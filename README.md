@@ -4,14 +4,16 @@ This is an experimental implementation of a new declarative API for gesture hand
 
 ## Installation
 
-1. First install the library from npm repository:
+I. First install the library from npm repository:
 ```bash
   npm install --save react-native-gesture-handler
 ```
 
-2. Update your main activity (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating a `ReactRootView` instance. Then use a root view wrapper provided by this library:
+II. Update your main activity (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating a `ReactRootView` instance. Then use a root view wrapper provided by this library:
 ```java
-// Don't forget the import
+// Don't forget imports
+import com.facebook.react.ReactActivityDelegate;
+import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 class MainActivity extends ReactActivity {
@@ -29,7 +31,12 @@ class MainActivity extends ReactActivity {
 }
 ```
 
-3. You're all set, just run your app now
+III. Run:
+```bash
+  react-native link react-native-gesture-handler
+```
+
+IV. You're all set, just run your app with `react-native run-android`
 
 ## Examples
 
@@ -86,6 +93,7 @@ Last available element exported by the library is a dictionary of constants used
 ## Roadmap
 
  - Build two more gesture recognizers: `DoubleTapGestuerHandler`, `FlingGestureHandler`
+ - Send out necessary updates to RN core for native animated event support
  - Support for multi-touch events (build `PinchGestureHandler`)
  - iOS port
 
