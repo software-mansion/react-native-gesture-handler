@@ -1,0 +1,60 @@
+{
+  "name": "react-native-gesture-handler",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "main": "GestureHandler.js",
+  "files": [
+    "android/build.gradle",
+    "android/src/main/AndroidManifest.xml",
+    "android/src/main/java/com/swmansion/gesturehandler/GestureHandler.java",
+    "android/src/main/java/com/swmansion/gesturehandler/GestureHandlerOrchestrator.java",
+    "android/src/main/java/com/swmansion/gesturehandler/GestureHandlerRegistry.java",
+    "android/src/main/java/com/swmansion/gesturehandler/GestureHandlerRegistryImpl.java",
+    "android/src/main/java/com/swmansion/gesturehandler/GestureHandlerViewWrapper.java",
+    "android/src/main/java/com/swmansion/gesturehandler/LongPressGestureHandler.java",
+    "android/src/main/java/com/swmansion/gesturehandler/NativeViewGestureHandler.java",
+    "android/src/main/java/com/swmansion/gesturehandler/OnTouchEventListener.java",
+    "android/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java",
+    "android/src/main/java/com/swmansion/gesturehandler/PointerEvents.java",
+    "android/src/main/java/com/swmansion/gesturehandler/TapGestureHandler.java",
+    "android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerEnabledRootView.java",
+    "android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerEvent.java",
+    "android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.java",
+    "android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerPackage.java",
+    "android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRegistry.java",
+    "android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerStateChangeEvent.java",
+    "README.md",
+    "GestureHandler.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kmagiera/react-native-gesture-handler.git"
+  },
+  "author": {
+    "email": "krzys.magiera@gmail.com",
+    "name": "Krzysztof Magiera"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/kmagiera/react-native-gesture-handler/issues"
+  },
+  "homepage": "https://github.com/kmagiera/react-native-gesture-handler#readme",
+  "dependencies": {
+    "react": "15.3.2",
+    "react-native": "0.35.0"
+  },
+  "jest": {
+    "preset": "jest-react-native"
+  },
+  "devDependencies": {
+    "babel-jest": "16.0.0",
+    "babel-preset-react-native": "1.9.0",
+    "jest": "16.0.2",
+    "jest-react-native": "16.0.0",
+    "react-test-renderer": "15.3.2"
+  }
+}
