@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
@@ -8,24 +9,28 @@ import android.widget.FrameLayout;
 public class GestureHandlerViewWrapper extends FrameLayout {
 
   private final GestureHandlerOrchestrator mOrchestrator;
+  private final GestureHandlerRegistryImpl mRegistry;
 
   public GestureHandlerViewWrapper(Context context) {
     super(context);
-    mOrchestrator = new GestureHandlerOrchestrator(this);
+    mRegistry = new GestureHandlerRegistryImpl();
+    mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry);
   }
 
   public GestureHandlerViewWrapper(Context context, AttributeSet attrs) {
     super(context, attrs);
-    mOrchestrator = new GestureHandlerOrchestrator(this);
+    mRegistry = new GestureHandlerRegistryImpl();
+    mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry);
   }
 
   public GestureHandlerViewWrapper(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    mOrchestrator = new GestureHandlerOrchestrator(this);
+    mRegistry = new GestureHandlerRegistryImpl();
+    mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry);
   }
 
-  public GestureHandlerOrchestrator getOrchestrator() {
-    return mOrchestrator;
+  public GestureHandlerRegistryImpl getRegistry() {
+    return mRegistry;
   }
 
   @Override

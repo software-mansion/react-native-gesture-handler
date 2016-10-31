@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler;
 import android.view.MotionEvent;
 
 public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
+
   public TapGestureHandler() {
     setCanStartHandlingWithDownEventOnly(true);
     setShouldCancelWhenOutside(true);

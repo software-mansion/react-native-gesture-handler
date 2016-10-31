@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.swmansion.gesturehandler.example"
+    package="com.swmansion.gesturehandler.react.example"
     android:versionCode="1"
     android:versionName="1.0">
 

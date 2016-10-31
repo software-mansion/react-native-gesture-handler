@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler.example;
+package com.swmansion.gesturehandler.react.example;
 
 import android.app.Application;
 

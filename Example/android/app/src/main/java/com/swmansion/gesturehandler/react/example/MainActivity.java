@@ -1,11 +1,11 @@
-package com.swmansion.gesturehandler.example;
+package com.swmansion.gesturehandler.react.example;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
-class MainActivity extends ReactActivity {
+public class MainActivity extends ReactActivity {
 
   /**
    * Returns the name of the main component registered from JavaScript.

@@ -9,7 +9,7 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
 
   private WeakHashMap<View, ArrayList<GestureHandler>> mHandlers = new WeakHashMap<>();
 
-  public void registerHandlerForView(View view, GestureHandler handler) {
+  public <T extends GestureHandler> T registerHandlerForView(View view, T handler) {
     ArrayList<GestureHandler> listToAdd = mHandlers.get(view);
     if (listToAdd == null) {
       listToAdd = new ArrayList<>(1);
@@ -18,6 +18,7 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
     } else {
       listToAdd.add(handler);
     }
+    return handler;
   }
 
   @Override

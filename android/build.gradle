@@ -2,25 +2,43 @@ apply plugin: 'com.android.library'
 
 repositories {
     maven {
-        url "$projectDir/../../../node_modules/react-native/android"
+        mavenLocal()
+        jcenter()
+        url "$projectDir/../../node_modules/react-native/android"
     }
 }
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "24.0.3"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-        ndk {
-            abiFilters "armeabi-v7a", "x86"
-        }
+    }
+
+    // Include "lib/" as sources, unfortunetely react-native link can't handle
+    // setting up alternative gradle modules. We still have "lib" defined as a
+    // standalone gradle module just to be used in AndroidNativeExample
+    sourceSets {
+        main.java.srcDirs += 'lib/src/main/java'
     }
 }
 
 dependencies {
     compile 'com.facebook.react:react-native:[0.32.+,)'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.3'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
 }
