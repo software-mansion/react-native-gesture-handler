@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerRegistryImpl;
 import com.swmansion.gesturehandler.GestureHandlerViewWrapper;
+import com.swmansion.gesturehandler.LongPressGestureHandler;
 import com.swmansion.gesturehandler.NativeViewGestureHandler;
 import com.swmansion.gesturehandler.OnTouchEventListener;
 import com.swmansion.gesturehandler.TapGestureHandler;
@@ -52,9 +53,23 @@ public class MainActivity extends AppCompatActivity {
             .setShouldActivateOnStart(true)
             .setShouldCancelWhenOutside(false);
 
+    registry.registerHandlerForView(block, new LongPressGestureHandler())
+            .setOnTouchEventListener(new OnTouchEventListener<LongPressGestureHandler>() {
+              @Override
+              public void onTouchEvent(LongPressGestureHandler handler, MotionEvent event) {
+
+              }
+
+              @Override
+              public void onStateChange(LongPressGestureHandler handler, int newState, int oldState) {
+                if (newState == GestureHandler.STATE_ACTIVE) {
+                  Toast.makeText(MainActivity.this, "Long press", Toast.LENGTH_SHORT).show();
+                }
+              }
+            });
+
     registry.registerHandlerForView(block, new TapGestureHandler())
             .setNumberOfTaps(2)
-            .setMaxDurationMs(5000)
             .setShouldBeRequiredByOthersToFail(true)
             .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
               @Override
@@ -72,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
     registry.registerHandlerForView(block, new TapGestureHandler())
             .setNumberOfTaps(1)
-            .setMaxDurationMs(5000)
             .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
               @Override
               public void onTouchEvent(TapGestureHandler handler, MotionEvent event) {

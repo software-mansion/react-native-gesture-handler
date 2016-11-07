@@ -52,6 +52,8 @@ public class GestureHandlerOrchestrator {
       sTempCoords[0] = event.getX();
       sTempCoords[1] = event.getY();
       extractGestureHandlers(mWrapperView, sTempCoords);
+    } else if (action == MotionEvent.ACTION_CANCEL) {
+      cancelAll();
     }
 
     deliverEventToGestureHandlers(event);
@@ -97,7 +99,10 @@ public class GestureHandlerOrchestrator {
     if (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED) {
       // if there were handlers awaiting completion of this handler, we can trigger active state
       for (int i = 0; i < mAwaitingHandlersCount; i++) {
-        tryActivate(mAwaitingHandlers[i]);
+        GestureHandler otherHandler = mAwaitingHandlers[i];
+        if (handler.isRequiredByHandlerToFail(otherHandler)) {
+          tryActivate(otherHandler);
+        }
       }
     }
     if (newState == GestureHandler.STATE_ACTIVE) {
@@ -162,6 +167,21 @@ public class GestureHandlerOrchestrator {
     }
     for (int i = 0; i < handlersCount; i++) {
       deliverEventToGestureHandler(mPreparedHandlers[i], event);
+    }
+  }
+
+  public void cancelAll() {
+    for (int i = 0; i < mAwaitingHandlersCount; i++) {
+      mAwaitingHandlers[i].cancel();
+    }
+    // Copy handlers to "prepared handlers" array, because the list of active handlers can change
+    // as a result of state updates
+    int handlersCount = mGestureHandlersCount;
+    for (int i = 0; i < handlersCount; i++) {
+      mPreparedHandlers[i] = mGestureHandlers[i];
+    }
+    for (int i = 0; i < handlersCount; i++) {
+      mPreparedHandlers[i].cancel();
     }
   }
 

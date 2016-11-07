@@ -91,6 +91,7 @@ public class GestureHandler<T extends GestureHandler> {
     if (mState == STATE_ACTIVE) {
       if (mShouldCancelWhenOutside && !isWithinBounds(event)) {
         cancel();
+        return;
       }
     }
     onHandle(event);

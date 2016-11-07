@@ -31,8 +31,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside";
   private static final String KEY_SHOULD_CANCEL_OTHERS_WHEN_ACTIVATED =
           "shouldCancelOthersWhenActivated";
-  private static final String KEY_CAN_START_HANDLING_WITH_DOWN_EVENT_ONLY =
-          "canStartHandlingWithDownEventOnly";
+  private static final String KEY_SHOULD_BE_REQUIRED_BY_OTHERS_TO_FAIL =
+          "shouldBeRequiredByOthersToFail";
+  private static final String KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart";
+  private static final String KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps";
+  private static final String KEY_TAP_MAX_DURATION_MS = "maxDurationMs";
+  private static final String KEY_TAP_MAX_DELAY_MS = "maxDelayMs";
   private static final String KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs";
   private static final String KEY_PAN_MIN_DELTA_X = "minDeltaX";
   private static final String KEY_PAN_MIN_DELTA_Y = "minDeltaY";
@@ -53,9 +57,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handler.setShouldCancelOthersWhenActivated(
                 config.getBoolean(KEY_SHOULD_CANCEL_OTHERS_WHEN_ACTIVATED));
       }
-      if (config.hasKey(KEY_CAN_START_HANDLING_WITH_DOWN_EVENT_ONLY)) {
-        handler.setCanStartHandlingWithDownEventOnly(
-                config.getBoolean(KEY_CAN_START_HANDLING_WITH_DOWN_EVENT_ONLY));
+      if (config.hasKey(KEY_SHOULD_BE_REQUIRED_BY_OTHERS_TO_FAIL)) {
+        handler.setShouldBeRequiredByOthersToFail(
+                config.getBoolean(KEY_SHOULD_BE_REQUIRED_BY_OTHERS_TO_FAIL));
       }
     }
   }
@@ -71,6 +75,15 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     public NativeViewGestureHandler create() {
       return new NativeViewGestureHandler();
     }
+
+    @Override
+    public void configure(NativeViewGestureHandler handler, ReadableMap config) {
+      super.configure(handler, config);
+      if (config.hasKey(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)) {
+        handler.setShouldActivateOnStart(
+                config.getBoolean(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START));
+      }
+    }
   }
 
   private static class TapGestureHandlerFactory extends HandlerFactory<TapGestureHandler> {
@@ -82,6 +95,20 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public TapGestureHandler create() {
       return new TapGestureHandler();
+    }
+
+    @Override
+    public void configure(TapGestureHandler handler, ReadableMap config) {
+      super.configure(handler, config);
+      if (config.hasKey(KEY_TAP_NUMBER_OF_TAPS)) {
+        handler.setNumberOfTaps(config.getInt(KEY_TAP_NUMBER_OF_TAPS));
+      }
+      if (config.hasKey(KEY_TAP_MAX_DURATION_MS)) {
+        handler.setMaxDurationMs(config.getInt(KEY_TAP_MAX_DURATION_MS));
+      }
+      if (config.hasKey(KEY_TAP_MAX_DELAY_MS)) {
+        handler.setMaxDelayMs(config.getInt(KEY_TAP_MAX_DELAY_MS));
+      }
     }
   }
 
@@ -198,7 +225,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             "BEGAN", GestureHandler.STATE_BEGAN,
             "ACTIVE", GestureHandler.STATE_ACTIVE,
             "CANCELLED", GestureHandler.STATE_CANCELLED,
-            "FAILED", GestureHandler.STATE_FAILED
+            "FAILED", GestureHandler.STATE_FAILED,
+            "END", GestureHandler.STATE_END
     ));
   }
 

@@ -9,8 +9,6 @@ import {
   WebView,
 } from 'react-native';
 
-
-
 import NativeModules from 'NativeModules';
 import findNodeHandle from 'react/lib/findNodeHandle';
 
@@ -25,7 +23,7 @@ let handlerTag = 1
 const GestureHandlerPropTypes = {
   shouldCancelWhenOutside: PropTypes.bool,
   shouldCancelOthersWhenActivated: PropTypes.bool,
-  canStartHandlingWithDownEventOnly: PropTypes.bool,
+  shouldBeRequiredByOthersToFail: PropTypes.bool,
   onGestureEvent: PropTypes.func,
   onHandlerStateChange: PropTypes.func,
 }
@@ -90,7 +88,6 @@ function createHandler(handlerName, propTypes = null) {
     }
 
     render() {
-      console.log("Redner", handlerName, Object.keys(this.props));
       const child = React.Children.only(this.props.children);
       return React.cloneElement(child, {
         ref: CHILD_REF,
@@ -103,8 +100,14 @@ function createHandler(handlerName, propTypes = null) {
   return Handler;
 }
 
-const NativeViewGestureHandler = createHandler('NativeViewGestureHandler');
-const TapGestureHandler = createHandler('TapGestureHandler');
+const NativeViewGestureHandler = createHandler('NativeViewGestureHandler', {
+  shouldActivateOnStart: PropTypes.bool,
+});
+const TapGestureHandler = createHandler('TapGestureHandler', {
+  maxDurationMs: PropTypes.number,
+  maxDelayMs: PropTypes.number,
+  numberOfTaps: PropTypes.number,
+});
 const LongPressGestureHandler = createHandler('LongPressGestureHandler', {
   minDurationMs: PropTypes.number,
 });
@@ -140,7 +143,7 @@ function createNativeWrapper(Component, config = {}) {
 }
 
 const WrappedScrollView = createNativeWrapper(ScrollView);
-const WrappedSlider = createNativeWrapper(Slider, { shouldCancelWhenOutside: false });
+const WrappedSlider = createNativeWrapper(Slider, { shouldCancelWhenOutside: false, shouldActivateOnStart: true });
 const WrappedSwitch = createNativeWrapper(Switch);
 const WrappedTextInput = createNativeWrapper(TextInput);
 const WrappedToolbarAndroid = createNativeWrapper(ToolbarAndroid);
