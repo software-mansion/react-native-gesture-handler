@@ -14,7 +14,7 @@ import com.swmansion.gesturehandler.GestureHandlerRegistryImpl;
 import com.swmansion.gesturehandler.GestureHandlerViewWrapper;
 import com.swmansion.gesturehandler.NativeViewGestureHandler;
 import com.swmansion.gesturehandler.OnTouchEventListener;
-import com.swmansion.gesturehandler.PanGestureHandler;
+import com.swmansion.gesturehandler.TapGestureHandler;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,24 +49,59 @@ public class MainActivity extends AppCompatActivity {
     registry.registerHandlerForView(scrollView, new NativeViewGestureHandler());
     registry.registerHandlerForView(button, new NativeViewGestureHandler());
     registry.registerHandlerForView(seekBar, new NativeViewGestureHandler())
+            .setShouldActivateOnStart(true)
             .setShouldCancelWhenOutside(false);
 
-    registry.registerHandlerForView(block, new PanGestureHandler())
-            .setShouldCancelOthersWhenActivated(true)
-            .setMinDy(2)
-            .setCanStartHandlingWithDownEventOnly(true)
-            .setOnTouchEventListener(new OnTouchEventListener<PanGestureHandler>() {
+    registry.registerHandlerForView(block, new TapGestureHandler())
+            .setNumberOfTaps(2)
+            .setMaxDurationMs(5000)
+            .setShouldBeRequiredByOthersToFail(true)
+            .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
               @Override
-              public void onTouchEvent(PanGestureHandler handler, MotionEvent event) {
-                if (handler.getState() == GestureHandler.STATE_ACTIVE) {
-                  block.setTranslationX(handler.getTranslationX());
-                  block.setTranslationY(handler.getTranslationY());
-                }
+              public void onTouchEvent(TapGestureHandler handler, MotionEvent event) {
+
               }
 
               @Override
-              public void onStateChange(PanGestureHandler handler, int newState, int oldState) {
+              public void onStateChange(TapGestureHandler handler, int newState, int oldState) {
+                if (newState == GestureHandler.STATE_ACTIVE) {
+                  Toast.makeText(MainActivity.this, "I'm d0able tapped", Toast.LENGTH_SHORT).show();
+                }
               }
             });
+
+    registry.registerHandlerForView(block, new TapGestureHandler())
+            .setNumberOfTaps(1)
+            .setMaxDurationMs(5000)
+            .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
+              @Override
+              public void onTouchEvent(TapGestureHandler handler, MotionEvent event) {
+
+              }
+
+              @Override
+              public void onStateChange(TapGestureHandler handler, int newState, int oldState) {
+                if (newState == GestureHandler.STATE_ACTIVE) {
+                  Toast.makeText(MainActivity.this, "I'm tapped once", Toast.LENGTH_SHORT).show();
+                }
+              }
+            });
+//    registry.registerHandlerForView(block, new PanGestureHandler())
+//            .setShouldCancelOthersWhenActivated(true)
+//            .setMinDy(2)
+//            .setCanStartHandlingWithDownEventOnly(true)
+//            .setOnTouchEventListener(new OnTouchEventListener<PanGestureHandler>() {
+//              @Override
+//              public void onTouchEvent(PanGestureHandler handler, MotionEvent event) {
+//                if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+//                  block.setTranslationX(handler.getTranslationX());
+//                  block.setTranslationY(handler.getTranslationY());
+//                }
+//              }
+//
+//              @Override
+//              public void onStateChange(PanGestureHandler handler, int newState, int oldState) {
+//              }
+//            });
   }
 }

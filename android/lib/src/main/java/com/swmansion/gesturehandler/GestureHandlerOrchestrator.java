@@ -5,7 +5,6 @@ import android.graphics.PointF;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import java.util.ArrayList;
 
@@ -22,10 +21,18 @@ public class GestureHandlerOrchestrator {
 
   private final ViewGroup mWrapperView;
   private final GestureHandlerRegistry mHandlerRegistry;
-  private final GestureHandler[] mGestureHandlers = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
-  private int mGestureHandlersCount = 0;
 
-  private boolean mAcceptNewHandlers = true;
+  private final GestureHandler[] mGestureHandlers
+          = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
+  private final GestureHandler[] mAwaitingHandlers
+          = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
+  private final GestureHandler[] mPreparedHandlers
+          = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
+  private final GestureHandler[] mHandlersToCancel
+          = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
+  private int mGestureHandlersCount = 0;
+  private int mAwaitingHandlersCount = 0;
+
 
   public GestureHandlerOrchestrator(ViewGroup wrapperView) {
     this(wrapperView, new GestureHandlerRegistryImpl());
@@ -40,40 +47,121 @@ public class GestureHandlerOrchestrator {
    * Should be called from the view wrapper
    */
   public boolean onTouchEvent(MotionEvent event) {
-    deliverEventToGestureHandlers(event);
-
-    if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-      reset();
+    int action = event.getActionMasked();
+    if (action == MotionEvent.ACTION_DOWN) {
+      sTempCoords[0] = event.getX();
+      sTempCoords[1] = event.getY();
+      extractGestureHandlers(mWrapperView, sTempCoords);
     }
 
+    deliverEventToGestureHandlers(event);
     return true;
   }
 
-  private void reset() {
+  private void cleanupFinishedHandlers() {
     for (int i = 0; i < mGestureHandlersCount; i++) {
-      mGestureHandlers[i].reset();
-    }
-    mGestureHandlersCount = 0;
-    mAcceptNewHandlers = true;
-  }
-
-  public void cancelOtherGestureHandlers(GestureHandler handler) {
-    for (int i = 0; i < mGestureHandlersCount; i++) {
-      GestureHandler other = mGestureHandlers[i];
-      if (other != handler) {
-        other.cancel();
+      GestureHandler handler = mGestureHandlers[i];
+      if (isFinished(handler.getState()) && !isAwaiting(handler)) {
+        mGestureHandlers[i] = mGestureHandlers[mGestureHandlersCount - 1];
+        mGestureHandlers[mGestureHandlersCount - 1] = null;
+        mGestureHandlersCount--;
+        i--;
+        handler.reset();
+        handler.mIsActive = false;
       }
     }
-    mAcceptNewHandlers = false;
+  }
+
+  private boolean hasOtherHandlerToWaitFor(GestureHandler handler) {
+    for (int i = 0; i < mGestureHandlersCount; i++) {
+      GestureHandler otherHandler = mGestureHandlers[i];
+      if (!isFinished(otherHandler.getState()) && otherHandler.isRequiredByHandlerToFail(handler)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void tryActivate(GestureHandler handler) {
+    // see if there is anyone else who we need to wait for
+    if (hasOtherHandlerToWaitFor(handler)) {
+      addAwaitingHandler(handler);
+    } else {
+      // we can activate handler right away
+      makeActive(handler);
+      removeFromAwaitingHandlers(handler);
+    }
+  }
+
+  /*package*/ void onHandlerStateChange(GestureHandler handler, int newState, int prevState) {
+    if (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED) {
+      // if there were handlers awaiting completion of this handler, we can trigger active state
+      for (int i = 0; i < mAwaitingHandlersCount; i++) {
+        tryActivate(mAwaitingHandlers[i]);
+      }
+    }
+    if (newState == GestureHandler.STATE_ACTIVE) {
+      tryActivate(handler);
+    } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
+      if (handler.mIsActive) {
+        handler.dispatchStateChange(newState, prevState);
+      }
+    } else {
+      handler.dispatchStateChange(newState, prevState);
+    }
+    cleanupFinishedHandlers();
+  }
+
+  private void makeActive(GestureHandler handler) {
+    int currentState = handler.getState();
+
+    handler.mIsActive = true;
+
+    int toCancelCount = 0;
+    // Cancel all handlers that are required to be cancel upon current handler's activation
+    for (int i = 0; i < mGestureHandlersCount; i++) {
+      GestureHandler otherHandler = mGestureHandlers[i];
+      if (otherHandler.isRequiredToCancelUponHandlerActivation(handler)) {
+        mHandlersToCancel[toCancelCount++] = otherHandler;
+      }
+    }
+
+    for (int i = 0; i < toCancelCount; i++) {
+      mHandlersToCancel[i].cancel();
+    }
+
+    // Clear all awaiting handlers waiting for the current handler to fail
+    for (int i = 0; i < mAwaitingHandlersCount; i++) {
+      GestureHandler otherHandler = mAwaitingHandlers[i];
+      if (otherHandler.isRequiredByHandlerToFail(handler)) {
+        mAwaitingHandlers[i] = mAwaitingHandlers[mAwaitingHandlersCount - 1];
+        mAwaitingHandlers[mAwaitingHandlersCount - 1] = null;
+        mAwaitingHandlersCount--;
+        i--;
+        otherHandler.cancel();
+      }
+    }
+
+    // Dispatch state change event if handler is no longer in the active state we should also
+    // trigger END state change and UNDETERMINED state change if necessary
+    handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN);
+    if (currentState != GestureHandler.STATE_ACTIVE) {
+      handler.dispatchStateChange(GestureHandler.STATE_END, GestureHandler.STATE_ACTIVE);
+      if (currentState != GestureHandler.STATE_END) {
+        handler.dispatchStateChange(GestureHandler.STATE_UNDETERMINED, GestureHandler.STATE_END);
+      }
+    }
   }
 
   public void deliverEventToGestureHandlers(MotionEvent event) {
-    sTempCoords[0] = event.getX();
-    sTempCoords[1] = event.getY();
-    extractGestureHandlers(mWrapperView, sTempCoords);
-
-    for (int i = 0; i < mGestureHandlersCount; i++) {
-      deliverEventToGestureHandler(mGestureHandlers[i], event);
+    // Copy handlers to "prepared handlers" array, because the list of active handlers can change
+    // as a result of state updates
+    int handlersCount = mGestureHandlersCount;
+    for (int i = 0; i < handlersCount; i++) {
+      mPreparedHandlers[i] = mGestureHandlers[i];
+    }
+    for (int i = 0; i < handlersCount; i++) {
+      deliverEventToGestureHandler(mPreparedHandlers[i], event);
     }
   }
 
@@ -87,6 +175,9 @@ public class GestureHandlerOrchestrator {
     float oldY = event.getY();
     event.setLocation(coords[0], coords[1]);
     handler.handle(event);
+    if (handler.mIsActive) {
+      handler.dispatchTouchEvent(event);
+    }
     event.setLocation(oldX, oldY);
   }
 
@@ -107,10 +198,39 @@ public class GestureHandlerOrchestrator {
     outputCoords[1] = childPoint.y;
   }
 
-  private void recordGestureHandler(GestureHandler handler, View view) {
-    if (!mAcceptNewHandlers) {
-      return;
+  private void addAwaitingHandler(GestureHandler handler) {
+    for (int i = 0; i < mAwaitingHandlersCount; i++) {
+      if (mAwaitingHandlers[i] == handler) {
+        return;
+      }
     }
+    if (mAwaitingHandlersCount >= mAwaitingHandlers.length) {
+      throw new IllegalStateException("Too many recognizers");
+    }
+    mAwaitingHandlers[mAwaitingHandlersCount++] = handler;
+  }
+
+  private boolean isAwaiting(GestureHandler handler) {
+    for (int i = 0; i < mAwaitingHandlersCount; i++) {
+      if (handler == mAwaitingHandlers[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void removeFromAwaitingHandlers(GestureHandler handler) {
+    for (int i = 0; i < mAwaitingHandlersCount; i++) {
+      if (mAwaitingHandlers[i] == handler) {
+        mAwaitingHandlers[i] = mAwaitingHandlers[mAwaitingHandlersCount - 1];
+        mAwaitingHandlers[mAwaitingHandlersCount - 1] = null;
+        mAwaitingHandlersCount--;
+        return;
+      }
+    }
+  }
+
+  private void recordGestureHandler(GestureHandler handler, View view) {
     for (int i = 0; i < mGestureHandlersCount; i++) {
       if (mGestureHandlers[i] == handler) {
         return;
@@ -120,6 +240,7 @@ public class GestureHandlerOrchestrator {
       throw new IllegalStateException("Too many recognizers");
     }
     mGestureHandlers[mGestureHandlersCount++] = handler;
+    handler.mIsActive = false;
     handler.prepare(view, this);
   }
 
@@ -157,7 +278,6 @@ public class GestureHandlerOrchestrator {
     if (pointerEvents == PointerEvents.NONE) {
       // This view and its children can't be the target
       return;
-
     } else if (pointerEvents == PointerEvents.BOX_ONLY) {
       // This view is the target, its children don't matter
       recordHandlerIfNotPresent(view, coords);
@@ -168,7 +288,6 @@ public class GestureHandlerOrchestrator {
         extractGestureHandlers((ViewGroup) view, coords);
       }
       return;
-
     } else if (pointerEvents == PointerEvents.AUTO) {
       // Either this view or one of its children is the target
       recordHandlerIfNotPresent(view, coords);
@@ -176,11 +295,15 @@ public class GestureHandlerOrchestrator {
         extractGestureHandlers((ViewGroup) view, coords);
       }
       return;
-
     } else {
       throw new IllegalArgumentException(
               "Unknown pointer event type: " + pointerEvents.toString());
     }
+  }
+
+  private static boolean isFinished(int state) {
+    return state == GestureHandler.STATE_CANCELLED || state == GestureHandler.STATE_FAILED
+            || state == GestureHandler.STATE_END;
   }
 
   private static boolean isTransformedTouchPointInView(

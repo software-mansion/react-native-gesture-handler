@@ -52,7 +52,13 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mStartY = mLastY;
       mVelocityTracker = VelocityTracker.obtain();
       mVelocityTracker.addMovement(event);
-      moveToState(STATE_BEGAN);
+      begin();
+    } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+      if (state == STATE_ACTIVE) {
+        end();
+      } else {
+        fail();
+      }
     } else if (state == STATE_BEGAN) {
       float dx = Math.abs(mStartX - mLastX);
       float dy = Math.abs(mStartY - mLastY);
@@ -64,7 +70,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       float velocitySq = velocityX * velocityX + velocityY * velocityY;
       if (velocitySq < mMaxVelocitySq &&
               (distSq > mMinDistSq || dx > mMinDeltaX || dy > mMinDeltaY)) {
-        moveToState(STATE_ACTIVE);
+        activate();
       }
     }
   }
