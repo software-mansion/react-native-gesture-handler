@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler.react;
 
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -22,7 +21,6 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
     } else {
       listToAdd.add(handler);
     }
-    Log.e("CAT", "Register " + listToAdd.size() + " @ " + viewTag);
   }
 
   public void dropHandlersForViewWithTag(int viewTag) {

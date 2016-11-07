@@ -111,16 +111,26 @@ class PressBox extends Component {
       ToastAndroid.show("I'm being pressed for so long", ToastAndroid.SHORT);
     }
   }
-  _onTap = (event) => {
+  _onSingleTap = (event) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       ToastAndroid.show("I'm touched", ToastAndroid.SHORT);
+    }
+  }
+  _onDoubleTap = (event) => {
+    if (event.nativeEvent.state === State.ACTIVE) {
+      ToastAndroid.show("D0able tap, good job!", ToastAndroid.SHORT);
     }
   }
   render() {
     return (
       <LongPressGestureHandler onHandlerStateChange={this._onHandlerStateChange}>
-        <TapGestureHandler onHandlerStateChange={this._onTap}>
-          <View style={styles.box}/>
+        <TapGestureHandler onHandlerStateChange={this._onSingleTap}>
+          <TapGestureHandler
+            onHandlerStateChange={this._onDoubleTap}
+            numberOfTaps={2}
+            shouldBeRequiredByOthersToFail={true}>
+            <View style={styles.box}/>
+          </TapGestureHandler>
         </TapGestureHandler>
       </LongPressGestureHandler>
     );
