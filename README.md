@@ -69,14 +69,25 @@ Last available element exported by the library is a dictionary of constants used
  - `State.BEGAN`
  - `State.CANCELLED`
  - `State.ACTIVE`
+ - `State.END`
 
 #### Common `GestureHandler` properties
 
  - `shouldCancelWhenOutside`
  - `shouldCancelOthersWhenActivated`
- - `canStartHandlingWithDownEventOnly`
+ - `shouldBeRequiredByOthersToFail`
  - `onGestureEvent`
  - `onHandlerStateChange`
+
+#### `TapGestureHandler` extra properties
+
+ - `maxDurationMs`
+ - `maxDelayMs`
+ - `numberOfTaps`
+
+#### `NativeViewGestureHandler` extra properties
+
+ - `shouldActivateOnStart`
 
 #### `LongPressGestureHandler` extra properties
 
@@ -92,7 +103,7 @@ Last available element exported by the library is a dictionary of constants used
 
 ## Roadmap
 
- - Build two more gesture recognizers: `DoubleTapGestuerHandler`, `FlingGestureHandler`
+ - Build one more gesture recognizer: `FlingGestureHandler`
  - Send out necessary updates to RN core for native animated event support
  - Support for multi-touch events (build `PinchGestureHandler`)
  - iOS port
