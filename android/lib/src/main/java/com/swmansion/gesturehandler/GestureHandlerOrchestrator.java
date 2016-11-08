@@ -2,7 +2,6 @@ package com.swmansion.gesturehandler;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,6 @@ public class GestureHandlerOrchestrator {
   private static final float[] sMatrixTransformCoords = new float[2];
   private static final Matrix sInverseMatrix = new Matrix();
   private static final float[] sTempCoords = new float[2];
-  private static final Rect sTempRect = new Rect();
 
   private final ViewGroup mWrapperView;
   private final GestureHandlerRegistry mHandlerRegistry;
