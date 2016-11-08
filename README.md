@@ -76,6 +76,7 @@ Last available element exported by the library is a dictionary of constants used
  - `shouldCancelWhenOutside`
  - `shouldCancelOthersWhenActivated`
  - `shouldBeRequiredByOthersToFail`
+ - `hitSlop`
  - `onGestureEvent`
  - `onHandlerStateChange`
 
@@ -104,6 +105,7 @@ Last available element exported by the library is a dictionary of constants used
 ## Roadmap
 
  - Build one more gesture recognizer: `FlingGestureHandler`
+ - Interop with standard ways of handling touch in react-native
  - Send out necessary updates to RN core for native animated event support
  - Support for multi-touch events (build `PinchGestureHandler`)
  - iOS port

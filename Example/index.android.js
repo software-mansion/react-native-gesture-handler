@@ -1,20 +1,21 @@
 import React, { Component } from 'react';
 import {
+  Animated,
   AppRegistry,
   StyleSheet,
+  Switch,
   Text,
-  View,
-  Animated,
   ToastAndroid,
+  View,
 } from 'react-native';
 
 import {
   LongPressGestureHandler,
+  NativeViewGestureHandler,
   PanGestureHandler,
   ScrollView,
   Slider,
   State,
-  Switch,
   TapGestureHandler,
   TextInput,
   ToolbarAndroid,
@@ -148,7 +149,11 @@ class ControlledSwitch extends React.Component {
     this.props.onValueChange && this.props.onValueChange(value);
   }
   render() {
-    return <Switch {...this.props} value={this.state.value} onValueChange={this._onValueChange} />
+    return (
+      <NativeViewGestureHandler hitSlop={20}>
+        <Switch {...this.props} value={this.state.value} onValueChange={this._onValueChange} />
+      </NativeViewGestureHandler>
+    );
   }
 }
 

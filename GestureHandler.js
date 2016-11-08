@@ -24,6 +24,17 @@ const GestureHandlerPropTypes = {
   shouldCancelWhenOutside: PropTypes.bool,
   shouldCancelOthersWhenActivated: PropTypes.bool,
   shouldBeRequiredByOthersToFail: PropTypes.bool,
+  hitSlop: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.shape({
+      left: PropTypes.number,
+      top: PropTypes.number,
+      right: PropTypes.number,
+      bottom: PropTypes.number,
+      vertical: PropTypes.number,
+      horizontal: PropTypes.number,
+    }),
+  ]),
   onGestureEvent: PropTypes.func,
   onHandlerStateChange: PropTypes.func,
 }

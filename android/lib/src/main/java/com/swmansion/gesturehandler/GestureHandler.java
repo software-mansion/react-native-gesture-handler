@@ -12,10 +12,16 @@ public class GestureHandler<T extends GestureHandler> {
   public static final int STATE_ACTIVE = 5;
   public static final int STATE_END = 6;
 
+  private static final int HIT_SLOP_LEFT_IDX = 0;
+  private static final int HIT_SLOP_TOP_IDX = 1;
+  private static final int HIT_SLOP_RIGHT_IDX = 2;
+  private static final int HIT_SLOP_BOTTOM_IDX = 3;
+
   private int mTag;
   private View mView;
   private int mState = STATE_UNDETERMINED;
   private float mX, mY;
+  private float mHitSlop[];
 
   private boolean mShouldCancelWhenOutside;
   private boolean mShouldCancelOthersWhenActivated;
@@ -50,6 +56,21 @@ public class GestureHandler<T extends GestureHandler> {
   public T setShouldBeRequiredByOthersToFail(boolean shouldBeRequiredByOthersToFail) {
     mShouldBeRequiredByOthersToFail = shouldBeRequiredByOthersToFail;
     return (T) this;
+  }
+
+  public T setHitSlop(float leftPad, float topPad, float rightPad, float bottomPad) {
+    if (mHitSlop == null) {
+      mHitSlop = new float[4];
+    }
+    mHitSlop[HIT_SLOP_LEFT_IDX] = leftPad;
+    mHitSlop[HIT_SLOP_TOP_IDX] = topPad;
+    mHitSlop[HIT_SLOP_RIGHT_IDX] = rightPad;
+    mHitSlop[HIT_SLOP_BOTTOM_IDX] = bottomPad;
+    return (T) this;
+  }
+
+  public T setHitSlop(float padding) {
+    return setHitSlop(padding, padding, padding, padding);
   }
 
   public void setTag(int tag) {
@@ -89,7 +110,7 @@ public class GestureHandler<T extends GestureHandler> {
     mX = event.getX();
     mY = event.getY();
     if (mState == STATE_ACTIVE) {
-      if (mShouldCancelWhenOutside && !isWithinBounds(event)) {
+      if (mShouldCancelWhenOutside && !isWithinBounds(mView, event.getX(), event.getY())) {
         cancel();
         return;
       }
@@ -125,10 +146,18 @@ public class GestureHandler<T extends GestureHandler> {
     return handler != this && handler.mShouldCancelOthersWhenActivated;
   }
 
-  protected boolean isWithinBounds(MotionEvent event) {
-    float posX = event.getX();
-    float posY = event.getY();
-    return posX >= 0 && posX < mView.getWidth() && posY >= 0 && posY < mView.getHeight();
+  public boolean isWithinBounds(View view, float posX, float posY) {
+    float left = 0;
+    float top = 0;
+    float right = view.getWidth();
+    float bottom = view.getHeight();
+    if (mHitSlop != null) {
+      left -= mHitSlop[HIT_SLOP_LEFT_IDX];
+      top -= mHitSlop[HIT_SLOP_TOP_IDX];
+      right += mHitSlop[HIT_SLOP_RIGHT_IDX];
+      bottom += mHitSlop[HIT_SLOP_BOTTOM_IDX];
+    }
+    return posX >= left && posX <= right && posY >= top && posY <= bottom;
   }
 
   public final void cancel() {

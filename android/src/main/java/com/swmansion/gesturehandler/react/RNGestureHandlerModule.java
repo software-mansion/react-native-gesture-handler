@@ -9,6 +9,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -33,6 +34,13 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           "shouldCancelOthersWhenActivated";
   private static final String KEY_SHOULD_BE_REQUIRED_BY_OTHERS_TO_FAIL =
           "shouldBeRequiredByOthersToFail";
+  private static final String KEY_HIT_SLOP = "hitSlop";
+  private static final String KEY_HIT_SLOP_LEFT = "left";
+  private static final String KEY_HIT_SLOP_TOP = "left";
+  private static final String KEY_HIT_SLOP_RIGHT = "right";
+  private static final String KEY_HIT_SLOP_BOTTOM = "bottom";
+  private static final String KEY_HIT_SLOP_VERTICAL = "vertical";
+  private static final String KEY_HIT_SLOP_HORIZONTAL = "horizontal";
   private static final String KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart";
   private static final String KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps";
   private static final String KEY_TAP_MAX_DURATION_MS = "maxDurationMs";
@@ -60,6 +68,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (config.hasKey(KEY_SHOULD_BE_REQUIRED_BY_OTHERS_TO_FAIL)) {
         handler.setShouldBeRequiredByOthersToFail(
                 config.getBoolean(KEY_SHOULD_BE_REQUIRED_BY_OTHERS_TO_FAIL));
+      }
+      if (config.hasKey(KEY_HIT_SLOP)) {
+        handleHitSlopProperty(handler, config);
       }
     }
   }
@@ -292,5 +303,36 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             translationX,
             translationY);
     eventDispatcher.dispatchEvent(event);
+  }
+
+  private static void handleHitSlopProperty(GestureHandler handler, ReadableMap config) {
+    if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
+      float hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP));
+      handler.setHitSlop(hitSlop, hitSlop, hitSlop, hitSlop);
+    } else {
+      ReadableMap hitSlop = config.getMap(KEY_HIT_SLOP);
+      float left = 0, top = 0, right = 0, bottom = 0;
+      if (hitSlop.hasKey(KEY_HIT_SLOP_HORIZONTAL)) {
+        float horizontalPad = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_HORIZONTAL));
+        left = right = horizontalPad;
+      }
+      if (hitSlop.hasKey(KEY_HIT_SLOP_VERTICAL)) {
+        float verticalPad = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_VERTICAL));
+        top = bottom = verticalPad;
+      }
+      if (hitSlop.hasKey(KEY_HIT_SLOP_LEFT)) {
+        left  = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_LEFT));
+      }
+      if (hitSlop.hasKey(KEY_HIT_SLOP_TOP)) {
+        top = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_TOP));
+      }
+      if (hitSlop.hasKey(KEY_HIT_SLOP_RIGHT)) {
+        right = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_RIGHT));
+      }
+      if (hitSlop.hasKey(KEY_HIT_SLOP_BOTTOM)) {
+        bottom = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_BOTTOM));
+      }
+      handler.setHitSlop(left, top, right, bottom);
+    }
   }
 }

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.swmansion.gesturehandler.GestureHandler;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
   private Button button;
   private SeekBar seekBar;
   private View block;
+  private Switch switchView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     button = (Button) findViewById(R.id.button);
     seekBar = (SeekBar) findViewById(R.id.seekbar);
     block = findViewById(R.id.block);
+    switchView = (Switch) findViewById(R.id.switchView);
 
     // Native click events should work as expected assuming the view is wrapped with
     // NativeViewGestureHandler
@@ -52,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
     registry.registerHandlerForView(seekBar, new NativeViewGestureHandler())
             .setShouldActivateOnStart(true)
             .setShouldCancelWhenOutside(false);
+    registry.registerHandlerForView(switchView, new NativeViewGestureHandler()).setHitSlop(20);
 
     registry.registerHandlerForView(block, new LongPressGestureHandler())
             .setOnTouchEventListener(new OnTouchEventListener<LongPressGestureHandler>() {
               @Override
               public void onTouchEvent(LongPressGestureHandler handler, MotionEvent event) {
-
               }
 
               @Override
@@ -74,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
               @Override
               public void onTouchEvent(TapGestureHandler handler, MotionEvent event) {
-
               }
 
               @Override
@@ -90,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
             .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
               @Override
               public void onTouchEvent(TapGestureHandler handler, MotionEvent event) {
-
               }
 
               @Override

@@ -321,12 +321,7 @@ public class GestureHandlerOrchestrator {
     }
   }
 
-  private static boolean isFinished(int state) {
-    return state == GestureHandler.STATE_CANCELLED || state == GestureHandler.STATE_FAILED
-            || state == GestureHandler.STATE_END;
-  }
-
-  private static boolean isTransformedTouchPointInView(
+  private boolean isTransformedTouchPointInView(
           float x,
           float y,
           ViewGroup parent,
@@ -346,11 +341,23 @@ public class GestureHandlerOrchestrator {
       localY = localXY[1];
     }
     outLocalPoint.set(localX, localY);
-    if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
-            && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
-      return true;
-    }
 
-    return false;
+    boolean isWithinBounds = false;
+    ArrayList<GestureHandler> handlers = mHandlerRegistry.getHandlersForView(child);
+    if (handlers != null) {
+      for (int i = 0, size = handlers.size(); !isWithinBounds && i < size ; i++) {
+        isWithinBounds = handlers.get(i).isWithinBounds(child, localX, localY);
+      }
+    }
+    if (!isWithinBounds) {
+      isWithinBounds = localX >= 0 && localX <= child.getWidth() && localY >= 0
+              && localY < child.getHeight();
+    }
+    return isWithinBounds;
+  }
+
+  private static boolean isFinished(int state) {
+    return state == GestureHandler.STATE_CANCELLED || state == GestureHandler.STATE_FAILED
+            || state == GestureHandler.STATE_END;
   }
 }
