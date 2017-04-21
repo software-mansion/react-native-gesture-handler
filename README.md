@@ -1,10 +1,17 @@
 # react-native-gesture-handler
 
-This is an experimental implementation of a new declarative API for gesture handling in react-native. The project is **Android only** at the moment and works by completely replacing current react native touch system, which means that all `Touchable` and `PanResponder` components you may use in your app will not function as expected.
+This is an experimental implementation of a new declarative API for gesture handling in react-native. The project for now only consists of the implementation of the new gesture system for **Android**.
+
+*Since version 0.1.0 react-native-gesture-handler is compatible with the default React Native's gesture system (JS Responder system) 👌*
 
 ## Installation
 
-I. First install the library from npm repository:
+I. First install the library from npm repository using `yarn`:
+```bash
+  yarn add react-native-gesture-handler
+```
+
+or using `npm` if you prefer:
 ```bash
   npm install --save react-native-gesture-handler
 ```
@@ -42,7 +49,7 @@ IV. You're all set, just run your app with `react-native run-android`
 
 If you don't feel like trying it on a real app, but just want to play with the API you can run the example project. Clone the repo, go to the `Example/` folder and run:
 ```bash
-  npm install && react-native run-android
+  yarn install && react-native run-android
 ```
 
 You will need to have an android device or emulator connected as well as `react-native-cli` package installed globally.
@@ -105,8 +112,8 @@ Last available element exported by the library is a dictionary of constants used
 ## Roadmap
 
  - Build one more gesture recognizer: `FlingGestureHandler`
- - Interop with standard ways of handling touch in react-native
- - Send out necessary updates to RN core for native animated event support
+ - ~~Interop with standard ways of handling touch in react-native~~ ✔️
+ - ~~Send out necessary updates to RN core for native animated event support~~ ✔️
  - Support for multi-touch events (build `PinchGestureHandler`)
  - iOS port
 

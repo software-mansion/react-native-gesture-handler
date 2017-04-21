@@ -34,6 +34,9 @@ local.properties
 node_modules/
 npm-debug.log
 
+# vscode
+jsconfig.json
+
 # BUCK
 buck-out/
 \.buckd/

@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    compile 'com.facebook.react:react-native:[0.32.+,)'
+    compile "com.facebook.react:react-native:+"
 }
 
 buildscript {

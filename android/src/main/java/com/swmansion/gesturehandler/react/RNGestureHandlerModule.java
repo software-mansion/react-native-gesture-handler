@@ -21,6 +21,8 @@ import com.swmansion.gesturehandler.OnTouchEventListener;
 import com.swmansion.gesturehandler.PanGestureHandler;
 import com.swmansion.gesturehandler.TapGestureHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -229,6 +231,15 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     getRegistry().dropHandlersForViewWithTag(viewTag);
   }
 
+  @ReactMethod
+  public void handleSetJSResponder(int viewTag, boolean blockNativeResponder) {
+    getRootView().handleSetJSResponder(viewTag, blockNativeResponder);
+  }
+
+  @ReactMethod
+  public void handleClearJSResponder() {
+  }
+
   @Override
   public @Nullable Map getConstants() {
     return MapBuilder.of("State", MapBuilder.of(
@@ -245,14 +256,17 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     if (mRegistry != null) {
       return mRegistry;
     }
+    mRegistry = getRootView().getRegistry();
+    return mRegistry;
+  }
+
+  private RNGestureHandlerEnabledRootView getRootView() {
     View contentView = getCurrentActivity().findViewById(android.R.id.content);
     View rootView = ((ViewGroup) contentView).getChildAt(0);
     if (!(rootView instanceof RNGestureHandlerEnabledRootView)) {
-      throw new IllegalStateException("Trying to register gesture handler but the root view " +
-              "is not setup properly " + rootView);
+      throw new IllegalStateException("Root view seems not to be setup properly " + rootView);
     }
-    mRegistry = ((RNGestureHandlerEnabledRootView) rootView).getRegistry();
-    return mRegistry;
+    return (RNGestureHandlerEnabledRootView) rootView;
   }
 
   @Override
