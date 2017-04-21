@@ -116,11 +116,26 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     render() {
+      let gestureEventHandler = this._onGestureHandlerEvent;
+      const { onGestureEvent, onGestureHandlerEvent } = this.props;
+      if (onGestureEvent && (typeof onGestureEvent !== 'function')) {
+        // If it's not a mathod it should be an native Animated.event
+        // object. We set it directly as the handler for the view
+        // In this case nested handlers are not going to be supported
+        if (onGestureHandlerEvent) {
+          throw new Error('Nesting touch handlers with native animated driver is not supported yet');
+        }
+        gestureEventHandler = this.props.onGestureEvent;
+      } else {
+        if (onGestureHandlerEvent && (typeof onGestureHandlerEvent !== 'function')) {
+          throw new Error('Nesting touch handlers with native animated driver is not supported yet');
+        }
+      }
       const child = React.Children.only(this.props.children);
       return React.cloneElement(child, {
         ref: CHILD_REF,
         collapsable: false,
-        onGestureHandlerEvent: this._onGestureHandlerEvent,
+        onGestureHandlerEvent: gestureEventHandler,
         onGestureHandlerStateChange: this._onGestureHandlerStateChange,
       });
     }
