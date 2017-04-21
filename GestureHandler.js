@@ -1,5 +1,7 @@
 import React, { PropTypes } from 'react';
 import {
+  findNodeHandle,
+  NativeModules,
   ScrollView,
   Slider,
   Switch,
@@ -9,10 +11,19 @@ import {
   WebView,
 } from 'react-native';
 
-import NativeModules from 'NativeModules';
-import findNodeHandle from 'react/lib/findNodeHandle';
-
 const RNGestureHandlerModule = NativeModules.RNGestureHandlerModule;
+
+/* Wrap JS responder calls and notify gesture handler manager */
+const UIManager = require('UIManager');
+const { setJSResponder: oldSetJSResponder, clearJSResponder: oldClearJSResponder } = UIManager;
+UIManager.setJSResponder = (tag, blockNativeResponder) => {
+  RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
+  oldSetJSResponder(tag, blockNativeResponder);
+}
+UIManager.clearJSResponder = () => {
+  RNGestureHandlerModule.handleClearJSResponder();
+  oldClearJSResponder();
+}
 
 const State = RNGestureHandlerModule.State
 
@@ -39,19 +50,25 @@ const GestureHandlerPropTypes = {
   onHandlerStateChange: PropTypes.func,
 }
 
-function filterConfig(component) {
+function canUseNativeParam(param) {
+  return param !== undefined && (typeof param !== 'function') &&
+    ((typeof param !== 'object') || !('__isNative' in param));
+}
+
+function filterConfig(component, defaults = {}) {
   const props = component.props;
   const validProps = component.constructor.propTypes
-  const res = {};
+  const res = { ...defaults };
   Object.keys(validProps).forEach(key => {
-    if (key in props && validProps[key] !== PropTypes.func) {
+    const value = props[key]
+    if (canUseNativeParam(value)) {
       res[key] = props[key];
     }
   })
   return res;
 }
 
-function createHandler(handlerName, propTypes = null) {
+function createHandler(handlerName, propTypes = null, config = {}) {
   class Handler extends React.Component {
     static propTypes = {
       ...GestureHandlerPropTypes,
@@ -90,7 +107,7 @@ function createHandler(handlerName, propTypes = null) {
         viewTag,
         handlerName,
         this._handlerTag,
-        filterConfig(this)
+        filterConfig(this, config)
       );
     }
 
@@ -118,15 +135,21 @@ const TapGestureHandler = createHandler('TapGestureHandler', {
   maxDurationMs: PropTypes.number,
   maxDelayMs: PropTypes.number,
   numberOfTaps: PropTypes.number,
+}, {
+  shouldCancelOthersWhenActivated: true,
 });
 const LongPressGestureHandler = createHandler('LongPressGestureHandler', {
   minDurationMs: PropTypes.number,
+}, {
+  shouldCancelOthersWhenActivated: true,
 });
 const PanGestureHandler = createHandler('PanGestureHandler', {
   minDeltaX: PropTypes.number,
   minDeltaY: PropTypes.number,
   minDist: PropTypes.number,
   maxVelocity: PropTypes.number,
+}, {
+  shouldCancelOthersWhenActivated: true,
 });
 
 function createNativeWrapper(Component, config = {}) {

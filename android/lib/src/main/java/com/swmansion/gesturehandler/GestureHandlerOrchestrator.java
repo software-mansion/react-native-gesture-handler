@@ -49,9 +49,7 @@ public class GestureHandlerOrchestrator {
   public boolean onTouchEvent(MotionEvent event) {
     int action = event.getActionMasked();
     if (action == MotionEvent.ACTION_DOWN) {
-      sTempCoords[0] = event.getX();
-      sTempCoords[1] = event.getY();
-      extractGestureHandlers(mWrapperView, sTempCoords);
+      extractGestureHandlers(event);
     } else if (action == MotionEvent.ACTION_CANCEL) {
       cancelAll();
     }
@@ -271,6 +269,13 @@ public class GestureHandlerOrchestrator {
         recordGestureHandler(handlers.get(i), view);
       }
     }
+  }
+
+  private boolean extractGestureHandlers(MotionEvent event) {
+    sTempCoords[0] = event.getX();
+    sTempCoords[1] = event.getY();
+    traverseWithPointerEvents(mWrapperView, sTempCoords);
+    return extractGestureHandlers(mWrapperView, sTempCoords);
   }
 
   private boolean extractGestureHandlers(ViewGroup viewGroup, float[] coords) {
