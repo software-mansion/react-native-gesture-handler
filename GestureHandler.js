@@ -14,7 +14,7 @@ import {
 const RNGestureHandlerModule = NativeModules.RNGestureHandlerModule;
 
 /* Wrap JS responder calls and notify gesture handler manager */
-const UIManager = require('UIManager');
+const { UIManager } = NativeModules;
 const { setJSResponder: oldSetJSResponder, clearJSResponder: oldClearJSResponder } = UIManager;
 UIManager.setJSResponder = (tag, blockNativeResponder) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
