@@ -1,8 +1,8 @@
 # react-native-gesture-handler
 
-This is an experimental implementation of a new declarative API for gesture handling in react-native. The project for now only consists of the implementation of the new gesture system for **Android**.
+This is an experimental implementation of a new declarative API for gesture handling in react-native.
 
-*Since version 0.1.0 react-native-gesture-handler is compatible with the default React Native's gesture system (JS Responder system) 👌*
+*Since version 0.1.0 react-native-gesture-handler on Android is compatible with the default React Native's gesture system (JS Responder system) 👌*
 
 ## Installation
 
@@ -16,7 +16,7 @@ or using `npm` if you prefer:
   npm install --save react-native-gesture-handler
 ```
 
-II. Update your main activity (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating a `ReactRootView` instance. Then use a root view wrapper provided by this library:
+II (**Android**). Update your main activity (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating a `ReactRootView` instance. Then use a root view wrapper provided by this library:
 ```java
 // Don't forget imports
 import com.facebook.react.ReactActivityDelegate;
@@ -38,21 +38,25 @@ class MainActivity extends ReactActivity {
 }
 ```
 
+II (**iOS**). There is no additional config required to be done on iOS except from what follows in the next steps.
+
 III. Run:
 ```bash
   react-native link react-native-gesture-handler
 ```
 
-IV. You're all set, just run your app with `react-native run-android`
+IV. You're all set, just run your app with `react-native run-android` or `react-native run-ios`
 
 ## Examples
 
 If you don't feel like trying it on a real app, but just want to play with the API you can run the example project. Clone the repo, go to the `Example/` folder and run:
 ```bash
-  yarn install && react-native run-android
+  yarn install
 ```
 
-You will need to have an android device or emulator connected as well as `react-native-cli` package installed globally.
+Then run `react-native run-android` or `react-native run-ios` depending on which platform you want to run the example app on.
+
+You will need to have an Android or iOS device or emulator connected as well as `react-native-cli` package installed globally.
 
 ## API
 
@@ -65,10 +69,10 @@ Whenever you use a native component that should handle touch events you can eith
  - `Slider`
  - `Switch`
  - `TextInput`
- - `ToolbarAndroid`
- - `ViewPagerAndroid`
+ - `ToolbarAndroid` (**Android only**)
+ - `ViewPagerAndroid` (**Android only**)
  - `WebView`
- - `NativeViewGestureHandler`
+ - `NativeViewGestureHandler` (**Android only**)
 
 Last available element exported by the library is a dictionary of constants used to express the state of the recognizer. Here are the available options:
  - `State.UNDETERMINED`
@@ -83,7 +87,7 @@ Last available element exported by the library is a dictionary of constants used
  - `shouldCancelWhenOutside`
  - `shouldCancelOthersWhenActivated`
  - `shouldBeRequiredByOthersToFail`
- - `hitSlop`
+ - `hitSlop` (**Android only**)
  - `onGestureEvent`
  - `onHandlerStateChange`
 
@@ -115,7 +119,7 @@ Last available element exported by the library is a dictionary of constants used
  - ~~Interop with standard ways of handling touch in react-native~~ ✔️
  - ~~Send out necessary updates to RN core for native animated event support~~ ✔️
  - Support for multi-touch events (build `PinchGestureHandler`)
- - iOS port
+ - ~~iOS port~~ ️✔️
 
 ## Troubleshooting
 
