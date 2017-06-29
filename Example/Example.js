@@ -7,6 +7,7 @@ import {
   Switch,
   Text,
   View,
+  Image,
   // ScrollView,
 } from 'react-native';
 
@@ -14,6 +15,7 @@ import {
   LongPressGestureHandler,
   NativeViewGestureHandler,
   PanGestureHandler,
+  PinchGestureHandler,
   ScrollView,
   Slider,
   State,
@@ -83,8 +85,8 @@ class DraggableBox extends Component {
   }
   _onHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastOffset.x += event.nativeEvent.lastTranslationX;
-      this._lastOffset.y += event.nativeEvent.lastTranslationY;
+      this._lastOffset.x += event.nativeEvent.translationX;
+      this._lastOffset.y += event.nativeEvent.translationY;
       this._translateX.setOffset(this._lastOffset.x);
       this._translateX.setValue(0);
       this._translateY.setOffset(this._lastOffset.y);
@@ -158,6 +160,41 @@ class ControlledSwitch extends React.Component {
   }
 }
 
+class PinchableBox extends React.Component {
+  constructor(props) {
+    super(props);
+    this._baseScale = new Animated.Value(1);
+    this._pinchScale = new Animated.Value(1);
+    this._scale = Animated.multiply(this._baseScale, this._pinchScale);
+    this._lastScale = 1;
+
+    this._onGestureEvent = Animated.event(
+       [{ nativeEvent: { scale: this._pinchScale }}],
+       { useNativeDriver: true }
+    )
+  }
+  _onHandlerStateChange = (event) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      this._lastScale *= event.nativeEvent.scale;
+      this._baseScale.setValue(this._lastScale);
+      this._pinchScale.setValue(1);
+    }
+  }
+  render() {
+    return (
+      <View style={styles.pinchableBoxContainer}>
+        <PinchGestureHandler
+          onGestureEvent={this._onGestureEvent}
+          onHandlerStateChange={this._onHandlerStateChange}>
+          <Animated.Image
+            style={[styles.pinchableImage, { transform: [ { scale: this._scale } ] }]}
+            source={{uri: 'https://avatars1.githubusercontent.com/u/6952717'}}/>
+        </PinchGestureHandler>
+      </View>
+    )
+  }
+}
+
 export default class Example extends Component {
   _onClick = () => {
     Alert.alert("I'm so touched");
@@ -180,6 +217,7 @@ export default class Example extends Component {
             </View>
           </TouchableHighlight>
           <Slider style={styles.slider} />
+          <PinchableBox/>
           <DraggableBox/>
           <PressBox/>
           <ControlledSwitch/>
@@ -241,6 +279,15 @@ const styles = StyleSheet.create({
   toolbar: {
     backgroundColor: '#e9eaed',
     height: 56,
+  },
+  pinchableBoxContainer: {
+    width: 200,
+    height: 200,
+    overflow: 'hidden',
+    alignSelf: 'center',
+  },
+  pinchableImage: {
+    flex: 1,
   },
 });
 

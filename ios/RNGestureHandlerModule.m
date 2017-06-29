@@ -55,6 +55,7 @@ RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSNumber *)viewTag withName:(non
                 @"TapGestureHandler" : [RNTapGestureHandler class],
                 @"LongPressGestureHandler": [RNLongPressGestureHandler class],
                 @"NativeViewGestureHandler": [RNNativeViewGestureHandler class],
+                @"PinchGestureHandler": [RNPinchGestureHandler class],
                 };
     });
     

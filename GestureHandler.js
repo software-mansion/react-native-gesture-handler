@@ -166,6 +166,11 @@ const PanGestureHandler = createHandler('PanGestureHandler', {
 }, {
   shouldCancelOthersWhenActivated: true,
 });
+const PinchGestureHandler = createHandler('PinchGestureHandler', {
+  // no options yet
+}, {
+  shouldCancelOthersWhenActivated: true,
+});
 
 function createNativeWrapper(Component, config = {}) {
   class ComponentWrapper extends React.Component {
@@ -220,5 +225,6 @@ export {
   TapGestureHandler,
   LongPressGestureHandler,
   PanGestureHandler,
+  PinchGestureHandler,
   State,
 }

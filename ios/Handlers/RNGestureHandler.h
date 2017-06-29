@@ -16,7 +16,7 @@
 
 @interface RNGestureHandler : NSObject {
 
-@protected UIGestureRecognizer* _recognizer;
+@protected UIGestureRecognizer *_recognizer;
 @protected RNGestureHandlerState _lastState;
     
 }
@@ -26,12 +26,13 @@
 
 @property (nonatomic, readonly) NSNumber *tag;
 @property (nonatomic, weak) id<RNGestureHandlerEventEmitter> emitter;
-@property (nonatomic, readonly) UIGestureRecognizer* recognizer;
+@property (nonatomic, readonly) UIGestureRecognizer *recognizer;
 
-- (void)bindToView:(UIView*)view;
+- (void)bindToView:(UIView *)view;
 - (void)unbindFromView;
 - (void)handleGesture:(id)recognizer;
 - (RNGestureHandlerState)state;
+- (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer;
 
 @end
 
@@ -46,4 +47,7 @@
 @end
 
 @interface RNNativeViewGestureHandler : RNGestureHandler
+@end
+
+@interface RNPinchGestureHandler : RNGestureHandler
 @end

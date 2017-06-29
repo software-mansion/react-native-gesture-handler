@@ -54,26 +54,21 @@
     self.recognizer.delegate = nil;
 }
 
+- (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer
+{
+    return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:[recognizer view]]];
+}
+
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
     RNGestureHandlerState state = self.state;
     
-    CGPoint position = [recognizer locationInView:recognizer.view];
+    RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
     
-    CGPoint translation = RNGestureHandlerTranslationUndefined;
-    if ([recognizer respondsToSelector:@selector(translationInView:)]) {
-        NSInvocationOperation *op = [[NSInvocationOperation alloc] initWithTarget:recognizer
-                                                                         selector:@selector(translationInView:)
-                                                                           object:nil];
-        [op start];
-        [op.result getValue:&translation];
-    }
-
     id touchEvent = [[RNGestureHandlerEvent alloc] initWithRactTag:recognizer.view.reactTag
                                                         handlerTag:_tag
                                                              state:state
-                                                          position:position
-                                                       translation:translation];
+                                                         extraData:eventData];
     [self.emitter sendTouchEvent:touchEvent];
     
     if (state != _lastState) {
@@ -82,16 +77,14 @@
                                                                                          handlerTag:_tag
                                                                                               state:RNGestureHandlerStateActive
                                                                                           prevState:_lastState
-                                                                                           position:position
-                                                                                        translation:translation]];
+                                                                                          extraData:eventData]];
             _lastState = RNGestureHandlerStateActive;
         }
         id stateEvent = [[RNGestureHandlerStateChange alloc] initWithRactTag:recognizer.view.reactTag
                                                                   handlerTag:_tag
                                                                        state:state
                                                                    prevState:_lastState
-                                                                    position:position
-                                                                 translation:translation];
+                                                                   extraData:eventData];
         [self.emitter sendStateChangeEvent:stateEvent];
         _lastState = state;
     }
@@ -289,6 +282,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return state;
 }
 
+- (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer
+{
+    return [RNGestureHandlerEventExtraData
+            forPan:[recognizer locationInView:[recognizer view]]
+            withTranslation:[recognizer translationInView:[recognizer view]]];
+}
+
 @end
 
 
@@ -436,7 +436,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 @end
 
 
-#pragma mark LongPressgestureHandler
+#pragma mark LongPressGestureHandler
 
 @implementation RNLongPressGestureHandler
 
@@ -478,6 +478,28 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)bindToView:(UIView *)view
 {
+}
+
+@end
+
+#pragma mark PinchGestureHandler
+
+@implementation RNPinchGestureHandler
+
+- (instancetype)initWithTag:(NSNumber *)tag
+                     config:(NSDictionary<NSString *, id> *)config
+{
+    if ((self = [super initWithTag:tag config:config])) {
+        _recognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+    }
+    return self;
+}
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer
+{
+    return [RNGestureHandlerEventExtraData
+            forPinch:[(UIPinchGestureRecognizer *)recognizer scale]
+            withVelocity:[(UIPinchGestureRecognizer *)recognizer velocity]];
 }
 
 @end

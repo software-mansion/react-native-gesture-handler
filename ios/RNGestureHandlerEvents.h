@@ -5,15 +5,24 @@
 
 #import "RNGestureHandlerState.h"
 
-static const CGPoint RNGestureHandlerTranslationUndefined = { NAN, NAN };
+@interface RNGestureHandlerEventExtraData : NSObject
+
+@property (readonly) NSDictionary *data;
+
+- (instancetype)initWithData:(NSDictionary *)data;
+
++ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position;
++ (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position withTranslation:(CGPoint)translation;
++ (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale withVelocity:(CGFloat)velocity;
+
+@end
 
 @interface RNGestureHandlerEvent : NSObject <RCTEvent>
 
 - (instancetype)initWithRactTag:(NSNumber *)reactTag
                      handlerTag:(NSNumber *)handlerTag
                           state:(RNGestureHandlerState)state
-                       position:(CGPoint)position
-                    translation:(CGPoint)translation NS_DESIGNATED_INITIALIZER;
+                      extraData:(RNGestureHandlerEventExtraData*)extraData NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -24,7 +33,6 @@ static const CGPoint RNGestureHandlerTranslationUndefined = { NAN, NAN };
                      handlerTag:(NSNumber *)handlerTag
                           state:(RNGestureHandlerState)state
                       prevState:(RNGestureHandlerState)prevState
-                       position:(CGPoint)position
-                    translation:(CGPoint)translation NS_DESIGNATED_INITIALIZER;
+                      extraData:(RNGestureHandlerEventExtraData*)extraData NS_DESIGNATED_INITIALIZER;
 
 @end

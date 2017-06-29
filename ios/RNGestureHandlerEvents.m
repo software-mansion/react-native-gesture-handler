@@ -1,11 +1,47 @@
  #import "RNGestureHandlerEvents.h"
 
+@implementation RNGestureHandlerEventExtraData
+
+- (instancetype)initWithData:(NSDictionary *)data;
+{
+    if ((self = [super init])) {
+        _data = data;
+    }
+    return self;
+}
+
++ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
+{
+    return [[RNGestureHandlerEventExtraData alloc]
+            initWithData:@{ @"x": @(position.x), @"y": @(position.y) }];
+}
+
++ (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position withTranslation:(CGPoint)translation
+{
+    return [[RNGestureHandlerEventExtraData alloc]
+            initWithData:@{
+                                 @"x": @(position.x),
+                                 @"y": @(position.y),
+                                 @"translationX": @(translation.x),
+                                 @"translationY": @(translation.y)}];
+}
+
++ (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale withVelocity:(CGFloat)velocity
+{
+    return [[RNGestureHandlerEventExtraData alloc]
+            initWithData:@{
+                                 @"scale": @(scale),
+                                 @"velocity": @(velocity)}];
+}
+
+@end
+
+
 @implementation RNGestureHandlerEvent
 {
     NSNumber *_handlerTag;
     RNGestureHandlerState _state;
-    CGPoint _position;
-    CGPoint _translation;
+    RNGestureHandlerEventExtraData *_extraData;
 }
 
 @synthesize viewTag = _viewTag;
@@ -14,16 +50,14 @@
 - (instancetype)initWithRactTag:(NSNumber *)reactTag
                      handlerTag:(NSNumber *)handlerTag
                           state:(RNGestureHandlerState)state
-                       position:(CGPoint)position
-                    translation:(CGPoint)translation
+                      extraData:(RNGestureHandlerEventExtraData *)extraData
 {
     static uint16_t coalescingKey = 0;
     if ((self = [super init])) {
         _viewTag = reactTag;
         _handlerTag = handlerTag;
         _state = state;
-        _position = position;
-        _translation = translation;
+        _extraData = extraData;
         _coalescingKey = coalescingKey++;
     }
     return self;
@@ -54,15 +88,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSArray *)arguments
 {
-    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithObjectsAndKeys:_viewTag, @"target",
-                                 _handlerTag, @"handlerTag",
-                                 @(_state), @"state",
-                                 @(_position.x), @"x",
-                                 @(_position.y), @"y", nil];
-    if (!isnan(_translation.x) && !isnan(_translation.y)) {
-        [body setObject:@(_translation.x) forKey:@"translationX"];
-        [body setObject:@(_translation.y) forKey:@"translationY"];
-    }
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithDictionary:_extraData.data];
+    [body setObject:_viewTag forKey:@"target"];
+    [body setObject:_handlerTag forKey:@"handlerTag"];
+    [body setObject:@(_state) forKey:@"state"];
     return @[self.viewTag, @"topGestureHandlerEvent", body];
 }
 
@@ -74,8 +103,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     NSNumber *_handlerTag;
     RNGestureHandlerState _state;
     RNGestureHandlerState _prevState;
-    CGPoint _position;
-    CGPoint _translation;
+    RNGestureHandlerEventExtraData *_extraData;
 }
 
 @synthesize viewTag = _viewTag;
@@ -84,9 +112,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (instancetype)initWithRactTag:(NSNumber *)reactTag
                      handlerTag:(NSNumber *)handlerTag
                           state:(RNGestureHandlerState)state
-                          prevState:(RNGestureHandlerState)prevState
-                       position:(CGPoint)position
-                    translation:(CGPoint)translation
+                      prevState:(RNGestureHandlerState)prevState
+                      extraData:(RNGestureHandlerEventExtraData *)extraData
 {
     static uint16_t coalescingKey = 0;
     if ((self = [super init])) {
@@ -94,8 +121,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         _handlerTag = handlerTag;
         _state = state;
         _prevState = prevState;
-        _position = position;
-        _translation = translation;
+        _extraData = extraData;
         _coalescingKey = coalescingKey++;
     }
     return self;
@@ -126,16 +152,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSArray *)arguments
 {
-    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithObjectsAndKeys:_viewTag, @"target",
-                                 _handlerTag, @"handlerTag",
-                                 @(_state), @"state",
-                                 @(_prevState), @"oldState",
-                                 @(_position.x), @"lastX",
-                                 @(_position.y), @"lastY", nil];
-    if (!isnan(_translation.x) && !isnan(_translation.y)) {
-        [body setObject:@(_translation.x) forKey:@"lastTranslationX"];
-        [body setObject:@(_translation.y) forKey:@"lastTranslationY"];
-    }
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithDictionary:_extraData.data];
+    [body setObject:_viewTag forKey:@"target"];
+    [body setObject:_handlerTag forKey:@"handlerTag"];
+    [body setObject:@(_state) forKey:@"state"];
+    [body setObject:@(_prevState) forKey:@"oldState"];
     return @[self.viewTag, @"topGestureHandlerStateChange", body];
 }
 
