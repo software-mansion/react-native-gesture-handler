@@ -16,6 +16,7 @@ import {
   NativeViewGestureHandler,
   PanGestureHandler,
   PinchGestureHandler,
+  RotationGestureHandler,
   ScrollView,
   Slider,
   State,
@@ -163,17 +164,34 @@ class ControlledSwitch extends React.Component {
 class PinchableBox extends React.Component {
   constructor(props) {
     super(props);
+
+    /* Pinching */
     this._baseScale = new Animated.Value(1);
     this._pinchScale = new Animated.Value(1);
     this._scale = Animated.multiply(this._baseScale, this._pinchScale);
     this._lastScale = 1;
-
-    this._onGestureEvent = Animated.event(
+    this._onPinchGestureEvent = Animated.event(
        [{ nativeEvent: { scale: this._pinchScale }}],
-       { useNativeDriver: true }
+      //  { useNativeDriver: true }
+    )
+
+    /* Rotation */
+    this._rotate = new Animated.Value(0);
+    this._rotateStr = this._rotate.interpolate({ inputRange: [-100, 100], outputRange: ['-100rad', '100rad'] });
+    this._lastRotate = 0;
+    this._onRotateGestureEvent = Animated.event(
+       [{ nativeEvent: { rotation: this._rotate }}],
+      //  { useNativeDriver: true }
     )
   }
-  _onHandlerStateChange = (event) => {
+  _onRotateHandlerStateChange = (event) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      this._lastRotate += event.nativeEvent.rotation;
+      this._rotate.setOffset(this._lastRotate);
+      this._rotate.setValue(0);
+    }
+  }
+  _onPinchHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this._lastScale *= event.nativeEvent.scale;
       this._baseScale.setValue(this._lastScale);
@@ -183,13 +201,17 @@ class PinchableBox extends React.Component {
   render() {
     return (
       <View style={styles.pinchableBoxContainer}>
-        <PinchGestureHandler
-          onGestureEvent={this._onGestureEvent}
-          onHandlerStateChange={this._onHandlerStateChange}>
-          <Animated.Image
-            style={[styles.pinchableImage, { transform: [ { scale: this._scale } ] }]}
-            source={{uri: 'https://avatars1.githubusercontent.com/u/6952717'}}/>
-        </PinchGestureHandler>
+        <RotationGestureHandler
+          onGestureEvent={this._onRotateGestureEvent}
+          onHandlerStateChange={this._onRotateHandlerStateChange}>
+          <PinchGestureHandler
+            onGestureEvent={this._onPinchGestureEvent}
+            onHandlerStateChange={this._onPinchHandlerStateChange}>
+            <Animated.Image
+              style={[styles.pinchableImage, { transform: [ { scale: this._scale }, { rotate: this._rotateStr } ] }]}
+              source={{uri: 'https://avatars1.githubusercontent.com/u/6952717'}}/>
+          </PinchGestureHandler>
+        </RotationGestureHandler>
       </View>
     )
   }

@@ -20,18 +20,22 @@
 {
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{
-                                 @"x": @(position.x),
-                                 @"y": @(position.y),
-                                 @"translationX": @(translation.x),
-                                 @"translationY": @(translation.y)}];
+                           @"x": @(position.x),
+                           @"y": @(position.y),
+                           @"translationX": @(translation.x),
+                           @"translationY": @(translation.y)}];
 }
 
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale withVelocity:(CGFloat)velocity
 {
     return [[RNGestureHandlerEventExtraData alloc]
-            initWithData:@{
-                                 @"scale": @(scale),
-                                 @"velocity": @(velocity)}];
+            initWithData:@{@"scale": @(scale), @"velocity": @(velocity)}];
+}
+
++ (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation withVelocity:(CGFloat)velocity
+{
+    return [[RNGestureHandlerEventExtraData alloc]
+            initWithData:@{@"rotation": @(rotation), @"velocity": @(velocity)}];
 }
 
 @end

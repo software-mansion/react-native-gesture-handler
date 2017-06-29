@@ -51,3 +51,6 @@
 
 @interface RNPinchGestureHandler : RNGestureHandler
 @end
+
+@interface RNRotationGestureHandler : RNGestureHandler
+@end

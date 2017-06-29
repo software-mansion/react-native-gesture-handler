@@ -14,6 +14,7 @@
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position;
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position withTranslation:(CGPoint)translation;
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale withVelocity:(CGFloat)velocity;
++ (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation withVelocity:(CGFloat)velocity;
 
 @end
 

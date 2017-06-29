@@ -503,3 +503,25 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 
 @end
+
+#pragma mark RotationGestureHandler
+
+@implementation RNRotationGestureHandler
+
+- (instancetype)initWithTag:(NSNumber *)tag
+                     config:(NSDictionary<NSString *, id> *)config
+{
+    if ((self = [super initWithTag:tag config:config])) {
+        _recognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+    }
+    return self;
+}
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer
+{
+    return [RNGestureHandlerEventExtraData
+            forRotation:[(UIRotationGestureRecognizer *)recognizer rotation]
+            withVelocity:[(UIRotationGestureRecognizer *)recognizer velocity]];
+}
+
+@end
