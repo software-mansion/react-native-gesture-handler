@@ -35,6 +35,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"/>
+            <View
+                android:id="@+id/large_block"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:background="#c5cae9" />
             <TextView
                 android:text="@string/lorem_ipsum"
                 android:layout_width="wrap_content"

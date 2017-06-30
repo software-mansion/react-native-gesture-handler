@@ -16,6 +16,8 @@ import com.swmansion.gesturehandler.GestureHandlerViewWrapper;
 import com.swmansion.gesturehandler.LongPressGestureHandler;
 import com.swmansion.gesturehandler.NativeViewGestureHandler;
 import com.swmansion.gesturehandler.OnTouchEventListener;
+import com.swmansion.gesturehandler.PinchGestureHandler;
+import com.swmansion.gesturehandler.RotationGestureHandler;
 import com.swmansion.gesturehandler.TapGestureHandler;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
   private Button button;
   private SeekBar seekBar;
   private View block;
+  private View largeBlock;
   private Switch switchView;
 
   @Override
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     button = (Button) findViewById(R.id.button);
     seekBar = (SeekBar) findViewById(R.id.seekbar);
     block = findViewById(R.id.block);
+    largeBlock = findViewById(R.id.large_block);
     switchView = (Switch) findViewById(R.id.switchView);
 
     // Native click events should work as expected assuming the view is wrapped with
@@ -101,6 +105,48 @@ public class MainActivity extends AppCompatActivity {
                 }
               }
             });
+
+    registry.registerHandlerForView(largeBlock, new RotationGestureHandler())
+            .setOnTouchEventListener(new OnTouchEventListener<RotationGestureHandler>() {
+
+              private double mRotation = 0f;
+
+              @Override
+              public void onTouchEvent(RotationGestureHandler handler, MotionEvent event) {
+                if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+                  largeBlock.setRotation((float) Math.toDegrees(mRotation + handler.getRotation()));
+                }
+              }
+
+              @Override
+              public void onStateChange(RotationGestureHandler handler, int newState, int oldState) {
+                if (oldState == GestureHandler.STATE_ACTIVE) {
+                  mRotation += handler.getRotation();
+                }
+              }
+            });
+
+      registry.registerHandlerForView(largeBlock, new PinchGestureHandler())
+              .setOnTouchEventListener(new OnTouchEventListener<PinchGestureHandler>() {
+
+                private double mScale = 1f;
+
+                @Override
+                public void onTouchEvent(PinchGestureHandler handler, MotionEvent event) {
+                  if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+                    largeBlock.setScaleX((float) (mScale * handler.getScale()));
+                    largeBlock.setScaleY((float) (mScale * handler.getScale()));
+                  }
+                }
+
+                @Override
+                public void onStateChange(PinchGestureHandler handler, int newState, int oldState) {
+                  if (oldState == GestureHandler.STATE_ACTIVE) {
+                    mScale *= handler.getScale();
+                  }
+                }
+              });
+
 //    registry.registerHandlerForView(block, new PanGestureHandler())
 //            .setShouldCancelOthersWhenActivated(true)
 //            .setMinDy(2)
