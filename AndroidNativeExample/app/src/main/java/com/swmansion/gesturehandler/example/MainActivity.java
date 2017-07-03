@@ -16,6 +16,7 @@ import com.swmansion.gesturehandler.GestureHandlerViewWrapper;
 import com.swmansion.gesturehandler.LongPressGestureHandler;
 import com.swmansion.gesturehandler.NativeViewGestureHandler;
 import com.swmansion.gesturehandler.OnTouchEventListener;
+import com.swmansion.gesturehandler.PanGestureHandler;
 import com.swmansion.gesturehandler.PinchGestureHandler;
 import com.swmansion.gesturehandler.RotationGestureHandler;
 import com.swmansion.gesturehandler.TapGestureHandler;
@@ -147,22 +148,22 @@ public class MainActivity extends AppCompatActivity {
                 }
               });
 
-//    registry.registerHandlerForView(block, new PanGestureHandler())
-//            .setShouldCancelOthersWhenActivated(true)
-//            .setMinDy(2)
-//            .setCanStartHandlingWithDownEventOnly(true)
-//            .setOnTouchEventListener(new OnTouchEventListener<PanGestureHandler>() {
-//              @Override
-//              public void onTouchEvent(PanGestureHandler handler, MotionEvent event) {
-//                if (handler.getState() == GestureHandler.STATE_ACTIVE) {
-//                  block.setTranslationX(handler.getTranslationX());
-//                  block.setTranslationY(handler.getTranslationY());
-//                }
-//              }
-//
-//              @Override
-//              public void onStateChange(PanGestureHandler handler, int newState, int oldState) {
-//              }
-//            });
+    registry.registerHandlerForView(largeBlock, new PanGestureHandler())
+            .setShouldCancelOthersWhenActivated(true)
+            .setMinDy(2)
+            .setMaxPointers(1)
+            .setOnTouchEventListener(new OnTouchEventListener<PanGestureHandler>() {
+              @Override
+              public void onTouchEvent(PanGestureHandler handler, MotionEvent event) {
+                if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+                  largeBlock.setTranslationX(handler.getTranslationX());
+                  largeBlock.setTranslationY(handler.getTranslationY());
+                }
+              }
+
+              @Override
+              public void onStateChange(PanGestureHandler handler, int newState, int oldState) {
+              }
+            });
   }
 }
