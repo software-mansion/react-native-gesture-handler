@@ -69,7 +69,9 @@
                                                         handlerTag:_tag
                                                              state:state
                                                          extraData:eventData];
-    [self.emitter sendTouchEvent:touchEvent];
+    if (state == RNGestureHandlerStateActive) {
+        [self.emitter sendTouchEvent:touchEvent];
+    }
     
     if (state != _lastState) {
         if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
@@ -198,7 +200,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         self.active = YES;
     }
     [super touchesMoved:touches withEvent:event];
-    if (self.active) {
+    if (self.active && self.state == UIGestureRecognizerStateBegan) {
         self.state = UIGestureRecognizerStateChanged;
     }
 }
@@ -263,6 +265,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         if (prop != nil) {
             CGFloat velocity = [RCTConvert CGFloat:prop];
             recognizer.maxVelocitySq = velocity * velocity;
+        }
+        
+        prop = config[@"minPointers"];
+        if (prop != nil) {
+            recognizer.minimumNumberOfTouches = [RCTConvert NSUInteger:prop];
+        }
+        
+        prop = config[@"maxPointers"];
+        if (prop != nil) {
+            recognizer.maximumNumberOfTouches = [RCTConvert NSUInteger:prop];
         }
         
         _recognizer = recognizer;

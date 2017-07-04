@@ -100,6 +100,7 @@ class DraggableBox extends Component {
           {...this.props}
           onGestureEvent={this._onGestureEvent}
           onHandlerStateChange={this._onHandlerStateChange}
+          minPointers={2}
           minDist={50}>
         <Animated.View style={[styles.box, { transform: [
           {translateX: this._translateX},
@@ -202,9 +203,11 @@ class PinchableBox extends React.Component {
     return (
       <View style={styles.pinchableBoxContainer}>
         <RotationGestureHandler
+          shouldCancelOthersWhenActivated={false}
           onGestureEvent={this._onRotateGestureEvent}
           onHandlerStateChange={this._onRotateHandlerStateChange}>
           <PinchGestureHandler
+            shouldCancelOthersWhenActivated={false}
             onGestureEvent={this._onPinchGestureEvent}
             onHandlerStateChange={this._onPinchHandlerStateChange}>
             <Animated.Image
@@ -269,8 +272,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   box: {
-    width: 50,
-    height: 50,
+    width: 150,
+    height: 150,
     alignSelf: 'center',
     backgroundColor: 'plum',
     margin: 10,

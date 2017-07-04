@@ -56,6 +56,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_MIN_DELTA_Y = "minDeltaY";
   private static final String KEY_PAN_MIN_DIST = "minDist";
   private static final String KEY_PAN_MAX_VELOCITY = "maxVelocity";
+  private static final String KEY_PAN_MIN_POINTERS = "minPointers";
+  private static final String KEY_PAN_MAX_POINTERS = "maxPointers";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
           implements RNGestureHandlerEventDataExtractor<T> {
@@ -205,6 +207,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         // This value is actually in DPs/ms, but we can use the same function as for converting
         // just from DPs to pixels as the unit we're converting is in the numerator
         handler.setMaxVelocity(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MAX_VELOCITY)));
+      }
+      if (config.hasKey(KEY_PAN_MIN_POINTERS)) {
+        handler.setMinPointers(config.getInt(KEY_PAN_MIN_POINTERS));
+      }
+      if (config.hasKey(KEY_PAN_MAX_POINTERS)) {
+        handler.setMinPointers(config.getInt(KEY_PAN_MAX_POINTERS));
       }
     }
 
@@ -375,12 +383,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   private void onTouchEvent(GestureHandler handler, MotionEvent motionEvent) {
-    HandlerFactory handlerFactory = findFactoryForHandler(handler);
-    EventDispatcher eventDispatcher = getReactApplicationContext()
-            .getNativeModule(UIManagerModule.class)
-            .getEventDispatcher();
-    RNGestureHandlerEvent event = RNGestureHandlerEvent.obtain(handler, handlerFactory);
-    eventDispatcher.dispatchEvent(event);
+    if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+      HandlerFactory handlerFactory = findFactoryForHandler(handler);
+      EventDispatcher eventDispatcher = getReactApplicationContext()
+              .getNativeModule(UIManagerModule.class)
+              .getEventDispatcher();
+      RNGestureHandlerEvent event = RNGestureHandlerEvent.obtain(handler, handlerFactory);
+      eventDispatcher.dispatchEvent(event);
+    }
   }
 
   private void onStateChange(GestureHandler handler, int newState, int oldState) {
