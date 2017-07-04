@@ -58,9 +58,15 @@ public class RotationGestureDetector {
     }
     mPrevAngle = angle;
 
-    if (mAngleDiff > Math.PI / 2) {
+    if (mAngleDiff > Math.PI) {
       mAngleDiff -= Math.PI;
-    } else if (mAngleDiff < -Math.PI / 2) {
+    } else if (mAngleDiff < -Math.PI) {
+      mAngleDiff += Math.PI;
+    }
+
+    if (mAngleDiff > Math.PI / 2.) {
+      mAngleDiff -= Math.PI;
+    } else if (mAngleDiff < -Math.PI / 2.) {
       mAngleDiff += Math.PI;
     }
   }

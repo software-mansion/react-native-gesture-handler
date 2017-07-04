@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -19,11 +20,14 @@ import com.swmansion.gesturehandler.LongPressGestureHandler;
 import com.swmansion.gesturehandler.NativeViewGestureHandler;
 import com.swmansion.gesturehandler.OnTouchEventListener;
 import com.swmansion.gesturehandler.PanGestureHandler;
+import com.swmansion.gesturehandler.PinchGestureHandler;
+import com.swmansion.gesturehandler.RotationGestureHandler;
 import com.swmansion.gesturehandler.TapGestureHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Handler;
 
 import javax.annotation.Nullable;
 
@@ -53,7 +57,10 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_MIN_DIST = "minDist";
   private static final String KEY_PAN_MAX_VELOCITY = "maxVelocity";
 
-  private abstract static class HandlerFactory<T extends GestureHandler> {
+  private abstract static class HandlerFactory<T extends GestureHandler>
+          implements RNGestureHandlerEventDataExtractor<T> {
+
+    public abstract Class<T> getType();
 
     public abstract String getName();
 
@@ -75,10 +82,20 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handleHitSlopProperty(handler, config);
       }
     }
+
+    @Override
+    public void extractEventData(T handler, WritableMap eventData) {
+      // empty default impl
+    }
   }
 
   private static class NativeViewGestureHandlerFactory extends
           HandlerFactory<NativeViewGestureHandler> {
+    @Override
+    public Class<NativeViewGestureHandler> getType() {
+      return NativeViewGestureHandler.class;
+    }
+
     @Override
     public String getName() {
       return "NativeViewGestureHandler";
@@ -100,6 +117,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   private static class TapGestureHandlerFactory extends HandlerFactory<TapGestureHandler> {
+    @Override
+    public Class<TapGestureHandler> getType() {
+      return TapGestureHandler.class;
+    }
+
     @Override
     public String getName() {
       return "TapGestureHandler";
@@ -128,6 +150,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static class LongPressGestureHandlerFactory extends
           HandlerFactory<LongPressGestureHandler> {
     @Override
+    public Class<LongPressGestureHandler> getType() {
+      return LongPressGestureHandler.class;
+    }
+
+    @Override
     public String getName() {
       return "LongPressGestureHandler";
     }
@@ -147,6 +174,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   private static class PanGestureHandlerFactory extends HandlerFactory<PanGestureHandler> {
+    @Override
+    public Class<PanGestureHandler> getType() {
+      return PanGestureHandler.class;
+    }
+
     @Override
     public String getName() {
       return "PanGestureHandler";
@@ -175,6 +207,58 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handler.setMaxVelocity(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MAX_VELOCITY)));
       }
     }
+
+    @Override
+    public void extractEventData(PanGestureHandler handler, WritableMap eventData) {
+      eventData.putDouble("translationX", PixelUtil.toDIPFromPixel(handler.getTranslationX()));
+      eventData.putDouble("translationY", PixelUtil.toDIPFromPixel(handler.getTranslationY()));
+    }
+  }
+
+  private static class PinchGestureHandlerFactory extends HandlerFactory<PinchGestureHandler> {
+    @Override
+    public Class<PinchGestureHandler> getType() {
+      return PinchGestureHandler.class;
+    }
+
+    @Override
+    public String getName() {
+      return "PinchGestureHandler";
+    }
+
+    @Override
+    public PinchGestureHandler create() {
+      return new PinchGestureHandler();
+    }
+
+    @Override
+    public void extractEventData(PinchGestureHandler handler, WritableMap eventData) {
+      eventData.putDouble("scale", handler.getScale());
+      eventData.putDouble("velocity", handler.getVelocity());
+    }
+  }
+
+  private static class RotationGestureHandlerFactory extends HandlerFactory<RotationGestureHandler> {
+    @Override
+    public Class<RotationGestureHandler> getType() {
+      return RotationGestureHandler.class;
+    }
+
+    @Override
+    public String getName() {
+      return "RotationGestureHandler";
+    }
+
+    @Override
+    public RotationGestureHandler create() {
+      return new RotationGestureHandler();
+    }
+
+    @Override
+    public void extractEventData(RotationGestureHandler handler, WritableMap eventData) {
+      eventData.putDouble("rotation", handler.getRotation());
+      eventData.putDouble("velocity", handler.getVelocity());
+    }
   }
 
   private OnTouchEventListener mEventListener = new OnTouchEventListener() {
@@ -193,7 +277,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           new NativeViewGestureHandlerFactory(),
           new TapGestureHandlerFactory(),
           new LongPressGestureHandlerFactory(),
-          new PanGestureHandlerFactory()
+          new PanGestureHandlerFactory(),
+          new PinchGestureHandlerFactory(),
+          new RotationGestureHandlerFactory()
   };
   private RNGestureHandlerRegistry mRegistry;
 
@@ -278,44 +364,34 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     super.onCatalystInstanceDestroy();
   }
 
-  private void onTouchEvent(GestureHandler handler, MotionEvent motionEvent) {
-    float translationX = Float.NaN, translationY = Float.NaN;
-    if (handler instanceof PanGestureHandler) {
-      translationX = ((PanGestureHandler) handler).getTranslationX();
-      translationY = ((PanGestureHandler) handler).getTranslationY();
+  private @Nullable HandlerFactory findFactoryForHandler(GestureHandler handler) {
+    for (int i = 0; i < mHandlerFactories.length; i++) {
+      HandlerFactory factory = mHandlerFactories[i];
+      if (factory.getType().equals(handler.getClass())) {
+        return factory;
+      }
     }
+    return null;
+  }
+
+  private void onTouchEvent(GestureHandler handler, MotionEvent motionEvent) {
+    HandlerFactory handlerFactory = findFactoryForHandler(handler);
     EventDispatcher eventDispatcher = getReactApplicationContext()
             .getNativeModule(UIManagerModule.class)
             .getEventDispatcher();
-    RNGestureHandlerEvent event = RNGestureHandlerEvent.obtain(
-            handler.getView().getId(),
-            handler.getTag(),
-            handler.getState(),
-            motionEvent.getX(),
-            motionEvent.getY(),
-            translationX,
-            translationY);
+    RNGestureHandlerEvent event = RNGestureHandlerEvent.obtain(handler, handlerFactory);
     eventDispatcher.dispatchEvent(event);
   }
 
   private void onStateChange(GestureHandler handler, int newState, int oldState) {
-    float translationX = Float.NaN, translationY = Float.NaN;
-    if (handler instanceof PanGestureHandler) {
-      translationX = ((PanGestureHandler) handler).getTranslationX();
-      translationY = ((PanGestureHandler) handler).getTranslationY();
-    }
+    HandlerFactory handlerFactory = findFactoryForHandler(handler);
     EventDispatcher eventDispatcher = getReactApplicationContext()
             .getNativeModule(UIManagerModule.class)
             .getEventDispatcher();
     RNGestureHandlerStateChangeEvent event = RNGestureHandlerStateChangeEvent.obtain(
-            handler.getView().getId(),
-            handler.getTag(),
-            newState,
+            handler,
             oldState,
-            handler.getX(),
-            handler.getY(),
-            translationX,
-            translationY);
+            handlerFactory);
     eventDispatcher.dispatchEvent(event);
   }
 
