@@ -22,7 +22,7 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="I'm a button"
+                android:text="I\'m a button"
                 android:id="@+id/button"/>
             <View
                 android:id="@+id/block"
