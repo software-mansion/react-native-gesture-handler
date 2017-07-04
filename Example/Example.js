@@ -100,7 +100,6 @@ class DraggableBox extends Component {
           {...this.props}
           onGestureEvent={this._onGestureEvent}
           onHandlerStateChange={this._onHandlerStateChange}
-          minPointers={2}
           minDist={50}>
         <Animated.View style={[styles.box, { transform: [
           {translateX: this._translateX},

@@ -149,7 +149,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 @property (nonatomic) CGFloat minDeltaY;
 @property (nonatomic) CGFloat minDistSq;
 @property (nonatomic) CGFloat maxVelocitySq;
-@property (nonatomic) BOOL active;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 - (BOOL)shouldActivate;
@@ -159,6 +158,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 @implementation RNBetterPanGestureRecognizer {
     __weak RNGestureHandler *_gestureHandler;
+    NSUInteger _realMinimumNumberOfTouches;
     NSUInteger _tapsSoFar;
 }
 
@@ -170,8 +170,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         _minDeltaY = NAN;
         _minDistSq = NAN;
         _maxVelocitySq = NAN;
+        _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
     }
     return self;
+}
+
+- (void)setMinimumNumberOfTouches:(NSUInteger)minimumNumberOfTouches
+{
+    _realMinimumNumberOfTouches = minimumNumberOfTouches;
 }
 
 - (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
@@ -183,32 +189,32 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    self.active = NO;
+    // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
+    // the gesture too early before we are sure that all criteria (e.g. minimum distance
+    // etc. are met)
+    super.minimumNumberOfTouches = 20;
     [super touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    if (!self.active && !isnan(_maxVelocitySq)) {
+    [super touchesMoved:touches withEvent:event];
+    if (self.state == UIGestureRecognizerStatePossible && [self shouldActivate]) {
+        super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
+        [super touchesMoved:touches withEvent:event];
+    }
+    if (self.state == UIGestureRecognizerStateChanged && !isnan(_maxVelocitySq)) {
         CGPoint velocity = [self velocityInView:self.view];
         if (VEC_LEN_SQ(velocity) >= _maxVelocitySq) {
             self.state = UIGestureRecognizerStateFailed;
             return;
         }
     }
-    if (!self.active && [self shouldActivate]) {
-        self.active = YES;
-    }
-    [super touchesMoved:touches withEvent:event];
-    if (self.active && self.state == UIGestureRecognizerStateBegan) {
-        self.state = UIGestureRecognizerStateChanged;
-    }
 }
 
 - (void)reset
 {
     self.enabled = YES;
-    self.active = NO;
     [super reset];
 }
 
@@ -280,18 +286,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         _recognizer = recognizer;
     }
     return self;
-}
-
-- (RNGestureHandlerState)state
-{
-    RNGestureHandlerState state = [super state];
-    RNBetterPanGestureRecognizer *recognizer = (RNBetterPanGestureRecognizer*) self.recognizer;
-    if (state == RNGestureHandlerStateActive && !recognizer.active) {
-        return RNGestureHandlerStateBegan;
-    } else if (state == RNGestureHandlerStateEnd && !recognizer.active) {
-        return RNGestureHandlerStateFailed;
-    }
-    return state;
 }
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer
