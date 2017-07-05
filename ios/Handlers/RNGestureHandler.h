@@ -22,7 +22,7 @@
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
+                     config:(NSDictionary<NSString *, id> *)config;
 
 @property (nonatomic, readonly) NSNumber *tag;
 @property (nonatomic, weak) id<RNGestureHandlerEventEmitter> emitter;
@@ -36,7 +36,15 @@
 
 @end
 
-  
+@interface RNGestureHandlerRegistry : NSObject
+
+- (void)registerGestureHandler:(RNGestureHandler *)gestureHandler forViewWithTag:(NSNumber *)viewTag;
+- (void)dropGestureHandlersForViewWithTag:(NSNumber *)viewTag;
+- (RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer;
+
+@end
+
+
 @interface RNPanGestureHandler : RNGestureHandler
 @end
 

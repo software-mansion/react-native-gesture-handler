@@ -25,13 +25,17 @@ UIManager.clearJSResponder = () => {
   oldClearJSResponder();
 }
 
-const State = RNGestureHandlerModule.State
+const State = RNGestureHandlerModule.State;
 
 const CHILD_REF = 'CHILD_REF';
 
-let handlerTag = 1
+let handlerTag = 1;
+const handlerIDToTag = {};
 
 const GestureHandlerPropTypes = {
+  id: PropTypes.string,
+  waitFor: PropTypes.oneOf(PropTypes.string),
+  simultaneousHandlers: PropTypes.oneOf(PropTypes.string),
   shouldCancelWhenOutside: PropTypes.bool,
   shouldCancelOthersWhenActivated: PropTypes.bool,
   shouldBeRequiredByOthersToFail: PropTypes.bool,
@@ -55,6 +59,13 @@ function canUseNativeParam(param) {
     ((typeof param !== 'object') || !('__isNative' in param));
 }
 
+function transformIntoHandlerTags(handlerIDs) {
+  // converts handler string IDs into their numeric tags
+  return handlerIDs
+    .map(handlerID => handlerIDToTag[handlerID] || -1)
+    .filter(handlerTag => handlerTag > 0)
+}
+
 function filterConfig(component, defaults = {}) {
   const props = component.props;
   const validProps = component.constructor.propTypes
@@ -62,9 +73,13 @@ function filterConfig(component, defaults = {}) {
   Object.keys(validProps).forEach(key => {
     const value = props[key]
     if (canUseNativeParam(value)) {
-      res[key] = props[key];
+      let value = props[key];
+      if (key === 'simultaneousHandlers' || key === 'waitFor') {
+        value = transformIntoHandlerTags(props[key]);
+      }
+      res[key] = value;
     }
-  })
+  });
   return res;
 }
 
@@ -78,6 +93,12 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     constructor(props) {
       super(props);
       this._handlerTag = handlerTag++;
+      if (props.id) {
+        if (handlerIDToTag[props.id] !== undefined) {
+          throw new Error(`Handler with ID "${props.id}" already registered`);
+        }
+        handlerIDToTag[props.id] = this._handlerTag;
+      }
     }
 
     _onGestureHandlerEvent = (event) => {
@@ -99,6 +120,9 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     componentWillUnmount() {
       const viewTag = findNodeHandle(this.refs[CHILD_REF]);
       RNGestureHandlerModule.dropGestureHandlersForView(viewTag);
+      if (this.props.id) {
+        delete handlerIDToTag[this.props.id];
+      }
     }
 
     componentDidMount() {
@@ -163,6 +187,8 @@ const PanGestureHandler = createHandler('PanGestureHandler', {
   minDeltaY: PropTypes.number,
   minDist: PropTypes.number,
   maxVelocity: PropTypes.number,
+  minPointers: PropTypes.number,
+  maxPointers: PropTypes.number,
 }, {
   shouldCancelOthersWhenActivated: true,
 });
@@ -171,19 +197,38 @@ const RotationGestureHandler = createHandler('RotationGestureHandler', {}, {});
 
 function createNativeWrapper(Component, config = {}) {
   class ComponentWrapper extends React.Component {
+    static propTypes = {
+      ...GestureHandlerPropTypes,
+      ...Component.propTypes,
+    }
+
     constructor(props) {
       super(props);
       this._handlerTag = handlerTag++;
+      if (props.id) {
+        if (handlerIDToTag[props.id] !== undefined) {
+          throw new Error(`Handler with ID "${props.id}" already registered`);
+        }
+        handlerIDToTag[props.id] = this._handlerTag;
+      }
     }
 
     componentWillUnmount() {
       const viewTag = findNodeHandle(this.refs[CHILD_REF]);
       RNGestureHandlerModule.dropGestureHandlersForView(viewTag);
+      if (this.props.id) {
+        delete handlerIDToTag[this.props.id];
+      }
     }
 
     componentDidMount() {
       const viewTag = findNodeHandle(this.refs[CHILD_REF]);
-      RNGestureHandlerModule.createGestureHandler(viewTag, 'NativeViewGestureHandler', this._handlerTag, config);
+      RNGestureHandlerModule.createGestureHandler(
+        viewTag,
+        'NativeViewGestureHandler',
+        this._handlerTag,
+        filterConfig(this, config)
+      );
     }
 
     render() {

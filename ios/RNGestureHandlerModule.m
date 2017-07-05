@@ -28,7 +28,7 @@ RCT_EXPORT_VIEW_PROPERTY(onGestureHandlerStateChange, RCTDirectEventBlock)
 
 @implementation RNGestureHandlerModule
 {
-    NSMutableDictionary<NSNumber *, NSMutableArray<RNGestureHandler *>* > *_gestureHandlers;
+    RNGestureHandlerRegistry *_registry;
 }
 
 RCT_EXPORT_MODULE()
@@ -42,7 +42,7 @@ RCT_EXPORT_MODULE()
 {
     [super setBridge:bridge];
 
-    _gestureHandlers = [NSMutableDictionary new];
+    _registry = [RNGestureHandlerRegistry new];
 }
 
 RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSNumber *)viewTag withName:(nonnull NSString *)handlerName tag:(nonnull NSNumber *)handlerTag config:(NSDictionary *)config)
@@ -59,33 +59,24 @@ RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSNumber *)viewTag withName:(non
                 @"RotationGestureHandler": [RNRotationGestureHandler class],
                 };
     });
-    
+
     Class nodeClass = map[handlerName];
     if (!nodeClass) {
         RCTLogError(@"Gesture handler type %@ is not supported", handlerName);
         return;
     }
-    
+
     RNGestureHandler *gestureHandler = [[nodeClass alloc] initWithTag:handlerTag config:config];
-    NSMutableArray *handlersArray = _gestureHandlers[viewTag];
-    if (handlersArray == nil) {
-        handlersArray = [NSMutableArray new];
-        _gestureHandlers[viewTag] = handlersArray;
-    }
-    [handlersArray addObject:gestureHandler];
+    [_registry registerGestureHandler:gestureHandler forViewWithTag:viewTag];
     gestureHandler.emitter = self;
-    
+
     UIView *view = [self.bridge.uiManager viewForReactTag:viewTag];
     [gestureHandler bindToView:view];
 }
 
 RCT_EXPORT_METHOD(dropGestureHandlersForView:(nonnull NSNumber *)viewTag)
 {
-    NSMutableArray *handlersArray = _gestureHandlers[viewTag];
-    for (RNGestureHandler *handler in handlersArray) {
-        [handler unbindFromView];
-    }
-    [_gestureHandlers removeObjectForKey:viewTag];
+    [_registry dropGestureHandlersForViewWithTag:viewTag];
 }
 
 RCT_EXPORT_METHOD(handleSetJSResponder:(nonnull NSNumber *)viewTag blockNativeResponder:(nonnull NSNumber *)blockNativeResponder)
@@ -133,4 +124,4 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
 
 
 @end
-  
+

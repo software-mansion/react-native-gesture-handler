@@ -7,19 +7,74 @@
 
 #define VEC_LEN_SQ(pt) (pt.x * pt.x + pt.y * pt.y)
 
+
+@interface RNDummyGestureRecognizer : UIGestureRecognizer
+@end
+
+
+@implementation RNDummyGestureRecognizer
+@end
+
+
 @interface RNGestureHandler () <UIGestureRecognizerDelegate>
 
 @property(nonatomic) BOOL shouldCancelWhenOutside;
+@property(nonatomic, weak) RNGestureHandlerRegistry *registry;
 
 @end
 
-@implementation RNGestureHandler {
-    BOOL _shouldCancelOthersWhenActivated;
-    BOOL _shouldBeRequiredByOthersToFail;
-    BOOL _shouldCancelWhenOutside;
+
+@implementation RNGestureHandlerRegistry {
+    NSMutableDictionary<NSNumber *, NSMutableArray<RNGestureHandler *>* > *_gestureHandlers;
 }
 
-@synthesize shouldCancelWhenOutside = _shouldCancelWhenOutside;
+- (instancetype)init
+{
+    if ((self = [super init])) {
+        _gestureHandlers = [NSMutableDictionary new];
+    }
+    return self;
+}
+
+- (void)registerGestureHandler:(RNGestureHandler *)gestureHandler forViewWithTag:(NSNumber *)viewTag
+{
+    NSMutableArray *handlersArray = _gestureHandlers[viewTag];
+    if (handlersArray == nil) {
+        handlersArray = [NSMutableArray new];
+        _gestureHandlers[viewTag] = handlersArray;
+    }
+    [handlersArray addObject:gestureHandler];
+    gestureHandler.registry = self;
+}
+
+- (void)dropGestureHandlersForViewWithTag:(NSNumber *)viewTag
+{
+    NSMutableArray *handlersArray = _gestureHandlers[viewTag];
+    for (RNGestureHandler *handler in handlersArray) {
+        [handler unbindFromView];
+    }
+    [_gestureHandlers removeObjectForKey:viewTag];
+}
+
+- (RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer
+{
+    NSNumber *viewTag = recognizer.view.reactTag;
+    NSArray *handlers = _gestureHandlers[viewTag];
+    for (RNGestureHandler *handler in handlers) {
+        if (handler.recognizer == recognizer) {
+            return handler;
+        }
+    }
+    return nil;
+}
+
+@end
+
+
+@implementation RNGestureHandler {
+    NSArray<NSNumber *> *_handlersToWaitFor;
+    NSArray<NSNumber *> *_simultaniousHandlers;
+}
 
 - (instancetype)initWithTag:(NSNumber *)tag
                      config:(NSDictionary<NSString *, id> *)config
@@ -28,9 +83,9 @@
         _tag = tag;
         _lastState = RNGestureHandlerStateUndetermined;
 
-        _shouldCancelOthersWhenActivated = [RCTConvert BOOL:config[@"shouldCancelOthersWhenActivated"]];
-        _shouldBeRequiredByOthersToFail = [RCTConvert BOOL:config[@"shouldBeRequiredByOthersToFail"]];
-        
+        _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
+        _simultaniousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
+
         id prop = config[@"shouldCancelWhenOutside"];
         if (prop != nil) {
             _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
@@ -62,9 +117,9 @@
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
     RNGestureHandlerState state = self.state;
-    
+
     RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
-    
+
     id touchEvent = [[RNGestureHandlerEvent alloc] initWithRactTag:recognizer.view.reactTag
                                                         handlerTag:_tag
                                                              state:state
@@ -72,7 +127,7 @@
     if (state == RNGestureHandlerStateActive) {
         [self.emitter sendTouchEvent:touchEvent];
     }
-    
+
     if (state != _lastState) {
         if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
             [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithRactTag:recognizer.view.reactTag
@@ -112,24 +167,77 @@
 
 #pragma mark UIGestureRecognizerDelegate
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
-shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+- (RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer
 {
-    return _shouldBeRequiredByOthersToFail;
+    RNGestureHandler *handler = [_registry findGestureHandlerByRecognizer:recognizer];
+    if (handler != nil) {
+        return handler;
+    }
+
+    // We may try to extract "DummyGestureHandler" in case when "otherGestureRecognizer" belongs to
+    // a native view being wrapped with "NativeViewGestureHandler"
+    UIView *reactView = recognizer.view;
+    while (reactView != nil && reactView.reactTag == nil) {
+        reactView = reactView.superview;
+    }
+
+    for (UIGestureRecognizer *recognizer in reactView.gestureRecognizers) {
+        if ([recognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
+            return [_registry findGestureHandlerByRecognizer:recognizer];
+        }
+    }
+
+    return nil;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
-shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer;
+shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    // Called when there is some other gesture recognizer that wants to recognize
-    // When receiver has already recognized, we disallow simultanious recognition based on shouldCancelOtherWhenActivated,
-    // which when set to true means we don't want other gesture handers to remain active, otherwise we return true
-    if (_recognizer.state != UIGestureRecognizerStateBegan && _recognizer.state != UIGestureRecognizerStatePossible) {
-        return !_shouldCancelOthersWhenActivated;
+    RNGestureHandler *handler = [self findGestureHandlerByRecognizer:otherGestureRecognizer];
+    if ([handler isKindOfClass:[RNNativeViewGestureHandler class]]) {
+        for (NSNumber *handlerTag in handler->_handlersToWaitFor) {
+            if ([_tag isEqual:handlerTag]) {
+                return YES;
+            }
+        }
     }
-    // If we haven't recognize just yet, we return YES and allow other gesture recognizer to remain active, if it ended
-    // up recognizing, canBePreventedByGestureRecognizer will get called and we can use it to cancel that recognizer
-    return YES;
+
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    if ([_handlersToWaitFor count]) {
+        RNGestureHandler *handler = [self findGestureHandlerByRecognizer:otherGestureRecognizer];
+        if (handler != nil) {
+            for (NSNumber *handlerTag in _handlersToWaitFor) {
+                if ([handler.tag isEqual:handlerTag]) {
+                    return YES;
+                }
+            }
+        }
+    }
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    if (_recognizer.state == UIGestureRecognizerStateBegan && _recognizer.state == UIGestureRecognizerStatePossible) {
+        return YES;
+    }
+    if ([_simultaniousHandlers count]) {
+        RNGestureHandler *handler = [self findGestureHandlerByRecognizer:otherGestureRecognizer];
+        if (handler != nil) {
+            for (NSNumber *handlerTag in _simultaniousHandlers) {
+                if ([handler.tag isEqual:handlerTag]) {
+                    return YES;
+                }
+            }
+        }
+    }
+    return NO;
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
@@ -159,7 +267,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 @implementation RNBetterPanGestureRecognizer {
     __weak RNGestureHandler *_gestureHandler;
     NSUInteger _realMinimumNumberOfTouches;
-    NSUInteger _tapsSoFar;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
@@ -178,13 +285,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)setMinimumNumberOfTouches:(NSUInteger)minimumNumberOfTouches
 {
     _realMinimumNumberOfTouches = minimumNumberOfTouches;
-}
-
-- (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
-{
-    BOOL res = [super canBePreventedByGestureRecognizer:preventingGestureRecognizer];
-    self.enabled = NO;
-    return res;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -223,7 +323,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (!isnan(_minDistSq) || !isnan(_minDeltaX) || !isnan(_minDeltaY)) {
         BOOL ready = NO;
         CGPoint trans = [self translationInView:self.view];
-        
+
         if (!isnan(_minDeltaX) && trans.x >= _minDeltaX) {
             ready = YES;
         }
@@ -233,7 +333,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         if (!isnan(_minDistSq) && VEC_LEN_SQ(trans) >= _minDistSq) {
             ready = YES;
         }
-        
+
         if (!ready) {
             return NO;
         }
@@ -250,39 +350,39 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     if ((self = [super initWithTag:tag config:config])) {
         RNBetterPanGestureRecognizer *recognizer = [[RNBetterPanGestureRecognizer alloc] initWithGestureHandler:self];
-        
+
         id prop = config[@"minDeltaX"];
         if (prop != nil) {
             recognizer.minDeltaX = [RCTConvert CGFloat:prop];
         }
-        
+
         prop = config[@"minDeltaY"];
         if (prop != nil) {
             recognizer.minDeltaY = [RCTConvert CGFloat:prop];
         }
-        
+
         prop = config[@"minDist"];
         if (prop != nil) {
             CGFloat dist = [RCTConvert CGFloat:prop];
             recognizer.minDistSq = dist * dist;
         }
-        
+
         prop = config[@"maxVelocity"];
         if (prop != nil) {
             CGFloat velocity = [RCTConvert CGFloat:prop];
             recognizer.maxVelocitySq = velocity * velocity;
         }
-        
+
         prop = config[@"minPointers"];
         if (prop != nil) {
             recognizer.minimumNumberOfTouches = [RCTConvert NSUInteger:prop];
         }
-        
+
         prop = config[@"maxPointers"];
         if (prop != nil) {
             recognizer.maximumNumberOfTouches = [RCTConvert NSUInteger:prop];
         }
-        
+
         _recognizer = recognizer;
     }
     return self;
@@ -354,11 +454,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     [super touchesMoved:touches withEvent:event];
-    
+
     if (self.state != UIGestureRecognizerStatePossible) {
         return;
     }
-    
+
     if (_gestureHandler.shouldCancelWhenOutside) {
         CGPoint pt = [self locationInView:self.view];
         if (pt.x < 0. || pt.y < 0. || pt.x > self.view.frame.size.width || pt.y > self.view.frame.size.height) {
@@ -368,7 +468,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             return;
         }
     }
-    
+
     self.state = UIGestureRecognizerStatePossible;
     [self triggerAction];
 }
@@ -391,13 +491,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self reset];
 }
 
-- (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
-{
-    BOOL res = [super canBePreventedByGestureRecognizer:preventingGestureRecognizer];
-    self.enabled = NO;
-    return res;
-}
-
 - (void)reset
 {
     if (self.state == UIGestureRecognizerStateFailed) {
@@ -418,22 +511,22 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     if ((self = [super initWithTag:tag config:config])) {
         RNBetterTapGestureRecognizer *recognizer = [[RNBetterTapGestureRecognizer alloc] initWithGestureHandler:self];
-        
+
         id prop = config[@"numberOfTaps"];
         if (prop != nil) {
             recognizer.numberOfTaps = [RCTConvert NSUInteger:prop];
         }
-        
+
         prop = config[@"maxDelayMs"];
         if (prop != nil) {
             recognizer.maxDelay = [RCTConvert CGFloat:prop] / 1000.0;
         }
-        
+
         prop = config[@"maxDurationMs"];
         if (prop != nil) {
             recognizer.maxDuration = [RCTConvert CGFloat:prop] / 1000.0;
         }
-        
+
         _recognizer = recognizer;
     }
     return self;
@@ -452,12 +545,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if ((self = [super initWithTag:tag config:config])) {
         UILongPressGestureRecognizer *recognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                                                 action:@selector(handleGesture:)];
-        
+
         id prop = config[@"minDurationMs"];
         if (prop != nil) {
             recognizer.minimumPressDuration = [RCTConvert CGFloat:prop] / 1000.0;
         }
-        
+
         _recognizer = recognizer;
     }
     return self;
@@ -476,14 +569,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                      config:(NSDictionary<NSString *,id> *)config
 {
     if ((self = [super initWithTag:tag config:config])) {
-        _recognizer = nil;
+        _recognizer = [[RNDummyGestureRecognizer alloc] init];
         _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
     }
     return self;
-}
-
-- (void)bindToView:(UIView *)view
-{
 }
 
 @end

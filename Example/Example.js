@@ -100,7 +100,8 @@ class DraggableBox extends Component {
           {...this.props}
           onGestureEvent={this._onGestureEvent}
           onHandlerStateChange={this._onHandlerStateChange}
-          minDist={50}>
+          minDist={100}
+          id="dragbox">
         <Animated.View style={[styles.box, { transform: [
           {translateX: this._translateX},
           {translateY: this._translateY}
@@ -173,7 +174,7 @@ class PinchableBox extends React.Component {
     this._onPinchGestureEvent = Animated.event(
        [{ nativeEvent: { scale: this._pinchScale }}],
       //  { useNativeDriver: true }
-    )
+    );
 
     /* Rotation */
     this._rotate = new Animated.Value(0);
@@ -182,7 +183,16 @@ class PinchableBox extends React.Component {
     this._onRotateGestureEvent = Animated.event(
        [{ nativeEvent: { rotation: this._rotate }}],
       //  { useNativeDriver: true }
-    )
+    );
+
+    /* Tilt */
+    this._tilt = new Animated.Value(0);
+    this._tiltStr = this._tilt.interpolate({ inputRange: [-501, -500, 0, 1], outputRange: ['1rad', '1rad', '0rad', '0rad']});
+    this._lastTilt = 0;
+    this._onTiltGestureEvent = Animated.event(
+      [{ nativeEvent: { translationY: this._tilt }}],
+      //  { useNativeDriver: true }
+    );
   }
   _onRotateHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
@@ -198,23 +208,42 @@ class PinchableBox extends React.Component {
       this._pinchScale.setValue(1);
     }
   }
+  _onTiltGestureStateChange = (event) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      this._lastTilt += event.nativeEvent.translationY;
+      this._tilt.setOffset(this._lastTilt);
+      this._tilt.setValue(0);
+    }
+  }
   render() {
     return (
-      <View style={styles.pinchableBoxContainer}>
-        <RotationGestureHandler
-          shouldCancelOthersWhenActivated={false}
-          onGestureEvent={this._onRotateGestureEvent}
-          onHandlerStateChange={this._onRotateHandlerStateChange}>
-          <PinchGestureHandler
+      <Animated.View style={styles.pinchableBoxContainer}>
+        <PanGestureHandler
+          id="image_tilt"
+          simultaneousHandlers={["image_pinch", "image_rotation"]}
+          onGestureEvent={this._onTiltGestureEvent}
+          onHandlerStateChange={this._onTiltGestureStateChange}
+          minPointers={2}
+          maxPointers={2}>
+          <RotationGestureHandler
+            id="image_rotation"
+            simultaneousHandlers={["image_pinch", "image_tilt"]}
             shouldCancelOthersWhenActivated={false}
-            onGestureEvent={this._onPinchGestureEvent}
-            onHandlerStateChange={this._onPinchHandlerStateChange}>
-            <Animated.Image
-              style={[styles.pinchableImage, { transform: [ { scale: this._scale }, { rotate: this._rotateStr } ] }]}
-              source={{uri: 'https://avatars1.githubusercontent.com/u/6952717'}}/>
-          </PinchGestureHandler>
-        </RotationGestureHandler>
-      </View>
+            onGestureEvent={this._onRotateGestureEvent}
+            onHandlerStateChange={this._onRotateHandlerStateChange}>
+            <PinchGestureHandler
+              id="image_pinch"
+              simultaneousHandlers={["image_rotation", "image_tilt"]}
+              shouldCancelOthersWhenActivated={false}
+              onGestureEvent={this._onPinchGestureEvent}
+              onHandlerStateChange={this._onPinchHandlerStateChange}>
+              <Animated.Image
+                style={[styles.pinchableImage, { transform: [ { perspective: 200 }, { rotateX: this._tiltStr }, { scale: this._scale }, { rotate: this._rotateStr } ] }]}
+                source={{uri: 'https://avatars1.githubusercontent.com/u/6952717'}}/>
+            </PinchGestureHandler>
+          </RotationGestureHandler>
+        </PanGestureHandler>
+      </Animated.View>
     )
   }
 }
@@ -234,7 +263,7 @@ export default class Example extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.scrollView}>
+        <ScrollView waitFor={["dragbox"]} style={styles.scrollView}>
           <TouchableHighlight style={styles.button} onClick={this._onClick}>
             <View style={styles.buttonInner}>
               <Text>Hello</Text>
