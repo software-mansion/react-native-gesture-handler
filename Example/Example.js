@@ -220,25 +220,30 @@ class PinchableBox extends React.Component {
       <Animated.View style={styles.pinchableBoxContainer}>
         <PanGestureHandler
           id="image_tilt"
-          simultaneousHandlers={["image_pinch", "image_rotation"]}
           onGestureEvent={this._onTiltGestureEvent}
           onHandlerStateChange={this._onTiltGestureStateChange}
+          minDist={10}
           minPointers={2}
           maxPointers={2}>
           <RotationGestureHandler
             id="image_rotation"
-            simultaneousHandlers={["image_pinch", "image_tilt"]}
+            simultaneousHandlers={["image_pinch"]}
             shouldCancelOthersWhenActivated={false}
             onGestureEvent={this._onRotateGestureEvent}
             onHandlerStateChange={this._onRotateHandlerStateChange}>
             <PinchGestureHandler
               id="image_pinch"
-              simultaneousHandlers={["image_rotation", "image_tilt"]}
+              simultaneousHandlers={["image_rotation"]}
               shouldCancelOthersWhenActivated={false}
               onGestureEvent={this._onPinchGestureEvent}
               onHandlerStateChange={this._onPinchHandlerStateChange}>
               <Animated.Image
-                style={[styles.pinchableImage, { transform: [ { perspective: 200 }, { rotateX: this._tiltStr }, { scale: this._scale }, { rotate: this._rotateStr } ] }]}
+                style={[styles.pinchableImage, { transform: [
+                  { perspective: 200 },
+                  { scale: this._scale },
+                  { rotate: this._rotateStr },
+                  { rotateX: this._tiltStr },
+                ] }]}
                 source={{uri: 'https://avatars1.githubusercontent.com/u/6952717'}}/>
             </PinchGestureHandler>
           </RotationGestureHandler>
@@ -263,7 +268,7 @@ export default class Example extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView waitFor={["dragbox"]} style={styles.scrollView}>
+        <ScrollView waitFor={["dragbox", "image_pinch", "image_rotation", "image_tilt"]} style={styles.scrollView}>
           <TouchableHighlight style={styles.button} onClick={this._onClick}>
             <View style={styles.buttonInner}>
               <Text>Hello</Text>

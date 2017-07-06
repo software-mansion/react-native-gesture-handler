@@ -4,6 +4,8 @@ import android.view.MotionEvent;
 
 public class RotationGestureHandler extends GestureHandler<RotationGestureHandler> {
 
+  private static final double ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36.; // 5 deg in radians
+
   private RotationGestureDetector mRotationGestureDetector;
   private double mLastRotation;
   private double mLastVelocity;
@@ -18,12 +20,14 @@ public class RotationGestureHandler extends GestureHandler<RotationGestureHandle
       if (delta > 0) {
         mLastVelocity = (mLastRotation - prevRotation) / delta;
       }
+      if (Math.abs(mLastRotation) >= ROTATION_RECOGNITION_THRESHOLD && getState() == STATE_BEGAN) {
+        activate();
+      }
       return true;
     }
 
     @Override
     public boolean onRotationBegin(RotationGestureDetector detector) {
-      activate();
       return true;
     }
 

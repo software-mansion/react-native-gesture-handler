@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler;
 import android.content.Context;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.ViewConfiguration;
 
 public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
 
@@ -10,7 +11,11 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
   private double mLastScaleFactor;
   private double mLastVelocity;
 
-  private ScaleGestureDetector.OnScaleGestureListener mGestureListener = new ScaleGestureDetector.OnScaleGestureListener() {
+  private float mStartingSpan;
+  private float mSpanSlop;
+
+  private ScaleGestureDetector.OnScaleGestureListener mGestureListener =
+          new ScaleGestureDetector.OnScaleGestureListener() {
 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
@@ -20,12 +25,16 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
       if (delta > 0) {
         mLastVelocity = (mLastScaleFactor - prevScaleFactor) / delta;
       }
+      if (Math.abs(mStartingSpan - detector.getCurrentSpan()) >= mSpanSlop
+              && getState() == STATE_BEGAN) {
+        activate();
+      }
       return true;
     }
 
     @Override
     public boolean onScaleBegin(ScaleGestureDetector detector) {
-      activate();
+      mStartingSpan = detector.getCurrentSpan();
       return true;
     }
 
@@ -47,6 +56,8 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
       mLastVelocity = 0f;
       mLastScaleFactor = 1f;
       mScaleGestureDetector = new ScaleGestureDetector(context, mGestureListener);
+      ViewConfiguration configuration = ViewConfiguration.get(context);
+      mSpanSlop = configuration.getScaledTouchSlop();
 
       begin();
     }
