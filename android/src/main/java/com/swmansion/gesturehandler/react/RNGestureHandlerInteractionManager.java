@@ -32,12 +32,13 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
   }
 
   public void configureInteractions(GestureHandler handler, ReadableMap config) {
+    handler.setInteractionController(this);
     if (config.hasKey(KEY_WAIT_FOR)) {
       int[] tags = convertHandlerTagsArray(config, KEY_WAIT_FOR);
       mWaitForRelations.put(handler.getTag(), tags);
     }
     if (config.hasKey(KEY_SIMULTANEOUS_HANDLERS)) {
-      int[] tags = convertHandlerTagsArray(config, KEY_WAIT_FOR);
+      int[] tags = convertHandlerTagsArray(config, KEY_SIMULTANEOUS_HANDLERS);
       mSimultaneousRelations.put(handler.getTag(), tags);
     }
   }

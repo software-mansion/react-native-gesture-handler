@@ -25,9 +25,7 @@ import com.swmansion.gesturehandler.RotationGestureHandler;
 import com.swmansion.gesturehandler.TapGestureHandler;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.logging.Handler;
 
 import javax.annotation.Nullable;
 
@@ -44,6 +42,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_HIT_SLOP_VERTICAL = "vertical";
   private static final String KEY_HIT_SLOP_HORIZONTAL = "horizontal";
   private static final String KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart";
+  private static final String KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION = "shouldActivateOnStart";
   private static final String KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps";
   private static final String KEY_TAP_MAX_DURATION_MS = "maxDurationMs";
   private static final String KEY_TAP_MAX_DELAY_MS = "maxDelayMs";
@@ -102,6 +101,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (config.hasKey(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)) {
         handler.setShouldActivateOnStart(
                 config.getBoolean(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START));
+      }
+      if (config.hasKey(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION)) {
+        handler.setDisallowInterruption(config.getBoolean(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION));
       }
     }
   }

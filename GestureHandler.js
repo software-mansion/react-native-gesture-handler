@@ -37,8 +37,6 @@ const GestureHandlerPropTypes = {
   waitFor: PropTypes.oneOf(PropTypes.string),
   simultaneousHandlers: PropTypes.oneOf(PropTypes.string),
   shouldCancelWhenOutside: PropTypes.bool,
-  shouldCancelOthersWhenActivated: PropTypes.bool,
-  shouldBeRequiredByOthersToFail: PropTypes.bool,
   hitSlop: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.shape({
@@ -169,6 +167,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
 
 const NativeViewGestureHandler = createHandler('NativeViewGestureHandler', {
   shouldActivateOnStart: PropTypes.bool,
+
 });
 const TapGestureHandler = createHandler('TapGestureHandler', {
   maxDurationMs: PropTypes.number,
@@ -239,8 +238,16 @@ function createNativeWrapper(Component, config = {}) {
 }
 
 const WrappedScrollView = createNativeWrapper(ScrollView);
-const WrappedSlider = createNativeWrapper(Slider, { shouldCancelWhenOutside: false, shouldActivateOnStart: true });
-const WrappedSwitch = createNativeWrapper(Switch);
+const WrappedSlider = createNativeWrapper(Slider, {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: true,
+  disallowInterruption: true,
+});
+const WrappedSwitch = createNativeWrapper(Switch, {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: true,
+  disallowInterruption: true,
+});
 const WrappedTextInput = createNativeWrapper(TextInput);
 const WrappedToolbarAndroid = createNativeWrapper(ToolbarAndroid);
 const WrappedViewPagerAndroid = createNativeWrapper(ViewPagerAndroid);

@@ -15,7 +15,9 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.swmansion.gesturehandler.BaseGestureHandlerInteractionController;
 import com.swmansion.gesturehandler.GestureHandler;
+import com.swmansion.gesturehandler.GestureHandlerInteractionController;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
 
 import javax.annotation.Nullable;
@@ -27,6 +29,15 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
           new GestureHandlerOrchestrator(this, mRegistry);
 
   private @Nullable GestureHandler mJSGestureHandler;
+  private GestureHandlerInteractionController mRootInteractionController =
+          new BaseGestureHandlerInteractionController() {
+    @Override
+    public boolean shouldRequireHandlerToWaitForFailure(
+            GestureHandler handler,
+            GestureHandler otherHandler) {
+      return handler.getState() == GestureHandler.STATE_ACTIVE;
+    }
+  };
 
   public RNGestureHandlerEnabledRootView(Context context) {
     super(context);
@@ -74,7 +85,6 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
           super.onReset();
         }
       };
-      mJSGestureHandler.setShouldCancelOthersWhenActivated(true);
       mJSGestureHandler.setTag(rootViewTag);
       getRegistry().registerHandlerForViewWithTag(rootViewTag, mJSGestureHandler);
       // TODO: figure out where to drop root view handlers
