@@ -34,7 +34,6 @@ public class RotationGestureHandler extends GestureHandler<RotationGestureHandle
   };
 
   public RotationGestureHandler() {
-    setShouldCancelOthersWhenActivated(true);
     setShouldCancelWhenOutside(false);
   }
 

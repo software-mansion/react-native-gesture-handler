@@ -24,11 +24,10 @@ public class GestureHandler<T extends GestureHandler> {
   private float mHitSlop[];
 
   private boolean mShouldCancelWhenOutside;
-  private boolean mShouldCancelOthersWhenActivated;
-  private boolean mShouldBeRequiredByOthersToFail;
 
   private GestureHandlerOrchestrator mOrchestrator;
   private OnTouchEventListener<T> mListener;
+  private GestureHandlerInteractionController mInteractionController;
   /*package*/ boolean mIsActive; // set and accessed only by the orchestrator
 
   /*package*/ void dispatchStateChange(int newState, int prevState) {
@@ -48,16 +47,6 @@ public class GestureHandler<T extends GestureHandler> {
     return (T) this;
   }
 
-  public T setShouldCancelOthersWhenActivated(boolean shouldCancelOthersWhenActivated) {
-    mShouldCancelOthersWhenActivated = shouldCancelOthersWhenActivated;
-    return (T) this;
-  }
-
-  public T setShouldBeRequiredByOthersToFail(boolean shouldBeRequiredByOthersToFail) {
-    mShouldBeRequiredByOthersToFail = shouldBeRequiredByOthersToFail;
-    return (T) this;
-  }
-
   public T setHitSlop(float leftPad, float topPad, float rightPad, float bottomPad) {
     if (mHitSlop == null) {
       mHitSlop = new float[4];
@@ -71,6 +60,11 @@ public class GestureHandler<T extends GestureHandler> {
 
   public T setHitSlop(float padding) {
     return setHitSlop(padding, padding, padding, padding);
+  }
+
+  public T setInteractionController(GestureHandlerInteractionController controller) {
+    mInteractionController = controller;
+    return (T) this;
   }
 
   public void setTag(int tag) {
@@ -138,12 +132,18 @@ public class GestureHandler<T extends GestureHandler> {
     return mState;
   }
 
-  public boolean isRequiredByHandlerToFail(GestureHandler handler) {
-    return handler != this && mShouldBeRequiredByOthersToFail;
+  public boolean shouldWaitForHandlerFailure(GestureHandler handler) {
+    if (handler != this && mInteractionController != null) {
+      return mInteractionController.shouldWaitForHandlerFailure(handler);
+    }
+    return false;
   }
 
-  public boolean isRequiredToCancelUponHandlerActivation(GestureHandler handler) {
-    return handler != this && handler.mShouldCancelOthersWhenActivated;
+  public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
+    if (mInteractionController != null) {
+      return mInteractionController.shouldRecognizeSimultaneously(handler);
+    }
+    return false;
   }
 
   public boolean isWithinBounds(View view, float posX, float posY) {

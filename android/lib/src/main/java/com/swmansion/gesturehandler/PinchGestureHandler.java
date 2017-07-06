@@ -36,7 +36,6 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
   };
 
   public PinchGestureHandler() {
-    setShouldCancelOthersWhenActivated(true);
     setShouldCancelWhenOutside(false);
   }
 

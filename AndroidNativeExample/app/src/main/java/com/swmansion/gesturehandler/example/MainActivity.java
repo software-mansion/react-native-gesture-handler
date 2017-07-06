@@ -11,6 +11,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.swmansion.gesturehandler.GestureHandler;
+import com.swmansion.gesturehandler.GestureHandlerInteractionController;
 import com.swmansion.gesturehandler.GestureHandlerRegistryImpl;
 import com.swmansion.gesturehandler.GestureHandlerViewWrapper;
 import com.swmansion.gesturehandler.LongPressGestureHandler;
@@ -78,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
     registry.registerHandlerForView(block, new TapGestureHandler())
             .setNumberOfTaps(2)
-            .setShouldBeRequiredByOthersToFail(true)
             .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
               @Override
               public void onTouchEvent(TapGestureHandler handler, MotionEvent event) {
@@ -107,7 +107,22 @@ public class MainActivity extends AppCompatActivity {
               }
             });
 
+    GestureHandlerInteractionController pinchAndRotateInteractionController =
+            new GestureHandlerInteractionController() {
+      @Override
+      public boolean shouldWaitForHandlerFailure(GestureHandler handler) {
+        return false;
+      }
+
+      @Override
+      public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
+        // Allow pinch and rotate handlers registered for largeBlock to run simultaneously
+        return handler.getView().equals(largeBlock) && handler instanceof PinchGestureHandler;
+      }
+    };
+
     registry.registerHandlerForView(largeBlock, new RotationGestureHandler())
+            .setInteractionController(pinchAndRotateInteractionController)
             .setOnTouchEventListener(new OnTouchEventListener<RotationGestureHandler>() {
 
               private double mRotation = 0f;
@@ -127,29 +142,30 @@ public class MainActivity extends AppCompatActivity {
               }
             });
 
-      registry.registerHandlerForView(largeBlock, new PinchGestureHandler())
-              .setOnTouchEventListener(new OnTouchEventListener<PinchGestureHandler>() {
 
-                private double mScale = 1f;
 
-                @Override
-                public void onTouchEvent(PinchGestureHandler handler, MotionEvent event) {
-                  if (handler.getState() == GestureHandler.STATE_ACTIVE) {
-                    largeBlock.setScaleX((float) (mScale * handler.getScale()));
-                    largeBlock.setScaleY((float) (mScale * handler.getScale()));
-                  }
+    registry.registerHandlerForView(largeBlock, new PinchGestureHandler())
+            .setOnTouchEventListener(new OnTouchEventListener<PinchGestureHandler>() {
+
+              private double mScale = 1f;
+
+              @Override
+              public void onTouchEvent(PinchGestureHandler handler, MotionEvent event) {
+                if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+                  largeBlock.setScaleX((float) (mScale * handler.getScale()));
+                  largeBlock.setScaleY((float) (mScale * handler.getScale()));
                 }
+              }
 
-                @Override
-                public void onStateChange(PinchGestureHandler handler, int newState, int oldState) {
-                  if (oldState == GestureHandler.STATE_ACTIVE) {
-                    mScale *= handler.getScale();
-                  }
+              @Override
+              public void onStateChange(PinchGestureHandler handler, int newState, int oldState) {
+                if (oldState == GestureHandler.STATE_ACTIVE) {
+                  mScale *= handler.getScale();
                 }
-              });
+              }
+            });
 
     registry.registerHandlerForView(largeBlock, new PanGestureHandler())
-            .setShouldCancelOthersWhenActivated(true)
             .setMinDy(2)
             .setMaxPointers(1)
             .setOnTouchEventListener(new OnTouchEventListener<PanGestureHandler>() {

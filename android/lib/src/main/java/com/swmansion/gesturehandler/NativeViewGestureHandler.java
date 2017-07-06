@@ -5,14 +5,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.swmansion.gesturehandler.GestureHandler;
-
 public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHandler> {
 
   private boolean mShouldActivateOnStart;
 
   public NativeViewGestureHandler() {
-    setShouldCancelOthersWhenActivated(true);
     setShouldCancelWhenOutside(true);
   }
 

@@ -75,7 +75,8 @@ public class GestureHandlerOrchestrator {
   private boolean hasOtherHandlerToWaitFor(GestureHandler handler) {
     for (int i = 0; i < mGestureHandlersCount; i++) {
       GestureHandler otherHandler = mGestureHandlers[i];
-      if (!isFinished(otherHandler.getState()) && otherHandler.isRequiredByHandlerToFail(handler)) {
+      if (!isFinished(otherHandler.getState())
+              && handler.shouldWaitForHandlerFailure(otherHandler)) {
         return true;
       }
     }
@@ -98,7 +99,7 @@ public class GestureHandlerOrchestrator {
       // if there were handlers awaiting completion of this handler, we can trigger active state
       for (int i = 0; i < mAwaitingHandlersCount; i++) {
         GestureHandler otherHandler = mAwaitingHandlers[i];
-        if (handler.isRequiredByHandlerToFail(otherHandler)) {
+        if (otherHandler.shouldWaitForHandlerFailure(handler)) {
           tryActivate(otherHandler);
         }
       }
@@ -124,7 +125,7 @@ public class GestureHandlerOrchestrator {
     // Cancel all handlers that are required to be cancel upon current handler's activation
     for (int i = 0; i < mGestureHandlersCount; i++) {
       GestureHandler otherHandler = mGestureHandlers[i];
-      if (otherHandler.isRequiredToCancelUponHandlerActivation(handler)) {
+      if (!canRunSimultaneously(handler, otherHandler)) {
         mHandlersToCancel[toCancelCount++] = otherHandler;
       }
     }
@@ -136,7 +137,7 @@ public class GestureHandlerOrchestrator {
     // Clear all awaiting handlers waiting for the current handler to fail
     for (int i = 0; i < mAwaitingHandlersCount; i++) {
       GestureHandler otherHandler = mAwaitingHandlers[i];
-      if (otherHandler.isRequiredByHandlerToFail(handler)) {
+      if (!canRunSimultaneously(handler, otherHandler)) {
         mAwaitingHandlers[i] = mAwaitingHandlers[mAwaitingHandlersCount - 1];
         mAwaitingHandlers[mAwaitingHandlersCount - 1] = null;
         mAwaitingHandlersCount--;
@@ -359,6 +360,10 @@ public class GestureHandlerOrchestrator {
               && localY < child.getHeight();
     }
     return isWithinBounds;
+  }
+
+  private static boolean canRunSimultaneously(GestureHandler a, GestureHandler b) {
+    return a == b || a.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a);
   }
 
   private static boolean isFinished(int state) {
