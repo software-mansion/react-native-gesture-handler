@@ -116,7 +116,8 @@ public class MainActivity extends AppCompatActivity {
     GestureHandlerInteractionController pinchAndRotateInteractionController =
             new BaseGestureHandlerInteractionController() {
       @Override
-      public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
+      public boolean shouldRecognizeSimultaneously(GestureHandler handler,
+                                                   GestureHandler otherHandler) {
         // Allow pinch and rotate handlers registered for largeBlock to run simultaneously
         return handler.getView().equals(largeBlock) && handler instanceof PinchGestureHandler;
       }

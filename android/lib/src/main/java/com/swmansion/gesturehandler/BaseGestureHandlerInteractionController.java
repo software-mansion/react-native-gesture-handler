@@ -4,17 +4,20 @@ public abstract class BaseGestureHandlerInteractionController
         implements GestureHandlerInteractionController {
 
   @Override
-  public boolean shouldWaitForHandlerFailure(GestureHandler handler) {
+  public boolean shouldWaitForHandlerFailure(GestureHandler handler,
+                                             GestureHandler otherHandler) {
     return false;
   }
 
   @Override
-  public boolean shouldRequireHandlerToWaitForFailure(GestureHandler handler) {
+  public boolean shouldRequireHandlerToWaitForFailure(GestureHandler handler,
+                                                      GestureHandler otherHandler) {
     return false;
   }
 
   @Override
-  public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
+  public boolean shouldRecognizeSimultaneously(GestureHandler handler,
+                                               GestureHandler otherHandler) {
     return false;
   }
 }

@@ -1,7 +1,7 @@
 package com.swmansion.gesturehandler;
 
 public interface GestureHandlerInteractionController {
-  boolean shouldWaitForHandlerFailure(GestureHandler handler);
-  boolean shouldRequireHandlerToWaitForFailure(GestureHandler handler);
-  boolean shouldRecognizeSimultaneously(GestureHandler handler);
+  boolean shouldWaitForHandlerFailure(GestureHandler handler, GestureHandler otherHandler);
+  boolean shouldRequireHandlerToWaitForFailure(GestureHandler handler, GestureHandler otherHandler);
+  boolean shouldRecognizeSimultaneously(GestureHandler handler, GestureHandler otherHandler);
 }
