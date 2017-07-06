@@ -36,10 +36,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   public static final String MODULE_NAME = "RNGestureHandlerModule";
 
   private static final String KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside";
-  private static final String KEY_SHOULD_CANCEL_OTHERS_WHEN_ACTIVATED =
-          "shouldCancelOthersWhenActivated";
-  private static final String KEY_SHOULD_BE_REQUIRED_BY_OTHERS_TO_FAIL =
-          "shouldBeRequiredByOthersToFail";
   private static final String KEY_HIT_SLOP = "hitSlop";
   private static final String KEY_HIT_SLOP_LEFT = "left";
   private static final String KEY_HIT_SLOP_TOP = "left";
@@ -71,14 +67,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     public void configure(T handler, ReadableMap config) {
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
         handler.setShouldCancelWhenOutside(config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE));
-      }
-      if (config.hasKey(KEY_SHOULD_CANCEL_OTHERS_WHEN_ACTIVATED)) {
-        handler.setShouldCancelOthersWhenActivated(
-                config.getBoolean(KEY_SHOULD_CANCEL_OTHERS_WHEN_ACTIVATED));
-      }
-      if (config.hasKey(KEY_SHOULD_BE_REQUIRED_BY_OTHERS_TO_FAIL)) {
-        handler.setShouldBeRequiredByOthersToFail(
-                config.getBoolean(KEY_SHOULD_BE_REQUIRED_BY_OTHERS_TO_FAIL));
       }
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config);
@@ -290,6 +278,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           new RotationGestureHandlerFactory()
   };
   private RNGestureHandlerRegistry mRegistry;
+  private RNGestureHandlerInteractionManager mInteractionManager =
+          new RNGestureHandlerInteractionManager();
 
   public RNGestureHandlerModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -311,6 +301,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (handlerFactory.getName().equals(handlerName)) {
         GestureHandler handler = handlerFactory.create();
         handler.setTag(handlerTag);
+        mInteractionManager.configureInteractions(handler, config);
         handlerFactory.configure(handler, config);
         getRegistry().registerHandlerForViewWithTag(viewTag, handler);
         handler.setOnTouchEventListener(mEventListener);
@@ -322,6 +313,13 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void dropGestureHandlersForView(int viewTag) {
+    ArrayList<GestureHandler> handlers = getRegistry().getHandlersForViewWithTag(viewTag);
+    if (handlers != null) {
+      for (int i = 0; i < handlers.size(); i++) {
+        GestureHandler handler = handlers.get(i);
+        mInteractionManager.dropRelationsForHandler(handler);
+      }
+    }
     getRegistry().dropHandlersForViewWithTag(viewTag);
   }
 

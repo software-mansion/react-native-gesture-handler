@@ -31,8 +31,12 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
     mHandlers.clear();
   }
 
+  public ArrayList<GestureHandler> getHandlersForViewWithTag(int viewTag) {
+    return mHandlers.get(viewTag);
+  }
+
   @Override
   public ArrayList<GestureHandler> getHandlersForView(View view) {
-    return mHandlers.get(view.getId());
+    return getHandlersForViewWithTag(view.getId());
   }
 }
