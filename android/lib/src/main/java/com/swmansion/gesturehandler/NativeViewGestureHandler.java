@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHandler> {
 
   private boolean mShouldActivateOnStart;
+  private boolean mDisallowInterruption;
 
   public NativeViewGestureHandler() {
     setShouldCancelWhenOutside(true);
@@ -16,6 +17,24 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
   public NativeViewGestureHandler setShouldActivateOnStart(boolean shouldActivateOnStart) {
     mShouldActivateOnStart = shouldActivateOnStart;
     return this;
+  }
+
+  /**
+   * Set this to {@code true} when wrapping native components that are supposed to be an exclusive
+   * target for a touch stream. Like for example switch or slider component which when activated
+   * aren't supposed to be cancelled by scrollview or other container that may also handle touches.
+   */
+  public NativeViewGestureHandler setDisallowInterruption(boolean disallowInterruption) {
+    mDisallowInterruption = disallowInterruption;
+    return this;
+  }
+
+  @Override
+  public boolean shouldRequireToWaitForFailure(GestureHandler handler) {
+    if (mDisallowInterruption) {
+      return handler != this;
+    }
+    return super.shouldRequireToWaitForFailure(handler);
   }
 
   @Override

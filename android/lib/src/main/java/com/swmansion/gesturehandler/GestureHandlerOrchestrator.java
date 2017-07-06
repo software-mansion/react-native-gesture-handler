@@ -76,7 +76,7 @@ public class GestureHandlerOrchestrator {
     for (int i = 0; i < mGestureHandlersCount; i++) {
       GestureHandler otherHandler = mGestureHandlers[i];
       if (!isFinished(otherHandler.getState())
-              && handler.shouldWaitForHandlerFailure(otherHandler)) {
+              && shouldHandlerWaitForOther(handler, otherHandler)) {
         return true;
       }
     }
@@ -99,7 +99,7 @@ public class GestureHandlerOrchestrator {
       // if there were handlers awaiting completion of this handler, we can trigger active state
       for (int i = 0; i < mAwaitingHandlersCount; i++) {
         GestureHandler otherHandler = mAwaitingHandlers[i];
-        if (otherHandler.shouldWaitForHandlerFailure(handler)) {
+        if (shouldHandlerWaitForOther(handler, otherHandler)) {
           tryActivate(otherHandler);
         }
       }
@@ -360,6 +360,11 @@ public class GestureHandlerOrchestrator {
               && localY < child.getHeight();
     }
     return isWithinBounds;
+  }
+
+  private static boolean shouldHandlerWaitForOther(GestureHandler handler, GestureHandler other) {
+    return handler != other && (handler.shouldWaitForHandlerFailure(other)
+            || other.shouldRequireToWaitForFailure(handler));
   }
 
   private static boolean canRunSimultaneously(GestureHandler a, GestureHandler b) {

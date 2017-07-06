@@ -10,6 +10,7 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.swmansion.gesturehandler.BaseGestureHandlerInteractionController;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerInteractionController;
 import com.swmansion.gesturehandler.GestureHandlerRegistryImpl;
@@ -59,9 +60,14 @@ public class MainActivity extends AppCompatActivity {
     registry.registerHandlerForView(scrollView, new NativeViewGestureHandler());
     registry.registerHandlerForView(button, new NativeViewGestureHandler());
     registry.registerHandlerForView(seekBar, new NativeViewGestureHandler())
+            .setDisallowInterruption(true)
             .setShouldActivateOnStart(true)
             .setShouldCancelWhenOutside(false);
-    registry.registerHandlerForView(switchView, new NativeViewGestureHandler()).setHitSlop(20);
+    registry.registerHandlerForView(switchView, new NativeViewGestureHandler())
+            .setShouldActivateOnStart(true)
+            .setDisallowInterruption(true)
+            .setShouldCancelWhenOutside(false)
+            .setHitSlop(20);
 
     registry.registerHandlerForView(block, new LongPressGestureHandler())
             .setOnTouchEventListener(new OnTouchEventListener<LongPressGestureHandler>() {
@@ -108,12 +114,7 @@ public class MainActivity extends AppCompatActivity {
             });
 
     GestureHandlerInteractionController pinchAndRotateInteractionController =
-            new GestureHandlerInteractionController() {
-      @Override
-      public boolean shouldWaitForHandlerFailure(GestureHandler handler) {
-        return false;
-      }
-
+            new BaseGestureHandlerInteractionController() {
       @Override
       public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
         // Allow pinch and rotate handlers registered for largeBlock to run simultaneously
@@ -141,8 +142,6 @@ public class MainActivity extends AppCompatActivity {
                 }
               }
             });
-
-
 
     registry.registerHandlerForView(largeBlock, new PinchGestureHandler())
             .setOnTouchEventListener(new OnTouchEventListener<PinchGestureHandler>() {

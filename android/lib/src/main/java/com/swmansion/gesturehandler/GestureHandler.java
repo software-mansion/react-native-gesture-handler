@@ -132,6 +132,13 @@ public class GestureHandler<T extends GestureHandler> {
     return mState;
   }
 
+  public boolean shouldRequireToWaitForFailure(GestureHandler handler) {
+    if (handler != this && mInteractionController != null) {
+      return mInteractionController.shouldRequireHandlerToWaitForFailure(handler);
+    }
+    return false;
+  }
+
   public boolean shouldWaitForHandlerFailure(GestureHandler handler) {
     if (handler != this && mInteractionController != null) {
       return mInteractionController.shouldWaitForHandlerFailure(handler);
@@ -140,6 +147,9 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
+    if (handler == this) {
+      return true;
+    }
     if (mInteractionController != null) {
       return mInteractionController.shouldRecognizeSimultaneously(handler);
     }
