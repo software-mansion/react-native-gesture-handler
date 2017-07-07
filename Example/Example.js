@@ -217,7 +217,7 @@ class PinchableBox extends React.Component {
   }
   render() {
     return (
-      <Animated.View style={styles.pinchableBoxContainer}>
+      <Animated.View style={styles.pinchableBoxContainer} collapsable={false}>
         <PanGestureHandler
           id="image_tilt"
           onGestureEvent={this._onTiltGestureEvent}
@@ -339,10 +339,11 @@ const styles = StyleSheet.create({
     height: 56,
   },
   pinchableBoxContainer: {
-    width: 200,
-    height: 200,
+    width: 250,
+    height: 250,
     overflow: 'hidden',
     alignSelf: 'center',
+    backgroundColor: 'black',
   },
   pinchableImage: {
     flex: 1,
