@@ -42,7 +42,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_HIT_SLOP_VERTICAL = "vertical";
   private static final String KEY_HIT_SLOP_HORIZONTAL = "horizontal";
   private static final String KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart";
-  private static final String KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION = "shouldActivateOnStart";
+  private static final String KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION = "disallowInterruption";
   private static final String KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps";
   private static final String KEY_TAP_MAX_DURATION_MS = "maxDurationMs";
   private static final String KEY_TAP_MAX_DELAY_MS = "maxDelayMs";
@@ -383,6 +383,10 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   private void onTouchEvent(GestureHandler handler, MotionEvent motionEvent) {
+    if (handler.getTag() < 0) {
+      // root containers use negative tags, we don't need to dispatch events for them to the JS
+      return;
+    }
     if (handler.getState() == GestureHandler.STATE_ACTIVE) {
       HandlerFactory handlerFactory = findFactoryForHandler(handler);
       EventDispatcher eventDispatcher = getReactApplicationContext()
@@ -394,12 +398,17 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   private void onStateChange(GestureHandler handler, int newState, int oldState) {
+    if (handler.getTag() < 0) {
+      // root containers use negative tags, we don't need to dispatch events for them to the JS
+      return;
+    }
     HandlerFactory handlerFactory = findFactoryForHandler(handler);
     EventDispatcher eventDispatcher = getReactApplicationContext()
             .getNativeModule(UIManagerModule.class)
             .getEventDispatcher();
     RNGestureHandlerStateChangeEvent event = RNGestureHandlerStateChangeEvent.obtain(
             handler,
+            newState,
             oldState,
             handlerFactory);
     eventDispatcher.dispatchEvent(event);

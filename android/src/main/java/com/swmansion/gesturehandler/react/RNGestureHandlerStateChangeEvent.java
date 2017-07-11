@@ -21,13 +21,14 @@ public class RNGestureHandlerStateChangeEvent extends Event<RNGestureHandlerStat
 
   public static RNGestureHandlerStateChangeEvent obtain(
           GestureHandler handler,
+          int newState,
           int oldState,
           @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
     RNGestureHandlerStateChangeEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new RNGestureHandlerStateChangeEvent();
     }
-    event.init(handler, oldState, dataExtractor);
+    event.init(handler, newState, oldState, dataExtractor);
     return event;
   }
 
@@ -38,6 +39,7 @@ public class RNGestureHandlerStateChangeEvent extends Event<RNGestureHandlerStat
 
   private void init(
           GestureHandler handler,
+          int newState,
           int oldState,
           @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
     super.init(handler.getView().getId());
@@ -46,7 +48,7 @@ public class RNGestureHandlerStateChangeEvent extends Event<RNGestureHandlerStat
       dataExtractor.extractEventData(handler, mExtraData);
     }
     mExtraData.putInt("handlerTag", handler.getTag());
-    mExtraData.putInt("state", handler.getState());
+    mExtraData.putInt("state", newState);
     mExtraData.putInt("oldState", oldState);
   }
 

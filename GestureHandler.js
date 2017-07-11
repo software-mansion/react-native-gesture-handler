@@ -8,6 +8,7 @@ import {
   TextInput,
   ToolbarAndroid,
   ViewPagerAndroid,
+  DrawerLayoutAndroid,
   WebView,
 } from 'react-native';
 
@@ -58,10 +59,13 @@ function canUseNativeParam(param) {
 }
 
 function transformIntoHandlerTags(handlerIDs) {
+  if (!Array.isArray(handlerIDs)) {
+    handlerIDs = [ handlerIDs ];
+  }
   // converts handler string IDs into their numeric tags
   return handlerIDs
     .map(handlerID => handlerIDToTag[handlerID] || -1)
-    .filter(handlerTag => handlerTag > 0)
+    .filter(handlerTag => handlerTag > 0);
 }
 
 function filterConfig(component, defaults = {}) {
@@ -249,9 +253,12 @@ const WrappedSwitch = createNativeWrapper(Switch, {
   disallowInterruption: true,
 });
 const WrappedTextInput = createNativeWrapper(TextInput);
+const WrappedWebView = createNativeWrapper(WebView);
+
 const WrappedToolbarAndroid = createNativeWrapper(ToolbarAndroid);
 const WrappedViewPagerAndroid = createNativeWrapper(ViewPagerAndroid);
-const WrappedWebView = createNativeWrapper(WebView);
+const WrappedDrawerLayoutAndroid = createNativeWrapper(DrawerLayoutAndroid);
+WrappedDrawerLayoutAndroid.positions = DrawerLayoutAndroid.positions;
 
 State.print = (state) => {
   const keys = Object.keys(State);
@@ -269,6 +276,7 @@ export {
   WrappedTextInput as TextInput,
   WrappedToolbarAndroid as ToolbarAndroid,
   WrappedViewPagerAndroid as ViewPagerAndroid,
+  WrappedDrawerLayoutAndroid as DrawerLayoutAndroid,
   WrappedWebView as WebView,
   NativeViewGestureHandler,
   TapGestureHandler,

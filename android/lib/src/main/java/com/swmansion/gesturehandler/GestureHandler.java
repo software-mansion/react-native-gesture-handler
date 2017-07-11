@@ -29,6 +29,7 @@ public class GestureHandler<T extends GestureHandler> {
   private OnTouchEventListener<T> mListener;
   private GestureHandlerInteractionController mInteractionController;
   /*package*/ boolean mIsActive; // set and accessed only by the orchestrator
+  /*package*/ boolean mIsAwaiting; // set and accessed only by the orchestrator
 
   /*package*/ void dispatchStateChange(int newState, int prevState) {
     if (mListener != null) {
@@ -239,6 +240,6 @@ public class GestureHandler<T extends GestureHandler> {
 
   @Override
   public String toString() {
-    return this.getClass().getSimpleName() + "@" + mView;
+    return this.getClass().getSimpleName() + "@[" + mTag + "]:"  + mView;
   }
 }

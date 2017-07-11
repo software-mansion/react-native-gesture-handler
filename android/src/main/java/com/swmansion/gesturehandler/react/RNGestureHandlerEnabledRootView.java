@@ -29,15 +29,6 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
           new GestureHandlerOrchestrator(this, mRegistry);
 
   private @Nullable GestureHandler mJSGestureHandler;
-  private GestureHandlerInteractionController mRootInteractionController =
-          new BaseGestureHandlerInteractionController() {
-    @Override
-    public boolean shouldRequireHandlerToWaitForFailure(
-            GestureHandler handler,
-            GestureHandler otherHandler) {
-      return handler.getState() == GestureHandler.STATE_ACTIVE;
-    }
-  };
 
   public RNGestureHandlerEnabledRootView(Context context) {
     super(context);
@@ -64,6 +55,12 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     super.setRootViewTag(rootViewTag);
     if (mJSGestureHandler == null) {
       mJSGestureHandler = new GestureHandler() {
+
+//        @Override
+//        public boolean shouldRequireToWaitForFailure(GestureHandler handler) {
+//          return handler.getState() == GestureHandler.STATE_ACTIVE;
+//        }
+
         @Override
         protected void onHandle(MotionEvent event) {
           int currentState = getState();
@@ -85,7 +82,7 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
           super.onReset();
         }
       };
-      mJSGestureHandler.setTag(rootViewTag);
+      mJSGestureHandler.setTag(-getRootViewTag());
       getRegistry().registerHandlerForViewWithTag(rootViewTag, mJSGestureHandler);
       // TODO: figure out where to drop root view handlers
     }

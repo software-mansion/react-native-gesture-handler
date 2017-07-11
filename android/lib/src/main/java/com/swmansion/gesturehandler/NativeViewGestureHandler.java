@@ -64,7 +64,7 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
   private void onHandleForViewGroup(ViewGroup view, MotionEvent event) {
     int state = getState();
     if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
-      if (view.onInterceptTouchEvent(event)) {
+      if (view.onInterceptTouchEvent(event) || mShouldActivateOnStart) {
         activate();
       } else if (state != STATE_BEGAN) {
         begin();

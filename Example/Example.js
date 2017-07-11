@@ -24,6 +24,7 @@ import {
   TextInput,
   ToolbarAndroid,
   ViewPagerAndroid,
+  DrawerLayoutAndroid,
   WebView,
 } from 'react-native-gesture-handler';
 
@@ -130,8 +131,9 @@ class PressBox extends Component {
   render() {
     return (
       <LongPressGestureHandler onHandlerStateChange={this._onHandlerStateChange} minDurationMs={1500}>
-        <TapGestureHandler onHandlerStateChange={this._onSingleTap}>
+        <TapGestureHandler onHandlerStateChange={this._onSingleTap} waitFor="double_tap">
           <TapGestureHandler
+            id="double_tap"
             onHandlerStateChange={this._onDoubleTap}
             numberOfTaps={2}
             shouldBeRequiredByOthersToFail={true}>
@@ -227,13 +229,13 @@ class PinchableBox extends React.Component {
           maxPointers={2}>
           <RotationGestureHandler
             id="image_rotation"
-            simultaneousHandlers={["image_pinch"]}
+            simultaneousHandlers="image_pinch"
             shouldCancelOthersWhenActivated={false}
             onGestureEvent={this._onRotateGestureEvent}
             onHandlerStateChange={this._onRotateHandlerStateChange}>
             <PinchGestureHandler
               id="image_pinch"
-              simultaneousHandlers={["image_rotation"]}
+              simultaneousHandlers="image_rotation"
               shouldCancelOthersWhenActivated={false}
               onGestureEvent={this._onPinchGestureEvent}
               onHandlerStateChange={this._onPinchHandlerStateChange}>
@@ -258,10 +260,39 @@ export default class Example extends Component {
     Alert.alert("I'm so touched");
   }
   render2() {
+    const navigationView = (
+      <View style={{flex: 1, backgroundColor: '#fff'}}>
+        <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>I'm in the Drawer!</Text>
+      </View>
+    );
     return (
-      <ViewPagerAndroid style={styles.container}>
-        <View style={{backgroundColor: 'red'}}/>
+      <ViewPagerAndroid style={styles.container} waitFor={["drawer_blocker", "drawer2_blocker"]}>
+        <View>
+          <DrawerLayoutAndroid
+            simultaneousHandlers="drawer_blocker"
+            drawerWidth={200}
+            drawerPosition={DrawerLayoutAndroid.positions.Left}
+            renderNavigationView={() => navigationView}>
+            <View style={{flex: 1, backgroundColor: 'gray'}}/>
+          </DrawerLayoutAndroid>
+          <PanGestureHandler id="drawer_blocker" hitSlop={{right: 100}}>
+            <View style={{position: 'absolute', width: 0, top: 0, bottom: 0}} />
+          </PanGestureHandler>
+        </View>
+        <View style={{backgroundColor: 'yellow'}}/>
         <View style={{backgroundColor: 'blue'}}/>
+        <View>
+          <DrawerLayoutAndroid
+            simultaneousHandlers="drawer2_blocker"
+            drawerWidth={200}
+            drawerPosition={DrawerLayoutAndroid.positions.Right}
+            renderNavigationView={() => navigationView}>
+            <View style={{flex: 1, backgroundColor: 'plum'}}/>
+          </DrawerLayoutAndroid>
+          <PanGestureHandler id="drawer2_blocker" hitSlop={{left: 100}}>
+            <View style={{position: 'absolute', width: 0, top: 0, bottom: 0, right: 0}} />
+          </PanGestureHandler>
+        </View>
       </ViewPagerAndroid>
     );
   }
