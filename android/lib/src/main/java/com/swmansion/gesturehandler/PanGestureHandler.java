@@ -22,6 +22,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mStartX, mStartY;
   private float mOffsetX, mOffsetY;
   private float mLastX, mLastY;
+  private float mLastVelocityX, mLastVelocityY;
   private VelocityTracker mVelocityTracker;
 
   /**
@@ -102,7 +103,14 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mVelocityTracker = VelocityTracker.obtain();
       mVelocityTracker.addMovement(event);
       begin();
-    } else if (action == MotionEvent.ACTION_UP) {
+    } else if (mVelocityTracker != null) {
+      mVelocityTracker.addMovement(event);
+      mVelocityTracker.computeCurrentVelocity(1);
+      mLastVelocityX = mVelocityTracker.getXVelocity();
+      mLastVelocityY = mVelocityTracker.getYVelocity();
+    }
+
+    if (action == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
         end();
       } else {
@@ -119,11 +127,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       float dx = Math.abs(mStartX - mLastX + mOffsetX);
       float dy = Math.abs(mStartY - mLastY + mOffsetY);
       float distSq = dx * dx + dy * dy;
-      mVelocityTracker.addMovement(event);
-      mVelocityTracker.computeCurrentVelocity(1);
-      float velocityX = mVelocityTracker.getXVelocity();
-      float velocityY = mVelocityTracker.getYVelocity();
-      float velocitySq = velocityX * velocityX + velocityY * velocityY;
+      float velocitySq = mLastVelocityX * mLastVelocityX + mLastVelocityY * mLastVelocityY;
       if (velocitySq < mMaxVelocitySq &&
               (distSq > mMinDistSq || dx > mMinDeltaX || dy > mMinDeltaY)) {
         activate();
@@ -145,5 +149,13 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   public float getTranslationY() {
     return mLastY - mStartY + mOffsetY;
+  }
+
+  public float getVelocityX() {
+    return mLastVelocityX;
+  }
+
+  public float getVelocityY() {
+    return mLastVelocityY;
   }
 }

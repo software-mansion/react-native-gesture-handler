@@ -210,6 +210,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     public void extractEventData(PanGestureHandler handler, WritableMap eventData) {
       eventData.putDouble("translationX", PixelUtil.toDIPFromPixel(handler.getTranslationX()));
       eventData.putDouble("translationY", PixelUtil.toDIPFromPixel(handler.getTranslationY()));
+      eventData.putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.getVelocityX()));
+      eventData.putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.getVelocityY()));
     }
   }
 

@@ -16,14 +16,16 @@
             initWithData:@{ @"x": @(position.x), @"y": @(position.y) }];
 }
 
-+ (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position withTranslation:(CGPoint)translation
++ (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position withTranslation:(CGPoint)translation withVelocity:(CGPoint)velocity
 {
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{
                            @"x": @(position.x),
                            @"y": @(position.y),
                            @"translationX": @(translation.x),
-                           @"translationY": @(translation.y)}];
+                           @"translationY": @(translation.y),
+                           @"velocityX": @(velocity.x),
+                           @"velocityY": @(velocity.y)}];
 }
 
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale withVelocity:(CGFloat)velocity

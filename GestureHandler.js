@@ -28,8 +28,6 @@ UIManager.clearJSResponder = () => {
 
 const State = RNGestureHandlerModule.State;
 
-const CHILD_REF = 'CHILD_REF';
-
 let handlerTag = 1;
 const handlerIDToTag = {};
 
@@ -119,8 +117,18 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       }
     }
 
+    _refHandler = (node) => {
+      this._viewNode = node;
+
+      const child = React.Children.only(this.props.children);
+      const { ref } = child;
+      if (typeof ref === 'function') {
+        ref(node);
+      }
+    }
+
     componentWillUnmount() {
-      const viewTag = findNodeHandle(this.refs[CHILD_REF]);
+      const viewTag = findNodeHandle(this._viewNode);
       RNGestureHandlerModule.dropGestureHandlersForView(viewTag);
       if (this.props.id) {
         delete handlerIDToTag[this.props.id];
@@ -128,7 +136,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     componentDidMount() {
-      const viewTag = findNodeHandle(this.refs[CHILD_REF]);
+      const viewTag = findNodeHandle(this._viewNode);
       RNGestureHandlerModule.createGestureHandler(
         viewTag,
         handlerName,
@@ -159,7 +167,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       }
       const child = React.Children.only(this.props.children);
       return React.cloneElement(child, {
-        ref: CHILD_REF,
+        ref: this._refHandler,
         collapsable: false,
         onGestureHandlerEvent: gestureEventHandler,
         onGestureHandlerStateChange: this._onGestureHandlerStateChange,

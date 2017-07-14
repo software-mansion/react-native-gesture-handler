@@ -124,10 +124,7 @@
                                                         handlerTag:_tag
                                                              state:state
                                                          extraData:eventData];
-    if (state == RNGestureHandlerStateActive) {
-        [self.emitter sendTouchEvent:touchEvent];
-    }
-
+    
     if (state != _lastState) {
         if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
             [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithRactTag:recognizer.view.reactTag
@@ -144,6 +141,10 @@
                                                                    extraData:eventData];
         [self.emitter sendStateChangeEvent:stateEvent];
         _lastState = state;
+    }
+    
+    if (state == RNGestureHandlerStateActive) {
+        [self.emitter sendTouchEvent:touchEvent];
     }
 }
 
@@ -392,7 +393,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     return [RNGestureHandlerEventExtraData
             forPan:[recognizer locationInView:[recognizer view]]
-            withTranslation:[recognizer translationInView:[recognizer view]]];
+            withTranslation:[recognizer translationInView:[recognizer view]]
+            withVelocity:[recognizer velocityInView:[recognizer view]]];
 }
 
 @end
