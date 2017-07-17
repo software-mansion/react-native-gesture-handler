@@ -135,8 +135,7 @@ class PressBox extends Component {
           <TapGestureHandler
             id="double_tap"
             onHandlerStateChange={this._onDoubleTap}
-            numberOfTaps={2}
-            shouldBeRequiredByOthersToFail={true}>
+            numberOfTaps={2}>
             <View style={styles.box}/>
           </TapGestureHandler>
         </TapGestureHandler>
@@ -230,13 +229,11 @@ class PinchableBox extends React.Component {
           <RotationGestureHandler
             id="image_rotation"
             simultaneousHandlers="image_pinch"
-            shouldCancelOthersWhenActivated={false}
             onGestureEvent={this._onRotateGestureEvent}
             onHandlerStateChange={this._onRotateHandlerStateChange}>
             <PinchGestureHandler
               id="image_pinch"
               simultaneousHandlers="image_rotation"
-              shouldCancelOthersWhenActivated={false}
               onGestureEvent={this._onPinchGestureEvent}
               onHandlerStateChange={this._onPinchHandlerStateChange}>
               <Animated.Image
