@@ -14,6 +14,8 @@
 		446E7FEE1ED6E198009282E7 /* RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 446E7FEA1ED6E198009282E7 /* RNGestureHandler.m */; };
 		446E7FF61ED89A31009282E7 /* RNGestureHandlerEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 446E7FF51ED89A31009282E7 /* RNGestureHandlerEvents.h */; };
 		446E7FF81ED89A4B009282E7 /* RNGestureHandlerEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 446E7FF71ED89A4B009282E7 /* RNGestureHandlerEvents.m */; };
+		44BE34481F1E1AAA008679D1 /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */; };
+		44BE344A1F1E1ABA008679D1 /* RNgestureHandlerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 44BE34491F1E1ABA008679D1 /* RNgestureHandlerManager.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +39,8 @@
 		446E7FEA1ED6E198009282E7 /* RNGestureHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandler.m; sourceTree = "<group>"; };
 		446E7FF51ED89A31009282E7 /* RNGestureHandlerEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerEvents.h; sourceTree = "<group>"; };
 		446E7FF71ED89A4B009282E7 /* RNGestureHandlerEvents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerEvents.m; sourceTree = "<group>"; };
+		44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerManager.m; sourceTree = "<group>"; };
+		44BE34491F1E1ABA008679D1 /* RNgestureHandlerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNgestureHandlerManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +74,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				44BE34491F1E1ABA008679D1 /* RNgestureHandlerManager.h */,
+				44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */,
 				446E7FF71ED89A4B009282E7 /* RNGestureHandlerEvents.m */,
 				446E7FF51ED89A31009282E7 /* RNGestureHandlerEvents.h */,
 				446E7FE81ED6E198009282E7 /* Handlers */,
@@ -88,6 +94,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				446E7FE61ED6E177009282E7 /* RNGestureHandlerModule.h in Headers */,
+				44BE344A1F1E1ABA008679D1 /* RNgestureHandlerManager.h in Headers */,
 				446E7FF61ED89A31009282E7 /* RNGestureHandlerEvents.h in Headers */,
 				446E7FE71ED6E177009282E7 /* RNGestureHandlerState.h in Headers */,
 				446E7FED1ED6E198009282E7 /* RNGestureHandler.h in Headers */,
@@ -151,6 +158,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44BE34481F1E1AAA008679D1 /* RNGestureHandlerManager.m in Sources */,
 				446E7FEE1ED6E198009282E7 /* RNGestureHandler.m in Sources */,
 				446E7FF81ED89A4B009282E7 /* RNGestureHandlerEvents.m in Sources */,
 				446E7FDE1ED57CA6009282E7 /* RNGestureHandlerModule.m in Sources */,

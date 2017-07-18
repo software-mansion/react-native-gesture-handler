@@ -185,14 +185,10 @@ const TapGestureHandler = createHandler('TapGestureHandler', {
   maxDurationMs: PropTypes.number,
   maxDelayMs: PropTypes.number,
   numberOfTaps: PropTypes.number,
-}, {
-  shouldCancelOthersWhenActivated: true,
-});
+}, {});
 const LongPressGestureHandler = createHandler('LongPressGestureHandler', {
   minDurationMs: PropTypes.number,
-}, {
-  shouldCancelOthersWhenActivated: true,
-});
+}, {});
 const PanGestureHandler = createHandler('PanGestureHandler', {
   minDeltaX: PropTypes.number,
   minDeltaY: PropTypes.number,
@@ -200,9 +196,7 @@ const PanGestureHandler = createHandler('PanGestureHandler', {
   maxVelocity: PropTypes.number,
   minPointers: PropTypes.number,
   maxPointers: PropTypes.number,
-}, {
-  shouldCancelOthersWhenActivated: true,
-});
+}, {});
 const PinchGestureHandler = createHandler('PinchGestureHandler', {}, {});
 const RotationGestureHandler = createHandler('RotationGestureHandler', {}, {});
 
