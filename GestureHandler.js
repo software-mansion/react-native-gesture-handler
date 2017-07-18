@@ -224,8 +224,12 @@ function createNativeWrapper(Component, config = {}) {
       }
     }
 
+    _refHandler = (node) => {
+      this._viewNode = node;
+    }
+
     componentWillUnmount() {
-      const viewTag = findNodeHandle(this.refs[CHILD_REF]);
+      const viewTag = findNodeHandle(this._viewNode);
       RNGestureHandlerModule.dropGestureHandlersForView(viewTag);
       if (this.props.id) {
         delete handlerIDToTag[this.props.id];
@@ -233,7 +237,7 @@ function createNativeWrapper(Component, config = {}) {
     }
 
     componentDidMount() {
-      const viewTag = findNodeHandle(this.refs[CHILD_REF]);
+      const viewTag = findNodeHandle(this._viewNode);
       RNGestureHandlerModule.createGestureHandler(
         viewTag,
         'NativeViewGestureHandler',
@@ -243,7 +247,7 @@ function createNativeWrapper(Component, config = {}) {
     }
 
     render() {
-      return <Component {...this.props} ref={CHILD_REF} />;
+      return <Component {...this.props} ref={this._refHandler} />;
     }
   }
   return ComponentWrapper;
