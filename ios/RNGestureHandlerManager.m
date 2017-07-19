@@ -3,6 +3,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTViewManager.h>
 #import <React/RCTComponent.h>
+#import <React/RCTRootView.h>
 
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandler.h"
@@ -15,6 +16,7 @@
 {
     RNGestureHandlerRegistry *_registry;
     RCTUIManager *_uiManager;
+    NSMutableSet<RCTRootView*> *_rootViews;
     RCTEventDispatcher *_eventDispatcher;
 }
 
@@ -25,6 +27,7 @@
         _uiManager = uiManager;
         _eventDispatcher = eventDispatcher;
         _registry = [RNGestureHandlerRegistry new];
+        _rootViews = [NSMutableSet new];
     }
     return self;
 }
@@ -61,6 +64,9 @@
         
     UIView *view = [_uiManager viewForReactTag:viewTag];
     [gestureHandler bindToView:view];
+    
+    // register root view if not already there
+    [self registerRootViewIfNeeded:view];
 }
 
 - (void)dropGestureHandlersForView:(NSNumber *)viewTag
@@ -70,12 +76,34 @@
 
 - (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder
 {
-    // TODO: js responder support
+    for (RCTRootView *rootView in _rootViews) {
+        for (UIGestureRecognizer *recognizer in rootView.gestureRecognizers) {
+            if ([recognizer isKindOfClass:[RNRootViewGestureRecognizer class]]) {
+                [(RNRootViewGestureRecognizer *)recognizer blockOtherRecognizers];
+            }
+        }
+    }
 }
 
 - (void)handleClearJSResponder
 {
-    // TODO: js responder support
+    // ignore...
+}
+
+#pragma mark Root Views Management
+
+- (void)registerRootViewIfNeeded:(UIView*)childView
+{
+    UIView *parent = childView;
+    while (parent != nil && ![parent isKindOfClass:[RCTRootView class]]) parent = parent.superview;
+    
+    RCTRootView *rootView = (RCTRootView *)parent;
+    if (rootView != nil && ![_rootViews containsObject:rootView]) {
+        [_rootViews addObject:rootView];
+        RNRootViewGestureRecognizer *recognizer = [RNRootViewGestureRecognizer new];
+        rootView.userInteractionEnabled = YES;
+        [rootView addGestureRecognizer:recognizer];
+    }
 }
 
 #pragma mark Events

@@ -62,3 +62,9 @@
 
 @interface RNRotationGestureHandler : RNGestureHandler
 @end
+
+@interface RNRootViewGestureRecognizer : UIGestureRecognizer
+
+- (void)blockOtherRecognizers;
+
+@end

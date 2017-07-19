@@ -4,6 +4,8 @@
 
 #import <React/UIView+React.h>
 #import <React/RCTConvert.h>
+#import <React/RCTScrollView.h>
+#import <React/RCTTouchHandler.h>
 
 #define VEC_LEN_SQ(pt) (pt.x * pt.x + pt.y * pt.y)
 
@@ -124,7 +126,7 @@
                                                         handlerTag:_tag
                                                              state:state
                                                          extraData:eventData];
-    
+
     if (state != _lastState) {
         if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
             [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithRactTag:recognizer.view.reactTag
@@ -142,7 +144,7 @@
         [self.emitter sendStateChangeEvent:stateEvent];
         _lastState = state;
     }
-    
+
     if (state == RNGestureHandlerStateActive) {
         [self.emitter sendTouchEvent:touchEvent];
     }
@@ -577,6 +579,21 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return self;
 }
 
+- (void)bindToView:(UIView *)view
+{
+    [super bindToView:view];
+    // We can restore default scrollview behaviour to delay touches to scrollview's children
+    // because gesture handler system can handle cancellation of scroll recognizer when JS responder
+    // is set
+    if ([view isKindOfClass:[RCTScrollView class]]) {
+        // This part of the code is coupled with RN implementation of ScrollView native wrapper and
+        // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
+        // subview
+        UIScrollView *scrollView = [view.subviews objectAtIndex:0];
+        scrollView.delaysContentTouches = YES;
+    }
+}
+
 @end
 
 #pragma mark PinchGestureHandler
@@ -622,3 +639,29 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 
 @end
+
+#pragma mark Root View Helpers
+
+@implementation RNRootViewGestureRecognizer
+
+- (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
+{
+    return ![preventedGestureRecognizer isKindOfClass:[RCTTouchHandler class]];
+}
+
+- (void)blockOtherRecognizers
+{
+    self.state = UIGestureRecognizerStateBegan;
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
+        self.state = UIGestureRecognizerStateEnded;
+    }
+    [self reset];
+    [super touchesEnded:touches withEvent:event];
+}
+
+@end
+
