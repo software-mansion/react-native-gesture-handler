@@ -643,15 +643,24 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 #pragma mark Root View Helpers
 
 @implementation RNRootViewGestureRecognizer
+{
+    BOOL _active;
+}
 
 - (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
 {
     return ![preventedGestureRecognizer isKindOfClass:[RCTTouchHandler class]];
 }
 
-- (void)blockOtherRecognizers
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    self.state = UIGestureRecognizerStateBegan;
+    _active = YES;
+    self.state = UIGestureRecognizerStatePossible;
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    self.state = UIGestureRecognizerStatePossible;
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -660,7 +669,23 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         self.state = UIGestureRecognizerStateEnded;
     }
     [self reset];
-    [super touchesEnded:touches withEvent:event];
+    _active = NO;
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
+        self.state = UIGestureRecognizerStateCancelled;
+    }
+    [self reset];
+    _active = NO;
+}
+
+- (void)blockOtherRecognizers
+{
+    if (_active) {
+        self.state = UIGestureRecognizerStateBegan;
+    }
 }
 
 @end
