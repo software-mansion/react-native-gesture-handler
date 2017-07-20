@@ -667,6 +667,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
         self.state = UIGestureRecognizerStateEnded;
+    } else {
+        self.state = UIGestureRecognizerStateFailed;
     }
     [self reset];
     _active = NO;
@@ -674,9 +676,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
-        self.state = UIGestureRecognizerStateCancelled;
-    }
+    self.state = UIGestureRecognizerStateCancelled;
     [self reset];
     _active = NO;
 }
