@@ -118,29 +118,33 @@
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
-    RNGestureHandlerState state = self.state;
-
     RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
+    [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
+}
 
-    id touchEvent = [[RNGestureHandlerEvent alloc] initWithRactTag:recognizer.view.reactTag
+- (void)sendEventsInState:(RNGestureHandlerState)state
+           forViewWithTag:(nonnull NSNumber *)reactTag
+            withExtraData:(RNGestureHandlerEventExtraData *)extraData
+{
+    id touchEvent = [[RNGestureHandlerEvent alloc] initWithRactTag:reactTag
                                                         handlerTag:_tag
                                                              state:state
-                                                         extraData:eventData];
+                                                         extraData:extraData];
 
     if (state != _lastState) {
         if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
-            [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithRactTag:recognizer.view.reactTag
+            [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
                                                                                          handlerTag:_tag
                                                                                               state:RNGestureHandlerStateActive
                                                                                           prevState:_lastState
-                                                                                          extraData:eventData]];
+                                                                                          extraData:extraData]];
             _lastState = RNGestureHandlerStateActive;
         }
-        id stateEvent = [[RNGestureHandlerStateChange alloc] initWithRactTag:recognizer.view.reactTag
+        id stateEvent = [[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
                                                                   handlerTag:_tag
                                                                        state:state
                                                                    prevState:_lastState
-                                                                   extraData:eventData];
+                                                                   extraData:extraData];
         [self.emitter sendStateChangeEvent:stateEvent];
         _lastState = state;
     }
@@ -243,9 +247,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return NO;
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+- (void)reset
 {
     _lastState = RNGestureHandlerStateUndetermined;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    [self reset];
     return YES;
 }
 
@@ -567,6 +576,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 @implementation RNNativeViewGestureHandler {
     BOOL _shouldActivateOnStart;
+    BOOL _disallowInterruption;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -575,13 +585,27 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if ((self = [super initWithTag:tag config:config])) {
         _recognizer = [[RNDummyGestureRecognizer alloc] init];
         _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
+        _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
     }
     return self;
 }
 
 - (void)bindToView:(UIView *)view
 {
-    [super bindToView:view];
+    // For UIControl based views (UIButton, UISwitch) we provide special handling that would allow
+    // for properties like `disallowInterruption` to work.
+    if ([view isKindOfClass:[UIControl class]]) {
+        UIControl *control = (UIControl *)view;
+        [control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
+        [control addTarget:self action:@selector(handleTouchUpOutside:forEvent:) forControlEvents:UIControlEventTouchUpOutside];
+        [control addTarget:self action:@selector(handleTouchUpInside:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+        [control addTarget:self action:@selector(handleDragExit:forEvent:) forControlEvents:UIControlEventTouchDragExit];
+        [control addTarget:self action:@selector(handleDragEnter:forEvent:) forControlEvents:UIControlEventTouchDragEnter];
+        [control addTarget:self action:@selector(handleTouchCancel:forEvent:) forControlEvents:UIControlEventTouchCancel];
+    } else {
+        [super bindToView:view];
+    }
+    
     // We can restore default scrollview behaviour to delay touches to scrollview's children
     // because gesture handler system can handle cancellation of scroll recognizer when JS responder
     // is set
@@ -592,6 +616,70 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         UIScrollView *scrollView = [view.subviews objectAtIndex:0];
         scrollView.delaysContentTouches = YES;
     }
+}
+
+- (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
+{
+    [self reset];
+    
+    if (_disallowInterruption) {
+        // When `disallowInterruption` is set we cancel all gesture handlers when this UIControl
+        // gets DOWN event
+        for (UITouch *touch in [event allTouches]) {
+            for (UIGestureRecognizer *recogn in [touch gestureRecognizers]) {
+                recogn.enabled = NO;
+                recogn.enabled = YES;
+            }
+        }
+    }
+    
+    [self sendEventsInState:RNGestureHandlerStateActive
+             forViewWithTag:sender.reactTag
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
+}
+
+- (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event
+{
+    [self sendEventsInState:RNGestureHandlerStateEnd
+             forViewWithTag:sender.reactTag
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+}
+
+- (void)handleTouchUpInside:(UIView *)sender forEvent:(UIEvent *)event
+{
+    [self sendEventsInState:RNGestureHandlerStateEnd
+             forViewWithTag:sender.reactTag
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
+}
+
+- (void)handleDragExit:(UIView *)sender forEvent:(UIEvent *)event
+{
+    // Pointer is moved outside of the view bounds, we cancel button when `shouldCancelWhenOutside` is set
+    if (self.shouldCancelWhenOutside) {
+        UIControl *control = (UIControl *)sender;
+        [control cancelTrackingWithEvent:event];
+        [self sendEventsInState:RNGestureHandlerStateEnd
+                 forViewWithTag:sender.reactTag
+                  withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+    } else {
+        [self sendEventsInState:RNGestureHandlerStateActive
+                 forViewWithTag:sender.reactTag
+                  withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+    }
+}
+
+- (void)handleDragEnter:(UIView *)sender forEvent:(UIEvent *)event
+{
+    [self sendEventsInState:RNGestureHandlerStateActive
+             forViewWithTag:sender.reactTag
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
+}
+
+- (void)handleTouchCancel:(UIView *)sender forEvent:(UIEvent *)event
+{
+    [self sendEventsInState:RNGestureHandlerStateCancelled
+             forViewWithTag:sender.reactTag
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
 }
 
 @end
@@ -686,6 +774,46 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (_active) {
         self.state = UIGestureRecognizerStateBegan;
     }
+}
+
+@end
+
+
+#pragma mark Button
+
+/**
+ * Gesture Handler Button components overrides standard mechanism used by RN
+ * to determine touch target, which normally would reurn the UIView that is placed
+ * as the deepest element in the view hierarchy.
+ * It's done this way as it allows for the actual target determination to run in JS
+ * where we can travers up the view ierarchy to find first element that want to became
+ * JS responder.
+ * 
+ * Since we want to use native button (or actually a `UIControl`) we need to determine
+ * the target in native. This makes it impossible for JS responder based components to
+ * function as a subviews of the button component. Here we override `hitTest:withEvent:`
+ * method and we only determine the target to be either a subclass of `UIControl` or a 
+ * view that has gesture recognizers registered.
+ *
+ * This "default" behaviour of target determinator should be sufficient in most of the 
+ * cases as in fact it is not that common UI pattern to have many nested buttons (usually
+ * there are just two levels e.g. when you have clickable table cells with additional 
+ * buttons). In cases when the default behaviour is insufficient it is recommended to use
+ * `TapGestureHandler` instead of a button which gives much better flexibility as far as
+ * controlling the touch flow.
+ */
+@implementation RNGestureHandlerButton
+
+- (BOOL)shouldHandleTouch:(UIView *)view
+{
+    return [view isKindOfClass:[UIControl class]] || [view.gestureRecognizers count] > 0;
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+    UIView *inner = [super hitTest:point withEvent:event];
+    while (inner && ![self shouldHandleTouch:inner]) inner = inner.superview;
+    return inner;
 }
 
 @end

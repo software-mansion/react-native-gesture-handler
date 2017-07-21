@@ -68,3 +68,7 @@
 - (void)blockOtherRecognizers;
 
 @end
+
+@interface RNGestureHandlerButton : UIControl
+@end
+

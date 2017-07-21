@@ -18,7 +18,6 @@
 @interface RNDummyViewManager : RCTViewManager
 @end
 
-
 @implementation RNDummyViewManager
 
 RCT_EXPORT_MODULE()
@@ -27,6 +26,24 @@ RCT_EXPORT_VIEW_PROPERTY(onGestureHandlerEvent, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onGestureHandlerStateChange, RCTDirectEventBlock)
 
 @end
+
+
+@interface RNGestureHandlerButtonManager : RCTViewManager
+@end
+
+@implementation RNGestureHandlerButtonManager
+
+RCT_EXPORT_MODULE(RNGestureHandlerButton)
+
+RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
+
+- (UIView *)view
+{
+    return [SuperButton new];
+}
+
+@end
+
 
 typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 

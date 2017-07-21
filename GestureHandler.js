@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import {
   findNodeHandle,
+  requireNativeComponent,
   NativeModules,
   ScrollView,
   Slider,
@@ -179,7 +180,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
 
 const NativeViewGestureHandler = createHandler('NativeViewGestureHandler', {
   shouldActivateOnStart: PropTypes.bool,
-
+  disallowInterruption: PropTypes.bool,
 });
 const TapGestureHandler = createHandler('TapGestureHandler', {
   maxDurationMs: PropTypes.number,
@@ -203,7 +204,7 @@ const RotationGestureHandler = createHandler('RotationGestureHandler', {}, {});
 function createNativeWrapper(Component, config = {}) {
   class ComponentWrapper extends React.Component {
     static propTypes = {
-      ...GestureHandlerPropTypes,
+      ...NativeViewGestureHandler.propTypes,
       ...Component.propTypes,
     }
 
@@ -241,7 +242,15 @@ function createNativeWrapper(Component, config = {}) {
     }
 
     render() {
-      return <Component {...this.props} ref={this._refHandler} />;
+      const { onGestureEvent, onHandlerStateChange, ...rest } = this.props;
+      return (
+        <Component
+          {...rest}
+          onGestureHandlerEvent={onGestureEvent}
+          onGestureHandlerStateChange={onHandlerStateChange}
+          ref={this._refHandler}
+        />
+      );
     }
   }
   return ComponentWrapper;
@@ -275,6 +284,11 @@ State.print = (state) => {
   }
 }
 
+const Button = createNativeWrapper(requireNativeComponent('RNGestureHandlerButton', null), {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: true,
+});
+
 export {
   WrappedScrollView as ScrollView,
   WrappedSlider as Slider,
@@ -291,4 +305,5 @@ export {
   PinchGestureHandler,
   RotationGestureHandler,
   State,
+  Button,
 }

@@ -40,6 +40,11 @@
             initWithData:@{@"rotation": @(rotation), @"velocity": @(velocity)}];
 }
 
++ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside;
+{
+    return [[RNGestureHandlerEventExtraData alloc] initWithData:@{@"pointerInside": @(pointerInside)}];
+}
+
 @end
 
 

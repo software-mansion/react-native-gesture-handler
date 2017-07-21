@@ -76,6 +76,7 @@
 
 - (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder
 {
+    NSLog(@"SET JS RESP");
     for (RCTRootView *rootView in _rootViews) {
         for (UIGestureRecognizer *recognizer in rootView.gestureRecognizers) {
             if ([recognizer isKindOfClass:[RNRootViewGestureRecognizer class]]) {
