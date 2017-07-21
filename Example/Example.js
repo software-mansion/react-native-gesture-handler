@@ -27,6 +27,7 @@ import {
   DrawerLayoutAndroid,
   WebView,
   RectButton,
+  BorderlessButton,
 } from 'react-native-gesture-handler';
 
 const UNDERLAY_REF = 'UNDERLAY_REF';
@@ -253,6 +254,14 @@ class PinchableBox extends React.Component {
   }
 }
 
+const InfoButton = (props) => (
+  <BorderlessButton {...props} style={styles.infoButton}>
+    <View style={styles.infoButtonBorders}>
+      <Text style={styles.infoButtonText}>i</Text>
+    </View>
+  </BorderlessButton>
+)
+
 export default class Example extends Component {
   _onClick = () => {
     Alert.alert("I'm so touched");
@@ -311,11 +320,30 @@ export default class Example extends Component {
           <ControlledSwitch/>
           <View style={styles.table}>
             <RectButton style={styles.rectButton}>
-              <Text style={styles.buttonText}>This is a first clickable row</Text>
+              <Text style={styles.buttonText}>Observe highlight delay on the row</Text>
+              {/* Info icon will cancel when you scroll in the direction of the scrollview
+                  but if you move finger horizontally it would allow you to "re-enter" into
+                  an active state. This is typical for most of the buttons on iOS (but not
+                  on Android where the touch cancels as soon as you leave the area of the
+                  button). */}
+              <InfoButton />
             </RectButton>
             <View style={styles.buttonDelimiter} />
             <RectButton style={styles.rectButton}>
-              <Text style={styles.buttonText}>Second clickable row, observe highlight delay</Text>
+              <Text style={styles.buttonText}>Second info icon will block scrolling</Text>
+              {/* Info icon will block interaction with other gesture handlers including
+                  the scrollview handler its a descendant of. This is typical for buttons
+                  embedded in a scrollable content on iOS. */}
+              <InfoButton disallowInterruption/>
+            </RectButton>
+            <View style={styles.buttonDelimiter} />
+            <RectButton style={styles.rectButton}>
+              <Text style={styles.buttonText}>This one will cancel when you drag outside</Text>
+              {/* Info icon will cancel when you drag your finger outside of its bounds and
+                  then back unlike all the previous icons that would activate when you re-enter
+                  their activation area. This is a typical bahaviour for android but less frequent
+                  for most of the iOS native apps. */}
+              <InfoButton shouldCancelWhenOutside/>
             </RectButton>
           </View>
           <Text style={styles.text}>
@@ -339,9 +367,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 60,
     padding: 10,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: 'white',
+    flexDirection: 'row',
   },
   table: {
     marginTop: 20,
@@ -358,6 +387,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#999',
   },
   buttonText: {
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
+  },
+  infoButton: {
+    width: 20,
+    height: 20,
+  },
+  infoButtonBorders: {
+    borderColor: '#467AFB',
+    borderWidth: 2,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+  },
+  infoButtonText: {
+    color: '#467AFB',
     fontWeight: 'bold',
     backgroundColor: 'transparent',
   },

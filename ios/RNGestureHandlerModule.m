@@ -39,7 +39,7 @@ RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 
 - (UIView *)view
 {
-    return [SuperButton new];
+    return [RNGestureHandlerButton new];
 }
 
 @end
@@ -50,7 +50,7 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 @implementation RNGestureHandlerModule
 {
     RNGestureHandlerManager *_manager;
-    
+
     // Oparations called after views have been updated.
     NSMutableArray<GestureHandlerOperation> *_operations;
 }
@@ -62,7 +62,7 @@ RCT_EXPORT_MODULE()
     // This module needs to be on the same queue as the UIManager to avoid
     // having to lock `_operations` and `_preOperations` since `uiManagerWillFlushUIBlocks`
     // will be called from that queue.
-    
+
     // This is required as this module rely on having all the view nodes created before
     // gesture handlers can be associated with them
     return RCTGetUIManagerQueue();
@@ -121,10 +121,10 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
     if (_operations.count == 0) {
         return;
     }
-    
+
     NSArray<GestureHandlerOperation> *operations = _operations;
     _operations = [NSMutableArray new];
-    
+
     [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         for (GestureHandlerOperation operation in operations) {
             operation(self->_manager);
