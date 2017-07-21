@@ -26,6 +26,7 @@ import {
   ViewPagerAndroid,
   DrawerLayoutAndroid,
   WebView,
+  RectButton,
 } from 'react-native-gesture-handler';
 
 const UNDERLAY_REF = 'UNDERLAY_REF';
@@ -303,12 +304,21 @@ export default class Example extends Component {
             </View>
           </TouchableHighlight>
           <Slider style={styles.slider} />
+
           <PinchableBox/>
           <DraggableBox/>
           <PressBox/>
           <ControlledSwitch/>
+          <View style={styles.table}>
+            <RectButton style={styles.rectButton}>
+              <Text style={styles.buttonText}>This is a first clickable row</Text>
+            </RectButton>
+            <View style={styles.buttonDelimiter} />
+            <RectButton style={styles.rectButton}>
+              <Text style={styles.buttonText}>Second clickable row, observe highlight delay</Text>
+            </RectButton>
+          </View>
           <Text style={styles.text}>
-            {LOREM_IPSUM}
             {LOREM_IPSUM}
           </Text>
         </ScrollView>
@@ -324,6 +334,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+  },
+  rectButton: {
+    flex: 1,
+    height: 60,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: 'white',
+  },
+  table: {
+    marginTop: 20,
+    marginBottom: 20,
+    marginLeft: -1,
+    marginRight: -1,
+    borderWidth: 1,
+    borderColor: '#999',
+  },
+  buttonDelimiter: {
+    height: 1,
+    marginLeft: 20,
+    marginRight: 20,
+    backgroundColor: '#999',
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
   },
   slider: {
     margin: 10,
