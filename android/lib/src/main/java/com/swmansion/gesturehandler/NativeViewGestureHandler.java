@@ -31,10 +31,20 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
 
   @Override
   public boolean shouldRequireToWaitForFailure(GestureHandler handler) {
-    if (mDisallowInterruption) {
-      return handler != this;
-    }
     return super.shouldRequireToWaitForFailure(handler);
+  }
+
+  @Override
+  public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
+    if (!mDisallowInterruption) {
+      return true;
+    }
+    return super.shouldRecognizeSimultaneously(handler);
+  }
+
+  @Override
+  public boolean shouldBeCancelledBy(GestureHandler handler) {
+    return !mDisallowInterruption;
   }
 
   @Override
@@ -63,17 +73,28 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
 
   private void onHandleForViewGroup(ViewGroup view, MotionEvent event) {
     int state = getState();
+    boolean delivered = false;
     if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
-      if (view.onInterceptTouchEvent(event) || mShouldActivateOnStart) {
+      if (view.isPressed()) {
         activate();
-      } else if (state != STATE_BEGAN) {
-        begin();
+      } else {
+        // view could become pressed due to
+        view.onTouchEvent(event);
+        delivered = true;
+        if (view.onInterceptTouchEvent(event) || mShouldActivateOnStart || view.isPressed()) {
+          activate();
+        } else if (state != STATE_BEGAN) {
+          begin();
+        }
       }
-    }
-    if (getState() == STATE_ACTIVE) {
+    } else if (state == STATE_ACTIVE) {
       view.onTouchEvent(event);
+      delivered = true;
     }
     if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+      if (!delivered) {
+        view.onTouchEvent(event);
+      }
       end();
     }
   }

@@ -106,6 +106,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handler.setDisallowInterruption(config.getBoolean(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION));
       }
     }
+
+    @Override
+    public void extractEventData(NativeViewGestureHandler handler, WritableMap eventData) {
+      eventData.putBoolean("pointerInside", handler.isWithinBounds());
+    }
   }
 
   private static class TapGestureHandlerFactory extends HandlerFactory<TapGestureHandler> {

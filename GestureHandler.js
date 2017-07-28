@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import {
   findNodeHandle,
   requireNativeComponent,
+  Animated,
   NativeModules,
   ScrollView,
   Slider,
@@ -11,6 +12,7 @@ import {
   ViewPagerAndroid,
   DrawerLayoutAndroid,
   WebView,
+  StyleSheet,
 } from 'react-native';
 
 const RNGestureHandlerModule = NativeModules.RNGestureHandlerModule;
@@ -256,7 +258,7 @@ function createNativeWrapper(Component, config = {}) {
   return ComponentWrapper;
 }
 
-const WrappedScrollView = createNativeWrapper(ScrollView);
+const WrappedScrollView = createNativeWrapper(ScrollView, { disallowInterruption: true });
 const WrappedSlider = createNativeWrapper(Slider, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: true,
@@ -284,10 +286,106 @@ State.print = (state) => {
   }
 }
 
-const Button = createNativeWrapper(requireNativeComponent('RNGestureHandlerButton', null), {
+const RawButton = createNativeWrapper(requireNativeComponent('RNGestureHandlerButton', null), {
   shouldCancelWhenOutside: false,
-  shouldActivateOnStart: true,
+  shouldActivateOnStart: false,
 });
+
+/* Buttons */
+
+class BaseButton extends React.Component {
+  static propTypes = RawButton.propTypes;
+  constructor(props) {
+    super(props);
+    this._lastActive = false;
+  }
+  _onHandlerEvent = (e) => {
+    console.log("EV", e.nativeEvent);
+    const { state, oldState, pointerInside } = e.nativeEvent;
+    const active = pointerInside && state === State.ACTIVE;
+    if (active != this._lastActive) {
+      this.props.onActiveStateChange && this.props.onActiveStateChange(active);
+    }
+    if (oldState === State.ACTIVE && this._lastActive) {
+      this.props.onPress && this.props.onPress(active);
+    }
+    this._lastActive = active;
+  }
+  render() {
+    return (
+      <RawButton
+        {...this.props}
+        onHandlerStateChange={this._onHandlerEvent}
+        onGestureEvent={this._onHandlerEvent}
+      />
+    )
+  }
+}
+
+const btnStyles = StyleSheet.create({
+  underlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+  },
+  borderlessContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+  }
+});
+
+class RectButton extends React.Component {
+  static propTypes = BaseButton.propTypes;
+  static defaultProps = {
+    activeOpacity: 0.105,
+    underlayColor: 'black',
+  }
+  constructor(props) {
+    super(props);
+    this._opacity = new Animated.Value(0);
+  }
+  _handleActiveStateChange = (active) => {
+    // this._opacity.setValue(active ? this.props.activeOpacity : 0);
+  }
+  render() {
+    const { children, ...rest } = this.props;
+    return (
+      <BaseButton {...rest} onActiveStateChange={this._handleActiveStateChange}>
+        <Animated.View style={[btnStyles.underlay, { backgroundColor: this.props.underlayColor }, { opacity: this._opacity }]} />
+        {children}
+      </BaseButton>
+    );
+  }
+}
+
+class BorderlessButton extends React.Component {
+  static propTypes = BaseButton.propTypes;
+  static defaultProps = {
+    activeOpacity: 0.3,
+  }
+  constructor(props) {
+    super(props);
+    this._opacity = new Animated.Value(1);
+  }
+  _handleActiveStateChange = (active) => {
+    this._opacity.setValue(active ? this.props.activeOpacity : 1);
+  }
+  render() {
+    const { children, ...rest } = this.props;
+    return (
+      <BaseButton borderless={true} {...rest} onActiveStateChange={this._handleActiveStateChange}>
+        <Animated.View style={[btnStyles.borderlessContainer, { opacity: this._opacity }]}>
+          {children}
+        </Animated.View>
+      </BaseButton>
+    )
+  }
+}
 
 export {
   WrappedScrollView as ScrollView,
@@ -305,5 +403,10 @@ export {
   PinchGestureHandler,
   RotationGestureHandler,
   State,
-  Button,
+
+  /* Buttons */
+  RawButton,
+  BaseButton,
+  RectButton,
+  BorderlessButton,
 }

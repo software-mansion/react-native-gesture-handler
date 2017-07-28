@@ -63,6 +63,11 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
   }
 
   @Override
+  public boolean shouldHandlerBeCancelledBy(GestureHandler handler, GestureHandler otherHandler) {
+    return false;
+  }
+
+  @Override
   public boolean shouldRecognizeSimultaneously(GestureHandler handler,
                                                GestureHandler otherHandler) {
     int[] simultHandlerTags = mSimultaneousRelations.get(handler.getTag());

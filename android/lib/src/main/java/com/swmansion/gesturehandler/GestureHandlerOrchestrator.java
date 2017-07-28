@@ -75,13 +75,12 @@ public class GestureHandlerOrchestrator {
   }
 
   private void cleanupFinishedHandlers() {
-    for (int i = 0; i < mGestureHandlersCount; i++) {
+    for (int i = mGestureHandlersCount - 1; i >= 0; i--) {
       GestureHandler handler = mGestureHandlers[i];
       if (isFinished(handler.getState()) && !isAwaiting(handler)) {
         mGestureHandlers[i] = mGestureHandlers[mGestureHandlersCount - 1];
         mGestureHandlers[mGestureHandlersCount - 1] = null;
         mGestureHandlersCount--;
-        i--;
         handler.reset();
         handler.mIsActive = false;
         handler.mIsAwaiting = false;
@@ -114,12 +113,12 @@ public class GestureHandlerOrchestrator {
 
   /*package*/ void onHandlerStateChange(GestureHandler handler, int newState, int prevState) {
     mHandlingChangeSemaphore += 1;
-    if (isFinished(newState) && !handler.mIsAwaiting) {
+    if (isFinished(newState)) {
       removeFromAwaitingHandlers(handler);
     }
     if (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED) {
       // if there were handlers awaiting completion of this handler, we can trigger active state
-      for (int i = 0; i < mAwaitingHandlersCount; i++) {
+      for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
         GestureHandler otherHandler = mAwaitingHandlers[i];
         if (shouldHandlerWaitForOther(otherHandler, handler)) {
           tryActivate(otherHandler);
@@ -149,23 +148,22 @@ public class GestureHandlerOrchestrator {
     // Cancel all handlers that are required to be cancel upon current handler's activation
     for (int i = 0; i < mGestureHandlersCount; i++) {
       GestureHandler otherHandler = mGestureHandlers[i];
-      if (!canRunSimultaneously(handler, otherHandler)) {
+      if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
         mHandlersToCancel[toCancelCount++] = otherHandler;
       }
     }
 
-    for (int i = 0; i < toCancelCount; i++) {
+    for (int i = toCancelCount - 1; i >= 0; i--) {
       mHandlersToCancel[i].cancel();
     }
 
     // Clear all awaiting handlers waiting for the current handler to fail
-    for (int i = 0; i < mAwaitingHandlersCount; i++) {
+    for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
       GestureHandler otherHandler = mAwaitingHandlers[i];
-      if (!canRunSimultaneously(handler, otherHandler)) {
+      if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
         mAwaitingHandlers[i] = mAwaitingHandlers[mAwaitingHandlersCount - 1];
         mAwaitingHandlers[mAwaitingHandlersCount - 1] = null;
         mAwaitingHandlersCount--;
-        i--;
         otherHandler.cancel();
       }
     }
@@ -188,13 +186,13 @@ public class GestureHandlerOrchestrator {
     for (int i = 0; i < handlersCount; i++) {
       mPreparedHandlers[i] = mGestureHandlers[i];
     }
-    for (int i = 0; i < handlersCount; i++) {
+    for (int i = handlersCount - 1; i >= 0; i--) {
       deliverEventToGestureHandler(mPreparedHandlers[i], event);
     }
   }
 
   public void cancelAll() {
-    for (int i = 0; i < mAwaitingHandlersCount; i++) {
+    for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
       mAwaitingHandlers[i].cancel();
     }
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
@@ -203,13 +201,16 @@ public class GestureHandlerOrchestrator {
     for (int i = 0; i < handlersCount; i++) {
       mPreparedHandlers[i] = mGestureHandlers[i];
     }
-    for (int i = 0; i < handlersCount; i++) {
+    for (int i = handlersCount - 1; i >= 0; i--) {
       mPreparedHandlers[i].cancel();
     }
   }
 
   private void deliverEventToGestureHandler(GestureHandler handler, MotionEvent event) {
-    if (!handler.wantEvents() || handler.mIsAwaiting) {
+    if (!handler.wantEvents()) {
+      return;
+    }
+    if (handler.mIsAwaiting && event.getActionMasked() == MotionEvent.ACTION_MOVE) {
       return;
     }
     float[] coords = sTempCoords;
@@ -396,6 +397,11 @@ public class GestureHandlerOrchestrator {
 
   private static boolean canRunSimultaneously(GestureHandler a, GestureHandler b) {
     return a == b || a.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a);
+  }
+
+  private static boolean shouldHandlerBeCancelledBy(GestureHandler handler, GestureHandler other) {
+    return !canRunSimultaneously(handler, other) ||
+            (handler != other && handler.shouldBeCancelledBy(other));
   }
 
   private static boolean isFinished(int state) {
