@@ -13,6 +13,7 @@ import {
   DrawerLayoutAndroid,
   WebView,
   StyleSheet,
+  Platform,
 } from 'react-native';
 
 const RNGestureHandlerModule = NativeModules.RNGestureHandlerModule;
@@ -300,13 +301,12 @@ class BaseButton extends React.Component {
     this._lastActive = false;
   }
   _onHandlerEvent = (e) => {
-    console.log("EV", e.nativeEvent);
     const { state, oldState, pointerInside } = e.nativeEvent;
     const active = pointerInside && state === State.ACTIVE;
     if (active != this._lastActive) {
       this.props.onActiveStateChange && this.props.onActiveStateChange(active);
     }
-    if (oldState === State.ACTIVE && this._lastActive) {
+    if (oldState === State.ACTIVE && state !== State.CANCELLED && this._lastActive) {
       this.props.onPress && this.props.onPress(active);
     }
     this._lastActive = active;
@@ -349,8 +349,8 @@ class RectButton extends React.Component {
     super(props);
     this._opacity = new Animated.Value(0);
   }
-  _handleActiveStateChange = (active) => {
-    // this._opacity.setValue(active ? this.props.activeOpacity : 0);
+  _handleActiveStateChange = Platform.OS === 'android' ? null : (active) => {
+    this._opacity.setValue(active ? this.props.activeOpacity : 0);
   }
   render() {
     const { children, ...rest } = this.props;
@@ -372,7 +372,7 @@ class BorderlessButton extends React.Component {
     super(props);
     this._opacity = new Animated.Value(1);
   }
-  _handleActiveStateChange = (active) => {
+  _handleActiveStateChange = Platform.OS === 'android' ? null : (active) => {
     this._opacity.setValue(active ? this.props.activeOpacity : 1);
   }
   render() {

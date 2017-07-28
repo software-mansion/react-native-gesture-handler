@@ -16,6 +16,7 @@ public class RNGestureHandlerButtonViewManager extends
 
   static class ButtonViewGroup extends ViewGroup {
 
+    static TypedValue sResolveOutValue = new TypedValue();
     static ButtonViewGroup sResponder;
     static Drawable mDrawableForPress;
 
@@ -48,7 +49,6 @@ public class RNGestureHandlerButtonViewManager extends
 
     private void updateBackground(String identifier) {
       int attrID = getResources().getIdentifier(identifier, "attr", "android");
-      TypedValue sResolveOutValue = new TypedValue();
       Drawable drawable;
       getContext().getTheme().resolveAttribute(attrID, sResolveOutValue, true);
       final int version = Build.VERSION.SDK_INT;

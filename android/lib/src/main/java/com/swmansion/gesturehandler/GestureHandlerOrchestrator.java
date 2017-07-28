@@ -113,7 +113,7 @@ public class GestureHandlerOrchestrator {
 
   /*package*/ void onHandlerStateChange(GestureHandler handler, int newState, int prevState) {
     mHandlingChangeSemaphore += 1;
-    if (isFinished(newState)) {
+    if (isFinished(newState) && !handler.mIsAwaiting) {
       removeFromAwaitingHandlers(handler);
     }
     if (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED) {
@@ -400,8 +400,13 @@ public class GestureHandlerOrchestrator {
   }
 
   private static boolean shouldHandlerBeCancelledBy(GestureHandler handler, GestureHandler other) {
-    return !canRunSimultaneously(handler, other) ||
-            (handler != other && handler.shouldBeCancelledBy(other));
+    if (handler != other && !other.shouldRecognizeSimultaneously(handler)) {// !canRunSimultaneously(handler, other)) {
+      return true;
+    } else if (handler != other &&
+            (handler.mIsAwaiting || handler.getState() == GestureHandler.STATE_ACTIVE)) {
+      return handler.shouldBeCancelledBy(other);
+    }
+    return false;
   }
 
   private static boolean isFinished(int state) {

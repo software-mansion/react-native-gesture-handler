@@ -9,6 +9,7 @@ import {
   View,
   Image,
   // ScrollView,
+  Platform,
 } from 'react-native';
 
 import {
@@ -158,7 +159,7 @@ class ControlledSwitch extends React.Component {
   }
   render() {
     return (
-      <NativeViewGestureHandler hitSlop={20}>
+      <NativeViewGestureHandler hitSlop={20} shouldCancelWhenOutside={false} shouldActivateOnStart disallowInterruption>
         <Switch {...this.props} value={this.state.value} onValueChange={this._onValueChange} />
       </NativeViewGestureHandler>
     );
@@ -255,7 +256,7 @@ class PinchableBox extends React.Component {
 }
 
 const InfoButton = (props) => (
-  <BorderlessButton {...props} style={styles.infoButton}>
+  <BorderlessButton {...props} style={styles.infoButton} onPress={() => Alert.alert(`${props.name} info button clicked`)}>
     <View style={styles.infoButtonBorders}>
       <Text style={styles.infoButtonText}>i</Text>
     </View>
@@ -319,31 +320,31 @@ export default class Example extends Component {
           <PressBox/>
           <ControlledSwitch/>
           <View style={styles.table}>
-            <RectButton style={styles.rectButton}>
+            <RectButton style={styles.rectButton} onPress={() => Alert.alert('First row clicked')}>
               <Text style={styles.buttonText}>Observe highlight delay on the row</Text>
               {/* Info icon will cancel when you scroll in the direction of the scrollview
                   but if you move finger horizontally it would allow you to "re-enter" into
                   an active state. This is typical for most of the buttons on iOS (but not
                   on Android where the touch cancels as soon as you leave the area of the
                   button). */}
-              <InfoButton />
+              <InfoButton name="first" />
             </RectButton>
             <View style={styles.buttonDelimiter} />
-            <RectButton style={styles.rectButton}>
+            <RectButton style={styles.rectButton} onPress={() => Alert.alert('Second row clicked')}>
               <Text style={styles.buttonText}>Second info icon will block scrolling</Text>
               {/* Info icon will block interaction with other gesture handlers including
                   the scrollview handler its a descendant of. This is typical for buttons
                   embedded in a scrollable content on iOS. */}
-              <InfoButton disallowInterruption/>
+              <InfoButton disallowInterruption name="second"/>
             </RectButton>
             <View style={styles.buttonDelimiter} />
-            <RectButton style={styles.rectButton}>
+            <RectButton style={styles.rectButton} onPress={() => Alert.alert('Third row clicked')}>
               <Text style={styles.buttonText}>This one will cancel when you drag outside</Text>
               {/* Info icon will cancel when you drag your finger outside of its bounds and
                   then back unlike all the previous icons that would activate when you re-enter
                   their activation area. This is a typical bahaviour for android but less frequent
                   for most of the iOS native apps. */}
-              <InfoButton shouldCancelWhenOutside/>
+              <InfoButton shouldCancelWhenOutside name="third"/>
             </RectButton>
           </View>
           <Text style={styles.text}>
@@ -358,7 +359,7 @@ export default class Example extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: (Platform.OS === 'ios') ? 20 : 0,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
@@ -369,7 +370,6 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'white',
     flexDirection: 'row',
   },
   table: {
@@ -379,6 +379,7 @@ const styles = StyleSheet.create({
     marginRight: -1,
     borderWidth: 1,
     borderColor: '#999',
+    backgroundColor: 'white',
   },
   buttonDelimiter: {
     height: 1,
@@ -391,8 +392,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   infoButton: {
-    width: 20,
-    height: 20,
+    width: 40,
+    height: 40,
   },
   infoButtonBorders: {
     borderColor: '#467AFB',
@@ -402,6 +403,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
+    margin: 10,
   },
   infoButtonText: {
     color: '#467AFB',
