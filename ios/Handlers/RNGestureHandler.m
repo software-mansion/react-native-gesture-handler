@@ -15,6 +15,19 @@
 
 
 @implementation RNDummyGestureRecognizer
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    self.state = UIGestureRecognizerStateFailed;
+    [self reset];
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    self.state = UIGestureRecognizerStateCancelled;
+    [self reset];
+}
+
 @end
 
 
@@ -733,6 +746,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 @implementation RNRootViewGestureRecognizer
 {
     BOOL _active;
+}
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.delaysTouchesEnded = NO;
+        self.delaysTouchesBegan = NO;
+    }
+    return self;
 }
 
 - (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
