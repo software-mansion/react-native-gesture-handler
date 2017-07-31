@@ -228,7 +228,8 @@ class PinchableBox extends React.Component {
           onHandlerStateChange={this._onTiltGestureStateChange}
           minDist={10}
           minPointers={2}
-          maxPointers={2}>
+          maxPointers={2}
+          avgTouches>
           <RotationGestureHandler
             id="image_rotation"
             simultaneousHandlers="image_pinch"
@@ -314,6 +315,7 @@ export default class Example extends Component {
             </View>
           </TouchableHighlight>
           <Slider style={styles.slider} />
+          <TextInput style={styles.textinput} placeholder="Type something here!" underlineColorAndroid="transparent" />
 
           <PinchableBox/>
           <DraggableBox/>
@@ -416,6 +418,15 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  textinput: {
+    height: 40,
+    backgroundColor: 'white',
+    borderColor: 'gray',
+    borderWidth: 1,
+    margin: 10,
+    padding: 3,
+    borderRadius: 5,
   },
   box: {
     width: 150,

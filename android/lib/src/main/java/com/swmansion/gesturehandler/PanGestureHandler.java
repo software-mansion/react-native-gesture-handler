@@ -25,21 +25,50 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mLastVelocityX, mLastVelocityY;
   private VelocityTracker mVelocityTracker;
 
+  private boolean mAverageTouches;
+
   /**
    * On Android when there are multiple pointers on the screen pan gestures most often just consider
    * the last placed pointer. The behaviour on iOS is quite different where the x and y component
    * of the pan pointer is calculated as an average out of all the pointers placed on the screen.
+   *
+   * This behaviour can be customized on android by setting averageTouches property of the handler
+   * object. This could be useful in particular for the usecases when we attach other handlers that
+   * recognizes multi-finger gestures such as rotation. In that case when we only rely on the last
+   * placed finger it is easier for the gesture handler to trigger when we do a rotation gesture
+   * because each finger when treated separately will travel some distance, whereas the average
+   * position of all the fingers will remain still while doing a rotation gesture.
    */
-  private static float getLastPointerX(MotionEvent event) {
+  private static float getLastPointerX(MotionEvent event, boolean averageTouches) {
     float offset = event.getRawX() - event.getX();
-    int last = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ? 2 : 1;
-    return event.getX(event.getPointerCount() - last) + offset;
+
+    if (averageTouches) {
+      float sum = 0f;
+      int count = event.getPointerCount();
+      for (int i = 0; i < count; i++) {
+        sum += event.getX(i) + offset;
+      }
+      return sum / count;
+    } else {
+      int last = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ? 2 : 1;
+      return event.getX(event.getPointerCount() - last) + offset;
+    }
   }
 
-  private static float getLastPointerY(MotionEvent event) {
+  private static float getLastPointerY(MotionEvent event, boolean averageTouches) {
     float offset = event.getRawY() - event.getY();
-    int last = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ? 2 : 1;
-    return event.getY(event.getPointerCount() - last) + offset;
+
+    if (averageTouches) {
+      float sum = 0f;
+      int count = event.getPointerCount();
+      for (int i = 0; i < count; i++) {
+        sum += event.getY(i) + offset;
+      }
+      return sum / count;
+    } else {
+      int last = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ? 2 : 1;
+      return event.getY(event.getPointerCount() - last) + offset;
+    }
   }
 
   public PanGestureHandler setMinDx(float deltaX) {
@@ -67,6 +96,11 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return this;
   }
 
+  public PanGestureHandler setAverageTouches(boolean averageTouches) {
+    mAverageTouches = averageTouches;
+    return this;
+  }
+
   /**
    * @param maxVelocity in pixels per millisecond
    */
@@ -86,13 +120,13 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mOffsetY += mLastY - mStartY;
 
       // reset starting point
-      mLastX = getLastPointerX(event);
-      mLastY = getLastPointerY(event);
+      mLastX = getLastPointerX(event, mAverageTouches);
+      mLastY = getLastPointerY(event, mAverageTouches);
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
-      mLastX = getLastPointerX(event);
-      mLastY = getLastPointerY(event);
+      mLastX = getLastPointerX(event, mAverageTouches);
+      mLastY = getLastPointerY(event, mAverageTouches);
     }
 
     if (state == STATE_UNDETERMINED && event.getPointerCount() >= mMinPointers) {

@@ -200,6 +200,7 @@ const PanGestureHandler = createHandler('PanGestureHandler', {
   maxVelocity: PropTypes.number,
   minPointers: PropTypes.number,
   maxPointers: PropTypes.number,
+  avgTouches: PropTypes.number,
 }, {});
 const PinchGestureHandler = createHandler('PinchGestureHandler', {}, {});
 const RotationGestureHandler = createHandler('RotationGestureHandler', {}, {});
