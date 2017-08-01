@@ -21,15 +21,16 @@ public class GestureHandler<T extends GestureHandler> {
   private View mView;
   private int mState = STATE_UNDETERMINED;
   private float mX, mY;
+  private boolean mWithinBounds;
   private float mHitSlop[];
 
   private boolean mShouldCancelWhenOutside;
-  private boolean mShouldCancelOthersWhenActivated;
-  private boolean mShouldBeRequiredByOthersToFail;
 
   private GestureHandlerOrchestrator mOrchestrator;
   private OnTouchEventListener<T> mListener;
+  private GestureHandlerInteractionController mInteractionController;
   /*package*/ boolean mIsActive; // set and accessed only by the orchestrator
+  /*package*/ boolean mIsAwaiting; // set and accessed only by the orchestrator
 
   /*package*/ void dispatchStateChange(int newState, int prevState) {
     if (mListener != null) {
@@ -48,16 +49,6 @@ public class GestureHandler<T extends GestureHandler> {
     return (T) this;
   }
 
-  public T setShouldCancelOthersWhenActivated(boolean shouldCancelOthersWhenActivated) {
-    mShouldCancelOthersWhenActivated = shouldCancelOthersWhenActivated;
-    return (T) this;
-  }
-
-  public T setShouldBeRequiredByOthersToFail(boolean shouldBeRequiredByOthersToFail) {
-    mShouldBeRequiredByOthersToFail = shouldBeRequiredByOthersToFail;
-    return (T) this;
-  }
-
   public T setHitSlop(float leftPad, float topPad, float rightPad, float bottomPad) {
     if (mHitSlop == null) {
       mHitSlop = new float[4];
@@ -71,6 +62,11 @@ public class GestureHandler<T extends GestureHandler> {
 
   public T setHitSlop(float padding) {
     return setHitSlop(padding, padding, padding, padding);
+  }
+
+  public T setInteractionController(GestureHandlerInteractionController controller) {
+    mInteractionController = controller;
+    return (T) this;
   }
 
   public void setTag(int tag) {
@@ -93,6 +89,10 @@ public class GestureHandler<T extends GestureHandler> {
     return mY;
   }
 
+  public boolean isWithinBounds() {
+    return mWithinBounds;
+  }
+
   public final void prepare(View view, GestureHandlerOrchestrator orchestrator) {
     if (mView != null || mOrchestrator != null) {
       throw new IllegalStateException("Already prepared or hasn't been reset");
@@ -109,8 +109,9 @@ public class GestureHandler<T extends GestureHandler> {
     }
     mX = event.getX();
     mY = event.getY();
+    mWithinBounds = isWithinBounds(mView, mX, mY);
     if (mState == STATE_ACTIVE) {
-      if (mShouldCancelWhenOutside && !isWithinBounds(mView, event.getX(), event.getY())) {
+      if (mShouldCancelWhenOutside && !mWithinBounds) {
         cancel();
         return;
       }
@@ -138,12 +139,38 @@ public class GestureHandler<T extends GestureHandler> {
     return mState;
   }
 
-  public boolean isRequiredByHandlerToFail(GestureHandler handler) {
-    return handler != this && mShouldBeRequiredByOthersToFail;
+  public boolean shouldRequireToWaitForFailure(GestureHandler handler) {
+    if (handler != this && mInteractionController != null) {
+      return mInteractionController.shouldRequireHandlerToWaitForFailure(this, handler);
+    }
+    return false;
   }
 
-  public boolean isRequiredToCancelUponHandlerActivation(GestureHandler handler) {
-    return handler != this && handler.mShouldCancelOthersWhenActivated;
+  public boolean shouldWaitForHandlerFailure(GestureHandler handler) {
+    if (handler != this && mInteractionController != null) {
+      return mInteractionController.shouldWaitForHandlerFailure(this, handler);
+    }
+    return false;
+  }
+
+  public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
+    if (handler == this) {
+      return true;
+    }
+    if (mInteractionController != null) {
+      return mInteractionController.shouldRecognizeSimultaneously(this, handler);
+    }
+    return false;
+  }
+
+  public boolean shouldBeCancelledBy(GestureHandler handler) {
+    if (handler == this) {
+      return false;
+    }
+    if (mInteractionController != null) {
+      return mInteractionController.shouldHandlerBeCancelledBy(this, handler);
+    }
+    return false;
   }
 
   public boolean isWithinBounds(View view, float posX, float posY) {
@@ -229,6 +256,7 @@ public class GestureHandler<T extends GestureHandler> {
 
   @Override
   public String toString() {
-    return this.getClass().getSimpleName() + "@" + mView;
+    String viewString = mView == null ? null : mView.getClass().getSimpleName();
+    return this.getClass().getSimpleName() + "@[" + mTag + "]:"  + viewString;
   }
 }

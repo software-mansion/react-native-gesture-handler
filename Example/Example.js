@@ -7,13 +7,17 @@ import {
   Switch,
   Text,
   View,
+  Image,
   // ScrollView,
+  Platform,
 } from 'react-native';
 
 import {
   LongPressGestureHandler,
   NativeViewGestureHandler,
   PanGestureHandler,
+  PinchGestureHandler,
+  RotationGestureHandler,
   ScrollView,
   Slider,
   State,
@@ -21,7 +25,10 @@ import {
   TextInput,
   ToolbarAndroid,
   ViewPagerAndroid,
+  DrawerLayoutAndroid,
   WebView,
+  RectButton,
+  BorderlessButton,
 } from 'react-native-gesture-handler';
 
 const UNDERLAY_REF = 'UNDERLAY_REF';
@@ -83,8 +90,8 @@ class DraggableBox extends Component {
   }
   _onHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastOffset.x += event.nativeEvent.lastTranslationX;
-      this._lastOffset.y += event.nativeEvent.lastTranslationY;
+      this._lastOffset.x += event.nativeEvent.translationX;
+      this._lastOffset.y += event.nativeEvent.translationY;
       this._translateX.setOffset(this._lastOffset.x);
       this._translateX.setValue(0);
       this._translateY.setOffset(this._lastOffset.y);
@@ -97,7 +104,8 @@ class DraggableBox extends Component {
           {...this.props}
           onGestureEvent={this._onGestureEvent}
           onHandlerStateChange={this._onHandlerStateChange}
-          minDist={50}>
+          minDist={100}
+          id="dragbox">
         <Animated.View style={[styles.box, { transform: [
           {translateX: this._translateX},
           {translateY: this._translateY}
@@ -126,11 +134,11 @@ class PressBox extends Component {
   render() {
     return (
       <LongPressGestureHandler onHandlerStateChange={this._onHandlerStateChange} minDurationMs={1500}>
-        <TapGestureHandler onHandlerStateChange={this._onSingleTap}>
+        <TapGestureHandler onHandlerStateChange={this._onSingleTap} waitFor="double_tap">
           <TapGestureHandler
+            id="double_tap"
             onHandlerStateChange={this._onDoubleTap}
-            numberOfTaps={2}
-            shouldBeRequiredByOthersToFail={true}>
+            numberOfTaps={2}>
             <View style={styles.box}/>
           </TapGestureHandler>
         </TapGestureHandler>
@@ -151,40 +159,197 @@ class ControlledSwitch extends React.Component {
   }
   render() {
     return (
-      <NativeViewGestureHandler hitSlop={20}>
+      <NativeViewGestureHandler hitSlop={20} shouldCancelWhenOutside={false} shouldActivateOnStart disallowInterruption>
         <Switch {...this.props} value={this.state.value} onValueChange={this._onValueChange} />
       </NativeViewGestureHandler>
     );
   }
 }
 
+class PinchableBox extends React.Component {
+  constructor(props) {
+    super(props);
+
+    /* Pinching */
+    this._baseScale = new Animated.Value(1);
+    this._pinchScale = new Animated.Value(1);
+    this._scale = Animated.multiply(this._baseScale, this._pinchScale);
+    this._lastScale = 1;
+    this._onPinchGestureEvent = Animated.event(
+       [{ nativeEvent: { scale: this._pinchScale }}],
+      //  { useNativeDriver: true }
+    );
+
+    /* Rotation */
+    this._rotate = new Animated.Value(0);
+    this._rotateStr = this._rotate.interpolate({ inputRange: [-100, 100], outputRange: ['-100rad', '100rad'] });
+    this._lastRotate = 0;
+    this._onRotateGestureEvent = Animated.event(
+       [{ nativeEvent: { rotation: this._rotate }}],
+      //  { useNativeDriver: true }
+    );
+
+    /* Tilt */
+    this._tilt = new Animated.Value(0);
+    this._tiltStr = this._tilt.interpolate({ inputRange: [-501, -500, 0, 1], outputRange: ['1rad', '1rad', '0rad', '0rad']});
+    this._lastTilt = 0;
+    this._onTiltGestureEvent = Animated.event(
+      [{ nativeEvent: { translationY: this._tilt }}],
+      //  { useNativeDriver: true }
+    );
+  }
+  _onRotateHandlerStateChange = (event) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      this._lastRotate += event.nativeEvent.rotation;
+      this._rotate.setOffset(this._lastRotate);
+      this._rotate.setValue(0);
+    }
+  }
+  _onPinchHandlerStateChange = (event) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      this._lastScale *= event.nativeEvent.scale;
+      this._baseScale.setValue(this._lastScale);
+      this._pinchScale.setValue(1);
+    }
+  }
+  _onTiltGestureStateChange = (event) => {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      this._lastTilt += event.nativeEvent.translationY;
+      this._tilt.setOffset(this._lastTilt);
+      this._tilt.setValue(0);
+    }
+  }
+  render() {
+    return (
+      <Animated.View style={styles.pinchableBoxContainer} collapsable={false}>
+        <PanGestureHandler
+          id="image_tilt"
+          onGestureEvent={this._onTiltGestureEvent}
+          onHandlerStateChange={this._onTiltGestureStateChange}
+          minDist={10}
+          minPointers={2}
+          maxPointers={2}
+          avgTouches>
+          <RotationGestureHandler
+            id="image_rotation"
+            simultaneousHandlers="image_pinch"
+            onGestureEvent={this._onRotateGestureEvent}
+            onHandlerStateChange={this._onRotateHandlerStateChange}>
+            <PinchGestureHandler
+              id="image_pinch"
+              simultaneousHandlers="image_rotation"
+              onGestureEvent={this._onPinchGestureEvent}
+              onHandlerStateChange={this._onPinchHandlerStateChange}>
+              <Animated.Image
+                style={[styles.pinchableImage, { transform: [
+                  { perspective: 200 },
+                  { scale: this._scale },
+                  { rotate: this._rotateStr },
+                  { rotateX: this._tiltStr },
+                ] }]}
+                source={{uri: 'https://avatars1.githubusercontent.com/u/6952717'}}/>
+            </PinchGestureHandler>
+          </RotationGestureHandler>
+        </PanGestureHandler>
+      </Animated.View>
+    )
+  }
+}
+
+const InfoButton = (props) => (
+  <BorderlessButton {...props} style={styles.infoButton} onPress={() => Alert.alert(`${props.name} info button clicked`)}>
+    <View style={styles.infoButtonBorders}>
+      <Text style={styles.infoButtonText}>i</Text>
+    </View>
+  </BorderlessButton>
+)
+
 export default class Example extends Component {
   _onClick = () => {
     Alert.alert("I'm so touched");
   }
   render2() {
+    const navigationView = (
+      <View style={{flex: 1, backgroundColor: '#fff'}}>
+        <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>I'm in the Drawer!</Text>
+      </View>
+    );
     return (
-      <ViewPagerAndroid style={styles.container}>
-        <View style={{backgroundColor: 'red'}}/>
+      <ViewPagerAndroid style={styles.container} waitFor={["drawer_blocker", "drawer2_blocker"]}>
+        <View>
+          <DrawerLayoutAndroid
+            simultaneousHandlers="drawer_blocker"
+            drawerWidth={200}
+            drawerPosition={DrawerLayoutAndroid.positions.Left}
+            renderNavigationView={() => navigationView}>
+            <View style={{flex: 1, backgroundColor: 'gray'}}/>
+          </DrawerLayoutAndroid>
+          <PanGestureHandler id="drawer_blocker" hitSlop={{right: 100}}>
+            <View style={{position: 'absolute', width: 0, top: 0, bottom: 0}} />
+          </PanGestureHandler>
+        </View>
+        <View style={{backgroundColor: 'yellow'}}/>
         <View style={{backgroundColor: 'blue'}}/>
+        <View>
+          <DrawerLayoutAndroid
+            simultaneousHandlers="drawer2_blocker"
+            drawerWidth={200}
+            drawerPosition={DrawerLayoutAndroid.positions.Right}
+            renderNavigationView={() => navigationView}>
+            <View style={{flex: 1, backgroundColor: 'plum'}}/>
+          </DrawerLayoutAndroid>
+          <PanGestureHandler id="drawer2_blocker" hitSlop={{left: 100}}>
+            <View style={{position: 'absolute', width: 0, top: 0, bottom: 0, right: 0}} />
+          </PanGestureHandler>
+        </View>
       </ViewPagerAndroid>
     );
   }
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.scrollView}>
+        <ScrollView waitFor={["dragbox", "image_pinch", "image_rotation", "image_tilt"]} style={styles.scrollView}>
           <TouchableHighlight style={styles.button} onClick={this._onClick}>
             <View style={styles.buttonInner}>
               <Text>Hello</Text>
             </View>
           </TouchableHighlight>
           <Slider style={styles.slider} />
+          <TextInput style={styles.textinput} placeholder="Type something here!" underlineColorAndroid="transparent" />
+
+          <PinchableBox/>
           <DraggableBox/>
           <PressBox/>
           <ControlledSwitch/>
+          <View style={styles.table}>
+            <RectButton style={styles.rectButton} onPress={() => Alert.alert('First row clicked')}>
+              <Text style={styles.buttonText}>Observe highlight delay on the row</Text>
+              {/* Info icon will cancel when you scroll in the direction of the scrollview
+                  but if you move finger horizontally it would allow you to "re-enter" into
+                  an active state. This is typical for most of the buttons on iOS (but not
+                  on Android where the touch cancels as soon as you leave the area of the
+                  button). */}
+              <InfoButton name="first" />
+            </RectButton>
+            <View style={styles.buttonDelimiter} />
+            <RectButton style={styles.rectButton} onPress={() => Alert.alert('Second row clicked')}>
+              <Text style={styles.buttonText}>Second info icon will block scrolling</Text>
+              {/* Info icon will block interaction with other gesture handlers including
+                  the scrollview handler its a descendant of. This is typical for buttons
+                  embedded in a scrollable content on iOS. */}
+              <InfoButton disallowInterruption name="second"/>
+            </RectButton>
+            <View style={styles.buttonDelimiter} />
+            <RectButton style={styles.rectButton} onPress={() => Alert.alert('Third row clicked')}>
+              <Text style={styles.buttonText}>This one will cancel when you drag outside</Text>
+              {/* Info icon will cancel when you drag your finger outside of its bounds and
+                  then back unlike all the previous icons that would activate when you re-enter
+                  their activation area. This is a typical bahaviour for android but less frequent
+                  for most of the iOS native apps. */}
+              <InfoButton shouldCancelWhenOutside name="third"/>
+            </RectButton>
+          </View>
           <Text style={styles.text}>
-            {LOREM_IPSUM}
             {LOREM_IPSUM}
           </Text>
         </ScrollView>
@@ -196,10 +361,56 @@ export default class Example extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: (Platform.OS === 'ios') ? 20 : 0,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+  },
+  rectButton: {
+    flex: 1,
+    height: 60,
+    padding: 10,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  table: {
+    marginTop: 20,
+    marginBottom: 20,
+    marginLeft: -1,
+    marginRight: -1,
+    borderWidth: 1,
+    borderColor: '#999',
+    backgroundColor: 'white',
+  },
+  buttonDelimiter: {
+    height: 1,
+    marginLeft: 20,
+    marginRight: 20,
+    backgroundColor: '#999',
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
+  },
+  infoButton: {
+    width: 40,
+    height: 40,
+  },
+  infoButtonBorders: {
+    borderColor: '#467AFB',
+    borderWidth: 2,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    margin: 10,
+  },
+  infoButtonText: {
+    color: '#467AFB',
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
   },
   slider: {
     margin: 10,
@@ -208,9 +419,18 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  textinput: {
+    height: 40,
+    backgroundColor: 'white',
+    borderColor: 'gray',
+    borderWidth: 1,
+    margin: 10,
+    padding: 3,
+    borderRadius: 5,
+  },
   box: {
-    width: 50,
-    height: 50,
+    width: 150,
+    height: 150,
     alignSelf: 'center',
     backgroundColor: 'plum',
     margin: 10,
@@ -241,6 +461,16 @@ const styles = StyleSheet.create({
   toolbar: {
     backgroundColor: '#e9eaed',
     height: 56,
+  },
+  pinchableBoxContainer: {
+    width: 250,
+    height: 250,
+    overflow: 'hidden',
+    alignSelf: 'center',
+    backgroundColor: 'black',
+  },
+  pinchableImage: {
+    flex: 1,
   },
 });
 

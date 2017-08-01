@@ -5,19 +5,90 @@ import android.view.VelocityTracker;
 
 public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
-  private static float MIN_DISTANCE_IGNORE = Float.MAX_VALUE;
+  private static float MIN_VALUE_IGNORE = Float.MAX_VALUE;
 
   private static float DEFAULT_MIN_DISTANCE = 10.0f;
-  private static float DEFAULT_MAX_VELOCITY = 50.0f;
+  private static int DEFAULT_MIN_POINTERS = 1;
+  private static int DEFAULT_MAX_POINTERS = 10;
 
-  private float mMinDeltaX = MIN_DISTANCE_IGNORE;
-  private float mMinDeltaY = MIN_DISTANCE_IGNORE;
+  private float mMinOffsetX = MIN_VALUE_IGNORE;
+  private float mMinOffsetY = MIN_VALUE_IGNORE;
+  private float mMinDeltaX = MIN_VALUE_IGNORE;
+  private float mMinDeltaY = MIN_VALUE_IGNORE;
   private float mMinDistSq = DEFAULT_MIN_DISTANCE * DEFAULT_MIN_DISTANCE;
-  private float mMaxVelocitySq = DEFAULT_MAX_VELOCITY;
+  private float mMinVelocityX = MIN_VALUE_IGNORE;
+  private float mMinVelocityY = MIN_VALUE_IGNORE;
+  private float mMinVelocitySq = MIN_VALUE_IGNORE;
+  private int mMinPointers = DEFAULT_MIN_POINTERS;
+  private int mMaxPointers = DEFAULT_MAX_POINTERS;
 
   private float mStartX, mStartY;
+  private float mOffsetX, mOffsetY;
   private float mLastX, mLastY;
+  private float mLastVelocityX, mLastVelocityY;
   private VelocityTracker mVelocityTracker;
+
+  private boolean mAverageTouches;
+
+  /**
+   * On Android when there are multiple pointers on the screen pan gestures most often just consider
+   * the last placed pointer. The behaviour on iOS is quite different where the x and y component
+   * of the pan pointer is calculated as an average out of all the pointers placed on the screen.
+   *
+   * This behaviour can be customized on android by setting averageTouches property of the handler
+   * object. This could be useful in particular for the usecases when we attach other handlers that
+   * recognizes multi-finger gestures such as rotation. In that case when we only rely on the last
+   * placed finger it is easier for the gesture handler to trigger when we do a rotation gesture
+   * because each finger when treated separately will travel some distance, whereas the average
+   * position of all the fingers will remain still while doing a rotation gesture.
+   */
+  private static float getLastPointerX(MotionEvent event, boolean averageTouches) {
+    float offset = event.getRawX() - event.getX();
+    int excludeIndex = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ?
+            event.getActionIndex() : -1;
+
+    if (averageTouches) {
+      float sum = 0f;
+      int count = 0;
+      for (int i = 0, size = event.getPointerCount(); i < size; i++) {
+        if (i != excludeIndex) {
+          sum += event.getX(i) + offset;
+          count++;
+        }
+      }
+      return sum / count;
+    } else {
+      int lastPointerIdx = event.getPointerCount() - 1;
+      if (lastPointerIdx == excludeIndex) {
+        lastPointerIdx--;
+      }
+      return event.getX(lastPointerIdx) + offset;
+    }
+  }
+
+  private static float getLastPointerY(MotionEvent event, boolean averageTouches) {
+    float offset = event.getRawY() - event.getY();
+    int excludeIndex = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ?
+            event.getActionIndex() : -1;
+
+    if (averageTouches) {
+      float sum = 0f;
+      int count = 0;
+      for (int i = 0, size = event.getPointerCount(); i < size; i++) {
+        if (i != excludeIndex) {
+          sum += event.getY(i) + offset;
+          count++;
+        }
+      }
+      return sum / count;
+    } else {
+      int lastPointerIdx = event.getPointerCount() - 1;
+      if (lastPointerIdx == excludeIndex) {
+        lastPointerIdx -= 1;
+      }
+      return event.getY(lastPointerIdx) + offset;
+    }
+  }
 
   public PanGestureHandler setMinDx(float deltaX) {
     mMinDeltaX = deltaX;
@@ -29,47 +100,151 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return this;
   }
 
+  public PanGestureHandler setMinOffsetX(float offsetX) {
+    mMinOffsetX = offsetX;
+    return this;
+  }
+
+  public PanGestureHandler setMinOffsetY(float offsetY) {
+    mMinOffsetY = offsetY;
+    return this;
+  }
+
   public PanGestureHandler setMinDist(float minDist) {
     mMinDistSq = minDist * minDist;
     return this;
   }
 
-  /**
-   * @param maxVelocity in pixels per millisecond
-   */
-  public PanGestureHandler setMaxVelocity(float maxVelocity) {
-    mMaxVelocitySq = maxVelocity * maxVelocity;
+  public PanGestureHandler setMinPointers(int minPointers) {
+    mMinPointers = minPointers;
     return this;
+  }
+
+  public PanGestureHandler setMaxPointers(int maxPointers) {
+    mMaxPointers = maxPointers;
+    return this;
+  }
+
+  public PanGestureHandler setAverageTouches(boolean averageTouches) {
+    mAverageTouches = averageTouches;
+    return this;
+  }
+
+  /**
+   * @param minVelocity in pixels per second
+   */
+  public PanGestureHandler setMinVelocity(float minVelocity) {
+    mMinVelocitySq = minVelocity * minVelocity;
+    return this;
+  }
+
+  public PanGestureHandler setMinVelocityX(float minVelocityX) {
+    mMinVelocityX = minVelocityX;
+    return this;
+  }
+
+  public PanGestureHandler setMinVelocityY(float minVelocityY) {
+    mMinVelocityY = minVelocityY;
+    return this;
+  }
+
+  private boolean shouldActivate() {
+    float dx = mLastX - mStartX + mOffsetX;
+    if (mMinDeltaX != MIN_VALUE_IGNORE && Math.abs(dx) >= mMinDeltaX) {
+      return true;
+    }
+    if (mMinOffsetX != MIN_VALUE_IGNORE &&
+            ((mMinOffsetX < 0 && dx <= mMinOffsetX) || (mMinOffsetX >= 0 && dx >= mMinOffsetX))) {
+      return true;
+    }
+
+    float dy = mLastY - mStartY + mOffsetY;
+    if (mMinDeltaY != MIN_VALUE_IGNORE && Math.abs(dy) >= mMinDeltaY) {
+      return true;
+    }
+    if (mMinOffsetY != MIN_VALUE_IGNORE &&
+            ((mMinOffsetY < 0 && dy <= mMinOffsetY) || (mMinOffsetY >= 0 && dy >= mMinOffsetY))) {
+      return true;
+    }
+
+    float distSq = dx * dx + dy * dy;
+    if (mMinDistSq != MIN_VALUE_IGNORE && distSq >= mMinDistSq) {
+      return true;
+    }
+
+    float vx = mLastVelocityX;
+    if (mMinVelocityX != MIN_VALUE_IGNORE &&
+            ((mMinVelocityX < 0 && vx <= mMinVelocityX) || (mMinVelocityX >= 0 && vx >= mMinVelocityX))) {
+      return true;
+    }
+
+    float vy = mLastVelocityY;
+    if (mMinVelocityY != MIN_VALUE_IGNORE &&
+            ((mMinVelocityY < 0 && vx <= mMinVelocityY) || (mMinVelocityY >= 0 && vx >= mMinVelocityY))) {
+      return true;
+    }
+
+    float velocitySq = vx * vx + vy * vy;
+    if (mMinVelocitySq != MIN_VALUE_IGNORE && velocitySq >= mMinVelocitySq) {
+      return true;
+    }
+
+    return false;
   }
 
   @Override
   protected void onHandle(MotionEvent event) {
     int state = getState();
-    mLastX = event.getRawX();
-    mLastY = event.getRawY();
-    if (state == STATE_UNDETERMINED) {
+    int action = event.getActionMasked();
+
+    if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
+      // update offset if new pointer gets added or removed
+      mOffsetX += mLastX - mStartX;
+      mOffsetY += mLastY - mStartY;
+
+      // reset starting point
+      mLastX = getLastPointerX(event, mAverageTouches);
+      mLastY = getLastPointerY(event, mAverageTouches);
       mStartX = mLastX;
       mStartY = mLastY;
+    } else {
+      mLastX = getLastPointerX(event, mAverageTouches);
+      mLastY = getLastPointerY(event, mAverageTouches);
+    }
+
+    if (state == STATE_UNDETERMINED && event.getPointerCount() >= mMinPointers) {
+      mStartX = mLastX;
+      mStartY = mLastY;
+      mOffsetX = 0;
+      mOffsetY = 0;
       mVelocityTracker = VelocityTracker.obtain();
       mVelocityTracker.addMovement(event);
       begin();
-    } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+    } else if (mVelocityTracker != null) {
+      mVelocityTracker.addMovement(event);
+      mVelocityTracker.computeCurrentVelocity(1000);
+      mLastVelocityX = mVelocityTracker.getXVelocity();
+      mLastVelocityY = mVelocityTracker.getYVelocity();
+    }
+
+    if (action == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
         end();
       } else {
         fail();
       }
+    } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN)
+            && (event.getPointerCount() < mMinPointers || event.getPointerCount() > mMaxPointers)) {
+      if (state == STATE_ACTIVE) {
+        cancel();
+      } else {
+        fail();
+      }
     } else if (state == STATE_BEGAN) {
-      float dx = Math.abs(mStartX - mLastX);
-      float dy = Math.abs(mStartY - mLastY);
-      float distSq = dx * dx + dy * dy;
-      mVelocityTracker.addMovement(event);
-      mVelocityTracker.computeCurrentVelocity(1);
-      float velocityX = mVelocityTracker.getXVelocity();
-      float velocityY = mVelocityTracker.getYVelocity();
-      float velocitySq = velocityX * velocityX + velocityY * velocityY;
-      if (velocitySq < mMaxVelocitySq &&
-              (distSq > mMinDistSq || dx > mMinDeltaX || dy > mMinDeltaY)) {
+      if (shouldActivate()) {
+        // reset starting point
+        mStartX = mLastX;
+        mStartY = mLastY;
         activate();
       }
     }
@@ -84,10 +259,18 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   }
 
   public float getTranslationX() {
-    return mLastX - mStartX;
+    return mLastX - mStartX + mOffsetX;
   }
 
   public float getTranslationY() {
-    return mLastY - mStartY;
+    return mLastY - mStartY + mOffsetY;
+  }
+
+  public float getVelocityX() {
+    return mLastVelocityX;
+  }
+
+  public float getVelocityY() {
+    return mLastVelocityY;
   }
 }

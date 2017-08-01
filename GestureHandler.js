@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import {
   findNodeHandle,
+  requireNativeComponent,
+  Animated,
   NativeModules,
   ScrollView,
   Slider,
@@ -8,7 +10,10 @@ import {
   TextInput,
   ToolbarAndroid,
   ViewPagerAndroid,
+  DrawerLayoutAndroid,
   WebView,
+  StyleSheet,
+  Platform,
 } from 'react-native';
 
 const RNGestureHandlerModule = NativeModules.RNGestureHandlerModule;
@@ -25,16 +30,16 @@ UIManager.clearJSResponder = () => {
   oldClearJSResponder();
 }
 
-const State = RNGestureHandlerModule.State
+const State = RNGestureHandlerModule.State;
 
-const CHILD_REF = 'CHILD_REF';
-
-let handlerTag = 1
+let handlerTag = 1;
+const handlerIDToTag = {};
 
 const GestureHandlerPropTypes = {
+  id: PropTypes.string,
+  waitFor: PropTypes.oneOf(PropTypes.string),
+  simultaneousHandlers: PropTypes.oneOf(PropTypes.string),
   shouldCancelWhenOutside: PropTypes.bool,
-  shouldCancelOthersWhenActivated: PropTypes.bool,
-  shouldBeRequiredByOthersToFail: PropTypes.bool,
   hitSlop: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.shape({
@@ -55,6 +60,16 @@ function canUseNativeParam(param) {
     ((typeof param !== 'object') || !('__isNative' in param));
 }
 
+function transformIntoHandlerTags(handlerIDs) {
+  if (!Array.isArray(handlerIDs)) {
+    handlerIDs = [ handlerIDs ];
+  }
+  // converts handler string IDs into their numeric tags
+  return handlerIDs
+    .map(handlerID => handlerIDToTag[handlerID] || -1)
+    .filter(handlerTag => handlerTag > 0);
+}
+
 function filterConfig(component, defaults = {}) {
   const props = component.props;
   const validProps = component.constructor.propTypes
@@ -62,9 +77,13 @@ function filterConfig(component, defaults = {}) {
   Object.keys(validProps).forEach(key => {
     const value = props[key]
     if (canUseNativeParam(value)) {
-      res[key] = props[key];
+      let value = props[key];
+      if (key === 'simultaneousHandlers' || key === 'waitFor') {
+        value = transformIntoHandlerTags(props[key]);
+      }
+      res[key] = value;
     }
-  })
+  });
   return res;
 }
 
@@ -78,6 +97,12 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     constructor(props) {
       super(props);
       this._handlerTag = handlerTag++;
+      if (props.id) {
+        if (handlerIDToTag[props.id] !== undefined) {
+          throw new Error(`Handler with ID "${props.id}" already registered`);
+        }
+        handlerIDToTag[props.id] = this._handlerTag;
+      }
     }
 
     _onGestureHandlerEvent = (event) => {
@@ -96,13 +121,26 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       }
     }
 
+    _refHandler = (node) => {
+      this._viewNode = node;
+
+      const child = React.Children.only(this.props.children);
+      const { ref } = child;
+      if (typeof ref === 'function') {
+        ref(node);
+      }
+    }
+
     componentWillUnmount() {
-      const viewTag = findNodeHandle(this.refs[CHILD_REF]);
+      const viewTag = findNodeHandle(this._viewNode);
       RNGestureHandlerModule.dropGestureHandlersForView(viewTag);
+      if (this.props.id) {
+        delete handlerIDToTag[this.props.id];
+      }
     }
 
     componentDidMount() {
-      const viewTag = findNodeHandle(this.refs[CHILD_REF]);
+      const viewTag = findNodeHandle(this._viewNode);
       RNGestureHandlerModule.createGestureHandler(
         viewTag,
         handlerName,
@@ -133,7 +171,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       }
       const child = React.Children.only(this.props.children);
       return React.cloneElement(child, {
-        ref: CHILD_REF,
+        ref: this._refHandler,
         collapsable: false,
         onGestureHandlerEvent: gestureEventHandler,
         onGestureHandlerStateChange: this._onGestureHandlerStateChange,
@@ -145,59 +183,105 @@ function createHandler(handlerName, propTypes = null, config = {}) {
 
 const NativeViewGestureHandler = createHandler('NativeViewGestureHandler', {
   shouldActivateOnStart: PropTypes.bool,
+  disallowInterruption: PropTypes.bool,
 });
 const TapGestureHandler = createHandler('TapGestureHandler', {
   maxDurationMs: PropTypes.number,
   maxDelayMs: PropTypes.number,
   numberOfTaps: PropTypes.number,
-}, {
-  shouldCancelOthersWhenActivated: true,
-});
+}, {});
 const LongPressGestureHandler = createHandler('LongPressGestureHandler', {
   minDurationMs: PropTypes.number,
-}, {
-  shouldCancelOthersWhenActivated: true,
-});
+}, {});
 const PanGestureHandler = createHandler('PanGestureHandler', {
   minDeltaX: PropTypes.number,
   minDeltaY: PropTypes.number,
+  minOffsetX: PropTypes.number,
+  minOffsetY: PropTypes.number,
   minDist: PropTypes.number,
-  maxVelocity: PropTypes.number,
-}, {
-  shouldCancelOthersWhenActivated: true,
-});
+  minVelocity: PropTypes.number,
+  minVelocityX: PropTypes.number,
+  minVelocityY: PropTypes.number,
+  minPointers: PropTypes.number,
+  maxPointers: PropTypes.number,
+  avgTouches: PropTypes.number,
+}, {});
+const PinchGestureHandler = createHandler('PinchGestureHandler', {}, {});
+const RotationGestureHandler = createHandler('RotationGestureHandler', {}, {});
 
 function createNativeWrapper(Component, config = {}) {
   class ComponentWrapper extends React.Component {
+    static propTypes = {
+      ...NativeViewGestureHandler.propTypes,
+      ...Component.propTypes,
+    }
+
     constructor(props) {
       super(props);
       this._handlerTag = handlerTag++;
+      if (props.id) {
+        if (handlerIDToTag[props.id] !== undefined) {
+          throw new Error(`Handler with ID "${props.id}" already registered`);
+        }
+        handlerIDToTag[props.id] = this._handlerTag;
+      }
+    }
+
+    _refHandler = (node) => {
+      this._viewNode = node;
     }
 
     componentWillUnmount() {
-      const viewTag = findNodeHandle(this.refs[CHILD_REF]);
+      const viewTag = findNodeHandle(this._viewNode);
       RNGestureHandlerModule.dropGestureHandlersForView(viewTag);
+      if (this.props.id) {
+        delete handlerIDToTag[this.props.id];
+      }
     }
 
     componentDidMount() {
-      const viewTag = findNodeHandle(this.refs[CHILD_REF]);
-      RNGestureHandlerModule.createGestureHandler(viewTag, 'NativeViewGestureHandler', this._handlerTag, config);
+      const viewTag = findNodeHandle(this._viewNode);
+      RNGestureHandlerModule.createGestureHandler(
+        viewTag,
+        'NativeViewGestureHandler',
+        this._handlerTag,
+        filterConfig(this, config)
+      );
     }
 
     render() {
-      return <Component {...this.props} ref={CHILD_REF} />;
+      const { onGestureEvent, onHandlerStateChange, ...rest } = this.props;
+      return (
+        <Component
+          {...rest}
+          onGestureHandlerEvent={onGestureEvent}
+          onGestureHandlerStateChange={onHandlerStateChange}
+          ref={this._refHandler}
+        />
+      );
     }
   }
   return ComponentWrapper;
 }
 
-const WrappedScrollView = createNativeWrapper(ScrollView);
-const WrappedSlider = createNativeWrapper(Slider, { shouldCancelWhenOutside: false, shouldActivateOnStart: true });
-const WrappedSwitch = createNativeWrapper(Switch);
+const WrappedScrollView = createNativeWrapper(ScrollView, { disallowInterruption: true });
+const WrappedSlider = createNativeWrapper(Slider, {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: true,
+  disallowInterruption: true,
+});
+const WrappedSwitch = createNativeWrapper(Switch, {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: true,
+  disallowInterruption: true,
+});
 const WrappedTextInput = createNativeWrapper(TextInput);
+const WrappedWebView = createNativeWrapper(WebView);
+
 const WrappedToolbarAndroid = createNativeWrapper(ToolbarAndroid);
 const WrappedViewPagerAndroid = createNativeWrapper(ViewPagerAndroid);
-const WrappedWebView = createNativeWrapper(WebView);
+const WrappedDrawerLayoutAndroid = createNativeWrapper(DrawerLayoutAndroid);
+WrappedDrawerLayoutAndroid.positions = DrawerLayoutAndroid.positions;
 
 State.print = (state) => {
   const keys = Object.keys(State);
@@ -208,6 +292,106 @@ State.print = (state) => {
   }
 }
 
+const RawButton = createNativeWrapper(requireNativeComponent('RNGestureHandlerButton', null), {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: false,
+});
+
+/* Buttons */
+
+class BaseButton extends React.Component {
+  static propTypes = RawButton.propTypes;
+  constructor(props) {
+    super(props);
+    this._lastActive = false;
+  }
+  _onHandlerEvent = (e) => {
+    const { state, oldState, pointerInside } = e.nativeEvent;
+    const active = pointerInside && state === State.ACTIVE;
+    if (active != this._lastActive) {
+      this.props.onActiveStateChange && this.props.onActiveStateChange(active);
+    }
+    if (oldState === State.ACTIVE && state !== State.CANCELLED && this._lastActive) {
+      this.props.onPress && this.props.onPress(active);
+    }
+    this._lastActive = active;
+  }
+  render() {
+    return (
+      <RawButton
+        {...this.props}
+        onHandlerStateChange={this._onHandlerEvent}
+        onGestureEvent={this._onHandlerEvent}
+      />
+    )
+  }
+}
+
+const btnStyles = StyleSheet.create({
+  underlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+  },
+  borderlessContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+  }
+});
+
+class RectButton extends React.Component {
+  static propTypes = BaseButton.propTypes;
+  static defaultProps = {
+    activeOpacity: 0.105,
+    underlayColor: 'black',
+  }
+  constructor(props) {
+    super(props);
+    this._opacity = new Animated.Value(0);
+  }
+  _handleActiveStateChange = Platform.OS === 'android' ? null : (active) => {
+    this._opacity.setValue(active ? this.props.activeOpacity : 0);
+  }
+  render() {
+    const { children, ...rest } = this.props;
+    return (
+      <BaseButton {...rest} onActiveStateChange={this._handleActiveStateChange}>
+        <Animated.View style={[btnStyles.underlay, { backgroundColor: this.props.underlayColor }, { opacity: this._opacity }]} />
+        {children}
+      </BaseButton>
+    );
+  }
+}
+
+class BorderlessButton extends React.Component {
+  static propTypes = BaseButton.propTypes;
+  static defaultProps = {
+    activeOpacity: 0.3,
+  }
+  constructor(props) {
+    super(props);
+    this._opacity = new Animated.Value(1);
+  }
+  _handleActiveStateChange = Platform.OS === 'android' ? null : (active) => {
+    this._opacity.setValue(active ? this.props.activeOpacity : 1);
+  }
+  render() {
+    const { children, ...rest } = this.props;
+    return (
+      <BaseButton borderless={true} {...rest} onActiveStateChange={this._handleActiveStateChange}>
+        <Animated.View style={[btnStyles.borderlessContainer, { opacity: this._opacity }]}>
+          {children}
+        </Animated.View>
+      </BaseButton>
+    )
+  }
+}
+
 export {
   WrappedScrollView as ScrollView,
   WrappedSlider as Slider,
@@ -215,10 +399,19 @@ export {
   WrappedTextInput as TextInput,
   WrappedToolbarAndroid as ToolbarAndroid,
   WrappedViewPagerAndroid as ViewPagerAndroid,
+  WrappedDrawerLayoutAndroid as DrawerLayoutAndroid,
   WrappedWebView as WebView,
   NativeViewGestureHandler,
   TapGestureHandler,
   LongPressGestureHandler,
   PanGestureHandler,
+  PinchGestureHandler,
+  RotationGestureHandler,
   State,
+
+  /* Buttons */
+  RawButton,
+  BaseButton,
+  RectButton,
+  BorderlessButton,
 }

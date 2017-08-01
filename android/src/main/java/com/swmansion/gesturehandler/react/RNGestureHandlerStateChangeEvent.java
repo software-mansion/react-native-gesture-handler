@@ -4,9 +4,11 @@ import android.support.v4.util.Pools;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.swmansion.gesturehandler.GestureHandler;
+
+import javax.annotation.Nullable;
 
 public class RNGestureHandlerStateChangeEvent extends Event<RNGestureHandlerStateChangeEvent>{
 
@@ -18,57 +20,41 @@ public class RNGestureHandlerStateChangeEvent extends Event<RNGestureHandlerStat
           new Pools.SynchronizedPool<>(TOUCH_EVENTS_POOL_SIZE);
 
   public static RNGestureHandlerStateChangeEvent obtain(
-          int viewTag,
-          int handlerTag,
+          GestureHandler handler,
           int newState,
           int oldState,
-          float lastX,
-          float lastY,
-          float lastTranslationX,
-          float lastTranslationY) {
+          @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
     RNGestureHandlerStateChangeEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new RNGestureHandlerStateChangeEvent();
     }
-    event.init(
-            viewTag,
-            handlerTag,
-            newState,
-            oldState,
-            lastX,
-            lastY,
-            lastTranslationX,
-            lastTranslationY);
+    event.init(handler, newState, oldState, dataExtractor);
     return event;
   }
 
-  private int mState, mOldState, mHandlerTag;
-  private float mLastX, mLastY, mLastTranslationX, mLastTranslationY;
+  private WritableMap mExtraData;
 
   private RNGestureHandlerStateChangeEvent() {
   }
 
   private void init(
-          int viewTag,
-          int handlerTag,
+          GestureHandler handler,
           int newState,
           int oldState,
-          float lastX,
-          float lastY,
-          float lastTranslationX,
-          float lastTranslationY) {
-    super.init(viewTag);
-    mHandlerTag = handlerTag;
-    mState = newState;
-    mOldState = oldState;
-    mLastX = lastX;
-    mLastY = lastY;
-    mLastTranslationX = lastTranslationX;
-    mLastTranslationY = lastTranslationY;
+          @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
+    super.init(handler.getView().getId());
+    mExtraData = Arguments.createMap();
+    if (dataExtractor != null) {
+      dataExtractor.extractEventData(handler, mExtraData);
+    }
+    mExtraData.putInt("handlerTag", handler.getTag());
+    mExtraData.putInt("state", newState);
+    mExtraData.putInt("oldState", oldState);
   }
 
   @Override
   public void onDispose() {
+    mExtraData = null;
     EVENTS_POOL.release(this);
   }
 
@@ -91,16 +77,6 @@ public class RNGestureHandlerStateChangeEvent extends Event<RNGestureHandlerStat
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    WritableMap data = Arguments.createMap();
-    data.putInt("handlerTag", mHandlerTag);
-    data.putInt("state", mState);
-    data.putInt("oldState", mOldState);
-    data.putDouble("lastX", PixelUtil.toDIPFromPixel(mLastX));
-    data.putDouble("lastY", PixelUtil.toDIPFromPixel(mLastY));
-    if (!Float.isNaN(mLastTranslationX)) {
-      data.putDouble("lastTranslationX", PixelUtil.toDIPFromPixel(mLastTranslationX));
-      data.putDouble("lastTranslationY", PixelUtil.toDIPFromPixel(mLastTranslationY));
-    }
-    rctEventEmitter.receiveEvent(getViewTag(), EVENT_NAME, data);
+    rctEventEmitter.receiveEvent(getViewTag(), EVENT_NAME, mExtraData);
   }
 }
