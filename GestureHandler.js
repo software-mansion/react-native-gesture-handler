@@ -196,8 +196,12 @@ const LongPressGestureHandler = createHandler('LongPressGestureHandler', {
 const PanGestureHandler = createHandler('PanGestureHandler', {
   minDeltaX: PropTypes.number,
   minDeltaY: PropTypes.number,
+  minOffsetX: PropTypes.number,
+  minOffsetY: PropTypes.number,
   minDist: PropTypes.number,
-  maxVelocity: PropTypes.number,
+  minVelocity: PropTypes.number,
+  minVelocityX: PropTypes.number,
+  minVelocityY: PropTypes.number,
   minPointers: PropTypes.number,
   maxPointers: PropTypes.number,
   avgTouches: PropTypes.number,

@@ -8,7 +8,8 @@
 #import <React/RCTTouchHandler.h>
 
 #define VEC_LEN_SQ(pt) (pt.x * pt.x + pt.y * pt.y)
-
+#define TEST_MIN_IF_NOT_NAN(value, limit) \
+    (!isnan(limit) && ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit)))
 
 @interface RNDummyGestureRecognizer : UIGestureRecognizer
 @end
@@ -280,8 +281,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 @property (nonatomic) CGFloat minDeltaX;
 @property (nonatomic) CGFloat minDeltaY;
+@property (nonatomic) CGFloat minOffsetX;
+@property (nonatomic) CGFloat minOffsetY;
 @property (nonatomic) CGFloat minDistSq;
-@property (nonatomic) CGFloat maxVelocitySq;
+@property (nonatomic) CGFloat minVelocityX;
+@property (nonatomic) CGFloat minVelocityY;
+@property (nonatomic) CGFloat minVelocitySq;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 - (BOOL)shouldActivate;
@@ -300,8 +305,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         _gestureHandler = gestureHandler;
         _minDeltaX = NAN;
         _minDeltaY = NAN;
+        _minOffsetX = NAN;
+        _minOffsetY = NAN;
         _minDistSq = NAN;
-        _maxVelocitySq = NAN;
+        _minVelocityX = NAN;
+        _minVelocityY = NAN;
+        _minVelocitySq = NAN;
         _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
     }
     return self;
@@ -328,13 +337,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
         [super touchesMoved:touches withEvent:event];
     }
-    if (self.state == UIGestureRecognizerStateChanged && !isnan(_maxVelocitySq)) {
-        CGPoint velocity = [self velocityInView:self.view];
-        if (VEC_LEN_SQ(velocity) >= _maxVelocitySq) {
-            self.state = UIGestureRecognizerStateFailed;
-            return;
-        }
-    }
 }
 
 - (void)reset
@@ -345,25 +347,50 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (BOOL)shouldActivate
 {
-    if (!isnan(_minDistSq) || !isnan(_minDeltaX) || !isnan(_minDeltaY)) {
-        BOOL ready = NO;
-        CGPoint trans = [self translationInView:self.view];
-
-        if (!isnan(_minDeltaX) && trans.x >= _minDeltaX) {
-            ready = YES;
-        }
-        if (!isnan(_minDeltaY) && trans.y >= _minDeltaY) {
-            ready = YES;
-        }
-        if (!isnan(_minDistSq) && VEC_LEN_SQ(trans) >= _minDistSq) {
-            ready = YES;
-        }
-
-        if (!ready) {
+    if (!isnan(_minDistSq) || !isnan(_minDeltaX) || !isnan(_minDeltaY)
+        || !isnan(_minOffsetX) || !isnan(_minOffsetY)
+        || !isnan(_minVelocityX) || !isnan(_minVelocityY) || !isnan(_minVelocitySq)) {
+        if ([self shouldActivateForCustomConfig]) {
+            [self setTranslation:CGPointMake(0, 0) inView:self.view];
+            return YES;
+        } else {
             return NO;
         }
     }
     return YES;
+}
+
+- (BOOL)shouldActivateForCustomConfig
+{
+    CGPoint trans = [self translationInView:self.view];
+    if (TEST_MIN_IF_NOT_NAN(fabs(trans.x), _minDeltaX)) {
+        return YES;
+    }
+    if (TEST_MIN_IF_NOT_NAN(fabs(trans.y), _minDeltaY)) {
+        return YES;
+    }
+    if (TEST_MIN_IF_NOT_NAN(trans.x, _minOffsetX)) {
+        return YES;
+    }
+    if (TEST_MIN_IF_NOT_NAN(trans.y, _minOffsetY)) {
+        return YES;
+    }
+    if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ(trans), _minDistSq)) {
+        return YES;
+    }
+
+    CGPoint velocity = [self velocityInView:self.view];
+    if (TEST_MIN_IF_NOT_NAN(velocity.x, _minVelocityX)) {
+        return YES;
+    }
+    if (TEST_MIN_IF_NOT_NAN(velocity.y, _minVelocityY)) {
+        return YES;
+    }
+    if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ(velocity), _minVelocitySq)) {
+        return YES;
+    }
+
+    return NO;
 }
 
 @end
@@ -386,16 +413,36 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             recognizer.minDeltaY = [RCTConvert CGFloat:prop];
         }
 
+        prop = config[@"minOffsetX"];
+        if (prop != nil) {
+            recognizer.minOffsetX = [RCTConvert CGFloat:prop];
+        }
+
+        prop = config[@"minOffsetY"];
+        if (prop != nil) {
+            recognizer.minOffsetY = [RCTConvert CGFloat:prop];
+        }
+
         prop = config[@"minDist"];
         if (prop != nil) {
             CGFloat dist = [RCTConvert CGFloat:prop];
             recognizer.minDistSq = dist * dist;
         }
 
-        prop = config[@"maxVelocity"];
+        prop = config[@"minVelocityX"];
+        if (prop != nil) {
+            recognizer.minVelocityX = [RCTConvert CGFloat:prop];
+        }
+
+        prop = config[@"minVelocityY"];
+        if (prop != nil) {
+            recognizer.minVelocityY = [RCTConvert CGFloat:prop];
+        }
+
+        prop = config[@"minVelocity"];
         if (prop != nil) {
             CGFloat velocity = [RCTConvert CGFloat:prop];
-            recognizer.maxVelocitySq = velocity * velocity;
+            recognizer.minVelocitySq = velocity * velocity;
         }
 
         prop = config[@"minPointers"];
@@ -618,7 +665,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     } else {
         [super bindToView:view];
     }
-    
+
     // We can restore default scrollview behaviour to delay touches to scrollview's children
     // because gesture handler system can handle cancellation of scroll recognizer when JS responder
     // is set
@@ -634,7 +681,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 {
     [self reset];
-    
+
     if (_disallowInterruption) {
         // When `disallowInterruption` is set we cancel all gesture handlers when this UIControl
         // gets DOWN event
@@ -645,7 +692,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             }
         }
     }
-    
+
     [self sendEventsInState:RNGestureHandlerStateActive
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
@@ -810,16 +857,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
  * It's done this way as it allows for the actual target determination to run in JS
  * where we can travers up the view ierarchy to find first element that want to became
  * JS responder.
- * 
+ *
  * Since we want to use native button (or actually a `UIControl`) we need to determine
  * the target in native. This makes it impossible for JS responder based components to
  * function as a subviews of the button component. Here we override `hitTest:withEvent:`
- * method and we only determine the target to be either a subclass of `UIControl` or a 
+ * method and we only determine the target to be either a subclass of `UIControl` or a
  * view that has gesture recognizers registered.
  *
- * This "default" behaviour of target determinator should be sufficient in most of the 
+ * This "default" behaviour of target determinator should be sufficient in most of the
  * cases as in fact it is not that common UI pattern to have many nested buttons (usually
- * there are just two levels e.g. when you have clickable table cells with additional 
+ * there are just two levels e.g. when you have clickable table cells with additional
  * buttons). In cases when the default behaviour is insufficient it is recommended to use
  * `TapGestureHandler` instead of a button which gives much better flexibility as far as
  * controlling the touch flow.

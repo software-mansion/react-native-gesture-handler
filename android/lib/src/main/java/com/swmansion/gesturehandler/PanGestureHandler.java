@@ -5,17 +5,20 @@ import android.view.VelocityTracker;
 
 public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
-  private static float MIN_DISTANCE_IGNORE = Float.MAX_VALUE;
+  private static float MIN_VALUE_IGNORE = Float.MAX_VALUE;
 
   private static float DEFAULT_MIN_DISTANCE = 10.0f;
-  private static float DEFAULT_MAX_VELOCITY = 50.0f;
   private static int DEFAULT_MIN_POINTERS = 1;
   private static int DEFAULT_MAX_POINTERS = 10;
 
-  private float mMinDeltaX = MIN_DISTANCE_IGNORE;
-  private float mMinDeltaY = MIN_DISTANCE_IGNORE;
+  private float mMinOffsetX = MIN_VALUE_IGNORE;
+  private float mMinOffsetY = MIN_VALUE_IGNORE;
+  private float mMinDeltaX = MIN_VALUE_IGNORE;
+  private float mMinDeltaY = MIN_VALUE_IGNORE;
   private float mMinDistSq = DEFAULT_MIN_DISTANCE * DEFAULT_MIN_DISTANCE;
-  private float mMaxVelocitySq = DEFAULT_MAX_VELOCITY;
+  private float mMinVelocityX = MIN_VALUE_IGNORE;
+  private float mMinVelocityY = MIN_VALUE_IGNORE;
+  private float mMinVelocitySq = MIN_VALUE_IGNORE;
   private int mMinPointers = DEFAULT_MIN_POINTERS;
   private int mMaxPointers = DEFAULT_MAX_POINTERS;
 
@@ -97,6 +100,16 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return this;
   }
 
+  public PanGestureHandler setMinOffsetX(float offsetX) {
+    mMinOffsetX = offsetX;
+    return this;
+  }
+
+  public PanGestureHandler setMinOffsetY(float offsetY) {
+    mMinOffsetY = offsetY;
+    return this;
+  }
+
   public PanGestureHandler setMinDist(float minDist) {
     mMinDistSq = minDist * minDist;
     return this;
@@ -118,11 +131,65 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   }
 
   /**
-   * @param maxVelocity in pixels per millisecond
+   * @param minVelocity in pixels per second
    */
-  public PanGestureHandler setMaxVelocity(float maxVelocity) {
-    mMaxVelocitySq = maxVelocity * maxVelocity;
+  public PanGestureHandler setMinVelocity(float minVelocity) {
+    mMinVelocitySq = minVelocity * minVelocity;
     return this;
+  }
+
+  public PanGestureHandler setMinVelocityX(float minVelocityX) {
+    mMinVelocityX = minVelocityX;
+    return this;
+  }
+
+  public PanGestureHandler setMinVelocityY(float minVelocityY) {
+    mMinVelocityY = minVelocityY;
+    return this;
+  }
+
+  private boolean shouldActivate() {
+    float dx = mLastX - mStartX + mOffsetX;
+    if (mMinDeltaX != MIN_VALUE_IGNORE && Math.abs(dx) >= mMinDeltaX) {
+      return true;
+    }
+    if (mMinOffsetX != MIN_VALUE_IGNORE &&
+            ((mMinOffsetX < 0 && dx <= mMinOffsetX) || (mMinOffsetX >= 0 && dx >= mMinOffsetX))) {
+      return true;
+    }
+
+    float dy = mLastY - mStartY + mOffsetY;
+    if (mMinDeltaY != MIN_VALUE_IGNORE && Math.abs(dy) >= mMinDeltaY) {
+      return true;
+    }
+    if (mMinOffsetY != MIN_VALUE_IGNORE &&
+            ((mMinOffsetY < 0 && dy <= mMinOffsetY) || (mMinOffsetY >= 0 && dy >= mMinOffsetY))) {
+      return true;
+    }
+
+    float distSq = dx * dx + dy * dy;
+    if (mMinDistSq != MIN_VALUE_IGNORE && distSq >= mMinDistSq) {
+      return true;
+    }
+
+    float vx = mLastVelocityX;
+    if (mMinVelocityX != MIN_VALUE_IGNORE &&
+            ((mMinVelocityX < 0 && vx <= mMinVelocityX) || (mMinVelocityX >= 0 && vx >= mMinVelocityX))) {
+      return true;
+    }
+
+    float vy = mLastVelocityY;
+    if (mMinVelocityY != MIN_VALUE_IGNORE &&
+            ((mMinVelocityY < 0 && vx <= mMinVelocityY) || (mMinVelocityY >= 0 && vx >= mMinVelocityY))) {
+      return true;
+    }
+
+    float velocitySq = vx * vx + vy * vy;
+    if (mMinVelocitySq != MIN_VALUE_IGNORE && velocitySq >= mMinVelocitySq) {
+      return true;
+    }
+
+    return false;
   }
 
   @Override
@@ -155,7 +222,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       begin();
     } else if (mVelocityTracker != null) {
       mVelocityTracker.addMovement(event);
-      mVelocityTracker.computeCurrentVelocity(1);
+      mVelocityTracker.computeCurrentVelocity(1000);
       mLastVelocityX = mVelocityTracker.getXVelocity();
       mLastVelocityY = mVelocityTracker.getYVelocity();
     }
@@ -174,12 +241,10 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
         fail();
       }
     } else if (state == STATE_BEGAN) {
-      float dx = Math.abs(mStartX - mLastX + mOffsetX);
-      float dy = Math.abs(mStartY - mLastY + mOffsetY);
-      float distSq = dx * dx + dy * dy;
-      float velocitySq = mLastVelocityX * mLastVelocityX + mLastVelocityY * mLastVelocityY;
-      if (velocitySq < mMaxVelocitySq &&
-              (distSq > mMinDistSq || dx > mMinDeltaX || dy > mMinDeltaY)) {
+      if (shouldActivate()) {
+        // reset starting point
+        mStartX = mLastX;
+        mStartY = mLastY;
         activate();
       }
     }

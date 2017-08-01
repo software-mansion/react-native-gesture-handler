@@ -49,8 +49,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs";
   private static final String KEY_PAN_MIN_DELTA_X = "minDeltaX";
   private static final String KEY_PAN_MIN_DELTA_Y = "minDeltaY";
+  private static final String KEY_PAN_MIN_OFFSET_X = "minOffsetX";
+  private static final String KEY_PAN_MIN_OFFSET_Y = "minOffsetY";
   private static final String KEY_PAN_MIN_DIST = "minDist";
-  private static final String KEY_PAN_MAX_VELOCITY = "maxVelocity";
+  private static final String KEY_PAN_MIN_VELOCITY = "minVelocity";
+  private static final String KEY_PAN_MIN_VELOCITY_X = "minVelocityX";
+  private static final String KEY_PAN_MIN_VELOCITY_Y = "minVelocityY";
   private static final String KEY_PAN_MIN_POINTERS = "minPointers";
   private static final String KEY_PAN_MAX_POINTERS = "maxPointers";
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
@@ -196,14 +200,28 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (config.hasKey(KEY_PAN_MIN_DELTA_Y)) {
         handler.setMinDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DELTA_Y)));
       }
+      if (config.hasKey(KEY_PAN_MIN_OFFSET_X)) {
+        handler.setMinOffsetX(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_OFFSET_X)));
+      }
+      if (config.hasKey(KEY_PAN_MIN_OFFSET_Y)) {
+        handler.setMinOffsetY(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_OFFSET_Y)));
+      }
       if (config.hasKey(KEY_PAN_MIN_DIST)) {
         handler.setMinDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DIST)));
       }
-      if (config.hasKey(KEY_PAN_MAX_VELOCITY)) {
+
+      if (config.hasKey(KEY_PAN_MIN_VELOCITY)) {
         // This value is actually in DPs/ms, but we can use the same function as for converting
-        // just from DPs to pixels as the unit we're converting is in the numerator
-        handler.setMaxVelocity(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MAX_VELOCITY)));
+        // from DPs to pixels as the unit we're converting is in the numerator
+        handler.setMinVelocity(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY)));
       }
+      if (config.hasKey(KEY_PAN_MIN_VELOCITY_X)) {
+        handler.setMinVelocityX(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY_X)));
+      }
+      if (config.hasKey(KEY_PAN_MIN_VELOCITY_Y)) {
+        handler.setMinVelocityY(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY_Y)));
+      }
+
       if (config.hasKey(KEY_PAN_MIN_POINTERS)) {
         handler.setMinPointers(config.getInt(KEY_PAN_MIN_POINTERS));
       }
