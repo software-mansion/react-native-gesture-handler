@@ -51,7 +51,10 @@ const GestureHandlerPropTypes = {
       horizontal: PropTypes.number,
     }),
   ]),
-  onGestureEvent: PropTypes.func,
+  onGestureEvent: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
   onHandlerStateChange: PropTypes.func,
 }
 
