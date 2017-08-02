@@ -680,6 +680,19 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 {
+    // When button is placed in scrollable component and in some other gesture
+    // recognizer and if that recognizer activates the scrollview will cancel
+    // its recognizer which in turn will send delayed touch down.
+    // To make sure touch down event does not get delivered we verify if there are
+    // any recognizers that are active at the moment of receiving down event.
+    for (UITouch *touch in event.allTouches) {
+        for (UIGestureRecognizer *recognizer in touch.gestureRecognizers) {
+            if (recognizer.state == UIGestureRecognizerStateBegan
+                || recognizer.state == UIGestureRecognizerStateChanged) {
+                return;
+            }
+        }
+    }
     [self reset];
 
     if (_disallowInterruption) {
