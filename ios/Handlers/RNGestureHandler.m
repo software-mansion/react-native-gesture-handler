@@ -297,6 +297,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 @implementation RNBetterPanGestureRecognizer {
     __weak RNGestureHandler *_gestureHandler;
     NSUInteger _realMinimumNumberOfTouches;
+    BOOL _hasCustomCriteria;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
@@ -311,6 +312,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         _minVelocityX = NAN;
         _minVelocityY = NAN;
         _minVelocitySq = NAN;
+        _hasCustomCriteria = [self hasCustomCriteria];
         _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
     }
     return self;
@@ -323,19 +325,24 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
-    // the gesture too early before we are sure that all criteria (e.g. minimum distance
-    // etc. are met)
-    super.minimumNumberOfTouches = 20;
+    if (_hasCustomCriteria) {
+        // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
+        // the gesture too early before we are sure that all criteria (e.g. minimum distance
+        // etc. are met)
+        super.minimumNumberOfTouches = 20;
+    } else {
+        super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
+    }
     [super touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     [super touchesMoved:touches withEvent:event];
-    if (self.state == UIGestureRecognizerStatePossible && [self shouldActivate]) {
+    if (_hasCustomCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
+        self.state = UIGestureRecognizerStateBegan;
         super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
-        [super touchesMoved:touches withEvent:event];
+        [self setTranslation:CGPointMake(0, 0) inView:self.view];
     }
 }
 
@@ -345,22 +352,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [super reset];
 }
 
-- (BOOL)shouldActivate
+- (BOOL)hasCustomCriteria
 {
-    if (!isnan(_minDistSq) || !isnan(_minDeltaX) || !isnan(_minDeltaY)
+    return !isnan(_minDistSq) || !isnan(_minDeltaX) || !isnan(_minDeltaY)
         || !isnan(_minOffsetX) || !isnan(_minOffsetY)
-        || !isnan(_minVelocityX) || !isnan(_minVelocityY) || !isnan(_minVelocitySq)) {
-        if ([self shouldActivateForCustomConfig]) {
-            [self setTranslation:CGPointMake(0, 0) inView:self.view];
-            return YES;
-        } else {
-            return NO;
-        }
-    }
-    return YES;
+        || !isnan(_minVelocityX) || !isnan(_minVelocityY) || !isnan(_minVelocitySq);
 }
 
-- (BOOL)shouldActivateForCustomConfig
+- (BOOL)shouldActivateUnderCustomCriteria
 {
     CGPoint trans = [self translationInView:self.view];
     if (TEST_MIN_IF_NOT_NAN(fabs(trans.x), _minDeltaX)) {
@@ -680,19 +679,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 {
-    // When button is placed in scrollable component and in some other gesture
-    // recognizer and if that recognizer activates the scrollview will cancel
-    // its recognizer which in turn will send delayed touch down.
-    // To make sure touch down event does not get delivered we verify if there are
-    // any recognizers that are active at the moment of receiving down event.
-    for (UITouch *touch in event.allTouches) {
-        for (UIGestureRecognizer *recognizer in touch.gestureRecognizers) {
-            if (recognizer.state == UIGestureRecognizerStateBegan
-                || recognizer.state == UIGestureRecognizerStateChanged) {
-                return;
-            }
-        }
-    }
     [self reset];
 
     if (_disallowInterruption) {
