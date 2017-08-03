@@ -2,8 +2,12 @@ package com.swmansion.gesturehandler.react;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
@@ -18,7 +22,12 @@ public class RNGestureHandlerButtonViewManager extends
 
     static TypedValue sResolveOutValue = new TypedValue();
     static ButtonViewGroup sResponder;
-    static Drawable mDrawableForPress;
+
+    int mBackgroundColor = Color.TRANSPARENT;
+    boolean mUseForeground = false;
+    boolean mUseBorderless = false;
+    boolean mNeedBackgroundUpdate = false;
+
 
     public ButtonViewGroup(Context context) {
       super(context);
@@ -26,41 +35,63 @@ public class RNGestureHandlerButtonViewManager extends
       setClickable(true);
       setFocusable(true);
 
-      setUseBorderlessDrawable(false);
+      mNeedBackgroundUpdate = true;
     }
 
-    public void setUseDrawableOnForeground(boolean useForeground) {
-      if (useForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    @Override
+    public void setBackgroundColor(int color) {
+      mBackgroundColor = color;
+      mNeedBackgroundUpdate = true;
+    }
+
+    private void updateBackground() {
+      if (!mNeedBackgroundUpdate) {
+        return;
+      }
+      mNeedBackgroundUpdate = false;
+      if (mBackgroundColor == Color.TRANSPARENT) {
+        // reset background
         setBackground(null);
-        setForeground(mDrawableForPress);
-      } else {
-        setBackground(mDrawableForPress);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          setForeground(null);
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        // reset foreground
+        setForeground(null);
+      }
+      if (mUseForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        setForeground(createSelectableDrawable());
+        if (mBackgroundColor != Color.TRANSPARENT) {
+          setBackgroundColor(mBackgroundColor);
         }
+      } else if (mBackgroundColor == Color.TRANSPARENT) {
+        setBackground(createSelectableDrawable());
+      } else {
+        ColorDrawable colorDrawable = new ColorDrawable(mBackgroundColor);
+        LayerDrawable layerDrawable = new LayerDrawable(
+                new Drawable[] { colorDrawable, createSelectableDrawable() });
+        setBackground(layerDrawable);
       }
     }
 
-    public void setUseBorderlessDrawable(boolean useBorderless) {
-      String identifier = useBorderless ? "selectableItemBackgroundBorderless"
-              : "selectableItemBackground";
-      updateBackground(identifier);
+    public void setUseDrawableOnForeground(boolean useForeground) {
+      mUseForeground = useForeground;
+      mNeedBackgroundUpdate = true;
     }
 
-    private void updateBackground(String identifier) {
+    public void setUseBorderlessDrawable(boolean useBorderless) {
+      mUseBorderless = useBorderless;
+    }
+
+    private Drawable createSelectableDrawable() {
+      String identifier = mUseBorderless ? "selectableItemBackgroundBorderless"
+              : "selectableItemBackground";
       int attrID = getResources().getIdentifier(identifier, "attr", "android");
       Drawable drawable;
       getContext().getTheme().resolveAttribute(attrID, sResolveOutValue, true);
       final int version = Build.VERSION.SDK_INT;
       if (version >= 21) {
-        drawable = getResources().getDrawable(sResolveOutValue.resourceId, getContext().getTheme());
+        return getResources().getDrawable(sResolveOutValue.resourceId, getContext().getTheme());
       } else {
-        drawable = getResources().getDrawable(sResolveOutValue.resourceId);
-      }
-      if (drawable != null) {
-        boolean shouldSetForeground = mDrawableForPress != null && getBackground() == null;
-        mDrawableForPress = drawable;
-        setUseDrawableOnForeground(shouldSetForeground);
+        return getResources().getDrawable(sResolveOutValue.resourceId);
       }
     }
 
@@ -119,4 +150,8 @@ public class RNGestureHandlerButtonViewManager extends
     view.setUseBorderlessDrawable(useBorderlessDrawable);
   }
 
+  @Override
+  protected void onAfterUpdateTransaction(ButtonViewGroup view) {
+    view.updateBackground();
+  }
 }
