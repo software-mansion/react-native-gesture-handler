@@ -6,6 +6,7 @@ import android.view.VelocityTracker;
 public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private static float MIN_VALUE_IGNORE = Float.MAX_VALUE;
+  private static float MAX_VALUE_IGNORE = Float.MIN_VALUE;
 
   private static float DEFAULT_MIN_DISTANCE = 10.0f;
   private static int DEFAULT_MIN_POINTERS = 1;
@@ -15,6 +16,8 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mMinOffsetY = MIN_VALUE_IGNORE;
   private float mMinDeltaX = MIN_VALUE_IGNORE;
   private float mMinDeltaY = MIN_VALUE_IGNORE;
+  private float mMaxDeltaX = MAX_VALUE_IGNORE;
+  private float mMaxDeltaY = MAX_VALUE_IGNORE;
   private float mMinDistSq = DEFAULT_MIN_DISTANCE * DEFAULT_MIN_DISTANCE;
   private float mMinVelocityX = MIN_VALUE_IGNORE;
   private float mMinVelocityY = MIN_VALUE_IGNORE;
@@ -97,6 +100,16 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   public PanGestureHandler setMinDy(float deltaY) {
     mMinDeltaY = deltaY;
+    return this;
+  }
+
+  public PanGestureHandler setMaxDx(float deltaX) {
+    mMaxDeltaX = deltaX;
+    return this;
+  }
+
+  public PanGestureHandler setMaxDy(float deltaY) {
+    mMaxDeltaY = deltaY;
     return this;
   }
 
@@ -192,6 +205,20 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return false;
   }
 
+  private boolean shouldFail() {
+    float dx = mLastX - mStartX + mOffsetX;
+    if (mMaxDeltaX != MAX_VALUE_IGNORE && Math.abs(dx) > mMaxDeltaX) {
+      return true;
+    }
+
+    float dy = mLastY - mStartY + mOffsetY;
+    if (mMaxDeltaY != MAX_VALUE_IGNORE && Math.abs(dy) > mMaxDeltaY) {
+      return true;
+    }
+
+    return false;
+  }
+
   @Override
   protected void onHandle(MotionEvent event) {
     int state = getState();
@@ -241,7 +268,9 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
         fail();
       }
     } else if (state == STATE_BEGAN) {
-      if (shouldActivate()) {
+      if (shouldFail()) {
+        fail();
+      } else if (shouldActivate()) {
         // reset starting point
         mStartX = mLastX;
         mStartY = mLastY;

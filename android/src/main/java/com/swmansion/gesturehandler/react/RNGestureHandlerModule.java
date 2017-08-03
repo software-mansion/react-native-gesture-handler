@@ -49,6 +49,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs";
   private static final String KEY_PAN_MIN_DELTA_X = "minDeltaX";
   private static final String KEY_PAN_MIN_DELTA_Y = "minDeltaY";
+  private static final String KEY_PAN_MAX_DELTA_X = "maxDeltaX";
+  private static final String KEY_PAN_MAX_DELTA_Y = "maxDeltaY";
   private static final String KEY_PAN_MIN_OFFSET_X = "minOffsetX";
   private static final String KEY_PAN_MIN_OFFSET_Y = "minOffsetY";
   private static final String KEY_PAN_MIN_DIST = "minDist";
@@ -200,6 +202,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (config.hasKey(KEY_PAN_MIN_DELTA_Y)) {
         handler.setMinDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DELTA_Y)));
       }
+      if (config.hasKey(KEY_PAN_MAX_DELTA_X)) {
+        handler.setMaxDx(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MAX_DELTA_X)));
+      }
+      if (config.hasKey(KEY_PAN_MAX_DELTA_Y)) {
+        handler.setMaxDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MAX_DELTA_Y)));
+      }
       if (config.hasKey(KEY_PAN_MIN_OFFSET_X)) {
         handler.setMinOffsetX(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_OFFSET_X)));
       }
@@ -226,7 +234,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handler.setMinPointers(config.getInt(KEY_PAN_MIN_POINTERS));
       }
       if (config.hasKey(KEY_PAN_MAX_POINTERS)) {
-        handler.setMinPointers(config.getInt(KEY_PAN_MAX_POINTERS));
+        handler.setMaxPointers(config.getInt(KEY_PAN_MAX_POINTERS));
       }
       if (config.hasKey(KEY_PAN_AVG_TOUCHES)) {
         handler.setAverageTouches(config.getBoolean(KEY_PAN_AVG_TOUCHES));
