@@ -8,9 +8,8 @@
   },
   "dependencies": {
     "react": "16.0.0-alpha.12",
-    "react-native": "0.46.4",
-    "react-native-gesture-handler": "file:../",
-    "react-navigation": "1.0.0-beta.9"
+    "react-native": "0.47.1",
+    "react-native-gesture-handler": "file:../"
   },
   "jest": {
     "preset": "react-native"
