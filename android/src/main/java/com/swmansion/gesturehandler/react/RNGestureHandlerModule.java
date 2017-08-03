@@ -196,11 +196,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void configure(PanGestureHandler handler, ReadableMap config) {
       super.configure(handler, config);
+      boolean hasCustomActivationCriteria = false;
       if (config.hasKey(KEY_PAN_MIN_DELTA_X)) {
         handler.setMinDx(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DELTA_X)));
+        hasCustomActivationCriteria = true;
       }
       if (config.hasKey(KEY_PAN_MIN_DELTA_Y)) {
         handler.setMinDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DELTA_Y)));
+        hasCustomActivationCriteria = true;
       }
       if (config.hasKey(KEY_PAN_MAX_DELTA_X)) {
         handler.setMaxDx(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MAX_DELTA_X)));
@@ -210,24 +213,34 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
       if (config.hasKey(KEY_PAN_MIN_OFFSET_X)) {
         handler.setMinOffsetX(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_OFFSET_X)));
+        hasCustomActivationCriteria = true;
       }
       if (config.hasKey(KEY_PAN_MIN_OFFSET_Y)) {
         handler.setMinOffsetY(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_OFFSET_Y)));
-      }
-      if (config.hasKey(KEY_PAN_MIN_DIST)) {
-        handler.setMinDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DIST)));
+        hasCustomActivationCriteria = true;
       }
 
       if (config.hasKey(KEY_PAN_MIN_VELOCITY)) {
         // This value is actually in DPs/ms, but we can use the same function as for converting
         // from DPs to pixels as the unit we're converting is in the numerator
         handler.setMinVelocity(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY)));
+        hasCustomActivationCriteria = true;
       }
       if (config.hasKey(KEY_PAN_MIN_VELOCITY_X)) {
         handler.setMinVelocityX(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY_X)));
+        hasCustomActivationCriteria = true;
       }
       if (config.hasKey(KEY_PAN_MIN_VELOCITY_Y)) {
         handler.setMinVelocityY(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY_Y)));
+        hasCustomActivationCriteria = true;
+      }
+
+      // PanGestureHandler sets minDist by default, if there are custom criteria specified we want
+      // to reset that setting and use provided criteria instead.
+      if (config.hasKey(KEY_PAN_MIN_DIST)) {
+        handler.setMinDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DIST)));
+      } else if (hasCustomActivationCriteria) {
+        handler.setMinDist(Float.MAX_VALUE);
       }
 
       if (config.hasKey(KEY_PAN_MIN_POINTERS)) {
