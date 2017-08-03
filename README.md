@@ -121,6 +121,8 @@ Library exports a `State` object that provides a number of constants used to exp
 
  - `minDeltaX`
  - `minDeltaY`
+ - `maxDeltaX`
+ - `maxDeltaY`
  - `minOffsetX`
  - `minOffsetY`
  - `minDist`
