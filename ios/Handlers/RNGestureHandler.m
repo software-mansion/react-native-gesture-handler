@@ -14,6 +14,15 @@
 #define TEST_MAX_IF_NOT_NAN(value, max) \
     (!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
 
+#define APPLY_PROP(recognizer, config, type, prop, propName) do { \
+    id value = config[propName]; \
+    if (value != nil) recognizer.prop = [RCTConvert type:value]; \
+} while(0)
+
+#define APPLY_FLOAT_PROP(prop) do { APPLY_PROP(recognizer, config, CGFloat, prop, @#prop); } while(0)
+#define APPLY_INT_PROP(prop) do { APPLY_PROP(recognizer, config, NSInteger, prop, @#prop); } while(0)
+#define APPLY_NAMED_INT_PROP(prop, propName) do { APPLY_PROP(recognizer, config, NSInteger, prop, propName); } while(0)
+
 @interface RNDummyGestureRecognizer : UIGestureRecognizer
 @end
 
@@ -290,10 +299,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 @property (nonatomic) CGFloat minVelocityX;
 @property (nonatomic) CGFloat minVelocityY;
 @property (nonatomic) CGFloat minVelocitySq;
+@property (nonatomic) CGFloat maxDeltaX;
 @property (nonatomic) CGFloat maxDeltaY;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
-- (BOOL)shouldActivate;
 
 @end
 
@@ -301,7 +310,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 @implementation RNBetterPanGestureRecognizer {
     __weak RNGestureHandler *_gestureHandler;
     NSUInteger _realMinimumNumberOfTouches;
-    BOOL _hasCustomCriteria;
+    BOOL _hasCustomActivationCriteria;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
@@ -310,14 +319,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         _gestureHandler = gestureHandler;
         _minDeltaX = NAN;
         _minDeltaY = NAN;
+        _maxDeltaX = NAN;
+        _maxDeltaY = NAN;
         _minOffsetX = NAN;
         _minOffsetY = NAN;
         _minDistSq = NAN;
         _minVelocityX = NAN;
         _minVelocityY = NAN;
         _minVelocitySq = NAN;
-        _maxDeltaY = NAN;
-        _hasCustomCriteria = [self hasCustomCriteria];
+        _hasCustomActivationCriteria = NO;
         _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
     }
     return self;
@@ -330,11 +340,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    // NOTE(brent): Probably there is a better place to update this cached value, didn't
-    // think too much about it.
-    _hasCustomCriteria = [self hasCustomCriteria];
-
-    if (_hasCustomCriteria) {
+    if (_hasCustomActivationCriteria) {
         // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
         // the gesture too early before we are sure that all criteria (e.g. minimum distance
         // etc. are met)
@@ -348,13 +354,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     [super touchesMoved:touches withEvent:event];
-    if (_hasCustomCriteria && self.state == UIGestureRecognizerStatePossible && [self
-         shouldFailUnderCustomCriteria]) {
+    if (self.state == UIGestureRecognizerStatePossible && [self shouldFailUnderCustomCriteria]) {
         self.state = UIGestureRecognizerStateFailed;
-        self.enabled = NO;
         return;
     }
-    if (_hasCustomCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
+    if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
         self.state = UIGestureRecognizerStateBegan;
         super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
         [self setTranslation:CGPointMake(0, 0) inView:self.view];
@@ -367,22 +371,23 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [super reset];
 }
 
-- (BOOL)hasCustomCriteria
+- (void)updateHasCustomActivationCriteria
 {
-    return !isnan(_minDistSq) || !isnan(_minDeltaX) || !isnan(_minDeltaY)
+    _hasCustomActivationCriteria = !isnan(_minDistSq) || !isnan(_minDeltaX) || !isnan(_minDeltaY)
         || !isnan(_minOffsetX) || !isnan(_minOffsetY)
-        || !isnan(_minVelocityX) || !isnan(_minVelocityY) || !isnan(_minVelocitySq)
-        || !isnan(_maxDeltaY);
+        || !isnan(_minVelocityX) || !isnan(_minVelocityY) || !isnan(_minVelocitySq);
 }
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
-    
    CGPoint trans = [self translationInView:self.view];
+    if (TEST_MAX_IF_NOT_NAN(fabs(trans.x), _maxDeltaX)) {
+        return YES;
+    }
     if (TEST_MAX_IF_NOT_NAN(fabs(trans.y), _maxDeltaY)) {
         return YES;
     }
-    
+
     return NO;
 }
 
@@ -430,40 +435,22 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if ((self = [super initWithTag:tag config:config])) {
         RNBetterPanGestureRecognizer *recognizer = [[RNBetterPanGestureRecognizer alloc] initWithGestureHandler:self];
 
-        id prop = config[@"minDeltaX"];
-        if (prop != nil) {
-            recognizer.minDeltaX = [RCTConvert CGFloat:prop];
-        }
+        APPLY_FLOAT_PROP(minDeltaX);
+        APPLY_FLOAT_PROP(minDeltaY);
+        APPLY_FLOAT_PROP(maxDeltaX);
+        APPLY_FLOAT_PROP(maxDeltaY);
+        APPLY_FLOAT_PROP(minOffsetX);
+        APPLY_FLOAT_PROP(minOffsetY);
+        APPLY_FLOAT_PROP(minVelocityX);
+        APPLY_FLOAT_PROP(minVelocityY);
 
-        prop = config[@"minDeltaY"];
-        if (prop != nil) {
-            recognizer.minDeltaY = [RCTConvert CGFloat:prop];
-        }
+        APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
+        APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
 
-        prop = config[@"minOffsetX"];
-        if (prop != nil) {
-            recognizer.minOffsetX = [RCTConvert CGFloat:prop];
-        }
-
-        prop = config[@"minOffsetY"];
-        if (prop != nil) {
-            recognizer.minOffsetY = [RCTConvert CGFloat:prop];
-        }
-
-        prop = config[@"minDist"];
+        id prop = config[@"minDist"];
         if (prop != nil) {
             CGFloat dist = [RCTConvert CGFloat:prop];
             recognizer.minDistSq = dist * dist;
-        }
-
-        prop = config[@"minVelocityX"];
-        if (prop != nil) {
-            recognizer.minVelocityX = [RCTConvert CGFloat:prop];
-        }
-
-        prop = config[@"minVelocityY"];
-        if (prop != nil) {
-            recognizer.minVelocityY = [RCTConvert CGFloat:prop];
         }
 
         prop = config[@"minVelocity"];
@@ -471,22 +458,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             CGFloat velocity = [RCTConvert CGFloat:prop];
             recognizer.minVelocitySq = velocity * velocity;
         }
-
-        prop = config[@"minPointers"];
-        if (prop != nil) {
-            recognizer.minimumNumberOfTouches = [RCTConvert NSUInteger:prop];
-        }
-
-        prop = config[@"maxPointers"];
-        if (prop != nil) {
-            recognizer.maximumNumberOfTouches = [RCTConvert NSUInteger:prop];
-        }
         
-        prop = config[@"maxDeltaY"];
-        if (prop != nil) {
-            recognizer.maxDeltaY = [RCTConvert CGFloat:prop];
-        }
-
+        [recognizer updateHasCustomActivationCriteria];
         _recognizer = recognizer;
     }
     return self;
@@ -617,12 +590,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if ((self = [super initWithTag:tag config:config])) {
         RNBetterTapGestureRecognizer *recognizer = [[RNBetterTapGestureRecognizer alloc] initWithGestureHandler:self];
 
-        id prop = config[@"numberOfTaps"];
-        if (prop != nil) {
-            recognizer.numberOfTaps = [RCTConvert NSUInteger:prop];
-        }
+        APPLY_INT_PROP(numberOfTaps);
 
-        prop = config[@"maxDelayMs"];
+        id prop = config[@"maxDelayMs"];
         if (prop != nil) {
             recognizer.maxDelay = [RCTConvert CGFloat:prop] / 1000.0;
         }
