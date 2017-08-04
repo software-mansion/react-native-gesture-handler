@@ -14,6 +14,7 @@
 #define TEST_MAX_IF_NOT_NAN(value, max) \
     (!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
 
+
 #define APPLY_PROP(recognizer, config, type, prop, propName) do { \
     id value = config[propName]; \
     if (value != nil) recognizer.prop = [RCTConvert type:value]; \
@@ -95,6 +96,17 @@
     }
     return nil;
 }
+
+- (RNGestureHandler *)findGestureHandlerForView:(NSNumber *)viewTag withTag:(nonnull NSNumber *)handlerTag {
+    NSArray *handlers = _gestureHandlers[viewTag];
+    for (RNGestureHandler *handler in handlers) {
+        if (handler.tag == handlerTag) {
+            return handler;
+        }
+    }
+    return nil;
+}
+
 
 @end
 
@@ -222,6 +234,19 @@
 
     return nil;
 }
+
+- (RNGestureHandler *)findGestureHandlerForView:(NSNumber *)viewTag withTag:(nonnull NSNumber *)handlerTag {
+    RNGestureHandler *handler = [_registry findGestureHandlerForView:viewTag withTag:handlerTag];
+    
+    if (handler != nil) {
+        return handler;
+    }
+    
+    /* Maybe we want to do something if invalid tag is given? */
+    
+    return nil;
+}
+
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
@@ -433,36 +458,39 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                      config:(NSDictionary<NSString *, id> *)config
 {
     if ((self = [super initWithTag:tag config:config])) {
-        RNBetterPanGestureRecognizer *recognizer = [[RNBetterPanGestureRecognizer alloc] initWithGestureHandler:self];
-
-        APPLY_FLOAT_PROP(minDeltaX);
-        APPLY_FLOAT_PROP(minDeltaY);
-        APPLY_FLOAT_PROP(maxDeltaX);
-        APPLY_FLOAT_PROP(maxDeltaY);
-        APPLY_FLOAT_PROP(minOffsetX);
-        APPLY_FLOAT_PROP(minOffsetY);
-        APPLY_FLOAT_PROP(minVelocityX);
-        APPLY_FLOAT_PROP(minVelocityY);
-
-        APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
-        APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
-
-        id prop = config[@"minDist"];
-        if (prop != nil) {
-            CGFloat dist = [RCTConvert CGFloat:prop];
-            recognizer.minDistSq = dist * dist;
-        }
-
-        prop = config[@"minVelocity"];
-        if (prop != nil) {
-            CGFloat velocity = [RCTConvert CGFloat:prop];
-            recognizer.minVelocitySq = velocity * velocity;
-        }
-        
-        [recognizer updateHasCustomActivationCriteria];
-        _recognizer = recognizer;
+        _recognizer = [[RNBetterPanGestureRecognizer alloc] initWithGestureHandler:self];
+        [self setConfig:config];
     }
     return self;
+}
+
+- (void)setConfig:(NSDictionary *)config {
+    RNBetterPanGestureRecognizer *recognizer = _recognizer;
+    APPLY_FLOAT_PROP(minDeltaX);
+    APPLY_FLOAT_PROP(minDeltaY);
+    APPLY_FLOAT_PROP(maxDeltaX);
+    APPLY_FLOAT_PROP(maxDeltaY);
+    APPLY_FLOAT_PROP(minOffsetX);
+    APPLY_FLOAT_PROP(minOffsetY);
+    APPLY_FLOAT_PROP(minVelocityX);
+    APPLY_FLOAT_PROP(minVelocityY);
+    
+    APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
+    APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
+    
+    id prop = config[@"minDist"];
+    if (prop != nil) {
+        CGFloat dist = [RCTConvert CGFloat:prop];
+        recognizer.minDistSq = dist * dist;
+    }
+    
+    prop = config[@"minVelocity"];
+    if (prop != nil) {
+        CGFloat velocity = [RCTConvert CGFloat:prop];
+        recognizer.minVelocitySq = velocity * velocity;
+    }
+    
+    [recognizer updateHasCustomActivationCriteria];
 }
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer

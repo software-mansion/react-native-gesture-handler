@@ -41,7 +41,7 @@
 - (void)registerGestureHandler:(RNGestureHandler *)gestureHandler forViewWithTag:(NSNumber *)viewTag;
 - (void)dropGestureHandlersForViewWithTag:(NSNumber *)viewTag;
 - (RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer;
-
+- (RNGestureHandler *)findGestureHandlerForView:(NSNumber *)viewTag withTag:(nonnull NSNumber *)handlerTag;
 @end
 
 
