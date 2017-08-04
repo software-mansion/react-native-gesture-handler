@@ -73,9 +73,7 @@ function transformIntoHandlerTags(handlerIDs) {
     .filter(handlerTag => handlerTag > 0);
 }
 
-function filterConfig(component, defaults = {}) {
-  const props = component.props;
-  const validProps = component.constructor.propTypes
+function filterConfig(props, validProps, defaults = {}) {
   const res = { ...defaults };
   Object.keys(validProps).forEach(key => {
     const value = props[key]
@@ -148,7 +146,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
         viewTag,
         handlerName,
         this._handlerTag,
-        filterConfig(this, config)
+        filterConfig(this.props, this.constructor.propTypes, config)
       );
     }
 
@@ -250,7 +248,7 @@ function createNativeWrapper(Component, config = {}) {
         viewTag,
         'NativeViewGestureHandler',
         this._handlerTag,
-        filterConfig(this, config)
+        filterConfig(this.props, NativeViewGestureHandler.propTypes, config)
       );
     }
 
