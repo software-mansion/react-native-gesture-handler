@@ -118,7 +118,7 @@ public class GestureHandlerOrchestrator {
     }
     if (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED) {
       // if there were handlers awaiting completion of this handler, we can trigger active state
-      for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
+      for (int i = 0; i < mAwaitingHandlersCount; i++) {
         GestureHandler otherHandler = mAwaitingHandlers[i];
         if (shouldHandlerWaitForOther(otherHandler, handler)) {
           tryActivate(otherHandler);
@@ -186,7 +186,7 @@ public class GestureHandlerOrchestrator {
     for (int i = 0; i < handlersCount; i++) {
       mPreparedHandlers[i] = mGestureHandlers[i];
     }
-    for (int i = handlersCount - 1; i >= 0; i--) {
+    for (int i = 0; i < handlersCount; i++) {
       deliverEventToGestureHandler(mPreparedHandlers[i], event);
     }
   }
@@ -265,7 +265,7 @@ public class GestureHandlerOrchestrator {
   }
 
   private void removeFromAwaitingHandlers(GestureHandler handler) {
-    for (int i = 0; i < mAwaitingHandlersCount; i++) {
+    for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
       if (mAwaitingHandlers[i] == handler) {
         mAwaitingHandlers[i] = mAwaitingHandlers[mAwaitingHandlersCount - 1];
         mAwaitingHandlers[mAwaitingHandlersCount - 1] = null;
@@ -344,10 +344,10 @@ public class GestureHandlerOrchestrator {
       return;
     } else if (pointerEvents == PointerEvents.AUTO) {
       // Either this view or one of its children is the target
-      recordHandlerIfNotPresent(view, coords);
       if (view instanceof ViewGroup) {
         extractGestureHandlers((ViewGroup) view, coords);
       }
+      recordHandlerIfNotPresent(view, coords);
       return;
     } else {
       throw new IllegalArgumentException(
