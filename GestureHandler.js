@@ -340,8 +340,6 @@ const btnStyles = StyleSheet.create({
     bottom: 0,
     top: 0,
   },
-  borderlessContainer: {
-  }
 });
 
 class RectButton extends React.Component {
@@ -382,11 +380,14 @@ class BorderlessButton extends React.Component {
   }
   render() {
     const { children, ...rest } = this.props;
+    const content = Platform.OS === 'android' ? children : (
+      <Animated.View style={{ opacity: this._opacity }}>
+        {children}
+      </Animated.View>
+    )
     return (
       <BaseButton borderless={true} {...rest} onActiveStateChange={this._handleActiveStateChange}>
-        <Animated.View style={[btnStyles.borderlessContainer, { opacity: this._opacity }]}>
-          {children}
-        </Animated.View>
+        {content}
       </BaseButton>
     )
   }
