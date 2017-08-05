@@ -15,6 +15,7 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
+import deepEqual from 'fbjs/lib/areEqual';
 
 const RNGestureHandlerModule = NativeModules.RNGestureHandlerModule;
 
@@ -153,14 +154,16 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     componentDidUpdate(prevProps, prevState) {
-      // TODO: maybe do a shallow/deep compare to see if config has changed for sure
       const viewTag = findNodeHandle(this._viewNode);
-      this._config = filterConfig(this.props, this.constructor.propTypes, config);
-      RNGestureHandlerModule.updateGestureHandler(
-        viewTag,
-        this._handlerTag,
-        this._config
-      );
+      const newConfig = filterConfig(this.props, this.constructor.propTypes, config);
+      if (!deepEqual(this._config, newConfig)) {
+        this._config = newConfig;
+        RNGestureHandlerModule.updateGestureHandler(
+          viewTag,
+          this._handlerTag,
+          this._config
+        );
+      }
     }
 
     render() {
@@ -264,14 +267,16 @@ function createNativeWrapper(Component, config = {}) {
     }
 
     componentDidUpdate(prevProps, prevState) {
-      // TODO: maybe do a shallow/deep compare to see if config has changed for sure
       const viewTag = findNodeHandle(this._viewNode);
-      this._config = filterConfig(this.props, NativeViewGestureHandler.propTypes, config);
-      RNGestureHandlerModule.updateGestureHandler(
-        viewTag,
-        this._handlerTag,
-        this._config
-      );
+      const newConfig = filterConfig(this.props, NativeViewGestureHandler.propTypes, config);
+      if (!deepEqual(this._config, newConfig)) {
+        this._config = newConfig;
+        RNGestureHandlerModule.updateGestureHandler(
+          viewTag,
+          this._handlerTag,
+          this._config
+        );
+      }
     }
 
     render() {

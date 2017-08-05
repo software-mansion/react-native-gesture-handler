@@ -364,6 +364,25 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void updateGestureHandler(
+          int viewTag,
+          int handlerTag,
+          ReadableMap config) {
+    ArrayList<GestureHandler> handlers = getRegistry().getHandlersForViewWithTag(viewTag);
+    if (handlers != null) {
+      for (int i = 0; i < handlers.size(); i++) {
+        GestureHandler handler = handlers.get(i);
+        if (handler != null && handler.getTag() == handlerTag) {
+          HandlerFactory factory = findFactoryForHandler(handler);
+          if (factory != null) {
+            factory.configure(handler, config);
+          }
+        }
+      }
+    }
+  }
+
+  @ReactMethod
   public void dropGestureHandlersForView(int viewTag) {
     ArrayList<GestureHandler> handlers = getRegistry().getHandlersForViewWithTag(viewTag);
     if (handlers != null) {
