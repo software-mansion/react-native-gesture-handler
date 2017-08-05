@@ -69,6 +69,17 @@
     [self registerRootViewIfNeeded:view];
 }
 
+- (void)updateGestureHandler:(nonnull NSNumber *)handlerTag
+                     forView:(nonnull NSNumber *)viewTag
+                  withConfig:(NSDictionary *)config {
+    RNGestureHandler *gestureHandler = [_registry findGestureHandlerForView:viewTag withTag:handlerTag];
+    
+    if ([gestureHandler respondsToSelector:@selector(setConfig:)]) {
+        [gestureHandler performSelector:@selector(setConfig:) withObject:config];
+    }
+}
+
+
 - (void)dropGestureHandlersForView:(NSNumber *)viewTag
 {
     [_registry dropGestureHandlersForViewWithTag:viewTag];

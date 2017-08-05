@@ -13,6 +13,10 @@
                          tag:(nonnull NSNumber *)handlerTag
                       config:(NSDictionary *)config;
 
+- (void)updateGestureHandler:(nonnull NSNumber *)handlerTag
+                     forView:(nonnull NSNumber *)viewTag
+                  withConfig:(NSDictionary *)config;
+
 - (void)dropGestureHandlersForView:(nonnull NSNumber *)viewTag;
 
 - (void)handleSetJSResponder:(nonnull NSNumber *)viewTag

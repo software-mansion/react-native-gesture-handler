@@ -150,8 +150,14 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       );
     }
 
+    // TODO: Support gesturehandler config updates
     componentDidUpdate(prevProps, prevState) {
-      // TODO: Support gesturehandler config updates
+      const viewTag = findNodeHandle(this._viewNode);
+      RNGestureHandlerModule.updateGestureHandler(
+        this._handlerTag,
+        viewTag,
+        filterConfig(this.props, this.constructor.propTypes, config)
+      );
     }
 
     render() {
