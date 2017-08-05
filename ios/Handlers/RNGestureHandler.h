@@ -18,11 +18,10 @@
 
 @protected UIGestureRecognizer *_recognizer;
 @protected RNGestureHandlerState _lastState;
-    
+
 }
 
-- (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config;
+- (instancetype)initWithTag:(NSNumber *)tag;
 
 @property (nonatomic, readonly) NSNumber *tag;
 @property (nonatomic, weak) id<RNGestureHandlerEventEmitter> emitter;
@@ -30,6 +29,7 @@
 
 - (void)bindToView:(UIView *)view;
 - (void)unbindFromView;
+- (void)configure:(NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)handleGesture:(id)recognizer;
 - (RNGestureHandlerState)state;
 - (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer;
@@ -40,8 +40,9 @@
 
 - (void)registerGestureHandler:(RNGestureHandler *)gestureHandler forViewWithTag:(NSNumber *)viewTag;
 - (void)dropGestureHandlersForViewWithTag:(NSNumber *)viewTag;
+- (NSArray<RNGestureHandler*> *)gestureHandlersForViewWithTag:(NSNumber *)viewTag andTag:(NSNumber *)handlerTag;
 - (RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer;
-- (RNGestureHandler *)findGestureHandlerForView:(NSNumber *)viewTag withTag:(nonnull NSNumber *)handlerTag;
+
 @end
 
 

@@ -86,10 +86,10 @@ RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSNumber *)viewTag withName:(non
     }];
 }
 
-RCT_EXPORT_METHOD(updateGestureHandler:(nonnull NSNumber *)handlerTag withViewTag:(nonnull NSNumber *)viewTag config:(NSDictionary *)config)
+RCT_EXPORT_METHOD(updateGestureHandler:(nonnull NSNumber *)viewTag tag:(nonnull NSNumber *)handlerTag config:(NSDictionary *)config)
 {
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-        [manager updateGestureHandler:handlerTag forView:viewTag withConfig:config];
+        [manager updateGestureHandler:viewTag tag:handlerTag config:config];
     }];
 }
 

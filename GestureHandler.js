@@ -98,6 +98,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     constructor(props) {
       super(props);
       this._handlerTag = handlerTag++;
+      this._config = {};
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);
@@ -142,21 +143,23 @@ function createHandler(handlerName, propTypes = null, config = {}) {
 
     componentDidMount() {
       const viewTag = findNodeHandle(this._viewNode);
+      this._config = filterConfig(this.props, this.constructor.propTypes, config)
       RNGestureHandlerModule.createGestureHandler(
         viewTag,
         handlerName,
         this._handlerTag,
-        filterConfig(this.props, this.constructor.propTypes, config)
+        this._config
       );
     }
 
-    // TODO: Support gesturehandler config updates
     componentDidUpdate(prevProps, prevState) {
+      // TODO: maybe do a shallow/deep compare to see if config has changed for sure
       const viewTag = findNodeHandle(this._viewNode);
+      this._config = filterConfig(this.props, this.constructor.propTypes, config);
       RNGestureHandlerModule.updateGestureHandler(
-        this._handlerTag,
         viewTag,
-        filterConfig(this.props, this.constructor.propTypes, config)
+        this._handlerTag,
+        this._config
       );
     }
 
@@ -228,6 +231,7 @@ function createNativeWrapper(Component, config = {}) {
     constructor(props) {
       super(props);
       this._handlerTag = handlerTag++;
+      this._config = {};
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);
@@ -250,11 +254,23 @@ function createNativeWrapper(Component, config = {}) {
 
     componentDidMount() {
       const viewTag = findNodeHandle(this._viewNode);
+      this._config = filterConfig(this.props, NativeViewGestureHandler.propTypes, config)
       RNGestureHandlerModule.createGestureHandler(
         viewTag,
         'NativeViewGestureHandler',
         this._handlerTag,
-        filterConfig(this.props, NativeViewGestureHandler.propTypes, config)
+        this._config
+      );
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+      // TODO: maybe do a shallow/deep compare to see if config has changed for sure
+      const viewTag = findNodeHandle(this._viewNode);
+      this._config = filterConfig(this.props, NativeViewGestureHandler.propTypes, config);
+      RNGestureHandlerModule.updateGestureHandler(
+        viewTag,
+        this._handlerTag,
+        this._config
       );
     }
 

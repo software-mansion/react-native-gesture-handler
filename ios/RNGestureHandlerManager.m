@@ -56,7 +56,8 @@
         return;
     }
     
-    RNGestureHandler *gestureHandler = [[nodeClass alloc] initWithTag:handlerTag config:config];
+    RNGestureHandler *gestureHandler = [[nodeClass alloc] initWithTag:handlerTag];
+    [gestureHandler configure:config];
     [_registry registerGestureHandler:gestureHandler forViewWithTag:viewTag];
     
     __weak id<RNGestureHandlerEventEmitter> emitter = self;
@@ -69,20 +70,18 @@
     [self registerRootViewIfNeeded:view];
 }
 
-- (void)updateGestureHandler:(nonnull NSNumber *)handlerTag
-                     forView:(nonnull NSNumber *)viewTag
-                  withConfig:(NSDictionary *)config {
-    RNGestureHandler *gestureHandler = [_registry findGestureHandlerForView:viewTag withTag:handlerTag];
-    
-    if ([gestureHandler respondsToSelector:@selector(setConfig:)]) {
-        [gestureHandler performSelector:@selector(setConfig:) withObject:config];
-    }
-}
-
-
-- (void)dropGestureHandlersForView:(NSNumber *)viewTag
+- (void)updateGestureHandler:(NSNumber *)viewTag
+                         tag:(NSNumber *)handlerTag
+                      config:(NSDictionary *)config
 {
-    [_registry dropGestureHandlersForViewWithTag:viewTag];
+    NSArray<RNGestureHandler*> *handlers = [_registry
+                                            gestureHandlersForViewWithTag:viewTag
+                                            andTag:handlerTag];
+    for (RNGestureHandler *handler in handlers) {
+        if ([handler.tag isEqual:handlerTag]) {
+            [handler configure:config];
+        }
+    }
 }
 
 - (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder

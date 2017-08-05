@@ -5,17 +5,17 @@
 
 @interface RNGestureHandlerManager : NSObject
 
-- (nonnull instancetype)initWithUIManager:(RCTUIManager *)uiManager
-                          eventDispatcher:(RCTEventDispatcher *)eventDispatcher;
+- (nonnull instancetype)initWithUIManager:(nonnull RCTUIManager *)uiManager
+                          eventDispatcher:(nonnull RCTEventDispatcher *)eventDispatcher;
 
 - (void)createGestureHandler:(nonnull NSNumber *)viewTag
                     withName:(nonnull NSString *)handlerName
                          tag:(nonnull NSNumber *)handlerTag
-                      config:(NSDictionary *)config;
+                      config:(nonnull NSDictionary *)config;
 
-- (void)updateGestureHandler:(nonnull NSNumber *)handlerTag
-                     forView:(nonnull NSNumber *)viewTag
-                  withConfig:(NSDictionary *)config;
+- (void)updateGestureHandler:(nonnull NSNumber *)viewTag
+                         tag:(nonnull NSNumber *)handlerTag
+                      config:(nonnull NSDictionary *)config;
 
 - (void)dropGestureHandlersForView:(nonnull NSNumber *)viewTag;
 
