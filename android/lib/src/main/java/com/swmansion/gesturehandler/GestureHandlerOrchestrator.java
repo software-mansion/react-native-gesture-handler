@@ -400,13 +400,13 @@ public class GestureHandlerOrchestrator {
   }
 
   private static boolean shouldHandlerBeCancelledBy(GestureHandler handler, GestureHandler other) {
-    if (handler != other && !other.shouldRecognizeSimultaneously(handler)) {// !canRunSimultaneously(handler, other)) {
-      return true;
+    if (canRunSimultaneously(handler, other)) {
+      return false;
     } else if (handler != other &&
             (handler.mIsAwaiting || handler.getState() == GestureHandler.STATE_ACTIVE)) {
       return handler.shouldBeCancelledBy(other);
     }
-    return false;
+    return true;
   }
 
   private static boolean isFinished(int state) {

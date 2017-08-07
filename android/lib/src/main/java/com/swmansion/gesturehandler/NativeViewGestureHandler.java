@@ -10,6 +10,8 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
   private boolean mShouldActivateOnStart;
   private boolean mDisallowInterruption;
 
+  private boolean mTouchIntercepted;
+
   public NativeViewGestureHandler() {
     setShouldCancelWhenOutside(true);
   }
@@ -36,6 +38,18 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
 
   @Override
   public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
+    if (handler instanceof NativeViewGestureHandler) {
+      // Special case when the peer handler is also an instance of NativeViewGestureHandler:
+      // For the `disallowInterruption` to work correctly we need to check the property when
+      // accessed as a peer, because simultaneous recognizers can be set on either side of the
+      // connection.
+      NativeViewGestureHandler nativeWrapper = (NativeViewGestureHandler) handler;
+      if (nativeWrapper.getState() == STATE_ACTIVE && nativeWrapper.mDisallowInterruption) {
+        // other handler is active and it disallows interruption, we don't want to get into its way
+        return false;
+      }
+    }
+
     return !mDisallowInterruption;
   }
 
@@ -56,6 +70,9 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
       end();
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       if (mShouldActivateOnStart || view.isPressed()) {
+        if (tryIntercept(view, event)) {
+          mTouchIntercepted = true;
+        }
         view.onTouchEvent(event);
         activate();
       } else {
@@ -63,15 +80,26 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
         view.onTouchEvent(event);
         if (view.isPressed()) {
           activate();
-        } else if (view instanceof ViewGroup && ((ViewGroup) view).onInterceptTouchEvent(event)) {
+        } else if (tryIntercept(view, event)) {
+          mTouchIntercepted = true;
           activate();
         } else if (state != STATE_BEGAN) {
           begin();
         }
       }
     } else if (state == STATE_ACTIVE) {
+      if (!mTouchIntercepted && tryIntercept(view, event)) {
+        mTouchIntercepted = true;
+      }
       view.onTouchEvent(event);
     }
+  }
+
+  private static boolean tryIntercept(View view, MotionEvent event) {
+    if (view instanceof ViewGroup && ((ViewGroup) view).onInterceptTouchEvent(event)) {
+      return true;
+    }
+    return false;
   }
 
   @Override
@@ -80,5 +108,11 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
     MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
     event.setAction(MotionEvent.ACTION_CANCEL);
     getView().onTouchEvent(event);
+  }
+
+  @Override
+  protected void onReset() {
+    super.onReset();
+    mTouchIntercepted = false;
   }
 }
