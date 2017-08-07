@@ -31,7 +31,7 @@
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    self.state = UIGestureRecognizerStateFailed;
+    self.state = UIGestureRecognizerStateEnded;
     [self reset];
 }
 
@@ -370,6 +370,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
         [self setTranslation:CGPointMake(0, 0) inView:self.view];
     }
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    self.state = UIGestureRecognizerStateEnded;
 }
 
 - (void)reset
