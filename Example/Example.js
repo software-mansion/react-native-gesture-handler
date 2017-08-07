@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import {
   Alert,
   Animated,
@@ -9,8 +9,8 @@ import {
   View,
   Image,
   // ScrollView,
-  Platform
-} from "react-native";
+  Platform,
+} from 'react-native';
 
 import {
   LongPressGestureHandler,
@@ -28,23 +28,23 @@ import {
   DrawerLayoutAndroid,
   WebView,
   RectButton,
-  BorderlessButton
-} from "react-native-gesture-handler";
+  BorderlessButton,
+} from 'react-native-gesture-handler';
 
-const UNDERLAY_REF = "UNDERLAY_REF";
-const CHILD_REF = "CHILD_REF";
+const UNDERLAY_REF = 'UNDERLAY_REF';
+const CHILD_REF = 'CHILD_REF';
 
 class TouchableHighlight extends Component {
   static propTypes = View.propTypes;
   static defaultProps = {
     activeOpacity: 0.85,
-    underlayColor: "black"
+    underlayColor: 'black',
   };
   constructor(props) {
     super(props);
     this.state = { gestureHandlerState: State.UNDETERMINED };
     this._pressedStyle = {
-      opacity: this.props.activeOpacity
+      opacity: this.props.activeOpacity,
     };
   }
   _onStateChange = event => {
@@ -55,7 +55,7 @@ class TouchableHighlight extends Component {
         this.refs[CHILD_REF].setNativeProps({
           style: pressed
             ? { opacity: this.props.activeOpacity }
-            : INACTIVE_CHILD_STYLE
+            : INACTIVE_CHILD_STYLE,
         });
       });
       if (event.nativeEvent.state === State.ACTIVE && this.props.onClick) {
@@ -72,7 +72,7 @@ class TouchableHighlight extends Component {
       <TapGestureHandler onHandlerStateChange={this._onStateChange}>
         <View style={[this.props.style, style]}>
           {React.cloneElement(React.Children.only(this.props.children), {
-            ref: CHILD_REF
+            ref: CHILD_REF,
           })}
         </View>
       </TapGestureHandler>
@@ -82,7 +82,7 @@ class TouchableHighlight extends Component {
 
 var INACTIVE_CHILD_STYLE = StyleSheet.create({ x: { opacity: 1.0 } }).x;
 const INACTIVE_UNDERLAY_STYLE = StyleSheet.create({
-  x: { backgroundColor: "transparent" }
+  x: { backgroundColor: 'transparent' },
 }).x;
 
 class DraggableBox extends Component {
@@ -96,9 +96,9 @@ class DraggableBox extends Component {
         {
           nativeEvent: {
             translationX: this._translateX,
-            translationY: this._translateY
-          }
-        }
+            translationY: this._translateY,
+          },
+        },
       ],
       { useNativeDriver: true }
     );
@@ -120,17 +120,16 @@ class DraggableBox extends Component {
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}
         minDist={100}
-        id="dragbox"
-      >
+        id="dragbox">
         <Animated.View
           style={[
             styles.box,
             {
               transform: [
                 { translateX: this._translateX },
-                { translateY: this._translateY }
-              ]
-            }
+                { translateY: this._translateY },
+              ],
+            },
           ]}
         />
       </PanGestureHandler>
@@ -151,24 +150,21 @@ class PressBox extends Component {
   };
   _onDoubleTap = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert("D0able tap, good job!");
+      Alert.alert('D0able tap, good job!');
     }
   };
   render() {
     return (
       <LongPressGestureHandler
         onHandlerStateChange={this._onHandlerStateChange}
-        minDurationMs={1500}
-      >
+        minDurationMs={1500}>
         <TapGestureHandler
           onHandlerStateChange={this._onSingleTap}
-          waitFor="double_tap"
-        >
+          waitFor="double_tap">
           <TapGestureHandler
             id="double_tap"
             onHandlerStateChange={this._onDoubleTap}
-            numberOfTaps={2}
-          >
+            numberOfTaps={2}>
             <View style={styles.box} />
           </TapGestureHandler>
         </TapGestureHandler>
@@ -193,8 +189,7 @@ class ControlledSwitch extends React.Component {
         hitSlop={20}
         shouldCancelWhenOutside={false}
         shouldActivateOnStart
-        disallowInterruption
-      >
+        disallowInterruption>
         <Switch
           {...this.props}
           value={this.state.value}
@@ -223,7 +218,7 @@ class PinchableBox extends React.Component {
     this._rotate = new Animated.Value(0);
     this._rotateStr = this._rotate.interpolate({
       inputRange: [-100, 100],
-      outputRange: ["-100rad", "100rad"]
+      outputRange: ['-100rad', '100rad'],
     });
     this._lastRotate = 0;
     this._onRotateGestureEvent = Animated.event(
@@ -235,7 +230,7 @@ class PinchableBox extends React.Component {
     this._tilt = new Animated.Value(0);
     this._tiltStr = this._tilt.interpolate({
       inputRange: [-501, -500, 0, 1],
-      outputRange: ["1rad", "1rad", "0rad", "0rad"]
+      outputRange: ['1rad', '1rad', '0rad', '0rad'],
     });
     this._lastTilt = 0;
     this._onTiltGestureEvent = Animated.event(
@@ -274,20 +269,17 @@ class PinchableBox extends React.Component {
           minDist={10}
           minPointers={2}
           maxPointers={2}
-          avgTouches
-        >
+          avgTouches>
           <RotationGestureHandler
             id="image_rotation"
             simultaneousHandlers="image_pinch"
             onGestureEvent={this._onRotateGestureEvent}
-            onHandlerStateChange={this._onRotateHandlerStateChange}
-          >
+            onHandlerStateChange={this._onRotateHandlerStateChange}>
             <PinchGestureHandler
               id="image_pinch"
               simultaneousHandlers="image_rotation"
               onGestureEvent={this._onPinchGestureEvent}
-              onHandlerStateChange={this._onPinchHandlerStateChange}
-            >
+              onHandlerStateChange={this._onPinchHandlerStateChange}>
               <Animated.Image
                 style={[
                   styles.pinchableImage,
@@ -296,12 +288,12 @@ class PinchableBox extends React.Component {
                       { perspective: 200 },
                       { scale: this._scale },
                       { rotate: this._rotateStr },
-                      { rotateX: this._tiltStr }
-                    ]
-                  }
+                      { rotateX: this._tiltStr },
+                    ],
+                  },
                 ]}
                 source={{
-                  uri: "https://avatars1.githubusercontent.com/u/6952717"
+                  uri: 'https://avatars1.githubusercontent.com/u/6952717',
                 }}
               />
             </PinchGestureHandler>
@@ -316,8 +308,7 @@ const InfoButton = props =>
   <BorderlessButton
     {...props}
     style={styles.infoButton}
-    onPress={() => Alert.alert(`${props.name} info button clicked`)}
-  >
+    onPress={() => Alert.alert(`${props.name} info button clicked`)}>
     <View style={styles.infoButtonBorders}>
       <Text style={styles.infoButtonText}>i</Text>
     </View>
@@ -329,8 +320,8 @@ export default class Example extends Component {
   };
   render2() {
     const navigationView = (
-      <View style={{ flex: 1, backgroundColor: "#fff" }}>
-        <Text style={{ margin: 10, fontSize: 15, textAlign: "left" }}>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
+        <Text style={{ margin: 10, fontSize: 15, textAlign: 'left' }}>
           I'm in the Drawer!
         </Text>
       </View>
@@ -338,42 +329,39 @@ export default class Example extends Component {
     return (
       <ViewPagerAndroid
         style={styles.container}
-        waitFor={["drawer_blocker", "drawer2_blocker"]}
-      >
+        waitFor={['drawer_blocker', 'drawer2_blocker']}>
         <View>
           <DrawerLayoutAndroid
             simultaneousHandlers="drawer_blocker"
             drawerWidth={200}
             drawerPosition={DrawerLayoutAndroid.positions.Left}
-            renderNavigationView={() => navigationView}
-          >
-            <View style={{ flex: 1, backgroundColor: "gray" }} />
+            renderNavigationView={() => navigationView}>
+            <View style={{ flex: 1, backgroundColor: 'gray' }} />
           </DrawerLayoutAndroid>
           <PanGestureHandler id="drawer_blocker" hitSlop={{ right: 100 }}>
             <View
-              style={{ position: "absolute", width: 0, top: 0, bottom: 0 }}
+              style={{ position: 'absolute', width: 0, top: 0, bottom: 0 }}
             />
           </PanGestureHandler>
         </View>
-        <View style={{ backgroundColor: "yellow" }} />
-        <View style={{ backgroundColor: "blue" }} />
+        <View style={{ backgroundColor: 'yellow' }} />
+        <View style={{ backgroundColor: 'blue' }} />
         <View>
           <DrawerLayoutAndroid
             simultaneousHandlers="drawer2_blocker"
             drawerWidth={200}
             drawerPosition={DrawerLayoutAndroid.positions.Right}
-            renderNavigationView={() => navigationView}
-          >
-            <View style={{ flex: 1, backgroundColor: "plum" }} />
+            renderNavigationView={() => navigationView}>
+            <View style={{ flex: 1, backgroundColor: 'plum' }} />
           </DrawerLayoutAndroid>
           <PanGestureHandler id="drawer2_blocker" hitSlop={{ left: 100 }}>
             <View
               style={{
-                position: "absolute",
+                position: 'absolute',
                 width: 0,
                 top: 0,
                 bottom: 0,
-                right: 0
+                right: 0,
               }}
             />
           </PanGestureHandler>
@@ -385,9 +373,8 @@ export default class Example extends Component {
     return (
       <View style={styles.container}>
         <ScrollView
-          waitFor={["dragbox", "image_pinch", "image_rotation", "image_tilt"]}
-          style={styles.scrollView}
-        >
+          waitFor={['dragbox', 'image_pinch', 'image_rotation', 'image_tilt']}
+          style={styles.scrollView}>
           <TouchableHighlight style={styles.button} onClick={this._onClick}>
             <View style={styles.buttonInner}>
               <Text>Hello</Text>
@@ -407,8 +394,7 @@ export default class Example extends Component {
           <View style={styles.table}>
             <RectButton
               style={styles.rectButton}
-              onPress={() => Alert.alert("First row clicked")}
-            >
+              onPress={() => Alert.alert('First row clicked')}>
               <Text style={styles.buttonText}>
                 Observe highlight delay on the row
               </Text>
@@ -422,8 +408,7 @@ export default class Example extends Component {
             <View style={styles.buttonDelimiter} />
             <RectButton
               style={styles.rectButton}
-              onPress={() => Alert.alert("Second row clicked")}
-            >
+              onPress={() => Alert.alert('Second row clicked')}>
               <Text style={styles.buttonText}>
                 Second info icon will block scrolling
               </Text>
@@ -435,8 +420,7 @@ export default class Example extends Component {
             <View style={styles.buttonDelimiter} />
             <RectButton
               style={styles.rectButton}
-              onPress={() => Alert.alert("Third row clicked")}
-            >
+              onPress={() => Alert.alert('Third row clicked')}>
               <Text style={styles.buttonText}>
                 This one will cancel when you drag outside
               </Text>
@@ -459,18 +443,18 @@ export default class Example extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === "ios" ? 20 : 0,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5FCFF"
+    paddingTop: Platform.OS === 'ios' ? 20 : 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
   },
   rectButton: {
     flex: 1,
     height: 60,
     padding: 10,
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "row"
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   table: {
     marginTop: 20,
@@ -478,98 +462,98 @@ const styles = StyleSheet.create({
     marginLeft: -1,
     marginRight: -1,
     borderWidth: 1,
-    borderColor: "#999",
-    backgroundColor: "white"
+    borderColor: '#999',
+    backgroundColor: 'white',
   },
   buttonDelimiter: {
     height: 1,
     marginLeft: 20,
     marginRight: 20,
-    backgroundColor: "#999"
+    backgroundColor: '#999',
   },
   buttonText: {
-    fontWeight: "bold",
-    backgroundColor: "transparent"
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
   },
   infoButton: {
     width: 40,
-    height: 40
+    height: 40,
   },
   infoButtonBorders: {
-    borderColor: "#467AFB",
+    borderColor: '#467AFB',
     borderWidth: 2,
     width: 20,
     height: 20,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 10,
-    margin: 10
+    margin: 10,
   },
   infoButtonText: {
-    color: "#467AFB",
-    fontWeight: "bold",
-    backgroundColor: "transparent"
+    color: '#467AFB',
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
   },
   slider: {
     margin: 10,
-    flex: 1
+    flex: 1,
   },
   scrollView: {
-    flex: 1
+    flex: 1,
   },
   textinput: {
     height: 40,
-    backgroundColor: "white",
-    borderColor: "gray",
+    backgroundColor: 'white',
+    borderColor: 'gray',
     borderWidth: 1,
     margin: 10,
     padding: 3,
-    borderRadius: 5
+    borderRadius: 5,
   },
   box: {
     width: 150,
     height: 150,
-    alignSelf: "center",
-    backgroundColor: "plum",
+    alignSelf: 'center',
+    backgroundColor: 'plum',
     margin: 10,
-    zIndex: 200
+    zIndex: 200,
   },
   button: {
-    margin: 20
+    margin: 20,
   },
   buttonInner: {
     flex: 1,
     padding: 10,
-    alignItems: "center",
-    backgroundColor: "red"
+    alignItems: 'center',
+    backgroundColor: 'red',
   },
   welcome: {
     fontSize: 20,
-    textAlign: "center",
-    margin: 10
+    textAlign: 'center',
+    margin: 10,
   },
   instructions: {
-    textAlign: "center",
-    color: "#333333",
-    marginBottom: 5
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
   },
   text: {
-    margin: 10
+    margin: 10,
   },
   toolbar: {
-    backgroundColor: "#e9eaed",
-    height: 56
+    backgroundColor: '#e9eaed',
+    height: 56,
   },
   pinchableBoxContainer: {
     width: 250,
     height: 250,
-    overflow: "hidden",
-    alignSelf: "center",
-    backgroundColor: "black"
+    overflow: 'hidden',
+    alignSelf: 'center',
+    backgroundColor: 'black',
   },
   pinchableImage: {
-    flex: 1
-  }
+    flex: 1,
+  },
 });
 
 const LOREM_IPSUM = `
