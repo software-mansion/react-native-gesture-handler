@@ -4,7 +4,8 @@
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "precommit": "lint-staged"
   },
   "main": "GestureHandler.js",
   "files": [
@@ -42,8 +43,17 @@
   "devDependencies": {
     "babel-jest": "16.0.0",
     "babel-preset-react-native": "1.9.0",
+    "husky": "^0.14.3",
     "jest": "16.0.2",
     "jest-react-native": "16.0.0",
+    "lint-staged": "^4.0.3",
+    "prettier": "^1.5.3",
     "react-test-renderer": "15.3.2"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
