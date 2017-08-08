@@ -72,6 +72,7 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
         view.onTouchEvent(event);
         activate();
       } else if (tryIntercept(view, event)) {
+        view.onTouchEvent(event);
         activate();
       } else if (state != STATE_BEGAN) {
         begin();

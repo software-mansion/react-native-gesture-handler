@@ -98,17 +98,26 @@ public class GestureHandlerOrchestrator {
   }
 
   private void cleanupFinishedHandlers() {
+    boolean shouldCleanEmptyCells = false;
     for (int i = mGestureHandlersCount - 1; i >= 0; i--) {
       GestureHandler handler = mGestureHandlers[i];
-      if (isFinished(handler.getState()) && !isAwaiting(handler)) {
-        mGestureHandlers[i] = mGestureHandlers[mGestureHandlersCount - 1];
-        mGestureHandlers[mGestureHandlersCount - 1] = null;
-        mGestureHandlersCount--;
+      if (isFinished(handler.getState()) && !handler.mIsAwaiting) {
+        mGestureHandlers[i] = null;
+        shouldCleanEmptyCells = true;
         handler.reset();
         handler.mIsActive = false;
         handler.mIsAwaiting = false;
         handler.mActivationIndex = Integer.MAX_VALUE;
       }
+    }
+    if (shouldCleanEmptyCells) {
+      int out = 0;
+      for (int i = 0; i < mGestureHandlersCount; i++) {
+        if (mGestureHandlers[i] != null) {
+          mGestureHandlers[out++] = mGestureHandlers[i];
+        }
+      }
+      mGestureHandlersCount = out;
     }
     mFinishedHandlersCleanupScheduled = false;
   }
@@ -131,23 +140,38 @@ public class GestureHandlerOrchestrator {
     } else {
       // we can activate handler right away
       makeActive(handler);
-      removeFromAwaitingHandlers(handler);
+      handler.mIsAwaiting = false;
     }
+  }
+
+  private void cleanupAwaitingHandlers() {
+    int out = 0;
+    for (int i = 0; i < mAwaitingHandlersCount; i++) {
+      if (mAwaitingHandlers[i].mIsAwaiting) {
+        mAwaitingHandlers[out++] = mAwaitingHandlers[i];
+      }
+    }
+    mAwaitingHandlersCount = out;
   }
 
   /*package*/ void onHandlerStateChange(GestureHandler handler, int newState, int prevState) {
     mHandlingChangeSemaphore += 1;
-    if (isFinished(newState) && handler.mIsAwaiting) {
-      removeFromAwaitingHandlers(handler);
-    }
-    if (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED) {
+    if (isFinished(newState)) {
       // if there were handlers awaiting completion of this handler, we can trigger active state
       for (int i = 0; i < mAwaitingHandlersCount; i++) {
         GestureHandler otherHandler = mAwaitingHandlers[i];
         if (shouldHandlerWaitForOther(otherHandler, handler)) {
-          tryActivate(otherHandler);
+          if (newState == GestureHandler.STATE_END) {
+            // gesture has ended, we need to kill the awaiting handler
+            otherHandler.cancel();
+            otherHandler.mIsAwaiting = false;
+          } else {
+            // gesture has failed recognition, we may try activating
+            tryActivate(otherHandler);
+          }
         }
       }
+      cleanupAwaitingHandlers();
     }
     if (newState == GestureHandler.STATE_ACTIVE) {
       tryActivate(handler);
@@ -186,12 +210,11 @@ public class GestureHandlerOrchestrator {
     for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
       GestureHandler otherHandler = mAwaitingHandlers[i];
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        mAwaitingHandlers[i] = mAwaitingHandlers[mAwaitingHandlersCount - 1];
-        mAwaitingHandlers[mAwaitingHandlersCount - 1] = null;
-        mAwaitingHandlersCount--;
         otherHandler.cancel();
+        otherHandler.mIsAwaiting = false;
       }
     }
+    cleanupAwaitingHandlers();
 
     // Dispatch state change event if handler is no longer in the active state we should also
     // trigger END state change and UNDETERMINED state change if necessary
@@ -284,27 +307,6 @@ public class GestureHandlerOrchestrator {
     mAwaitingHandlers[mAwaitingHandlersCount++] = handler;
     handler.mIsAwaiting = true;
     handler.mActivationIndex = mActivationIndex++;
-  }
-
-  private boolean isAwaiting(GestureHandler handler) {
-    for (int i = 0; i < mAwaitingHandlersCount; i++) {
-      if (handler == mAwaitingHandlers[i]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private void removeFromAwaitingHandlers(GestureHandler handler) {
-    for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
-      if (mAwaitingHandlers[i] == handler) {
-        mAwaitingHandlers[i] = mAwaitingHandlers[mAwaitingHandlersCount - 1];
-        mAwaitingHandlers[mAwaitingHandlersCount - 1] = null;
-        mAwaitingHandlersCount--;
-        return;
-      }
-    }
-    handler.mIsAwaiting = false;
   }
 
   private void recordGestureHandler(GestureHandler handler, View view) {
