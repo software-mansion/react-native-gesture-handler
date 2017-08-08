@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class GestureHandlerOrchestrator {
 
@@ -18,6 +20,27 @@ public class GestureHandlerOrchestrator {
   private static final float[] sMatrixTransformCoords = new float[2];
   private static final Matrix sInverseMatrix = new Matrix();
   private static final float[] sTempCoords = new float[2];
+
+  private static final Comparator<GestureHandler> sHandlersComparator =
+          new Comparator<GestureHandler>() {
+    @Override
+    public int compare(GestureHandler a, GestureHandler b) {
+      if (a.mIsActive && b.mIsActive || a.mIsAwaiting && b.mIsAwaiting) {
+        // both A and B are either active or awaiting activation, in which case we prefer one that
+        // has activated (or turned into "awaiting" state) earlier
+        return Integer.signum(b.mActivationIndex - a.mActivationIndex);
+      } else if (a.mIsActive) {
+        return -1; // only A is active
+      } else if (b.mIsActive) {
+        return 1; // only B is active
+      } else if (a.mIsAwaiting) {
+        return -1; // only A is awaiting, B is inactive
+      } else if (b.mIsAwaiting) {
+        return 1; // only B is awaiting, A is inactive
+      }
+      return 0; // both A and B are inactive, stable order matters
+    }
+  };
 
   private final ViewGroup mWrapperView;
   private final GestureHandlerRegistry mHandlerRegistry;
@@ -36,7 +59,7 @@ public class GestureHandlerOrchestrator {
   private boolean mIsHandlingTouch = false;
   private int mHandlingChangeSemaphore = 0;
   private boolean mFinishedHandlersCleanupScheduled = false;
-
+  private int mActivationIndex = 0;
 
   public GestureHandlerOrchestrator(ViewGroup wrapperView) {
     this(wrapperView, new GestureHandlerRegistryImpl());
@@ -84,6 +107,7 @@ public class GestureHandlerOrchestrator {
         handler.reset();
         handler.mIsActive = false;
         handler.mIsAwaiting = false;
+        handler.mActivationIndex = Integer.MAX_VALUE;
       }
     }
     mFinishedHandlersCleanupScheduled = false;
@@ -143,6 +167,7 @@ public class GestureHandlerOrchestrator {
 
     handler.mIsAwaiting = false;
     handler.mIsActive = true;
+    handler.mActivationIndex = mActivationIndex++;
 
     int toCancelCount = 0;
     // Cancel all handlers that are required to be cancel upon current handler's activation
@@ -186,6 +211,11 @@ public class GestureHandlerOrchestrator {
     for (int i = 0; i < handlersCount; i++) {
       mPreparedHandlers[i] = mGestureHandlers[i];
     }
+    // We want to deliver events to active handlers first in order of their activation (handlers
+    // that activated first will first get event delivered). Otherwise we deliver events in the
+    // order in which handlers has been added (most direct childrent goes first). Therefore we rely
+    // on Arrays.sort providing a stable sort
+    Arrays.sort(mPreparedHandlers, 0, handlersCount, sHandlersComparator);
     for (int i = 0; i < handlersCount; i++) {
       deliverEventToGestureHandler(mPreparedHandlers[i], event);
     }
@@ -253,6 +283,7 @@ public class GestureHandlerOrchestrator {
     }
     mAwaitingHandlers[mAwaitingHandlersCount++] = handler;
     handler.mIsAwaiting = true;
+    handler.mActivationIndex = mActivationIndex++;
   }
 
   private boolean isAwaiting(GestureHandler handler) {
@@ -288,6 +319,7 @@ public class GestureHandlerOrchestrator {
     mGestureHandlers[mGestureHandlersCount++] = handler;
     handler.mIsActive = false;
     handler.mIsAwaiting = false;
+    handler.mActivationIndex = Integer.MAX_VALUE;
     handler.prepare(view, this);
   }
 
