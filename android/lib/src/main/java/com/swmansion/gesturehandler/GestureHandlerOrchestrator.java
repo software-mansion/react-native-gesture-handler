@@ -113,7 +113,7 @@ public class GestureHandlerOrchestrator {
 
   /*package*/ void onHandlerStateChange(GestureHandler handler, int newState, int prevState) {
     mHandlingChangeSemaphore += 1;
-    if (isFinished(newState) && !handler.mIsAwaiting) {
+    if (isFinished(newState) && handler.mIsAwaiting) {
       removeFromAwaitingHandlers(handler);
     }
     if (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED) {

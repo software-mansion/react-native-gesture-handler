@@ -10,8 +10,6 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
   private boolean mShouldActivateOnStart;
   private boolean mDisallowInterruption;
 
-  private boolean mTouchIntercepted;
-
   public NativeViewGestureHandler() {
     setShouldCancelWhenOutside(true);
   }
@@ -69,28 +67,17 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
       }
       end();
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
-      if (mShouldActivateOnStart || view.isPressed()) {
-        if (tryIntercept(view, event)) {
-          mTouchIntercepted = true;
-        }
+      if (mShouldActivateOnStart) {
+        tryIntercept(view, event);
         view.onTouchEvent(event);
         activate();
-      } else {
-        // view could become pressed due to
+      } else if (tryIntercept(view, event)) {
         view.onTouchEvent(event);
-        if (view.isPressed()) {
-          activate();
-        } else if (tryIntercept(view, event)) {
-          mTouchIntercepted = true;
-          activate();
-        } else if (state != STATE_BEGAN) {
-          begin();
-        }
+        activate();
+      } else if (state != STATE_BEGAN) {
+        begin();
       }
     } else if (state == STATE_ACTIVE) {
-      if (!mTouchIntercepted && tryIntercept(view, event)) {
-        mTouchIntercepted = true;
-      }
       view.onTouchEvent(event);
     }
   }
@@ -108,11 +95,5 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
     MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
     event.setAction(MotionEvent.ACTION_CANCEL);
     getView().onTouchEvent(event);
-  }
-
-  @Override
-  protected void onReset() {
-    super.onReset();
-    mTouchIntercepted = false;
   }
 }

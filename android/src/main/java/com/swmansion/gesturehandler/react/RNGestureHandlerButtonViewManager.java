@@ -9,6 +9,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -42,6 +43,11 @@ public class RNGestureHandlerButtonViewManager extends
     public void setBackgroundColor(int color) {
       mBackgroundColor = color;
       mNeedBackgroundUpdate = true;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+      return true;
     }
 
     private void updateBackground() {
