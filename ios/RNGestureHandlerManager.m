@@ -84,6 +84,11 @@
     }
 }
 
+- (void)dropGestureHandlersForView:(NSNumber *)viewTag
+{
+    [_registry dropGestureHandlersForViewWithTag:viewTag];
+}
+
 - (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder
 {
     if ([blockNativeResponder boolValue]) {
