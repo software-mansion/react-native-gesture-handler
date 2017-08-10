@@ -48,7 +48,18 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
       }
     }
 
-    return !mDisallowInterruption;
+    boolean canBeInterrupted = !mDisallowInterruption;
+    int state = getState();
+    int otherState = handler.getState();
+
+    if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
+      // if both handlers are active and the current handler can be interruped it we return `false`
+      // as it means the other handler has turned active and returning `true` would prevent it from
+      // interrupting the current handler
+      return false;
+    }
+    // otherwise we can only return `true` if already in an active state
+    return state == STATE_ACTIVE && canBeInterrupted;
   }
 
   @Override

@@ -15,6 +15,8 @@ public class GestureHandlerOrchestrator {
   // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
   // it is also more allocation-wise efficient to have a fixed limit
   private static final int SIMULTANEOUS_GESTURE_HANDLER_LIMIT = 20;
+  // Be default fully transparent views can receive touch
+  private static final float DEFAULT_MIN_ALPHA_FOR_TRAVERSAL = 0f;
 
   private static final PointF sTempPoint = new PointF();
   private static final float[] sMatrixTransformCoords = new float[2];
@@ -61,6 +63,8 @@ public class GestureHandlerOrchestrator {
   private boolean mFinishedHandlersCleanupScheduled = false;
   private int mActivationIndex = 0;
 
+  private float mMinAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL;
+
   public GestureHandlerOrchestrator(ViewGroup wrapperView) {
     this(wrapperView, new GestureHandlerRegistryImpl());
   }
@@ -68,6 +72,15 @@ public class GestureHandlerOrchestrator {
   public GestureHandlerOrchestrator(ViewGroup wrapperView, GestureHandlerRegistry registry) {
     mWrapperView = wrapperView;
     mHandlerRegistry = registry;
+  }
+
+  /**
+   * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
+   * gesture target. E.g. if set to 0.1 then views that less than 10% opaque will be ignored when
+   * traversing view hierarchy and looking for gesture handlers.
+   */
+  public void setMinimumAlphaForTraversal(float alpha) {
+    mMinAlphaForTraversal = alpha;
   }
 
   /**
@@ -236,8 +249,9 @@ public class GestureHandlerOrchestrator {
     }
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
-    // order in which handlers has been added (most direct childrent goes first). Therefore we rely
-    // on Arrays.sort providing a stable sort
+    // order in which handlers has been added ("most direct" children goes first). Therefore we rely
+    // on Arrays.sort providing a stable sort (as children are registered in order in which they
+    // should be tested)
     Arrays.sort(mPreparedHandlers, 0, handlersCount, sHandlersComparator);
     for (int i = 0; i < handlersCount; i++) {
       deliverEventToGestureHandler(mPreparedHandlers[i], event);
@@ -334,20 +348,20 @@ public class GestureHandlerOrchestrator {
     }
   }
 
-  private boolean extractGestureHandlers(MotionEvent event) {
+  private void extractGestureHandlers(MotionEvent event) {
     sTempCoords[0] = event.getX();
     sTempCoords[1] = event.getY();
     traverseWithPointerEvents(mWrapperView, sTempCoords);
-    return extractGestureHandlers(mWrapperView, sTempCoords);
+    extractGestureHandlers(mWrapperView, sTempCoords);
   }
 
   private boolean extractGestureHandlers(ViewGroup viewGroup, float[] coords) {
     int childrenCount = viewGroup.getChildCount();
-    boolean result = false;
     for (int i = childrenCount - 1; i >= 0; i--) {
       View child = viewGroup.getChildAt(i);
       PointF childPoint = sTempPoint;
-      if (isTransformedTouchPointInView(coords[0], coords[1], viewGroup, child, childPoint)) {
+      if (canReceiveEvents(child)
+              && isTransformedTouchPointInView(coords[0], coords[1], viewGroup, child, childPoint)) {
         float restoreX = coords[0];
         float restoreY = coords[1];
         coords[0] = childPoint.x;
@@ -355,10 +369,10 @@ public class GestureHandlerOrchestrator {
         traverseWithPointerEvents(child, coords);
         coords[0] = restoreX;
         coords[1] = restoreY;
-        result = true;
+        return true;
       }
     }
-    return result;
+    return false;
   }
 
   private void traverseWithPointerEvents(View view, float coords[]) {
@@ -387,6 +401,10 @@ public class GestureHandlerOrchestrator {
       throw new IllegalArgumentException(
               "Unknown pointer event type: " + pointerEvents.toString());
     }
+  }
+
+  private boolean canReceiveEvents(View view) {
+    return view.getVisibility() == View.VISIBLE && view.getAlpha() >= mMinAlphaForTraversal;
   }
 
   private boolean isTransformedTouchPointInView(

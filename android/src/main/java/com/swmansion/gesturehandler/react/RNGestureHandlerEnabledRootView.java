@@ -1,28 +1,20 @@
 package com.swmansion.gesturehandler.react;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.uimanager.JSTouchDispatcher;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.events.EventDispatcher;
-import com.swmansion.gesturehandler.BaseGestureHandlerInteractionController;
 import com.swmansion.gesturehandler.GestureHandler;
-import com.swmansion.gesturehandler.GestureHandlerInteractionController;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
 
 import javax.annotation.Nullable;
 
 public class RNGestureHandlerEnabledRootView extends ReactRootView {
+
+  // Be default we require views to be at least 10% opaque in order to receive touch
+  private static final float MIN_ALPHA_FOR_TOUCH = 0.1f;
 
   private final RNGestureHandlerRegistry mRegistry = new RNGestureHandlerRegistry();
   private final GestureHandlerOrchestrator mOrchestrator =
@@ -32,6 +24,7 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
 
   public RNGestureHandlerEnabledRootView(Context context) {
     super(context);
+    mOrchestrator.setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH);
   }
 
   @Override
@@ -56,16 +49,14 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     if (mJSGestureHandler == null) {
       mJSGestureHandler = new GestureHandler() {
 
-//        @Override
-//        public boolean shouldRequireToWaitForFailure(GestureHandler handler) {
-//          return handler.getState() == GestureHandler.STATE_ACTIVE;
-//        }
-
         @Override
         protected void onHandle(MotionEvent event) {
           int currentState = getState();
           if (currentState == STATE_UNDETERMINED) {
             begin();
+          }
+          if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+            end();
           }
         }
 
@@ -76,11 +67,6 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
           event.setAction(MotionEvent.ACTION_CANCEL);
           onChildStartedNativeGesture(event);
         }
-
-        @Override
-        protected void onReset() {
-          super.onReset();
-        }
       };
       mJSGestureHandler.setTag(-getRootViewTag());
       getRegistry().registerHandlerForViewWithTag(rootViewTag, mJSGestureHandler);
@@ -88,17 +74,19 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     }
   }
 
-  /*package*/ void handleSetJSResponder(int viewTag, boolean blockNativeResponder) {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mJSGestureHandler != null
-                && mJSGestureHandler.getState() == GestureHandler.STATE_BEGAN) {
-          // Try activate main JS handler
-          mJSGestureHandler.activate();
-          mJSGestureHandler.end();
+  /*package*/ void handleSetJSResponder(final int viewTag, final boolean blockNativeResponder) {
+    if (blockNativeResponder) {
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          if (mJSGestureHandler != null
+                  && mJSGestureHandler.getState() == GestureHandler.STATE_BEGAN) {
+            // Try activate main JS handler
+            mJSGestureHandler.activate();
+            mJSGestureHandler.end();
+          }
         }
-      }
-    });
+      });
+    }
   }
 }

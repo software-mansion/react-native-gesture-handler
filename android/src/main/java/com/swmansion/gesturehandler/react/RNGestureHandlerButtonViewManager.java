@@ -46,7 +46,16 @@ public class RNGestureHandlerButtonViewManager extends
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-      return true;
+      if (super.onInterceptTouchEvent(ev)) {
+        return true;
+      }
+      // We call `onTouchEvent` to and wait until button changes state to `pressed`, if it's pressed
+      // we return true so that the gesture handler can activate
+      onTouchEvent(ev);
+      if (isPressed()) {
+        return true;
+      }
+      return false;
     }
 
     private void updateBackground() {
