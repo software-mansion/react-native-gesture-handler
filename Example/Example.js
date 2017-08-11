@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   Alert,
+  Button,
   Animated,
   AppRegistry,
   StyleSheet,
@@ -8,7 +9,7 @@ import {
   Text,
   View,
   Image,
-  // ScrollView,
+  ScrollView as NormalScrollView,
   Platform,
 } from 'react-native';
 
@@ -270,8 +271,7 @@ class PinchableBox extends React.Component {
           onHandlerStateChange={this._onTiltGestureStateChange}
           minDist={10}
           minPointers={2}
-          maxPointers={2}
-          avgTouches>
+          maxPointers={2}>
           <RotationGestureHandler
             id="image_rotation"
             simultaneousHandlers="image_pinch"
@@ -412,7 +412,77 @@ const InfoButton = props =>
     </View>
   </BorderlessButton>;
 
-export default class Example extends Component {
+export default class ExampleWrapper extends Component {
+  state = { gh: true };
+
+  render() {
+    const { gh } = this.state;
+
+    return (
+      <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, marginBottom: 50 }} />
+        <View
+          pointerEvents={gh ? 'auto' : 'none'}
+          style={[
+            StyleSheet.absoluteFill,
+            gh ? { opacity: 1 } : { opacity: 0 },
+          ]}>
+          <Example />
+        </View>
+
+        <View
+          pointerEvents={gh ? 'none' : 'auto'}
+          style={[
+            StyleSheet.absoluteFill,
+            gh ? { opacity: 0 } : { opacity: 1 },
+          ]}>
+          <NormalExample />
+        </View>
+
+        <View
+          style={{
+            height: 50,
+            backgroundColor: '#000',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+          }}>
+          <Button title="RNGH" onPress={() => this.setState({ gh: true })} />
+          <Button title="Normal" onPress={() => this.setState({ gh: false })} />
+        </View>
+      </View>
+    );
+  }
+}
+
+class NormalExample extends Component {
+  render() {
+    return (
+      <NormalScrollView style={{ flex: 1 }}>
+        <Text style={styles.text}>
+          {LOREM_IPSUM}
+        </Text>
+
+        <Text style={styles.text}>
+          {LOREM_IPSUM}
+        </Text>
+        <Text style={styles.text}>
+          {LOREM_IPSUM}
+        </Text>
+        <Text style={styles.text}>
+          {LOREM_IPSUM}
+        </Text>
+        <Text style={styles.text}>
+          {LOREM_IPSUM}
+        </Text>
+        <Text style={styles.text}>
+          {LOREM_IPSUM}
+        </Text>
+      </NormalScrollView>
+    );
+  }
+}
+
+class Example extends Component {
   _onClick = () => {
     Alert.alert("I'm so touched");
   };
