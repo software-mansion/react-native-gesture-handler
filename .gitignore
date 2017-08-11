@@ -37,6 +37,7 @@ npm-debug.log
 # vscode
 jsconfig.json
 .project
+.vscode
 
 # BUCK
 buck-out/

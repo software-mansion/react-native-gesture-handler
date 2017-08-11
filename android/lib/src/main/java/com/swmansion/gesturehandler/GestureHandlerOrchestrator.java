@@ -258,6 +258,17 @@ public class GestureHandlerOrchestrator {
     }
   }
 
+  public GestureHandler getLastActivatedHandler() {
+    GestureHandler result = null;
+    for (int i = 0; i < mGestureHandlersCount; i++) {
+      GestureHandler handler = mGestureHandlers[i];
+      if (handler.mIsActive && (result == null || result.mActivationIndex < handler.mActivationIndex)) {
+        result = handler;
+      }
+    }
+    return result;
+  }
+
   public void cancelAll() {
     for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
       mAwaitingHandlers[i].cancel();
