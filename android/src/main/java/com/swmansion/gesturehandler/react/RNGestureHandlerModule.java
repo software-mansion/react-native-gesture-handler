@@ -439,6 +439,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     if (mRegistry != null) {
       mRegistry.dropAllHandlers();
       mRegistry = null;
+      getRootView().reset();
     }
     super.onCatalystInstanceDestroy();
   }

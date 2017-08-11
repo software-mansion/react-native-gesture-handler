@@ -16,27 +16,6 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
   // Be default we require views to be at least 10% opaque in order to receive touch
   private static final float MIN_ALPHA_FOR_TOUCH = 0.1f;
 
-  private class RootViewGestureHandler extends GestureHandler {
-    @Override
-    protected void onHandle(MotionEvent event) {
-      int currentState = getState();
-      if (currentState == STATE_UNDETERMINED) {
-        begin();
-      }
-      if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-        end();
-      }
-    }
-
-    @Override
-    protected void onCancel() {
-      long time = SystemClock.uptimeMillis();
-      MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
-      event.setAction(MotionEvent.ACTION_CANCEL);
-      onChildStartedNativeGesture(event);
-    }
-  }
-
   private @Nullable RNGestureHandlerRegistry mRegistry;
   private @Nullable GestureHandlerOrchestrator mOrchestrator;
 
@@ -47,12 +26,53 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     super(context);
   }
 
+  private long mLastProcessedEventTime = -1;
+  private int mLastProcessedEventAction = 0;
+  private boolean mShouldIntercept = false;
+  private boolean mPassingTouch = false;
+
+  private class RootViewGestureHandler extends GestureHandler {
+    @Override
+    protected void onHandle(MotionEvent event) {
+      int currentState = getState();
+      if (currentState == STATE_UNDETERMINED) {
+        begin();
+        mShouldIntercept = false;
+      }
+      if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+        end();
+      }
+    }
+
+    @Override
+    protected void onCancel() {
+      mShouldIntercept = true;
+      long time = SystemClock.uptimeMillis();
+      MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+      event.setAction(MotionEvent.ACTION_CANCEL);
+      onChildStartedNativeGesture(event);
+    }
+  }
+
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     if (mOrchestrator == null) {
       return super.onInterceptTouchEvent(ev);
     }
-    return true;
+    passTouchEventOnce(ev);
+    return super.onInterceptTouchEvent(ev) || mShouldIntercept;
+  }
+
+  @Override
+  public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+    // If this method gets called it means that some native view is attempting to grab lock for
+    // touch event delivery. In that case we cancel all gesture recognizers
+    if (!mPassingTouch) {
+      // if we are in the process of delivering touch events via GH orchestrator, we don't want to
+      // treat it as a native gesture capturing the lock
+      tryCancelAllHandlers();
+    }
+    super.requestDisallowInterceptTouchEvent(disallowIntercept);
   }
 
   @Override
@@ -60,9 +80,35 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     if (mOrchestrator == null) {
       return super.onTouchEvent(ev);
     }
-    boolean result = mOrchestrator.onTouchEvent(ev);
+    passTouchEventOnce(ev);
     super.onTouchEvent(ev);
-    return result;
+    return true;
+  }
+
+  private void passTouchEventOnce(MotionEvent ev) {
+    // Since we get events in `onInterceptTouch` and in `onTouch` handlers we want to avoid passing
+    // same event twice to the GH orchestrator. We use action and eventTime attributes of an event
+    // object to tell if have already processed the given event
+    long eventTime = ev.getEventTime();
+    int action = ev.getAction();
+    if (mLastProcessedEventAction != action || eventTime > mLastProcessedEventTime) {
+      mLastProcessedEventTime = eventTime;
+      // We mark `mPassingTouch` before we get into `mOrchestrator.onTouchEvent` so that we can tell
+      // if `requestDisallow` has been called as a result of a normal gesture handling process or
+      // as a result of one of the gesture handlers activating
+      mPassingTouch = true;
+      mOrchestrator.onTouchEvent(ev);
+      mPassingTouch = false;
+    }
+  }
+
+  private void tryCancelAllHandlers() {
+    // In order to cancel handlers we activate handler that is hooked to the root view
+    if (mJSGestureHandler != null && mJSGestureHandler.getState() == GestureHandler.STATE_BEGAN) {
+      // Try activate main JS handler
+      mJSGestureHandler.activate();
+      mJSGestureHandler.end();
+    }
   }
 
   /**
@@ -77,6 +123,15 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     if (mRootViewTag >= 0) {
       updateRootViewTag(mRootViewTag);
     }
+  }
+
+  public void reset() {
+    mRegistry = null;
+    mOrchestrator = null;
+    mJSGestureHandler = null;
+    mRootViewTag = -1;
+    mLastProcessedEventTime = -1;
+    mShouldIntercept = false;
   }
 
   private void updateRootViewTag(int rootViewTag) {
@@ -106,12 +161,7 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          if (mJSGestureHandler != null
-                  && mJSGestureHandler.getState() == GestureHandler.STATE_BEGAN) {
-            // Try activate main JS handler
-            mJSGestureHandler.activate();
-            mJSGestureHandler.end();
-          }
+          tryCancelAllHandlers();
         }
       });
     }
