@@ -396,7 +396,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void handleSetJSResponder(int viewTag, boolean blockNativeResponder) {
-    getRootView().handleSetJSResponder(viewTag, blockNativeResponder);
+    if (mRegistry != null) {
+      getRootView().handleSetJSResponder(viewTag, blockNativeResponder);
+    }
   }
 
   @ReactMethod
