@@ -36,9 +36,11 @@ npm-debug.log
 
 # vscode
 jsconfig.json
+.project
 
 # BUCK
 buck-out/
+bin/
 \.buckd/
 android/app/libs
 android/keystores/debug.keystore
