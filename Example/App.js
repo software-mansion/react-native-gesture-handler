@@ -34,7 +34,7 @@ const SCREENS = {
 
 class MainScreen extends React.Component {
   static navigationOptions = {
-    title: 'Gesture Handler Demo',
+    title: '✌️ Gesture Handler Demo',
   };
   _onPressItem = item => this.props.navigation.navigate(item);
   _renderItem = props =>

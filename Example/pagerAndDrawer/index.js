@@ -7,14 +7,18 @@ import {
   DrawerLayoutAndroid,
 } from 'react-native-gesture-handler';
 
+const Page = ({ backgroundColor, text }) =>
+  <View style={[styles.page, { backgroundColor }]}>
+    <Text style={styles.pageText}>
+      {text}
+    </Text>
+  </View>;
+
 export default class Example extends Component {
-  _onClick = () => {
-    Alert.alert("I'm so touched");
-  };
   render() {
     if (Platform.OS !== 'android') {
       return (
-        <Text>Sorry, thisis a demo of android-only native components</Text>
+        <Text>Sorry, this is a demo of android-only native components</Text>
       );
     }
     const navigationView = (
@@ -34,7 +38,7 @@ export default class Example extends Component {
             drawerWidth={200}
             drawerPosition={DrawerLayoutAndroid.positions.Left}
             renderNavigationView={() => navigationView}>
-            <View style={{ flex: 1, backgroundColor: 'gray' }} />
+            <Page backgroundColor="gray" text="First 🙈" />
           </DrawerLayoutAndroid>
           <PanGestureHandler id="drawer_blocker" hitSlop={{ right: 100 }}>
             <View
@@ -42,15 +46,15 @@ export default class Example extends Component {
             />
           </PanGestureHandler>
         </View>
-        <View style={{ backgroundColor: 'yellow' }} />
-        <View style={{ backgroundColor: 'blue' }} />
+        <Page backgroundColor="yellow" text="Second 🙉" />
+        <Page backgroundColor="blue" text="Third 🙊" />
         <View>
           <DrawerLayoutAndroid
             simultaneousHandlers="drawer2_blocker"
             drawerWidth={200}
             drawerPosition={DrawerLayoutAndroid.positions.Right}
             renderNavigationView={() => navigationView}>
-            <View style={{ flex: 1, backgroundColor: 'plum' }} />
+            <Page backgroundColor="blue" text="Fourth 😎" />
           </DrawerLayoutAndroid>
           <PanGestureHandler id="drawer2_blocker" hitSlop={{ left: 100 }}>
             <View
@@ -76,5 +80,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+  },
+  page: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pageText: {
+    fontSize: 21,
+    color: 'white',
   },
 });
