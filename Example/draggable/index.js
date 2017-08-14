@@ -67,11 +67,9 @@ export default class Example extends Component {
   };
   render() {
     return (
-      <ScrollView
-        waitFor={['dragbox', 'image_pinch', 'image_rotation', 'image_tilt']}
-        style={styles.scrollView}>
+      <ScrollView style={styles.scrollView}>
         <LoremIpsum words={40} />
-        <DraggableBox />
+        <DraggableBox minDist={30} />
         <LoremIpsum />
       </ScrollView>
     );
