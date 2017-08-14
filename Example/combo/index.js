@@ -1,16 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Alert,
-  Animated,
-  AppRegistry,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-  Image,
-  // ScrollView,
-  Platform,
-} from 'react-native';
+import { Alert, Animated, StyleSheet, Switch, Text, View } from 'react-native';
 
 import {
   LongPressGestureHandler,
@@ -23,17 +12,15 @@ import {
   State,
   TapGestureHandler,
   TextInput,
-  ToolbarAndroid,
-  ViewPagerAndroid,
-  DrawerLayoutAndroid,
-  WebView,
   RectButton,
-  BorderlessButton,
 } from 'react-native-gesture-handler';
 
-const USE_NATIVE_DRIVER = true;
+import { Swipeable, InfoButton } from '../swipeable';
+import { DraggableBox } from '../draggable';
 
-const UNDERLAY_REF = 'UNDERLAY_REF';
+import { USE_NATIVE_DRIVER } from '../config';
+import { LOREM_IPSUM } from '../common';
+
 const CHILD_REF = 'CHILD_REF';
 
 class TouchableHighlight extends Component {
@@ -86,58 +73,6 @@ var INACTIVE_CHILD_STYLE = StyleSheet.create({ x: { opacity: 1.0 } }).x;
 const INACTIVE_UNDERLAY_STYLE = StyleSheet.create({
   x: { backgroundColor: 'transparent' },
 }).x;
-
-class DraggableBox extends Component {
-  constructor(props) {
-    super(props);
-    this._translateX = new Animated.Value(0);
-    this._translateY = new Animated.Value(0);
-    this._lastOffset = { x: 0, y: 0 };
-    this._onGestureEvent = Animated.event(
-      [
-        {
-          nativeEvent: {
-            translationX: this._translateX,
-            translationY: this._translateY,
-          },
-        },
-      ],
-      { useNativeDriver: true }
-    );
-  }
-  _onHandlerStateChange = event => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastOffset.x += event.nativeEvent.translationX;
-      this._lastOffset.y += event.nativeEvent.translationY;
-      this._translateX.setOffset(this._lastOffset.x);
-      this._translateX.setValue(0);
-      this._translateY.setOffset(this._lastOffset.y);
-      this._translateY.setValue(0);
-    }
-  };
-  render() {
-    return (
-      <PanGestureHandler
-        {...this.props}
-        onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}
-        minDist={100}
-        id="dragbox">
-        <Animated.View
-          style={[
-            styles.box,
-            {
-              transform: [
-                { translateX: this._translateX },
-                { translateY: this._translateY },
-              ],
-            },
-          ]}
-        />
-      </PanGestureHandler>
-    );
-  }
-}
 
 class PressBox extends Component {
   _onHandlerStateChange = event => {
@@ -212,8 +147,8 @@ class PinchableBox extends React.Component {
     this._scale = Animated.multiply(this._baseScale, this._pinchScale);
     this._lastScale = 1;
     this._onPinchGestureEvent = Animated.event(
-      [{ nativeEvent: { scale: this._pinchScale } }]
-      //  { useNativeDriver: true }
+      [{ nativeEvent: { scale: this._pinchScale } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
     /* Rotation */
@@ -224,8 +159,8 @@ class PinchableBox extends React.Component {
     });
     this._lastRotate = 0;
     this._onRotateGestureEvent = Animated.event(
-      [{ nativeEvent: { rotation: this._rotate } }]
-      //  { useNativeDriver: true }
+      [{ nativeEvent: { rotation: this._rotate } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
     /* Tilt */
@@ -236,8 +171,8 @@ class PinchableBox extends React.Component {
     });
     this._lastTilt = 0;
     this._onTiltGestureEvent = Animated.event(
-      [{ nativeEvent: { translationY: this._tilt } }]
-      //  { useNativeDriver: true }
+      [{ nativeEvent: { translationY: this._tilt } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
   _onRotateHandlerStateChange = event => {
@@ -306,167 +241,10 @@ class PinchableBox extends React.Component {
   }
 }
 
-const RATIO = 3;
-
-class Swipeable extends Component {
-  constructor(props) {
-    super(props);
-    this._width = 0;
-    this._dragX = new Animated.Value(0);
-    this._transX = this._dragX.interpolate({
-      inputRange: [0, RATIO],
-      outputRange: [0, 1],
-    });
-    this._showLeftAction = this._dragX.interpolate({
-      inputRange: [-1, 0, 1],
-      outputRange: [0, 0, 1],
-    });
-    this._showRightAction = this._dragX.interpolate({
-      inputRange: [-1, 0, 1],
-      outputRange: [1, 0, 0],
-    });
-    this._onGestureEvent = Animated.event(
-      [{ nativeEvent: { translationX: this._dragX } }],
-      { useNativeDriver: USE_NATIVE_DRIVER }
-    );
-  }
-  _onHandlerStateChange = event => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      const dragToss = 0.05;
-      const endOffsetX =
-        event.nativeEvent.translationX + dragToss * event.nativeEvent.velocityX;
-
-      let toValue = 0;
-      if (endOffsetX > this._width / 2) {
-        toValue = this._width * RATIO;
-      } else if (endOffsetX < -this._width / 2) {
-        toValue = -this._width * RATIO;
-      }
-
-      Animated.spring(this._dragX, {
-        velocity: event.nativeEvent.velocityX,
-        tension: 15,
-        friction: 5,
-        toValue,
-        useNativeDriver: USE_NATIVE_DRIVER,
-      }).start();
-    }
-  };
-  _onLayout = event => {
-    this._width = event.nativeEvent.layout.width;
-  };
-  _reset = () => {
-    Animated.spring(this._dragX, {
-      toValue: 0,
-      useNativeDriver: USE_NATIVE_DRIVER,
-      tension: 15,
-      friction: 5,
-    }).start();
-  };
-  render() {
-    const { children } = this.props;
-    return (
-      <View>
-        <Animated.View
-          style={[styles.rowAction, { opacity: this._showLeftAction }]}>
-          <RectButton
-            style={[styles.rowAction, styles.leftAction]}
-            onPress={this._reset}>
-            <Text style={styles.actionButtonText}>Green</Text>
-          </RectButton>
-        </Animated.View>
-        <Animated.View
-          style={[styles.rowAction, { opacity: this._showRightAction }]}>
-          <RectButton
-            style={[styles.rowAction, styles.rightAction]}
-            onPress={this._reset}>
-            <Text style={styles.actionButtonText}>Red</Text>
-          </RectButton>
-        </Animated.View>
-        <PanGestureHandler
-          {...this.props}
-          minDeltaX={10}
-          onGestureEvent={this._onGestureEvent}
-          onHandlerStateChange={this._onHandlerStateChange}>
-          <Animated.View
-            style={{
-              backgroundColor: 'white',
-              transform: [{ translateX: this._transX }],
-            }}
-            onLayout={this._onLayout}>
-            {children}
-          </Animated.View>
-        </PanGestureHandler>
-      </View>
-    );
-  }
-}
-
-const InfoButton = props =>
-  <BorderlessButton
-    {...props}
-    style={styles.infoButton}
-    onPress={() => Alert.alert(`${props.name} info button clicked`)}>
-    <View style={styles.infoButtonBorders}>
-      <Text style={styles.infoButtonText}>i</Text>
-    </View>
-  </BorderlessButton>;
-
 export default class Example extends Component {
   _onClick = () => {
     Alert.alert("I'm so touched");
   };
-  render2() {
-    const navigationView = (
-      <View style={{ flex: 1, backgroundColor: '#fff' }}>
-        <Text style={{ margin: 10, fontSize: 15, textAlign: 'left' }}>
-          I'm in the Drawer!
-        </Text>
-      </View>
-    );
-    return (
-      <ViewPagerAndroid
-        style={styles.container}
-        waitFor={['drawer_blocker', 'drawer2_blocker']}>
-        <View>
-          <DrawerLayoutAndroid
-            simultaneousHandlers="drawer_blocker"
-            drawerWidth={200}
-            drawerPosition={DrawerLayoutAndroid.positions.Left}
-            renderNavigationView={() => navigationView}>
-            <View style={{ flex: 1, backgroundColor: 'gray' }} />
-          </DrawerLayoutAndroid>
-          <PanGestureHandler id="drawer_blocker" hitSlop={{ right: 100 }}>
-            <View
-              style={{ position: 'absolute', width: 0, top: 0, bottom: 0 }}
-            />
-          </PanGestureHandler>
-        </View>
-        <View style={{ backgroundColor: 'yellow' }} />
-        <View style={{ backgroundColor: 'blue' }} />
-        <View>
-          <DrawerLayoutAndroid
-            simultaneousHandlers="drawer2_blocker"
-            drawerWidth={200}
-            drawerPosition={DrawerLayoutAndroid.positions.Right}
-            renderNavigationView={() => navigationView}>
-            <View style={{ flex: 1, backgroundColor: 'plum' }} />
-          </DrawerLayoutAndroid>
-          <PanGestureHandler id="drawer2_blocker" hitSlop={{ left: 100 }}>
-            <View
-              style={{
-                position: 'absolute',
-                width: 0,
-                top: 0,
-                bottom: 0,
-                right: 0,
-              }}
-            />
-          </PanGestureHandler>
-        </View>
-      </ViewPagerAndroid>
-    );
-  }
   render() {
     return (
       <View style={styles.container}>
@@ -486,7 +264,7 @@ export default class Example extends Component {
           />
 
           <PinchableBox />
-          <DraggableBox />
+          <DraggableBox minDist={100} />
           <PressBox />
           <ControlledSwitch />
           <View style={styles.table}>
@@ -543,9 +321,6 @@ export default class Example extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === 'ios' ? 20 : 0,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
   rectButton: {
@@ -555,21 +330,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-  },
-  rowAction: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  leftAction: {
-    backgroundColor: '#4CAF50',
-  },
-  rightAction: {
-    backgroundColor: '#F44336',
-  },
-  actionButtonText: {
-    color: 'white',
-    fontSize: 16,
   },
   table: {
     marginTop: 20,
@@ -587,25 +347,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#999',
   },
   buttonText: {
-    fontWeight: 'bold',
-    backgroundColor: 'transparent',
-  },
-  infoButton: {
-    width: 40,
-    height: 40,
-  },
-  infoButtonBorders: {
-    borderColor: '#467AFB',
-    borderWidth: 2,
-    width: 20,
-    height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    margin: 10,
-  },
-  infoButtonText: {
-    color: '#467AFB',
     fontWeight: 'bold',
     backgroundColor: 'transparent',
   },
@@ -642,22 +383,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'red',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
   text: {
     margin: 10,
-  },
-  toolbar: {
-    backgroundColor: '#e9eaed',
-    height: 56,
   },
   pinchableBoxContainer: {
     width: 250,
@@ -670,15 +397,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-const LOREM_IPSUM = `
-Curabitur accumsan sit amet massa quis cursus. Fusce sollicitudin nunc nisl, quis efficitur quam tristique eget. Ut non erat molestie, ullamcorper turpis nec, euismod neque. Praesent aliquam risus ultricies, cursus mi consectetur, bibendum lorem. Nunc eleifend consectetur metus quis pulvinar. In vitae lacus eu nibh tincidunt sagittis ut id lorem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Quisque sagittis mauris rhoncus, maximus justo in, consequat dolor. Pellentesque ornare laoreet est vulputate vestibulum. Aliquam sit amet metus lorem.
-
-Morbi tempus elit lorem, ut pulvinar nunc sagittis pharetra. Nulla mi sem, elementum non bibendum eget, viverra in purus. Vestibulum efficitur ex id nisi luctus egestas. Quisque in urna vitae leo consectetur ultricies sit amet at nunc. Cras porttitor neque at nisi ornare, mollis ornare dolor pharetra. Donec iaculis lacus orci, et pharetra eros imperdiet nec. Morbi leo nunc, placerat eget varius nec, volutpat ac velit. Phasellus pulvinar vulputate tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce elementum dui at ipsum hendrerit, vitae consectetur erat pulvinar. Sed vehicula sapien felis, id tristique dolor tempor feugiat. Aenean sit amet erat libero.
-
-Nam posuere at mi ut porttitor. Vivamus dapibus vehicula mauris, commodo pretium nibh. Mauris turpis metus, vulputate iaculis nibh eu, maximus tincidunt nisl. Vivamus in mauris nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse convallis ornare finibus. Quisque leo ex, vulputate quis molestie auctor, congue nec arcu.
-
-Praesent ac risus nec augue commodo semper eu eget quam. Donec aliquam sodales convallis. Etiam interdum eu nulla at tempor. Duis nec porttitor odio, consectetur tempor turpis. Sed consequat varius lorem vel fermentum. Maecenas dictum sapien vitae lobortis tempus. Aliquam iaculis vehicula velit, non tempus est varius nec. Nunc congue dolor nec sem gravida, nec tincidunt mi luctus. Nam ut porttitor diam.
-
-Fusce interdum nisi a risus aliquet, non dictum metus cursus. Praesent imperdiet sapien orci, quis sodales metus aliquet id. Aliquam convallis pharetra erat. Fusce gravida diam ut tellus elementum sodales. Fusce varius congue neque, quis laoreet sapien blandit vestibulum. Donec congue libero sapien, nec varius risus viverra ut. Quisque eu maximus magna. Phasellus tortor nisi, tincidunt vitae dignissim nec, interdum vel mi. Ut accumsan urna finibus posuere mattis.
-`;
