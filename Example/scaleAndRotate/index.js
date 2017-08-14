@@ -119,9 +119,7 @@ export class PinchableBox extends React.Component {
 export default class Example extends Component {
   render() {
     return (
-      <ScrollView
-        waitFor={['image_pinch', 'image_rotation', 'image_tilt']}
-        style={styles.scrollView}>
+      <ScrollView style={styles.scrollView}>
         <LoremIpsum words={40} />
         <PinchableBox />
         <LoremIpsum />
