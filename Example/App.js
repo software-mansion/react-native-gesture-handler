@@ -4,7 +4,9 @@ import { StackNavigator } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import Swipeable from './swipeable';
+import Multitap from './multitap';
 import Draggable from './draggable';
+import ScaleAndRotate from './scaleAndRotate';
 import PagerAndDrawer from './pagerAndDrawer';
 import PanResponder from './panResponder';
 import Bouncing from './bouncing';
@@ -13,7 +15,9 @@ import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 
 const SCREENS = {
   Swipeable: { screen: Swipeable, title: 'Swipeable rows & buttons' },
+  Multitap: { screen: Multitap },
   Draggable: { screen: Draggable },
+  ScaleAndRotate: { screen: ScaleAndRotate, title: 'Scale, rotate & tilt' },
   PagerAndDrawer: { screen: PagerAndDrawer, title: 'Android pager & drawer' },
   PanResponder: { screen: PanResponder },
   Bouncing: { screen: Bouncing, title: 'Twist & bounce back animation' },

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   Alert,
-  Animated,
   StyleSheet,
   ScrollView as RNScroll,
   Switch,
@@ -10,11 +9,7 @@ import {
 } from 'react-native';
 
 import {
-  LongPressGestureHandler,
   NativeViewGestureHandler,
-  PanGestureHandler,
-  PinchGestureHandler,
-  RotationGestureHandler,
   ScrollView as GHScroll,
   Slider,
   State,
@@ -25,9 +20,10 @@ import {
 
 import { Swipeable, InfoButton } from '../swipeable';
 import { DraggableBox } from '../draggable';
+import { PinchableBox } from '../scaleAndRotate';
+import { PressBox } from '../multitap';
 
-import { USE_NATIVE_DRIVER } from '../config';
-import { LOREM_IPSUM } from '../common';
+import { LoremIpsum } from '../common';
 
 const CHILD_REF = 'CHILD_REF';
 
@@ -82,42 +78,6 @@ const INACTIVE_UNDERLAY_STYLE = StyleSheet.create({
   x: { backgroundColor: 'transparent' },
 }).x;
 
-class PressBox extends Component {
-  _onHandlerStateChange = event => {
-    if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert("I'm being pressed for so long");
-    }
-  };
-  _onSingleTap = event => {
-    if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert("I'm touched");
-    }
-  };
-  _onDoubleTap = event => {
-    if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert('D0able tap, good job!');
-    }
-  };
-  render() {
-    return (
-      <LongPressGestureHandler
-        onHandlerStateChange={this._onHandlerStateChange}
-        minDurationMs={1500}>
-        <TapGestureHandler
-          onHandlerStateChange={this._onSingleTap}
-          waitFor="double_tap">
-          <TapGestureHandler
-            id="double_tap"
-            onHandlerStateChange={this._onDoubleTap}
-            numberOfTaps={2}>
-            <View style={styles.box} />
-          </TapGestureHandler>
-        </TapGestureHandler>
-      </LongPressGestureHandler>
-    );
-  }
-}
-
 class ControlledSwitch extends React.Component {
   static propTypes = Switch.propTypes;
   constructor(props) {
@@ -141,110 +101,6 @@ class ControlledSwitch extends React.Component {
           onValueChange={this._onValueChange}
         />
       </NativeViewGestureHandler>
-    );
-  }
-}
-
-class PinchableBox extends React.Component {
-  constructor(props) {
-    super(props);
-
-    /* Pinching */
-    this._baseScale = new Animated.Value(1);
-    this._pinchScale = new Animated.Value(1);
-    this._scale = Animated.multiply(this._baseScale, this._pinchScale);
-    this._lastScale = 1;
-    this._onPinchGestureEvent = Animated.event(
-      [{ nativeEvent: { scale: this._pinchScale } }],
-      { useNativeDriver: USE_NATIVE_DRIVER }
-    );
-
-    /* Rotation */
-    this._rotate = new Animated.Value(0);
-    this._rotateStr = this._rotate.interpolate({
-      inputRange: [-100, 100],
-      outputRange: ['-100rad', '100rad'],
-    });
-    this._lastRotate = 0;
-    this._onRotateGestureEvent = Animated.event(
-      [{ nativeEvent: { rotation: this._rotate } }],
-      { useNativeDriver: USE_NATIVE_DRIVER }
-    );
-
-    /* Tilt */
-    this._tilt = new Animated.Value(0);
-    this._tiltStr = this._tilt.interpolate({
-      inputRange: [-501, -500, 0, 1],
-      outputRange: ['1rad', '1rad', '0rad', '0rad'],
-    });
-    this._lastTilt = 0;
-    this._onTiltGestureEvent = Animated.event(
-      [{ nativeEvent: { translationY: this._tilt } }],
-      { useNativeDriver: USE_NATIVE_DRIVER }
-    );
-  }
-  _onRotateHandlerStateChange = event => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastRotate += event.nativeEvent.rotation;
-      this._rotate.setOffset(this._lastRotate);
-      this._rotate.setValue(0);
-    }
-  };
-  _onPinchHandlerStateChange = event => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastScale *= event.nativeEvent.scale;
-      this._baseScale.setValue(this._lastScale);
-      this._pinchScale.setValue(1);
-    }
-  };
-  _onTiltGestureStateChange = event => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastTilt += event.nativeEvent.translationY;
-      this._tilt.setOffset(this._lastTilt);
-      this._tilt.setValue(0);
-    }
-  };
-  render() {
-    return (
-      <Animated.View style={styles.pinchableBoxContainer} collapsable={false}>
-        <PanGestureHandler
-          id="image_tilt"
-          onGestureEvent={this._onTiltGestureEvent}
-          onHandlerStateChange={this._onTiltGestureStateChange}
-          minDist={10}
-          minPointers={2}
-          maxPointers={2}
-          avgTouches>
-          <RotationGestureHandler
-            id="image_rotation"
-            simultaneousHandlers="image_pinch"
-            onGestureEvent={this._onRotateGestureEvent}
-            onHandlerStateChange={this._onRotateHandlerStateChange}>
-            <PinchGestureHandler
-              id="image_pinch"
-              simultaneousHandlers="image_rotation"
-              onGestureEvent={this._onPinchGestureEvent}
-              onHandlerStateChange={this._onPinchHandlerStateChange}>
-              <Animated.Image
-                style={[
-                  styles.pinchableImage,
-                  {
-                    transform: [
-                      { perspective: 200 },
-                      { scale: this._scale },
-                      { rotate: this._rotateStr },
-                      { rotateX: this._tiltStr },
-                    ],
-                  },
-                ]}
-                source={{
-                  uri: 'https://avatars1.githubusercontent.com/u/6952717',
-                }}
-              />
-            </PinchGestureHandler>
-          </RotationGestureHandler>
-        </PanGestureHandler>
-      </Animated.View>
     );
   }
 }
@@ -318,9 +174,7 @@ class Combo extends Component {
               <InfoButton shouldCancelWhenOutside name="third" />
             </RectButton>
           </View>
-          <Text style={styles.text}>
-            {LOREM_IPSUM}
-          </Text>
+          <LoremIpsum />
         </ScrollViewComponent>
       </View>
     );
@@ -378,14 +232,6 @@ const styles = StyleSheet.create({
     padding: 3,
     borderRadius: 5,
   },
-  box: {
-    width: 150,
-    height: 150,
-    alignSelf: 'center',
-    backgroundColor: 'plum',
-    margin: 10,
-    zIndex: 200,
-  },
   button: {
     margin: 20,
   },
@@ -394,18 +240,5 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     backgroundColor: 'red',
-  },
-  text: {
-    margin: 10,
-  },
-  pinchableBoxContainer: {
-    width: 250,
-    height: 250,
-    overflow: 'hidden',
-    alignSelf: 'center',
-    backgroundColor: 'black',
-  },
-  pinchableImage: {
-    flex: 1,
   },
 });
