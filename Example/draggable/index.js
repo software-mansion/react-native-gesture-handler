@@ -71,7 +71,7 @@ export default class Example extends Component {
         waitFor={['dragbox', 'image_pinch', 'image_rotation', 'image_tilt']}
         style={styles.scrollView}>
         <LoremIpsum words={40} />
-        <DraggableBox minDist={100} />
+        <DraggableBox />
         <LoremIpsum />
       </ScrollView>
     );
