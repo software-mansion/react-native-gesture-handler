@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -73,25 +73,25 @@ export class PinchableBox extends React.Component {
   };
   render() {
     return (
-      <Animated.View style={styles.pinchableBoxContainer} collapsable={false}>
-        <PanGestureHandler
-          id="image_tilt"
-          onGestureEvent={this._onTiltGestureEvent}
-          onHandlerStateChange={this._onTiltGestureStateChange}
-          minDist={10}
-          minPointers={2}
-          maxPointers={2}
-          avgTouches>
-          <RotationGestureHandler
-            id="image_rotation"
-            simultaneousHandlers="image_pinch"
-            onGestureEvent={this._onRotateGestureEvent}
-            onHandlerStateChange={this._onRotateHandlerStateChange}>
-            <PinchGestureHandler
-              id="image_pinch"
-              simultaneousHandlers="image_rotation"
-              onGestureEvent={this._onPinchGestureEvent}
-              onHandlerStateChange={this._onPinchHandlerStateChange}>
+      <PanGestureHandler
+        id="image_tilt"
+        onGestureEvent={this._onTiltGestureEvent}
+        onHandlerStateChange={this._onTiltGestureStateChange}
+        minDist={10}
+        minPointers={2}
+        maxPointers={2}
+        avgTouches>
+        <RotationGestureHandler
+          id="image_rotation"
+          simultaneousHandlers="image_pinch"
+          onGestureEvent={this._onRotateGestureEvent}
+          onHandlerStateChange={this._onRotateHandlerStateChange}>
+          <PinchGestureHandler
+            id="image_pinch"
+            simultaneousHandlers="image_rotation"
+            onGestureEvent={this._onPinchGestureEvent}
+            onHandlerStateChange={this._onPinchHandlerStateChange}>
+            <View style={styles.container} collapsable={false}>
               <Animated.Image
                 style={[
                   styles.pinchableImage,
@@ -108,38 +108,26 @@ export class PinchableBox extends React.Component {
                   uri: 'https://avatars1.githubusercontent.com/u/6952717',
                 }}
               />
-            </PinchGestureHandler>
-          </RotationGestureHandler>
-        </PanGestureHandler>
-      </Animated.View>
+            </View>
+          </PinchGestureHandler>
+        </RotationGestureHandler>
+      </PanGestureHandler>
     );
   }
 }
 
-export default class Example extends Component {
-  render() {
-    return (
-      <ScrollView style={styles.scrollView}>
-        <LoremIpsum words={40} />
-        <PinchableBox />
-        <LoremIpsum />
-      </ScrollView>
-    );
-  }
-}
+export default PinchableBox;
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
-  pinchableBoxContainer: {
-    width: 250,
-    height: 250,
-    overflow: 'hidden',
-    alignSelf: 'center',
+  container: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'black',
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pinchableImage: {
-    flex: 1,
+    width: 250,
+    height: 250,
   },
 });

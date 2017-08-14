@@ -128,7 +128,9 @@ class Combo extends Component {
             underlineColorAndroid="transparent"
           />
 
-          <PinchableBox />
+          <View style={styles.pinchableContainer}>
+            <PinchableBox />
+          </View>
           <DraggableBox minDist={100} />
           <PressBox />
           <ControlledSwitch />
@@ -240,5 +242,10 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     backgroundColor: 'red',
+  },
+  pinchableContainer: {
+    width: 250,
+    height: 250,
+    alignSelf: 'center',
   },
 });
