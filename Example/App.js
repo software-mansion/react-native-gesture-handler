@@ -21,10 +21,10 @@ const SCREENS = {
   PagerAndDrawer: { screen: PagerAndDrawer, title: 'Android pager & drawer' },
   PanResponder: { screen: PanResponder },
   Bouncing: { screen: Bouncing, title: 'Twist & bounce back animation' },
-  ChatHeads: {
-    screen: ChatHeads,
-    title: 'Chat Heads (no native animated support yet)',
-  },
+  // ChatHeads: {
+  //   screen: ChatHeads,
+  //   title: 'Chat Heads (no native animated support yet)',
+  // },
   Combo: { screen: ComboWithGHScroll },
   ComboWithRNScroll: {
     screen: ComboWithRNScroll,
@@ -36,15 +36,16 @@ class MainScreen extends React.Component {
   static navigationOptions = {
     title: '✌️ Gesture Handler Demo',
   };
-  _onPressItem = item => this.props.navigation.navigate(item);
+  _onPressItem = ({ key }) => this.props.navigation.navigate(key);
   _renderItem = props =>
     <MainScreenItem {...props} onPressItem={this._onPressItem} />;
   _renderScroll = props => <ScrollView {...props} />;
   render() {
+    const data = Object.keys(SCREENS).map(key => ({ key }));
     return (
       <FlatList
         style={styles.list}
-        data={Object.keys(SCREENS)}
+        data={data}
         ItemSeparatorComponent={ItemSeparator}
         renderItem={this._renderItem}
         renderScrollComponent={this._renderScroll}
@@ -58,11 +59,11 @@ const ItemSeparator = () => <View style={styles.separator} />;
 class MainScreenItem extends React.Component {
   _onPress = () => this.props.onPressItem(this.props.item);
   render() {
-    const { item } = this.props;
+    const { key } = this.props.item;
     return (
       <RectButton style={styles.button} onPress={this._onPress}>
         <Text style={styles.buttonText}>
-          {SCREENS[item].title || item}
+          {SCREENS[key].title || key}
         </Text>
       </RectButton>
     );
