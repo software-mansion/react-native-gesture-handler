@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, Button, FlatList, StyleSheet } from 'react-native';
+import { Text, View, FlatList, StyleSheet } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
@@ -9,7 +9,7 @@ import PagerAndDrawer from './pagerAndDrawer';
 import PanResponder from './panResponder';
 import Bouncing from './bouncing';
 import ChatHeads from './chatHeads';
-import Combo from './combo';
+import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 
 const SCREENS = {
   Swipeable: { screen: Swipeable, title: 'Swipeable rows & buttons' },
@@ -21,7 +21,11 @@ const SCREENS = {
     screen: ChatHeads,
     title: 'Chat Heads (no native animated support yet)',
   },
-  Combo: { screen: Combo },
+  Combo: { screen: ComboWithGHScroll },
+  ComboWithRNScroll: {
+    screen: ComboWithRNScroll,
+    title: "Combo with RN's ScrollView",
+  },
 };
 
 class MainScreen extends React.Component {
@@ -33,7 +37,6 @@ class MainScreen extends React.Component {
     <MainScreenItem {...props} onPressItem={this._onPressItem} />;
   _renderScroll = props => <ScrollView {...props} />;
   render() {
-    const { navigate } = this.props.navigation;
     return (
       <FlatList
         style={styles.list}
@@ -51,7 +54,7 @@ const ItemSeparator = () => <View style={styles.separator} />;
 class MainScreenItem extends React.Component {
   _onPress = () => this.props.onPressItem(this.props.item);
   render() {
-    const { item, onPress } = this.props;
+    const { item } = this.props;
     return (
       <RectButton style={styles.button} onPress={this._onPress}>
         <Text style={styles.buttonText}>
@@ -68,9 +71,6 @@ const ExampleApp = StackNavigator({
 });
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#888',
-  },
   list: {
     backgroundColor: '#EFEFF4',
   },

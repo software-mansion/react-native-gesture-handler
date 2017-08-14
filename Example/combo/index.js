@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { Alert, Animated, StyleSheet, Switch, Text, View } from 'react-native';
+import {
+  Alert,
+  Animated,
+  StyleSheet,
+  ScrollView as RNScroll,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 
 import {
   LongPressGestureHandler,
@@ -7,7 +15,7 @@ import {
   PanGestureHandler,
   PinchGestureHandler,
   RotationGestureHandler,
-  ScrollView,
+  ScrollView as GHScroll,
   Slider,
   State,
   TapGestureHandler,
@@ -241,14 +249,15 @@ class PinchableBox extends React.Component {
   }
 }
 
-export default class Example extends Component {
+class Combo extends Component {
   _onClick = () => {
     Alert.alert("I'm so touched");
   };
   render() {
+    const { ScrollViewComponent } = this.props;
     return (
       <View style={styles.container}>
-        <ScrollView
+        <ScrollViewComponent
           waitFor={['dragbox', 'image_pinch', 'image_rotation', 'image_tilt']}
           style={styles.scrollView}>
           <TouchableHighlight style={styles.button} onClick={this._onClick}>
@@ -312,11 +321,14 @@ export default class Example extends Component {
           <Text style={styles.text}>
             {LOREM_IPSUM}
           </Text>
-        </ScrollView>
+        </ScrollViewComponent>
       </View>
     );
   }
 }
+
+export const ComboWithGHScroll = () => <Combo ScrollViewComponent={GHScroll} />;
+export const ComboWithRNScroll = () => <Combo ScrollViewComponent={RNScroll} />;
 
 const styles = StyleSheet.create({
   container: {
