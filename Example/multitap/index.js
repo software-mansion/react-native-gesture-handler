@@ -30,7 +30,7 @@ export class PressBox extends Component {
     return (
       <LongPressGestureHandler
         onHandlerStateChange={this._onHandlerStateChange}
-        minDurationMs={1500}>
+        minDurationMs={800}>
         <TapGestureHandler
           onHandlerStateChange={this._onSingleTap}
           waitFor="double_tap">

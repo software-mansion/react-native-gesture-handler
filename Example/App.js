@@ -69,10 +69,15 @@ class MainScreenItem extends React.Component {
   }
 }
 
-const ExampleApp = StackNavigator({
-  Main: { screen: MainScreen },
-  ...SCREENS,
-});
+const ExampleApp = StackNavigator(
+  {
+    Main: { screen: MainScreen },
+    ...SCREENS,
+  },
+  {
+    initialRouteName: 'Main',
+  }
+);
 
 const styles = StyleSheet.create({
   list: {
