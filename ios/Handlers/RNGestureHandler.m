@@ -366,9 +366,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         return;
     }
     if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
-        self.state = UIGestureRecognizerStateBegan;
         super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
-        [self setTranslation:CGPointMake(0, 0) inView:self.view];
+        if ([self numberOfTouches] >= _realMinimumNumberOfTouches) {
+            self.state = UIGestureRecognizerStateBegan;
+            [self setTranslation:CGPointMake(0, 0) inView:self.view];
+        }
     }
 }
 
