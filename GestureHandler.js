@@ -358,7 +358,7 @@ WrappedDrawerLayoutAndroid.positions = DrawerLayoutAndroid.positions;
 
 State.print = state => {
   const keys = Object.keys(State);
-  for (const i = 0; i < keys.length; i++) {
+  for (let i = 0; i < keys.length; i++) {
     if (state === State[keys[i]]) {
       return keys[i];
     }
