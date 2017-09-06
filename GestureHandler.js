@@ -352,8 +352,12 @@ const WrappedTextInput = createNativeWrapper(TextInput);
 const WrappedWebView = createNativeWrapper(WebView);
 
 const WrappedToolbarAndroid = createNativeWrapper(ToolbarAndroid);
-const WrappedViewPagerAndroid = createNativeWrapper(ViewPagerAndroid);
-const WrappedDrawerLayoutAndroid = createNativeWrapper(DrawerLayoutAndroid);
+const WrappedViewPagerAndroid = createNativeWrapper(ViewPagerAndroid, {
+  disallowInterruption: true,
+});
+const WrappedDrawerLayoutAndroid = createNativeWrapper(DrawerLayoutAndroid, {
+  disallowInterruption: true,
+});
 WrappedDrawerLayoutAndroid.positions = DrawerLayoutAndroid.positions;
 
 State.print = state => {

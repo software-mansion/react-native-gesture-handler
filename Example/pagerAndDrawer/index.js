@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Platform } from 'react-native';
 
 import {
-  PanGestureHandler,
   ViewPagerAndroid,
   DrawerLayoutAndroid,
 } from 'react-native-gesture-handler';
@@ -29,44 +28,24 @@ export default class Example extends Component {
       </View>
     );
     return (
-      <ViewPagerAndroid
-        style={styles.container}
-        waitFor={['drawer_blocker', 'drawer2_blocker']}>
+      <ViewPagerAndroid style={styles.container}>
         <View>
           <DrawerLayoutAndroid
-            simultaneousHandlers="drawer_blocker"
             drawerWidth={200}
             drawerPosition={DrawerLayoutAndroid.positions.Left}
             renderNavigationView={() => navigationView}>
             <Page backgroundColor="gray" text="First 🙈" />
           </DrawerLayoutAndroid>
-          <PanGestureHandler id="drawer_blocker" hitSlop={{ right: 100 }}>
-            <View
-              style={{ position: 'absolute', width: 0, top: 0, bottom: 0 }}
-            />
-          </PanGestureHandler>
         </View>
         <Page backgroundColor="yellow" text="Second 🙉" />
         <Page backgroundColor="blue" text="Third 🙊" />
         <View>
           <DrawerLayoutAndroid
-            simultaneousHandlers="drawer2_blocker"
             drawerWidth={200}
             drawerPosition={DrawerLayoutAndroid.positions.Right}
             renderNavigationView={() => navigationView}>
             <Page backgroundColor="blue" text="Fourth 😎" />
           </DrawerLayoutAndroid>
-          <PanGestureHandler id="drawer2_blocker" hitSlop={{ left: 100 }}>
-            <View
-              style={{
-                position: 'absolute',
-                width: 0,
-                top: 0,
-                bottom: 0,
-                right: 0,
-              }}
-            />
-          </PanGestureHandler>
         </View>
       </ViewPagerAndroid>
     );
