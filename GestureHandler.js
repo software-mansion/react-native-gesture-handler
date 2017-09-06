@@ -278,6 +278,18 @@ function createNativeWrapper(Component, config = {}) {
 
     _refHandler = node => {
       this._viewNode = node;
+
+      // bind native component's methods
+      for (let methodName in node) {
+        const method = node[methodName];
+        if (
+          !methodName.startsWith('_') &&
+          typeof method === 'function' &&
+          this[methodName] === undefined
+        ) {
+          this[methodName] = method;
+        }
+      }
     };
 
     componentWillUnmount() {
