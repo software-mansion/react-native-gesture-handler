@@ -34,7 +34,7 @@
   "homepage": "https://github.com/kmagiera/react-native-gesture-handler#readme",
   "dependencies": {},
   "peerDependencies": {
-    "react": ">= 16.0.0",
+    "react": "> 15.0.0",
     "react-native": ">= 0.47.0"
   },
   "jest": {
