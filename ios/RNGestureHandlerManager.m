@@ -118,6 +118,7 @@
     RCTRootView *rootView = (RCTRootView *)parent;
     UIView *rootContentView = rootView.contentView;
     if (rootContentView != nil && ![_rootViews containsObject:rootContentView]) {
+        RCTLogInfo(@"[GESTURE HANDLER] Initialize gesture handler for root view %@", rootContentView);
         [_rootViews addObject:rootContentView];
         RNRootViewGestureRecognizer *recognizer = [RNRootViewGestureRecognizer new];
         recognizer.delegate = self;
@@ -142,6 +143,13 @@
     // to be delivered to JS
     touchHandler.enabled = NO;
     touchHandler.enabled = YES;
+}
+
+- (void)dealloc
+{
+    if ([_rootViews count] > 0) {
+        RCTLogInfo(@"[GESTURE HANDLER] Tearing down gesture handler registered for views %@", _rootViews);
+    }
 }
 
 #pragma mark Events
