@@ -2,10 +2,12 @@ package com.swmansion.gesturehandler.react;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.ReactConstants;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
 
@@ -99,6 +101,7 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
    * be in a "disabled" state and all touch related events will fallback to default RN behaviour.
    */
   private void initialize() {
+    Log.i(ReactConstants.TAG, "[GESTURE HANDLER] Initialize gesture handler for root view with tag " + mRootViewTag);
     mRegistry = new RNGestureHandlerRegistry();
     mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry);
     mOrchestrator.setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH);
@@ -108,6 +111,9 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
   }
 
   public void reset() {
+    if (mRootViewTag != -1) {
+      Log.i(ReactConstants.TAG, "[GESTURE HANDLER] Tearing down gesture handler registered for view " + mRootViewTag);
+    }
     mRegistry = null;
     mOrchestrator = null;
     mJSGestureHandler = null;
