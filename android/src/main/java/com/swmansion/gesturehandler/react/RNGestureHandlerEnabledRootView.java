@@ -114,7 +114,8 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     }
     mJSGestureHandler = new RootViewGestureHandler();
     mJSGestureHandler.setTag(-rootViewTag);
-    registry.registerHandlerForViewWithTag(rootViewTag, mJSGestureHandler);
+    registry.registerHandler(mJSGestureHandler);
+    registry.attachHandlerToView(mJSGestureHandler.getTag(), rootViewTag);
   }
 
   public void reset() {

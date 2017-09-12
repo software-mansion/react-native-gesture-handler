@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler.react;
 
+import android.util.SparseArray;
 import android.view.MotionEvent;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -329,6 +330,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           new RotationGestureHandlerFactory()
   };
   private RNGestureHandlerRegistry mRegistry;
+
   private RNGestureHandlerInteractionManager mInteractionManager =
           new RNGestureHandlerInteractionManager();
   private List<RNGestureHandlerEnabledRootView> mRootViews = new ArrayList<>();
@@ -344,7 +346,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void createGestureHandler(
-          int viewTag,
           String handlerName,
           int handlerTag,
           ReadableMap config) {
@@ -353,9 +354,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (handlerFactory.getName().equals(handlerName)) {
         GestureHandler handler = handlerFactory.create();
         handler.setTag(handlerTag);
+        getOrCreateRegistry().registerHandler(handler);
         mInteractionManager.configureInteractions(handler, config);
         handlerFactory.configure(handler, config);
-        getOrCreateRegistry().registerHandlerForViewWithTag(viewTag, handler);
         handler.setOnTouchEventListener(mEventListener);
         return;
       }
@@ -364,34 +365,29 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void attachGestureHandler(int handlerTag, int viewTag) {
+    if (!getOrCreateRegistry().attachHandlerToView(handlerTag, viewTag)) {
+      throw new JSApplicationIllegalArgumentException(
+              "Handler with tag " + handlerTag + " does not exists");
+    }
+  }
+
+  @ReactMethod
   public void updateGestureHandler(
-          int viewTag,
           int handlerTag,
           ReadableMap config) {
-    ArrayList<GestureHandler> handlers = getOrCreateRegistry().getHandlersForViewWithTag(viewTag);
-    if (handlers != null) {
-      for (int i = 0; i < handlers.size(); i++) {
-        GestureHandler handler = handlers.get(i);
-        if (handler != null && handler.getTag() == handlerTag) {
-          HandlerFactory factory = findFactoryForHandler(handler);
-          if (factory != null) {
-            factory.configure(handler, config);
-          }
-        }
+    GestureHandler handler = getOrCreateRegistry().getHandler(handlerTag);
+    if (handler != null) {
+      HandlerFactory factory = findFactoryForHandler(handler);
+      if (factory != null) {
+        factory.configure(handler, config);
       }
     }
   }
 
   @ReactMethod
-  public void dropGestureHandlersForView(int viewTag) {
-    ArrayList<GestureHandler> handlers = getOrCreateRegistry().getHandlersForViewWithTag(viewTag);
-    if (handlers != null) {
-      for (int i = 0; i < handlers.size(); i++) {
-        GestureHandler handler = handlers.get(i);
-        mInteractionManager.dropRelationsForHandler(handler);
-      }
-    }
-    getOrCreateRegistry().dropHandlersForViewWithTag(viewTag);
+  public void dropGestureHandler(int handlerTag) {
+    getOrCreateRegistry().dropHandler(handlerTag);
   }
 
   @ReactMethod

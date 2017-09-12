@@ -141,30 +141,37 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     };
 
     componentWillUnmount() {
-      const viewTag = findNodeHandle(this._viewNode);
-      RNGestureHandlerModule.dropGestureHandlersForView(viewTag);
+      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
       if (this.props.id) {
         delete handlerIDToTag[this.props.id];
       }
     }
 
     componentDidMount() {
-      const viewTag = findNodeHandle(this._viewNode);
+      this._viewTag = findNodeHandle(this._viewNode);
       this._config = filterConfig(
         this.props,
         this.constructor.propTypes,
         config
       );
       RNGestureHandlerModule.createGestureHandler(
-        viewTag,
         handlerName,
         this._handlerTag,
         this._config
+      );
+      RNGestureHandlerModule.attachGestureHandler(
+        this._handlerTag,
+        this._viewTag
       );
     }
 
     componentDidUpdate(prevProps, prevState) {
       const viewTag = findNodeHandle(this._viewNode);
+      if (this._viewTag !== viewTag) {
+        this._viewTag = viewTag;
+        RNGestureHandlerModule.attachGestureHandler(this._handlerTag, viewTag);
+      }
+
       const newConfig = filterConfig(
         this.props,
         this.constructor.propTypes,
@@ -173,7 +180,6 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       if (!deepEqual(this._config, newConfig)) {
         this._config = newConfig;
         RNGestureHandlerModule.updateGestureHandler(
-          viewTag,
           this._handlerTag,
           this._config
         );
@@ -293,30 +299,37 @@ function createNativeWrapper(Component, config = {}) {
     };
 
     componentWillUnmount() {
-      const viewTag = findNodeHandle(this._viewNode);
-      RNGestureHandlerModule.dropGestureHandlersForView(viewTag);
+      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
       if (this.props.id) {
         delete handlerIDToTag[this.props.id];
       }
     }
 
     componentDidMount() {
-      const viewTag = findNodeHandle(this._viewNode);
+      this._viewTag = findNodeHandle(this._viewNode);
       this._config = filterConfig(
         this.props,
         NativeViewGestureHandler.propTypes,
         config
       );
       RNGestureHandlerModule.createGestureHandler(
-        viewTag,
         'NativeViewGestureHandler',
         this._handlerTag,
         this._config
+      );
+      RNGestureHandlerModule.attachGestureHandler(
+        this._handlerTag,
+        this._viewTag
       );
     }
 
     componentDidUpdate(prevProps, prevState) {
       const viewTag = findNodeHandle(this._viewNode);
+      if (this._viewTag !== viewTag) {
+        this._viewTag = viewTag;
+        RNGestureHandlerModule.attachGestureHandler(this._handlerTag, viewTag);
+      }
+
       const newConfig = filterConfig(
         this.props,
         NativeViewGestureHandler.propTypes,
