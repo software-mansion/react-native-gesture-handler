@@ -32,7 +32,9 @@
     "url": "https://github.com/kmagiera/react-native-gesture-handler/issues"
   },
   "homepage": "https://github.com/kmagiera/react-native-gesture-handler#readme",
-  "dependencies": {},
+  "dependencies": {
+    "prop-types": "^15.5.10"
+  },
   "peerDependencies": {
     "react": ">= 16.0.0",
     "react-native": ">= 0.47.0"
