@@ -281,6 +281,9 @@ function createNativeWrapper(Component, config = {}) {
 
       // bind native component's methods
       for (let methodName in node) {
+        if (methodName === 'replaceState' || methodName === 'isMounted') {
+          continue;
+        }
         const method = node[methodName];
         if (
           !methodName.startsWith('_') &&
