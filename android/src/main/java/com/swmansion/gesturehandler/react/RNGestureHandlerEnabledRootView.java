@@ -1,10 +1,12 @@
 package com.swmansion.gesturehandler.react;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
@@ -18,10 +20,8 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
   // Be default we require views to be at least 10% opaque in order to receive touch
   private static final float MIN_ALPHA_FOR_TOUCH = 0.1f;
 
-  private @Nullable RNGestureHandlerRegistry mRegistry;
   private @Nullable GestureHandlerOrchestrator mOrchestrator;
-
-  private int mRootViewTag = -1;
+  private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable GestureHandler mJSGestureHandler;
 
   public RNGestureHandlerEnabledRootView(Context context) {
@@ -58,7 +58,7 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
   public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
     // If this method gets called it means that some native view is attempting to grab lock for
     // touch event delivery. In that case we cancel all gesture recognizers
-    if (!mPassingTouch) {
+    if (mOrchestrator != null && !mPassingTouch) {
       // if we are in the process of delivering touch events via GH orchestrator, we don't want to
       // treat it as a native gesture capturing the lock
       tryCancelAllHandlers();
@@ -96,51 +96,73 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
   }
 
   /**
-   * This method is used to lazily initialze gesture handler registry and orchestrator. Unless
-   * {@code #getRegistry} is called neither of those would be initialized and the whole module will
-   * be in a "disabled" state and all touch related events will fallback to default RN behaviour.
+   * This method is used to enable root view to start processing touch events through the gesture
+   * handler library lgic. Unless this method is called (which happens as a result of instantiating
+   * new gesture handler from JS) the root view component will just proxy all touch related methods
+   * to superclass. In a "disabled" state all touch related events will fallback to default RN
+   * behaviour.
    */
-  private void initialize() {
-    Log.i(ReactConstants.TAG, "[GESTURE HANDLER] Initialize gesture handler for root view with tag " + mRootViewTag);
-    mRegistry = new RNGestureHandlerRegistry();
-    mOrchestrator = new GestureHandlerOrchestrator(this, mRegistry);
+  /*package*/ void initialize(RNGestureHandlerRegistry registry) {
+    Log.i(
+      ReactConstants.TAG,
+      "[GESTURE HANDLER] Initialize gesture handler for root view " + this);
+    mOrchestrator = new GestureHandlerOrchestrator(this, registry);
     mOrchestrator.setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH);
-    if (mRootViewTag >= 0) {
-      updateRootViewTag(mRootViewTag);
+    int rootViewTag = getRootViewTag();
+    if (rootViewTag < 1) {
+      throw new IllegalStateException("Expect root view tag to be set for " + this);
     }
+    mJSGestureHandler = new RootViewGestureHandler();
+    mJSGestureHandler.setTag(-rootViewTag);
+    registry.registerHandlerForViewWithTag(rootViewTag, mJSGestureHandler);
   }
 
   public void reset() {
-    if (mRootViewTag != -1) {
-      Log.i(ReactConstants.TAG, "[GESTURE HANDLER] Tearing down gesture handler registered for view " + mRootViewTag);
+    if (mOrchestrator != null) {
+      Log.i(
+        ReactConstants.TAG,
+        "[GESTURE HANDLER] Tearing down gesture handler registered for view " + this);
     }
-    mRegistry = null;
     mOrchestrator = null;
     mJSGestureHandler = null;
-    mRootViewTag = -1;
-    mShouldIntercept = false;
-  }
-
-  private void updateRootViewTag(int rootViewTag) {
-    mRootViewTag = rootViewTag;
-    if (mRegistry != null && mJSGestureHandler == null) {
-      mJSGestureHandler = new RootViewGestureHandler();
-      mJSGestureHandler.setTag(-mRootViewTag);
-      mRegistry.registerHandlerForViewWithTag(rootViewTag, mJSGestureHandler);
-    }
-  }
-
-  public RNGestureHandlerRegistry getRegistry() {
-    if (mRegistry == null) {
-      initialize();
-    }
-    return mRegistry;
+    mShouldIntercept = mPassingTouch = false;
   }
 
   @Override
-  public void setRootViewTag(int rootViewTag) {
-    updateRootViewTag(rootViewTag);
-    super.setRootViewTag(rootViewTag);
+  public void startReactApplication(
+          ReactInstanceManager reactInstanceManager,
+          String moduleName,
+          @Nullable Bundle initialProperties) {
+    super.startReactApplication(reactInstanceManager, moduleName, initialProperties);
+    mReactInstanceManager = reactInstanceManager;
+  }
+
+  @Override
+  public void onAttachedToReactInstance() {
+    super.onAttachedToReactInstance();
+    RNGestureHandlerModule gestureHandlerModule = getGestureHandlerModule();
+    if (gestureHandlerModule != null) {
+      getGestureHandlerModule().registerRootView(this);
+    }
+  }
+
+  @Override
+  public void unmountReactApplication() {
+    RNGestureHandlerModule gestureHandlerModule = getGestureHandlerModule();
+    if (gestureHandlerModule != null) {
+      getGestureHandlerModule().unregisterRootView(this);
+    }
+    mReactInstanceManager = null;
+    super.unmountReactApplication();
+  }
+
+  private @Nullable RNGestureHandlerModule getGestureHandlerModule() {
+    if (mReactInstanceManager == null) {
+      return null;
+    }
+    return mReactInstanceManager
+            .getCurrentReactContext()
+            .getNativeModule(RNGestureHandlerModule.class);
   }
 
   /*package*/ void handleSetJSResponder(final int viewTag, final boolean blockNativeResponder) {
