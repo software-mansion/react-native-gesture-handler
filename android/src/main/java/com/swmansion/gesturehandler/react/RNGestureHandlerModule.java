@@ -354,10 +354,10 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (handlerFactory.getName().equals(handlerName)) {
         GestureHandler handler = handlerFactory.create();
         handler.setTag(handlerTag);
+        handler.setOnTouchEventListener(mEventListener);
         getOrCreateRegistry().registerHandler(handler);
         mInteractionManager.configureInteractions(handler, config);
         handlerFactory.configure(handler, config);
-        handler.setOnTouchEventListener(mEventListener);
         return;
       }
     }
@@ -380,6 +380,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     if (handler != null) {
       HandlerFactory factory = findFactoryForHandler(handler);
       if (factory != null) {
+        mInteractionManager.dropRelationsForHandlerWithTag(handlerTag);
+        mInteractionManager.configureInteractions(handler, config);
         factory.configure(handler, config);
       }
     }
@@ -387,6 +389,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void dropGestureHandler(int handlerTag) {
+    mInteractionManager.dropRelationsForHandlerWithTag(handlerTag);
     getOrCreateRegistry().dropHandler(handlerTag);
   }
 
@@ -446,6 +449,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     if (mRegistry != null) {
       mRegistry.dropAllHandlers();
       mRegistry = null;
+      mInteractionManager.reset();
       for (RNGestureHandlerEnabledRootView rootView : mRootViews) {
         rootView.reset();
       }

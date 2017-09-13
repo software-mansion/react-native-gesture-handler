@@ -36,6 +36,10 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
   }
 
   private void registerHandlerForViewWithTag(int viewTag, GestureHandler handler) {
+    if (mAttachedTo.get(handler.getTag()) != null) {
+      throw new IllegalStateException("Handler " + handler + " already attached");
+    }
+    mAttachedTo.put(handler.getTag(), viewTag);
     ArrayList<GestureHandler> listToAdd = mHandlersForView.get(viewTag);
     if (listToAdd == null) {
       listToAdd = new ArrayList<>(1);
