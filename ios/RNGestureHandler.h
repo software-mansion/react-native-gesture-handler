@@ -4,7 +4,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-
 @protocol RNGestureHandlerEventEmitter
 
 - (void)sendTouchEvent:(RNGestureHandlerEvent *)event;
@@ -48,7 +47,6 @@
 - (void)registerGestureHandler:(RNGestureHandler *)gestureHandler;
 - (void)attachHandlerWithTag:(NSNumber *)handlerTag toView:(UIView *)view;
 - (void)dropHandlerWithTag:(NSNumber *)handlerTag;
-- (RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer;
 
 @end
 
