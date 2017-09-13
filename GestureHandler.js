@@ -427,6 +427,8 @@ class BaseButton extends React.Component {
   }
 }
 
+const AnimatedBaseButton = Animated.createAnimatedComponent(BaseButton);
+
 const btnStyles = StyleSheet.create({
   underlay: {
     position: 'absolute',
@@ -484,20 +486,15 @@ class BorderlessButton extends React.Component {
         this._opacity.setValue(active ? this.props.activeOpacity : 1);
       };
   render() {
-    const { children, ...rest } = this.props;
-    const content =
-      Platform.OS === 'android'
-        ? children
-        : <Animated.View style={{ opacity: this._opacity }}>
-            {children}
-          </Animated.View>;
+    const { children, style, ...rest } = this.props;
     return (
-      <BaseButton
+      <AnimatedBaseButton
         borderless={true}
         {...rest}
-        onActiveStateChange={this._handleActiveStateChange}>
-        {content}
-      </BaseButton>
+        onActiveStateChange={this._handleActiveStateChange}
+        style={[style, Platform.OS === 'ios' && { opacity: this._opacity }]}>
+        {children}
+      </AnimatedBaseButton>
     );
   }
 }
