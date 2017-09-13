@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler.react;
 
+import android.content.Context;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 
@@ -68,7 +69,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     public abstract String getName();
 
-    public abstract T create();
+    public abstract T create(Context context);
 
     public void configure(T handler, ReadableMap config) {
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
@@ -98,7 +99,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public NativeViewGestureHandler create() {
+    public NativeViewGestureHandler create(Context context) {
       return new NativeViewGestureHandler();
     }
 
@@ -132,7 +133,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public TapGestureHandler create() {
+    public TapGestureHandler create(Context context) {
       return new TapGestureHandler();
     }
 
@@ -164,7 +165,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public LongPressGestureHandler create() {
+    public LongPressGestureHandler create(Context context) {
       return new LongPressGestureHandler();
     }
 
@@ -189,8 +190,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public PanGestureHandler create() {
-      return new PanGestureHandler();
+    public PanGestureHandler create(Context context) {
+      return new PanGestureHandler(context);
     }
 
     @Override
@@ -275,7 +276,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public PinchGestureHandler create() {
+    public PinchGestureHandler create(Context context) {
       return new PinchGestureHandler();
     }
 
@@ -298,7 +299,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     @Override
-    public RotationGestureHandler create() {
+    public RotationGestureHandler create(Context context) {
       return new RotationGestureHandler();
     }
 
@@ -352,7 +353,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     for (int i = 0; i < mHandlerFactories.length; i++) {
       HandlerFactory handlerFactory = mHandlerFactories[i];
       if (handlerFactory.getName().equals(handlerName)) {
-        GestureHandler handler = handlerFactory.create();
+        GestureHandler handler = handlerFactory.create(getReactApplicationContext());
         handler.setTag(handlerTag);
         handler.setOnTouchEventListener(mEventListener);
         getOrCreateRegistry().registerHandler(handler);

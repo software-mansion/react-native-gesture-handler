@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
               }
             });
 
-    registry.registerHandlerForView(largeBlock, new PanGestureHandler())
+    registry.registerHandlerForView(largeBlock, new PanGestureHandler(this))
             .setMinDy(2)
             .setMaxPointers(1)
             .setOnTouchEventListener(new OnTouchEventListener<PanGestureHandler>() {
