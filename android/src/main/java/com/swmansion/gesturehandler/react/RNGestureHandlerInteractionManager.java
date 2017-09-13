@@ -1,23 +1,21 @@
 package com.swmansion.gesturehandler.react;
 
+import android.util.SparseArray;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerInteractionController;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RNGestureHandlerInteractionManager implements GestureHandlerInteractionController {
 
   private static final String KEY_WAIT_FOR = "waitFor";
   private static final String KEY_SIMULTANEOUS_HANDLERS = "simultaneousHandlers";
 
-  private Map<Integer, int[]> mWaitForRelations = new HashMap<>();
-  private Map<Integer, int[]> mSimultaneousRelations = new HashMap<>();
+  private SparseArray<int[]> mWaitForRelations = new SparseArray<>();
+  private SparseArray<int[]> mSimultaneousRelations = new SparseArray<>();
 
-  public void dropRelationsForHandler(GestureHandler handler) {
-    int handlerTag = handler.getTag();
+  public void dropRelationsForHandlerWithTag(int handlerTag) {
     mWaitForRelations.remove(handlerTag);
     mSimultaneousRelations.remove(handlerTag);
   }
@@ -79,5 +77,10 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
       }
     }
     return false;
+  }
+
+  public void reset() {
+    mWaitForRelations.clear();
+    mSimultaneousRelations.clear();
   }
 }
