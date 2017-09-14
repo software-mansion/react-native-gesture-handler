@@ -42,8 +42,14 @@ const handlerIDToTag = {};
 
 const GestureHandlerPropTypes = {
   id: PropTypes.string,
-  waitFor: PropTypes.oneOf(PropTypes.string),
-  simultaneousHandlers: PropTypes.oneOf(PropTypes.string),
+  waitFor: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
+  simultaneousHandlers: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
   shouldCancelWhenOutside: PropTypes.bool,
   hitSlop: PropTypes.oneOfType([
     PropTypes.number,
