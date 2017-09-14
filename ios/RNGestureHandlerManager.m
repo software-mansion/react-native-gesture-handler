@@ -9,6 +9,10 @@
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandler.h"
 
+// We use the method below instead of RCTLog because we log out messages after the bridge gets
+// turned down in some cases. Which normally with RCTLog would cause a crash in DEBUG mode
+#define RCTLifecycleLog(...) RCTDefaultLogFunction(RCTLogLevelInfo, RCTLogSourceNative, @(__FILE__), @(__LINE__), [NSString stringWithFormat:__VA_ARGS__])
+
 @interface RNGestureHandlerManager () <RNGestureHandlerEventEmitter, RNRootViewGestureRecognizerDelegate>
 
 @end
@@ -115,7 +119,7 @@
     RCTRootView *rootView = (RCTRootView *)parent;
     UIView *rootContentView = rootView.contentView;
     if (rootContentView != nil && ![_rootViews containsObject:rootContentView]) {
-        RCTLogInfo(@"[GESTURE HANDLER] Initialize gesture handler for root view %@", rootContentView);
+        RCTLifecycleLog(@"[GESTURE HANDLER] Initialize gesture handler for root view %@", rootContentView);
         [_rootViews addObject:rootContentView];
         RNRootViewGestureRecognizer *recognizer = [RNRootViewGestureRecognizer new];
         recognizer.delegate = self;
@@ -145,7 +149,7 @@
 - (void)dealloc
 {
     if ([_rootViews count] > 0) {
-        RCTLogInfo(@"[GESTURE HANDLER] Tearing down gesture handler registered for views %@", _rootViews);
+        RCTLifecycleLog(@"[GESTURE HANDLER] Tearing down gesture handler registered for views %@", _rootViews);
     }
 }
 
