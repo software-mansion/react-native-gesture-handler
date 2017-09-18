@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "react": "16.0.0-alpha.12",
-    "react-native": "0.47.1",
+    "react-native": "^0.48.3",
     "react-native-gesture-handler": "file:../",
     "react-navigation": "^1.0.0-beta.11"
   },
