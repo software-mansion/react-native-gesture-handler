@@ -850,7 +850,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     // When this method is called it means that one of handlers has activated, in this case we want
     // to send an info to JS so that it cancells all JS responders
-    [self.delegate gestureHandlerDidActivateInRootView:self.view];
+    [self.delegate gestureRecognizer:preventingGestureRecognizer didActivateInRootView:self.view];
     return [super canBePreventedByGestureRecognizer:preventingGestureRecognizer];
 }
 

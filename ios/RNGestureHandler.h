@@ -12,9 +12,11 @@
 
 @end
 
+
 @protocol RNRootViewGestureRecognizerDelegate <UIGestureRecognizerDelegate>
 
-- (void)gestureHandlerDidActivateInRootView:(UIView *)rootView;
+- (void)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    didActivateInRootView:(UIView *)rootView;
 
 @end
 
