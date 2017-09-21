@@ -832,6 +832,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     BOOL _active;
 }
 
+@dynamic delegate;
+
 - (instancetype)init
 {
     if (self = [super init]) {
