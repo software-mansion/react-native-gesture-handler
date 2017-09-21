@@ -492,12 +492,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [recognizer updateHasCustomActivationCriteria];
 }
 
-- (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
 {
     return [RNGestureHandlerEventExtraData
-            forPan:[recognizer locationInView:[recognizer view]]
-            withTranslation:[recognizer translationInView:[recognizer view]]
-            withVelocity:[recognizer velocityInView:[recognizer view]]];
+            forPan:[recognizer locationInView:recognizer.view]
+            withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+            withTranslation:[recognizer translationInView:recognizer.view]
+            withVelocity:[recognizer velocityInView:recognizer.view.window]];
 }
 
 @end
@@ -795,11 +796,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return self;
 }
 
-- (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIPinchGestureRecognizer *)recognizer
 {
     return [RNGestureHandlerEventExtraData
-            forPinch:[(UIPinchGestureRecognizer *)recognizer scale]
-            withVelocity:[(UIPinchGestureRecognizer *)recognizer velocity]];
+            forPinch:recognizer.scale
+            withFocalPoint:[recognizer locationInView:recognizer.view]
+            withVelocity:recognizer.velocity];
 }
 
 @end
@@ -816,11 +818,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return self;
 }
 
-- (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIRotationGestureRecognizer *)recognizer
 {
     return [RNGestureHandlerEventExtraData
-            forRotation:[(UIRotationGestureRecognizer *)recognizer rotation]
-            withVelocity:[(UIRotationGestureRecognizer *)recognizer velocity]];
+            forRotation:recognizer.rotation
+            withAnchorPoint:[recognizer locationInView:recognizer.view]
+            withVelocity:recognizer.velocity];
 }
 
 @end
