@@ -166,6 +166,18 @@ export default class Example extends Component {
                   for most of the iOS native apps. */}
             <InfoButton shouldCancelWhenOutside name="third" />
           </RectButton>
+          <View style={styles.buttonDelimiter} />
+          <Swipeable>
+            <RectButton
+              enabled={false}
+              style={styles.rectButton}
+              onPress={() => Alert.alert('Fourth row clicked')}>
+              <Text style={styles.buttonText}>
+                This row is "disabled" but you can swipe it
+              </Text>
+              <InfoButton name="fourth" />
+            </RectButton>
+          </Swipeable>
           <LoremIpsum />
         </ScrollView>
       </View>
