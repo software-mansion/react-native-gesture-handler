@@ -430,7 +430,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (BOOL)shouldActivateUnderCustomCriteria
 {
     CGPoint trans = [self translationInView:self.view];
-
     if (TEST_MIN_IF_NOT_NAN(fabs(trans.x), _minDeltaX)) {
         return YES;
     }
@@ -501,7 +500,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         CGFloat velocity = [RCTConvert CGFloat:prop];
         recognizer.minVelocitySq = velocity * velocity;
     }
-
     [recognizer updateHasCustomActivationCriteria];
 }
 
