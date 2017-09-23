@@ -14,6 +14,9 @@
 #define TEST_MAX_IF_NOT_NAN(value, max) \
     (!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
 
+#define TEST_IS_OUT_OF_BOUNDS(point, size) \
+    (point.x < 0. || point.y < 0. || point.x > size.width || point.y > size.height)
+
 #define APPLY_PROP(recognizer, config, type, prop, propName) do { \
     id value = config[propName]; \
     if (value != nil) recognizer.prop = [RCTConvert type:value]; \
@@ -370,6 +373,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         self.state = UIGestureRecognizerStateFailed;
         return;
     }
+    if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged) && _gestureHandler.shouldCancelWhenOutside) {
+        CGPoint pt = [self locationInView:self.view];
+        if (TEST_IS_OUT_OF_BOUNDS(pt, self.view.frame.size)) {
+            self.state = self.state == UIGestureRecognizerStatePossible
+                ? UIGestureRecognizerStateFailed
+                : UIGestureRecognizerStateCancelled;
+            [self reset];
+            return;
+        }
+    }
     if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
         super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
         if ([self numberOfTouches] >= _realMinimumNumberOfTouches) {
@@ -417,7 +430,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (BOOL)shouldActivateUnderCustomCriteria
 {
     CGPoint trans = [self translationInView:self.view];
-    
+
     if (TEST_MIN_IF_NOT_NAN(fabs(trans.x), _minDeltaX)) {
         return YES;
     }
@@ -488,7 +501,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         CGFloat velocity = [RCTConvert CGFloat:prop];
         recognizer.minVelocitySq = velocity * velocity;
     }
-    
+
     [recognizer updateHasCustomActivationCriteria];
 }
 
@@ -567,7 +580,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
     if (_gestureHandler.shouldCancelWhenOutside) {
         CGPoint pt = [self locationInView:self.view];
-        if (pt.x < 0. || pt.y < 0. || pt.x > self.view.frame.size.width || pt.y > self.view.frame.size.height) {
+        if (TEST_IS_OUT_OF_BOUNDS(pt, self.view.frame.size)) {
             self.state = UIGestureRecognizerStateFailed;
             [self triggerAction];
             [self reset];
@@ -936,4 +949,3 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 
 @end
-
