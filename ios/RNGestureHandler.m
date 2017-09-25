@@ -14,9 +14,6 @@
 #define TEST_MAX_IF_NOT_NAN(value, max) \
     (!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
 
-#define TEST_IS_OUT_OF_BOUNDS(point, size) \
-    (point.x < 0. || point.y < 0. || point.x > size.width || point.y > size.height)
-
 #define APPLY_PROP(recognizer, config, type, prop, propName) do { \
     id value = config[propName]; \
     if (value != nil) recognizer.prop = [RCTConvert type:value]; \
@@ -375,7 +372,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     }
     if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged) && _gestureHandler.shouldCancelWhenOutside) {
         CGPoint pt = [self locationInView:self.view];
-        if (TEST_IS_OUT_OF_BOUNDS(pt, self.view.frame.size)) {
+        if (!CGRectContainsPoint(self.view.bounds, pt)) {
             // If the previous recognizer state is UIGestureRecognizerStateChanged
             // then UIGestureRecognizer's sate machine will only transition to
             // UIGestureRecognizerStateCancelled even if you set the state to
@@ -582,7 +579,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
     if (_gestureHandler.shouldCancelWhenOutside) {
         CGPoint pt = [self locationInView:self.view];
-        if (TEST_IS_OUT_OF_BOUNDS(pt, self.view.frame.size)) {
+        if (!CGRectContainsPoint(self.view.bounds, pt)) {
             self.state = UIGestureRecognizerStateFailed;
             [self triggerAction];
             [self reset];

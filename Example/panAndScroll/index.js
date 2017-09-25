@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import {
   PanGestureHandler,
   TapGestureHandler,
@@ -25,23 +18,16 @@ export class TapOrPan extends Component {
     super(props);
     this._translateX = new Animated.Value(windowWidth / 2 - circleRadius);
     this._lastX = 0;
-    this._onGestureEvent =
-      Platform.OS === 'ios'
-        ? Animated.event(
-            [
-              {
-                nativeEvent: {
-                  translationX: this._translateX,
-                },
-              },
-            ],
-            { useNativeDriver: USE_NATIVE_DRIVER }
-          )
-        : event => {
-            this._lastX = event.nativeEvent.x;
-            this._translateX.setOffset(this._lastX);
-            this._translateX.setValue(0);
-          };
+    this._onGestureEvent = Animated.event(
+      [
+        {
+          nativeEvent: {
+            translationX: this._translateX,
+          },
+        },
+      ],
+      { useNativeDriver: USE_NATIVE_DRIVER }
+    );
   }
 
   _onHandlerStateChange = event => {
