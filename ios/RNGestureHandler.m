@@ -376,7 +376,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged) && _gestureHandler.shouldCancelWhenOutside) {
         CGPoint pt = [self locationInView:self.view];
         if (TEST_IS_OUT_OF_BOUNDS(pt, self.view.frame.size)) {
-            self.state = self.state == UIGestureRecognizerStatePossible
+            // If the previous recognizer state is UIGestureRecognizerStateChanged
+            // then UIGestureRecognizer's sate machine will only transition to
+            // UIGestureRecognizerStateCancelled even if you set the state to
+            // UIGestureRecognizerStateFailed here. Making the behavior explicit.
+            self.state = (self.state == UIGestureRecognizerStatePossible)
                 ? UIGestureRecognizerStateFailed
                 : UIGestureRecognizerStateCancelled;
             [self reset];
