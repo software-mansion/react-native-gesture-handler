@@ -35,6 +35,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   public static final String MODULE_NAME = "RNGestureHandlerModule";
 
   private static final String KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside";
+  private static final String KEY_ENABLED = "enabled";
   private static final String KEY_HIT_SLOP = "hitSlop";
   private static final String KEY_HIT_SLOP_LEFT = "left";
   private static final String KEY_HIT_SLOP_TOP = "left";
@@ -74,6 +75,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     public void configure(T handler, ReadableMap config) {
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
         handler.setShouldCancelWhenOutside(config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE));
+      }
+      if (config.hasKey(KEY_ENABLED)) {
+        handler.setEnabled(config.getBoolean(KEY_ENABLED));
       }
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config);
