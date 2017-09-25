@@ -370,6 +370,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         self.state = UIGestureRecognizerStateFailed;
         return;
     }
+    if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged) && _gestureHandler.shouldCancelWhenOutside) {
+        CGPoint pt = [self locationInView:self.view];
+        if (!CGRectContainsPoint(self.view.bounds, pt)) {
+            // If the previous recognizer state is UIGestureRecognizerStateChanged
+            // then UIGestureRecognizer's sate machine will only transition to
+            // UIGestureRecognizerStateCancelled even if you set the state to
+            // UIGestureRecognizerStateFailed here. Making the behavior explicit.
+            self.state = (self.state == UIGestureRecognizerStatePossible)
+                ? UIGestureRecognizerStateFailed
+                : UIGestureRecognizerStateCancelled;
+            [self reset];
+            return;
+        }
+    }
     if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
         super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
         if ([self numberOfTouches] >= _realMinimumNumberOfTouches) {
@@ -417,7 +431,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (BOOL)shouldActivateUnderCustomCriteria
 {
     CGPoint trans = [self translationInView:self.view];
-    
     if (TEST_MIN_IF_NOT_NAN(fabs(trans.x), _minDeltaX)) {
         return YES;
     }
@@ -488,7 +501,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         CGFloat velocity = [RCTConvert CGFloat:prop];
         recognizer.minVelocitySq = velocity * velocity;
     }
-    
     [recognizer updateHasCustomActivationCriteria];
 }
 
@@ -567,7 +579,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
     if (_gestureHandler.shouldCancelWhenOutside) {
         CGPoint pt = [self locationInView:self.view];
-        if (pt.x < 0. || pt.y < 0. || pt.x > self.view.frame.size.width || pt.y > self.view.frame.size.height) {
+        if (!CGRectContainsPoint(self.view.bounds, pt)) {
             self.state = UIGestureRecognizerStateFailed;
             [self triggerAction];
             [self reset];
@@ -936,4 +948,3 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 
 @end
-

@@ -8,6 +8,7 @@ import Multitap from './multitap';
 import Draggable from './draggable';
 import ScaleAndRotate from './scaleAndRotate';
 import PagerAndDrawer from './pagerAndDrawer';
+import PanAndScroll from './panAndScroll';
 import PanResponder from './panResponder';
 import Bouncing from './bouncing';
 import ChatHeads from './chatHeads';
@@ -19,6 +20,10 @@ const SCREENS = {
   Draggable: { screen: Draggable },
   ScaleAndRotate: { screen: ScaleAndRotate, title: 'Scale, rotate & tilt' },
   PagerAndDrawer: { screen: PagerAndDrawer, title: 'Android pager & drawer' },
+  PanAndScroll: {
+    screen: PanAndScroll,
+    title: 'Horizontal pan or tap in ScrollView',
+  },
   PanResponder: { screen: PanResponder },
   Bouncing: { screen: Bouncing, title: 'Twist & bounce back animation' },
   // ChatHeads: {
@@ -37,8 +42,9 @@ class MainScreen extends React.Component {
     title: '✌️ Gesture Handler Demo',
   };
   _onPressItem = ({ key }) => this.props.navigation.navigate(key);
-  _renderItem = props =>
-    <MainScreenItem {...props} onPressItem={this._onPressItem} />;
+  _renderItem = props => (
+    <MainScreenItem {...props} onPressItem={this._onPressItem} />
+  );
   _renderScroll = props => <ScrollView {...props} />;
   render() {
     const data = Object.keys(SCREENS).map(key => ({ key }));
@@ -62,9 +68,7 @@ class MainScreenItem extends React.Component {
     const { key } = this.props.item;
     return (
       <RectButton style={styles.button} onPress={this._onPress}>
-        <Text style={styles.buttonText}>
-          {SCREENS[key].title || key}
-        </Text>
+        <Text style={styles.buttonText}>{SCREENS[key].title || key}</Text>
       </RectButton>
     );
   }
