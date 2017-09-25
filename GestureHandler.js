@@ -42,6 +42,7 @@ const handlerIDToTag = {};
 
 const GestureHandlerPropTypes = {
   id: PropTypes.string,
+  enabled: PropTypes.bool,
   waitFor: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.string),
@@ -92,6 +93,10 @@ function filterConfig(props, validProps, defaults = {}) {
       let value = props[key];
       if (key === 'simultaneousHandlers' || key === 'waitFor') {
         value = transformIntoHandlerTags(props[key]);
+      } else if (key === 'hitSlop') {
+        if (typeof value !== 'object') {
+          value = { top: value, left: value, bottom: value, right: value };
+        }
       }
       res[key] = value;
     }

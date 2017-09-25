@@ -112,6 +112,7 @@
 @implementation RNGestureHandler {
     NSArray<NSNumber *> *_handlersToWaitFor;
     NSArray<NSNumber *> *_simultaniousHandlers;
+    UIEdgeInsets _hitSlopEdgeInsets;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -119,6 +120,7 @@
     if ((self = [super init])) {
         _tag = tag;
         _lastState = RNGestureHandlerStateUndetermined;
+        _hitSlopEdgeInsets = UIEdgeInsetsZero;
     }
     return self;
 }
@@ -133,6 +135,12 @@
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
     } else {
         _shouldCancelWhenOutside = YES;
+    }
+
+    prop = config[@"hitSlop"];
+    if (prop != nil) {
+         UIEdgeInsets insets = [RCTConvert UIEdgeInsets:prop];
+        _hitSlopEdgeInsets = UIEdgeInsetsMake(-insets.top, -insets.left, -insets.bottom, -insets.right);
     }
 }
 
@@ -293,6 +301,21 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     [self reset];
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    // If hitSlop is set we use it to determine if a given gesture recognizer should start processing
+    // touch stream. This only works for negative values of hitSlop as this method won't be triggered
+    // unless touch startes in the bounds of the attached view. To acheve similar effect with positive
+    // values of hitSlop one should set hitSlop for the underlying view. This limitation is due to the
+    // fact that hitTest method is only available at the level of UIView
+    if (!UIEdgeInsetsEqualToEdgeInsets(_hitSlopEdgeInsets, UIEdgeInsetsZero)) {
+        CGPoint location = [touch locationInView:gestureRecognizer.view];
+        CGRect hitFrame = UIEdgeInsetsInsetRect(gestureRecognizer.view.bounds, _hitSlopEdgeInsets);
+        return CGRectContainsPoint(hitFrame, location);
+    }
     return YES;
 }
 
