@@ -95,6 +95,7 @@ Library exports a `State` object that provides a number of constants used to exp
 #### Common `GestureHandler` properties
 
  - `id`
+ - `enabled`
  - `shouldCancelWhenOutside`
  - `simultaneousHandlers`
  - `waitFor`
