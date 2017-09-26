@@ -17,8 +17,8 @@ export class TapOrPan extends Component {
   constructor(props) {
     super(props);
     this._translateX = new Animated.Value(windowWidth / 2 - circleRadius);
-    this._lastX = 0;
-    this._onGestureEvent = Animated.event(
+    this._translateX.extractOffset();
+    this._onPanGestureEvent = Animated.event(
       [
         {
           nativeEvent: {
@@ -30,16 +30,24 @@ export class TapOrPan extends Component {
     );
   }
 
-  _onHandlerStateChange = event => {
-    if (!event.nativeEvent || !event.nativeEvent.x) return;
-
-    if (
-      event.nativeEvent.oldState === State.ACTIVE ||
-      event.nativeEvent.oldState === State.UNDETERMINED
-    ) {
-      this._lastX = event.nativeEvent.x;
-      this._translateX.setOffset(this._lastX);
+  _onTapHandlerStateChange = ({ nativeEvent }) => {
+    if (nativeEvent.oldState === State.ACTIVE) {
+      // Once tap happened we set the position of the circle under the tapped spot
+      this._translateX.setOffset(nativeEvent.x - circleRadius);
       this._translateX.setValue(0);
+    }
+  };
+
+  _onPanHandlerStateChange = ({ nativeEvent }) => {
+    if (nativeEvent.oldState === State.ACTIVE) {
+      // Current dragX value is set as the translateX
+      // After this method get called we want to reset value to 0 and
+      // accumulate the translation in the value's offset. In order to
+      // do that we call flattenOffset first to accumulate the sum in
+      // base value and then call extractOffset to move the accumulated
+      // base value to offset and reset base value to 0
+      this._translateX.flattenOffset();
+      this._translateX.extractOffset();
     }
   };
 
@@ -48,13 +56,14 @@ export class TapOrPan extends Component {
       <TapGestureHandler
         id="tap"
         waitFor="pan"
-        onHandlerStateChange={this._onHandlerStateChange}
+        onGestureEvent={this._onTapGestureEvent}
+        onHandlerStateChange={this._onTapHandlerStateChange}
         shouldCancelWhenOutside>
         <PanGestureHandler
           id="pan"
           minDeltaX={20}
-          onGestureEvent={this._onGestureEvent}
-          onHandlerStateChange={this._onHandlerStateChange}
+          onGestureEvent={this._onPanGestureEvent}
+          onHandlerStateChange={this._onPanHandlerStateChange}
           shouldCancelWhenOutside>
           <View style={styles.horizontalPan}>
             <Animated.View
@@ -63,10 +72,7 @@ export class TapOrPan extends Component {
                 {
                   transform: [
                     {
-                      translateX: Animated.add(
-                        this._translateX,
-                        new Animated.Value(-circleRadius)
-                      ),
+                      translateX: this._translateX,
                     },
                   ],
                 },

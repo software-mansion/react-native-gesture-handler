@@ -164,9 +164,11 @@
     self.recognizer.delegate = nil;
 }
 
-- (RNGestureHandlerEventExtraData *)eventExtraData:(id)recognizer
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
-    return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:[recognizer view]]];
+    return [RNGestureHandlerEventExtraData
+            forPosition:[recognizer locationInView:recognizer.view]
+            withAbsolutePosition:[recognizer locationInView:recognizer.view.window]];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
