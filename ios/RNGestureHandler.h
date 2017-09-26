@@ -28,11 +28,14 @@
 
 }
 
++ (nullable RNGestureHandler *)findGestureHandlerByRecognizer:(nonnull UIGestureRecognizer *)recognizer;
+
 - (nonnull instancetype)initWithTag:(nonnull NSNumber *)tag;
 
 @property (nonatomic, readonly, nonnull) NSNumber *tag;
 @property (nonatomic, weak, nullable) id<RNGestureHandlerEventEmitter> emitter;
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
+@property (nonatomic) BOOL enabled;
 
 - (void)bindToView:(nonnull UIView *)view;
 - (void)unbindFromView;

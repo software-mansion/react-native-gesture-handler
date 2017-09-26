@@ -130,7 +130,14 @@
     _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
     _simultaniousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
 
-    id prop = config[@"shouldCancelWhenOutside"];
+    id prop = config[@"enabled"];
+    if (prop != nil) {
+        self.enabled = [RCTConvert BOOL:prop];
+    } else {
+        self.enabled = YES;
+    }
+
+    prop = config[@"shouldCancelWhenOutside"];
     if (prop != nil) {
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
     } else {
@@ -220,7 +227,7 @@
 
 #pragma mark UIGestureRecognizerDelegate
 
-- (RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer
++ (RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer
 {
     RNGestureHandler *handler = recognizer.gestureHandler;
     if (handler != nil) {
@@ -246,7 +253,7 @@
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    RNGestureHandler *handler = [self findGestureHandlerByRecognizer:otherGestureRecognizer];
+    RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
     if ([handler isKindOfClass:[RNNativeViewGestureHandler class]]) {
         for (NSNumber *handlerTag in handler->_handlersToWaitFor) {
             if ([_tag isEqual:handlerTag]) {
@@ -262,7 +269,7 @@ shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRec
 shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
     if ([_handlersToWaitFor count]) {
-        RNGestureHandler *handler = [self findGestureHandlerByRecognizer:otherGestureRecognizer];
+        RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
         if (handler != nil) {
             for (NSNumber *handlerTag in _handlersToWaitFor) {
                 if ([handler.tag isEqual:handlerTag]) {
@@ -281,7 +288,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         return YES;
     }
     if ([_simultaniousHandlers count]) {
-        RNGestureHandler *handler = [self findGestureHandlerByRecognizer:otherGestureRecognizer];
+        RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
         if (handler != nil) {
             for (NSNumber *handlerTag in _simultaniousHandlers) {
                 if ([handler.tag isEqual:handlerTag]) {
@@ -879,6 +886,19 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         self.delaysTouchesBegan = NO;
     }
     return self;
+}
+
+- (BOOL)shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    // This method is used to implement "enabled" feature for gesture handlers. We enforce gesture
+    // recognizers that are connected with "disabled" handlers to wait for the root gesture
+    // recognizer to fail and this way we block them from acting.
+    RNGestureHandler *otherHandler = [RNGestureHandler
+                                      findGestureHandlerByRecognizer:otherGestureRecognizer];
+    if (otherHandler != nil && otherHandler.enabled == NO) {
+        return YES;
+    }
+    return NO;
 }
 
 - (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
