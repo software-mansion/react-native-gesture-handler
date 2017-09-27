@@ -11,6 +11,7 @@ import PagerAndDrawer from './pagerAndDrawer';
 import PanAndScroll from './panAndScroll';
 import PanResponder from './panResponder';
 import Bouncing from './bouncing';
+import HorizontalDrawer from './horizontalDrawer';
 import ChatHeads from './chatHeads';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 
@@ -20,6 +21,10 @@ const SCREENS = {
   Draggable: { screen: Draggable },
   ScaleAndRotate: { screen: ScaleAndRotate, title: 'Scale, rotate & tilt' },
   PagerAndDrawer: { screen: PagerAndDrawer, title: 'Android pager & drawer' },
+  HorizontalDrawer: {
+    screen: HorizontalDrawer,
+    title: 'Gesture handler based DrawerLayout',
+  },
   PanAndScroll: {
     screen: PanAndScroll,
     title: 'Horizontal pan or tap in ScrollView',
