@@ -16,13 +16,16 @@ const circleRadius = 30;
 export class TapOrPan extends Component {
   constructor(props) {
     super(props);
-    this._translateX = new Animated.Value(windowWidth / 2 - circleRadius);
-    this._translateX.extractOffset();
+    this._touchX = new Animated.Value(windowWidth / 2 - circleRadius);
+    this._translateX = Animated.add(
+      this._touchX,
+      new Animated.Value(-circleRadius)
+    );
     this._onPanGestureEvent = Animated.event(
       [
         {
           nativeEvent: {
-            translationX: this._translateX,
+            x: this._touchX,
           },
         },
       ],
@@ -33,21 +36,7 @@ export class TapOrPan extends Component {
   _onTapHandlerStateChange = ({ nativeEvent }) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       // Once tap happened we set the position of the circle under the tapped spot
-      this._translateX.setOffset(nativeEvent.x - circleRadius);
-      this._translateX.setValue(0);
-    }
-  };
-
-  _onPanHandlerStateChange = ({ nativeEvent }) => {
-    if (nativeEvent.oldState === State.ACTIVE) {
-      // Current dragX value is set as the translateX
-      // After this method get called we want to reset value to 0 and
-      // accumulate the translation in the value's offset. In order to
-      // do that we call flattenOffset first to accumulate the sum in
-      // base value and then call extractOffset to move the accumulated
-      // base value to offset and reset base value to 0
-      this._translateX.flattenOffset();
-      this._translateX.extractOffset();
+      this._touchX.setValue(nativeEvent.x);
     }
   };
 
@@ -56,14 +45,12 @@ export class TapOrPan extends Component {
       <TapGestureHandler
         id="tap"
         waitFor="pan"
-        onGestureEvent={this._onTapGestureEvent}
         onHandlerStateChange={this._onTapHandlerStateChange}
         shouldCancelWhenOutside>
         <PanGestureHandler
           id="pan"
           minDeltaX={20}
           onGestureEvent={this._onPanGestureEvent}
-          onHandlerStateChange={this._onPanHandlerStateChange}
           shouldCancelWhenOutside>
           <View style={styles.horizontalPan}>
             <Animated.View
