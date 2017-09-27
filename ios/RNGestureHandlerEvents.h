@@ -11,7 +11,8 @@
 
 - (instancetype)initWithData:(NSDictionary *)data;
 
-+ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position;
++ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
+                           withAbsolutePosition:(CGPoint)absolutePosition;
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation

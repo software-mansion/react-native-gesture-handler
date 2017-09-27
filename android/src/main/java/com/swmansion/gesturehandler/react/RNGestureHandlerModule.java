@@ -154,6 +154,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handler.setMaxDelayMs(config.getInt(KEY_TAP_MAX_DELAY_MS));
       }
     }
+
+    @Override
+    public void extractEventData(TapGestureHandler handler, WritableMap eventData) {
+      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
+      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
+      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
+      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionY()));
+    }
   }
 
   private static class LongPressGestureHandlerFactory extends
