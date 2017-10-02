@@ -3,7 +3,7 @@ import { StyleSheet, Text, Animated, View, TextInput } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
 
-import DrawerLayout from './DrawerLayout';
+import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 
 const TYPES = ['front', 'back', 'back', 'slide'];
 const PARALLAX = [false, false, true, false];
