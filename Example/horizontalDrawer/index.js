@@ -1,16 +1,25 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import { StyleSheet, Text, Animated, View, TextInput } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
 
 import DrawerLayout from './DrawerLayout';
 
-const Page = ({ fromLeft, onPress }) => (
+const TYPES = ['front', 'back', 'back', 'slide'];
+const PARALLAX = [false, false, true, false];
+
+const Page = ({ fromLeft, type, parallaxOn, flipSide, nextType }) => (
   <View style={styles.page}>
     <Text style={styles.pageText}>Hi 👋</Text>
-    <RectButton style={styles.rectButton} onPress={onPress}>
+    <RectButton style={styles.rectButton} onPress={flipSide}>
       <Text style={styles.rectButtonText}>
-        Drawer to the {fromLeft ? 'left' : 'right'}! Flip
+        Drawer to the {fromLeft ? 'left' : 'right'}! -> Flip
+      </Text>
+    </RectButton>
+    <RectButton style={styles.rectButton} onPress={nextType}>
+      <Text style={styles.rectButtonText}>
+        Type '{type}
+        {parallaxOn && ' with parallax'}'! -> Next
       </Text>
     </RectButton>
     <TextInput
@@ -21,14 +30,37 @@ const Page = ({ fromLeft, onPress }) => (
 );
 
 export default class Example extends Component {
-  state = { fromLeft: true };
+  state = { fromLeft: true, type: 0 };
 
-  render() {
-    const drawerView = (
+  renderParallaxDrawer = progressValue => {
+    const parallax = progressValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [this.state.fromLeft ? -50 : 50, 0],
+    });
+    const animatedStyles = {
+      transform: [{ translateX: parallax }],
+    };
+    return (
+      <Animated.View style={[styles.drawerContainer, animatedStyles]}>
+        <Text style={styles.drawerText}>I am in the drawer!</Text>
+        <Text style={styles.drawerText}>
+          Watch parallax animation while you pull the drawer!
+        </Text>
+      </Animated.View>
+    );
+  };
+
+  renderDrawer = () => {
+    return (
       <View style={styles.drawerContainer}>
-        <Text style={styles.drawerText}>In the drawer!</Text>
+        <Text style={styles.drawerText}>I am in the drawer!</Text>
       </View>
     );
+  };
+
+  render() {
+    const drawerType = TYPES[this.state.type];
+    const parallax = PARALLAX[this.state.type];
     return (
       <View style={styles.container}>
         <DrawerLayout
@@ -39,10 +71,18 @@ export default class Example extends Component {
               ? DrawerLayout.positions.Left
               : DrawerLayout.positions.Right
           }
-          renderNavigationView={() => drawerView}>
+          drawerType={TYPES[this.state.type]}
+          drawerBackgroundColor="#ddd"
+          renderNavigationView={
+            parallax ? this.renderParallaxDrawer : this.renderDrawer
+          }>
           <Page
+            type={drawerType}
             fromLeft={this.state.fromLeft}
-            onPress={() => this.setState({ fromLeft: !this.state.fromLeft })}
+            parallaxOn={parallax}
+            flipSide={() => this.setState({ fromLeft: !this.state.fromLeft })}
+            nextType={() =>
+              this.setState({ type: (this.state.type + 1) % TYPES.length })}
           />
         </DrawerLayout>
       </View>
@@ -57,7 +97,7 @@ const styles = StyleSheet.create({
   page: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
-    paddingTop: 100,
+    paddingTop: 40,
     backgroundColor: 'gray',
   },
   pageText: {
@@ -78,7 +118,6 @@ const styles = StyleSheet.create({
   },
   drawerContainer: {
     flex: 1,
-    backgroundColor: 'white',
   },
   pageInput: {
     height: 60,
@@ -87,7 +126,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
-    backgroundColor: '#ddd',
+    backgroundColor: '#eee',
   },
   drawerText: {
     margin: 10,
