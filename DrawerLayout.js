@@ -32,6 +32,7 @@ export type PropType = {
   minSwipeDistance: number,
   hideStatusBar: boolean,
   statusBarAnimation: 'slide' | 'none' | 'fade',
+  overlayColor: string,
 
   // Properties not yet supported
   // onDrawerSlide?: Function
@@ -66,6 +67,7 @@ export default class DrawerLayout extends Component {
     drawerType: 'front',
     edgeWidth: 20,
     minSwipeDistance: 3,
+    overlayColor: 'black',
   };
 
   static positions = {
@@ -210,6 +212,7 @@ export default class DrawerLayout extends Component {
   };
 
   _onTapHandlerStateChange = ({ nativeEvent }) => {
+    console.log('NE', nativeEvent);
     if (this.state.drawerShown && nativeEvent.oldState === State.ACTIVE) {
       this.closeDrawer();
     }
@@ -287,6 +290,27 @@ export default class DrawerLayout extends Component {
     this._animateDrawer(this.props.drawerWidth, 0, options.velocity);
   };
 
+  _renderOverlay = () => {
+    /* Overlay styles */
+    const overlayOpacity = this._openValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 0.7],
+      extrapolate: 'clamp',
+    });
+    const dynamicOverlayStyles = {
+      opacity: overlayOpacity,
+      backgroundColor: this.props.overlayColor,
+    };
+    return (
+      <TapGestureHandler onHandlerStateChange={this._onTapHandlerStateChange}>
+        <Animated.View
+          pointerEvents={this.state.drawerShown ? 'auto' : 'none'}
+          style={[styles.overlay, dynamicOverlayStyles]}
+        />
+      </TapGestureHandler>
+    );
+  };
+
   _renderBackDrawer = drawerSlide => {
     const { drawerShown } = this.state;
     const { drawerBackgroundColor, drawerWidth, drawerPosition } = this.props;
@@ -331,10 +355,9 @@ export default class DrawerLayout extends Component {
             {this.props.renderNavigationView(this._openValue)}
           </View>
         </Animated.View>
-        <Animated.View
-          style={[styles.frontContainer, containerStyles]}
-          pointerEvents={drawerShown ? 'none' : 'auto'}>
+        <Animated.View style={[styles.frontContainer, containerStyles]}>
           {this.props.children}
+          {this._renderOverlay()}
         </Animated.View>
       </Animated.View>
     );
@@ -362,25 +385,10 @@ export default class DrawerLayout extends Component {
       flexDirection: fromLeft ? 'row' : 'row-reverse',
     };
 
-    const dragHandlerStyle = drawerShown
-      ? styles.dragHandlerOpened
-      : styles.dragHandler;
-
-    /* Overlay styles */
-    const overlayOpacity = this._openValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 0.7],
-      extrapolate: 'clamp',
-    });
-    const animatedOverlayStyles = { opacity: overlayOpacity };
-
     return (
       <Animated.View style={styles.main} onLayout={this._handleContainerLayout}>
         {this.props.children}
-        <Animated.View
-          pointerEvents="none"
-          style={[styles.overlay, animatedOverlayStyles]}
-        />
+        {this._renderOverlay()}
         <Animated.View
           pointerEvents="box-none"
           accessibilityViewIsModal={drawerShown}
@@ -388,10 +396,6 @@ export default class DrawerLayout extends Component {
           <View style={[styles.drawer, dynamicDrawerStyles]}>
             {this.props.renderNavigationView(this._openValue)}
           </View>
-          <TapGestureHandler
-            onHandlerStateChange={this._onTapHandlerStateChange}>
-            <Animated.View style={dragHandlerStyle} />
-          </TapGestureHandler>
         </Animated.View>
       </Animated.View>
     );
@@ -460,12 +464,8 @@ const styles = StyleSheet.create({
     zIndex: 0,
     overflow: 'hidden',
   },
-  dragHandlerOpened: {
-    flex: 1,
-  },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000',
     zIndex: 1000,
   },
 });
