@@ -1,6 +1,6 @@
 // @flow
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View, Keyboard } from 'react-native';
+import { Animated, StyleSheet, View, Keyboard, StatusBar } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -8,7 +8,6 @@ import {
   State,
 } from 'react-native-gesture-handler';
 
-const MIN_SWIPE_DISTANCE = 3;
 const DRAG_TOSS = 0.05;
 
 const IDLE = 'Idle';
@@ -30,6 +29,9 @@ export type PropType = {
   // brand new properties
   drawerType: 'front' | 'back' | 'slide',
   edgeWidth: number,
+  minSwipeDistance: number,
+  hideStatusBar: boolean,
+  statusBarAnimation: 'slide' | 'none' | 'fade',
 
   // Properties not yet supported
   // onDrawerSlide?: Function
@@ -63,6 +65,7 @@ export default class DrawerLayout extends Component {
     useNativeAnimations: true,
     drawerType: 'front',
     edgeWidth: 20,
+    minSwipeDistance: 3,
   };
 
   static positions = {
@@ -187,9 +190,9 @@ export default class DrawerLayout extends Component {
     this.setState({ containerWidth: nativeEvent.layout.width });
   };
 
-  _emitStateChanged = (newState: string) => {
+  _emitStateChanged = (newState: string, drawerWillShow: boolean) => {
     this.props.onDrawerStateChanged &&
-      this.props.onDrawerStateChanged(newState);
+      this.props.onDrawerStateChanged(newState, drawerWillShow);
   };
 
   _openingHandlerStateChange = ({ nativeEvent }) => {
@@ -199,6 +202,9 @@ export default class DrawerLayout extends Component {
       this._emitStateChanged(DRAGGING);
       if (this.props.keyboardDismissMode === 'on-drag') {
         Keyboard.dismiss();
+      }
+      if (this.props.hideStatusBar) {
+        StatusBar.setHidden(true, this.props.statusBarAnimation || 'slide');
       }
     }
   };
@@ -252,7 +258,10 @@ export default class DrawerLayout extends Component {
 
     const willShow = toValue !== 0;
     this.setState({ drawerShown: willShow });
-    this._emitStateChanged(SETTLING);
+    this._emitStateChanged(SETTLING, willShow);
+    if (this.props.hideStatusBar) {
+      StatusBar.setHidden(willShow, this.props.statusBarAnimation || 'slide');
+    }
     Animated.spring(this.state.drawerTranslation, {
       velocity,
       bounciness: 0,
@@ -260,7 +269,7 @@ export default class DrawerLayout extends Component {
       useNativeDriver: this.props.useNativeAnimations,
     }).start(({ finished }) => {
       if (finished) {
-        this._emitStateChanged(IDLE);
+        this._emitStateChanged(IDLE, willShow);
         if (willShow) {
           this.props.onDrawerOpen && this.props.onDrawerOpen();
         } else {
@@ -391,7 +400,12 @@ export default class DrawerLayout extends Component {
   render() {
     const { drawerShown, containerWidth } = this.state;
 
-    const { drawerPosition, drawerType, edgeWidth } = this.props;
+    const {
+      drawerPosition,
+      drawerType,
+      edgeWidth,
+      minSwipeDistance,
+    } = this.props;
 
     const fromLeft = drawerPosition === 'left';
 
@@ -421,7 +435,7 @@ export default class DrawerLayout extends Component {
     return (
       <PanGestureHandler
         hitSlop={hitSlop}
-        minOffsetX={gestureOrientation * MIN_SWIPE_DISTANCE}
+        minOffsetX={gestureOrientation * minSwipeDistance}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._openingHandlerStateChange}>
         {drawer}
