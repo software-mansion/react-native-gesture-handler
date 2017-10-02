@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   },
   drawerContainer: {
     flex: 1,
+    paddingTop: 10,
   },
   pageInput: {
     height: 60,

@@ -9,7 +9,6 @@ import {
 } from 'react-native-gesture-handler';
 
 const MIN_SWIPE_DISTANCE = 3;
-const SLOP = 30;
 const DRAG_TOSS = 0.05;
 
 const IDLE = 'Idle';
@@ -30,6 +29,7 @@ export type PropType = {
 
   // brand new properties
   drawerType: 'front' | 'back' | 'slide',
+  edgeWidth: number,
 
   // Properties not yet supported
   // onDrawerSlide?: Function
@@ -62,6 +62,7 @@ export default class DrawerLayout extends Component {
     drawerPosition: 'left',
     useNativeAnimations: true,
     drawerType: 'front',
+    edgeWidth: 20,
   };
 
   static positions = {
@@ -390,7 +391,7 @@ export default class DrawerLayout extends Component {
   render() {
     const { drawerShown, containerWidth } = this.state;
 
-    const { drawerPosition, drawerType } = this.props;
+    const { drawerPosition, drawerType, edgeWidth } = this.props;
 
     const fromLeft = drawerPosition === 'left';
 
@@ -403,8 +404,8 @@ export default class DrawerLayout extends Component {
     // than the container size by the value of SLOP. This will make it only
     // activate when gesture happens not further than SLOP away from the edge
     const hitSlop = fromLeft
-      ? { right: drawerShown ? 0 : SLOP - containerWidth }
-      : { left: drawerShown ? 0 : containerWidth - SLOP };
+      ? { right: drawerShown ? 0 : edgeWidth - containerWidth }
+      : { left: drawerShown ? 0 : containerWidth - edgeWidth };
 
     let drawer = null;
     if (drawerType === 'front') {
