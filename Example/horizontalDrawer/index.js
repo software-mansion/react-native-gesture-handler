@@ -16,11 +16,9 @@ const Page = () => (
 
 export default class Example extends Component {
   render() {
-    const navigationView = (
-      <View style={{ flex: 1, backgroundColor: '#fff' }}>
-        <Text style={{ margin: 10, fontSize: 15, textAlign: 'left' }}>
-          I'm in the Drawer!
-        </Text>
+    const leftDrawerView = (
+      <View style={styles.leftDrawerContainer}>
+        <Text style={styles.drawerText}>Left Drawer!</Text>
       </View>
     );
     return (
@@ -28,7 +26,7 @@ export default class Example extends Component {
         <DrawerLayout
           drawerWidth={200}
           drawerPosition={DrawerLayout.positions.Left}
-          renderNavigationView={() => navigationView}>
+          renderNavigationView={() => leftDrawerView}>
           <Page />
         </DrawerLayout>
       </View>
@@ -61,5 +59,18 @@ const styles = StyleSheet.create({
   },
   rectButtonText: {
     backgroundColor: 'transparent',
+  },
+  leftDrawerContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  rightDrawerContainer: {
+    flex: 1,
+    backgroundColor: 'plum',
+  },
+  drawerText: {
+    margin: 10,
+    fontSize: 15,
+    textAlign: 'left',
   },
 });
