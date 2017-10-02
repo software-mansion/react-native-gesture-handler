@@ -212,7 +212,6 @@ export default class DrawerLayout extends Component {
   };
 
   _onTapHandlerStateChange = ({ nativeEvent }) => {
-    console.log('NE', nativeEvent);
     if (this.state.drawerShown && nativeEvent.oldState === State.ACTIVE) {
       this.closeDrawer();
     }
@@ -311,84 +310,62 @@ export default class DrawerLayout extends Component {
     );
   };
 
-  _renderBackDrawer = drawerSlide => {
+  _renderDrawer = () => {
     const { drawerShown } = this.state;
-    const { drawerBackgroundColor, drawerWidth, drawerPosition } = this.props;
+    const {
+      drawerBackgroundColor,
+      drawerWidth,
+      drawerPosition,
+      drawerType,
+    } = this.props;
 
     const fromLeft = drawerPosition === 'left';
+    const drawerSlide = drawerType !== 'back';
+    const containerSlide = drawerType !== 'front';
 
     const dynamicDrawerStyles = {
       backgroundColor: drawerBackgroundColor,
       width: drawerWidth,
-      flexDirection: fromLeft ? 'row' : 'row-reverse',
     };
 
-    const containerTranslateX = this._openValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: fromLeft ? [0, drawerWidth] : [0, -drawerWidth],
-      extrapolate: 'clamp',
-    });
-    const containerStyles = {
-      transform: [{ translateX: containerTranslateX }],
-    };
-
-    let drawerTranslateX;
-    if (drawerSlide) {
-      drawerTranslateX = this._openValue.interpolate({
+    let containerStyles;
+    if (containerSlide) {
+      const containerTranslateX = this._openValue.interpolate({
         inputRange: [0, 1],
-        outputRange: fromLeft ? [-drawerWidth, 0] : [drawerWidth, 0],
+        outputRange: fromLeft ? [0, drawerWidth] : [0, -drawerWidth],
         extrapolate: 'clamp',
       });
+      containerStyles = {
+        transform: [{ translateX: containerTranslateX }],
+      };
     }
-    const drawerStyles = {
-      transform: drawerSlide ? [{ translateX: drawerTranslateX }] : undefined,
-      flexDirection: fromLeft ? 'row' : 'row-reverse',
-    };
+
+    let drawerStyles = { flexDirection: fromLeft ? 'row' : 'row-reverse' };
+    if (drawerSlide) {
+      const closedDrawerOffset = fromLeft ? -drawerWidth : drawerWidth;
+      drawerTranslateX = this._openValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: [closedDrawerOffset, 0],
+        extrapolate: 'clamp',
+      });
+      drawerStyles = {
+        transform: [{ translateX: drawerTranslateX }],
+        flexDirection: fromLeft ? 'row' : 'row-reverse',
+      };
+    }
 
     return (
       <Animated.View style={styles.main} onLayout={this._handleContainerLayout}>
         <Animated.View
-          pointerEvents="box-none"
-          accessibilityViewIsModal={drawerShown}
-          style={[styles.drawerContainer, drawerStyles]}>
-          <View style={[styles.drawer, dynamicDrawerStyles]}>
-            {this.props.renderNavigationView(this._openValue)}
-          </View>
-        </Animated.View>
-        <Animated.View style={[styles.frontContainer, containerStyles]}>
+          style={[
+            drawerType === 'front'
+              ? styles.containerOnBack
+              : styles.containerInFront,
+            containerStyles,
+          ]}>
           {this.props.children}
           {this._renderOverlay()}
         </Animated.View>
-      </Animated.View>
-    );
-  };
-
-  _renderFrontDrawer = () => {
-    const { drawerShown } = this.state;
-    const { drawerBackgroundColor, drawerWidth, drawerPosition } = this.props;
-
-    const fromLeft = drawerPosition === 'left';
-
-    const dynamicDrawerStyles = {
-      backgroundColor: drawerBackgroundColor,
-      width: drawerWidth,
-    };
-
-    const closedDrawerOffset = fromLeft ? -drawerWidth : drawerWidth;
-    const drawerTranslateX = this._openValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [closedDrawerOffset, 0],
-      extrapolate: 'clamp',
-    });
-    const drawerStyles = {
-      transform: [{ translateX: drawerTranslateX }],
-      flexDirection: fromLeft ? 'row' : 'row-reverse',
-    };
-
-    return (
-      <Animated.View style={styles.main} onLayout={this._handleContainerLayout}>
-        {this.props.children}
-        {this._renderOverlay()}
         <Animated.View
           pointerEvents="box-none"
           accessibilityViewIsModal={drawerShown}
@@ -425,24 +402,13 @@ export default class DrawerLayout extends Component {
       ? { right: drawerShown ? 0 : edgeWidth - containerWidth }
       : { left: drawerShown ? 0 : containerWidth - edgeWidth };
 
-    let drawer = null;
-    if (drawerType === 'front') {
-      drawer = this._renderFrontDrawer();
-    } else if (drawerType === 'back') {
-      drawer = this._renderBackDrawer(false);
-    } else if (drawerType === 'slide') {
-      drawer = this._renderBackDrawer(true);
-    } else {
-      throw new Error(`Unknown drawer type "${drawerType}"`);
-    }
-
     return (
       <PanGestureHandler
         hitSlop={hitSlop}
         minOffsetX={gestureOrientation * minSwipeDistance}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._openingHandlerStateChange}>
-        {drawer}
+        {this._renderDrawer()}
       </PanGestureHandler>
     );
   }
@@ -455,9 +421,12 @@ const styles = StyleSheet.create({
     zIndex: 1001,
     flexDirection: 'row',
   },
-  frontContainer: {
+  containerInFront: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 1002,
+  },
+  containerOnBack: {
+    ...StyleSheet.absoluteFillObject,
   },
   main: {
     flex: 1,
