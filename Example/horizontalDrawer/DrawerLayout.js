@@ -1,6 +1,6 @@
 // @flow
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View, Keyboard } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -19,17 +19,18 @@ const SETTLING = 'Settling';
 export type PropType = {
   children: any,
   drawerBackgroundColor?: string,
-  drawerLockMode?: 'unlocked' | 'locked-closed' | 'locked-open',
   drawerPosition: 'left' | 'right',
   drawerWidth: number,
   keyboardDismissMode?: 'none' | 'on-drag',
   onDrawerClose?: Function,
   onDrawerOpen?: Function,
-  onDrawerSlide?: Function,
   onDrawerStateChanged?: Function,
   renderNavigationView: () => any,
-  statusBarBackgroundColor?: string,
   useNativeAnimations?: boolean,
+
+  // Properties not yet supported
+  // onDrawerSlide?: Function
+  // drawerLockMode?: 'unlocked' | 'locked-closed' | 'locked-open',
 };
 
 export type StateType = {
@@ -119,6 +120,8 @@ export default class DrawerLayout extends Component {
         Animated.multiply(new Animated.Value(-1), touchXValue)
       );
       touchXValue.setValue(containerWidth);
+    } else {
+      touchXValue.setValue(0);
     }
 
     // When closing drawer and user starts gesture outside of the drawer (in greyed
@@ -173,9 +176,19 @@ export default class DrawerLayout extends Component {
     this.setState({ containerWidth: nativeEvent.layout.width });
   };
 
+  _emitStateChanged = (newState: string) => {
+    this.props.onDrawerStateChanged &&
+      this.props.onDrawerStateChanged(newState);
+  };
+
   _openingHandlerStateChange = ({ nativeEvent }) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       this._handleRelease(nativeEvent);
+    } else if (nativeEvent.state === State.ACTIVE) {
+      this._emitStateChanged(DRAGGING);
+      if (this.props.keyboardDismissMode === 'on-drag') {
+        Keyboard.dismiss();
+      }
     }
   };
 
@@ -222,13 +235,24 @@ export default class DrawerLayout extends Component {
     );
     this.state.drawerTranslation.setValue(fromValue);
 
-    this.setState({ drawerShown: toValue !== 0 });
+    const willShow = toValue !== 0;
+    this.setState({ drawerShown: willShow });
+    this._emitStateChanged(SETTLING);
     Animated.spring(this.state.drawerTranslation, {
       velocity,
       bounciness: 0,
       toValue,
       useNativeDriver: this.props.useNativeAnimations,
-    }).start();
+    }).start(({ finished }) => {
+      if (finished) {
+        this._emitStateChanged(IDLE);
+        if (willShow) {
+          this.props.onDrawerOpen && this.props.onDrawerOpen();
+        } else {
+          this.props.onDrawerClose && this.props.onDrawerClose();
+        }
+      }
+    });
   };
 
   openDrawer = (options: DrawerMovementOptionType = {}) => {
@@ -240,11 +264,7 @@ export default class DrawerLayout extends Component {
   };
 
   render() {
-    const {
-      accessibilityViewIsModal,
-      drawerShown,
-      containerWidth,
-    } = this.state;
+    const { drawerShown, containerWidth } = this.state;
 
     const { drawerBackgroundColor, drawerWidth, drawerPosition } = this.props;
 
@@ -306,7 +326,7 @@ export default class DrawerLayout extends Component {
           />
           <Animated.View
             pointerEvents="box-none"
-            accessibilityViewIsModal={accessibilityViewIsModal}
+            accessibilityViewIsModal={drawerShown}
             style={[styles.drawerContainer, drawerStyles]}>
             <View style={[styles.drawer, dynamicDrawerStyles]}>
               {this.props.renderNavigationView()}
