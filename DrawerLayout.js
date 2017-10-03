@@ -1,4 +1,13 @@
 // @flow
+
+// This component is based on RN's DrawerLayoutAndroid API
+//
+// It perhaps deserves to be put in a separate repo, but since it relies
+// on react-native-gesture-handler library which isn't very popular at the
+// moment I decided to keep it here for the time being. It will allow us
+// to move faster and fix issues that may arise in gesture handler library
+// that could be found when using the drawer component
+
 import React, { Component } from 'react';
 import { Animated, StyleSheet, View, Keyboard, StatusBar } from 'react-native';
 
