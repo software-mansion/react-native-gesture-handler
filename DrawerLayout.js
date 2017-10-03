@@ -340,7 +340,7 @@ export default class DrawerLayout extends Component {
       };
     }
 
-    let drawerStyles = { flexDirection: fromLeft ? 'row' : 'row-reverse' };
+    let drawerTranslateX = 0;
     if (drawerSlide) {
       const closedDrawerOffset = fromLeft ? -drawerWidth : drawerWidth;
       drawerTranslateX = this._openValue.interpolate({
@@ -348,11 +348,11 @@ export default class DrawerLayout extends Component {
         outputRange: [closedDrawerOffset, 0],
         extrapolate: 'clamp',
       });
-      drawerStyles = {
-        transform: [{ translateX: drawerTranslateX }],
-        flexDirection: fromLeft ? 'row' : 'row-reverse',
-      };
     }
+    const drawerStyles = {
+      transform: [{ translateX: drawerTranslateX }],
+      flexDirection: fromLeft ? 'row' : 'row-reverse',
+    };
 
     return (
       <Animated.View style={styles.main} onLayout={this._handleContainerLayout}>
