@@ -7,7 +7,6 @@ import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 
 const TYPES = ['front', 'back', 'back', 'slide'];
 const PARALLAX = [false, false, true, false];
-const HIDE_STATUS_BAR = [true, true, true, false];
 
 const Page = ({ fromLeft, type, parallaxOn, flipSide, nextType }) => (
   <View style={styles.page}>
@@ -62,13 +61,11 @@ export default class Example extends Component {
   render() {
     const drawerType = TYPES[this.state.type];
     const parallax = PARALLAX[this.state.type];
-    const hideStatusBar = HIDE_STATUS_BAR[this.state.type];
     return (
       <View style={styles.container}>
         <DrawerLayout
           drawerWidth={200}
           keyboardDismissMode="on-drag"
-          hideStatusBar={hideStatusBar}
           drawerPosition={
             this.state.fromLeft
               ? DrawerLayout.positions.Left

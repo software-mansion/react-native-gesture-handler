@@ -3,8 +3,10 @@ package com.swmansion.gesturehandler.react;
 import android.util.SparseArray;
 import android.view.View;
 
+import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerRegistry;
+import com.swmansion.gesturehandler.PointerEvents;
 
 import java.util.ArrayList;
 
@@ -85,5 +87,32 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
   @Override
   public ArrayList<GestureHandler> getHandlersForView(View view) {
     return getHandlersForViewWithTag(view.getId());
+  }
+
+  @Override
+  public PointerEvents getPointerEventsConfigForView(View view) {
+    com.facebook.react.uimanager.PointerEvents pointerEvents;
+    pointerEvents = view instanceof ReactPointerEventsView ?
+            ((ReactPointerEventsView) view).getPointerEvents() :
+            com.facebook.react.uimanager.PointerEvents.AUTO;
+
+    // Views that are disabled should never be the target of pointer events. However, their children
+    // can be because some views (SwipeRefreshLayout) use enabled but still have children that can
+    // be valid targets.
+    if (!view.isEnabled()) {
+      if (pointerEvents == com.facebook.react.uimanager.PointerEvents.AUTO) {
+        return PointerEvents.BOX_NONE;
+      } else if (pointerEvents == com.facebook.react.uimanager.PointerEvents.BOX_ONLY) {
+        return PointerEvents.NONE;
+      }
+    }
+
+    switch (pointerEvents) {
+      case BOX_ONLY: return PointerEvents.BOX_ONLY;
+      case BOX_NONE: return PointerEvents.BOX_NONE;
+      case NONE: return PointerEvents.NONE;
+    }
+
+    return PointerEvents.AUTO;
   }
 }
