@@ -352,13 +352,17 @@ public class GestureHandlerOrchestrator {
 
   private boolean recordHandlerIfNotPresent(View view, float[] coords) {
     ArrayList<GestureHandler> handlers = mHandlerRegistry.getHandlersForView(view);
+    boolean found = false;
     if (handlers != null) {
       for (int i = 0, size = handlers.size(); i < size; i++) {
-        recordGestureHandler(handlers.get(i), view);
+        GestureHandler handler = handlers.get(i);
+        if (handler.isWithinBounds(view, coords[0], coords[1])) {
+          recordGestureHandler(handlers.get(i), view);
+          found = true;
+        }
       }
-      return true;
     }
-    return false;
+    return found;
   }
 
   private void extractGestureHandlers(MotionEvent event) {
