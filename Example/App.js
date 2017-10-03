@@ -85,7 +85,7 @@ const ExampleApp = StackNavigator(
     ...SCREENS,
   },
   {
-    initialRouteName: 'HorizontalDrawer',
+    initialRouteName: 'Main',
   }
 );
 
