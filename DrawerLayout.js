@@ -400,7 +400,7 @@ export default class DrawerLayout extends Component {
     // activate when gesture happens not further than SLOP away from the edge
     const hitSlop = fromLeft
       ? { right: drawerShown ? 0 : edgeWidth - containerWidth }
-      : { left: drawerShown ? 0 : containerWidth - edgeWidth };
+      : { left: drawerShown ? 0 : edgeWidth - containerWidth };
 
     return (
       <PanGestureHandler
