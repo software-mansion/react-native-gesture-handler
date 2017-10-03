@@ -6,4 +6,5 @@ import java.util.ArrayList;
 
 public interface GestureHandlerRegistry {
   ArrayList<GestureHandler> getHandlersForView(View view);
+  PointerEvents getPointerEventsConfigForView(View view);
 }

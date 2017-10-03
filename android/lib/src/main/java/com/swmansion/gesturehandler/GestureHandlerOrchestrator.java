@@ -350,13 +350,15 @@ public class GestureHandlerOrchestrator {
     handler.prepare(view, this);
   }
 
-  private void recordHandlerIfNotPresent(View view, float[] coords) {
+  private boolean recordHandlerIfNotPresent(View view, float[] coords) {
     ArrayList<GestureHandler> handlers = mHandlerRegistry.getHandlersForView(view);
     if (handlers != null) {
       for (int i = 0, size = handlers.size(); i < size; i++) {
         recordGestureHandler(handlers.get(i), view);
       }
+      return true;
     }
+    return false;
   }
 
   private void extractGestureHandlers(MotionEvent event) {
@@ -368,6 +370,7 @@ public class GestureHandlerOrchestrator {
 
   private boolean extractGestureHandlers(ViewGroup viewGroup, float[] coords) {
     int childrenCount = viewGroup.getChildCount();
+    // TODO: It may be necessary to traverse children ordered by Z-index
     for (int i = childrenCount - 1; i >= 0; i--) {
       View child = viewGroup.getChildAt(i);
       PointF childPoint = sTempPoint;
@@ -377,37 +380,38 @@ public class GestureHandlerOrchestrator {
         float restoreY = coords[1];
         coords[0] = childPoint.x;
         coords[1] = childPoint.y;
-        traverseWithPointerEvents(child, coords);
+        boolean found = traverseWithPointerEvents(child, coords);
         coords[0] = restoreX;
         coords[1] = restoreY;
-        return true;
+        if (found) {
+          return true;
+        }
       }
     }
     return false;
   }
 
-  private void traverseWithPointerEvents(View view, float coords[]) {
-    PointerEvents pointerEvents = PointerEvents.AUTO;
+  private boolean traverseWithPointerEvents(View view, float coords[]) {
+    PointerEvents pointerEvents = mHandlerRegistry.getPointerEventsConfigForView(view);
     if (pointerEvents == PointerEvents.NONE) {
       // This view and its children can't be the target
-      return;
+      return false;
     } else if (pointerEvents == PointerEvents.BOX_ONLY) {
       // This view is the target, its children don't matter
-      recordHandlerIfNotPresent(view, coords);
-      return;
+      return recordHandlerIfNotPresent(view, coords);
     } else if (pointerEvents == PointerEvents.BOX_NONE) {
       // This view can't be the target, but its children might
       if (view instanceof ViewGroup) {
-        extractGestureHandlers((ViewGroup) view, coords);
+        return extractGestureHandlers((ViewGroup) view, coords);
       }
-      return;
+      return false;
     } else if (pointerEvents == PointerEvents.AUTO) {
       // Either this view or one of its children is the target
+      boolean found = false;
       if (view instanceof ViewGroup) {
-        extractGestureHandlers((ViewGroup) view, coords);
+        found = extractGestureHandlers((ViewGroup) view, coords);
       }
-      recordHandlerIfNotPresent(view, coords);
-      return;
+      return recordHandlerIfNotPresent(view, coords) || found;
     } else {
       throw new IllegalArgumentException(
               "Unknown pointer event type: " + pointerEvents.toString());
