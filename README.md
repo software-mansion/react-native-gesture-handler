@@ -179,6 +179,36 @@ This property accepts a single string ID of a gesture handler or an array of str
 
 This property accepts a single string ID of a gesture handler or an array of string IDs. When set for a given gesture handler it allow for this gesture handler to recognize simultaneousy with handler(s) with the given ID(s). One popular usecase is with a photo that can be pinched and rotated, in which case we want both pinch and rotate gesture handlers to recognize simultaneously.
 
+## Custom components
+
+Gesture handler library makes it possible for some interations to be build in much more performant way that it was possible with PanHandler. To illustrate this we decided to build a couple of components that are already available for react-native apps but often are build using PanResponder API which results in poor performance.
+
+### DrawerLayout
+
+This is a cross platform replacement for react-native's [DrawerLayoutAndroid](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) component. It provides a compatible API but allows for the component to be used on both Android and iOS. Please refer to [react-native docs](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) for the detailed usage for standard parameters.
+
+#### Usage:
+
+As the DrawerLayout component isn't expored by default from the gesture-handler package in order to use it import it in the following way:
+```js
+import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
+```
+
+#### Props:
+
+On top of the standard list of parameters DrawerLayout has an additional set of attributes that helps with customizing its behavior. Please refer to the list below:
+
+ - `drawerType` – possible values are: `front`, `back` or `slide` (default is `front`). It specifies the way drawer will be displayed. When set to `front` drawer will slide in/out along with the gesture and will display on top of the content view. When `back` is used the drawer displays below the content view and can be revealed with the gesture that will pull the content view to the side. Finally `slide` option make the drawer appear like it is sticked to the side of the content view and when you pull both content view and drawer will follow the gesture.
+ - `edgeWidth` – number, allows for defining how far from the edge of the content view the gesture should activate.
+ - `hideStatusBar` – boolean, when set to `true` Drawer component will use [StatusBar](http://facebook.github.io/react-native/docs/statusbar.html) API to hide the OS status bar whenever the drawer is pulled or when its in an "open" state.
+ - `statusBarAnimation` – possible values are: `slide`, `none` or `fade` (defaults to `slide`). Can be used when `hideStatusBar` is set to `true` and allows for defining the animation used for hiding/showing the status bar. See [StatusBar](http://facebook.github.io/react-native/docs/statusbar.html#statusbaranimation) documentation for more details.
+ - `overlayColor` – color (default to `"black"`) of a semi-transparent overlay to be displayed on top of the content view when drawer gets open. A solid color should be used as the opacity is added by the Drawer itself and the opacity of the overlay is animated (from 0% to 70%).
+ - `renderNavigationView` - function. This attibute is present in the standard implementation already and is one of the required params. Gesture handler version of DrawerLayout make it possible for the function passed as `renderNavigationView` to take an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened). This can be used by the drawer component to animated its children while the drawer is opening or closing.
+
+#### Example:
+
+An example code that that uses `DrawerLayout` component can be found here: [`horizontalDrawer/index.js`](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/horizontalDrawer/index.js)
+
 ## Troubleshooting
 
 This project is still in alpha so it is not suprising you're seeking help. Try searching over the issues on GitHub [here](https://github.com/kmagiera/react-native-gesture-handler/issues). If you don't find anything that would help feel free to open a new issue!
