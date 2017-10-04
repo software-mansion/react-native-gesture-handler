@@ -149,19 +149,19 @@ Currently Gesture handler library exposes three components that renders native t
 
 On top of that all the buttons are wrapped with `NativeViewGestureHandler` and therefore allow for all the [common gesture handler properties](#common-gesturehandler-properties) and `NativeViewGestureHandler`'s [extra properties](#nativeviewgesturehandler-extra-properties) to be applied to them.
 
-#### `BaseButton` component
+#### `<BaseButton />` component
 
 Can be used as a base class if you'd like to implement some custom interaction for when the button is pressed. The following props can be used:
  - `onActiveStateChange` - function that gets triggered when button changes from inactive to active and vice versa. It passes active state as a boolean variable as a first parameter for that method.
  - `onPress` - function that gets triggered when the button gets pressed (similar to how it works with `TouchableHighlight` from RN core).
 
-#### `RectButton` component
+#### `<RectButton />` component
 
 This type of a button component should be used when you deal with a rectangular elements or blocks of content that can be pressed, like table rows or buttons with text and icons. This component provides a platform specific interaction rendering a rectangular ripple on android or highlighting the background on iOS and on older versions of android. Along with all the properties of [`BaseButton`](#basebutton-component) it allows for specifying the following props:
  - `underlayColor` - this is the background color that will be dimmed when button is in active state.
  - `activeOpacity` (**iOS only**) - opacity applied to the underlay when button is in active state.
 
-#### `BorderlessButton` component
+#### `<BorderlessButton />` component
 
 This type of a button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds) whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). Along with all the properties of [`BaseButton`](#basebutton-component) it allows for specifying the following props:
  - `borderless` (**Android only**) - set this to `false` if you want the ripple animation to render only within view bounds.
@@ -183,7 +183,7 @@ This property accepts a single string ID of a gesture handler or an array of str
 
 Gesture handler library makes it possible for some interations to be build in much more performant way that it was possible with PanHandler. To illustrate this we decided to build a couple of components that are already available for react-native apps but often are build using PanResponder API which results in poor performance.
 
-### DrawerLayout
+### `<DrawerLayout />`
 
 This is a cross platform replacement for react-native's [DrawerLayoutAndroid](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) component. It provides a compatible API but allows for the component to be used on both Android and iOS. Please refer to [react-native docs](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) for the detailed usage for standard parameters.
 
