@@ -25,10 +25,5 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
   public ArrayList<GestureHandler> getHandlersForView(View view) {
     return mHandlers.get(view);
   }
-
-  @Override
-  public PointerEvents getPointerEventsConfigForView(View view) {
-    return PointerEvents.AUTO;
-  }
 }
 

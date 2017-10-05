@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler;
 
+import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.view.MotionEvent;
@@ -46,6 +47,7 @@ public class GestureHandlerOrchestrator {
 
   private final ViewGroup mWrapperView;
   private final GestureHandlerRegistry mHandlerRegistry;
+  private final ViewConfigurationHelper mViewConfigHelper;
 
   private final GestureHandler[] mGestureHandlers
           = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
@@ -66,12 +68,16 @@ public class GestureHandlerOrchestrator {
   private float mMinAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL;
 
   public GestureHandlerOrchestrator(ViewGroup wrapperView) {
-    this(wrapperView, new GestureHandlerRegistryImpl());
+    this(wrapperView, new GestureHandlerRegistryImpl(), new ViewConfigurationHelperImpl());
   }
 
-  public GestureHandlerOrchestrator(ViewGroup wrapperView, GestureHandlerRegistry registry) {
+  public GestureHandlerOrchestrator(
+          ViewGroup wrapperView,
+          GestureHandlerRegistry registry,
+          ViewConfigurationHelper viewConfigurationHelper) {
     mWrapperView = wrapperView;
     mHandlerRegistry = registry;
+    mViewConfigHelper = viewConfigurationHelper;
   }
 
   /**
@@ -374,9 +380,8 @@ public class GestureHandlerOrchestrator {
 
   private boolean extractGestureHandlers(ViewGroup viewGroup, float[] coords) {
     int childrenCount = viewGroup.getChildCount();
-    // TODO: It may be necessary to traverse children ordered by Z-index
     for (int i = childrenCount - 1; i >= 0; i--) {
-      View child = viewGroup.getChildAt(i);
+      View child = mViewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i);
       PointF childPoint = sTempPoint;
       if (canReceiveEvents(child)
               && isTransformedTouchPointInView(coords[0], coords[1], viewGroup, child, childPoint)) {
@@ -395,14 +400,24 @@ public class GestureHandlerOrchestrator {
     return false;
   }
 
+  private static boolean shouldHandlerlessViewBecomeTouchTarget(View view, float coords[]) {
+    // The following code is to match the iOS behavior where transparent parts of the views can
+    // pass touch events through them allowing sibling nodes to handle them.
+
+    // TODO: this is not an ideal solution as we only consider ViewGroups that has no background set
+    // TODO: ideally we should determine the pixel color under the given coordinates and return
+    // false if the color is transparent
+    return !(view instanceof ViewGroup) || view.getBackground() != null;
+  }
+
   private boolean traverseWithPointerEvents(View view, float coords[]) {
-    PointerEvents pointerEvents = mHandlerRegistry.getPointerEventsConfigForView(view);
+    PointerEvents pointerEvents = mViewConfigHelper.getPointerEventsConfigForView(view);
     if (pointerEvents == PointerEvents.NONE) {
       // This view and its children can't be the target
       return false;
     } else if (pointerEvents == PointerEvents.BOX_ONLY) {
       // This view is the target, its children don't matter
-      return recordHandlerIfNotPresent(view, coords);
+      return recordHandlerIfNotPresent(view, coords) || shouldHandlerlessViewBecomeTouchTarget(view, coords);
     } else if (pointerEvents == PointerEvents.BOX_NONE) {
       // This view can't be the target, but its children might
       if (view instanceof ViewGroup) {
@@ -415,7 +430,7 @@ public class GestureHandlerOrchestrator {
       if (view instanceof ViewGroup) {
         found = extractGestureHandlers((ViewGroup) view, coords);
       }
-      return recordHandlerIfNotPresent(view, coords) || found;
+      return recordHandlerIfNotPresent(view, coords) || found || shouldHandlerlessViewBecomeTouchTarget(view, coords);
     } else {
       throw new IllegalArgumentException(
               "Unknown pointer event type: " + pointerEvents.toString());
