@@ -90,7 +90,7 @@ const ExampleApp = StackNavigator(
     ...SCREENS,
   },
   {
-    initialRouteName: 'SwipeableTable',
+    initialRouteName: 'Main',
   }
 );
 
