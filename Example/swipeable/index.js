@@ -9,91 +9,138 @@ import {
   BorderlessButton,
 } from 'react-native-gesture-handler';
 
-import { USE_NATIVE_DRIVER } from '../config';
 import { LoremIpsum } from '../common';
 
 const RATIO = 3;
+const DRAG_TOSS = 0.05;
 
-export class Swipeable extends Component {
+export class SwipeableRow extends Component {
+  static defaultProps = {
+    friction: 1,
+    useNativeAnimations: true,
+  };
+
   constructor(props) {
     super(props);
     this._width = 0;
-    this._dragX = new Animated.Value(0);
-    this._transX = this._dragX.interpolate({
-      inputRange: [0, RATIO],
-      outputRange: [0, 1],
-    });
-    this._showLeftAction = this._dragX.interpolate({
+    const dragX = new Animated.Value(0);
+    const rowTranslation = new Animated.Value(0);
+    this.state = { dragX, rowTranslation };
+    this._updateAnimatedEvent(props, this.state);
+  }
+
+  _updateAnimatedEvent = (props, state) => {
+    const { friction, useNativeAnimations } = props;
+    const { dragX, rowTranslation } = state;
+
+    this._transX = Animated.add(
+      rowTranslation,
+      dragX.interpolate({
+        inputRange: [0, friction],
+        outputRange: [0, 1],
+      })
+    );
+    this._showLeftAction = this._transX.interpolate({
       inputRange: [-1, 0, 1],
       outputRange: [0, 0, 1],
     });
-    this._showRightAction = this._dragX.interpolate({
+    this._leftActionOpacity = this._showLeftAction.interpolate({
+      inputRange: [0, 0.1],
+      outputRange: [0, 1],
+    });
+    this._showRightAction = this._transX.interpolate({
       inputRange: [-1, 0, 1],
       outputRange: [1, 0, 0],
     });
+    this._rightActionOpacity = this._showRightAction.interpolate({
+      inputRange: [0, 0.1],
+      outputRange: [0, 1],
+    });
     this._onGestureEvent = Animated.event(
-      [{ nativeEvent: { translationX: this._dragX } }],
-      { useNativeDriver: USE_NATIVE_DRIVER }
+      [{ nativeEvent: { translationX: this.state.dragX } }],
+      { useNativeDriver: useNativeAnimations }
     );
-  }
-  _onHandlerStateChange = event => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      const dragToss = 0.05;
-      const endOffsetX =
-        event.nativeEvent.translationX + dragToss * event.nativeEvent.velocityX;
+  };
 
-      let toValue = 0;
-      if (endOffsetX > this._width / 2) {
-        toValue = this._width * RATIO;
-      } else if (endOffsetX < -this._width / 2) {
-        toValue = -this._width * RATIO;
-      }
-
-      Animated.spring(this._dragX, {
-        velocity: event.nativeEvent.velocityX,
-        tension: 15,
-        friction: 5,
-        toValue,
-        useNativeDriver: USE_NATIVE_DRIVER,
-      }).start();
+  _onHandlerStateChange = ({ nativeEvent }) => {
+    if (nativeEvent.oldState === State.ACTIVE) {
+      this._handleRelease(nativeEvent);
     }
   };
-  _onLayout = event => {
-    this._width = event.nativeEvent.layout.width;
+
+  _handleRelease = nativeEvent => {
+    const { velocityX, translationX } = nativeEvent;
+    const { width } = this.state;
+    const {
+      friction,
+      leftThreshold = width / 2,
+      leftOffset = width,
+      rightThreshold = width / 2,
+      rightOffset = width / 2,
+    } = this.props;
+
+    const startOffsetX = translationX / friction;
+    const endOffsetX = (translationX + DRAG_TOSS * velocityX) / friction;
+
+    if (endOffsetX > leftThreshold) {
+      this._animateRow(startOffsetX, leftOffset, velocityX);
+    } else if (endOffsetX < -rightThreshold) {
+      this._animateRow(startOffsetX, -rightOffset, velocityX);
+    }
   };
-  _reset = () => {
-    Animated.spring(this._dragX, {
-      toValue: 0,
-      useNativeDriver: USE_NATIVE_DRIVER,
-      tension: 15,
-      friction: 5,
+
+  _animateRow = (fromValue, toValue, velocityX) => {
+    const { dragX, rowTranslation } = this.state;
+    dragX.setValue(0);
+    rowTranslation.setValue(fromValue);
+
+    Animated.spring(this.state.dragX, {
+      velocity: velocityX,
+      bounciness: 0,
+      toValue,
+      useNativeDriver: this.props.useNativeAnimations,
     }).start();
   };
+
+  _onLayout = ({ nativeEvent }) => {
+    this.setState({ width: nativeEvent.layout.width });
+  };
+
+  _currentOffset = () => {
+    const { rowState } = this.state;
+    const { leftOffset = width, rightOffset = width / 2 } = this.props;
+    if (rowState === 1) {
+      return leftOffset;
+    } else if (rowState === -1) {
+      return -rightOffset;
+    }
+    return 0;
+  };
+
+  close = () => {
+    this._animateRow(this._currentOffset(), 0);
+  };
+
   render() {
-    const { children } = this.props;
+    const { children, renderLeftActions, renderRightActions } = this.props;
     return (
-      <View>
-        <Animated.View
-          style={[styles.rowAction, { opacity: this._showLeftAction }]}>
-          <RectButton
-            style={[styles.rowAction, styles.leftAction]}
-            onPress={this._reset}>
-            <Text style={styles.actionButtonText}>Green</Text>
-          </RectButton>
-        </Animated.View>
-        <Animated.View
-          style={[styles.rowAction, { opacity: this._showRightAction }]}>
-          <RectButton
-            style={[styles.rowAction, styles.rightAction]}
-            onPress={this._reset}>
-            <Text style={styles.actionButtonText}>Red</Text>
-          </RectButton>
-        </Animated.View>
-        <PanGestureHandler
-          {...this.props}
-          minDeltaX={10}
-          onGestureEvent={this._onGestureEvent}
-          onHandlerStateChange={this._onHandlerStateChange}>
+      <PanGestureHandler
+        {...this.props}
+        minDeltaX={10}
+        onGestureEvent={this._onGestureEvent}
+        onHandlerStateChange={this._onHandlerStateChange}>
+        <Animated.View>
+          <Animated.View
+            style={[styles.leftActions, { opacity: this._leftActionOpacity }]}>
+            {renderLeftActions && renderLeftActions(this._showLeftAction)}
+          </Animated.View>
+          <Animated.View
+            style={[
+              styles.rightActions,
+              { opacity: this._rightActionOpacity },
+            ]}>
+            {renderLeftActions && renderRightActions(this._showLeftAction)}
+          </Animated.View>
           <Animated.View
             style={{
               backgroundColor: 'white',
@@ -102,13 +149,57 @@ export class Swipeable extends Component {
             onLayout={this._onLayout}>
             {children}
           </Animated.View>
-        </PanGestureHandler>
-      </View>
+        </Animated.View>
+      </PanGestureHandler>
     );
   }
 }
 
-export const InfoButton = props =>
+export class Swipeable extends Component {
+  renderLeftActions = () => {
+    return (
+      <View
+        style={{ flex: 1, backgroundColor: 'blue', justifyContent: 'center' }}>
+        <View
+          style={{ width: 30, height: 30, backgroundColor: 'red', margin: 5 }}
+        />
+      </View>
+    );
+    // <RectButton
+    //   style={[styles.rowAction, styles.leftAction]}
+    //   onPress={this.close}>
+    //   <Text style={styles.actionButtonText}>Green</Text>
+    // </RectButton>
+  };
+  renderRightActions = () => (
+    <RectButton
+      style={[styles.rowAction, styles.rightAction]}
+      onPress={this.close}>
+      <Text style={styles.actionButtonText}>Red</Text>
+    </RectButton>
+  );
+  updateRef = ref => {
+    this._swipeableRow = ref;
+  };
+  close = () => {
+    this._swipeableRow.close();
+  };
+  render() {
+    const { children } = this.props;
+    return (
+      <SwipeableRow
+        ref={this.updateRef}
+        friction={3}
+        leftThreshold={30}
+        renderLeftActions={this.renderLeftActions}
+        renderRightActions={this.renderRightActions}>
+        {children}
+      </SwipeableRow>
+    );
+  }
+}
+
+export const InfoButton = props => (
   <BorderlessButton
     {...props}
     style={styles.infoButton}
@@ -116,7 +207,8 @@ export const InfoButton = props =>
     <View style={styles.infoButtonBorders}>
       <Text style={styles.infoButtonText}>i</Text>
     </View>
-  </BorderlessButton>;
+  </BorderlessButton>
+);
 
 export default class Example extends Component {
   render() {
@@ -200,8 +292,14 @@ const styles = StyleSheet.create({
   },
   rowAction: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  leftActions: {
+    ...StyleSheet.absoluteFillObject,
+    flexDirection: 'row',
+  },
+  rightActions: {
+    ...StyleSheet.absoluteFillObject,
+    flexDirection: 'row-reverse',
   },
   leftAction: {
     backgroundColor: '#4CAF50',
