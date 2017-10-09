@@ -13,6 +13,7 @@ import {
   DrawerLayoutAndroid,
   WebView,
   StyleSheet,
+  FlatList,
   Platform,
 } from 'react-native';
 import deepEqual from 'fbjs/lib/areEqual';
@@ -523,6 +524,15 @@ class BorderlessButton extends React.Component {
   }
 }
 
+/* Other */
+
+const FlatListWithGHScroll = props => (
+  <FlatList
+    {...props}
+    renderScrollComponent={props => <WrappedScrollView {...props} />}
+  />
+);
+
 export {
   WrappedScrollView as ScrollView,
   WrappedSlider as Slider,
@@ -544,4 +554,6 @@ export {
   BaseButton,
   RectButton,
   BorderlessButton,
+  /* Other */
+  FlatListWithGHScroll as FlatList,
 };

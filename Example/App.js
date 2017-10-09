@@ -3,7 +3,8 @@ import { Text, View, FlatList, StyleSheet } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
-import Swipeable from './swipeable';
+import SwipeableTable from './swipeable';
+import Rows from './rows';
 import Multitap from './multitap';
 import Draggable from './draggable';
 import ScaleAndRotate from './scaleAndRotate';
@@ -16,7 +17,7 @@ import ChatHeads from './chatHeads';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 
 const SCREENS = {
-  Swipeable: { screen: Swipeable, title: 'Swipeable rows & buttons' },
+  Rows: { screen: Rows, title: 'Table rows & buttons' },
   Multitap: { screen: Multitap },
   Draggable: { screen: Draggable },
   ScaleAndRotate: { screen: ScaleAndRotate, title: 'Scale, rotate & tilt' },
@@ -24,6 +25,10 @@ const SCREENS = {
   HorizontalDrawer: {
     screen: HorizontalDrawer,
     title: 'Gesture handler based DrawerLayout',
+  },
+  SwipeableTable: {
+    screen: SwipeableTable,
+    title: 'Gesture handler based SwipeableRow',
   },
   PanAndScroll: {
     screen: PanAndScroll,
@@ -85,7 +90,7 @@ const ExampleApp = StackNavigator(
     ...SCREENS,
   },
   {
-    initialRouteName: 'Swipeable',
+    initialRouteName: 'SwipeableTable',
   }
 );
 
