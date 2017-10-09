@@ -29,7 +29,7 @@ import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
-class MainActivity extends ReactActivity {
+public class MainActivity extends ReactActivity {
 
   // Add the following method to your main activity class
   @Override
