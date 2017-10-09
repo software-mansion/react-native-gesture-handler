@@ -1,3 +1,5 @@
+// @flow
+
 // Similarily to the DrawerLayout component this deserves to be put in a
 // separate repo. ALthough, keeping it here for the time being will allow us
 // to move faster and fix possible issues quicker
@@ -13,7 +15,29 @@ import {
 
 const DRAG_TOSS = 0.05;
 
+export type PropType = {
+  children: any,
+  friction?: number,
+  leftThreshold?: number,
+  rightThreshold?: number,
+  onSwipeableLeftOpen?: Function,
+  onSwipeableRightOpen?: Function,
+  onSwipeableOpen?: Function,
+  onSwipeableClose?: Function,
+  renderLeftActions?: (
+    progressAnimatedValue: any,
+    dragAnimatedValue: any
+  ) => any,
+  renderRightActions?: (
+    progressAnimatedValue: any,
+    dragAnimatedValue: any
+  ) => any,
+  useNativeAnimations?: boolean,
+};
+
 export default class Swipeable extends Component {
+  props: PropType;
+
   static defaultProps = {
     friction: 1,
     useNativeAnimations: true,
@@ -136,7 +160,21 @@ export default class Swipeable extends Component {
       bounciness: 0,
       toValue,
       useNativeDriver: this.props.useNativeAnimations,
-    }).start();
+    }).start(({ finished }) => {
+      if (finished) {
+        if (toValue > 0 && this.props.onSwipeableLeftOpen) {
+          this.props.onSwipeableLeftOpen();
+        } else if (toValue < 0 && this.props.onSwipeableRightOpen) {
+          this.props.onSwipeableRightOpen();
+        }
+
+        if (toValue === 0) {
+          this.props.onSwipeableClose && this.props.onSwipeableClose();
+        } else {
+          this.props.onSwipeableOpen && this.props.onSwipeableOpen();
+        }
+      }
+    });
   };
 
   _onRowLayout = ({ nativeEvent }) => {

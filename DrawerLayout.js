@@ -36,12 +36,12 @@ export type PropType = {
   useNativeAnimations?: boolean,
 
   // brand new properties
-  drawerType: 'front' | 'back' | 'slide',
-  edgeWidth: number,
-  minSwipeDistance: number,
-  hideStatusBar: boolean,
-  statusBarAnimation: 'slide' | 'none' | 'fade',
-  overlayColor: string,
+  drawerType?: 'front' | 'back' | 'slide',
+  edgeWidth?: number,
+  minSwipeDistance?: number,
+  hideStatusBar?: boolean,
+  statusBarAnimation?: 'slide' | 'none' | 'fade',
+  overlayColor?: string,
 
   // Properties not yet supported
   // onDrawerSlide?: Function
