@@ -151,6 +151,12 @@
     }
 }
 
+- (void)setEnabled:(BOOL)enabled
+{
+    _enabled = enabled;
+    self.recognizer.enabled = enabled;
+}
+
 - (void)bindToView:(UIView *)view
 {
     view.userInteractionEnabled = YES;
