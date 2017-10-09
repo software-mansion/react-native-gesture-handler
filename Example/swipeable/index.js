@@ -1,83 +1,38 @@
 import React, { Component } from 'react';
-import { Alert, Animated, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { FlatList, RectButton } from 'react-native-gesture-handler';
 
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import AppleStyleSwipeableRow from './AppleStyleSwipeableRow';
+import GmailStyleSwipeableRow from './GmailStyleSwipeableRow';
 
-export class SwipeableRow extends Component {
-  renderLeftActions = (progress, dragX) => {
-    const trans = dragX.interpolate({
-      inputRange: [0, 50, 100, 101],
-      outputRange: [-20, 0, 0, 1],
-    });
+const Row = ({ item }) => (
+  <RectButton style={styles.rectButton} onPress={() => Alert.alert(item.from)}>
+    <Text style={styles.fromText}>{item.from}</Text>
+    <Text numberOfLines={2} style={styles.messageText}>
+      {item.message}
+    </Text>
+    <Text style={styles.dateText}>
+      {item.when} {'❭'}
+    </Text>
+  </RectButton>
+);
+
+const SwipeableRow = ({ item, index }) => {
+  if (index % 2 === 0) {
     return (
-      <RectButton style={styles.leftActionArchive} onPress={this.close}>
-        <Animated.Text
-          style={[
-            styles.actionText,
-            {
-              transform: [{ translateX: trans }],
-            },
-          ]}>
-          Archive
-        </Animated.Text>
-      </RectButton>
+      <AppleStyleSwipeableRow>
+        <Row item={item} />
+      </AppleStyleSwipeableRow>
     );
-  };
-  renderRightAction = (text, color, x, progress) => {
-    const trans = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [x, 0],
-    });
+  } else {
     return (
-      <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
-        <RectButton
-          style={[styles.rightAction, { backgroundColor: color }]}
-          onPress={this.close}>
-          <Text style={styles.actionText}>{text}</Text>
-        </RectButton>
-      </Animated.View>
-    );
-  };
-  renderRightActions = progress => (
-    <View style={{ width: 192, flexDirection: 'row' }}>
-      {this.renderRightAction('More', '#C8C7CD', 192, progress)}
-      {this.renderRightAction('Flag', '#E49B26', 128, progress)}
-      {this.renderRightAction('More', '#D95139', 64, progress)}
-    </View>
-  );
-  updateRef = ref => {
-    this._swipeableRow = ref;
-  };
-  close = () => {
-    this._swipeableRow.close();
-  };
-  render() {
-    const { item } = this.props;
-    return (
-      <Swipeable
-        ref={this.updateRef}
-        friction={2}
-        leftThreshold={30}
-        rightThreshold={40}
-        renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}>
-        <RectButton
-          style={styles.rectButton}
-          onPress={() => Alert.alert(item.from)}>
-          <Text style={styles.fromText}>{item.from}</Text>
-          <Text numberOfLines={2} style={styles.messageText}>
-            {item.message}
-          </Text>
-          <Text style={styles.dateText}>
-            {item.when} {'❭'}
-          </Text>
-        </RectButton>
-      </Swipeable>
+      <GmailStyleSwipeableRow>
+        <Row item={item} />
+      </GmailStyleSwipeableRow>
     );
   }
-}
+};
 
 export default class Example extends Component {
   render() {
@@ -85,7 +40,9 @@ export default class Example extends Component {
       <FlatList
         data={DATA}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        renderItem={({ item }) => <SwipeableRow item={item} />}
+        renderItem={({ item, index }) => (
+          <SwipeableRow item={item} index={index} />
+        )}
         keyExtractor={(item, index) => index}
       />
     );
@@ -121,22 +78,6 @@ const styles = StyleSheet.create({
     top: 10,
     color: '#999',
     fontWeight: 'bold',
-  },
-  leftActionArchive: {
-    flex: 1,
-    backgroundColor: '#497AFC',
-    justifyContent: 'center',
-  },
-  actionText: {
-    color: 'white',
-    fontSize: 16,
-    backgroundColor: 'transparent',
-    padding: 10,
-  },
-  rightAction: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
   },
 });
 
