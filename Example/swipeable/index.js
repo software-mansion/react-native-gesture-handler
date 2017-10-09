@@ -45,8 +45,8 @@ export class SwipeableRow extends Component {
       dragX,
       rowTranslation,
       leftWidth = 1,
-      rowWidth = 2,
-      rightOffset = 1,
+      rowWidth = 1,
+      rightOffset = 0,
     } = state;
     const rightWidth = Math.max(0, rowWidth - rightOffset);
 
@@ -62,7 +62,7 @@ export class SwipeableRow extends Component {
       outputRange: [0, 0, 1],
     });
     this._leftActionOpacity = this._showLeftAction.interpolate({
-      inputRange: [0, 0.1],
+      inputRange: [0, Number.MIN_VALUE],
       outputRange: [0, 1],
     });
     this._showRightAction = this._transX.interpolate({
@@ -70,7 +70,7 @@ export class SwipeableRow extends Component {
       outputRange: [1, 0, 0],
     });
     this._rightActionOpacity = this._showRightAction.interpolate({
-      inputRange: [0, 0.1],
+      inputRange: [0, Number.MIN_VALUE],
       outputRange: [0, 1],
     });
     this._onGestureEvent = Animated.event(
@@ -140,14 +140,6 @@ export class SwipeableRow extends Component {
     }).start();
   };
 
-  _onLeftSpacerLayout = ({ nativeEvent }) => {
-    this.setState({ leftWidth: nativeEvent.layout.x });
-  };
-
-  _onRightSpacerLayout = ({ nativeEvent }) => {
-    this.setState({ rightOffset: nativeEvent.layout.x });
-  };
-
   _onRowLayout = ({ nativeEvent }) => {
     this.setState({ rowWidth: nativeEvent.layout.width });
   };
@@ -170,32 +162,44 @@ export class SwipeableRow extends Component {
   render() {
     const { rowState } = this.state;
     const { children, renderLeftActions, renderRightActions } = this.props;
+
+    const left = renderLeftActions && (
+      <Animated.View
+        pointerEvents={rowState === 1 ? 'auto' : 'none'}
+        style={[styles.leftActions, { opacity: this._leftActionOpacity }]}>
+        {renderLeftActions(this._showLeftAction, this._transX)}
+        <View
+          onLayout={({ nativeEvent }) =>
+            this.setState({ leftWidth: nativeEvent.layout.x })}
+        />
+      </Animated.View>
+    );
+
+    const right = renderRightActions && (
+      <Animated.View
+        pointerEvents={rowState === -1 ? 'auto' : 'none'}
+        style={[styles.rightActions, { opacity: this._rightActionOpacity }]}>
+        {renderRightActions(this._showRightAction, this._transX)}
+        <View
+          onLayout={({ nativeEvent }) =>
+            this.setState({ rightOffset: nativeEvent.layout.x })}
+        />
+      </Animated.View>
+    );
+
     return (
       <PanGestureHandler
         {...this.props}
-        minDeltaX={10}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}>
         <Animated.View onLayout={this._onRowLayout}>
-          <Animated.View
-            pointerEvents={rowState === 1 ? 'auto' : 'none'}
-            style={[styles.leftActions, { opacity: this._leftActionOpacity }]}>
-            {renderLeftActions && renderLeftActions(this._showLeftAction)}
-            <View onLayout={this._onLeftSpacerLayout} />
-          </Animated.View>
-          <Animated.View
-            pointerEvents={rowState === -1 ? 'auto' : 'none'}
-            style={[
-              styles.rightActions,
-              { opacity: this._rightActionOpacity },
-            ]}>
-            {renderRightActions && renderRightActions(this._showRightAction)}
-            <View onLayout={this._onRightSpacerLayout} />
-          </Animated.View>
+          {left}
+          {right}
           <TapGestureHandler
-            enabled={false}
+            enabled={rowState !== 0}
             onHandlerStateChange={this._onTapHandlerStateChange}>
             <Animated.View
+              pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
               style={{
                 overflow: 'hidden',
                 transform: [{ translateX: this._transX }],
@@ -210,38 +214,108 @@ export class SwipeableRow extends Component {
 }
 
 export class Swipeable extends Component {
-  renderLeftActions = value => {
-    return (
-      <View
-        style={{
-          width: 90,
-          backgroundColor: 'blue',
-          justifyContent: 'center',
-        }}>
-        <Animated.View
-          style={{
-            width: 30,
-            height: 30,
-            backgroundColor: 'red',
-            margin: 5,
-            opacity: value,
-          }}
-        />
-      </View>
-    );
-    // <RectButton
-    //   style={[styles.rowAction, styles.leftAction]}
-    //   onPress={this.close}>
-    //   <Text style={styles.actionButtonText}>Green</Text>
-    // </RectButton>
-  };
-  renderRightActions = () => {
+  renderLeftActions = (progress, dragX) => {
+    const trans = dragX.interpolate({
+      inputRange: [0, 50, 100, 101],
+      outputRange: [-20, 0, 0, 1],
+    });
     return (
       <RectButton
-        style={[styles.rowAction, styles.rightAction]}
+        style={{
+          flex: 1,
+          backgroundColor: '#497AFC',
+          justifyContent: 'center',
+        }}
         onPress={this.close}>
-        <Text style={styles.actionButtonText}>Red</Text>
+        <Animated.Text
+          style={{
+            color: 'white',
+            fontSize: 16,
+            backgroundColor: 'transparent',
+            padding: 10,
+            transform: [{ translateX: trans }],
+          }}>
+          Archive
+        </Animated.Text>
       </RectButton>
+    );
+  };
+  renderRightActions = progress => {
+    const t1 = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [64, 0],
+    });
+    const t2 = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [128, 0],
+    });
+    const t3 = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [192, 0],
+    });
+    return (
+      <View style={{ width: 192, flexDirection: 'row' }}>
+        <Animated.View style={{ flex: 1, transform: [{ translateX: t3 }] }}>
+          <RectButton
+            style={{
+              alignItems: 'center',
+              flex: 1,
+              backgroundColor: '#C8C7CD',
+              justifyContent: 'center',
+            }}
+            onPress={this.close}>
+            <Text
+              style={{
+                color: 'white',
+                backgroundColor: 'transparent',
+                fontSize: 16,
+                padding: 10,
+              }}>
+              More
+            </Text>
+          </RectButton>
+        </Animated.View>
+        <Animated.View style={{ flex: 1, transform: [{ translateX: t2 }] }}>
+          <RectButton
+            style={{
+              flex: 1,
+              backgroundColor: '#E49B26',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onPress={this.close}>
+            <Text
+              style={{
+                backgroundColor: 'transparent',
+                color: 'white',
+                fontSize: 16,
+                padding: 10,
+              }}>
+              Flag
+            </Text>
+          </RectButton>
+        </Animated.View>
+        <Animated.View style={{ flex: 1, transform: [{ translateX: t1 }] }}>
+          <RectButton
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              backgroundColor: '#D95139',
+              justifyContent: 'center',
+            }}
+            onPress={this.close}>
+            <Text
+              style={{
+                color: 'white',
+                backgroundColor: 'transparent',
+                fontSize: 16,
+                padding: 10,
+              }}>
+              Trash
+            </Text>
+          </RectButton>
+        </Animated.View>
+      </View>
     );
   };
   updateRef = ref => {
@@ -255,9 +329,9 @@ export class Swipeable extends Component {
     return (
       <SwipeableRow
         ref={this.updateRef}
-        friction={3}
+        friction={2}
         leftThreshold={30}
-        rightThreshold={10}
+        rightThreshold={40}
         renderLeftActions={this.renderLeftActions}
         renderRightActions={this.renderRightActions}>
         {children}

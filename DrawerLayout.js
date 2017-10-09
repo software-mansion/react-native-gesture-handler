@@ -144,11 +144,11 @@ export default class DrawerLayout extends Component {
       touchXValue.setValue(0);
     }
 
-    // When closing drawer and user starts gesture outside of the drawer (in greyed
-    // out area), we want the drawer to follow only once finger reaches the edge of the
-    // drawer.
-    // E.g. imagine that the revealed drawer is illustrate by X and the greyed out area by
-    // dots. The touch gesture starts at '*' and moves left and its path is indicated by
+    // While closing the drawer when user starts gesture outside of its area (in greyed
+    // out part of the window), we want the drawer to follow only once finger reaches the
+    // edge of the drawer.
+    // E.g. on the diagram below drawer is illustrate by X signs and the greyed out area by
+    // dots. The touch gesture starts at '*' and moves left, touch path is indicated by
     // an arrow pointing left
     // 1) +---------------+ 2) +---------------+ 3) +---------------+ 4) +---------------+
     //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
