@@ -20,6 +20,8 @@ export type PropType = {
   friction?: number,
   leftThreshold?: number,
   rightThreshold?: number,
+  overshootLeft?: boolean,
+  overshootRight?: boolean,
   onSwipeableLeftOpen?: Function,
   onSwipeableRightOpen?: Function,
   onSwipeableOpen?: Function,
@@ -54,6 +56,8 @@ export default class Swipeable extends Component {
   componentWillUpdate(props, state) {
     if (
       this.props.friction !== props.friction ||
+      this.props.overshootLeft !== props.overshootLeft ||
+      this.props.overshootRight !== props.overshootRight ||
       this.state.leftWidth !== state.leftWidth ||
       this.state.rightOffset !== state.rightOffset ||
       this.state.rowWidth !== state.rowWidth
@@ -64,14 +68,14 @@ export default class Swipeable extends Component {
 
   _updateAnimatedEvent = (props, state) => {
     const { friction, useNativeAnimations } = props;
-    const {
-      dragX,
-      rowTranslation,
-      leftWidth = 1,
-      rowWidth = 1,
-      rightOffset = 0,
-    } = state;
+    const { dragX, rowTranslation, leftWidth = 0, rowWidth = 0 } = state;
+    const { rightOffset = rowWidth } = this.state;
     const rightWidth = Math.max(0, rowWidth - rightOffset);
+
+    const {
+      overshootLeft = leftWidth > 0,
+      overshootRight = rightWidth > 0,
+    } = props;
 
     this._transX = Animated.add(
       rowTranslation,
@@ -79,7 +83,15 @@ export default class Swipeable extends Component {
         inputRange: [0, friction],
         outputRange: [0, 1],
       })
-    );
+    ).interpolate({
+      inputRange: [-rightWidth - 1, -rightWidth, leftWidth, leftWidth + 1],
+      outputRange: [
+        -rightWidth - (overshootRight ? 1 : 0),
+        -rightWidth,
+        leftWidth,
+        leftWidth + (overshootLeft ? 1 : 0),
+      ],
+    });
     this._showLeftAction = this._transX.interpolate({
       inputRange: [-1, 0, leftWidth],
       outputRange: [0, 0, 1],
@@ -116,7 +128,8 @@ export default class Swipeable extends Component {
 
   _handleRelease = nativeEvent => {
     const { velocityX, translationX: dragX } = nativeEvent;
-    const { leftWidth, rowWidth, rightOffset, rowState } = this.state;
+    const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
+    const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
     const {
       friction,
@@ -182,7 +195,8 @@ export default class Swipeable extends Component {
   };
 
   _currentOffset = () => {
-    const { leftWidth, rowWidth, rightOffset, rowState } = this.state;
+    const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
+    const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
     if (rowState === 1) {
       return leftWidth;
