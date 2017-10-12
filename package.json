@@ -16,7 +16,9 @@
     "android/lib/src/main/java/",
     "ios/",
     "README.md",
-    "GestureHandler.js"
+    "GestureHandler.js",
+    "Swipeable.js",
+    "DrawerLayout.js"
   ],
   "repository": {
     "type": "git",
