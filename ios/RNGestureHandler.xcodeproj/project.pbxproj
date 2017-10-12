@@ -14,6 +14,24 @@
 		446E7FF81ED89A4B009282E7 /* RNGestureHandlerEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 446E7FF71ED89A4B009282E7 /* RNGestureHandlerEvents.m */; };
 		448802DD1F6803DF00018214 /* RNGestureHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 448802DB1F6803DF00018214 /* RNGestureHandler.h */; };
 		448802DE1F6803DF00018214 /* RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 448802DC1F6803DF00018214 /* RNGestureHandler.m */; };
+		44AEC7111F8F9B6C0086889F /* RNRootViewGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7101F8F9B6C0086889F /* RNRootViewGestureRecognizer.h */; };
+		44AEC7131F8F9B770086889F /* RNRootViewGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7121F8F9B770086889F /* RNRootViewGestureRecognizer.m */; };
+		44AEC7151F8F9BEF0086889F /* RNGestureHandlerRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7141F8F9BEF0086889F /* RNGestureHandlerRegistry.h */; };
+		44AEC7171F8F9C090086889F /* RNGestureHandlerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7161F8F9C090086889F /* RNGestureHandlerRegistry.m */; };
+		44AEC71F1F8FA0700086889F /* RNGestureHandlerButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC71D1F8FA0700086889F /* RNGestureHandlerButton.h */; };
+		44AEC7201F8FA0700086889F /* RNGestureHandlerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC71E1F8FA0700086889F /* RNGestureHandlerButton.m */; };
+		44AEC72F1F8FA1270086889F /* RNLongPressHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7231F8FA1270086889F /* RNLongPressHandler.h */; };
+		44AEC7301F8FA1270086889F /* RNLongPressHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7241F8FA1270086889F /* RNLongPressHandler.m */; };
+		44AEC7311F8FA1270086889F /* RNNativeViewHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7251F8FA1270086889F /* RNNativeViewHandler.h */; };
+		44AEC7321F8FA1270086889F /* RNNativeViewHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7261F8FA1270086889F /* RNNativeViewHandler.m */; };
+		44AEC7331F8FA1270086889F /* RNPanHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7271F8FA1270086889F /* RNPanHandler.h */; };
+		44AEC7341F8FA1270086889F /* RNPanHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7281F8FA1270086889F /* RNPanHandler.m */; };
+		44AEC7351F8FA1270086889F /* RNPinchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7291F8FA1270086889F /* RNPinchHandler.h */; };
+		44AEC7361F8FA1270086889F /* RNPinchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC72A1F8FA1270086889F /* RNPinchHandler.m */; };
+		44AEC7371F8FA1270086889F /* RNRotationHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC72B1F8FA1270086889F /* RNRotationHandler.h */; };
+		44AEC7381F8FA1270086889F /* RNRotationHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC72C1F8FA1270086889F /* RNRotationHandler.m */; };
+		44AEC7391F8FA1270086889F /* RNTapHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC72D1F8FA1270086889F /* RNTapHandler.h */; };
+		44AEC73A1F8FA1270086889F /* RNTapHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC72E1F8FA1270086889F /* RNTapHandler.m */; };
 		44BE34481F1E1AAA008679D1 /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */; };
 		44BE344A1F1E1ABA008679D1 /* RNGestureHandlerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 44BE34491F1E1ABA008679D1 /* RNGestureHandlerManager.h */; };
 /* End PBXBuildFile section */
@@ -39,6 +57,24 @@
 		446E7FF71ED89A4B009282E7 /* RNGestureHandlerEvents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerEvents.m; sourceTree = "<group>"; };
 		448802DB1F6803DF00018214 /* RNGestureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandler.h; sourceTree = "<group>"; };
 		448802DC1F6803DF00018214 /* RNGestureHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandler.m; sourceTree = "<group>"; };
+		44AEC7101F8F9B6C0086889F /* RNRootViewGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNRootViewGestureRecognizer.h; sourceTree = "<group>"; };
+		44AEC7121F8F9B770086889F /* RNRootViewGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNRootViewGestureRecognizer.m; sourceTree = "<group>"; };
+		44AEC7141F8F9BEF0086889F /* RNGestureHandlerRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerRegistry.h; sourceTree = "<group>"; };
+		44AEC7161F8F9C090086889F /* RNGestureHandlerRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerRegistry.m; sourceTree = "<group>"; };
+		44AEC71D1F8FA0700086889F /* RNGestureHandlerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerButton.h; sourceTree = "<group>"; };
+		44AEC71E1F8FA0700086889F /* RNGestureHandlerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerButton.m; sourceTree = "<group>"; };
+		44AEC7231F8FA1270086889F /* RNLongPressHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNLongPressHandler.h; path = Handlers/RNLongPressHandler.h; sourceTree = "<group>"; };
+		44AEC7241F8FA1270086889F /* RNLongPressHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNLongPressHandler.m; path = Handlers/RNLongPressHandler.m; sourceTree = "<group>"; };
+		44AEC7251F8FA1270086889F /* RNNativeViewHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNNativeViewHandler.h; path = Handlers/RNNativeViewHandler.h; sourceTree = "<group>"; };
+		44AEC7261F8FA1270086889F /* RNNativeViewHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNNativeViewHandler.m; path = Handlers/RNNativeViewHandler.m; sourceTree = "<group>"; };
+		44AEC7271F8FA1270086889F /* RNPanHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNPanHandler.h; path = Handlers/RNPanHandler.h; sourceTree = "<group>"; };
+		44AEC7281F8FA1270086889F /* RNPanHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNPanHandler.m; path = Handlers/RNPanHandler.m; sourceTree = "<group>"; };
+		44AEC7291F8FA1270086889F /* RNPinchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNPinchHandler.h; path = Handlers/RNPinchHandler.h; sourceTree = "<group>"; };
+		44AEC72A1F8FA1270086889F /* RNPinchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNPinchHandler.m; path = Handlers/RNPinchHandler.m; sourceTree = "<group>"; };
+		44AEC72B1F8FA1270086889F /* RNRotationHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNRotationHandler.h; path = Handlers/RNRotationHandler.h; sourceTree = "<group>"; };
+		44AEC72C1F8FA1270086889F /* RNRotationHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNRotationHandler.m; path = Handlers/RNRotationHandler.m; sourceTree = "<group>"; };
+		44AEC72D1F8FA1270086889F /* RNTapHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNTapHandler.h; path = Handlers/RNTapHandler.h; sourceTree = "<group>"; };
+		44AEC72E1F8FA1270086889F /* RNTapHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNTapHandler.m; path = Handlers/RNTapHandler.m; sourceTree = "<group>"; };
 		44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerManager.m; sourceTree = "<group>"; };
 		44BE34491F1E1ABA008679D1 /* RNGestureHandlerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -62,9 +98,33 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		44AEC7221F8FA1150086889F /* Handlers */ = {
+			isa = PBXGroup;
+			children = (
+				44AEC7231F8FA1270086889F /* RNLongPressHandler.h */,
+				44AEC7241F8FA1270086889F /* RNLongPressHandler.m */,
+				44AEC7251F8FA1270086889F /* RNNativeViewHandler.h */,
+				44AEC7261F8FA1270086889F /* RNNativeViewHandler.m */,
+				44AEC7271F8FA1270086889F /* RNPanHandler.h */,
+				44AEC7281F8FA1270086889F /* RNPanHandler.m */,
+				44AEC7291F8FA1270086889F /* RNPinchHandler.h */,
+				44AEC72A1F8FA1270086889F /* RNPinchHandler.m */,
+				44AEC72B1F8FA1270086889F /* RNRotationHandler.h */,
+				44AEC72C1F8FA1270086889F /* RNRotationHandler.m */,
+				44AEC72D1F8FA1270086889F /* RNTapHandler.h */,
+				44AEC72E1F8FA1270086889F /* RNTapHandler.m */,
+			);
+			name = Handlers;
+			sourceTree = "<group>";
+		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				44AEC7221F8FA1150086889F /* Handlers */,
+				44AEC7161F8F9C090086889F /* RNGestureHandlerRegistry.m */,
+				44AEC7141F8F9BEF0086889F /* RNGestureHandlerRegistry.h */,
+				44AEC7121F8F9B770086889F /* RNRootViewGestureRecognizer.m */,
+				44AEC7101F8F9B6C0086889F /* RNRootViewGestureRecognizer.h */,
 				448802DB1F6803DF00018214 /* RNGestureHandler.h */,
 				448802DC1F6803DF00018214 /* RNGestureHandler.m */,
 				44BE34491F1E1ABA008679D1 /* RNGestureHandlerManager.h */,
@@ -74,6 +134,8 @@
 				446E7FDC1ED57CA6009282E7 /* RNGestureHandlerModule.h */,
 				446E7FDD1ED57CA6009282E7 /* RNGestureHandlerModule.m */,
 				44384A781ECDE0DB006BAD02 /* RNGestureHandlerState.h */,
+				44AEC71D1F8FA0700086889F /* RNGestureHandlerButton.h */,
+				44AEC71E1F8FA0700086889F /* RNGestureHandlerButton.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,11 +147,20 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44AEC72F1F8FA1270086889F /* RNLongPressHandler.h in Headers */,
 				446E7FE61ED6E177009282E7 /* RNGestureHandlerModule.h in Headers */,
+				44AEC7351F8FA1270086889F /* RNPinchHandler.h in Headers */,
+				44AEC7151F8F9BEF0086889F /* RNGestureHandlerRegistry.h in Headers */,
 				448802DD1F6803DF00018214 /* RNGestureHandler.h in Headers */,
+				44AEC7371F8FA1270086889F /* RNRotationHandler.h in Headers */,
+				44AEC7331F8FA1270086889F /* RNPanHandler.h in Headers */,
 				44BE344A1F1E1ABA008679D1 /* RNGestureHandlerManager.h in Headers */,
 				446E7FF61ED89A31009282E7 /* RNGestureHandlerEvents.h in Headers */,
+				44AEC7391F8FA1270086889F /* RNTapHandler.h in Headers */,
+				44AEC7111F8F9B6C0086889F /* RNRootViewGestureRecognizer.h in Headers */,
+				44AEC7311F8FA1270086889F /* RNNativeViewHandler.h in Headers */,
 				446E7FE71ED6E177009282E7 /* RNGestureHandlerState.h in Headers */,
+				44AEC71F1F8FA0700086889F /* RNGestureHandlerButton.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,10 +221,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44AEC7201F8FA0700086889F /* RNGestureHandlerButton.m in Sources */,
 				44BE34481F1E1AAA008679D1 /* RNGestureHandlerManager.m in Sources */,
+				44AEC7301F8FA1270086889F /* RNLongPressHandler.m in Sources */,
 				446E7FF81ED89A4B009282E7 /* RNGestureHandlerEvents.m in Sources */,
+				44AEC7341F8FA1270086889F /* RNPanHandler.m in Sources */,
+				44AEC7171F8F9C090086889F /* RNGestureHandlerRegistry.m in Sources */,
 				448802DE1F6803DF00018214 /* RNGestureHandler.m in Sources */,
+				44AEC73A1F8FA1270086889F /* RNTapHandler.m in Sources */,
 				446E7FDE1ED57CA6009282E7 /* RNGestureHandlerModule.m in Sources */,
+				44AEC7381F8FA1270086889F /* RNRotationHandler.m in Sources */,
+				44AEC7321F8FA1270086889F /* RNNativeViewHandler.m in Sources */,
+				44AEC7131F8F9B770086889F /* RNRootViewGestureRecognizer.m in Sources */,
+				44AEC7361F8FA1270086889F /* RNPinchHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
