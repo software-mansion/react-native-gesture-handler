@@ -51,6 +51,11 @@ export default class Swipeable extends Component {
     const rowTranslation = new Animated.Value(0);
     this.state = { dragX, rowTranslation, rowState: 0 };
     this._updateAnimatedEvent(props, this.state);
+
+    this._onGestureEvent = Animated.event(
+      [{ nativeEvent: { translationX: dragX } }],
+      { useNativeDriver: props.useNativeAnimations }
+    );
   }
 
   componentWillUpdate(props, state) {
@@ -95,23 +100,23 @@ export default class Swipeable extends Component {
     this._showLeftAction = this._transX.interpolate({
       inputRange: [-1, 0, leftWidth],
       outputRange: [0, 0, 1],
+      extrapolate: 'clamp',
     });
-    this._leftActionOpacity = this._showLeftAction.interpolate({
+    this._leftActionTranslate = this._showLeftAction.interpolate({
       inputRange: [0, Number.MIN_VALUE],
-      outputRange: [0, 1],
+      outputRange: [-10000, 0],
+      extrapolate: 'clamp',
     });
     this._showRightAction = this._transX.interpolate({
       inputRange: [-rightWidth, 0, 1],
       outputRange: [1, 0, 0],
+      extrapolate: 'clamp',
     });
-    this._rightActionOpacity = this._showRightAction.interpolate({
+    this._rightActionTranslate = this._showRightAction.interpolate({
       inputRange: [0, Number.MIN_VALUE],
-      outputRange: [0, 1],
+      outputRange: [-10000, 0],
+      extrapolate: 'clamp',
     });
-    this._onGestureEvent = Animated.event(
-      [{ nativeEvent: { translationX: this.state.dragX } }],
-      { useNativeDriver: useNativeAnimations }
-    );
   };
 
   _onTapHandlerStateChange = ({ nativeEvent }) => {
@@ -159,7 +164,7 @@ export default class Swipeable extends Component {
       }
     }
 
-    this._animateRow(startOffsetX, toValue, velocityX);
+    this._animateRow(startOffsetX, toValue, velocityX / friction);
   };
 
   _animateRow = (fromValue, toValue, velocityX) => {
@@ -216,8 +221,10 @@ export default class Swipeable extends Component {
 
     const left = renderLeftActions && (
       <Animated.View
-        pointerEvents={rowState === 1 ? 'auto' : 'none'}
-        style={[styles.leftActions, { opacity: this._leftActionOpacity }]}>
+        style={[
+          styles.leftActions,
+          { transform: [{ translateX: this._leftActionTranslate }] },
+        ]}>
         {renderLeftActions(this._showLeftAction, this._transX)}
         <View
           onLayout={({ nativeEvent }) =>
@@ -228,8 +235,10 @@ export default class Swipeable extends Component {
 
     const right = renderRightActions && (
       <Animated.View
-        pointerEvents={rowState === -1 ? 'auto' : 'none'}
-        style={[styles.rightActions, { opacity: this._rightActionOpacity }]}>
+        style={[
+          styles.rightActions,
+          { transform: [{ translateX: this._rightActionTranslate }] },
+        ]}>
         {renderRightActions(this._showRightAction, this._transX)}
         <View
           onLayout={({ nativeEvent }) =>
@@ -244,7 +253,7 @@ export default class Swipeable extends Component {
         minDeltaX={10}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}>
-        <Animated.View onLayout={this._onRowLayout}>
+        <Animated.View onLayout={this._onRowLayout} style={styles.container}>
           {left}
           {right}
           <TapGestureHandler
@@ -253,7 +262,6 @@ export default class Swipeable extends Component {
             <Animated.View
               pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
               style={{
-                overflow: 'hidden',
                 transform: [{ translateX: this._transX }],
               }}>
               {children}
@@ -266,6 +274,9 @@ export default class Swipeable extends Component {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    overflow: 'hidden',
+  },
   leftActions: {
     ...StyleSheet.absoluteFillObject,
     flexDirection: 'row',
