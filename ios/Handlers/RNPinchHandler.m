@@ -8,8 +8,6 @@
 
 #import "RNPinchHandler.h"
 
-#import <UIKit/UIGestureRecognizer.h>
-
 @implementation RNPinchGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag

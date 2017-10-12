@@ -8,7 +8,6 @@
 
 #import "RNLongPressHandler.h"
 
-#import <UIKit/UIGestureRecognizer.h>
 #import <React/RCTConvert.h>
 
 @implementation RNLongPressGestureHandler

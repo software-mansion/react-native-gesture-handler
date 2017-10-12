@@ -8,8 +8,6 @@
 
 #import "RNGestureHandler.h"
 
-#import <UIKit/UIGestureRecognizer.h>
-
 @interface RNDummyGestureRecognizer : UIGestureRecognizer
 @end
 

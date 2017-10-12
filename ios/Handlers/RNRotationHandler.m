@@ -8,8 +8,6 @@
 
 #import "RNRotationHandler.h"
 
-#import <UIKit/UIGestureRecognizer.h>
-
 @implementation RNRotationGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag

@@ -38,7 +38,7 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 @end
 
 
-@interface RNGestureHandler : NSObject {
+@interface RNGestureHandler : NSObject <UIGestureRecognizerDelegate> {
 
 @protected UIGestureRecognizer *_recognizer;
 @protected RNGestureHandlerState _lastState;
