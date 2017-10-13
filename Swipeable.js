@@ -74,7 +74,7 @@ export default class Swipeable extends Component {
   _updateAnimatedEvent = (props, state) => {
     const { friction, useNativeAnimations } = props;
     const { dragX, rowTranslation, leftWidth = 0, rowWidth = 0 } = state;
-    const { rightOffset = rowWidth } = this.state;
+    const { rightOffset = rowWidth } = state;
     const rightWidth = Math.max(0, rowWidth - rightOffset);
 
     const {
