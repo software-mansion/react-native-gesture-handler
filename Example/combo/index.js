@@ -18,7 +18,7 @@ import {
   RectButton,
 } from 'react-native-gesture-handler';
 
-import { Swipeable, InfoButton } from '../swipeable';
+import { Swipeable, InfoButton } from '../rows';
 import { DraggableBox } from '../draggable';
 import { PinchableBox } from '../scaleAndRotate';
 import { PressBox } from '../multitap';
