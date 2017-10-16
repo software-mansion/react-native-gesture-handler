@@ -222,12 +222,36 @@ function createHandler(handlerName, propTypes = null, config = {}) {
           );
         }
       }
+
+      let gestureStateEventHandler = this._onGestureHandlerStateChange;
+      const { onHandlerStateChange, onGestureHandlerStateChange } = this.props;
+      if (onHandlerStateChange && typeof onHandlerStateChange !== 'function') {
+        // If it's not a method it should be an native Animated.event
+        // object. We set it directly as the handler for the view
+        // In this case nested handlers are not going to be supported
+        if (onGestureHandlerStateChange) {
+          throw new Error(
+            'Nesting touch handlers with native animated driver is not supported yet'
+          );
+        }
+        gestureStateEventHandler = this.props.onHandlerStateChange;
+      } else {
+        if (
+          onGestureHandlerStateChange &&
+          typeof onGestureHandlerStateChange !== 'function'
+        ) {
+          throw new Error(
+            'Nesting touch handlers with native animated driver is not supported yet'
+          );
+        }
+      }
+
       const child = React.Children.only(this.props.children);
       return React.cloneElement(child, {
         ref: this._refHandler,
         collapsable: false,
         onGestureHandlerEvent: gestureEventHandler,
-        onGestureHandlerStateChange: this._onGestureHandlerStateChange,
+        onGestureHandlerStateChange: gestureStateEventHandler,
       });
     }
   }
@@ -276,36 +300,29 @@ const PanGestureHandler = createHandler(
 const PinchGestureHandler = createHandler('PinchGestureHandler', {}, {});
 const RotationGestureHandler = createHandler('RotationGestureHandler', {}, {});
 
+const NATIVE_WRAPPER_BIND_BLACKLIST = new Set(['replaceState', 'isMounted']);
+const NATIVE_WRAPPER_PROPS_FILTER = {
+  // accept all gesture handler prop types plus native wrapper specific ones
+  ...NativeViewGestureHandler.propTypes,
+  // we want to pass gesture event handlers if registered
+  onGestureHandlerEvent: PropTypes.func,
+  onGestureHandlerStateChange: PropTypes.func,
+};
+
 function createNativeWrapper(Component, config = {}) {
   class ComponentWrapper extends React.Component {
     static propTypes = {
-      ...NativeViewGestureHandler.propTypes,
       ...Component.propTypes,
     };
 
-    constructor(props) {
-      super(props);
-      this._handlerTag = handlerTag++;
-      this._config = {};
-      if (props.id) {
-        if (handlerIDToTag[props.id] !== undefined) {
-          throw new Error(`Handler with ID "${props.id}" already registered`);
-        }
-        handlerIDToTag[props.id] = this._handlerTag;
-      }
-    }
-
     _refHandler = node => {
-      this._viewNode = node;
-
       // bind native component's methods
       for (let methodName in node) {
-        if (methodName === 'replaceState' || methodName === 'isMounted') {
-          continue;
-        }
         const method = node[methodName];
         if (
-          !methodName.startsWith('_') &&
+          !methodName.startsWith('_') && // private methods
+          !methodName.startsWith('component') && // lifecycle methods
+          !NATIVE_WRAPPER_BIND_BLACKLIST.has(methodName) && // other
           typeof method === 'function' &&
           this[methodName] === undefined
         ) {
@@ -314,62 +331,21 @@ function createNativeWrapper(Component, config = {}) {
       }
     };
 
-    componentWillUnmount() {
-      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
-      if (this.props.id) {
-        delete handlerIDToTag[this.props.id];
-      }
-    }
-
-    componentDidMount() {
-      this._viewTag = findNodeHandle(this._viewNode);
-      this._config = filterConfig(
-        this.props,
-        NativeViewGestureHandler.propTypes,
-        config
-      );
-      RNGestureHandlerModule.createGestureHandler(
-        'NativeViewGestureHandler',
-        this._handlerTag,
-        this._config
-      );
-      RNGestureHandlerModule.attachGestureHandler(
-        this._handlerTag,
-        this._viewTag
-      );
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-      const viewTag = findNodeHandle(this._viewNode);
-      if (this._viewTag !== viewTag) {
-        this._viewTag = viewTag;
-        RNGestureHandlerModule.attachGestureHandler(this._handlerTag, viewTag);
-      }
-
-      const newConfig = filterConfig(
-        this.props,
-        NativeViewGestureHandler.propTypes,
-        config
-      );
-      if (!deepEqual(this._config, newConfig)) {
-        this._config = newConfig;
-        RNGestureHandlerModule.updateGestureHandler(
-          viewTag,
-          this._handlerTag,
-          this._config
-        );
-      }
-    }
-
     render() {
-      const { onGestureEvent, onHandlerStateChange, ...rest } = this.props;
+      // filter out props that should be passed to gesture handler wrapper
+      const gestureHandlerProps = Object.keys(this.props).reduce(
+        (props, key) => {
+          if (key in NATIVE_WRAPPER_PROPS_FILTER) {
+            props[key] = this.props[key];
+          }
+          return props;
+        },
+        { ...config } // watch out not to modify config
+      );
       return (
-        <Component
-          {...rest}
-          onGestureHandlerEvent={onGestureEvent}
-          onGestureHandlerStateChange={onHandlerStateChange}
-          ref={this._refHandler}
-        />
+        <NativeViewGestureHandler {...gestureHandlerProps}>
+          <Component {...this.props} ref={this._refHandler} />
+        </NativeViewGestureHandler>
       );
     }
   }
