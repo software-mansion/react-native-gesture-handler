@@ -2,13 +2,9 @@ package com.swmansion.gesturehandler.react;
 
 import android.util.SparseArray;
 import android.view.View;
-import android.view.ViewGroup;
 
-import com.facebook.react.uimanager.ReactPointerEventsView;
-import com.facebook.react.views.view.ReactViewGroup;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerRegistry;
-import com.swmansion.gesturehandler.PointerEvents;
 
 import java.util.ArrayList;
 
