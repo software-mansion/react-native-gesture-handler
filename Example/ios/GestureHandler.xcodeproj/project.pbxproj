@@ -462,6 +462,7 @@
 			isa = PBXGroup;
 			children = (
 				F45F3123B97C4B01A0BBF800 /* libRNGestureHandler.a */,
+				4F1F27D7ACA64B05BF4E3D01 /* libRNVectorIcons.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
