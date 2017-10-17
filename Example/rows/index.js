@@ -184,13 +184,13 @@ export default class Example extends Component {
           <LongPressGestureHandler
             onHandlerStateChange={({ nativeEvent }) =>
               nativeEvent.state === State.ACTIVE && Alert.alert('Long')}>
-            <BaseButton
+            <RectButton
               style={styles.rectButton}
               onPress={() => Alert.alert('Fifth row clicked')}>
               <Text style={styles.buttonText}>
                 Clickable row with long press handler
               </Text>
-            </BaseButton>
+            </RectButton>
           </LongPressGestureHandler>
           <LoremIpsum />
         </ScrollView>
