@@ -5,7 +5,7 @@
 // to move faster and fix possible issues quicker
 
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View, Keyboard, StatusBar } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 
 import {
   PanGestureHandler,
