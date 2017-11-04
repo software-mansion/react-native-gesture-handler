@@ -314,8 +314,11 @@ public class GestureHandlerOrchestrator {
       outputCoords[1] = event.getY();
       return;
     }
-    if (view == null || !(view.getParent() instanceof ViewGroup)) {
-      throw new IllegalArgumentException("Parent is null? View is no longer in the tree");
+    if (!(view.getParent() instanceof ViewGroup)) {
+      return;
+    }
+    if (view == null) {
+      throw new IllegalArgumentException("View is no longer in the tree");
     }
     ViewGroup parent = (ViewGroup) view.getParent();
     extractCoordsForView(parent, event, outputCoords);
