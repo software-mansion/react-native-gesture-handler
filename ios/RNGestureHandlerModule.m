@@ -4,6 +4,7 @@
 #import <React/RCTViewManager.h>
 #import <React/RCTComponent.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
 #import "RNGestureHandlerState.h"
@@ -15,20 +16,6 @@
 @interface RNGestureHandlerModule () <RCTUIManagerObserver>
 
 @end
-
-
-@interface RNDummyViewManager : RCTViewManager
-@end
-
-@implementation RNDummyViewManager
-
-RCT_EXPORT_MODULE()
-
-RCT_EXPORT_VIEW_PROPERTY(onGestureHandlerEvent, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onGestureHandlerStateChange, RCTDirectEventBlock)
-
-@end
-
 
 @interface RNGestureHandlerButtonManager : RCTViewManager
 @end
@@ -179,4 +166,3 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
 
 
 @end
-

@@ -12,6 +12,18 @@ This library provides an API that exposes mobile platform specific native capabi
 
 ## Installation
 
+### Supported configurations
+
+Before instaling please check the following table to find which library version is compatible with React Native version you are using:
+
+ | React Native version | React Native Gesture Handler version | Notes |
+ | --- | --- | --- |
+ | v0.50+ | **latest** | |
+ | v0.47 - v0.49 | 1.0.0-alpha.29 | Breaking changes explained and fixed in [#44](https://github.com/kmagiera/react-native-gesture-handler/pull/44) |
+ | pre v0.47 | **Not supported** |
+
+
+
 I. First install the library from npm repository using `yarn`:
 ```bash
   yarn add react-native-gesture-handler
