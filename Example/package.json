@@ -7,20 +7,20 @@
     "test": "jest"
   },
   "dependencies": {
-    "react": "16.0.0",
-    "react-native": "^0.50.0",
+    "react": "^16.1.0",
+    "react-native": "^0.50.3",
     "react-native-gesture-handler": "file:../",
     "react-native-vector-icons": "^4.4.2",
-    "react-navigation": "^1.0.0-beta.13"
+    "react-navigation": "^1.0.0-beta.19"
   },
   "jest": {
     "preset": "react-native"
   },
   "devDependencies": {
-    "babel-jest": "20.0.3",
-    "babel-preset-react-native": "1.9.2",
-    "jest": "20.0.3",
-    "jest-react-native": "16.0.0",
-    "react-test-renderer": "16.0.0"
+    "babel-jest": "^21.2.0",
+    "babel-preset-react-native": "^4.0.0",
+    "jest": "^21.2.1",
+    "jest-react-native": "^18.0.0",
+    "react-test-renderer": "^16.1.0"
   }
 }
