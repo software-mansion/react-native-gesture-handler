@@ -7,6 +7,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 
@@ -35,7 +36,7 @@ public class RNGestureHandlerPackage implements ReactPackage {
 
     @Override
     public Class getShadowNodeClass() {
-      return ReactShadowNode.class;
+      return ReactShadowNodeImpl.class;
     }
 
     @Override
@@ -51,9 +52,9 @@ public class RNGestureHandlerPackage implements ReactPackage {
     public @Nullable Map getExportedCustomDirectEventTypeConstants() {
       return MapBuilder.of(
               RNGestureHandlerEvent.EVENT_NAME,
-              MapBuilder.of("registrationName", RNGestureHandlerEvent.EVENT_NAME),
+              MapBuilder.of("registrationName", "onGestureHandlerEvent"),
               RNGestureHandlerStateChangeEvent.EVENT_NAME,
-              MapBuilder.of("registrationName", RNGestureHandlerStateChangeEvent.EVENT_NAME));
+              MapBuilder.of("registrationName", "onGestureHandlerStateChange"));
     }
   }
 

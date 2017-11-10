@@ -16,6 +16,7 @@ import {
   FlatList,
   Platform,
 } from 'react-native';
+import ReactNativeBridgeEventPlugin from 'react-native/Libraries/Renderer/shims/ReactNativeBridgeEventPlugin';
 import deepEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 
@@ -35,6 +36,15 @@ UIManager.clearJSResponder = () => {
   RNGestureHandlerModule.handleClearJSResponder();
   oldClearJSResponder();
 };
+
+ReactNativeBridgeEventPlugin.processEventTypes({
+  directEventTypes: {
+    topGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+    topGestureHandlerStateChange: {
+      registrationName: 'onGestureHandlerStateChange',
+    },
+  },
+});
 
 const State = RNGestureHandlerModule.State;
 
