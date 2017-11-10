@@ -1,7 +1,8 @@
 {
   "name": "react-native-gesture-handler",
   "version": "1.0.0-alpha.29",
-  "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
+  "description":
+    "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
@@ -39,7 +40,7 @@
   },
   "peerDependencies": {
     "react": "> 15.0.0",
-    "react-native": ">= 0.47.0"
+    "react-native": ">= 0.50.0"
   },
   "jest": {
     "preset": "jest-react-native"
