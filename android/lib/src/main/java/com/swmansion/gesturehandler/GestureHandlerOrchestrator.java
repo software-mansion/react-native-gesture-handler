@@ -119,7 +119,7 @@ public class GestureHandlerOrchestrator {
     boolean shouldCleanEmptyCells = false;
     for (int i = mGestureHandlersCount - 1; i >= 0; i--) {
       GestureHandler handler = mGestureHandlers[i];
-      if (isFinished(handler.getState()) && !handler.mIsAwaiting) {
+      if ((isFinished(handler.getState()) || handler.getState()==GestureHandler.STATE_UNDETERMINED)  && !handler.mIsAwaiting) {
         mGestureHandlers[i] = null;
         shouldCleanEmptyCells = true;
         handler.reset();
@@ -315,7 +315,7 @@ public class GestureHandlerOrchestrator {
       return;
     }
     if (!(view.getParent() instanceof ViewGroup)) {
-      return;
+      throw new IllegalArgumentException("Parent View is no longer in the tree");
     }
     if (view == null) {
       throw new IllegalArgumentException("View is no longer in the tree");
