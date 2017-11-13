@@ -41,9 +41,9 @@ type StateType = {
   dragX: Animated.Value,
   rowTranslation: Animated.Value,
   rowState: number,
-  leftWidth: ?number,
-  rightOffset: ?number,
-  rowWidth: ?number,
+  leftWidth: number | typeof undefined,
+  rightOffset: number | typeof undefined,
+  rowWidth: number | typeof undefined,
 };
 
 export default class Swipeable extends Component<PropType, StateType> {
@@ -92,10 +92,8 @@ export default class Swipeable extends Component<PropType, StateType> {
 
   _updateAnimatedEvent = (props: PropType, state: StateType) => {
     const { friction, useNativeAnimations } = props;
-    const { dragX, rowTranslation } = state;
-    const leftWidth = state.leftWidth ? state.leftWidth : 0;
-    const rowWidth = state.rowWidth ? state.rowWidth : 0;
-    const rightOffset = state.rightOffset ? state.rightOffset : rowWidth;
+    const { dragX, rowTranslation, leftWidth = 0, rowWidth = 0 } = state;
+    const { rightOffset = rowWidth } = state;
     const rightWidth = Math.max(0, rowWidth - rightOffset);
 
     const {
@@ -155,12 +153,8 @@ export default class Swipeable extends Component<PropType, StateType> {
 
   _handleRelease = nativeEvent => {
     const { velocityX, translationX: dragX } = nativeEvent;
-    const leftWidth = this.state.leftWidth ? this.state.leftWidth : 0;
-    const rowWidth = this.state.rowWidth ? this.state.rowWidth : 0;
-    const { rowState } = this.state;
-    const rightOffset = this.state.rightOffset
-      ? this.state.rightOffset
-      : rowWidth;
+    const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
+    const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
     const {
       friction,
@@ -226,12 +220,8 @@ export default class Swipeable extends Component<PropType, StateType> {
   };
 
   _currentOffset = () => {
-    const { rowState } = this.state;
-    const leftWidth = this.state.leftWidth ? this.state.leftWidth : 0;
-    const rowWidth = this.state.rowWidth ? this.state.rowWidth : 0;
-    const rightOffset = this.state.rightOffset
-      ? this.state.rightOffset
-      : rowWidth;
+    const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
+    const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
     if (rowState === 1) {
       return leftWidth;
