@@ -10,6 +10,8 @@
 
 import React, { Component } from 'react';
 import { Animated, StyleSheet, View, Keyboard, StatusBar } from 'react-native';
+import invariant from 'invariant';
+import { AnimatedEvent } from 'react-native/Libraries/Animated/src/AnimatedEvent';
 
 import {
   PanGestureHandler,
@@ -33,15 +35,15 @@ export type PropType = {
   onDrawerOpen?: Function,
   onDrawerStateChanged?: Function,
   renderNavigationView: (progressAnimatedValue: any) => any,
-  useNativeAnimations?: boolean,
+  useNativeAnimations: boolean,
 
   // brand new properties
-  drawerType?: 'front' | 'back' | 'slide',
-  edgeWidth?: number,
-  minSwipeDistance?: number,
+  drawerType: 'front' | 'back' | 'slide',
+  edgeWidth: number,
+  minSwipeDistance: number,
   hideStatusBar?: boolean,
   statusBarAnimation?: 'slide' | 'none' | 'fade',
-  overlayColor?: string,
+  overlayColor: string,
 
   // Properties not yet supported
   // onDrawerSlide?: Function
@@ -49,7 +51,6 @@ export type PropType = {
 };
 
 export type StateType = {
-  accessibilityViewIsModal: boolean,
   drawerShown: boolean,
   dragX: any,
   touchX: any,
@@ -65,10 +66,7 @@ export type DrawerMovementOptionType = {
   velocity?: number,
 };
 
-export default class DrawerLayout extends Component {
-  props: PropType;
-  state: StateType;
-
+export default class DrawerLayout extends Component<PropType, StateType> {
   static defaultProps = {
     drawerWidth: 0,
     drawerPosition: 'left',
@@ -83,6 +81,8 @@ export default class DrawerLayout extends Component {
     Left: 'left',
     Right: 'right',
   };
+  _openValue: ?Animated.Interpolation;
+  _onGestureEvent: ?AnimatedEvent;
 
   constructor(props: PropType, context: any) {
     super(props, context);
@@ -102,7 +102,7 @@ export default class DrawerLayout extends Component {
     this._updateAnimatedEvent(props, this.state);
   }
 
-  componentWillUpdate(props, state) {
+  componentWillUpdate(props: PropType, state: StateType) {
     if (
       this.props.drawerPosition !== props.drawerPosition ||
       this.props.drawerWidth !== props.drawerWidth ||
@@ -113,7 +113,7 @@ export default class DrawerLayout extends Component {
     }
   }
 
-  _updateAnimatedEvent = (props, state) => {
+  _updateAnimatedEvent = (props: PropType, state: StateType) => {
     // Event definition is based on
     const { drawerPosition, drawerWidth, drawerType } = props;
     const {
@@ -182,14 +182,13 @@ export default class DrawerLayout extends Component {
       translationX = Animated.add(dragX, dragOffsetFromOnStartPosition);
     }
 
-    this._openValue = Animated.add(
-      translationX,
-      drawerTranslation
-    ).interpolate({
-      inputRange: [0, drawerWidth],
-      outputRange: [0, 1],
-      extrapolate: 'clamp',
-    });
+    this._openValue = Animated.add(translationX, drawerTranslation).interpolate(
+      {
+        inputRange: [0, drawerWidth],
+        outputRange: [0, 1],
+        extrapolate: 'clamp',
+      }
+    );
 
     this._onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: dragXValue, x: touchXValue } }],
@@ -210,7 +209,7 @@ export default class DrawerLayout extends Component {
     if (nativeEvent.oldState === State.ACTIVE) {
       this._handleRelease(nativeEvent);
     } else if (nativeEvent.state === State.ACTIVE) {
-      this._emitStateChanged(DRAGGING);
+      this._emitStateChanged(DRAGGING, false);
       if (this.props.keyboardDismissMode === 'on-drag') {
         Keyboard.dismiss();
       }
@@ -260,7 +259,7 @@ export default class DrawerLayout extends Component {
     }
   };
 
-  _animateDrawer = (fromValue: number, toValue: number, velocity: ?number) => {
+  _animateDrawer = (fromValue: number, toValue: number, velocity: number) => {
     this.state.dragX.setValue(0);
     this.state.touchX.setValue(
       this.props.drawerPosition === 'left' ? 0 : this.state.containerWidth
@@ -291,15 +290,24 @@ export default class DrawerLayout extends Component {
   };
 
   openDrawer = (options: DrawerMovementOptionType = {}) => {
-    this._animateDrawer(0, this.props.drawerWidth, options.velocity);
+    this._animateDrawer(
+      0,
+      this.props.drawerWidth,
+      options.velocity ? options.velocity : 0
+    );
   };
 
   closeDrawer = (options: DrawerMovementOptionType = {}) => {
-    this._animateDrawer(this.props.drawerWidth, 0, options.velocity);
+    this._animateDrawer(
+      this.props.drawerWidth,
+      0,
+      options.velocity ? options.velocity : 0
+    );
   };
 
   _renderOverlay = () => {
     /* Overlay styles */
+    invariant(this._openValue, 'should be set');
     const overlayOpacity = this._openValue.interpolate({
       inputRange: [0, 1],
       outputRange: [0, 0.7],
@@ -336,10 +344,12 @@ export default class DrawerLayout extends Component {
       backgroundColor: drawerBackgroundColor,
       width: drawerWidth,
     };
+    const openValue = this._openValue;
+    invariant(openValue, 'should be set');
 
     let containerStyles;
     if (containerSlide) {
-      const containerTranslateX = this._openValue.interpolate({
+      const containerTranslateX = openValue.interpolate({
         inputRange: [0, 1],
         outputRange: fromLeft ? [0, drawerWidth] : [0, -drawerWidth],
         extrapolate: 'clamp',
@@ -352,7 +362,7 @@ export default class DrawerLayout extends Component {
     let drawerTranslateX = 0;
     if (drawerSlide) {
       const closedDrawerOffset = fromLeft ? -drawerWidth : drawerWidth;
-      drawerTranslateX = this._openValue.interpolate({
+      drawerTranslateX = openValue.interpolate({
         inputRange: [0, 1],
         outputRange: [closedDrawerOffset, 0],
         extrapolate: 'clamp',
