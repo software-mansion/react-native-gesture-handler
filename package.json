@@ -61,6 +61,7 @@
   "lint-staged": {
     "*.js": [
       "prettier --write --print-width 80 --tab-width 2 --single-quote --jsx-bracket-same-line=true --trailing-comma=es5",
+      "flow",
       "git add"
     ]
   }
