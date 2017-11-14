@@ -52,6 +52,11 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public T setEnabled(boolean enabled) {
+    if (mView != null) {
+      // If view is set then handler is in "active" state. In that case we want to "cancel" handler
+      // when it changes enabled state so that it gets cleared from the orchestrator
+      cancel();
+    }
     mEnabled = enabled;
     return (T) this;
   }
@@ -143,7 +148,7 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public boolean wantEvents() {
-    return mState != STATE_FAILED && mState != STATE_CANCELLED && mState != STATE_END;
+    return mEnabled && mState != STATE_FAILED && mState != STATE_CANCELLED && mState != STATE_END;
   }
 
   public int getState() {
