@@ -62,6 +62,12 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
         }
       }
     }
+    if (handler.getView() != null) {
+      // Handler is in "prepared" state which means it is registered in the orchestrator and can
+      // receive touch events. This means that before we remove it from the registry we need to
+      // "cancel" it so that orchestrator does no longer keep a reference to it.
+      handler.cancel();
+    }
   }
 
   public void dropHandler(int handlerTag) {
