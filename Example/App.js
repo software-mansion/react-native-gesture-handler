@@ -1,11 +1,7 @@
 import React from 'react';
 import { Text, View, FlatList, StyleSheet } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import {
-  RectButton,
-  ScrollView,
-  gestureHandlerRootHOC,
-} from 'react-native-gesture-handler';
+import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import SwipeableTable from './swipeable';
 import Rows from './rows';

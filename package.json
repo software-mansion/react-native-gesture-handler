@@ -1,7 +1,8 @@
 {
   "name": "react-native-gesture-handler",
   "version": "1.0.0-alpha.31",
-  "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
+  "description":
+    "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
@@ -16,6 +17,7 @@
     "android/lib/src/main/java/",
     "ios/",
     "README.md",
+    "NATIVE_NAVIGATORS.md",
     "GestureHandler.js",
     "Swipeable.js",
     "DrawerLayout.js"

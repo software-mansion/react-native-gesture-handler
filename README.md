@@ -34,7 +34,10 @@ or using `npm` if you prefer:
   npm install --save react-native-gesture-handler
 ```
 
-II (**Android**). Update your main activity (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating a `ReactRootView` instance. Then use a root view wrapper provided by this library:
+II (**Android**). Follow the steps below:
+ > By default Gesture Handler library require that you change your main activity code on Android. This may not be possible if you use one of the native navigation libraries. If this is the case please refer to [this document](NATIVE_NAVIGATORS.md) to learn how can you get the library set up.
+
+Update your main activity (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating a `ReactRootView` instance. Then use a root view wrapper provided by this library:
 ```java
 // Don't forget imports
 import com.facebook.react.ReactActivityDelegate;
