@@ -20,6 +20,8 @@ import ReactNativeBridgeEventPlugin from 'react-native/Libraries/Renderer/shims/
 import deepEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 
+import gestureHandlerRootHOC from './gestureHandlerRootHOC';
+
 const RNGestureHandlerModule = NativeModules.RNGestureHandlerModule;
 
 /* Wrap JS responder calls and notify gesture handler manager */
@@ -584,4 +586,5 @@ export {
   BorderlessButton,
   /* Other */
   FlatListWithGHScroll as FlatList,
+  gestureHandlerRootHOC,
 };

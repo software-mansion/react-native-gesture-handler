@@ -119,4 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default gestureHandlerRootHOC(ExampleApp);
+export default ExampleApp;

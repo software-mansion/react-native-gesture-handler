@@ -6,7 +6,6 @@ import android.view.MotionEvent;
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
-import com.facebook.react.bridge.ReactContext;
 
 import javax.annotation.Nullable;
 
@@ -35,12 +34,26 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     return super.dispatchTouchEvent(ev);
   }
 
+  /**
+   * This method is used to enable root view to start processing touch events through the gesture
+   * handler library logic. Unless this method is called (which happens as a result of instantiating
+   * new gesture handler from JS) the root view component will just proxy all touch related methods
+   * to its superclass. Thus in the "disabled" state all touch related events will fallback to
+   * default RN behavior.
+   */
   public void initialize() {
     if (mGestureRootHelper != null) {
       throw new IllegalStateException("GestureHandler already initialized for root view " + this);
     }
     mGestureRootHelper = new RNGestureHandlerRootHelper(
             mReactInstanceManager.getCurrentReactContext(), this);
+  }
+
+  public void tearDown() {
+    if (mGestureRootHelper != null) {
+      mGestureRootHelper.tearDown();
+      mGestureRootHelper = null;
+    }
   }
 
   @Override
@@ -50,39 +63,5 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
           @Nullable Bundle initialProperties) {
     super.startReactApplication(reactInstanceManager, moduleName, initialProperties);
     mReactInstanceManager = reactInstanceManager;
-  }
-
-  @Override
-  public void onAttachedToReactInstance() {
-    super.onAttachedToReactInstance();
-    RNGestureHandlerModule gestureHandlerModule = getGestureHandlerModule();
-    if (gestureHandlerModule != null) {
-      gestureHandlerModule.registerReactRootView(this);
-    }
-  }
-
-  @Override
-  public void unmountReactApplication() {
-    if (mGestureRootHelper != null) {
-      mGestureRootHelper.tearDown();
-      mGestureRootHelper = null;
-    }
-    RNGestureHandlerModule gestureHandlerModule = getGestureHandlerModule();
-    if (gestureHandlerModule != null) {
-      gestureHandlerModule.unregisterReactRootView(this);
-    }
-    mReactInstanceManager = null;
-    super.unmountReactApplication();
-  }
-
-  private @Nullable RNGestureHandlerModule getGestureHandlerModule() {
-    if (mReactInstanceManager == null) {
-      return null;
-    }
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    if (reactContext == null) {
-      return null;
-    }
-    return reactContext.getNativeModule(RNGestureHandlerModule.class);
   }
 }

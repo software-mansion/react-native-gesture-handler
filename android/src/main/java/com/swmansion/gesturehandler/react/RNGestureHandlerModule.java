@@ -1,9 +1,10 @@
 package com.swmansion.gesturehandler.react;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 
+import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -12,8 +13,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.swmansion.gesturehandler.GestureHandler;
@@ -351,12 +353,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           new PinchGestureHandlerFactory(),
           new RotationGestureHandlerFactory()
   };
-  private RNGestureHandlerRegistry mRegistry;
+  private final RNGestureHandlerRegistry mRegistry = new RNGestureHandlerRegistry();
 
   private RNGestureHandlerInteractionManager mInteractionManager =
           new RNGestureHandlerInteractionManager();
   private List<RNGestureHandlerRootHelper> mRoots = new ArrayList<>();
-  private List<RNGestureHandlerEnabledRootView> mReactRootViews = new ArrayList<>();
+  private List<Integer> mEnqueuedRootViewInit = new ArrayList<>();
 
   public RNGestureHandlerModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -378,7 +380,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         GestureHandler handler = handlerFactory.create(getReactApplicationContext());
         handler.setTag(handlerTag);
         handler.setOnTouchEventListener(mEventListener);
-        getOrCreateRegistry().registerHandler(handler);
+        mRegistry.registerHandler(handler);
         mInteractionManager.configureInteractions(handler, config);
         handlerFactory.configure(handler, config);
         return;
@@ -389,15 +391,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void attachGestureHandler(int handlerTag, int viewTag) {
-    RNGestureHandlerRegistry registry = getOrCreateRegistry();
-    RNGestureHandlerRootHelper root = findRootHelperForViewAncestor(viewTag);
-    if (root == null) {
-      // if root helper is not present for the given child view we may try to find if the react root
-      // view parent is registered under mReactRootViews. If so, we need to initialize gesture
-      // handler for that root view so that it is present in root helpers registry
-      tryInitializeHandlerForReactRootView(viewTag);
-    }
-    if (!registry.attachHandlerToView(handlerTag, viewTag)) {
+    tryInitializeHandlerForReactRootView(viewTag);
+    if (!mRegistry.attachHandlerToView(handlerTag, viewTag)) {
       throw new JSApplicationIllegalArgumentException(
               "Handler with tag " + handlerTag + " does not exists");
     }
@@ -407,7 +402,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   public void updateGestureHandler(
           int handlerTag,
           ReadableMap config) {
-    GestureHandler handler = getOrCreateRegistry().getHandler(handlerTag);
+    GestureHandler handler = mRegistry.getHandler(handlerTag);
     if (handler != null) {
       HandlerFactory factory = findFactoryForHandler(handler);
       if (factory != null) {
@@ -421,7 +416,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void dropGestureHandler(int handlerTag) {
     mInteractionManager.dropRelationsForHandlerWithTag(handlerTag);
-    getOrCreateRegistry().dropHandler(handlerTag);
+    mRegistry.dropHandler(handlerTag);
   }
 
   @ReactMethod
@@ -450,33 +445,22 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     ));
   }
 
-  public RNGestureHandlerRegistry getOrCreateRegistry() {
-    if (mRegistry != null) {
-      return mRegistry;
-    }
-    mRegistry = new RNGestureHandlerRegistry();
+  public RNGestureHandlerRegistry getRegistry() {
     return mRegistry;
-  }
-
-  /*package*/ void registerReactRootView(RNGestureHandlerEnabledRootView rootView) {
-    if (mReactRootViews.contains(rootView)) {
-      throw new IllegalStateException("RootView " + rootView + " already registered");
-    }
-    mReactRootViews.add(rootView);
-  }
-
-  /*package*/ void unregisterReactRootView(RNGestureHandlerEnabledRootView rootView) {
-    mReactRootViews.remove(rootView);
   }
 
   @Override
   public void onCatalystInstanceDestroy() {
-    if (mRegistry != null) {
-      mRegistry.dropAllHandlers();
-      mRegistry = null;
-      mInteractionManager.reset();
+    mRegistry.dropAllHandlers();
+    mInteractionManager.reset();
+    synchronized (mRoots) {
       for (RNGestureHandlerRootHelper root : mRoots) {
-        root.tearDown();
+        ReactRootView reactRootView = root.getRootView();
+        if (reactRootView instanceof RNGestureHandlerEnabledRootView) {
+          ((RNGestureHandlerEnabledRootView) reactRootView).tearDown();
+        } else {
+          root.tearDown();
+        }
       }
       mRoots.clear();
     }
@@ -485,31 +469,63 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   private void tryInitializeHandlerForReactRootView(int ancestorViewTag) {
     UIManagerModule uiManager = getReactApplicationContext().getNativeModule(UIManagerModule.class);
-    int rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag);
+    final int rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag);
     if (rootViewTag < 1) {
       throw new JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag "
               + ancestorViewTag);
     }
-    for (int i = 0; i < mReactRootViews.size(); i++) {
-      RNGestureHandlerEnabledRootView rootView = mReactRootViews.get(i);
-      if (rootView.getRootViewTag() == rootViewTag) {
-        rootView.initialize();
-        return;
+    synchronized (mRoots) {
+      for (int i = 0; i < mRoots.size(); i++) {
+        RNGestureHandlerRootHelper root = mRoots.get(i);
+        if (root.getRootView().getRootViewTag() == rootViewTag) {
+          // we have found root helper registered for a given react root, we don't need to
+          // initialize a new one then
+          return;
+        }
       }
     }
-    // TODO: warn here that HOC needs to be used
+    synchronized (mEnqueuedRootViewInit) {
+      if (mEnqueuedRootViewInit.contains(rootViewTag)) {
+        // root view initialization already enqueued -> we skip
+        return;
+      }
+      mEnqueuedRootViewInit.add(rootViewTag);
+    }
+    // root helper for a given root tag has not been found, we may wat to check if the root view is
+    // an instance of RNGestureHandlerEnabledRootView and then initialize gesture handler with it
+    uiManager.addUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        View view = nativeViewHierarchyManager.resolveView(rootViewTag);
+        if (view instanceof RNGestureHandlerEnabledRootView) {
+          ((RNGestureHandlerEnabledRootView) view).initialize();
+        } else {
+          // Seems like the root view is something else than RNGestureHandlerEnabledRootView, this
+          // is fine though as long as gestureHandlerRootHOC is used in JS
+          // FIXME: check and warn about gestureHandlerRootHOC
+        }
+        synchronized (mEnqueuedRootViewInit) {
+          mEnqueuedRootViewInit.remove(new Integer(rootViewTag));
+        }
+      }
+    });
   }
 
   public void registerRootHelper(RNGestureHandlerRootHelper root) {
-    if (mRoots.contains(root)) {
-      throw new IllegalStateException("Root helper" + root + " already registered");
+    synchronized (mRoots) {
+      if (mRoots.contains(root)) {
+        throw new IllegalStateException("Root helper" + root + " already registered");
+      }
+      mRoots.add(root);
     }
-    mRoots.add(root);
   }
 
   public void unregisterRootHelper(RNGestureHandlerRootHelper root) {
-    mRoots.remove(root);
+    synchronized (mRoots) {
+      mRoots.remove(root);
+    }
   }
+
 
   private @Nullable RNGestureHandlerRootHelper findRootHelperForViewAncestor(int viewTag) {
     UIManagerModule uiManager = getReactApplicationContext().getNativeModule(UIManagerModule.class);
@@ -517,10 +533,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     if (rootViewTag < 1) {
       return null;
     }
-    for (int i = 0; i < mRoots.size(); i++) {
-      RNGestureHandlerRootHelper root = mRoots.get(i);
-      if (root.getRootViewTag() == rootViewTag) {
-        return root;
+    synchronized (mRoots) {
+      for (int i = 0; i < mRoots.size(); i++) {
+        RNGestureHandlerRootHelper root = mRoots.get(i);
+        if (root.getRootView().getRootViewTag() == rootViewTag) {
+          return root;
+        }
       }
     }
     return null;

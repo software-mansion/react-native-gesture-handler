@@ -10,7 +10,6 @@ import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
 
@@ -27,6 +26,7 @@ public class RNGestureHandlerRootHelper {
   private boolean mPassingTouch = false;
 
   private static ReactRootView findRootViewTag(ViewGroup viewGroup) {
+    UiThreadUtil.assertOnUiThread();
     ViewParent parent = viewGroup;
     while (parent != null && !(parent instanceof ReactRootView)) {
       parent = parent.getParent();
@@ -39,13 +39,14 @@ public class RNGestureHandlerRootHelper {
   }
 
   public RNGestureHandlerRootHelper(ReactContext context, ViewGroup wrappedView) {
+    UiThreadUtil.assertOnUiThread();
     int wrappedViewTag = wrappedView.getId();
     if (wrappedViewTag < 1) {
       throw new IllegalStateException("Expect view tag to be set for " + wrappedView);
     }
 
     RNGestureHandlerModule module = context.getNativeModule(RNGestureHandlerModule.class);
-    RNGestureHandlerRegistry registry = module.getOrCreateRegistry();
+    RNGestureHandlerRegistry registry = module.getRegistry();
 
     mReactRootView = findRootViewTag(wrappedView);
 
@@ -71,12 +72,12 @@ public class RNGestureHandlerRootHelper {
             ReactConstants.TAG,
             "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + mReactRootView);
     RNGestureHandlerModule module = mContext.getNativeModule(RNGestureHandlerModule.class);
-    module.getOrCreateRegistry().dropHandler(mJSGestureHandler.getTag());
+    module.getRegistry().dropHandler(mJSGestureHandler.getTag());
     module.unregisterRootHelper(this);
   }
 
-  public int getRootViewTag() {
-    return mReactRootView.getRootViewTag();
+  public ReactRootView getRootView() {
+    return mReactRootView;
   }
 
   private class RootViewGestureHandler extends GestureHandler {
