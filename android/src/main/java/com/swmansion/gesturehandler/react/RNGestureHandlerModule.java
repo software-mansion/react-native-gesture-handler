@@ -449,20 +449,25 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     return mRegistry;
   }
 
+
   @Override
   public void onCatalystInstanceDestroy() {
     mRegistry.dropAllHandlers();
     mInteractionManager.reset();
     synchronized (mRoots) {
-      for (RNGestureHandlerRootHelper root : mRoots) {
+      while (!mRoots.isEmpty()) {
+        int sizeBefore = mRoots.size();
+        RNGestureHandlerRootHelper root = mRoots.get(0);
         ReactRootView reactRootView = root.getRootView();
         if (reactRootView instanceof RNGestureHandlerEnabledRootView) {
           ((RNGestureHandlerEnabledRootView) reactRootView).tearDown();
         } else {
           root.tearDown();
         }
+        if (mRoots.size() >= sizeBefore) {
+          throw new IllegalStateException("Expected root helper to get unregistered while tearing down");
+        }
       }
-      mRoots.clear();
     }
     super.onCatalystInstanceDestroy();
   }
