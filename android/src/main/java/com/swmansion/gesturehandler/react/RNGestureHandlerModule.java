@@ -41,7 +41,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_ENABLED = "enabled";
   private static final String KEY_HIT_SLOP = "hitSlop";
   private static final String KEY_HIT_SLOP_LEFT = "left";
-  private static final String KEY_HIT_SLOP_TOP = "left";
+  private static final String KEY_HIT_SLOP_TOP = "top";
   private static final String KEY_HIT_SLOP_RIGHT = "right";
   private static final String KEY_HIT_SLOP_BOTTOM = "bottom";
   private static final String KEY_HIT_SLOP_VERTICAL = "vertical";
