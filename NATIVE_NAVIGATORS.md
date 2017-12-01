@@ -30,4 +30,6 @@ export function registerScreens() {
 }
 ```
 
+You can check [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this set up in action.
+
 **IMPORTANT!!** Remember that you need to wrap each screen that you use in you rapp with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It is not enough to wrap the main screen only.

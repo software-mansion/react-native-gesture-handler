@@ -35,7 +35,8 @@ or using `npm` if you prefer:
 ```
 
 II (**Android**). Follow the steps below:
- > By default Gesture Handler library require that you change your main activity code on Android. This may not be possible if you use one of the native navigation libraries. If this is the case please refer to [this document](NATIVE_NAVIGATORS.md) to learn how can you get the library set up.
+
+**IMPORTANT:** If you use one of the *native navigation libraries* (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you need to follow [this separate guide](NATIVE_NAVIGATORS.md) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that uses standard Android project layout.
 
 Update your main activity (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating a `ReactRootView` instance. Then use a root view wrapper provided by this library:
 ```java
