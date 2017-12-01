@@ -18,6 +18,7 @@ export default function gestureHandlerRootHOC(
   containerStyles = undefined
 ) {
   class Wrapper extends React.Component {
+    static navigatorStyle = Component.navigatorStyle;
     render() {
       return (
         <GestureHandlerRootView style={[styles.container, containerStyles]}>
