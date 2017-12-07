@@ -34,7 +34,12 @@ or using `npm` if you prefer:
   npm install --save react-native-gesture-handler
 ```
 
-II (**Android**). Follow the steps below:
+II. Run:
+```bash
+  react-native link react-native-gesture-handler
+```
+
+III (**Android**). Follow the steps below:
 
 **IMPORTANT:** If you use one of the *native navigation libraries* (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you need to follow [this separate guide](NATIVE_NAVIGATORS.md) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that uses standard Android project layout.
 
@@ -60,12 +65,7 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-II (**iOS**). There is no additional config required to be done on iOS except from what follows in the next steps.
-
-III. Run:
-```bash
-  react-native link react-native-gesture-handler
-```
+III (**iOS**). There is no additional config required to be done on iOS except from what follows in the next steps.
 
 IV. You're all set, just run your app with `react-native run-android` or `react-native run-ios`
 
