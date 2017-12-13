@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { Text, View, FlatList, StyleSheet } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
@@ -47,7 +47,7 @@ const SCREENS = {
   },
 };
 
-class MainScreen extends React.Component {
+class MainScreen extends PureComponent {
   static navigationOptions = {
     title: '✌️ Gesture Handler Demo',
   };
@@ -72,7 +72,7 @@ class MainScreen extends React.Component {
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
-class MainScreenItem extends React.Component {
+class MainScreenItem extends PureComponent {
   _onPress = () => this.props.onPressItem(this.props.item);
   render() {
     const { key } = this.props.item;

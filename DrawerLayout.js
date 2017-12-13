@@ -8,7 +8,7 @@
 // to move faster and fix issues that may arise in gesture handler library
 // that could be found when using the drawer component
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated, StyleSheet, View, Keyboard, StatusBar } from 'react-native';
 import invariant from 'invariant';
 import { AnimatedEvent } from 'react-native/Libraries/Animated/src/AnimatedEvent';
@@ -66,7 +66,7 @@ export type DrawerMovementOptionType = {
   velocity?: number,
 };
 
-export default class DrawerLayout extends Component<PropType, StateType> {
+export default class DrawerLayout extends PureComponent<PropType, StateType> {
   static defaultProps = {
     drawerWidth: 0,
     drawerPosition: 'left',
@@ -182,13 +182,14 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       translationX = Animated.add(dragX, dragOffsetFromOnStartPosition);
     }
 
-    this._openValue = Animated.add(translationX, drawerTranslation).interpolate(
-      {
-        inputRange: [0, drawerWidth],
-        outputRange: [0, 1],
-        extrapolate: 'clamp',
-      }
-    );
+    this._openValue = Animated.add(
+      translationX,
+      drawerTranslation
+    ).interpolate({
+      inputRange: [0, drawerWidth],
+      outputRange: [0, 1],
+      extrapolate: 'clamp',
+    });
 
     this._onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: dragXValue, x: touchXValue } }],

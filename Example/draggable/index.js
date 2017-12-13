@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
 import {
@@ -10,7 +10,7 @@ import {
 import { USE_NATIVE_DRIVER } from '../config';
 import { LoremIpsum } from '../common';
 
-export class DraggableBox extends Component {
+export class DraggableBox extends PureComponent {
   constructor(props) {
     super(props);
     this._translateX = new Animated.Value(0);
@@ -61,7 +61,7 @@ export class DraggableBox extends Component {
   }
 }
 
-export default class Example extends Component {
+export default class Example extends PureComponent {
   _onClick = () => {
     Alert.alert("I'm so touched");
   };

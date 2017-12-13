@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { requireNativeComponent, View, StyleSheet } from 'react-native';
 
 var iface = {
@@ -17,7 +17,7 @@ export default function gestureHandlerRootHOC(
   Component,
   containerStyles = undefined
 ) {
-  class Wrapper extends React.Component {
+  class Wrapper extends PureComponent {
     static navigatorStyle = Component.navigatorStyle;
     render() {
       return (

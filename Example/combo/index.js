@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
   Alert,
   StyleSheet,
@@ -27,7 +27,7 @@ import { LoremIpsum } from '../common';
 
 const CHILD_REF = 'CHILD_REF';
 
-class TouchableHighlight extends Component {
+class TouchableHighlight extends PureComponent {
   static propTypes = View.propTypes;
   static defaultProps = {
     activeOpacity: 0.85,
@@ -78,7 +78,7 @@ const INACTIVE_UNDERLAY_STYLE = StyleSheet.create({
   x: { backgroundColor: 'transparent' },
 }).x;
 
-class ControlledSwitch extends React.Component {
+class ControlledSwitch extends PureComponent {
   static propTypes = Switch.propTypes;
   constructor(props) {
     super(props);
@@ -105,7 +105,7 @@ class ControlledSwitch extends React.Component {
   }
 }
 
-class Combo extends Component {
+class Combo extends PureComponent {
   _onClick = () => {
     Alert.alert("I'm so touched");
     this._scrollView.scrollTo(200);

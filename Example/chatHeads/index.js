@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
@@ -13,7 +13,7 @@ const USE_NATIVE_DRIVER = false;
 const START_X = 0;
 const START_Y = 0;
 
-class Tracking extends Component {
+class Tracking extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -177,7 +177,7 @@ class Tracking extends Component {
   }
 }
 
-export default class Example extends Component {
+export default class Example extends PureComponent {
   render() {
     return (
       <View style={styles.container}>

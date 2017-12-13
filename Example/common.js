@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { Text, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -7,20 +7,18 @@ const styles = StyleSheet.create({
   },
 });
 
-export class LoremIpsum extends React.Component {
+export class LoremIpsum extends PureComponent {
   static defaultProps = {
     words: 1000,
     style: styles.lipsum,
   };
   loremIpsum() {
-    return LOREM_IPSUM.split(' ').slice(0, this.props.words).join(' ');
+    return LOREM_IPSUM.split(' ')
+      .slice(0, this.props.words)
+      .join(' ');
   }
   render() {
-    return (
-      <Text style={this.props.style}>
-        {this.loremIpsum()}
-      </Text>
-    );
+    return <Text style={this.props.style}>{this.loremIpsum()}</Text>;
   }
 }
 

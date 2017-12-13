@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import {
@@ -10,7 +10,7 @@ import {
 
 import { LoremIpsum } from '../common';
 
-export class PressBox extends Component {
+export class PressBox extends PureComponent {
   _onHandlerStateChange = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm being pressed for so long");
@@ -46,7 +46,7 @@ export class PressBox extends Component {
   }
 }
 
-export default class Example extends Component {
+export default class Example extends PureComponent {
   render() {
     return (
       <ScrollView

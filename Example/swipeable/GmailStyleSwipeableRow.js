@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const AnimatedIcon = Animated.createAnimatedComponent(Icon);
 
-export default class AppleStyleSwipeableRow extends Component {
+export default class AppleStyleSwipeableRow extends PureComponent {
   renderLeftActions = (progress, dragX) => {
     const scale = dragX.interpolate({
       inputRange: [0, 80],

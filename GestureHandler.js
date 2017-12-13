@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import {
   findNodeHandle,
   requireNativeComponent,
@@ -118,7 +118,7 @@ function filterConfig(props, validProps, defaults = {}) {
 }
 
 function createHandler(handlerName, propTypes = null, config = {}) {
-  class Handler extends React.Component {
+  class Handler extends PureComponent {
     static propTypes = {
       ...GestureHandlerPropTypes,
       ...propTypes,
@@ -322,7 +322,7 @@ const NATIVE_WRAPPER_PROPS_FILTER = {
 };
 
 function createNativeWrapper(Component, config = {}) {
-  class ComponentWrapper extends React.Component {
+  class ComponentWrapper extends PureComponent {
     static propTypes = {
       ...Component.propTypes,
     };
@@ -408,7 +408,7 @@ const RawButton = createNativeWrapper(
 
 /* Buttons */
 
-class BaseButton extends React.Component {
+class BaseButton extends PureComponent {
   static propTypes = {
     ...RawButton.propTypes,
     onPress: PropTypes.func,
@@ -477,7 +477,7 @@ const btnStyles = StyleSheet.create({
   },
 });
 
-class RectButton extends React.Component {
+class RectButton extends PureComponent {
   static propTypes = BaseButton.propTypes;
 
   static defaultProps = {
@@ -516,7 +516,7 @@ class RectButton extends React.Component {
   }
 }
 
-class BorderlessButton extends React.Component {
+class BorderlessButton extends PureComponent {
   static propTypes = {
     ...BaseButton.propTypes,
     borderless: PropTypes.bool,
