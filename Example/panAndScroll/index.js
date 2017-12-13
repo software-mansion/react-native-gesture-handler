@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import {
   PanGestureHandler,
@@ -13,7 +13,7 @@ import { LoremIpsum } from '../common';
 const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;
 
-export class TapOrPan extends Component {
+export class TapOrPan extends PureComponent {
   constructor(props) {
     super(props);
     this._touchX = new Animated.Value(windowWidth / 2 - circleRadius);
@@ -72,7 +72,7 @@ export class TapOrPan extends Component {
   }
 }
 
-export default class Example extends Component {
+export default class Example extends PureComponent {
   render() {
     return (
       <ScrollView waitFor={['tap', 'pan']}>

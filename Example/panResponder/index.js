@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Alert, StyleSheet, View, PanResponder } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
@@ -9,7 +9,7 @@ import { LoremIpsum } from '../common';
 var CIRCLE_SIZE = 80;
 
 // A clone of: https://github.com/facebook/react-native/blob/master/RNTester/js/PanResponderExample.js
-class PanResponderExample extends Component {
+class PanResponderExample extends PureComponent {
   _panResponder = {};
   _previousLeft = 0;
   _previousTop = 0;
@@ -92,7 +92,7 @@ class PanResponderExample extends Component {
   };
 }
 
-export default class Example extends Component {
+export default class Example extends PureComponent {
   _onClick = () => {
     Alert.alert("I'm so touched");
   };

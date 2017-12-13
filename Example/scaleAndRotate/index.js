@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
 import {
@@ -12,7 +12,7 @@ import {
 import { USE_NATIVE_DRIVER } from '../config';
 import { LoremIpsum } from '../common';
 
-export class PinchableBox extends React.Component {
+export class PinchableBox extends PureComponent {
   constructor(props) {
     super(props);
 

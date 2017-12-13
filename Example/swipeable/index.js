@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { FlatList, RectButton } from 'react-native-gesture-handler';
@@ -34,7 +34,7 @@ const SwipeableRow = ({ item, index }) => {
   }
 };
 
-export default class Example extends Component {
+export default class Example extends PureComponent {
   render() {
     return (
       <FlatList

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
 import {
@@ -14,7 +14,7 @@ import { USE_NATIVE_DRIVER } from '../config';
 //   while (iters-- > 0) sum += iters;
 // }, 300);
 
-class Snappable extends Component {
+class Snappable extends PureComponent {
   constructor(props) {
     super(props);
     this._dragX = new Animated.Value(0);
@@ -54,7 +54,7 @@ class Snappable extends Component {
   }
 }
 
-class Twistable extends Component {
+class Twistable extends PureComponent {
   constructor(props) {
     super(props);
     this._gesture = new Animated.Value(0);
@@ -100,7 +100,7 @@ class Twistable extends Component {
   }
 }
 
-export default class Example extends Component {
+export default class Example extends PureComponent {
   render() {
     return (
       <View style={styles.container}>

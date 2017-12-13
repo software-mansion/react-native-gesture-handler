@@ -4,7 +4,7 @@
 // separate repo. ALthough, keeping it here for the time being will allow us
 // to move faster and fix possible issues quicker
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { AnimatedEvent } from 'react-native/Libraries/Animated/src/AnimatedEvent';
 
@@ -46,7 +46,7 @@ type StateType = {
   rowWidth: number | typeof undefined,
 };
 
-export default class Swipeable extends Component<PropType, StateType> {
+export default class Swipeable extends PureComponent<PropType, StateType> {
   static defaultProps = {
     friction: 1,
     useNativeAnimations: true,

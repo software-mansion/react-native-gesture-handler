@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, Text, Animated, View, TextInput } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
@@ -29,7 +29,7 @@ const Page = ({ fromLeft, type, parallaxOn, flipSide, nextType }) => (
   </View>
 );
 
-export default class Example extends Component {
+export default class Example extends PureComponent {
   state = { fromLeft: true, type: 0 };
 
   renderParallaxDrawer = progressValue => {

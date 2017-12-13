@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Alert, Animated, StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -16,7 +16,7 @@ import { LoremIpsum } from '../common';
 
 const RATIO = 3;
 
-export class Swipeable extends Component {
+export class Swipeable extends PureComponent {
   constructor(props) {
     super(props);
     this._width = 0;
@@ -121,7 +121,7 @@ export const InfoButton = props => (
   </BorderlessButton>
 );
 
-export default class Example extends Component {
+export default class Example extends PureComponent {
   render() {
     return (
       <View style={styles.container}>
