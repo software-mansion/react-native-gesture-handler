@@ -6,11 +6,11 @@ import android.view.View;
 public class GestureHandler<T extends GestureHandler> {
 
   public static final int STATE_UNDETERMINED = 0;
-  public static final int STATE_FAILED = 2;
-  public static final int STATE_BEGAN = 3;
-  public static final int STATE_CANCELLED = 4;
-  public static final int STATE_ACTIVE = 5;
-  public static final int STATE_END = 6;
+  public static final int STATE_FAILED = 1;
+  public static final int STATE_BEGAN = 2;
+  public static final int STATE_CANCELLED = 3;
+  public static final int STATE_ACTIVE = 4;
+  public static final int STATE_END = 5;
 
   private static final int HIT_SLOP_LEFT_IDX = 0;
   private static final int HIT_SLOP_TOP_IDX = 1;
