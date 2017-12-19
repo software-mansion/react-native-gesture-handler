@@ -21,6 +21,8 @@ import deepEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 
 import gestureHandlerRootHOC from './gestureHandlerRootHOC';
+import Swipeable from './Swipeable';
+import DrawerLayout from './DrawerLayout';
 
 const RNGestureHandlerModule = NativeModules.RNGestureHandlerModule;
 
@@ -587,4 +589,6 @@ export {
   /* Other */
   FlatListWithGHScroll as FlatList,
   gestureHandlerRootHOC,
+  Swipeable,
+  DrawerLayout,
 };
