@@ -1,6 +1,4 @@
-// Type definitions for react-native-gesture-handler 1.0.0-alpha.35
 // Project: https://github.com/kmagiera/react-native-gesture-handler
-// Definitions by: Krzysztof Ciombor <https://github.com/krzysztofciombor>
 // TypeScript Version: 2.6.2
 
 import * as React from 'react';
