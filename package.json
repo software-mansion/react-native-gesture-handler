@@ -22,7 +22,8 @@
     "Swipeable.js",
     "DrawerLayout.js",
     "gestureHandlerRootHOC.android.js",
-    "gestureHandlerRootHOC.ios.js"
+    "gestureHandlerRootHOC.ios.js",
+    "react-native-gesture-handler.d.ts"
   ],
   "repository": {
     "type": "git",
