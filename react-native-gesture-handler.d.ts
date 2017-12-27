@@ -334,11 +334,11 @@ export interface SwipeableProperties {
   renderLeftActions?: (
     progressAnimatedValue: Animated.Value,
     dragAnimatedValue: Animated.Value,
-  ) => JSX.Element | null | undefined | false;
+  ) => React.ReactNode
   renderRightActions?: (
     progressAnimatedValue: Animated.Value,
     dragAnimatedValue: Animated.Value,
-  ) => JSX.Element | null | undefined | false;
+  ) => React.ReactNode
   useNativeAnimations?: boolean;
 }
 
@@ -349,7 +349,7 @@ export class Swipeable extends React.Component<SwipeableProperties> {
 export interface DrawerLayoutProperties {
   renderNavigationView: (
     progressAnimatedValue: Animated.Value,
-  ) => JSX.Element | null | undefined | false;
+  ) => React.ReactNode
   drawerPosition?: 'left' | 'right';
   drawerWidth?: number;
   drawerBackgroundColor?: string;
