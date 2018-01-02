@@ -28,7 +28,6 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
         @Override
         public void run() {
           activate();
-          end();
         }
       }, mMinDurationMs);
     }
@@ -37,7 +36,11 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
         mHandler.removeCallbacksAndMessages(null);
         mHandler = null;
       }
-      fail();
+      if (getState() == STATE_ACTIVE) {
+        end();
+      } else {
+        fail();
+      }
     }
   }
 
