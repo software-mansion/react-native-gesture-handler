@@ -80,6 +80,19 @@ const GestureHandlerPropTypes = {
   ]),
   onGestureEvent: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   onHandlerStateChange: PropTypes.func,
+  onBegan: PropTypes.func,
+  onFailed: PropTypes.func,
+  onCancelled: PropTypes.func,
+  onActivated: PropTypes.func,
+  onEnded: PropTypes.func,
+};
+
+const stateToPropMappings = {
+  [State.BEGAN]: 'onBegan',
+  [State.FAILED]: 'onFailed',
+  [State.CANCELLED]: 'onCancelled',
+  [State.ACTIVE]: 'onActivated',
+  [State.END]: 'onEnded',
 };
 
 function canUseNativeParam(param) {
@@ -151,6 +164,11 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onHandlerStateChange &&
           this.props.onHandlerStateChange(event);
+
+        const stateEventName = stateToPropMappings[event.nativeEvent.state];
+        if (typeof this.props[stateEventName] === 'function') {
+          this.props[stateEventName](event);
+        }
       } else {
         this.props.onGestureHandlerStateChange &&
           this.props.onGestureHandlerStateChange(event);
