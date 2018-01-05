@@ -118,6 +118,11 @@ Library exports a `State` object that provides a number of constants used to exp
  - `hitSlop` (**accepts only negative values on iOS**)
  - `onGestureEvent`
  - `onHandlerStateChange`
+ - `onBegan`
+ - `onFailed`
+ - `onCancelled`
+ - `onActivated`
+ - `onEnded`
 
 #### `TapGestureHandler` extra properties
 
