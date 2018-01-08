@@ -108,7 +108,7 @@ class ControlledSwitch extends React.Component {
 class Combo extends Component {
   _onClick = () => {
     Alert.alert("I'm so touched");
-    this._scrollView.scrollTo(200);
+    this._scrollView.scrollTo({ y: 200, animated: true });
   };
   render() {
     const { ScrollViewComponent } = this.props;
