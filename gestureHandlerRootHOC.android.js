@@ -1,5 +1,6 @@
 import React from 'react';
 import { requireNativeComponent, View, StyleSheet } from 'react-native';
+import hoistNonReactStatics from 'hoist-non-react-statics';
 
 var iface = {
   name: 'GestureHandlerRootView',
@@ -18,7 +19,6 @@ export default function gestureHandlerRootHOC(
   containerStyles = undefined
 ) {
   class Wrapper extends React.Component {
-    static navigatorStyle = Component.navigatorStyle;
     render() {
       return (
         <GestureHandlerRootView style={[styles.container, containerStyles]}>
@@ -27,6 +27,7 @@ export default function gestureHandlerRootHOC(
       );
     }
   }
+  hoistNonReactStatics(Wrapper, Component);
   return Wrapper;
 }
 
