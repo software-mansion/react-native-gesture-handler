@@ -307,6 +307,7 @@ const LongPressGestureHandler = createHandler(
   'LongPressGestureHandler',
   {
     minDurationMs: PropTypes.number,
+    maxDist: PropTypes.number,
   },
   {}
 );

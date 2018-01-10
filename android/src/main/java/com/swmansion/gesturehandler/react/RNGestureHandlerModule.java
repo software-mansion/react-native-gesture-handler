@@ -52,6 +52,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_TAP_MAX_DURATION_MS = "maxDurationMs";
   private static final String KEY_TAP_MAX_DELAY_MS = "maxDelayMs";
   private static final String KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs";
+  private static final String KEY_LONG_PRESS_MAX_DIST = "maxDist";
   private static final String KEY_PAN_MIN_DELTA_X = "minDeltaX";
   private static final String KEY_PAN_MIN_DELTA_Y = "minDeltaY";
   private static final String KEY_PAN_MAX_DELTA_X = "maxDeltaX";
@@ -181,7 +182,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public LongPressGestureHandler create(Context context) {
-      return new LongPressGestureHandler();
+      return new LongPressGestureHandler(context);
     }
 
     @Override
@@ -189,6 +190,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       super.configure(handler, config);
       if (config.hasKey(KEY_LONG_PRESS_MIN_DURATION_MS)) {
         handler.setMinDurationMs(config.getInt(KEY_LONG_PRESS_MIN_DURATION_MS));
+      }
+      if (config.hasKey(KEY_LONG_PRESS_MAX_DIST)) {
+        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_LONG_PRESS_MAX_DIST)));
       }
     }
   }

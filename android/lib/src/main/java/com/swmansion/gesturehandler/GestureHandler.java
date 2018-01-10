@@ -126,11 +126,13 @@ public class GestureHandler<T extends GestureHandler> {
     mX = event.getX();
     mY = event.getY();
     mWithinBounds = isWithinBounds(mView, mX, mY);
-    if (mState == STATE_ACTIVE) {
-      if (mShouldCancelWhenOutside && !mWithinBounds) {
+    if (mShouldCancelWhenOutside && !mWithinBounds) {
+      if (mState == STATE_ACTIVE) {
         cancel();
-        return;
+      } else if (mState == STATE_BEGAN) {
+        fail();
       }
+      return;
     }
     onHandle(event);
   }
