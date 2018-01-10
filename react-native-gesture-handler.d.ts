@@ -173,7 +173,7 @@ export interface NativeViewGestureHandlerProperties
   disallowInterruption?: boolean;
   onGestureEvent?: (event: NativeViewGestureHandlerGestureEvent) => void;
   onHandlerStateChange?: (
-    event: NativeViewGestureHandlerStateChangeEvent,
+    event: NativeViewGestureHandlerStateChangeEvent
   ) => void;
 }
 
@@ -188,6 +188,7 @@ export interface TapGestureHandlerProperties extends GestureHandlerProperties {
 export interface LongPressGestureHandlerProperties
   extends GestureHandlerProperties {
   minDurationMs?: number;
+  maxDist?: number;
 }
 
 export interface PanGestureHandlerProperties extends GestureHandlerProperties {
@@ -218,7 +219,7 @@ export interface RotationGestureHandlerProperties
   extends GestureHandlerProperties {
   onGestureEvent?: (event: RotationGestureHandlerGestureEvent) => void;
   onHandlerStateChange?: (
-    event: RotationGestureHandlerStateChangeEvent,
+    event: RotationGestureHandlerStateChangeEvent
   ) => void;
 }
 
@@ -318,7 +319,7 @@ export class FlatList extends React.Component<
 
 export function gestureHandlerRootHOC(
   Component: React.Component,
-  containerStyles?: any,
+  containerStyles?: any
 ): React.Component;
 
 export interface SwipeableProperties {
@@ -333,12 +334,12 @@ export interface SwipeableProperties {
   onSwipeableClose?: () => void;
   renderLeftActions?: (
     progressAnimatedValue: Animated.Value,
-    dragAnimatedValue: Animated.Value,
-  ) => React.ReactNode
+    dragAnimatedValue: Animated.Value
+  ) => React.ReactNode;
   renderRightActions?: (
     progressAnimatedValue: Animated.Value,
-    dragAnimatedValue: Animated.Value,
-  ) => React.ReactNode
+    dragAnimatedValue: Animated.Value
+  ) => React.ReactNode;
   useNativeAnimations?: boolean;
 }
 
@@ -348,8 +349,8 @@ export class Swipeable extends React.Component<SwipeableProperties> {
 
 export interface DrawerLayoutProperties {
   renderNavigationView: (
-    progressAnimatedValue: Animated.Value,
-  ) => React.ReactNode
+    progressAnimatedValue: Animated.Value
+  ) => React.ReactNode;
   drawerPosition?: 'left' | 'right';
   drawerWidth?: number;
   drawerBackgroundColor?: string;
@@ -358,7 +359,7 @@ export interface DrawerLayoutProperties {
   onDrawerOpen?: () => void;
   onDrawerStateChanged?: (
     newState: 'Idle' | 'Dragging' | 'Settling',
-    drawerWillShow: boolean,
+    drawerWillShow: boolean
   ) => void;
   useNativeAnimations?: boolean;
 
@@ -370,7 +371,6 @@ export interface DrawerLayoutProperties {
   overlayColor?: string;
 }
 
-
 export interface DrawerMovementOptionType {
   velocity?: number;
 }
@@ -379,4 +379,3 @@ export class DrawerLayout extends React.Component<DrawerLayoutProperties> {
   openDrawer: (options: DrawerMovementOptionType) => void;
   closeDrawer: (options?: DrawerMovementOptionType) => void;
 }
-
