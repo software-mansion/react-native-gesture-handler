@@ -104,9 +104,7 @@ export class PinchableBox extends React.Component {
                     ],
                   },
                 ]}
-                source={{
-                  uri: 'https://avatars1.githubusercontent.com/u/6952717',
-                }}
+                source={require('./swmansion.png')}
               />
             </View>
           </PinchGestureHandler>
