@@ -18,8 +18,7 @@ Before instaling please check the following table to find which library version 
 
  | React Native version | React Native Gesture Handler version | Notes |
  | --- | --- | --- |
- | v0.52+ | **latest** | Breaking changes explained and fixed in [#101](https://github.com/kmagiera/react-native-gesture-handler/pull/44) |
- | v0.50 - v0.51 | 1.0.0-alpha.39 | |
+ | v0.50+ | **latest** | |
  | v0.47 - v0.49 | 1.0.0-alpha.29 | Breaking changes explained and fixed in [#44](https://github.com/kmagiera/react-native-gesture-handler/pull/44) |
  | pre v0.47 | **Not supported** |
 
