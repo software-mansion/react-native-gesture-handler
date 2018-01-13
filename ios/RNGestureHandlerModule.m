@@ -132,6 +132,11 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
 
 - (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)uiManager
 {
+  [self uiManagerWillPerformMounting:uiManager];
+}
+
+- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager
+{
     if (_operations.count == 0) {
         return;
     }
