@@ -102,15 +102,6 @@
     }
 }
 
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-    if (self.state == UIGestureRecognizerStateChanged) {
-        self.state = UIGestureRecognizerStateEnded;
-    } else {
-        self.state = UIGestureRecognizerStateFailed;
-    }
-}
-
 - (void)reset
 {
     self.enabled = YES;
