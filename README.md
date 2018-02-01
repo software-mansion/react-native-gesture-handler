@@ -1,14 +1,16 @@
 # react-native-gesture-handler
 
-Native way of handling touch & gestures for React Native apps!
+Native performance touch gestures in React Native apps!
 
 This library provides an API that exposes mobile platform specific native capabilities of touch & gesture handling and recognition. It allows for defining complex gesture handling and recognition logic that runs 100% in native thread and is therefore deterministic.
 
+This library is still in early development phase – but it is already useful. Our ultimate goal is to merge it into React Native core – for now, it is included in [Expo](https://expo.io).
+
 ### What does it give me:
- - It provides a way to access native touch handling logic for recognizing pinch, rotation, pan and other
- - You can define relations between gesture handlers, e.g. when you have pan handler in scrollview you can make scrollview to wait until it knows pan won't recognize
- - You can use touchables that run in native and follow platform default behaviour in case when they are embbede in scrollable component (the interaction is slightly delayed to prevent button from highlighting when you fling)
- - You can implement smooth gesture interactions that thanks to "Animated Native Driver" can run even when JS thread is overloaded
+ - It provides a way to access native touch handling logic for recognizing pinch, rotation and pan (among others)
+ - You can define relations between gesture handlers, e.g. when you have pan handler in `ScrollView` you can make `ScrollView` to wait until it knows pan won't recognize
+ - You can use touchables that run in native and follow platform default behaviour in case when they are embbeded in scrollable component (the interaction is slightly delayed to prevent button from highlighting when you fling)
+ - You can implement smooth gesture interactions that thanks to Animated Native Driver can run even when JS thread is overloaded
 
 ## Installation
 
@@ -41,9 +43,9 @@ II. Run:
 
 III (**Android**). Follow the steps below:
 
-**IMPORTANT:** If you use one of the *native navigation libraries* (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you need to follow [this separate guide](NATIVE_NAVIGATORS.md) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that uses standard Android project layout.
+**IMPORTANT:** If you use one of the *native navigation libraries* (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you should follow [this separate guide](NATIVE_NAVIGATORS.md) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that use standard Android project layout.
 
-Update your main activity (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating a `ReactRootView` instance. Then use a root view wrapper provided by this library:
+Update your main activity (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating `ReactRootView` instance. Then use a root view wrapper provided by this library:
 ```java
 // Don't forget imports
 import com.facebook.react.ReactActivityDelegate;
@@ -71,12 +73,12 @@ IV. You're all set, just run your app with `react-native run-android` or `react-
 
 ## Examples
 
-If you don't feel like trying it on a real app, but just want to play with the API you can run the example project. Clone the repo, go to the `Example/` folder and run:
+If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `Example/` folder and run:
 ```bash
   yarn install
 ```
 
-Then run `react-native run-android` or `react-native run-ios` depending on which platform you want to run the example app on.
+Then run `react-native run-android` or `react-native run-ios` (depending on which platform you want to run the example app on).
 
 You will need to have an Android or iOS device or emulator connected as well as `react-native-cli` package installed globally.
 
