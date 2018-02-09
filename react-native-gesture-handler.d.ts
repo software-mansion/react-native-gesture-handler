@@ -262,7 +262,9 @@ export interface BaseButtonProperties extends RawButtonProperties {
   style?: StyleProp<ViewStyle>;
 }
 
-export interface RectButtonProperties extends RawButtonProperties {}
+export interface RectButtonProperties extends BaseButtonProperties {
+  underlayColor?: string
+}
 
 export interface BorderlessButtonProperties extends RawButtonProperties {
   borderless?: boolean;
@@ -274,7 +276,7 @@ export class RawButton extends React.Component<RawButtonProperties> {}
 
 export class BaseButton extends React.Component<BaseButtonProperties> {}
 
-export class RectButton extends BaseButton {}
+export class RectButton extends React.Component<RectButtonProperties> {}
 
 export class BorderlessButton extends React.Component<
   BorderlessButtonProperties
