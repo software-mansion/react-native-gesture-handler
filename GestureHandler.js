@@ -76,6 +76,8 @@ const GestureHandlerPropTypes = {
       bottom: PropTypes.number,
       vertical: PropTypes.number,
       horizontal: PropTypes.number,
+      width: PropTypes.number,
+      height: PropTypes.number,
     }),
   ]),
   onGestureEvent: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
