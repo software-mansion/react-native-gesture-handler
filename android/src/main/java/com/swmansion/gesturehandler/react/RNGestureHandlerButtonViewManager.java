@@ -15,8 +15,8 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-public class RNGestureHandlerButtonViewManager extends
-        ViewGroupManager<RNGestureHandlerButtonViewManager.ButtonViewGroup> {
+public class RNGestureHandlerButtonViewManager
+    extends ViewGroupManager<RNGestureHandlerButtonViewManager.ButtonViewGroup> {
 
   static class ButtonViewGroup extends ViewGroup {
 
@@ -26,8 +26,8 @@ public class RNGestureHandlerButtonViewManager extends
     int mBackgroundColor = Color.TRANSPARENT;
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
+    boolean mUseRippleEffect = false;
     boolean mNeedBackgroundUpdate = false;
-
 
     public ButtonViewGroup(Context context) {
       super(context);
@@ -71,18 +71,22 @@ public class RNGestureHandlerButtonViewManager extends
         // reset foreground
         setForeground(null);
       }
-      if (mUseForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (mUseForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mUseRippleEffect) {
         setForeground(createSelectableDrawable());
         if (mBackgroundColor != Color.TRANSPARENT) {
           setBackgroundColor(mBackgroundColor);
         }
-      } else if (mBackgroundColor == Color.TRANSPARENT) {
+      } else if (mBackgroundColor == Color.TRANSPARENT && mUseRippleEffect) {
         setBackground(createSelectableDrawable());
       } else {
         ColorDrawable colorDrawable = new ColorDrawable(mBackgroundColor);
-        LayerDrawable layerDrawable = new LayerDrawable(
-                new Drawable[] { colorDrawable, createSelectableDrawable() });
-        setBackground(layerDrawable);
+
+        if (mUseRippleEffect) {
+          LayerDrawable layerDrawable = new LayerDrawable(new Drawable[] { colorDrawable, createSelectableDrawable() });
+          setBackground(layerDrawable);
+        } else {
+          setBackground(colorDrawable);
+        }
       }
     }
 
@@ -95,9 +99,13 @@ public class RNGestureHandlerButtonViewManager extends
       mUseBorderless = useBorderless;
     }
 
+    public void setUseRippleEffect(boolean useRippleEffect) {
+      mUseRippleEffect = useRippleEffect;
+      mNeedBackgroundUpdate = true;
+    }
+
     private Drawable createSelectableDrawable() {
-      String identifier = mUseBorderless ? "selectableItemBackgroundBorderless"
-              : "selectableItemBackground";
+      String identifier = mUseBorderless ? "selectableItemBackgroundBorderless" : "selectableItemBackground";
       int attrID = getResources().getIdentifier(identifier, "attr", "android");
       getContext().getTheme().resolveAttribute(attrID, sResolveOutValue, true);
       final int version = Build.VERSION.SDK_INT;
@@ -166,6 +174,11 @@ public class RNGestureHandlerButtonViewManager extends
   @ReactProp(name = "enabled")
   public void setEnabled(ButtonViewGroup view, boolean enabled) {
     view.setEnabled(enabled);
+  }
+
+  @ReactProp(name = "useRippleEffect")
+  public void setRippleEffect(ButtonViewGroup view, boolean useRippleEffect) {
+    view.setUseRippleEffect(useRippleEffect);
   }
 
   @Override
