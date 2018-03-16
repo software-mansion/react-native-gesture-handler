@@ -1,21 +1,19 @@
+require "json"
 
 Pod::Spec.new do |s|
+  # NPM package specification
+  package = JSON.parse(File.read(File.join(File.dirname(__FILE__), "../package.json")))
+
   s.name         = "RNGestureHandler"
-  s.version      = "1.0.0"
-  s.summary      = "RNGestureHandler"
-  s.description  = <<-DESC
-                  RNGestureHandler
-                   DESC
+  s.version      = package["version"]
+  s.summary      = package["description"]
   s.homepage     = "https://github.com/kmagiera/react-native-gesture-handler"
   s.license      = "MIT"
-  s.author             = { "author" => "author@domain.cn" }
+  s.author       = { package["author"]["name"] => package["author"]["email"] }
   s.platform     = :ios, "7.0"
-  s.source       = { :git => "https://github.com/author/RNGestureHandler.git", :tag => "master" }
-  s.source_files  = "RNGestureHandler/**/*.{h,m}"
-  s.requires_arc = true
+  s.source       = { :git => "https://github.com/author/RNGestureHandler.git", :tag => "#{s.version}" }
+  s.source_files = "**/*.{h,m}"
 
   s.dependency "React"
 
 end
-
-  
