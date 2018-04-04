@@ -68,7 +68,7 @@ export type DrawerMovementOptionType = {
 
 export default class DrawerLayout extends Component<PropType, StateType> {
   static defaultProps = {
-    drawerWidth: 0,
+    drawerWidth: 200,
     drawerPosition: 'left',
     useNativeAnimations: true,
     drawerType: 'front',
