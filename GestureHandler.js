@@ -97,6 +97,13 @@ const stateToPropMappings = {
   [State.END]: 'onEnded',
 };
 
+const Directions = {
+  RIGTH: 0,
+  LEFT: 1,
+  UP: 2,
+  DOWN: 3
+}
+
 function canUseNativeParam(param) {
   return (
     param !== undefined &&
@@ -305,6 +312,16 @@ const TapGestureHandler = createHandler(
   },
   {}
 );
+
+const FlingGestureHandler = createHandler(
+  'FlingGestureHandler',
+  {
+    minNumberOfTouches: PropTypes.number,
+    direction: PropTypes.number
+  },
+  {}
+);
+
 const LongPressGestureHandler = createHandler(
   'LongPressGestureHandler',
   {
@@ -597,6 +614,7 @@ export {
   WrappedWebView as WebView,
   NativeViewGestureHandler,
   TapGestureHandler,
+  FlingGestureHandler,
   LongPressGestureHandler,
   PanGestureHandler,
   PinchGestureHandler,
@@ -612,4 +630,5 @@ export {
   gestureHandlerRootHOC,
   Swipeable,
   DrawerLayout,
+  Directions
 };
