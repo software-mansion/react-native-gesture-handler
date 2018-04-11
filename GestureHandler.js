@@ -316,7 +316,7 @@ const TapGestureHandler = createHandler(
 const FlingGestureHandler = createHandler(
   'FlingGestureHandler',
   {
-    minNumberOfTouches: PropTypes.number,
+    numberOfTouches: PropTypes.number,
     direction: PropTypes.number
   },
   {}

@@ -48,7 +48,7 @@
         }
     }
     
-    prop = config[@"minNumberOfTouches"];
+    prop = config[@"numberOfTouches"];
     if (prop != nil) {
         recognizer.numberOfTouchesRequired = [RCTConvert NSInteger:prop];
     }

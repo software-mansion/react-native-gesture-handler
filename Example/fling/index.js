@@ -31,7 +31,7 @@ class Fling extends Component {
     return (
       <FlingGestureHandler
         direction={Directions.LEFT}
-        minNumberOfTouches={2}
+        numberOfTouches={2}
         onHandlerStateChange={(ev) => this._onTapHandlerStateChange(ev, 10)}
       >
         <FlingGestureHandler
