@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.view.MotionEvent;
 
 public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
-  private static final long DEFAULT_MAX_DURATION_MS = 600;
+  private static final long DEFAULT_MAX_DURATION_MS = 800;
   private static final long DEFAULT_MIN_ACCEPTABLE_DELTA = 90;
   private static final int DEFAULT_DIRECTION = DIRECTION_RIGHT;
   private static final int DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
