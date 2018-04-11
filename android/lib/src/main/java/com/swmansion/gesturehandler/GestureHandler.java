@@ -21,6 +21,11 @@ public class GestureHandler<T extends GestureHandler> {
   private static final int HIT_SLOP_WIDTH_IDX = 4;
   private static final int HIT_SLOP_HEIGHT_IDX = 5;
 
+  protected static final int DIRECTION_RIGHT = 0;
+  protected static final int DIRECTION_LEFT = 1;
+  protected static final int DIRECTION_UP = 2;
+  protected static final int DIRECTION_DOWN = 3;
+
   private int mTag;
   private View mView;
   private int mState = STATE_UNDETERMINED;

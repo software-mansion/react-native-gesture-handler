@@ -31,6 +31,7 @@ class Fling extends Component {
     return (
       <FlingGestureHandler
         direction={Directions.LEFT}
+        minNumberOfTouches={2}
         onHandlerStateChange={(ev) => this._onTapHandlerStateChange(ev, 10)}
       >
         <FlingGestureHandler
@@ -63,7 +64,7 @@ export default class Example extends Component {
       <View>
         <Fling/>
         <Text>
-          Move left or right and watch magic
+          Move left (with two fingers) or right (with one finger) and watch magic happens
         </Text>
       </View>
     );

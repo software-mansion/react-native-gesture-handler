@@ -54,14 +54,5 @@
     }
 }
 
-
-
-- (RNGestureHandlerEventExtraData *)eventExtraData:(UISwipeGestureRecognizer *)recognizer
-{
-    return [RNGestureHandlerEventExtraData
-            withNumberOfTouches:recognizer.numberOfTouches
-            withDirection:recognizer.direction];
-}
-
 @end
 
