@@ -1,5 +1,5 @@
 //
-//  RNTapHandler.h
+//  RNFlingHandler.h
 //  RNGestureHandler
 //
 //  Created by Michał Osadnik on 10/04/2018.
