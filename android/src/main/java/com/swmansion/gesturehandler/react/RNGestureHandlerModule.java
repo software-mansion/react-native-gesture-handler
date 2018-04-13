@@ -366,6 +366,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void extractEventData(RotationGestureHandler handler, WritableMap eventData) {
       eventData.putDouble("rotation", handler.getRotation());
+      eventData.putDouble("rotation", handler.getRotation());
       eventData.putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.getAnchorX()));
       eventData.putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.getAnchorY()));
       eventData.putDouble("velocity", handler.getVelocity());
@@ -482,6 +483,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             "CANCELLED", GestureHandler.STATE_CANCELLED,
             "FAILED", GestureHandler.STATE_FAILED,
             "END", GestureHandler.STATE_END
+    ), "Direction", MapBuilder.of(
+            "RIGHT", GestureHandler.DIRECTION_RIGHT,
+            "LEFT", GestureHandler.DIRECTION_LEFT,
+            "UP", GestureHandler.DIRECTION_UP,
+            "DOWN", GestureHandler.DIRECTION_DOWN
     ));
   }
 

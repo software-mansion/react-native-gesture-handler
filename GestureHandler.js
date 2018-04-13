@@ -52,6 +52,8 @@ ReactNativeBridgeEventPlugin.processEventTypes({
 
 const State = RNGestureHandlerModule.State;
 
+const Directions = RNGestureHandlerModule.Direction;
+
 let handlerTag = 1;
 const handlerIDToTag = {};
 
@@ -96,13 +98,6 @@ const stateToPropMappings = {
   [State.ACTIVE]: 'onActivated',
   [State.END]: 'onEnded',
 };
-
-const Directions = {
-  RIGTH: 0,
-  LEFT: 1,
-  UP: 2,
-  DOWN: 3
-}
 
 function canUseNativeParam(param) {
   return (
@@ -317,7 +312,7 @@ const FlingGestureHandler = createHandler(
   'FlingGestureHandler',
   {
     numberOfTouches: PropTypes.number,
-    direction: PropTypes.number
+    direction: PropTypes.number,
   },
   {}
 );
@@ -630,5 +625,5 @@ export {
   gestureHandlerRootHOC,
   Swipeable,
   DrawerLayout,
-  Directions
+  Directions,
 };

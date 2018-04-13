@@ -37,7 +37,7 @@ const SCREENS = {
   },
   Fling: {
     screen: Fling,
-    title: 'Fling handrer',
+    title: 'Fling handler',
   },
   PanResponder: { screen: PanResponder },
   Bouncing: { screen: Bouncing, title: 'Twist & bounce back animation' },

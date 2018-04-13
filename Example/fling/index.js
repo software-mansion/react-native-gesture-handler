@@ -23,7 +23,10 @@ class Fling extends Component {
 
   _onTapHandlerStateChange = ({ nativeEvent }, offset) => {
     if (nativeEvent.oldState === State.ACTIVE) {
-      this._touchX.setValue(this._touchX._value + offset);
+      Animated.spring(this._touchX, {
+        toValue: this._touchX._value + offset,
+        useNativeDriver: USE_NATIVE_DRIVER,
+      }).start();
     }
   };
 
@@ -32,12 +35,10 @@ class Fling extends Component {
       <FlingGestureHandler
         direction={Directions.LEFT}
         numberOfTouches={2}
-        onHandlerStateChange={(ev) => this._onTapHandlerStateChange(ev, 10)}
-      >
+        onHandlerStateChange={ev => this._onTapHandlerStateChange(ev, 10)}>
         <FlingGestureHandler
           direction={Directions.RIGHT}
-          onHandlerStateChange={(ev) => this._onTapHandlerStateChange(ev, -10)}
-        >
+          onHandlerStateChange={ev => this._onTapHandlerStateChange(ev, -10)}>
           <View style={styles.horizontalPan}>
             <Animated.View
               style={[
@@ -62,9 +63,10 @@ export default class Example extends Component {
   render() {
     return (
       <View>
-        <Fling/>
+        <Fling />
         <Text>
-          Move left (with two fingers) or right (with one finger) and watch magic happens
+          Move left (with two fingers) or right (with one finger) and watch
+          magic happens
         </Text>
       </View>
     );

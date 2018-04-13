@@ -1,13 +1,13 @@
-//
-//  RNFlingHandler.m
-//  RNGestureHandler
-//
-//  Created by Michał Osadnik on 10/04/2018.
-//  Copyright © 2018 Software Mansion. All rights reserved.
-//
-
-
 #import "RNFlingHandler.h"
+
+@implementation RCTConvert (UISwipeGestureRecognizerDirection)
+RCT_ENUM_CONVERTER(UISwipeGestureRecognizerDirection, (@{
+                                                        @(RNGestureHandlerDirectionLeft): @(UISwipeGestureRecognizerDirectionLeft),
+                                                        @(RNGestureHandlerDirectionRight): @(UISwipeGestureRecognizerDirectionRight),
+                                                        @(RNGestureHandlerDirectionUp): @(UISwipeGestureRecognizerDirectionUp),
+                                                        @(RNGestureHandlerDirectionDown): @(UISwipeGestureRecognizerDirectionDown),
+                                                        }), UISwipeGestureRecognizerDirectionLeft, integerValue)
+@end
 
 @implementation RNFlingGestureHandler
 
@@ -25,27 +25,10 @@
     [super configure:config];
     UISwipeGestureRecognizer *recognizer = (UISwipeGestureRecognizer *)_recognizer;
 
-    
     id prop = config[@"direction"];
     if (prop != nil) {
-        
-        NSInteger direction = [RCTConvert NSInteger:prop];
-        switch (direction) {
-            case 0:
-                recognizer.direction = UISwipeGestureRecognizerDirectionRight;
-                break;
-            case 1:
-                recognizer.direction = UISwipeGestureRecognizerDirectionLeft;
-                break;
-            case 2:
-                recognizer.direction = UISwipeGestureRecognizerDirectionUp;
-                break;
-            case 3:
-                recognizer.direction = UISwipeGestureRecognizerDirectionDown;
-                break;
-            default:
-                break;
-        }
+        RNGestureHandlerDirection direction = [RCTConvert NSInteger:prop];
+        recognizer.direction = [RCTConvert UISwipeGestureRecognizerDirection:prop];
     }
     
     prop = config[@"numberOfTouches"];
