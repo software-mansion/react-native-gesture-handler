@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, RNGestureHandlerDirection) {
-    RNGestureHandlerDirectionRight = 0,
-    RNGestureHandlerDirectionLeft = 1,
-    RNGestureHandlerDirectionUp = 2,
-    RNGestureHandlerDirectionDown = 3,
+    RNGestureHandlerDirectionRight = 1,
+    RNGestureHandlerDirectionLeft = 2,
+    RNGestureHandlerDirectionUp = 4,
+    RNGestureHandlerDirectionDown = 8,
 };

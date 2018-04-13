@@ -1,14 +1,5 @@
 #import "RNFlingHandler.h"
 
-@implementation RCTConvert (UISwipeGestureRecognizerDirection)
-RCT_ENUM_CONVERTER(UISwipeGestureRecognizerDirection, (@{
-                                                        @(RNGestureHandlerDirectionLeft): @(UISwipeGestureRecognizerDirectionLeft),
-                                                        @(RNGestureHandlerDirectionRight): @(UISwipeGestureRecognizerDirectionRight),
-                                                        @(RNGestureHandlerDirectionUp): @(UISwipeGestureRecognizerDirectionUp),
-                                                        @(RNGestureHandlerDirectionDown): @(UISwipeGestureRecognizerDirectionDown),
-                                                        }), UISwipeGestureRecognizerDirectionLeft, integerValue)
-@end
-
 @implementation RNFlingGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -27,8 +18,7 @@ RCT_ENUM_CONVERTER(UISwipeGestureRecognizerDirection, (@{
 
     id prop = config[@"direction"];
     if (prop != nil) {
-        RNGestureHandlerDirection direction = [RCTConvert NSInteger:prop];
-        recognizer.direction = [RCTConvert UISwipeGestureRecognizerDirection:prop];
+        recognizer.direction = [RCTConvert NSInteger:prop];
     }
     
     prop = config[@"numberOfTouches"];
