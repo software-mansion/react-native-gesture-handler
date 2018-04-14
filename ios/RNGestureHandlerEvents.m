@@ -23,16 +23,6 @@
                            @"absoluteY": @(absolutePosition.y)}];
 }
 
-+ (RNGestureHandlerEventExtraData *) withNumberOfTouches:(NSUInteger)numberOfTouches
-                                           withDirection:(UISwipeGestureRecognizerDirection)direction
-{
-    return [[RNGestureHandlerEventExtraData alloc]
-            initWithData:@{
-                           @"numberOfTouches": @(numberOfTouches),
-                           @"direction": @(direction)}];
-}
-
-
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation

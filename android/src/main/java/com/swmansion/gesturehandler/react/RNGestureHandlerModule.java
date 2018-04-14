@@ -71,7 +71,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_MIN_POINTERS = "minPointers";
   private static final String KEY_PAN_MAX_POINTERS = "maxPointers";
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
-  private static final String KEY_NUMBER_OF_TOUCHES= "numberOfTouches";
+  private static final String KEY_NUMBER_OF_TOUCHES = "numberOfTouches";
   private static final String KEY_DIRECTION= "direction";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
