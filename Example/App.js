@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, FlatList, StyleSheet } from 'react-native';
+import { Text, View, FlatList, StyleSheet, YellowBox } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
@@ -15,6 +15,13 @@ import Bouncing from './bouncing';
 import HorizontalDrawer from './horizontalDrawer';
 import ChatHeads from './chatHeads';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
+
+YellowBox.ignoreWarnings([
+  'Warning: isMounted(...) is deprecated',
+  'Module RCTImageLoader',
+]);
+// refers to bug in React Navigation which should be fixed soon
+// https://github.com/react-navigation/react-navigation/issues/3956
 
 const SCREENS = {
   Rows: { screen: Rows, title: 'Table rows & buttons' },
