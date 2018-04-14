@@ -8,10 +8,9 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
   private static final long DEFAULT_MIN_ACCEPTABLE_DELTA = 90;
   private static final int DEFAULT_DIRECTION = DIRECTION_RIGHT;
   private static final int DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
-
+  
   private long mMaxDurationMs = DEFAULT_MAX_DURATION_MS;
   private long mMinAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA;
-
   private int mDirection = DEFAULT_DIRECTION;
   private int mNumberOfTouchesRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
   private float mStartX, mStartY;
@@ -49,10 +48,14 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
 
   private void endFling(MotionEvent event) {
     if (mMaxNumberOfTouchesSimultaneously == mNumberOfTouchesRequired &&
-            ((mDirection == DIRECTION_RIGHT && event.getX() - mStartX > mMinAcceptableDelta) ||
-            (mDirection == DIRECTION_LEFT && mStartX - event.getX() > mMinAcceptableDelta) ||
-            (mDirection == DIRECTION_UP && mStartY - event.getY() > mMinAcceptableDelta) ||
-            (mDirection == DIRECTION_DOWN && event.getY() - mStartY > mMinAcceptableDelta))) {
+            (((mDirection & DIRECTION_RIGHT) != 0 &&
+                    event.getRawX() - mStartX > mMinAcceptableDelta) ||
+            ((mDirection & DIRECTION_LEFT) !=0 &&
+                    mStartX - event.getRawX() > mMinAcceptableDelta) ||
+            ((mDirection & DIRECTION_UP) !=0 &&
+                    mStartY - event.getRawY() > mMinAcceptableDelta) ||
+            ((mDirection & DIRECTION_DOWN) !=0 &&
+                    event.getRawY() - mStartY > mMinAcceptableDelta))) {
       activate();
       end();
     } else {

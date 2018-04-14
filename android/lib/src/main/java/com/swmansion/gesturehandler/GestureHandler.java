@@ -21,10 +21,10 @@ public class GestureHandler<T extends GestureHandler> {
   private static final int HIT_SLOP_WIDTH_IDX = 4;
   private static final int HIT_SLOP_HEIGHT_IDX = 5;
 
-  public static final int DIRECTION_RIGHT = 0;
-  public static final int DIRECTION_LEFT = 1;
-  public static final int DIRECTION_UP = 2;
-  public static final int DIRECTION_DOWN = 3;
+  public static final int DIRECTION_RIGHT = 1;
+  public static final int DIRECTION_LEFT = 2;
+  public static final int DIRECTION_UP = 4;
+  public static final int DIRECTION_DOWN = 8;
 
   private int mTag;
   private View mView;

@@ -19,9 +19,10 @@ class Fling extends Component {
       this._touchX,
       new Animated.Value(-circleRadius)
     );
+    this._translateY = new Animated.Value(0);
   }
 
-  _onTapHandlerStateChange = ({ nativeEvent }, offset) => {
+  _onVerticalFlingHandlerStateChange = ({ nativeEvent }, offset) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       Animated.spring(this._touchX, {
         toValue: this._touchX._value + offset,
@@ -30,15 +31,26 @@ class Fling extends Component {
     }
   };
 
+  _onHorizontalFlingHandlerStateChange = ({ nativeEvent }) => {
+    if (nativeEvent.oldState === State.ACTIVE) {
+      Animated.spring(this._translateY, {
+        toValue: this._translateY._value + 10,
+        useNativeDriver: USE_NATIVE_DRIVER,
+      }).start();
+    }
+  };
+
   render() {
     return (
       <FlingGestureHandler
-        direction={Directions.LEFT}
+        direction={Directions.UP}
         numberOfTouches={2}
-        onHandlerStateChange={ev => this._onTapHandlerStateChange(ev, 10)}>
+        onHandlerStateChange={this._onHorizontalFlingHandlerStateChange}>
         <FlingGestureHandler
-          direction={Directions.RIGHT}
-          onHandlerStateChange={ev => this._onTapHandlerStateChange(ev, -10)}>
+          direction={Directions.RIGHT | Directions.LEFT}
+          onHandlerStateChange={ev =>
+            this._onVerticalFlingHandlerStateChange(ev, -10)
+          }>
           <View style={styles.horizontalPan}>
             <Animated.View
               style={[
@@ -47,6 +59,9 @@ class Fling extends Component {
                   transform: [
                     {
                       translateX: this._translateX,
+                    },
+                    {
+                      translateY: this._translateY,
                     },
                   ],
                 },
@@ -65,7 +80,7 @@ export default class Example extends Component {
       <View>
         <Fling />
         <Text>
-          Move left (with two fingers) or right (with one finger) and watch
+          Move up (with two fingers) or right/left (with one finger) and watch
           magic happens
         </Text>
       </View>

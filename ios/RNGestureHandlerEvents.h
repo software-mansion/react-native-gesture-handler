@@ -23,7 +23,7 @@
                                 withVelocity:(CGFloat)velocity
                          withNumberOfTouches:(NSUInteger)numberOfTouches;
 + (RNGestureHandlerEventExtraData *)withNumberOfTouches:(NSUInteger)numberOfTouches
-                                           withDirection:(UISwipeGestureRecognizerDirection)direction;
+                                          withDirection:(UISwipeGestureRecognizerDirection)direction;
 + (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
