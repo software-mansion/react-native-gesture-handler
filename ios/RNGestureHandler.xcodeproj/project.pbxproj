@@ -34,6 +34,9 @@
 		44AEC73A1F8FA1270086889F /* RNTapHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC72E1F8FA1270086889F /* RNTapHandler.m */; };
 		44BE34481F1E1AAA008679D1 /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */; };
 		44BE344A1F1E1ABA008679D1 /* RNGestureHandlerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 44BE34491F1E1ABA008679D1 /* RNGestureHandlerManager.h */; };
+		660F46742080D8F700B7B50D /* RNGestureHandlerDirection.h in Headers */ = {isa = PBXBuildFile; fileRef = 660F46732080D8F600B7B50D /* RNGestureHandlerDirection.h */; };
+		66A291D5207D032400809C27 /* RNFlingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A291D3207D032400809C27 /* RNFlingHandler.m */; };
+		66A291D6207D032400809C27 /* RNFlingHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A291D4207D032400809C27 /* RNFlingHandler.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -77,6 +80,9 @@
 		44AEC72E1F8FA1270086889F /* RNTapHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNTapHandler.m; path = Handlers/RNTapHandler.m; sourceTree = "<group>"; };
 		44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerManager.m; sourceTree = "<group>"; };
 		44BE34491F1E1ABA008679D1 /* RNGestureHandlerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerManager.h; sourceTree = "<group>"; };
+		660F46732080D8F600B7B50D /* RNGestureHandlerDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerDirection.h; sourceTree = "<group>"; };
+		66A291D3207D032400809C27 /* RNFlingHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFlingHandler.m; path = Handlers/RNFlingHandler.m; sourceTree = "<group>"; };
+		66A291D4207D032400809C27 /* RNFlingHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFlingHandler.h; path = Handlers/RNFlingHandler.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +107,8 @@
 		44AEC7221F8FA1150086889F /* Handlers */ = {
 			isa = PBXGroup;
 			children = (
+				66A291D4207D032400809C27 /* RNFlingHandler.h */,
+				66A291D3207D032400809C27 /* RNFlingHandler.m */,
 				44AEC7231F8FA1270086889F /* RNLongPressHandler.h */,
 				44AEC7241F8FA1270086889F /* RNLongPressHandler.m */,
 				44AEC7251F8FA1270086889F /* RNNativeViewHandler.h */,
@@ -120,6 +128,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				660F46732080D8F600B7B50D /* RNGestureHandlerDirection.h */,
 				44AEC7221F8FA1150086889F /* Handlers */,
 				44AEC7161F8F9C090086889F /* RNGestureHandlerRegistry.m */,
 				44AEC7141F8F9BEF0086889F /* RNGestureHandlerRegistry.h */,
@@ -147,6 +156,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66A291D6207D032400809C27 /* RNFlingHandler.h in Headers */,
 				44AEC72F1F8FA1270086889F /* RNLongPressHandler.h in Headers */,
 				446E7FE61ED6E177009282E7 /* RNGestureHandlerModule.h in Headers */,
 				44AEC7351F8FA1270086889F /* RNPinchHandler.h in Headers */,
@@ -161,6 +171,7 @@
 				44AEC7311F8FA1270086889F /* RNNativeViewHandler.h in Headers */,
 				446E7FE71ED6E177009282E7 /* RNGestureHandlerState.h in Headers */,
 				44AEC71F1F8FA0700086889F /* RNGestureHandlerButton.h in Headers */,
+				660F46742080D8F700B7B50D /* RNGestureHandlerDirection.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,6 +244,7 @@
 				44AEC7381F8FA1270086889F /* RNRotationHandler.m in Sources */,
 				44AEC7321F8FA1270086889F /* RNNativeViewHandler.m in Sources */,
 				44AEC7131F8F9B770086889F /* RNRootViewGestureRecognizer.m in Sources */,
+				66A291D5207D032400809C27 /* RNFlingHandler.m in Sources */,
 				44AEC7361F8FA1270086889F /* RNPinchHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

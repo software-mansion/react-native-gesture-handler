@@ -21,7 +21,9 @@
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale
                               withFocalPoint:(CGPoint)focalPoint
                                 withVelocity:(CGFloat)velocity
-                            withNumberOfTouches:(NSUInteger)numberOfTouches;
+                         withNumberOfTouches:(NSUInteger)numberOfTouches;
++ (RNGestureHandlerEventExtraData *)withNumberOfTouches:(NSUInteger)numberOfTouches
+                                          withDirection:(UISwipeGestureRecognizerDirection)direction;
 + (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity

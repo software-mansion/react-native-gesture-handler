@@ -52,6 +52,8 @@ ReactNativeBridgeEventPlugin.processEventTypes({
 
 const State = RNGestureHandlerModule.State;
 
+const Directions = RNGestureHandlerModule.Direction;
+
 let handlerTag = 1;
 const handlerIDToTag = {};
 
@@ -305,6 +307,16 @@ const TapGestureHandler = createHandler(
   },
   {}
 );
+
+const FlingGestureHandler = createHandler(
+  'FlingGestureHandler',
+  {
+    numberOfPointers: PropTypes.number,
+    direction: PropTypes.number,
+  },
+  {}
+);
+
 const LongPressGestureHandler = createHandler(
   'LongPressGestureHandler',
   {
@@ -597,6 +609,7 @@ export {
   WrappedWebView as WebView,
   NativeViewGestureHandler,
   TapGestureHandler,
+  FlingGestureHandler,
   LongPressGestureHandler,
   PanGestureHandler,
   PinchGestureHandler,
@@ -612,4 +625,5 @@ export {
   gestureHandlerRootHOC,
   Swipeable,
   DrawerLayout,
+  Directions,
 };
