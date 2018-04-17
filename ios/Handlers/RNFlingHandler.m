@@ -21,7 +21,7 @@
         recognizer.direction = [RCTConvert NSInteger:prop];
     }
     
-    prop = config[@"numberOfTouches"];
+    prop = config[@"numberOfPointers"];
     if (prop != nil) {
         recognizer.numberOfTouchesRequired = [RCTConvert NSInteger:prop];
     }

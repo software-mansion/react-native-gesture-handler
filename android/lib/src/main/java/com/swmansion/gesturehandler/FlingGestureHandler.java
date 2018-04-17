@@ -5,18 +5,18 @@ import android.view.MotionEvent;
 
 public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
   private static final long DEFAULT_MAX_DURATION_MS = 800;
-  private static final long DEFAULT_MIN_ACCEPTABLE_DELTA = 90;
+  private static final long DEFAULT_MIN_ACCEPTABLE_DELTA = 160;
   private static final int DEFAULT_DIRECTION = DIRECTION_RIGHT;
   private static final int DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
   
   private long mMaxDurationMs = DEFAULT_MAX_DURATION_MS;
   private long mMinAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA;
   private int mDirection = DEFAULT_DIRECTION;
-  private int mNumberOfTouchesRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
+  private int mNumberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
   private float mStartX, mStartY;
 
   private Handler mHandler;
-  private int mMaxNumberOfTouchesSimultaneously;
+  private int mMaxNumberOfPointersSimultaneously;
 
   private final Runnable mFailDelayed = new Runnable() {
     @Override
@@ -25,8 +25,8 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     }
   };
 
-  public void setNumberOfTouchesRequired(int numberOfTouchesRequired) {
-    mNumberOfTouchesRequired = numberOfTouchesRequired;
+  public void setNumberOfPointersRequired(int numberOfPointersRequired) {
+    mNumberOfPointersRequired = numberOfPointersRequired;
   }
 
   public void setDirection(int direction) {
@@ -37,7 +37,7 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     mStartX = event.getRawX();
     mStartY = event.getRawY();
     begin();
-    mMaxNumberOfTouchesSimultaneously = 1;
+    mMaxNumberOfPointersSimultaneously = 1;
     if (mHandler == null) {
       mHandler = new Handler();
     } else {
@@ -46,21 +46,30 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     mHandler.postDelayed(mFailDelayed, mMaxDurationMs);
   }
 
-  private void endFling(MotionEvent event) {
-    if (mMaxNumberOfTouchesSimultaneously == mNumberOfTouchesRequired &&
+  private boolean tryEndFling(MotionEvent event) {
+    if (mMaxNumberOfPointersSimultaneously == mNumberOfPointersRequired &&
             (((mDirection & DIRECTION_RIGHT) != 0 &&
                     event.getRawX() - mStartX > mMinAcceptableDelta) ||
-            ((mDirection & DIRECTION_LEFT) !=0 &&
-                    mStartX - event.getRawX() > mMinAcceptableDelta) ||
-            ((mDirection & DIRECTION_UP) !=0 &&
-                    mStartY - event.getRawY() > mMinAcceptableDelta) ||
-            ((mDirection & DIRECTION_DOWN) !=0 &&
-                    event.getRawY() - mStartY > mMinAcceptableDelta))) {
+                    ((mDirection & DIRECTION_LEFT) !=0 &&
+                            mStartX - event.getRawX() > mMinAcceptableDelta) ||
+                    ((mDirection & DIRECTION_UP) !=0 &&
+                            mStartY - event.getRawY() > mMinAcceptableDelta) ||
+                    ((mDirection & DIRECTION_DOWN) !=0 &&
+                            event.getRawY() - mStartY > mMinAcceptableDelta))) {
+      mHandler.removeCallbacksAndMessages(null);
       activate();
       end();
+      return true;
     } else {
+      return false;
+    }
+  }
+
+  private void endFling(MotionEvent event) {
+    if (!tryEndFling(event)) {
       fail();
     }
+
   }
 
   @Override
@@ -73,8 +82,9 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
 
 
     if (state == STATE_BEGAN) {
-      if (event.getPointerCount() > mMaxNumberOfTouchesSimultaneously) {
-        mMaxNumberOfTouchesSimultaneously = event.getPointerCount();
+      tryEndFling(event);
+      if (event.getPointerCount() > mMaxNumberOfPointersSimultaneously) {
+        mMaxNumberOfPointersSimultaneously = event.getPointerCount();
       }
 
       int action = event.getActionMasked();

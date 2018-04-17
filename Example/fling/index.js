@@ -44,7 +44,7 @@ class Fling extends Component {
     return (
       <FlingGestureHandler
         direction={Directions.UP}
-        numberOfTouches={2}
+        numberOfPointers={2}
         onHandlerStateChange={this._onHorizontalFlingHandlerStateChange}>
         <FlingGestureHandler
           direction={Directions.RIGHT | Directions.LEFT}
