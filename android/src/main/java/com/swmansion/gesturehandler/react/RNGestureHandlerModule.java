@@ -72,7 +72,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_MAX_POINTERS = "maxPointers";
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
   private static final String KEY_NUMBER_OF_POINTERS = "numberOfPointers";
-  private static final String KEY_DIRECTION= "direction";
+  private static final String KEY_DIRECTION = "direction";
+  private static final String KEY_PAN_SHOULD_ACTIVATE_BEFORE_FINISH = "shouldActivateBeforeFinish";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
           implements RNGestureHandlerEventDataExtractor<T> {
@@ -279,6 +280,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (config.hasKey(KEY_PAN_AVG_TOUCHES)) {
         handler.setAverageTouches(config.getBoolean(KEY_PAN_AVG_TOUCHES));
       }
+      if (config.hasKey(KEY_PAN_SHOULD_ACTIVATE_BEFORE_FINISH)) {
+        handler.setShouldActivateBeforeFinish(
+                config.getBoolean(KEY_PAN_SHOULD_ACTIVATE_BEFORE_FINISH));
+      }
+
     }
 
     @Override

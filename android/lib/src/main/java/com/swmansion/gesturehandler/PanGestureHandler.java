@@ -12,6 +12,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private static int DEFAULT_MIN_POINTERS = 1;
   private static int DEFAULT_MAX_POINTERS = 10;
+  private static boolean DEFAULT_SHOULD_ACTIVATE_BEFORE_FINISH = false;
 
   private float mMinOffsetX = MIN_VALUE_IGNORE;
   private float mMinOffsetY = MIN_VALUE_IGNORE;
@@ -25,6 +26,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mMinVelocitySq = MIN_VALUE_IGNORE;
   private int mMinPointers = DEFAULT_MIN_POINTERS;
   private int mMaxPointers = DEFAULT_MAX_POINTERS;
+  private boolean mShouldActivateBeforeFinish = DEFAULT_SHOULD_ACTIVATE_BEFORE_FINISH;
 
   private float mStartX, mStartY;
   private float mOffsetX, mOffsetY;
@@ -152,6 +154,11 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return this;
   }
 
+  public PanGestureHandler setShouldActivateBeforeFinish(boolean shouldActivateBeforeFinish) {
+    mShouldActivateBeforeFinish = shouldActivateBeforeFinish;
+    return this;
+  }
+
   /**
    * @param minVelocity in pixels per second
    */
@@ -271,7 +278,12 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       if (state == STATE_ACTIVE) {
         end();
       } else {
-        fail();
+        if (mShouldActivateBeforeFinish) {
+          activate();
+          end();
+        } else {
+          fail();
+        }
       }
     } else if (action == MotionEvent.ACTION_POINTER_DOWN && event.getPointerCount() > mMaxPointers) {
       // When new finger is placed down (POINTER_DOWN) we check if MAX_POINTERS is not exceeded
