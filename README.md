@@ -90,7 +90,7 @@ Here are a gesture recognizers currently available in the package:
  - `PanGestureHandler`
  - `PinchGestureHandler`
  - `RotationGestureHandler`
-- `FlingGestureHandler`
+ - `FlingGestureHandler`
 
 Whenever you use a native component that should handle touch events you can either wrap it with `NativeViewGestureHandler` or import wrapper component exported by the library instead of importing it from `react-native` package. Here is the list of available components:
  - `ScrollView`
@@ -165,8 +165,8 @@ Library exports a `State` object that provides a number of constants used to exp
 
 #### `FlingGestureHandler` extra properties
 
-- `direction`
-- `numberOfPointers`
+ - `direction`
+ - `numberOfPointers`
 
 ## Buttons
 
