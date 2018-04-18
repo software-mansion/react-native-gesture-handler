@@ -77,7 +77,7 @@
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     [super touchesMoved:touches withEvent:event];
-    
+
     if (self.state != UIGestureRecognizerStatePossible) {
         return;
     }

@@ -4,6 +4,7 @@ import {
   PanGestureHandler,
   NativeViewGestureHandler,
   State,
+  TapGestureHandler,
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../common';
@@ -100,10 +101,9 @@ export default class BottomSheet extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <PanGestureHandler
-          shouldActivateBeforeFinish
+        <TapGestureHandler
+          maxDurationMs={100000}
           id="masterdrawer"
-          minDeltaY={2000}
           maxDeltaY={this.state.lastSnap - SNAP_POINTS_FROM_TOP[0]}>
           <View style={StyleSheet.absoluteFillObject}>
             <PanGestureHandler
@@ -131,12 +131,14 @@ export default class BottomSheet extends Component {
                     onScrollBeginDrag={this._onRegisterLastScroll}
                     scrollEventThrottle={1}>
                     <LoremIpsum />
+                    <LoremIpsum />
+                    <LoremIpsum />
                   </Animated.ScrollView>
                 </NativeViewGestureHandler>
               </Animated.View>
             </PanGestureHandler>
           </View>
-        </PanGestureHandler>
+        </TapGestureHandler>
       </View>
     );
   }
