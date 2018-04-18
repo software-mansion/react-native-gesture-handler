@@ -157,7 +157,6 @@ Library exports a `State` object that provides a number of constants used to exp
  - `minVelocityY`
  - `minPointers`
  - `maxPointers`
-  - `shouldActivateBeforeFinish` (you could use this handler for some kind of dicretre gestures - if gesture does not fail before releasing pointer, it will get active for a while like Tap or Fling)
  - `avgTouches` (**Android only**)
 
 #### `PinchGestureHandler`

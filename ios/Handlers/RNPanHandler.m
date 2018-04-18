@@ -22,7 +22,6 @@
 @property (nonatomic) CGFloat minVelocitySq;
 @property (nonatomic) CGFloat maxDeltaX;
 @property (nonatomic) CGFloat maxDeltaY;
-@property (nonatomic) BOOL shouldActivateBeforeFinish;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
@@ -50,7 +49,6 @@
         _minVelocityY = NAN;
         _minVelocitySq = NAN;
         _hasCustomActivationCriteria = NO;
-        _shouldActivateBeforeFinish = NO;
         _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
     }
     return self;
@@ -102,14 +100,6 @@
             [self setTranslation:CGPointMake(0, 0) inView:self.view];
         }
     }
-}
-
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-    if(self.shouldActivateBeforeFinish) {
-        self.state = UIGestureRecognizerStateBegan;
-    }
-     [super touchesEnded:touches withEvent:event];
 }
 
 - (void)reset
@@ -199,13 +189,8 @@
 
     APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
     APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
-    
-    id prop = config[@"shouldActivateBeforeFinish"];
-    if (prop != nil) {
-        recognizer.shouldActivateBeforeFinish = [RCTConvert BOOL:prop];
-    }
 
-    prop = config[@"minDist"];
+    id prop = config[@"minDist"];
     if (prop != nil) {
         CGFloat dist = [RCTConvert CGFloat:prop];
         recognizer.minDistSq = dist * dist;
