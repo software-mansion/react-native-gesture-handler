@@ -56,6 +56,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps";
   private static final String KEY_TAP_MAX_DURATION_MS = "maxDurationMs";
   private static final String KEY_TAP_MAX_DELAY_MS = "maxDelayMs";
+  private static final String KEY_TAP_MAX_DELTA_X = "maxDeltaX";
+  private static final String KEY_TAP_MAX_DELTA_Y = "maxDeltaY";
+  private static final String KEY_TAP_MAX_DIST = "maxDist";
   private static final String KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs";
   private static final String KEY_LONG_PRESS_MAX_DIST = "maxDist";
   private static final String KEY_PAN_MIN_DELTA_X = "minDeltaX";
@@ -72,7 +75,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_MAX_POINTERS = "maxPointers";
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
   private static final String KEY_NUMBER_OF_POINTERS = "numberOfPointers";
-  private static final String KEY_DIRECTION = "direction";
+  private static final String KEY_DIRECTION= "direction";
   private static final String KEY_PAN_SHOULD_ACTIVATE_BEFORE_FINISH = "shouldActivateBeforeFinish";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
@@ -164,6 +167,15 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
       if (config.hasKey(KEY_TAP_MAX_DELAY_MS)) {
         handler.setMaxDelayMs(config.getInt(KEY_TAP_MAX_DELAY_MS));
+      }
+      if (config.hasKey(KEY_TAP_MAX_DELTA_X)) {
+        handler.setMaxDx(config.getInt(KEY_TAP_MAX_DELTA_X));
+      }
+      if (config.hasKey(KEY_TAP_MAX_DELTA_Y)) {
+        handler.setMaxDy(config.getInt(KEY_TAP_MAX_DELTA_Y));
+      }
+      if (config.hasKey(KEY_TAP_MAX_DIST)) {
+        handler.setMaxDist(config.getInt(KEY_TAP_MAX_DIST));
       }
     }
 
@@ -371,7 +383,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(RotationGestureHandler handler, WritableMap eventData) {
-      eventData.putDouble("rotation", handler.getRotation());
       eventData.putDouble("rotation", handler.getRotation());
       eventData.putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.getAnchorX()));
       eventData.putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.getAnchorY()));

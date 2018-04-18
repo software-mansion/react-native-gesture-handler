@@ -304,6 +304,9 @@ const TapGestureHandler = createHandler(
     maxDurationMs: PropTypes.number,
     maxDelayMs: PropTypes.number,
     numberOfTaps: PropTypes.number,
+    maxDeltaX: PropTypes.number,
+    maxDeltaY: PropTypes.number,
+    maxDist: PropTypes.number,
   },
   {}
 );
