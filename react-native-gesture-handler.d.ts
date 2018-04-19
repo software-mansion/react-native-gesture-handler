@@ -21,6 +21,13 @@ import {
 
 /* GESTURE HANDLER STATE */
 
+export enum Directions {
+  RIGHT = 1,
+  LEFT = 2,
+  UP = 4,
+  DOWN = 8,
+}
+
 export enum State {
   UNDETERMINED = 0,
   FAILED,
@@ -147,6 +154,16 @@ export interface RotationGestureHandlerGestureEvent
     RotationGestureHandlerEventExtra;
 }
 
+export interface FlingGestureHandlerStateChangeEvent
+  extends GestureHandlerStateChangeEvent {
+  nativeEvent: GestureHandlerStateChangeNativeEvent;
+}
+
+export interface FlingGestureHandlerGestureEvent
+  extends GestureHandlerGestureEvent {
+  nativeEvent: GestureHandlerGestureEventNativeEvent;
+}
+
 /* GESTURE HANDLERS PROPERTIES */
 
 export interface GestureHandlerProperties {
@@ -225,6 +242,14 @@ export interface RotationGestureHandlerProperties
   ) => void;
 }
 
+export interface FlingGestureHandlerProperties
+  extends GestureHandlerProperties {
+  direction?: number;
+  numberOfPointers?: number;
+  onGestureEvent?: (event: FlingGestureHandlerGestureEvent) => void;
+  onHandlerStateChange?: (event: FlingGestureHandlerStateChangeEvent) => void;
+}
+
 /* GESTURE HANDLERS CLASSES */
 
 export class NativeViewGestureHandler extends React.Component<
@@ -251,6 +276,10 @@ export class RotationGestureHandler extends React.Component<
   RotationGestureHandlerProperties
 > {}
 
+export class FlingGestureHandler extends React.Component<
+  FlingGestureHandlerProperties
+> {}
+
 /* BUTTONS PROPERTIES */
 
 export interface RawButtonProperties
@@ -263,7 +292,7 @@ export interface BaseButtonProperties extends RawButtonProperties {
 }
 
 export interface RectButtonProperties extends BaseButtonProperties {
-  underlayColor?: string
+  underlayColor?: string;
 }
 
 export interface BorderlessButtonProperties extends RawButtonProperties {
