@@ -21,6 +21,13 @@ import {
 
 /* GESTURE HANDLER STATE */
 
+export enum Directions {
+  RIGHT = 1,
+  LEFT = 2,
+  UP = 4,
+  DOWN = 8,
+}
+
 export enum State {
   UNDETERMINED = 0,
   FAILED,
