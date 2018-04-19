@@ -225,6 +225,14 @@ export interface RotationGestureHandlerProperties
   ) => void;
 }
 
+export interface FlingGestureHandlerProperties
+  extends GestureHandlerProperties {
+  direction?: number;
+  numberOfPointers?: number;
+  onGestureEvent?: (event: PinchGestureHandlerGestureEvent) => void;
+  onHandlerStateChange?: (event: PinchGestureHandlerStateChangeEvent) => void;
+}
+
 /* GESTURE HANDLERS CLASSES */
 
 export class NativeViewGestureHandler extends React.Component<
@@ -249,6 +257,10 @@ export class PinchGestureHandler extends React.Component<
 
 export class RotationGestureHandler extends React.Component<
   RotationGestureHandlerProperties
+> {}
+
+export class FlingGestureHandler extends React.Component<
+  FlingGestureHandlerProperties
 > {}
 
 /* BUTTONS PROPERTIES */
