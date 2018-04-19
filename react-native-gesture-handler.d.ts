@@ -154,6 +154,16 @@ export interface RotationGestureHandlerGestureEvent
     RotationGestureHandlerEventExtra;
 }
 
+export interface FlingGestureHandlerStateChangeEvent
+  extends GestureHandlerStateChangeEvent {
+  nativeEvent: GestureHandlerStateChangeNativeEvent;
+}
+
+export interface FlingGestureHandlerGestureEvent
+  extends GestureHandlerGestureEvent {
+  nativeEvent: GestureHandlerGestureEventNativeEvent;
+}
+
 /* GESTURE HANDLERS PROPERTIES */
 
 export interface GestureHandlerProperties {
@@ -236,8 +246,8 @@ export interface FlingGestureHandlerProperties
   extends GestureHandlerProperties {
   direction?: number;
   numberOfPointers?: number;
-  onGestureEvent?: (event: PinchGestureHandlerGestureEvent) => void;
-  onHandlerStateChange?: (event: PinchGestureHandlerStateChangeEvent) => void;
+  onGestureEvent?: (event: FlingGestureHandlerGestureEvent) => void;
+  onHandlerStateChange?: (event: FlingGestureHandlerStateChangeEvent) => void;
 }
 
 /* GESTURE HANDLERS CLASSES */
@@ -282,7 +292,7 @@ export interface BaseButtonProperties extends RawButtonProperties {
 }
 
 export interface RectButtonProperties extends BaseButtonProperties {
-  underlayColor?: string
+  underlayColor?: string;
 }
 
 export interface BorderlessButtonProperties extends RawButtonProperties {
