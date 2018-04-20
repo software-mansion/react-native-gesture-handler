@@ -13,6 +13,8 @@
 #import <React/RCTConvert.h>
 
 @interface RNBetterTapGestureRecognizer : UIPanGestureRecognizer
+// We decided to extend UIPanGestureRecognizer
+// in order to implement maxDeltas using translationInView
 
 @property (nonatomic) NSUInteger numberOfTaps;
 @property (nonatomic) NSTimeInterval maxDelay;
