@@ -352,9 +352,9 @@ export class FlatList extends React.Component<
 > {}
 
 export function gestureHandlerRootHOC(
-  Component: React.Component,
+  Component: React.ComponentType<any>,
   containerStyles?: StyleProp<ViewStyle>
-): React.Component;
+): React.ComponentType<any>;
 
 export interface SwipeableProperties {
   friction: number;
