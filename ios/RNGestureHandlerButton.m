@@ -45,5 +45,11 @@
     return inner;
 }
 
+- (void)layoutSubviews
+{
+    self.clipsToBounds = YES;
+    [super layoutSubviews];
+}
+
 @end
 
