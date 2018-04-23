@@ -26,6 +26,7 @@
 @property (nonatomic) CGFloat currentNumberOfTaps;
 @property (nonatomic) CGPoint currentLocation;
 @property (nonatomic) CGPoint deltaLocation;
+@property (nonatomic) NSInteger minPointers;
 
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
@@ -44,6 +45,7 @@
         _tapsSoFar = 0;
         _numberOfTaps = 1;
         _maxDelay = 0.2;
+        _minPointers = 1;
         _maxDuration = NAN;
         _maxDeltaX = NAN;
         _maxDeltaY = NAN;
@@ -120,7 +122,7 @@
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    if (_numberOfTaps == _tapsSoFar) {
+    if (_numberOfTaps == _tapsSoFar && self.numberOfTouches >= _minPointers) {
         self.state = UIGestureRecognizerStateBegan;
         [super touchesEnded:touches withEvent:event];
         self.state = UIGestureRecognizerStateEnded;
@@ -166,6 +168,7 @@
     RNBetterTapGestureRecognizer *recognizer = (RNBetterTapGestureRecognizer *)_recognizer;
 
     APPLY_INT_PROP(numberOfTaps);
+    APPLY_INT_PROP(minPointers);
     APPLY_FLOAT_PROP(maxDeltaX);
     APPLY_FLOAT_PROP(maxDeltaY);
 
@@ -178,7 +181,7 @@
     if (prop != nil) {
         recognizer.maxDuration = [RCTConvert CGFloat:prop] / 1000.0;
     }
-    
+
     prop = config[@"maxDist"];
     if (prop != nil) {
         CGFloat dist = [RCTConvert CGFloat:prop];
