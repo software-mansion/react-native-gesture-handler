@@ -133,6 +133,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void extractEventData(NativeViewGestureHandler handler, WritableMap eventData) {
       eventData.putBoolean("pointerInside", handler.isWithinBounds());
+      eventData.putDouble("numberOfTouches", handler.getMaxNumberOfPointers());
     }
   }
 
@@ -201,6 +202,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (config.hasKey(KEY_LONG_PRESS_MAX_DIST)) {
         handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_LONG_PRESS_MAX_DIST)));
       }
+    }
+
+    @Override
+    public void extractEventData(LongPressGestureHandler handler, WritableMap eventData) {
+      eventData.putDouble("numberOfTouches", handler.getMaxNumberOfPointers());
     }
   }
 
@@ -291,6 +297,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       eventData.putDouble("translationY", PixelUtil.toDIPFromPixel(handler.getTranslationY()));
       eventData.putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.getVelocityX()));
       eventData.putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.getVelocityY()));
+      eventData.putDouble("numberOfTouches", handler.getMaxNumberOfPointers());
     }
   }
 
@@ -316,6 +323,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       eventData.putDouble("focalX", PixelUtil.toDIPFromPixel(handler.getFocalPointX()));
       eventData.putDouble("focalY", PixelUtil.toDIPFromPixel(handler.getFocalPointY()));
       eventData.putDouble("velocity", handler.getVelocity());
+      eventData.putDouble("numberOfTouches", handler.getMaxNumberOfPointers());
     }
   }
 
@@ -370,6 +378,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       eventData.putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.getAnchorX()));
       eventData.putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.getAnchorY()));
       eventData.putDouble("velocity", handler.getVelocity());
+      eventData.putDouble("numberOfTouches", handler.getMaxNumberOfPointers());
+
     }
   }
 
