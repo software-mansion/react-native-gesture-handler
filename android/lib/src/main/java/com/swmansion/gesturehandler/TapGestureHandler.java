@@ -7,8 +7,8 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
   private static float MAX_VALUE_IGNORE = Float.MIN_VALUE;
   private static final long DEFAULT_MAX_DURATION_MS = 500;
   private static final long DEFAULT_MAX_DELAY_MS = 500;
-  private static final int DEFAULT_NUMBER_OF_TAPS= 1;
-  private static final int DEFAULT_MIN_NUMBER_OF_POINTERS= 1;
+  private static final int DEFAULT_NUMBER_OF_TAPS = 1;
+  private static final int DEFAULT_MIN_NUMBER_OF_POINTERS = 1;
 
   private float mMaxDeltaX = MAX_VALUE_IGNORE;
   private float mMaxDeltaY = MAX_VALUE_IGNORE;
@@ -137,8 +137,10 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     mLastX = event.getRawX();
     mLastY = event.getRawY();
 
-    if (mNumberOfPointers < event.getPointerCount()) {
-      mNumberOfPointers = event.getPointerCount();
+    if (action == MotionEvent.ACTION_MOVE) {
+      if (mNumberOfPointers < event.getPointerCount()) {
+        mNumberOfPointers = event.getPointerCount();
+      }
     }
 
     if (action == MotionEvent.ACTION_DOWN) {
@@ -146,9 +148,7 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
         begin();
       }
       startTap();
-    }
-
-    if (shouldFail()) {
+    } else if (shouldFail()) {
       fail();
     }
     if (action == MotionEvent.ACTION_UP) {
