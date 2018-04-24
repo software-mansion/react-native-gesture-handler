@@ -49,6 +49,7 @@ public class RNGestureHandlerButtonViewManager extends
 
     public void setBorderRadius(float borderRadius) {
       mBorderRadius = borderRadius;
+      mNeedBackgroundUpdate = true;
     }
 
     @Override
@@ -88,19 +89,21 @@ public class RNGestureHandlerButtonViewManager extends
       } else {
         PaintDrawable colorDrawable = new PaintDrawable(mBackgroundColor);
         Drawable selectable = createSelectableDrawable();
-        // Radius-connected lines below ought to be considered
-        // as a temporary solution. It do not allow to set
-        // different radius on each corner. However, I suppose it's fairly
-        // fine for button-related use cases.
-        // Therefore it might be used as long as:
-        // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
-        // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
-        colorDrawable.setCornerRadius(mBorderRadius);
-        if (selectable instanceof RippleDrawable
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          PaintDrawable mask = new PaintDrawable(Color.WHITE);
-          mask.setCornerRadius(mBorderRadius);
-          ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);
+        if (mBorderRadius != 0) {
+          // Radius-connected lines below ought to be considered
+          // as a temporary solution. It do not allow to set
+          // different radius on each corner. However, I suppose it's fairly
+          // fine for button-related use cases.
+          // Therefore it might be used as long as:
+          // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
+          // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
+          colorDrawable.setCornerRadius(mBorderRadius);
+          if (selectable instanceof RippleDrawable
+                  && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            PaintDrawable mask = new PaintDrawable(Color.WHITE);
+            mask.setCornerRadius(mBorderRadius);
+            ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);
+          }
         }
         LayerDrawable layerDrawable = new LayerDrawable(
                 new Drawable[] { colorDrawable, selectable});

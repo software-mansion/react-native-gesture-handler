@@ -45,11 +45,11 @@
     return inner;
 }
 
-- (void)layoutSubviews
+- (instancetype)init
 {
+    self = [super init];
     self.clipsToBounds = YES;
-    [super layoutSubviews];
+    return self;
 }
-
 @end
 
