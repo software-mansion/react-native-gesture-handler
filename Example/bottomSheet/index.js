@@ -8,8 +8,7 @@ import {
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../common';
-// import { USE_NATIVE_DRIVER } from '../config';
-USE_NATIVE_DRIVER = false;
+import { USE_NATIVE_DRIVER } from '../config';
 
 const HEADER_HEIGHT = 50;
 
