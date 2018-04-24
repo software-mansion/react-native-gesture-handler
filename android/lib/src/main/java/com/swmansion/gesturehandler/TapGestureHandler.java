@@ -145,6 +145,8 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
 
     if (action == MotionEvent.ACTION_DOWN) {
       if (state == STATE_UNDETERMINED) {
+        mOffsetX = 0;
+        mOffsetY = 0;
         begin();
       }
       startTap();
