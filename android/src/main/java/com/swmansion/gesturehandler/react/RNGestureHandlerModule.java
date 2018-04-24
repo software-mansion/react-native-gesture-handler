@@ -59,6 +59,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_TAP_MAX_DELTA_X = "maxDeltaX";
   private static final String KEY_TAP_MAX_DELTA_Y = "maxDeltaY";
   private static final String KEY_TAP_MAX_DIST = "maxDist";
+  private static final String KEY_TAP_MIN_POINTERS = "minPointers";
   private static final String KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs";
   private static final String KEY_LONG_PRESS_MAX_DIST = "maxDist";
   private static final String KEY_PAN_MIN_DELTA_X = "minDeltaX";
@@ -175,6 +176,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
       if (config.hasKey(KEY_TAP_MAX_DIST)) {
         handler.setMaxDist(config.getInt(KEY_TAP_MAX_DIST));
+      }
+      if (config.hasKey(KEY_TAP_MIN_POINTERS)) {
+        handler.setMinNumberOfPointers(config.getInt(KEY_TAP_MIN_POINTERS));
       }
     }
 

@@ -8,14 +8,17 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
   private static final long DEFAULT_MAX_DURATION_MS = 500;
   private static final long DEFAULT_MAX_DELAY_MS = 500;
   private static final int DEFAULT_NUMBER_OF_TAPS= 1;
+  private static final int DEFAULT_MIN_NUMBER_OF_POINTERS= 1;
 
   private float mMaxDeltaX = MAX_VALUE_IGNORE;
   private float mMaxDeltaY = MAX_VALUE_IGNORE;
-  private float mMaxDist = MAX_VALUE_IGNORE;
+  private float mMaxDistSq = MAX_VALUE_IGNORE;
 
   private long mMaxDurationMs = DEFAULT_MAX_DURATION_MS;
   private long mMaxDelayMs = DEFAULT_MAX_DELAY_MS;
   private int mNumberOfTaps = DEFAULT_NUMBER_OF_TAPS;
+  private int mMinNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
+  private int mNumberOfPointers = 1;
 
   private float mStartX, mStartY;
   private float mOffsetX, mOffsetY;
@@ -57,7 +60,12 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     return this;
   }
   public TapGestureHandler setMaxDist(float maxDist) {
-    mMaxDeltaY = maxDist;
+    mMaxDistSq = maxDist * maxDist;
+    return this;
+  }
+
+  public TapGestureHandler setMinNumberOfPointers(int minNumberOfPointers) {
+    mMinNumberOfPointers = minNumberOfPointers;
     return this;
   }
 
@@ -80,7 +88,7 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     } else {
       mHandler.removeCallbacksAndMessages(null);
     }
-    if (++mTapsSoFar == mNumberOfTaps) {
+    if (++mTapsSoFar == mNumberOfTaps && mNumberOfPointers >= mMinNumberOfPointers) {
       activate();
       end();
     } else {
@@ -115,7 +123,7 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     }
 
     float dist = dy * dy + dx * dx;
-    return mMaxDist != MAX_VALUE_IGNORE && Math.abs(dist) > mMaxDist;
+    return mMaxDistSq != MAX_VALUE_IGNORE && dist > mMaxDistSq;
   }
 
   @Override
@@ -143,6 +151,10 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     mLastEventOffsetY = event.getRawY() - event.getY();
     mLastX = event.getRawX();
     mLastY = event.getRawY();
+
+    if (mNumberOfPointers < event.getPointerCount()) {
+      mNumberOfPointers = event.getPointerCount();
+    }
 
     if (action == MotionEvent.ACTION_DOWN) {
       if (state == STATE_UNDETERMINED) {
