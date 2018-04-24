@@ -35,7 +35,7 @@ public class GestureHandler<T extends GestureHandler> {
   private float mHitSlop[];
 
   private boolean mShouldCancelWhenOutside;
-  private int mNumberOfPointers = 1;
+  private int mNumberOfPointers = 0;
 
   private GestureHandlerOrchestrator mOrchestrator;
   private OnTouchEventListener<T> mListener;
@@ -157,6 +157,8 @@ public class GestureHandler<T extends GestureHandler> {
     }
     mX = event.getX();
     mY = event.getY();
+    mNumberOfPointers = event.getPointerCount();
+
     mWithinBounds = isWithinBounds(mView, mX, mY);
     if (mShouldCancelWhenOutside && !mWithinBounds) {
       if (mState == STATE_ACTIVE) {
@@ -165,9 +167,6 @@ public class GestureHandler<T extends GestureHandler> {
         fail();
       }
       return;
-    }
-    if (mNumberOfPointers != event.getPointerCount()) {
-      mNumberOfPointers = event.getPointerCount();
     }
     onHandle(event);
   }
