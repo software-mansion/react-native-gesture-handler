@@ -96,21 +96,6 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     }
   }
 
-  private static float getLastPointer(MotionEvent event, boolean isX) {
-    float offset = isX ? event.getRawX() - event.getX() : event.getRawY() - event.getY();
-    int excludeIndex = event.getActionMasked() == MotionEvent.ACTION_POINTER_UP ?
-            event.getActionIndex() : -1;
-      float sum = 0f;
-      int count = 0;
-      for (int i = 0, size = event.getPointerCount(); i < size; i++) {
-        if (i != excludeIndex) {
-          sum += (isX ? event.getX(i) : event.getY()) + offset;
-          count++;
-        }
-      }
-      return sum / count;
-  }
-
   private boolean shouldFail() {
     float dx = mLastX - mStartX + mOffsetX;
     if (mMaxDeltaX != MAX_VALUE_IGNORE && Math.abs(dx) > mMaxDeltaX) {
@@ -134,15 +119,15 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
       mOffsetX += mLastX - mStartX;
       mOffsetY += mLastY - mStartY;
-      mLastX = getLastPointer(event, true);
-      mLastY = getLastPointer(event, false);
+      mLastX = GestureUtils.getLastPointerX(event, true);
+      mLastY = GestureUtils.getLastPointerY(event, true);
       mLastEventOffsetX = event.getRawX() - event.getX();
       mLastEventOffsetY = event.getRawY() - event.getY();
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
-      mLastX = getLastPointer(event, true);
-      mLastY = getLastPointer(event, false);
+      mLastX = GestureUtils.getLastPointerX(event, true);
+      mLastY = GestureUtils.getLastPointerY(event, true);
       mLastEventOffsetX = event.getRawX() - event.getX();
       mLastEventOffsetY = event.getRawY() - event.getY();
     }

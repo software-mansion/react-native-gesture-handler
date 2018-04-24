@@ -13,8 +13,10 @@
 #import <React/RCTConvert.h>
 
 @interface RNBetterTapGestureRecognizer : UIPanGestureRecognizer
-// We decided to extend UIPanGestureRecognizer
-// in order to implement maxDeltas using translationInView
+// RNBetterTapGestureRecognizer extends UIPanGestureRecognizer instead of UITapGestureRecognizer so that
+// translationInView can be used to make the recognizer respect max deltas constraint. Also parameters like
+// maxDelay and maxDuration are not configurable in UITapGestureRecognizer and therefore require custom
+// implementation.
 
 @property (nonatomic) NSUInteger numberOfTaps;
 @property (nonatomic) NSTimeInterval maxDelay;
