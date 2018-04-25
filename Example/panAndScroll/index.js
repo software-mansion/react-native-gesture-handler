@@ -36,7 +36,6 @@ export class TapOrPan extends Component {
   }
 
   _onTapHandlerStateChange = ({ nativeEvent }) => {
-    console.log(this.a);
     if (nativeEvent.oldState === State.ACTIVE) {
       // Once tap happened we set the position of the circle under the tapped spot
       this._touchX.setValue(nativeEvent.x);
