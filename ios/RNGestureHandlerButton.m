@@ -45,11 +45,5 @@
     return inner;
 }
 
-- (instancetype)init
-{
-    self = [super init];
-    self.clipsToBounds = YES;
-    return self;
-}
 @end
 

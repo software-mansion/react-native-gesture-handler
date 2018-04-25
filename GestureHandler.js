@@ -450,6 +450,10 @@ class BaseButton extends React.Component {
     onActiveStateChange: PropTypes.func,
   };
 
+  static defaultProps = {
+    overflow: 'hidden',
+  };
+
   constructor(props) {
     super(props);
     this._lastActive = false;
@@ -518,6 +522,7 @@ class RectButton extends React.Component {
   static defaultProps = {
     activeOpacity: 0.105,
     underlayColor: 'black',
+    overflow: 'hidden',
   };
 
   constructor(props) {
@@ -560,6 +565,7 @@ class BorderlessButton extends React.Component {
   static defaultProps = {
     activeOpacity: 0.3,
     borderless: true,
+    overlay: 'hidden',
   };
 
   constructor(props) {
