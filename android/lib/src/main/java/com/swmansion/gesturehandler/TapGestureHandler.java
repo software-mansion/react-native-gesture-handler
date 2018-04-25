@@ -136,11 +136,8 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     mLastEventOffsetY = event.getRawY() - event.getY();
     mLastX = event.getRawX();
     mLastY = event.getRawY();
-
-    if (action == MotionEvent.ACTION_MOVE) {
-      if (mNumberOfPointers < event.getPointerCount()) {
-        mNumberOfPointers = event.getPointerCount();
-      }
+    if (mNumberOfPointers < event.getPointerCount()) {
+      mNumberOfPointers = event.getPointerCount();
     }
 
     if (action == MotionEvent.ACTION_DOWN) {
