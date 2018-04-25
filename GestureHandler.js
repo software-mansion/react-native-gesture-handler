@@ -63,6 +63,8 @@ const GestureHandlerPropTypes = {
   waitFor: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.string),
+    PropTypes.object,
+    PropTypes.arrayOf(PropTypes.object),
   ]),
   simultaneousHandlers: PropTypes.oneOfType([
     PropTypes.string,
@@ -111,7 +113,7 @@ function transformIntoHandlerTags(handlerIDs) {
   if (!Array.isArray(handlerIDs)) {
     handlerIDs = [handlerIDs];
   }
-  // converts handler string IDs into their numeric tags
+  // converts handler string IDs or ref objects into their numeric tags
   return handlerIDs
     .map(handlerID => handlerIDToTag[handlerID] || -1)
     .filter(handlerTag => handlerTag > 0);
@@ -153,6 +155,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
         }
         handlerIDToTag[props.id] = this._handlerTag;
       }
+      handlerIDToTag[this] = this._handlerTag;
     }
 
     _onGestureHandlerEvent = event => {
@@ -194,6 +197,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       if (this.props.id) {
         delete handlerIDToTag[this.props.id];
       }
+      delete handlerIDToTag[this];
     }
 
     componentDidMount() {

@@ -13,6 +13,8 @@ import { LoremIpsum } from '../common';
 const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;
 
+const tap = React.createRef();
+const pan = React.createRef();
 export class TapOrPan extends Component {
   constructor(props) {
     super(props);
@@ -34,6 +36,7 @@ export class TapOrPan extends Component {
   }
 
   _onTapHandlerStateChange = ({ nativeEvent }) => {
+    console.log(this.a);
     if (nativeEvent.oldState === State.ACTIVE) {
       // Once tap happened we set the position of the circle under the tapped spot
       this._touchX.setValue(nativeEvent.x);
@@ -43,12 +46,13 @@ export class TapOrPan extends Component {
   render() {
     return (
       <TapGestureHandler
-        id="tap"
-        waitFor="pan"
+        ref={tap}
+        waitFor={pan}
         onHandlerStateChange={this._onTapHandlerStateChange}
         shouldCancelWhenOutside>
         <PanGestureHandler
-          id="pan"
+          waitFor={this.a}
+          ref={pan}
           minDeltaX={20}
           onGestureEvent={this._onPanGestureEvent}
           shouldCancelWhenOutside>
@@ -75,7 +79,7 @@ export class TapOrPan extends Component {
 export default class Example extends Component {
   render() {
     return (
-      <ScrollView waitFor={['tap', 'pan']}>
+      <ScrollView waitFor={[tap, pan]}>
         <LoremIpsum words={150} />
         <TapOrPan />
         <LoremIpsum words={150} />
