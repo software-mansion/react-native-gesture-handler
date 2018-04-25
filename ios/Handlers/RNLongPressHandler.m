@@ -84,5 +84,10 @@
     return [super state];
 }
 
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UILongPressGestureRecognizer *)recognizer
+{
+    return [RNGestureHandlerEventExtraData
+            withNumberOfTouches:recognizer.numberOfTouches];
+}
 @end
 

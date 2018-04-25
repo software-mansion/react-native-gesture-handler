@@ -97,7 +97,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(T handler, WritableMap eventData) {
-      // empty default impl
+      eventData.putDouble("numberOfPointer", handler.getNumberOfPointers());
     }
   }
 
@@ -132,8 +132,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(NativeViewGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putBoolean("pointerInside", handler.isWithinBounds());
-      eventData.putDouble("numberOfTouches", handler.getNumberOfPointers());
     }
   }
 
@@ -169,6 +169,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(TapGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
       eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
       eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
@@ -202,11 +203,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (config.hasKey(KEY_LONG_PRESS_MAX_DIST)) {
         handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_LONG_PRESS_MAX_DIST)));
       }
-    }
-
-    @Override
-    public void extractEventData(LongPressGestureHandler handler, WritableMap eventData) {
-      eventData.putDouble("numberOfTouches", handler.getNumberOfPointers());
     }
   }
 
@@ -289,6 +285,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(PanGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
       eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
       eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
@@ -297,7 +294,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       eventData.putDouble("translationY", PixelUtil.toDIPFromPixel(handler.getTranslationY()));
       eventData.putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.getVelocityX()));
       eventData.putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.getVelocityY()));
-      eventData.putDouble("numberOfTouches", handler.getNumberOfPointers());
     }
   }
 
@@ -319,11 +315,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(PinchGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("scale", handler.getScale());
       eventData.putDouble("focalX", PixelUtil.toDIPFromPixel(handler.getFocalPointX()));
       eventData.putDouble("focalY", PixelUtil.toDIPFromPixel(handler.getFocalPointY()));
       eventData.putDouble("velocity", handler.getVelocity());
-      eventData.putDouble("numberOfTouches", handler.getNumberOfPointers());
     }
   }
 
@@ -373,13 +369,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(RotationGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("rotation", handler.getRotation());
       eventData.putDouble("rotation", handler.getRotation());
       eventData.putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.getAnchorX()));
       eventData.putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.getAnchorY()));
       eventData.putDouble("velocity", handler.getVelocity());
-      eventData.putDouble("numberOfTouches", handler.getNumberOfPointers());
-
     }
   }
 

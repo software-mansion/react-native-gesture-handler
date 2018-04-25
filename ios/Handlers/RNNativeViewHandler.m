@@ -99,21 +99,21 @@
 
     [self sendEventsInState:RNGestureHandlerStateActive
              forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withNumberOfTouches: _recognizer.numberOfTouches]];
 }
 
 - (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event
 {
     [self sendEventsInState:RNGestureHandlerStateEnd
              forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withNumberOfTouches: _recognizer.numberOfTouches]];
 }
 
 - (void)handleTouchUpInside:(UIView *)sender forEvent:(UIEvent *)event
 {
     [self sendEventsInState:RNGestureHandlerStateEnd
              forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withNumberOfTouches: _recognizer.numberOfTouches]];
 }
 
 - (void)handleDragExit:(UIView *)sender forEvent:(UIEvent *)event
@@ -124,11 +124,11 @@
         [control cancelTrackingWithEvent:event];
         [self sendEventsInState:RNGestureHandlerStateEnd
                  forViewWithTag:sender.reactTag
-                  withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+                  withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withNumberOfTouches: _recognizer.numberOfTouches]];
     } else {
         [self sendEventsInState:RNGestureHandlerStateActive
                  forViewWithTag:sender.reactTag
-                  withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+                  withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withNumberOfTouches: _recognizer.numberOfTouches]];
     }
 }
 
@@ -136,14 +136,14 @@
 {
     [self sendEventsInState:RNGestureHandlerStateActive
              forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withNumberOfTouches: _recognizer.numberOfTouches]];
 }
 
 - (void)handleTouchCancel:(UIView *)sender forEvent:(UIEvent *)event
 {
     [self sendEventsInState:RNGestureHandlerStateCancelled
              forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withNumberOfTouches: _recognizer.numberOfTouches]];
 }
 
 @end

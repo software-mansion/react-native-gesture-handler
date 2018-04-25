@@ -28,7 +28,9 @@
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
                             withNumberOfTouches:(NSUInteger)numberOfTouches;
-+ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside;
++ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside
+                                 withNumberOfTouches:(NSUInteger)numberOfTouches;
++ (RNGestureHandlerEventExtraData *)withNumberOfTouches:(NSUInteger)numberOfTouches;
 
 @end
 

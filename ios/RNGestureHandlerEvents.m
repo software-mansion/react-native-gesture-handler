@@ -39,7 +39,7 @@
                            @"translationY": @(translation.y),
                            @"velocityX": SAFE_VELOCITY(velocity.x),
                            @"velocityY": SAFE_VELOCITY(velocity.y),
-                           @"numberOfTouches": @(numberOfTouches)}];
+                           @"numberOfPointers": @(numberOfTouches)}];
 }
 
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale
@@ -53,7 +53,7 @@
                            @"focalX": @(focalPoint.x),
                            @"focalY": @(focalPoint.y),
                            @"velocity": SAFE_VELOCITY(velocity),
-                           @"numberOfTouches": @(numberOfTouches)}];
+                           @"numberOfPointers": @(numberOfTouches)}];
 }
 
 + (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation
@@ -66,12 +66,21 @@
                            @"anchorX": @(anchorPoint.x),
                            @"anchorY": @(anchorPoint.y),
                            @"velocity": SAFE_VELOCITY(velocity),
-                           @"numberOfTouches": @(numberOfTouches)}];
+                           @"numberOfPointers": @(numberOfTouches)}];
 }
 
-+ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside;
++ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside
+                                 withNumberOfTouches:(NSUInteger)numberOfTouches
 {
-    return [[RNGestureHandlerEventExtraData alloc] initWithData:@{@"pointerInside": @(pointerInside)}];
+    return [[RNGestureHandlerEventExtraData alloc]
+            initWithData:@{@"pointerInside": @(pointerInside),
+                           @"numberOfPointers": @(numberOfTouches)}];
+}
+
++ (RNGestureHandlerEventExtraData *)withNumberOfTouches:(NSUInteger)numberOfTouches
+{
+    return [[RNGestureHandlerEventExtraData alloc]
+            initWithData:@{@"numberOfPointers": @(numberOfTouches)}];
 }
 
 @end
