@@ -58,11 +58,13 @@ let handlerTag = 1;
 const handlerIDToTag = {};
 
 const GestureHandlerPropTypes = {
-  id: PropTypes.string,
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   enabled: PropTypes.bool,
   waitFor: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.string),
+    PropTypes.number,
+    PropTypes.arrayOf(PropTypes.number),
   ]),
   simultaneousHandlers: PropTypes.oneOfType([
     PropTypes.string,
@@ -113,7 +115,12 @@ function transformIntoHandlerTags(handlerIDs) {
   }
   // converts handler string IDs into their numeric tags
   return handlerIDs
-    .map(handlerID => handlerIDToTag[handlerID] || -1)
+    .map(
+      handlerID =>
+        typeof handlerID == 'number'
+          ? handlerID
+          : handlerIDToTag[handlerID] || -1
+    )
     .filter(handlerTag => handlerTag > 0);
 }
 
@@ -145,7 +152,11 @@ function createHandler(handlerName, propTypes = null, config = {}) {
 
     constructor(props) {
       super(props);
-      this._handlerTag = handlerTag++;
+      if (props.id && typeof props.id == 'number') {
+        this._handlerTag = props.id;
+      } else {
+        this._handlerTag = handlerTag++;
+      }
       this._config = {};
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
@@ -598,6 +609,8 @@ const FlatListWithGHScroll = props => (
   />
 );
 
+const createTag = () => handlerTag++;
+
 export {
   WrappedScrollView as ScrollView,
   WrappedSlider as Slider,
@@ -626,4 +639,5 @@ export {
   Swipeable,
   DrawerLayout,
   Directions,
+  createTag,
 };
