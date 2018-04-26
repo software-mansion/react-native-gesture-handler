@@ -11,6 +11,7 @@ import {
 import { LoremIpsum } from '../common';
 
 export class PressBox extends Component {
+  doubleTapRef = React.createRef();
   _onHandlerStateChange = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm being pressed for so long");
@@ -26,7 +27,6 @@ export class PressBox extends Component {
       Alert.alert('D0able tap, good job!');
     }
   };
-  doubleTapRef = React.createRef();
   render() {
     return (
       <LongPressGestureHandler

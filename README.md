@@ -201,6 +201,8 @@ This type of button component should be used with simple icon-only or text-only 
 
 Gesture handler library API allows for defining some basic interaction between handler components. Interactions can be defined by first setting a ref object (`React.createRef()`) for a handler component with the `ref` property and then referencing it with `waitFor` or `simultaneousHandlers` props in other handler component.
 
+You could read about refs in React [docs](https://reactjs.org/docs/refs-and-the-dom.html)
+
 *Note:* You may wish to use older version of React which do not support `createRef` (older than 16.03) and then you could pass string name as `id`. Mind that handlers names have to unique in whole app. This solutions is suppose to be deprecated and will be removed soon.
 
 #### `waitFor` property
