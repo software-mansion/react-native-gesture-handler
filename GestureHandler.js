@@ -450,10 +450,6 @@ class BaseButton extends React.Component {
     onActiveStateChange: PropTypes.func,
   };
 
-  static defaultProps = {
-    overflow: 'hidden',
-  };
-
   constructor(props) {
     super(props);
     this._lastActive = false;
@@ -494,9 +490,12 @@ class BaseButton extends React.Component {
   };
 
   render() {
+    const { style, ...rest } = this.props;
+
     return (
       <RawButton
-        {...this.props}
+        style={[{ overflow: 'hidden' }, style]}
+        {...rest}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}
       />
