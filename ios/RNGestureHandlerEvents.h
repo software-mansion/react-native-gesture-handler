@@ -12,7 +12,8 @@
 - (instancetype)initWithData:(NSDictionary *)data;
 
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
-                           withAbsolutePosition:(CGPoint)absolutePosition;
+                           withAbsolutePosition:(CGPoint)absolutePosition
+                            withNumberOfTouches:(NSUInteger)numberOfTouches;
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation
@@ -30,8 +31,6 @@
                             withNumberOfTouches:(NSUInteger)numberOfTouches;
 + (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside
                                  withNumberOfTouches:(NSUInteger)numberOfTouches;
-+ (RNGestureHandlerEventExtraData *)withNumberOfTouches:(NSUInteger)numberOfTouches;
-
 @end
 
 @interface RNGestureHandlerEvent : NSObject <RCTEvent>
