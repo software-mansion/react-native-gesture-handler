@@ -147,9 +147,12 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
         begin();
       }
       startTap();
-    } else if (shouldFail()) {
+    }
+
+    if (shouldFail()) {
       fail();
     }
+
     if (action == MotionEvent.ACTION_UP) {
       endTap();
     }
@@ -165,6 +168,7 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
   @Override
   protected void onReset() {
     mTapsSoFar = 0;
+    mNumberOfPointers = 0;
     if (mHandler != null) {
       mHandler.removeCallbacksAndMessages(null);
     }

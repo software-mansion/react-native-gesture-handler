@@ -169,13 +169,13 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handler.setMaxDelayMs(config.getInt(KEY_TAP_MAX_DELAY_MS));
       }
       if (config.hasKey(KEY_TAP_MAX_DELTA_X)) {
-        handler.setMaxDx(config.getInt(KEY_TAP_MAX_DELTA_X));
+        handler.setMaxDx(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DELTA_X)));
       }
       if (config.hasKey(KEY_TAP_MAX_DELTA_Y)) {
-        handler.setMaxDy(config.getInt(KEY_TAP_MAX_DELTA_Y));
+        handler.setMaxDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DELTA_Y)));
       }
       if (config.hasKey(KEY_TAP_MAX_DIST)) {
-        handler.setMaxDist(config.getInt(KEY_TAP_MAX_DIST));
+        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DIST)));
       }
       if (config.hasKey(KEY_TAP_MIN_POINTERS)) {
         handler.setMinNumberOfPointers(config.getInt(KEY_TAP_MIN_POINTERS));
