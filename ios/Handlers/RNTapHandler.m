@@ -30,7 +30,7 @@
 @property (nonatomic) CGPoint currentLocation;
 @property (nonatomic) CGPoint deltaLocation;
 @property (nonatomic) NSInteger minPointers;
-
+@property (nonatomic) NSInteger maxNumberOfTouches;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
@@ -53,6 +53,8 @@
         _maxDeltaX = NAN;
         _maxDeltaY = NAN;
         _maxDistSq = NAN;
+        _maxNumberOfTouches = 0;
+        super.minimumNumberOfTouches = 20;
     }
     return self;
 }
@@ -69,8 +71,11 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    super.minimumNumberOfTouches = 20;
     _tapsSoFar++;
+    NSInteger numberOfTouches = [touches count];
+    if (numberOfTouches > _maxNumberOfTouches) {
+        _maxNumberOfTouches = numberOfTouches;
+    }
     if (_tapsSoFar) {
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
     }
@@ -84,9 +89,13 @@
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     [super touchesMoved:touches withEvent:event];
-
+    NSInteger numberOfTouches = [touches count];
     if (self.state != UIGestureRecognizerStatePossible) {
         return;
+    }
+    
+    if (numberOfTouches > _maxNumberOfTouches) {
+        _maxNumberOfTouches = numberOfTouches;
     }
 
     if (_gestureHandler.shouldCancelWhenOutside) {
@@ -125,7 +134,7 @@
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    if (_numberOfTaps == _tapsSoFar && self.numberOfTouches >= _minPointers) {
+    if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
         self.state = UIGestureRecognizerStateBegan;
         [super touchesEnded:touches withEvent:event];
         self.state = UIGestureRecognizerStateEnded;
@@ -149,6 +158,7 @@
     }
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
     _tapsSoFar = 0;
+    _maxNumberOfTouches = 0;
     self.enabled = YES;
     [super reset];
 }

@@ -59,6 +59,7 @@ const handlerIDToTag = {};
 
 const GestureHandlerPropTypes = {
   id: PropTypes.string,
+  minPointers: PropTypes.number,
   enabled: PropTypes.bool,
   waitFor: PropTypes.oneOfType([
     PropTypes.string,
