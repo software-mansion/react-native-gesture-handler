@@ -44,6 +44,7 @@ export type PropType = {
   hideStatusBar?: boolean,
   statusBarAnimation?: 'slide' | 'none' | 'fade',
   overlayColor: string,
+  contentContainerStyle?: any,
 
   // Properties not yet supported
   // onDrawerSlide?: Function
@@ -182,13 +183,14 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       translationX = Animated.add(dragX, dragOffsetFromOnStartPosition);
     }
 
-    this._openValue = Animated.add(translationX, drawerTranslation).interpolate(
-      {
-        inputRange: [0, drawerWidth],
-        outputRange: [0, 1],
-        extrapolate: 'clamp',
-      }
-    );
+    this._openValue = Animated.add(
+      translationX,
+      drawerTranslation
+    ).interpolate({
+      inputRange: [0, drawerWidth],
+      outputRange: [0, 1],
+      extrapolate: 'clamp',
+    });
 
     this._onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: dragXValue, x: touchXValue } }],
@@ -334,6 +336,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       drawerWidth,
       drawerPosition,
       drawerType,
+      contentContainerStyle,
     } = this.props;
 
     const fromLeft = drawerPosition === 'left';
@@ -381,6 +384,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
               ? styles.containerOnBack
               : styles.containerInFront,
             containerStyles,
+            contentContainerStyle,
           ]}>
           {this.props.children}
           {this._renderOverlay()}

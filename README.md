@@ -237,6 +237,7 @@ On top of the standard list of parameters DrawerLayout has an additional set of 
  - `statusBarAnimation` – possible values are: `slide`, `none` or `fade` (defaults to `slide`). Can be used when `hideStatusBar` is set to `true` and will select the animation used for hiding/showing the status bar. See [StatusBar](http://facebook.github.io/react-native/docs/statusbar.html#statusbaranimation) documentation for more details.
  - `overlayColor` – color (default to `"black"`) of a semi-transparent overlay to be displayed on top of the content view when drawer gets open. A solid color should be used as the opacity is added by the Drawer itself and the opacity of the overlay is animated (from 0% to 70%).
  - `renderNavigationView` - function. This attibute is present in the standard implementation already and is one of the required params. Gesture handler version of DrawerLayout make it possible for the function passed as `renderNavigationView` to take an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened). This can be used by the drawer component to animated its children while the drawer is opening or closing.
+ - `contentContainerStyle` - object. If specified, this allows you to apply styles to the wrapper `Animated.View` that `DrawerLayout` renders around its children. This is helpful e.g. if you want to add a drop shadow (since, if you apply it to the child view, the wrapper view may clip it).
 
 #### Example:
 
