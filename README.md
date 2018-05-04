@@ -260,12 +260,11 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
  - `onSwipeableRightOpen` – method that is called when right action panel gets open.
  - `onSwipeableOpen` – method that is called when action panel gets open (either right or left).
  - `onSwipeableClose` – method that is called when action panel is closed.
- - `renderLeftActions` – method that is expected to return an action panel that is going to be revealed from the left side when user swipes right.
  - `onSwipeableLeftStartOpen` – method that is called when left action panel starts getting open.
  - `onSwipeableRightStartOpen` – method that is called when right action panel starts getting open.
  - `onSwipeableStartOpen` – method that is called when action panel starts getting open (either right or left).
  - `onSwipeableStartClose` – method that is called when action panel is starting getting closed.
- - `renderLeftActions` – method that is expected to return an action panel t
+ - `renderLeftActions` – method that is expected to return an action panel that is going to be revealed from the left side when user swipes right.
  - `renderRightActions` – method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
 
 #### Example:
