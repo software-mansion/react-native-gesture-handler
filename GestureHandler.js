@@ -62,13 +62,17 @@ const GestureHandlerPropTypes = {
   enabled: PropTypes.bool,
   waitFor: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
     PropTypes.number,
-    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    ),
   ]),
   simultaneousHandlers: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.number,
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    ),
   ]),
   shouldCancelWhenOutside: PropTypes.bool,
   hitSlop: PropTypes.oneOfType([

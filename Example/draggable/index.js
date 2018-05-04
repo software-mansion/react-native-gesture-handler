@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
 import {
+  createTag,
   PanGestureHandler,
   ScrollView,
   State,
@@ -11,6 +12,7 @@ import { USE_NATIVE_DRIVER } from '../config';
 import { LoremIpsum } from '../common';
 
 export class DraggableBox extends Component {
+  dragbox = createTag();
   constructor(props) {
     super(props);
     this._translateX = new Animated.Value(0);
@@ -44,7 +46,7 @@ export class DraggableBox extends Component {
         {...this.props}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}
-        id="dragbox">
+        id={this.dragbox}>
         <Animated.View
           style={[
             styles.box,
