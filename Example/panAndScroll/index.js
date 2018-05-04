@@ -5,6 +5,7 @@ import {
   TapGestureHandler,
   ScrollView,
   State,
+  createTag,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../config';
@@ -41,14 +42,15 @@ export class TapOrPan extends Component {
   };
 
   render() {
+    const { tapTag, panTag } = this.props;
     return (
       <TapGestureHandler
-        id="tap"
-        waitFor="pan"
+        id={tapTag}
+        waitFor={panTag}
         onHandlerStateChange={this._onTapHandlerStateChange}
         shouldCancelWhenOutside>
         <PanGestureHandler
-          id="pan"
+          id={panTag}
           minDeltaX={20}
           onGestureEvent={this._onPanGestureEvent}
           shouldCancelWhenOutside>
@@ -73,11 +75,13 @@ export class TapOrPan extends Component {
 }
 
 export default class Example extends Component {
+  tapTag = createTag();
+  panTag = createTag();
   render() {
     return (
-      <ScrollView waitFor={['tap', 'pan']}>
+      <ScrollView waitFor={[this.tapTag, this.panTag]}>
         <LoremIpsum words={150} />
-        <TapOrPan />
+        <TapOrPan tapTag={this.tapTag} panTag={this.panTag} />
         <LoremIpsum words={150} />
       </ScrollView>
     );
