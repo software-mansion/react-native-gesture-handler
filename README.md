@@ -201,7 +201,7 @@ This type of button component should be used with simple icon-only or text-only 
 
 Gesture handler library API allows for defining some basic interaction between handler components. Interactions can be defined by first setting a tag or string identifer for a handler component with the `id` property and then referencing it with `waitFor` or `simultaneousHandlers` props in other handler component.
 
-In order to generate unique tag of handler you have to use `ceateTag` method from our library
+In order to generate unique tag of handler you have to use `createTag` method from our library.
 
 #### `waitFor` property
 
