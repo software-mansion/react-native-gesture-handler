@@ -19,7 +19,7 @@ const DRAG_TOSS = 0.05;
 // Math.sign polyfill for iOS 8.x
 if (!Math.sign) {
   Math.sign = function(x) {
-    return ((x > 0) - (x < 0)) || +x;
+    return (x > 0) - (x < 0) || +x;
   };
 }
 
@@ -34,6 +34,10 @@ export type PropType = {
   onSwipeableRightOpen?: Function,
   onSwipeableOpen?: Function,
   onSwipeableClose?: Function,
+  onSwipeableLeftStartOpen?: Function,
+  onSwipeableRightStartOpen?: Function,
+  onSwipeableStartOpen?: Function,
+  onSwipeableStartClose?: Function,
   renderLeftActions?: (
     progressAnimatedValue: any,
     dragAnimatedValue: any
@@ -220,6 +224,17 @@ export default class Swipeable extends Component<PropType, StateType> {
         }
       }
     });
+    if (toValue > 0 && this.props.onSwipeableLeftStartOpen) {
+      this.props.onSwipeableLeftStartOpen();
+    } else if (toValue < 0 && this.props.onSwipeableRighStartOpen) {
+      this.props.onSwipeableRightStartOpen();
+    }
+
+    if (toValue === 0) {
+      this.props.onSwipeableStartClose && this.props.onSwipeableStartClose();
+    } else {
+      this.props.onSwipeableStartOpen && this.props.onSwipeableStartOpen();
+    }
   };
 
   _onRowLayout = ({ nativeEvent }) => {
@@ -255,7 +270,8 @@ export default class Swipeable extends Component<PropType, StateType> {
         {renderLeftActions(this._showLeftAction, this._transX)}
         <View
           onLayout={({ nativeEvent }) =>
-            this.setState({ leftWidth: nativeEvent.layout.x })}
+            this.setState({ leftWidth: nativeEvent.layout.x })
+          }
         />
       </Animated.View>
     );
@@ -269,7 +285,8 @@ export default class Swipeable extends Component<PropType, StateType> {
         {renderRightActions(this._showRightAction, this._transX)}
         <View
           onLayout={({ nativeEvent }) =>
-            this.setState({ rightOffset: nativeEvent.layout.x })}
+            this.setState({ rightOffset: nativeEvent.layout.x })
+          }
         />
       </Animated.View>
     );
