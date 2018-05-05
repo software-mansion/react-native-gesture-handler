@@ -226,7 +226,7 @@ export default class Swipeable extends Component<PropType, StateType> {
     });
     if (toValue > 0 && this.props.onSwipeableLeftStartOpen) {
       this.props.onSwipeableLeftStartOpen();
-    } else if (toValue < 0 && this.props.onSwipeableRighStartOpen) {
+    } else if (toValue < 0 && this.props.onSwipeableRightStartOpen) {
       this.props.onSwipeableRightStartOpen();
     }
 
