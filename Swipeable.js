@@ -43,6 +43,7 @@ export type PropType = {
     dragAnimatedValue: any
   ) => any,
   useNativeAnimations: boolean,
+  animationOptions?: object,
 };
 type StateType = {
   dragX: Animated.Value,
@@ -201,12 +202,13 @@ export default class Swipeable extends Component<PropType, StateType> {
 
     this.setState({ rowState: Math.sign(toValue) });
     Animated.spring(rowTranslation, {
-      restSpeedThreshold: 50,
-      restDisplacementThreshold: 50,
+      restSpeedThreshold: 30,
+      restDisplacementThreshold: 30,
       velocity: velocityX,
       bounciness: 0,
       toValue,
       useNativeDriver: this.props.useNativeAnimations,
+      ...this.props.animationOptions,
     }).start(({ finished }) => {
       if (finished) {
         if (toValue > 0 && this.props.onSwipeableLeftOpen) {
