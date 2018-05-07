@@ -56,6 +56,10 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps";
   private static final String KEY_TAP_MAX_DURATION_MS = "maxDurationMs";
   private static final String KEY_TAP_MAX_DELAY_MS = "maxDelayMs";
+  private static final String KEY_TAP_MAX_DELTA_X = "maxDeltaX";
+  private static final String KEY_TAP_MAX_DELTA_Y = "maxDeltaY";
+  private static final String KEY_TAP_MAX_DIST = "maxDist";
+  private static final String KEY_TAP_MIN_POINTERS = "minPointers";
   private static final String KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs";
   private static final String KEY_LONG_PRESS_MAX_DIST = "maxDist";
   private static final String KEY_PAN_MIN_DELTA_X = "minDeltaX";
@@ -164,6 +168,18 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
       if (config.hasKey(KEY_TAP_MAX_DELAY_MS)) {
         handler.setMaxDelayMs(config.getInt(KEY_TAP_MAX_DELAY_MS));
+      }
+      if (config.hasKey(KEY_TAP_MAX_DELTA_X)) {
+        handler.setMaxDx(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DELTA_X)));
+      }
+      if (config.hasKey(KEY_TAP_MAX_DELTA_Y)) {
+        handler.setMaxDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DELTA_Y)));
+      }
+      if (config.hasKey(KEY_TAP_MAX_DIST)) {
+        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DIST)));
+      }
+      if (config.hasKey(KEY_TAP_MIN_POINTERS)) {
+        handler.setMinNumberOfPointers(config.getInt(KEY_TAP_MIN_POINTERS));
       }
     }
 
@@ -370,7 +386,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void extractEventData(RotationGestureHandler handler, WritableMap eventData) {
       super.extractEventData(handler, eventData);
-      eventData.putDouble("rotation", handler.getRotation());
       eventData.putDouble("rotation", handler.getRotation());
       eventData.putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.getAnchorX()));
       eventData.putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.getAnchorY()));

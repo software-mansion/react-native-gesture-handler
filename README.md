@@ -132,6 +132,9 @@ Library exports a `State` object that provides a number of constants used to exp
  - `maxDurationMs`
  - `maxDelayMs`
  - `numberOfTaps`
+ - `maxDeltaX`
+ - `maxDeltaY`
+ - `maxDist`
 
 #### `NativeViewGestureHandler` extra properties
 
