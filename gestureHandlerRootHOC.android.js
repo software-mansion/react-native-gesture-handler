@@ -1,11 +1,16 @@
 import React from 'react';
-import { requireNativeComponent, View, StyleSheet } from 'react-native';
+import {
+  requireNativeComponent,
+  View,
+  StyleSheet,
+  ViewPropTypes,
+} from 'react-native';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 
-var iface = {
+const iface = {
   name: 'GestureHandlerRootView',
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
   },
 };
 
