@@ -490,9 +490,12 @@ class BaseButton extends React.Component {
   };
 
   render() {
+    const { style, ...rest } = this.props;
+
     return (
       <RawButton
-        {...this.props}
+        style={[{ overflow: 'hidden' }, style]}
+        {...rest}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}
       />
