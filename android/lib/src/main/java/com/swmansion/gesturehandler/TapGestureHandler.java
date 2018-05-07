@@ -121,15 +121,11 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
       mOffsetY += mLastY - mStartY;
       mLastX = GestureUtils.getLastPointerX(event, true);
       mLastY = GestureUtils.getLastPointerY(event, true);
-      mLastEventOffsetX = event.getRawX() - event.getX();
-      mLastEventOffsetY = event.getRawY() - event.getY();
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
       mLastX = GestureUtils.getLastPointerX(event, true);
       mLastY = GestureUtils.getLastPointerY(event, true);
-      mLastEventOffsetX = event.getRawX() - event.getX();
-      mLastEventOffsetY = event.getRawY() - event.getY();
     }
 
     mLastEventOffsetX = event.getRawX() - event.getX();
@@ -154,6 +150,10 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
       if (action == MotionEvent.ACTION_UP) {
         endTap();
       }
+      if (action == MotionEvent.ACTION_DOWN) {
+        startTap();
+      }
+
     }
   }
 
