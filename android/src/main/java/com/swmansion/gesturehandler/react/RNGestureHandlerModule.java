@@ -97,7 +97,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(T handler, WritableMap eventData) {
-      // empty default impl
+      eventData.putDouble("numberOfPointer", handler.getNumberOfPointers());
     }
   }
 
@@ -132,6 +132,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(NativeViewGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putBoolean("pointerInside", handler.isWithinBounds());
     }
   }
@@ -168,6 +169,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(TapGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
       eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
       eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
@@ -283,6 +285,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(PanGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
       eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
       eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
@@ -312,6 +315,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(PinchGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("scale", handler.getScale());
       eventData.putDouble("focalX", PixelUtil.toDIPFromPixel(handler.getFocalPointX()));
       eventData.putDouble("focalY", PixelUtil.toDIPFromPixel(handler.getFocalPointY()));
@@ -365,6 +369,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(RotationGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
       eventData.putDouble("rotation", handler.getRotation());
       eventData.putDouble("rotation", handler.getRotation());
       eventData.putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.getAnchorX()));
