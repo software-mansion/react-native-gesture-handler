@@ -72,17 +72,9 @@
 }
 
 + (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside
-                                 withNumberOfTouches:(NSUInteger)numberOfTouches
 {
     return [[RNGestureHandlerEventExtraData alloc]
-            initWithData:@{@"pointerInside": @(pointerInside),
-                           @"numberOfPointers": @(numberOfTouches)}];
-}
-
-+ (RNGestureHandlerEventExtraData *)withNumberOfTouches:(NSUInteger)numberOfTouches
-{
-    return [[RNGestureHandlerEventExtraData alloc]
-            initWithData:@{@"numberOfPointers": @(numberOfTouches)}];
+            initWithData:@{@"pointerInside": @(pointerInside)}];
 }
 
 @end
