@@ -150,7 +150,7 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
         begin();
       }
       startTap();
-  } else if (state == STATE_BEGAN || state == STATE_ACTIVE) {
+  } else if (state == STATE_BEGAN) {
       if (action == MotionEvent.ACTION_UP) {
         endTap();
       }
