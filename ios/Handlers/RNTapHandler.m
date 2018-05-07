@@ -98,27 +98,28 @@
         _maxNumberOfTouches = numberOfTouches;
     }
 
-    if (_gestureHandler.shouldCancelWhenOutside) {
-        CGPoint pt = [self locationInView:self.view];
-        if (!CGRectContainsPoint(self.view.bounds, pt)) {
-            self.state = UIGestureRecognizerStateFailed;
-            [self triggerAction];
-            [self reset];
-            return;
-        }
-    }
-
+    
     if ([self shouldFailUnderCustomCriteria]) {
         self.state = UIGestureRecognizerStateFailed;
+        [self triggerAction];
+        [self reset];
         return;
     }
 
     self.state = UIGestureRecognizerStatePossible;
     [self triggerAction];
+    return;
 }
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
+    if (_gestureHandler.shouldCancelWhenOutside) {
+        CGPoint pt = [self locationInView:self.view];
+        if (!CGRectContainsPoint(self.view.bounds, pt)) {
+            return YES;
+        }
+    }
+
     CGPoint trans = [self translationInView:self.view];
     if (TEST_MAX_IF_NOT_NAN(fabs(trans.x), _maxDeltaX)) {
         return YES;

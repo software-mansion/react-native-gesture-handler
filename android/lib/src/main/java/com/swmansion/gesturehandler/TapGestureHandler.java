@@ -136,25 +136,24 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     mLastEventOffsetY = event.getRawY() - event.getY();
     mLastX = event.getRawX();
     mLastY = event.getRawY();
+
     if (mNumberOfPointers < event.getPointerCount()) {
       mNumberOfPointers = event.getPointerCount();
     }
 
-    if (action == MotionEvent.ACTION_DOWN) {
-      if (state == STATE_UNDETERMINED) {
+    if (shouldFail()) {
+      fail();
+    } else if (state == STATE_UNDETERMINED) {
+      if (action == MotionEvent.ACTION_DOWN) {
         mOffsetX = 0;
         mOffsetY = 0;
         begin();
       }
       startTap();
-    }
-
-    if (shouldFail()) {
-      fail();
-    }
-
-    if (action == MotionEvent.ACTION_UP) {
-      endTap();
+  } else if (state == STATE_BEGAN || state == STATE_ACTIVE) {
+      if (action == MotionEvent.ACTION_UP) {
+        endTap();
+      }
     }
   }
 
