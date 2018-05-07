@@ -63,13 +63,13 @@ const GestureHandlerPropTypes = {
   enabled: PropTypes.bool,
   waitFor: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
     PropTypes.object,
-    PropTypes.arrayOf(PropTypes.object),
+    PropTypes.arrayOf(PropTypes.oneOfType(PropTypes.string, PropTypes.object)),
   ]),
   simultaneousHandlers: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.object,
+    PropTypes.arrayOf(PropTypes.oneOfType(PropTypes.string, PropTypes.object)),
   ]),
   shouldCancelWhenOutside: PropTypes.bool,
   hitSlop: PropTypes.oneOfType([
@@ -114,9 +114,15 @@ function transformIntoHandlerTags(handlerIDs) {
   if (!Array.isArray(handlerIDs)) {
     handlerIDs = [handlerIDs];
   }
-  // converts handler string IDs or ref objects into their numeric tags
+
+  // converts handler string IDs into their numeric tags
   return handlerIDs
-    .map(handlerID => handlerIDToTag[handlerID] || -1)
+    .map(
+      handlerID =>
+        typeof handlerID === 'function'
+          ? handlerIDToTag[handlerID] || -1
+          : handlerID.current && handlerID.current._handlerTag
+    )
     .filter(handlerTag => handlerTag > 0);
 }
 
@@ -156,7 +162,6 @@ function createHandler(handlerName, propTypes = null, config = {}) {
         }
         handlerIDToTag[props.id] = this._handlerTag;
       }
-      handlerIDToTag[this] = this._handlerTag;
     }
 
     _onGestureHandlerEvent = event => {
@@ -188,8 +193,12 @@ function createHandler(handlerName, propTypes = null, config = {}) {
 
       const child = React.Children.only(this.props.children);
       const { ref } = child;
-      if (typeof ref === 'function') {
-        ref(node);
+      if (ref !== null) {
+        if (typeof ref === 'function') {
+          ref(node);
+        } else {
+          ref.current = node;
+        }
       }
     };
 
@@ -198,7 +207,6 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       if (this.props.id) {
         delete handlerIDToTag[this.props.id];
       }
-      delete handlerIDToTag[this];
     }
 
     componentDidMount() {
