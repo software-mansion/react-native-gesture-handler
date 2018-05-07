@@ -6,6 +6,7 @@ import {
   ScrollView,
   State,
   TapGestureHandler,
+  createTag,
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../common';
@@ -27,15 +28,18 @@ export class PressBox extends Component {
     }
   };
   render() {
+    const doubleTap = createTag();
     return (
       <LongPressGestureHandler
         onHandlerStateChange={this._onHandlerStateChange}
         minDurationMs={800}>
         <TapGestureHandler
           onHandlerStateChange={this._onSingleTap}
-          waitFor="double_tap">
+          waitFor={doubleTap}>
           <TapGestureHandler
-            id="double_tap"
+            maxDurationMs={1000}
+            minPointers={2}
+            id={doubleTap}
             onHandlerStateChange={this._onDoubleTap}
             numberOfTaps={2}>
             <View style={styles.box} />
