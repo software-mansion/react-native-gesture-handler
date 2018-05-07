@@ -59,6 +59,7 @@ const handlerIDToTag = {};
 
 const GestureHandlerPropTypes = {
   id: PropTypes.string,
+  minPointers: PropTypes.number,
   enabled: PropTypes.bool,
   waitFor: PropTypes.oneOfType([
     PropTypes.string,
@@ -308,6 +309,11 @@ const TapGestureHandler = createHandler(
     maxDurationMs: PropTypes.number,
     maxDelayMs: PropTypes.number,
     numberOfTaps: PropTypes.number,
+    maxDeltaX: PropTypes.number,
+    maxDeltaY: PropTypes.number,
+    minPointers: PropTypes.number,
+    maxDist: PropTypes.number,
+    minPointers: PropTypes.number,
   },
   {}
 );
@@ -494,9 +500,12 @@ class BaseButton extends React.Component {
   };
 
   render() {
+    const { style, ...rest } = this.props;
+
     return (
       <RawButton
-        {...this.props}
+        style={[{ overflow: 'hidden' }, style]}
+        {...rest}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}
       />
