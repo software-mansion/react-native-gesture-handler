@@ -121,17 +121,16 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
       mOffsetY += mLastY - mStartY;
       mLastX = GestureUtils.getLastPointerX(event, true);
       mLastY = GestureUtils.getLastPointerY(event, true);
+      mLastEventOffsetX = event.getRawX() - event.getX();
+      mLastEventOffsetY = event.getRawY() - event.getY();
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
       mLastX = GestureUtils.getLastPointerX(event, true);
       mLastY = GestureUtils.getLastPointerY(event, true);
+      mLastEventOffsetX = event.getRawX() - event.getX();
+      mLastEventOffsetY = event.getRawY() - event.getY();
     }
-
-    mLastEventOffsetX = event.getRawX() - event.getX();
-    mLastEventOffsetY = event.getRawY() - event.getY();
-    mLastX = event.getRawX();
-    mLastY = event.getRawY();
 
     if (mNumberOfPointers < event.getPointerCount()) {
       mNumberOfPointers = event.getPointerCount();
@@ -143,17 +142,17 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
       if (action == MotionEvent.ACTION_DOWN) {
         mOffsetX = 0;
         mOffsetY = 0;
+        mStartX = event.getRawX();
+        mStartY = event.getRawY();
         begin();
       }
       startTap();
   } else if (state == STATE_BEGAN) {
       if (action == MotionEvent.ACTION_UP) {
         endTap();
-      }
-      if (action == MotionEvent.ACTION_DOWN) {
+      } else if (action == MotionEvent.ACTION_DOWN) {
         startTap();
       }
-
     }
   }
 
