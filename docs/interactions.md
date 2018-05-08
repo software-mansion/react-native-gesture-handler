@@ -1,6 +1,6 @@
 ---
 id: interactions
-title: Gesture Handlers interactions
+title: Interactions
 ---
 
 Gesture handler library API allows for defining some basic interaction between handler components. Interactions can be defined by first setting a string identifer for a handler component with the `id` property and then referencing it with `waitFor` or `simultaneousHandlers` props in other handler component.
