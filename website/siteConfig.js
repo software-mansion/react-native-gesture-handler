@@ -36,8 +36,8 @@ const siteConfig = {
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
-    { doc: 'doc1', label: 'Docs' },
-    { doc: 'doc4', label: 'API' },
+    { doc: 'about', label: 'Docs' },
+    //{ doc: 'doc4', label: 'API' },
     { page: 'help', label: 'Help' },
   ],
 
@@ -51,8 +51,8 @@ const siteConfig = {
 
   /* colors for website */
   colors: {
-    primaryColor: '#2E8555',
-    secondaryColor: '#205C3B',
+    primaryColor: '#236f85',
+    secondaryColor: '#17335c',
   },
 
   /* custom fonts for website */
@@ -87,7 +87,7 @@ const siteConfig = {
 
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
-  //   repoUrl: 'https://github.com/facebook/test-site',
+  repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler',
 };
 
 module.exports = siteConfig;

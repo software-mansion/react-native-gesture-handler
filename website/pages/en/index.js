@@ -84,6 +84,16 @@ class HomeSplash extends React.Component {
             <Button href={docUrl('doc1.html', language)}>Example Link</Button>
             <Button href={docUrl('doc2.html', language)}>Example Link 2</Button>
           </PromoSection>
+          <a
+            className="github-button"
+            href={siteConfig.repoUrl}
+            data-icon="octicon-star"
+            data-count-href="/kmagiera/react-native-gesture-handler"
+            data-show-count={true}
+            data-count-aria-label="# stargazers on GitHub"
+            aria-label="Star this project on GitHub">
+            Star
+          </a>
         </div>
       </SplashContainer>
     );
