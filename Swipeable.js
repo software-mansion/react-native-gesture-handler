@@ -202,8 +202,8 @@ export default class Swipeable extends Component<PropType, StateType> {
 
     this.setState({ rowState: Math.sign(toValue) });
     Animated.spring(rowTranslation, {
-      restSpeedThreshold: 30,
-      restDisplacementThreshold: 30,
+      restSpeedThreshold: 1.7,
+      restDisplacementThreshold: 0.4,
       velocity: velocityX,
       bounciness: 0,
       toValue,
