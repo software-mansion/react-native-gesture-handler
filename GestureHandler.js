@@ -210,21 +210,29 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     componentDidMount() {
-      this._viewTag = findNodeHandle(this._viewNode);
-      this._config = filterConfig(
-        this.props,
-        this.constructor.propTypes,
-        config
-      );
-      RNGestureHandlerModule.createGestureHandler(
-        handlerName,
-        this._handlerTag,
-        this._config
-      );
-      RNGestureHandlerModule.attachGestureHandler(
-        this._handlerTag,
-        this._viewTag
-      );
+      // Code below will be executed AFTER whole cycle of
+      // rendering which seems to be done atomically
+      // That dirty and hacky workaround was made in order to handle
+      // ref-related action. Otherwise, outer refs
+      // are invisible (null) for their children and cannot wait for them or
+      // be managed simultaneous.
+      setImmediate(() => {
+        this._viewTag = findNodeHandle(this._viewNode);
+        this._config = filterConfig(
+          this.props,
+          this.constructor.propTypes,
+          config
+        );
+        RNGestureHandlerModule.createGestureHandler(
+          handlerName,
+          this._handlerTag,
+          this._config
+        );
+        RNGestureHandlerModule.attachGestureHandler(
+          this._handlerTag,
+          this._viewTag
+        );
+      });
     }
 
     componentDidUpdate(prevProps, prevState) {
