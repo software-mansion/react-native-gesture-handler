@@ -58,21 +58,16 @@ let handlerTag = 1;
 const handlerIDToTag = {};
 
 const GestureHandlerPropTypes = {
-  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  id: PropTypes.string,
+  minPointers: PropTypes.number,
   enabled: PropTypes.bool,
   waitFor: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.number,
-    PropTypes.arrayOf(
-      PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-    ),
+    PropTypes.arrayOf(PropTypes.string),
   ]),
   simultaneousHandlers: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.number,
-    PropTypes.arrayOf(
-      PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-    ),
+    PropTypes.arrayOf(PropTypes.string),
   ]),
   shouldCancelWhenOutside: PropTypes.bool,
   hitSlop: PropTypes.oneOfType([
@@ -119,12 +114,7 @@ function transformIntoHandlerTags(handlerIDs) {
   }
   // converts handler string IDs into their numeric tags
   return handlerIDs
-    .map(
-      handlerID =>
-        typeof handlerID == 'number'
-          ? handlerID
-          : handlerIDToTag[handlerID] || -1
-    )
+    .map(handlerID => handlerIDToTag[handlerID] || -1)
     .filter(handlerTag => handlerTag > 0);
 }
 
@@ -156,11 +146,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
 
     constructor(props) {
       super(props);
-      if (props.id && typeof props.id == 'number') {
-        this._handlerTag = props.id;
-      } else {
-        this._handlerTag = handlerTag++;
-      }
+      this._handlerTag = handlerTag++;
       this._config = {};
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
@@ -319,6 +305,11 @@ const TapGestureHandler = createHandler(
     maxDurationMs: PropTypes.number,
     maxDelayMs: PropTypes.number,
     numberOfTaps: PropTypes.number,
+    maxDeltaX: PropTypes.number,
+    maxDeltaY: PropTypes.number,
+    minPointers: PropTypes.number,
+    maxDist: PropTypes.number,
+    minPointers: PropTypes.number,
   },
   {}
 );
@@ -505,9 +496,12 @@ class BaseButton extends React.Component {
   };
 
   render() {
+    const { style, ...rest } = this.props;
+
     return (
       <RawButton
-        {...this.props}
+        style={[{ overflow: 'hidden' }, style]}
+        {...rest}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}
       />
@@ -613,8 +607,6 @@ const FlatListWithGHScroll = props => (
   />
 );
 
-const createTag = () => handlerTag++;
-
 export {
   WrappedScrollView as ScrollView,
   WrappedSlider as Slider,
@@ -643,5 +635,4 @@ export {
   Swipeable,
   DrawerLayout,
   Directions,
-  createTag,
 };
