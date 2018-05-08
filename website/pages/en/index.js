@@ -99,31 +99,33 @@ const Block = props => (
   </Container>
 );
 
-const Features = props => (
-  <Block layout="fourColumn">
-    {[
-      {
-        content: 'This is the content of my feature',
-        image: imgUrl('docusaurus.svg'),
-        imageAlign: 'top',
-        title: 'Feature One',
-      },
-      {
-        content: 'The content of my second feature',
-        image: imgUrl('docusaurus.svg'),
-        imageAlign: 'top',
-        title: 'Feature Two',
-      },
-    ]}
-  </Block>
-);
+// const Features = props => (
+//   <Block layout="fourColumn">
+//     {[
+//       {
+//         content: 'This is the content of my feature',
+//         image: imgUrl('docusaurus.svg'),
+//         imageAlign: 'top',
+//         title: 'Feature One',
+//       },
+//       {
+//         content: 'The content of my second feature',
+//         image: imgUrl('docusaurus.svg'),
+//         imageAlign: 'top',
+//         title: 'Feature Two',
+//       },
+//     ]}
+//   </Block>
+// );
 
 const FeatureCallout = props => (
   <div
     className="productShowcaseSection paddingBottom"
-    style={{textAlign: 'center'}}>
-    <h2>Feature Callout</h2>
-    <MarkdownBlock>These are features of this project</MarkdownBlock>
+    style={{ textAlign: 'center' }}>
+    <h2>Gesture Handlers</h2>
+    <MarkdownBlock>
+      Library provides native components in order to manage gestures natively
+    </MarkdownBlock>
   </div>
 );
 
@@ -131,7 +133,7 @@ const LearnHow = props => (
   <Block background="light">
     {[
       {
-        content: 'Talk about learning how to use this',
+        content: 'Take a look on our example!',
         image: imgUrl('docusaurus.svg'),
         imageAlign: 'right',
         title: 'Learn How',
@@ -144,7 +146,7 @@ const TryOut = props => (
   <Block id="try">
     {[
       {
-        content: 'Talk about trying this out',
+        content: 'Install library via yarn or npm and follow instruction',
         image: imgUrl('docusaurus.svg'),
         imageAlign: 'left',
         title: 'Try it Out',
@@ -153,18 +155,18 @@ const TryOut = props => (
   </Block>
 );
 
-const Description = props => (
-  <Block background="dark">
-    {[
-      {
-        content: 'This is another description of how this project is useful',
-        image: imgUrl('docusaurus.svg'),
-        imageAlign: 'right',
-        title: 'Description',
-      },
-    ]}
-  </Block>
-);
+//const Description = props => (
+//  <Block background="dark">
+//    {[
+//      {
+//        content: 'This is another description of how this project is useful',
+//        image: imgUrl('docusaurus.svg'),
+//        imageAlign: 'right',
+//        title: 'Description',
+//      },
+//    ]}
+//  </Block>
+//);
 
 const Showcase = props => {
   if ((siteConfig.users || []).length === 0) {
@@ -204,11 +206,9 @@ class Index extends React.Component {
       <div>
         <HomeSplash language={language} />
         <div className="mainContainer">
-          <Features />
           <FeatureCallout />
           <LearnHow />
           <TryOut />
-          <Description />
           <Showcase language={language} />
         </div>
       </div>
