@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, Animated, View, TextInput } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  Animated,
+  View,
+  TextInput,
+} from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
 
@@ -8,7 +15,14 @@ import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 const TYPES = ['front', 'back', 'back', 'slide'];
 const PARALLAX = [false, false, true, false];
 
-const Page = ({ fromLeft, type, parallaxOn, flipSide, nextType }) => (
+const Page = ({
+  fromLeft,
+  type,
+  parallaxOn,
+  flipSide,
+  nextType,
+  openDrawer,
+}) => (
   <View style={styles.page}>
     <Text style={styles.pageText}>Hi 👋</Text>
     <RectButton style={styles.rectButton} onPress={flipSide}>
@@ -21,6 +35,9 @@ const Page = ({ fromLeft, type, parallaxOn, flipSide, nextType }) => (
         Type '{type}
         {parallaxOn && ' with parallax'}'! -> Next
       </Text>
+    </RectButton>
+    <RectButton style={styles.rectButton} onPress={openDrawer}>
+      <Text style={styles.rectButtonText}>Open drawer</Text>
     </RectButton>
     <TextInput
       style={styles.pageInput}
@@ -64,6 +81,9 @@ export default class Example extends Component {
     return (
       <View style={styles.container}>
         <DrawerLayout
+          ref={drawer => {
+            this.drawer = drawer;
+          }}
           drawerWidth={200}
           keyboardDismissMode="on-drag"
           drawerPosition={
@@ -71,10 +91,30 @@ export default class Example extends Component {
               ? DrawerLayout.positions.Left
               : DrawerLayout.positions.Right
           }
-          drawerType={TYPES[this.state.type]}
+          drawerType={drawerType}
           drawerBackgroundColor="#ddd"
+          overlayColor={drawerType === 'front' ? 'black' : '#00000000'}
           renderNavigationView={
             parallax ? this.renderParallaxDrawer : this.renderDrawer
+          }
+          contentContainerStyle={
+            // careful; don't elevate the child container
+            // over top of the drawer when the drawer is supposed
+            // to be in front - you won't be able to see/open it.
+            drawerType === 'front'
+              ? {}
+              : Platform.select({
+                  ios: {
+                    shadowColor: '#000',
+                    shadowOpacity: 0.5,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowRadius: 60,
+                  },
+                  android: {
+                    elevation: 100,
+                    backgroundColor: '#000',
+                  },
+                })
           }>
           <Page
             type={drawerType}
@@ -83,6 +123,7 @@ export default class Example extends Component {
             flipSide={() => this.setState({ fromLeft: !this.state.fromLeft })}
             nextType={() =>
               this.setState({ type: (this.state.type + 1) % TYPES.length })}
+            openDrawer={() => this.drawer.openDrawer()}
           />
         </DrawerLayout>
       </View>
