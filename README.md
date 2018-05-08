@@ -262,6 +262,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
  - `onSwipeableClose` – method that is called when action panel is closed.
  - `renderLeftActions` – method that is expected to return an action panel that is going to be revealed from the left side when user swipes right.
  - `renderRightActions` – method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
+ - `animationOptions` - an object with props to be applied to spring animation. See at official [docs](https://facebook.github.io/react-native/docs/animated.html#spring)
 
 #### Example:
 
