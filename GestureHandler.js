@@ -119,9 +119,9 @@ function transformIntoHandlerTags(handlerIDs) {
   return handlerIDs
     .map(
       handlerID =>
-        typeof handlerID === 'string'
-          ? handlerIDToTag[handlerID] || -1
-          : handlerID.current && handlerID.current._handlerTag
+        handlerIDToTag[handlerID] ||
+        (handlerID.current && handlerID.current._handlerTag) ||
+        -1
     )
     .filter(handlerTag => handlerTag > 0);
 }
