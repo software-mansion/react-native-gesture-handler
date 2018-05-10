@@ -202,15 +202,19 @@ This type of button component should be used with simple icon-only or text-only 
 
 ## Controlling gesture handlers interactions
 
-Gesture handler library API allows for defining some basic interaction between handler components. Interactions can be defined by first setting a string identifer for a handler component with the `id` property and then referencing it with `waitFor` or `simultaneousHandlers` props in other handler component.
+Gesture handler library API allows for defining some basic interaction between handler components. Interactions could be defined by first setting a ref object (`React.createRef()`) for a handler component with the `ref` property and then referencing it with `waitFor` or `simultaneousHandlers` props in other handler component.
+
+You could read about refs in React [docs](https://reactjs.org/docs/refs-and-the-dom.html)
+
+If you want to use link two gesture handlers (by using `waitFor` or `simultaneousHandlers`) with React older than 16.3, you need to set a globally unique string identifier for the handler with `id` property and then use it in `waitFor` or `simultaneousHandlers` props for the other handler. Note that this way of linking handlers is deprecated and will be removed in future releases
 
 #### `waitFor` property
 
-This property accepts one or more gesture handler IDs (either as a single string or an array of strings). If this property is set, the gesture handler will wait for the provided handlers to fail before it can activate.
+This property accepts one or more gesture handler refs (either as a single ref or an array of refs). If this property is set, the gesture handler will wait for the provided handlers to fail before it can activate.
 
 #### `simultaneousHandlers` property
 
-This property accepts one or more gesture handler IDs (either as a single string or an array of strings). Setting this property will make the gesture handler recognize a gesture simultaneously with handlers with provided IDs. Typical use case would be a map component, for which we want both pinch and rotate gestures to be recognized simultaneously.
+This property accepts one or more gesture handler refs (either as a single ref or an array of refs). Setting this property will make the gesture handler recognize a gesture simultaneously with handlers with given refs. Typical use case would be a map component, for which we want both pinch and rotate gestures to be recognized simultaneously.
 
 ## Custom components
 
