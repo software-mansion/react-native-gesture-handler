@@ -210,12 +210,12 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     componentDidMount() {
-      // Code below will be executed AFTER whole cycle of
-      // rendering which seems to be done atomically
-      // That dirty and hacky workaround was made in order to handle
-      // ref-related action. Otherwise, outer refs
-      // are invisible (null) for their children and cannot wait for them or
-      // be managed simultaneous.
+      // Calling createGestureHandler from setImmediate guarantees that 
+      // all the other components are mounted which is necessary for
+      // the refs to be set. If we were to call it directly here then if
+      // the parent component ref is passed in `waitFor` or `simultaniousHandlers`
+      // property it's `.current` element would be `null` because it has not
+      // yet been mounted.
       setImmediate(() => {
         this._viewTag = findNodeHandle(this._viewNode);
         this._config = filterConfig(
