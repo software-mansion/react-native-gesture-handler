@@ -3,7 +3,7 @@
   "localized-strings": {
     "next": "Next",
     "previous": "Previous",
-    "tagline": "Library for gesture handling natively in react-native",
+    "tagline": "Declarative API exposing platform native touch and gesture system to React Native.",
     "about": "About Library",
     "buttons": "Buttons",
     "contributing": "Contributing",

@@ -46,3 +46,7 @@ bin/
 \.buckd/
 android/app/libs
 android/keystores/debug.keystore
+
+# yarn
+yarn-error.log
+
