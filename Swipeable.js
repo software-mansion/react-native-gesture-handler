@@ -34,10 +34,10 @@ export type PropType = {
   onSwipeableRightOpen?: Function,
   onSwipeableOpen?: Function,
   onSwipeableClose?: Function,
-  onSwipeableLeftStartOpen?: Function,
-  onSwipeableRightStartOpen?: Function,
-  onSwipeableStartOpen?: Function,
-  onSwipeableStartClose?: Function,
+  onSwipeableLeftWillOpen?: Function,
+  onSwipeableRightWillOpen?: Function,
+  onSwipeableWillOpen?: Function,
+  onSwipeableWillClose?: Function,
   renderLeftActions?: (
     progressAnimatedValue: any,
     dragAnimatedValue: any
