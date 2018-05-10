@@ -101,7 +101,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     @Override
     public void extractEventData(T handler, WritableMap eventData) {
-      eventData.putDouble("numberOfPointer", handler.getNumberOfPointers());
+      eventData.putDouble("numberOfPointers", handler.getNumberOfPointers());
     }
   }
 
