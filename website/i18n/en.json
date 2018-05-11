@@ -3,32 +3,37 @@
   "localized-strings": {
     "next": "Next",
     "previous": "Previous",
-    "tagline":
-      "Declarative API exposing platform native touch and gesture system to React Native.",
-    "about": "About Library",
+    "tagline": "Declarative API exposing platform native touch and gesture system to React Native.",
+    "about-handlers": "About Gesture Handlers",
+    "About Gesture Handlers": "About Gesture Handlers",
     "buttons": "Buttons",
     "contributing": "Contributing",
     "credits": "Credits",
     "drawer-layout": "Drawer Layout",
     "example": "Example",
+    "getting-started": "Getting Started",
+    "Getting Started": "Getting Started",
     "handler-longpress": "LongPressGestureHandler",
+    "LongPressGestureHandler": "LongPressGestureHandler",
     "handler-pan": "PanGestureHandler",
+    "PanGestureHandler": "PanGestureHandler",
     "handlers": "Gesture Handlers",
     "installation": "Installation",
     "interactions": "Interactions",
+    "state": "Handler State",
+    "Handler State": "Handler State",
     "swipeable": "Swipeable",
     "troubleshooting": "Troubleshooting",
     "Docs": "Docs",
     "Help": "Help",
-    "About": "About",
+    "Basics": "Basics",
     "Handlers": "Handlers",
-    "Components": "Components"
+    "Components": "Components",
+    "Other": "Other"
   },
   "pages-strings": {
-    "Help Translate|recruit community translators for your project":
-      "Help Translate",
+    "Help Translate|recruit community translators for your project": "Help Translate",
     "Edit this Doc|recruitment message asking to edit the doc source": "Edit",
-    "Translate this Doc|recruitment message asking to translate the docs":
-      "Translate"
+    "Translate this Doc|recruitment message asking to translate the docs": "Translate"
   }
 }

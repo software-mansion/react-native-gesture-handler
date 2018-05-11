@@ -1,6 +1,7 @@
 ---
-id: about
-title: About Library
+id: getting-started
+title: Getting Started
+sidebar_label: Getting Started
 ---
 
 Native performance touch gestures in React Native apps!
