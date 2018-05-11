@@ -13,6 +13,8 @@
     "example": "Running Example App",
     "getting-started": "Getting Started",
     "Getting Started": "Getting Started",
+    "handler-common": "Common handler properties",
+    "BaseGestureHandler": "BaseGestureHandler",
     "handler-fling": "FlingGestureHandler",
     "FlingGestureHandler": "FlingGestureHandler",
     "handler-longpress": "LongPressGestureHandler",

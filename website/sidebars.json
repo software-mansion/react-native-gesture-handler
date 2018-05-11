@@ -2,7 +2,7 @@
   "docs": {
     "Basics": ["getting-started", "about-handlers", "state", "example"],
     "Handlers": [
-      "handlers",
+      "handler-common",
       "handler-pan",
       "handler-longpress",
       "handler-fling",

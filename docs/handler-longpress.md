@@ -12,7 +12,7 @@ The handler is implemented using [UILongPressGestureRecognizer](https://develope
 
 ## Parameters
 
-See [set of parameters inherited from base handler class](handler-common). Below is a list of parameters specific to `LongPressGestureHandler` component:
+See [set of parameters inherited from base handler class](handler-common.md#parameters). Below is a list of parameters specific to `LongPressGestureHandler` component:
 
 ### `minDurationMs`
 
@@ -24,7 +24,7 @@ Allow finger movement while pressing. This property expresses the maximum distan
 
 ## Event data
 
-Gesture events provided to `LongPressGestureHandler` callbacks does not include any handler specific attributes beside the [common set of event attributes from base handler class](handler-common.md).
+Gesture events provided to `LongPressGestureHandler` callbacks does not include any handler specific attributes beside the [common set of event attributes from base handler class](handler-common.md#event-data).
 
 ## Example
 

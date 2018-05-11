@@ -5,12 +5,14 @@ sidebar_label: FlingGestureHandler
 ---
 
 A discrete gesture handler that activates when the movement is sufficiently long and fast.
-Handler gets [ACTIVE](state#active) when movement is sufficiently long and it did not take too much time. 
+Handler gets [ACTIVE](state#active) when movement is sufficiently long and it did not take too much time.
 When handler gets activated it will turn into [END](state#end) state when finger is released.
 The handler will fail to recognize if the finger is lifted before being activated.
 The handler is implemented using [UISwipeGestureRecognizer](https://developer.apple.com/documentation/uikit/uiswipegesturerecognizer) on iOS and from scratch on Android.
 
-See [set of parameters inherited from base handler class](handler-common). Below is a list of parameters specific to `FlingGestureHandler` component:
+## Parameters
+
+See [set of parameters inherited from base handler class](handler-common.md#parameters). Below is a list of parameters specific to `FlingGestureHandler` component:
 
 ### `direction`
 
@@ -29,7 +31,7 @@ Determinate exact number of point required to handle the fling gesture.
 
 ## Event data
 
-Gesture events provided to `FlingGestureHandler` callbacks does not include any handler specific attributes beside the [common set of event attributes from base handler class](handler-common).
+Gesture events provided to `FlingGestureHandler` callbacks does not include any handler specific attributes beside the [common set of event attributes from base handler class](handler-common#event-data).
 
 ## Example
 
