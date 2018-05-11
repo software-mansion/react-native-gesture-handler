@@ -13,6 +13,8 @@
     "example": "Example",
     "getting-started": "Getting Started",
     "Getting Started": "Getting Started",
+    "handler-fling": "FlingGestureHandler",
+    "FlingGestureHandler": "FlingGestureHandler",
     "handler-longpress": "LongPressGestureHandler",
     "LongPressGestureHandler": "LongPressGestureHandler",
     "handler-pan": "PanGestureHandler",

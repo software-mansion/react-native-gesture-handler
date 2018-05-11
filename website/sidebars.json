@@ -5,6 +5,7 @@
       "handlers",
       "handler-pan",
       "handler-longpress",
+      "handler-fling",
       "interactions"
     ],
     "Components": ["buttons", "swipeable", "drawer-layout"],
