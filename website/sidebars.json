@@ -1,7 +1,12 @@
 {
   "docs": {
     "About": ["about", "example", "contributing", "troubleshooting", "credits"],
-    "Handlers": ["handlers", "interactions"],
+    "Handlers": [
+      "handlers",
+      "handler-pan",
+      "handler-longpress",
+      "interactions"
+    ],
     "Components": ["buttons", "swipeable", "drawer-layout"]
   }
 }

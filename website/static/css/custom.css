@@ -14,3 +14,18 @@
 
 @media only screen and (min-width: 1500px) {
 }
+
+footer .logos {
+  text-align: center;
+}
+
+footer .logo {
+  margin: 1em;
+  opacity: 0.4;
+  transition: opacity 0.15s ease-in-out;
+  width: 170px;
+}
+
+footer .logo:hover {
+  opacity: 1.0;
+}

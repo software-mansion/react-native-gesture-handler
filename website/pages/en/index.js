@@ -82,7 +82,9 @@ class HomeSplash extends React.Component {
           <PromoSection>
             <Button href="#try">Try It Out</Button>
             <Button href={docUrl('doc1.html', language)}>Example Link</Button>
-            <Button href={docUrl('doc2.html', language)}>Example Link 2</Button>
+            <Button href={docUrl('doc2.html', language)}>
+              TRY DEMO APP ON EXPO
+            </Button>
           </PromoSection>
           <a
             className="github-button"
@@ -109,44 +111,28 @@ const Block = props => (
   </Container>
 );
 
-// const Features = props => (
-//   <Block layout="fourColumn">
-//     {[
-//       {
-//         content: 'This is the content of my feature',
-//         image: imgUrl('docusaurus.svg'),
-//         imageAlign: 'top',
-//         title: 'Feature One',
-//       },
-//       {
-//         content: 'The content of my second feature',
-//         image: imgUrl('docusaurus.svg'),
-//         imageAlign: 'top',
-//         title: 'Feature Two',
-//       },
-//     ]}
-//   </Block>
-// );
-
-const FeatureCallout = props => (
-  <div
-    className="productShowcaseSection paddingBottom"
-    style={{ textAlign: 'center' }}>
-    <h2>Gesture Handlers</h2>
-    <MarkdownBlock>
-      Library provides native components in order to manage gestures natively
-    </MarkdownBlock>
-  </div>
-);
-
-const LearnHow = props => (
-  <Block background="light">
+const Features = props => (
+  <Block layout="fourColumn">
     {[
       {
-        content: 'Take a look on our example!',
-        image: imgUrl('docusaurus.svg'),
-        imageAlign: 'right',
-        title: 'Learn How',
+        content:
+          'Gesture Handler relies on component native to each platform for gesture recognition.',
+        title: 'Use platform native gesture recognizers',
+      },
+      {
+        content:
+          "Use events with gesture data with React Native's [Animated library](http://facebook.github.io/react-native/docs/animated.html) and build smooth gesture based expiriences with `useNativeDriver` flag.",
+        title: 'Works with Animated API',
+      },
+      {
+        content:
+          'Gesture Handler library ships with a set of components that aims to provide best possible interations such as SwipeableRow or Drawer. More components to come!',
+        title: 'Use cross platform components build with Gesture Handler',
+      },
+      {
+        content:
+          'Gesture Handler is available for you to use with [Expo](https://expo.io) and to play with on [Snack](https://snack.expo.io/).',
+        title: 'Available in Expo.io',
       },
     ]}
   </Block>
@@ -165,48 +151,18 @@ const TryOut = props => (
   </Block>
 );
 
-//const Description = props => (
-//  <Block background="dark">
-//    {[
-//      {
-//        content: 'This is another description of how this project is useful',
-//        image: imgUrl('docusaurus.svg'),
-//        imageAlign: 'right',
-//        title: 'Description',
-//      },
-//    ]}
-//  </Block>
-//);
-
-const Showcase = props => {
-  if ((siteConfig.users || []).length === 0) {
-    return null;
-  }
-  const showcase = siteConfig.users
-    .filter(user => {
-      return user.pinned;
-    })
-    .map((user, i) => {
-      return (
-        <a href={user.infoLink} key={i}>
-          <img src={user.image} alt={user.caption} title={user.caption} />
-        </a>
-      );
-    });
-
-  return (
-    <div className="productShowcaseSection paddingBottom">
-      <h2>{"Who's Using This?"}</h2>
-      <p>This project is used by all these people</p>
-      <div className="logos">{showcase}</div>
-      <div className="more-users">
-        <a className="button" href={pageUrl('users.html', props.language)}>
-          More {siteConfig.title} Users
-        </a>
-      </div>
-    </div>
-  );
-};
+const Description = props => (
+  <Block background="dark">
+    {[
+      {
+        content: 'This is another description of how this project is useful',
+        image: imgUrl('docusaurus.svg'),
+        imageAlign: 'right',
+        title: 'Description',
+      },
+    ]}
+  </Block>
+);
 
 class Index extends React.Component {
   render() {
@@ -216,10 +172,9 @@ class Index extends React.Component {
       <div>
         <HomeSplash language={language} />
         <div className="mainContainer">
-          <FeatureCallout />
-          <LearnHow />
+          <Features />
+          <Description />
           <TryOut />
-          <Showcase language={language} />
         </div>
       </div>
     );
