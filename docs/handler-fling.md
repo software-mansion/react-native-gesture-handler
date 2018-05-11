@@ -10,10 +10,11 @@ When handler gets activated it will turn into [END](state#end) state when finger
 The handler will fail to recognize if the finger is lifted before being activated.
 The handler is implemented using [UISwipeGestureRecognizer](https://developer.apple.com/documentation/uikit/uiswipegesturerecognizer) on iOS and from scratch on Android.
 
-## Parameters
+## Properties
 
-See [set of parameters inherited from base handler class](handler-common.md#parameters). Below is a list of parameters specific to `FlingGestureHandler` component:
+See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `FlingGestureHandler` component:
 
+---
 ### `direction`
 
 Expressed allowed direction of movement. It's possible to set ona or many direction in one parameter:
@@ -25,6 +26,7 @@ or
 direction={Directions.DOWN}
 ```
 
+---
 ### `numberOfPointers`
 
 Determinate exact number of point required to handle the fling gesture.

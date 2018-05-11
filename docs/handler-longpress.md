@@ -10,14 +10,16 @@ The handler will fail to recognize if the finger is lifted before the [minimum r
 
 The handler is implemented using [UILongPressGestureRecognizer](https://developer.apple.com/documentation/uikit/uilongpressgesturerecognizer) on iOS and [LongPressGestureHandler](https://github.com/kmagiera/react-native-gesture-handler/blob/master/android/lib/src/main/java/com/swmansion/gesturehandler/LongPressGestureHandler.java) on Android.
 
-## Parameters
+## Properties
 
-See [set of parameters inherited from base handler class](handler-common.md#parameters). Below is a list of parameters specific to `LongPressGestureHandler` component:
+See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `LongPressGestureHandler` component:
 
+---
 ### `minDurationMs`
 
 How long the view has to be pressed in order for gesture to activate. In milliseconds. The default duration is 0.5sec.
 
+---
 ### `maxDist`
 
 Allow finger movement while pressing. This property expresses the maximum distance it is allowed for the finger to travel before it cancels. The default distance is 10 points.
