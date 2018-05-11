@@ -1,13 +1,46 @@
 ---
 id: example
-title: Example
+title: Running Example App
 ---
 
-If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `Example/` folder and run:
+Example app code is located under [`Example/`](https://github.com/kmagiera/react-native-gesture-handler/tree/master/Example) folder in the repo.
+It cosists of the list of single screen examples presenting the capabilities of the library.
+Each example is located under a separate folder under [`Example/`](https://github.com/kmagiera/react-native-gesture-handler/tree/master/Example).
+
+## Running example app on Expo
+
+You can run example app on [Expo](https://expo.io). Follow instructions under [this link](https://exp.host/@osdnk/gesturehandlerexample) to do so. Note that the app publiched to Expo is not the most up to date version. We publish updates whenever new version of Expo SDK is released. If you wish to try the most up to date version you will have to run example app locally. For that see below 👇
+
+## Running example app locally
+
+Before you begin you should follow [React Native's setup steps](http://facebook.github.io/react-native/docs/getting-started.html) to make sure you have all the tools necessary to build and run React Native apps installed.
+The example app is a regular React Native app, so in case of problems or to learn about available commands you may want to [check create-react-native-app documentation](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md).
+
+In order to run example app you need to clone the repo first:
+
 ```bash
-  yarn install
+git clone git@github.com:kmagiera/react-native-gesture-handler.git
 ```
 
-Then run `react-native run-android` or `react-native run-ios` (depending on which platform you want to run the example app on).
+Then go tp the `Example/` folder:
+```bash
+cd react-native-gesture-handler/Example
+```
 
-You will need to have an Android or iOS device or emulator connected as well as `react-native-cli` package installed globally.
+Install dependencies with the following command:
+```bash
+yarn install
+```
+
+Finally run one of the commands below in order to build, install and launch the app on Android:
+```bash
+react-native run-android
+```
+
+or on iOS:
+```bash
+react-native run-ios
+```
+
+You will need to have an Android or iOS device or emulator connected and `react-native-cli` package installed globally.
+
