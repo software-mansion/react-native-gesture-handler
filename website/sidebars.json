@@ -10,6 +10,7 @@
     "Handlers": [
       "handler-common",
       "handler-pan",
+      "handler-tap",
       "handler-longpress",
       "handler-fling"
     ],

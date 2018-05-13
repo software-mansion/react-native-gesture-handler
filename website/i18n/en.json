@@ -21,6 +21,8 @@
     "LongPressGestureHandler": "LongPressGestureHandler",
     "handler-pan": "PanGestureHandler",
     "PanGestureHandler": "PanGestureHandler",
+    "handler-tap": "TapGestureHandler",
+    "TapGestureHandler": "TapGestureHandler",
     "handlers": "Gesture Handlers",
     "installation": "Installation",
     "interactions": "Cross handler interactions",

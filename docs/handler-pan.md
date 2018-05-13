@@ -39,7 +39,7 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 
 ## Properties
 
-See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `LongPressGestureHandler` component:
+See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `PanGestureHandler` component:
 
 ---
 ### `minDist`

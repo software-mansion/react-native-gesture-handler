@@ -9,7 +9,7 @@ Each example is located under a separate folder under [`Example/`](https://githu
 
 ## Running example app on Expo
 
-You can run example app on [Expo](https://expo.io). Follow instructions under [this link](https://exp.host/@osdnk/gesturehandlerexample) to do so. Note that the app publiched to Expo is not the most up to date version. We publish updates whenever new version of Expo SDK is released. If you wish to try the most up to date version you will have to run example app locally. For that see below 👇
+You can run example app on [Expo](https://expo.io). Follow instructions under [this link](https://exp.host/@osdnk/gesturehandlerexample) to do so. Note that the app published to Expo is not the most up to date version. We publish updates whenever new version of Expo SDK is released. If you wish to try the most up to date version you will have to run example app locally. For that see below 👇
 
 ## Running example app locally
 
