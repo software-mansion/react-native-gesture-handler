@@ -30,12 +30,12 @@ Most of the handlers defaults to `true` but in case of the [`LongPressGestureHan
 ---
 ### `simultaniousHandlers`
 
-<TODO>
+Accepts a react ref object or an array of refs to other handler components (refs should be created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html)). When set the handler will be allowed to [activate](state.md#active) even if one or more of the handlers provided by their refs are [active](state.md#active). It will also prevent the provided handlers from [cancelling](state.md#cancelled) current handler when they [activate](state.md#active). Read more in the [cross handler interaction](interactions.md#simultaneous-recognition) section.
 
 ---
 ### `waitFor`
 
-<TODO>
+Accepts a react ref object or an array of refs to other handler components (refs should be created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html)). When set the handler will not [activate](state.md#active) as long as the handlers provided by their refs are in [began](state.md#began) state. Read more in the [cross handler interaction](interactions.md#awaiting-other-handlers) section.
 
 ---
 ### `hitSlop`
