@@ -12,6 +12,7 @@
       "handler-pan",
       "handler-tap",
       "handler-longpress",
+      "handler-rotation",
       "handler-fling"
     ],
     "Components": ["buttons", "swipeable", "drawer-layout"],
