@@ -12,7 +12,16 @@ Gesture callback can be used for continuous tracking of the pan gesture. It prov
 
 The handler is implemented using [UIPanGestureRecognizer](https://developer.apple.com/documentation/uikit/uipangesturerecognizer) on iOS and [PanGestureHandler](https://github.com/kmagiera/react-native-gesture-handler/blob/master/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java) on Android.
 
-## Differences in multi touch pan handling between platforms
+## Custom activation criteria
+
+Component `PanGestureHandler` exposes a number of properties that allows for customizing the criteria under which the handler will [activate](state.md#active) or [fail](state.md#fail) recognizing.
+
+When more than one of such a property is set pan handler expects all the criteria to be met for recognizing and at most one of the criteria to be overstepped to fail recognition.
+For example when both [`minDeltaX`](#mindeltax) and [`minDeltaY`](#mindeltay) are set to 20 we expect the finger to travel by 20 points in both X and Y axis before the handler activates.
+Another example would be to have both [`maxDeltaX`](#maxdeltaX) and [`maxDeltaY`](#maxdeltay) set to 20 and [`minDist`](#mindist) set to 23.
+In such a case when we move finger along X axis by 20 points and 0 points along Y axis the handler will fail even though we are still within the limit with the translation along Y axis.
+
+## Multi touch pan handling
 
 If your app relies on multi touch pan handling this section provides some information how the default behavior differs between the platform and how (if necessary) it can be unified.
 
@@ -33,36 +42,82 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `LongPressGestureHandler` component:
 
 ---
+### `minDist`
+
+Minimum distance the finger (or multiple finger) need to travel before the handler [activates](state.md#active). Expressed in points.
+
+---
 ### `minDeltaX`
+
+Minimum distance expressed in points along X axis the finger (or multiple finger) need to travel before the handler [activates](state.md#active). If set to a negative value we expect the finger to travel "left" by the given distance. When set to a positive number the handler will activate on a movement to the "right". If you wish for the movement direction to be ignored use [`minOffsetX`](#minoffsetx) instead.
 
 ---
 ### `minDeltaY`
 
----
-### `maxDeltaX`
-
----
-### `maxDeltaY`
+Minimum distance expressed in points along Y axis the finger (or multiple finger) need to travel before the handler [activates](state.md#active). If set to a negative value we expect the finger to travel "up" by the given distance. When set to a positive number the handler will activate on a movement to the "bottom". If you wish for the movement direction to be ignored use [`minOffsetY`](#minoffsety) instead.
 
 ---
 ### `minOffsetX`
 
+Minimum distance expressed in points along X axis the finger (or multiple finger) need to travel (left or right) before the handler [activates](state.md#active). Unlike [`minDeltaX`](#mindeltax) this parameter accepts only non-negative numbers that represents the distance in point units. If you want for the handler to [activate](state.md#active) for the movement in one particular direction use [`minDeltaX`](#mindeltax) instead.
+
 ---
 ### `minOffsetY`
+
+Minimum distance expressed in points along Y axis the finger (or multiple finger) need to travel (top or bottom) before the handler [activates](state.md#active). Unlike [`minDeltaY`](#mindeltay) this parameter accepts only non-negative numbers that represents the distance in point units. If you want for the handler to [activate](state.md#active) for the movement in one particular direction use [`minDeltaY`](#mindeltay) instead.
 
 ---
 ### `minPointers`
 
+A number of fingers that is required to be placed before handler can [activate](state.md#active). Should be a positive integer.
+
 ---
 ### `maxPointers`
+
+When the given number of fingers is placed on the screen and handler hasn't yet [activated](state.md#active) it will fail recognizing the gesture. Should be a positive integer.
+
+---
+### `maxDeltaX`
+
+When the finger travels the given distance expressed in points along X axis and handler hasn't yet [activated](state.md#active) it will fail recognizing the gesture.
+
+---
+### `maxDeltaY`
+
+When the finger travels the given distance expressed in points along Y axis and handler hasn't yet [activated](state.md#active) it will fail recognizing the gesture.
+
 
 ---
 ### `avgTouches` (Android only)
 
 ## Event data
 
+See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `PanGestureHandler`:
+
+---
+### `translationX`
+
+Translation of the pan gesture along X axis accumulated over the time of the gesture. The value is expressed in the point units.
+
+---
+### `translationY`
+
+Translation of the pan gesture along Y axis accumulated over the time of the gesture. The value is expressed in the point units.
+
+---
+### `velocityX`
+
+Velocity of the pan gesture along the X axis in the current moment. The value is expressed in point units per second.
+
+---
+### `velocityY`
+
+Velocity of the pan gesture along the Y axis in the current moment. The value is expressed in point units per second.
+
 ---
 ### `x`
+
+Current position of the pointer (finger or a leading pointer when there are multiple fingers placed)
 
 ---
 ### `y`
@@ -73,32 +128,20 @@ See [set of properties inherited from base handler class](handler-common.md#prop
 ---
 ### `absoluteY`
 
----
-### `translationX`
-
----
-### `translationY`
-
----
-### `velocityX`
-
----
-### `velocityY`
 
 ## Example
 
-See the [multitap example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/multitap/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
+See the [draggable example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/draggable/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
 
 ```js
-const LongPressButton = () => (
-  <LongPressGestureHandler
-      onHandlerStateChange={({ nativeEvent }) => {
-        if (nativeEvent.state === State.ACTIVE) {
-          Alert.alert("I'm being pressed for so long");
-        }
-      }}
-      minDurationMs={800}>
-      <View style={styles.box} />
-  </LongPressGestureHandler>
-);
+class HorizontalSlider extends Component {
+  render() {
+    return (
+      <TODO>
+      <PanGestureHandler>
+          <View style={styles.box} />
+      </PanGestureHandler>
+    );
+  }
+}
 ```
