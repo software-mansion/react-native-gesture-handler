@@ -4,14 +4,26 @@ title: Getting Started
 sidebar_label: Getting Started
 ---
 
-Native performance touch gestures in React Native apps!
+Gesture handler aims at replacing React Native's built in touch system called a [JS Responder System](http://facebook.github.io/react-native/docs/gesture-responder-system.html).
 
-This library provides an API that exposes mobile platform specific native capabilities of touch & gesture handling and recognition. It allows for defining complex gesture handling and recognition logic that runs 100% in native thread and is therefore deterministic.
+The library came to live to fix some performance limitations of the responder system and also to provide more control over the native components that can also handle gestures.
+We recommend [this talk](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) where the limitations are explained.
 
-This library is still in early development phase – but it is already useful. Our ultimate goal is to merge it into React Native core – for now, it is included in [Expo](https://expo.io).
+Here is what the library provides in a nutshell:
+ - Way to use platform native touch handling system for recognizing pinch, rotation and pan (and few other type of gestures).
+ - You can define relations between gesture handlers, e.g. when you have pan handler in `ScrollView` you can make that `ScrollView` wait until it knows pan won't recognize.
+ - You can use touchables that run in native thread and follow platform default behavior. E.g. in case they are in a scrollable component turning into pressed state is slightly delayed to prevent it from highlighting when you fling.
+ - You can implement smooth gesture interactions that thanks to Animated Native Driver. Interations will be responsive even when JS thread is overloaded.
 
-### What does it give me:
- - It provides a way to access native touch handling logic for recognizing pinch, rotation and pan (among others)
- - You can define relations between gesture handlers, e.g. when you have pan handler in `ScrollView` you can make `ScrollView` to wait until it knows pan won't recognize
- - You can use touchables that run in native and follow platform default behaviour in case when they are embbeded in scrollable component (the interaction is slightly delayed to prevent button from highlighting when you fling)
- - You can implement smooth gesture interactions that thanks to Animated Native Driver can run even when JS thread is overloaded
+
+## Installation
+
+<TODO>
+
+### With [Expo](https://expo.io)
+
+<TODO>
+
+### With [React Native](http://facebook.github.io/react-native/) app (no Expo)
+
+### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
