@@ -13,7 +13,8 @@
       "handler-tap",
       "handler-longpress",
       "handler-rotation",
-      "handler-fling"
+      "handler-fling",
+      "handler-pinch"
     ],
     "Components": ["buttons", "swipeable", "drawer-layout"],
     "Other": ["contributing", "troubleshooting", "resources", "credits"]

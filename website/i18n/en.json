@@ -21,6 +21,8 @@
     "LongPressGestureHandler": "LongPressGestureHandler",
     "handler-pan": "PanGestureHandler",
     "PanGestureHandler": "PanGestureHandler",
+    "handler-pinch": "PinchGestureHandler",
+    "PinchGestureHandler": "PinchGestureHandler",
     "handler-rotation": "RotationGestureHandler",
     "RotationGestureHandler": "RotationGestureHandler",
     "handler-tap": "TapGestureHandler",

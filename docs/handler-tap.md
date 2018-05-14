@@ -6,7 +6,12 @@ sidebar_label: TapGestureHandler
 
 A discrete gesture handler that recognizes tap (or many taps).  
 
-The handler [activates](state.md#active) after certain number of taps done in proper time and with short enough delay. When handler gets activated it will turn into [END](state.md#end) state immediately.
+Tap gestures detect one or more fingers touching the screen briefly. 
+The fingers involved in these gestures must not move significantly from the initial touch points, 
+and you can configure the number of times the fingers must touch the screen and allowable distance. 
+For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
+
+For the handler to be [activated](state.md#active) the specified number of fingers must tap the view a specified number of times in proper time and with short enough delay. When handler gets activated it will turn into [END](state.md#end) state immediately.
 The handler will fail to recognize if the finger is moved further than the [allowable distance](#maxdist).
 
 ## Properties

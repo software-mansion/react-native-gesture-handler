@@ -39,7 +39,7 @@ Position expressed in points along Y axis of center anchor point of gesture
 See the [scale and rotation example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/scaleAndRotate/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
 
 ```js
-export class RotableBox extends React.Component {
+class RotableBox extends React.Component {
   _rotate = new Animated.Value(0);
   _rotateStr = this._rotate.interpolate({
     inputRange: [-100, 100],
