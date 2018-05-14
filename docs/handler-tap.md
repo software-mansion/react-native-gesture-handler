@@ -16,7 +16,7 @@ The handler will fail to recognize if the finger is moved further than the [allo
 
 ## Properties
 
-See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `LongPressGestureHandler` component:
+See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `TapGestureHandler` component:
 
 ---
 ### `minPointers`
