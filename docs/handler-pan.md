@@ -139,14 +139,53 @@ Y coordinate of the current position of the pointer (finger or a leading pointer
 See the [draggable example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/draggable/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
 
 ```js
-class HorizontalSlider extends Component {
+const circleRadius = 30;
+
+class Circleable extends Component {
+  _touchX = new Animated.Value(windowWidth / 2 - circleRadius);
+  _onPanGestureEvent = Animated.event(
+    [
+      {
+        nativeEvent: {
+          x: this._touchX,
+        },
+      },
+    ],
+    { useNativeDriver: true }
+  );
+
   render() {
     return (
-      <TODO>
-      <PanGestureHandler>
-          <View style={styles.box} />
+      <PanGestureHandler
+        onGestureEvent={this._onPanGestureEvent}>
+        <View style={{
+          height: 150,
+          justifyContent: 'center',
+        }}>
+          <Animated.View
+            style={[
+              {
+                backgroundColor: '#42a5f5',
+                borderRadius: circleRadius,
+                height: circleRadius * 2,
+                width: circleRadius * 2,
+              },
+              {
+                transform: [
+                  {
+                    translateX: Animated.add(
+                      this._touchX,
+                      new Animated.Value(-circleRadius)
+                    )
+                  },
+                ],
+              },
+            ]}
+          />
+        </View>
       </PanGestureHandler>
     );
   }
 }
+
 ```
