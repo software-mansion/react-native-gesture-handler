@@ -12,7 +12,6 @@ import { LoremIpsum } from '../common';
 
 const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;
-
 export class TapOrPan extends Component {
   constructor(props) {
     super(props);
@@ -41,14 +40,15 @@ export class TapOrPan extends Component {
   };
 
   render() {
+    const { tapRef, panRef } = this.props;
     return (
       <TapGestureHandler
-        id="tap"
-        waitFor="pan"
+        ref={tapRef}
+        waitFor={panRef}
         onHandlerStateChange={this._onTapHandlerStateChange}
         shouldCancelWhenOutside>
         <PanGestureHandler
-          id="pan"
+          ref={panRef}
           minDeltaX={20}
           onGestureEvent={this._onPanGestureEvent}
           shouldCancelWhenOutside>
@@ -74,10 +74,12 @@ export class TapOrPan extends Component {
 
 export default class Example extends Component {
   render() {
+    const tapRef = React.createRef();
+    const panRef = React.createRef();
     return (
-      <ScrollView waitFor={['tap', 'pan']}>
+      <ScrollView waitFor={[tapRef, panRef]}>
         <LoremIpsum words={150} />
-        <TapOrPan />
+        <TapOrPan tapRef={tapRef} panRef={panRef} />
         <LoremIpsum words={150} />
       </ScrollView>
     );
