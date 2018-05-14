@@ -19,6 +19,10 @@ The handler will fail to recognize if the finger is moved further than the [allo
 See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `LongPressGestureHandler` component:
 
 ---
+### `minPointers`
+A number of fingers that is required to be placed before handler can [activate](state.md#active). Should be a positive integer.
+
+---
 ### `maxDurationMs`
 Time expressed in milliseconds which defines how fast finger has to be released after touch.
 
