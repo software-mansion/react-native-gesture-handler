@@ -6,14 +6,14 @@ sidebar_label: DrawerLayout
 
 This is a cross-platform replacement for React Native's [DrawerLayoutAndroid](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) component. It provides a compatible API but allows for the component to be used on both Android and iOS. Please refer to [React Native docs](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) for the detailed usage for standard parameters.
 
-### Usage:
+## Usage:
 
 `DrawerLayout` component isn't exported by default from the `react-native-gesture-handler` package. To use it, import it in the following way:
 ```js
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 ```
 
-### Properties:
+## Properties:
 
 On top of the standard list of parameters DrawerLayout has an additional set of attributes to customize its behavior. Please refer to the list below:
 
@@ -41,7 +41,7 @@ color (default to `"black"`) of a semi-transparent overlay to be displayed on to
 function. This attibute is present in the standard implementation already and is one of the required params. Gesture handler version of DrawerLayout make it possible for the function passed as `renderNavigationView` to take an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened). This can be used by the drawer component to animated its children while the drawer is opening or closing.
 
 ---
-#### Example:
+## Example:
 See the [drawer example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/horizontalDrawer/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
 ```js
 class Drawerable extends Component {
