@@ -16,6 +16,6 @@
       "handler-fling"
     ],
     "Components": ["buttons", "swipeable", "drawer-layout"],
-    "Other": ["contributing", "troubleshooting", "credits"]
+    "Other": ["contributing", "troubleshooting", "resources", "credits"]
   }
 }

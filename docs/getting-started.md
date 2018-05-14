@@ -4,6 +4,8 @@ title: Getting Started
 sidebar_label: Getting Started
 ---
 
+Gesture handler aims at replacing React Native's built in touch system that relies
+
 Native performance touch gestures in React Native apps!
 
 This library provides an API that exposes mobile platform specific native capabilities of touch & gesture handling and recognition. It allows for defining complex gesture handling and recognition logic that runs 100% in native thread and is therefore deterministic.
