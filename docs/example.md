@@ -2,6 +2,7 @@
 id: example
 title: Running Example App
 ---
+![alt-text](assets/sampleapp.gif)
 
 Example app code is located under [`Example/`](https://github.com/kmagiera/react-native-gesture-handler/tree/master/Example) folder in the repo.
 It cosists of the list of single screen examples presenting the capabilities of the library.
