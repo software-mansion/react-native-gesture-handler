@@ -1,8 +1,8 @@
 ---
-id: drawer-layout
+id: component-drawer-layout
 title: Drawer Layout
+sidebar_label: DrawerLayout
 ---
-### `<DrawerLayout />`
 
 This is a cross-platform replacement for React Native's [DrawerLayoutAndroid](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) component. It provides a compatible API but allows for the component to be used on both Android and iOS. Please refer to [React Native docs](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) for the detailed usage for standard parameters.
 

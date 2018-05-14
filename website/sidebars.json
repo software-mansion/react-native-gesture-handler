@@ -16,7 +16,7 @@
       "handler-fling",
       "handler-pinch"
     ],
-    "Components": ["buttons", "swipeable", "drawer-layout"],
+    "Components": ["component-buttons", "component-swipeable", "component-drawer-layout"],
     "Other": ["contributing", "troubleshooting", "resources", "credits"]
   }
 }
