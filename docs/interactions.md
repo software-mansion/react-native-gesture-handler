@@ -50,5 +50,16 @@ Otherwise if we try to perform a double tap the single tap handler will fire jus
 See the ["Multitap" example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/multitap/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
 
 ```js
-<TODO>
+const PressBox = () => (
+  <TapGestureHandler
+    onHandlerStateChange={({ nativeEvent }) => nativeEvent.state === State.ACTIVE && Alert.alert('Single tap!')}
+    waitFor="double_tap">
+    <TapGestureHandler
+      id="double_tap"
+      onHandlerStateChange={({ nativeEvent }) => nativeEvent.state === State.ACTIVE && Alert.alert('You\'re so fast')}
+      numberOfTaps={2}>
+      <View style={styles.box}/>
+    </TapGestureHandler>
+  </TapGestureHandler>
+);
 ```
