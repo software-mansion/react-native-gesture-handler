@@ -13,7 +13,7 @@ Here is what the library provides in a nutshell:
  - Way to use platform native touch handling system for recognizing pinch, rotation and pan (and few other type of gestures).
  - You can define relations between gesture handlers, e.g. when you have pan handler in `ScrollView` you can make that `ScrollView` wait until it knows pan won't recognize.
  - You can use touchables that run in native thread and follow platform default behavior. E.g. in case they are in a scrollable component turning into pressed state is slightly delayed to prevent it from highlighting when you fling.
- - You can implement smooth gesture interactions that thanks to Animated Native Driver. Interations will be responsive even when JS thread is overloaded.
+ - You can implement smooth gesture interactions that thanks to Animated Native Driver. Interactions will be responsive even when JS thread is overloaded.
 
 
 ## Installation
@@ -107,4 +107,4 @@ export function registerScreens() {
 
 You can check [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this set up in action.
 
-Remember that you need to wrap each screen that you use in you rapp with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It is not enough to wrap the main screen only.
+Remember that you need to wrap each screen that you use in your app with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It is not enough to wrap the main screen only.

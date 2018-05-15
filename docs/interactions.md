@@ -24,7 +24,7 @@ Moreover, when the given handler [activates](state.md#active) it will
 ### Use cases
 
 Simultaneous recognition needs to be used when implementing a photo preview component that allows for zooming in (scaling) the photo, rotating the photo and panning it while it is zoomed in.
-In this case we would use a [`PinchGestureHandler`](handler-pinch.md), [`RotationGestureHandler`](handler-rotation.md) and [`PanGestureHandler`](handler-pan.md) that all would have to recognize simultaniously.
+In this case we would use a [`PinchGestureHandler`](handler-pinch.md), [`RotationGestureHandler`](handler-rotation.md) and [`PanGestureHandler`](handler-pan.md) that all would have to recognize simultaneously.
 
 ---
 ### Example

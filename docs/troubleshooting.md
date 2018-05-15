@@ -28,4 +28,4 @@ To make it easier for us to understand your issue and to be able to approach it 
  - Explain how you run your repro app and what steps to take to reproduce the issue.
  - Isolate your issue from other dependencies you might be using and make the repro app as minimal as possible.
  - If you have spent some time figuring out the root cause of the problem you can leave a note about your findings so far.
- - __Do not comment on closed issues__. It is very unlikely that we are going to notice your comment in such a case. If the issue has been closed, but the proposed solution doesn't work for you, please open a new one providing all the informatio necessary and linking to the solution you have tried.
+ - __Do not comment on closed issues__. It is very unlikely that we are going to notice your comment in such a case. If the issue has been closed, but the proposed solution doesn't work for you, please open a new one providing all the information necessary and linking to the solution you have tried.
