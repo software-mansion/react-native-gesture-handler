@@ -12,8 +12,11 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     { doc: 'getting-started', label: 'Docs' },
-    //{ doc: 'doc4', label: 'API' },
     { page: 'help', label: 'Help' },
+    {
+      href: 'https://github.com/kmagiera/react-native-gesture-handler',
+      label: 'GitHub',
+    },
   ],
 
   /* path to images for header/footer */
