@@ -46,7 +46,7 @@ or using `npm` if you prefer:
 #### Android
 Follow the steps below:
 
-**IMPORTANT:** If you use one of the *native navigation libraries* (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you should follow [this separate guide](#with-wix-react-native-navigation-https-githubcom-wix-react-native-navigation) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that use standard Android project layout.
+If you use one of the *native navigation libraries* (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you should follow [this separate guide](#with-wix-react-native-navigation-https-githubcom-wix-react-native-navigation) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that use standard Android project layout.
 
 Update your main activity (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating `ReactRootView` instance. Then use a root view wrapper provided by this library:
 ```java
@@ -107,4 +107,4 @@ export function registerScreens() {
 
 You can check [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this set up in action.
 
-**IMPORTANT!!** Remember that you need to wrap each screen that you use in you rapp with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It is not enough to wrap the main screen only.
+Remember that you need to wrap each screen that you use in you rapp with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It is not enough to wrap the main screen only.
