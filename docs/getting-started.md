@@ -7,7 +7,7 @@ sidebar_label: Getting Started
 Gesture handler aims at replacing React Native's built in touch system called a [JS Responder System](http://facebook.github.io/react-native/docs/gesture-responder-system.html).
 
 The library came to live to fix some performance limitations of the responder system and also to provide more control over the built in native components that can handle gestures.
-We recommend [this talk](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) where the issue with responder system are explained.
+We recommend [this talk](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) where the issues with the responder system are explained.
 
 Here is what the library provides in a nutshell:
  - A way to use platform native touch handling system for recognizing pinch, rotation and pan (and few other type of gestures).
