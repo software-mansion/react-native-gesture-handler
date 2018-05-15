@@ -14,15 +14,17 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 ```
 
 ## Properties
+
+---
 ### `friction`
  a number that specifies how much the visual interation will be delayed compared to the gesture distance. e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
 
 ---
-### `leftThreshold` 
+### `leftThreshold`
 distance from the left edge at which released panel will animate to the open state (or the open panel will animate into the closed state). By default it's a half of the panel's width.
 
 ---
-### `rightThreshold` 
+### `rightThreshold`
 distance from the right edge at which released panel will animate to the open state (or the open panel will animate into the closed state). By default it's a half of the panel's width.
 
 ---

@@ -17,6 +17,7 @@ import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 
 On top of the standard list of parameters DrawerLayout has an additional set of attributes to customize its behavior. Please refer to the list below:
 
+---
 ### `drawerType`
 possible values are: `front`, `back` or `slide` (default is `front`). It specifies the way the drawer will be displayed. When set to `front` the drawer will slide in and out along with the gesture and will display on top of the content view. When `back` is used the drawer displays behind the content view and can be revealed with gesture of pulling the content view to the side. Finally `slide` option makes the drawer appear like it is attached to the side of the content view; when you pull both content view and drawer will follow the gesture.
 
