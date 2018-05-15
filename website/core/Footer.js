@@ -35,13 +35,17 @@ class Footer extends React.Component {
           </a>
           <div>
             <h5>Docs</h5>
-            <a href={this.docUrl('about.html')}>About</a>
+            <a href={this.docUrl('getting-started.html')}>Getting Started</a>
+            <a href={this.docUrl('resources.html')}>Learning Resources</a>
             <a href={this.docUrl('credits.html')}>Credits</a>
           </div>
           <div>
             <h5>More</h5>
             <a href="https://github.com/kmagiera/react-native-gesture-handler">
               GitHub
+            </a>
+            <a href="https://github.com/kmagiera/react-native-gesture-handler/issues">
+              Issues
             </a>
             <a
               className="github-button"

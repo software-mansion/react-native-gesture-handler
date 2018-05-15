@@ -80,10 +80,11 @@ class HomeSplash extends React.Component {
         <div className="inner">
           <ProjectTitle />
           <PromoSection>
-            <Button href="#try">Try It Out</Button>
-            <Button href={docUrl('doc1.html', language)}>Example Link</Button>
-            <Button href={docUrl('doc2.html', language)}>
-              TRY DEMO APP ON EXPO
+            <Button href={docUrl('getting-started.html', language)}>
+              Read the docs
+            </Button>
+            <Button href="https://exp.host/@osdnk/gesturehandlerexample">
+              Try demo app on Expo
             </Button>
           </PromoSection>
           <a
@@ -142,7 +143,7 @@ const TryOut = props => (
   <Block id="try">
     {[
       {
-        content: 'Install library via yarn or npm and follow instruction',
+        content: 'TODO Install library via yarn or npm and follow instruction',
         image: imgUrl('docusaurus.svg'),
         imageAlign: 'left',
         title: 'Try it Out',
@@ -155,7 +156,8 @@ const Description = props => (
   <Block background="dark">
     {[
       {
-        content: 'This is another description of how this project is useful',
+        content:
+          'TODO This is another description of how this project is useful',
         image: imgUrl('docusaurus.svg'),
         imageAlign: 'right',
         title: 'Description',
