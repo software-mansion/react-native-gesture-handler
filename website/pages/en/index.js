@@ -148,7 +148,7 @@ const TryOut = props => (
           '[our expo demo](https://exp.host/@osdnk/gesturehandlerexample) and get inspired how powerfully ' +
           'handle gestures and their interactions. \n\n' +
           'If you wish to use library in your project, read carefully the [installation guide](docs/getting-started.html#installation) and follow exactly the instructions',
-        image: imgUrl('ghlogo.svg'),
+        image: imgUrl('sampleswipeable.gif'),
         imageAlign: 'left',
         title: 'Try it Out',
       },
@@ -157,7 +157,7 @@ const TryOut = props => (
 );
 
 const Description = props => (
-  <Block background="light">
+  <Block background="light" id="description">
     {[
       {
         content:
