@@ -4,7 +4,8 @@ title: About Gesture Handlers
 sidebar_label: About Gesture Handlers
 ---
 
-We use a term "gesture handler" to refer to an objects that are instantiated on a native side and can be controlled from Javascript with React Component interface.
+Gesture handlers are the core elemenets of the library.
+We use this term to describe elements of the native touch system that the library allows us to instantiate and control from Javascript using [React's Component](https://reactjs.org/docs/react-component.html) interface.
 
 Each handler type is capable of recognizing one type of gesture (pan, pinch, etc.) and provides gesture specific information via events (translation, scale, etc.).
 

@@ -116,18 +116,18 @@ const Features = props => (
     {[
       {
         content:
-          'Gesture Handler relies on component native to each platform for gesture recognition.',
+          'With Gesture Handler touch stream handling happens on the UI thread and uses APIs native to each platform.',
         title: 'Use platform native gesture recognizers',
       },
       {
         content:
-          "Use events with gesture data with React Native's [Animated library](http://facebook.github.io/react-native/docs/animated.html) and build smooth gesture based expiriences with `useNativeDriver` flag.",
+          "Pass and process gesture specific data to React Native's [Animated library](http://facebook.github.io/react-native/docs/animated.html) and build smooth gesture based expiriences with `useNativeDriver` flag.",
         title: 'Works with Animated API',
       },
       {
         content:
           'Gesture Handler library ships with a set of components that aims to provide best possible interations such as SwipeableRow or Drawer. More components to come!',
-        title: 'Use cross platform components build with Gesture Handler',
+        title: 'Use cross platform components built with Gesture Handler',
       },
       {
         content:
@@ -142,12 +142,7 @@ const TryOut = props => (
   <Block id="try">
     {[
       {
-        content:
-          'Get acquainted with [documentation](docs/getting-started.html) to take a deep look how the' +
-          'library API works and how to use it effectively to make your app better. \n\n You could see ' +
-          '[our expo demo](https://exp.host/@osdnk/gesturehandlerexample) and get inspired how powerfully ' +
-          'handle gestures and their interactions. \n\n' +
-          'If you wish to use library in your project, read carefully the [installation guide](docs/getting-started.html#installation) and follow exactly the instructions',
+        content: `Check out the [documentation](docs/getting-started.html) and learn how to quickly get up and running with Gesture Handler. Take a look at our API guides to get familiarize with the API. \n\n Try our showcase app or [get it here using Expo](https://exp.host/@osdnk/gesturehandlerexample). Or just [go to this page](docs/example.html) to see how you can run it locally with React Native on both Android and iOS.`,
         image: imgUrl('sampleswipeable.gif'),
         imageAlign: 'left',
         title: 'Try it Out',
@@ -160,15 +155,10 @@ const Description = props => (
   <Block background="light" id="description">
     {[
       {
-        content:
-          'React Native Gesture Handler allows native-based gesture management for lightning and reliable ' +
-          'interactions in React Native. Using the library, gestures are no longer control in memory and ' +
-          'CPU-expensive JavaScript thread, but the most costable operations (like tracking of finger movement) are ' +
-          'executed in a fast native threads. Gesture tracking is not only smooth, which increase user experience of ' +
-          'your apps, but also dependable and deterministic.',
+        content: `React Native Gesture Handler provides native-driven gesture management APIs for building best possible touch-based expiriences in React Native. With this library gestures are no longer controlled by the JS responder system, but instead are recognized and tracked in the UI thread. Now gesture tracking is not only smooth, but also dependable and deterministic. [Continue here to the getting started guide](docs/getting-started.html) to learn more about the library`,
         image: imgUrl('ghlogo.svg'),
         imageAlign: 'right',
-        title: 'Description',
+        title: 'About this project',
       },
     ]}
   </Block>

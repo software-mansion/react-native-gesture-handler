@@ -81,6 +81,11 @@ Instead of a callback [`Animated.event`](https://facebook.github.io/react-native
 This section describes the attributes of event object being provided to [`onGestureEvent`](#ongestureevent) and [`onHandlerStateChange`](#onhandlerstatechange) callbacks:
 
 ---
+### `state`
+
+Current [state](state.md) of the handler. Expressed as one of the constants exported under `State` object by the library. Refer to the section about [handler state](state.md) to learn more about how to use it.
+
+---
 ### `numberOfPointers`
 
 Represents the number of pointers (fingers) currently placed on the screen.
