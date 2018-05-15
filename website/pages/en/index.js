@@ -76,7 +76,6 @@ class HomeSplash extends React.Component {
     let language = this.props.language || '';
     return (
       <SplashContainer>
-        <Logo img_src={imgUrl('docusaurus.svg')} />
         <div className="inner">
           <ProjectTitle />
           <PromoSection>
@@ -149,7 +148,7 @@ const TryOut = props => (
           '[our expo demo](https://exp.host/@osdnk/gesturehandlerexample) and get inspired how powerfully ' +
           'handle gestures and their interactions. \n\n' +
           'If you wish to use library in your project, read carefully the [installation guide](docs/getting-started.html#installation) and follow exactly the instructions',
-        image: imgUrl('docusaurus.svg'),
+        image: imgUrl('ghlogo.svg'),
         imageAlign: 'left',
         title: 'Try it Out',
       },
@@ -167,7 +166,7 @@ const Description = props => (
           'CPU-expensive JavaScript thread, but the most costable operations (like tracking of finger movement) are ' +
           'executed in a fast native threads. Gesture tracking is not only smooth, which increase user experience of ' +
           'your apps, but also dependable and deterministic.',
-        image: imgUrl('docusaurus.svg'),
+        image: imgUrl('ghlogo.svg'),
         imageAlign: 'right',
         title: 'Description',
       },

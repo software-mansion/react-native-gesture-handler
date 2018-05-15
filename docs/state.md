@@ -4,7 +4,9 @@ title: Handler State
 sidebar_label: Handler State
 ---
 
-Library exports a `State` object that provides a number of constants used to express the state of the handler. States were inspired by [UIGestureRecognizerState](https://developer.apple.com/documentation/uikit/uigesturerecognizerstate), but represent a bit different flow of changes gesture's recognition steps. 
+As described in ["About Gesture Handlers"](about-handlers.md) section
+
+Library exports a `State` object that provides a number of constants used to express the state of the handler. States were inspired by [UIGestureRecognizerState](https://developer.apple.com/documentation/uikit/uigesturerecognizerstate), but represent a bit different flow of changes gesture's recognition steps.
 States are used in native event's callback `onHandlerStateChange` and represents current state of gesture.
 Here are the available predefined states:
 
@@ -25,4 +27,4 @@ The gesture recognizer has received touches resulting in the cancellation of a c
 Handler has recognized gesture and provide proper action. Gesture will be active as long as finger is on the screen and every custom conditions are met. Then it will [end](#end).
 
 ### END
-The gesture recognizer has received touches recognized as the end of gesture. 
+The gesture recognizer has received touches recognized as the end of gesture.
