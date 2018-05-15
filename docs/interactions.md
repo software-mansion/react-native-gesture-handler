@@ -32,7 +32,32 @@ In this case we would use a [`PinchGestureHandler`](handler-pinch.md), [`Rotatio
 See the ["Scale, rotate & tilt" example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/scaleAndRotate/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
 
 ```js
-<TODO>
+class PinchableBox extends React.Component {
+  // ...take a look on full implementation in an Example app
+  render() {
+    const imagePinch = React.createRef();
+    const imageRotation = React.createRef();
+    return (
+      <RotationGestureHandler
+        ref={imageRotation}
+        simultaneousHandlers={imagePinch}
+        onGestureEvent={this._onRotateGestureEvent}
+        onHandlerStateChange={this._onRotateHandlerStateChange}>
+        <PinchGestureHandler
+          ref={imagePinch}
+          simultaneousHandlers={imageRotation}
+          onGestureEvent={this._onPinchGestureEvent}
+          onHandlerStateChange={this._onPinchHandlerStateChange}>
+          <View style={styles.container} collapsable={false}>
+            <Animated.Image
+              style={[styles.pinchableImage, { /* events-related transformations */ }]}
+            />
+          </View>
+        </PinchGestureHandler>
+      </RotationGestureHandler>
+    );
+  }
+}
 ```
 
 ## Awaiting other handlers
