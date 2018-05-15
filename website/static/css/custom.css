@@ -45,8 +45,14 @@ footer .logo:hover {
 }
 
 article a {
-  color: #00796B;
-  /* background-color: rgba(63, 70, 79, 0.07); */
-  /* box-shadow: 2px 0 rgba(63, 70, 79, 0.07), -2px 0 rgba(63, 70, 79, 0.07); */
-  /* border-radius: .3em; */
+  color: #607D8B;
+}
+
+.fixedHeaderContainer header h2 {
+  font-weight: 200;
+  color: #CFD8DC !important;
+}
+
+h1, h2, h3, h4 {
+  color: #607D8B !important;
 }

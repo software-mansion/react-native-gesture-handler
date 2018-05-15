@@ -22,19 +22,28 @@ class Help extends React.Component {
     let language = this.props.language || '';
     const supportLinks = [
       {
-        content: `Learn more using the [documentation on this site.](${docUrl(
-          'doc1.html',
+        content: `Docs can help you [get your project setup to use Gesture Handler](${docUrl(
+          'getting-started.html#installation',
           language
-        )})`,
+        )}). They also discuss some [low level topics](${docUrl(
+          'about-handlers.html',
+          language
+        )}) that may help you understand how handlers work. On top of that all the parameters of the API are documented there.`,
         title: 'Browse Docs',
       },
       {
-        content: 'Ask questions about the documentation and project',
-        title: 'Join the community',
+        content: `Check our ["Resources" section](${docUrl(
+          'resources.html',
+          language
+        )}) for a list of open-source apps using Gesture Handler and a video recordings from conferences and workshops.`,
+        title: 'Projects and talks',
       },
       {
-        content: "Find out what's new with this project",
-        title: 'Stay up to date',
+        content: `Ask questions about Gesture Handler on [Expo Developers Slack channel](https://slack.expo.io/). Or just [create an issue on Github](${docUrl(
+          'troubleshooting.html#reporting-issues',
+          language
+        )})`,
+        title: 'Join the community',
       },
     ];
 
@@ -45,7 +54,10 @@ class Help extends React.Component {
             <header className="postHeader">
               <h2>Need help?</h2>
             </header>
-            <p>This project is maintained by a dedicated group of people.</p>
+            <p>
+              If you need help with Gesture Handler try one of the following
+              channels.
+            </p>
             <GridBlock contents={supportLinks} layout="threeColumn" />
           </div>
         </Container>

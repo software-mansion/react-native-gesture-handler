@@ -12,8 +12,11 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     { doc: 'getting-started', label: 'Docs' },
-    //{ doc: 'doc4', label: 'API' },
     { page: 'help', label: 'Help' },
+    {
+      href: 'https://github.com/kmagiera/react-native-gesture-handler',
+      label: 'GitHub',
+    },
   ],
 
   /* path to images for header/footer */
@@ -32,7 +35,7 @@ const siteConfig = {
 
   highlight: {
     // Highlight.js theme to use for syntax highlighting in code blocks
-    theme: 'atom-one-dark',
+    theme: 'rainbow',
   },
 
   // Add custom scripts here that would be placed in <script> tags
