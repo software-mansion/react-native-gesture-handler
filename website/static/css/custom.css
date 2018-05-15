@@ -50,7 +50,7 @@ footer .logo:hover {
   max-width: unset;
 }
 
-article a {
+article a, .blockContent a {
   color: #607D8B;
 }
 
