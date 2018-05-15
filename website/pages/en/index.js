@@ -108,7 +108,7 @@ const Block = props => (
     padding={['bottom', 'top']}
     id={props.id}
     background={props.background}>
-    <GridBlock align="center" contents={props.children} layout={props.layout} />
+    <GridBlock contents={props.children} layout={props.layout} />
   </Container>
 );
 
@@ -145,9 +145,9 @@ const TryOut = props => (
       {
         content:
           'Get acquainted with [documentation](docs/getting-started.html) to take a deep look how the' +
-          'library API works and how to use it effectively to make your app better. \n You could see ' +
+          'library API works and how to use it effectively to make your app better. \n\n You could see ' +
           '[our expo demo](https://exp.host/@osdnk/gesturehandlerexample) and get inspired how powerfully ' +
-          'handle gestures and their interactions. \n' +
+          'handle gestures and their interactions. \n\n' +
           'If you wish to use library in your project, read carefully the [installation guide](docs/getting-started.html#installation) and follow exactly the instructions',
         image: imgUrl('docusaurus.svg'),
         imageAlign: 'left',
@@ -158,7 +158,7 @@ const TryOut = props => (
 );
 
 const Description = props => (
-  <Block background="dark">
+  <Block background="light">
     {[
       {
         content:
