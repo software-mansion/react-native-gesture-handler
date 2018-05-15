@@ -31,10 +31,14 @@ footer .logo:hover {
 }
 
 article a {
-  color: #00796B;
+  color: #607D8B;
 }
 
 .fixedHeaderContainer header h2 {
   font-weight: 200;
-  color: #CFD8DC;
+  color: #CFD8DC !important;
+}
+
+h1, h2, h3, h4 {
+  color: #607D8B !important;
 }
