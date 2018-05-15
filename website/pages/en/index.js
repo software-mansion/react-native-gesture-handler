@@ -157,7 +157,11 @@ const Description = props => (
     {[
       {
         content:
-          'TODO This is another description of how this project is useful',
+          'React Native Gesture Handler allows native-based gesture management for lightning and reliable ' +
+          'interactions in React Native. Using the library, gestures are no longer control in memory and ' +
+          'CPU-expensive JavaScript thread, but the most costable operations (like tracking of finger movement) are ' +
+          'executed in native threads. Gesture tracking is not only smooth, which increase user experience of ' +
+          'your apps, but also dependable and deterministic.',
         image: imgUrl('docusaurus.svg'),
         imageAlign: 'right',
         title: 'Description',
