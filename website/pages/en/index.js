@@ -143,7 +143,12 @@ const TryOut = props => (
   <Block id="try">
     {[
       {
-        content: 'TODO Install library via yarn or npm and follow instruction',
+        content:
+          'Get acquainted with [documentation](docs/getting-started.html) to take a deep look how the' +
+          'library API works and how to use it effectively to make your app better. \n You could see ' +
+          '[our expo demo](https://exp.host/@osdnk/gesturehandlerexample) and get inspired how powerfully ' +
+          'handle gestures and their interactions. \n' +
+          'If you wish to use library in your project, read carefully the [installation guide](docs/getting-started.html#installation) and follow exactly the instructions',
         image: imgUrl('docusaurus.svg'),
         imageAlign: 'left',
         title: 'Try it Out',
@@ -160,7 +165,7 @@ const Description = props => (
           'React Native Gesture Handler allows native-based gesture management for lightning and reliable ' +
           'interactions in React Native. Using the library, gestures are no longer control in memory and ' +
           'CPU-expensive JavaScript thread, but the most costable operations (like tracking of finger movement) are ' +
-          'executed in native threads. Gesture tracking is not only smooth, which increase user experience of ' +
+          'executed in a fast native threads. Gesture tracking is not only smooth, which increase user experience of ' +
           'your apps, but also dependable and deterministic.',
         image: imgUrl('docusaurus.svg'),
         imageAlign: 'right',
