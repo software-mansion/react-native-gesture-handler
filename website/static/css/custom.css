@@ -36,6 +36,12 @@ footer .logo:hover {
   box-shadow: 0px 0px 20px #acacac;
 }
 
+.mainContainer article p img {
+  border: 1px solid #acacac;
+  border-radius: 6px;
+  box-shadow: 0px 0px 20px #acacac;
+}
+
 #description .blockImage {
   max-width: 350px;
 }

@@ -4,6 +4,8 @@ title: Swipeable
 sidebar_label: Swipeable
 ---
 
+<img src="assets/sampleswipeable.gif" height="120" />
+
 This component allows for implementing swipeable rows or similar interaction. It renders its children within a panable container allows for horizontal swiping left and right. While swiping one of two "action" containers can be shown depends on whether user swipes left or right (containers can be rendered by `renderLeftActions` or `renderRightActions` props).
 
 ### Usage:
@@ -44,7 +46,7 @@ method that is called when left action panel gets open.
 method that is called when right action panel gets open.
 
 ---
-### `onSwipeableOpen`
+exa `onSwipeableOpen`
 method that is called when action panel gets open (either right or left).
 
 ---
