@@ -13,12 +13,12 @@ Gesture handler relies on ref objects created using [`React.createRef()`](https:
 ## Simultaneous recognition
 
 By default at a given time only one gesture handler is allowed to be in an [active](state.md#active) state.
-So when a gesture handler recognizes a gesture, it [cancells](state.md#cancelled) all the other handlers in [began](state.md#began) and prevents any new handlers from receiving a stream of touch events for as long as it is [active](state.md#active).
+So when a gesture handler recognizes a gesture, it [cancels](state.md#cancelled) all the other handlers in [began](state.md#began) and prevents any new handlers from receiving a stream of touch events for as long as it is [active](state.md#active).
 
 This behavior can be altered using [`simultaneousHandlers`](handler-common.md#simultanioushandlers) property that is available for all type of handlers.
 The property takes a ref or an array of refs to other handlers.
 Handlers connected this way will be allowed to be in an [active](state.md#active) state at the same time.
-Moreover, when the given handler [activates](state.md#active) it will
+<!-- Moreover, when the given handler [activates](state.md#active) it will -->
 
 ---
 ### Use cases
