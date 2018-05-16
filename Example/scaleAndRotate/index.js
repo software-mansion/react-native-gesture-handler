@@ -84,22 +84,14 @@ export class PinchableBox extends React.Component {
         <RotationGestureHandler
           id="image_rotation"
           simultaneousHandlers="image_pinch"
-          onGestureEvent={() => {
-            /* event for managing rotations */
-          }}
-          onHandlerStateChange={() => {
-            /* another event for managing rotations */
-          }}>
+          onGestureEvent={this._onRotateGestureEvent}
+          onHandlerStateChange={this._onRotateHandlerStateChange}>
           <PinchGestureHandler
             id="image_pinch"
             simultaneousHandlers="image_rotation"
-            onGestureEvent={() => {
-              /* event for managing pinching */
-            }}
-            onHandlerStateChange={() => {
-              /* another event for managing pinching */
-            }}>
-            <View style={styles.container}>
+            onGestureEvent={this._onPinchGestureEvent}
+            onHandlerStateChange={this._onPinchHandlerStateChange}>
+            <View style={styles.container} collapsable={false}>
               <Animated.Image
                 style={[
                   styles.pinchableImage,
