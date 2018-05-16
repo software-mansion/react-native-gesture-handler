@@ -43,17 +43,19 @@ class PinchableBox extends React.Component {
         simultaneousHandlers={imagePinch}
         onGestureEvent={this._onRotateGestureEvent}
         onHandlerStateChange={this._onRotateHandlerStateChange}>
-        <PinchGestureHandler
-          ref={imagePinch}
-          simultaneousHandlers={imageRotation}
-          onGestureEvent={this._onPinchGestureEvent}
-          onHandlerStateChange={this._onPinchHandlerStateChange}>
-          <View style={styles.container} collapsable={false}>
-            <Animated.Image
-              style={[styles.pinchableImage, { /* events-related transformations */ }]}
-            />
-          </View>
-        </PinchGestureHandler>
+        <Animated.View>
+          <PinchGestureHandler
+            ref={imagePinch}
+            simultaneousHandlers={imageRotation}
+            onGestureEvent={this._onPinchGestureEvent}
+            onHandlerStateChange={this._onPinchHandlerStateChange}>
+            <Animated.View style={styles.container} collapsable={false}>
+              <Animated.Image
+                style={[styles.pinchableImage, { /* events-related transformations */ }]}
+              />
+            </Animated.View>
+          </PinchGestureHandler>
+        </Animated.View>
       </RotationGestureHandler>
     );
   }
