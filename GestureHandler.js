@@ -17,6 +17,8 @@ import {
   Platform,
 } from 'react-native';
 import ReactNativeBridgeEventPlugin from 'react-native/Libraries/Renderer/shims/ReactNativeBridgeEventPlugin';
+import Touchable from 'react-native/Libraries/Components/Touchable/Touchable';
+
 import deepEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 
@@ -210,7 +212,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     componentDidMount() {
-      // Calling createGestureHandler from setImmediate guarantees that 
+      // Calling createGestureHandler from setImmediate guarantees that
       // all the other components are mounted which is necessary for
       // the refs to be set. If we were to call it directly here then if
       // the parent component ref is passed in `waitFor` or `simultaniousHandlers`
@@ -303,7 +305,25 @@ function createHandler(handlerName, propTypes = null, config = {}) {
         }
       }
 
-      const child = React.Children.only(this.props.children);
+      let child = React.Children.only(this.props.children);
+      if (Touchable.TOUCH_TARGET_DEBUG) {
+        const hexColor = '#AA11BB80';
+        child = React.cloneElement(
+          child,
+          {
+            style: [
+              child.props.style,
+              {
+                borderColor: hexColor.slice(0, -2) + '55',
+                borderWidth: 1,
+                borderStyle: 'dashed',
+                backgroundColor: hexColor.slice(0, -2) + '0F',
+              },
+            ],
+          },
+          child.props.children
+        );
+      }
       return React.cloneElement(child, {
         ref: this._refHandler,
         collapsable: false,
