@@ -64,12 +64,16 @@ const GestureHandlerPropTypes = {
   waitFor: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object,
-    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.object])),
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+    ),
   ]),
   simultaneousHandlers: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object,
-    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.object])),
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+    ),
   ]),
   shouldCancelWhenOutside: PropTypes.bool,
   hitSlop: PropTypes.oneOfType([
@@ -210,7 +214,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     componentDidMount() {
-      // Calling createGestureHandler from setImmediate guarantees that 
+      // Calling createGestureHandler from setImmediate guarantees that
       // all the other components are mounted which is necessary for
       // the refs to be set. If we were to call it directly here then if
       // the parent component ref is passed in `waitFor` or `simultaniousHandlers`
