@@ -96,7 +96,7 @@ public class RNGestureHandlerButtonViewManager extends
       } else {
         PaintDrawable colorDrawable = new PaintDrawable(mBackgroundColor);
         Drawable selectable = createSelectableDrawable();
-        if (mBorderRadius !=0) {
+        if (mBorderRadius != 0) {
           // Radius-connected lines below ought to be considered
           // as a temporary solution. It do not allow to set
           // different radius on each corner. However, I suppose it's fairly
