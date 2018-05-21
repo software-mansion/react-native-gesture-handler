@@ -19,7 +19,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 ---
 ### `friction`
- a number that specifies how much the visual interation will be delayed compared to the gesture distance. e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
+ a number that specifies how much the visual interaction will be delayed compared to the gesture distance. e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
 
 ---
 ### `leftThreshold`

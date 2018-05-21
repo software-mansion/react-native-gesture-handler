@@ -14,7 +14,7 @@ Handlers analyse touch stream synchronously in the UI thread. This allows for th
 Each handler works as an isolated state machine. It takes touch stream as an input and based on in it can flip between [states](state.md).
 When the gesture starts based on the position where the finger was placed a set of handlers that may be interested in recognizing the gesture is selected.
 All the touch events (touch down, move, up, or when other fingers are placed or lifted) are delivered to all of handlers selected initially.
-When one gesture becomes [active](state.md#active), it cancells all the other gestures (read more about how to influence this process in ["Cross handler interactions"](interactions.md) section).
+When one gesture becomes [active](state.md#active), it cancels all the other gestures (read more about how to influence this process in ["Cross handler interactions"](interactions.md) section).
 
 Gesture handler components does not instantiate a native view in the view hierarchy. Instead, they are kept in library own registry and only connected to a native views. When using one of the gesture handler components it is important it has a native view rendered as a children.
 Since handler components don't have corresponding views in the hierarchy they events registered with them are actually hooked into the underlying view.
@@ -39,7 +39,7 @@ Continuous gesture handlers can be [active](state.md#active) for a long period o
 An example of continuous handler is [`PanGestureHandler`](handler-pan.md) that once [activated](state.md#active) will start providing updates about [translation](handler-pan.md#translationx) and other properties.
 
 On the other hand discrete gesture handlers once [activated](state.md#active) will not stay in the active state but will [end](state.md#ended) immediately.
-[`LongPressGestureHandler`](handler-longpress.md) is a discrete handler as it only detects if the finger is placed for a sufficienlty long period of time, it does not track finger movements (as that's the responsibility of [`PanGestureHandler`](handler-pan.md)).
+[`LongPressGestureHandler`](handler-longpress.md) is a discrete handler as it only detects if the finger is placed for a sufficiently long period of time, it does not track finger movements (as that's the responsibility of [`PanGestureHandler`](handler-pan.md)).
 
 
 ---
@@ -84,12 +84,12 @@ Here is a list of exposed components:
  - `DrawerLayoutAndroid` (**Android only**)
  - `WebView`
 
-If you want to use other [handlers] or [buttons](component-buttons.md) nested in a `ScrollView` or you want to use [`waitFor`](handler-common.md#waitfor) property to define interaction between a handler and `SclrollView`
+If you want to use other handlers or [buttons](component-buttons.md) nested in a `ScrollView` or you want to use [`waitFor`](handler-common.md#waitfor) property to define interaction between a handler and `SclrollView`
 
 ---
 ### Events with `useNativeDriver`
 
-Because handler components does not instantiate native views but instead hook up under thier child views when using `Animated.event` it is not supported currently for two gestures to be directly nested.
+Because handler components does not instantiate native views but instead hook up under their child views when using `Animated.event` it is not supported currently for two gestures to be directly nested.
 To workaround this limitation we recommend that a `<Animated.View>` component is placed in between the handlers.
 
 Instead of doing:
@@ -127,6 +127,6 @@ class Draggable extends Component {
       </PanGestureHandler>
     );
   }
-);
+};
 ```
 
