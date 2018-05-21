@@ -158,6 +158,7 @@ export default class Example extends Component {
           </RectButton>
           <View style={styles.buttonDelimiter} />
           <RectButton
+            rippleColor="red"
             style={styles.rectButton}
             onPress={() => Alert.alert('Third row clicked')}>
             <Text style={styles.buttonText}>
@@ -183,7 +184,8 @@ export default class Example extends Component {
           </Swipeable>
           <LongPressGestureHandler
             onHandlerStateChange={({ nativeEvent }) =>
-              nativeEvent.state === State.ACTIVE && Alert.alert('Long')}>
+              nativeEvent.state === State.ACTIVE && Alert.alert('Long')
+            }>
             <RectButton
               style={styles.rectButton}
               onPress={() => Alert.alert('Fifth row clicked')}>

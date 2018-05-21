@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler.react;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -26,6 +27,7 @@ public class RNGestureHandlerButtonViewManager extends
     static ButtonViewGroup sResponder;
 
     int mBackgroundColor = Color.TRANSPARENT;
+    int mRippleColor = Color.LTGRAY; // default Android Color
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
@@ -44,6 +46,11 @@ public class RNGestureHandlerButtonViewManager extends
     @Override
     public void setBackgroundColor(int color) {
       mBackgroundColor = color;
+      mNeedBackgroundUpdate = true;
+    }
+
+    public void setRippleColor(int color) {
+      mRippleColor = color;
       mNeedBackgroundUpdate = true;
     }
 
@@ -89,7 +96,7 @@ public class RNGestureHandlerButtonViewManager extends
       } else {
         PaintDrawable colorDrawable = new PaintDrawable(mBackgroundColor);
         Drawable selectable = createSelectableDrawable();
-        if (mBorderRadius != 0) {
+        if (mBorderRadius !=0) {
           // Radius-connected lines below ought to be considered
           // as a temporary solution. It do not allow to set
           // different radius on each corner. However, I suppose it's fairly
@@ -104,6 +111,14 @@ public class RNGestureHandlerButtonViewManager extends
             mask.setCornerRadius(mBorderRadius);
             ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);
           }
+        }
+        if (mRippleColor != Color.LTGRAY
+                && selectable instanceof RippleDrawable
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          int[][] states = new int[][] { new int[] { android.R.attr.state_pressed} };
+          int[] colors = new int[] { mRippleColor };
+          ColorStateList colorStateList = new ColorStateList(states, colors);
+          ((RippleDrawable) selectable).setColor(colorStateList);
         }
         LayerDrawable layerDrawable = new LayerDrawable(
                 new Drawable[] { colorDrawable, selectable});
@@ -197,6 +212,12 @@ public class RNGestureHandlerButtonViewManager extends
   public void setBorderRadius(ButtonViewGroup view, float borderRadius) {
     view.setBorderRadius(borderRadius);
   }
+
+  @ReactProp(name = "rippleColor")
+  public void setRippleColor(ButtonViewGroup view, int rippleColor) {
+    view.setRippleColor(rippleColor);;
+  }
+
 
   @Override
   protected void onAfterUpdateTransaction(ButtonViewGroup view) {

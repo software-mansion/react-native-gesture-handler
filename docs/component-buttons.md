@@ -29,7 +29,11 @@ function that gets triggered when button changes from inactive to active and vic
 ### `onPress`
 function that gets triggered when the button gets pressed (analogous to `onPress` in `TouchableHighlight` from RN core).
 
+---
+### `rippleColor` (**Android only**)
+defines color of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation used since API level 21. 
 
+---
 ## `RectButton`
 
 This type of button component should be used when you deal with a rectangular elements or blocks of content that can be pressed, for example table rows or buttons with text and icons. This component provides a platform specific interaction, rendering a rectangular ripple on Android or highlighting the background on iOS and on older versions of Android. In addition to the props of [`BaseButton`](#basebutton-component), it accepts the following:
