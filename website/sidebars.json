@@ -1,0 +1,22 @@
+{
+  "docs": {
+    "Basics": [
+      "getting-started",
+      "about-handlers",
+      "state",
+      "interactions",
+      "example"
+    ],
+    "Handlers": [
+      "handler-common",
+      "handler-pan",
+      "handler-tap",
+      "handler-longpress",
+      "handler-rotation",
+      "handler-fling",
+      "handler-pinch"
+    ],
+    "Components": ["component-buttons", "component-swipeable", "component-drawer-layout"],
+    "Other": ["contributing", "troubleshooting", "resources", "credits"]
+  }
+}

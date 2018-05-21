@@ -41,32 +41,35 @@ export class TapOrPan extends Component {
   };
 
   render() {
+    const { tapRef, panRef } = this.props;
     return (
       <TapGestureHandler
-        id="tap"
-        waitFor="pan"
+        ref={tapRef}
+        waitFor={panRef}
         onHandlerStateChange={this._onTapHandlerStateChange}
         shouldCancelWhenOutside>
-        <PanGestureHandler
-          id="pan"
-          minDeltaX={20}
-          onGestureEvent={this._onPanGestureEvent}
-          shouldCancelWhenOutside>
-          <View style={styles.horizontalPan}>
-            <Animated.View
-              style={[
-                styles.circle,
-                {
-                  transform: [
-                    {
-                      translateX: this._translateX,
-                    },
-                  ],
-                },
-              ]}
-            />
-          </View>
-        </PanGestureHandler>
+        <Animated.View style={styles.wrapper}>
+          <PanGestureHandler
+            ref={panRef}
+            minDeltaX={20}
+            onGestureEvent={this._onPanGestureEvent}
+            shouldCancelWhenOutside>
+            <Animated.View style={styles.horizontalPan}>
+              <Animated.View
+                style={[
+                  styles.circle,
+                  {
+                    transform: [
+                      {
+                        translateX: this._translateX,
+                      },
+                    ],
+                  },
+                ]}
+              />
+            </Animated.View>
+          </PanGestureHandler>
+        </Animated.View>
       </TapGestureHandler>
     );
   }
@@ -74,10 +77,12 @@ export class TapOrPan extends Component {
 
 export default class Example extends Component {
   render() {
+    const tapRef = React.createRef();
+    const panRef = React.createRef();
     return (
-      <ScrollView waitFor={['tap', 'pan']}>
+      <ScrollView waitFor={[tapRef, panRef]}>
         <LoremIpsum words={150} />
-        <TapOrPan />
+        <TapOrPan tapRef={tapRef} panRef={panRef} />
         <LoremIpsum words={150} />
       </ScrollView>
     );
@@ -96,5 +101,8 @@ const styles = StyleSheet.create({
     borderRadius: circleRadius,
     height: circleRadius * 2,
     width: circleRadius * 2,
+  },
+  wrapper: {
+    flex: 1,
   },
 });

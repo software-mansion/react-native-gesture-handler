@@ -50,6 +50,7 @@ export class PinchableBox extends React.Component {
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
+
   _onRotateHandlerStateChange = event => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this._lastRotate += event.nativeEvent.rotation;
@@ -71,6 +72,7 @@ export class PinchableBox extends React.Component {
       this._tilt.setValue(0);
     }
   };
+
   render() {
     return (
       <PanGestureHandler
@@ -81,34 +83,38 @@ export class PinchableBox extends React.Component {
         minPointers={2}
         maxPointers={2}
         avgTouches>
-        <RotationGestureHandler
-          id="image_rotation"
-          simultaneousHandlers="image_pinch"
-          onGestureEvent={this._onRotateGestureEvent}
-          onHandlerStateChange={this._onRotateHandlerStateChange}>
-          <PinchGestureHandler
-            id="image_pinch"
-            simultaneousHandlers="image_rotation"
-            onGestureEvent={this._onPinchGestureEvent}
-            onHandlerStateChange={this._onPinchHandlerStateChange}>
-            <View style={styles.container} collapsable={false}>
-              <Animated.Image
-                style={[
-                  styles.pinchableImage,
-                  {
-                    transform: [
-                      { perspective: 200 },
-                      { scale: this._scale },
-                      { rotate: this._rotateStr },
-                      { rotateX: this._tiltStr },
-                    ],
-                  },
-                ]}
-                source={require('./swmansion.png')}
-              />
-            </View>
-          </PinchGestureHandler>
-        </RotationGestureHandler>
+        <Animated.View style={styles.wrapper}>
+          <RotationGestureHandler
+            id="image_rotation"
+            simultaneousHandlers="image_pinch"
+            onGestureEvent={this._onRotateGestureEvent}
+            onHandlerStateChange={this._onRotateHandlerStateChange}>
+            <Animated.View style={styles.wrapper}>
+              <PinchGestureHandler
+                id="image_pinch"
+                simultaneousHandlers="image_rotation"
+                onGestureEvent={this._onPinchGestureEvent}
+                onHandlerStateChange={this._onPinchHandlerStateChange}>
+                <Animated.View style={styles.container} collapsable={false}>
+                  <Animated.Image
+                    style={[
+                      styles.pinchableImage,
+                      {
+                        transform: [
+                          { perspective: 200 },
+                          { scale: this._scale },
+                          { rotate: this._rotateStr },
+                          { rotateX: this._tiltStr },
+                        ],
+                      },
+                    ]}
+                    source={require('./swmansion.png')}
+                  />
+                </Animated.View>
+              </PinchGestureHandler>
+            </Animated.View>
+          </RotationGestureHandler>
+        </Animated.View>
       </PanGestureHandler>
     );
   }
@@ -127,5 +133,8 @@ const styles = StyleSheet.create({
   pinchableImage: {
     width: 250,
     height: 250,
+  },
+  wrapper: {
+    flex: 1,
   },
 });
