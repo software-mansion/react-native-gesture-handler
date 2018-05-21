@@ -44,6 +44,7 @@ export type PropType = {
   hideStatusBar?: boolean,
   statusBarAnimation?: 'slide' | 'none' | 'fade',
   overlayColor: string,
+  contentContainerStyle?: any,
 
   // Properties not yet supported
   // onDrawerSlide?: Function
@@ -334,6 +335,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       drawerWidth,
       drawerPosition,
       drawerType,
+      contentContainerStyle,
     } = this.props;
 
     const fromLeft = drawerPosition === 'left';
@@ -381,6 +383,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
               ? styles.containerOnBack
               : styles.containerInFront,
             containerStyles,
+            contentContainerStyle,
           ]}>
           {this.props.children}
           {this._renderOverlay()}

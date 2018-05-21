@@ -11,6 +11,7 @@ import {
 import { LoremIpsum } from '../common';
 
 export class PressBox extends Component {
+  doubleTapRef = React.createRef();
   _onHandlerStateChange = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm being pressed for so long");
@@ -33,9 +34,9 @@ export class PressBox extends Component {
         minDurationMs={800}>
         <TapGestureHandler
           onHandlerStateChange={this._onSingleTap}
-          waitFor="double_tap">
+          waitFor={this.doubleTapRef}>
           <TapGestureHandler
-            id="double_tap"
+            ref={this.doubleTapRef}
             onHandlerStateChange={this._onDoubleTap}
             numberOfTaps={2}>
             <View style={styles.box} />
@@ -49,9 +50,7 @@ export class PressBox extends Component {
 export default class Example extends Component {
   render() {
     return (
-      <ScrollView
-        waitFor={['image_pinch', 'image_rotation', 'image_tilt']}
-        style={styles.scrollView}>
+      <ScrollView style={styles.scrollView}>
         <LoremIpsum words={40} />
         <PressBox />
         <LoremIpsum />

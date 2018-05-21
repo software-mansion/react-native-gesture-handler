@@ -16,6 +16,7 @@ import HorizontalDrawer from './horizontalDrawer';
 import Fling from './fling/index';
 import ChatHeads from './chatHeads';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
+import BottomSheet from './bottomSheet/index';
 
 YellowBox.ignoreWarnings([
   'Warning: isMounted(...) is deprecated',
@@ -53,6 +54,10 @@ const SCREENS = {
   //   title: 'Chat Heads (no native animated support yet)',
   // },
   Combo: { screen: ComboWithGHScroll },
+  BottomSheet: {
+    title: 'BottomSheet gestures interactions',
+    screen: BottomSheet,
+  },
   ComboWithRNScroll: {
     screen: ComboWithRNScroll,
     title: "Combo with RN's ScrollView",
