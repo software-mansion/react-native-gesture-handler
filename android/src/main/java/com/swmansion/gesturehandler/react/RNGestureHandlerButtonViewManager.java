@@ -27,7 +27,7 @@ public class RNGestureHandlerButtonViewManager extends
     static ButtonViewGroup sResponder;
 
     int mBackgroundColor = Color.TRANSPARENT;
-    int mRippleColor = Color.LTGRAY; // default Android Color
+    int mRippleColor = Color.LTGRAY; // default Android ripple color
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
@@ -217,7 +217,6 @@ public class RNGestureHandlerButtonViewManager extends
   public void setRippleColor(ButtonViewGroup view, int rippleColor) {
     view.setRippleColor(rippleColor);;
   }
-
 
   @Override
   protected void onAfterUpdateTransaction(ButtonViewGroup view) {
