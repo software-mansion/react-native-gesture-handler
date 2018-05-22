@@ -195,9 +195,13 @@ export interface NativeViewGestureHandlerProperties
 }
 
 export interface TapGestureHandlerProperties extends GestureHandlerProperties {
+  minPointers?: number;
   maxDurationMs?: number;
   maxDelayMs?: number;
   numberOfTaps?: number;
+  maxDeltaX?: number;
+  maxDeltaY?: number;
+  maxDist?: number;
   onGestureEvent?: (event: TapGestureHandlerGestureEvent) => void;
   onHandlerStateChange?: (event: TapGestureHandlerStateChangeEvent) => void;
 }
