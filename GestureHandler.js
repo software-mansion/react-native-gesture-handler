@@ -305,31 +305,33 @@ function createHandler(handlerName, propTypes = null, config = {}) {
         }
       }
 
-      let child = React.Children.only(this.props.children);
-      if (Touchable.TOUCH_TARGET_DEBUG) {
-        const hexColor = '#AA11BB80';
-        child = React.cloneElement(
-          child,
-          {
-            style: [
-              child.props.style,
-              {
-                borderColor: hexColor.slice(0, -2) + '55',
-                borderWidth: 1,
-                borderStyle: 'dashed',
-                backgroundColor: hexColor.slice(0, -2) + '0F',
-              },
-            ],
-          },
-          child.props.children
+      const child = React.Children.only(this.props.children);
+      let children = child.props.children;
+      if (
+        Touchable.TOUCH_TARGET_DEBUG &&
+        child.type &&
+        (child.type === 'RNGestureHandlerButton' ||
+          child.type.name === 'View' ||
+          child.type.displayName === 'View')
+      ) {
+        children = React.Children.toArray(children);
+        children.push(
+          Touchable.renderDebugView({
+            color: 'mediumspringgreen',
+            hitSlop: child.props.hitSlop,
+          })
         );
       }
-      return React.cloneElement(child, {
-        ref: this._refHandler,
-        collapsable: false,
-        onGestureHandlerEvent: gestureEventHandler,
-        onGestureHandlerStateChange: gestureStateEventHandler,
-      });
+      return React.cloneElement(
+        child,
+        {
+          ref: this._refHandler,
+          collapsable: false,
+          onGestureHandlerEvent: gestureEventHandler,
+          onGestureHandlerStateChange: gestureStateEventHandler,
+        },
+        children
+      );
     }
   }
   return Handler;
