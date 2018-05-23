@@ -17,6 +17,8 @@ import {
   Platform,
 } from 'react-native';
 import ReactNativeBridgeEventPlugin from 'react-native/Libraries/Renderer/shims/ReactNativeBridgeEventPlugin';
+import Touchable from 'react-native/Libraries/Components/Touchable/Touchable';
+
 import deepEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 
@@ -313,12 +315,32 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       }
 
       const child = React.Children.only(this.props.children);
-      return React.cloneElement(child, {
-        ref: this._refHandler,
-        collapsable: false,
-        onGestureHandlerEvent: gestureEventHandler,
-        onGestureHandlerStateChange: gestureStateEventHandler,
-      });
+      let children = child.props.children;
+      if (
+        Touchable.TOUCH_TARGET_DEBUG &&
+        child.type &&
+        (child.type === 'RNGestureHandlerButton' ||
+          child.type.name === 'View' ||
+          child.type.displayName === 'View')
+      ) {
+        children = React.Children.toArray(children);
+        children.push(
+          Touchable.renderDebugView({
+            color: 'mediumspringgreen',
+            hitSlop: child.props.hitSlop,
+          })
+        );
+      }
+      return React.cloneElement(
+        child,
+        {
+          ref: this._refHandler,
+          collapsable: false,
+          onGestureHandlerEvent: gestureEventHandler,
+          onGestureHandlerStateChange: gestureStateEventHandler,
+        },
+        children
+      );
     }
   }
   return Handler;
