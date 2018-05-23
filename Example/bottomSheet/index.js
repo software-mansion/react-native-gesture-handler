@@ -15,6 +15,10 @@ const HEADER_HEIGHT = 50;
 const SNAP_POINTS_FROM_TOP = [50, 300, 550];
 
 export class BottomSheet extends Component {
+  masterdrawer = React.createRef();
+  drawer = React.createRef();
+  drawerheader = React.createRef();
+  scroll = React.createRef();
   constructor(props) {
     super(props);
     const START = SNAP_POINTS_FROM_TOP[0];
@@ -93,7 +97,7 @@ export class BottomSheet extends Component {
     return (
       <TapGestureHandler
         maxDurationMs={100000}
-        id="masterdrawer"
+        ref={this.masterdrawer}
         maxDeltaY={this.state.lastSnap - SNAP_POINTS_FROM_TOP[0]}>
         <View style={StyleSheet.absoluteFillObject}>
           <Animated.View
@@ -104,24 +108,24 @@ export class BottomSheet extends Component {
               },
             ]}>
             <PanGestureHandler
-              id="drawerheader"
-              simultaneousHandlers={['scroll', 'masterdrawer']}
+              ref={this.drawerheader}
+              simultaneousHandlers={[this.scroll, this.masterdrawer]}
               shouldCancelWhenOutside={false}
               onGestureEvent={this._onGestureEvent}
               onHandlerStateChange={this._onHeaderHandlerStateChange}>
               <Animated.View style={styles.header} />
             </PanGestureHandler>
             <PanGestureHandler
-              id="drawer"
-              simultaneousHandlers={['scroll', 'masterdrawer']}
+              ref={this.drawer}
+              simultaneousHandlers={[this.scroll, this.masterdrawer]}
               shouldCancelWhenOutside={false}
               onGestureEvent={this._onGestureEvent}
               onHandlerStateChange={this._onHandlerStateChange}>
               <Animated.View style={styles.container}>
                 <NativeViewGestureHandler
-                  id="scroll"
-                  waitFor="masterdrawer"
-                  simultaneousHandlers="drawer">
+                  ref={this.scroll}
+                  waitFor={this.masterdrawer}
+                  simultaneousHandlers={this.drawer}>
                   <Animated.ScrollView
                     style={[
                       styles.scrollView,
