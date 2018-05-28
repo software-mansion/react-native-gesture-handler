@@ -34,6 +34,10 @@ export type PropType = {
   onSwipeableRightOpen?: Function,
   onSwipeableOpen?: Function,
   onSwipeableClose?: Function,
+  onSwipeableLeftWillOpen?: Function,
+  onSwipeableRightWillOpen?: Function,
+  onSwipeableWillOpen?: Function,
+  onSwipeableWillClose?: Function,
   renderLeftActions?: (
     progressAnimatedValue: any,
     dragAnimatedValue: any
@@ -224,6 +228,17 @@ export default class Swipeable extends Component<PropType, StateType> {
         }
       }
     });
+    if (toValue > 0 && this.props.onSwipeableLeftWillOpen) {
+      this.props.onSwipeableLeftWillOpen();
+    } else if (toValue < 0 && this.props.onSwipeableRightWillOpen) {
+      this.props.onSwipeableRightWillOpen();
+    }
+
+    if (toValue === 0) {
+      this.props.onSwipeableWillClose && this.props.onSwipeableWillClose();
+    } else {
+      this.props.onSwipeableWillOpen && this.props.onSwipeableWillOpen();
+    }
   };
 
   _onRowLayout = ({ nativeEvent }) => {
