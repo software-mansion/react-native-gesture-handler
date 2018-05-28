@@ -60,7 +60,9 @@ export class BottomSheet extends Component {
     });
   }
   _onHeaderHandlerStateChange = ({ nativeEvent }) => {
-    this._lastScrollY.setValue(0);
+    if (nativeEvent.oldState === State.BEGAN) {
+      this._lastScrollY.setValue(0);
+    }
     this._onHandlerStateChange({ nativeEvent });
   };
   _onHandlerStateChange = ({ nativeEvent }) => {
