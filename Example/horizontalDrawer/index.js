@@ -122,8 +122,7 @@ export default class Example extends Component {
             parallaxOn={parallax}
             flipSide={() => this.setState({ fromLeft: !this.state.fromLeft })}
             nextType={() =>
-              this.setState({ type: (this.state.type + 1) % TYPES.length })
-            }
+              this.setState({ type: (this.state.type + 1) % TYPES.length })}
             openDrawer={() => this.drawer.openDrawer()}
           />
         </DrawerLayout>
