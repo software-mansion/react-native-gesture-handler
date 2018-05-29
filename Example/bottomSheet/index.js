@@ -14,7 +14,11 @@ const HEADER_HEIGHT = 50;
 
 const SNAP_POINTS_FROM_TOP = [50, 300, 550];
 
-export default class BottomSheet extends Component {
+export class BottomSheet extends Component {
+  masterdrawer = React.createRef();
+  drawer = React.createRef();
+  drawerheader = React.createRef();
+  scroll = React.createRef();
   constructor(props) {
     super(props);
     const START = SNAP_POINTS_FROM_TOP[0];
@@ -23,12 +27,6 @@ export default class BottomSheet extends Component {
     this.state = {
       lastSnap: END,
     };
-
-    this._scrollY = new Animated.Value(0);
-    this._onScroll = Animated.event(
-      [{ nativeEvent: { contentOffset: { y: this._scrollY } } }],
-      { useNativeDriver: USE_NATIVE_DRIVER }
-    );
 
     this._lastScrollYValue = 0;
     this._lastScrollY = new Animated.Value(0);
@@ -60,13 +58,13 @@ export default class BottomSheet extends Component {
       outputRange: [START, END],
       extrapolate: 'clamp',
     });
-
-    this._showScroll = this._translateY.interpolate({
-      inputRange: [START, START + 1],
-      outputRange: [1, 0],
-      extrapolate: 'clamp',
-    });
   }
+  _onHeaderHandlerStateChange = ({ nativeEvent }) => {
+    if (nativeEvent.oldState === State.BEGAN) {
+      this._lastScrollY.setValue(0);
+    }
+    this._onHandlerStateChange({ nativeEvent });
+  };
   _onHandlerStateChange = ({ nativeEvent }) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       let { velocityY, translationY } = nativeEvent;
@@ -99,34 +97,43 @@ export default class BottomSheet extends Component {
   };
   render() {
     return (
-      <View style={styles.container}>
-        <TapGestureHandler
-          maxDurationMs={100000}
-          id="masterdrawer"
-          maxDeltaY={this.state.lastSnap - SNAP_POINTS_FROM_TOP[0]}>
-          <View style={StyleSheet.absoluteFillObject}>
+      <TapGestureHandler
+        maxDurationMs={100000}
+        ref={this.masterdrawer}
+        maxDeltaY={this.state.lastSnap - SNAP_POINTS_FROM_TOP[0]}>
+        <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+          <Animated.View
+            style={[
+              StyleSheet.absoluteFillObject,
+              {
+                transform: [{ translateY: this._translateY }],
+              },
+            ]}>
             <PanGestureHandler
-              id="drawer"
-              simultaneousHandlers={['scroll', 'masterdrawer']}
+              ref={this.drawerheader}
+              simultaneousHandlers={[this.scroll, this.masterdrawer]}
+              shouldCancelWhenOutside={false}
+              onGestureEvent={this._onGestureEvent}
+              onHandlerStateChange={this._onHeaderHandlerStateChange}>
+              <Animated.View style={styles.header} />
+            </PanGestureHandler>
+            <PanGestureHandler
+              ref={this.drawer}
+              simultaneousHandlers={[this.scroll, this.masterdrawer]}
               shouldCancelWhenOutside={false}
               onGestureEvent={this._onGestureEvent}
               onHandlerStateChange={this._onHandlerStateChange}>
-              <Animated.View
-                style={[
-                  StyleSheet.absoluteFillObject,
-                  {
-                    transform: [{ translateY: this._translateY }],
-                  },
-                ]}>
-                <View style={styles.header} />
+              <Animated.View style={styles.container}>
                 <NativeViewGestureHandler
-                  id="scroll"
-                  waitFor="masterdrawer"
-                  simultaneousHandlers="drawer">
+                  ref={this.scroll}
+                  waitFor={this.masterdrawer}
+                  simultaneousHandlers={this.drawer}>
                   <Animated.ScrollView
-                    style={styles.scrollView}
+                    style={[
+                      styles.scrollView,
+                      { marginBottom: SNAP_POINTS_FROM_TOP[0] },
+                    ]}
                     bounces={false}
-                    onScroll={this._onScroll}
                     onScrollBeginDrag={this._onRegisterLastScroll}
                     scrollEventThrottle={1}>
                     <LoremIpsum />
@@ -136,8 +143,18 @@ export default class BottomSheet extends Component {
                 </NativeViewGestureHandler>
               </Animated.View>
             </PanGestureHandler>
-          </View>
-        </TapGestureHandler>
+          </Animated.View>
+        </View>
+      </TapGestureHandler>
+    );
+  }
+}
+
+export default class Example extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <BottomSheet />
       </View>
     );
   }
