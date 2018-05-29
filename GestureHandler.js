@@ -229,40 +229,44 @@ function createHandler(handlerName, propTypes = null, config = {}) {
           this.constructor.propTypes,
           config
         );
-        RNGestureHandlerModule.createGestureHandler(
-          handlerName,
-          this._handlerTag,
-          this._config
-        );
-        RNGestureHandlerModule.attachGestureHandler(
-          this._handlerTag,
-          this._viewTag
-        );
+        if (this._viewTag && this._handlerTag) {
+          RNGestureHandlerModule.createGestureHandler(
+            handlerName,
+            this._handlerTag,
+            this._config
+          );
+          RNGestureHandlerModule.attachGestureHandler(
+            this._handlerTag,
+            this._viewTag
+          );
+        }
       });
     }
 
     componentDidUpdate() {
       setImmediate(() => {
-        const viewTag = findNodeHandle(this._viewNode);
-        if (this._viewTag !== viewTag) {
-          this._viewTag = viewTag;
-          RNGestureHandlerModule.attachGestureHandler(
-            this._handlerTag,
-            viewTag
-          );
-        }
+        if (this._handlerTag) {
+          const viewTag = findNodeHandle(this._viewNode);
+          if (this._viewTag !== viewTag) {
+            this._viewTag = viewTag;
+            RNGestureHandlerModule.attachGestureHandler(
+              this._handlerTag,
+              viewTag
+            );
+          }
 
-        const newConfig = filterConfig(
-          this.props,
-          this.constructor.propTypes,
-          config
-        );
-        if (!deepEqual(this._config, newConfig)) {
-          this._config = newConfig;
-          RNGestureHandlerModule.updateGestureHandler(
-            this._handlerTag,
-            this._config
+          const newConfig = filterConfig(
+            this.props,
+            this.constructor.propTypes,
+            config
           );
+          if (!deepEqual(this._config, newConfig)) {
+            this._config = newConfig;
+            RNGestureHandlerModule.updateGestureHandler(
+              this._handlerTag,
+              this._config
+            );
+          }
         }
       });
     }
