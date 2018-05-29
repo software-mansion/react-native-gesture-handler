@@ -218,8 +218,8 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     componentDidMount() {
-      this._viewTag = findNodeHandle(this._viewNode);
-      const viewTag = this._viewTag;
+      const viewTag = findNodeHandle(this._viewNode);
+      this._viewTag = viewTag;
       // Calling createGestureHandler from setImmediate guarantees that
       // all the other components are mounted which is necessary for
       // the refs to be set. If we were to call it directly here then if
