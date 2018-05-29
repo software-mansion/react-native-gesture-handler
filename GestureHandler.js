@@ -28,6 +28,18 @@ import DrawerLayout from './DrawerLayout';
 
 const RNGestureHandlerModule = NativeModules.RNGestureHandlerModule;
 
+const NATIVE_METHODS_TO_BE_DELAYED_WHITE_LIST = [
+  'attachGestureHandler',
+  'createGestureHandler',
+  'dropGestureHandler',
+];
+for (let method in NATIVE_METHODS_TO_BE_DELAYED_WHITE_LIST) {
+  const oldMethod = RNGestureHandlerModule[method];
+  RNGestureHandlerModule[method] = function(...args) {
+    setImmediate(() => oldMethod(...args));
+  };
+}
+
 /* Wrap JS responder calls and notify gesture handler manager */
 const { UIManager } = NativeModules;
 const {
@@ -216,59 +228,42 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     componentDidMount() {
-      // Calling createGestureHandler from setImmediate guarantees that
-      // all the other components are mounted which is necessary for
-      // the refs to be set. If we were to call it directly here then if
-      // the parent component ref is passed in `waitFor` or `simultaniousHandlers`
-      // property it's `.current` element would be `null` because it has not
-      // yet been mounted.
-      setImmediate(() => {
-        this._viewTag = findNodeHandle(this._viewNode);
-        this._config = filterConfig(
-          this.props,
-          this.constructor.propTypes,
-          config
-        );
-        if (this._viewTag && this._handlerTag) {
-          RNGestureHandlerModule.createGestureHandler(
-            handlerName,
-            this._handlerTag,
-            this._config
-          );
-          RNGestureHandlerModule.attachGestureHandler(
-            this._handlerTag,
-            this._viewTag
-          );
-        }
-      });
+      this._viewTag = findNodeHandle(this._viewNode);
+      this._config = filterConfig(
+        this.props,
+        this.constructor.propTypes,
+        config
+      );
+      RNGestureHandlerModule.createGestureHandler(
+        handlerName,
+        this._handlerTag,
+        this._config
+      );
+      RNGestureHandlerModule.attachGestureHandler(
+        this._handlerTag,
+        this._viewTag
+      );
     }
 
     componentDidUpdate() {
-      setImmediate(() => {
-        if (this._handlerTag) {
-          const viewTag = findNodeHandle(this._viewNode);
-          if (this._viewTag !== viewTag) {
-            this._viewTag = viewTag;
-            RNGestureHandlerModule.attachGestureHandler(
-              this._handlerTag,
-              viewTag
-            );
-          }
+      const viewTag = findNodeHandle(this._viewNode);
+      if (this._viewTag !== viewTag) {
+        this._viewTag = viewTag;
+        RNGestureHandlerModule.attachGestureHandler(this._handlerTag, viewTag);
+      }
 
-          const newConfig = filterConfig(
-            this.props,
-            this.constructor.propTypes,
-            config
-          );
-          if (!deepEqual(this._config, newConfig)) {
-            this._config = newConfig;
-            RNGestureHandlerModule.updateGestureHandler(
-              this._handlerTag,
-              this._config
-            );
-          }
-        }
-      });
+      const newConfig = filterConfig(
+        this.props,
+        this.constructor.propTypes,
+        config
+      );
+      if (!deepEqual(this._config, newConfig)) {
+        this._config = newConfig;
+        RNGestureHandlerModule.updateGestureHandler(
+          this._handlerTag,
+          this._config
+        );
+      }
     }
 
     render() {
