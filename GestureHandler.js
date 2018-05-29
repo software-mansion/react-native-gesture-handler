@@ -209,13 +209,17 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     };
 
     componentWillUnmount() {
-      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
-      if (this.props.id) {
-        delete handlerIDToTag[this.props.id];
-      }
+      setImmediate(() => {
+        RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
+        if (this.props.id) {
+          delete handlerIDToTag[this.props.id];
+        }
+      });
     }
 
     componentDidMount() {
+      const viewTag = findNodeHandle(this._viewNode);
+      this._viewTag = viewTag;
       // Calling createGestureHandler from setImmediate guarantees that
       // all the other components are mounted which is necessary for
       // the refs to be set. If we were to call it directly here then if
@@ -223,7 +227,6 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       // property it's `.current` element would be `null` because it has not
       // yet been mounted.
       setImmediate(() => {
-        this._viewTag = findNodeHandle(this._viewNode);
         this._config = filterConfig(
           this.props,
           this.constructor.propTypes,
@@ -234,16 +237,13 @@ function createHandler(handlerName, propTypes = null, config = {}) {
           this._handlerTag,
           this._config
         );
-        RNGestureHandlerModule.attachGestureHandler(
-          this._handlerTag,
-          this._viewTag
-        );
+        RNGestureHandlerModule.attachGestureHandler(this._handlerTag, viewTag);
       });
     }
 
     componentDidUpdate() {
+      const viewTag = findNodeHandle(this._viewNode);
       setImmediate(() => {
-        const viewTag = findNodeHandle(this._viewNode);
         if (this._viewTag !== viewTag) {
           this._viewTag = viewTag;
           RNGestureHandlerModule.attachGestureHandler(
@@ -251,7 +251,6 @@ function createHandler(handlerName, propTypes = null, config = {}) {
             viewTag
           );
         }
-
         const newConfig = filterConfig(
           this.props,
           this.constructor.propTypes,
