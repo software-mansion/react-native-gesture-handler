@@ -17,6 +17,7 @@ const siteConfig = {
       href: 'https://github.com/kmagiera/react-native-gesture-handler',
       label: 'GitHub',
     },
+    { search: true },
   ],
 
   /* path to images for header/footer */
@@ -36,6 +37,11 @@ const siteConfig = {
   highlight: {
     // Highlight.js theme to use for syntax highlighting in code blocks
     theme: 'rainbow',
+  },
+
+  algolia: {
+    apiKey: 'fc5e7cc8717893ac4fab5c1541116e02',
+    indexName: 'react_native_gesture_handler',
   },
 
   // Add custom scripts here that would be placed in <script> tags
