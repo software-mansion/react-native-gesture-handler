@@ -151,6 +151,16 @@ function filterConfig(props, validProps, defaults = {}) {
   return res;
 }
 
+function hasUnresolvedRefs(props) {
+  const extract = refs => {
+    if (!Array.isArray(refs)) {
+      return refs && refs.current === null;
+    }
+    return refs.some(r => r && r.current === null);
+  };
+  return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
+}
+
 function createHandler(handlerName, propTypes = null, config = {}) {
   class Handler extends React.Component {
     static propTypes = {
@@ -209,61 +219,67 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     };
 
     componentWillUnmount() {
-      setImmediate(() => {
-        RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
-        if (this.props.id) {
-          delete handlerIDToTag[this.props.id];
-        }
-      });
+      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
+      if (this._updateEnqueued) {
+        clearImmediate(this._updateEnqueued);
+      }
+      if (this.props.id) {
+        delete handlerIDToTag[this.props.id];
+      }
     }
 
     componentDidMount() {
-      const viewTag = findNodeHandle(this._viewNode);
-      this._viewTag = viewTag;
-      // Calling createGestureHandler from setImmediate guarantees that
-      // all the other components are mounted which is necessary for
-      // the refs to be set. If we were to call it directly here then if
-      // the parent component ref is passed in `waitFor` or `simultaniousHandlers`
-      // property it's `.current` element would be `null` because it has not
-      // yet been mounted.
-      setImmediate(() => {
-        this._config = filterConfig(
-          this.props,
-          this.constructor.propTypes,
-          config
-        );
-        RNGestureHandlerModule.createGestureHandler(
-          handlerName,
-          this._handlerTag,
-          this._config
-        );
-        RNGestureHandlerModule.attachGestureHandler(this._handlerTag, viewTag);
-      });
+      this._viewTag = findNodeHandle(this._viewNode);
+      this._config = filterConfig(
+        this.props,
+        this.constructor.propTypes,
+        config
+      );
+      if (hasUnresolvedRefs(this.props)) {
+        // If there are unresolved refs (e.g. ".current" has not yet been set)
+        // passed as `simultaniousHandlers` or `waitFor`, we enqueue a call to
+        // _update method that will try to update native handler props using
+        // setImmediate. This makes it so _update function gets called after all
+        // react components are mounted and we expect the missing ref object to
+        // be resolved by then.
+        this._updateEnqueued = setImmediate(() => {
+          this._updateEnqueued = null;
+          this._update();
+        });
+      }
+      RNGestureHandlerModule.createGestureHandler(
+        handlerName,
+        this._handlerTag,
+        this._config
+      );
+      RNGestureHandlerModule.attachGestureHandler(
+        this._handlerTag,
+        this._viewTag
+      );
     }
 
     componentDidUpdate() {
       const viewTag = findNodeHandle(this._viewNode);
-      setImmediate(() => {
-        if (this._viewTag !== viewTag) {
-          this._viewTag = viewTag;
-          RNGestureHandlerModule.attachGestureHandler(
-            this._handlerTag,
-            viewTag
-          );
-        }
-        const newConfig = filterConfig(
-          this.props,
-          this.constructor.propTypes,
-          config
+      if (this._viewTag !== viewTag) {
+        this._viewTag = viewTag;
+        RNGestureHandlerModule.attachGestureHandler(this._handlerTag, viewTag);
+      }
+      this._update();
+    }
+
+    _update() {
+      const newConfig = filterConfig(
+        this.props,
+        this.constructor.propTypes,
+        config
+      );
+      if (!deepEqual(this._config, newConfig)) {
+        this._config = newConfig;
+        RNGestureHandlerModule.updateGestureHandler(
+          this._handlerTag,
+          this._config
         );
-        if (!deepEqual(this._config, newConfig)) {
-          this._config = newConfig;
-          RNGestureHandlerModule.updateGestureHandler(
-            this._handlerTag,
-            this._config
-          );
-        }
-      });
+      }
     }
 
     render() {
