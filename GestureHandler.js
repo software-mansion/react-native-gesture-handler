@@ -154,7 +154,7 @@ function filterConfig(props, validProps, defaults = {}) {
 function hasUnresolvedRefs(props) {
   const extract = refs => {
     if (!Array.isArray(refs)) {
-      refs = [refs];
+      return refs && refs.current === null;
     }
     return refs.some(r => r && r.current === null);
   };
