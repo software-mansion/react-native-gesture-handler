@@ -1,6 +1,6 @@
 # react-native-gesture-handler
 
-React Native Gesture Handler provides native-driven gesture management APIs for building best possible touch-based expiriences in React Native.
+React Native Gesture Handler provides native-driven gesture management APIs for building best possible touch-based experiences in React Native.
 
 With this library gestures are no longer controlled by the JS responder system, but instead are recognized and tracked in the UI thread.
 It makes touch interactions and gesture tracking not only smooth, but also dependable and deterministic.

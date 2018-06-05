@@ -121,7 +121,7 @@ const Features = props => (
       },
       {
         content:
-          "Pass and process gesture specific data to React Native's [Animated library](http://facebook.github.io/react-native/docs/animated.html) and build smooth gesture based expiriences with `useNativeDriver` flag.",
+          "Pass and process gesture specific data to React Native's [Animated library](http://facebook.github.io/react-native/docs/animated.html) and build smooth gesture based experiences with `useNativeDriver` flag.",
         title: 'Works with Animated API',
       },
       {
@@ -155,7 +155,7 @@ const Description = props => (
   <Block background="light" id="description">
     {[
       {
-        content: `React Native Gesture Handler provides native-driven gesture management APIs for building best possible touch-based expiriences in React Native. With this library gestures are no longer controlled by the JS responder system, but instead are recognized and tracked in the UI thread. It makes touch interactions and gesture tracking not only smooth, but also dependable and deterministic.. [Continue here to the getting started guide](docs/getting-started.html) to learn more about the library`,
+        content: `React Native Gesture Handler provides native-driven gesture management APIs for building best possible touch-based experiences in React Native. With this library gestures are no longer controlled by the JS responder system, but instead are recognized and tracked in the UI thread. It makes touch interactions and gesture tracking not only smooth, but also dependable and deterministic.. [Continue here to the getting started guide](docs/getting-started.html) to learn more about the library`,
         image: imgUrl('ghlogo.svg'),
         imageAlign: 'right',
         title: 'About this project',
