@@ -16,7 +16,6 @@ import {
   FlatList,
   Platform,
 } from 'react-native';
-import ReactNativeBridgeEventPlugin from 'react-native/Libraries/Renderer/shims/ReactNativeBridgeEventPlugin';
 import Touchable from 'react-native/Libraries/Components/Touchable/Touchable';
 
 import deepEqual from 'fbjs/lib/areEqual';
@@ -43,14 +42,16 @@ UIManager.clearJSResponder = () => {
   oldClearJSResponder();
 };
 
-ReactNativeBridgeEventPlugin.processEventTypes({
-  directEventTypes: {
-    topGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
-    topGestureHandlerStateChange: {
-      registrationName: 'onGestureHandlerStateChange',
-    },
+// Add gesture spacific events to RCTView's directEventTypes object exported via UIManager.
+// Once new event types are registered with react it is possible to dispatch these to other
+// view types as well.
+UIManager.RCTView.directEventTypes = {
+  ...UIManager.RCTView.directEventTypes,
+  onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+  onGestureHandlerStateChange: {
+    registrationName: 'onGestureHandlerStateChange',
   },
-});
+};
 
 const State = RNGestureHandlerModule.State;
 
