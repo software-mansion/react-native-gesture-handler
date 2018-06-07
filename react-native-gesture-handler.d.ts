@@ -299,7 +299,7 @@ export interface RectButtonProperties extends BaseButtonProperties {
   underlayColor?: string;
 }
 
-export interface BorderlessButtonProperties extends RawButtonProperties {
+export interface BorderlessButtonProperties extends BaseButtonProperties {
   borderless?: boolean;
 }
 
