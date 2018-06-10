@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import ReactNativeBridgeEventPlugin from 'react-native/Libraries/Renderer/shims/ReactNativeBridgeEventPlugin';
 import processColor from 'react-native/Libraries/StyleSheet/processColor';
+import Touchable from 'react-native/Libraries/Components/Touchable/Touchable';
 import deepEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 
@@ -42,14 +43,16 @@ UIManager.clearJSResponder = () => {
   oldClearJSResponder();
 };
 
-ReactNativeBridgeEventPlugin.processEventTypes({
-  directEventTypes: {
-    topGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
-    topGestureHandlerStateChange: {
-      registrationName: 'onGestureHandlerStateChange',
-    },
+// Add gesture spacific events to RCTView's directEventTypes object exported via UIManager.
+// Once new event types are registered with react it is possible to dispatch these to other
+// view types as well.
+UIManager.RCTView.directEventTypes = {
+  ...UIManager.RCTView.directEventTypes,
+  onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+  onGestureHandlerStateChange: {
+    registrationName: 'onGestureHandlerStateChange',
   },
-});
+};
 
 const State = RNGestureHandlerModule.State;
 
@@ -150,6 +153,16 @@ function filterConfig(props, validProps, defaults = {}) {
   return res;
 }
 
+function hasUnresolvedRefs(props) {
+  const extract = refs => {
+    if (!Array.isArray(refs)) {
+      return refs && refs.current === null;
+    }
+    return refs.some(r => r && r.current === null);
+  };
+  return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
+}
+
 function createHandler(handlerName, propTypes = null, config = {}) {
   class Handler extends React.Component {
     static propTypes = {
@@ -209,44 +222,54 @@ function createHandler(handlerName, propTypes = null, config = {}) {
 
     componentWillUnmount() {
       RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
+      if (this._updateEnqueued) {
+        clearImmediate(this._updateEnqueued);
+      }
       if (this.props.id) {
         delete handlerIDToTag[this.props.id];
       }
     }
 
     componentDidMount() {
-      // Calling createGestureHandler from setImmediate guarantees that
-      // all the other components are mounted which is necessary for
-      // the refs to be set. If we were to call it directly here then if
-      // the parent component ref is passed in `waitFor` or `simultaniousHandlers`
-      // property it's `.current` element would be `null` because it has not
-      // yet been mounted.
-      setImmediate(() => {
-        this._viewTag = findNodeHandle(this._viewNode);
-        this._config = filterConfig(
-          this.props,
-          this.constructor.propTypes,
-          config
-        );
-        RNGestureHandlerModule.createGestureHandler(
-          handlerName,
-          this._handlerTag,
-          this._config
-        );
-        RNGestureHandlerModule.attachGestureHandler(
-          this._handlerTag,
-          this._viewTag
-        );
-      });
+      this._viewTag = findNodeHandle(this._viewNode);
+      this._config = filterConfig(
+        this.props,
+        this.constructor.propTypes,
+        config
+      );
+      if (hasUnresolvedRefs(this.props)) {
+        // If there are unresolved refs (e.g. ".current" has not yet been set)
+        // passed as `simultaniousHandlers` or `waitFor`, we enqueue a call to
+        // _update method that will try to update native handler props using
+        // setImmediate. This makes it so _update function gets called after all
+        // react components are mounted and we expect the missing ref object to
+        // be resolved by then.
+        this._updateEnqueued = setImmediate(() => {
+          this._updateEnqueued = null;
+          this._update();
+        });
+      }
+      RNGestureHandlerModule.createGestureHandler(
+        handlerName,
+        this._handlerTag,
+        this._config
+      );
+      RNGestureHandlerModule.attachGestureHandler(
+        this._handlerTag,
+        this._viewTag
+      );
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate() {
       const viewTag = findNodeHandle(this._viewNode);
       if (this._viewTag !== viewTag) {
         this._viewTag = viewTag;
         RNGestureHandlerModule.attachGestureHandler(this._handlerTag, viewTag);
       }
+      this._update();
+    }
 
+    _update() {
       const newConfig = filterConfig(
         this.props,
         this.constructor.propTypes,
@@ -309,12 +332,32 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       }
 
       const child = React.Children.only(this.props.children);
-      return React.cloneElement(child, {
-        ref: this._refHandler,
-        collapsable: false,
-        onGestureHandlerEvent: gestureEventHandler,
-        onGestureHandlerStateChange: gestureStateEventHandler,
-      });
+      let children = child.props.children;
+      if (
+        Touchable.TOUCH_TARGET_DEBUG &&
+        child.type &&
+        (child.type === 'RNGestureHandlerButton' ||
+          child.type.name === 'View' ||
+          child.type.displayName === 'View')
+      ) {
+        children = React.Children.toArray(children);
+        children.push(
+          Touchable.renderDebugView({
+            color: 'mediumspringgreen',
+            hitSlop: child.props.hitSlop,
+          })
+        );
+      }
+      return React.cloneElement(
+        child,
+        {
+          ref: this._refHandler,
+          collapsable: false,
+          onGestureHandlerEvent: gestureEventHandler,
+          onGestureHandlerStateChange: gestureStateEventHandler,
+        },
+        children
+      );
     }
   }
   return Handler;

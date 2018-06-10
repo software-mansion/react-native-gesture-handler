@@ -19,7 +19,7 @@ const DRAG_TOSS = 0.05;
 // Math.sign polyfill for iOS 8.x
 if (!Math.sign) {
   Math.sign = function(x) {
-    return ((x > 0) - (x < 0)) || +x;
+    return (x > 0) - (x < 0) || +x;
   };
 }
 
@@ -34,6 +34,10 @@ export type PropType = {
   onSwipeableRightOpen?: Function,
   onSwipeableOpen?: Function,
   onSwipeableClose?: Function,
+  onSwipeableLeftWillOpen?: Function,
+  onSwipeableRightWillOpen?: Function,
+  onSwipeableWillOpen?: Function,
+  onSwipeableWillClose?: Function,
   renderLeftActions?: (
     progressAnimatedValue: any,
     dragAnimatedValue: any
@@ -43,6 +47,7 @@ export type PropType = {
     dragAnimatedValue: any
   ) => any,
   useNativeAnimations: boolean,
+  animationOptions?: object,
 };
 type StateType = {
   dragX: Animated.Value,
@@ -201,10 +206,13 @@ export default class Swipeable extends Component<PropType, StateType> {
 
     this.setState({ rowState: Math.sign(toValue) });
     Animated.spring(rowTranslation, {
+      restSpeedThreshold: 1.7,
+      restDisplacementThreshold: 0.4,
       velocity: velocityX,
       bounciness: 0,
       toValue,
       useNativeDriver: this.props.useNativeAnimations,
+      ...this.props.animationOptions,
     }).start(({ finished }) => {
       if (finished) {
         if (toValue > 0 && this.props.onSwipeableLeftOpen) {
@@ -220,6 +228,17 @@ export default class Swipeable extends Component<PropType, StateType> {
         }
       }
     });
+    if (toValue > 0 && this.props.onSwipeableLeftWillOpen) {
+      this.props.onSwipeableLeftWillOpen();
+    } else if (toValue < 0 && this.props.onSwipeableRightWillOpen) {
+      this.props.onSwipeableRightWillOpen();
+    }
+
+    if (toValue === 0) {
+      this.props.onSwipeableWillClose && this.props.onSwipeableWillClose();
+    } else {
+      this.props.onSwipeableWillOpen && this.props.onSwipeableWillOpen();
+    }
   };
 
   _onRowLayout = ({ nativeEvent }) => {
@@ -255,7 +274,8 @@ export default class Swipeable extends Component<PropType, StateType> {
         {renderLeftActions(this._showLeftAction, this._transX)}
         <View
           onLayout={({ nativeEvent }) =>
-            this.setState({ leftWidth: nativeEvent.layout.x })}
+            this.setState({ leftWidth: nativeEvent.layout.x })
+          }
         />
       </Animated.View>
     );
@@ -269,7 +289,8 @@ export default class Swipeable extends Component<PropType, StateType> {
         {renderRightActions(this._showRightAction, this._transX)}
         <View
           onLayout={({ nativeEvent }) =>
-            this.setState({ rightOffset: nativeEvent.layout.x })}
+            this.setState({ rightOffset: nativeEvent.layout.x })
+          }
         />
       </Animated.View>
     );

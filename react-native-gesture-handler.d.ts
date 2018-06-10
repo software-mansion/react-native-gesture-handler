@@ -195,9 +195,13 @@ export interface NativeViewGestureHandlerProperties
 }
 
 export interface TapGestureHandlerProperties extends GestureHandlerProperties {
+  minPointers?: number;
   maxDurationMs?: number;
   maxDelayMs?: number;
   numberOfTaps?: number;
+  maxDeltaX?: number;
+  maxDeltaY?: number;
+  maxDist?: number;
   onGestureEvent?: (event: TapGestureHandlerGestureEvent) => void;
   onHandlerStateChange?: (event: TapGestureHandlerStateChangeEvent) => void;
 }
@@ -295,7 +299,7 @@ export interface RectButtonProperties extends BaseButtonProperties {
   underlayColor?: string;
 }
 
-export interface BorderlessButtonProperties extends RawButtonProperties {
+export interface BorderlessButtonProperties extends BaseButtonProperties {
   borderless?: boolean;
 }
 
