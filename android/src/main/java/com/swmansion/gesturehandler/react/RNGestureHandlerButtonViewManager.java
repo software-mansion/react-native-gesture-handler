@@ -27,7 +27,8 @@ public class RNGestureHandlerButtonViewManager extends
     static ButtonViewGroup sResponder;
 
     int mBackgroundColor = Color.TRANSPARENT;
-    int mRippleColor = Color.LTGRAY; // default Android Color
+    int mRippleColor;
+    boolean mUseCustomRippleColor = false;
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
@@ -51,6 +52,7 @@ public class RNGestureHandlerButtonViewManager extends
 
     public void setRippleColor(int color) {
       mRippleColor = color;
+      mUseCustomRippleColor = true;
       mNeedBackgroundUpdate = true;
     }
 
@@ -112,10 +114,10 @@ public class RNGestureHandlerButtonViewManager extends
             ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);
           }
         }
-        if (mRippleColor != Color.LTGRAY
+        if (mUseCustomRippleColor
                 && selectable instanceof RippleDrawable
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          int[][] states = new int[][] { new int[] { android.R.attr.state_pressed} };
+          int[][] states = new int[][] { new int[] { android.R.attr.state_enabled} };
           int[] colors = new int[] { mRippleColor };
           ColorStateList colorStateList = new ColorStateList(states, colors);
           ((RippleDrawable) selectable).setColor(colorStateList);

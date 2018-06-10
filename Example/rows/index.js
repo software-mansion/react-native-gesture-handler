@@ -187,6 +187,7 @@ export default class Example extends Component {
               nativeEvent.state === State.ACTIVE && Alert.alert('Long')
             }>
             <RectButton
+              rippleColor="red"
               style={styles.rectButton}
               onPress={() => Alert.alert('Fifth row clicked')}>
               <Text style={styles.buttonText}>
