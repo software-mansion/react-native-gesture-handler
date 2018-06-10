@@ -220,7 +220,6 @@ public class RNGestureHandlerButtonViewManager extends
     view.setRippleColor(rippleColor);;
   }
 
-
   @Override
   protected void onAfterUpdateTransaction(ButtonViewGroup view) {
     view.updateBackground();
