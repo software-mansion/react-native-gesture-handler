@@ -100,7 +100,11 @@ export class BottomSheet extends Component {
       <TapGestureHandler
         maxDurationMs={100000}
         ref={this.masterdrawer}
-        maxDeltaY={this.state.lastSnap - SNAP_POINTS_FROM_TOP[0]}>
+        maxDeltaY={
+          this.state.lastSnap - SNAP_POINTS_FROM_TOP[0] === 0
+            ? -1
+            : this.state.lastSnap - SNAP_POINTS_FROM_TOP[0]
+        }>
         <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
           <Animated.View
             style={[
