@@ -84,6 +84,7 @@
     }
 
     [super touchesBegan:touches withEvent:event];
+    [self touchesMoved:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
