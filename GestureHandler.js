@@ -3,9 +3,15 @@ import {
   findNodeHandle,
   requireNativeComponent,
   Animated,
+  DrawerLayoutAndroid,
+  findNodeHandle,
+  FlatList,
   NativeModules,
+  Platform,
+  requireNativeComponent,
   ScrollView,
   Slider,
+  StyleSheet,
   Switch,
   TextInput,
   ToolbarAndroid,
@@ -163,6 +169,8 @@ function hasUnresolvedRefs(props) {
 }
 
 function createHandler(handlerName, propTypes = null, config = {}) {
+  name = 'handler';
+
   class Handler extends React.Component {
     static propTypes = {
       ...GestureHandlerPropTypes,
@@ -331,32 +339,39 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       }
 
       const child = React.Children.only(this.props.children);
-      let children = child.props.children;
-      if (
-        Touchable.TOUCH_TARGET_DEBUG &&
-        child.type &&
-        (child.type === 'RNGestureHandlerButton' ||
-          child.type.name === 'View' ||
-          child.type.displayName === 'View')
-      ) {
-        children = React.Children.toArray(children);
-        children.push(
-          Touchable.renderDebugView({
-            color: 'mediumspringgreen',
-            hitSlop: child.props.hitSlop,
-          })
-        );
-      }
-      return React.cloneElement(
-        child,
-        {
+      if (child.type.name === 'AnimatedComponent') {
+        return React.cloneElement(child, {
           ref: this._refHandler,
           collapsable: false,
           onGestureHandlerEvent: gestureEventHandler,
           onGestureHandlerStateChange: gestureStateEventHandler,
-        },
-        children
-      );
+        });
+      } else if (child.type.name === 'Handler') {
+        return React.createElement(
+          Animated.View,
+          {
+            style: StyleSheet.absoluteFillObject,
+            ref: this._refHandler,
+            collapsable: false,
+            onGestureHandlerEvent: gestureEventHandler,
+            onGestureHandlerStateChange: gestureStateEventHandler,
+          },
+          child
+        );
+      } else {
+        const { children, ...butForChildren } = child.props;
+        return React.createElement(
+          Animated.createAnimatedComponent(child.type),
+          {
+            ...butForChildren,
+            ref: this._refHandler,
+            collapsable: false,
+            onGestureHandlerEvent: gestureEventHandler,
+            onGestureHandlerStateChange: gestureStateEventHandler,
+          },
+          children
+        );
+      }
     }
   }
   return Handler;
