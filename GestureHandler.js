@@ -169,7 +169,7 @@ function hasUnresolvedRefs(props) {
 }
 
 function createHandler(handlerName, propTypes = null, config = {}) {
-  name = 'handler';
+  this.name = 'handler';
 
   class Handler extends React.Component {
     static propTypes = {
