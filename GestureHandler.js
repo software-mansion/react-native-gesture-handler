@@ -1,17 +1,11 @@
 import React from 'react';
 import {
-  findNodeHandle,
   requireNativeComponent,
   Animated,
-  DrawerLayoutAndroid,
   findNodeHandle,
-  FlatList,
   NativeModules,
-  Platform,
-  requireNativeComponent,
   ScrollView,
   Slider,
-  StyleSheet,
   Switch,
   TextInput,
   ToolbarAndroid,
@@ -169,8 +163,6 @@ function hasUnresolvedRefs(props) {
 }
 
 function createHandler(handlerName, propTypes = null, config = {}) {
-  this.name = 'handler';
-
   class Handler extends React.Component {
     static propTypes = {
       ...GestureHandlerPropTypes,
@@ -346,7 +338,10 @@ function createHandler(handlerName, propTypes = null, config = {}) {
           onGestureHandlerEvent: gestureEventHandler,
           onGestureHandlerStateChange: gestureStateEventHandler,
         });
-      } else if (child.type.name === 'Handler') {
+      } else if (
+        child.type.name === 'Handler' ||
+        child.type === 'RNGestureHandlerButton'
+      ) {
         return React.createElement(
           Animated.View,
           {
