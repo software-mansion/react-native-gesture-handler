@@ -83,38 +83,34 @@ export class PinchableBox extends React.Component {
         minPointers={2}
         maxPointers={2}
         avgTouches>
-        <Animated.View style={styles.wrapper}>
-          <RotationGestureHandler
-            id="image_rotation"
-            simultaneousHandlers="image_pinch"
-            onGestureEvent={this._onRotateGestureEvent}
-            onHandlerStateChange={this._onRotateHandlerStateChange}>
-            <Animated.View style={styles.wrapper}>
-              <PinchGestureHandler
-                id="image_pinch"
-                simultaneousHandlers="image_rotation"
-                onGestureEvent={this._onPinchGestureEvent}
-                onHandlerStateChange={this._onPinchHandlerStateChange}>
-                <Animated.View style={styles.container} collapsable={false}>
-                  <Animated.Image
-                    style={[
-                      styles.pinchableImage,
-                      {
-                        transform: [
-                          { perspective: 200 },
-                          { scale: this._scale },
-                          { rotate: this._rotateStr },
-                          { rotateX: this._tiltStr },
-                        ],
-                      },
-                    ]}
-                    source={require('./swmansion.png')}
-                  />
-                </Animated.View>
-              </PinchGestureHandler>
+        <RotationGestureHandler
+          id="image_rotation"
+          simultaneousHandlers="image_pinch"
+          onGestureEvent={this._onRotateGestureEvent}
+          onHandlerStateChange={this._onRotateHandlerStateChange}>
+          <PinchGestureHandler
+            id="image_pinch"
+            simultaneousHandlers="image_rotation"
+            onGestureEvent={this._onPinchGestureEvent}
+            onHandlerStateChange={this._onPinchHandlerStateChange}>
+            <Animated.View style={styles.container} collapsable={false}>
+              <Animated.Image
+                style={[
+                  styles.pinchableImage,
+                  {
+                    transform: [
+                      { perspective: 200 },
+                      { scale: this._scale },
+                      { rotate: this._rotateStr },
+                      { rotateX: this._tiltStr },
+                    ],
+                  },
+                ]}
+                source={require('./swmansion.png')}
+              />
             </Animated.View>
-          </RotationGestureHandler>
-        </Animated.View>
+          </PinchGestureHandler>
+        </RotationGestureHandler>
       </PanGestureHandler>
     );
   }
