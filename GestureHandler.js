@@ -238,7 +238,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       );
       if (hasUnresolvedRefs(this.props)) {
         // If there are unresolved refs (e.g. ".current" has not yet been set)
-        // passed as `simultaniousHandlers` or `waitFor`, we enqueue a call to
+        // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
         // _update method that will try to update native handler props using
         // setImmediate. This makes it so _update function gets called after all
         // react components are mounted and we expect the missing ref object to
