@@ -8,10 +8,10 @@
 
 #define VEC_LEN_SQ(pt) (pt.x * pt.x + pt.y * pt.y)
 #define TEST_MIN_IF_NOT_NAN(value, limit) \
-(!isnan(limit) && value >= limit)
+(!isnan(limit) && ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit)))
 
 #define TEST_MAX_IF_NOT_NAN(value, max) \
-(!isnan(max) && value > max)
+(!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
 
 #define APPLY_PROP(recognizer, config, type, prop, propName) do { \
 id value = config[propName]; \

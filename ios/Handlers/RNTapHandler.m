@@ -128,7 +128,7 @@
     if (TEST_MAX_IF_NOT_NAN(fabs(trans.y), _maxDeltaY)) {
         return YES;
     }
-    if (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x + trans.x), _maxDistSq)) {
+    if (fabs(trans.y * trans.y + trans.x + trans.x) > _maxDistSq) {
         return YES;
     }
     return NO;
@@ -201,6 +201,9 @@
     if (prop != nil) {
         CGFloat dist = [RCTConvert CGFloat:prop];
         recognizer.maxDistSq = dist * dist;
+      if (dist < 0) {
+        recognizer.maxDistSq *= -1;
+      }
     }
 
 }
