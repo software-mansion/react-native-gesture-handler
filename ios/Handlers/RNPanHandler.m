@@ -70,6 +70,9 @@
         super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
     }
     [super touchesBegan:touches withEvent:event];
+    if ([self numberOfTouches] >= _realMinimumNumberOfTouches) {
+      self.state = UIGestureRecognizerStateBegan;
+    }
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -97,7 +100,6 @@
         super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
         if ([self numberOfTouches] >= _realMinimumNumberOfTouches) {
             self.state = UIGestureRecognizerStateBegan;
-            [self setTranslation:CGPointMake(0, 0) inView:self.view];
         }
     }
 }
