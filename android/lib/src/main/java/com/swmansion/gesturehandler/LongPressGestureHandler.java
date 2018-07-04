@@ -29,7 +29,8 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
   }
 
   @Override
-  protected void onHandle(MotionEvent event) {
+  protected void onHandle() {
+    GestureHandlerMotionEventAdapter event = mGestureEvent;
     if (getState() == STATE_UNDETERMINED) {
       begin();
       mStartX = event.getRawX();

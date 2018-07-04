@@ -94,7 +94,7 @@ public class GestureHandlerOrchestrator {
   public boolean onTouchEvent(MotionEvent event) {
     mIsHandlingTouch = true;
     int action = event.getActionMasked();
-    if (action == MotionEvent.ACTION_DOWN) {
+    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
       extractGestureHandlers(event);
     } else if (action == MotionEvent.ACTION_CANCEL) {
       cancelAll();
@@ -290,6 +290,9 @@ public class GestureHandlerOrchestrator {
   }
 
   private void deliverEventToGestureHandler(GestureHandler handler, MotionEvent event) {
+    if (event == null) {
+      return;
+    }
     if (!handler.wantEvents()) {
       return;
     }
@@ -371,10 +374,12 @@ public class GestureHandlerOrchestrator {
   }
 
   private void extractGestureHandlers(MotionEvent event) {
-    sTempCoords[0] = event.getX();
-    sTempCoords[1] = event.getY();
-    traverseWithPointerEvents(mWrapperView, sTempCoords);
-    extractGestureHandlers(mWrapperView, sTempCoords);
+    for (int i = 0; i< event.getPointerCount(); i++) {
+      sTempCoords[0] = event.getX(i);
+      sTempCoords[1] = event.getY(i);
+      traverseWithPointerEvents(mWrapperView, sTempCoords);
+      extractGestureHandlers(mWrapperView, sTempCoords);
+    }
   }
 
   private boolean extractGestureHandlers(ViewGroup viewGroup, float[] coords) {

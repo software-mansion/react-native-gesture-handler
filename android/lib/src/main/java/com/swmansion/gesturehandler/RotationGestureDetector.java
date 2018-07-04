@@ -30,7 +30,7 @@ public class RotationGestureDetector {
     mListener = listener;
   }
 
-  private void updateCurrent(MotionEvent event) {
+  private void updateCurrent(GestureHandlerMotionEventAdapter event) {
     mPrevTime = mCurrTime;
     mCurrTime = event.getEventTime();
 
@@ -80,7 +80,7 @@ public class RotationGestureDetector {
     }
   }
 
-  public boolean onTouchEvent(MotionEvent event) {
+  public boolean onTouchEvent(GestureHandlerMotionEventAdapter event) {
     switch (event.getActionMasked()) {
 
       case MotionEvent.ACTION_DOWN:

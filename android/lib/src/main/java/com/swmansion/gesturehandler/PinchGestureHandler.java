@@ -2,23 +2,22 @@ package com.swmansion.gesturehandler;
 
 import android.content.Context;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.ViewConfiguration;
 
 public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
 
-  private ScaleGestureDetector mScaleGestureDetector;
+  private GestureHandlerScaleDetector mScaleDetector;
   private double mLastScaleFactor;
   private double mLastVelocity;
 
   private float mStartingSpan;
   private float mSpanSlop;
 
-  private ScaleGestureDetector.OnScaleGestureListener mGestureListener =
-          new ScaleGestureDetector.OnScaleGestureListener() {
+  private GestureHandlerScaleDetector.OnScaleGestureListener mGestureListener =
+          new GestureHandlerScaleDetector.OnScaleGestureListener() {
 
     @Override
-    public boolean onScale(ScaleGestureDetector detector) {
+    public boolean onScale(GestureHandlerScaleDetector detector) {
       double prevScaleFactor = mLastScaleFactor;
       mLastScaleFactor *= detector.getScaleFactor();
       long delta = detector.getTimeDelta();
@@ -33,14 +32,14 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
     }
 
     @Override
-    public boolean onScaleBegin(ScaleGestureDetector detector) {
+    public boolean onScaleBegin(GestureHandlerScaleDetector detector) {
       mStartingSpan = detector.getCurrentSpan();
       return true;
     }
 
     @Override
-    public void onScaleEnd(ScaleGestureDetector detector) {
-      // ScaleGestureDetector thinks that when fingers are 27mm away that's a sufficiently good
+    public void onScaleEnd(GestureHandlerScaleDetector detector) {
+      // GestureHandlerScaleDetector thinks that when fingers are 27mm away that's a sufficiently good
       // reason to trigger this method giving us no other choice but to ignore it completely.
     }
   };
@@ -50,20 +49,21 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
   }
 
   @Override
-  protected void onHandle(MotionEvent event) {
+  protected void onHandle() {
+    GestureHandlerMotionEventAdapter event = mGestureEvent;
     if (getState() == STATE_UNDETERMINED) {
       Context context = getView().getContext();
       mLastVelocity = 0f;
       mLastScaleFactor = 1f;
-      mScaleGestureDetector = new ScaleGestureDetector(context, mGestureListener);
+      mScaleDetector = new GestureHandlerScaleDetector(context, mGestureListener);
       ViewConfiguration configuration = ViewConfiguration.get(context);
       mSpanSlop = configuration.getScaledTouchSlop();
 
       begin();
     }
 
-    if (mScaleGestureDetector != null) {
-      mScaleGestureDetector.onTouchEvent(event);
+    if (mScaleDetector != null) {
+      mScaleDetector.onTouchEvent(event);
     }
 
     int activePointers = event.getPointerCount();
@@ -80,7 +80,7 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
 
   @Override
   protected void onReset() {
-    mScaleGestureDetector = null;
+    mScaleDetector = null;
     mLastVelocity = 0f;
     mLastScaleFactor = 1f;
   }
@@ -94,16 +94,16 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
   }
 
   public float getFocalPointX() {
-    if (mScaleGestureDetector == null) {
+    if (mScaleDetector == null) {
       return Float.NaN;
     }
-    return mScaleGestureDetector.getFocusX();
+    return mScaleDetector.getFocusX();
   }
 
   public float getFocalPointY() {
-    if (mScaleGestureDetector == null) {
+    if (mScaleDetector == null) {
       return Float.NaN;
     }
-    return mScaleGestureDetector.getFocusY();
+    return mScaleDetector.getFocusY();
   }
 }

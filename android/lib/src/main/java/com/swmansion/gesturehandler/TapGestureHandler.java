@@ -112,7 +112,8 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
   }
 
   @Override
-  protected void onHandle(MotionEvent event) {
+  protected void onHandle() {
+    GestureHandlerMotionEventAdapter event = mGestureEvent;
     int state = getState();
     int action = event.getActionMasked();
 

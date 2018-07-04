@@ -68,28 +68,29 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
   }
 
   @Override
-  protected void onHandle(MotionEvent event) {
+  protected void onHandle() {
+    GestureHandlerMotionEventAdapter event = mGestureEvent;
     View view = getView();
     int state = getState();
     if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-      view.onTouchEvent(event);
+      view.onTouchEvent(event.getRawEvent());
       if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed()) {
         activate();
       }
       end();
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       if (mShouldActivateOnStart) {
-        tryIntercept(view, event);
-        view.onTouchEvent(event);
+        tryIntercept(view, event.getRawEvent());
+        view.onTouchEvent(event.getRawEvent());
         activate();
-      } else if (tryIntercept(view, event)) {
-        view.onTouchEvent(event);
+      } else if (tryIntercept(view, event.getRawEvent())) {
+        view.onTouchEvent(event.getRawEvent());
         activate();
       } else if (state != STATE_BEGAN) {
         begin();
       }
     } else if (state == STATE_ACTIVE) {
-      view.onTouchEvent(event);
+      view.onTouchEvent(event.getRawEvent());
     }
   }
 

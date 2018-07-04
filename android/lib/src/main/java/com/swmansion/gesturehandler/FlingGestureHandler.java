@@ -33,7 +33,7 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     mDirection = direction;
   }
 
-  private void startFling(MotionEvent event) {
+  private void startFling(GestureHandlerMotionEventAdapter event) {
     mStartX = event.getRawX();
     mStartY = event.getRawY();
     begin();
@@ -46,7 +46,7 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     mHandler.postDelayed(mFailDelayed, mMaxDurationMs);
   }
 
-  private boolean tryEndFling(MotionEvent event) {
+  private boolean tryEndFling(GestureHandlerMotionEventAdapter event) {
     if (mMaxNumberOfPointersSimultaneously == mNumberOfPointersRequired &&
             (((mDirection & DIRECTION_RIGHT) != 0 &&
                     event.getRawX() - mStartX > mMinAcceptableDelta) ||
@@ -65,7 +65,7 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     }
   }
 
-  private void endFling(MotionEvent event) {
+  private void endFling(GestureHandlerMotionEventAdapter event) {
     if (!tryEndFling(event)) {
       fail();
     }
@@ -73,7 +73,9 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
   }
 
   @Override
-  protected void onHandle(MotionEvent event) {
+  protected void onHandle() {
+    GestureHandlerMotionEventAdapter event = mGestureEvent;
+
     int state = getState();
 
     if (state == STATE_UNDETERMINED) {

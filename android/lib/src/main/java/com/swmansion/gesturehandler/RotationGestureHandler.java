@@ -42,7 +42,8 @@ public class RotationGestureHandler extends GestureHandler<RotationGestureHandle
   }
 
   @Override
-  protected void onHandle(MotionEvent event) {
+  protected void onHandle() {
+    GestureHandlerMotionEventAdapter event = mGestureEvent;
     int state = getState();
     if (state == STATE_UNDETERMINED) {
       mLastVelocity = 0f;

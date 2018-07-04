@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.swmansion.gesturehandler.GestureHandler;
+import com.swmansion.gesturehandler.GestureHandlerMotionEventAdapter;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
 
 public class RNGestureHandlerRootHelper {
@@ -82,7 +83,8 @@ public class RNGestureHandlerRootHelper {
 
   private class RootViewGestureHandler extends GestureHandler {
     @Override
-    protected void onHandle(MotionEvent event) {
+    protected void onHandle() {
+      GestureHandlerMotionEventAdapter event = mGestureEvent;
       int currentState = getState();
       if (currentState == STATE_UNDETERMINED) {
         begin();

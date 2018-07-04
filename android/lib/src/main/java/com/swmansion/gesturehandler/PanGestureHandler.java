@@ -180,7 +180,8 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   }
 
   @Override
-  protected void onHandle(MotionEvent event) {
+  protected void onHandle() {
+    GestureHandlerMotionEventAdapter event = mGestureEvent;
     int state = getState();
     int action = event.getActionMasked();
 
@@ -209,13 +210,14 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mOffsetX = 0;
       mOffsetY = 0;
       mVelocityTracker = VelocityTracker.obtain();
-      addVelocityMovement(mVelocityTracker, event);
+      addVelocityMovement(mVelocityTracker, event.getRawEvent());
+      event.setVelocityTracker(mVelocityTracker);
       begin();
     } else if (mVelocityTracker != null) {
-      addVelocityMovement(mVelocityTracker, event);
+      addVelocityMovement(mVelocityTracker, event.getRawEvent());
       mVelocityTracker.computeCurrentVelocity(1000);
-      mLastVelocityX = mVelocityTracker.getXVelocity();
-      mLastVelocityY = mVelocityTracker.getYVelocity();
+      mLastVelocityX = event.getXVelocity();
+      mLastVelocityY = event.getYVelocity();
     }
 
     if (action == MotionEvent.ACTION_UP) {

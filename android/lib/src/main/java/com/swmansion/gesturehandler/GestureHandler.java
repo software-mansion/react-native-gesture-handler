@@ -26,6 +26,8 @@ public class GestureHandler<T extends GestureHandler> {
   public static final int DIRECTION_UP = 4;
   public static final int DIRECTION_DOWN = 8;
 
+  protected final GestureHandlerMotionEventAdapter mGestureEvent;
+
   private int mTag;
   private View mView;
   private int mState = STATE_UNDETERMINED;
@@ -58,6 +60,10 @@ public class GestureHandler<T extends GestureHandler> {
     if (mListener != null) {
       mListener.onTouchEvent((T) this, event);
     }
+  }
+
+  public GestureHandler(){
+    mGestureEvent = new GestureHandlerMotionEventAdapter(this);
   }
 
   public T setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
@@ -152,12 +158,17 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public final void handle(MotionEvent event) {
+    mGestureEvent.updateMotionEventBeforeHandling(event);
+    GestureHandlerMotionEventAdapter me = mGestureEvent;
+    if (me == null) {
+      return;
+    }
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
       return;
     }
-    mX = event.getX();
-    mY = event.getY();
-    mNumberOfPointers = event.getPointerCount();
+    mX = me.getX();
+    mY = me.getY();
+    mNumberOfPointers = me.getPointerCount();
 
     mWithinBounds = isWithinBounds(mView, mX, mY);
     if (mShouldCancelWhenOutside && !mWithinBounds) {
@@ -168,7 +179,8 @@ public class GestureHandler<T extends GestureHandler> {
       }
       return;
     }
-    onHandle(event);
+    onHandle();
+    mGestureEvent.updateMotionEventAfterHandling(event);
   }
 
   private void moveToState(int newState) {
@@ -299,7 +311,7 @@ public class GestureHandler<T extends GestureHandler> {
     }
   }
 
-  protected void onHandle(MotionEvent event) {
+  protected void onHandle() {
     moveToState(STATE_FAILED);
   }
 
