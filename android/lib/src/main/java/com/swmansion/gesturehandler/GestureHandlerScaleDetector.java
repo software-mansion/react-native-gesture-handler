@@ -11,19 +11,7 @@ public class GestureHandlerScaleDetector {
   public interface OnScaleGestureListener {
     public boolean onScale(GestureHandlerScaleDetector detector);
     public boolean onScaleBegin(GestureHandlerScaleDetector detector);
-
     public void onScaleEnd(GestureHandlerScaleDetector detector);
-  }
-  public static class SimpleOnScaleGestureListener implements OnScaleGestureListener {
-    public boolean onScale(GestureHandlerScaleDetector detector) {
-      return false;
-    }
-    public boolean onScaleBegin(GestureHandlerScaleDetector detector) {
-      return true;
-    }
-    public void onScaleEnd(GestureHandlerScaleDetector detector) {
-      // Intentionally empty
-    }
   }
   private static final float PRESSURE_THRESHOLD = 0.67f;
   private final Context mContext;
@@ -338,18 +326,14 @@ public class GestureHandlerScaleDetector {
     }
     return newActiveIndex;
   }
-  /**
-   * MotionEvent has no getRawX(int) method; simulate it pending future API approval.
-   */
+
   private static float getRawX(GestureHandlerMotionEventAdapter event, int pointerIndex) {
     if (pointerIndex < 0) return Float.MIN_VALUE;
     if (pointerIndex == 0) return event.getRawX();
     float offset = event.getRawX() - event.getX();
     return event.getX(pointerIndex) + offset;
   }
-  /**
-   * MotionEvent has no getRawY(int) method; simulate it pending future API approval.
-   */
+
   private static float getRawY(GestureHandlerMotionEventAdapter event, int pointerIndex) {
     if (pointerIndex < 0) return Float.MIN_VALUE;
     if (pointerIndex == 0) return event.getRawY();
@@ -413,47 +397,14 @@ public class GestureHandlerScaleDetector {
     mActiveId1 = -1;
     mInvalidGesture = false;
   }
-  /**
-   * Returns {@code true} if a two-finger scale gesture is in progress.
-   * @return {@code true} if a scale gesture is in progress, {@code false} otherwise.
-   */
-  public boolean isInProgress() {
-    return mGestureInProgress;
-  }
-  /**
-   * Get the X coordinate of the current gesture's focal point.
-   * If a gesture is in progress, the focal point is directly between
-   * the two pointers forming the gesture.
-   * If a gesture is ending, the focal point is the location of the
-   * remaining pointer on the screen.
-   * If {@link #isInProgress()} would return false, the result of this
-   * function is undefined.
-   *
-   * @return X coordinate of the focal point in pixels.
-   */
   public float getFocusX() {
     return mFocusX;
   }
-  /**
-   * Get the Y coordinate of the current gesture's focal point.
-   * If a gesture is in progress, the focal point is directly between
-   * the two pointers forming the gesture.
-   * If a gesture is ending, the focal point is the location of the
-   * remaining pointer on the screen.
-   * If {@link #isInProgress()} would return false, the result of this
-   * function is undefined.
-   *
-   * @return Y coordinate of the focal point in pixels.
-   */
+
   public float getFocusY() {
     return mFocusY;
   }
-  /**
-   * Return the current distance between the two pointers forming the
-   * gesture in progress.
-   *
-   * @return Distance between pointers in pixels.
-   */
+
   public float getCurrentSpan() {
     if (mCurrLen == -1) {
       final float cvx = mCurrFingerDiffX;
@@ -462,30 +413,7 @@ public class GestureHandlerScaleDetector {
     }
     return mCurrLen;
   }
-  /**
-   * Return the current x distance between the two pointers forming the
-   * gesture in progress.
-   *
-   * @return Distance between pointers in pixels.
-   */
-  public float getCurrentSpanX() {
-    return mCurrFingerDiffX;
-  }
-  /**
-   * Return the current y distance between the two pointers forming the
-   * gesture in progress.
-   *
-   * @return Distance between pointers in pixels.
-   */
-  public float getCurrentSpanY() {
-    return mCurrFingerDiffY;
-  }
-  /**
-   * Return the previous distance between the two pointers forming the
-   * gesture in progress.
-   *
-   * @return Previous distance between pointers in pixels.
-   */
+
   public float getPreviousSpan() {
     if (mPrevLen == -1) {
       final float pvx = mPrevFingerDiffX;
@@ -494,52 +422,15 @@ public class GestureHandlerScaleDetector {
     }
     return mPrevLen;
   }
-  /**
-   * Return the previous x distance between the two pointers forming the
-   * gesture in progress.
-   *
-   * @return Previous distance between pointers in pixels.
-   */
-  public float getPreviousSpanX() {
-    return mPrevFingerDiffX;
-  }
-  /**
-   * Return the previous y distance between the two pointers forming the
-   * gesture in progress.
-   *
-   * @return Previous distance between pointers in pixels.
-   */
-  public float getPreviousSpanY() {
-    return mPrevFingerDiffY;
-  }
-  /**
-   * Return the scaling factor from the previous scale event to the current
-   * event. This value is defined as
-   * ({@link #getCurrentSpan()} / {@link #getPreviousSpan()}).
-   *
-   * @return The current scaling factor.
-   */
+
   public float getScaleFactor() {
     if (mScaleFactor == -1) {
       mScaleFactor = getCurrentSpan() / getPreviousSpan();
     }
     return mScaleFactor;
   }
-  /**
-   * Return the time difference in milliseconds between the previous
-   * accepted scaling event and the current scaling event.
-   *
-   * @return Time difference since the last scaling event in milliseconds.
-   */
+
   public long getTimeDelta() {
     return mTimeDelta;
-  }
-  /**
-   * Return the event time of the current event being processed.
-   *
-   * @return Current event time in milliseconds.
-   */
-  public long getEventTime() {
-    return mCurrEvent.getEventTime();
   }
 }
