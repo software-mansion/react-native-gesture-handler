@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
@@ -52,6 +53,8 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
   protected void onHandle() {
     GestureHandlerMotionEventAdapter event = mGestureEvent;
     if (getState() == STATE_UNDETERMINED) {
+      if (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN)
+        Log.d("XXXX", "BUUUG");
       Context context = getView().getContext();
       mLastVelocity = 0f;
       mLastScaleFactor = 1f;

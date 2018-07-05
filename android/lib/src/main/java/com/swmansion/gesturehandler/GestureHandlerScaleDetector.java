@@ -59,7 +59,7 @@ public class GestureHandlerScaleDetector {
     } else if (!mGestureInProgress) {
       switch (action) {
         case MotionEvent.ACTION_DOWN: {
-          mActiveId0 = event.getPointerId(0);
+          mActiveId0 = event.getFirstPoinerId();
           mActive0MostRecent = true;
         }
         break;
@@ -312,6 +312,8 @@ public class GestureHandlerScaleDetector {
     int newActiveIndex = -1;
     // Pick a new id and update tracking state. Only pick pointers not on the slop edges.
     for (int i = 0; i < pointerCount; i++) {
+      if (!ev.containsIndexOfMotionEvent(i))
+        continue;
       if (i != oldIndex && i != otherActiveIndex) {
         final float edgeSlop = mEdgeSlop;
         final float rightSlop = mRightSlopEdge;

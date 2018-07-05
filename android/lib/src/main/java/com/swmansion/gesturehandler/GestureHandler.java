@@ -158,11 +158,10 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public final void handle(MotionEvent event) {
-    mGestureEvent.updateMotionEventBeforeHandling(event);
-    GestureHandlerMotionEventAdapter me = mGestureEvent;
-    if (me == null) {
+    if (!mGestureEvent.updateMotionEventBeforeHandling(event)) {
       return;
     }
+    GestureHandlerMotionEventAdapter me = mGestureEvent;
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
       return;
     }
@@ -309,6 +308,7 @@ public class GestureHandler<T extends GestureHandler> {
     if (mState == STATE_BEGAN || mState == STATE_ACTIVE) {
       moveToState(STATE_END);
     }
+    mGestureEvent.reset();
   }
 
   protected void onHandle() {

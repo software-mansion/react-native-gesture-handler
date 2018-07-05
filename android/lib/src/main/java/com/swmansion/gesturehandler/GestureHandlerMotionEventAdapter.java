@@ -10,6 +10,7 @@ public class GestureHandlerMotionEventAdapter {
   private final GestureHandler mHandler;
   private MotionEvent mEvent;
   private VelocityTracker mVelocityTracker;
+  private int mFirstPointerId = -1;
 
   public GestureHandlerMotionEventAdapter(GestureHandler handler) {
     mHandler = handler;
@@ -29,17 +30,12 @@ public class GestureHandlerMotionEventAdapter {
   public int getActionMasked() {
     int action = mEvent.getActionMasked();
 
-    if((action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) &&
-         !mActivePointers.contains(mEvent.getPointerId(getActionIndex()))){
-        return MotionEvent.ACTION_OUTSIDE; // not to be handled
-    }
-
-    if (action == MotionEvent.ACTION_POINTER_DOWN && mActivePointers.size() == 0) {
+    if (action == MotionEvent.ACTION_POINTER_DOWN && mActivePointers.size() == 1) {
       // handle when many fingers on screen but only one just touched the area
       return MotionEvent.ACTION_DOWN;
     }
 
-    if (action == MotionEvent.ACTION_POINTER_UP && mActivePointers.size() == 1) {
+    if (action == MotionEvent.ACTION_POINTER_UP && (mActivePointers.size() == 1 || mActivePointers.size() == 0)) {
       // handle when many fingers on screen but the one of active was removed from area
       return MotionEvent.ACTION_UP;
     }
@@ -79,6 +75,10 @@ public class GestureHandlerMotionEventAdapter {
     return mEvent.getActionIndex();
   }
 
+  public int getFirstPoinerId(){
+    return mFirstPointerId;
+  }
+
   public float getY(int pointerIndex) {
     return mEvent.getY(pointerIndex);
   }
@@ -111,16 +111,32 @@ public class GestureHandlerMotionEventAdapter {
     return sum / mActivePointers.size();
   }
 
+  public void reset(){
+    mActivePointers.clear();
+    mFirstPointerId = -1;
+  }
 
-  public void updateMotionEventBeforeHandling(MotionEvent event) {
+
+  public boolean updateMotionEventBeforeHandling(MotionEvent event) {
     int action = event.getActionMasked();
     if (action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_DOWN) {
       int index = event.getActionIndex();
       if (mHandler.isWithinBounds(mHandler.getView(), event.getX(index), event.getY(index))) {
+        if (mActivePointers.size() == 0 ) {
+          mFirstPointerId = event.getPointerId(index);
+        }
         mActivePointers.add(event.getPointerId(index));
+      } else {
+        return false;
       }
     }
+
     mEvent = event;
+    if((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) &&
+            !mActivePointers.contains(mEvent.getPointerId(getActionIndex()))){
+      return false; // not to be handled
+    }
+    return true;
   }
 
   public void updateMotionEventAfterHandling(MotionEvent event) {
@@ -128,6 +144,9 @@ public class GestureHandlerMotionEventAdapter {
     int id = event.getPointerId(event.getActionIndex());
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) {
       mActivePointers.remove(id);
+      if (mActivePointers.size() == 0) {
+        mFirstPointerId = -1;
+      }
     }
   }
 

@@ -25,24 +25,24 @@ public class GestureHandlerOrchestrator {
 
   private static final Comparator<GestureHandler> sHandlersComparator =
           new Comparator<GestureHandler>() {
-    @Override
-    public int compare(GestureHandler a, GestureHandler b) {
-      if (a.mIsActive && b.mIsActive || a.mIsAwaiting && b.mIsAwaiting) {
-        // both A and B are either active or awaiting activation, in which case we prefer one that
-        // has activated (or turned into "awaiting" state) earlier
-        return Integer.signum(b.mActivationIndex - a.mActivationIndex);
-      } else if (a.mIsActive) {
-        return -1; // only A is active
-      } else if (b.mIsActive) {
-        return 1; // only B is active
-      } else if (a.mIsAwaiting) {
-        return -1; // only A is awaiting, B is inactive
-      } else if (b.mIsAwaiting) {
-        return 1; // only B is awaiting, A is inactive
-      }
-      return 0; // both A and B are inactive, stable order matters
-    }
-  };
+            @Override
+            public int compare(GestureHandler a, GestureHandler b) {
+              if (a.mIsActive && b.mIsActive || a.mIsAwaiting && b.mIsAwaiting) {
+                // both A and B are either active or awaiting activation, in which case we prefer one that
+                // has activated (or turned into "awaiting" state) earlier
+                return Integer.signum(b.mActivationIndex - a.mActivationIndex);
+              } else if (a.mIsActive) {
+                return -1; // only A is active
+              } else if (b.mIsActive) {
+                return 1; // only B is active
+              } else if (a.mIsAwaiting) {
+                return -1; // only A is awaiting, B is inactive
+              } else if (b.mIsAwaiting) {
+                return 1; // only B is awaiting, A is inactive
+              }
+              return 0; // both A and B are inactive, stable order matters
+            }
+          };
 
   private final ViewGroup mWrapperView;
   private final GestureHandlerRegistry mHandlerRegistry;
@@ -290,9 +290,6 @@ public class GestureHandlerOrchestrator {
   }
 
   private void deliverEventToGestureHandler(GestureHandler handler, MotionEvent event) {
-    if (event == null) {
-      return;
-    }
     if (!handler.wantEvents()) {
       return;
     }
@@ -374,12 +371,11 @@ public class GestureHandlerOrchestrator {
   }
 
   private void extractGestureHandlers(MotionEvent event) {
-    for (int i = 0; i< event.getPointerCount(); i++) {
-      sTempCoords[0] = event.getX(i);
-      sTempCoords[1] = event.getY(i);
-      traverseWithPointerEvents(mWrapperView, sTempCoords);
-      extractGestureHandlers(mWrapperView, sTempCoords);
-    }
+    int i = event.getActionIndex();
+    sTempCoords[0] = event.getX(i);
+    sTempCoords[1] = event.getY(i);
+    traverseWithPointerEvents(mWrapperView, sTempCoords);
+    extractGestureHandlers(mWrapperView, sTempCoords);
   }
 
   private boolean extractGestureHandlers(ViewGroup viewGroup, float[] coords) {
@@ -469,7 +465,7 @@ public class GestureHandlerOrchestrator {
     boolean isWithinBounds = false;
     ArrayList<GestureHandler> handlers = mHandlerRegistry.getHandlersForView(child);
     if (handlers != null) {
-      for (int i = 0, size = handlers.size(); !isWithinBounds && i < size ; i++) {
+      for (int i = 0, size = handlers.size(); !isWithinBounds && i < size; i++) {
         isWithinBounds = handlers.get(i).isWithinBounds(child, localX, localY);
       }
     }
@@ -492,7 +488,12 @@ public class GestureHandlerOrchestrator {
   private static boolean shouldHandlerBeCancelledBy(GestureHandler handler, GestureHandler other) {
     if (canRunSimultaneously(handler, other)) {
       return false;
-    } else if (handler != other &&
+    }
+    if (handler.getState() == GestureHandler.STATE_BEGAN && false) {
+      // If handler hasn't been triggered it might be triggered in the future
+      return false;
+    }
+    if (handler != other &&
             (handler.mIsAwaiting || handler.getState() == GestureHandler.STATE_ACTIVE)) {
       return handler.shouldBeCancelledBy(other);
     }
