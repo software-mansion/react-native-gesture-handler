@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import java.util.HashSet;
@@ -30,12 +31,15 @@ public class GestureHandlerMotionEventAdapter {
   public int getActionMasked() {
     int action = mEvent.getActionMasked();
 
+    if (mActivePointers.size() == 0)
+      Log.e("GHMEAdapter", "Asked for empty event");
+
     if (action == MotionEvent.ACTION_POINTER_DOWN && mActivePointers.size() == 1) {
       // handle when many fingers on screen but only one just touched the area
       return MotionEvent.ACTION_DOWN;
     }
 
-    if (action == MotionEvent.ACTION_POINTER_UP && (mActivePointers.size() == 1 || mActivePointers.size() == 0)) {
+    if (action == MotionEvent.ACTION_POINTER_UP && (mActivePointers.size() == 1)) {
       // handle when many fingers on screen but the one of active was removed from area
       return MotionEvent.ACTION_UP;
     }

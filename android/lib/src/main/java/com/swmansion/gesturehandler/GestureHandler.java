@@ -318,7 +318,6 @@ public class GestureHandler<T extends GestureHandler> {
     if (mState == STATE_BEGAN || mState == STATE_ACTIVE) {
       moveToState(STATE_END);
     }
-    mGestureEvent.reset();
   }
 
   protected void onHandle() {
@@ -338,6 +337,7 @@ public class GestureHandler<T extends GestureHandler> {
     mView = null;
     mOrchestrator = null;
     mFirstPointerId = -1;
+    mGestureEvent.reset();
     onReset();
   }
 
