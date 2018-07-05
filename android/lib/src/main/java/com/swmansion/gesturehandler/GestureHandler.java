@@ -3,6 +3,8 @@ package com.swmansion.gesturehandler;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.logging.Handler;
+
 public class GestureHandler<T extends GestureHandler> {
 
   public static final int STATE_UNDETERMINED = 0;
@@ -35,6 +37,7 @@ public class GestureHandler<T extends GestureHandler> {
   private boolean mWithinBounds;
   private boolean mEnabled = true;
   private float mHitSlop[];
+  private int mFirstPointerId = -1;
 
   private boolean mShouldCancelWhenOutside;
   private int mNumberOfPointers = 0;
@@ -60,6 +63,12 @@ public class GestureHandler<T extends GestureHandler> {
     if (mListener != null) {
       mListener.onTouchEvent((T) this, event);
     }
+  }
+
+  public boolean hasSameFirstPointerId(GestureHandler other) {
+    return other.mFirstPointerId != -1
+            && mFirstPointerId != -1
+            && mFirstPointerId == other.mFirstPointerId;
   }
 
   public GestureHandler(){
@@ -164,6 +173,9 @@ public class GestureHandler<T extends GestureHandler> {
     GestureHandlerMotionEventAdapter me = mGestureEvent;
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
       return;
+    }
+    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+      mFirstPointerId = event.getPointerId(event.getActionIndex());
     }
     mX = me.getX();
     mY = me.getY();
@@ -327,6 +339,7 @@ public class GestureHandler<T extends GestureHandler> {
   public final void reset() {
     mView = null;
     mOrchestrator = null;
+    mFirstPointerId = -1;
     onReset();
   }
 

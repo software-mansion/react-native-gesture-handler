@@ -489,8 +489,9 @@ public class GestureHandlerOrchestrator {
     if (canRunSimultaneously(handler, other)) {
       return false;
     }
-    if (handler.getState() == GestureHandler.STATE_BEGAN && false) {
-      // If handler hasn't been triggered it might be triggered in the future
+    if (handler.getState() == GestureHandler.STATE_BEGAN && !handler.hasSameFirstPointerId(other)) {
+      // If handler hasn't been activated it might
+      // be activated in the future if it was done by another finger
       return false;
     }
     if (handler != other &&
