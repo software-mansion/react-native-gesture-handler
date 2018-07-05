@@ -3,8 +3,6 @@ package com.swmansion.gesturehandler;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.logging.Handler;
-
 public class GestureHandler<T extends GestureHandler> {
 
   public static final int STATE_UNDETERMINED = 0;

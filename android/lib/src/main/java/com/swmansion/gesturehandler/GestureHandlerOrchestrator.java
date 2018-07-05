@@ -371,9 +371,9 @@ public class GestureHandlerOrchestrator {
   }
 
   private void extractGestureHandlers(MotionEvent event) {
-    int i = event.getActionIndex();
-    sTempCoords[0] = event.getX(i);
-    sTempCoords[1] = event.getY(i);
+    int index = event.getActionIndex();
+    sTempCoords[0] = event.getX(index);
+    sTempCoords[1] = event.getY(index);
     traverseWithPointerEvents(mWrapperView, sTempCoords);
     extractGestureHandlers(mWrapperView, sTempCoords);
   }
@@ -486,6 +486,7 @@ public class GestureHandlerOrchestrator {
   }
 
   private static boolean shouldHandlerBeCancelledBy(GestureHandler handler, GestureHandler other) {
+
     if (canRunSimultaneously(handler, other)) {
       return false;
     }
