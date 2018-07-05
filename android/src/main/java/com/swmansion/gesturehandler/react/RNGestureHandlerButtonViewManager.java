@@ -48,7 +48,7 @@ public class RNGestureHandlerButtonViewManager extends
     }
 
     public void setBorderRadius(float borderRadius) {
-      mBorderRadius = borderRadius;
+      mBorderRadius = borderRadius * (float)getResources().getDisplayMetrics().density;
       mNeedBackgroundUpdate = true;
     }
 
