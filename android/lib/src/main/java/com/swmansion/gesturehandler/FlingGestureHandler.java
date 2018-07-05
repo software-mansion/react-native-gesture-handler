@@ -33,9 +33,9 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     mDirection = direction;
   }
 
-  private void startFling(GestureHandlerMotionEventAdapter event) {
-    mStartX = event.getRawX();
-    mStartY = event.getRawY();
+  private void startFling() {
+    mStartX = mGestureEvent.getRawX();
+    mStartY = mGestureEvent.getRawY();
     begin();
     mMaxNumberOfPointersSimultaneously = 1;
     if (mHandler == null) {
@@ -46,16 +46,16 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     mHandler.postDelayed(mFailDelayed, mMaxDurationMs);
   }
 
-  private boolean tryEndFling(GestureHandlerMotionEventAdapter event) {
+  private boolean tryEndFling() {
     if (mMaxNumberOfPointersSimultaneously == mNumberOfPointersRequired &&
             (((mDirection & DIRECTION_RIGHT) != 0 &&
-                    event.getRawX() - mStartX > mMinAcceptableDelta) ||
+                    mGestureEvent.getRawX() - mStartX > mMinAcceptableDelta) ||
                     ((mDirection & DIRECTION_LEFT) !=0 &&
-                            mStartX - event.getRawX() > mMinAcceptableDelta) ||
+                            mStartX - mGestureEvent.getRawX() > mMinAcceptableDelta) ||
                     ((mDirection & DIRECTION_UP) !=0 &&
-                            mStartY - event.getRawY() > mMinAcceptableDelta) ||
+                            mStartY - mGestureEvent.getRawY() > mMinAcceptableDelta) ||
                     ((mDirection & DIRECTION_DOWN) !=0 &&
-                            event.getRawY() - mStartY > mMinAcceptableDelta))) {
+                            mGestureEvent.getRawY() - mStartY > mMinAcceptableDelta))) {
       mHandler.removeCallbacksAndMessages(null);
       activate();
       end();
@@ -65,8 +65,8 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     }
   }
 
-  private void endFling(GestureHandlerMotionEventAdapter event) {
-    if (!tryEndFling(event)) {
+  private void endFling() {
+    if (!tryEndFling()) {
       fail();
     }
 
@@ -79,19 +79,19 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     int state = getState();
 
     if (state == STATE_UNDETERMINED) {
-      startFling(event);
+      startFling();
     }
 
 
     if (state == STATE_BEGAN) {
-      tryEndFling(event);
+      tryEndFling();
       if (event.getPointerCount() > mMaxNumberOfPointersSimultaneously) {
         mMaxNumberOfPointersSimultaneously = event.getPointerCount();
       }
 
       int action = event.getActionMasked();
       if (action == MotionEvent.ACTION_UP) {
-        endFling(event);
+        endFling();
       }
     }
   }
