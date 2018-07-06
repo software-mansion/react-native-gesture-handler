@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler;
 
-import android.util.Log;
 import android.view.VelocityTracker;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -22,14 +21,34 @@ public class MotionEvent {
   public static final int ACTION_MOVE = android.view.MotionEvent.ACTION_MOVE;
   public static final int INVALID_POINTER_ID = android.view.MotionEvent.INVALID_POINTER_ID;
   public static final int ACTION_CANCEL = android.view.MotionEvent.ACTION_CANCEL;
-  
 
-  private void activePointersClear(){
+
+  private void activePointersClear() {
     Arrays.fill(mActivePointers, false);
   }
 
+  public void initVelocityTracker() {
+    mVelocityTracker = VelocityTracker.obtain();
+    addVelocityMovement();
+  }
+
+  /**
+   * This method adds movement to {@class VelocityTracker} first resetting offset of the event so
+   * that the velocity is calculated based on the absolute position of touch pointers. This is
+   * because if the underlying view moves along with the finger using relative x/y coords yields
+   * incorrect results.
+   */
+  private void addVelocityMovement() {
+    if (mVelocityTracker == null) {
+      return;
+    }
+    mEvent.offsetLocation(getXOffset(), getYOffset());
+    mVelocityTracker.addMovement(mEvent);
+    mEvent.offsetLocation(-getXOffset(), -getYOffset());
+  }
+
   public MotionEvent(GestureHandler handler) {
-    mActivePointers =  new boolean[10];
+    mActivePointers = new boolean[10];
     mHandler = handler;
     activePointersClear();
   }
@@ -142,6 +161,10 @@ public class MotionEvent {
     activePointersClear();
     mActivePointersCount = 0;
     mFirstPointerId = -1;
+    if (mVelocityTracker != null) {
+      mVelocityTracker.recycle();
+      mVelocityTracker = null;
+    }
   }
 
 
@@ -157,6 +180,12 @@ public class MotionEvent {
     }
 
     mEvent = event;
+
+    if (mVelocityTracker != null) {
+      addVelocityMovement();
+      mVelocityTracker.computeCurrentVelocity(1000);
+    }
+
     if ((action == ACTION_UP || action == ACTION_POINTER_UP) &&
             !mActivePointers[mEvent.getPointerId(getActionIndex())]) {
       return false; // not to be handled
@@ -169,7 +198,7 @@ public class MotionEvent {
     int id = mEvent.getPointerId(mEvent.getActionIndex());
     if (action == ACTION_POINTER_UP || action == ACTION_UP) {
       mActivePointers[id] = false;
-      mActivePointersCount--;      
+      mActivePointersCount--;
       if (mActivePointersCount == 0) {
         mFirstPointerId = -1;
       }

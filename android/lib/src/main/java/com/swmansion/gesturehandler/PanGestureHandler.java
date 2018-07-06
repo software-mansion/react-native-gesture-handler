@@ -30,7 +30,6 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mLastX, mLastY;
   private float mLastEventOffsetX, mLastEventOffsetY;
   private float mLastVelocityX, mLastVelocityY;
-  private VelocityTracker mVelocityTracker;
 
   private boolean mAverageTouches;
 
@@ -207,13 +206,9 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mStartY = mLastY;
       mOffsetX = 0;
       mOffsetY = 0;
-      mVelocityTracker = VelocityTracker.obtain();
-      addVelocityMovement(mVelocityTracker, event.getRawEvent());
-      event.setVelocityTracker(mVelocityTracker);
+      event.initVelocityTracker();
       begin();
-    } else if (mVelocityTracker != null) {
-      addVelocityMovement(mVelocityTracker, event.getRawEvent());
-      mVelocityTracker.computeCurrentVelocity(1000);
+    } else {
       mLastVelocityX = event.getXVelocity();
       mLastVelocityY = event.getYVelocity();
     }
@@ -249,14 +244,6 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     }
   }
 
-  @Override
-  protected void onReset() {
-    if (mVelocityTracker != null) {
-      mVelocityTracker.recycle();
-      mVelocityTracker = null;
-    }
-  }
-
   public float getTranslationX() {
     return mLastX - mStartX + mOffsetX;
   }
@@ -289,17 +276,4 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return mLastY - mLastEventOffsetY;
   }
 
-  /**
-   * This method adds movement to {@class VelocityTracker} first resetting offset of the event so
-   * that the velocity is calculated based on the absolute position of touch pointers. This is
-   * because if the underlying view moves along with the finger using relative x/y coords yields
-   * incorrect results.
-   */
-  private static void addVelocityMovement(VelocityTracker tracker, android.view.MotionEvent event) {
-    float offsetX = event.getRawX() - event.getX();
-    float offsetY = event.getRawY() - event.getY();
-    event.offsetLocation(offsetX, offsetY);
-    tracker.addMovement(event);
-    event.offsetLocation(-offsetX, -offsetY);
-  }
 }
