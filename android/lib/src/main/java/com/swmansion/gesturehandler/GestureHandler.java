@@ -25,7 +25,7 @@ public class GestureHandler<T extends GestureHandler> {
   public static final int DIRECTION_UP = 4;
   public static final int DIRECTION_DOWN = 8;
 
-  private final MotionEvent event;
+  private final MotionEvent mMotionEvent;
 
   private int mTag;
   private View mView;
@@ -69,7 +69,7 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public GestureHandler(){
-    event = new MotionEvent(this);
+    mMotionEvent = new MotionEvent(this);
   }
 
   public T setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
@@ -164,10 +164,10 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public final void handle(android.view.MotionEvent unwrappedEvent) {
-    if (!event.wrap(unwrappedEvent)) {
+    if (!mMotionEvent.wrap(unwrappedEvent)) {
       return;
     }
-    MotionEvent me = event;
+    MotionEvent me = mMotionEvent;
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
       return;
     }
@@ -187,8 +187,8 @@ public class GestureHandler<T extends GestureHandler> {
       }
       return;
     }
-    onHandle(event);
-    event.unwrap();
+    onHandle(mMotionEvent);
+    mMotionEvent.unwrap();
   }
 
   private void moveToState(int newState) {
@@ -336,7 +336,7 @@ public class GestureHandler<T extends GestureHandler> {
     mView = null;
     mOrchestrator = null;
     mFirstPointerId = -1;
-    event.reset();
+    mMotionEvent.reset();
     onReset();
   }
 
