@@ -25,7 +25,7 @@ public class GestureHandler<T extends GestureHandler> {
   public static final int DIRECTION_UP = 4;
   public static final int DIRECTION_DOWN = 8;
 
-  private final MotionEvent mMotionEvent;
+  private final MotionEvent mMotionEvent = new MotionEvent();
 
   private int mTag;
   private View mView;
@@ -63,10 +63,6 @@ public class GestureHandler<T extends GestureHandler> {
 
   public boolean hasCommonPointers(GestureHandler other) {
     return mMotionEvent.hasCommonPointers(other.mMotionEvent);
-  }
-
-  public GestureHandler(){
-    mMotionEvent = new MotionEvent(this);
   }
 
   public T setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
@@ -164,13 +160,12 @@ public class GestureHandler<T extends GestureHandler> {
     if (!mMotionEvent.wrap(unwrappedEvent)) {
       return;
     }
-    MotionEvent me = mMotionEvent;
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
       return;
     }
-    mX = me.getX();
-    mY = me.getY();
-    mNumberOfPointers = me.getPointerCount();
+    mX = mMotionEvent.getX();
+    mY = mMotionEvent.getY();
+    mNumberOfPointers = mMotionEvent.getPointerCount();
 
     mWithinBounds = isWithinBounds(mView, mX, mY);
     if (mShouldCancelWhenOutside && !mWithinBounds) {

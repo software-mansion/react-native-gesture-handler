@@ -9,7 +9,6 @@ import java.util.Arrays;
 public class MotionEvent {
   private final boolean[] mActivePointers;
   private int mActivePointersCount = 0;
-  private final GestureHandler mHandler;
   private android.view.MotionEvent mEvent;
   private VelocityTracker mVelocityTracker;
   private int mFirstPointerId = -1;
@@ -62,16 +61,14 @@ public class MotionEvent {
     mEvent.offsetLocation(-getXOffset(), -getYOffset());
   }
 
-  public MotionEvent(GestureHandler handler) {
+  public MotionEvent() {
     mActivePointers = new boolean[MAX_POINTERS_COUNT];
-    mHandler = handler;
     activePointersClear();
   }
 
   private MotionEvent(MotionEvent other) {
     mEvent = android.view.MotionEvent.obtain(other.mEvent);
     mActivePointers = Arrays.copyOf(other.mActivePointers, MAX_POINTERS_COUNT);
-    mHandler = other.mHandler;
   }
 
   static MotionEvent obtain(MotionEvent other) {
