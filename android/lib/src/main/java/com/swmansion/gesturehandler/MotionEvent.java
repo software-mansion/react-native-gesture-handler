@@ -7,14 +7,6 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import java.util.Arrays;
 
 public class MotionEvent {
-  private final boolean[] mActivePointers;
-  private int mActivePointersCount = 0;
-  private android.view.MotionEvent mEvent;
-  private VelocityTracker mVelocityTracker;
-  private int mFirstPointerId = -1;
-
-  private static int MAX_POINTERS_COUNT = 10;
-
   public static final int ACTION_DOWN = android.view.MotionEvent.ACTION_DOWN;
   public static final int ACTION_UP = android.view.MotionEvent.ACTION_UP;
   public static final int ACTION_POINTER_DOWN = android.view.MotionEvent.ACTION_POINTER_DOWN;
@@ -22,10 +14,38 @@ public class MotionEvent {
   public static final int ACTION_MOVE = android.view.MotionEvent.ACTION_MOVE;
   public static final int INVALID_POINTER_ID = android.view.MotionEvent.INVALID_POINTER_ID;
   public static final int ACTION_CANCEL = android.view.MotionEvent.ACTION_CANCEL;
+  private static int MAX_POINTERS_COUNT = 10;
+  private final boolean[] mActivePointers;
+  private int mActivePointersCount = 0;
+  private android.view.MotionEvent mEvent;
+  private VelocityTracker mVelocityTracker;
+  private int mFirstPointerId = -1;
 
+
+  public MotionEvent() {
+    mActivePointers = new boolean[MAX_POINTERS_COUNT];
+    activePointersClear();
+  }
+
+  private MotionEvent(MotionEvent other) {
+    mEvent = android.view.MotionEvent.obtain(other.mEvent);
+    mActivePointers = Arrays.copyOf(other.mActivePointers, MAX_POINTERS_COUNT);
+  }
+
+  static MotionEvent obtain(MotionEvent other) {
+    return new MotionEvent(other);
+  }
 
   private void activePointersClear() {
     Arrays.fill(mActivePointers, false);
+  }
+
+  private int getFirstActiveIndex() {
+    for(int i = 0; i < mEvent.getPointerCount(); i++) {
+      if (mActivePointers[mEvent.getPointerId(i)])
+        return i;
+    }
+    return -1;
   }
 
   public void initVelocityTracker() {
@@ -33,7 +53,7 @@ public class MotionEvent {
     addVelocityMovement();
   }
 
-  public boolean hasInitializedVelocityTracker(){
+  public boolean hasInitializedVelocityTracker() {
     return mVelocityTracker != null;
   }
 
@@ -56,23 +76,11 @@ public class MotionEvent {
     if (mVelocityTracker == null) {
       return;
     }
-    mEvent.offsetLocation(getXOffset(), getYOffset());
+    float xOffset = getXOffset();
+    float yOffset = getYOffset();
+    mEvent.offsetLocation(xOffset, yOffset);
     mVelocityTracker.addMovement(mEvent);
-    mEvent.offsetLocation(-getXOffset(), -getYOffset());
-  }
-
-  public MotionEvent() {
-    mActivePointers = new boolean[MAX_POINTERS_COUNT];
-    activePointersClear();
-  }
-
-  private MotionEvent(MotionEvent other) {
-    mEvent = android.view.MotionEvent.obtain(other.mEvent);
-    mActivePointers = Arrays.copyOf(other.mActivePointers, MAX_POINTERS_COUNT);
-  }
-
-  static MotionEvent obtain(MotionEvent other) {
-    return new MotionEvent(other);
+    mEvent.offsetLocation(-xOffset, -yOffset);
   }
 
   public int getActionMasked() {
@@ -108,11 +116,11 @@ public class MotionEvent {
   }
 
   public float getX() {
-    return mEvent.getX();
+    return mEvent.getX(getFirstActiveIndex());
   }
 
   public float getY() {
-    return mEvent.getY();
+    return mEvent.getY(getFirstActiveIndex());
   }
 
   public float getRawX() {
@@ -141,10 +149,6 @@ public class MotionEvent {
 
   public android.view.MotionEvent getRawEvent() {
     return mEvent;
-  }
-
-  public void setVelocityTracker(VelocityTracker velocityTracker) {
-    mVelocityTracker = velocityTracker;
   }
 
   public float getXVelocity() {
@@ -239,11 +243,11 @@ public class MotionEvent {
   }
 
   public float getXOffset() {
-    return getRawX() - getX();
+    return mEvent.getRawX() - mEvent.getX();
   }
 
   public float getYOffset() {
-    return getRawY() - getY();
+    return mEvent.getRawY() - mEvent.getY();
   }
 
   public float getLastPointerX(boolean averageTouches) {
