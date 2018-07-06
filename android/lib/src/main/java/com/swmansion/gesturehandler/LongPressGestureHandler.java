@@ -2,7 +2,6 @@ package com.swmansion.gesturehandler;
 
 import android.content.Context;
 import android.os.Handler;
-import android.view.MotionEvent;
 
 public class LongPressGestureHandler extends GestureHandler<LongPressGestureHandler> {
 
@@ -29,8 +28,7 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
   }
 
   @Override
-  protected void onHandle() {
-    GestureHandlerMotionEventAdapter event = mGestureEvent;
+  protected void onHandle(MotionEvent event) {
     if (getState() == STATE_UNDETERMINED) {
       begin();
       mStartX = event.getRawX();

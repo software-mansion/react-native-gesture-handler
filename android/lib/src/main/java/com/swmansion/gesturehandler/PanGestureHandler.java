@@ -1,7 +1,6 @@
 package com.swmansion.gesturehandler;
 
 import android.content.Context;
-import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 
@@ -180,8 +179,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   }
 
   @Override
-  protected void onHandle() {
-    GestureHandlerMotionEventAdapter event = mGestureEvent;
+  protected void onHandle(MotionEvent event) {
     int state = getState();
     int action = event.getActionMasked();
 
@@ -191,15 +189,15 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mOffsetY += mLastY - mStartY;
 
       // reset starting point
-      mLastX = GestureUtils.getLastPointerX(event, mAverageTouches);
-      mLastY = GestureUtils.getLastPointerY(event, mAverageTouches);
+      mLastX = event.getLastPointerX(mAverageTouches);
+      mLastY = event.getLastPointerY(mAverageTouches);
       mLastEventOffsetX = event.getRawX() - event.getX();
       mLastEventOffsetY = event.getRawY() - event.getY();
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
-      mLastX = GestureUtils.getLastPointerX(event, mAverageTouches);
-      mLastY = GestureUtils.getLastPointerY(event, mAverageTouches);
+      mLastX = event.getLastPointerX(mAverageTouches);
+      mLastY = event.getLastPointerY(mAverageTouches);
       mLastEventOffsetX = event.getRawX() - event.getX();
       mLastEventOffsetY = event.getRawY() - event.getY();
     }
@@ -297,7 +295,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
    * because if the underlying view moves along with the finger using relative x/y coords yields
    * incorrect results.
    */
-  private static void addVelocityMovement(VelocityTracker tracker, MotionEvent event) {
+  private static void addVelocityMovement(VelocityTracker tracker, android.view.MotionEvent event) {
     float offsetX = event.getRawX() - event.getX();
     float offsetY = event.getRawY() - event.getY();
     event.offsetLocation(offsetX, offsetY);

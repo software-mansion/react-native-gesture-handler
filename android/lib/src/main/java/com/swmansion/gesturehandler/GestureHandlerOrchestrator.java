@@ -301,9 +301,13 @@ public class GestureHandlerOrchestrator {
     float oldX = event.getX();
     float oldY = event.getY();
     event.setLocation(coords[0], coords[1]);
-    handler.handle(event);
-    if (handler.mIsActive) {
-      handler.dispatchTouchEvent(event);
+    int index = event.getActionIndex();
+    int action = event.getActionMasked();
+    if (!(action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_DOWN) || handler.isWithinBounds(handler.getView(), event.getX(index), event.getY(index))) {
+      handler.handle(event);
+      if (handler.mIsActive) {
+        handler.dispatchTouchEvent(event);
+      }
     }
     event.setLocation(oldX, oldY);
   }
@@ -490,7 +494,7 @@ public class GestureHandlerOrchestrator {
     if (canRunSimultaneously(handler, other)) {
       return false;
     }
-    if (handler.getState() == GestureHandler.STATE_BEGAN && !handler.hasSameFirstPointerId(other)) {
+    if (!handler.hasSameFirstPointerId(other)) {
       // If handler hasn't been activated it might
       // be activated in the future if it was done by another finger
       return false;

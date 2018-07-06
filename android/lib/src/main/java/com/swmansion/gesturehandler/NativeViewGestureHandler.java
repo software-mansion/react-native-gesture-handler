@@ -1,7 +1,6 @@
 package com.swmansion.gesturehandler;
 
 import android.os.SystemClock;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -68,11 +67,10 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
   }
 
   @Override
-  protected void onHandle() {
-    GestureHandlerMotionEventAdapter event = mGestureEvent;
+  protected void onHandle(MotionEvent event) {
     View view = getView();
     int state = getState();
-    if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+    if (event.getActionMasked() == android.view.MotionEvent.ACTION_UP) {
       view.onTouchEvent(event.getRawEvent());
       if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed()) {
         activate();
@@ -94,7 +92,7 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
     }
   }
 
-  private static boolean tryIntercept(View view, MotionEvent event) {
+  private static boolean tryIntercept(View view, android.view.MotionEvent event) {
     if (view instanceof ViewGroup && ((ViewGroup) view).onInterceptTouchEvent(event)) {
       return true;
     }
@@ -104,8 +102,8 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
   @Override
   protected void onCancel() {
     long time = SystemClock.uptimeMillis();
-    MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
-    event.setAction(MotionEvent.ACTION_CANCEL);
+    android.view.MotionEvent event = android.view.MotionEvent.obtain(time, time, android.view.MotionEvent.ACTION_CANCEL, 0, 0, 0);
+    event.setAction(android.view.MotionEvent.ACTION_CANCEL);
     getView().onTouchEvent(event);
   }
 }

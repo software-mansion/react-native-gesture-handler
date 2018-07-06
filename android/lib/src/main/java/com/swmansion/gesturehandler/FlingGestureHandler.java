@@ -1,7 +1,6 @@
 package com.swmansion.gesturehandler;
 
 import android.os.Handler;
-import android.view.MotionEvent;
 
 public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
   private static final long DEFAULT_MAX_DURATION_MS = 800;
@@ -33,9 +32,9 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     mDirection = direction;
   }
 
-  private void startFling() {
-    mStartX = mGestureEvent.getRawX();
-    mStartY = mGestureEvent.getRawY();
+  private void startFling(MotionEvent event) {
+    mStartX = event.getRawX();
+    mStartY = event.getRawY();
     begin();
     mMaxNumberOfPointersSimultaneously = 1;
     if (mHandler == null) {
@@ -46,16 +45,16 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     mHandler.postDelayed(mFailDelayed, mMaxDurationMs);
   }
 
-  private boolean tryEndFling() {
+  private boolean tryEndFling(MotionEvent event) {
     if (mMaxNumberOfPointersSimultaneously == mNumberOfPointersRequired &&
             (((mDirection & DIRECTION_RIGHT) != 0 &&
-                    mGestureEvent.getRawX() - mStartX > mMinAcceptableDelta) ||
+                    event.getRawX() - mStartX > mMinAcceptableDelta) ||
                     ((mDirection & DIRECTION_LEFT) !=0 &&
-                            mStartX - mGestureEvent.getRawX() > mMinAcceptableDelta) ||
+                            mStartX - event.getRawX() > mMinAcceptableDelta) ||
                     ((mDirection & DIRECTION_UP) !=0 &&
-                            mStartY - mGestureEvent.getRawY() > mMinAcceptableDelta) ||
+                            mStartY - event.getRawY() > mMinAcceptableDelta) ||
                     ((mDirection & DIRECTION_DOWN) !=0 &&
-                            mGestureEvent.getRawY() - mStartY > mMinAcceptableDelta))) {
+                            event.getRawY() - mStartY > mMinAcceptableDelta))) {
       mHandler.removeCallbacksAndMessages(null);
       activate();
       end();
@@ -65,33 +64,31 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     }
   }
 
-  private void endFling() {
-    if (!tryEndFling()) {
+  private void endFling(MotionEvent event) {
+    if (!tryEndFling(event)) {
       fail();
     }
 
   }
 
   @Override
-  protected void onHandle() {
-    GestureHandlerMotionEventAdapter event = mGestureEvent;
-
+  protected void onHandle(MotionEvent event) {
     int state = getState();
 
     if (state == STATE_UNDETERMINED) {
-      startFling();
+      startFling(event);
     }
 
 
     if (state == STATE_BEGAN) {
-      tryEndFling();
+      tryEndFling(event);
       if (event.getPointerCount() > mMaxNumberOfPointersSimultaneously) {
         mMaxNumberOfPointersSimultaneously = event.getPointerCount();
       }
 
       int action = event.getActionMasked();
       if (action == MotionEvent.ACTION_UP) {
-        endFling();
+        endFling(event);
       }
     }
   }

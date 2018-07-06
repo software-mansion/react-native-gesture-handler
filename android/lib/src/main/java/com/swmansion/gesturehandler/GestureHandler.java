@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler;
 
-import android.view.MotionEvent;
 import android.view.View;
 
 public class GestureHandler<T extends GestureHandler> {
@@ -26,7 +25,7 @@ public class GestureHandler<T extends GestureHandler> {
   public static final int DIRECTION_UP = 4;
   public static final int DIRECTION_DOWN = 8;
 
-  protected final GestureHandlerMotionEventAdapter mGestureEvent;
+  private final MotionEvent event;
 
   private int mTag;
   private View mView;
@@ -57,7 +56,7 @@ public class GestureHandler<T extends GestureHandler> {
     }
   }
 
-  /*package*/ void dispatchTouchEvent(MotionEvent event) {
+  /*package*/ void dispatchTouchEvent(android.view.MotionEvent event) {
     if (mListener != null) {
       mListener.onTouchEvent((T) this, event);
     }
@@ -70,7 +69,7 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public GestureHandler(){
-    mGestureEvent = new GestureHandlerMotionEventAdapter(this);
+    event = new MotionEvent(this);
   }
 
   public T setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
@@ -164,16 +163,16 @@ public class GestureHandler<T extends GestureHandler> {
     mOrchestrator = orchestrator;
   }
 
-  public final void handle(MotionEvent event) {
-    if (!mGestureEvent.updateMotionEventBeforeHandling(event)) {
+  public final void handle(android.view.MotionEvent unwrappedEvent) {
+    if (!event.wrap(unwrappedEvent)) {
       return;
     }
-    GestureHandlerMotionEventAdapter me = mGestureEvent;
+    MotionEvent me = event;
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
       return;
     }
-    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-      mFirstPointerId = event.getPointerId(event.getActionIndex());
+    if (me.getActionMasked() == MotionEvent.ACTION_DOWN) {
+      mFirstPointerId = unwrappedEvent.getPointerId(unwrappedEvent.getActionIndex());
     }
     mX = me.getX();
     mY = me.getY();
@@ -188,8 +187,8 @@ public class GestureHandler<T extends GestureHandler> {
       }
       return;
     }
-    onHandle();
-    mGestureEvent.updateMotionEventAfterHandling(event);
+    onHandle(event);
+    event.unwrap();
   }
 
   private void moveToState(int newState) {
@@ -320,7 +319,7 @@ public class GestureHandler<T extends GestureHandler> {
     }
   }
 
-  protected void onHandle() {
+  protected void onHandle(MotionEvent event) {
     moveToState(STATE_FAILED);
   }
 
@@ -337,7 +336,7 @@ public class GestureHandler<T extends GestureHandler> {
     mView = null;
     mOrchestrator = null;
     mFirstPointerId = -1;
-    mGestureEvent.reset();
+    event.reset();
     onReset();
   }
 

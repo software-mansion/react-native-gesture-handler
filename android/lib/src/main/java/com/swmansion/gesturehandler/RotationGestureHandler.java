@@ -1,7 +1,5 @@
 package com.swmansion.gesturehandler;
 
-import android.view.MotionEvent;
-
 public class RotationGestureHandler extends GestureHandler<RotationGestureHandler> {
 
   private static final double ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36.; // 5 deg in radians
@@ -42,8 +40,7 @@ public class RotationGestureHandler extends GestureHandler<RotationGestureHandle
   }
 
   @Override
-  protected void onHandle() {
-    GestureHandlerMotionEventAdapter event = mGestureEvent;
+  protected void onHandle(MotionEvent event) {
     int state = getState();
     if (state == STATE_UNDETERMINED) {
       mLastVelocity = 0f;

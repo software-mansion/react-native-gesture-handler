@@ -2,8 +2,13 @@ package com.swmansion.gesturehandler;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
-import android.view.MotionEvent;
 import android.view.ViewConfiguration;
+
+// Based on:
+// https://android.googlesource.com/platform/frameworks/base/+/android-4.0.4_r2.1/core/java/android/view/ScaleGestureDetector.java
+// Changed to handle our MotionEvent
+// Added condition in findNewActiveIndex to handle only related touches
+// Added event.getFirstPointerId() to selected firts touched finger
 
 public class GestureHandlerScaleDetector {
   private static final String TAG = "GestureHandlerScaleDetector";
@@ -17,8 +22,8 @@ public class GestureHandlerScaleDetector {
   private final Context mContext;
   private final OnScaleGestureListener mListener;
   private boolean mGestureInProgress;
-  private GestureHandlerMotionEventAdapter mPrevEvent;
-  private GestureHandlerMotionEventAdapter mCurrEvent;
+  private MotionEvent mPrevEvent;
+  private MotionEvent mCurrEvent;
   private float mFocusX;
   private float mFocusY;
   private float mPrevFingerDiffX;
@@ -48,7 +53,7 @@ public class GestureHandlerScaleDetector {
     mListener = listener;
     mEdgeSlop = config.getScaledEdgeSlop();
   }
-  public boolean onTouchEvent(GestureHandlerMotionEventAdapter event) {
+  public boolean onTouchEvent(MotionEvent event) {
     final int action = event.getActionMasked();
     if (action == MotionEvent.ACTION_DOWN) {
       reset(); // Start fresh
@@ -59,7 +64,7 @@ public class GestureHandlerScaleDetector {
     } else if (!mGestureInProgress) {
       switch (action) {
         case MotionEvent.ACTION_DOWN: {
-          mActiveId0 = event.getFirstPoinerId();
+          mActiveId0 = event.getFirstPointerId();
           mActive0MostRecent = true;
         }
         break;
@@ -73,7 +78,7 @@ public class GestureHandlerScaleDetector {
           mRightSlopEdge = metrics.widthPixels - mEdgeSlop;
           mBottomSlopEdge = metrics.heightPixels - mEdgeSlop;
           if (mPrevEvent != null) mPrevEvent.recycle();
-          mPrevEvent = GestureHandlerMotionEventAdapter.obtain(event);
+          mPrevEvent = MotionEvent.obtain(event);
           mTimeDelta = 0;
           int index1 = event.getActionIndex();
           int index0 = event.findPointerIndex(mActiveId0);
@@ -213,7 +218,7 @@ public class GestureHandlerScaleDetector {
           final int oldActive0 = mActiveId0;
           final int oldActive1 = mActiveId1;
           reset();
-          mPrevEvent = GestureHandlerMotionEventAdapter.obtain(event);
+          mPrevEvent = MotionEvent.obtain(event);
           mActiveId0 = mActive0MostRecent ? oldActive0 : oldActive1;
           mActiveId1 = event.getPointerId(event.getActionIndex());
           mActive0MostRecent = false;
@@ -240,7 +245,7 @@ public class GestureHandlerScaleDetector {
                 mListener.onScaleEnd(this);
                 mActiveId0 = event.getPointerId(newIndex);
                 mActive0MostRecent = true;
-                mPrevEvent = GestureHandlerMotionEventAdapter.obtain(event);
+                mPrevEvent = MotionEvent.obtain(event);
                 setContext(event);
                 mGestureInProgress = mListener.onScaleBegin(this);
               } else {
@@ -252,7 +257,7 @@ public class GestureHandlerScaleDetector {
                 mListener.onScaleEnd(this);
                 mActiveId1 = event.getPointerId(newIndex);
                 mActive0MostRecent = false;
-                mPrevEvent = GestureHandlerMotionEventAdapter.obtain(event);
+                mPrevEvent = MotionEvent.obtain(event);
                 setContext(event);
                 mGestureInProgress = mListener.onScaleBegin(this);
               } else {
@@ -260,7 +265,7 @@ public class GestureHandlerScaleDetector {
               }
             }
             mPrevEvent.recycle();
-            mPrevEvent = GestureHandlerMotionEventAdapter.obtain(event);
+            mPrevEvent = MotionEvent.obtain(event);
             setContext(event);
           } else {
             gestureEnded = true;
@@ -296,7 +301,7 @@ public class GestureHandlerScaleDetector {
             final boolean updatePrevious = mListener.onScale(this);
             if (updatePrevious) {
               mPrevEvent.recycle();
-              mPrevEvent = GestureHandlerMotionEventAdapter.obtain(event);
+              mPrevEvent = MotionEvent.obtain(event);
             }
           }
         }
@@ -305,7 +310,7 @@ public class GestureHandlerScaleDetector {
     }
     return handled;
   }
-  private int findNewActiveIndex(GestureHandlerMotionEventAdapter ev, int otherActiveId, int oldIndex) {
+  private int findNewActiveIndex(MotionEvent ev, int otherActiveId, int oldIndex) {
     final int pointerCount = ev.getMotionEventPointerCount();
     // It's ok if this isn't found and returns -1, it simply won't match.
     final int otherActiveIndex = ev.findPointerIndex(otherActiveId);
@@ -329,28 +334,28 @@ public class GestureHandlerScaleDetector {
     return newActiveIndex;
   }
 
-  private static float getRawX(GestureHandlerMotionEventAdapter event, int pointerIndex) {
+  private static float getRawX(MotionEvent event, int pointerIndex) {
     if (pointerIndex < 0) return Float.MIN_VALUE;
     if (pointerIndex == 0) return event.getRawX();
     float offset = event.getRawX() - event.getX();
     return event.getX(pointerIndex) + offset;
   }
 
-  private static float getRawY(GestureHandlerMotionEventAdapter event, int pointerIndex) {
+  private static float getRawY(MotionEvent event, int pointerIndex) {
     if (pointerIndex < 0) return Float.MIN_VALUE;
     if (pointerIndex == 0) return event.getRawY();
     float offset = event.getRawY() - event.getY();
     return event.getY(pointerIndex) + offset;
   }
-  private void setContext(GestureHandlerMotionEventAdapter curr) {
+  private void setContext(MotionEvent curr) {
     if (mCurrEvent != null) {
       mCurrEvent.recycle();
     }
-    mCurrEvent = GestureHandlerMotionEventAdapter.obtain(curr);
+    mCurrEvent = MotionEvent.obtain(curr);
     mCurrLen = -1;
     mPrevLen = -1;
     mScaleFactor = -1;
-    final GestureHandlerMotionEventAdapter prev = mPrevEvent;
+    final MotionEvent prev = mPrevEvent;
     final int prevIndex0 = prev.findPointerIndex(mActiveId0);
     final int prevIndex1 = prev.findPointerIndex(mActiveId1);
     final int currIndex0 = curr.findPointerIndex(mActiveId0);

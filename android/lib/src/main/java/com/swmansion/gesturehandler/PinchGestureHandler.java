@@ -1,7 +1,6 @@
 package com.swmansion.gesturehandler;
 
 import android.content.Context;
-import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
 public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
@@ -49,8 +48,7 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
   }
 
   @Override
-  protected void onHandle() {
-    GestureHandlerMotionEventAdapter event = mGestureEvent;
+  protected void onHandle(MotionEvent event) {
     if (getState() == STATE_UNDETERMINED) {
       Context context = getView().getContext();
       mLastVelocity = 0f;

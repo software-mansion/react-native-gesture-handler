@@ -1,7 +1,5 @@
 package com.swmansion.gesturehandler;
 
-import android.view.MotionEvent;
-
 public class RotationGestureDetector {
 
   public interface OnRotationGestureListener {
@@ -30,7 +28,7 @@ public class RotationGestureDetector {
     mListener = listener;
   }
 
-  private void updateCurrent(GestureHandlerMotionEventAdapter event) {
+  private void updateCurrent(MotionEvent event) {
     mPrevTime = mCurrTime;
     mCurrTime = event.getEventTime();
 
@@ -80,7 +78,7 @@ public class RotationGestureDetector {
     }
   }
 
-  public boolean onTouchEvent(GestureHandlerMotionEventAdapter event) {
+  public boolean onTouchEvent(MotionEvent event) {
     switch (event.getActionMasked()) {
 
       case MotionEvent.ACTION_DOWN:
