@@ -14,7 +14,9 @@ public class MotionEvent {
   public static final int ACTION_MOVE = android.view.MotionEvent.ACTION_MOVE;
   public static final int INVALID_POINTER_ID = android.view.MotionEvent.INVALID_POINTER_ID;
   public static final int ACTION_CANCEL = android.view.MotionEvent.ACTION_CANCEL;
+
   private static int MAX_POINTERS_COUNT = 10;
+
   private final boolean[] mActivePointers;
   private int mActivePointersCount = 0;
   private android.view.MotionEvent mEvent;
