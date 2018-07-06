@@ -190,15 +190,15 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       // reset starting point
       mLastX = event.getLastPointerX(mAverageTouches);
       mLastY = event.getLastPointerY(mAverageTouches);
-      mLastEventOffsetX = event.getRawX() - event.getX();
-      mLastEventOffsetY = event.getRawY() - event.getY();
+      mLastEventOffsetX = event.getXOffset();
+      mLastEventOffsetY = event.getYOffset();
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
       mLastX = event.getLastPointerX(mAverageTouches);
       mLastY = event.getLastPointerY(mAverageTouches);
-      mLastEventOffsetX = event.getRawX() - event.getX();
-      mLastEventOffsetY = event.getRawY() - event.getY();
+      mLastEventOffsetX = event.getXOffset();
+      mLastEventOffsetY = event.getYOffset();
     }
 
     if (state == STATE_UNDETERMINED && event.getPointerCount() >= mMinPointers) {

@@ -126,11 +126,11 @@ public class MotionEvent {
   }
 
   public float getRawX() {
-    return mEvent.getRawX();
+    return getX() + getXOffset();
   }
 
   public float getRawY() {
-    return mEvent.getRawY();
+    return getY() + getYOffset();
   }
 
   public int getActionIndex() {
