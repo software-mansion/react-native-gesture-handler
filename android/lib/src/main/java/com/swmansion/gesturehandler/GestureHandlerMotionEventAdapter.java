@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -79,7 +80,7 @@ public class GestureHandlerMotionEventAdapter {
     return mEvent.getActionIndex();
   }
 
-  public int getFirstPoinerId(){
+  public int getFirstPoinerId() {
     return mFirstPointerId;
   }
 
@@ -115,7 +116,7 @@ public class GestureHandlerMotionEventAdapter {
     return sum / mActivePointers.size();
   }
 
-  public void reset(){
+  public void reset() {
     mActivePointers.clear();
     mFirstPointerId = -1;
   }
@@ -126,7 +127,7 @@ public class GestureHandlerMotionEventAdapter {
     if (action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_DOWN) {
       int index = event.getActionIndex();
       if (mHandler.isWithinBounds(mHandler.getView(), event.getX(index), event.getY(index))) {
-        if (mActivePointers.size() == 0 ) {
+        if (mActivePointers.size() == 0) {
           mFirstPointerId = event.getPointerId(index);
         }
         mActivePointers.add(event.getPointerId(index));
@@ -136,8 +137,8 @@ public class GestureHandlerMotionEventAdapter {
     }
 
     mEvent = event;
-    if((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) &&
-            !mActivePointers.contains(mEvent.getPointerId(getActionIndex()))){
+    if ((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) &&
+            !mActivePointers.contains(mEvent.getPointerId(getActionIndex()))) {
       return false; // not to be handled
     }
     return true;
