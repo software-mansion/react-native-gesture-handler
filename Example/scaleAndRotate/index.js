@@ -120,11 +120,7 @@ export class PinchableBox extends React.Component {
   }
 }
 
-const Example = () => (
-  <Animated.View style={styles.wrapper}>
-    <PinchableBox />
-  </Animated.View>
-);
+const Example = () => <PinchableBox />;
 
 export default Example;
 

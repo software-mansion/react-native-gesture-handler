@@ -42,7 +42,6 @@ export class DraggableBox extends Component {
     return (
       <PanGestureHandler
         {...this.props}
-        ShouldCancelWhenOutside
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}>
         <Animated.View
@@ -66,11 +65,8 @@ export default class Example extends Component {
   render() {
     return (
       <View style={styles.scrollView}>
-        <Animated.View>
-          <DraggableBox />
-        </Animated.View>
         <LoremIpsum words={40} />
-
+        <DraggableBox />
         <LoremIpsum />
       </View>
     );

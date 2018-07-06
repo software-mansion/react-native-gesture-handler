@@ -8,12 +8,8 @@ export default class Example extends Component {
   render() {
     return (
       <View style={styles.scrollView}>
-        <Animated.View>
-          <DraggableBox boxStyle={{ backgroundColor: 'plum' }} />
-          <DraggableBox
-            boxStyle={{ backgroundColor: 'lightgoldenrodyellow' }}
-          />
-        </Animated.View>
+        <DraggableBox boxStyle={{ backgroundColor: 'plum' }} />
+        <DraggableBox boxStyle={{ backgroundColor: 'lightgoldenrodyellow' }} />
         <LoremIpsum />
       </View>
     );
