@@ -34,7 +34,6 @@ public class GestureHandler<T extends GestureHandler> {
   private boolean mWithinBounds;
   private boolean mEnabled = true;
   private float mHitSlop[];
-  private int mFirstPointerId = -1;
 
   private boolean mShouldCancelWhenOutside;
   private int mNumberOfPointers = 0;
@@ -62,10 +61,8 @@ public class GestureHandler<T extends GestureHandler> {
     }
   }
 
-  public boolean hasSameFirstPointerId(GestureHandler other) {
-    return other.mFirstPointerId != -1
-            && mFirstPointerId != -1
-            && mFirstPointerId == other.mFirstPointerId;
+  public boolean hasCommonPointers(GestureHandler other) {
+    return mMotionEvent.hasCommonPointers(other.mMotionEvent);
   }
 
   public GestureHandler(){
@@ -170,9 +167,6 @@ public class GestureHandler<T extends GestureHandler> {
     MotionEvent me = mMotionEvent;
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
       return;
-    }
-    if (me.getActionMasked() == MotionEvent.ACTION_DOWN) {
-      mFirstPointerId = unwrappedEvent.getPointerId(unwrappedEvent.getActionIndex());
     }
     mX = me.getX();
     mY = me.getY();
@@ -335,7 +329,6 @@ public class GestureHandler<T extends GestureHandler> {
   public final void reset() {
     mView = null;
     mOrchestrator = null;
-    mFirstPointerId = -1;
     mMotionEvent.reset();
     onReset();
   }

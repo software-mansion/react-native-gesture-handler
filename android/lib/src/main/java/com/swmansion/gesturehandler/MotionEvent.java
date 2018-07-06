@@ -14,6 +14,8 @@ public class MotionEvent {
   private VelocityTracker mVelocityTracker;
   private int mFirstPointerId = -1;
 
+  private static int MAX_POINTERS_COUNT = 10;
+
   public static final int ACTION_DOWN = android.view.MotionEvent.ACTION_DOWN;
   public static final int ACTION_UP = android.view.MotionEvent.ACTION_UP;
   public static final int ACTION_POINTER_DOWN = android.view.MotionEvent.ACTION_POINTER_DOWN;
@@ -32,6 +34,19 @@ public class MotionEvent {
     addVelocityMovement();
   }
 
+  public boolean hasInitializedVelocityTracker(){
+    return mVelocityTracker != null;
+  }
+
+  public boolean hasCommonPointers(MotionEvent other) {
+    for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
+      if (mActivePointers[i] && other.mActivePointers[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * This method adds movement to {@class VelocityTracker} first resetting offset of the event so
    * that the velocity is calculated based on the absolute position of touch pointers. This is
@@ -48,14 +63,14 @@ public class MotionEvent {
   }
 
   public MotionEvent(GestureHandler handler) {
-    mActivePointers = new boolean[10];
+    mActivePointers = new boolean[MAX_POINTERS_COUNT];
     mHandler = handler;
     activePointersClear();
   }
 
   private MotionEvent(MotionEvent other) {
     mEvent = android.view.MotionEvent.obtain(other.mEvent);
-    mActivePointers = Arrays.copyOf(other.mActivePointers, 10);
+    mActivePointers = Arrays.copyOf(other.mActivePointers, MAX_POINTERS_COUNT);
     mHandler = other.mHandler;
   }
 
@@ -137,7 +152,7 @@ public class MotionEvent {
 
   public float getXVelocity() {
     float sum = 0;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
       if (!mActivePointers[i]) {
         continue;
       }
@@ -148,7 +163,7 @@ public class MotionEvent {
 
   public float getYVelocity() {
     float sum = 0;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
       if (!mActivePointers[i]) {
         continue;
       }
