@@ -212,7 +212,22 @@ public class GestureHandler<T extends GestureHandler> {
     }
   }
 
+  private boolean needAdapt(MotionEvent event) {
+    if (event.getPointerCount() != mTrackedPointersCount) {
+      return true;
+    }
+    for (int i = 0; i < mTrackedPointerIDs.length; i++) {
+      if (mTrackedPointerIDs[i] != -1 && mTrackedPointerIDs[i] != i) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private MotionEvent adaptEvent(MotionEvent event) {
+    if (!needAdapt(event)) {
+      return event;
+    }
     int action = event.getActionMasked();
     int actionIndex = -1;
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
