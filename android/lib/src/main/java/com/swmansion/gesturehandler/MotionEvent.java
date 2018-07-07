@@ -4,6 +4,28 @@ import android.view.VelocityTracker;
 
 import java.util.Arrays;
 
+/**
+ * This class acts as an adapter to the original {@link android.view.MotionEvent}.
+ *
+ * Due to the fact MotionEvent is final we cannot extend it directly. Instead we introduce a
+ * separate class with a very similar (but limited) interface. That class is being used in all the
+ * handlers.
+ *
+ * The idea behind this adapter class is so that we can filer out pointers that given gesture
+ * handler is currently tracking. We override methods like {@link #getPointerCount()} to return only
+ * the tracked count and also re-map pointer indices such that they start from 0.
+ *
+ * The purpose is to make it transparent to handler logic whether we use original or adapted version
+ * of MotionEvent. And so that it does not need to control if POINTER_DOWN actually corresponds to
+ * ACTION_DOWN as the newly added pointer is the first one being tracked by the handler. It also
+ * makes it easy to adapt code from ScaleGestureDetector as it just rely on the same interface and
+ * works with adapter MotionEvent with almost zero changes.
+ *
+ * An alternative solution we considered to doing this would be to call into MotionEvent.obtain for
+ * each handler and pass filtered list of pointers there. We may still eventually adapt that approach
+ * in the future. The main consideration being the fact that the event would need to be copied each
+ * time for each gesture handler.
+ */
 public class MotionEvent {
   public static final int ACTION_DOWN = android.view.MotionEvent.ACTION_DOWN;
   public static final int ACTION_UP = android.view.MotionEvent.ACTION_UP;
