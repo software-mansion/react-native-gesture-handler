@@ -1,5 +1,7 @@
 package com.swmansion.gesturehandler;
 
+import android.view.MotionEvent;
+
 public class RotationGestureDetector {
 
   public interface OnRotationGestureListener {

@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler;
 
 import android.os.SystemClock;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -70,29 +71,29 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
   protected void onHandle(MotionEvent event) {
     View view = getView();
     int state = getState();
-    if (event.getActionMasked() == android.view.MotionEvent.ACTION_UP) {
-      view.onTouchEvent(event.getRawEvent());
+    if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+      view.onTouchEvent(event);
       if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed()) {
         activate();
       }
       end();
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       if (mShouldActivateOnStart) {
-        tryIntercept(view, event.getRawEvent());
-        view.onTouchEvent(event.getRawEvent());
+        tryIntercept(view, event);
+        view.onTouchEvent(event);
         activate();
-      } else if (tryIntercept(view, event.getRawEvent())) {
-        view.onTouchEvent(event.getRawEvent());
+      } else if (tryIntercept(view, event)) {
+        view.onTouchEvent(event);
         activate();
       } else if (state != STATE_BEGAN) {
         begin();
       }
     } else if (state == STATE_ACTIVE) {
-      view.onTouchEvent(event.getRawEvent());
+      view.onTouchEvent(event);
     }
   }
 
-  private static boolean tryIntercept(View view, android.view.MotionEvent event) {
+  private static boolean tryIntercept(View view, MotionEvent event) {
     if (view instanceof ViewGroup && ((ViewGroup) view).onInterceptTouchEvent(event)) {
       return true;
     }
@@ -102,8 +103,8 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
   @Override
   protected void onCancel() {
     long time = SystemClock.uptimeMillis();
-    android.view.MotionEvent event = android.view.MotionEvent.obtain(time, time, android.view.MotionEvent.ACTION_CANCEL, 0, 0, 0);
-    event.setAction(android.view.MotionEvent.ACTION_CANCEL);
+    MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+    event.setAction(MotionEvent.ACTION_CANCEL);
     getView().onTouchEvent(event);
   }
 }

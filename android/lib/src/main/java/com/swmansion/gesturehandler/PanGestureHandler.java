@@ -1,6 +1,8 @@
 package com.swmansion.gesturehandler;
 
 import android.content.Context;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 
 public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
@@ -29,6 +31,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mLastX, mLastY;
   private float mLastEventOffsetX, mLastEventOffsetY;
   private float mLastVelocityX, mLastVelocityY;
+  private VelocityTracker mVelocityTracker;
 
   private boolean mAverageTouches;
 
@@ -182,20 +185,20 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     int action = event.getActionMasked();
 
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
-      // wrap offset if new pointer gets added or removed
+      // update offset if new pointer gets added or removed
       mOffsetX += mLastX - mStartX;
       mOffsetY += mLastY - mStartY;
 
       // reset starting point
-      mLastX = event.getLastPointerX(mAverageTouches);
-      mLastY = event.getLastPointerY(mAverageTouches);
+      mLastX = GestureUtils.getLastPointerX(event, mAverageTouches);
+      mLastY = GestureUtils.getLastPointerY(event, mAverageTouches);
       mLastEventOffsetX = event.getRawX() - event.getX();
       mLastEventOffsetY = event.getRawY() - event.getY();
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
-      mLastX = event.getLastPointerX(mAverageTouches);
-      mLastY = event.getLastPointerY(mAverageTouches);
+      mLastX = GestureUtils.getLastPointerX(event, mAverageTouches);
+      mLastY = GestureUtils.getLastPointerY(event, mAverageTouches);
       mLastEventOffsetX = event.getRawX() - event.getX();
       mLastEventOffsetY = event.getRawY() - event.getY();
     }
@@ -205,11 +208,14 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mStartY = mLastY;
       mOffsetX = 0;
       mOffsetY = 0;
-      event.trackVelocity();
+      mVelocityTracker = VelocityTracker.obtain();
+      addVelocityMovement(mVelocityTracker, event);
       begin();
-    } else if (event.isTrackingVelocity()) {
-      mLastVelocityX = event.getXVelocity();
-      mLastVelocityY = event.getYVelocity();
+    } else if (mVelocityTracker != null) {
+      addVelocityMovement(mVelocityTracker, event);
+      mVelocityTracker.computeCurrentVelocity(1000);
+      mLastVelocityX = mVelocityTracker.getXVelocity();
+      mLastVelocityY = mVelocityTracker.getYVelocity();
     }
 
     if (action == MotionEvent.ACTION_UP) {
@@ -240,6 +246,14 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
         mStartY = mLastY;
         activate();
       }
+    }
+  }
+
+  @Override
+  protected void onReset() {
+    if (mVelocityTracker != null) {
+      mVelocityTracker.recycle();
+      mVelocityTracker = null;
     }
   }
 
@@ -275,4 +289,17 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return mLastY - mLastEventOffsetY;
   }
 
+  /**
+   * This method adds movement to {@class VelocityTracker} first resetting offset of the event so
+   * that the velocity is calculated based on the absolute position of touch pointers. This is
+   * because if the underlying view moves along with the finger using relative x/y coords yields
+   * incorrect results.
+   */
+  private static void addVelocityMovement(VelocityTracker tracker, MotionEvent event) {
+    float offsetX = event.getRawX() - event.getX();
+    float offsetY = event.getRawY() - event.getY();
+    event.offsetLocation(offsetX, offsetY);
+    tracker.addMovement(event);
+    event.offsetLocation(-offsetX, -offsetY);
+  }
 }

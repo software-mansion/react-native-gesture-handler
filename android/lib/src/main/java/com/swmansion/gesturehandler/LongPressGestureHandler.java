@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler;
 
 import android.content.Context;
 import android.os.Handler;
+import android.view.MotionEvent;
 
 public class LongPressGestureHandler extends GestureHandler<LongPressGestureHandler> {
 

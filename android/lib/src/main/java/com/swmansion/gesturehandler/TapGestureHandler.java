@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler;
 
 import android.os.Handler;
+import android.view.MotionEvent;
 
 public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
   private static float MAX_VALUE_IGNORE = Float.MIN_VALUE;
@@ -118,15 +119,15 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
       mOffsetX += mLastX - mStartX;
       mOffsetY += mLastY - mStartY;
-      mLastX = event.getLastPointerX(true);
-      mLastY = event.getLastPointerY(true);
+      mLastX = GestureUtils.getLastPointerX(event, true);
+      mLastY = GestureUtils.getLastPointerY(event, true);
       mLastEventOffsetX = event.getRawX() - event.getX();
       mLastEventOffsetY = event.getRawY() - event.getY();
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
-      mLastX = event.getLastPointerX(true);
-      mLastY = event.getLastPointerY(true);
+      mLastX = GestureUtils.getLastPointerX(event, true);
+      mLastY = GestureUtils.getLastPointerY(event, true);
       mLastEventOffsetX = event.getRawX() - event.getX();
       mLastEventOffsetY = event.getRawY() - event.getY();
     }

@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler;
 
 import android.os.Handler;
+import android.view.MotionEvent;
 
 public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
   private static final long DEFAULT_MAX_DURATION_MS = 800;

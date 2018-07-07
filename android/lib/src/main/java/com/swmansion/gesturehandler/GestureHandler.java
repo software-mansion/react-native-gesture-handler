@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler;
 
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.Arrays;
@@ -29,8 +30,7 @@ public class GestureHandler<T extends GestureHandler> {
 
   private static int MAX_POINTERS_COUNT = 11;
 
-  private final MotionEvent mMotionEvent = new MotionEvent();
-  private final boolean[] mTrackedPointerIDs = new boolean[MAX_POINTERS_COUNT];
+  private final int[] mTrackedPointerIDs = new int[MAX_POINTERS_COUNT];
   private int mTrackedPointersCount = 0;
 
   private int mTag;
@@ -61,7 +61,7 @@ public class GestureHandler<T extends GestureHandler> {
     }
   }
 
-  /*package*/ void dispatchTouchEvent(android.view.MotionEvent event) {
+  /*package*/ void dispatchTouchEvent(MotionEvent event) {
     if (mListener != null) {
       mListener.onTouchEvent((T) this, event);
     }
@@ -69,7 +69,7 @@ public class GestureHandler<T extends GestureHandler> {
 
   public boolean hasCommonPointers(GestureHandler other) {
     for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
-      if (mTrackedPointerIDs[i] && other.mTrackedPointerIDs[i]) {
+      if (mTrackedPointerIDs[i] != -1 && other.mTrackedPointerIDs[i] != -1) {
         return true;
       }
     }
@@ -161,35 +161,108 @@ public class GestureHandler<T extends GestureHandler> {
     if (mView != null || mOrchestrator != null) {
       throw new IllegalStateException("Already prepared or hasn't been reset");
     }
+    Arrays.fill(mTrackedPointerIDs, -1);
     mState = STATE_UNDETERMINED;
 
     mView = view;
     mOrchestrator = orchestrator;
   }
 
+  private int findLocalPointerId() {
+    int localPointerId = 0;
+    for (; localPointerId < mTrackedPointersCount; localPointerId++) {
+      int i = 0;
+      for (; i < mTrackedPointerIDs.length; i++) {
+        if (mTrackedPointerIDs[i] == localPointerId) {
+          break;
+        }
+      }
+      if (i == mTrackedPointerIDs.length) {
+        return localPointerId;
+      }
+    }
+    return localPointerId;
+  }
+
   public void startTrackingPointer(int pointerId) {
-    if (!mTrackedPointerIDs[pointerId]) {
-      mTrackedPointerIDs[pointerId] = true;
+    if (mTrackedPointerIDs[pointerId] == -1) {
+      mTrackedPointerIDs[pointerId] = findLocalPointerId();
       mTrackedPointersCount++;
     }
   }
 
   public void stopTrackingPointer(int pointerId) {
-    if (mTrackedPointerIDs[pointerId]) {
-      mTrackedPointerIDs[pointerId] = false;
+    if (mTrackedPointerIDs[pointerId] != -1) {
+      mTrackedPointerIDs[pointerId] = -1;
       mTrackedPointersCount--;
     }
   }
 
-  public final void handle(android.view.MotionEvent unwrappedEvent) {
+  private MotionEvent adaptEvent(MotionEvent event) {
+    int action = event.getActionMasked();
+    int actionIndex = -1;
+    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+      actionIndex = event.getActionIndex();
+      int actionPointer = event.getPointerId(actionIndex);
+      if (mTrackedPointerIDs[actionPointer] != -1) {
+        action = mTrackedPointersCount == 1 ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_POINTER_DOWN;
+        // TODO: ADD INDEX
+      } else {
+        action = MotionEvent.ACTION_MOVE;
+      }
+    } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
+      actionIndex = event.getActionIndex();
+      int actionPointer = event.getPointerId(actionIndex);
+      if (mTrackedPointerIDs[actionPointer] != -1) {
+        action = mTrackedPointersCount == 1 ? MotionEvent.ACTION_UP : MotionEvent.ACTION_POINTER_UP;
+        // TODO: ADD INDEX
+      } else {
+        action = MotionEvent.ACTION_MOVE;
+      }
+    }
+    MotionEvent.PointerProperties[] pointerProps = new MotionEvent.PointerProperties[mTrackedPointersCount];
+    MotionEvent.PointerCoords[] pointerCoords = new MotionEvent.PointerCoords[mTrackedPointersCount];
+    int count = 0;
+    for (int index = 0, size = event.getPointerCount(); index < size; index++) {
+      int origPointerId = event.getPointerId(index);
+      if (mTrackedPointerIDs[origPointerId] != -1) {
+        pointerProps[count] = new MotionEvent.PointerProperties();
+        pointerCoords[count] = new MotionEvent.PointerCoords();
+        event.getPointerProperties(index, pointerProps[count]);
+        pointerProps[count].id = mTrackedPointerIDs[origPointerId];
+        event.getPointerCoords(index, pointerCoords[count]);
+        if (count == actionIndex) {
+          action = action | (count << MotionEvent.ACTION_POINTER_INDEX_SHIFT);
+        }
+        count++;
+      }
+    }
+    return MotionEvent.obtain(
+            event.getDownTime(),
+            event.getEventTime(),
+            action,
+            mTrackedPointersCount,
+            pointerProps,
+            pointerCoords,
+            event.getMetaState(),
+            event.getButtonState(),
+            event.getXPrecision(),
+            event.getYPrecision(),
+            event.getDeviceId(),
+            event.getEdgeFlags(),
+            event.getSource(),
+            event.getFlags());
+  }
+
+  public final void handle(MotionEvent unwrappedEvent) {
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED
             || mState == STATE_END || mTrackedPointersCount < 1) {
       return;
     }
-    mMotionEvent.wrap(unwrappedEvent, mTrackedPointerIDs);
-    mX = mMotionEvent.getX();
-    mY = mMotionEvent.getY();
-    mNumberOfPointers = mMotionEvent.getPointerCount();
+    MotionEvent event = adaptEvent(unwrappedEvent);
+    mX = event.getX();
+    mY = event.getY();
+    mNumberOfPointers = event.getPointerCount();
 
     mWithinBounds = isWithinBounds(mView, mX, mY);
     if (mShouldCancelWhenOutside && !mWithinBounds) {
@@ -200,7 +273,7 @@ public class GestureHandler<T extends GestureHandler> {
       }
       return;
     }
-    onHandle(mMotionEvent);
+    onHandle(event);
   }
 
   private void moveToState(int newState) {
@@ -348,8 +421,7 @@ public class GestureHandler<T extends GestureHandler> {
   public final void reset() {
     mView = null;
     mOrchestrator = null;
-    mMotionEvent.reset();
-    Arrays.fill(mTrackedPointerIDs, false);
+    Arrays.fill(mTrackedPointerIDs, -1);
     mTrackedPointersCount = 0;
     onReset();
   }
