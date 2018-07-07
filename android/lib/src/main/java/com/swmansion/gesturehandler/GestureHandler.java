@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -29,6 +30,19 @@ public class GestureHandler<T extends GestureHandler> {
   public static final int DIRECTION_DOWN = 8;
 
   private static int MAX_POINTERS_COUNT = 11;
+  private static MotionEvent.PointerProperties[] sPointerProps;
+  private static MotionEvent.PointerCoords[] sPointerCoords;
+
+  private static void initPointerProps(int size) {
+    if (sPointerProps == null) {
+      sPointerProps = new MotionEvent.PointerProperties[MAX_POINTERS_COUNT];
+      sPointerCoords = new MotionEvent.PointerCoords[MAX_POINTERS_COUNT];
+    }
+    for (; size > 0 && sPointerProps[size - 1] == null; size--) {
+      sPointerProps[size - 1] = new MotionEvent.PointerProperties();
+      sPointerCoords[size - 1] = new MotionEvent.PointerCoords();
+    }
+  }
 
   private final int[] mTrackedPointerIDs = new int[MAX_POINTERS_COUNT];
   private int mTrackedPointersCount = 0;
@@ -168,7 +182,7 @@ public class GestureHandler<T extends GestureHandler> {
     mOrchestrator = orchestrator;
   }
 
-  private int findLocalPointerId() {
+  private int findNextLocalPointerId() {
     int localPointerId = 0;
     for (; localPointerId < mTrackedPointersCount; localPointerId++) {
       int i = 0;
@@ -186,7 +200,7 @@ public class GestureHandler<T extends GestureHandler> {
 
   public void startTrackingPointer(int pointerId) {
     if (mTrackedPointerIDs[pointerId] == -1) {
-      mTrackedPointerIDs[pointerId] = findLocalPointerId();
+      mTrackedPointerIDs[pointerId] = findNextLocalPointerId();
       mTrackedPointersCount++;
     }
   }
@@ -199,6 +213,8 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   private MotionEvent adaptEvent(MotionEvent event) {
+    float oldX = event.getX();
+    float oldY = event.getY();
     int action = event.getActionMasked();
     int actionIndex = -1;
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
@@ -206,7 +222,6 @@ public class GestureHandler<T extends GestureHandler> {
       int actionPointer = event.getPointerId(actionIndex);
       if (mTrackedPointerIDs[actionPointer] != -1) {
         action = mTrackedPointersCount == 1 ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_POINTER_DOWN;
-        // TODO: ADD INDEX
       } else {
         action = MotionEvent.ACTION_MOVE;
       }
@@ -215,35 +230,32 @@ public class GestureHandler<T extends GestureHandler> {
       int actionPointer = event.getPointerId(actionIndex);
       if (mTrackedPointerIDs[actionPointer] != -1) {
         action = mTrackedPointersCount == 1 ? MotionEvent.ACTION_UP : MotionEvent.ACTION_POINTER_UP;
-        // TODO: ADD INDEX
       } else {
         action = MotionEvent.ACTION_MOVE;
       }
     }
-    MotionEvent.PointerProperties[] pointerProps = new MotionEvent.PointerProperties[mTrackedPointersCount];
-    MotionEvent.PointerCoords[] pointerCoords = new MotionEvent.PointerCoords[mTrackedPointersCount];
+    initPointerProps(mTrackedPointersCount);
     int count = 0;
+    event.setLocation(event.getRawX(), event.getRawY());
     for (int index = 0, size = event.getPointerCount(); index < size; index++) {
       int origPointerId = event.getPointerId(index);
       if (mTrackedPointerIDs[origPointerId] != -1) {
-        pointerProps[count] = new MotionEvent.PointerProperties();
-        pointerCoords[count] = new MotionEvent.PointerCoords();
-        event.getPointerProperties(index, pointerProps[count]);
-        pointerProps[count].id = mTrackedPointerIDs[origPointerId];
-        event.getPointerCoords(index, pointerCoords[count]);
-        if (count == actionIndex) {
+        event.getPointerProperties(index, sPointerProps[count]);
+        sPointerProps[count].id = mTrackedPointerIDs[origPointerId];
+        event.getPointerCoords(index, sPointerCoords[count]);
+        if (index == actionIndex) {
           action = action | (count << MotionEvent.ACTION_POINTER_INDEX_SHIFT);
         }
         count++;
       }
     }
-    return MotionEvent.obtain(
+    MotionEvent result = MotionEvent.obtain(
             event.getDownTime(),
             event.getEventTime(),
             action,
-            mTrackedPointersCount,
-            pointerProps,
-            pointerCoords,
+            count,
+            Arrays.copyOfRange(sPointerProps, 0, count), /* props are copied and hence it is safe to use static array here */
+            Arrays.copyOfRange(sPointerCoords, 0, count), /* same applies to coords */
             event.getMetaState(),
             event.getButtonState(),
             event.getXPrecision(),
@@ -252,6 +264,9 @@ public class GestureHandler<T extends GestureHandler> {
             event.getEdgeFlags(),
             event.getSource(),
             event.getFlags());
+    event.setLocation(oldX, oldY);
+    result.setLocation(oldX, oldY);
+    return result;
   }
 
   public final void handle(MotionEvent unwrappedEvent) {
@@ -274,6 +289,7 @@ public class GestureHandler<T extends GestureHandler> {
       return;
     }
     onHandle(event);
+    event.recycle();
   }
 
   private void moveToState(int newState) {
