@@ -213,8 +213,6 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   private MotionEvent adaptEvent(MotionEvent event) {
-    float oldX = event.getX();
-    float oldY = event.getY();
     int action = event.getActionMasked();
     int actionIndex = -1;
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
@@ -236,6 +234,8 @@ public class GestureHandler<T extends GestureHandler> {
     }
     initPointerProps(mTrackedPointersCount);
     int count = 0;
+    float oldX = event.getX();
+    float oldY = event.getY();
     event.setLocation(event.getRawX(), event.getRawY());
     for (int index = 0, size = event.getPointerCount(); index < size; index++) {
       int origPointerId = event.getPointerId(index);
@@ -254,8 +254,8 @@ public class GestureHandler<T extends GestureHandler> {
             event.getEventTime(),
             action,
             count,
-            Arrays.copyOfRange(sPointerProps, 0, count), /* props are copied and hence it is safe to use static array here */
-            Arrays.copyOfRange(sPointerCoords, 0, count), /* same applies to coords */
+            sPointerProps, /* props are copied and hence it is safe to use static array here */
+            sPointerCoords, /* same applies to coords */
             event.getMetaState(),
             event.getButtonState(),
             event.getXPrecision(),
@@ -269,12 +269,12 @@ public class GestureHandler<T extends GestureHandler> {
     return result;
   }
 
-  public final void handle(MotionEvent unwrappedEvent) {
+  public final void handle(MotionEvent origEvent) {
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED
             || mState == STATE_END || mTrackedPointersCount < 1) {
       return;
     }
-    MotionEvent event = adaptEvent(unwrappedEvent);
+    MotionEvent event = adaptEvent(origEvent);
     mX = event.getX();
     mY = event.getY();
     mNumberOfPointers = event.getPointerCount();
@@ -289,7 +289,9 @@ public class GestureHandler<T extends GestureHandler> {
       return;
     }
     onHandle(event);
-    event.recycle();
+    if (event != origEvent) {
+      event.recycle();
+    }
   }
 
   private void moveToState(int newState) {
