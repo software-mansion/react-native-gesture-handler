@@ -5,18 +5,18 @@ import android.view.ViewConfiguration;
 
 public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
 
-  private GestureHandlerScaleDetector mScaleDetector;
+  private ScaleGestureDetector mScaleDetector;
   private double mLastScaleFactor;
   private double mLastVelocity;
 
   private float mStartingSpan;
   private float mSpanSlop;
 
-  private GestureHandlerScaleDetector.OnScaleGestureListener mGestureListener =
-          new GestureHandlerScaleDetector.OnScaleGestureListener() {
+  private ScaleGestureDetector.OnScaleGestureListener mGestureListener =
+          new ScaleGestureDetector.OnScaleGestureListener() {
 
     @Override
-    public boolean onScale(GestureHandlerScaleDetector detector) {
+    public boolean onScale(ScaleGestureDetector detector) {
       double prevScaleFactor = mLastScaleFactor;
       mLastScaleFactor *= detector.getScaleFactor();
       long delta = detector.getTimeDelta();
@@ -31,13 +31,13 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
     }
 
     @Override
-    public boolean onScaleBegin(GestureHandlerScaleDetector detector) {
+    public boolean onScaleBegin(ScaleGestureDetector detector) {
       mStartingSpan = detector.getCurrentSpan();
       return true;
     }
 
     @Override
-    public void onScaleEnd(GestureHandlerScaleDetector detector) {
+    public void onScaleEnd(ScaleGestureDetector detector) {
       // GestureHandlerScaleDetector thinks that when fingers are 27mm away that's a sufficiently good
       // reason to trigger this method giving us no other choice but to ignore it completely.
     }
@@ -53,7 +53,7 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
       Context context = getView().getContext();
       mLastVelocity = 0f;
       mLastScaleFactor = 1f;
-      mScaleDetector = new GestureHandlerScaleDetector(context, mGestureListener);
+      mScaleDetector = new ScaleGestureDetector(context, mGestureListener);
       ViewConfiguration configuration = ViewConfiguration.get(context);
       mSpanSlop = configuration.getScaledTouchSlop();
 

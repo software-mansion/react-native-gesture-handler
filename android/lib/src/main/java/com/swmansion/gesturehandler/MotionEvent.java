@@ -2,8 +2,6 @@ package com.swmansion.gesturehandler;
 
 import android.view.VelocityTracker;
 
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-
 import java.util.Arrays;
 
 public class MotionEvent {
@@ -15,57 +13,39 @@ public class MotionEvent {
   public static final int INVALID_POINTER_ID = android.view.MotionEvent.INVALID_POINTER_ID;
   public static final int ACTION_CANCEL = android.view.MotionEvent.ACTION_CANCEL;
 
-  private static int MAX_POINTERS_COUNT = 10;
+  private static int MAX_POINTERS_COUNT = 11;
 
-  private final boolean[] mActivePointers;
-  private int mActivePointersCount = 0;
+  private final int[] mPointerIndices;
+  private int mActionMasked;
+  private int mPointersCount = 0;
+  private int mActionIndex = -1;
   private android.view.MotionEvent mEvent;
   private VelocityTracker mVelocityTracker;
-  private int mFirstPointerId = -1;
 
 
   public MotionEvent() {
-    mActivePointers = new boolean[MAX_POINTERS_COUNT];
-    activePointersClear();
+    mPointerIndices = new int[MAX_POINTERS_COUNT];
   }
 
   private MotionEvent(MotionEvent other) {
     mEvent = android.view.MotionEvent.obtain(other.mEvent);
-    mActivePointers = Arrays.copyOf(other.mActivePointers, MAX_POINTERS_COUNT);
+    mActionIndex = other.mActionIndex;
+    mActionMasked = other.mActionMasked;
+    mPointersCount = other.mPointersCount;
+    mPointerIndices = Arrays.copyOf(other.mPointerIndices, MAX_POINTERS_COUNT);
   }
 
   static MotionEvent obtain(MotionEvent other) {
     return new MotionEvent(other);
   }
 
-  private void activePointersClear() {
-    Arrays.fill(mActivePointers, false);
-  }
-
-  private int getFirstActiveIndex() {
-    for(int i = 0; i < mEvent.getPointerCount(); i++) {
-      if (mActivePointers[mEvent.getPointerId(i)])
-        return i;
-    }
-    return -1;
-  }
-
-  public void initVelocityTracker() {
+  public void trackVelocity() {
     mVelocityTracker = VelocityTracker.obtain();
     addVelocityMovement();
   }
 
-  public boolean hasInitializedVelocityTracker() {
+  public boolean isTrackingVelocity() {
     return mVelocityTracker != null;
-  }
-
-  public boolean hasCommonPointers(MotionEvent other) {
-    for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
-      if (mActivePointers[i] && other.mActivePointers[i]) {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**
@@ -75,78 +55,57 @@ public class MotionEvent {
    * incorrect results.
    */
   private void addVelocityMovement() {
-    if (mVelocityTracker == null) {
-      return;
-    }
-    float xOffset = getXOffset();
-    float yOffset = getYOffset();
+    float xOffset = mEvent.getRawX() - mEvent.getX();
+    float yOffset = mEvent.getRawY() - mEvent.getY();
     mEvent.offsetLocation(xOffset, yOffset);
     mVelocityTracker.addMovement(mEvent);
     mEvent.offsetLocation(-xOffset, -yOffset);
   }
 
   public int getActionMasked() {
-    int action = mEvent.getActionMasked();
-
-    if (mActivePointersCount == 0) {
-      throw new JSApplicationIllegalArgumentException("Asked for empty event");
-    }
-
-    if (action == android.view.MotionEvent.ACTION_POINTER_DOWN && mActivePointersCount == 1) {
-      // handle when many fingers on screen but only one just touched the area
-      return android.view.MotionEvent.ACTION_DOWN;
-    }
-
-    if (action == ACTION_POINTER_UP && (mActivePointersCount == 1)) {
-      // handle when many fingers on screen but the one of active was removed from area
-      return ACTION_UP;
-    }
-
-    return mEvent.getActionMasked();
+    return mActionMasked;
   }
 
   public int getPointerCount() {
-    return mActivePointersCount;
-  }
-
-  public int getMotionEventPointerCount() {
-    return mEvent.getPointerCount();
-  }
-
-  public boolean containsIndexOfMotionEvent(int index) {
-    return mActivePointers[mEvent.getPointerId(index)];
+    return mPointersCount;
   }
 
   public float getX() {
-    return mEvent.getX(getFirstActiveIndex());
+    return mEvent.getX(mPointerIndices[0]);
   }
 
   public float getY() {
-    return mEvent.getY(getFirstActiveIndex());
+    return mEvent.getY(mPointerIndices[0]);
   }
 
   public float getRawX() {
-    return getX() + getXOffset();
+    return getRawX(0);
   }
 
   public float getRawY() {
-    return getY() + getYOffset();
+    return getRawY(0);
+  }
+
+  public float getRawX(int index) {
+    float offset = mEvent.getRawX() - mEvent.getX();
+    return mEvent.getX(mPointerIndices[index]) + offset;
+  }
+
+  public float getRawY(int index) {
+    float offset = mEvent.getRawY() - mEvent.getY();
+    return mEvent.getY(mPointerIndices[index]) + offset;
   }
 
   public int getActionIndex() {
-    return mEvent.getActionIndex();
-  }
-
-  public int getFirstPointerId() {
-    return mFirstPointerId;
+    return mActionIndex;
   }
 
   public float getY(int pointerIndex) {
-    return mEvent.getY(pointerIndex);
+    return mEvent.getY(mPointerIndices[pointerIndex]);
   }
 
   public float getX(int pointerIndex) {
-    return mEvent.getX(pointerIndex);
+    return mEvent.getX(mPointerIndices[pointerIndex]);
   }
 
   public android.view.MotionEvent getRawEvent() {
@@ -155,77 +114,93 @@ public class MotionEvent {
 
   public float getXVelocity() {
     float sum = 0;
-    for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
-      if (!mActivePointers[i]) {
-        continue;
-      }
-      sum += mVelocityTracker.getXVelocity(i);
+    for (int i = 0; i < mPointersCount; i++) {
+      sum += mVelocityTracker.getXVelocity(mEvent.getPointerId(mPointerIndices[i]));
     }
-    return sum / mActivePointersCount;
+    return sum / mPointersCount;
   }
 
   public float getYVelocity() {
     float sum = 0;
-    for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
-      if (!mActivePointers[i]) {
-        continue;
-      }
-      sum += mVelocityTracker.getYVelocity(i);
+    for (int i = 0; i < mPointersCount; i++) {
+      sum += mVelocityTracker.getYVelocity(mEvent.getPointerId(mPointerIndices[i]));
     }
-    return sum / mActivePointersCount;
+    return sum / mPointersCount;
   }
 
   public void reset() {
-    activePointersClear();
-    mActivePointersCount = 0;
-    mFirstPointerId = -1;
     if (mVelocityTracker != null) {
       mVelocityTracker.recycle();
       mVelocityTracker = null;
     }
+    mEvent = null;
   }
 
-
-  public boolean wrap(android.view.MotionEvent event) {
+  /**
+   * Call this method to wrap motion event adapter to use newly provided motion event.
+   *
+   * This needs to be called before we attempt on calling any pointer related method such as
+   * getPointersCount etc.
+   */
+  public void wrap(android.view.MotionEvent event, boolean[] trackedPointerIDs) {
     int action = event.getActionMasked();
-    if (action == ACTION_POINTER_DOWN || action == ACTION_DOWN) {
-      int index = event.getActionIndex();
-      if (mActivePointersCount == 0) {
-        mFirstPointerId = event.getPointerId(index);
+    boolean pointerAction = action == ACTION_DOWN || action == ACTION_POINTER_DOWN
+            || action == ACTION_UP || action == ACTION_POINTER_UP;
+    int actionIndex = pointerAction ? event.getActionIndex() : -1;
+
+    // Fill in pointerIndices array such that first mActivePointerCount items
+    // contains original indices from mEvent that corresponds to the indices
+    // of pointers activated for this adapter.
+    mPointersCount = 0;
+    mActionIndex = -1;
+    for (int i = 0, size = event.getPointerCount(); i < size; i++) {
+      int pointerId = event.getPointerId(i);
+      if (trackedPointerIDs[pointerId]) {
+        if (i == actionIndex) {
+          // assign mActionIndex such that the record in mPointerIndices maps to
+          // the original's event action index
+          mActionIndex = mPointersCount;
+        }
+        mPointerIndices[mPointersCount++] = i;
       }
-      mActivePointers[event.getPointerId(index)] = true;
-      mActivePointersCount++;
+    }
+
+    if (pointerAction) {
+      if (!trackedPointerIDs[event.getPointerId(actionIndex)]) {
+        // pointer which got added / removed is not being tracked by handler corresponding
+        // to this event adapter. We change action to ACTION_MOVE such that the handler still
+        // can read other pointer movements
+        action = ACTION_MOVE;
+      }
+    }
+
+    // assign action that adapter will provide when asked
+    if (action == ACTION_POINTER_DOWN || action == ACTION_DOWN) {
+      mActionMasked = mPointersCount == 1 ? ACTION_DOWN : ACTION_POINTER_DOWN;
+    } else if (action == ACTION_UP || action == ACTION_POINTER_UP) {
+      mActionMasked = mPointersCount == 1 ? ACTION_UP : ACTION_POINTER_UP;
+    } else if (action == ACTION_CANCEL) {
+      mActionMasked = ACTION_CANCEL;
+    } else {
+      mActionMasked = ACTION_MOVE;
     }
 
     mEvent = event;
 
     if (mVelocityTracker != null) {
       addVelocityMovement();
+      // TODO: maybe move below to the place where we retrieve velocity
       mVelocityTracker.computeCurrentVelocity(1000);
     }
-
-    if ((action == ACTION_UP || action == ACTION_POINTER_UP) &&
-            !mActivePointers[mEvent.getPointerId(getActionIndex())]) {
-      return false; // not to be handled
-    }
-    return true;
-  }
-
-  public void unwrap() {
-    int action = mEvent.getActionMasked();
-    int id = mEvent.getPointerId(mEvent.getActionIndex());
-    if (action == ACTION_POINTER_UP || action == ACTION_UP) {
-      mActivePointers[id] = false;
-      mActivePointersCount--;
-      if (mActivePointersCount == 0) {
-        mFirstPointerId = -1;
-      }
-    }
-    mEvent = null;
   }
 
   public int getPointerId(int pointerIndex) {
-    return mEvent.getPointerId(pointerIndex);
+    // TODO: this may result in pointer id returning values that are greater than getPointerCount
+    // as we don't remap pointer ids. This is against the documentation and may result in some weird
+    // effects. On the other hand remapping pointer IDs would require yet another array of pointers
+    // to be allocated. As I believe in most of the cases code wouldn't rely on that assumption this
+    // should be mostly ok.
+    return mEvent.getPointerId(mPointerIndices[pointerIndex]);
   }
 
   public long getEventTime() {
@@ -233,7 +208,12 @@ public class MotionEvent {
   }
 
   public int findPointerIndex(int pointerId) {
-    return mEvent.findPointerIndex(pointerId);
+    for (int i = 0; i < mPointersCount; i++) {
+      if (mEvent.getPointerId(mPointerIndices[i]) == pointerId) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   public void recycle() {
@@ -241,62 +221,56 @@ public class MotionEvent {
   }
 
   public float getPressure(int pointerIndex) {
-    return mEvent.getPressure(pointerIndex);
-  }
-
-  public float getXOffset() {
-    return mEvent.getRawX() - mEvent.getX();
-  }
-
-  public float getYOffset() {
-    return mEvent.getRawY() - mEvent.getY();
+    return mEvent.getPressure(mPointerIndices[pointerIndex]);
   }
 
   public float getLastPointerX(boolean averageTouches) {
-    float offset = getXOffset();
     int excludeIndex = getActionMasked() == ACTION_POINTER_UP ?
             getActionIndex() : -1;
 
     if (averageTouches) {
       float sum = 0f;
       int count = 0;
-      for (int i = 0, size = getMotionEventPointerCount(); i < size; i++) {
-        if (i != excludeIndex && containsIndexOfMotionEvent(i)) {
-          sum += getX(i) + offset;
+      for (int i = 0, size = getPointerCount(); i < size; i++) {
+        if (i != excludeIndex) {
+          sum += getRawX(i);
           count++;
         }
       }
       return sum / count;
     } else {
-      int lastPointerIdx = getMotionEventPointerCount() - 1;
-      while (lastPointerIdx == excludeIndex || !containsIndexOfMotionEvent(lastPointerIdx)) {
+      int lastPointerIdx = getPointerCount() - 1;
+      while (lastPointerIdx == excludeIndex) {
         lastPointerIdx--;
       }
-      return getX(lastPointerIdx) + offset;
+      return getRawX(lastPointerIdx);
     }
   }
 
   public float getLastPointerY(boolean averageTouches) {
-    float offset = getYOffset();
     int excludeIndex = getActionMasked() == ACTION_POINTER_UP ?
             getActionIndex() : -1;
 
     if (averageTouches) {
       float sum = 0f;
       int count = 0;
-      for (int i = 0, size = getMotionEventPointerCount(); i < size; i++) {
-        if (i != excludeIndex && containsIndexOfMotionEvent(i)) {
-          sum += getY(i) + offset;
+      for (int i = 0, size = getPointerCount(); i < size; i++) {
+        if (i != excludeIndex) {
+          sum += getRawY(i);
           count++;
         }
       }
       return sum / count;
     } else {
-      int lastPointerIdx = getMotionEventPointerCount() - 1;
-      while (lastPointerIdx == excludeIndex || !containsIndexOfMotionEvent(lastPointerIdx)) {
+      int lastPointerIdx = getPointerCount() - 1;
+      while (lastPointerIdx == excludeIndex) {
         lastPointerIdx--;
       }
-      return getY(lastPointerIdx) + offset;
+      return getRawY(lastPointerIdx);
     }
+  }
+
+  static String actionToString(int action) {
+    return android.view.MotionEvent.actionToString(action);
   }
 }

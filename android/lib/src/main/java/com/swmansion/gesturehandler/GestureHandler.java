@@ -2,6 +2,8 @@ package com.swmansion.gesturehandler;
 
 import android.view.View;
 
+import java.util.Arrays;
+
 public class GestureHandler<T extends GestureHandler> {
 
   public static final int STATE_UNDETERMINED = 0;
@@ -25,7 +27,11 @@ public class GestureHandler<T extends GestureHandler> {
   public static final int DIRECTION_UP = 4;
   public static final int DIRECTION_DOWN = 8;
 
+  private static int MAX_POINTERS_COUNT = 11;
+
   private final MotionEvent mMotionEvent = new MotionEvent();
+  private final boolean[] mTrackedPointerIDs = new boolean[MAX_POINTERS_COUNT];
+  private int mTrackedPointersCount = 0;
 
   private int mTag;
   private View mView;
@@ -62,7 +68,12 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public boolean hasCommonPointers(GestureHandler other) {
-    return mMotionEvent.hasCommonPointers(other.mMotionEvent);
+    for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
+      if (mTrackedPointerIDs[i] && other.mTrackedPointerIDs[i]) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public T setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
@@ -156,10 +167,22 @@ public class GestureHandler<T extends GestureHandler> {
     mOrchestrator = orchestrator;
   }
 
-  public final void handle(android.view.MotionEvent unwrappedEvent) {
-    if (!mMotionEvent.wrap(unwrappedEvent)) {
-      return;
+  public void startTrackingPointer(int pointerId) {
+    if (!mTrackedPointerIDs[pointerId]) {
+      mTrackedPointerIDs[pointerId] = true;
+      mTrackedPointersCount++;
     }
+  }
+
+  public void stopTrackingPointer(int pointerId) {
+    if (mTrackedPointerIDs[pointerId]) {
+      mTrackedPointerIDs[pointerId] = false;
+      mTrackedPointersCount--;
+    }
+  }
+
+  public final void handle(android.view.MotionEvent unwrappedEvent) {
+    mMotionEvent.wrap(unwrappedEvent, mTrackedPointerIDs);
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
       return;
     }
@@ -177,7 +200,6 @@ public class GestureHandler<T extends GestureHandler> {
       return;
     }
     onHandle(mMotionEvent);
-    mMotionEvent.unwrap();
   }
 
   private void moveToState(int newState) {
@@ -193,7 +215,8 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public boolean wantEvents() {
-    return mEnabled && mState != STATE_FAILED && mState != STATE_CANCELLED && mState != STATE_END;
+    return mEnabled && mState != STATE_FAILED && mState != STATE_CANCELLED
+            && mState != STATE_END && mTrackedPointersCount > 0;
   }
 
   public int getState() {
@@ -325,6 +348,8 @@ public class GestureHandler<T extends GestureHandler> {
     mView = null;
     mOrchestrator = null;
     mMotionEvent.reset();
+    Arrays.fill(mTrackedPointerIDs, false);
+    mTrackedPointersCount = 0;
     onReset();
   }
 

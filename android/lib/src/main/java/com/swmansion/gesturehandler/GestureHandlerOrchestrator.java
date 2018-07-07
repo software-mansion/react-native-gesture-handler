@@ -293,23 +293,32 @@ public class GestureHandlerOrchestrator {
     if (!handler.wantEvents()) {
       return;
     }
-    if (handler.mIsAwaiting && event.getActionMasked() == MotionEvent.ACTION_MOVE) {
+    int action = event.getActionMasked();
+    if (handler.mIsAwaiting && action == MotionEvent.ACTION_MOVE) {
       return;
     }
     float[] coords = sTempCoords;
     extractCoordsForView(handler.getView(), event, coords);
     float oldX = event.getX();
     float oldY = event.getY();
+    // TODO: we may conside scaling events if necessary using MotionEvent.transform
+    // for now the events are only offset to the top left corner of the view but if
+    // view or any ot the parents is scaled the other pointers position will not reflect
+    // their actual place in the view. On the other hand not scaling seems like a better
+    // approach when we want to use pointer coordinates to calculate velocity or distance
+    // for pinch so I don't know yet if we should transform or not...
     event.setLocation(coords[0], coords[1]);
-    int index = event.getActionIndex();
-    int action = event.getActionMasked();
-    if (!(action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_DOWN) || handler.isWithinBounds(handler.getView(), event.getX(index), event.getY(index))) {
-      handler.handle(event);
-      if (handler.mIsActive) {
-        handler.dispatchTouchEvent(event);
-      }
+    handler.handle(event);
+    if (handler.mIsActive) {
+      handler.dispatchTouchEvent(event);
     }
     event.setLocation(oldX, oldY);
+    // if event was of type UP or POINTER_UP we request handler to stop tracking now that
+    // the event has been dispatched
+    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
+      int pointerId = event.getPointerId(event.getActionIndex());
+      handler.stopTrackingPointer(pointerId);
+    }
   }
 
   private void extractCoordsForView(View view, MotionEvent event, float[] outputCoords) {
@@ -343,7 +352,7 @@ public class GestureHandlerOrchestrator {
     handler.mActivationIndex = mActivationIndex++;
   }
 
-  private void recordGestureHandler(GestureHandler handler, View view) {
+  private void recordHandlerIfNotPresent(GestureHandler handler, View view) {
     for (int i = 0; i < mGestureHandlersCount; i++) {
       if (mGestureHandlers[i] == handler) {
         return;
@@ -359,14 +368,15 @@ public class GestureHandlerOrchestrator {
     handler.prepare(view, this);
   }
 
-  private boolean recordHandlerIfNotPresent(View view, float[] coords) {
+  private boolean recordViewHandlersForPointer(View view, float[] coords, int pointerId) {
     ArrayList<GestureHandler> handlers = mHandlerRegistry.getHandlersForView(view);
     boolean found = false;
     if (handlers != null) {
       for (int i = 0, size = handlers.size(); i < size; i++) {
         GestureHandler handler = handlers.get(i);
         if (handler.isEnabled() && handler.isWithinBounds(view, coords[0], coords[1])) {
-          recordGestureHandler(handlers.get(i), view);
+          recordHandlerIfNotPresent(handler, view);
+          handler.startTrackingPointer(pointerId);
           found = true;
         }
       }
@@ -375,14 +385,15 @@ public class GestureHandlerOrchestrator {
   }
 
   private void extractGestureHandlers(MotionEvent event) {
-    int index = event.getActionIndex();
-    sTempCoords[0] = event.getX(index);
-    sTempCoords[1] = event.getY(index);
-    traverseWithPointerEvents(mWrapperView, sTempCoords);
-    extractGestureHandlers(mWrapperView, sTempCoords);
+    int actionIndex = event.getActionIndex();
+    int pointerId = event.getPointerId(actionIndex);
+    sTempCoords[0] = event.getX(actionIndex);
+    sTempCoords[1] = event.getY(actionIndex);
+    traverseWithPointerEvents(mWrapperView, sTempCoords, pointerId);
+    extractGestureHandlers(mWrapperView, sTempCoords, pointerId);
   }
 
-  private boolean extractGestureHandlers(ViewGroup viewGroup, float[] coords) {
+  private boolean extractGestureHandlers(ViewGroup viewGroup, float[] coords, int pointerId) {
     int childrenCount = viewGroup.getChildCount();
     for (int i = childrenCount - 1; i >= 0; i--) {
       View child = mViewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i);
@@ -393,7 +404,7 @@ public class GestureHandlerOrchestrator {
         float restoreY = coords[1];
         coords[0] = childPoint.x;
         coords[1] = childPoint.y;
-        boolean found = traverseWithPointerEvents(child, coords);
+        boolean found = traverseWithPointerEvents(child, coords, pointerId);
         coords[0] = restoreX;
         coords[1] = restoreY;
         if (found) {
@@ -414,27 +425,29 @@ public class GestureHandlerOrchestrator {
     return !(view instanceof ViewGroup) || view.getBackground() != null;
   }
 
-  private boolean traverseWithPointerEvents(View view, float coords[]) {
+  private boolean traverseWithPointerEvents(View view, float coords[], int pointerId) {
     PointerEventsConfig pointerEvents = mViewConfigHelper.getPointerEventsConfigForView(view);
     if (pointerEvents == PointerEventsConfig.NONE) {
       // This view and its children can't be the target
       return false;
     } else if (pointerEvents == PointerEventsConfig.BOX_ONLY) {
       // This view is the target, its children don't matter
-      return recordHandlerIfNotPresent(view, coords) || shouldHandlerlessViewBecomeTouchTarget(view, coords);
+      return recordViewHandlersForPointer(view, coords, pointerId)
+              || shouldHandlerlessViewBecomeTouchTarget(view, coords);
     } else if (pointerEvents == PointerEventsConfig.BOX_NONE) {
       // This view can't be the target, but its children might
       if (view instanceof ViewGroup) {
-        return extractGestureHandlers((ViewGroup) view, coords);
+        return extractGestureHandlers((ViewGroup) view, coords, pointerId);
       }
       return false;
     } else if (pointerEvents == PointerEventsConfig.AUTO) {
       // Either this view or one of its children is the target
       boolean found = false;
       if (view instanceof ViewGroup) {
-        found = extractGestureHandlers((ViewGroup) view, coords);
+        found = extractGestureHandlers((ViewGroup) view, coords, pointerId);
       }
-      return recordHandlerIfNotPresent(view, coords) || found || shouldHandlerlessViewBecomeTouchTarget(view, coords);
+      return recordViewHandlersForPointer(view, coords, pointerId)
+              || found || shouldHandlerlessViewBecomeTouchTarget(view, coords);
     } else {
       throw new IllegalArgumentException(
               "Unknown pointer event type: " + pointerEvents.toString());
