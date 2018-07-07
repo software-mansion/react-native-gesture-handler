@@ -182,10 +182,11 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public final void handle(android.view.MotionEvent unwrappedEvent) {
-    mMotionEvent.wrap(unwrappedEvent, mTrackedPointerIDs);
-    if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED || mState == STATE_END) {
+    if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED
+            || mState == STATE_END || mTrackedPointersCount < 1) {
       return;
     }
+    mMotionEvent.wrap(unwrappedEvent, mTrackedPointerIDs);
     mX = mMotionEvent.getX();
     mY = mMotionEvent.getY();
     mNumberOfPointers = mMotionEvent.getPointerCount();
