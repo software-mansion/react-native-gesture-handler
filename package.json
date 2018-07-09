@@ -60,8 +60,8 @@
     "husky": "^0.14.3",
     "jest": "16.0.2",
     "jest-react-native": "16.0.0",
-    "lint-staged": "^4.0.3",
-    "prettier": "^1.7.0",
+    "lint-staged": "^7.2.0",
+    "prettier": "^1.13.7",
     "react": "^16.0.0",
     "react-native": "^0.50.1",
     "react-test-renderer": "15.3.2"
@@ -71,5 +71,8 @@
       "prettier --write --print-width 80 --tab-width 2 --single-quote --jsx-bracket-same-line=true --trailing-comma=es5",
       "git add"
     ]
+  },
+  "resolutions": {
+    "fsevents": "1.2.4"
   }
 }
