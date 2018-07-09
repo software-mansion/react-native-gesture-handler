@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import {
   PanGestureHandler,
   PinchGestureHandler,
   RotationGestureHandler,
-  ScrollView,
   State,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../config';
-import { LoremIpsum } from '../common';
 
 export class PinchableBox extends React.Component {
+  panRef = React.createRef();
+  rotationRef = React.createRef();
+  pinchRef = React.createRef();
   constructor(props) {
     super(props);
 
@@ -72,11 +73,10 @@ export class PinchableBox extends React.Component {
       this._tilt.setValue(0);
     }
   };
-
   render() {
     return (
       <PanGestureHandler
-        id="image_tilt"
+        ref={this.panRef}
         onGestureEvent={this._onTiltGestureEvent}
         onHandlerStateChange={this._onTiltGestureStateChange}
         minDist={10}
@@ -85,14 +85,14 @@ export class PinchableBox extends React.Component {
         avgTouches>
         <Animated.View style={styles.wrapper}>
           <RotationGestureHandler
-            id="image_rotation"
-            simultaneousHandlers="image_pinch"
+            ref={this.rotationRef}
+            simultaneousHandlers={this.pinchRef}
             onGestureEvent={this._onRotateGestureEvent}
             onHandlerStateChange={this._onRotateHandlerStateChange}>
             <Animated.View style={styles.wrapper}>
               <PinchGestureHandler
-                id="image_pinch"
-                simultaneousHandlers="image_rotation"
+                ref={this.pinchRef}
+                simultaneousHandlers={this.rotationRef}
                 onGestureEvent={this._onPinchGestureEvent}
                 onHandlerStateChange={this._onPinchHandlerStateChange}>
                 <Animated.View style={styles.container} collapsable={false}>
@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     overflow: 'hidden',
     alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
   },
   pinchableImage: {

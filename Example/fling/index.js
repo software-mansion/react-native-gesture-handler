@@ -22,7 +22,7 @@ class Fling extends Component {
     this._translateY = new Animated.Value(0);
   }
 
-  _onVerticalFlingHandlerStateChange = ({ nativeEvent }, offset) => {
+  _onHorizontalFlingHandlerStateChange = ({ nativeEvent }, offset) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       Animated.spring(this._touchX, {
         toValue: this._touchX._value + offset,
@@ -31,7 +31,7 @@ class Fling extends Component {
     }
   };
 
-  _onHorizontalFlingHandlerStateChange = ({ nativeEvent }) => {
+  _onVerticalFlingHandlerStateChange = ({ nativeEvent }) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       Animated.spring(this._translateY, {
         toValue: this._translateY._value + 10,
@@ -45,11 +45,11 @@ class Fling extends Component {
       <FlingGestureHandler
         direction={Directions.UP}
         numberOfPointers={2}
-        onHandlerStateChange={this._onHorizontalFlingHandlerStateChange}>
+        onHandlerStateChange={this._onVerticalFlingHandlerStateChange}>
         <FlingGestureHandler
           direction={Directions.RIGHT | Directions.LEFT}
           onHandlerStateChange={ev =>
-            this._onVerticalFlingHandlerStateChange(ev, -10)
+            this._onHorizontalFlingHandlerStateChange(ev, -10)
           }>
           <View style={styles.horizontalPan}>
             <Animated.View

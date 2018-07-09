@@ -43,8 +43,7 @@ export class DraggableBox extends Component {
       <PanGestureHandler
         {...this.props}
         onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}
-        id="dragbox">
+        onHandlerStateChange={this._onHandlerStateChange}>
         <Animated.View
           style={[
             styles.box,
@@ -54,6 +53,7 @@ export class DraggableBox extends Component {
                 { translateY: this._translateY },
               ],
             },
+            this.props.boxStyle,
           ]}
         />
       </PanGestureHandler>
@@ -62,16 +62,13 @@ export class DraggableBox extends Component {
 }
 
 export default class Example extends Component {
-  _onClick = () => {
-    Alert.alert("I'm so touched");
-  };
   render() {
     return (
-      <ScrollView style={styles.scrollView}>
+      <View style={styles.scrollView}>
         <LoremIpsum words={40} />
-        <DraggableBox minDist={30} />
+        <DraggableBox />
         <LoremIpsum />
-      </ScrollView>
+      </View>
     );
   }
 }
