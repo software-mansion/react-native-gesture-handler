@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   requireNativeComponent,
-  View,
   StyleSheet,
   ViewPropTypes,
 } from 'react-native';
