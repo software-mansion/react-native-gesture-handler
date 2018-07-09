@@ -82,7 +82,7 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public boolean hasCommonPointers(GestureHandler other) {
-    for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
+    for (int i = 0; i < mTrackedPointerIDs.length; i++) {
       if (mTrackedPointerIDs[i] != -1 && other.mTrackedPointerIDs[i] != -1) {
         return true;
       }

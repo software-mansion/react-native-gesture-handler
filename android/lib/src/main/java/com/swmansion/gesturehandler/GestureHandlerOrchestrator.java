@@ -504,16 +504,19 @@ public class GestureHandlerOrchestrator {
 
   private static boolean shouldHandlerBeCancelledBy(GestureHandler handler, GestureHandler other) {
 
-    if (canRunSimultaneously(handler, other)) {
+    if (!handler.hasCommonPointers(other)) {
+      // if two handlers share no common pointer one can never trigger cancel for the other
       return false;
     }
-    if (!handler.hasCommonPointers(other)) {
-      // If handler hasn't been activated it might
-      // be activated in the future if it was done by another finger
+    if (canRunSimultaneously(handler, other)) {
+      // if handlers are allowed to run simultaneously, when first activates second can still remain
+      // in began state
       return false;
     }
     if (handler != other &&
             (handler.mIsAwaiting || handler.getState() == GestureHandler.STATE_ACTIVE)) {
+      // in every other case as long as the handler is about to be activated or already in active
+      // state, we delegate the decision to the implementation of GestureHandler#shouldBeCancelledBy
       return handler.shouldBeCancelledBy(other);
     }
     return true;
