@@ -120,7 +120,7 @@ export class PinchableBox extends React.Component {
   }
 }
 
-const default PinchableBox;
+export default PinchableBox;
 
 const styles = StyleSheet.create({
   container: {
