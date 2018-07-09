@@ -97,7 +97,7 @@ public class RNGestureHandlerRootHelper {
     protected void onCancel() {
       mShouldIntercept = true;
       long time = SystemClock.uptimeMillis();
-      android.view.MotionEvent event = android.view.MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+      MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
       event.setAction(MotionEvent.ACTION_CANCEL);
       mReactRootView.onChildStartedNativeGesture(event);
     }
@@ -113,7 +113,7 @@ public class RNGestureHandlerRootHelper {
     }
   }
 
-  public boolean dispatchTouchEvent(android.view.MotionEvent ev) {
+  public boolean dispatchTouchEvent(MotionEvent ev) {
     // We mark `mPassingTouch` before we get into `mOrchestrator.onTouchEvent` so that we can tell
     // if `requestDisallow` has been called as a result of a normal gesture handling process or
     // as a result of one of the gesture handlers activating

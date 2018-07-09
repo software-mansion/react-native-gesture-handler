@@ -176,6 +176,7 @@ public class GestureHandler<T extends GestureHandler> {
       throw new IllegalStateException("Already prepared or hasn't been reset");
     }
     Arrays.fill(mTrackedPointerIDs, -1);
+    mTrackedPointersCount = 0;
     mState = STATE_UNDETERMINED;
 
     mView = view;
