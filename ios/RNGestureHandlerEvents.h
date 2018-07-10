@@ -39,6 +39,14 @@
 
 @end
 
+@interface RNGestureHandlerCustomEvent : NSObject <RCTEvent>
+
+- (instancetype)initWithRactTag:(NSNumber *)reactTag
+                     handlerTag:(NSNumber *)handlerTag
+                          state:(RNGestureHandlerState)state
+                      extraData:(RNGestureHandlerEventExtraData*)extraData NS_DESIGNATED_INITIALIZER;
+
+@end
 
 @interface RNGestureHandlerStateChange : NSObject <RCTEvent>
 

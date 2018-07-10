@@ -18,6 +18,7 @@
 #import "Handlers/RNNativeViewHandler.h"
 #import "Handlers/RNPinchHandler.h"
 #import "Handlers/RNRotationHandler.h"
+#import "Handlers/RNCustomHandler.h"
 
 // We use the method below instead of RCTLog because we log out messages after the bridge gets
 // turned down in some cases. Which normally with RCTLog would cause a crash in DEBUG mode
@@ -62,6 +63,7 @@
                 @"NativeViewGestureHandler": [RNNativeViewGestureHandler class],
                 @"PinchGestureHandler": [RNPinchGestureHandler class],
                 @"RotationGestureHandler": [RNRotationGestureHandler class],
+                @"CustomGestureHandler": [RNCustomGestureHandler class],
                 };
     });
     
@@ -168,11 +170,27 @@
     }
 }
 
+
+- (void)setCustomHandlerState:(nonnull NSNumber *)handlerTag
+                    withState:(nonnull NSNumber *)state; {
+   RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
+  if ([handler isKindOfClass:[RNCustomGestureHandler class]]) {
+    [(RNCustomGestureHandler *)handler setState:state];
+  } else {
+    
+  }
+}
+
 #pragma mark Events
 
 - (void)sendTouchEvent:(RNGestureHandlerEvent *)event
 {
     [_eventDispatcher sendEvent:event];
+}
+
+- (void)sendCustomEvent:(RNGestureHandlerEvent *)event
+{
+  [_eventDispatcher sendEvent:event];
 }
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event

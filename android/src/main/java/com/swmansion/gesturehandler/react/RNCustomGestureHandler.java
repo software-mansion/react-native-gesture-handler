@@ -16,18 +16,18 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.swmansion.gesturehandler.GestureHandler;
 
 public class RNCustomGestureHandler extends GestureHandler<RNCustomGestureHandler> {
-  private static class RNGestureHandlerCustomHandlerEvent extends Event<RNGestureHandlerCustomHandlerEvent> {
+  private static class RNGestureHandlerCustomEvent extends Event<RNGestureHandlerCustomEvent> {
     private WritableMap mExtraData;
     public static final String EVENT_NAME = "onGestureHandlerCustomEvent";
     private static final int CUSTOM_TOUCH_EVENTS_POOL_SIZE = 12; // magic
 
-    private static final Pools.SynchronizedPool<RNGestureHandlerCustomHandlerEvent> EVENTS_POOL =
+    private static final Pools.SynchronizedPool<RNGestureHandlerCustomEvent> EVENTS_POOL =
             new Pools.SynchronizedPool<>(CUSTOM_TOUCH_EVENTS_POOL_SIZE);
 
-    private static RNGestureHandlerCustomHandlerEvent obtain(GestureHandler handler) {
-      RNGestureHandlerCustomHandlerEvent event = EVENTS_POOL.acquire();
+    private static RNGestureHandlerCustomEvent obtain(GestureHandler handler) {
+      RNGestureHandlerCustomEvent event = EVENTS_POOL.acquire();
       if (event == null) {
-        event = new RNGestureHandlerCustomHandlerEvent();
+        event = new RNGestureHandlerCustomEvent();
       }
       event.init(handler);
       return event;
@@ -46,6 +46,7 @@ public class RNCustomGestureHandler extends GestureHandler<RNCustomGestureHandle
     private void init(GestureHandler handler) {
       super.init(handler.getView().getId());
       mExtraData = Arguments.createMap();
+      mExtraData.putInt("numberOfPointers", handler.getNumberOfPointers());
       mExtraData.putInt("handlerTag", handler.getTag());
       mExtraData.putInt("state", handler.getState());
       mExtraData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getX()));
@@ -67,7 +68,7 @@ public class RNCustomGestureHandler extends GestureHandler<RNCustomGestureHandle
     EventDispatcher eventDispatcher = mContext
             .getNativeModule(UIManagerModule.class)
             .getEventDispatcher();
-    RNGestureHandlerCustomHandlerEvent event = RNGestureHandlerCustomHandlerEvent.obtain(this);
+    RNGestureHandlerCustomEvent event = RNGestureHandlerCustomEvent.obtain(this);
     eventDispatcher.dispatchEvent(event);
   }
 

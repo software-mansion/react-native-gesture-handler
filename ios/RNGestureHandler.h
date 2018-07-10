@@ -28,6 +28,8 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 
 - (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event;
 
+- (void)sendCustomEvent:(nonnull RNGestureHandlerEvent *)event;
+
 @end
 
 
@@ -60,6 +62,7 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 - (void)unbindFromView;
 - (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)handleGesture:(nonnull id)recognizer;
+- (void)emitCustomEvent:(nonnull id)recognizer;
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
 

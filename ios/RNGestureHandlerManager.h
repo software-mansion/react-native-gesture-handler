@@ -24,4 +24,7 @@
 
 - (void)handleClearJSResponder;
 
+- (void)setCustomHandlerState:(nonnull NSNumber *)handlerTag
+                    withState:(nonnull NSNumber *)state;
+
 @end

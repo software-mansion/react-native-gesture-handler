@@ -122,6 +122,15 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
     }];
 }
 
+RCT_EXPORT_METHOD(setCustomHandlerState:(nonnull NSNumber *)handlerTag withState:(nonnull NSNumber *)state)
+{
+  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
+    [manager setCustomHandlerState:handlerTag withState:state];
+  }];
+}
+
+
+
 #pragma mark -- Batch handling
 
 - (void)addOperationBlock:(GestureHandlerOperation)operation
