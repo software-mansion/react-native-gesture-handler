@@ -183,14 +183,13 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       translationX = Animated.add(dragX, dragOffsetFromOnStartPosition);
     }
 
-    this._openValue = Animated.add(
-      translationX,
-      drawerTranslation
-    ).interpolate({
-      inputRange: [0, drawerWidth],
-      outputRange: [0, 1],
-      extrapolate: 'clamp',
-    });
+    this._openValue = Animated.add(translationX, drawerTranslation).interpolate(
+      {
+        inputRange: [0, drawerWidth],
+        outputRange: [0, 1],
+        extrapolate: 'clamp',
+      }
+    );
 
     this._onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: dragXValue, x: touchXValue } }],
@@ -386,7 +385,9 @@ export default class DrawerLayout extends Component<PropType, StateType> {
             containerStyles,
             contentContainerStyle,
           ]}>
-          {this.props.children}
+          {typeof this.props.children === 'function'
+            ? this.props.children(this._openValue)
+            : this.props.children}
           {this._renderOverlay()}
         </Animated.View>
         <Animated.View
