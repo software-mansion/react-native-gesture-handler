@@ -115,8 +115,8 @@ public class RNGestureHandlerButtonViewManager extends
           }
         }
         if (mUseCustomRippleColor
-                && selectable instanceof RippleDrawable
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && selectable instanceof RippleDrawable) {
           int[][] states = new int[][] { new int[] { android.R.attr.state_enabled} };
           int[] colors = new int[] { mRippleColor };
           ColorStateList colorStateList = new ColorStateList(states, colors);
