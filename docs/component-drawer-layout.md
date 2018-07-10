@@ -43,7 +43,7 @@ function. This attribute is present in the standard implementation already and i
 
 ---
 ### `children`
-component or function. Children is a component which is rendered by default and is wrapped by drawer. However, it could be also render function which takes an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened) is the same way like `renderNavigationView` prop
+component or function. Children is a component which is rendered by default and is wrapped by drawer. However, it could be also a render function which takes an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened) is the same way like `renderNavigationView` prop.
 
 ## Example:
 See the [drawer example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/horizontalDrawer/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
