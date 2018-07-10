@@ -367,6 +367,31 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
   }
 
+  private static class CustomGestureHandlerFactory extends HandlerFactory<RNCustomGestureHandler> {
+    @Override
+    public Class<RNCustomGestureHandler> getType() {
+      return RNCustomGestureHandler.class;
+    }
+
+    @Override
+    public String getName() {
+      return "CustomGestureHandler";
+    }
+
+    @Override
+    public RNCustomGestureHandler create(Context context) {
+      return new RNCustomGestureHandler(context);
+    }
+
+    @Override
+    public void extractEventData(RNCustomGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
+      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getX()));
+      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getY()));
+    }
+  }
+
+
   private static class RotationGestureHandlerFactory extends HandlerFactory<RotationGestureHandler> {
     @Override
     public Class<RotationGestureHandler> getType() {
@@ -412,7 +437,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           new PanGestureHandlerFactory(),
           new PinchGestureHandlerFactory(),
           new RotationGestureHandlerFactory(),
-          new FlingGestureHandlerFactory()
+          new FlingGestureHandlerFactory(),
+          new CustomGestureHandlerFactory()
   };
   private final RNGestureHandlerRegistry mRegistry = new RNGestureHandlerRegistry();
 
@@ -457,6 +483,17 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       throw new JSApplicationIllegalArgumentException(
               "Handler with tag " + handlerTag + " does not exists");
     }
+  }
+
+  @ReactMethod
+  public void setCustomHandlerState(int handlerTag, int state) {
+    GestureHandler handler = mRegistry.getHandler(handlerTag);
+    if (handler instanceof RNCustomGestureHandler) {
+      ((RNCustomGestureHandler)handler).setState(state);
+    } else {
+      throw new JSApplicationIllegalArgumentException("It's only possible to set CustomGestureHandler's state manually");
+    }
+
   }
 
   @ReactMethod

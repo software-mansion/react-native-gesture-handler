@@ -18,6 +18,7 @@ import doubleDraggable from './doubleDraggable';
 import ChatHeads from './chatHeads';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
+import Customable from './customable';
 import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
 
 YellowBox.ignoreWarnings([
@@ -71,6 +72,10 @@ const SCREENS = {
   doubleDraggable: {
     screen: doubleDraggable,
     title: 'Two handlers simultaneously',
+  },
+  Customable: {
+    screen: Customable,
+    title: 'Custom Gesture Handler',
   },
 };
 

@@ -51,6 +51,9 @@ UIManager.RCTView.directEventTypes = {
   onGestureHandlerStateChange: {
     registrationName: 'onGestureHandlerStateChange',
   },
+  onGestureHandlerCustomEvent: {
+    registrationName: 'onGestureHandlerCustomEvent',
+  },
 };
 
 const State = RNGestureHandlerModule.State;
@@ -347,7 +350,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
           })
         );
       }
-      return React.cloneElement(
+      return this.innerRender(
         child,
         {
           ref: this._refHandler,
@@ -357,6 +360,11 @@ function createHandler(handlerName, propTypes = null, config = {}) {
         },
         children
       );
+    }
+
+    // to be overrided in custom handler
+    innerRender(component, props, children) {
+      return React.cloneElement(component, props, children);
     }
   }
   return Handler;
@@ -419,6 +427,57 @@ const PanGestureHandler = createHandler(
 );
 const PinchGestureHandler = createHandler('PinchGestureHandler', {}, {});
 const RotationGestureHandler = createHandler('RotationGestureHandler', {}, {});
+const UnwrappedCustomGestureHandler = createHandler(
+  'CustomGestureHandler',
+  {},
+  {}
+);
+class CustomGestureHandler extends UnwrappedCustomGestureHandler {
+  stateManager = {
+    performStateChange: newState =>
+      RNGestureHandlerModule.setCustomHandlerState(this._handlerTag, newState),
+    fail: () =>
+      RNGestureHandlerModule.setCustomHandlerState(
+        this._handlerTag,
+        State.FAILED
+      ),
+    begin: () =>
+      RNGestureHandlerModule.setCustomHandlerState(
+        this._handlerTag,
+        State.BEGAN
+      ),
+    cancel: () =>
+      RNGestureHandlerModule.setCustomHandlerState(
+        this._handlerTag,
+        State.CANCELLED
+      ),
+    activate: () =>
+      RNGestureHandlerModule.setCustomHandlerState(
+        this._handlerTag,
+        State.ACTIVE
+      ),
+    end: () =>
+      RNGestureHandlerModule.setCustomHandlerState(this._handlerTag, State.END),
+  };
+
+  _onGestureHandlerCustomEvent = event => {
+    if (event.nativeEvent.handlerTag === this._handlerTag) {
+      this.props.handleEvents &&
+        this.props.handleEvents(event, this.stateManager);
+    }
+  };
+
+  innerRender(component, props, children) {
+    return React.cloneElement(
+      component,
+      {
+        ...props,
+        onGestureHandlerCustomEvent: this._onGestureHandlerCustomEvent,
+      },
+      children
+    );
+  }
+}
 
 const NATIVE_WRAPPER_BIND_BLACKLIST = new Set(['replaceState', 'isMounted']);
 const NATIVE_WRAPPER_PROPS_FILTER = {
@@ -427,6 +486,7 @@ const NATIVE_WRAPPER_PROPS_FILTER = {
   // we want to pass gesture event handlers if registered
   onGestureHandlerEvent: PropTypes.func,
   onGestureHandlerStateChange: PropTypes.func,
+  onGestureHandlerCustomEvent: PropTypes.func,
 };
 
 function createNativeWrapper(Component, config = {}) {
@@ -687,6 +747,7 @@ export {
   TapGestureHandler,
   FlingGestureHandler,
   LongPressGestureHandler,
+  CustomGestureHandler,
   PanGestureHandler,
   PinchGestureHandler,
   RotationGestureHandler,
