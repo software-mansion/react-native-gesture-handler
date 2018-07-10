@@ -84,12 +84,14 @@
   }
   
   [super touchesBegan:touches withEvent:event];
+  
   // workaround below refers to error with recognizing gesture if there was no move event
-  // beetween touching down and up. As in TapHandler it's not a special case (contrary to PanHandler)
+  // between touching down and up. As in TapHandler it's not a special case (contrary to PanHandler)
   // the first touch (down event) has to be handled in the same way as move
   // in order to allow handle to change its state not only if there was some move event during recognizing
+  // Otherwise it implies in error with calculating position of tap as
+  // it was sum of each touches before in this case
   [super touchesMoved:touches withEvent:event];
-    
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
