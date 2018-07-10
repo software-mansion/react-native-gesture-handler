@@ -15,16 +15,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.swmansion.gesturehandler.GestureHandler;
 
-import javax.annotation.Nullable;
-
 public class RNCustomGestureHandler extends GestureHandler<RNCustomGestureHandler> {
   private static class RNGestureHandlerCustomHandlerEvent extends Event<RNGestureHandlerCustomHandlerEvent> {
     private WritableMap mExtraData;
     public static final String EVENT_NAME = "onGestureHandlerCustomEvent";
-    private static final int TOUCH_EVENTS_POOL_SIZE = 12; // magic
+    private static final int CUSTOM_TOUCH_EVENTS_POOL_SIZE = 12; // magic
 
     private static final Pools.SynchronizedPool<RNGestureHandlerCustomHandlerEvent> EVENTS_POOL =
-            new Pools.SynchronizedPool<>(TOUCH_EVENTS_POOL_SIZE);
+            new Pools.SynchronizedPool<>(CUSTOM_TOUCH_EVENTS_POOL_SIZE);
 
     private static RNGestureHandlerCustomHandlerEvent obtain(GestureHandler handler) {
       RNGestureHandlerCustomHandlerEvent event = EVENTS_POOL.acquire();
