@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
   },
   ghspace: {
     backgroundColor: 'red',
-    width: 400,
-    height: 400,
+    width: 305,
+    height: 305,
   },
   scrollView: {
     flex: 1,
