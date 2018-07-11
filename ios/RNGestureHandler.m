@@ -6,6 +6,8 @@
 
 #import <React/UIView+React.h>
 
+#import "Handlers/RNCustomHandler.h"
+
 @interface UIGestureRecognizer (GestureHandler)
 @property (nonatomic, readonly) RNGestureHandler *gestureHandler;
 @end
@@ -197,7 +199,14 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 
 - (RNGestureHandlerState)state
 {
-    switch (_recognizer.state) {
+  UIGestureRecognizerState state;
+  if ([_recognizer isKindOfClass:[RNCustomGestureRecognizer class]]) {
+    state = ((RNCustomGestureRecognizer *) _recognizer).fallbackState;
+  } else {
+    state = _recognizer.state;
+  }
+  
+    switch (state) {
         case UIGestureRecognizerStateBegan:
         case UIGestureRecognizerStatePossible:
             return RNGestureHandlerStateBegan;

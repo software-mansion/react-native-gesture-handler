@@ -31,7 +31,7 @@ export default class Example extends Component {
             Alert.alert('Meh...', "You're so slow ¯\\_(ツ)_/¯");
             clearTimeout(this.timeout);
             this.timeout = false;
-          }, 2000);
+          }, 3000);
         }
         this.setState({ level: (this.state.level + 1) % 8 });
       }
@@ -59,6 +59,10 @@ export default class Example extends Component {
       this.timeout = false;
     }
   };
+
+  componentWillUnmount() {
+    clearTimeout(this.timeout);
+  }
 
   render() {
     return (

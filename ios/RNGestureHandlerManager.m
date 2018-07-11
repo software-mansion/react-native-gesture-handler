@@ -128,7 +128,7 @@
   if ([handler isKindOfClass:[RNCustomGestureHandler class]]) {
     [(RNCustomGestureHandler *)handler setState:state];
   } else {
-    // throw sth
+    RCTLogError(@"It's only possible to set CustomGestureHandler's state manually");
   }
 }
 

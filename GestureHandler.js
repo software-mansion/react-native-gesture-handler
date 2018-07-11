@@ -441,11 +441,6 @@ class CustomGestureHandler extends UnwrappedCustomGestureHandler {
         this._handlerTag,
         State.FAILED
       ),
-    begin: () =>
-      RNGestureHandlerModule.setCustomHandlerState(
-        this._handlerTag,
-        State.BEGAN
-      ),
     cancel: () =>
       RNGestureHandlerModule.setCustomHandlerState(
         this._handlerTag,
