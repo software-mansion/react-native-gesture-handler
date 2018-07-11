@@ -3,7 +3,6 @@
 #import "RNGestureHandlerState.h"
 #import <React/RCTConvert.h>
 
-
 @implementation RNCustomGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
   NSSet<UITouch *> *_lastTouches;
@@ -61,8 +60,6 @@
   }
 }
 
-
-
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   _lastEvent = event;
@@ -71,7 +68,6 @@
   if (self.state == UIGestureRecognizerStateChanged || self.state == UIGestureRecognizerStatePossible) {
     self.state = UIGestureRecognizerStateFailed;
   }
-  
   [self triggerAction];
 }
 
@@ -79,7 +75,6 @@
 {
   self.enabled = YES;
   [super reset];
-  
 }
 @end
 
@@ -123,6 +118,5 @@
 {
   [super configure:config];
 }
-
 
 @end
