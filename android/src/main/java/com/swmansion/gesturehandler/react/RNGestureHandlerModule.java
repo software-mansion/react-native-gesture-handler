@@ -486,17 +486,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setCustomHandlerState(int handlerTag, int state) {
-    GestureHandler handler = mRegistry.getHandler(handlerTag);
-    if (handler instanceof RNCustomGestureHandler) {
-      ((RNCustomGestureHandler)handler).setState(state);
-    } else {
-      throw new JSApplicationIllegalArgumentException("It's only possible to set CustomGestureHandler's state manually");
-    }
-
-  }
-
-  @ReactMethod
   public void updateGestureHandler(
           int handlerTag,
           ReadableMap config) {
@@ -529,6 +518,16 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void handleClearJSResponder() {
+  }
+
+  @ReactMethod
+  public void setCustomHandlerState(int handlerTag, int state) {
+    GestureHandler handler = mRegistry.getHandler(handlerTag);
+    if (handler instanceof RNCustomGestureHandler) {
+      ((RNCustomGestureHandler)handler).setState(state);
+    } else {
+      throw new JSApplicationIllegalArgumentException("It's only possible to set CustomGestureHandler's state manually");
+    }
   }
 
   @Override

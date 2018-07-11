@@ -61,6 +61,9 @@ public class RNCustomGestureHandler extends GestureHandler<RNCustomGestureHandle
 
   @Override
   protected void onHandle(MotionEvent event) {
+    if (getState() == STATE_UNDETERMINED) {
+      begin();
+    }
     sendEventToJS();
   }
 
@@ -82,7 +85,7 @@ public class RNCustomGestureHandler extends GestureHandler<RNCustomGestureHandle
         fail();
         break;
       case STATE_BEGAN:
-        begin();
+        // no-op
         break;
       case STATE_CANCELLED:
         cancel();

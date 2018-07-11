@@ -1,18 +1,12 @@
-//
-//  RNCustomHandler.m
-//  RNGestureHandler
-//
-//  Created by Michał Osadnik on 10.07.2018.
-//  Copyright © 2018 Software Mansion. All rights reserved.
-//
-
 #import "RNCustomHandler.h"
 #import <UIKit/UIGestureRecognizerSubclass.h>
+#import "RNGestureHandlerState.h"
+#import <React/RCTConvert.h>
 
-@interface RNCustomGestureRecognizer : UIPanGestureRecognizer
+@interface RNCustomGestureRecognizer : UIGestureRecognizer
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
-
+@property (nonatomic) UIGestureRecognizerState stateToBeSet;
 @end
 
 
@@ -24,20 +18,36 @@
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
+    _stateToBeSet = UIGestureRecognizerStatePossible;
   }
   return self;
 }
 
+- (void)manageState
+{
+  if (_stateToBeSet != self.state) {
+    self.state = _stateToBeSet;
+  }
+}
+
+- (void)triggerAction
+{
+  if (_stateToBeSet != self.state) {
+    self.state = _stateToBeSet;
+  }
+  [_gestureHandler handleGesture:self];
+  [_gestureHandler emitCustomEvent:self];
+}
+
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  super.minimumNumberOfTouches = 20; // prevent "normal" activating
   [super touchesBegan:touches withEvent:event];
-  self.state = -1; // undetermined
+  self.state = UIGestureRecognizerStatePossible;
+  [self triggerAction];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler emitCustomEvent:self];
   [super touchesMoved:touches withEvent:event];
   if (_gestureHandler.shouldCancelWhenOutside) {
     CGPoint pt = [self locationInView:self.view];
@@ -46,7 +56,7 @@
       self.enabled = YES;
     }
   }
-  
+  [self triggerAction];
 }
 
 
@@ -59,13 +69,36 @@
 - (void)reset
 {
   self.enabled = YES;
+  self.stateToBeSet = UIGestureRecognizerStatePossible;
   [super reset];
 }
 @end
 
 @implementation RNCustomGestureHandler
+- (UIGestureRecognizerState) converToNativeState:(NSInteger) state
+{
+  switch (state) {
+    case RNGestureHandlerStateBegan:
+      return UIGestureRecognizerStateBegan;
+    case RNGestureHandlerStateCancelled:
+      return UIGestureRecognizerStateCancelled;
+    case RNGestureHandlerStateActive:
+      return UIGestureRecognizerStateChanged;
+    case RNGestureHandlerStateFailed:
+      return UIGestureRecognizerStateFailed;
+    case RNGestureHandlerStateEnd:
+      return UIGestureRecognizerStateEnded;
+    default:
+      return UIGestureRecognizerStatePossible; // not to be reached
+  }
+}
+
 - (void)setState:(NSNumber *)state {
-  
+  ((RNCustomGestureRecognizer *)_recognizer).stateToBeSet = [self converToNativeState:[RCTConvert NSInteger:state]];
+  if (self.state == RNGestureHandlerStateCancelled || self.state == RNGestureHandlerStateFailed)
+  {
+ // [(RNCustomGestureRecognizer *)_recognizer triggerAction];
+  }
 }
 - (instancetype)initWithTag:(NSNumber *)tag
 {

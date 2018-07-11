@@ -19,25 +19,28 @@ export default class Example extends Component {
     { x: 79, y: 79 },
   ];
   parseEvent = ({ nativeEvent }, sm) => {
-    console.log(nativeEvent.x, nativeEvent.y);
     if (
       Math.pow(nativeEvent.x - this.points[this.state.level].x, 2) +
         Math.pow(nativeEvent.y - this.points[this.state.level].y, 2) <
       700
     ) {
-      if (nativeEvent.state === State.UNDETERMINED) {
-        sm.begin();
-        this.timeout = setTimeout(() => {
-          sm.fail();
-          Alert.alert('Meh...', "You're so slow ¯\\_(ツ)_/¯");
-        }, 2000);
+      if (nativeEvent.state === State.BEGAN) {
+        if (!this.timeout) {
+          this.timeout = setTimeout(() => {
+            sm.cancel();
+            Alert.alert('Meh...', "You're so slow ¯\\_(ツ)_/¯");
+            clearTimeout(this.timeout);
+            this.timeout = false;
+          }, 2000);
+        }
+        this.setState({ level: (this.state.level + 1) % 8 });
       }
       if (this.state.level === 7) {
         clearTimeout(this.timeout);
+        this.timeout = false;
         sm.activate();
         sm.end();
       }
-      this.setState({ level: (this.state.level + 1) % 8 });
     }
   };
 
@@ -47,9 +50,13 @@ export default class Example extends Component {
     });
     if (oldState === State.ACTIVE) {
       Alert.alert('Yay!');
+      clearTimeout(this.timeout);
+      this.timeout = false;
     }
     if (state === State.FAILED || state === State.CANCELLED) {
       this.setState({ level: 0 });
+      clearTimeout(this.timeout);
+      this.timeout = false;
     }
   };
 
@@ -59,7 +66,6 @@ export default class Example extends Component {
         <Text>Draw circle fast starting from the top</Text>
         <CustomGestureHandler
           shouldCancelWhenOutside
-          onGestureEvent={event => console.log(event.nativeEvent)}
           handleEvents={this.parseEvent}
           onHandlerStateChange={this.parseState}>
           <View style={styles.ghspace}>

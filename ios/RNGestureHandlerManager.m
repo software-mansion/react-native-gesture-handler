@@ -122,6 +122,16 @@
     // ignore...
 }
 
+- (void)setCustomHandlerState:(nonnull NSNumber *)handlerTag
+                    withState:(nonnull NSNumber *)state; {
+  RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
+  if ([handler isKindOfClass:[RNCustomGestureHandler class]]) {
+    [(RNCustomGestureHandler *)handler setState:state];
+  } else {
+    // throw sth
+  }
+}
+
 #pragma mark Root Views Management
 
 - (void)registerRootViewIfNeeded:(UIView*)childView
@@ -168,17 +178,6 @@
     if ([_rootViews count] > 0) {
         RCTLifecycleLog(@"[GESTURE HANDLER] Tearing down gesture handler registered for views %@", _rootViews);
     }
-}
-
-
-- (void)setCustomHandlerState:(nonnull NSNumber *)handlerTag
-                    withState:(nonnull NSNumber *)state; {
-   RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
-  if ([handler isKindOfClass:[RNCustomGestureHandler class]]) {
-    [(RNCustomGestureHandler *)handler setState:state];
-  } else {
-    
-  }
 }
 
 #pragma mark Events
