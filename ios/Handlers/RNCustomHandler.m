@@ -6,7 +6,7 @@
 @interface RNCustomGestureRecognizer : UIGestureRecognizer
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
-@property (nonatomic) UIGestureRecognizerState stateToBeSet;
+- (void)manageState:(UIGestureRecognizerState)state;
 @end
 
 
@@ -18,23 +18,18 @@
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
-    _stateToBeSet = UIGestureRecognizerStatePossible;
   }
   return self;
 }
 
-- (void)manageState
+- (void)manageState:(UIGestureRecognizerState)state;
 {
-  if (_stateToBeSet != self.state) {
-    self.state = _stateToBeSet;
-  }
+  self.state = state;
+  [self triggerAction];
 }
 
 - (void)triggerAction
 {
-  if (_stateToBeSet != self.state) {
-    self.state = _stateToBeSet;
-  }
   [_gestureHandler handleGesture:self];
   [_gestureHandler emitCustomEvent:self];
 }
@@ -48,6 +43,7 @@
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [self triggerAction];
   [super touchesMoved:touches withEvent:event];
   if (_gestureHandler.shouldCancelWhenOutside) {
     CGPoint pt = [self locationInView:self.view];
@@ -56,7 +52,6 @@
       self.enabled = YES;
     }
   }
-  [self triggerAction];
 }
 
 
@@ -64,12 +59,16 @@
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
+  if (self.state == UIGestureRecognizerStateChanged || self.state == UIGestureRecognizerStatePossible) {
+    self.state = UIGestureRecognizerStateFailed;
+  }
+  
+  [self triggerAction];
 }
 
 - (void)reset
 {
   self.enabled = YES;
-  self.stateToBeSet = UIGestureRecognizerStatePossible;
   [super reset];
 }
 @end
@@ -94,11 +93,7 @@
 }
 
 - (void)setState:(NSNumber *)state {
-  ((RNCustomGestureRecognizer *)_recognizer).stateToBeSet = [self converToNativeState:[RCTConvert NSInteger:state]];
-  if (self.state == RNGestureHandlerStateCancelled || self.state == RNGestureHandlerStateFailed)
-  {
- // [(RNCustomGestureRecognizer *)_recognizer triggerAction];
-  }
+  [((RNCustomGestureRecognizer *)_recognizer) manageState:[self converToNativeState:[RCTConvert NSInteger:state]]];
 }
 - (instancetype)initWithTag:(NSNumber *)tag
 {

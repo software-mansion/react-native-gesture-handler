@@ -61,8 +61,15 @@ public class RNCustomGestureHandler extends GestureHandler<RNCustomGestureHandle
 
   @Override
   protected void onHandle(MotionEvent event) {
-    if (getState() == STATE_UNDETERMINED) {
+    int action = event.getActionMasked();
+    int state = getState();
+    if (state == STATE_UNDETERMINED) {
       begin();
+    }
+    if (action == MotionEvent.ACTION_UP) {
+      if (state == STATE_ACTIVE || state == STATE_BEGAN) {
+        fail();
+      }
     }
     sendEventToJS();
   }

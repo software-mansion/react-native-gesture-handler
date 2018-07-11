@@ -82,7 +82,6 @@
     if (!isnan(_maxDuration)) {
         [self performSelector:@selector(cancel) withObject:nil afterDelay:_maxDuration];
     }
-
     [super touchesBegan:touches withEvent:event];
 }
 
