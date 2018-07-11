@@ -121,8 +121,6 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
       mOffsetY = 0;
       mStartX = event.getRawX();
       mStartY = event.getRawY();
-      mLastX = mStartX;
-      mLastY = mStartY;
     }
 
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
