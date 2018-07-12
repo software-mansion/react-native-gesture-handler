@@ -12,6 +12,10 @@
 
 #import <React/RCTConvert.h>
 
+// RNBetterTapGestureRecognizer does not extend UITapGestureRecognizer so that as parameters like
+// maxDelay, maxDuration, minPointers, maxDelta are not configurable in UITapGestureRecognizer
+// and therefore require custom implementation.
+
 @interface RNBetterTapGestureRecognizer : UIGestureRecognizer
 
 @property (nonatomic) NSUInteger numberOfTaps;
