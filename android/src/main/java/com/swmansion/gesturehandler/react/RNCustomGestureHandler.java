@@ -97,6 +97,7 @@ public class RNCustomGestureHandler extends GestureHandler<RNCustomGestureHandle
       case STATE_END:
         if (getState() == STATE_BEGAN) {
           activate();
+          // in order to handle discrete gestures
         }
         end();
         break;
