@@ -242,20 +242,18 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       if (shouldFail()) {
         fail();
       }
-    } else
-      if (state == STATE_UNDETERMINED
-              && action == MotionEvent.ACTION_MOVE
-              && mHasProperNumberOfPointers
-              && shouldBeginAndActivate()) {
-        // reset starting point
-        mStartX = mLastX;
-        mStartY = mLastY;
-        mVelocityTracker = VelocityTracker.obtain();
-        addVelocityMovement(mVelocityTracker, event);
-        begin();
-        activate();
-      }
-
+    } else if (state == STATE_UNDETERMINED
+            && action == MotionEvent.ACTION_MOVE
+            && event.getPointerCount() >= mMinPointers
+            && shouldBeginAndActivate()) {
+      // reset starting point
+      mStartX = mLastX;
+      mStartY = mLastY;
+      mVelocityTracker = VelocityTracker.obtain();
+      addVelocityMovement(mVelocityTracker, event);
+      begin();
+      activate();
+    }
   }
 
   @Override
