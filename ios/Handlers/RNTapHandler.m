@@ -107,7 +107,7 @@
     [self triggerAction];
 }
 
-- (CGPoint)translationInView:(UIView *)view {
+- (CGPoint)translationInView {
     CGPoint currentPosition = [self locationInView:self.view];
     return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
 }
@@ -121,7 +121,7 @@
     }
   }
   
-  CGPoint trans = [self translationInView:self.view];
+  CGPoint trans = [self translationInView];
   if (TEST_MAX_IF_NOT_NAN(fabs(trans.x), _maxDeltaX)) {
     return YES;
   }
