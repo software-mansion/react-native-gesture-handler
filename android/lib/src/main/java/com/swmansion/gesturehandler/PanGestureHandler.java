@@ -25,7 +25,6 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mMinVelocitySq = MIN_VALUE_IGNORE;
   private int mMinPointers = DEFAULT_MIN_POINTERS;
   private int mMaxPointers = DEFAULT_MAX_POINTERS;
-  private boolean mHasProperNumberOfPointers = false;
 
   private float mStartX, mStartY;
   private float mOffsetX, mOffsetY;
@@ -204,10 +203,13 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mLastEventOffsetY = event.getRawY() - event.getY();
     }
 
+    boolean actionPointersChanged = action == MotionEvent.ACTION_DOWN
+            || action == MotionEvent.ACTION_POINTER_DOWN
+            || action == MotionEvent.ACTION_POINTER_UP;
+
     if (state == STATE_UNDETERMINED
             && event.getPointerCount() >= mMinPointers
-            && !mHasProperNumberOfPointers) {
-      mHasProperNumberOfPointers = true;
+            &&  actionPointersChanged) {
       mStartX = mLastX;
       mStartY = mLastY;
       mOffsetX = 0;
@@ -262,7 +264,6 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mVelocityTracker.recycle();
       mVelocityTracker = null;
     }
-    mHasProperNumberOfPointers = false;
   }
 
   public float getTranslationX() {
