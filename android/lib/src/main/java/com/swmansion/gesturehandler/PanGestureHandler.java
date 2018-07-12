@@ -25,6 +25,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mMinVelocitySq = MIN_VALUE_IGNORE;
   private int mMinPointers = DEFAULT_MIN_POINTERS;
   private int mMaxPointers = DEFAULT_MAX_POINTERS;
+  private boolean mHasProperNumberOfPointers = false;
 
   private float mStartX, mStartY;
   private float mOffsetX, mOffsetY;
@@ -121,7 +122,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return this;
   }
 
-  private boolean shouldActivate() {
+  private boolean shouldBeginAndActivate() {
     float dx = mLastX - mStartX + mOffsetX;
     if (mMinDeltaX != MIN_VALUE_IGNORE && Math.abs(dx) >= mMinDeltaX) {
       return true;
@@ -205,14 +206,12 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
     if (state == STATE_UNDETERMINED
             && event.getPointerCount() >= mMinPointers
-            && action == MotionEvent.ACTION_MOVE) {
+            && !mHasProperNumberOfPointers) {
+      mHasProperNumberOfPointers = true;
       mStartX = mLastX;
       mStartY = mLastY;
       mOffsetX = 0;
       mOffsetY = 0;
-      mVelocityTracker = VelocityTracker.obtain();
-      addVelocityMovement(mVelocityTracker, event);
-      begin();
     } else if (mVelocityTracker != null) {
       addVelocityMovement(mVelocityTracker, event);
       mVelocityTracker.computeCurrentVelocity(1000);
@@ -223,7 +222,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     if (action == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
         end();
-      } else {
+      } else if (state == STATE_BEGAN) {
         fail();
       }
     } else if (action == MotionEvent.ACTION_POINTER_DOWN && event.getPointerCount() > mMaxPointers) {
@@ -242,13 +241,21 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     } else if (state == STATE_BEGAN) {
       if (shouldFail()) {
         fail();
-      } else if (shouldActivate()) {
+      }
+    } else
+      if (state == STATE_UNDETERMINED
+              && action == MotionEvent.ACTION_MOVE
+              && mHasProperNumberOfPointers
+              && shouldBeginAndActivate()) {
         // reset starting point
         mStartX = mLastX;
         mStartY = mLastY;
+        mVelocityTracker = VelocityTracker.obtain();
+        addVelocityMovement(mVelocityTracker, event);
+        begin();
         activate();
       }
-    }
+
   }
 
   @Override
@@ -257,6 +264,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       mVelocityTracker.recycle();
       mVelocityTracker = null;
     }
+    mHasProperNumberOfPointers = false;
   }
 
   public float getTranslationX() {
