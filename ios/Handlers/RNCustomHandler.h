@@ -4,7 +4,6 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 - (void)manageState:(UIGestureRecognizerState)state;
-@property UIGestureRecognizerState fallbackState;
 @end
 
 @interface RNCustomGestureHandler : RNGestureHandler

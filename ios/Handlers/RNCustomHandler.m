@@ -5,8 +5,6 @@
 
 @implementation RNCustomGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
-  NSSet<UITouch *> *_lastTouches;
-  UIEvent *_lastEvent;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
@@ -29,15 +27,8 @@
   [_gestureHandler emitCustomEvent:self];
 }
 
-- (void) setState:(UIGestureRecognizerState)state {
-  _fallbackState = state;
-  [super setState:state];
-}
-
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  _lastEvent = event;
-  _lastTouches = touches;
   [super touchesBegan:touches withEvent:event];
   self.state = UIGestureRecognizerStatePossible;
   [self triggerAction];
@@ -45,8 +36,6 @@
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  _lastEvent = event;
-  _lastTouches = touches;
   [self triggerAction];
   [super touchesMoved:touches withEvent:event];
   if (_gestureHandler.shouldCancelWhenOutside) {
@@ -62,8 +51,6 @@
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  _lastEvent = event;
-  _lastTouches = touches;
   [super touchesEnded:touches withEvent:event];
   if (self.state == UIGestureRecognizerStateChanged || self.state == UIGestureRecognizerStatePossible) {
     self.state = UIGestureRecognizerStateFailed;

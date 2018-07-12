@@ -38,7 +38,6 @@ export default class Example extends Component {
       if (this.state.level === 7) {
         clearTimeout(this.timeout);
         this.timeout = false;
-        sm.activate();
         sm.end();
       }
     }

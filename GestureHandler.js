@@ -433,29 +433,25 @@ const UnwrappedCustomGestureHandler = createHandler(
   {}
 );
 class CustomGestureHandler extends UnwrappedCustomGestureHandler {
+  usedManagerInThisFrame = false;
   stateManager = {
-    performStateChange: newState =>
-      RNGestureHandlerModule.setCustomHandlerState(this._handlerTag, newState),
-    fail: () =>
-      RNGestureHandlerModule.setCustomHandlerState(
-        this._handlerTag,
-        State.FAILED
-      ),
-    cancel: () =>
-      RNGestureHandlerModule.setCustomHandlerState(
-        this._handlerTag,
-        State.CANCELLED
-      ),
-    activate: () =>
-      RNGestureHandlerModule.setCustomHandlerState(
-        this._handlerTag,
-        State.ACTIVE
-      ),
-    end: () =>
-      RNGestureHandlerModule.setCustomHandlerState(this._handlerTag, State.END),
+    performStateChange: newState => {
+      if (this.usedManagerInThisFrame) {
+        throw new Error(
+          'You are not to use state manager more than once a frame'
+        );
+      }
+      this.usedManagerInThisFrame = true;
+      RNGestureHandlerModule.setCustomHandlerState(this._handlerTag, newState);
+    },
+    fail: () => this.stateManager.performStateChange(State.FAILED),
+    cancel: () => this.stateManager.performStateChange(State.CANCELLED),
+    activate: () => this.stateManager.performStateChange(State.ACTIVE),
+    end: () => this.stateManager.performStateChange(State.END),
   };
 
   _onGestureHandlerCustomEvent = event => {
+    usedManagerIsThisFrame = false;
     if (event.nativeEvent.handlerTag === this._handlerTag) {
       this.props.handleEvents &&
         this.props.handleEvents(event, this.stateManager);

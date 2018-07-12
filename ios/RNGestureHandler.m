@@ -199,27 +199,20 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 
 - (RNGestureHandlerState)state
 {
-  UIGestureRecognizerState state;
-  if ([_recognizer isKindOfClass:[RNCustomGestureRecognizer class]]) {
-    state = ((RNCustomGestureRecognizer *) _recognizer).fallbackState;
-  } else {
-    state = _recognizer.state;
+  switch (_recognizer.state) {
+    case UIGestureRecognizerStateBegan:
+    case UIGestureRecognizerStatePossible:
+        return RNGestureHandlerStateBegan;
+    case UIGestureRecognizerStateEnded:
+        return RNGestureHandlerStateEnd;
+    case UIGestureRecognizerStateFailed:
+        return RNGestureHandlerStateFailed;
+    case UIGestureRecognizerStateCancelled:
+        return RNGestureHandlerStateCancelled;
+    case UIGestureRecognizerStateChanged:
+        return RNGestureHandlerStateActive;
   }
-  
-    switch (state) {
-        case UIGestureRecognizerStateBegan:
-        case UIGestureRecognizerStatePossible:
-            return RNGestureHandlerStateBegan;
-        case UIGestureRecognizerStateEnded:
-            return RNGestureHandlerStateEnd;
-        case UIGestureRecognizerStateFailed:
-            return RNGestureHandlerStateFailed;
-        case UIGestureRecognizerStateCancelled:
-            return RNGestureHandlerStateCancelled;
-        case UIGestureRecognizerStateChanged:
-            return RNGestureHandlerStateActive;
-    }
-    return RNGestureHandlerStateUndetermined;
+  return RNGestureHandlerStateUndetermined;
 }
 
 #pragma mark UIGestureRecognizerDelegate
