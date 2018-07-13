@@ -55,6 +55,14 @@ UIManager.RCTView.directEventTypes = {
 
 const State = RNGestureHandlerModule.State;
 
+// Used code below as it was impossible to do it with restructuration
+Object.defineProperty(State, 'UNDETERMINED', {
+  get() {
+    console.warn('It is deprecated to use state UNDETERMINED');
+    return 0;
+  },
+});
+
 const Directions = RNGestureHandlerModule.Direction;
 
 let handlerTag = 1;

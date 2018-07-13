@@ -172,12 +172,15 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
                                                                                           extraData:extraData]];
             _lastState = RNGestureHandlerStateActive;
         }
-        id stateEvent = [[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
-                                                                  handlerTag:_tag
-                                                                       state:state
-                                                                   prevState:_lastState
-                                                                   extraData:extraData];
-        [self.emitter sendStateChangeEvent:stateEvent];
+        if (_lastState != RNGestureHandlerStateUndetermined) {
+            id stateEvent = [[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
+                                                                      handlerTag:_tag
+                                                                           state:state
+                                                                       prevState:_lastState
+                                                                       extraData:extraData];
+            
+            [self.emitter sendStateChangeEvent:stateEvent];
+        }
         _lastState = state;
     }
 
