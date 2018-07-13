@@ -15,6 +15,7 @@ import {
   StyleSheet,
   FlatList,
   Platform,
+  DeviceEventEmitter,
 } from 'react-native';
 import Touchable from 'react-native/Libraries/Components/Touchable/Touchable';
 
@@ -52,6 +53,17 @@ UIManager.RCTView.directEventTypes = {
     registrationName: 'onGestureHandlerStateChange',
   },
 };
+
+let shouldHandleInspection = false;
+// Toggled inspector block touches events in ordes to allow indpecting
+// As event emitter could be hooked only on toggling an inpector
+// it's impossible to allow touches on disabling "Inspect" without toggling inpector
+if (__DEV__) {
+  DeviceEventEmitter.addListener(
+    'toggleElementInspector',
+    () => (shouldHandleInspection = !shouldHandleInspection)
+  );
+}
 
 const State = RNGestureHandlerModule.State;
 
@@ -182,6 +194,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     _onGestureHandlerEvent = event => {
+      if (shouldHandleInspection) return;
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onGestureEvent && this.props.onGestureEvent(event);
       } else {
@@ -191,6 +204,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     };
 
     _onGestureHandlerStateChange = event => {
+      if (shouldHandleInspection) return;
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onHandlerStateChange &&
           this.props.onHandlerStateChange(event);
