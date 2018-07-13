@@ -55,9 +55,9 @@ UIManager.RCTView.directEventTypes = {
 };
 
 let shouldHandleInspection = false;
-// Toggled inspector block touches events in ordes to allow indpecting
-// As event emitter could be hooked only on toggling an inpector
-// it's impossible to allow touches on disabling "Inspect" without toggling inpector
+// Toggled inspector block touches events in order to allow inspecting on Android
+// As event emitter could be hooked only on toggling an inspector
+// it's impossible to allow touches on disabling "Inspect" without toggling inspector
 if (__DEV__ && Platform.OS === 'android') {
   DeviceEventEmitter.addListener(
     'toggleElementInspector',
