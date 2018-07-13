@@ -58,7 +58,7 @@ let shouldHandleInspection = false;
 // Toggled inspector block touches events in ordes to allow indpecting
 // As event emitter could be hooked only on toggling an inpector
 // it's impossible to allow touches on disabling "Inspect" without toggling inpector
-if (__DEV__) {
+if (__DEV__ && Platform.OS === 'android') {
   DeviceEventEmitter.addListener(
     'toggleElementInspector',
     () => (shouldHandleInspection = !shouldHandleInspection)
