@@ -58,7 +58,9 @@ const State = RNGestureHandlerModule.State;
 // Used code below as it was impossible to do it with restructuration
 Object.defineProperty(State, 'UNDETERMINED', {
   get() {
-    console.warn('It is deprecated to use state UNDETERMINED');
+    console.warn(
+      'It is deprecated to use state UNDETERMINED. Now it used only for internal native states handling and will be removed in next version'
+    );
     return 0;
   },
 });
