@@ -42,6 +42,9 @@ color (default to `"black"`) of a semi-transparent overlay to be displayed on to
 function. This attribute is present in the standard implementation already and is one of the required params. Gesture handler version of DrawerLayout make it possible for the function passed as `renderNavigationView` to take an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened). This can be used by the drawer component to animated its children while the drawer is opening or closing.
 
 ---
+### `children`
+component or function. Children is a component which is rendered by default and is wrapped by drawer. However, it could be also a render function which takes an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened) is the same way like `renderNavigationView` prop.
+
 ## Example:
 See the [drawer example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/horizontalDrawer/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
 ```js
