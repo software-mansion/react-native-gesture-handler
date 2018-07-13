@@ -192,7 +192,6 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 - (RNGestureHandlerState)state
 {
     switch (_recognizer.state) {
-        case UIGestureRecognizerStateBegan:
         case UIGestureRecognizerStatePossible:
             return RNGestureHandlerStateBegan;
         case UIGestureRecognizerStateEnded:
@@ -201,6 +200,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
             return RNGestureHandlerStateFailed;
         case UIGestureRecognizerStateCancelled:
             return RNGestureHandlerStateCancelled;
+        case UIGestureRecognizerStateBegan:
         case UIGestureRecognizerStateChanged:
             return RNGestureHandlerStateActive;
     }
