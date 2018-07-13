@@ -197,7 +197,7 @@ public class GestureHandlerOrchestrator {
       if (handler.mIsActive) {
         handler.dispatchStateChange(newState, prevState);
       }
-    } else {
+    } else if (prevState != GestureHandler.STATE_UNDETERMINED ){
       handler.dispatchStateChange(newState, prevState);
     }
     mHandlingChangeSemaphore -= 1;
