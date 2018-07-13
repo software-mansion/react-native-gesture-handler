@@ -164,7 +164,6 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
 - (NSDictionary *)constantsToExport
 {
     return @{ @"State": @{
-                      @"UNDETERMINED": @(RNGestureHandlerStateUndetermined),
                       @"BEGAN": @(RNGestureHandlerStateBegan),
                       @"ACTIVE": @(RNGestureHandlerStateActive),
                       @"CANCELLED": @(RNGestureHandlerStateCancelled),

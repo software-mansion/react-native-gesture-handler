@@ -497,7 +497,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   @Override
   public @Nullable Map getConstants() {
     return MapBuilder.of("State", MapBuilder.of(
-            "UNDETERMINED", GestureHandler.STATE_UNDETERMINED,
             "BEGAN", GestureHandler.STATE_BEGAN,
             "ACTIVE", GestureHandler.STATE_ACTIVE,
             "CANCELLED", GestureHandler.STATE_CANCELLED,
