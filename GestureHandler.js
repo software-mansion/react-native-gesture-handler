@@ -194,7 +194,9 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     }
 
     _onGestureHandlerEvent = event => {
-      if (shouldHandleInspection) return;
+      if (shouldHandleInspection) {
+        return;
+      }
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onGestureEvent && this.props.onGestureEvent(event);
       } else {
@@ -204,7 +206,9 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     };
 
     _onGestureHandlerStateChange = event => {
-      if (shouldHandleInspection) return;
+      if (shouldHandleInspection) {
+        return;
+      }
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onHandlerStateChange &&
           this.props.onHandlerStateChange(event);
