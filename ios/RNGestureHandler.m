@@ -69,7 +69,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 {
     if ((self = [super init])) {
         _tag = tag;
-        _lastState = RNGestureHandlerStateUndetermined;
+        _lastState = RNGestureHandlerStateBegan;
         _hitSlop = RNGHHitSlopEmpty;
     }
     return self;
@@ -172,7 +172,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
                                                                                           extraData:extraData]];
             _lastState = RNGestureHandlerStateActive;
         }
-        if (_lastState != RNGestureHandlerStateUndetermined) {
+        if (_lastState != RNGestureHandlerStateBegan || (state != RNGestureHandlerStateCancelled && state != RNGestureHandlerStateFailed)) {
             id stateEvent = [[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
                                                                       handlerTag:_tag
                                                                            state:state
@@ -204,7 +204,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
         case UIGestureRecognizerStateChanged:
             return RNGestureHandlerStateActive;
     }
-    return RNGestureHandlerStateUndetermined;
+    return RNGestureHandlerStateBegan;
 }
 
 #pragma mark UIGestureRecognizerDelegate
@@ -284,7 +284,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)reset
 {
-    _lastState = RNGestureHandlerStateUndetermined;
+    _lastState = RNGestureHandlerStateBegan;
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer

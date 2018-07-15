@@ -1,8 +1,7 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, RNGestureHandlerState) {
-    RNGestureHandlerStateUndetermined = 0,
-    RNGestureHandlerStateFailed,
+    RNGestureHandlerStateFailed = 1,
     RNGestureHandlerStateBegan,
     RNGestureHandlerStateCancelled,
     RNGestureHandlerStateActive,
