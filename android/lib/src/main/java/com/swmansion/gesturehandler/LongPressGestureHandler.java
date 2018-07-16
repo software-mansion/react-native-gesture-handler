@@ -57,12 +57,8 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
       float deltaX = event.getRawX() - mStartX;
       float deltaY = event.getRawY() - mStartY;
       float distSq = deltaX * deltaX + deltaY * deltaY;
-      if (distSq > mMaxDistSq) {
-        if (getState() == STATE_ACTIVE) {
-          cancel();
-        } else {
-          fail();
-        }
+      if (distSq > mMaxDistSq && getState() != STATE_ACTIVE) {
+        fail();
       }
     }
   }
