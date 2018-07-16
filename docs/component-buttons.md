@@ -59,3 +59,32 @@ set this to `false` if you want the ripple animation to render only within view 
 opacity applied to the button when it is in an active state.
 
 ---
+
+## Design patters
+Components listed above were generally not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration their's design concepts.
+
+If you wish to get specific information about platforms design patters, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/ios/controls/buttons/) and [Material.io guideline](https://material.io/design/components/buttons.html#text-button), which widely describe how to implement coherent design.
+
+This library allows to use native components with native feedback in adequate situations.
+
+Generally it's not advisable to use `BaseButton` anywhere because it's only a basic wrapper for a button to handle event actions. However, if you do not wish to implement custom design approach, `RectButton` and `BorderlessButton` seem to be absolutely enough and there's no need to use anything else.
+
+If you wish to prepare list of many components or your action button is important you are to use `RectButton` which has native feedback. It changes opacity on click and additionally supports a ripple effect on Android.
+
+
+<img src="assets/androidsettings.gif" width="280" />
+
+
+<img src="assets/iossettings.gif" width="280" />
+
+
+In other cases it's advisable to use `BorderlessButton` which should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered, whereas on iOS the button will be dimmed.
+It should be used if you wish to handle non-crucial actions and supportive behaviour.
+
+
+<img src="assets/androidmail.gif" width="280" />
+
+
+<img src="assets/iosmail.gif" width="280" />
+
+
