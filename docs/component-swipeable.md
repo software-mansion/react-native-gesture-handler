@@ -78,7 +78,7 @@ method that is expected to return an action panel that is going to be revealed f
 method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
 
 ## Methods
-Using reference to `Swipeable` it's possible toi trigger some actions on it
+Using reference to `Swipeable` it's possible to trigger some actions on it
 
 ---
 ### `close`
