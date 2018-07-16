@@ -29,8 +29,7 @@ export enum Directions {
 }
 
 export enum State {
-  UNDETERMINED = 0,
-  FAILED,
+  FAILED = 1,
   BEGAN,
   CANCELLED,
   ACTIVE,
