@@ -56,6 +56,7 @@ UIManager.RCTView.directEventTypes = {
 const State = RNGestureHandlerModule.State;
 
 // Used code below as it was impossible to do it with restructuration
+// FIXME to be removed
 Object.defineProperty(State, 'UNDETERMINED', {
   get() {
     console.warn(
