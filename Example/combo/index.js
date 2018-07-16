@@ -35,7 +35,7 @@ class TouchableHighlight extends Component {
   };
   constructor(props) {
     super(props);
-    this.state = { gestureHandlerState: State.UNDETERMINED };
+    this.state = { gestureHandlerState: State.BEGAN };
     this._pressedStyle = {
       opacity: this.props.activeOpacity,
     };
