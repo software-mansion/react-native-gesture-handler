@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Image, View, Dimensions } from 'react-native';
+import { Dimensions, Image, View, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
@@ -8,6 +8,7 @@ const { width } = Dimensions.get('window');
 
 const {
   set,
+  neq,
   cond,
   eq,
   add,
@@ -40,7 +41,11 @@ function follow(clock, value) {
     position: new Value(0),
     time: new Value(0),
   };
-  return block([spring(clock, state, config), state.position]);
+  return block([
+    cond(clockRunning(clock), 0, startClock(clock)),
+    spring(clock, state, config),
+    state.position,
+  ]);
 }
 
 class Tracking extends Component {
@@ -68,11 +73,11 @@ class Tracking extends Component {
       },
     ]);
 
-    const transX = new Value();
+    const transX = new Value(0);
     const transY = new Value(0);
+    const clock = new Clock();
     const prevDragX = new Value(0);
     const prevDragY = new Value(0);
-    const clock = new Clock();
     const clock2 = new Clock();
     const snapPoint = cond(
       lessThan(add(transX, multiply(TOSS_SEC, dragVX)), 0),
@@ -105,7 +110,7 @@ class Tracking extends Component {
         set(prevDragX, dragX),
         transX,
       ],
-      [
+      cond(neq(animState, -1), [
         set(prevDragX, 0),
         set(
           transX,
@@ -119,13 +124,13 @@ class Tracking extends Component {
                 startClock(clock),
               ]),
               spring(clock, state, config),
-              cond(state.finished, [stopClock(clock), stopClock(clock2)]),
+              cond(state.finished, [stopClock(clock)]),
               state.position,
             ],
             0
           )
         ),
-      ]
+      ])
     );
 
     this._transY = block([
@@ -140,77 +145,76 @@ class Tracking extends Component {
       transY,
     ]);
 
-    this.follow1x = follow(clock, this._transX);
-    this.follow1y = follow(clock, this._transY);
+    this.follow1x = follow(clock2, this._transX);
+    this.follow1y = follow(clock2, this._transY);
 
-    this.follow2x = follow(clock, this.follow1x);
-    this.follow2y = follow(clock, this.follow1y);
+    this.follow2x = follow(clock2, this.follow1x);
+    this.follow2y = follow(clock2, this.follow1y);
 
-    this.follow3x = follow(clock, this.follow2x);
-    this.follow3y = follow(clock, this.follow2y);
+    this.follow3x = follow(clock2, this.follow2x);
+    this.follow3y = follow(clock2, this.follow2y);
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Animated.View
-          style={{
-            transform: [
-              { translateX: this.follow3x, translateY: this.follow3y },
-            ],
-          }}>
-          <Image
-            style={styles.box}
-            source={{
-              uri: 'https://avatars0.githubusercontent.com/u/379606?v=4&s=460',
-            }}
-          />
-        </Animated.View>
-        <Animated.View
-          style={{
-            transform: [
-              { translateX: this.follow2x, translateY: this.follow2y },
-            ],
-          }}>
-          <Image
-            style={styles.box}
-            source={{
-              uri: 'https://avatars3.githubusercontent.com/u/90494?v=4&s=460',
-            }}
-          />
-        </Animated.View>
-        <Animated.View
-          style={{
-            transform: [
-              { translateX: this.follow1x, translateY: this.follow1y },
-            ],
-          }}>
-          <Image
-            style={styles.box}
-            source={{
-              uri:
-                'https://avatars3.githubusercontent.com/u/25709300?s=460&v=4',
-            }}
-          />
-        </Animated.View>
+        <Animated.Image
+          style={[
+            styles.box,
+            {
+              transform: [
+                { translateX: this.follow3x, translateY: this.follow3y },
+              ],
+            },
+          ]}
+          source={{
+            uri: 'https://avatars3.githubusercontent.com/u/1714764?s=460&v=4',
+          }}
+        />
+        <Animated.Image
+          style={[
+            styles.box,
+            {
+              transform: [
+                { translateX: this.follow2x, translateY: this.follow2y },
+              ],
+            },
+          ]}
+          source={{
+            uri: 'https://avatars3.githubusercontent.com/u/90494?v=4&s=460',
+          }}
+        />
+
+        <Animated.Image
+          style={[
+            styles.box,
+            {
+              transform: [
+                { translateX: this.follow1x, translateY: this.follow1y },
+              ],
+            },
+          ]}
+          source={{
+            uri: 'https://avatars3.githubusercontent.com/u/25709300?s=460&v=4',
+          }}
+        />
         <PanGestureHandler
           maxPointers={1}
           onGestureEvent={this._onGestureEvent}
           onHandlerStateChange={this._onGestureEvent}>
-          <Animated.View
-            style={{
-              transform: [
-                { translateX: this._transX, translateY: this._transY },
-              ],
-            }}>
-            <Image
-              style={styles.box}
-              source={{
-                uri:
-                  'https://avatars3.githubusercontent.com/u/726445?v=4&s=460',
-              }}
-            />
-          </Animated.View>
+          <Animated.Image
+            style={[
+              styles.box,
+              {
+                transform: [
+                  { translateX: this._transX, translateY: this._transY },
+                ],
+              },
+            ]}
+            source={{
+              uri: 'https://avatars3.githubusercontent.com/u/726445?v=4&s=460',
+            }}
+          />
         </PanGestureHandler>
       </View>
     );
@@ -240,7 +244,6 @@ const styles = StyleSheet.create({
     height: BOX_SIZE,
     alignSelf: 'center',
     borderColor: '#F5FCFF',
-    backgroundColor: 'plum',
     borderRadius: BOX_SIZE / 2,
     margin: BOX_SIZE / 2,
   },
