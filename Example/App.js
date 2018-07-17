@@ -55,10 +55,10 @@ const SCREENS = {
   },
   PanResponder: { screen: PanResponder },
   Bouncing: { screen: Bouncing, title: 'Twist & bounce back animation' },
-  // ChatHeads: {
-  //   screen: ChatHeads,
-  //   title: 'Chat Heads (no native animated support yet)',
-  // },
+  ChatHeads: {
+    screen: ChatHeads,
+    title: 'Chat Heads (currently only iOS)',
+  },
   Combo: { screen: ComboWithGHScroll },
   BottomSheet: {
     title: 'BottomSheet gestures interactions',

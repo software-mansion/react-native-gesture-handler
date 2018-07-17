@@ -5,13 +5,13 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "postinstall":
-      "rm -rf node_modules/react-native-gesture-handler/{.git,node_modules,Example,AndroidNativeExample}"
+    "postinstall": "rm -rf node_modules/react-native-gesture-handler/{.git,node_modules,Example,AndroidNativeExample}"
   },
   "dependencies": {
     "react": "^16.3.2",
     "react-native": "^0.55.3",
     "react-native-gesture-handler": "file:../",
+    "react-native-reanimated": "^1.0.0-alpha.5",
     "react-native-vector-icons": "^4.4.3",
     "react-navigation": "^1.5.11"
   },
