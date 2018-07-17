@@ -78,6 +78,11 @@ If you wish to prepare list of many components or your action button is importan
 <img src="assets/iossettings.gif" width="280" />
 
 
+To determine emphasis of button it's vital to use fill color or leave it transparent.
+For medium emphasis you may consider outlined buttons which are used for lower impact than fill buttons.
+ 
+
+
 In other cases it's advisable to use `BorderlessButton` which should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered, whereas on iOS the button will be dimmed.
 It should be used if you wish to handle non-crucial actions and supportive behaviour.
 
