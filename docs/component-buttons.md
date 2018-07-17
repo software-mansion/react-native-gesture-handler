@@ -60,7 +60,7 @@ opacity applied to the button when it is in an active state.
 
 ---
 
-## Design patters
+## Design patterns
 Components listed above were generally not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration their's design concepts.
 
 If you wish to get specific information about platforms design patters, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/ios/controls) and [Material.io guideline](https://material.io/design/components/buttons.html#text-button), which widely describe how to implement coherent design.
@@ -78,10 +78,10 @@ If you wish to prepare list of many components or your action button is importan
 <img src="assets/iossettings.gif" width="280" />
 
 
-To determine emphasis of button it's vital to use fill color or leave it transparent.
+To determine emphasis of button it's vital to use fill color or leave it transparent especially on Android.
 For medium emphasis you may consider outlined buttons which are used for lower impact than fill buttons.
  
-
+<img src="assets/androidbutton.gif" width="280" />
 
 In other cases it's advisable to use `BorderlessButton` which should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered, whereas on iOS the button will be dimmed.
 It should be used if you wish to handle non-crucial actions and supportive behaviour.
@@ -92,4 +92,4 @@ It should be used if you wish to handle non-crucial actions and supportive behav
 
 <img src="assets/iosmail.gif" width="280" />
 
-
+It's also important to remember that stylization of button (especially on Android) in very limited as it is connected with rendering native view from scratch. As `View` from RN core is very complicated we decided not to rewrite every `style`'s fields. So do not hesitate to wrap additional `View` with button in order to stylize more precisely. 
