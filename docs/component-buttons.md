@@ -92,4 +92,4 @@ It should be used if you wish to handle non-crucial actions and supportive behav
 
 <img src="assets/iosmail.gif" width="280" />
 
-It's also important to remember that stylization of button (especially on Android) in very limited as it is connected with rendering native view from scratch. As `View` from RN core is very complicated we decided not to rewrite every `style`'s fields. So do not hesitate to wrap additional `View` with button in order to stylize more precisely. 
+It's also important to remember that stylization of button (especially on Android) in very limited as it is connected with rendering native view from scratch. As `View` from RN core is very complicated we decided not to rewrite every `style`'s fields. So do not hesitate to wrap an additional `View` with button in order to stylize more precisely. 
