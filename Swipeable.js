@@ -261,6 +261,18 @@ export default class Swipeable extends Component<PropType, StateType> {
     this._animateRow(this._currentOffset(), 0);
   };
 
+  openLeft = () => {
+    const { leftWidth = 0 } = this.state;
+    this._animateRow(this._currentOffset(), leftWidth);
+  };
+
+  openRight = () => {
+    const { rowWidth = 0 } = this.state;
+    const { rightOffset = rowWidth } = this.state;
+    const rightWidth = rowWidth - rightOffset;
+    this._animateRow(this._currentOffset(), -rightWidth);
+  };
+
   render() {
     const { rowState } = this.state;
     const { children, renderLeftActions, renderRightActions } = this.props;

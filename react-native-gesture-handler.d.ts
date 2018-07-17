@@ -383,6 +383,8 @@ export interface SwipeableProperties {
 
 export class Swipeable extends React.Component<SwipeableProperties> {
   close: () => void;
+  openLeft: () => void;
+  openRight: () => void;
 }
 
 export interface DrawerLayoutProperties {
