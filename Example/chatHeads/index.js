@@ -1,176 +1,216 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { StyleSheet, Image, View, Dimensions } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
-const USE_NATIVE_DRIVER = false;
+const { width } = Dimensions.get('window');
 
-// setInterval(() => {
-//   let iters = 1e8, sum = 0;
-//   while (iters-- > 0) sum += iters;
-// }, 300);
+const {
+  set,
+  cond,
+  eq,
+  add,
+  multiply,
+  lessThan,
+  spring,
+  block,
+  startClock,
+  stopClock,
+  clockRunning,
+  sub,
+  defined,
+  Value,
+  Clock,
+  event,
+} = Animated;
 
-const START_X = 0;
-const START_Y = 0;
+function follow(clock, value) {
+  const config = {
+    damping: 28,
+    mass: 0.3,
+    stiffness: 188.296,
+    overshootClamping: false,
+    toValue: value,
+  };
+
+  const state = {
+    finished: new Value(0),
+    velocity: new Value(0),
+    position: new Value(0),
+    time: new Value(0),
+  };
+  return block([spring(clock, state, config), state.position]);
+}
 
 class Tracking extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { width: 0, height: 0 };
+    const TOSS_SEC = 0.2;
 
-    const tension = 0.8;
-    const friction = 3;
+    const dragX = new Value(0);
+    const dragY = new Value(0);
 
-    this._dragX = new Animated.Value(START_X);
-    this._transX = new Animated.Value(START_X);
-    this._follow1x = new Animated.Value(START_X);
-    this._follow2x = new Animated.Value(START_X);
-    Animated.spring(this._transX, {
-      toValue: this._dragX,
-      tension,
-      friction,
-    }).start();
-    Animated.spring(this._follow1x, {
-      toValue: this._transX,
-      tension,
-      friction,
-    }).start();
-    Animated.spring(this._follow2x, {
-      toValue: this._follow1x,
-      tension,
-      friction,
-    }).start();
+    const animState = new Value(-1);
+    const dragVX = new Value(0);
+    const dragVY = new Value(0);
 
-    this._dragY = new Animated.Value(START_Y);
-    this._transY = new Animated.Value(START_Y);
-    this._follow1y = new Animated.Value(START_Y);
-    this._follow2y = new Animated.Value(START_Y);
-    Animated.spring(this._transY, {
-      toValue: this._dragY,
-      tension,
-      friction,
-    }).start();
-    Animated.spring(this._follow1y, {
-      toValue: this._transY,
-      tension,
-      friction,
-    }).start();
-    Animated.spring(this._follow2y, {
-      toValue: this._follow1y,
-      tension,
-      friction,
-    }).start();
-
-    this._onGestureEvent = Animated.event(
-      [
-        {
-          nativeEvent: { translationX: this._dragX, translationY: this._dragY },
+    this._onGestureEvent = event([
+      {
+        nativeEvent: {
+          translationX: dragX,
+          velocityX: dragVX,
+          velocityY: dragVY,
+          state: animState,
+          translationY: dragY,
         },
-      ],
-      { useNativeDriver: USE_NATIVE_DRIVER }
+      },
+    ]);
+
+    const transX = new Value();
+    const transY = new Value(0);
+    const prevDragX = new Value(0);
+    const prevDragY = new Value(0);
+    const clock = new Clock();
+    const clock2 = new Clock();
+    const snapPoint = cond(
+      lessThan(add(transX, multiply(TOSS_SEC, dragVX)), 0),
+      -(width / 2),
+      width / 2
     );
 
-    this._lastOffset = { x: START_X, y: START_Y };
+    const config = {
+      damping: 12,
+      mass: 1,
+      stiffness: 150,
+      overshootClamping: false,
+      restSpeedThreshold: 0.001,
+      restDisplacementThreshold: 0.001,
+      toValue: snapPoint,
+    };
+
+    const state = {
+      finished: new Value(0),
+      velocity: dragVX,
+      position: new Value(0),
+      time: new Value(0),
+    };
+
+    this._transX = cond(
+      eq(animState, State.ACTIVE),
+      [
+        stopClock(clock),
+        set(transX, add(transX, sub(dragX, prevDragX))),
+        set(prevDragX, dragX),
+        transX,
+      ],
+      [
+        set(prevDragX, 0),
+        set(
+          transX,
+          cond(
+            defined(transX),
+            [
+              cond(clockRunning(clock), 0, [
+                set(state.finished, 0),
+                set(state.velocity, dragVX),
+                set(state.position, transX),
+                startClock(clock),
+              ]),
+              spring(clock, state, config),
+              cond(state.finished, [stopClock(clock), stopClock(clock2)]),
+              state.position,
+            ],
+            0
+          )
+        ),
+      ]
+    );
+
+    this._transY = block([
+      cond(
+        eq(animState, State.ACTIVE),
+        [
+          set(transY, add(transY, sub(dragY, prevDragY))),
+          set(prevDragY, dragY),
+        ],
+        set(prevDragY, 0)
+      ),
+      transY,
+    ]);
+
+    this.follow1x = follow(clock, this._transX);
+    this.follow1y = follow(clock, this._transY);
+
+    this.follow2x = follow(clock, this.follow1x);
+    this.follow2y = follow(clock, this.follow1y);
+
+    this.follow3x = follow(clock, this.follow2x);
+    this.follow3y = follow(clock, this.follow2y);
   }
-  _onHandlerStateChange = event => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      const { height, width } = this.state;
 
-      const posX = this._lastOffset.x + event.nativeEvent.translationX;
-      const posY = this._lastOffset.y + event.nativeEvent.translationY;
-
-      const distFromTop = posY;
-      const distFromBottom = height - posY - BOX_SIZE;
-      const distFromLeft = posX;
-      const distFromRight = width - posX - BOX_SIZE;
-
-      this._lastOffset = { x: posX, y: posY };
-
-      this._dragX.flattenOffset();
-      this._dragY.flattenOffset();
-
-      const minDist = Math.min(
-        distFromTop,
-        distFromBottom,
-        distFromLeft,
-        distFromRight
-      );
-      if (distFromTop === minDist) {
-        this._dragY.setValue(-BOX_SIZE / 4);
-        this._lastOffset.y = -BOX_SIZE / 4;
-      } else if (distFromBottom === minDist) {
-        this._dragY.setValue(height - BOX_SIZE / 2);
-        this._lastOffset.y = height - BOX_SIZE / 2;
-      } else if (distFromLeft === minDist) {
-        this._dragX.setValue(-BOX_SIZE / 2);
-        this._lastOffset.x = -BOX_SIZE / 2;
-      } else if (distFromRight === minDist) {
-        this._dragX.setValue(width - BOX_SIZE / 2);
-        this._lastOffset.x = width - BOX_SIZE / 2;
-      }
-
-      this._dragX.extractOffset();
-      this._dragY.extractOffset();
-    }
-  };
-  _onLayout = ({ nativeEvent }) => {
-    const { width, height } = nativeEvent.layout;
-    this.setState({ width, height });
-  };
   render() {
     return (
-      <View
-        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-        onLayout={this._onLayout}>
-        <Animated.Image
-          style={[
-            styles.box,
-            { marginLeft: 10, marginTop: 10 },
-            {
-              transform: [
-                { translateX: this._follow2x },
-                { translateY: this._follow2y },
-              ],
-            },
-          ]}
-          source={{
-            uri: 'https://avatars0.githubusercontent.com/u/379606?v=4&s=460',
-          }}
-        />
-        <Animated.Image
-          style={[
-            styles.box,
-            { marginLeft: 5, marginTop: 5 },
-            {
-              transform: [
-                { translateX: this._follow1x },
-                { translateY: this._follow1y },
-              ],
-            },
-          ]}
-          source={{
-            uri: 'https://avatars3.githubusercontent.com/u/90494?v=4&s=460',
-          }}
-        />
-
-        <PanGestureHandler
-          onGestureEvent={this._onGestureEvent}
-          onHandlerStateChange={this._onHandlerStateChange}>
-          <Animated.Image
-            style={[
-              styles.box,
-              {
-                transform: [
-                  { translateX: this._transX },
-                  { translateY: this._transY },
-                ],
-              },
-            ]}
+      <View style={styles.container}>
+        <Animated.View
+          style={{
+            transform: [
+              { translateX: this.follow3x, translateY: this.follow3y },
+            ],
+          }}>
+          <Image
+            style={styles.box}
             source={{
-              uri: 'https://avatars3.githubusercontent.com/u/726445?v=4&s=460',
+              uri: 'https://avatars0.githubusercontent.com/u/379606?v=4&s=460',
             }}
           />
+        </Animated.View>
+        <Animated.View
+          style={{
+            transform: [
+              { translateX: this.follow2x, translateY: this.follow2y },
+            ],
+          }}>
+          <Image
+            style={styles.box}
+            source={{
+              uri: 'https://avatars3.githubusercontent.com/u/90494?v=4&s=460',
+            }}
+          />
+        </Animated.View>
+        <Animated.View
+          style={{
+            transform: [
+              { translateX: this.follow1x, translateY: this.follow1y },
+            ],
+          }}>
+          <Image
+            style={styles.box}
+            source={{
+              uri:
+                'https://avatars3.githubusercontent.com/u/25709300?s=460&v=4',
+            }}
+          />
+        </Animated.View>
+        <PanGestureHandler
+          maxPointers={1}
+          onGestureEvent={this._onGestureEvent}
+          onHandlerStateChange={this._onGestureEvent}>
+          <Animated.View
+            style={{
+              transform: [
+                { translateX: this._transX, translateY: this._transY },
+              ],
+            }}>
+            <Image
+              style={styles.box}
+              source={{
+                uri:
+                  'https://avatars3.githubusercontent.com/u/726445?v=4&s=460',
+              }}
+            />
+          </Animated.View>
         </PanGestureHandler>
       </View>
     );
@@ -198,8 +238,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: BOX_SIZE,
     height: BOX_SIZE,
+    alignSelf: 'center',
     borderColor: '#F5FCFF',
     backgroundColor: 'plum',
     borderRadius: BOX_SIZE / 2,
+    margin: BOX_SIZE / 2,
   },
 });
