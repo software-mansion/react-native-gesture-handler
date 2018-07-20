@@ -425,7 +425,7 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
   }
   
   export default class DrawerLayout extends React.Component<DrawerLayoutProperties> {
-    openDrawer: (options: DrawerMovementOptionType) => void;
+    openDrawer: (options?: DrawerMovementOptionType) => void;
     closeDrawer: (options?: DrawerMovementOptionType) => void;
   }
 }
