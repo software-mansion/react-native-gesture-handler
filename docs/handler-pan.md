@@ -99,7 +99,7 @@ See [set of event attributes from base handler class](handler-common.md#event-da
 
 Translation of the pan gesture along X axis accumulated over the time of the gesture. The value is expressed in the point units.
 
-Here a simple example of how to detect the direction of a user's swipe.
+Here is a simple example of how to detect the direction of a user's swipe.
 
 ```js
 _onHandlerStateChange = event => {
