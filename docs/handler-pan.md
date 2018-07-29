@@ -103,7 +103,7 @@ Here is a simple example of how to detect the direction of a user's swipe.
 
 ```js
 _onHandlerStateChange = event => {
-  if (e.nativeEvent.oldState === State.ACTIVE) {
+  if (event.nativeEvent.oldState === State.ACTIVE) {
     const direction = event.nativeEvent.translationX < 0 ? 'right' : 'left';
     console.log(direction);
   }
