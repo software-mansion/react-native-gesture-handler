@@ -360,39 +360,6 @@ declare module 'react-native-gesture-handler' {
     Component: React.ComponentType<any>,
     containerStyles?: StyleProp<ViewStyle>
   ): React.ComponentType<any>;
-
-  export interface DrawerLayoutProperties {
-    renderNavigationView: (
-      progressAnimatedValue: Animated.Value
-    ) => React.ReactNode;
-    drawerPosition?: 'left' | 'right';
-    drawerWidth?: number;
-    drawerBackgroundColor?: string;
-    keyboardDismissMode?: 'none' | 'on-drag';
-    onDrawerClose?: () => void;
-    onDrawerOpen?: () => void;
-    onDrawerStateChanged?: (
-      newState: 'Idle' | 'Dragging' | 'Settling',
-      drawerWillShow: boolean
-    ) => void;
-    useNativeAnimations?: boolean;
-
-    drawerType?: 'front' | 'back' | 'slide';
-    edgeWidth?: number;
-    minSwipeDistance?: number;
-    hideStatusBar?: boolean;
-    statusBarAnimation?: 'slide' | 'none' | 'fade';
-    overlayColor?: string;
-  }
-
-  export interface DrawerMovementOptionType {
-    velocity?: number;
-  }
-
-  export class DrawerLayout extends React.Component<DrawerLayoutProperties> {
-    openDrawer: (options: DrawerMovementOptionType) => void;
-    closeDrawer: (options?: DrawerMovementOptionType) => void;
-  }
 }
 
 declare module 'react-native-gesture-handler/Swipeable' {
@@ -423,5 +390,42 @@ declare module 'react-native-gesture-handler/Swipeable' {
     close: () => void;
     openLeft: () => void;
     openRight: () => void;
+  }
+}
+
+declare module 'react-native-gesture-handler/DrawerLayout' {
+  import { Animated } from 'react-native';
+  
+  interface DrawerLayoutProperties {
+    renderNavigationView: (
+      progressAnimatedValue: Animated.Value
+    ) => React.ReactNode;
+    drawerPosition?: 'left' | 'right';
+    drawerWidth?: number;
+    drawerBackgroundColor?: string;
+    keyboardDismissMode?: 'none' | 'on-drag';
+    onDrawerClose?: () => void;
+    onDrawerOpen?: () => void;
+    onDrawerStateChanged?: (
+      newState: 'Idle' | 'Dragging' | 'Settling',
+      drawerWillShow: boolean
+    ) => void;
+    useNativeAnimations?: boolean;
+
+    drawerType?: 'front' | 'back' | 'slide';
+    edgeWidth?: number;
+    minSwipeDistance?: number;
+    hideStatusBar?: boolean;
+    statusBarAnimation?: 'slide' | 'none' | 'fade';
+    overlayColor?: string;
+  }
+  
+  interface DrawerMovementOptionType {
+    velocity?: number;
+  }
+  
+  export default class DrawerLayout extends React.Component<DrawerLayoutProperties> {
+    openDrawer: (options?: DrawerMovementOptionType) => void;
+    closeDrawer: (options?: DrawerMovementOptionType) => void;
   }
 }
