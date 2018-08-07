@@ -93,7 +93,7 @@ const GestureHandlerPropTypes = {
     }),
   ]),
   onGestureEvent: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-  onHandlerStateChange: PropTypes.func,
+  onHandlerStateChange: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   onBegan: PropTypes.func,
   onFailed: PropTypes.func,
   onCancelled: PropTypes.func,
