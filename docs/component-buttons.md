@@ -61,15 +61,19 @@ opacity applied to the button when it is in an active state.
 ---
 
 ## Design patterns
-Components listed above were generally not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration their's design concepts.
+Components listed here were not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration their's design concepts.
 
 If you wish to get specific information about platforms design patters, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/ios/controls) and [Material.io guideline](https://material.io/design/components/buttons.html#text-button), which widely describe how to implement coherent design.
 
 This library allows to use native components with native feedback in adequate situations.
 
-Generally it's not advisable to use `BaseButton` anywhere because it's only a basic wrapper for a button to handle event actions. However, if you do not wish to implement custom design approach, `RectButton` and `BorderlessButton` seem to be absolutely enough and there's no need to use anything else.
+If you do not wish to implement custom design approach, `RectButton` and `BorderlessButton` seem to be absolutely enough and there's no need to use anything else. In all the remaining cases you can always rely on `BaseButton` which is a superclass for the other button classes and can be used as a generic `Touchable` replacement that can be customized to your needs.
 
-If you wish to prepare list of many components or your action button is important you are to use `RectButton` which has native feedback. It changes opacity on click and additionally supports a ripple effect on Android.
+Below we list some of the common usecases for button components to be used along with the type of button that should be used according to the platform specific design guidelines.
+
+### Lists and action buttons
+
+If you have a list with clickable items or have an action button that need to display as a separate UI block (vs being inlined in a text) you should use `RectButton`. It changes opacity on click and additionally supports a ripple effect on Android.
 
 
 <img src="assets/androidsettings.gif" width="280" />
@@ -83,7 +87,9 @@ For medium emphasis you may consider outlined buttons which are used for lower i
  
 <img src="assets/androidbutton.gif" width="280" />
 
-In other cases it's advisable to use `BorderlessButton` which should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered, whereas on iOS the button will be dimmed.
+### Icon or text only buttons
+
+Use `BorderlessButton` for simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered, whereas on iOS the button will be dimmed.
 It should be used if you wish to handle non-crucial actions and supportive behaviour.
 
 
@@ -91,5 +97,3 @@ It should be used if you wish to handle non-crucial actions and supportive behav
 
 
 <img src="assets/iosmail.gif" width="280" />
-
-It's also important to remember that stylization of button (especially on Android) in very limited as it is connected with rendering native view from scratch. As `View` from RN core is very complicated we decided not to rewrite every `style`'s fields. So do not hesitate to wrap an additional `View` with button in order to stylize more precisely. 
