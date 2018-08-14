@@ -59,3 +59,41 @@ set this to `false` if you want the ripple animation to render only within view 
 opacity applied to the button when it is in an active state.
 
 ---
+
+## Design patterns
+Components listed here were not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration their's design concepts.
+
+If you wish to get specific information about platforms design patters, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/ios/controls) and [Material.io guideline](https://material.io/design/components/buttons.html#text-button), which widely describe how to implement coherent design.
+
+This library allows to use native components with native feedback in adequate situations.
+
+If you do not wish to implement custom design approach, `RectButton` and `BorderlessButton` seem to be absolutely enough and there's no need to use anything else. In all the remaining cases you can always rely on `BaseButton` which is a superclass for the other button classes and can be used as a generic `Touchable` replacement that can be customized to your needs.
+
+Below we list some of the common usecases for button components to be used along with the type of button that should be used according to the platform specific design guidelines.
+
+### Lists and action buttons
+
+If you have a list with clickable items or have an action button that need to display as a separate UI block (vs being inlined in a text) you should use `RectButton`. It changes opacity on click and additionally supports a ripple effect on Android.
+
+
+<img src="assets/androidsettings.gif" width="280" />
+
+
+<img src="assets/iossettings.gif" width="280" />
+
+
+To determine emphasis of button it's vital to use fill color or leave it transparent especially on Android.
+For medium emphasis you may consider outlined buttons which are used for lower impact than fill buttons.
+ 
+<img src="assets/androidbutton.gif" width="280" />
+
+### Icon or text only buttons
+
+Use `BorderlessButton` for simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered, whereas on iOS the button will be dimmed.
+It should be used if you wish to handle non-crucial actions and supportive behaviour.
+
+
+<img src="assets/androidmail.gif" width="280" />
+
+
+<img src="assets/iosmail.gif" width="280" />
