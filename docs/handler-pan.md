@@ -62,7 +62,7 @@ Minimum distance expressed in points along Y axis the finger (or multiple finger
 Minimum distance expressed in points along X axis the finger (or multiple finger) need to travel (left or right) before the handler [activates](state.md#active). Unlike [`minoffsetx`](#minoffsetx) this parameter accepts only non-negative numbers that represents the distance in point units. If you want for the handler to [activate](state.md#active) for the movement in one particular direction use [`minOffsetX`](#minoffsetx) instead.
 
 ---
-### `minOffsetY`
+### `minDeltaY`
 
 Minimum distance expressed in points along Y axis the finger (or multiple finger) need to travel (top or bottom) before the handler [activates](state.md#active). Unlike [`minOffsetY`](#minoffsety) this parameter accepts only non-negative numbers that represents the distance in point units. If you want for the handler to [activate](state.md#active) for the movement in one particular direction use [`minOffsetY`](#minoffsety) instead.
 
