@@ -374,6 +374,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handler.setDirection(config.getInt(KEY_DIRECTION));
       }
     }
+    @Override
+    public void extractEventData(FlingGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
+      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
+      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
+      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
+      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionY()));
+    }
   }
 
   private static class RotationGestureHandlerFactory extends HandlerFactory<RotationGestureHandler> {

@@ -170,12 +170,20 @@ declare module 'react-native-gesture-handler' {
 
   export interface FlingGestureHandlerStateChangeEvent
     extends GestureHandlerStateChangeEvent {
-    nativeEvent: GestureHandlerStateChangeNativeEvent;
+    nativeEvent: GestureHandlerStateChangeNativeEvent &
+      FlingGestureHandlerEventExtra;
   }
 
   export interface FlingGestureHandlerGestureEvent
     extends GestureHandlerGestureEvent {
     nativeEvent: GestureHandlerGestureEventNativeEvent;
+  }
+
+  interface FlingGestureHandlerEventExtra {
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
   }
 
   /* GESTURE HANDLERS PROPERTIES */
