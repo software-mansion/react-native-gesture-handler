@@ -99,6 +99,21 @@ See [set of event attributes from base handler class](handler-common.md#event-da
 
 Translation of the pan gesture along X axis accumulated over the time of the gesture. The value is expressed in the point units.
 
+Here is a simple example of how to detect the direction of a user's swipe.
+
+```js
+_onHandlerStateChange = event => {
+  if (event.nativeEvent.oldState === State.ACTIVE) {
+    const direction = event.nativeEvent.translationX < 0 ? 'right' : 'left';
+    console.log(direction);
+  }
+};
+
+<PanGestureHandler onHandlerStateChange={this._onHandlerStateChange}>
+  <View style={{ flex: 1 }} />
+</PanGestureHandler>
+```
+
 ---
 ### `translationY`
 
