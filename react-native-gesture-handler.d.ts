@@ -94,6 +94,19 @@ declare module 'react-native-gesture-handler' {
       TapGestureHandlerEventExtra;
   }
 
+  export interface LongPressGestureHandlerStateChangeEvent
+    extends GestureHandlerStateChangeEvent {
+    nativeEvent: GestureHandlerStateChangeNativeEvent &
+      LongPressGestureHandlerEventExtra;
+  }
+
+  interface LongPressGestureHandlerEventExtra {
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
+  }
+
   interface PanGestureHandlerEventExtra {
     x: number;
     y: number;
@@ -212,7 +225,7 @@ declare module 'react-native-gesture-handler' {
     minDurationMs?: number;
     maxDist?: number;
     onGestureEvent?: (event: GestureHandlerGestureEvent) => void;
-    onHandlerStateChange?: (event: GestureHandlerStateChangeEvent) => void;
+    onHandlerStateChange?: (event: LongPressGestureHandlerStateChangeEvent) => void;
   }
 
   export interface PanGestureHandlerProperties extends GestureHandlerProperties {
