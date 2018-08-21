@@ -220,6 +220,15 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_LONG_PRESS_MAX_DIST)));
       }
     }
+
+    @Override
+    public void extractEventData(LongPressGestureHandler handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
+      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionX()));
+      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
+      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
+      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionY()));
+    }
   }
 
   private static class PanGestureHandlerFactory extends HandlerFactory<PanGestureHandler> {
