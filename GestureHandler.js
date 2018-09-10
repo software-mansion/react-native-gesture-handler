@@ -147,7 +147,7 @@ function filterConfig(props, validProps, defaults = {}) {
         }
       } else if ((key === 'onHandlerStateChange' || key === 'onGestureEvent') && value.__nodeID) {
         // reanimated
-        value = undefined
+        value = undefined;
       }
       res[key] = value;
     }
