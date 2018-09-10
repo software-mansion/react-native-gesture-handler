@@ -42,11 +42,13 @@ declare module 'react-native-gesture-handler' {
 
   export interface GestureHandlerGestureEventNativeEvent {
     handlerTag: number;
+    numberOfPointers: number;
     state: State;
   }
 
   export interface GestureHandlerStateChangeNativeEvent {
     handlerTag: number;
+    numberOfPointers: number;
     state: State;
     oldState: State;
   }
