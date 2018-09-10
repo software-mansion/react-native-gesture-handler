@@ -145,6 +145,9 @@ function filterConfig(props, validProps, defaults = {}) {
         if (typeof value !== 'object') {
           value = { top: value, left: value, bottom: value, right: value };
         }
+      } else if ((key === 'onHandlerStateChange' || key === 'onGestureEvent') && value.__nodeID) {
+        // reanimated
+        value = undefined
       }
       res[key] = value;
     }
