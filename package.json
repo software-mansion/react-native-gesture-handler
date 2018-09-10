@@ -60,7 +60,7 @@
     "husky": "^0.14.3",
     "jest": "16.0.2",
     "jest-react-native": "16.0.0",
-    "lint-staged": "^7.2.0",
+    "lint-staged": "^8.0.0-beta.1",
     "prettier": "^1.13.7",
     "react": "^16.0.0",
     "react-native": "^0.50.1",

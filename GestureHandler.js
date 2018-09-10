@@ -109,11 +109,13 @@ const stateToPropMappings = {
   [State.END]: 'onEnded',
 };
 
-function canUseNativeParam(param) {
+function isEventHandler(param, name) {
   return (
     param !== undefined &&
     typeof param !== 'function' &&
-    (typeof param !== 'object' || !('__isNative' in param))
+    (typeof param !== 'object' || !('__isNative' in param)) &&
+    name !== 'onHandlerStateChange' &&
+    name !== 'onGestureEvent'
   );
 }
 
@@ -137,7 +139,7 @@ function filterConfig(props, validProps, defaults = {}) {
   const res = { ...defaults };
   Object.keys(validProps).forEach(key => {
     const value = props[key];
-    if (canUseNativeParam(value)) {
+    if (isEventHandler(value, key)) {
       let value = props[key];
       if (key === 'simultaneousHandlers' || key === 'waitFor') {
         value = transformIntoHandlerTags(props[key]);
@@ -145,8 +147,6 @@ function filterConfig(props, validProps, defaults = {}) {
         if (typeof value !== 'object') {
           value = { top: value, left: value, bottom: value, right: value };
         }
-      } else if (key === 'onHandlerStateChange' || key === 'onGestureEvent') {
-        value = undefined;
       }
       res[key] = value;
     }
