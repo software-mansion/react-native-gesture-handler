@@ -109,7 +109,7 @@ const stateToPropMappings = {
   [State.END]: 'onEnded',
 };
 
-function isEventHandler(param, name) {
+function isConfigParam(param, name) {
   return (
     param !== undefined &&
     typeof param !== 'function' &&
@@ -139,7 +139,7 @@ function filterConfig(props, validProps, defaults = {}) {
   const res = { ...defaults };
   Object.keys(validProps).forEach(key => {
     const value = props[key];
-    if (isEventHandler(value, key)) {
+    if (isConfigParam(value, key)) {
       let value = props[key];
       if (key === 'simultaneousHandlers' || key === 'waitFor') {
         value = transformIntoHandlerTags(props[key]);
