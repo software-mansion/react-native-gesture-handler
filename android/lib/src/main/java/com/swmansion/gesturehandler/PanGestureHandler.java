@@ -29,7 +29,6 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mStartX, mStartY;
   private float mOffsetX, mOffsetY;
   private float mLastX, mLastY;
-  private float mLastEventOffsetX, mLastEventOffsetY;
   private float mLastVelocityX, mLastVelocityY;
   private VelocityTracker mVelocityTracker;
 
@@ -192,15 +191,11 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
       // reset starting point
       mLastX = GestureUtils.getLastPointerX(event, mAverageTouches);
       mLastY = GestureUtils.getLastPointerY(event, mAverageTouches);
-      mLastEventOffsetX = event.getRawX() - event.getX();
-      mLastEventOffsetY = event.getRawY() - event.getY();
       mStartX = mLastX;
       mStartY = mLastY;
     } else {
       mLastX = GestureUtils.getLastPointerX(event, mAverageTouches);
       mLastY = GestureUtils.getLastPointerY(event, mAverageTouches);
-      mLastEventOffsetX = event.getRawX() - event.getX();
-      mLastEventOffsetY = event.getRawY() - event.getY();
     }
 
     if (state == STATE_UNDETERMINED && event.getPointerCount() >= mMinPointers) {
@@ -273,21 +268,6 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return mLastVelocityY;
   }
 
-  public float getLastAbsolutePositionX() {
-    return mLastX;
-  }
-
-  public float getLastAbsolutePositionY() {
-    return mLastY;
-  }
-
-  public float getLastRelativePositionX() {
-    return mLastX - mLastEventOffsetX;
-  }
-
-  public float getLastRelativePositionY() {
-    return mLastY - mLastEventOffsetY;
-  }
 
   /**
    * This method adds movement to {@class VelocityTracker} first resetting offset of the event so
