@@ -109,11 +109,13 @@ const stateToPropMappings = {
   [State.END]: 'onEnded',
 };
 
-function canUseNativeParam(param) {
+function isConfigParam(param, name) {
   return (
     param !== undefined &&
     typeof param !== 'function' &&
-    (typeof param !== 'object' || !('__isNative' in param))
+    (typeof param !== 'object' || !('__isNative' in param)) &&
+    name !== 'onHandlerStateChange' &&
+    name !== 'onGestureEvent'
   );
 }
 
@@ -137,7 +139,7 @@ function filterConfig(props, validProps, defaults = {}) {
   const res = { ...defaults };
   Object.keys(validProps).forEach(key => {
     const value = props[key];
-    if (canUseNativeParam(value)) {
+    if (isConfigParam(value, key)) {
       let value = props[key];
       if (key === 'simultaneousHandlers' || key === 'waitFor') {
         value = transformIntoHandlerTags(props[key]);
