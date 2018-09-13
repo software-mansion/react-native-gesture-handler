@@ -321,6 +321,7 @@ declare module 'react-native-gesture-handler' {
 
   export interface RectButtonProperties extends BaseButtonProperties {
     underlayColor?: string;
+    activeOpacity?: number;
   }
 
   export interface BorderlessButtonProperties extends BaseButtonProperties {
