@@ -154,13 +154,10 @@ function filterConfig(props, validProps, defaults = {}) {
   return res;
 }
 function backwardCompatibleTransformProps(handlerName, props) {
-  console.warn('XX');
   const res = {};
   if (handlerName === 'PanGestureHandler') {
-    console.warn('XX2');
     // TODO inv
     if (props.minDeltaX) {
-      console.warn('XXX');
       res.minOffsetRangeStartX = -props.minDeltaX;
       res.minOffsetRangeEndX = props.minDeltaX;
     }
