@@ -42,7 +42,7 @@ UIManager.clearJSResponder = () => {
   oldClearJSResponder();
 };
 
-// Add gesture spacific events to RCTView's directEventTypes object exported via UIManager.
+// Add gesture specific events to RCTView's directEventTypes object exported via UIManager.
 // Once new event types are registered with react it is possible to dispatch these to other
 // view types as well.
 UIManager.RCTView.directEventTypes = {
@@ -158,10 +158,20 @@ function backwardCompatibleTransformProps(handlerName, props) {
   if (handlerName === 'PanGestureHandler') {
     // TODO inv
     if (props.minDeltaX) {
+      if (props.minOffsetRangeStartX || props.minOffsetRangeEndX) {
+        throw new Error(
+          `It's not supported use minDeltaX with minOffsetRangeStartX or minOffsetRangeEndX`
+        );
+      }
       res.minOffsetRangeStartX = -props.minDeltaX;
       res.minOffsetRangeEndX = props.minDeltaX;
     }
     if (props.maxDeltaX) {
+      if (props.maxOffsetRangeStartX || props.maxOffsetRangeEndX) {
+        throw new Error(
+          `It's not supported use maxDeltaX with maxOffsetRangeStartX or maxOffsetRangeEndX`
+        );
+      }
       res.maxOffsetRangeStartX = -props.maxDeltaX;
       res.maxOffsetRangeEndX = props.maxDeltaX;
     }
@@ -174,10 +184,20 @@ function backwardCompatibleTransformProps(handlerName, props) {
     }
 
     if (props.minDeltaY) {
+      if (props.minOffsetRangeStartY || props.minOffsetRangeEndY) {
+        throw new Error(
+          `It's not supported use minDeltaY with minOffsetRangeStartY or minOffsetRangeEndY`
+        );
+      }
       res.minOffsetRangeStartY = -props.minDeltaY;
       res.minOffsetRangeEndY = props.minDeltaY;
     }
     if (props.maxDeltaY) {
+      if (props.maxOffsetRangeStartY || props.maxOffsetRangeEndY) {
+        throw new Error(
+          `It's not supported use maxDeltaY with maxOffsetRangeStartY or maxOffsetRangeEndY`
+        );
+      }
       res.maxOffsetRangeStartY = -props.maxDeltaY;
       res.maxOffsetRangeEndY = props.maxDeltaY;
     }
@@ -326,7 +346,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       let gestureEventHandler = this._onGestureHandlerEvent;
       const { onGestureEvent, onGestureHandlerEvent } = this.props;
       if (onGestureEvent && typeof onGestureEvent !== 'function') {
-        // If it's not a mathod it should be an native Animated.event
+        // If it's not a method it should be an native Animated.event
         // object. We set it directly as the handler for the view
         // In this case nested handlers are not going to be supported
         if (onGestureHandlerEvent) {
