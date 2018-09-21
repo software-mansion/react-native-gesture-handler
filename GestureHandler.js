@@ -153,6 +153,47 @@ function filterConfig(props, validProps, defaults = {}) {
   });
   return res;
 }
+function backwardCompatibleTransformProps(handlerName, props) {
+  console.warn('XX');
+  const res = {};
+  if (handlerName === 'PanGestureHandler') {
+    console.warn('XX2');
+    // TODO inv
+    if (props.minDeltaX) {
+      console.warn('XXX');
+      res.minOffsetRangeStartX = -props.minDeltaX;
+      res.minOffsetRangeEndX = props.minDeltaX;
+    }
+    if (props.maxDeltaX) {
+      res.maxOffsetRangeStartX = -props.maxDeltaX;
+      res.maxOffsetRangeEndX = props.maxDeltaX;
+    }
+    if (props.minOffsetX) {
+      if (props.minOffsetX < 0) {
+        res.minOffsetRangeStartX = props.minOffsetX;
+      } else {
+        res.minOffsetRangeEndX = props.minOffsetX;
+      }
+    }
+
+    if (props.minDeltaY) {
+      res.minOffsetRangeStartY = -props.minDeltaY;
+      res.minOffsetRangeEndY = props.minDeltaY;
+    }
+    if (props.maxDeltaY) {
+      res.maxOffsetRangeStartY = -props.maxDeltaY;
+      res.maxOffsetRangeEndY = props.maxDeltaY;
+    }
+    if (props.minOffsetY) {
+      if (props.minOffsetY < 0) {
+        res.minOffsetRangeStartY = props.minOffsetY;
+      } else {
+        res.minOffsetRangeEndY = props.minOffsetY;
+      }
+    }
+  }
+  return res;
+}
 
 function hasUnresolvedRefs(props) {
   const extract = refs => {
@@ -233,11 +274,10 @@ function createHandler(handlerName, propTypes = null, config = {}) {
 
     componentDidMount() {
       this._viewTag = findNodeHandle(this._viewNode);
-      this._config = filterConfig(
-        this.props,
-        this.constructor.propTypes,
-        config
-      );
+      this._config = filterConfig(this.props, this.constructor.propTypes, {
+        ...config,
+        ...backwardCompatibleTransformProps(handlerName, this.props),
+      });
       if (hasUnresolvedRefs(this.props)) {
         // If there are unresolved refs (e.g. ".current" has not yet been set)
         // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
@@ -403,12 +443,14 @@ const LongPressGestureHandler = createHandler(
 const PanGestureHandler = createHandler(
   'PanGestureHandler',
   {
-    minDeltaX: PropTypes.number,
-    minDeltaY: PropTypes.number,
-    maxDeltaX: PropTypes.number,
-    maxDeltaY: PropTypes.number,
-    minOffsetX: PropTypes.number,
-    minOffsetY: PropTypes.number,
+    minOffsetRangeStartX: PropTypes.number,
+    minOffsetRangeEndX: PropTypes.number,
+    maxOffsetRangeStartX: PropTypes.number,
+    maxOffsetRangeEndX: PropTypes.number,
+    minOffsetRangeStartY: PropTypes.number,
+    minOffsetRangeEndY: PropTypes.number,
+    maxOffsetRangeStartY: PropTypes.number,
+    maxOffsetRangeEndY: PropTypes.number,
     minDist: PropTypes.number,
     minVelocity: PropTypes.number,
     minVelocityX: PropTypes.number,

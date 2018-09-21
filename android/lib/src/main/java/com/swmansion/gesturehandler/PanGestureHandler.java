@@ -13,13 +13,20 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private static int DEFAULT_MIN_POINTERS = 1;
   private static int DEFAULT_MAX_POINTERS = 10;
 
-  private float mMinOffsetX = MIN_VALUE_IGNORE;
-  private float mMinOffsetY = MIN_VALUE_IGNORE;
-  private float mMinDeltaX = MIN_VALUE_IGNORE;
-  private float mMinDeltaY = MIN_VALUE_IGNORE;
-  private float mMaxDeltaX = MAX_VALUE_IGNORE;
-  private float mMaxDeltaY = MAX_VALUE_IGNORE;
   private float mMinDistSq = MAX_VALUE_IGNORE;
+
+  private float mMinOffsetRangeStartX = MIN_VALUE_IGNORE;
+  private float mMinOffsetRangeEndX = MAX_VALUE_IGNORE;
+
+  private float mMaxOffsetRangeStartX = MAX_VALUE_IGNORE;
+  private float mMaxOffsetRangeEndX = MIN_VALUE_IGNORE;
+
+  private float mMinOffsetRangeStartY = MIN_VALUE_IGNORE;
+  private float mMinOffsetRangeEndY = MAX_VALUE_IGNORE;
+
+  private float mMaxOffsetRangeStartY = MAX_VALUE_IGNORE;
+  private float mMaxOffsetRangeEndY = MIN_VALUE_IGNORE;
+
   private float mMinVelocityX = MIN_VALUE_IGNORE;
   private float mMinVelocityY = MIN_VALUE_IGNORE;
   private float mMinVelocitySq = MIN_VALUE_IGNORE;
@@ -52,33 +59,43 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     mMinDistSq = touchSlop * touchSlop;
   }
 
-  public PanGestureHandler setMinDx(float deltaX) {
-    mMinDeltaX = deltaX;
+  public PanGestureHandler setMinOffsetRangeStartX(float minOffsetRangeStartX) {
+    mMinOffsetRangeStartX = minOffsetRangeStartX;
     return this;
   }
 
-  public PanGestureHandler setMinDy(float deltaY) {
-    mMinDeltaY = deltaY;
+  public PanGestureHandler setMinOffsetRangeEndX(float minOffsetRangeEndX) {
+    mMinOffsetRangeEndX = minOffsetRangeEndX;
     return this;
   }
 
-  public PanGestureHandler setMaxDx(float deltaX) {
-    mMaxDeltaX = deltaX;
+  public PanGestureHandler setMaxOffsetRangeStartX(float maxOffsetRangeStartX) {
+    mMaxOffsetRangeStartX = maxOffsetRangeStartX;
     return this;
   }
 
-  public PanGestureHandler setMaxDy(float deltaY) {
-    mMaxDeltaY = deltaY;
+  public PanGestureHandler setMaxOffsetRangeEndX(float maxOffsetRangeEndX) {
+    mMaxOffsetRangeEndX = maxOffsetRangeEndX;
     return this;
   }
 
-  public PanGestureHandler setMinOffsetX(float offsetX) {
-    mMinOffsetX = offsetX;
+  public PanGestureHandler setMinOffsetRangeStartY(float minOffsetRangeStartY) {
+    mMinOffsetRangeStartY = minOffsetRangeStartY;
     return this;
   }
 
-  public PanGestureHandler setMinOffsetY(float offsetY) {
-    mMinOffsetY = offsetY;
+  public PanGestureHandler setMinOffsetRangeEndY(float minOffsetRangeEndY) {
+    mMinOffsetRangeEndY = minOffsetRangeEndY;
+    return this;
+  }
+
+  public PanGestureHandler setMaxOffsetRangeStartY(float maxOffsetRangeStartY) {
+    mMaxOffsetRangeStartY = maxOffsetRangeStartY;
+    return this;
+  }
+
+  public PanGestureHandler setMaxOffsetRangeEndY(float maxOffsetRangeEndY) {
+    mMaxOffsetRangeEndY = maxOffsetRangeEndY;
     return this;
   }
 
@@ -122,20 +139,20 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private boolean shouldActivate() {
     float dx = mLastX - mStartX + mOffsetX;
-    if (mMinDeltaX != MIN_VALUE_IGNORE && Math.abs(dx) >= mMinDeltaX) {
+    if (mMinOffsetRangeStartX != MIN_VALUE_IGNORE && dx <=  mMinOffsetRangeStartX) {
       return true;
     }
-    if (mMinOffsetX != MIN_VALUE_IGNORE &&
-            ((mMinOffsetX < 0 && dx <= mMinOffsetX) || (mMinOffsetX >= 0 && dx >= mMinOffsetX))) {
+
+    if (mMinOffsetRangeEndX != MAX_VALUE_IGNORE && dx >=  mMinOffsetRangeEndX) {
       return true;
     }
 
     float dy = mLastY - mStartY + mOffsetY;
-    if (mMinDeltaY != MIN_VALUE_IGNORE && Math.abs(dy) >= mMinDeltaY) {
+    if (mMinOffsetRangeStartY != MIN_VALUE_IGNORE && dy <=  mMinOffsetRangeStartY) {
       return true;
     }
-    if (mMinOffsetY != MIN_VALUE_IGNORE &&
-            ((mMinOffsetY < 0 && dy <= mMinOffsetY) || (mMinOffsetY >= 0 && dy >= mMinOffsetY))) {
+
+    if (mMinOffsetRangeEndY != MAX_VALUE_IGNORE && dy >=  mMinOffsetRangeEndY) {
       return true;
     }
 
@@ -166,12 +183,22 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private boolean shouldFail() {
     float dx = mLastX - mStartX + mOffsetX;
-    if (mMaxDeltaX != MAX_VALUE_IGNORE && Math.abs(dx) > mMaxDeltaX) {
+
+    if (mMaxOffsetRangeStartX != MAX_VALUE_IGNORE && dx <=  mMaxOffsetRangeStartX) {
       return true;
     }
 
+    if (mMaxOffsetRangeEndX != MIN_VALUE_IGNORE && dx >=  mMaxOffsetRangeEndX) {
+      return true;
+    }
+
+
     float dy = mLastY - mStartY + mOffsetY;
-    if (mMaxDeltaY != MAX_VALUE_IGNORE && Math.abs(dy) > mMaxDeltaY) {
+    if (mMaxOffsetRangeStartY != MAX_VALUE_IGNORE && dy <=  mMaxOffsetRangeStartY) {
+      return true;
+    }
+
+    if (mMaxOffsetRangeEndY != MIN_VALUE_IGNORE && dy >=  mMaxOffsetRangeEndY) {
       return true;
     }
 
