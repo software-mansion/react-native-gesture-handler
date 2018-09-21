@@ -239,12 +239,26 @@ declare module 'react-native-gesture-handler' {
   }
 
   export interface PanGestureHandlerProperties extends GestureHandlerProperties {
+    /** @deprecated  use minOffsetRangeStartX and minOffsetRangeEndX*/
     minDeltaX?: number;
+    /** @deprecated  use minOffsetRangeStartY and minOffsetRangeEndY*/
     minDeltaY?: number;
+    /** @deprecated  use maxOffsetRangeStartX and maxOffsetRangeEndX*/
     maxDeltaX?: number;
+    /** @deprecated  use maxOffsetRangeStartY and maxOffsetRangeEndY*/
     maxDeltaY?: number;
+    /** @deprecated  use minOffsetRangeStartX or minOffsetRangeEndX*/
     minOffsetX?: number;
+    /** @deprecated  use minOffsetRangeStartY or minOffsetRangeEndY*/
     minOffsetY?: number;
+    minOffsetRangeStartX?: number;
+    minOffsetRangeEndX?: number;
+    maxOffsetRangeStartX?: number;
+    maxOffsetRangeEndX?: number;
+    minOffsetRangeStartY?: number;
+    minOffsetRangeEndY?: number;
+    maxOffsetRangeStartY?: number;
+    maxOffsetRangeEndY?: number;    
     minDist?: number;
     minVelocity?: number;
     minVelocityX?: number;
