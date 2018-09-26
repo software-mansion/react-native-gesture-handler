@@ -20,5 +20,16 @@ allprojects {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
         }
+        maven {
+            url 'https://maven.google.com/'
+        }
     }
+}
+
+ext {
+    buildToolsVersion = "26.0.3"
+    minSdkVersion = 16
+    compileSdkVersion = 26
+    targetSdkVersion = 26
+    supportLibVersion = "26.1.0"
 }
