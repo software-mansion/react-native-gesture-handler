@@ -153,63 +153,6 @@ function filterConfig(props, validProps, defaults = {}) {
   });
   return res;
 }
-function backwardCompatibleTransformProps(handlerName, props) {
-  const res = {};
-  if (handlerName === 'PanGestureHandler') {
-    if (props.minDeltaX) {
-      if (props.activeOffsetStartX || props.activeOffsetEndX) {
-        throw new Error(
-          `It's not supported use minDeltaX with activeOffsetStartX or activeOffsetEndX`
-        );
-      }
-      res.activeOffsetStartX = -props.minDeltaX;
-      res.activeOffsetEndX = props.minDeltaX;
-    }
-    if (props.maxDeltaX) {
-      if (props.failOffsetStartX || props.failOffsetEndX) {
-        throw new Error(
-          `It's not supported use maxDeltaX with failOffsetStartX or failOffsetEndX`
-        );
-      }
-      res.failOffsetStartX = -props.maxDeltaX;
-      res.failOffsetEndX = props.maxDeltaX;
-    }
-    if (props.minOffsetX) {
-      if (props.minOffsetX < 0) {
-        res.activeOffsetStartX = props.minOffsetX;
-      } else {
-        res.activeOffsetEndX = props.minOffsetX;
-      }
-    }
-
-    if (props.minDeltaY) {
-      if (props.activeOffsetStartY || props.activeOffsetEndY) {
-        throw new Error(
-          `It's not supported use minDeltaY with activeOffsetStartY or activeOffsetEndY`
-        );
-      }
-      res.activeOffsetStartY = -props.minDeltaY;
-      res.activeOffsetEndY = props.minDeltaY;
-    }
-    if (props.maxDeltaY) {
-      if (props.failOffsetStartY || props.failOffsetEndY) {
-        throw new Error(
-          `It's not supported use maxDeltaY with failOffsetStartY or failOffsetEndY`
-        );
-      }
-      res.failOffsetStartY = -props.maxDeltaY;
-      res.failOffsetEndY = props.maxDeltaY;
-    }
-    if (props.minOffsetY) {
-      if (props.minOffsetY < 0) {
-        res.activeOffsetStartY = props.minOffsetY;
-      } else {
-        res.activeOffsetEndY = props.minOffsetY;
-      }
-    }
-  }
-  return res;
-}
 
 function hasUnresolvedRefs(props) {
   const extract = refs => {
@@ -221,7 +164,13 @@ function hasUnresolvedRefs(props) {
   return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
 }
 
-function createHandler(handlerName, propTypes = null, config = {}) {
+function createHandler(
+  handlerName,
+  propTypes = null,
+  config = {},
+  transformProps,
+  customNativeProps = {}
+) {
   class Handler extends React.Component {
     static propTypes = {
       ...GestureHandlerPropTypes,
@@ -290,10 +239,11 @@ function createHandler(handlerName, propTypes = null, config = {}) {
 
     componentDidMount() {
       this._viewTag = findNodeHandle(this._viewNode);
-      this._config = filterConfig(this.props, this.constructor.propTypes, {
-        ...config,
-        ...backwardCompatibleTransformProps(handlerName, this.props),
-      });
+      this._config = filterConfig(
+        transformProps ? transformProps(this.props) : this.props,
+        { ...this.constructor.propTypes, ...customNativeProps },
+        config
+      );
       if (hasUnresolvedRefs(this.props)) {
         // If there are unresolved refs (e.g. ".current" has not yet been set)
         // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
@@ -456,17 +406,165 @@ const LongPressGestureHandler = createHandler(
   },
   {}
 );
+
+function backwardCompatibleTransformPanProps(props) {
+  const res = {};
+  if (__DEV__) {
+    if (props.minDeltaX && props.activeOffsetX) {
+      throw new Error(
+        `It's not supported use minDeltaX with activeOffsetStartX or activeOffsetEndX`
+      );
+    }
+    if (props.maxDeltaX && props.failOffsetX) {
+      throw new Error(
+        `It's not supported use minDeltaX with activeOffsetStartX or activeOffsetEndX`
+      );
+    }
+    if (props.minDeltaY && props.activeOffsetY) {
+      throw new Error(
+        `It's not supported use minDeltaX with activeOffsetStartY or activeOffsetEndY`
+      );
+    }
+    if (props.maxDeltaY && props.failOffsetY) {
+      throw new Error(
+        `It's not supported use minDeltaX with activeOffsetStartY or activeOffsetEndY`
+      );
+    }
+    if (
+      Array.isArray(props.activeOffsetX) &&
+      (props.activeOffsetX[0] > 0 || props.activeOffsetX[1] < 0)
+    ) {
+      throw new Error(
+        `First element of activeOffsetX should be negative, a the second one should be positive`
+      );
+    }
+
+    if (
+      Array.isArray(props.activeOffsetY) &&
+      (props.activeOffsetY[0] > 0 || props.activeOffsetX[1] < 0)
+    ) {
+      throw new Error(
+        `First element of activeOffsetY should be negative, a the second one should be positive`
+      );
+    }
+
+    if (
+      Array.isArray(props.failOffsetX) &&
+      (props.failOffsetX[0] > 0 || props.failOffsetX[1] < 0)
+    ) {
+      throw new Error(
+        `First element of failOffsetX should be negative, a the second one should be positive`
+      );
+    }
+
+    if (
+      Array.isArray(props.failOffsetY) &&
+      (props.failOffsetY[0] > 0 || props.failOffsetX[1] < 0)
+    ) {
+      throw new Error(
+        `First element of failOffsetY should be negative, a the second one should be positive`
+      );
+    }
+  }
+  if (props.minDeltaX) {
+    res.activeOffsetStartX = -props.minDeltaX;
+    res.activeOffsetEndX = props.minDeltaX;
+  }
+  if (props.maxDeltaX) {
+    res.failOffsetStartX = -props.maxDeltaX;
+    res.failOffsetEndX = props.maxDeltaX;
+  }
+  if (props.minOffsetX) {
+    if (props.minOffsetX < 0) {
+      res.activeOffsetStartX = props.minOffsetX;
+    } else {
+      res.activeOffsetEndX = props.minOffsetX;
+    }
+  }
+
+  if (props.minDeltaY) {
+    res.activeOffsetStartY = -props.minDeltaY;
+    res.activeOffsetEndY = props.minDeltaY;
+  }
+  if (props.maxDeltaY) {
+    res.failOffsetStartY = -props.maxDeltaY;
+    res.failOffsetEndY = props.maxDeltaY;
+  }
+
+  if (props.minOffsetY) {
+    if (props.minOffsetY < 0) {
+      res.activeOffsetStartY = props.minOffsetY;
+    } else {
+      res.activeOffsetEndY = props.minOffsetY;
+    }
+  }
+
+  if (props.activeOffsetX) {
+    if (Array.isArray(props.activeOffsetX)) {
+      res.activeOffsetStartX = props.activeOffsetX[0];
+      res.activeOffsetEndX = props.activeOffsetX[1];
+    } else if (props.activeOffsetX < 0) {
+      res.activeOffsetStartX = props.activeOffsetX;
+    } else {
+      res.activeOffsetEndX = props.activeOffsetX;
+    }
+  }
+
+  if (props.activeOffsetY) {
+    if (Array.isArray(props.activeOffsetY)) {
+      res.activeOffsetStartY = props.activeOffsetY[0];
+      res.activeOffsetEndY = props.activeOffsetY[1];
+    } else if (props.activeOffsetY < 0) {
+      res.activeOffsetStartY = props.activeOffsetY;
+    } else {
+      res.activeOffsetEndY = props.activeOffsetY;
+    }
+  }
+
+  if (props.failOffsetX) {
+    if (Array.isArray(props.failOffsetX)) {
+      res.failOffsetStartX = props.failOffsetX[0];
+      res.failOffsetEndX = props.failOffsetX[1];
+    } else if (props.failOffsetX < 0) {
+      res.failOffsetStartX = props.failOffsetX;
+    } else {
+      res.failOffsetEndX = props.failOffsetX;
+    }
+  }
+
+  if (props.failOffsetY) {
+    if (Array.isArray(props.failOffsetY)) {
+      res.failOffsetStartY = props.failOffsetY[0];
+      res.failOffsetEndY = props.failOffsetY[1];
+    } else if (props.failOffsetY < 0) {
+      res.failOffsetStartY = props.failOffsetY;
+    } else {
+      res.failOffsetEndY = props.failOffsetY;
+    }
+  }
+
+  return res;
+}
+
 const PanGestureHandler = createHandler(
   'PanGestureHandler',
   {
-    activeOffsetStartX: PropTypes.number,
-    activeOffsetEndX: PropTypes.number,
-    failOffsetStartX: PropTypes.number,
-    failOffsetEndX: PropTypes.number,
-    activeOffsetStartY: PropTypes.number,
-    activeOffsetEndY: PropTypes.number,
-    failOffsetStartY: PropTypes.number,
-    failOffsetEndY: PropTypes.number,
+    activeOffsetY: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+    activeOffsetX: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+    failOffsetY: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+    failOffsetX: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
     minDist: PropTypes.number,
     minVelocity: PropTypes.number,
     minVelocityX: PropTypes.number,
@@ -475,7 +573,18 @@ const PanGestureHandler = createHandler(
     maxPointers: PropTypes.number,
     avgTouches: PropTypes.bool,
   },
-  {}
+  {},
+  backwardCompatibleTransformPanProps,
+  {
+    activeOffsetStartY: true,
+    activeOffsetEndY: true,
+    activeOffsetStartX: true,
+    activeOffsetEndX: true,
+    failOffsetStartY: true,
+    failOffsetEndY: true,
+    failOffsetStartX: true,
+    failOffsetEndX: true,
+  }
 );
 const PinchGestureHandler = createHandler('PinchGestureHandler', {}, {});
 const RotationGestureHandler = createHandler('RotationGestureHandler', {}, {});
