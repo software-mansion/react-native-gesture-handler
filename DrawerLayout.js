@@ -92,6 +92,11 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     const touchX = new Animated.Value(0);
     const drawerTranslation = new Animated.Value(0);
 
+    // This is necessary to ensure that the value we get from stopAnimation is
+    // kept up to date. If we don't do this then values on the JS side never get
+    // updated and drawerTranslation value in JS will always be 0.
+    this.drawerTranslationListener = drawerTranslation.addListener(() => {});
+
     this.state = {
       dragX,
       touchX,
@@ -101,6 +106,10 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     };
 
     this._updateAnimatedEvent(props, this.state);
+  }
+
+  componentWillUnmount() {
+    this.drawerTranslation.removeListener(this.drawerTranslationListener);
   }
 
   componentWillUpdate(props: PropType, state: StateType) {
@@ -291,19 +300,23 @@ export default class DrawerLayout extends Component<PropType, StateType> {
   };
 
   openDrawer = (options: DrawerMovementOptionType = {}) => {
-    this._animateDrawer(
-      0,
-      this.props.drawerWidth,
-      options.velocity ? options.velocity : 0
-    );
+    this.state.drawerTranslation.stopAnimation(initialValue => {
+      this._animateDrawer(
+        initialValue,
+        this.props.drawerWidth,
+        options.velocity ? options.velocity : 0
+      );
+    });
   };
 
   closeDrawer = (options: DrawerMovementOptionType = {}) => {
-    this._animateDrawer(
-      this.props.drawerWidth,
-      0,
-      options.velocity ? options.velocity : 0
-    );
+    this.state.drawerTranslation.stopAnimation(initialValue => {
+      this._animateDrawer(
+        initialValue,
+        0,
+        options.velocity ? options.velocity : 0
+      );
+    });
   };
 
   _renderOverlay = () => {
