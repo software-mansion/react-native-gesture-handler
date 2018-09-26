@@ -16,14 +16,14 @@
 @property (nonatomic) CGFloat minVelocityX;
 @property (nonatomic) CGFloat minVelocityY;
 @property (nonatomic) CGFloat minVelocitySq;
-@property (nonatomic) CGFloat minOffsetRangeStartX;
-@property (nonatomic) CGFloat minOffsetRangeEndX;
-@property (nonatomic) CGFloat maxOffsetRangeStartX;
-@property (nonatomic) CGFloat maxOffsetRangeEndX;
-@property (nonatomic) CGFloat minOffsetRangeStartY;
-@property (nonatomic) CGFloat minOffsetRangeEndY;
-@property (nonatomic) CGFloat maxOffsetRangeStartY;
-@property (nonatomic) CGFloat maxOffsetRangeEndY;
+@property (nonatomic) CGFloat activeOffsetStartX;
+@property (nonatomic) CGFloat activeOffsetEndX;
+@property (nonatomic) CGFloat failOffsetStartX;
+@property (nonatomic) CGFloat failOffsetEndX;
+@property (nonatomic) CGFloat activeOffsetStartY;
+@property (nonatomic) CGFloat activeOffsetEndY;
+@property (nonatomic) CGFloat failOffsetStartY;
+@property (nonatomic) CGFloat failOffsetEndY;
 
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
@@ -45,14 +45,14 @@
     _minVelocityX = NAN;
     _minVelocityY = NAN;
     _minVelocitySq = NAN;
-    _minOffsetRangeStartX = NAN;
-    _minOffsetRangeEndX = NAN;
-    _maxOffsetRangeStartX = NAN;
-    _maxOffsetRangeEndX = NAN;
-    _minOffsetRangeStartY = NAN;
-    _minOffsetRangeEndY = NAN;
-    _maxOffsetRangeStartY = NAN;
-    _maxOffsetRangeEndY = NAN;
+    _activeOffsetStartX = NAN;
+    _activeOffsetEndX = NAN;
+    _failOffsetStartX = NAN;
+    _failOffsetEndX = NAN;
+    _activeOffsetStartY = NAN;
+    _activeOffsetEndY = NAN;
+    _failOffsetStartY = NAN;
+    _failOffsetEndY = NAN;
     _hasCustomActivationCriteria = NO;
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
   }
@@ -117,25 +117,25 @@
 {
   _hasCustomActivationCriteria = !isnan(_minDistSq)
   || !isnan(_minVelocityX) || !isnan(_minVelocityY) || !isnan(_minVelocitySq)
-  || !isnan(_minOffsetRangeStartX) || !isnan(_minOffsetRangeEndX) || !isnan(_maxOffsetRangeStartX)
-  || !isnan(_maxOffsetRangeEndX) || !isnan(_minOffsetRangeStartY) || !isnan(_minOffsetRangeEndY)
-  || !isnan(_maxOffsetRangeStartY) || !isnan(_maxOffsetRangeEndY);
+  || !isnan(_activeOffsetStartX) || !isnan(_activeOffsetEndX) || !isnan(_failOffsetStartX)
+  || !isnan(_failOffsetEndX) || !isnan(_activeOffsetStartY) || !isnan(_activeOffsetEndY)
+  || !isnan(_failOffsetStartY) || !isnan(_failOffsetEndY);
 }
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
   CGPoint trans = [self translationInView:self.view];
   
-  if (TEST_MIN_IF_NOT_NAN(trans.x, _maxOffsetRangeStartX)) {
+  if (TEST_MIN_IF_NOT_NAN(trans.x, _failOffsetStartX)) {
     return YES;
   }
-  if (TEST_MAX_IF_NOT_NAN(trans.x, _maxOffsetRangeEndX)) {
+  if (TEST_MAX_IF_NOT_NAN(trans.x, _failOffsetEndX)) {
     return YES;
   }
-  if (TEST_MIN_IF_NOT_NAN(trans.y, _maxOffsetRangeStartY)) {
+  if (TEST_MIN_IF_NOT_NAN(trans.y, _failOffsetStartY)) {
     return YES;
   }
-  if (TEST_MAX_IF_NOT_NAN(trans.y, _maxOffsetRangeEndY)) {
+  if (TEST_MAX_IF_NOT_NAN(trans.y, _failOffsetEndY)) {
     return YES;
   }
   
@@ -146,16 +146,16 @@
 - (BOOL)shouldActivateUnderCustomCriteria
 {
   CGPoint trans = [self translationInView:self.view];
-  if (TEST_MIN_IF_NOT_NAN(trans.x, _minOffsetRangeStartX)) {
+  if (TEST_MIN_IF_NOT_NAN(trans.x, _activeOffsetStartX)) {
     return YES;
   }
-  if (TEST_MAX_IF_NOT_NAN(trans.x, _minOffsetRangeEndX)) {
+  if (TEST_MAX_IF_NOT_NAN(trans.x, _activeOffsetEndX)) {
     return YES;
   }
-  if (TEST_MIN_IF_NOT_NAN(trans.y, _minOffsetRangeStartY)) {
+  if (TEST_MIN_IF_NOT_NAN(trans.y, _activeOffsetStartY)) {
     return YES;
   }
-  if (TEST_MAX_IF_NOT_NAN(trans.y, _minOffsetRangeEndY)) {
+  if (TEST_MAX_IF_NOT_NAN(trans.y, _activeOffsetEndY)) {
     return YES;
   }
   
@@ -196,14 +196,14 @@
   
   APPLY_FLOAT_PROP(minVelocityX);
   APPLY_FLOAT_PROP(minVelocityY);
-  APPLY_FLOAT_PROP(minOffsetRangeStartX);
-  APPLY_FLOAT_PROP(minOffsetRangeEndX);
-  APPLY_FLOAT_PROP(maxOffsetRangeStartX);
-  APPLY_FLOAT_PROP(maxOffsetRangeEndX);
-  APPLY_FLOAT_PROP(minOffsetRangeStartY);
-  APPLY_FLOAT_PROP(minOffsetRangeEndY);
-  APPLY_FLOAT_PROP(maxOffsetRangeStartY);
-  APPLY_FLOAT_PROP(maxOffsetRangeEndY);
+  APPLY_FLOAT_PROP(activeOffsetStartX);
+  APPLY_FLOAT_PROP(activeOffsetEndX);
+  APPLY_FLOAT_PROP(failOffsetStartX);
+  APPLY_FLOAT_PROP(failOffsetEndX);
+  APPLY_FLOAT_PROP(activeOffsetStartY);
+  APPLY_FLOAT_PROP(activeOffsetEndY);
+  APPLY_FLOAT_PROP(failOffsetStartY);
+  APPLY_FLOAT_PROP(failOffsetEndY);
   
   
   APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");

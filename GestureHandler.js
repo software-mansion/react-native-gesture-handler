@@ -157,54 +157,54 @@ function backwardCompatibleTransformProps(handlerName, props) {
   const res = {};
   if (handlerName === 'PanGestureHandler') {
     if (props.minDeltaX) {
-      if (props.minOffsetRangeStartX || props.minOffsetRangeEndX) {
+      if (props.activeOffsetStartX || props.activeOffsetEndX) {
         throw new Error(
-          `It's not supported use minDeltaX with minOffsetRangeStartX or minOffsetRangeEndX`
+          `It's not supported use minDeltaX with activeOffsetStartX or activeOffsetEndX`
         );
       }
-      res.minOffsetRangeStartX = -props.minDeltaX;
-      res.minOffsetRangeEndX = props.minDeltaX;
+      res.activeOffsetStartX = -props.minDeltaX;
+      res.activeOffsetEndX = props.minDeltaX;
     }
     if (props.maxDeltaX) {
-      if (props.maxOffsetRangeStartX || props.maxOffsetRangeEndX) {
+      if (props.failOffsetStartX || props.failOffsetEndX) {
         throw new Error(
-          `It's not supported use maxDeltaX with maxOffsetRangeStartX or maxOffsetRangeEndX`
+          `It's not supported use maxDeltaX with failOffsetStartX or failOffsetEndX`
         );
       }
-      res.maxOffsetRangeStartX = -props.maxDeltaX;
-      res.maxOffsetRangeEndX = props.maxDeltaX;
+      res.failOffsetStartX = -props.maxDeltaX;
+      res.failOffsetEndX = props.maxDeltaX;
     }
     if (props.minOffsetX) {
       if (props.minOffsetX < 0) {
-        res.minOffsetRangeStartX = props.minOffsetX;
+        res.activeOffsetStartX = props.minOffsetX;
       } else {
-        res.minOffsetRangeEndX = props.minOffsetX;
+        res.activeOffsetEndX = props.minOffsetX;
       }
     }
 
     if (props.minDeltaY) {
-      if (props.minOffsetRangeStartY || props.minOffsetRangeEndY) {
+      if (props.activeOffsetStartY || props.activeOffsetEndY) {
         throw new Error(
-          `It's not supported use minDeltaY with minOffsetRangeStartY or minOffsetRangeEndY`
+          `It's not supported use minDeltaY with activeOffsetStartY or activeOffsetEndY`
         );
       }
-      res.minOffsetRangeStartY = -props.minDeltaY;
-      res.minOffsetRangeEndY = props.minDeltaY;
+      res.activeOffsetStartY = -props.minDeltaY;
+      res.activeOffsetEndY = props.minDeltaY;
     }
     if (props.maxDeltaY) {
-      if (props.maxOffsetRangeStartY || props.maxOffsetRangeEndY) {
+      if (props.failOffsetStartY || props.failOffsetEndY) {
         throw new Error(
-          `It's not supported use maxDeltaY with maxOffsetRangeStartY or maxOffsetRangeEndY`
+          `It's not supported use maxDeltaY with failOffsetStartY or failOffsetEndY`
         );
       }
-      res.maxOffsetRangeStartY = -props.maxDeltaY;
-      res.maxOffsetRangeEndY = props.maxDeltaY;
+      res.failOffsetStartY = -props.maxDeltaY;
+      res.failOffsetEndY = props.maxDeltaY;
     }
     if (props.minOffsetY) {
       if (props.minOffsetY < 0) {
-        res.minOffsetRangeStartY = props.minOffsetY;
+        res.activeOffsetStartY = props.minOffsetY;
       } else {
-        res.minOffsetRangeEndY = props.minOffsetY;
+        res.activeOffsetEndY = props.minOffsetY;
       }
     }
   }
@@ -459,14 +459,14 @@ const LongPressGestureHandler = createHandler(
 const PanGestureHandler = createHandler(
   'PanGestureHandler',
   {
-    minOffsetRangeStartX: PropTypes.number,
-    minOffsetRangeEndX: PropTypes.number,
-    maxOffsetRangeStartX: PropTypes.number,
-    maxOffsetRangeEndX: PropTypes.number,
-    minOffsetRangeStartY: PropTypes.number,
-    minOffsetRangeEndY: PropTypes.number,
-    maxOffsetRangeStartY: PropTypes.number,
-    maxOffsetRangeEndY: PropTypes.number,
+    activeOffsetStartX: PropTypes.number,
+    activeOffsetEndX: PropTypes.number,
+    failOffsetStartX: PropTypes.number,
+    failOffsetEndX: PropTypes.number,
+    activeOffsetStartY: PropTypes.number,
+    activeOffsetEndY: PropTypes.number,
+    failOffsetStartY: PropTypes.number,
+    failOffsetEndY: PropTypes.number,
     minDist: PropTypes.number,
     minVelocity: PropTypes.number,
     minVelocityX: PropTypes.number,
