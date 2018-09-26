@@ -15,17 +15,17 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private float mMinDistSq = MAX_VALUE_IGNORE;
 
-  private float mMinOffsetRangeStartX = MIN_VALUE_IGNORE;
-  private float mMinOffsetRangeEndX = MAX_VALUE_IGNORE;
+  private float mActiveOffsetStartX = MIN_VALUE_IGNORE;
+  private float mActiveOffsetEndX = MAX_VALUE_IGNORE;
 
-  private float mMaxOffsetRangeStartX = MAX_VALUE_IGNORE;
-  private float mMaxOffsetRangeEndX = MIN_VALUE_IGNORE;
+  private float mFailOffsetStartX = MAX_VALUE_IGNORE;
+  private float mFailOffsetEndX = MIN_VALUE_IGNORE;
 
-  private float mMinOffsetRangeStartY = MIN_VALUE_IGNORE;
-  private float mMinOffsetRangeEndY = MAX_VALUE_IGNORE;
+  private float mActiveOffsetStartY = MIN_VALUE_IGNORE;
+  private float mActiveOffsetEndY = MAX_VALUE_IGNORE;
 
-  private float mMaxOffsetRangeStartY = MAX_VALUE_IGNORE;
-  private float mMaxOffsetRangeEndY = MIN_VALUE_IGNORE;
+  private float mFailOffsetStartY = MAX_VALUE_IGNORE;
+  private float mFailOffsetEndY = MIN_VALUE_IGNORE;
 
   private float mMinVelocityX = MIN_VALUE_IGNORE;
   private float mMinVelocityY = MIN_VALUE_IGNORE;
@@ -59,43 +59,43 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     mMinDistSq = touchSlop * touchSlop;
   }
 
-  public PanGestureHandler setMinOffsetRangeStartX(float minOffsetRangeStartX) {
-    mMinOffsetRangeStartX = minOffsetRangeStartX;
+  public PanGestureHandler setactiveOffsetStartX(float activeOffsetStartX) {
+    mActiveOffsetStartX = activeOffsetStartX;
     return this;
   }
 
-  public PanGestureHandler setMinOffsetRangeEndX(float minOffsetRangeEndX) {
-    mMinOffsetRangeEndX = minOffsetRangeEndX;
+  public PanGestureHandler setactiveOffsetEndX(float activeOffsetEndX) {
+    mActiveOffsetEndX = activeOffsetEndX;
     return this;
   }
 
-  public PanGestureHandler setMaxOffsetRangeStartX(float maxOffsetRangeStartX) {
-    mMaxOffsetRangeStartX = maxOffsetRangeStartX;
+  public PanGestureHandler setfailOffsetStartX(float failOffsetStartX) {
+    mFailOffsetStartX = failOffsetStartX;
     return this;
   }
 
-  public PanGestureHandler setMaxOffsetRangeEndX(float maxOffsetRangeEndX) {
-    mMaxOffsetRangeEndX = maxOffsetRangeEndX;
+  public PanGestureHandler setfailOffsetEndX(float failOffsetEndX) {
+    mFailOffsetEndX = failOffsetEndX;
     return this;
   }
 
-  public PanGestureHandler setMinOffsetRangeStartY(float minOffsetRangeStartY) {
-    mMinOffsetRangeStartY = minOffsetRangeStartY;
+  public PanGestureHandler setactiveOffsetStartY(float activeOffsetStartY) {
+    mActiveOffsetStartY = activeOffsetStartY;
     return this;
   }
 
-  public PanGestureHandler setMinOffsetRangeEndY(float minOffsetRangeEndY) {
-    mMinOffsetRangeEndY = minOffsetRangeEndY;
+  public PanGestureHandler setactiveOffsetEndY(float activeOffsetEndY) {
+    mActiveOffsetEndY = activeOffsetEndY;
     return this;
   }
 
-  public PanGestureHandler setMaxOffsetRangeStartY(float maxOffsetRangeStartY) {
-    mMaxOffsetRangeStartY = maxOffsetRangeStartY;
+  public PanGestureHandler setfailOffsetStartY(float failOffsetStartY) {
+    mFailOffsetStartY = failOffsetStartY;
     return this;
   }
 
-  public PanGestureHandler setMaxOffsetRangeEndY(float maxOffsetRangeEndY) {
-    mMaxOffsetRangeEndY = maxOffsetRangeEndY;
+  public PanGestureHandler setfailOffsetEndY(float failOffsetEndY) {
+    mFailOffsetEndY = failOffsetEndY;
     return this;
   }
 
@@ -139,20 +139,20 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private boolean shouldActivate() {
     float dx = mLastX - mStartX + mOffsetX;
-    if (mMinOffsetRangeStartX != MIN_VALUE_IGNORE && dx <=  mMinOffsetRangeStartX) {
+    if (mActiveOffsetStartX != MIN_VALUE_IGNORE && dx <=  mActiveOffsetStartX) {
       return true;
     }
 
-    if (mMinOffsetRangeEndX != MAX_VALUE_IGNORE && dx >=  mMinOffsetRangeEndX) {
+    if (mActiveOffsetEndX != MAX_VALUE_IGNORE && dx >=  mActiveOffsetEndX) {
       return true;
     }
 
     float dy = mLastY - mStartY + mOffsetY;
-    if (mMinOffsetRangeStartY != MIN_VALUE_IGNORE && dy <=  mMinOffsetRangeStartY) {
+    if (mActiveOffsetStartY != MIN_VALUE_IGNORE && dy <=  mActiveOffsetStartY) {
       return true;
     }
 
-    if (mMinOffsetRangeEndY != MAX_VALUE_IGNORE && dy >=  mMinOffsetRangeEndY) {
+    if (mActiveOffsetEndY != MAX_VALUE_IGNORE && dy >=  mActiveOffsetEndY) {
       return true;
     }
 
@@ -184,21 +184,21 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private boolean shouldFail() {
     float dx = mLastX - mStartX + mOffsetX;
 
-    if (mMaxOffsetRangeStartX != MAX_VALUE_IGNORE && dx <=  mMaxOffsetRangeStartX) {
+    if (mFailOffsetStartX != MAX_VALUE_IGNORE && dx <= mFailOffsetStartX) {
       return true;
     }
 
-    if (mMaxOffsetRangeEndX != MIN_VALUE_IGNORE && dx >=  mMaxOffsetRangeEndX) {
+    if (mFailOffsetEndX != MIN_VALUE_IGNORE && dx >=  mFailOffsetEndX) {
       return true;
     }
 
 
     float dy = mLastY - mStartY + mOffsetY;
-    if (mMaxOffsetRangeStartY != MAX_VALUE_IGNORE && dy <=  mMaxOffsetRangeStartY) {
+    if (mFailOffsetStartY != MAX_VALUE_IGNORE && dy <=  mFailOffsetStartY) {
       return true;
     }
 
-    if (mMaxOffsetRangeEndY != MIN_VALUE_IGNORE && dy >=  mMaxOffsetRangeEndY) {
+    if (mFailOffsetEndY != MIN_VALUE_IGNORE && dy >=  mFailOffsetEndY) {
       return true;
     }
 
