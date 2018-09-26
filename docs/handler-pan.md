@@ -57,16 +57,30 @@ A number of fingers that is required to be placed before handler can [activate](
 When the given number of fingers is placed on the screen and handler hasn't yet [activated](state.md#active) it will fail recognizing the gesture. Should be a positive integer.
 
 ---
-### `activeOffsetX`, `activeOffsetY`
+### `activeOffsetX`
 
-Range along X or Y axis where fingers travels without activation of handler. Moving outside this range implies activation of handler. Range could be given as array or a single number.
+Range along X axis where fingers travels without activation of handler. Moving outside this range implies activation of handler. Range could be given as an array or a single number.
  If range is set as array, first value must be negative, a the second one positive.
  If there's given only positive number `p`, it means that range is: `(-inf, p)`. If the number if negative, the range is: `(p, inf)`. 
 
 ---
-### `failOffsetX`, `failOffsetY`
+### `activeOffsetY`
 
-When the finger moves outside this range along X or Y axis and handler hasn't yet activated it will fail recognizing the gesture. Range could be given as array or a single number.
+Range along Y axis where fingers travels without activation of handler. Moving outside this range implies activation of handler. Range could be given as an array or a single number.
+ If range is set as array, first value must be negative, a the second one positive.
+ If there's given only positive number `p`, it means that range is: `(-inf, p)`. If the number if negative, the range is: `(p, inf)`. 
+
+---
+### `failOffsetY`
+
+When the finger moves outside this range along Y axis and handler hasn't yet activated it will fail recognizing the gesture. Range could be given as an array or a single number.
+ If range is set as array, first value must be negative, a the second one positive.
+ If there's given only positive number `p`, it means that range is: `(-inf, p)`. If the number if negative, the range is: `(p, inf)`. 
+
+---
+### `failOffsetX`
+
+When the finger moves outside this range along X axis and handler hasn't yet activated it will fail recognizing the gesture. Range could be given as an array or a single number.
  If range is set as array, first value must be negative, a the second one positive.
  If there's given only positive number `p`, it means that range is: `(-inf, p)`. If the number if negative, the range is: `(p, inf)`. 
 
