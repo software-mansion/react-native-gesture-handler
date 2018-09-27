@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIBlock;
@@ -36,6 +37,7 @@ import javax.annotation.Nullable;
 
 import static com.swmansion.gesturehandler.GestureHandler.HIT_SLOP_NONE;
 
+@ReactModule(name=RNGestureHandlerModule.MODULE_NAME)
 public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   public static final String MODULE_NAME = "RNGestureHandlerModule";
