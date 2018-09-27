@@ -397,14 +397,19 @@ public class GestureHandlerOrchestrator {
     int childrenCount = viewGroup.getChildCount();
     for (int i = childrenCount - 1; i >= 0; i--) {
       View child = mViewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i);
-      PointF childPoint = sTempPoint;
       if (canReceiveEvents(child)) {
+        PointF childPoint = sTempPoint;
         transformTouchPointToViewCoords(coords[0], coords[1], viewGroup, child, childPoint);
         float restoreX = coords[0];
         float restoreY = coords[1];
         coords[0] = childPoint.x;
         coords[1] = childPoint.y;
-        boolean found = traverseWithPointerEvents(child, coords, pointerId);
+        boolean found = false;
+        if (!isClipping(child) || isTransformedTouchPointInView(coords[0], coords[1], child)) {
+          // we only consider the view if touch is inside the view bounds or if the view's children
+          // can render outside of the view bounds (overflow visible)
+          found = traverseWithPointerEvents(child, coords, pointerId);
+        }
         coords[0] = restoreX;
         coords[1] = restoreY;
         if (found) {
@@ -479,6 +484,12 @@ public class GestureHandlerOrchestrator {
       localY = localXY[1];
     }
     outLocalPoint.set(localX, localY);
+  }
+
+  private boolean isClipping(View view) {
+    // if view is not a view group it is clipping, otherwise we check for `getClipChildren` flag to
+    // be turned on and also confirm with the ViewConfigHelper implementation
+    return !(view instanceof ViewGroup) || mViewConfigHelper.isViewClippingChildren((ViewGroup) view);
   }
 
   private static boolean isTransformedTouchPointInView(float x, float y, View child) {

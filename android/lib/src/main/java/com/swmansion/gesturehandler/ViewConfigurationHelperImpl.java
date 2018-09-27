@@ -14,4 +14,9 @@ public class ViewConfigurationHelperImpl implements ViewConfigurationHelper {
   public View getChildInDrawingOrderAtIndex(ViewGroup parent, int index) {
     return parent.getChildAt(index);
   }
+
+  @Override
+  public boolean isViewClippingChildren(ViewGroup view) {
+    return view.getClipChildren();
+  }
 }
