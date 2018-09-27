@@ -92,11 +92,6 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     const touchX = new Animated.Value(0);
     const drawerTranslation = new Animated.Value(0);
 
-    // This is necessary to ensure that the value we get from stopAnimation is
-    // kept up to date. If we don't do this then values on the JS side never get
-    // updated and drawerTranslation value in JS will always be 0.
-    this.drawerTranslationListener = drawerTranslation.addListener(() => {});
-
     this.state = {
       dragX,
       touchX,
@@ -106,10 +101,6 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     };
 
     this._updateAnimatedEvent(props, this.state);
-  }
-
-  componentWillUnmount() {
-    this.drawerTranslation.removeListener(this.drawerTranslationListener);
   }
 
   componentWillUpdate(props: PropType, state: StateType) {
@@ -263,18 +254,37 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     const shouldOpen = projOffsetX > drawerWidth / 2;
 
     if (shouldOpen) {
-      this._animateDrawer(startOffsetX, drawerWidth, velocityX);
+      this._animateDrawer({
+        fromValue: startOffsetX,
+        toValue: drawerWidth,
+        velocity: velocityX,
+      });
     } else {
-      this._animateDrawer(startOffsetX, 0, velocityX);
+      this._animateDrawer({
+        fromValue: startOffsetX,
+        toValue: 0,
+        velocity: velocityX,
+      });
     }
   };
 
-  _animateDrawer = (fromValue: number, toValue: number, velocity: number) => {
+  _animateDrawer = ({
+    fromValue,
+    toValue,
+    velocity,
+  }: {
+    fromValue: number,
+    toValue: number,
+    velocity: number,
+  }) => {
     this.state.dragX.setValue(0);
     this.state.touchX.setValue(
       this.props.drawerPosition === 'left' ? 0 : this.state.containerWidth
     );
-    this.state.drawerTranslation.setValue(fromValue);
+
+    if (typeof fromValue === 'number') {
+      this.state.drawerTranslation.setValue(fromValue);
+    }
 
     const willShow = toValue !== 0;
     this.setState({ drawerShown: willShow });
@@ -300,22 +310,16 @@ export default class DrawerLayout extends Component<PropType, StateType> {
   };
 
   openDrawer = (options: DrawerMovementOptionType = {}) => {
-    this.state.drawerTranslation.stopAnimation(initialValue => {
-      this._animateDrawer(
-        initialValue,
-        this.props.drawerWidth,
-        options.velocity ? options.velocity : 0
-      );
+    this._animateDrawer({
+      toValue: this.props.drawerWidth,
+      velocity: options.velocity ? options.velocity : 0,
     });
   };
 
   closeDrawer = (options: DrawerMovementOptionType = {}) => {
-    this.state.drawerTranslation.stopAnimation(initialValue => {
-      this._animateDrawer(
-        initialValue,
-        0,
-        options.velocity ? options.velocity : 0
-      );
+    this._animateDrawer({
+      toValue: 0,
+      velocity: options.velocity ? options.velocity : 0,
     });
   };
 
