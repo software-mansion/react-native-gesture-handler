@@ -193,8 +193,8 @@ declare module 'react-native-gesture-handler' {
   export interface GestureHandlerProperties {
     id?: string;
     enabled?: boolean;
-    waitFor?: string | string[];
-    simultaneousHandlers?: string | string[];
+    waitFor?: React.Ref<any> | React.Ref<any>[];
+    simultaneousHandlers?: React.Ref<any> | React.Ref<any>[];
     shouldCancelWhenOutside?: boolean;
     hitSlop?:
       | number
