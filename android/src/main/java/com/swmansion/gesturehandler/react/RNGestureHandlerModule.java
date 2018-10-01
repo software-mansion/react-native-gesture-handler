@@ -64,12 +64,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_TAP_MIN_POINTERS = "minPointers";
   private static final String KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs";
   private static final String KEY_LONG_PRESS_MAX_DIST = "maxDist";
-  private static final String KEY_PAN_MIN_DELTA_X = "minDeltaX";
-  private static final String KEY_PAN_MIN_DELTA_Y = "minDeltaY";
-  private static final String KEY_PAN_MAX_DELTA_X = "maxDeltaX";
-  private static final String KEY_PAN_MAX_DELTA_Y = "maxDeltaY";
-  private static final String KEY_PAN_MIN_OFFSET_X = "minOffsetX";
-  private static final String KEY_PAN_MIN_OFFSET_Y = "minOffsetY";
+  private static final String KEY_PAN_ACTIVE_OFFSET_X_START = "activeOffsetXStart";
+  private static final String KEY_PAN_ACTIVE_OFFSET_X_END = "activeOffsetXEnd";
+  private static final String KEY_PAN_FAIL_OFFSET_RANGE_X_START = "failOffsetXStart";
+  private static final String KEY_PAN_FAIL_OFFSET_RANGE_X_END = "failOffsetXEnd";
+  private static final String KEY_PAN_ACTIVE_OFFSET_Y_START = "activeOffsetYStart";
+  private static final String KEY_PAN_ACTIVE_OFFSET_Y_END = "activeOffsetYEnd";
+  private static final String KEY_PAN_FAIL_OFFSET_RANGE_Y_START = "failOffsetYStart";
+  private static final String KEY_PAN_FAIL_OFFSET_RANGE_Y_END = "failOffsetYEnd";
   private static final String KEY_PAN_MIN_DIST = "minDist";
   private static final String KEY_PAN_MIN_VELOCITY = "minVelocity";
   private static final String KEY_PAN_MIN_VELOCITY_X = "minVelocityX";
@@ -253,26 +255,36 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     public void configure(PanGestureHandler handler, ReadableMap config) {
       super.configure(handler, config);
       boolean hasCustomActivationCriteria = false;
-      if (config.hasKey(KEY_PAN_MIN_DELTA_X)) {
-        handler.setMinDx(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DELTA_X)));
+      if(config.hasKey(KEY_PAN_ACTIVE_OFFSET_X_START)) {
+        handler.setActiveOffsetXStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_X_START)));
         hasCustomActivationCriteria = true;
       }
-      if (config.hasKey(KEY_PAN_MIN_DELTA_Y)) {
-        handler.setMinDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DELTA_Y)));
+      if(config.hasKey(KEY_PAN_ACTIVE_OFFSET_X_END)) {
+        handler.setActiveOffsetXEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_X_END)));
         hasCustomActivationCriteria = true;
       }
-      if (config.hasKey(KEY_PAN_MAX_DELTA_X)) {
-        handler.setMaxDx(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MAX_DELTA_X)));
-      }
-      if (config.hasKey(KEY_PAN_MAX_DELTA_Y)) {
-        handler.setMaxDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MAX_DELTA_Y)));
-      }
-      if (config.hasKey(KEY_PAN_MIN_OFFSET_X)) {
-        handler.setMinOffsetX(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_OFFSET_X)));
+      if(config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_START)) {
+        handler.setFailOffsetXStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_X_START)));
         hasCustomActivationCriteria = true;
       }
-      if (config.hasKey(KEY_PAN_MIN_OFFSET_Y)) {
-        handler.setMinOffsetY(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_OFFSET_Y)));
+      if(config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_END)) {
+        handler.setFailOffsetXEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_X_END)));
+        hasCustomActivationCriteria = true;
+      }
+      if(config.hasKey(KEY_PAN_ACTIVE_OFFSET_Y_START)) {
+        handler.setActiveOffsetYStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_Y_START)));
+        hasCustomActivationCriteria = true;
+      }
+      if(config.hasKey(KEY_PAN_ACTIVE_OFFSET_Y_END)) {
+        handler.setActiveOffsetYEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_Y_END)));
+        hasCustomActivationCriteria = true;
+      }
+      if(config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)) {
+        handler.setFailOffsetYStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)));
+        hasCustomActivationCriteria = true;
+      }
+      if(config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)) {
+        handler.setFailOffsetYEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)));
         hasCustomActivationCriteria = true;
       }
 

@@ -51,7 +51,7 @@ export class TapOrPan extends Component {
         <Animated.View style={styles.wrapper}>
           <PanGestureHandler
             ref={panRef}
-            minDeltaX={20}
+            activeOffsetX={[-20, 20]}
             onGestureEvent={this._onPanGestureEvent}
             shouldCancelWhenOutside>
             <Animated.View style={styles.horizontalPan}>

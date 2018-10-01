@@ -13,13 +13,20 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private static int DEFAULT_MIN_POINTERS = 1;
   private static int DEFAULT_MAX_POINTERS = 10;
 
-  private float mMinOffsetX = MIN_VALUE_IGNORE;
-  private float mMinOffsetY = MIN_VALUE_IGNORE;
-  private float mMinDeltaX = MIN_VALUE_IGNORE;
-  private float mMinDeltaY = MIN_VALUE_IGNORE;
-  private float mMaxDeltaX = MAX_VALUE_IGNORE;
-  private float mMaxDeltaY = MAX_VALUE_IGNORE;
   private float mMinDistSq = MAX_VALUE_IGNORE;
+
+  private float mActiveOffsetXStart = MIN_VALUE_IGNORE;
+  private float mActiveOffsetXEnd = MAX_VALUE_IGNORE;
+
+  private float mFailOffsetXStart = MAX_VALUE_IGNORE;
+  private float mFailOffsetXEnd = MIN_VALUE_IGNORE;
+
+  private float mActiveOffsetYStart = MIN_VALUE_IGNORE;
+  private float mActiveOffsetYEnd = MAX_VALUE_IGNORE;
+
+  private float mFailOffsetYStart = MAX_VALUE_IGNORE;
+  private float mFailOffsetYEnd = MIN_VALUE_IGNORE;
+
   private float mMinVelocityX = MIN_VALUE_IGNORE;
   private float mMinVelocityY = MIN_VALUE_IGNORE;
   private float mMinVelocitySq = MIN_VALUE_IGNORE;
@@ -52,33 +59,43 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     mMinDistSq = touchSlop * touchSlop;
   }
 
-  public PanGestureHandler setMinDx(float deltaX) {
-    mMinDeltaX = deltaX;
+  public PanGestureHandler setActiveOffsetXStart(float activeOffsetXStart) {
+    mActiveOffsetXStart = activeOffsetXStart;
     return this;
   }
 
-  public PanGestureHandler setMinDy(float deltaY) {
-    mMinDeltaY = deltaY;
+  public PanGestureHandler setActiveOffsetXEnd(float activeOffsetXEnd) {
+    mActiveOffsetXEnd = activeOffsetXEnd;
     return this;
   }
 
-  public PanGestureHandler setMaxDx(float deltaX) {
-    mMaxDeltaX = deltaX;
+  public PanGestureHandler setFailOffsetXStart(float failOffsetXStart) {
+    mFailOffsetXStart = failOffsetXStart;
     return this;
   }
 
-  public PanGestureHandler setMaxDy(float deltaY) {
-    mMaxDeltaY = deltaY;
+  public PanGestureHandler setFailOffsetXEnd(float failOffsetXEnd) {
+    mFailOffsetXEnd = failOffsetXEnd;
     return this;
   }
 
-  public PanGestureHandler setMinOffsetX(float offsetX) {
-    mMinOffsetX = offsetX;
+  public PanGestureHandler setActiveOffsetYStart(float activeOffsetYStart) {
+    mActiveOffsetYStart = activeOffsetYStart;
     return this;
   }
 
-  public PanGestureHandler setMinOffsetY(float offsetY) {
-    mMinOffsetY = offsetY;
+  public PanGestureHandler setActiveOffsetYEnd(float activeOffsetYEnd) {
+    mActiveOffsetYEnd = activeOffsetYEnd;
+    return this;
+  }
+
+  public PanGestureHandler setFailOffsetYStart(float failOffsetYStart) {
+    mFailOffsetYStart = failOffsetYStart;
+    return this;
+  }
+
+  public PanGestureHandler setFailOffsetYEnd(float failOffsetYEnd) {
+    mFailOffsetYEnd = failOffsetYEnd;
     return this;
   }
 
@@ -122,20 +139,20 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private boolean shouldActivate() {
     float dx = mLastX - mStartX + mOffsetX;
-    if (mMinDeltaX != MIN_VALUE_IGNORE && Math.abs(dx) >= mMinDeltaX) {
+    if (mActiveOffsetXStart != MIN_VALUE_IGNORE && dx <=  mActiveOffsetXStart) {
       return true;
     }
-    if (mMinOffsetX != MIN_VALUE_IGNORE &&
-            ((mMinOffsetX < 0 && dx <= mMinOffsetX) || (mMinOffsetX >= 0 && dx >= mMinOffsetX))) {
+
+    if (mActiveOffsetXEnd != MAX_VALUE_IGNORE && dx >=  mActiveOffsetXEnd) {
       return true;
     }
 
     float dy = mLastY - mStartY + mOffsetY;
-    if (mMinDeltaY != MIN_VALUE_IGNORE && Math.abs(dy) >= mMinDeltaY) {
+    if (mActiveOffsetYStart != MIN_VALUE_IGNORE && dy <=  mActiveOffsetYStart) {
       return true;
     }
-    if (mMinOffsetY != MIN_VALUE_IGNORE &&
-            ((mMinOffsetY < 0 && dy <= mMinOffsetY) || (mMinOffsetY >= 0 && dy >= mMinOffsetY))) {
+
+    if (mActiveOffsetYEnd != MAX_VALUE_IGNORE && dy >=  mActiveOffsetYEnd) {
       return true;
     }
 
@@ -166,12 +183,22 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private boolean shouldFail() {
     float dx = mLastX - mStartX + mOffsetX;
-    if (mMaxDeltaX != MAX_VALUE_IGNORE && Math.abs(dx) > mMaxDeltaX) {
+
+    if (mFailOffsetXStart != MAX_VALUE_IGNORE && dx <= mFailOffsetXStart) {
       return true;
     }
 
+    if (mFailOffsetXEnd != MIN_VALUE_IGNORE && dx >=  mFailOffsetXEnd) {
+      return true;
+    }
+
+
     float dy = mLastY - mStartY + mOffsetY;
-    if (mMaxDeltaY != MAX_VALUE_IGNORE && Math.abs(dy) > mMaxDeltaY) {
+    if (mFailOffsetYStart != MAX_VALUE_IGNORE && dy <=  mFailOffsetYStart) {
+      return true;
+    }
+
+    if (mFailOffsetYEnd != MIN_VALUE_IGNORE && dy >=  mFailOffsetYEnd) {
       return true;
     }
 

@@ -42,7 +42,7 @@ UIManager.clearJSResponder = () => {
   oldClearJSResponder();
 };
 
-// Add gesture spacific events to RCTView's directEventTypes object exported via UIManager.
+// Add gesture specific events to RCTView's directEventTypes object exported via UIManager.
 // Once new event types are registered with react it is possible to dispatch these to other
 // view types as well.
 UIManager.RCTView.directEventTypes = {
@@ -164,7 +164,13 @@ function hasUnresolvedRefs(props) {
   return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
 }
 
-function createHandler(handlerName, propTypes = null, config = {}) {
+function createHandler(
+  handlerName,
+  propTypes = null,
+  config = {},
+  transformProps,
+  customNativeProps = {}
+) {
   class Handler extends React.Component {
     static propTypes = {
       ...GestureHandlerPropTypes,
@@ -234,8 +240,8 @@ function createHandler(handlerName, propTypes = null, config = {}) {
     componentDidMount() {
       this._viewTag = findNodeHandle(this._viewNode);
       this._config = filterConfig(
-        this.props,
-        this.constructor.propTypes,
+        transformProps ? transformProps(this.props) : this.props,
+        { ...this.constructor.propTypes, ...customNativeProps },
         config
       );
       if (hasUnresolvedRefs(this.props)) {
@@ -289,7 +295,7 @@ function createHandler(handlerName, propTypes = null, config = {}) {
       let gestureEventHandler = this._onGestureHandlerEvent;
       const { onGestureEvent, onGestureHandlerEvent } = this.props;
       if (onGestureEvent && typeof onGestureEvent !== 'function') {
-        // If it's not a mathod it should be an native Animated.event
+        // If it's not a method it should be an native Animated.event
         // object. We set it directly as the handler for the view
         // In this case nested handlers are not going to be supported
         if (onGestureHandlerEvent) {
@@ -400,15 +406,173 @@ const LongPressGestureHandler = createHandler(
   },
   {}
 );
+
+function validatePanGestureHandlerProps(props) {
+  if (props.minDeltaX && props.activeOffsetX) {
+    throw new Error(
+      `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
+    );
+  }
+  if (props.maxDeltaX && props.failOffsetX) {
+    throw new Error(
+      `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
+    );
+  }
+  if (props.minDeltaY && props.activeOffsetY) {
+    throw new Error(
+      `It's not supported use minDeltaX with activeOffsetYStart or activeOffsetYEnd`
+    );
+  }
+  if (props.maxDeltaY && props.failOffsetY) {
+    throw new Error(
+      `It's not supported use minDeltaX with activeOffsetYStart or activeOffsetYEnd`
+    );
+  }
+  if (
+    Array.isArray(props.activeOffsetX) &&
+    (props.activeOffsetX[0] > 0 || props.activeOffsetX[1] < 0)
+  ) {
+    throw new Error(
+      `First element of activeOffsetX should be negative, a the second one should be positive`
+    );
+  }
+
+  if (
+    Array.isArray(props.activeOffsetY) &&
+    (props.activeOffsetY[0] > 0 || props.activeOffsetX[1] < 0)
+  ) {
+    throw new Error(
+      `First element of activeOffsetY should be negative, a the second one should be positive`
+    );
+  }
+
+  if (
+    Array.isArray(props.failOffsetX) &&
+    (props.failOffsetX[0] > 0 || props.failOffsetX[1] < 0)
+  ) {
+    throw new Error(
+      `First element of failOffsetX should be negative, a the second one should be positive`
+    );
+  }
+
+  if (
+    Array.isArray(props.failOffsetY) &&
+    (props.failOffsetY[0] > 0 || props.failOffsetX[1] < 0)
+  ) {
+    throw new Error(
+      `First element of failOffsetY should be negative, a the second one should be positive`
+    );
+  }
+}
+
+function transformPanGestureHandlerProps(props) {
+  const res = {};
+  if (props.minDeltaX) {
+    res.activeOffsetXStart = -props.minDeltaX;
+    res.activeOffsetXEnd = props.minDeltaX;
+  }
+  if (props.maxDeltaX) {
+    res.failOffsetXStart = -props.maxDeltaX;
+    res.failOffsetXEnd = props.maxDeltaX;
+  }
+  if (props.minOffsetX) {
+    if (props.minOffsetX < 0) {
+      res.activeOffsetXStart = props.minOffsetX;
+    } else {
+      res.activeOffsetXEnd = props.minOffsetX;
+    }
+  }
+
+  if (props.minDeltaY) {
+    res.activeOffsetYStart = -props.minDeltaY;
+    res.activeOffsetYEnd = props.minDeltaY;
+  }
+  if (props.maxDeltaY) {
+    res.failOffsetYStart = -props.maxDeltaY;
+    res.failOffsetYEnd = props.maxDeltaY;
+  }
+
+  if (props.minOffsetY) {
+    if (props.minOffsetY < 0) {
+      res.activeOffsetYStart = props.minOffsetY;
+    } else {
+      res.activeOffsetYEnd = props.minOffsetY;
+    }
+  }
+
+  if (props.activeOffsetX) {
+    if (Array.isArray(props.activeOffsetX)) {
+      res.activeOffsetXStart = props.activeOffsetX[0];
+      res.activeOffsetXEnd = props.activeOffsetX[1];
+    } else if (props.activeOffsetX < 0) {
+      res.activeOffsetXStart = props.activeOffsetX;
+    } else {
+      res.activeOffsetXEnd = props.activeOffsetX;
+    }
+  }
+
+  if (props.activeOffsetY) {
+    if (Array.isArray(props.activeOffsetY)) {
+      res.activeOffsetYStart = props.activeOffsetY[0];
+      res.activeOffsetYEnd = props.activeOffsetY[1];
+    } else if (props.activeOffsetY < 0) {
+      res.activeOffsetYStart = props.activeOffsetY;
+    } else {
+      res.activeOffsetYEnd = props.activeOffsetY;
+    }
+  }
+
+  if (props.failOffsetX) {
+    if (Array.isArray(props.failOffsetX)) {
+      res.failOffsetXStart = props.failOffsetX[0];
+      res.failOffsetXEnd = props.failOffsetX[1];
+    } else if (props.failOffsetX < 0) {
+      res.failOffsetXStart = props.failOffsetX;
+    } else {
+      res.failOffsetXEnd = props.failOffsetX;
+    }
+  }
+
+  if (props.failOffsetY) {
+    if (Array.isArray(props.failOffsetY)) {
+      res.failOffsetYStart = props.failOffsetY[0];
+      res.failOffsetYEnd = props.failOffsetY[1];
+    } else if (props.failOffsetY < 0) {
+      res.failOffsetYStart = props.failOffsetY;
+    } else {
+      res.failOffsetYEnd = props.failOffsetY;
+    }
+  }
+
+  return res;
+}
+
+function managePanProps(props) {
+  if (__DEV__) {
+    validatePanGestureHandlerProps(props);
+  }
+  return transformPanGestureHandlerProps(props);
+}
+
 const PanGestureHandler = createHandler(
   'PanGestureHandler',
   {
-    minDeltaX: PropTypes.number,
-    minDeltaY: PropTypes.number,
-    maxDeltaX: PropTypes.number,
-    maxDeltaY: PropTypes.number,
-    minOffsetX: PropTypes.number,
-    minOffsetY: PropTypes.number,
+    activeOffsetY: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+    activeOffsetX: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+    failOffsetY: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+    failOffsetX: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
     minDist: PropTypes.number,
     minVelocity: PropTypes.number,
     minVelocityX: PropTypes.number,
@@ -417,7 +581,18 @@ const PanGestureHandler = createHandler(
     maxPointers: PropTypes.number,
     avgTouches: PropTypes.bool,
   },
-  {}
+  {},
+  managePanProps,
+  {
+    activeOffsetYStart: true,
+    activeOffsetYEnd: true,
+    activeOffsetXStart: true,
+    activeOffsetXEnd: true,
+    failOffsetYStart: true,
+    failOffsetYEnd: true,
+    failOffsetXStart: true,
+    failOffsetXEnd: true,
+  }
 );
 const PinchGestureHandler = createHandler('PinchGestureHandler', {}, {});
 const RotationGestureHandler = createHandler('RotationGestureHandler', {}, {});
