@@ -407,65 +407,66 @@ const LongPressGestureHandler = createHandler(
   {}
 );
 
-function backwardCompatibleTransformPanProps(props) {
-  const res = {};
-  if (__DEV__) {
-    if (props.minDeltaX && props.activeOffsetX) {
-      throw new Error(
-        `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
-      );
-    }
-    if (props.maxDeltaX && props.failOffsetX) {
-      throw new Error(
-        `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
-      );
-    }
-    if (props.minDeltaY && props.activeOffsetY) {
-      throw new Error(
-        `It's not supported use minDeltaX with activeOffsetYStart or activeOffsetYEnd`
-      );
-    }
-    if (props.maxDeltaY && props.failOffsetY) {
-      throw new Error(
-        `It's not supported use minDeltaX with activeOffsetYStart or activeOffsetYEnd`
-      );
-    }
-    if (
-      Array.isArray(props.activeOffsetX) &&
-      (props.activeOffsetX[0] > 0 || props.activeOffsetX[1] < 0)
-    ) {
-      throw new Error(
-        `First element of activeOffsetX should be negative, a the second one should be positive`
-      );
-    }
-
-    if (
-      Array.isArray(props.activeOffsetY) &&
-      (props.activeOffsetY[0] > 0 || props.activeOffsetX[1] < 0)
-    ) {
-      throw new Error(
-        `First element of activeOffsetY should be negative, a the second one should be positive`
-      );
-    }
-
-    if (
-      Array.isArray(props.failOffsetX) &&
-      (props.failOffsetX[0] > 0 || props.failOffsetX[1] < 0)
-    ) {
-      throw new Error(
-        `First element of failOffsetX should be negative, a the second one should be positive`
-      );
-    }
-
-    if (
-      Array.isArray(props.failOffsetY) &&
-      (props.failOffsetY[0] > 0 || props.failOffsetX[1] < 0)
-    ) {
-      throw new Error(
-        `First element of failOffsetY should be negative, a the second one should be positive`
-      );
-    }
+function validatePanGestureHandlerProps(props) {
+  if (props.minDeltaX && props.activeOffsetX) {
+    throw new Error(
+      `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
+    );
   }
+  if (props.maxDeltaX && props.failOffsetX) {
+    throw new Error(
+      `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
+    );
+  }
+  if (props.minDeltaY && props.activeOffsetY) {
+    throw new Error(
+      `It's not supported use minDeltaX with activeOffsetYStart or activeOffsetYEnd`
+    );
+  }
+  if (props.maxDeltaY && props.failOffsetY) {
+    throw new Error(
+      `It's not supported use minDeltaX with activeOffsetYStart or activeOffsetYEnd`
+    );
+  }
+  if (
+    Array.isArray(props.activeOffsetX) &&
+    (props.activeOffsetX[0] > 0 || props.activeOffsetX[1] < 0)
+  ) {
+    throw new Error(
+      `First element of activeOffsetX should be negative, a the second one should be positive`
+    );
+  }
+
+  if (
+    Array.isArray(props.activeOffsetY) &&
+    (props.activeOffsetY[0] > 0 || props.activeOffsetX[1] < 0)
+  ) {
+    throw new Error(
+      `First element of activeOffsetY should be negative, a the second one should be positive`
+    );
+  }
+
+  if (
+    Array.isArray(props.failOffsetX) &&
+    (props.failOffsetX[0] > 0 || props.failOffsetX[1] < 0)
+  ) {
+    throw new Error(
+      `First element of failOffsetX should be negative, a the second one should be positive`
+    );
+  }
+
+  if (
+    Array.isArray(props.failOffsetY) &&
+    (props.failOffsetY[0] > 0 || props.failOffsetX[1] < 0)
+  ) {
+    throw new Error(
+      `First element of failOffsetY should be negative, a the second one should be positive`
+    );
+  }
+}
+
+function transformPanGestureHandlerProps(props) {
+  const res = {};
   if (props.minDeltaX) {
     res.activeOffsetXStart = -props.minDeltaX;
     res.activeOffsetXEnd = props.minDeltaX;
@@ -546,6 +547,13 @@ function backwardCompatibleTransformPanProps(props) {
   return res;
 }
 
+function managePanProps(props) {
+  if (__DEV__) {
+    validatePanGestureHandlerProps(props);
+  }
+  return transformPanGestureHandlerProps(props);
+}
+
 const PanGestureHandler = createHandler(
   'PanGestureHandler',
   {
@@ -574,7 +582,7 @@ const PanGestureHandler = createHandler(
     avgTouches: PropTypes.bool,
   },
   {},
-  backwardCompatibleTransformPanProps,
+  managePanProps,
   {
     activeOffsetYStart: true,
     activeOffsetYEnd: true,
