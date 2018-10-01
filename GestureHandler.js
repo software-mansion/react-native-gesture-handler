@@ -412,22 +412,22 @@ function backwardCompatibleTransformPanProps(props) {
   if (__DEV__) {
     if (props.minDeltaX && props.activeOffsetX) {
       throw new Error(
-        `It's not supported use minDeltaX with activeOffsetStartX or activeOffsetEndX`
+        `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
       );
     }
     if (props.maxDeltaX && props.failOffsetX) {
       throw new Error(
-        `It's not supported use minDeltaX with activeOffsetStartX or activeOffsetEndX`
+        `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
       );
     }
     if (props.minDeltaY && props.activeOffsetY) {
       throw new Error(
-        `It's not supported use minDeltaX with activeOffsetStartY or activeOffsetEndY`
+        `It's not supported use minDeltaX with activeOffsetYStart or activeOffsetYEnd`
       );
     }
     if (props.maxDeltaY && props.failOffsetY) {
       throw new Error(
-        `It's not supported use minDeltaX with activeOffsetStartY or activeOffsetEndY`
+        `It's not supported use minDeltaX with activeOffsetYStart or activeOffsetYEnd`
       );
     }
     if (
@@ -467,79 +467,79 @@ function backwardCompatibleTransformPanProps(props) {
     }
   }
   if (props.minDeltaX) {
-    res.activeOffsetStartX = -props.minDeltaX;
-    res.activeOffsetEndX = props.minDeltaX;
+    res.activeOffsetXStart = -props.minDeltaX;
+    res.activeOffsetXEnd = props.minDeltaX;
   }
   if (props.maxDeltaX) {
-    res.failOffsetStartX = -props.maxDeltaX;
-    res.failOffsetEndX = props.maxDeltaX;
+    res.failOffsetXStart = -props.maxDeltaX;
+    res.failOffsetXEnd = props.maxDeltaX;
   }
   if (props.minOffsetX) {
     if (props.minOffsetX < 0) {
-      res.activeOffsetStartX = props.minOffsetX;
+      res.activeOffsetXStart = props.minOffsetX;
     } else {
-      res.activeOffsetEndX = props.minOffsetX;
+      res.activeOffsetXEnd = props.minOffsetX;
     }
   }
 
   if (props.minDeltaY) {
-    res.activeOffsetStartY = -props.minDeltaY;
-    res.activeOffsetEndY = props.minDeltaY;
+    res.activeOffsetYStart = -props.minDeltaY;
+    res.activeOffsetYEnd = props.minDeltaY;
   }
   if (props.maxDeltaY) {
-    res.failOffsetStartY = -props.maxDeltaY;
-    res.failOffsetEndY = props.maxDeltaY;
+    res.failOffsetYStart = -props.maxDeltaY;
+    res.failOffsetYEnd = props.maxDeltaY;
   }
 
   if (props.minOffsetY) {
     if (props.minOffsetY < 0) {
-      res.activeOffsetStartY = props.minOffsetY;
+      res.activeOffsetYStart = props.minOffsetY;
     } else {
-      res.activeOffsetEndY = props.minOffsetY;
+      res.activeOffsetYEnd = props.minOffsetY;
     }
   }
 
   if (props.activeOffsetX) {
     if (Array.isArray(props.activeOffsetX)) {
-      res.activeOffsetStartX = props.activeOffsetX[0];
-      res.activeOffsetEndX = props.activeOffsetX[1];
+      res.activeOffsetXStart = props.activeOffsetX[0];
+      res.activeOffsetXEnd = props.activeOffsetX[1];
     } else if (props.activeOffsetX < 0) {
-      res.activeOffsetStartX = props.activeOffsetX;
+      res.activeOffsetXStart = props.activeOffsetX;
     } else {
-      res.activeOffsetEndX = props.activeOffsetX;
+      res.activeOffsetXEnd = props.activeOffsetX;
     }
   }
 
   if (props.activeOffsetY) {
     if (Array.isArray(props.activeOffsetY)) {
-      res.activeOffsetStartY = props.activeOffsetY[0];
-      res.activeOffsetEndY = props.activeOffsetY[1];
+      res.activeOffsetYStart = props.activeOffsetY[0];
+      res.activeOffsetYEnd = props.activeOffsetY[1];
     } else if (props.activeOffsetY < 0) {
-      res.activeOffsetStartY = props.activeOffsetY;
+      res.activeOffsetYStart = props.activeOffsetY;
     } else {
-      res.activeOffsetEndY = props.activeOffsetY;
+      res.activeOffsetYEnd = props.activeOffsetY;
     }
   }
 
   if (props.failOffsetX) {
     if (Array.isArray(props.failOffsetX)) {
-      res.failOffsetStartX = props.failOffsetX[0];
-      res.failOffsetEndX = props.failOffsetX[1];
+      res.failOffsetXStart = props.failOffsetX[0];
+      res.failOffsetXEnd = props.failOffsetX[1];
     } else if (props.failOffsetX < 0) {
-      res.failOffsetStartX = props.failOffsetX;
+      res.failOffsetXStart = props.failOffsetX;
     } else {
-      res.failOffsetEndX = props.failOffsetX;
+      res.failOffsetXEnd = props.failOffsetX;
     }
   }
 
   if (props.failOffsetY) {
     if (Array.isArray(props.failOffsetY)) {
-      res.failOffsetStartY = props.failOffsetY[0];
-      res.failOffsetEndY = props.failOffsetY[1];
+      res.failOffsetYStart = props.failOffsetY[0];
+      res.failOffsetYEnd = props.failOffsetY[1];
     } else if (props.failOffsetY < 0) {
-      res.failOffsetStartY = props.failOffsetY;
+      res.failOffsetYStart = props.failOffsetY;
     } else {
-      res.failOffsetEndY = props.failOffsetY;
+      res.failOffsetYEnd = props.failOffsetY;
     }
   }
 
@@ -576,14 +576,14 @@ const PanGestureHandler = createHandler(
   {},
   backwardCompatibleTransformPanProps,
   {
-    activeOffsetStartY: true,
-    activeOffsetEndY: true,
-    activeOffsetStartX: true,
-    activeOffsetEndX: true,
-    failOffsetStartY: true,
-    failOffsetEndY: true,
-    failOffsetStartX: true,
-    failOffsetEndX: true,
+    activeOffsetYStart: true,
+    activeOffsetYEnd: true,
+    activeOffsetXStart: true,
+    activeOffsetXEnd: true,
+    failOffsetYStart: true,
+    failOffsetYEnd: true,
+    failOffsetXStart: true,
+    failOffsetXEnd: true,
   }
 );
 const PinchGestureHandler = createHandler('PinchGestureHandler', {}, {});
