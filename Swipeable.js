@@ -129,21 +129,25 @@ export default class Swipeable extends Component<PropType, StateType> {
       ],
     });
     this._transX = transX;
-    this._showLeftAction = transX.interpolate({
-      inputRange: [-1, 0, leftWidth],
-      outputRange: [0, 0, 1],
-      extrapolate: 'clamp',
-    });
+    this._showLeftAction = leftWidth > 0 
+      ? transX.interpolate({
+          inputRange: [-1, 0, leftWidth],
+          outputRange: [0, 0, 1],
+          extrapolate: 'clamp',
+        })
+      : new Animated.Value(0);
     this._leftActionTranslate = this._showLeftAction.interpolate({
       inputRange: [0, Number.MIN_VALUE],
       outputRange: [-10000, 0],
       extrapolate: 'clamp',
     });
-    this._showRightAction = transX.interpolate({
-      inputRange: [-rightWidth, 0, 1],
-      outputRange: [1, 0, 0],
-      extrapolate: 'clamp',
-    });
+    this._showRightAction = rightWidth > 0 
+      ? transX.interpolate({
+          inputRange: [-rightWidth, 0, 1],
+          outputRange: [1, 0, 0],
+          extrapolate: 'clamp',
+        })
+      : new Animated.Value(0);
     this._rightActionTranslate = this._showRightAction.interpolate({
       inputRange: [0, Number.MIN_VALUE],
       outputRange: [-10000, 0],
