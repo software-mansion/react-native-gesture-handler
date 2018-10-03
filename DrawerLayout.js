@@ -254,18 +254,37 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     const shouldOpen = projOffsetX > drawerWidth / 2;
 
     if (shouldOpen) {
-      this._animateDrawer(startOffsetX, drawerWidth, velocityX);
+      this._animateDrawer({
+        fromValue: startOffsetX,
+        toValue: drawerWidth,
+        velocity: velocityX,
+      });
     } else {
-      this._animateDrawer(startOffsetX, 0, velocityX);
+      this._animateDrawer({
+        fromValue: startOffsetX,
+        toValue: 0,
+        velocity: velocityX,
+      });
     }
   };
 
-  _animateDrawer = (fromValue: number, toValue: number, velocity: number) => {
+  _animateDrawer = ({
+    fromValue,
+    toValue,
+    velocity,
+  }: {
+    fromValue: number,
+    toValue: number,
+    velocity: number,
+  }) => {
     this.state.dragX.setValue(0);
     this.state.touchX.setValue(
       this.props.drawerPosition === 'left' ? 0 : this.state.containerWidth
     );
-    this.state.drawerTranslation.setValue(fromValue);
+
+    if (typeof fromValue === 'number') {
+      this.state.drawerTranslation.setValue(fromValue);
+    }
 
     const willShow = toValue !== 0;
     this.setState({ drawerShown: willShow });
@@ -291,19 +310,17 @@ export default class DrawerLayout extends Component<PropType, StateType> {
   };
 
   openDrawer = (options: DrawerMovementOptionType = {}) => {
-    this._animateDrawer(
-      0,
-      this.props.drawerWidth,
-      options.velocity ? options.velocity : 0
-    );
+    this._animateDrawer({
+      toValue: this.props.drawerWidth,
+      velocity: options.velocity ? options.velocity : 0,
+    });
   };
 
   closeDrawer = (options: DrawerMovementOptionType = {}) => {
-    this._animateDrawer(
-      this.props.drawerWidth,
-      0,
-      options.velocity ? options.velocity : 0
-    );
+    this._animateDrawer({
+      toValue: 0,
+      velocity: options.velocity ? options.velocity : 0,
+    });
   };
 
   _renderOverlay = () => {
