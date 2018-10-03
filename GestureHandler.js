@@ -466,16 +466,19 @@ function validatePanGestureHandlerProps(props) {
 }
 
 function transformPanGestureHandlerProps(props) {
-  const res = {};
-  if (props.minDeltaX) {
+  const res = { ...props };
+  if (props.minDeltaX !== undefined) {
+    delete res['minDeltaX'];
     res.activeOffsetXStart = -props.minDeltaX;
     res.activeOffsetXEnd = props.minDeltaX;
   }
-  if (props.maxDeltaX) {
+  if (props.maxDeltaX !== undefined) {
+    delete res['maxDeltaX'];
     res.failOffsetXStart = -props.maxDeltaX;
     res.failOffsetXEnd = props.maxDeltaX;
   }
-  if (props.minOffsetX) {
+  if (props.minOffsetX !== undefined) {
+    delete res['minOffsetX'];
     if (props.minOffsetX < 0) {
       res.activeOffsetXStart = props.minOffsetX;
     } else {
@@ -483,16 +486,19 @@ function transformPanGestureHandlerProps(props) {
     }
   }
 
-  if (props.minDeltaY) {
+  if (props.minDeltaY !== undefined) {
+    delete res['minDeltaY'];
     res.activeOffsetYStart = -props.minDeltaY;
     res.activeOffsetYEnd = props.minDeltaY;
   }
-  if (props.maxDeltaY) {
+  if (props.maxDeltaY !== undefined) {
+    delete res['maxDeltaY'];
     res.failOffsetYStart = -props.maxDeltaY;
     res.failOffsetYEnd = props.maxDeltaY;
   }
 
-  if (props.minOffsetY) {
+  if (props.minOffsetY !== undefined) {
+    delete res['minOffsetY'];
     if (props.minOffsetY < 0) {
       res.activeOffsetYStart = props.minOffsetY;
     } else {
@@ -500,7 +506,8 @@ function transformPanGestureHandlerProps(props) {
     }
   }
 
-  if (props.activeOffsetX) {
+  if (props.activeOffsetX !== undefined) {
+    delete res['activeOffsetX'];
     if (Array.isArray(props.activeOffsetX)) {
       res.activeOffsetXStart = props.activeOffsetX[0];
       res.activeOffsetXEnd = props.activeOffsetX[1];
@@ -511,7 +518,8 @@ function transformPanGestureHandlerProps(props) {
     }
   }
 
-  if (props.activeOffsetY) {
+  if (props.activeOffsetY !== undefined) {
+    delete res['activeOffsetY'];
     if (Array.isArray(props.activeOffsetY)) {
       res.activeOffsetYStart = props.activeOffsetY[0];
       res.activeOffsetYEnd = props.activeOffsetY[1];
@@ -522,7 +530,8 @@ function transformPanGestureHandlerProps(props) {
     }
   }
 
-  if (props.failOffsetX) {
+  if (props.failOffsetX !== undefined) {
+    delete res['failOffsetX'];
     if (Array.isArray(props.failOffsetX)) {
       res.failOffsetXStart = props.failOffsetX[0];
       res.failOffsetXEnd = props.failOffsetX[1];
@@ -533,7 +542,8 @@ function transformPanGestureHandlerProps(props) {
     }
   }
 
-  if (props.failOffsetY) {
+  if (props.failOffsetY !== undefined) {
+    delete res['failOffsetY'];
     if (Array.isArray(props.failOffsetY)) {
       res.failOffsetYStart = props.failOffsetY[0];
       res.failOffsetYEnd = props.failOffsetY[1];
