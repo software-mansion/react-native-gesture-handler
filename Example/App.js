@@ -82,6 +82,7 @@ class MainScreen extends React.Component {
     const data = Object.keys(SCREENS).map(key => ({ key }));
     return (
       <FlatList
+        testID={'main_menu'}
         style={styles.list}
         data={data}
         ItemSeparatorComponent={ItemSeparator}
@@ -104,7 +105,10 @@ class MainScreenItem extends React.Component {
   render() {
     const { key } = this.props.item;
     return (
-      <RectButton style={styles.button} onPress={this._onPress}>
+      <RectButton
+        style={styles.button}
+        onPress={this._onPress}
+        testID={`main_screen_item_${key}`}>
         <Text style={styles.buttonText}>{SCREENS[key].title || key}</Text>
       </RectButton>
     );
