@@ -4,9 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "postinstall": "rm -rf node_modules/react-native-gesture-handler/{.git,node_modules,Example,AndroidNativeExample}",
-    "test-android": "detox build -c android.emu.debug > /dev/null && react-native start > /dev/null & pid=$! && detox test -c android.emu.debug && kill $pid",
-    "test-ios": "detox build -c ios.sim.debug > /dev/null && react-native start > /dev/null & pid=$! && detox test -c ios.sim.debug && kill $pid"
+    "postinstall": "rm -rf node_modules/react-native-gesture-handler/{.git,node_modules,Example,AndroidNativeExample}"
   },
   "dependencies": {
     "react": "16.5.1",
@@ -15,48 +13,8 @@
     "react-native-vector-icons": "5.0.0",
     "react-navigation": "2.17.0"
   },
-  "jest": {
-    "preset": "react-native"
-  },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-eslint": "^10.0.1",
-    "babel-jest": "23.6.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react-native": "^4.0.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "detox": "^9.0.4",
-    "jest": "^23.6.0",
-    "jest-react-native": "^18.0.0",
     "metro-react-native-babel-preset": "0.45.2",
     "react-test-renderer": "^16.5.2"
-  },
-  "detox": {
-    "test-runner": "jest",
-    "runner-config": "e2e/config.json",
-    "configurations": {
-      "ios.sim.debug": {
-        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/GestureHandler.app",
-        "build": "xcodebuild -project ios/GestureHandler.xcodeproj -scheme GestureHandler -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
-        "type": "ios.simulator",
-        "name": "iPhone X"
-      },
-      "android.emu.debug": {
-        "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
-        "build":
-        "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
-        "type": "android.emulator",
-        "name": "Nexus_5X_API_28"
-      },
-      "android.emu.release": {
-        "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
-        "build":
-        "cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..",
-        "type": "android.emulator",
-        "name": "Nexus_5X_API_28"
-      }
-    }
   }
 }

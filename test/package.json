@@ -1,0 +1,68 @@
+{
+  "name": "GestureHandlerExample",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "postinstall": "rm -rf node_modules/react-native-gesture-handler/{.git,node_modules,Example,AndroidNativeExample}",
+    "test-android": "detox build -c android.emu.debug > /dev/null && react-native start > /dev/null & pid=$! && sleep 5s && detox test -c android.emu.debug && kill $pid",
+    "test-ios": "detox build -c ios.sim.debug > /dev/null && react-native start > /dev/null & pid=$! && sleep 5s && detox test -c ios.sim.debug && kill $pid"
+  },
+  "dependencies": {
+    "react": "16.5.1",
+    "react-native": "0.57.1",
+    "react-native-gesture-handler": "file:..",
+    "react-native-vector-icons": "5.0.0",
+    "react-navigation": "2.17.0"
+  },
+  "jest": {
+    "preset": "react-native"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "23.6.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react-native": "^4.0.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "detox": "^9.0.4",
+    "jest": "^23.6.0",
+    "jest-react-native": "^18.0.0",
+    "metro-react-native-babel-preset": "0.45.2",
+    "react-test-renderer": "^16.5.2"
+  },
+  "detox": {
+    "test-runner": "jest",
+    "runner-config": "e2e/config.json",
+    "configurations": {
+      "ios.sim.debug": {
+        "binaryPath": "../Example/ios/build/Build/Products/Debug-iphonesimulator/GestureHandler.app",
+        "build": "xcodebuild -project ../Example/ios/GestureHandler.xcodeproj -scheme GestureHandler -configuration Debug -sdk iphonesimulator -derivedDataPath ../Example/ios/build",
+        "type": "ios.simulator",
+        "name": "iPhone X"
+      },
+      "ios.sim.release": {
+        "binaryPath": "../Example/ios/build/Build/Products/Release-iphonesimulator/GestureHandler.app",
+        "build": "xcodebuild -project ../Example/ios/GestureHandler.xcodeproj -scheme GestureHandler -configuration Release -sdk iphonesimulator -derivedDataPath ../Example/ios/build",
+        "type": "ios.simulator",
+        "name": "iPhone 7"
+      },
+      "android.emu.debug": {
+        "binaryPath": "../Example/android/app/build/outputs/apk/debug/app-debug.apk",
+        "build":
+        "cd ../Example/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ../../test",
+        "type": "android.emulator",
+        "name": "Nexus_5X_API_28"
+      },
+      "android.emu.release": {
+        "binaryPath": "../Example/android/app/build/outputs/apk/release/app-release.apk",
+        "build":
+        "cd ../Example/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ../../test",
+        "type": "android.emulator",
+        "name": "Nexus_5X_API_28"
+      }
+    }
+  }
+}
