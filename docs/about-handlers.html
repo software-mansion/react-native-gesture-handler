@@ -4,7 +4,7 @@
           toggler.onclick = function() {
             nav.classList.toggle('docsSliderActive');
           };
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>About Gesture Handlers</h1></header><article><div><span><p>Gesture handlers are the core building blocks of this library.
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/kmagiera/react-native-gesture-handler/edit/master/docs/about-handlers.md" target="_blank" rel="noreferrer noopener">Edit</a><h1>About Gesture Handlers</h1></header><article><div><span><p>Gesture handlers are the core building blocks of this library.
 We use this term to describe elements of the native touch system that the library allows us to instantiate and control from Javascript using <a href="https://reactjs.org/docs/react-component.html">React's Component</a> interface.</p>
 <p>Each handler type is capable of recognizing one type of gesture (pan, pinch, etc.) and provides gesture specific information via events (translation, scale, etc.).</p>
 <p>Handlers analyse touch stream synchronously in the UI thread. This allows for the interactions to be uninterrupted even when Javascript thread is blocked.</p>
@@ -70,7 +70,7 @@ Here is a list of exposed components:</p>
 <li><code>DrawerLayoutAndroid</code> (<strong>Android only</strong>)</li>
 <li><code>WebView</code></li>
 </ul>
-<p>If you want to use other handlers or <a href="/react-native-gesture-handler/docs/component-buttons.html">buttons</a> nested in a <code>ScrollView</code> or you want to use <a href="/react-native-gesture-handler/docs/handler-common.html#waitfor"><code>waitFor</code></a> property to define interaction between a handler and <code>SclrollView</code></p>
+<p>If you want to use other handlers or <a href="/react-native-gesture-handler/docs/component-buttons.html">buttons</a> nested in a <code>ScrollView</code> or you want to use <a href="/react-native-gesture-handler/docs/handler-common.html#waitfor"><code>waitFor</code></a> property to define interaction between a handler and <code>ScrollView</code></p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="events-with-usenativedriver"></a><a href="#events-with-usenativedriver" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Events with <code>useNativeDriver</code></h3>
 <p>Because handler components does not instantiate native views but instead hook up under their child views when using <code>Animated.event</code> it is not supported currently for two gestures to be directly nested.
