@@ -439,7 +439,7 @@ function validatePanGestureHandlerProps(props) {
 
   if (
     Array.isArray(props.activeOffsetY) &&
-    (props.activeOffsetY[0] > 0 || props.activeOffsetX[1] < 0)
+    (props.activeOffsetY[0] > 0 || props.activeOffsetY[1] < 0)
   ) {
     throw new Error(
       `First element of activeOffsetY should be negative, a the second one should be positive`
@@ -457,7 +457,7 @@ function validatePanGestureHandlerProps(props) {
 
   if (
     Array.isArray(props.failOffsetY) &&
-    (props.failOffsetY[0] > 0 || props.failOffsetX[1] < 0)
+    (props.failOffsetY[0] > 0 || props.failOffsetY[1] < 0)
   ) {
     throw new Error(
       `First element of failOffsetY should be negative, a the second one should be positive`
