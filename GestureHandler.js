@@ -278,8 +278,8 @@ function createHandler(
 
     _update() {
       const newConfig = filterConfig(
-        this.props,
-        this.constructor.propTypes,
+        transformProps ? transformProps(this.props) : this.props,
+        { ...this.constructor.propTypes, ...customNativeProps },
         config
       );
       if (!deepEqual(this._config, newConfig)) {
@@ -382,7 +382,6 @@ const TapGestureHandler = createHandler(
     numberOfTaps: PropTypes.number,
     maxDeltaX: PropTypes.number,
     maxDeltaY: PropTypes.number,
-    minPointers: PropTypes.number,
     maxDist: PropTypes.number,
     minPointers: PropTypes.number,
   },
