@@ -157,7 +157,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 - (void)handleGestureStateTransition:(UIGestureRecognizer *)recognizer
 {
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
-  [self sendStateTransitions:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
+  [self sendStateTransitionIfNeeded:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
   if (_lastState == UIGestureRecognizerStatePossible && (self.state == UIGestureRecognizerStateFailed || self.state == UIGestureRecognizerStateCancelled)) {
    // [self reset];
   }
@@ -173,13 +173,13 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
                                                          extraData:extraData];
 
   
-
+    [self sendStateTransitionIfNeeded:state forViewWithTag:reactTag withExtraData:extraData];
     if (state == RNGestureHandlerStateActive) {
         [self.emitter sendTouchEvent:touchEvent];
     }
 }
 
-- (void) sendStateTransitions:(RNGestureHandlerState)state
+- (void) sendStateTransitionIfNeeded:(RNGestureHandlerState)state
                forViewWithTag:(nonnull NSNumber *)reactTag
                 withExtraData:(RNGestureHandlerEventExtraData *)extraData {
   if (state != _lastState) {

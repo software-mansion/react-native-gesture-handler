@@ -97,21 +97,21 @@
         }
     }
 
-    [self sendStateTransitions:RNGestureHandlerStateActive
+    [self sendStateTransitionIfNeeded:RNGestureHandlerStateActive
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
 }
 
 - (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event
 {
-    [self sendStateTransitions:RNGestureHandlerStateEnd
+    [self sendStateTransitionIfNeeded:RNGestureHandlerStateEnd
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
 }
 
 - (void)handleTouchUpInside:(UIView *)sender forEvent:(UIEvent *)event
 {
-    [self sendStateTransitions:RNGestureHandlerStateEnd
+    [self sendStateTransitionIfNeeded:RNGestureHandlerStateEnd
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
 }
@@ -122,11 +122,11 @@
     if (self.shouldCancelWhenOutside) {
         UIControl *control = (UIControl *)sender;
         [control cancelTrackingWithEvent:event];
-        [self sendStateTransitions:RNGestureHandlerStateEnd
+        [self sendStateTransitionIfNeeded:RNGestureHandlerStateEnd
                  forViewWithTag:sender.reactTag
                   withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
     } else {
-        [self sendStateTransitions:RNGestureHandlerStateActive
+        [self sendStateTransitionIfNeeded:RNGestureHandlerStateActive
                  forViewWithTag:sender.reactTag
                   withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
     }
@@ -134,14 +134,14 @@
 
 - (void)handleDragEnter:(UIView *)sender forEvent:(UIEvent *)event
 {
-    [self sendStateTransitions:RNGestureHandlerStateActive
+    [self sendStateTransitionIfNeeded:RNGestureHandlerStateActive
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
 }
 
 - (void)handleTouchCancel:(UIView *)sender forEvent:(UIEvent *)event
 {
-    [self sendStateTransitions:RNGestureHandlerStateCancelled
+    [self sendStateTransitionIfNeeded:RNGestureHandlerStateCancelled
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
 }
