@@ -97,21 +97,21 @@
         }
     }
 
-    [self sendEventsInState:RNGestureHandlerStateActive
+    [self sendStateTransitions:RNGestureHandlerStateActive
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
 }
 
 - (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event
 {
-    [self sendEventsInState:RNGestureHandlerStateEnd
+    [self sendStateTransitions:RNGestureHandlerStateEnd
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
 }
 
 - (void)handleTouchUpInside:(UIView *)sender forEvent:(UIEvent *)event
 {
-    [self sendEventsInState:RNGestureHandlerStateEnd
+    [self sendStateTransitions:RNGestureHandlerStateEnd
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
 }
@@ -122,11 +122,11 @@
     if (self.shouldCancelWhenOutside) {
         UIControl *control = (UIControl *)sender;
         [control cancelTrackingWithEvent:event];
-        [self sendEventsInState:RNGestureHandlerStateEnd
+        [self sendStateTransitions:RNGestureHandlerStateEnd
                  forViewWithTag:sender.reactTag
                   withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
     } else {
-        [self sendEventsInState:RNGestureHandlerStateActive
+        [self sendStateTransitions:RNGestureHandlerStateActive
                  forViewWithTag:sender.reactTag
                   withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
     }
@@ -134,14 +134,14 @@
 
 - (void)handleDragEnter:(UIView *)sender forEvent:(UIEvent *)event
 {
-    [self sendEventsInState:RNGestureHandlerStateActive
+    [self sendStateTransitions:RNGestureHandlerStateActive
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
 }
 
 - (void)handleTouchCancel:(UIView *)sender forEvent:(UIEvent *)event
 {
-    [self sendEventsInState:RNGestureHandlerStateCancelled
+    [self sendStateTransitions:RNGestureHandlerStateCancelled
              forViewWithTag:sender.reactTag
               withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
 }

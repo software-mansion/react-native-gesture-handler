@@ -150,8 +150,17 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
-    RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
-    [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
+  RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
+  [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
+}
+
+- (void)handleGestureStateTransition:(UIGestureRecognizer *)recognizer
+{
+  RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
+  [self sendStateTransitions:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
+  if (_lastState == UIGestureRecognizerStatePossible && (self.state == UIGestureRecognizerStateFailed || self.state == UIGestureRecognizerStateCancelled)) {
+   // [self reset];
+  }
 }
 
 - (void)sendEventsInState:(RNGestureHandlerState)state
@@ -163,27 +172,33 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
                                                              state:state
                                                          extraData:extraData];
 
-    if (state != _lastState) {
-        if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
-            [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
-                                                                                         handlerTag:_tag
-                                                                                              state:RNGestureHandlerStateActive
-                                                                                          prevState:_lastState
-                                                                                          extraData:extraData]];
-            _lastState = RNGestureHandlerStateActive;
-        }
-        id stateEvent = [[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
-                                                                  handlerTag:_tag
-                                                                       state:state
-                                                                   prevState:_lastState
-                                                                   extraData:extraData];
-        [self.emitter sendStateChangeEvent:stateEvent];
-        _lastState = state;
-    }
+  
 
     if (state == RNGestureHandlerStateActive) {
         [self.emitter sendTouchEvent:touchEvent];
     }
+}
+
+- (void) sendStateTransitions:(RNGestureHandlerState)state
+               forViewWithTag:(nonnull NSNumber *)reactTag
+                withExtraData:(RNGestureHandlerEventExtraData *)extraData {
+  if (state != _lastState) {
+    if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
+      [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
+                                                                                   handlerTag:_tag
+                                                                                        state:RNGestureHandlerStateActive
+                                                                                    prevState:_lastState
+                                                                                    extraData:extraData]];
+      _lastState = RNGestureHandlerStateActive;
+    }
+    id stateEvent = [[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
+                                                              handlerTag:_tag
+                                                                   state:state
+                                                               prevState:_lastState
+                                                               extraData:extraData];
+    [self.emitter sendStateChangeEvent:stateEvent];
+    _lastState = state;
+  }
 }
 
 - (RNGestureHandlerState)state

@@ -85,6 +85,11 @@
     [self triggerAction];
 }
 
+-(void) setState:(UIGestureRecognizerState)state {
+  [super setState:state];
+  [_gestureHandler handleGestureStateTransition:self];
+}
+
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     [super touchesMoved:touches withEvent:event];

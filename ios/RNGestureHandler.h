@@ -60,11 +60,16 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 - (void)unbindFromView;
 - (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)handleGesture:(nonnull id)recognizer;
+- (void)handleGestureStateTransition:(nonnull id)recognizer;
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
 
 - (void)reset;
 - (void)sendEventsInState:(RNGestureHandlerState)state
+           forViewWithTag:(nonnull NSNumber *)reactTag
+            withExtraData:(RNGestureHandlerEventExtraData *)extraData;
+
+- (void)sendStateTransitions:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(RNGestureHandlerEventExtraData *)extraData;
 

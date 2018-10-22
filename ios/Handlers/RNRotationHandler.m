@@ -8,12 +8,36 @@
 
 #import "RNRotationHandler.h"
 
+@interface RNRotationGestureRecognizer : UIRotationGestureRecognizer
+
+- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
+
+@end
+
+@implementation RNRotationGestureRecognizer {
+  __weak RNGestureHandler *_gestureHandler;
+}
+  
+  - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
+  {
+    if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+      _gestureHandler = gestureHandler;
+    }
+    return self;
+  }
+  -(void) setState:(UIGestureRecognizerState)state {
+    [super setState:state];
+    [_gestureHandler handleGestureStateTransition:self];
+  }
+
+@end
+
 @implementation RNRotationGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super initWithTag:tag])) {
-        _recognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+        _recognizer = [[RNRotationGestureRecognizer alloc] initWithGestureHandler:self];
     }
     return self;
 }

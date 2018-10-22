@@ -64,6 +64,11 @@
   _realMinimumNumberOfTouches = minimumNumberOfTouches;
 }
 
+-(void) setState:(UIGestureRecognizerState)state {
+  [super setState:state];
+  [_gestureHandler handleGestureStateTransition:self];
+}
+
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (_hasCustomActivationCriteria) {

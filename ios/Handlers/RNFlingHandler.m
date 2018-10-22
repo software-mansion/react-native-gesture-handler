@@ -1,11 +1,35 @@
 #import "RNFlingHandler.h"
 
+@interface RNSwipeGestureRecognizer : UISwipeGestureRecognizer
+
+- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
+
+@end
+
+@implementation RNSwipeGestureRecognizer {
+  __weak RNGestureHandler *_gestureHandler;
+}
+
+- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
+{
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+    _gestureHandler = gestureHandler;
+  }
+  return self;
+}
+-(void) setState:(UIGestureRecognizerState)state {
+  [super setState:state];
+  [_gestureHandler handleGestureStateTransition:self];
+}
+
+@end
+
 @implementation RNFlingGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super initWithTag:tag])) {
-        _recognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+        _recognizer = [[RNSwipeGestureRecognizer alloc] initWithGestureHandler:self];
         
     }
     return self;
@@ -14,7 +38,7 @@
 - (void)configure:(NSDictionary *)config
 {
     [super configure:config];
-    UISwipeGestureRecognizer *recognizer = (UISwipeGestureRecognizer *)_recognizer;
+    UISwipeGestureRecognizer *recognizer = (RNSwipeGestureRecognizer *)_recognizer;
 
     id prop = config[@"direction"];
     if (prop != nil) {
