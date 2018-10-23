@@ -1,9 +1,3 @@
-import Swipeable from './Swipeable';
-import DrawerLayout from './DrawerLayout';
-import GH from './GestureHandler';
-
-module.exports = {
-  ...GH,
-  DrawerLayout,
-  Swipeable,
-};
+export { default as Swipeable } from './Swipeable';
+export { default as DrawerLayout } from './DrawerLayout';
+export * from './GestureHandler';
