@@ -859,15 +859,15 @@ const FlatListWithGHScroll = props => (
   />
 );
 
-export {
-  WrappedScrollView as ScrollView,
-  WrappedSlider as Slider,
-  WrappedSwitch as Switch,
-  WrappedTextInput as TextInput,
-  WrappedToolbarAndroid as ToolbarAndroid,
-  WrappedViewPagerAndroid as ViewPagerAndroid,
-  WrappedDrawerLayoutAndroid as DrawerLayoutAndroid,
-  WrappedWebView as WebView,
+module.exports = {
+  ScrollView: WrappedScrollView,
+  Slider: WrappedSlider,
+  Switch: WrappedSwitch,
+  TextInput: WrappedTextInput,
+  ToolbarAndroid: WrappedToolbarAndroid,
+  ViewPagerAndroid: WrappedViewPagerAndroid,
+  DrawerLayoutAndroid: WrappedDrawerLayoutAndroid,
+  WebView: WrappedWebView,
   NativeViewGestureHandler,
   TapGestureHandler,
   FlingGestureHandler,
@@ -882,7 +882,7 @@ export {
   RectButton,
   BorderlessButton,
   /* Other */
-  FlatListWithGHScroll as FlatList,
+  FlatList: FlatListWithGHScroll,
   gestureHandlerRootHOC,
   Directions,
 };
