@@ -7,7 +7,7 @@
     "test": "jest",
     "precommit": "lint-staged"
   },
-  "main": "GestureHandler.js",
+  "main": "index.js",
   "types": "react-native-gesture-handler.d.ts",
   "files": [
     "android/build.gradle",
@@ -19,6 +19,7 @@
     "README.md",
     "NATIVE_NAVIGATORS.md",
     "GestureHandler.js",
+    "index.js",
     "Swipeable.js",
     "DrawerLayout.js",
     "gestureHandlerRootHOC.android.js",
