@@ -16,7 +16,6 @@ import {
   FlatList,
   Platform,
 } from 'react-native';
-import ReactNativeBridgeEventPlugin from 'react-native/Libraries/Renderer/shims/ReactNativeBridgeEventPlugin';
 import processColor from 'react-native/Libraries/StyleSheet/processColor';
 import Touchable from 'react-native/Libraries/Components/Touchable/Touchable';
 import deepEqual from 'fbjs/lib/areEqual';
