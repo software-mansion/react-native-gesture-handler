@@ -321,7 +321,9 @@ declare module 'react-native-gesture-handler' {
   /* BUTTONS PROPERTIES */
 
   export interface RawButtonProperties
-    extends NativeViewGestureHandlerProperties {}
+    extends NativeViewGestureHandlerProperties {
+    testID?: string;
+  }
 
   export interface BaseButtonProperties extends RawButtonProperties {
     onPress?: (pointerInside: boolean) => void;
