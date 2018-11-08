@@ -2,33 +2,33 @@ matrix:
   include:
     - language: objective-c
 language: objective-c
-osx_image: xcode8.3
+osx_image: xcode9.4
 
 branches:
   only:
-  - master
-  - first-tests
+    - master
+    - first-tests
 
 env:
   global:
-  - NODE_VERSION=stable
+    - NODE_VERSION=stable
 
 cache: yarn
 
 install:
-- cd test
-- brew tap wix/brew
-- brew install applesimutils
-- curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-- export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-- nvm install $NODE_VERSION
-- nvm use $NODE_VERSION
+  - cd test
+  - brew tap wix/brew
+  - brew install applesimutils
+  - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+  - export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+  - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
 
-- brew install yarn --without-node
-- npm install -g react-native-cli
-- npm install -g detox-cli
-- yarn
+  - brew install yarn --without-node
+  - npm install -g react-native-cli
+  - npm install -g detox-cli
+  - yarn
 
 script:
-- detox build --configuration ios.sim.release
-- detox test --configuration ios.sim.release --cleanup
+  - detox build --configuration ios.sim.release
+  - detox test --configuration ios.sim.release --cleanup

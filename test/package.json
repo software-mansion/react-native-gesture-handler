@@ -9,8 +9,6 @@
     "test-ios": "detox build -c ios.sim.debug > /dev/null && react-native start > /dev/null & pid=$! && sleep 5s && detox test -c ios.sim.debug && kill $pid"
   },
   "dependencies": {
-    "react": "16.5.1",
-    "react-native": "0.57.1",
     "react-native-gesture-handler": "file:..",
     "react-native-vector-icons": "5.0.0",
     "react-navigation": "2.17.0"
@@ -51,15 +49,13 @@
       },
       "android.emu.debug": {
         "binaryPath": "../Example/android/app/build/outputs/apk/debug/app-debug.apk",
-        "build":
-        "cd ../Example/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ../../test",
+        "build": "cd ../Example/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ../../test",
         "type": "android.emulator",
         "name": "Nexus_5X_API_28"
       },
       "android.emu.release": {
         "binaryPath": "../Example/android/app/build/outputs/apk/release/app-release.apk",
-        "build":
-        "cd ../Example/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ../../test",
+        "build": "cd ../Example/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ../../test",
         "type": "android.emulator",
         "name": "Nexus_5X_API_28"
       }
