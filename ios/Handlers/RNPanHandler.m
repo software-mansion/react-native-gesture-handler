@@ -130,10 +130,10 @@
   if (!isnan(_failOffsetXEnd) && trans.x > _failOffsetXEnd) {
     return YES;
   }
-  if (!isnan(_failOffsetYStart) && trans.x < _failOffsetYStart) {
+  if (!isnan(_failOffsetYStart) && trans.y < _failOffsetYStart) {
     return YES;
   }
-  if (!isnan(_failOffsetYEnd) && trans.x > _failOffsetYEnd) {
+  if (!isnan(_failOffsetYEnd) && trans.y > _failOffsetYEnd) {
     return YES;
   }
   return NO;
@@ -148,10 +148,10 @@
   if (!isnan(_activeOffsetXEnd) && trans.x > _activeOffsetXEnd) {
     return YES;
   }
-  if (!isnan(_activeOffsetYStart) && trans.x < _activeOffsetYStart) {
+  if (!isnan(_activeOffsetYStart) && trans.y < _activeOffsetYStart) {
     return YES;
   }
-  if (!isnan(_activeOffsetYEnd) && trans.x > _activeOffsetYEnd) {
+  if (!isnan(_activeOffsetYEnd) && trans.y > _activeOffsetYEnd) {
     return YES;
   }
   
