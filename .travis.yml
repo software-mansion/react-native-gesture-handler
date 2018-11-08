@@ -2,7 +2,8 @@ matrix:
   include:
     - language: objective-c
 language: objective-c
-osx_image: xcode9.4
+osx_image: xcode9
+xcode_sdk: iphonesimulator11.0
 
 branches:
   only:
@@ -16,6 +17,9 @@ env:
 cache: yarn
 
 install:
+  - brew update
+  - sudo launchctl limit maxfiles 2048 unlimited
+  - sudo ulimit -n 10000
   - cd test
   - brew tap wix/brew
   - brew install applesimutils
