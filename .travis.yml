@@ -34,5 +34,6 @@ install:
   - yarn
 
 script:
+  - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
   - detox build --configuration ios.sim.release
   - detox test --configuration ios.sim.release --cleanup
