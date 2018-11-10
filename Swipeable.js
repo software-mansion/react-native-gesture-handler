@@ -1,7 +1,7 @@
 // @flow
 
 // Similarily to the DrawerLayout component this deserves to be put in a
-// separate repo. ALthough, keeping it here for the time being will allow us
+// separate repo. Although, keeping it here for the time being will allow us
 // to move faster and fix possible issues quicker
 
 import React, { Component } from 'react';
