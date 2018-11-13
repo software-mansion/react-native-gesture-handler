@@ -39,7 +39,7 @@
         "binaryPath": "../Example/ios/build/Build/Products/Debug-iphonesimulator/GestureHandler.app",
         "build": "xcodebuild -project ../Example/ios/GestureHandler.xcodeproj -scheme GestureHandler -configuration Debug -sdk iphonesimulator -derivedDataPath ../Example/ios/build",
         "type": "ios.simulator",
-        "name": "iPhone X"
+        "name": "iPhone 7"
       },
       "ios.sim.release": {
         "binaryPath": "../Example/ios/build/Build/Products/Release-iphonesimulator/GestureHandler.app",
