@@ -20,7 +20,6 @@ install:
   - brew update
   - sudo launchctl limit maxfiles 2048 unlimited
   - sudo ulimit -n 10000
-  - cd test
   - brew tap wix/brew
   - brew install applesimutils
   - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
@@ -31,6 +30,9 @@ install:
   - brew install yarn --without-node
   - npm install -g react-native-cli
   - npm install -g detox-cli
+  - cd Example
+  - yarn
+  - cd ../test
   - yarn
 
 script:
