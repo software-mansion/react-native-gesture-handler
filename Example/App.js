@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, YellowBox } from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import SwipeableTable from './swipeable';
@@ -111,7 +111,7 @@ class MainScreenItem extends React.Component {
   }
 }
 
-const ExampleApp = StackNavigator(
+const ExampleApp = createStackNavigator(
   {
     Main: { screen: MainScreen },
     ...SCREENS,
