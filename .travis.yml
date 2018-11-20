@@ -3,7 +3,8 @@ matrix:
     - language: objective-c
 language: objective-c
 osx_image: xcode9
-xcode_sdk: iphonesimulator11.0
+xcode_sdk: iphonesimulator11.3
+xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
 
 branches:
   only:
