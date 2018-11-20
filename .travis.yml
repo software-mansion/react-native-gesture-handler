@@ -33,7 +33,7 @@ install:
   - npm install -g detox-cli
   - cd Example
   - yarn
-  - react-native bundle --entry-file='index.ios.js' --bundle-output='./ios/GestureHandler/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios'
+  - react-native bundle --entry-file='index.ios.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios'
   - cd ../test
   - yarn
 
