@@ -1,17 +1,12 @@
 apply plugin: 'com.android.library'
 
-def DEFAULT_COMPILE_SDK_VERSION             = 26
-def DEFAULT_BUILD_TOOLS_VERSION             = "26.0.3"
-def DEFAULT_MIN_SDK_VERSION                 = 16
-def DEFAULT_TARGET_SDK_VERSION              = 26
-
 android {
-    compileSdkVersion rootProject.findProperty('compileSdkVersion') ?: DEFAULT_COMPILE_SDK_VERSION
-    buildToolsVersion rootProject.findProperty('buildToolsVersion') ?: DEFAULT_BUILD_TOOLS_VERSION
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
-        minSdkVersion rootProject.findProperty('minSdkVersion') ?: DEFAULT_MIN_SDK_VERSION
-        targetSdkVersion rootProject.findProperty('targetSdkVersion') ?: DEFAULT_TARGET_SDK_VERSION
+        minSdkVersion 16
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         ndk {
@@ -29,9 +24,5 @@ android {
 
 dependencies {
     //noinspection GradleDynamicVersion
-    compileOnly 'com.facebook.react:react-native:+'
-}
-
-wrapper {
-    distributionType = Wrapper.DistributionType.ALL
+    provided 'com.facebook.react:react-native:+'
 }
