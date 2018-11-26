@@ -36,5 +36,5 @@ install:
 script:
   - export PRODUCT_BUNDLE_IDENTIFIER="org.reactjs.native.example.testapp"
   - FORCE_BUNDLING=1 detox build --configuration ios.sim.debug
-  - react-native bundle --entry-file='./index.js' --bundle-output='./ios/testapp/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios/testapp'
+  - react-native bundle --entry-file='./index.js' --bundle-output='./ios/testapp/main.jsbundle' --dev=true --platform='ios' --assets-dest='./ios/testapp'
   - detox test -d --no-color --configuration ios.sim.debug --cleanup

@@ -1,7 +1,6 @@
 describe('Example', () => {
   beforeEach(async () => {
     await device.reloadReactNative();
-    await device.disableSynchronization();
   });
 
   it('should pass', async () => {
