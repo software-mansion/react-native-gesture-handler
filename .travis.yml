@@ -9,7 +9,7 @@ xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
 branches:
   only:
     - master
-    - first-tests
+    - first-tests-osdnk
 
 env:
   global:
@@ -27,16 +27,14 @@ install:
   - export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
   - nvm install $NODE_VERSION
   - nvm use $NODE_VERSION
-
   - brew install yarn --without-node
   - npm install -g react-native-cli
   - npm install -g detox-cli
-  - cd Example
-  - yarn
-  - react-native bundle --entry-file='index.ios.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios'
-  - cd ../test
+  - cd testApp
   - yarn
 
 script:
-  - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
-  - FORCE_BUNDLING=1 detox build --configuration ios.sim.release > /dev/null && detox test --configuration ios.sim.release --cleanup
+  - export PRODUCT_BUNDLE_IDENTIFIER="org.reactjs.native.example.testapp"
+  - FORCE_BUNDLING=1 detox build --configuration ios.sim.debug
+  - react-native bundle --entry-file='./index.js' --bundle-output='./ios/testapp/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios/testapp'
+  - detox test -d --no-color --configuration ios.sim.debug --cleanup
