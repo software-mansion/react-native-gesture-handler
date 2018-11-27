@@ -1,0 +1,12 @@
+{
+  "presets": [
+    "es2015",
+    "react-native"
+  ],
+  "plugins": [
+    ["transform-runtime", {
+      "polyfill": false,
+      "regenerator": true
+    }]
+  ]
+}
