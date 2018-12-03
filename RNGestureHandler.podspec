@@ -2,7 +2,7 @@ require "json"
 
 Pod::Spec.new do |s|
   # NPM package specification
-  package = JSON.parse(File.read(File.join(File.dirname(__FILE__), "../package.json")))
+  package = JSON.parse(File.read(File.join(File.dirname(__FILE__), "package.json")))
 
   s.name         = "RNGestureHandler"
   s.version      = package["version"]
