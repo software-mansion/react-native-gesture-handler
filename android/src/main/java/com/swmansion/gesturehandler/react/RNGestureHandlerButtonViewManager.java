@@ -225,7 +225,7 @@ public class RNGestureHandlerButtonViewManager extends
   }
 
   @ReactProp(name = "useRippleColor")
-  public void setRippleColor(ButtonViewGroup view, boolean useCustomRippleColor) {
+  public void setUseRippleColor(ButtonViewGroup view, boolean useCustomRippleColor) {
     view.setUseRippleColor(useCustomRippleColor);
   }
 
