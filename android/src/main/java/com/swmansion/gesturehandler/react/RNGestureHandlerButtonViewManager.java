@@ -52,7 +52,11 @@ public class RNGestureHandlerButtonViewManager extends
 
     public void setRippleColor(int color) {
       mRippleColor = color;
-      mUseCustomRippleColor = true;
+      mNeedBackgroundUpdate = true;
+    }
+
+    public void setUseRippleColor(boolean useCustomRippleColor) {
+      mUseCustomRippleColor = useCustomRippleColor;
       mNeedBackgroundUpdate = true;
     }
 
@@ -107,8 +111,8 @@ public class RNGestureHandlerButtonViewManager extends
           // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
           // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
           colorDrawable.setCornerRadius(mBorderRadius);
-          if (selectable instanceof RippleDrawable
-                  && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && selectable instanceof RippleDrawable) {
             PaintDrawable mask = new PaintDrawable(Color.WHITE);
             mask.setCornerRadius(mBorderRadius);
             ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);
@@ -218,6 +222,11 @@ public class RNGestureHandlerButtonViewManager extends
   @ReactProp(name = "rippleColor")
   public void setRippleColor(ButtonViewGroup view, int rippleColor) {
     view.setRippleColor(rippleColor);
+  }
+
+  @ReactProp(name = "useRippleColor")
+  public void setRippleColor(ButtonViewGroup view, boolean useCustomRippleColor) {
+    view.setUseRippleColor(useCustomRippleColor);
   }
 
   @Override
