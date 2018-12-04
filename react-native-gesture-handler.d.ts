@@ -430,8 +430,8 @@ declare module 'react-native-gesture-handler/Swipeable' {
 }
 
 declare module 'react-native-gesture-handler/DrawerLayout' {
-  import { Animated } from 'react-native';
-  
+  import { Animated, StatusBarAnimation } from 'react-native';
+
   interface DrawerLayoutProperties {
     renderNavigationView: (
       progressAnimatedValue: Animated.Value
@@ -452,7 +452,7 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
     edgeWidth?: number;
     minSwipeDistance?: number;
     hideStatusBar?: boolean;
-    statusBarAnimation?: 'slide' | 'none' | 'fade';
+    statusBarAnimation?: StatusBarAnimation;
     overlayColor?: string;
   }
   
