@@ -15,7 +15,7 @@ const DRAG_TOSS = 0.05;
 // Math.sign polyfill for iOS 8.x
 if (!Math.sign) {
   Math.sign = function(x) {
-    return (x > 0) - (x < 0) || +x;
+    return Number(x > 0) - Number(x < 0) || +x;
   };
 }
 
@@ -43,7 +43,7 @@ export type PropType = {
     dragAnimatedValue: any
   ) => any,
   useNativeAnimations: boolean,
-  animationOptions?: object,
+  animationOptions?: Object,
 };
 type StateType = {
   dragX: Animated.Value,
@@ -61,9 +61,9 @@ export default class Swipeable extends Component<PropType, StateType> {
   };
   _onGestureEvent: ?AnimatedEvent;
   _transX: ?Animated.Interpolation;
-  _showLeftAction: ?Animated.Interpolation;
+  _showLeftAction: ?Animated.Interpolation | ?Animated.Value;
   _leftActionTranslate: ?Animated.Interpolation;
-  _showRightAction: ?Animated.Interpolation;
+  _showRightAction: ?Animated.Interpolation | ?Animated.Value;
   _rightActionTranslate: ?Animated.Interpolation;
 
   constructor(props: PropType) {
