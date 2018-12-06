@@ -569,7 +569,6 @@ class BaseButton extends React.Component {
       <RawButton
         style={[{ overflow: 'hidden' }, style]}
         rippleColor={processColor(rippleColor)}
-        useRippleColor={!!rippleColor}
         {...rest}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}

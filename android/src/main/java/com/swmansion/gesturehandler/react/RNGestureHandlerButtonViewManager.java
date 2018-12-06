@@ -27,8 +27,8 @@ public class RNGestureHandlerButtonViewManager extends
     static ButtonViewGroup sResponder;
 
     int mBackgroundColor = Color.TRANSPARENT;
-    int mRippleColor;
-    boolean mUseCustomRippleColor = false;
+    // Using object because of handling null representing no value set.
+    Integer mRippleColor;
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
@@ -50,13 +50,8 @@ public class RNGestureHandlerButtonViewManager extends
       mNeedBackgroundUpdate = true;
     }
 
-    public void setRippleColor(int color) {
+    public void setRippleColor(Integer color) {
       mRippleColor = color;
-      mNeedBackgroundUpdate = true;
-    }
-
-    public void setUseRippleColor(boolean useCustomRippleColor) {
-      mUseCustomRippleColor = useCustomRippleColor;
       mNeedBackgroundUpdate = true;
     }
 
@@ -118,7 +113,7 @@ public class RNGestureHandlerButtonViewManager extends
             ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);
           }
         }
-        if (mUseCustomRippleColor
+        if (mRippleColor != null
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && selectable instanceof RippleDrawable) {
           int[][] states = new int[][] { new int[] { android.R.attr.state_enabled} };
@@ -220,13 +215,8 @@ public class RNGestureHandlerButtonViewManager extends
   }
 
   @ReactProp(name = "rippleColor")
-  public void setRippleColor(ButtonViewGroup view, int rippleColor) {
+  public void setRippleColor(ButtonViewGroup view, Integer rippleColor) {
     view.setRippleColor(rippleColor);
-  }
-
-  @ReactProp(name = "useRippleColor")
-  public void setUseRippleColor(ButtonViewGroup view, boolean useCustomRippleColor) {
-    view.setUseRippleColor(useCustomRippleColor);
   }
 
   @Override
