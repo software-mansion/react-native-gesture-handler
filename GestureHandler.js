@@ -16,8 +16,8 @@ import {
   FlatList,
   Platform,
 } from 'react-native';
+import processColor from 'react-native/Libraries/StyleSheet/processColor';
 import Touchable from 'react-native/Libraries/Components/Touchable/Touchable';
-
 import deepEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 
@@ -761,11 +761,12 @@ class BaseButton extends React.Component {
   };
 
   render() {
-    const { style, ...rest } = this.props;
+    const { style, rippleColor, ...rest } = this.props;
 
     return (
       <RawButton
         style={[{ overflow: 'hidden' }, style]}
+        rippleColor={processColor(rippleColor)}
         {...rest}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}
