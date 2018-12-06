@@ -289,6 +289,20 @@ function createHandler(
       }
     }
 
+    setNativeProps(updates) {
+      const mergedProps = { ...this.props, ...updates };
+      const newConfig = filterConfig(
+        transformProps ? transformProps(mergedProps) : mergedProps,
+        { ...this.constructor.propTypes, ...customNativeProps },
+        config
+      );
+      this._config = newConfig;
+      RNGestureHandlerModule.updateGestureHandler(
+        this._handlerTag,
+        this._config
+      );
+    }
+
     render() {
       let gestureEventHandler = this._onGestureHandlerEvent;
       const { onGestureEvent, onGestureHandlerEvent } = this.props;
