@@ -1,8 +1,8 @@
 package com.swmansion.gesturehandler;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import com.facebook.react.bridge.Callback;
 
 import java.util.Arrays;
 
@@ -51,7 +51,8 @@ public class GestureHandler<T extends GestureHandler> {
   private View mView;
   private int mState = STATE_UNDETERMINED;
   private float mX, mY;
-  private boolean mWithinBounds;
+  private boolean mWithinBounds = true;
+  private boolean mPrevWithinBounds = true;
   private boolean mEnabled = true;
   private float mHitSlop[];
 
@@ -59,6 +60,7 @@ public class GestureHandler<T extends GestureHandler> {
   private float mLastEventOffsetX, mLastEventOffsetY;
 
   private boolean mShouldCancelWhenOutside;
+
   private int mNumberOfPointers = 0;
 
   private GestureHandlerOrchestrator mOrchestrator;
@@ -298,6 +300,7 @@ public class GestureHandler<T extends GestureHandler> {
     mY = event.getY();
     mNumberOfPointers = event.getPointerCount();
 
+    mPrevWithinBounds = mWithinBounds;
     mWithinBounds = isWithinBounds(mView, mX, mY);
     if (mShouldCancelWhenOutside && !mWithinBounds) {
       if (mState == STATE_ACTIVE) {
@@ -307,6 +310,12 @@ public class GestureHandler<T extends GestureHandler> {
       }
       return;
     }
+    if (mPrevWithinBounds != mWithinBounds) {
+      if (mListener != null) {
+        mListener.onPassBounds((T) this, mPrevWithinBounds);
+      }
+    }
+
 
     mLastX = GestureUtils.getLastPointerX(event, true);
     mLastY = GestureUtils.getLastPointerY(event, true);
@@ -462,6 +471,8 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public final void reset() {
+    mWithinBounds = true;
+    mPrevWithinBounds = true;
     mView = null;
     mOrchestrator = null;
     Arrays.fill(mTrackedPointerIDs, -1);

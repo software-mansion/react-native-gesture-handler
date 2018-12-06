@@ -43,6 +43,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   public static final String MODULE_NAME = "RNGestureHandlerModule";
 
   private static final String KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside";
+  private static final String KEY_ON_MOVE_IN = "onMoveIn";
+  private static final String KEY_ON_MOVE_OUT = "onMoveOut";
   private static final String KEY_ENABLED = "enabled";
   private static final String KEY_HIT_SLOP = "hitSlop";
   private static final String KEY_HIT_SLOP_LEFT = "left";
@@ -434,6 +436,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     public void onStateChange(GestureHandler handler, int newState, int oldState) {
       RNGestureHandlerModule.this.onStateChange(handler, newState, oldState);
     }
+
+    @Override
+    public void onPassBounds(GestureHandler handler, boolean isOutside) {
+      RNGestureHandlerModule.this.onPassBounds(handler, isOutside);
+    }
   };
 
   private HandlerFactory[] mHandlerFactories = new HandlerFactory[] {
@@ -687,6 +694,22 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             handlerFactory);
     eventDispatcher.dispatchEvent(event);
   }
+
+  private void onPassBounds(GestureHandler handler, boolean isOutside) {
+    if (handler.getTag() < 0) {
+      // root containers use negative tags, we don't need to dispatch events for them to the JS
+      return;
+    }
+    EventDispatcher eventDispatcher = getReactApplicationContext()
+            .getNativeModule(UIManagerModule.class)
+            .getEventDispatcher();
+    RNGestureHandlerPassBoundsEvent event = RNGestureHandlerPassBoundsEvent.obtain(
+            handler,
+            isOutside);
+    eventDispatcher.dispatchEvent(event);
+  }
+
+
 
   private static void handleHitSlopProperty(GestureHandler handler, ReadableMap config) {
     if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {

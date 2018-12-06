@@ -49,6 +49,9 @@ UIManager.RCTView.directEventTypes = {
   onGestureHandlerStateChange: {
     registrationName: 'onGestureHandlerStateChange',
   },
+  onGestureHandlerPassBounds: {
+    registrationName: 'onGestureHandlerPassBounds',
+  },
 };
 
 const State = RNGestureHandlerModule.State;
@@ -97,6 +100,8 @@ const GestureHandlerPropTypes = {
   onCancelled: PropTypes.func,
   onActivated: PropTypes.func,
   onEnded: PropTypes.func,
+  onMoveIt: PropTypes.func,
+  onMoveOut: PropTypes.func,
 };
 
 const stateToPropMappings = {
@@ -112,7 +117,7 @@ function isConfigParam(param, name) {
     param !== undefined &&
     typeof param !== 'function' &&
     (typeof param !== 'object' || !('__isNative' in param)) &&
-    name !== 'onHandlerStateChange' &&
+    name !== 'onTapStateChange' &&
     name !== 'onGestureEvent'
   );
 }
@@ -289,6 +294,15 @@ function createHandler(
       }
     }
 
+    _onPassBounds = ({ nativeEvent: { isOutside } }) => {
+      if (isOutside && this.props.onMoveOut) {
+        this.props.onMoveOut();
+      }
+      if (!isOutside && this.props.onMoveIn) {
+        this.props.onMoveIn();
+      }
+    };
+
     render() {
       let gestureEventHandler = this._onGestureHandlerEvent;
       const { onGestureEvent, onGestureHandlerEvent } = this.props;
@@ -360,6 +374,7 @@ function createHandler(
           collapsable: false,
           onGestureHandlerEvent: gestureEventHandler,
           onGestureHandlerStateChange: gestureStateEventHandler,
+          onGestureHandlerPassBounds: this._onPassBounds,
         },
         children
       );
@@ -611,6 +626,7 @@ const NATIVE_WRAPPER_PROPS_FILTER = {
   // we want to pass gesture event handlers if registered
   onGestureHandlerEvent: PropTypes.func,
   onGestureHandlerStateChange: PropTypes.func,
+  onGestureHandlerPassBounds: PropTypes.func,
 };
 
 function createNativeWrapper(Component, config = {}) {
