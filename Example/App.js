@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, YellowBox } from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import SwipeableTable from './swipeable';
@@ -14,9 +14,11 @@ import PanResponder from './panResponder';
 import Bouncing from './bouncing';
 import HorizontalDrawer from './horizontalDrawer';
 import Fling from './fling/index';
+import doubleDraggable from './doubleDraggable';
 import ChatHeads from './chatHeads';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
+import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
 
 YellowBox.ignoreWarnings([
   'Warning: isMounted(...) is deprecated',
@@ -30,6 +32,10 @@ const SCREENS = {
   Multitap: { screen: Multitap },
   Draggable: { screen: Draggable },
   ScaleAndRotate: { screen: ScaleAndRotate, title: 'Scale, rotate & tilt' },
+  ScaleAndRotateSimultaneously: {
+    screen: doubleScalePinchAndRotate,
+    title: 'Scale, rotate & tilt & more',
+  },
   PagerAndDrawer: { screen: PagerAndDrawer, title: 'Android pager & drawer' },
   HorizontalDrawer: {
     screen: HorizontalDrawer,
@@ -61,6 +67,10 @@ const SCREENS = {
   ComboWithRNScroll: {
     screen: ComboWithRNScroll,
     title: "Combo with RN's ScrollView",
+  },
+  doubleDraggable: {
+    screen: doubleDraggable,
+    title: 'Two handlers simultaneously',
   },
 };
 
@@ -101,7 +111,7 @@ class MainScreenItem extends React.Component {
   }
 }
 
-const ExampleApp = StackNavigator(
+const ExampleApp = createStackNavigator(
   {
     Main: { screen: MainScreen },
     ...SCREENS,

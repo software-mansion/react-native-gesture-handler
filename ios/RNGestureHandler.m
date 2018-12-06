@@ -40,7 +40,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
     rect.origin.y -= RNGH_HIT_SLOP_INSET(top);
 
     if (!isnan(hitSlop.width)) {
-        if (!isnan(hitSlop.left)) {
+        if (!isnan(hitSlop.right)) {
             rect.origin.x = rect.size.width - hitSlop.width + RNGH_HIT_SLOP_INSET(right);
         }
         rect.size.width = hitSlop.width;
@@ -48,7 +48,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
         rect.size.width += (RNGH_HIT_SLOP_INSET(left) + RNGH_HIT_SLOP_INSET(right));
     }
     if (!isnan(hitSlop.height)) {
-        if (!isnan(hitSlop.top)) {
+        if (!isnan(hitSlop.bottom)) {
             rect.origin.y = rect.size.height - hitSlop.height + RNGH_HIT_SLOP_INSET(bottom);
         }
         rect.size.height = hitSlop.height;
@@ -61,7 +61,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 
 @implementation RNGestureHandler {
     NSArray<NSNumber *> *_handlersToWaitFor;
-    NSArray<NSNumber *> *_simultaniousHandlers;
+    NSArray<NSNumber *> *_simultaneousHandlers;
     RNGHHitSlop _hitSlop;
 }
 
@@ -78,7 +78,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 - (void)configure:(NSDictionary *)config
 {
     _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
-    _simultaniousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
+    _simultaneousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
 
     id prop = config[@"enabled"];
     if (prop != nil) {
@@ -266,10 +266,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (_recognizer.state == UIGestureRecognizerStateBegan && _recognizer.state == UIGestureRecognizerStatePossible) {
         return YES;
     }
-    if ([_simultaniousHandlers count]) {
+    if ([_simultaneousHandlers count]) {
         RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
         if (handler != nil) {
-            for (NSNumber *handlerTag in _simultaniousHandlers) {
+            for (NSNumber *handlerTag in _simultaneousHandlers) {
                 if ([handler.tag isEqual:handlerTag]) {
                     return YES;
                 }

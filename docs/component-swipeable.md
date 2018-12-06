@@ -77,6 +77,21 @@ method that is expected to return an action panel that is going to be revealed f
 ### `renderRightActions`
 method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
 
+## Methods
+Using reference to `Swipeable` it's possible to trigger some actions on it
+
+---
+### `close`
+method that closes component.
+
+---
+### `openLeft`
+method that opens component on left side.
+
+---
+### `openRight`
+method that opens component on right side.
+
 
 ### Example:
 

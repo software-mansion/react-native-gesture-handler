@@ -17,10 +17,10 @@ For example, map views use pinch gestures to change the zoom level of the map.
 The handler is implemented using [UIPinchGestureRecognizer](https://developer.apple.com/documentation/uikit/uipinchgesturerecognizer) on iOS and from scratch on Android.
 
 ## Properties
-Properties provided to `RotationGestureHandler`  do not extend [common set of properties from base handler class](handler-common.md#properties).
+Properties provided to `PinchGestureHandler`  do not extend [common set of properties from base handler class](handler-common.md#properties).
 
 ## Event data
-See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
+See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `PinchGestureHandler`:
 
 ---
 ### `scale`

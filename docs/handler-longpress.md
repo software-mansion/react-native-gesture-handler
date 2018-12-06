@@ -26,7 +26,27 @@ Allow finger movement while pressing. This property expresses the maximum distan
 
 ## Event data
 
-Gesture events provided to `LongPressGestureHandler` callbacks does not include any handler specific attributes beside the [common set of event attributes from base handler class](handler-common.md#event-data).
+See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `LongPressGestureHandler`:
+
+---
+### `x`
+
+X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the handler. Expressed in point units.
+
+---
+### `y`
+
+Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the handler. Expressed in point units.
+
+---
+### `absoluteX`
+
+X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. The value is expressed in point units. It is recommended to use it instead of [`x`](#x) in cases when the original view can be transformed as an effect of the gesture.
+
+---
+### `absoluteY`
+
+Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. The value is expressed in point units. It is recommended to use it instead of [`y`](#y) in cases when the original view can be transformed as an effect of the gesture.
 
 ## Example
 

@@ -24,6 +24,8 @@ public class RNGestureHandlerPackage implements ReactPackage {
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Arrays.<ViewManager>asList(new RNGestureHandlerButtonViewManager());
+    return Arrays.<ViewManager>asList(
+            new RNGestureHandlerRootViewManager(),
+            new RNGestureHandlerButtonViewManager());
   }
 }
