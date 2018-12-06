@@ -19,6 +19,7 @@ import ChatHeads from './chatHeads';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
 import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
+import touchales from './touchables';
 
 YellowBox.ignoreWarnings([
   'Warning: isMounted(...) is deprecated',
@@ -72,6 +73,10 @@ const SCREENS = {
     screen: doubleDraggable,
     title: 'Two handlers simultaneously',
   },
+  touchables: {
+    screen: touchales,
+    title: 'Touchables',
+  },
 };
 
 class MainScreen extends React.Component {
@@ -117,7 +122,7 @@ const ExampleApp = createStackNavigator(
     ...SCREENS,
   },
   {
-    initialRouteName: 'Main',
+    initialRouteName: 'touchables',
   }
 );
 
