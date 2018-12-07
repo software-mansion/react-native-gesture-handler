@@ -717,9 +717,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             isOutside);
     eventDispatcher.dispatchEvent(event);
   }
-
-
-
+  
   private static void handleHitSlopProperty(GestureHandler handler, ReadableMap config) {
     if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
       float hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP));
