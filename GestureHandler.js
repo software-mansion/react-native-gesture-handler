@@ -784,6 +784,7 @@ class BaseButton extends React.Component {
 
   render() {
     const { style, rippleColor, ...rest } = this.props;
+
     return (
       <RawButton
         style={[{ overflow: 'hidden' }, style]}
