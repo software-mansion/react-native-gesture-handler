@@ -71,10 +71,10 @@ export class TouchableWithoutFeedback extends Component {
     if (this.props.delayPressOut) {
       this.pressOutTimeout =
         this.pressOutTimeout ||
-        setTimeout(
-          () => this.moveToState(TOUCHABLE_STATE.MOVED_OUTSIDE),
-          this.props.delayPressOut
-        );
+        setTimeout(() => {
+          this.moveToState(TOUCHABLE_STATE.MOVED_OUTSIDE);
+          this.pressOutTimeout = null;
+        }, this.props.delayPressOut);
     } else {
       this.moveToState(TOUCHABLE_STATE.MOVED_OUTSIDE);
     }
@@ -83,10 +83,10 @@ export class TouchableWithoutFeedback extends Component {
   handleGoToUndermined = () => {
     clearTimeout(this.pressOutTimeout);
     if (this.props.delayPressOut) {
-      this.pressOutTimeout = setTimeout(
-        () => this.moveToState(TOUCHABLE_STATE.UNDETERMINED),
-        this.props.delayPressOut
-      );
+      this.pressOutTimeout = setTimeout(() => {
+        this.moveToState(TOUCHABLE_STATE.UNDETERMINED);
+        this.pressOutTimeout = null;
+      }, this.props.delayPressOut);
     } else {
       this.moveToState(TOUCHABLE_STATE.UNDETERMINED);
     }
@@ -99,7 +99,6 @@ export class TouchableWithoutFeedback extends Component {
     if (newState === TOUCHABLE_STATE.BEGAN) {
       this.props.onPressIn && this.props.onPressIn();
     } else if (newState === TOUCHABLE_STATE.MOVED_OUTSIDE) {
-      this.pressOutTimeout = null;
       this.props.onPressOut && this.props.onPressOut();
     } else if (
       newState === TOUCHABLE_STATE.UNDETERMINED &&
@@ -161,7 +160,6 @@ export class TouchableWithoutFeedback extends Component {
   };
 
   onMoveIn = () => {
-    //console.warn("IN")
     if (this.STATE === TOUCHABLE_STATE.MOVED_OUTSIDE) {
       this.moveToState(TOUCHABLE_STATE.BEGAN);
     }
