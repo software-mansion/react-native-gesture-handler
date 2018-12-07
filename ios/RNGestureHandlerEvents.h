@@ -49,3 +49,11 @@
                       extraData:(RNGestureHandlerEventExtraData*)extraData NS_DESIGNATED_INITIALIZER;
 
 @end
+
+@interface RNGestureHandlerPassBounds : NSObject <RCTEvent>
+
+- (instancetype)initWithRactTag:(NSNumber *)reactTag
+                     handlerTag:(NSNumber *)handlerTag
+                      isOutside:(BOOL)isOutside;
+
+@end

@@ -100,7 +100,7 @@ const GestureHandlerPropTypes = {
   onCancelled: PropTypes.func,
   onActivated: PropTypes.func,
   onEnded: PropTypes.func,
-  onMoveIt: PropTypes.func,
+  onMoveIn: PropTypes.func,
   onMoveOut: PropTypes.func,
 };
 
@@ -138,7 +138,7 @@ function transformIntoHandlerTags(handlerIDs) {
     .filter(handlerTag => handlerTag > 0);
 }
 
-function filterConfig(props, validProps, defaults = {}) {
+function parseConfig(props, validProps, defaults = {}) {
   const res = { ...defaults };
   Object.keys(validProps).forEach(key => {
     const value = props[key];
@@ -154,6 +154,12 @@ function filterConfig(props, validProps, defaults = {}) {
       res[key] = value;
     }
   });
+  if (props.onMoveIn) {
+    res['sendOnMoveIn'] = true;
+  }
+  if (props.onMoveOut) {
+    res['sendOnMoveOut'] = true;
+  }
   return res;
 }
 
@@ -242,7 +248,7 @@ function createHandler(
 
     componentDidMount() {
       this._viewTag = findNodeHandle(this._viewNode);
-      this._config = filterConfig(
+      this._config = parseConfig(
         transformProps ? transformProps(this.props) : this.props,
         { ...this.constructor.propTypes, ...customNativeProps },
         config
@@ -280,7 +286,7 @@ function createHandler(
     }
 
     _update() {
-      const newConfig = filterConfig(
+      const newConfig = parseConfig(
         transformProps ? transformProps(this.props) : this.props,
         { ...this.constructor.propTypes, ...customNativeProps },
         config

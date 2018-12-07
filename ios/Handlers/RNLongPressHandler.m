@@ -19,28 +19,38 @@
 @end
 
 @implementation RNBetterLongPressGestureRecognizer {
-    __weak RNGestureHandler *_gestureHandler;
+  __weak RNGestureHandler *_gestureHandler;
+  BOOL _isWithinBounds;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
-    if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
-        _gestureHandler = gestureHandler;
-    }
-    return self;
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+    _gestureHandler = gestureHandler;
+    _isWithinBounds = YES;
+  }
+  return self;
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    [super touchesMoved:touches withEvent:event];
+  [super touchesMoved:touches withEvent:event];
+  
+  BOOL prevIsWithinBounds = _isWithinBounds;
+  CGPoint pt = [self locationInView:self.view];
+  _isWithinBounds = [_gestureHandler containsPointInView:pt];
+  if (prevIsWithinBounds != _isWithinBounds) {
+    [_gestureHandler handleBoundPassing:prevIsWithinBounds];
+  }
+  if (!_isWithinBounds && _gestureHandler.shouldCancelWhenOutside) {
+    self.enabled = NO;
+    self.enabled = YES;
+  }
+}
 
-    if (_gestureHandler.shouldCancelWhenOutside) {
-        CGPoint pt = [self locationInView:self.view];
-        if (!CGRectContainsPoint(self.view.bounds, pt)) {
-            self.enabled = NO;
-            self.enabled = YES;
-        }
-    }
+- (void) reset {
+  _isWithinBounds = YES;
+  [super reset];
 }
 
 @end
@@ -50,38 +60,38 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-    if ((self = [super initWithTag:tag])) {
-        _recognizer = [[RNBetterLongPressGestureRecognizer alloc] initWithGestureHandler:self];
-    }
-    return self;
+  if ((self = [super initWithTag:tag])) {
+    _recognizer = [[RNBetterLongPressGestureRecognizer alloc] initWithGestureHandler:self];
+  }
+  return self;
 }
 
 - (void)configure:(NSDictionary *)config
 {
-    [super configure:config];
-    UILongPressGestureRecognizer *recognizer = (UILongPressGestureRecognizer *)_recognizer;
-
-    id prop = config[@"minDurationMs"];
-    if (prop != nil) {
-        recognizer.minimumPressDuration = [RCTConvert CGFloat:prop] / 1000.0;
-    }
-
-    prop = config[@"maxDist"];
-    if (prop != nil) {
-        recognizer.allowableMovement = [RCTConvert CGFloat:prop];
-    }
+  [super configure:config];
+  UILongPressGestureRecognizer *recognizer = (UILongPressGestureRecognizer *)_recognizer;
+  
+  id prop = config[@"minDurationMs"];
+  if (prop != nil) {
+    recognizer.minimumPressDuration = [RCTConvert CGFloat:prop] / 1000.0;
+  }
+  
+  prop = config[@"maxDist"];
+  if (prop != nil) {
+    recognizer.allowableMovement = [RCTConvert CGFloat:prop];
+  }
 }
 
 - (RNGestureHandlerState)state
 {
-    // For long press recognizer we treat "Began" state as "active"
-    // as it changes its state to "Began" as soon as the the minimum
-    // hold duration timeout is reached, whereas state "Changed" is
-    // only set after "Began" phase if there is some movement.
-    if (_recognizer.state == UIGestureRecognizerStateBegan) {
-        return RNGestureHandlerStateActive;
-    }
-    return [super state];
+  // For long press recognizer we treat "Began" state as "active"
+  // as it changes its state to "Began" as soon as the the minimum
+  // hold duration timeout is reached, whereas state "Changed" is
+  // only set after "Began" phase if there is some movement.
+  if (_recognizer.state == UIGestureRecognizerStateBegan) {
+    return RNGestureHandlerStateActive;
+  }
+  return [super state];
 }
 @end
 

@@ -35,6 +35,7 @@
   __weak RNGestureHandler *_gestureHandler;
   NSUInteger _realMinimumNumberOfTouches;
   BOOL _hasCustomActivationCriteria;
+  BOOL _isWithinBounds;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
@@ -55,6 +56,7 @@
     _failOffsetYEnd = NAN;
     _hasCustomActivationCriteria = NO;
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
+    _isWithinBounds = YES;
   }
   return self;
 }
@@ -84,9 +86,11 @@
     self.state = UIGestureRecognizerStateFailed;
     return;
   }
-  if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged) && _gestureHandler.shouldCancelWhenOutside) {
+  if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged)) {
     CGPoint pt = [self locationInView:self.view];
-    if (!CGRectContainsPoint(self.view.bounds, pt)) {
+    BOOL prevIsWithinBounds = _isWithinBounds;
+    _isWithinBounds = [_gestureHandler containsPointInView:pt];
+    if (_gestureHandler.shouldCancelWhenOutside && !_isWithinBounds) {
       // If the previous recognizer state is UIGestureRecognizerStateChanged
       // then UIGestureRecognizer's sate machine will only transition to
       // UIGestureRecognizerStateCancelled even if you set the state to
@@ -96,6 +100,9 @@
       : UIGestureRecognizerStateCancelled;
       [self reset];
       return;
+    }
+    if (prevIsWithinBounds != _isWithinBounds) {
+      [_gestureHandler handleBoundPassing:prevIsWithinBounds];
     }
   }
   if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
@@ -109,6 +116,7 @@
 
 - (void)reset
 {
+  _isWithinBounds = YES;
   self.enabled = YES;
   [super reset];
 }

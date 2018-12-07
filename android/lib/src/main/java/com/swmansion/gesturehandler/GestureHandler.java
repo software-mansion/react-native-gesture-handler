@@ -2,7 +2,6 @@ package com.swmansion.gesturehandler;
 
 import android.view.MotionEvent;
 import android.view.View;
-import com.facebook.react.bridge.Callback;
 
 import java.util.Arrays;
 
@@ -52,7 +51,6 @@ public class GestureHandler<T extends GestureHandler> {
   private int mState = STATE_UNDETERMINED;
   private float mX, mY;
   private boolean mWithinBounds = true;
-  private boolean mPrevWithinBounds = true;
   private boolean mEnabled = true;
   private float mHitSlop[];
 
@@ -60,6 +58,8 @@ public class GestureHandler<T extends GestureHandler> {
   private float mLastEventOffsetX, mLastEventOffsetY;
 
   private boolean mShouldCancelWhenOutside;
+  private boolean mShouldSendOnMoveIn = false;
+  private boolean mShouldSendOnMoveOut = false;
 
   private int mNumberOfPointers = 0;
 
@@ -107,6 +107,16 @@ public class GestureHandler<T extends GestureHandler> {
       cancel();
     }
     mEnabled = enabled;
+    return (T) this;
+  }
+
+  public T setShouldSendOnMoveIn(boolean shouldSendOnMoveIn) {
+    mShouldSendOnMoveIn = shouldSendOnMoveIn;
+    return (T) this;
+  }
+
+  public T setShouldSendOnMoveOut(boolean shouldSendOnMoveOut) {
+    mShouldSendOnMoveOut = shouldSendOnMoveOut;
     return (T) this;
   }
 
@@ -300,7 +310,7 @@ public class GestureHandler<T extends GestureHandler> {
     mY = event.getY();
     mNumberOfPointers = event.getPointerCount();
 
-    mPrevWithinBounds = mWithinBounds;
+    boolean prevWithinBounds = mWithinBounds;
     mWithinBounds = isWithinBounds(mView, mX, mY);
     if (mShouldCancelWhenOutside && !mWithinBounds) {
       if (mState == STATE_ACTIVE) {
@@ -310,12 +320,13 @@ public class GestureHandler<T extends GestureHandler> {
       }
       return;
     }
-    if (mPrevWithinBounds != mWithinBounds) {
+    if (prevWithinBounds != mWithinBounds) {
       if (mListener != null) {
-        mListener.onPassBounds((T) this, mPrevWithinBounds);
+        if ((prevWithinBounds && mShouldSendOnMoveOut) || (!prevWithinBounds && mShouldSendOnMoveIn)) {
+          mListener.onPassBounds((T) this, prevWithinBounds);
+        }
       }
     }
-
 
     mLastX = GestureUtils.getLastPointerX(event, true);
     mLastY = GestureUtils.getLastPointerY(event, true);
@@ -472,7 +483,6 @@ public class GestureHandler<T extends GestureHandler> {
 
   public final void reset() {
     mWithinBounds = true;
-    mPrevWithinBounds = true;
     mView = null;
     mOrchestrator = null;
     Arrays.fill(mTrackedPointerIDs, -1);

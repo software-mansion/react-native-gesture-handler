@@ -8,8 +8,6 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.swmansion.gesturehandler.GestureHandler;
 
-import javax.annotation.Nullable;
-
 public class RNGestureHandlerPassBoundsEvent extends Event<RNGestureHandlerPassBoundsEvent>{
 
   public static final String EVENT_NAME = "onGestureHandlerPassBounds";
