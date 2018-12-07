@@ -32,7 +32,7 @@ const renderSampleBox = color => (
 const toReactNativeTouchable = touchable => {
   if (touchable === TouchableOpacity) return RNTouchableOpacity;
   if (touchable === TouchableWithoutFeedback) return RNTouchableWithoutFeedback;
-  if (touchable === TouchableHighlight) return TouchableHighlight;
+  if (touchable === TouchableHighlight) return RNTouchableHighlight;
   if (touchable === TouchableNativeFeedback) return RNTouchableNativeFeedback;
 };
 
@@ -200,31 +200,6 @@ const TOUCHABLES = [
     text: 'TouchableOpacity with nothing inside',
   },
   {
-    type: TouchableHighlight,
-    props: {
-      onPressIn: () => console.warn('press in'),
-      onPressOut: () => console.warn('press out'),
-      onPress: () => console.warn('press'),
-    },
-    renderChild: () => null,
-    text: 'TouchableHighlight with nothing inside',
-  },
-  {
-    type: TouchableHighlight,
-    props: {
-      onPressIn: () => console.warn('press in'),
-      onPressOut: () => console.warn('press out'),
-      onPress: () => console.warn('press'),
-      style: {
-        width: BOX_SIZE,
-        height: BOX_SIZE,
-        backgroundColor: 'khaki',
-      },
-    },
-    renderChild: () => null,
-    text: 'TouchableHighlight with nothing inside and style applied',
-  },
-  {
     type: TouchableOpacity,
     props: {
       onPressIn: () => console.warn('press in'),
@@ -332,6 +307,7 @@ export default class Touchables extends Component {
         keyExtractor={(item, index) => `TC${index}`}
         ItemSeparatorComponent={ItemSeparator}
         renderItem={this.renderRow}
+        renderScrollComponent={props => <ScrollView {...props} />}
       />
     );
   }
