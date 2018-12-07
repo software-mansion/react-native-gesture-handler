@@ -1,15 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Easing,
-  StyleSheet,
-  Text,
-  View,
-  TouchableWithoutFeedback as RNTouchableWithoutFeedback,
-  TouchableOpacity as RNTouchableOpacity,
-  TouchableHighlight as RNTouchableHighlight,
-} from 'react-native';
+import { Animated, Easing, StyleSheet } from 'react-native';
 import {
   TapGestureHandler,
   State,
@@ -112,7 +102,6 @@ export class TouchableWithoutFeedback extends Component {
 
   onTapStateChange = ({ nativeEvent }) => {
     const { state } = nativeEvent;
-    //console.warn(state)
     if (
       state === State.BEGAN &&
       this.STATE === TOUCHABLE_STATE.UNDETERMINED &&
@@ -142,8 +131,9 @@ export class TouchableWithoutFeedback extends Component {
   };
 
   onLongPressStateChange = ({ nativeEvent: { state } }) => {
-    if (state === State.ACTIVE) {
-      this.onLongPress();
+    if (state === State.ACTIVE && this.props.onLongPress) {
+      this.longPressDetected = true;
+      this.props.onLongPress();
     }
   };
 
@@ -154,11 +144,6 @@ export class TouchableWithoutFeedback extends Component {
     this.pressOutTimeout = null;
   }
 
-  onLongPress = () => {
-    this.longPressDetected = true;
-    this.props.onLongPress && this.props.onLongPress();
-  };
-
   onMoveIn = () => {
     if (this.STATE === TOUCHABLE_STATE.MOVED_OUTSIDE) {
       this.moveToState(TOUCHABLE_STATE.BEGAN);
@@ -166,8 +151,6 @@ export class TouchableWithoutFeedback extends Component {
   };
 
   onMoveOut = () => {
-    //console.warn("OUT")
-
     clearTimeout(this.longPressTimeout);
     if (this.STATE === TOUCHABLE_STATE.BEGAN) {
       this.handleMoveOutside();
@@ -192,6 +175,19 @@ export class TouchableWithoutFeedback extends Component {
   tap = React.createRef();
   long = React.createRef();
   render() {
+    const extraProps = {
+      accessible: this.props.accessible !== false,
+      accessibilityLabel: this.props.accessibilityLabel,
+      accessibilityHint: this.props.accessibilityHint,
+      accessibilityComponentType: this.props.accessibilityComponentType,
+      accessibilityRole: this.props.accessibilityRole,
+      accessibilityStates: this.props.accessibilityStates,
+      accessibilityTraits: this.props.accessibilityTraits,
+      nativeID: this.props.nativeID,
+      testID: this.props.testID,
+      onLayout: this.props.onLayout,
+      hitSlop: this.props.hitSlop,
+    };
     return (
       <TapGestureHandler
         onHandlerStateChange={this.onTapStateChange}
@@ -203,6 +199,7 @@ export class TouchableWithoutFeedback extends Component {
         onMoveIn={this.onMoveIn}
         shouldCancelWhenOutside={false}>
         <Animated.View
+          {...extraProps}
           style={[this.style, this.state && this.state.extraUnderlayStyle]}
           onLayout={this.onLayout}>
           <LongPressGestureHandler
@@ -299,7 +296,6 @@ export class TouchableHighlight extends TouchableWithoutFeedback {
 
   onStateChange = (from, to) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
-      console.warn('XXX');
       this.showUnderlay();
     } else if (
       to === TOUCHABLE_STATE.UNDETERMINED ||

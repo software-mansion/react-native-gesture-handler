@@ -2,9 +2,15 @@ import React, { Component } from 'react';
 import {
   TouchableHighlight as RNTouchableHighlight,
   TouchableOpacity as RNTouchableOpacity,
+  TouchableNativeFeedback as RNTouchableNativeFeedback,
   View,
 } from 'react-native';
-import { TouchableHighlight, TouchableOpacity } from './Touchables';
+import {
+  TouchableHighlight,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from './Touchables';
+import { BorderlessButton, RectButton } from 'react-native-gesture-handler';
 
 export default class Touchables extends Component {
   render() {
@@ -16,35 +22,33 @@ export default class Touchables extends Component {
           height: '100%',
           alignItems: 'center',
         }}>
-        <RNTouchableHighlight
+        <RNTouchableNativeFeedback
           onPress={() => console.warn('[RNTWF] onPress')}
           onPressIn={() => console.warn('[RNTWF] onPressIn')}
-          onPressOut={() => console.warn('[RNTWF] onPressOut')}
-          onLongPress={() => console.warn('[RNTWF] onLongPress')}>
+          onPressOut={() => console.warn('[RNTWF] onPressOut')}>
           <View
             style={{
               width: 100,
               height: 100,
-              opacity: 0.5,
               backgroundColor: 'red',
             }}
           />
-        </RNTouchableHighlight>
+        </RNTouchableNativeFeedback>
 
-        <TouchableHighlight
+        <TouchableWithoutFeedback
           onPress={() => console.warn('[GHTWF] onPress')}
           onPressIn={() => console.warn('[GHTWF] onPressIn')}
-          onPressOut={() => console.warn('[GHTWF] onPressOut')}
-          onLongPress={() => console.warn('[GHTWF] onLongPress')}>
-          <View
-            style={{
-              width: 100,
-              height: 100,
-              opacity: 0.5,
-              backgroundColor: 'red',
-            }}
-          />
-        </TouchableHighlight>
+          onPressOut={() => console.warn('[GHTWF] onPressOut')}>
+          <RectButton borderless={false}>
+            <View
+              style={{
+                width: 100,
+                backgroundColor: 'white',
+                height: 100,
+              }}
+            />
+          </RectButton>
+        </TouchableWithoutFeedback>
       </View>
     );
   }
