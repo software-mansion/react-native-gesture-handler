@@ -104,7 +104,6 @@ export default class TouchableWithoutFeedback extends Component {
   // handlePressIn in called on first touch on traveling inside component.
   // Handles state transition with delay.
   handlePressIn = () => {
-    console.warn('HPN');
     if (this.props.delayPressIn) {
       this.pressInTimeout = setTimeout(
         () => this.moveToState(TOUCHABLE_STATE.BEGAN),
