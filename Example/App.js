@@ -122,7 +122,7 @@ const ExampleApp = createStackNavigator(
     ...SCREENS,
   },
   {
-    initialRouteName: 'Main',
+    initialRouteName: 'touchables',
   }
 );
 

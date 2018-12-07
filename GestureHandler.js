@@ -16,8 +16,8 @@ import {
   FlatList,
   Platform,
 } from 'react-native';
+import processColor from 'react-native/Libraries/StyleSheet/processColor';
 import Touchable from 'react-native/Libraries/Components/Touchable/Touchable';
-
 import deepEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 
@@ -117,7 +117,7 @@ function isConfigParam(param, name) {
     param !== undefined &&
     typeof param !== 'function' &&
     (typeof param !== 'object' || !('__isNative' in param)) &&
-    name !== 'onTapStateChange' &&
+    name !== 'onHandlerStateChange' &&
     name !== 'onGestureEvent'
   );
 }
@@ -308,6 +308,20 @@ function createHandler(
         this.props.onMoveIn();
       }
     };
+
+    setNativeProps(updates) {
+      const mergedProps = { ...this.props, ...updates };
+      const newConfig = filterConfig(
+        transformProps ? transformProps(mergedProps) : mergedProps,
+        { ...this.constructor.propTypes, ...customNativeProps },
+        config
+      );
+      this._config = newConfig;
+      RNGestureHandlerModule.updateGestureHandler(
+        this._handlerTag,
+        this._config
+      );
+    }
 
     render() {
       let gestureEventHandler = this._onGestureHandlerEvent;
@@ -769,11 +783,12 @@ class BaseButton extends React.Component {
   };
 
   render() {
-    const { style, ...rest } = this.props;
+    const { style, rippleColor, ...rest } = this.props;
 
     return (
       <RawButton
         style={[{ overflow: 'hidden' }, style]}
+        rippleColor={processColor(rippleColor)}
         {...rest}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}
