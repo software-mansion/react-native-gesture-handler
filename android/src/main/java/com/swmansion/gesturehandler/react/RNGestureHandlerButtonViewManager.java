@@ -131,6 +131,7 @@ public class RNGestureHandlerButtonViewManager extends
         if (mRippleColor != null
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && selectable instanceof RippleDrawable) {
+          withRipple((RippleDrawable) selectable);
 
         }
         LayerDrawable layerDrawable = new LayerDrawable(
