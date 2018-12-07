@@ -311,7 +311,7 @@ function createHandler(
 
     setNativeProps(updates) {
       const mergedProps = { ...this.props, ...updates };
-      const newConfig = filterConfig(
+      const newConfig = parseConfig(
         transformProps ? transformProps(mergedProps) : mergedProps,
         { ...this.constructor.propTypes, ...customNativeProps },
         config
@@ -784,7 +784,6 @@ class BaseButton extends React.Component {
 
   render() {
     const { style, rippleColor, ...rest } = this.props;
-
     return (
       <RawButton
         style={[{ overflow: 'hidden' }, style]}
