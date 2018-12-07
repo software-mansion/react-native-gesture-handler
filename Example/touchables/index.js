@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
-import { TouchableHighlight as RNTouchableHighlight, View } from 'react-native';
-import { TouchableHighlight } from './Touchables';
+import {
+  TouchableHighlight as RNTouchableHighlight,
+  TouchableOpacity as RNTouchableOpacity,
+  View,
+} from 'react-native';
+import { TouchableHighlight, TouchableOpacity } from './Touchables';
 
 export default class Touchables extends Component {
   render() {
@@ -21,6 +25,7 @@ export default class Touchables extends Component {
             style={{
               width: 100,
               height: 100,
+              opacity: 0.5,
               backgroundColor: 'red',
             }}
           />
@@ -35,6 +40,7 @@ export default class Touchables extends Component {
             style={{
               width: 100,
               height: 100,
+              opacity: 0.5,
               backgroundColor: 'red',
             }}
           />

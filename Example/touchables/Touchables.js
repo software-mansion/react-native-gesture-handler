@@ -99,6 +99,7 @@ export class TouchableWithoutFeedback extends Component {
     if (newState === TOUCHABLE_STATE.BEGAN) {
       this.props.onPressIn && this.props.onPressIn();
     } else if (newState === TOUCHABLE_STATE.MOVED_OUTSIDE) {
+      this.pressOutTimeout = null;
       this.props.onPressOut && this.props.onPressOut();
     } else if (
       newState === TOUCHABLE_STATE.UNDETERMINED &&
@@ -112,6 +113,7 @@ export class TouchableWithoutFeedback extends Component {
 
   onTapStateChange = ({ nativeEvent }) => {
     const { state } = nativeEvent;
+    //console.warn(state)
     if (
       state === State.BEGAN &&
       this.STATE === TOUCHABLE_STATE.UNDETERMINED &&
@@ -159,12 +161,15 @@ export class TouchableWithoutFeedback extends Component {
   };
 
   onMoveIn = () => {
+    //console.warn("IN")
     if (this.STATE === TOUCHABLE_STATE.MOVED_OUTSIDE) {
       this.moveToState(TOUCHABLE_STATE.BEGAN);
     }
   };
 
   onMoveOut = () => {
+    //console.warn("OUT")
+
     clearTimeout(this.longPressTimeout);
     if (this.STATE === TOUCHABLE_STATE.BEGAN) {
       this.handleMoveOutside();
@@ -259,14 +264,16 @@ TouchableOpacity.defaultProps = {
 export class TouchableHighlight extends TouchableWithoutFeedback {
   state = {
     extraChildStyle: null,
-    extraUnderlayStyle: null,
+    extraUnderlayStyle: {
+      backgroundColor: 'black',
+    },
   };
 
   showUnderlay = () => {
     this.setState({
-      extraChildStyle: {
+      /*    extraChildStyle: {
         opacity: this.props.activeOpacity,
-      },
+      },*/
       extraUnderlayStyle: {
         backgroundColor: this.props.underlayColor,
       },
@@ -294,6 +301,7 @@ export class TouchableHighlight extends TouchableWithoutFeedback {
 
   onStateChange = (from, to) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
+      console.warn('XXX');
       this.showUnderlay();
     } else if (
       to === TOUCHABLE_STATE.UNDETERMINED ||
