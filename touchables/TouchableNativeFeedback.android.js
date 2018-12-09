@@ -2,6 +2,7 @@ import TouchableWithoutFeedback from './TouchableWithoutFeedback';
 import { BaseButton } from '../GestureHandler';
 import React from 'react';
 import PropTypes from 'prop-types';
+import { ViewPropTypes } from 'react-native';
 
 /**
  * TouchableNativeFeedback behaves slightly different than RN's TouchableNativeFeedback.
@@ -31,6 +32,7 @@ export default class TouchableNativeFeedback extends TouchableWithoutFeedback {
     ...TouchableWithoutFeedback.propTypes,
     useForeground: PropTypes.bool,
     background: PropTypes.string,
+    style: ViewPropTypes.style,
   };
 
   renderChildren(children) {

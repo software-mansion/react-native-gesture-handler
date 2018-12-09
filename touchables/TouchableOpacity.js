@@ -1,4 +1,10 @@
-import { Animated, Easing, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  View,
+  ViewPropTypes,
+} from 'react-native';
 import TouchableWithoutFeedback, {
   TOUCHABLE_STATE,
 } from './TouchableWithoutFeedback';
@@ -17,6 +23,8 @@ export default class TouchableOpacity extends TouchableWithoutFeedback {
 
   static propTypes = {
     ...TouchableWithoutFeedback.propTypes,
+
+    style: ViewPropTypes.style,
     activeOpacity: PropTypes.number,
   };
 

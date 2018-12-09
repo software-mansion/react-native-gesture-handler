@@ -2,7 +2,7 @@ import React from 'react';
 import TouchableWithoutFeedback, {
   TOUCHABLE_STATE,
 } from './TouchableWithoutFeedback';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, ViewPropTypes } from 'react-native';
 import PropTypes from 'prop-types';
 
 /**
@@ -21,7 +21,7 @@ export default class TouchableHighlight extends TouchableWithoutFeedback {
       ...TouchableWithoutFeedback.propTypes,
       activeOpacity: PropTypes.number,
       underlayColor: PropTypes.string,
-      style: View.propTypes.style,
+      style: ViewPropTypes.style,
       onShowUnderlay: PropTypes.func,
       onHideUnderlay: PropTypes.func,
     },
