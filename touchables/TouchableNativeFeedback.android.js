@@ -1,6 +1,7 @@
 import TouchableWithoutFeedback from './TouchableWithoutFeedback';
 import { BaseButton } from '../GestureHandler';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * TouchableNativeFeedback behaves slightly different than RN's TouchableNativeFeedback.

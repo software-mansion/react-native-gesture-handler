@@ -3,6 +3,7 @@ import TouchableWithoutFeedback, {
   TOUCHABLE_STATE,
 } from './TouchableWithoutFeedback';
 import { StyleSheet, View } from 'react-native';
+import PropTypes from 'prop-types';
 
 /**
  * TouchableHighlight follows RN's implementation

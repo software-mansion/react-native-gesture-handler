@@ -3,6 +3,7 @@ import TouchableWithoutFeedback, {
   TOUCHABLE_STATE,
 } from './TouchableWithoutFeedback';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * TouchableOpacity base timing animation which has been used in RN's core
