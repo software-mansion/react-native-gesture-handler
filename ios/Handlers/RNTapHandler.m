@@ -100,7 +100,7 @@
   }
   
   CGPoint pt = [self locationInView:self.view];
-  // side effect
+
   BOOL prevIsWithinBounds = _isWithinBounds;
   _isWithinBounds = [_gestureHandler containsPointInView:pt];
   if (prevIsWithinBounds != _isWithinBounds) {
