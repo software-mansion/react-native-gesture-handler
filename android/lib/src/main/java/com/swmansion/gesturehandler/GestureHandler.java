@@ -320,12 +320,10 @@ public class GestureHandler<T extends GestureHandler> {
       }
       return;
     }
-    if (prevWithinBounds != mWithinBounds) {
-      if (mListener != null) {
-        if ((prevWithinBounds && mShouldSendOnMoveOut) || (!prevWithinBounds && mShouldSendOnMoveIn)) {
-          mListener.onPassBounds((T) this, prevWithinBounds);
-        }
-      }
+    if (prevWithinBounds != mWithinBounds && mListener != null && (
+            (prevWithinBounds && mShouldSendOnMoveOut) || (!prevWithinBounds && mShouldSendOnMoveIn)
+    )) {
+      mListener.onPassBounds((T) this, prevWithinBounds);
     }
 
     mLastX = GestureUtils.getLastPointerX(event, true);
