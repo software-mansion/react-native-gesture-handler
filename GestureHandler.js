@@ -409,6 +409,12 @@ const FlingGestureHandler = createHandler(
   {}
 );
 
+const ForceTouchGestureHandler = createHandler(
+  'ForceTouchGestureHandler',
+  {},
+  {}
+);
+
 const LongPressGestureHandler = createHandler(
   'LongPressGestureHandler',
   {
@@ -885,6 +891,7 @@ export {
   NativeViewGestureHandler,
   TapGestureHandler,
   FlingGestureHandler,
+  ForceTouchGestureHandler,
   LongPressGestureHandler,
   PanGestureHandler,
   PinchGestureHandler,
