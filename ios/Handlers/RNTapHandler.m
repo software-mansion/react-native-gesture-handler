@@ -99,6 +99,14 @@
     return;
   }
   
+  CGPoint pt = [self locationInView:self.view];
+  // side effect
+  BOOL prevIsWithinBounds = _isWithinBounds;
+  _isWithinBounds = [_gestureHandler containsPointInView:pt];
+  if (prevIsWithinBounds != _isWithinBounds) {
+    [_gestureHandler handleBoundPassing:prevIsWithinBounds];
+  }
+  
   if ([self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
     [self triggerAction];
@@ -117,13 +125,6 @@
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
-  CGPoint pt = [self locationInView:self.view];
-  // side effect
-  BOOL prevIsWithinBounds = _isWithinBounds;
-  _isWithinBounds = [_gestureHandler containsPointInView:pt];
-  if (prevIsWithinBounds != _isWithinBounds) {
-    [_gestureHandler handleBoundPassing:prevIsWithinBounds];
-  }
   if (!_isWithinBounds && _gestureHandler.shouldCancelWhenOutside) {
     return YES;
   }
