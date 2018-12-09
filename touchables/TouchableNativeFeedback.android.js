@@ -26,6 +26,12 @@ export default class TouchableNativeFeedback extends TouchableWithoutFeedback {
     useForeground: true,
   };
 
+  static propTypes = {
+    ...TouchableWithoutFeedback.propTypes,
+    useForeground: PropTypes.bool,
+    background: PropTypes.string,
+  };
+
   renderChildren(children) {
     const extraProps = {};
     const { background } = this.props;

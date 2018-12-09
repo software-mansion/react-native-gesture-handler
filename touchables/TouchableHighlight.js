@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import TouchableWithoutFeedback, {
   TOUCHABLE_STATE,
 } from './TouchableWithoutFeedback';
@@ -13,6 +13,17 @@ export default class TouchableHighlight extends TouchableWithoutFeedback {
     activeOpacity: 0.85,
     delayPressOut: 100,
     underlayColor: 'black',
+  };
+
+  static propTypes = {
+    propTypes: {
+      ...TouchableWithoutFeedback.propTypes,
+      activeOpacity: PropTypes.number,
+      underlayColor: PropTypes.string,
+      style: View.propTypes.style,
+      onShowUnderlay: PropTypes.func,
+      onHideUnderlay: PropTypes.func,
+    },
   };
 
   // Copied from RN
@@ -68,6 +79,7 @@ export default class TouchableHighlight extends TouchableWithoutFeedback {
     });
   }
 
+  // override
   onStateChange = (from, to) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
       this.showUnderlay();

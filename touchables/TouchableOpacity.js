@@ -1,4 +1,4 @@
-import { Animated, Easing, StyleSheet, View, StyleProp } from 'react-native';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
 import TouchableWithoutFeedback, {
   TOUCHABLE_STATE,
 } from './TouchableWithoutFeedback';
@@ -12,7 +12,11 @@ export default class TouchableOpacity extends TouchableWithoutFeedback {
     ...TouchableWithoutFeedback.defaultProps,
     // value copier from RN's implementation
     activeOpacity: 0.2,
-    style: StyleProp,
+  };
+
+  static propTypes = {
+    ...TouchableWithoutFeedback.propTypes,
+    activeOpacity: PropTypes.number,
   };
 
   // opacity is 1 one by default but could be overwritten
