@@ -11,11 +11,13 @@ import {
   FlatList,
 } from 'react-native';
 import {
+  RectButton,
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
+import { createStackNavigator } from 'react-navigation';
 
 const BOX_SIZE = 80;
 
@@ -239,7 +241,6 @@ const TOUCHABLES = [
 
   {
     type: TouchableNativeFeedback,
-    props: {},
     background: A => A.SelectableBackground(),
     color: 'transparent',
     renderChild: renderSampleBox,
@@ -268,13 +269,40 @@ const TOUCHABLES = [
   },
 ];
 
+const screens = TOUCHABLES.reduce(
+  (map, obj) => ((map[obj.text] = obj), map),
+  {}
+);
+
 const ItemSeparator = () => <View style={styles.separator} />;
 
-export default class Touchables extends Component {
-  renderRow = ({
-    item: { type: GHTouchable, background, props, renderChild, text, color },
-  }) => {
+class Item extends React.Component {
+  _onPress = () => this.props.onPressItem(this.props.item);
+  render() {
+    const { text } = this.props.item;
+    return (
+      <RectButton style={styles.button} onPress={this._onPress}>
+        <Text style={styles.buttonText}>{screens[text].text || text}</Text>
+      </RectButton>
+    );
+  }
+}
+
+class TouchableExample extends Component {
+  static navigationOptions = {
+    title: 'Animated & GH',
+  };
+  render() {
+    const {
+      type: GHTouchable,
+      background,
+      props,
+      renderChild,
+      text,
+      color,
+    } = screens[this.props.navigation.state.params.item];
     const RNTouchable = toReactNativeTouchable(GHTouchable);
+
     return (
       <View style={{ width: '100%', padding: 10 }}>
         <Text>{text}</Text>
@@ -297,21 +325,43 @@ export default class Touchables extends Component {
         </View>
       </View>
     );
+  }
+}
+class Touchables extends Component {
+  static navigationOptions = {
+    header: null,
   };
-
   render() {
     return (
       <FlatList
         style={styles.list}
         data={TOUCHABLES}
-        keyExtractor={(item, index) => `TC${index}`}
+        keyExtractor={item => item.text}
         ItemSeparatorComponent={ItemSeparator}
-        renderItem={this.renderRow}
-        renderScrollComponent={props => <ScrollView {...props} />}
+        renderItem={props => (
+          <Item
+            {...props}
+            onPressItem={() =>
+              this.props.navigation.navigate('Example', {
+                item: props.item.text,
+              })
+            }
+          />
+        )}
       />
     );
   }
 }
+
+export default createStackNavigator(
+  {
+    Main: { screen: Touchables },
+    Example: { screen: TouchableExample },
+  },
+  {
+    initialRouteName: 'Main',
+  }
+);
 
 const styles = StyleSheet.create({
   list: {
@@ -320,5 +370,13 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: '#DBDBE0',
+  },
+  button: {
+    flex: 1,
+    height: 60,
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
 });
