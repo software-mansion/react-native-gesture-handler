@@ -4,14 +4,14 @@ title: ForceTouchGestureHandler (iOS only)
 sidebar_label: ForceTouchGestureHandler
 ---
 
-A continuous gesture handler that recognizes force touch. It allows for tracking pressure of touch on some iOS devices.
+A continuous gesture handler that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.
 The handler [activates](state.md#active) when pressure of touch if greater or equal than `minForce`. It fails if pressure is greater than `maxForce`
 Gesture callback can be used for continuous tracking of the touch pressure. It provides information for one finger (the first one).
 
 At the beginning of the gesture, the pressure factor is 0.0. As the pressure increases, the pressure factor increases proportionally. The maximum pressure is 1.0.
 
 The handler is implemented using custom [UIGestureRecognizer](https://developer.apple.com/documentation/uikit/uigesturerecognizer) on iOS. There's no implementation provided on Android and it simply render children without any wrappers.
-Since this behaviour is only provided on some iOS devices, this handler should not be used for defining any crucial behaviors. Use it only as additional improvements and make all features to be accessed without this handler as well.
+Since this behaviour is only provided on some iOS devices, this handler should not be used for defining any crucial behaviors. Use it only as an additional improvement and make all features to be accessed without this handler as well.
 
 # Properties
 
@@ -31,7 +31,7 @@ See [set of event attributes from base handler class](handler-common.md#event-da
 
 ---
 ### `force`
-The pressure of touch.
+The pressure of a touch.
 
 
 ## Static method
