@@ -25,11 +25,6 @@ export default class Example extends Component {
   render() {
     return (
       <View style={styles.view}>
-        <Text style={{ textAlign: 'center', width: '80%' }}>
-          {' '}
-          Force touch works only on some Apple devices (iPhones 6s+ excluding
-          XR) and should be used only as a supportive one{' '}
-        </Text>
         <ForceTouchGestureHandler
           minForce={0}
           onGestureEvent={this._onGestureEvent}
