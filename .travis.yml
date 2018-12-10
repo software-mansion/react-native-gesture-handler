@@ -10,7 +10,7 @@ branches:
 
 env:
   global:
-  - NODE_VERSION=stable
+  - NODE_VERSION=10.11.0
 
 cache: yarn
 
