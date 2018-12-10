@@ -17,14 +17,12 @@ export default class TouchableHighlight extends TouchableWithoutFeedback {
   };
 
   static propTypes = {
-    propTypes: {
-      ...TouchableWithoutFeedback.propTypes,
-      activeOpacity: PropTypes.number,
-      underlayColor: PropTypes.string,
-      style: PropTypes.object,
-      onShowUnderlay: PropTypes.func,
-      onHideUnderlay: PropTypes.func,
-    },
+    ...TouchableWithoutFeedback.propTypes,
+    activeOpacity: PropTypes.number,
+    underlayColor: PropTypes.string,
+    style: PropTypes.object,
+    onShowUnderlay: PropTypes.func,
+    onHideUnderlay: PropTypes.func,
   };
 
   // Copied from RN
