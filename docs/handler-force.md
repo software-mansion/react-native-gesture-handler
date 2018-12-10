@@ -34,6 +34,12 @@ See [set of event attributes from base handler class](handler-common.md#event-da
 The pressure of touch.
 
 
+## Static method
+
+---
+### `isAvailable`
+You may check if it's possible to use `ForceTouchGestureHandler` with `ForceTouchGestureHandler.isAvailable()`
+
 ## Example
 
 See the [force touch handler example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/forcetouch/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).

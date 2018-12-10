@@ -423,6 +423,9 @@ const ForceTouchGestureHandler =
       )
     : AndroidForceTouchFallback;
 
+ForceTouchGestureHandler.isAvailable =
+  NativeModules.PlatformConstants.forceTouchAvailable || false;
+
 const LongPressGestureHandler = createHandler(
   'LongPressGestureHandler',
   {
