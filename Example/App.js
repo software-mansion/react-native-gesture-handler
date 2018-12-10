@@ -19,6 +19,7 @@ import ChatHeads from './chatHeads';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
 import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
+import forceTouch from './forcetouch';
 
 YellowBox.ignoreWarnings([
   'Warning: isMounted(...) is deprecated',
@@ -71,6 +72,10 @@ const SCREENS = {
   doubleDraggable: {
     screen: doubleDraggable,
     title: 'Two handlers simultaneously',
+  },
+  forceTouch: {
+    screen: forceTouch,
+    title: 'Force touch',
   },
 };
 

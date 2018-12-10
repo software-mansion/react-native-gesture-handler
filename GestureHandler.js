@@ -409,11 +409,19 @@ const FlingGestureHandler = createHandler(
   {}
 );
 
-const ForceTouchGestureHandler = createHandler(
-  'ForceTouchGestureHandler',
-  {},
-  {}
-);
+const AndroidForceTouchFallback = props => props.children;
+
+const ForceTouchGestureHandler =
+  Platform.OS === 'ios'
+    ? createHandler(
+        'ForceTouchGestureHandler',
+        {
+          minForce: PropTypes.number,
+          maxForce: PropTypes.number,
+        },
+        {}
+      )
+    : AndroidForceTouchFallback;
 
 const LongPressGestureHandler = createHandler(
   'LongPressGestureHandler',
