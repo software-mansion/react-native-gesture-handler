@@ -5,7 +5,6 @@ import {
   TouchableNativeFeedback as RNTouchableNativeFeedback,
   TouchableWithoutFeedback as RNTouchableWithoutFeedback,
   View,
-  ScrollView,
   Text,
   StyleSheet,
   FlatList,
