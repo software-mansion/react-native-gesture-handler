@@ -58,11 +58,11 @@
 }
 
 - (BOOL) shouldActivate {
-  return (_force > _minForce);
+  return (_force >= _minForce);
 }
 
 - (BOOL) shouldFail {
-  return (_maxForce != NAN && _force > _maxForce);
+  return (_maxForce != NAN && _force >= _maxForce);
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
