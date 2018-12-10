@@ -35,6 +35,11 @@ Install dependencies with the following command:
 yarn install
 ```
 
+Run development server:
+```bash
+yarn start
+```
+
 Finally run one of the commands below in order to build, install and launch the app on Android:
 ```bash
 react-native run-android
