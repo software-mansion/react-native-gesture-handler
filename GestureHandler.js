@@ -418,6 +418,7 @@ const ForceTouchGestureHandler =
         {
           minForce: PropTypes.number,
           maxForce: PropTypes.number,
+          feedbackOnActivation: PropTypes.boolean,
         },
         {}
       )

@@ -36,7 +36,7 @@ export default class Example extends Component {
           </Text>
         )}
         <ForceTouchGestureHandler
-          minForce={0}
+          feedbackOnActivation
           onGestureEvent={this._onGestureEvent}
           onHandlerStateChange={this._onHandlerStateChange}>
           <Animated.View

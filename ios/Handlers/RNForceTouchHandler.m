@@ -9,6 +9,7 @@
 @property (nonatomic) CGFloat maxForce;
 @property (nonatomic) CGFloat minForce;
 @property (nonatomic) CGFloat force;
+@property (nonatomic) BOOL feedbackOnActivation;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
@@ -27,6 +28,7 @@
     _force = 0;
     _minForce = 0.2;
     _maxForce = NAN;
+    _feedbackOnActivation = NO;
   }
   return self;
 }
@@ -53,6 +55,7 @@
   
   [self handleForceWithTouches:touches];
   if (self.state == UIGestureRecognizerStatePossible && [self shouldActivate]) {
+    [self performFeedbackIfNeeded];
     self.state = UIGestureRecognizerStateBegan;
   }
 }
@@ -63,6 +66,13 @@
 
 - (BOOL) shouldFail {
   return (_maxForce != NAN && _force > _maxForce);
+}
+
+- (void)performFeedbackIfNeeded
+{
+  if (_feedbackOnActivation) {
+    [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
+  }
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -108,6 +118,11 @@
 
   APPLY_FLOAT_PROP(maxForce);
   APPLY_FLOAT_PROP(minForce);
+  id prop = config[@"feedbackOnActivation"];
+  if (prop != nil) {
+    recognizer.feedbackOnActivation = [RCTConvert BOOL:prop];
+  }
+  
 }
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(RNForceTouchGestureRecognizer *)recognizer
