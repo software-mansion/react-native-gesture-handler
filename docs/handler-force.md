@@ -25,6 +25,10 @@ A minimal pressure that is required before handler can [activate](state.md#activ
 ### `maxForce`
 A maximal pressure that could be applied for handler. If the pressure is greater, handler [fails](state.md#failed). Should be a value from range `[0.0, 1.0]`.
 
+---
+### `feedbackOnActivation`
+Boolean value defining if haptic feedback has to be performed on activation.
+
 
 ## Event data
 See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `ForceTouchGestureHandler`:

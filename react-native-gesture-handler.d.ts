@@ -253,6 +253,7 @@ declare module 'react-native-gesture-handler' {
   export interface ForceTouchGestureHandlerProperties extends GestureHandlerProperties {
     minForce?: number,
     maxForce?: number,
+    feedbackOnActivation?: boolean,
     onGestureEvent?: (event: ForceTouchGestureHandlerGestureEvent) => void;
     onHandlerStateChange?: (event: ForceTouchGestureHandlerStateChangeEvent) => void;
   }
