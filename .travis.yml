@@ -4,18 +4,6 @@ env:
 
 matrix:
   include:
-    - language: android
-      jdk: oraclejdk8
-      android:
-        components:
-        - tools
-        - android-25
-        - build-tools-25.0.3
-      install:
-      - FORCE_BUNDLING=1 detox build --configuration android.emu.debug
-      script:
-      - detox test -d --no-color --configuration android.emu.debug --cleanup
-
     - language: objective-c
       osx_image: xcode9
       xcode_sdk: iphonesimulator11.3
@@ -46,7 +34,7 @@ matrix:
       - cd Example
       - yarn
       - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
-      - FORCE_BUNDLING=1 detox build --configuration ios.sim.debug
+      - FORCE_BUNDLING=1 detox build --configuration ios.sim.debug > /dev/null
 
       script:
       - detox test -d --no-color --configuration ios.sim.debug --cleanup
