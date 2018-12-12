@@ -40,7 +40,7 @@
     "runner-config": "test/e2e/config.json",
     "configurations": {
       "ios.sim.debug": {
-        "binaryPath": "./ios/build/Build/Products/Release-iphonesimulator/GestureHandler.app",
+        "binaryPath": "./ios/build/Build/Products/Debug-iphonesimulator/GestureHandler.app",
         "build": "xcodebuild -project ./ios/GestureHandler.xcodeproj -scheme GestureHandler -configuration Debug -sdk iphonesimulator -derivedDataPath ./ios/build",
         "type": "ios.simulator",
         "name": "iPhone 7"
