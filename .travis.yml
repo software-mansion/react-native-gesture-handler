@@ -1,3 +1,7 @@
+env:
+  global:
+  - NODE_VERSION=10.11.0
+
 matrix:
   include:
     - language: objective-c
@@ -9,16 +13,13 @@ matrix:
         only:
         - master
 
-      env:
-        global:
-        - NODE_VERSION=10.11.0
-
       cache: yarn
 
       install:
       - brew update
       - sudo launchctl limit maxfiles 2048 unlimited
       - sudo ulimit -n 10000
+      - echo $NODE_VERSION
       - brew tap wix/brew
       - brew install applesimutils
       - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
