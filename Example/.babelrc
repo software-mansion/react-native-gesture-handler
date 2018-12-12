@@ -1,8 +1,8 @@
 {
   "presets": [
-    ["@babel/preset-env", {
+/*    ["@babel/preset-env", {
       "useBuiltIns": false
-    }],
+    }],*/
     "module:metro-react-native-babel-preset"
   ],
   "plugins": [
