@@ -35,4 +35,4 @@ install:
 script:
 - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 - FORCE_BUNDLING=1 detox build --configuration ios.sim.debug
-- detox test -d --no-color --configuration ios.sim.debug --cleanup
+- detox test -d --no-color --configuration ios.sim.debug
