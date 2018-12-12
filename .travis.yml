@@ -12,14 +12,14 @@ matrix:
       - $HOME/.yarn-cache
       - $HOME/.gradle/caches/
       - $HOME/.gradle/wrapper/
-
-    components:
-    - tools
-    - platform-tools
-    - build-tools-26.0.3
-    - tools
-    - android-26
-    - sys-img-x86-android-26
+    android:
+      components:
+      - tools
+      - platform-tools
+      - build-tools-26.0.3
+      - tools
+      - android-26
+      - sys-img-x86-android-26
 
     install:
     - nvm install $NODE_VERSION
