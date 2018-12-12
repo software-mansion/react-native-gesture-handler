@@ -1,38 +1,37 @@
-language: objective-c
-osx_image: xcode9
-xcode_sdk: iphonesimulator11.3
-xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
+matrix:
+  include:
+  - language: objective-c
+    osx_image: xcode9
+    xcode_sdk: iphonesimulator11.3
+    xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
+    env: NODE_VERSION=10.11.0
 
-branches:
-  only:
-  - master
-  - first-tests
+    branches:
+      only:
+      - master
 
-env:
-  global:
-  - NODE_VERSION=10.11.0
+    cache: yarn
 
-cache: yarn
+    install:
+    - echo $NODE_VERSION
+    - brew update
+    - sudo launchctl limit maxfiles 2048 unlimited
+    - sudo ulimit -n 10000
+    - brew tap wix/brew
+    - brew install applesimutils
+    - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+    - export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+    - nvm install $NODE_VERSION
+    - nvm use $NODE_VERSION
+    - echo `node --version`
+    - nvm alias default $NODE_VERSION
+    - brew install yarn --without-node
+    - npm install -g react-native-cli
+    - npm install -g detox-cli
+    - cd Example
+    - yarn
+    - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
+    - FORCE_BUNDLING=1 detox build --configuration ios.sim.debug > /dev/null
 
-install:
-- brew update
-- sudo launchctl limit maxfiles 2048 unlimited
-- sudo ulimit -n 10000
-- brew tap wix/brew
-- brew install applesimutils
-- curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-- export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-- nvm install $NODE_VERSION
-- nvm use $NODE_VERSION
-- echo `node --version`
-- nvm alias default $NODE_VERSION
-- brew install yarn --without-node
-- npm install -g react-native-cli
-- npm install -g detox-cli
-- cd Example
-- yarn
-- export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
-- FORCE_BUNDLING=1 detox build --configuration ios.sim.debug > /dev/null
-
-script:
-- detox test -d --no-color --configuration ios.sim.debug --cleanup
+    script:
+    - detox test -d --no-color --configuration ios.sim.debug --cleanup
