@@ -21,12 +21,10 @@ matrix:
       - sys-img-armeabi-v7a-android-24
 
     install:
-    - yes | sdkmanager "platforms;android-24"
-    - yes | sdkmanager "platforms;android-25"
     - yes | sdkmanager "platforms;android-26"
     - android list targets
     - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a
-    - emulator -avd test -no-window -memory 2048 -wipe-data -partition-size 2048 &
+    - emulator -avd test -wipe-data &
     - android-wait-for-emulator
     - adb shell input keyevent 82 &
     - nvm install $NODE_VERSION
