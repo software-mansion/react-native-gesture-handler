@@ -30,6 +30,7 @@ matrix:
     - npm install -g detox-cli
     - cd Example
     - yarn
+    - echo yes | sdkmanager "platforms;android-26"
     - FORCE_BUNDLING=1 detox build --configuration android.emu.debug
 
     script:
