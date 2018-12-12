@@ -1,5 +1,41 @@
 matrix:
   include:
+  - language: android
+    sudo: required
+    jdk: oraclejdk8
+    env: NODE_VERSION=10.11.0
+    before_cache:
+    - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+    - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+    cache:
+      directories:
+      - $HOME/.yarn-cache
+      - $HOME/.gradle/caches/
+      - $HOME/.gradle/wrapper/
+
+    components:
+    - tools
+    - platform-tools
+    - build-tools-26.0.3
+    - tools
+    - android-26
+
+    install:
+    - nvm install $NODE_VERSION
+    - nvm use $NODE_VERSION
+    - nvm alias default $NODE_VERSION
+    - node --version
+    - npm install -g yarn
+    - npm install -g react-native-cli
+    - npm install -g detox-cli
+    - cd Example
+    - yarn
+    - FORCE_BUNDLING=1 detox build --configuration android.emu.debug
+
+    script:
+    - detox test -d --no-color --configuration android.emu.debug --cleanup
+
+
   - language: objective-c
     osx_image: xcode9
     xcode_sdk: iphonesimulator11.3
@@ -13,6 +49,7 @@ matrix:
     cache: yarn
 
     install:
+    - nvm --version
     - echo $NODE_VERSION
     - brew update
     - sudo launchctl limit maxfiles 2048 unlimited
