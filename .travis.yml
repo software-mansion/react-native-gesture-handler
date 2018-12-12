@@ -25,6 +25,7 @@ install:
 - nvm install $NODE_VERSION
 - nvm use $NODE_VERSION
 - echo `node --version`
+- nvm alias default $NODE_VERSION
 - brew install yarn --without-node
 - npm install -g react-native-cli
 - npm install -g detox-cli
