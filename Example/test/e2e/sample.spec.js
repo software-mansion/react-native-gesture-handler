@@ -3,6 +3,6 @@ describe('Example', () => {
     await device.reloadReactNative();
   });
   it('should pass', async () => {
-    await expect(element(by.id('nie ma'))).toNotExist();
+    await expect(element(by.text('Scale, rotate & tilt & more'))).toExist();
   });
 });
