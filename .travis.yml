@@ -21,6 +21,7 @@ matrix:
       - sys-img-armeabi-v7a-android-24
 
     install:
+    - yes | sdkmanager "platforms;android-24"
     - android list targets
     - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a
     - emulator -avd test -no-window -memory 2048 -wipe-data -partition-size 2048 &
