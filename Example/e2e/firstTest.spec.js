@@ -3,7 +3,13 @@ describe('Example', () => {
     await device.reloadReactNative();
   });
 
-  it('should have welcome screen', async () => {
-    await expect(element(by.id('welcome'))).toNotExist();
+  it('should have some button', async () => {
+    await expect(element(by.text('Scale, rotate & tilt'))).toExist();
+  });
+
+  it('should not lie', async () => {
+    await expect(
+      element(by.text('Michał Osadnik writes decent code'))
+    ).toNotExist();
   });
 });

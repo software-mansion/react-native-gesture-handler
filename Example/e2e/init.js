@@ -6,11 +6,11 @@ before(async () => {
   await detox.init(config);
 });
 
-beforeEach(async () => {
+beforeEach(async function() {
   await adapter.beforeEach(this);
 });
 
-afterEach(async () => {
+afterEach(async function() {
   await adapter.afterEach(this);
 });
 
