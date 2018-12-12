@@ -301,7 +301,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     this._panGestureHandler.current &&
       this._panGestureHandler.current.setNativeProps({
         hitSlop,
-        minOffsetX: gestureOrientation * minSwipeDistance,
+        activeOffsetX: gestureOrientation * minSwipeDistance,
       });
   };
 
@@ -496,8 +496,8 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       <PanGestureHandler
         ref={this._setPanGestureRef}
         hitSlop={hitSlop}
-        minOffsetX={gestureOrientation * minSwipeDistance}
-        maxDeltaY={15}
+        activeOffsetX={gestureOrientation * minSwipeDistance}
+        failOffsetY={[-15, 15]}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._openingHandlerStateChange}
         enabled={
