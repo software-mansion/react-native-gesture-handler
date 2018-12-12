@@ -18,7 +18,9 @@
     "preset": "react-native"
   },
   "devDependencies": {
-    "babel-jest": "23.6.0",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/runtime": "^7.2.0",
     "mocha": "^5.2.0",
     "detox": "^9.0.4",
     "jest": "23.6.0",
@@ -34,6 +36,12 @@
         "build": "xcodebuild -project ./ios/GestureHandler.xcodeproj -scheme GestureHandler -configuration Debug -sdk iphonesimulator -derivedDataPath ./ios/build",
         "type": "ios.simulator",
         "name": "iPhone 7"
+      },
+      "android.emu.debug": {
+        "binaryPath": "./android/app/build/outputs/apk/debug/app-debug.apk",
+        "build": "cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
+        "type": "android.emulator",
+        "name": "Nexus_5X_API_26"
       }
     }
   }
