@@ -95,11 +95,11 @@
   }
 }
 
-- (void) handleForceWithTouches:(NSSet<UITouch *> *)touches {
+- (void)handleForceWithTouches:(NSSet<UITouch *> *)touches {
   _force = _firstTouch.force / _firstTouch.maximumPossibleForce;
 }
 
-- (void) reset {
+- (void)reset {
   [super reset];
   _force = 0;
   _firstTouch = NULL;
