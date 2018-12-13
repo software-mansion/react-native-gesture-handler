@@ -1,1 +1,1 @@
---recursive --timeout 120000 --bail
+--recursive --timeout 240000 --bail
