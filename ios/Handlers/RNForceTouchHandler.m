@@ -35,6 +35,10 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  if (_firstTouch) {
+    // ignore rest of fingers
+    return;
+  }
   [super touchesBegan:touches withEvent:event];
   _firstTouch = [touches anyObject];
   [self handleForceWithTouches:touches];
@@ -42,20 +46,22 @@
 }
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  if (![touches containsObject:_firstTouch]) {
+    // We're interested only on the very first touch
+    return;
+  }
   [super touchesMoved:touches withEvent:event];
+  
+  [self handleForceWithTouches:touches];
+  
   if ([self shouldFail]) {
     self.state = UIGestureRecognizerStateFailed;
     return;
   }
   
-  if (![touches containsObject:_firstTouch] && self.state == UIGestureRecognizerStateBegan){
-    self.state = UIGestureRecognizerStateEnded;
-    return;
-  }
   
-  [self handleForceWithTouches:touches];
   if (self.state == UIGestureRecognizerStatePossible && [self shouldActivate]) {
-    [self performFeedbackIfNeeded];
+    [self performFeedbackIfRequired];
     self.state = UIGestureRecognizerStateBegan;
   }
 }
@@ -68,7 +74,7 @@
   return (_maxForce != NAN && _force > _maxForce);
 }
 
-- (void)performFeedbackIfNeeded
+- (void)performFeedbackIfRequired
 {
   if (_feedbackOnActivation) {
     [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
@@ -77,6 +83,10 @@
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  if (![touches containsObject:_firstTouch]) {
+    // We're interested only on the very first touch
+    return;
+  }
   [super touchesEnded:touches withEvent:event];
   if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
     self.state = UIGestureRecognizerStateEnded;
@@ -86,17 +96,13 @@
 }
 
 - (void) handleForceWithTouches:(NSSet<UITouch *> *)touches {
-  if ([touches count] != 1) {
-    self.state = UIGestureRecognizerStateFailed;
-    return;
-  }
-
   self.force=_firstTouch.force / _firstTouch.maximumPossibleForce;
 }
 
 -(void) reset {
   [super reset];
   self.force = 0;
+  _firstTouch = NULL;
 }
 @end
 
@@ -115,7 +121,7 @@
   [super configure:config];
   RNForceTouchGestureRecognizer *recognizer = (RNForceTouchGestureRecognizer *)_recognizer;
   
-
+  
   APPLY_FLOAT_PROP(maxForce);
   APPLY_FLOAT_PROP(minForce);
   id prop = config[@"feedbackOnActivation"];
