@@ -21,13 +21,13 @@ install:
 - nvm use $NODE_VERSION
 - echo `node --version`
 - nvm alias default $NODE_VERSION
-- brew install yarn --without-node
+- npm i -g yarn
 - npm install -g react-native-cli
 - npm install -g detox-cli
 - cd Example
 - yarn
 - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
-- FORCE_BUNDLING=1 detox build --configuration ios.sim.debug > /dev/null
+- detox build --configuration ios.sim.debug > /dev/null
 
 script:
 - detox test -d --no-color --configuration ios.sim.debug --cleanup
