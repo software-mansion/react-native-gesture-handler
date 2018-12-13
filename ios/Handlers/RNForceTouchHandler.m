@@ -66,11 +66,11 @@
   }
 }
 
-- (BOOL) shouldActivate {
+- (BOOL)shouldActivate {
   return (_force >= _minForce);
 }
 
-- (BOOL) shouldFail {
+- (BOOL)shouldFail {
   return TEST_MAX_IF_NOT_NAN(_force, _maxForce);
 }
 
@@ -96,12 +96,12 @@
 }
 
 - (void) handleForceWithTouches:(NSSet<UITouch *> *)touches {
-  self.force=_firstTouch.force / _firstTouch.maximumPossibleForce;
+  _force = _firstTouch.force / _firstTouch.maximumPossibleForce;
 }
 
 - (void) reset {
   [super reset];
-  self.force = 0;
+  _force = 0;
   _firstTouch = NULL;
 }
 

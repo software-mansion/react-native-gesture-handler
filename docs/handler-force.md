@@ -41,8 +41,8 @@ The pressure of a touch.
 ## Static method
 
 ---
-### `isAvailable`
-You may check if it's possible to use `ForceTouchGestureHandler` with `ForceTouchGestureHandler.isAvailable()`
+### `forceTouchAvailable`
+You may check if it's possible to use `ForceTouchGestureHandler` with `ForceTouchGestureHandler.forceTouchAvailable`
 
 ## Example
 

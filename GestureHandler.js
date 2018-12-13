@@ -424,7 +424,7 @@ const ForceTouchGestureHandler =
       )
     : ForceTouchFallback;
 
-ForceTouchGestureHandler.isAvailable =
+ForceTouchGestureHandler.forceTouchAvailable =
   NativeModules.PlatformConstants.forceTouchAvailable || false;
 
 const LongPressGestureHandler = createHandler(
