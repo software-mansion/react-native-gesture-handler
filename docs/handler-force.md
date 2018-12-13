@@ -19,7 +19,7 @@ See [set of properties inherited from base handler class](handler-common.md#prop
 
 ---
 ### `minForce`
-A minimal pressure that is required before handler can [activate](state.md#active). Should be a value from range `[0.0, 1.0]`.
+A minimal pressure that is required before handler can [activate](state.md#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
 
 ---
 ### `maxForce`
