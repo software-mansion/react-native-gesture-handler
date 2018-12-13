@@ -1,77 +1,36 @@
-matrix:
-  include:
-  - language: android
-    sudo: required
-    jdk: oraclejdk8
-    env: NODE_VERSION=10.11.0
-    before_cache:
-    - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-    - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
-    cache:
-      directories:
-      - $HOME/.yarn-cache
-      - $HOME/.gradle/caches/
-      - $HOME/.gradle/wrapper/
-    android:
-      components:
-      - tools
-      - platform-tools
-      - build-tools-27.0.3
-      - android-24
-      - sys-img-armeabi-v7a-android-24
+language: objective-c
+osx_image: xcode9
+xcode_sdk: iphonesimulator11.3
+xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
+env: NODE_VERSION=10.11.0
 
-    install:
-    - yes | sdkmanager "platforms;android-26"
-    - android list targets
-    - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a
-    - nvm install $NODE_VERSION
-    - nvm use $NODE_VERSION
-    - nvm alias default $NODE_VERSION
-    - node --version
-    - npm install -g yarn
-    - npm install -g react-native-cli
-    - npm install -g detox-cli
-    - cd Example
-    - yarn
-    - FORCE_BUNDLING=1 detox build --configuration android.emu.debug
+branches:
+  only:
+  - master
 
-    script:
-    - detox test -d --no-color --configuration android.emu.debug --cleanup
+cache: yarn
 
+install:
+- nvm --version
+- echo $NODE_VERSION
+- brew update
+- sudo launchctl limit maxfiles 2048 unlimited
+- sudo ulimit -n 10000
+- brew tap wix/brew
+- brew install applesimutils
+- nvm install $NODE_VERSION
+- nvm use $NODE_VERSION
+- echo `node --version`
+- nvm alias default $NODE_VERSION
+- brew install yarn --without-node
+- npm install -g react-native-cli
+- npm install -g detox-cli
+- yarn
+- cd Example
+- yarn
+- yarn start
+- export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
+- FORCE_BUNDLING=1 detox build --configuration ios.sim.debug > /dev/null
 
-  - language: objective-c
-    osx_image: xcode9
-    xcode_sdk: iphonesimulator11.3
-    xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
-    env: NODE_VERSION=10.11.0
-
-    branches:
-      only:
-      - master
-
-    cache: yarn
-
-    install:
-    - nvm --version
-    - echo $NODE_VERSION
-    - brew update
-    - sudo launchctl limit maxfiles 2048 unlimited
-    - sudo ulimit -n 10000
-    - brew tap wix/brew
-    - brew install applesimutils
-    - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-    - export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-    - nvm install $NODE_VERSION
-    - nvm use $NODE_VERSION
-    - echo `node --version`
-    - nvm alias default $NODE_VERSION
-    - brew install yarn --without-node
-    - npm install -g react-native-cli
-    - npm install -g detox-cli
-    - cd Example
-    - yarn
-    - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
-    - FORCE_BUNDLING=1 detox build --configuration ios.sim.debug > /dev/null
-
-    script:
-    - detox test -d --no-color --configuration ios.sim.debug --cleanup
+script:
+- detox test -d --no-color --configuration ios.sim.debug --cleanup
