@@ -473,7 +473,6 @@ export default class DrawerLayout extends Component<PropType, StateType> {
   render() {
     const {
       drawerPosition,
-      drawerType,
       drawerLockMode,
       edgeWidth,
       minSwipeDistance,
