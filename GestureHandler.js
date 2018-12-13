@@ -4,7 +4,6 @@ import {
   requireNativeComponent,
   Animated,
   NativeModules,
-  Text,
   ScrollView,
   Slider,
   Switch,
@@ -410,11 +409,14 @@ const FlingGestureHandler = createHandler(
   {}
 );
 
-const ForceTouchFallback = props => (
-  <Text style={{ color: 'red' }}>
-    Force Touch is not available on this platform
-  </Text>
-);
+class ForceTouchFallback extends React.Component {
+  componentDidMount() {
+    console.warn('Force Touch is not available on this platform');
+  }
+  render() {
+    return this.props.children;
+  }
+}
 
 const ForceTouchGestureHandler = NativeModules.PlatformConstants
   .forceTouchAvailable
