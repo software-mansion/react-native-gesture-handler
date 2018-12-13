@@ -13,7 +13,6 @@ cache: yarn
 install:
 - nvm --version
 - echo $NODE_VERSION
-- brew update
 - sudo launchctl limit maxfiles 2048 unlimited
 - sudo ulimit -n 10000
 - brew tap wix/brew
