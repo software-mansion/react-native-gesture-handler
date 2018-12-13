@@ -409,7 +409,7 @@ const FlingGestureHandler = createHandler(
   {}
 );
 
-const AndroidForceTouchFallback = props => props.children;
+const ForceTouchFallback = props => props.children;
 
 const ForceTouchGestureHandler =
   Platform.OS === 'ios'
@@ -422,7 +422,7 @@ const ForceTouchGestureHandler =
         },
         {}
       )
-    : AndroidForceTouchFallback;
+    : ForceTouchFallback;
 
 ForceTouchGestureHandler.isAvailable =
   NativeModules.PlatformConstants.forceTouchAvailable || false;
