@@ -71,7 +71,7 @@
 }
 
 - (BOOL) shouldFail {
-  return (_maxForce != NAN && _force > _maxForce);
+  return TEST_MAX_IF_NOT_NAN(_force, _maxForce);
 }
 
 - (void)performFeedbackIfRequired
