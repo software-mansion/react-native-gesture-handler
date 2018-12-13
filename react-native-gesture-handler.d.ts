@@ -84,6 +84,14 @@ declare module 'react-native-gesture-handler' {
     absoluteY: number;
   }
 
+  interface ForceTouchGestureHandlerEventExtra {
+    x: number;
+    y: number;
+    absoluteX: number;
+    absoluteY: number;
+    force: number;
+  }
+
   export interface TapGestureHandlerStateChangeEvent
     extends GestureHandlerStateChangeEvent {
     nativeEvent: GestureHandlerStateChangeNativeEvent &
@@ -96,10 +104,22 @@ declare module 'react-native-gesture-handler' {
       TapGestureHandlerEventExtra;
   }
 
+  export interface ForceTouchGestureHandlerGestureEvent
+    extends GestureHandlerGestureEvent {
+    nativeEvent: GestureHandlerGestureEventNativeEvent &
+      ForceTouchGestureHandlerEventExtra;
+  }
+
   export interface LongPressGestureHandlerStateChangeEvent
     extends GestureHandlerStateChangeEvent {
     nativeEvent: GestureHandlerStateChangeNativeEvent &
       LongPressGestureHandlerEventExtra;
+  }
+
+  export interface ForceTouchGestureHandlerStateChangeEvent
+    extends GestureHandlerStateChangeEvent {
+    nativeEvent: GestureHandlerStateChangeNativeEvent &
+      ForceTouchGestureHandlerEventExtra;
   }
 
   interface LongPressGestureHandlerEventExtra {
@@ -230,6 +250,14 @@ declare module 'react-native-gesture-handler' {
     onHandlerStateChange?: (event: TapGestureHandlerStateChangeEvent) => void;
   }
 
+  export interface ForceTouchGestureHandlerProperties extends GestureHandlerProperties {
+    minForce?: number,
+    maxForce?: number,
+    feedbackOnActivation?: boolean,
+    onGestureEvent?: (event: ForceTouchGestureHandlerGestureEvent) => void;
+    onHandlerStateChange?: (event: ForceTouchGestureHandlerStateChangeEvent) => void;
+  }
+
   export interface LongPressGestureHandlerProperties
     extends GestureHandlerProperties {
     minDurationMs?: number;
@@ -318,6 +346,10 @@ declare module 'react-native-gesture-handler' {
     FlingGestureHandlerProperties
   > {}
 
+  export class ForceTouchGestureHandler extends React.Component<
+    ForceTouchGestureHandlerProperties
+  > {}
+
   /* BUTTONS PROPERTIES */
 
   export interface RawButtonProperties
@@ -400,7 +432,7 @@ declare module 'react-native-gesture-handler' {
 
 declare module 'react-native-gesture-handler/Swipeable' {
   import { Animated } from 'react-native';
-  
+
   interface SwipeableProperties {
     friction?: number;
     leftThreshold?: number;
@@ -455,11 +487,11 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
     statusBarAnimation?: StatusBarAnimation;
     overlayColor?: string;
   }
-  
+
   interface DrawerMovementOptionType {
     velocity?: number;
   }
-  
+
   export default class DrawerLayout extends React.Component<DrawerLayoutProperties> {
     openDrawer: (options?: DrawerMovementOptionType) => void;
     closeDrawer: (options?: DrawerMovementOptionType) => void;

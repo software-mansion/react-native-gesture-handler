@@ -409,6 +409,31 @@ const FlingGestureHandler = createHandler(
   {}
 );
 
+class ForceTouchFallback extends React.Component {
+  componentDidMount() {
+    console.warn('ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase');
+  }
+  render() {
+    return this.props.children;
+  }
+}
+
+const ForceTouchGestureHandler = NativeModules.PlatformConstants
+  .forceTouchAvailable
+  ? createHandler(
+      'ForceTouchGestureHandler',
+      {
+        minForce: PropTypes.number,
+        maxForce: PropTypes.number,
+        feedbackOnActivation: PropTypes.bool,
+      },
+      {}
+    )
+  : ForceTouchFallback;
+
+ForceTouchGestureHandler.forceTouchAvailable =
+  NativeModules.PlatformConstants.forceTouchAvailable || false;
+
 const LongPressGestureHandler = createHandler(
   'LongPressGestureHandler',
   {
@@ -885,6 +910,7 @@ export {
   NativeViewGestureHandler,
   TapGestureHandler,
   FlingGestureHandler,
+  ForceTouchGestureHandler,
   LongPressGestureHandler,
   PanGestureHandler,
   PinchGestureHandler,
