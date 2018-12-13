@@ -25,14 +25,29 @@ In order to run example app you need to clone the repo first:
 git clone git@github.com:kmagiera/react-native-gesture-handler.git
 ```
 
-Then go tp the `Example/` folder:
+Then go to the library folder:
 ```bash
-cd react-native-gesture-handler/Example
+cd react-native-gesture-handler/
 ```
 
-Install dependencies with the following command:
+Install dependencies of library with the following command:
 ```bash
-yarn install
+yarn
+```
+
+Then go to the `Example` folder:
+```bash
+cd Example
+```
+
+Install dependencies of example with the following command:
+```bash
+yarn
+```
+
+Run development server:
+```bash
+yarn start
 ```
 
 Finally run one of the commands below in order to build, install and launch the app on Android:
