@@ -47,7 +47,7 @@
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (![touches containsObject:_firstTouch]) {
-    // We're interested only on the very first touch
+    // Considered only the very first touch
     return;
   }
   [super touchesMoved:touches withEvent:event];
@@ -84,7 +84,7 @@
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (![touches containsObject:_firstTouch]) {
-    // We're interested only on the very first touch
+    // Considered only the very first touch
     return;
   }
   [super touchesEnded:touches withEvent:event];
