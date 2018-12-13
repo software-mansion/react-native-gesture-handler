@@ -410,22 +410,24 @@ const FlingGestureHandler = createHandler(
   {}
 );
 
-const ForceTouchFallback = props => props.children;
+const ForceTouchFallback = props => (
+  <Text style={{ color: 'red' }}>
+    Force Touch is not available on this platform
+  </Text>
+);
 
 const ForceTouchGestureHandler = NativeModules.PlatformConstants
-  .forceTouchAvailable ? (
-  createHandler(
-    'ForceTouchGestureHandler',
-    {
-      minForce: PropTypes.number,
-      maxForce: PropTypes.number,
-      feedbackOnActivation: PropTypes.bool,
-    },
-    {}
-  )
-) : (
-  <Text>Force Touch is not available on this platform</Text>
-);
+  .forceTouchAvailable
+  ? createHandler(
+      'ForceTouchGestureHandler',
+      {
+        minForce: PropTypes.number,
+        maxForce: PropTypes.number,
+        feedbackOnActivation: PropTypes.bool,
+      },
+      {}
+    )
+  : ForceTouchFallback;
 
 ForceTouchGestureHandler.forceTouchAvailable =
   NativeModules.PlatformConstants.forceTouchAvailable || false;
