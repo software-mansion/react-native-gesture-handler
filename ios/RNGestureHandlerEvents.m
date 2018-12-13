@@ -49,7 +49,6 @@
                         withAbsolutePosition:(CGPoint)absolutePosition
                          withNumberOfTouches:(NSUInteger)numberOfTouches
 {
-  {
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{
                            @"x": @(position.x),
@@ -58,7 +57,6 @@
                            @"absoluteY": @(absolutePosition.y),
                            @"force": @(force),
                            @"numberOfPointers": @(numberOfTouches)}];
-  }
   
 }
 
