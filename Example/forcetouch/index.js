@@ -30,11 +30,6 @@ export default class Example extends Component {
           Force touch works only on some Apple devices (iPhones 6s+ excluding
           XR) and should be used only as a supportive one{' '}
         </Text>
-        {ForceTouchGestureHandler.isAvailable || (
-          <Text style={{ textAlign: 'center', width: '80%' }}>
-            NOT SUPPORTED ON THIS DEVICE
-          </Text>
-        )}
         <ForceTouchGestureHandler
           feedbackOnActivation
           onGestureEvent={this._onGestureEvent}

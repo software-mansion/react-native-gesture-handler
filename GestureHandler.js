@@ -4,6 +4,7 @@ import {
   requireNativeComponent,
   Animated,
   NativeModules,
+  Text,
   ScrollView,
   Slider,
   Switch,
@@ -411,18 +412,20 @@ const FlingGestureHandler = createHandler(
 
 const ForceTouchFallback = props => props.children;
 
-const ForceTouchGestureHandler =
-  Platform.OS === 'ios'
-    ? createHandler(
-        'ForceTouchGestureHandler',
-        {
-          minForce: PropTypes.number,
-          maxForce: PropTypes.number,
-          feedbackOnActivation: PropTypes.bool,
-        },
-        {}
-      )
-    : ForceTouchFallback;
+const ForceTouchGestureHandler = NativeModules.PlatformConstants
+  .forceTouchAvailable ? (
+  createHandler(
+    'ForceTouchGestureHandler',
+    {
+      minForce: PropTypes.number,
+      maxForce: PropTypes.number,
+      feedbackOnActivation: PropTypes.bool,
+    },
+    {}
+  )
+) : (
+  <Text>Force Touch is not available on this platform</Text>
+);
 
 ForceTouchGestureHandler.forceTouchAvailable =
   NativeModules.PlatformConstants.forceTouchAvailable || false;
