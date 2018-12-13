@@ -13,14 +13,12 @@ cache: yarn
 install:
 - nvm --version
 - echo $NODE_VERSION
-- brew update
 - sudo launchctl limit maxfiles 2048 unlimited
 - sudo ulimit -n 10000
 - brew tap wix/brew
 - brew install applesimutils
 - nvm install $NODE_VERSION
 - nvm use $NODE_VERSION
-- echo `node --version`
 - nvm alias default $NODE_VERSION
 - brew install yarn --without-node
 - npm install -g react-native-cli
@@ -29,6 +27,8 @@ install:
 - yarn
 - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 - FORCE_BUNDLING=1 detox build --configuration ios.sim.debug > /dev/null
+- killall -9 node
+- yarn start
 
 script:
 - detox test -d --no-color --configuration ios.sim.debug --cleanup
