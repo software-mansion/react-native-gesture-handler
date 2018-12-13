@@ -44,6 +44,7 @@
   [self handleForceWithTouches:touches];
   self.state = UIGestureRecognizerStatePossible;
 }
+
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (![touches containsObject:_firstTouch]) {
@@ -58,7 +59,6 @@
     self.state = UIGestureRecognizerStateFailed;
     return;
   }
-  
   
   if (self.state == UIGestureRecognizerStatePossible && [self shouldActivate]) {
     [self performFeedbackIfRequired];
@@ -99,11 +99,12 @@
   self.force=_firstTouch.force / _firstTouch.maximumPossibleForce;
 }
 
--(void) reset {
+- (void) reset {
   [super reset];
   self.force = 0;
   _firstTouch = NULL;
 }
+
 @end
 
 @implementation RNForceTouchHandler
@@ -120,15 +121,14 @@
 {
   [super configure:config];
   RNForceTouchGestureRecognizer *recognizer = (RNForceTouchGestureRecognizer *)_recognizer;
-  
-  
+
   APPLY_FLOAT_PROP(maxForce);
   APPLY_FLOAT_PROP(minForce);
+
   id prop = config[@"feedbackOnActivation"];
   if (prop != nil) {
     recognizer.feedbackOnActivation = [RCTConvert BOOL:prop];
   }
-  
 }
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(RNForceTouchGestureRecognizer *)recognizer
