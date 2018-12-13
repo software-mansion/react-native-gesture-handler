@@ -398,6 +398,12 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     const drawerSlide = drawerType !== 'back';
     const containerSlide = drawerType !== 'front';
 
+    // we rely on row and row-reverse flex directions to position the drawer
+    // properly. Apparently for RTL these are flipped which requires us to use
+    // the opposite setting for the drawer to appear from left or right according
+    // to the drawerPosition prop
+    const reverseContentDirection = I18nManager.isRTL ? fromLeft : !fromLeft;
+
     const dynamicDrawerStyles = {
       backgroundColor: drawerBackgroundColor,
       width: drawerWidth,
@@ -428,11 +434,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     }
     const drawerStyles = {
       transform: [{ translateX: drawerTranslateX }],
-      flexDirection: (I18nManager.isRTL
-      ? !fromLeft
-      : fromLeft)
-        ? 'row'
-        : 'row-reverse',
+      flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
     };
 
     return (
