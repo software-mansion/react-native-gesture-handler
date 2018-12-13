@@ -46,6 +46,7 @@ module.exports = {
       'fbjs',
       'prop-types',
       'hoist-non-react-statics',
+      '@babel/runtime',
     ],
   },
   watchFolders: [path.resolve(__dirname, '..')],

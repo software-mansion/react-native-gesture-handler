@@ -25,10 +25,8 @@ install:
 - brew install yarn --without-node
 - npm install -g react-native-cli
 - npm install -g detox-cli
-- yarn
 - cd Example
 - yarn
-- yarn start
 - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 - FORCE_BUNDLING=1 detox build --configuration ios.sim.debug > /dev/null
 
