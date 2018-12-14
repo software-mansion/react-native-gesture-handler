@@ -249,9 +249,7 @@ public class GestureHandlerOrchestrator {
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
     int handlersCount = mGestureHandlersCount;
-    for (int i = 0; i < handlersCount; i++) {
-      mPreparedHandlers[i] = mGestureHandlers[i];
-    }
+    System.arraycopy(mGestureHandlers, 0, mPreparedHandlers, 0, handlersCount);
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
     // order in which handlers has been added ("most direct" children goes first). Therefore we rely
@@ -263,18 +261,7 @@ public class GestureHandlerOrchestrator {
     }
   }
 
-  public GestureHandler getLastActivatedHandler() {
-    GestureHandler result = null;
-    for (int i = 0; i < mGestureHandlersCount; i++) {
-      GestureHandler handler = mGestureHandlers[i];
-      if (handler.mIsActive && (result == null || result.mActivationIndex < handler.mActivationIndex)) {
-        result = handler;
-      }
-    }
-    return result;
-  }
-
-  public void cancelAll() {
+  private void cancelAll() {
     for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
       mAwaitingHandlers[i].cancel();
     }
@@ -298,7 +285,16 @@ public class GestureHandlerOrchestrator {
       return;
     }
     float[] coords = sTempCoords;
-    extractCoordsForView(handler.getView(), event, coords);
+    if (!extractCoordsForView(handler.getView(), event, coords)) {
+      if (!isFinished(handler.getState())) {
+        if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+          handler.end();
+        } else {
+          handler.fail();
+        }
+      }
+      return;
+    }
     float oldX = event.getX();
     float oldY = event.getY();
     // TODO: we may conside scaling events if necessary using MotionEvent.transform
@@ -321,21 +317,32 @@ public class GestureHandlerOrchestrator {
     }
   }
 
-  private void extractCoordsForView(View view, MotionEvent event, float[] outputCoords) {
+  /**
+   * extractCoordsForView performs extraction of coords fo event in rootView.
+   * In addition it checks whether all of parents for viw related to handler view are attached.
+   * Since there might be an issue rarely observed when view has been detached and handler's
+   * state hasn't been change to failed or ended yet. Probably it's a result of some race condition
+   * and stopping delivering for this handler and changing its state to failed of end appear
+   * to be good enough solution.
+   */
+  private boolean extractCoordsForView(View view, MotionEvent event, float[] outputCoords) {
     if (view == mWrapperView) {
       outputCoords[0] = event.getX();
       outputCoords[1] = event.getY();
-      return;
+      return false;
     }
     if (view == null || !(view.getParent() instanceof ViewGroup)) {
-      throw new IllegalArgumentException("Parent is null? View is no longer in the tree");
+      return false;
     }
     ViewGroup parent = (ViewGroup) view.getParent();
-    extractCoordsForView(parent, event, outputCoords);
+    if (!extractCoordsForView(parent, event, outputCoords)) {
+      return false;
+    }
     PointF childPoint = sTempPoint;
     isTransformedTouchPointInView(outputCoords[0], outputCoords[1], parent, view, childPoint);
     outputCoords[0] = childPoint.x;
     outputCoords[1] = childPoint.y;
+    return true;
   }
 
   private void addAwaitingHandler(GestureHandler handler) {
@@ -527,3 +534,4 @@ public class GestureHandlerOrchestrator {
             || state == GestureHandler.STATE_END;
   }
 }
+
