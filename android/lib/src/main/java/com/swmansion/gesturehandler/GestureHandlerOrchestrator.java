@@ -329,7 +329,7 @@ public class GestureHandlerOrchestrator {
     if (view == mWrapperView) {
       outputCoords[0] = event.getX();
       outputCoords[1] = event.getY();
-      return false;
+      return true;
     }
     if (view == null || !(view.getParent() instanceof ViewGroup)) {
       return false;
