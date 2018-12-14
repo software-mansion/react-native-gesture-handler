@@ -318,7 +318,7 @@ public class GestureHandlerOrchestrator {
   }
 
   /**
-   * extractCoordsForView performs extraction of coords fo event in rootView.
+   * extractCoordsForView performs extraction of coords for event in rootView.
    * In addition it checks whether all of parents for viw related to handler view are attached.
    * Since there might be an issue rarely observed when view has been detached and handler's
    * state hasn't been change to failed or ended yet. Probably it's a result of some race condition
