@@ -43,8 +43,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   public static final String MODULE_NAME = "RNGestureHandlerModule";
 
   private static final String KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside";
-  private static final String KEY_SEND_ON_MOVE_IN = "sendOnMoveIn";
-  private static final String KEY_SEND_ON_MOVE_OUT = "sendOnMoveOut";
   private static final String KEY_ENABLED = "enabled";
   private static final String KEY_HIT_SLOP = "hitSlop";
   private static final String KEY_HIT_SLOP_LEFT = "left";
@@ -437,11 +435,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void onStateChange(GestureHandler handler, int newState, int oldState) {
       RNGestureHandlerModule.this.onStateChange(handler, newState, oldState);
-    }
-
-    @Override
-    public void onPassBounds(GestureHandler handler, boolean isOutside) {
-      RNGestureHandlerModule.this.onPassBounds(handler, isOutside);
     }
   };
 
