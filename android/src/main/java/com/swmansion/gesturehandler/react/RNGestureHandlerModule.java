@@ -98,7 +98,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       if (config.hasKey(KEY_ENABLED)) {
         handler.setEnabled(config.getBoolean(KEY_ENABLED));
       }
-
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config);
       }
