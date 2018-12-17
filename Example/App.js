@@ -19,6 +19,7 @@ import ChatHeads from './chatHeads';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
 import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
+import forceTouch from './forcetouch';
 import touchales from './touchables';
 
 YellowBox.ignoreWarnings([
@@ -76,6 +77,10 @@ const SCREENS = {
   touchables: {
     screen: touchales,
     title: 'Touchables',
+  },
+  forceTouch: {
+    screen: forceTouch,
+    title: 'Force touch',
   },
 };
 

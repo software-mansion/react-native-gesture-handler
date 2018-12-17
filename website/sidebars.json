@@ -14,7 +14,8 @@
       "handler-longpress",
       "handler-rotation",
       "handler-fling",
-      "handler-pinch"
+      "handler-pinch",
+      "handler-force"
     ],
     "Components": ["component-buttons", "component-swipeable", "component-drawer-layout"],
     "Other": ["contributing", "troubleshooting", "resources", "credits"]

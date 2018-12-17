@@ -35,6 +35,8 @@
 		44BE34481F1E1AAA008679D1 /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */; };
 		44BE344A1F1E1ABA008679D1 /* RNGestureHandlerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 44BE34491F1E1ABA008679D1 /* RNGestureHandlerManager.h */; };
 		660F46742080D8F700B7B50D /* RNGestureHandlerDirection.h in Headers */ = {isa = PBXBuildFile; fileRef = 660F46732080D8F600B7B50D /* RNGestureHandlerDirection.h */; };
+		668E083C21BDD70900EDDF40 /* RNForceTouchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E083A21BDD70900EDDF40 /* RNForceTouchHandler.h */; };
+		668E083D21BDD70900EDDF40 /* RNForceTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 668E083B21BDD70900EDDF40 /* RNForceTouchHandler.m */; };
 		66A291D5207D032400809C27 /* RNFlingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A291D3207D032400809C27 /* RNFlingHandler.m */; };
 		66A291D6207D032400809C27 /* RNFlingHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A291D4207D032400809C27 /* RNFlingHandler.h */; };
 /* End PBXBuildFile section */
@@ -81,6 +83,8 @@
 		44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGestureHandlerManager.m; sourceTree = "<group>"; };
 		44BE34491F1E1ABA008679D1 /* RNGestureHandlerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerManager.h; sourceTree = "<group>"; };
 		660F46732080D8F600B7B50D /* RNGestureHandlerDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGestureHandlerDirection.h; sourceTree = "<group>"; };
+		668E083A21BDD70900EDDF40 /* RNForceTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNForceTouchHandler.h; path = Handlers/RNForceTouchHandler.h; sourceTree = "<group>"; };
+		668E083B21BDD70900EDDF40 /* RNForceTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNForceTouchHandler.m; path = Handlers/RNForceTouchHandler.m; sourceTree = "<group>"; };
 		66A291D3207D032400809C27 /* RNFlingHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFlingHandler.m; path = Handlers/RNFlingHandler.m; sourceTree = "<group>"; };
 		66A291D4207D032400809C27 /* RNFlingHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFlingHandler.h; path = Handlers/RNFlingHandler.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -107,6 +111,8 @@
 		44AEC7221F8FA1150086889F /* Handlers */ = {
 			isa = PBXGroup;
 			children = (
+				668E083A21BDD70900EDDF40 /* RNForceTouchHandler.h */,
+				668E083B21BDD70900EDDF40 /* RNForceTouchHandler.m */,
 				66A291D4207D032400809C27 /* RNFlingHandler.h */,
 				66A291D3207D032400809C27 /* RNFlingHandler.m */,
 				44AEC7231F8FA1270086889F /* RNLongPressHandler.h */,
@@ -156,6 +162,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				668E083C21BDD70900EDDF40 /* RNForceTouchHandler.h in Headers */,
 				66A291D6207D032400809C27 /* RNFlingHandler.h in Headers */,
 				44AEC72F1F8FA1270086889F /* RNLongPressHandler.h in Headers */,
 				446E7FE61ED6E177009282E7 /* RNGestureHandlerModule.h in Headers */,
@@ -233,6 +240,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				44AEC7201F8FA0700086889F /* RNGestureHandlerButton.m in Sources */,
+				668E083D21BDD70900EDDF40 /* RNForceTouchHandler.m in Sources */,
 				44BE34481F1E1AAA008679D1 /* RNGestureHandlerManager.m in Sources */,
 				44AEC7301F8FA1270086889F /* RNLongPressHandler.m in Sources */,
 				446E7FF81ED89A4B009282E7 /* RNGestureHandlerEvents.m in Sources */,
@@ -285,7 +293,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -319,7 +327,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
