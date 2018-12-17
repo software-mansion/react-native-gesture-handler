@@ -49,9 +49,6 @@ UIManager.RCTView.directEventTypes = {
   onGestureHandlerStateChange: {
     registrationName: 'onGestureHandlerStateChange',
   },
-  onGestureHandlerPassBounds: {
-    registrationName: 'onGestureHandlerPassBounds',
-  },
 };
 
 const State = RNGestureHandlerModule.State;
@@ -100,8 +97,6 @@ const GestureHandlerPropTypes = {
   onCancelled: PropTypes.func,
   onActivated: PropTypes.func,
   onEnded: PropTypes.func,
-  onMoveIn: PropTypes.func,
-  onMoveOut: PropTypes.func,
 };
 
 const stateToPropMappings = {
@@ -138,7 +133,7 @@ function transformIntoHandlerTags(handlerIDs) {
     .filter(handlerTag => handlerTag > 0);
 }
 
-function parseConfig(props, validProps, defaults = {}) {
+function filterConfig(props, validProps, defaults = {}) {
   const res = { ...defaults };
   Object.keys(validProps).forEach(key => {
     const value = props[key];
@@ -154,12 +149,6 @@ function parseConfig(props, validProps, defaults = {}) {
       res[key] = value;
     }
   });
-  if (props.onMoveIn) {
-    res['sendOnMoveIn'] = true;
-  }
-  if (props.onMoveOut) {
-    res['sendOnMoveOut'] = true;
-  }
   return res;
 }
 
@@ -248,7 +237,7 @@ function createHandler(
 
     componentDidMount() {
       this._viewTag = findNodeHandle(this._viewNode);
-      this._config = parseConfig(
+      this._config = filterConfig(
         transformProps ? transformProps(this.props) : this.props,
         { ...this.constructor.propTypes, ...customNativeProps },
         config
@@ -286,7 +275,7 @@ function createHandler(
     }
 
     _update() {
-      const newConfig = parseConfig(
+      const newConfig = filterConfig(
         transformProps ? transformProps(this.props) : this.props,
         { ...this.constructor.propTypes, ...customNativeProps },
         config
@@ -300,18 +289,9 @@ function createHandler(
       }
     }
 
-    _onPassBounds = ({ nativeEvent: { isOutside } }) => {
-      if (isOutside && this.props.onMoveOut) {
-        this.props.onMoveOut();
-      }
-      if (!isOutside && this.props.onMoveIn) {
-        this.props.onMoveIn();
-      }
-    };
-
     setNativeProps(updates) {
       const mergedProps = { ...this.props, ...updates };
-      const newConfig = parseConfig(
+      const newConfig = filterConfig(
         transformProps ? transformProps(mergedProps) : mergedProps,
         { ...this.constructor.propTypes, ...customNativeProps },
         config
@@ -394,7 +374,6 @@ function createHandler(
           collapsable: false,
           onGestureHandlerEvent: gestureEventHandler,
           onGestureHandlerStateChange: gestureStateEventHandler,
-          onGestureHandlerPassBounds: this._onPassBounds,
         },
         children
       );
@@ -673,7 +652,6 @@ const NATIVE_WRAPPER_PROPS_FILTER = {
   // we want to pass gesture event handlers if registered
   onGestureHandlerEvent: PropTypes.func,
   onGestureHandlerStateChange: PropTypes.func,
-  onGestureHandlerPassBounds: PropTypes.func,
 };
 
 function createNativeWrapper(Component, config = {}) {
