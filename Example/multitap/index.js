@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View, Text } from 'react-native';
 
 import {
   LongPressGestureHandler,
@@ -11,38 +11,55 @@ import {
 import { LoremIpsum } from '../common';
 
 export class PressBox extends Component {
+  state = {
+    lastGH: false,
+  };
   doubleTapRef = React.createRef();
   _onHandlerStateChange = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm being pressed for so long");
+      this.setState({
+        lastGH: 'Long press',
+      });
     }
   };
   _onSingleTap = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm touched");
+      this.setState({
+        lastGH: 'Single tap',
+      });
     }
   };
   _onDoubleTap = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert('D0able tap, good job!');
+      this.setState({
+        lastGH: 'Double tap',
+      });
     }
   };
   render() {
     return (
-      <LongPressGestureHandler
-        onHandlerStateChange={this._onHandlerStateChange}
-        minDurationMs={800}>
-        <TapGestureHandler
-          onHandlerStateChange={this._onSingleTap}
-          waitFor={this.doubleTapRef}>
+      <View>
+        <LongPressGestureHandler
+          onHandlerStateChange={this._onHandlerStateChange}
+          minDurationMs={800}>
           <TapGestureHandler
-            ref={this.doubleTapRef}
-            onHandlerStateChange={this._onDoubleTap}
-            numberOfTaps={2}>
-            <View style={styles.box} />
+            onHandlerStateChange={this._onSingleTap}
+            waitFor={this.doubleTapRef}>
+            <TapGestureHandler
+              ref={this.doubleTapRef}
+              onHandlerStateChange={this._onDoubleTap}
+              numberOfTaps={2}>
+              <View style={styles.box} testID="rectangle" />
+            </TapGestureHandler>
           </TapGestureHandler>
-        </TapGestureHandler>
-      </LongPressGestureHandler>
+        </LongPressGestureHandler>
+        {this.state.lastGH && (
+          <Text>{`${this.state.lastGH} has been activated`}</Text>
+        )}
+      </View>
     );
   }
 }
