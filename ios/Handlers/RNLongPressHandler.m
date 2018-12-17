@@ -33,8 +33,6 @@
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
-  
-
   CGPoint pt = [self locationInView:self.view];
   if (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView:pt]) {
     self.enabled = NO;
