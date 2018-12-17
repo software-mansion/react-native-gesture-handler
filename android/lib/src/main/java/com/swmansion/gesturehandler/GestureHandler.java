@@ -462,7 +462,6 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   public final void reset() {
-    mWithinBounds = true;
     mView = null;
     mOrchestrator = null;
     Arrays.fill(mTrackedPointerIDs, -1);
