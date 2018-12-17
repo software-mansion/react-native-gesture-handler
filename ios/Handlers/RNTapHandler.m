@@ -26,6 +26,7 @@
 @property (nonatomic) CGFloat maxDeltaX;
 @property (nonatomic) CGFloat maxDeltaY;
 @property (nonatomic) NSInteger minPointers;
+@property (nonatomic) BOOL isWithinBounds;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
@@ -36,7 +37,6 @@
   NSUInteger _tapsSoFar;
   CGPoint _initPosition;
   NSInteger _maxNumberOfTouches;
-  BOOL _isWithinBounds;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
@@ -101,11 +101,7 @@
   
   CGPoint pt = [self locationInView:self.view];
 
-  BOOL prevIsWithinBounds = _isWithinBounds;
   _isWithinBounds = [_gestureHandler containsPointInView:pt];
-  if (prevIsWithinBounds != _isWithinBounds) {
-    [_gestureHandler handleBoundPassing:prevIsWithinBounds];
-  }
   
   if ([self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;

@@ -101,14 +101,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handler.setEnabled(config.getBoolean(KEY_ENABLED));
       }
 
-      if (config.hasKey(KEY_SEND_ON_MOVE_IN)) {
-        handler.setShouldSendOnMoveIn(config.getBoolean(KEY_SEND_ON_MOVE_IN));
-      }
-
-      if (config.hasKey(KEY_SEND_ON_MOVE_OUT)) {
-        handler.setShouldSendOnMoveOut(config.getBoolean(KEY_SEND_ON_MOVE_OUT));
-      }
-
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config);
       }
@@ -344,6 +336,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       eventData.putDouble("translationY", PixelUtil.toDIPFromPixel(handler.getTranslationY()));
       eventData.putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.getVelocityX()));
       eventData.putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.getVelocityY()));
+      eventData.putBoolean("pointerInside",handler.getWithinBounds());
     }
   }
 
@@ -712,10 +705,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     EventDispatcher eventDispatcher = getReactApplicationContext()
             .getNativeModule(UIManagerModule.class)
             .getEventDispatcher();
-    RNGestureHandlerPassBoundsEvent event = RNGestureHandlerPassBoundsEvent.obtain(
-            handler,
-            isOutside);
-    eventDispatcher.dispatchEvent(event);
   }
 
   private static void handleHitSlopProperty(GestureHandler handler, ReadableMap config) {

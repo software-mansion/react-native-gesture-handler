@@ -4,6 +4,7 @@ import {
   TapGestureHandler,
   State,
   LongPressGestureHandler,
+  PanGestureHandler,
 } from '../GestureHandler';
 import PropTypes from 'prop-types';
 
@@ -78,6 +79,8 @@ export default class TouchableWithoutFeedback extends Component {
   // One move outside implies that no longPress event will be called later
   movedOutside = false;
 
+  pointerInside = true;
+
   // State of touchable
   STATE = TOUCHABLE_STATE.UNDETERMINED;
 
@@ -148,6 +151,7 @@ export default class TouchableWithoutFeedback extends Component {
   reset() {
     this.longPressDetected = false;
     this.movedOutside = false;
+    this.pointerInside = true;
     clearTimeout(this.pressInTimeout);
     clearTimeout(this.pressOutTimeout);
     this.pressOutTimeout = null;
@@ -177,8 +181,18 @@ export default class TouchableWithoutFeedback extends Component {
     // Finally call lister (used by subclasses)
     this.onStateChange && this.onStateChange(this.STATE, newState);
     // ... and make transition.
-    console.log(this.STATE, newState);
     this.STATE = newState;
+  };
+
+  onGestureEvent = ({ nativeEvent: { pointerInside } }) => {
+    if (this.pointerInside !== pointerInside) {
+      if (pointerInside) {
+        this.onMoveIn();
+      } else {
+        this.onMoveOut();
+      }
+    }
+    this.pointerInside = pointerInside;
   };
 
   onTapStateChange = ({ nativeEvent }) => {
@@ -230,7 +244,7 @@ export default class TouchableWithoutFeedback extends Component {
   };
 
   componentWillUnmount() {
-    // to prevent memmory leaks
+    // to prevent memory leaks
     this.reset();
   }
 
@@ -282,6 +296,7 @@ export default class TouchableWithoutFeedback extends Component {
 
   tap = React.createRef();
   long = React.createRef();
+  native = React.createRef();
   render() {
     const extraProps = {
       accessible: this.props.accessible !== false,
@@ -298,30 +313,34 @@ export default class TouchableWithoutFeedback extends Component {
     };
 
     return (
-      <TapGestureHandler
-        onHandlerStateChange={this.onTapStateChange}
-        maxDurationMs={100000}
-        ref={this.tap}
-        hitSlop={this.getHitSlop()}
-        simultaneousHandlers={this.long}
-        onMoveOut={this.onMoveOut}
-        onMoveIn={this.onMoveIn}
-        shouldCancelWhenOutside={false}>
-        <Animated.View
-          {...extraProps}
-          style={[this.style, this.state && this.state.extraUnderlayStyle]}
-          onLayout={this.onLayout}>
-          <LongPressGestureHandler
-            onHandlerStateChange={this.onLongPressStateChange}
-            minDurationMs={
-              (this.props.delayPressIn || 0) + (this.props.delayLongPress || 0)
-            }
-            ref={this.long}
-            simultaneousHandlers={this.tap}>
-            {this.renderChildren(this.props.children)}
-          </LongPressGestureHandler>
-        </Animated.View>
-      </TapGestureHandler>
+      <PanGestureHandler
+        ref={this.native}
+        onGestureEvent={this.onGestureEvent}
+        hitSlop={this.getHitSlop()}>
+        <TapGestureHandler
+          onHandlerStateChange={this.onTapStateChange}
+          maxDurationMs={100000}
+          ref={this.native}
+          hitSlop={this.getHitSlop()}
+          simultaneousHandlers={[this.long, this.native]}
+          shouldCancelWhenOutside={false}>
+          <Animated.View
+            {...extraProps}
+            style={[this.style, this.state && this.state.extraUnderlayStyle]}
+            onLayout={this.onLayout}>
+            <LongPressGestureHandler
+              onHandlerStateChange={this.onLongPressStateChange}
+              minDurationMs={
+                (this.props.delayPressIn || 0) +
+                (this.props.delayLongPress || 0)
+              }
+              ref={this.long}
+              simultaneousHandlers={[this.tap, this.native]}>
+              {this.renderChildren(this.props.children)}
+            </LongPressGestureHandler>
+          </Animated.View>
+        </TapGestureHandler>
+      </PanGestureHandler>
     );
   }
 }

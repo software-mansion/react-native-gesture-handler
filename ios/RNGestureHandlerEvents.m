@@ -30,6 +30,7 @@
                            withTranslation:(CGPoint)translation
                               withVelocity:(CGPoint)velocity
                        withNumberOfTouches:(NSUInteger)numberOfTouches
+                         withPointerInside:(BOOL)pointerInside
 {
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{
@@ -41,6 +42,7 @@
                            @"translationY": @(translation.y),
                            @"velocityX": SAFE_VELOCITY(velocity.x),
                            @"velocityY": SAFE_VELOCITY(velocity.y),
+                           @"pointerInside": @(pointerInside),
                            @"numberOfPointers": @(numberOfTouches)}];
 }
 
@@ -57,7 +59,7 @@
                            @"absoluteY": @(absolutePosition.y),
                            @"force": @(force),
                            @"numberOfPointers": @(numberOfTouches)}];
-  
+
 }
 
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale
@@ -152,63 +154,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [body setObject:_handlerTag forKey:@"handlerTag"];
   [body setObject:@(_state) forKey:@"state"];
   return @[self.viewTag, @"onGestureHandlerEvent", body];
-}
-
-@end
-
-@implementation RNGestureHandlerPassBounds
-{
-  NSNumber *_handlerTag;
-  BOOL _isOutside;
-}
-
-@synthesize viewTag = _viewTag;
-@synthesize coalescingKey = _coalescingKey;
-
-- (instancetype)initWithRactTag:(NSNumber *)reactTag
-                     handlerTag:(NSNumber *)handlerTag
-                      isOutside:(BOOL)isOutside
-{
-  static uint16_t coalescingKey = 0;
-  if ((self = [super init])) {
-    _viewTag = reactTag;
-    _handlerTag = handlerTag;
-    _isOutside = isOutside;
-    _coalescingKey = coalescingKey++;
-  }
-  return self;
-}
-
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
-
-- (NSString *)eventName
-{
-  return @"onGestureHandlerPassBounds";
-}
-
-- (BOOL)canCoalesce
-{
-  // TODO: event coalescing
-  return NO;
-}
-
-- (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
-{
-  return newEvent;
-}
-
-+ (NSString *)moduleDotMethod
-{
-  return @"RCTEventEmitter.receiveEvent";
-}
-
-- (NSArray *)arguments
-{
-  NSMutableDictionary *body = [NSMutableDictionary new];
-  [body setObject:_viewTag forKey:@"target"];
-  [body setObject:_handlerTag forKey:@"handlerTag"];
-  [body setObject:@(_isOutside) forKey:@"isOutside"];
-  return @[self.viewTag, @"onGestureHandlerPassBounds", body];
 }
 
 @end

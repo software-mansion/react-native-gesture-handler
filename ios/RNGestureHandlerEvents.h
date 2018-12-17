@@ -18,7 +18,8 @@
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation
                               withVelocity:(CGPoint)velocity
-                       withNumberOfTouches:(NSUInteger)numberOfTouches;
+                       withNumberOfTouches:(NSUInteger)numberOfTouches
+                         withPointerInside:(BOOL)pointerInside;
 + (RNGestureHandlerEventExtraData *)forForce:(CGFloat)force
                                  forPosition:(CGPoint)position
                         withAbsolutePosition:(CGPoint)absolutePosition
@@ -51,13 +52,5 @@
                           state:(RNGestureHandlerState)state
                       prevState:(RNGestureHandlerState)prevState
                       extraData:(RNGestureHandlerEventExtraData*)extraData NS_DESIGNATED_INITIALIZER;
-
-@end
-
-@interface RNGestureHandlerPassBounds : NSObject <RCTEvent>
-
-- (instancetype)initWithRactTag:(NSNumber *)reactTag
-                     handlerTag:(NSNumber *)handlerTag
-                      isOutside:(BOOL)isOutside;
 
 @end

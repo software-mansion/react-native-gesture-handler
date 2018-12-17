@@ -50,7 +50,7 @@ public class GestureHandler<T extends GestureHandler> {
   private View mView;
   private int mState = STATE_UNDETERMINED;
   private float mX, mY;
-  private boolean mWithinBounds;
+  protected boolean mWithinBounds;
   private boolean mEnabled = true;
   private float mHitSlop[];
 
@@ -58,8 +58,6 @@ public class GestureHandler<T extends GestureHandler> {
   private float mLastEventOffsetX, mLastEventOffsetY;
 
   private boolean mShouldCancelWhenOutside;
-  private boolean mShouldSendOnMoveIn = false;
-  private boolean mShouldSendOnMoveOut = false;
 
   private int mNumberOfPointers = 0;
 
@@ -107,16 +105,6 @@ public class GestureHandler<T extends GestureHandler> {
       cancel();
     }
     mEnabled = enabled;
-    return (T) this;
-  }
-
-  public T setShouldSendOnMoveIn(boolean shouldSendOnMoveIn) {
-    mShouldSendOnMoveIn = shouldSendOnMoveIn;
-    return (T) this;
-  }
-
-  public T setShouldSendOnMoveOut(boolean shouldSendOnMoveOut) {
-    mShouldSendOnMoveOut = shouldSendOnMoveOut;
     return (T) this;
   }
 
@@ -310,7 +298,6 @@ public class GestureHandler<T extends GestureHandler> {
     mY = event.getY();
     mNumberOfPointers = event.getPointerCount();
 
-    boolean prevWithinBounds = mWithinBounds;
     mWithinBounds = isWithinBounds(mView, mX, mY);
     if (mShouldCancelWhenOutside && !mWithinBounds) {
       if (mState == STATE_ACTIVE) {
@@ -319,11 +306,6 @@ public class GestureHandler<T extends GestureHandler> {
         fail();
       }
       return;
-    }
-    if (prevWithinBounds != mWithinBounds && mListener != null && (
-            (prevWithinBounds && mShouldSendOnMoveOut) || (!prevWithinBounds && mShouldSendOnMoveIn)
-    )) {
-      mListener.onPassBounds((T) this, prevWithinBounds);
     }
 
     mLastX = GestureUtils.getLastPointerX(event, true);

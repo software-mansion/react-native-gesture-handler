@@ -24,6 +24,7 @@
 @property (nonatomic) CGFloat activeOffsetYEnd;
 @property (nonatomic) CGFloat failOffsetYStart;
 @property (nonatomic) CGFloat failOffsetYEnd;
+@property (nonatomic) BOOL isWithinBounds;
 
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
@@ -35,7 +36,6 @@
   __weak RNGestureHandler *_gestureHandler;
   NSUInteger _realMinimumNumberOfTouches;
   BOOL _hasCustomActivationCriteria;
-  BOOL _isWithinBounds;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
@@ -88,7 +88,6 @@
   }
   if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged)) {
     CGPoint pt = [self locationInView:self.view];
-    BOOL prevIsWithinBounds = _isWithinBounds;
     _isWithinBounds = [_gestureHandler containsPointInView:pt];
     if (_gestureHandler.shouldCancelWhenOutside && !_isWithinBounds) {
       // If the previous recognizer state is UIGestureRecognizerStateChanged
@@ -100,9 +99,6 @@
       : UIGestureRecognizerStateCancelled;
       [self reset];
       return;
-    }
-    if (prevIsWithinBounds != _isWithinBounds) {
-      [_gestureHandler handleBoundPassing:prevIsWithinBounds];
     }
   }
   if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
@@ -227,14 +223,15 @@
   [recognizer updateHasCustomActivationCriteria];
 }
 
-- (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
+- (RNGestureHandlerEventExtraData *)eventExtraData:(RNBetterPanGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData
           forPan:[recognizer locationInView:recognizer.view]
           withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
           withTranslation:[recognizer translationInView:recognizer.view]
           withVelocity:[recognizer velocityInView:recognizer.view.window]
-          withNumberOfTouches:recognizer.numberOfTouches];
+          withNumberOfTouches:recognizer.numberOfTouches
+          withPointerInside:recognizer.isWithinBounds];
 }
 
 @end

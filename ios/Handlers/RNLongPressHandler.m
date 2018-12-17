@@ -20,14 +20,12 @@
 
 @implementation RNBetterLongPressGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
-  BOOL _isWithinBounds;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
-    _isWithinBounds = YES;
   }
   return self;
 }
@@ -36,21 +34,12 @@
 {
   [super touchesMoved:touches withEvent:event];
   
-  BOOL prevIsWithinBounds = _isWithinBounds;
+
   CGPoint pt = [self locationInView:self.view];
-  _isWithinBounds = [_gestureHandler containsPointInView:pt];
-  if (prevIsWithinBounds != _isWithinBounds) {
-    [_gestureHandler handleBoundPassing:prevIsWithinBounds];
-  }
-  if (!_isWithinBounds && _gestureHandler.shouldCancelWhenOutside) {
+  if (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView:pt]) {
     self.enabled = NO;
     self.enabled = YES;
   }
-}
-
-- (void) reset {
-  _isWithinBounds = YES;
-  [super reset];
 }
 
 @end

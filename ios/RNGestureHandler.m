@@ -174,14 +174,6 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
   [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
 }
 
-- (void)handleBoundPassing:(BOOL)isOutside
-{
-  if ((isOutside && _sendOnMoveOut) || (!isOutside && _sendOnMoveIn))\
-  {
-    [self.emitter sendPassBoundsEvent:[[RNGestureHandlerPassBounds alloc] initWithRactTag:_recognizer.view.reactTag handlerTag:_tag isOutside:isOutside]];
-  }
-}
-
 
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag

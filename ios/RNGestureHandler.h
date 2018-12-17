@@ -28,8 +28,6 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 
 - (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event;
 
-- (void)sendPassBoundsEvent:(RNGestureHandlerPassBounds *)event;
-
 @end
 
 

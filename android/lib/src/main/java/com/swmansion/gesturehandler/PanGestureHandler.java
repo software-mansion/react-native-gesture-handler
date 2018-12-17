@@ -295,6 +295,10 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return mLastVelocityY;
   }
 
+  public boolean getWithinBounds(){
+    return mWithinBounds;
+  }
+
 
   /**
    * This method adds movement to {@class VelocityTracker} first resetting offset of the event so

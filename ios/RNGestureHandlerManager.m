@@ -182,9 +182,4 @@
   [_eventDispatcher sendEvent:event];
 }
 
-- (void)sendPassBoundsEvent:(RNGestureHandlerPassBounds *)event
-{
-  [_eventDispatcher sendEvent:event];
-}
-
 @end
