@@ -690,16 +690,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     eventDispatcher.dispatchEvent(event);
   }
 
-  private void onPassBounds(GestureHandler handler, boolean isOutside) {
-    if (handler.getTag() < 0) {
-      // root containers use negative tags, we don't need to dispatch events for them to the JS
-      return;
-    }
-    EventDispatcher eventDispatcher = getReactApplicationContext()
-            .getNativeModule(UIManagerModule.class)
-            .getEventDispatcher();
-  }
-
   private static void handleHitSlopProperty(GestureHandler handler, ReadableMap config) {
     if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
       float hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP));
