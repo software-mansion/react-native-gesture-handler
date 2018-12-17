@@ -62,8 +62,6 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 @implementation RNGestureHandler {
   NSArray<NSNumber *> *_handlersToWaitFor;
   NSArray<NSNumber *> *_simultaneousHandlers;
-  BOOL _sendOnMoveIn;
-  BOOL _sendOnMoveOut;
   RNGHHitSlop _hitSlop;
 }
 
@@ -73,8 +71,6 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
     _tag = tag;
     _lastState = RNGestureHandlerStateUndetermined;
     _hitSlop = RNGHHitSlopEmpty;
-    _sendOnMoveIn = NO;
-    _sendOnMoveOut = NO;
   }
   return self;
 }
@@ -97,22 +93,6 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
   } else {
     _shouldCancelWhenOutside = NO;
   }
-  
-  prop = config[@"sendOnMoveIn"];
-  if (prop != nil) {
-    _sendOnMoveIn = [RCTConvert BOOL:prop];
-  } else {
-    _sendOnMoveIn = NO;
-  }
-  
-  prop = config[@"sendOnMoveOut"];
-  if (prop != nil) {
-    _sendOnMoveOut = [RCTConvert BOOL:prop];
-  } else {
-    _sendOnMoveOut = NO;
-  }
-  
-  
   
   prop = config[@"hitSlop"];
   if ([prop isKindOfClass:[NSNumber class]]) {

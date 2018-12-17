@@ -115,12 +115,12 @@
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
-  CGPoint pt = [self locationInView:self.view];
-  BOOL _isWithinBounds = [_gestureHandler containsPointInView:pt];
-  if (!_isWithinBounds && _gestureHandler.shouldCancelWhenOutside) {
-    return YES;
+  if (_gestureHandler.shouldCancelWhenOutside) {
+    CGPoint pt = [self locationInView:self.view];
+    if (![_gestureHandler containsPointInView:pt]) {
+      return YES;
+    }
   }
-  
   
   CGPoint trans = [self translationInView];
   if (TEST_MAX_IF_NOT_NAN(fabs(trans.x), _maxDeltaX)) {
