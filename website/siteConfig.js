@@ -57,6 +57,7 @@ const siteConfig = {
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
   repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler',
+  editUrl: 'https://github.com/kmagiera/react-native-gesture-handler/edit/master/docs/',
 };
 
 module.exports = siteConfig;

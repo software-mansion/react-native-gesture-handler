@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const AnimatedIcon = Animated.createAnimatedComponent(Icon);
 
-export default class AppleStyleSwipeableRow extends Component {
+export default class GmailStyleSwipeableRow extends Component {
   renderLeftActions = (progress, dragX) => {
     const scale = dragX.interpolate({
       inputRange: [0, 80],

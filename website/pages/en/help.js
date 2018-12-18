@@ -33,8 +33,7 @@ class Help extends React.Component {
       },
       {
         content: `Check our ["Resources" section](${docUrl(
-          'resources.html',
-          language
+          'resources.html'
         )}) for a list of open-source apps using Gesture Handler and a video recordings from conferences and workshops.`,
         title: 'Projects and talks',
       },

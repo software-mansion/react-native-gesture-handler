@@ -21,6 +21,15 @@ On top of the standard list of parameters DrawerLayout has an additional set of 
 ### `drawerType`
 possible values are: `front`, `back` or `slide` (default is `front`). It specifies the way the drawer will be displayed. When set to `front` the drawer will slide in and out along with the gesture and will display on top of the content view. When `back` is used the drawer displays behind the content view and can be revealed with gesture of pulling the content view to the side. Finally `slide` option makes the drawer appear like it is attached to the side of the content view; when you pull both content view and drawer will follow the gesture.
 
+Type `slide`:
+<img src="assets/drawer-slide.gif" width="280" />
+
+Type `front`:
+<img src="assets/drawer-front.gif" width="280" />
+
+Type `back`:
+<img src="assets/drawer-back.gif" width="280" />
+
 ---
 ### `edgeWidth`
 number, allows for defining how far from the edge of the content view the gesture should activate.
@@ -42,6 +51,9 @@ color (default to `"black"`) of a semi-transparent overlay to be displayed on to
 function. This attribute is present in the standard implementation already and is one of the required params. Gesture handler version of DrawerLayout make it possible for the function passed as `renderNavigationView` to take an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened). This can be used by the drawer component to animated its children while the drawer is opening or closing.
 
 ---
+### `children`
+component or function. Children is a component which is rendered by default and is wrapped by drawer. However, it could be also a render function which takes an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened) is the same way like `renderNavigationView` prop.
+
 ## Example:
 See the [drawer example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/horizontalDrawer/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
 ```js

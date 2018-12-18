@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, YellowBox } from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import SwipeableTable from './swipeable';
@@ -20,6 +20,7 @@ import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
 import Customable from './customable';
 import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
+import forceTouch from './forcetouch';
 
 YellowBox.ignoreWarnings([
   'Warning: isMounted(...) is deprecated',
@@ -76,6 +77,10 @@ const SCREENS = {
   Customable: {
     screen: Customable,
     title: 'Custom Gesture Handler',
+  },  
+  forceTouch: {
+    screen: forceTouch,
+    title: 'Force touch',
   },
 };
 
@@ -116,7 +121,7 @@ class MainScreenItem extends React.Component {
   }
 }
 
-const ExampleApp = StackNavigator(
+const ExampleApp = createStackNavigator(
   {
     Main: { screen: MainScreen },
     ...SCREENS,
