@@ -20,11 +20,7 @@ import {
 } from 'react-native';
 import { AnimatedEvent } from 'react-native/Libraries/Animated/src/AnimatedEvent';
 
-import {
-  PanGestureHandler,
-  TapGestureHandler,
-  State,
-} from 'react-native-gesture-handler';
+import { PanGestureHandler, TapGestureHandler, State } from './GestureHandler';
 
 const DRAG_TOSS = 0.05;
 
