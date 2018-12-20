@@ -50,7 +50,7 @@ public class GestureHandler<T extends GestureHandler> {
   private View mView;
   private int mState = STATE_UNDETERMINED;
   private float mX, mY;
-  protected boolean mWithinBounds;
+  private boolean mWithinBounds;
   private boolean mEnabled = true;
   private float mHitSlop[];
 

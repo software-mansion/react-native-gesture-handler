@@ -6,12 +6,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * TouchableOpacity base timing animation which has been used in RN's core
+ * TouchableOpacity bases on timing animation which has been used in RN's core
  */
 export default class TouchableOpacity extends TouchableWithoutFeedback {
   static defaultProps = {
     ...TouchableWithoutFeedback.defaultProps,
-    // value copier from RN's implementation
+    // value copied from RN's implementation
     activeOpacity: 0.2,
   };
 

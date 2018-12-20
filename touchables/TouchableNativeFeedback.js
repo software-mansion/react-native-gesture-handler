@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 /**
- * UI copied from RN
+ * This implementation is a copy of react-native behavior.
  */
 export default class DummyTouchableNativeFeedback extends Component {
   static SelectableBackground = () => ({});

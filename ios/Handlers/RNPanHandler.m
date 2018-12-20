@@ -24,7 +24,6 @@
 @property (nonatomic) CGFloat activeOffsetYEnd;
 @property (nonatomic) CGFloat failOffsetYStart;
 @property (nonatomic) CGFloat failOffsetYEnd;
-@property (nonatomic) BOOL isWithinBounds;
 
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
@@ -56,7 +55,6 @@
     _failOffsetYEnd = NAN;
     _hasCustomActivationCriteria = NO;
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
-    _isWithinBounds = YES;
   }
   return self;
 }
@@ -87,9 +85,7 @@
     return;
   }
   if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged)) {
-    CGPoint pt = [self locationInView:self.view];
-    _isWithinBounds = [_gestureHandler containsPointInView:pt];
-    if (_gestureHandler.shouldCancelWhenOutside && !_isWithinBounds) {
+    if (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) {
       // If the previous recognizer state is UIGestureRecognizerStateChanged
       // then UIGestureRecognizer's sate machine will only transition to
       // UIGestureRecognizerStateCancelled even if you set the state to
@@ -112,7 +108,6 @@
 
 - (void)reset
 {
-  _isWithinBounds = YES;
   self.enabled = YES;
   [super reset];
 }
@@ -223,7 +218,7 @@
   [recognizer updateHasCustomActivationCriteria];
 }
 
-- (RNGestureHandlerEventExtraData *)eventExtraData:(RNBetterPanGestureRecognizer *)recognizer
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData
           forPan:[recognizer locationInView:recognizer.view]
@@ -231,7 +226,7 @@
           withTranslation:[recognizer translationInView:recognizer.view]
           withVelocity:[recognizer velocityInView:recognizer.view.window]
           withNumberOfTouches:recognizer.numberOfTouches
-          withPointerInside:recognizer.isWithinBounds];
+          withPointerInside:[self containsPointInView]];
 }
 
 @end

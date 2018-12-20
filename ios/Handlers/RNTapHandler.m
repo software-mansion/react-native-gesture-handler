@@ -116,8 +116,7 @@
 - (BOOL)shouldFailUnderCustomCriteria
 {
   if (_gestureHandler.shouldCancelWhenOutside) {
-    CGPoint pt = [self locationInView:self.view];
-    if (![_gestureHandler containsPointInView:pt]) {
+    if (![_gestureHandler containsPointInView]) {
       return YES;
     }
   }

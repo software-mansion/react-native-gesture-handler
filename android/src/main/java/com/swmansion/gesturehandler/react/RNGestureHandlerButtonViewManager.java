@@ -9,7 +9,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.PaintDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
@@ -61,12 +60,15 @@ public class RNGestureHandlerButtonViewManager extends
       mNeedBackgroundUpdate = true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private RippleDrawable withRipple(RippleDrawable selectable) {
-      int[][] states = new int[][] { new int[] { android.R.attr.state_enabled} };
-      int[] colors = new int[] { mRippleColor };
-      ColorStateList colorStateList = new ColorStateList(states, colors);
-      selectable.setColor(colorStateList);
+    private Drawable applyRippleEffectIfNeeded(Drawable selectable) {
+      if (mRippleColor != null
+              && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+              && selectable instanceof RippleDrawable) {
+        int[][] states = new int[][]{new int[]{android.R.attr.state_enabled}};
+        int[] colors = new int[]{mRippleColor};
+        ColorStateList colorStateList = new ColorStateList(states, colors);
+        ((RippleDrawable)selectable).setColor(colorStateList);
+      }
       return selectable;
     }
 
@@ -104,7 +106,7 @@ public class RNGestureHandlerButtonViewManager extends
           setBackgroundColor(mBackgroundColor);
         }
         if(mRippleColor != null && selectable instanceof RippleDrawable) {
-          withRipple((RippleDrawable) selectable);
+          applyRippleEffectIfNeeded(selectable);
         }
       } else if (mBackgroundColor == Color.TRANSPARENT && mRippleColor == null) {
         setBackground(createSelectableDrawable());
@@ -123,7 +125,7 @@ public class RNGestureHandlerButtonViewManager extends
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && selectable instanceof RippleDrawable) {
             PaintDrawable mask = new PaintDrawable(Color.WHITE);
-            withRipple((RippleDrawable)selectable);
+            applyRippleEffectIfNeeded(selectable);
             mask.setCornerRadius(mBorderRadius);
             ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);
           }
@@ -131,7 +133,7 @@ public class RNGestureHandlerButtonViewManager extends
         if (mRippleColor != null
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && selectable instanceof RippleDrawable) {
-          withRipple((RippleDrawable) selectable);
+          applyRippleEffectIfNeeded((RippleDrawable) selectable);
 
         }
         LayerDrawable layerDrawable = new LayerDrawable(

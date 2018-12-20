@@ -296,7 +296,7 @@ export default class TouchableWithoutFeedback extends Component {
 
   tap = React.createRef();
   long = React.createRef();
-  native = React.createRef();
+  pan = React.createRef();
   render() {
     const extraProps = {
       accessible: this.props.accessible !== false,
@@ -314,30 +314,37 @@ export default class TouchableWithoutFeedback extends Component {
 
     return (
       <PanGestureHandler
-        ref={this.native}
+        ref={this.pan}
+        onHandlerStateChange={this.onTapStateChange}
         onGestureEvent={this.onGestureEvent}
-        hitSlop={this.getHitSlop()}>
+        hitSlop={this.getHitSlop()}
+        simultaneousHandlers={[this.long, this.tap]}
+        shouldCancelWhenOutside={false}>
         <TapGestureHandler
           onHandlerStateChange={this.onTapStateChange}
           maxDurationMs={100000}
           ref={this.native}
           hitSlop={this.getHitSlop()}
-          simultaneousHandlers={[this.long, this.native]}
+          simultaneousHandlers={[this.long, this.pan]}
           shouldCancelWhenOutside={false}>
           <Animated.View
             {...extraProps}
             style={[this.style, this.state && this.state.extraUnderlayStyle]}
             onLayout={this.onLayout}>
-            <LongPressGestureHandler
-              onHandlerStateChange={this.onLongPressStateChange}
-              minDurationMs={
-                (this.props.delayPressIn || 0) +
-                (this.props.delayLongPress || 0)
-              }
-              ref={this.long}
-              simultaneousHandlers={[this.tap, this.native]}>
-              {this.renderChildren(this.props.children)}
-            </LongPressGestureHandler>
+            {this.props.onLongPress ? (
+              <LongPressGestureHandler
+                onHandlerStateChange={this.onLongPressStateChange}
+                minDurationMs={
+                  (this.props.delayPressIn || 0) +
+                  (this.props.delayLongPress || 0)
+                }
+                ref={this.long}
+                simultaneousHandlers={[this.tap, this.pan]}>
+                {this.renderChildren(this.props.children)}
+              </LongPressGestureHandler>
+            ) : (
+              this.renderChildren(this.props.children)
+            )}
           </Animated.View>
         </TapGestureHandler>
       </PanGestureHandler>
