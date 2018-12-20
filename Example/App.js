@@ -20,7 +20,7 @@ import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
 import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
 import forceTouch from './forcetouch';
-import touchales from './touchables';
+import touchables from './touchables';
 
 YellowBox.ignoreWarnings([
   'Warning: isMounted(...) is deprecated',
@@ -75,7 +75,7 @@ const SCREENS = {
     title: 'Two handlers simultaneously',
   },
   touchables: {
-    screen: touchales,
+    screen: touchables,
     title: 'Touchables',
   },
   forceTouch: {
