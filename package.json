@@ -1,13 +1,13 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "1.0.7",
+  "version": "1.0.12",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
     "precommit": "lint-staged"
   },
-  "main": "GestureHandler.js",
+  "main": "index.js",
   "types": "react-native-gesture-handler.d.ts",
   "files": [
     "android/build.gradle",
@@ -19,11 +19,14 @@
     "README.md",
     "NATIVE_NAVIGATORS.md",
     "GestureHandler.js",
+    "index.js",
     "Swipeable.js",
     "DrawerLayout.js",
     "gestureHandlerRootHOC.android.js",
     "gestureHandlerRootHOC.ios.js",
-    "react-native-gesture-handler.d.ts"
+    "gestureHandlerRootHOC.js",
+    "react-native-gesture-handler.d.ts",
+    "RNGestureHandler.podspec"
   ],
   "repository": {
     "type": "git",

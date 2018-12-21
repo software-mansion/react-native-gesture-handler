@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, YellowBox } from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import SwipeableTable from './swipeable';
@@ -19,6 +19,7 @@ import ChatHeads from './chatHeads';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
 import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
+import forceTouch from './forcetouch';
 
 YellowBox.ignoreWarnings([
   'Warning: isMounted(...) is deprecated',
@@ -72,6 +73,10 @@ const SCREENS = {
     screen: doubleDraggable,
     title: 'Two handlers simultaneously',
   },
+  forceTouch: {
+    screen: forceTouch,
+    title: 'Force touch',
+  },
 };
 
 class MainScreen extends React.Component {
@@ -111,7 +116,7 @@ class MainScreenItem extends React.Component {
   }
 }
 
-const ExampleApp = StackNavigator(
+const ExampleApp = createStackNavigator(
   {
     Main: { screen: MainScreen },
     ...SCREENS,
