@@ -21,6 +21,8 @@
     "BaseGestureHandler": "BaseGestureHandler",
     "handler-fling": "FlingGestureHandler",
     "FlingGestureHandler": "FlingGestureHandler",
+    "handler-force": "ForceTouchGestureHandler (iOS only)",
+    "ForceTouchGestureHandler": "ForceTouchGestureHandler",
     "handler-longpress": "LongPressGestureHandler",
     "LongPressGestureHandler": "LongPressGestureHandler",
     "handler-pan": "PanGestureHandler",
