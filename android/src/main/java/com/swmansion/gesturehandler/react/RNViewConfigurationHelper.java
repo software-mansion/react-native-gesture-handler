@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler.react;
 
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -9,22 +10,7 @@ import com.facebook.react.views.view.ReactViewGroup;
 import com.swmansion.gesturehandler.PointerEventsConfig;
 import com.swmansion.gesturehandler.ViewConfigurationHelper;
 
-import java.lang.reflect.Field;
-
-import javax.annotation.Nullable;
-
 public class RNViewConfigurationHelper implements ViewConfigurationHelper {
-
-  private @Nullable Field mOverflowField;
-
-  public RNViewConfigurationHelper() {
-    try {
-      mOverflowField = ReactViewGroup.class.getDeclaredField("mOverflow");
-      mOverflowField.setAccessible(true);
-    } catch (NoSuchFieldException e) {
-      e.printStackTrace();
-    }
-  }
 
   @Override
   public PointerEventsConfig getPointerEventsConfigForView(View view) {
@@ -63,17 +49,14 @@ public class RNViewConfigurationHelper implements ViewConfigurationHelper {
 
   @Override
   public boolean isViewClippingChildren(ViewGroup view) {
-    if (!view.getClipChildren()) {
-      if (mOverflowField != null && view instanceof ReactViewGroup) {
-        try {
-          String overflow = (String) mOverflowField.get(view);
-          return "hidden".equals(overflow);
-        } catch (IllegalAccessException e) {
-          // ignore
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && !view.getClipChildren()) {
+        if (view instanceof ReactViewGroup) {
+            String overflow =((ReactViewGroup) view).getOverflow();
+            boolean res =  "hidden".equals(overflow);
+            return res;
         }
+        return false;
       }
-      return false;
-    }
     return true;
   }
 }
