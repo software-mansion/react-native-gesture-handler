@@ -52,17 +52,6 @@ UIManager.RCTView.directEventTypes = {
   },
 };
 
-let shouldHandleInspection = false;
-// Toggled inspector block touches events in order to allow inspecting on Android
-// As event emitter could be hooked only on toggling an inspector
-// it's impossible to allow touches on disabling "Inspect" without toggling inspector
-if (__DEV__ && Platform.OS === 'android') {
-  DeviceEventEmitter.addListener(
-    'toggleElementInspector',
-    () => (shouldHandleInspection = !shouldHandleInspection)
-  );
-}
-
 const State = RNGestureHandlerModule.State;
 
 const Directions = RNGestureHandlerModule.Direction;
@@ -197,12 +186,12 @@ function createHandler(
         }
         handlerIDToTag[props.id] = this._handlerTag;
       }
+      this.state = {
+        allowTouches: true,
+      };
     }
 
     _onGestureHandlerEvent = event => {
-      if (shouldHandleInspection) {
-        return;
-      }
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onGestureEvent && this.props.onGestureEvent(event);
       } else {
@@ -212,9 +201,6 @@ function createHandler(
     };
 
     _onGestureHandlerStateChange = event => {
-      if (shouldHandleInspection) {
-        return;
-      }
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onHandlerStateChange &&
           this.props.onHandlerStateChange(event);
@@ -244,6 +230,9 @@ function createHandler(
     };
 
     componentWillUnmount() {
+      if (this.debugListener) {
+        this.debugListener.remove();
+      }
       RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
       if (this._updateEnqueued) {
         clearImmediate(this._updateEnqueued);
@@ -254,6 +243,20 @@ function createHandler(
     }
 
     componentDidMount() {
+      // Toggled inspector block touches events in order to allow inspecting on Android
+      // As event emitter could be hooked only on toggling an inspector
+      // it's impossible to allow touches on disabling "Inspect" without toggling inspector
+      if (__DEV__ && Platform.OS === 'android') {
+        this.debugListener = DeviceEventEmitter.addListener(
+          'toggleElementInspector',
+          () => {
+            this.setState(prev => ({
+              allowTouches: !prev.allowTouches ? true : null,
+            }));
+            this._update();
+          }
+        );
+      }
       this._viewTag = findNodeHandle(this._viewNode);
       this._config = filterConfig(
         transformProps ? transformProps(this.props) : this.props,
@@ -390,8 +393,9 @@ function createHandler(
         {
           ref: this._refHandler,
           collapsable: false,
-          onGestureHandlerEvent: gestureEventHandler,
-          onGestureHandlerStateChange: gestureStateEventHandler,
+          onGestureHandlerEvent: this.state.allowTouches && gestureEventHandler,
+          onGestureHandlerStateChange:
+            this.state.allowTouches && gestureStateEventHandler,
         },
         children
       );
@@ -429,7 +433,9 @@ const FlingGestureHandler = createHandler(
 
 class ForceTouchFallback extends React.Component {
   componentDidMount() {
-    console.warn('ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase');
+    console.warn(
+      'ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase'
+    );
   }
   render() {
     return this.props.children;
