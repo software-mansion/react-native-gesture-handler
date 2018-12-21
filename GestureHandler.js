@@ -230,6 +230,7 @@ function createHandler(
     };
 
     componentWillUnmount() {
+      // Remove listeger on toggling inspector if needed
       if (this.debugListener) {
         this.debugListener.remove();
       }
@@ -243,9 +244,8 @@ function createHandler(
     }
 
     componentDidMount() {
-      // Toggled inspector block touches events in order to allow inspecting on Android
-      // As event emitter could be hooked only on toggling an inspector
-      // it's impossible to allow touches on disabling "Inspect" without toggling inspector
+      // If the inspector is getting opened all touches events in JS are getting block
+      // in order to allow inspecting.
       if (__DEV__ && Platform.OS === 'android') {
         this.debugListener = DeviceEventEmitter.addListener(
           'toggleElementInspector',
