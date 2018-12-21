@@ -7,12 +7,6 @@ describe('Example', () => {
     await expect(element(by.text('Scale, rotate & tilt'))).toExist();
   });
 
-  it('should not lie', async () => {
-    await expect(
-      element(by.text('Michał Osadnik writes decent code'))
-    ).toNotExist();
-  });
-
   it('test double tap', async () => {
     const el = element(by.text('Multitap'));
     await expect(el).toExist();
