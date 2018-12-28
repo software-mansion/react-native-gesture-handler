@@ -41,6 +41,16 @@ UIManager.clearJSResponder = () => {
   oldClearJSResponder();
 };
 
+let allowTouches = true;
+// Toggled inspector block touches events in order to allow inspecting on Android
+// As event emitter could be hooked only on toggling an inspector
+if (__DEV__ && Platform.OS === 'android') {
+  DeviceEventEmitter.addListener(
+    'toggleElementInspector',
+    () => (allowTouches = !allowTouches)
+  );
+}
+
 // Add gesture specific events to RCTView's directEventTypes object exported via UIManager.
 // Once new event types are registered with react it is possible to dispatch these to other
 // view types as well.
@@ -187,7 +197,7 @@ function createHandler(
         handlerIDToTag[props.id] = this._handlerTag;
       }
       this.state = {
-        allowTouches: true,
+        allowTouches,
       };
     }
 
