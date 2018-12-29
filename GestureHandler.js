@@ -660,17 +660,20 @@ function createNativeWrapper(Component, config = {}) {
 
     _refHandler = node => {
       // bind native component's methods
-      for (let methodName in node) {
-        const method = node[methodName];
-        if (
-          !methodName.startsWith('_') && // private methods
-          !methodName.startsWith('component') && // lifecycle methods
-          !NATIVE_WRAPPER_BIND_BLACKLIST.has(methodName) && // other
-          typeof method === 'function' &&
-          this[methodName] === undefined
-        ) {
-          this[methodName] = method;
+      let source = node;
+      while (source != null) {
+        for (let methodName of Object.getOwnPropertyNames(source)) {
+          if (
+            !methodName.startsWith('_') && // private methods
+            !methodName.startsWith('component') && // lifecycle methods
+            !NATIVE_WRAPPER_BIND_BLACKLIST.has(methodName) && // other
+            typeof source[methodName] === 'function' &&
+            this[methodName] === undefined
+          ) {
+            this[methodName] = source[methodName].bind(node);
+          }
         }
+        source = Object.getPrototypeOf(source);
       }
     };
 
