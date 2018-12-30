@@ -5,5 +5,3 @@ project(':react-native-vector-icons').projectDir = new File(rootProject.projectD
 include ':app'
 include ':react-native-gesture-handler'
 project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../../android')
-include ':detox'
-project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')

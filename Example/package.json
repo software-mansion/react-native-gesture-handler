@@ -33,8 +33,6 @@
     "react-test-renderer": "^16.5.2"
   },
   "detox": {
-    "test-runner": "mocha",
-    "runner-config": "e2e/mocha.opts",
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "./ios/build/Build/Products/Debug-iphonesimulator/GestureHandler.app",

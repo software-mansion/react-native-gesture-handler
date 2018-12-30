@@ -6,7 +6,6 @@ const glob = require('glob-to-regexp');
 function getBlacklist() {
   const nodeModuleDirs = [
     glob(`${path.resolve(__dirname, '..')}/node_modules/*`),
-    glob(`${path.resolve(__dirname, '..')}/e2e/*`),
     glob(`${path.resolve(__dirname)}/node_modules/metro/node_modules/fbjs/*`),
     glob(
       `${path.resolve(
@@ -47,7 +46,6 @@ module.exports = {
       'fbjs',
       'prop-types',
       'hoist-non-react-statics',
-      '@babel/runtime',
     ],
   },
   watchFolders: [path.resolve(__dirname, '..')],

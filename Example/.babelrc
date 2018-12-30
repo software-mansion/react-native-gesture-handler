@@ -5,11 +5,6 @@
       "alias": {
         "react-native-gesture-handler": "../"
       }
-    }],
-    ["@babel/plugin-transform-runtime",
-      {
-        "regenerator": true
-      }
-    ]
+    }]
   ]
 }
