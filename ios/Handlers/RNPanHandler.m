@@ -225,8 +225,7 @@
           withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
           withTranslation:[recognizer translationInView:recognizer.view]
           withVelocity:[recognizer velocityInView:recognizer.view.window]
-          withNumberOfTouches:recognizer.numberOfTouches
-          withPointerInside:[self containsPointInView]];
+          withNumberOfTouches:recognizer.numberOfTouches];
 }
 
 @end

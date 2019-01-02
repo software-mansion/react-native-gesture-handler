@@ -30,7 +30,6 @@
                            withTranslation:(CGPoint)translation
                               withVelocity:(CGPoint)velocity
                        withNumberOfTouches:(NSUInteger)numberOfTouches
-                         withPointerInside:(BOOL)pointerInside
 {
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{
@@ -42,7 +41,6 @@
                            @"translationY": @(translation.y),
                            @"velocityX": SAFE_VELOCITY(velocity.x),
                            @"velocityY": SAFE_VELOCITY(velocity.y),
-                           @"pointerInside": @(pointerInside),
                            @"numberOfPointers": @(numberOfTouches)}];
 }
 
@@ -100,9 +98,9 @@
 
 @implementation RNGestureHandlerEvent
 {
-  NSNumber *_handlerTag;
-  RNGestureHandlerState _state;
-  RNGestureHandlerEventExtraData *_extraData;
+    NSNumber *_handlerTag;
+    RNGestureHandlerState _state;
+    RNGestureHandlerEventExtraData *_extraData;
 }
 
 @synthesize viewTag = _viewTag;
@@ -113,47 +111,47 @@
                           state:(RNGestureHandlerState)state
                       extraData:(RNGestureHandlerEventExtraData *)extraData
 {
-  static uint16_t coalescingKey = 0;
-  if ((self = [super init])) {
-    _viewTag = reactTag;
-    _handlerTag = handlerTag;
-    _state = state;
-    _extraData = extraData;
-    _coalescingKey = coalescingKey++;
-  }
-  return self;
+    static uint16_t coalescingKey = 0;
+    if ((self = [super init])) {
+        _viewTag = reactTag;
+        _handlerTag = handlerTag;
+        _state = state;
+        _extraData = extraData;
+        _coalescingKey = coalescingKey++;
+    }
+    return self;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSString *)eventName
 {
-  return @"onGestureHandlerEvent";
+    return @"onGestureHandlerEvent";
 }
 
 - (BOOL)canCoalesce
 {
-  // TODO: event coalescing
-  return NO;
+    // TODO: event coalescing
+    return NO;
 }
 
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
 {
-  return newEvent;
+    return newEvent;
 }
 
 + (NSString *)moduleDotMethod
 {
-  return @"RCTEventEmitter.receiveEvent";
+    return @"RCTEventEmitter.receiveEvent";
 }
 
 - (NSArray *)arguments
 {
-  NSMutableDictionary *body = [NSMutableDictionary dictionaryWithDictionary:_extraData.data];
-  [body setObject:_viewTag forKey:@"target"];
-  [body setObject:_handlerTag forKey:@"handlerTag"];
-  [body setObject:@(_state) forKey:@"state"];
-  return @[self.viewTag, @"onGestureHandlerEvent", body];
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithDictionary:_extraData.data];
+    [body setObject:_viewTag forKey:@"target"];
+    [body setObject:_handlerTag forKey:@"handlerTag"];
+    [body setObject:@(_state) forKey:@"state"];
+    return @[self.viewTag, @"onGestureHandlerEvent", body];
 }
 
 @end
