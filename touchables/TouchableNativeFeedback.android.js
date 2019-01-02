@@ -34,7 +34,7 @@ export default class TouchableNativeFeedback extends TouchableWithoutFeedback {
     style: PropTypes.object,
   };
 
-  renderChildren(children) {
+  getExtraButtonProps = () => {
     const extraProps = {};
     const { background } = this.props;
     if (background) {
@@ -45,13 +45,7 @@ export default class TouchableNativeFeedback extends TouchableWithoutFeedback {
         extraProps['borderless'] = true;
       }
     }
-    return (
-      <BaseButton
-        style={this.props.style}
-        foreground={this.props.useForeground}
-        {...extraProps}>
-        {children}
-      </BaseButton>
-    );
-  }
+    extraProps['foreground'] = this.props.useForeground;
+    return extraProps;
+  };
 }

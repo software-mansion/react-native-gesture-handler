@@ -15,6 +15,7 @@ import {
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ScrollView,
 } from 'react-native-gesture-handler';
 import { createStackNavigator } from 'react-navigation';
 
@@ -291,6 +292,13 @@ class TouchableExample extends Component {
   static navigationOptions = {
     title: 'Animated & GH',
   };
+  state = {
+    useScrollView: true,
+  };
+
+  toggleScrollView = () =>
+    this.setState(prev => ({ useScrollView: !prev.useScrollView }));
+
   render() {
     const {
       type: GHTouchable,
@@ -301,9 +309,15 @@ class TouchableExample extends Component {
       color,
     } = screens[this.props.navigation.state.params.item];
     const RNTouchable = toReactNativeTouchable(GHTouchable);
+    const Component = this.state.useScrollView ? ScrollView : View;
 
     return (
-      <View style={{ width: '100%', padding: 10 }}>
+      <Component style={{ width: '100%', height: '100%', padding: 10 }}>
+        <TouchableOpacity onPress={this.toggleScrollView}>
+          <Text>
+            Use {this.state.useScrollView ? 'View' : 'ScrollView'} as a wrapper
+          </Text>
+        </TouchableOpacity>
         <Text>{text}</Text>
         <View
           style={{
@@ -322,7 +336,7 @@ class TouchableExample extends Component {
             {renderChild(color)}
           </GHTouchable>
         </View>
-      </View>
+      </Component>
     );
   }
 }
