@@ -175,9 +175,9 @@ export default class TouchableWithoutFeedback extends Component {
       // Need to handle case with external cancellation (e.g. by ScrollView)
       this.moveToState(TOUCHABLE_STATE.UNDETERMINED);
     } else if (
-      // This platform check is a reason of slightly different behavior of handlers on different platform.
+      // This platform check is an implication of slightly different behavior of handlers on different platform.
       // And Android "Active" state is achieving on first move of a finger, not on press in.
-      // On iOS event on began is not derived.
+      // On iOS event on "Began" is not delivered.
       state === (Platform.OS === 'ios' ? State.ACTIVE : State.BEGAN) &&
       this.STATE === TOUCHABLE_STATE.UNDETERMINED
     ) {
