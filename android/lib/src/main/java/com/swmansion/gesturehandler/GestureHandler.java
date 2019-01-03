@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
