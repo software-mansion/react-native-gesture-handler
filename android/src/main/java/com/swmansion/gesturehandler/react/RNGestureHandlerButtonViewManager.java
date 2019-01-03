@@ -64,8 +64,8 @@ public class RNGestureHandlerButtonViewManager extends
       if (mRippleColor != null
               && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
               && selectable instanceof RippleDrawable) {
-        int[][] states = new int[][]{new int[]{android.R.attr.state_enabled}};
-        int[] colors = new int[]{mRippleColor};
+        int[][] states = new int[][]{ new int[]{ android.R.attr.state_enabled } };
+        int[] colors = new int[]{ mRippleColor };
         ColorStateList colorStateList = new ColorStateList(states, colors);
         ((RippleDrawable)selectable).setColor(colorStateList);
       }
@@ -105,7 +105,7 @@ public class RNGestureHandlerButtonViewManager extends
         if (mBackgroundColor != Color.TRANSPARENT) {
           setBackgroundColor(mBackgroundColor);
         }
-        if(mRippleColor != null && selectable instanceof RippleDrawable) {
+        if (mRippleColor != null && selectable instanceof RippleDrawable) {
           applyRippleEffectIfNeeded(selectable);
         }
       } else if (mBackgroundColor == Color.TRANSPARENT && mRippleColor == null) {
