@@ -122,7 +122,6 @@ public class RNGestureHandlerButtonViewManager extends
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && selectable instanceof RippleDrawable) {
             PaintDrawable mask = new PaintDrawable(Color.WHITE);
-            applyRippleEffectWhenNeeded(selectable);
             mask.setCornerRadius(mBorderRadius);
             ((RippleDrawable) selectable).setDrawableByLayerId(android.R.id.mask, mask);
           }
