@@ -84,9 +84,8 @@
     self.state = UIGestureRecognizerStateFailed;
     return;
   }
-  if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged) && _gestureHandler.shouldCancelWhenOutside) {
-    CGPoint pt = [self locationInView:self.view];
-    if (!CGRectContainsPoint(self.view.bounds, pt)) {
+  if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged)) {
+    if (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) {
       // If the previous recognizer state is UIGestureRecognizerStateChanged
       // then UIGestureRecognizer's sate machine will only transition to
       // UIGestureRecognizerStateCancelled even if you set the state to
