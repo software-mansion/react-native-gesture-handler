@@ -6,11 +6,12 @@ import {
   DrawerLayoutAndroid,
 } from 'react-native-gesture-handler';
 
-const Page = ({ backgroundColor, text }) => (
+const Page = ({ backgroundColor, text }) =>
   <View style={[styles.page, { backgroundColor }]}>
-    <Text style={styles.pageText}>{text}</Text>
-  </View>
-);
+    <Text style={styles.pageText}>
+      {text}
+    </Text>
+  </View>;
 
 export default class Example extends Component {
   render() {

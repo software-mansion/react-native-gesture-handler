@@ -16,13 +16,13 @@ const TYPES = ['front', 'back', 'back', 'slide'];
 const PARALLAX = [false, false, true, false];
 
 const Page = ({
-  fromLeft,
-  type,
-  parallaxOn,
-  flipSide,
-  nextType,
-  openDrawer,
-}) => (
+                fromLeft,
+                type,
+                parallaxOn,
+                flipSide,
+                nextType,
+                openDrawer,
+              }) => (
   <View style={styles.page}>
     <Text style={styles.pageText}>Hi 👋</Text>
     <RectButton style={styles.rectButton} onPress={flipSide}>
@@ -104,17 +104,17 @@ export default class Example extends Component {
             drawerType === 'front'
               ? {}
               : Platform.select({
-                  ios: {
-                    shadowColor: '#000',
-                    shadowOpacity: 0.5,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowRadius: 60,
-                  },
-                  android: {
-                    elevation: 100,
-                    backgroundColor: '#000',
-                  },
-                })
+                ios: {
+                  shadowColor: '#000',
+                  shadowOpacity: 0.5,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowRadius: 60,
+                },
+                android: {
+                  elevation: 100,
+                  backgroundColor: '#000',
+                },
+              })
           }>
           <Page
             type={drawerType}
@@ -122,8 +122,7 @@ export default class Example extends Component {
             parallaxOn={parallax}
             flipSide={() => this.setState({ fromLeft: !this.state.fromLeft })}
             nextType={() =>
-              this.setState({ type: (this.state.type + 1) % TYPES.length })
-            }
+              this.setState({ type: (this.state.type + 1) % TYPES.length })}
             openDrawer={() => this.drawer.openDrawer()}
           />
         </DrawerLayout>

@@ -68,7 +68,7 @@ matrix:
     - yarn
 
     script:
-    - FORCE_BUNDLING=1 detox build --configuration android.emu.debug
+    - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
 
   - language: objective-c
     osx_image: xcode9
@@ -100,5 +100,5 @@ matrix:
     - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
     script:
-    - FORCE_BUNDLING=1 detox build --configuration ios.sim.debug
+    - xcodebuild -project ./ios/GestureHandler.xcodeproj -scheme GestureHandler -configuration Debug -sdk iphonesimulator -derivedDataPath ./ios/build
 
