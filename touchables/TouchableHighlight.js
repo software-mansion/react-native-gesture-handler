@@ -1,23 +1,21 @@
-import React from 'react';
-import TouchableWithoutFeedback, {
-  TOUCHABLE_STATE,
-} from './TouchableWithoutFeedback';
+import React, { Component } from 'react';
+import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
 import { StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 
 /**
  * TouchableHighlight follows RN's implementation
  */
-export default class TouchableHighlight extends TouchableWithoutFeedback {
+export default class TouchableHighlight extends Component {
   static defaultProps = {
-    ...TouchableWithoutFeedback.defaultProps,
+    ...GenericTouchable.defaultProps,
     activeOpacity: 0.85,
     delayPressOut: 100,
     underlayColor: 'black',
   };
 
   static propTypes = {
-    ...TouchableWithoutFeedback.propTypes,
+    ...GenericTouchable.publicPropTypes,
     activeOpacity: PropTypes.number,
     underlayColor: PropTypes.string,
     style: PropTypes.object,
@@ -25,7 +23,6 @@ export default class TouchableHighlight extends TouchableWithoutFeedback {
     onHideUnderlay: PropTypes.func,
   };
 
-  // Copied from RN
   state = {
     extraChildStyle: null,
     extraUnderlayStyle: {
@@ -49,14 +46,12 @@ export default class TouchableHighlight extends TouchableWithoutFeedback {
     this.props.onShowUnderlay && this.props.onShowUnderlay();
   };
 
-  // Copied from RN
   hasPressHandler = () =>
     this.props.onPress ||
     this.props.onPressIn ||
     this.props.onPressOut ||
     this.props.onLongPress;
 
-  // Copied from RN
   hideUnderlay = () => {
     this.setState({
       extraChildStyle: null,
@@ -65,10 +60,11 @@ export default class TouchableHighlight extends TouchableWithoutFeedback {
     this.props.onHideUnderlay && this.props.onHideUnderlay();
   };
 
-  renderChildren(children) {
+  renderChildren = children => {
     if (!children) {
       return <View />;
     }
+
     const child = React.Children.only(children);
     return React.cloneElement(child, {
       style: StyleSheet.compose(
@@ -76,9 +72,8 @@ export default class TouchableHighlight extends TouchableWithoutFeedback {
         this.state.extraChildStyle
       ),
     });
-  }
+  };
 
-  // override
   onStateChange = (from, to) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
       this.showUnderlay();
@@ -89,4 +84,20 @@ export default class TouchableHighlight extends TouchableWithoutFeedback {
       this.hideUnderlay();
     }
   };
+
+  render() {
+    const { style = {}, ...rest } = this.props;
+    const { extraUnderlayStyle } = this.state;
+    return (
+      <GenericTouchable
+        {...rest}
+        style={{
+          ...style,
+          ...extraUnderlayStyle,
+        }}
+        onStateChange={this.onStateChange}
+        renderChildren={this.renderChildren}
+      />
+    );
+  }
 }

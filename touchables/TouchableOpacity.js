@@ -1,22 +1,19 @@
 import { Animated, Easing, StyleSheet, View } from 'react-native';
-import TouchableWithoutFeedback, {
-  TOUCHABLE_STATE,
-} from './TouchableWithoutFeedback';
-import React from 'react';
+import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 /**
  * TouchableOpacity bases on timing animation which has been used in RN's core
  */
-export default class TouchableOpacity extends TouchableWithoutFeedback {
+export default class TouchableOpacity extends Component {
   static defaultProps = {
-    ...TouchableWithoutFeedback.defaultProps,
-    // value copied from RN's implementation
+    ...GenericTouchable.defaultProps,
     activeOpacity: 0.2,
   };
 
   static propTypes = {
-    ...TouchableWithoutFeedback.propTypes,
+    ...GenericTouchable.publicPropTypes,
     style: PropTypes.object,
     activeOpacity: PropTypes.number,
   };
@@ -28,16 +25,8 @@ export default class TouchableOpacity extends TouchableWithoutFeedback {
   };
 
   opacity = new Animated.Value(this.getChildStyleOpacityWithDefault());
-  style = {
-    ...this.props.style,
-    opacity: this.opacity,
-  };
 
-  // Handle case when touchable is empty, but LongPressGesture Handler has to be
-  // binded wit some view.
-  renderChildren(children) {
-    return children ? children : <View />;
-  }
+  renderChildren = children => (children ? children : <View />);
 
   setOpacityTo = (value, duration) => {
     Animated.timing(this.opacity, {
@@ -48,7 +37,6 @@ export default class TouchableOpacity extends TouchableWithoutFeedback {
     }).start();
   };
 
-  // Override
   onStateChange = (from, to) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
       this.setOpacityTo(this.props.activeOpacity, 0);
@@ -59,4 +47,19 @@ export default class TouchableOpacity extends TouchableWithoutFeedback {
       this.setOpacityTo(this.getChildStyleOpacityWithDefault(), 150);
     }
   };
+
+  render() {
+    const { style = {}, ...rest } = this.props;
+    return (
+      <GenericTouchable
+        {...rest}
+        style={{
+          ...style,
+          opacity: this.opacity,
+        }}
+        onStateChange={this.onStateChange}
+        renderChildren={this.renderChildren}
+      />
+    );
+  }
 }

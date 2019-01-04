@@ -1,6 +1,5 @@
-import TouchableWithoutFeedback from './TouchableWithoutFeedback';
-import { BaseButton } from '../GestureHandler';
-import React from 'react';
+import GenericTouchable from './GenericTouchable';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 /**
@@ -9,7 +8,7 @@ import PropTypes from 'prop-types';
  * ripple animation via bridge. This solution leaves all animations' handling for native components so
  * it follows native behaviours.
  */
-export default class TouchableNativeFeedback extends TouchableWithoutFeedback {
+export default class TouchableNativeFeedback extends Component {
   static SelectableBackground = () => ({ type: 'SelectableBackground' });
   static SelectableBackgroundBorderless = () => ({
     type: 'SelectableBackgroundBorderless',
@@ -19,16 +18,17 @@ export default class TouchableNativeFeedback extends TouchableWithoutFeedback {
     color,
     borderless,
   });
+
   static canUseNativeForeground = () =>
     Platform.OS === 'android' && Platform.Version >= 23;
 
   static defaultProps = {
-    ...TouchableWithoutFeedback.defaultProps,
+    ...GenericTouchable.defaultProps,
     useForeground: true,
   };
 
   static propTypes = {
-    ...TouchableWithoutFeedback.propTypes,
+    ...GenericTouchable.publicPropTypes,
     useForeground: PropTypes.bool,
     background: PropTypes.string,
     style: PropTypes.object,
@@ -48,4 +48,14 @@ export default class TouchableNativeFeedback extends TouchableWithoutFeedback {
     extraProps['foreground'] = this.props.useForeground;
     return extraProps;
   };
+  render() {
+    const { style = {}, ...rest } = this.props;
+    return (
+      <GenericTouchable
+        {...rest}
+        style={style}
+        extraButtonProps={this.getExtraButtonProps()}
+      />
+    );
+  }
 }
