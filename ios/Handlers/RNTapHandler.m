@@ -92,11 +92,11 @@
   if (numberOfTouches > _maxNumberOfTouches) {
     _maxNumberOfTouches = numberOfTouches;
   }
-
+  
   if (self.state != UIGestureRecognizerStatePossible) {
     return;
   }
-
+  
   if ([self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
     [self triggerAction];
@@ -120,7 +120,7 @@
       return YES;
     }
   }
-
+  
   CGPoint trans = [self translationInView];
   if (TEST_MAX_IF_NOT_NAN(fabs(trans.x), _maxDeltaX)) {
     return YES;
