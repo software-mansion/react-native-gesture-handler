@@ -411,7 +411,9 @@ const FlingGestureHandler = createHandler(
 
 class ForceTouchFallback extends React.Component {
   componentDidMount() {
-    console.warn('ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase');
+    console.warn(
+      'ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase'
+    );
   }
   render() {
     return this.props.children;
