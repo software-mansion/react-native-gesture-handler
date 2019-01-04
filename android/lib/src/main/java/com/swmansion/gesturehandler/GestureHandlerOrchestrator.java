@@ -537,4 +537,3 @@ public class GestureHandlerOrchestrator {
             || state == GestureHandler.STATE_END;
   }
 }
-
