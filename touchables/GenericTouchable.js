@@ -59,7 +59,9 @@ export default class GenericTouchable extends Component {
 
   static defaultProps = {
     delayLongPress: 600,
-    extraButtonProps: {},
+    extraButtonProps: {
+      rippleColor: 'transparent',
+    },
   };
 
   // timeout handlers

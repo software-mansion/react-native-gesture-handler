@@ -25,6 +25,10 @@ export default class TouchableNativeFeedback extends Component {
   static defaultProps = {
     ...GenericTouchable.defaultProps,
     useForeground: true,
+    extraButtonProps: {
+      // Disable hiding ripple on Android
+      rippleColor: null,
+    },
   };
 
   static propTypes = {
