@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import javax.annotation.Nullable;
+
 public class GestureHandlerOrchestrator {
 
   // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
@@ -319,16 +321,14 @@ public class GestureHandlerOrchestrator {
    * ended yet. Probably it's a result of some race condition and stopping delivering
    * for this handler and changing its state to failed of end appear to be good enough solution.
    */
-  private boolean isViewAttachedUnderWrapper(View view) {
-    if (view == mWrapperView) {
-      return true;
+  private boolean isViewAttachedUnderWrapper(@Nullable View view) {
+    while (view != mWrapperView) {
+      if (view == null || !(view.getParent() instanceof View)) {
+        return false;
+      }
+      view = (View) view.getParent();
     }
-
-    if (view == null || !(view.getParent() instanceof View)) {
-      return false;
-    }
-
-    return isViewAttachedUnderWrapper((View) view.getParent());
+    return true;
   }
 
   private void extractCoordsForView(View view, MotionEvent event, float[] outputCoords) {
