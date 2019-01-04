@@ -103,7 +103,7 @@
     [self reset];
     return;
   }
-
+  
   self.state = UIGestureRecognizerStatePossible;
   [self triggerAction];
 }
@@ -180,22 +180,22 @@
 {
   [super configure:config];
   RNBetterTapGestureRecognizer *recognizer = (RNBetterTapGestureRecognizer *)_recognizer;
-
+  
   APPLY_INT_PROP(numberOfTaps);
   APPLY_INT_PROP(minPointers);
   APPLY_FLOAT_PROP(maxDeltaX);
   APPLY_FLOAT_PROP(maxDeltaY);
-
+  
   id prop = config[@"maxDelayMs"];
   if (prop != nil) {
     recognizer.maxDelay = [RCTConvert CGFloat:prop] / 1000.0;
   }
-
+  
   prop = config[@"maxDurationMs"];
   if (prop != nil) {
     recognizer.maxDuration = [RCTConvert CGFloat:prop] / 1000.0;
   }
-
+  
   prop = config[@"maxDist"];
   if (prop != nil) {
     CGFloat dist = [RCTConvert CGFloat:prop];
