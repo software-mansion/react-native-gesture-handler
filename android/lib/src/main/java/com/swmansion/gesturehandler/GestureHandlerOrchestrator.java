@@ -277,6 +277,10 @@ public class GestureHandlerOrchestrator {
   }
 
   private void deliverEventToGestureHandler(GestureHandler handler, MotionEvent event) {
+    if (!isViewAttachedUnderWrapper(handler.getView())) {
+      handler.cancel();
+      return;
+    }
     if (!handler.wantEvents()) {
       return;
     }
@@ -285,16 +289,7 @@ public class GestureHandlerOrchestrator {
       return;
     }
     float[] coords = sTempCoords;
-    if (!extractCoordsForView(handler.getView(), event, coords)) {
-      if (!isFinished(handler.getState())) {
-        if (handler.getState() == GestureHandler.STATE_ACTIVE) {
-          handler.end();
-        } else {
-          handler.fail();
-        }
-      }
-      return;
-    }
+    extractCoordsForView(handler.getView(), event, coords);
     float oldX = event.getX();
     float oldY = event.getY();
     // TODO: we may conside scaling events if necessary using MotionEvent.transform
@@ -318,31 +313,39 @@ public class GestureHandlerOrchestrator {
   }
 
   /**
-   * extractCoordsForView performs extraction of coords for event in rootView.
-   * In addition it checks whether all of parents for view related to handler are attached.
-   * There might be a rarely observed issue when view has been detached and handler's
-   * state hasn't been change to failed or ended yet. Probably it's a result of some race condition
-   * and stopping delivering for this handler and changing its state to failed of end appear
-   * to be good enough solution.
+   * isViewAttachedUnderWrapper checks whether all of parents for view related to handler
+   * view are attached. Since there might be an issue rarely observed when view
+   * has been detached and handler's state hasn't been change to canceled, failed or
+   * ended yet. Probably it's a result of some race condition and stopping delivering
+   * for this handler and changing its state to failed of end appear to be good enough solution.
    */
-  private boolean extractCoordsForView(View view, MotionEvent event, float[] outputCoords) {
+  private boolean isViewAttachedUnderWrapper(View view) {
+    if (view == mWrapperView) {
+      return true;
+    }
+
+    if (view == null || !(view.getParent() instanceof View)) {
+      return false;
+    }
+
+    return isViewAttachedUnderWrapper((View) view.getParent());
+  }
+
+  private void extractCoordsForView(View view, MotionEvent event, float[] outputCoords) {
     if (view == mWrapperView) {
       outputCoords[0] = event.getX();
       outputCoords[1] = event.getY();
-      return true;
+      return;
     }
     if (view == null || !(view.getParent() instanceof ViewGroup)) {
-      return false;
+      throw new IllegalArgumentException("Parent is null? View is no longer in the tree");
     }
     ViewGroup parent = (ViewGroup) view.getParent();
-    if (!extractCoordsForView(parent, event, outputCoords)) {
-      return false;
-    }
+    extractCoordsForView(parent, event, outputCoords);
     PointF childPoint = sTempPoint;
     isTransformedTouchPointInView(outputCoords[0], outputCoords[1], parent, view, childPoint);
     outputCoords[0] = childPoint.x;
     outputCoords[1] = childPoint.y;
-    return true;
   }
 
   private void addAwaitingHandler(GestureHandler handler) {
