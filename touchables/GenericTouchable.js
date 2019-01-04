@@ -17,8 +17,8 @@ export const TOUCHABLE_STATE = {
 };
 
 /**
- * TouchableWithoutFeedback is not intent to be used.
- * Should be treated as a superclass for the rest of touchables
+ * GenericTouchable is not intented to be used as it.
+ * Should be treated as a source for the rest of touchables
  */
 
 export default class GenericTouchable extends Component {
