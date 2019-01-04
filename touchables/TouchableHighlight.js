@@ -60,19 +60,19 @@ export default class TouchableHighlight extends Component {
     this.props.onHideUnderlay && this.props.onHideUnderlay();
   };
 
-  renderChildren = children => {
-    if (!children) {
+  renderChildren() {
+    if (!this.props.children) {
       return <View />;
     }
 
-    const child = React.Children.only(children);
+    const child = React.Children.only(this.props.children);
     return React.cloneElement(child, {
       style: StyleSheet.compose(
         child.props.style,
         this.state.extraChildStyle
       ),
     });
-  };
+  }
 
   onStateChange = (from, to) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
@@ -95,9 +95,9 @@ export default class TouchableHighlight extends Component {
           ...style,
           ...extraUnderlayStyle,
         }}
-        onStateChange={this.onStateChange}
-        renderChildren={this.renderChildren}
-      />
+        onStateChange={this.onStateChange}>
+        {this.renderChildren()}
+      </GenericTouchable>
     );
   }
 }

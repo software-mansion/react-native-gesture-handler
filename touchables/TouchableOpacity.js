@@ -26,8 +26,6 @@ export default class TouchableOpacity extends Component {
 
   opacity = new Animated.Value(this.getChildStyleOpacityWithDefault());
 
-  renderChildren = children => (children ? children : <View />);
-
   setOpacityTo = (value, duration) => {
     Animated.timing(this.opacity, {
       toValue: value,
@@ -57,9 +55,9 @@ export default class TouchableOpacity extends Component {
           ...style,
           opacity: this.opacity,
         }}
-        onStateChange={this.onStateChange}
-        renderChildren={this.renderChildren}
-      />
+        onStateChange={this.onStateChange}>
+        {this.props.children ? this.props.children : <View />}
+      </GenericTouchable>
     );
   }
 }

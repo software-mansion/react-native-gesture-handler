@@ -48,7 +48,6 @@ export default class GenericTouchable extends Component {
   };
 
   static internalPropTypes = {
-    renderChildren: PropTypes.func,
     extraButtonProps: PropTypes.object,
     onStateChange: PropTypes.func,
   };
@@ -249,14 +248,12 @@ export default class GenericTouchable extends Component {
 
     return (
       <BaseButton
-        onHandlerStateChange={this.onHandlerStateChange}
+        onHandlerStateChange={this.props.disabled || this.onHandlerStateChange}
         onGestureEvent={this.onGestureEvent}
         hitSlop={this.props.hitSlop}
         {...this.props.extraButtonProps}>
         <Animated.View {...coreProps} style={this.props.style}>
-          {this.props.renderChildren
-            ? this.props.renderChildren(this.props.children)
-            : this.props.children}
+          {this.props.children}
         </Animated.View>
       </BaseButton>
     );
