@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.author       = { package["author"]["name"] => package["author"]["email"] }
   s.platform     = :ios, "7.0"
   s.source       = { :git => "https://github.com/kmagiera/react-native-gesture-handler", :tag => "#{s.version}" }
-  s.source_files = "**/*.{h,m}"
+  s.source_files = "ios/**/*.{h,m}"
 
   s.dependency "React"
 
