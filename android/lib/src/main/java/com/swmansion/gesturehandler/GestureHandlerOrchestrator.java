@@ -5,10 +5,13 @@ import android.graphics.PointF;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+
+import javax.annotation.Nullable;
 
 public class GestureHandlerOrchestrator {
 
@@ -249,9 +252,7 @@ public class GestureHandlerOrchestrator {
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
     int handlersCount = mGestureHandlersCount;
-    for (int i = 0; i < handlersCount; i++) {
-      mPreparedHandlers[i] = mGestureHandlers[i];
-    }
+    System.arraycopy(mGestureHandlers, 0, mPreparedHandlers, 0, handlersCount);
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
     // order in which handlers has been added ("most direct" children goes first). Therefore we rely
@@ -263,18 +264,7 @@ public class GestureHandlerOrchestrator {
     }
   }
 
-  public GestureHandler getLastActivatedHandler() {
-    GestureHandler result = null;
-    for (int i = 0; i < mGestureHandlersCount; i++) {
-      GestureHandler handler = mGestureHandlers[i];
-      if (handler.mIsActive && (result == null || result.mActivationIndex < handler.mActivationIndex)) {
-        result = handler;
-      }
-    }
-    return result;
-  }
-
-  public void cancelAll() {
+  private void cancelAll() {
     for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
       mAwaitingHandlers[i].cancel();
     }
@@ -290,6 +280,10 @@ public class GestureHandlerOrchestrator {
   }
 
   private void deliverEventToGestureHandler(GestureHandler handler, MotionEvent event) {
+    if (!isViewAttachedUnderWrapper(handler.getView())) {
+      handler.cancel();
+      return;
+    }
     if (!handler.wantEvents()) {
       return;
     }
@@ -319,6 +313,22 @@ public class GestureHandlerOrchestrator {
       int pointerId = event.getPointerId(event.getActionIndex());
       handler.stopTrackingPointer(pointerId);
     }
+  }
+
+  /**
+   * isViewAttachedUnderWrapper checks whether all of parents for view related to handler
+   * view are attached. Since there might be an issue rarely observed when view
+   * has been detached and handler's state hasn't been change to canceled, failed or
+   * ended yet. Probably it's a result of some race condition and stopping delivering
+   * for this handler and changing its state to failed of end appear to be good enough solution.
+   */
+  private boolean isViewAttachedUnderWrapper(@Nullable View view) {
+    if (view == null) return false;
+    @Nullable ViewParent parent = view.getParent();
+    while (parent != null && parent != mWrapperView) {
+      parent = parent.getParent();
+    }
+    return parent == mWrapperView;
   }
 
   private void extractCoordsForView(View view, MotionEvent event, float[] outputCoords) {
