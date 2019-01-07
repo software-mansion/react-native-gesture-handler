@@ -76,7 +76,7 @@
 
 - (void)performFeedbackIfRequired
 {
-  if (_feedbackOnActivation) {
+  if (_feedbackOnActivation && @available(iOS 10.0, *)) {
     [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
   }
 }
