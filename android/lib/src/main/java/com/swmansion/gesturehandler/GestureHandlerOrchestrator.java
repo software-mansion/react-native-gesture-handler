@@ -5,6 +5,7 @@ import android.graphics.PointF;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -322,13 +323,12 @@ public class GestureHandlerOrchestrator {
    * for this handler and changing its state to failed of end appear to be good enough solution.
    */
   private boolean isViewAttachedUnderWrapper(@Nullable View view) {
-    while (view != mWrapperView) {
-      if (view == null || !(view.getParent() instanceof View)) {
-        return false;
-      }
-      view = (View) view.getParent();
+    if (view == null) return false;
+    @Nullable ViewParent parent = view.getParent();
+    while (parent != null && parent != mWrapperView) {
+      parent = parent.getParent();
     }
-    return true;
+    return parent == mWrapperView;
   }
 
   private void extractCoordsForView(View view, MotionEvent event, float[] outputCoords) {
