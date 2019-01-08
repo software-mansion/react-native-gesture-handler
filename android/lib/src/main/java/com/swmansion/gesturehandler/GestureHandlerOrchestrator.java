@@ -380,7 +380,7 @@ public class GestureHandlerOrchestrator {
     if (handlers != null) {
       for (int i = 0, size = handlers.size(); i < size; i++) {
         GestureHandler handler = handlers.get(i);
-        if (handler.isEnabled() && (handler.isWithinBounds(view, coords[0], coords[1]) || !isClipping(view))) {
+        if (handler.isEnabled() && handler.isWithinBounds(view, coords[0], coords[1])) {
           recordHandlerIfNotPresent(handler, view);
           handler.startTrackingPointer(pointerId);
           found = true;
