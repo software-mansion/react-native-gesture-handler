@@ -52,8 +52,7 @@ public class RNViewConfigurationHelper implements ViewConfigurationHelper {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && !view.getClipChildren()) {
         if (view instanceof ReactViewGroup) {
             String overflow =((ReactViewGroup) view).getOverflow();
-            boolean res =  "hidden".equals(overflow);
-            return res;
+            return "hidden".equals(overflow);
         }
         return false;
       }
