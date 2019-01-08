@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 /**
  * Each touchable is a states' machine which preforms transitions.
  * On very beginning (and on the very end or recognition) touchable is
- * UNDERMINED. Then it moves to BEGAN. If touchable recognizes that finger
+ * UNDETERMINED. Then it moves to BEGAN. If touchable recognizes that finger
  * travel outside it transits to special MOVED_OUTSIDE state. Gesture recognition
  * finishes in UNDETERMINED state.
  */
@@ -109,8 +109,8 @@ export default class GenericTouchable extends Component {
     }
   };
 
-  // handleGoToUndermined transits to UNDETERMINED state with proper delay
-  handleGoToUndermined = () => {
+  // handleGoToUndetermined transits to UNDETERMINED state with proper delay
+  handleGoToUndetermined = () => {
     clearTimeout(this.pressOutTimeout);
     if (this.props.delayPressOut) {
       this.pressOutTimeout = setTimeout(() => {
@@ -199,7 +199,7 @@ export default class GenericTouchable extends Component {
         !this.longPressDetected &&
         this.STATE !== TOUCHABLE_STATE.MOVED_OUTSIDE &&
         this.pressOutTimeout === null;
-      this.handleGoToUndermined();
+      this.handleGoToUndetermined();
       if (shouldCallOnPress) {
         // Calls only inside component whether no long press was called previously
         this.props.onPress && this.props.onPress();
