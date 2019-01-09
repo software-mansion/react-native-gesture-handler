@@ -1,7 +1,4 @@
-// @flow
-
-import React, { Component } from 'react';
-
+// At the moment no swipe is supported
 export default function Swipeable({ children }) {
   return children;
 }
