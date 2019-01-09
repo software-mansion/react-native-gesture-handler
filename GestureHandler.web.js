@@ -39,7 +39,7 @@ function createHandler(name, attachNativeHandler) {
 
       // Attach handler to DOM node
       const { enabled } = this.props;
-      if (node && attachNativeHandler && enabled) {
+      if (node && attachNativeHandler && enabled !== false) {
         this.detachNativeHandler = attachNativeHandler(node, this.props);
       }
     }
@@ -56,7 +56,7 @@ function createHandler(name, attachNativeHandler) {
 
         // Attach handler to DOM node again
         const { enabled } = this.props;
-        if (enabled) {
+        if (enabled !== false) {
           attachNativeHandler(node, this.props);
         }
       }
