@@ -18,7 +18,7 @@ import {
   StatusBar,
   I18nManager,
 } from 'react-native';
-import { AnimatedEvent } from 'react-native/Libraries/Animated/src/AnimatedEvent';
+import { AnimatedEvent } from './AnimatedEvent';
 
 import { PanGestureHandler, TapGestureHandler, State } from './GestureHandler';
 
@@ -507,7 +507,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
 }
 
 const styles = StyleSheet.create({
-  drawer: { flex: 0 },
+  drawer: {},
   drawerContainer: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 1001,

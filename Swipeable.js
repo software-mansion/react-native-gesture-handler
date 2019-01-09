@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import { AnimatedEvent } from 'react-native/Libraries/Animated/src/AnimatedEvent';
+import { AnimatedEvent } from './AnimatedEvent';
 
 import { PanGestureHandler, TapGestureHandler, State } from './GestureHandler';
 
