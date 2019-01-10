@@ -13,17 +13,8 @@ import {
   findNodeHandle,
 } from 'react-native';
 import gestureHandlerRootHOC from './gestureHandlerRootHOC';
-
-const State = {
-  UNDETERMINED: 'UNDETERMINED',
-  FAILED: 'FAILED',
-  BEGAN: 'BEGAN',
-  CANCELLED: 'CANCELLED',
-  ACTIVE: 'ACTIVE',
-  END: 'END',
-};
-
-const Directions = {};
+import Directions from './Directions';
+import State from './State';
 
 // Factory for Handler components
 function createHandler(name, attachNativeHandler) {

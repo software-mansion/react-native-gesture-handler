@@ -22,6 +22,8 @@ import deepEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 
 import gestureHandlerRootHOC from './gestureHandlerRootHOC';
+import Directions from './Directions';
+import State from './State';
 
 const RNGestureHandlerModule = NativeModules.RNGestureHandlerModule;
 
@@ -50,10 +52,6 @@ UIManager.RCTView.directEventTypes = {
     registrationName: 'onGestureHandlerStateChange',
   },
 };
-
-const State = RNGestureHandlerModule.State;
-
-const Directions = RNGestureHandlerModule.Direction;
 
 let handlerTag = 1;
 const handlerIDToTag = {};
