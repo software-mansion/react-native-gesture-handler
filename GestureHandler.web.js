@@ -53,6 +53,10 @@ function createHandler(name, attachNativeHandler) {
       }
     }
 
+    setNativeProps() {
+      // No implementation so far but is needed to avoid null calls
+    }
+
     render() {
       const { children, ...rest } = this.props;
 
