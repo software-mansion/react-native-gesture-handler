@@ -16,45 +16,54 @@ export const TOUCHABLE_STATE = {
   MOVED_OUTSIDE: 2,
 };
 
+
+const PublicPropTypes = {
+  // Decided to drop not used fields from RN's implementation.
+  // e.g. onBlur and onFocus as well as deprecated props.
+  accessible: PropTypes.bool,
+  accessibilityLabel: PropTypes.node,
+  accessibilityHint: PropTypes.string,
+  hitSlop: PropTypes.shape({
+    top: PropTypes.number,
+    left: PropTypes.number,
+    bottom: PropTypes.number,
+    right: PropTypes.number,
+  }),
+  disabled: PropTypes.bool,
+  onPress: PropTypes.func,
+  onPressIn: PropTypes.func,
+  onPressOut: PropTypes.func,
+  onLayout: PropTypes.func,
+  onLongPress: PropTypes.func,
+  nativeID: PropTypes.string,
+  testID: PropTypes.string,
+  delayPressIn: PropTypes.number,
+  delayPressOut: PropTypes.number,
+  delayLongPress: PropTypes.number,
+};
+
+
+const InternalPropTypes = {
+  extraButtonProps: PropTypes.object,
+  onStateChange: PropTypes.func,
+};
+
+
 /**
  * GenericTouchable is not intented to be used as it.
  * Should be treated as a source for the rest of touchables
  */
 
 export default class GenericTouchable extends Component {
-  static publicPropTypes = {
-    // Decided to drop not used fields from RN's implementation.
-    // e.g. onBlur and onFocus as well as deprecated props.
-    accessible: PropTypes.bool,
-    accessibilityLabel: PropTypes.node,
-    accessibilityHint: PropTypes.string,
-    hitSlop: PropTypes.shape({
-      top: PropTypes.number,
-      left: PropTypes.number,
-      bottom: PropTypes.number,
-      right: PropTypes.number,
-    }),
-    disabled: PropTypes.bool,
-    onPress: PropTypes.func,
-    onPressIn: PropTypes.func,
-    onPressOut: PropTypes.func,
-    onLayout: PropTypes.func,
-    onLongPress: PropTypes.func,
-    nativeID: PropTypes.string,
-    testID: PropTypes.string,
-    delayPressIn: PropTypes.number,
-    delayPressOut: PropTypes.number,
-    delayLongPress: PropTypes.number,
-  };
+  static publicPropTypes = PublicPropTypes;
+  static internalPropTypes = InternalPropTypes;
 
-  static internalPropTypes = {
-    extraButtonProps: PropTypes.object,
-    onStateChange: PropTypes.func,
-  };
-
+  // The prop type collections have to be outside of the class, as metro
+  // at this time does not compile `this.foo` correctly if HMR is enabled.
+  // https://github.com/kmagiera/react-native-gesture-handler/pull/406#issuecomment-453779977
   static propTypes = {
-    ...this.internalPropTypes,
-    ...this.publicPropTypes,
+    ...InternalPropTypes,
+    ...PublicPropTypes,
   };
 
   static defaultProps = {
