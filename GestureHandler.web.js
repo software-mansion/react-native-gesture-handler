@@ -43,26 +43,28 @@ const NativeViewGestureHandler = createStubHandler('NativeViewGestureHandler');
 class TapGestureHandler extends React.Component {
   setNativeProps() {}
 
+  handlePress = ({ nativeEvent: { locationX, locationY, pageX, pageY } }) => {
+    const { enabled, onHandlerStateChange } = this.props;
+
+    if (enabled !== false && onHandlerStateChange) {
+      onHandlerStateChange({
+        nativeEvent: {
+          oldState: State.ACTIVE,
+          state: State.UNDETERMINED,
+          x: locationX,
+          y: locationY,
+          absoluteX: pageX,
+          absoluteY: pageY,
+        },
+      });
+    }
+  };
+
   render() {
-    const { children, enabled, onHandlerStateChange, style } = this.props;
+    const { children, style } = this.props;
 
     return (
-      <TouchableWithoutFeedback
-        style={style}
-        onPress={({ nativeEvent: { locationX, locationY, pageX, pageY } }) => {
-          enabled !== false &&
-            onHandlerStateChange &&
-            onHandlerStateChange({
-              nativeEvent: {
-                oldState: State.ACTIVE,
-                state: State.UNDETERMINED,
-                x: locationX,
-                y: locationY,
-                absoluteX: pageX,
-                absoluteY: pageY,
-              },
-            });
-        }}>
+      <TouchableWithoutFeedback style={style} onPress={this.handlePress}>
         {children}
       </TouchableWithoutFeedback>
     );
