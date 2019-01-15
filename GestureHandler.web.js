@@ -19,22 +19,17 @@ function createStubHandler(name) {
   return class NativeViewGestureHandler extends React.Component {
     static displayName = name;
 
-    container = React.createRef();
-
     setNativeProps() {
       // Since this is a stub we do not need to pass on native props.
       // However, we need to implement it here to avoid null calls.
-      // If for any reason we need to pass on native props we can fallback to this:
-      // this.container.current.setNativeProps(...args)
     }
 
     render() {
       const { children, ...rest } = this.props;
 
-      // We don't want to create another layer, so instead we clone it only but keep the reference
+      // We don't want to create another layer, so instead we just clone it
       const child = React.Children.only(children);
       return React.cloneElement(child, {
-        ref: this.container,
         ...rest,
       });
     }
@@ -54,14 +49,17 @@ class TapGestureHandler extends React.Component {
     return (
       <TouchableWithoutFeedback
         style={style}
-        onPress={({ x }) => {
+        onPress={({ nativeEvent: { locationX, locationY, pageX, pageY } }) => {
           enabled !== false &&
             onHandlerStateChange &&
             onHandlerStateChange({
               nativeEvent: {
                 oldState: State.ACTIVE,
                 state: State.UNDETERMINED,
-                x,
+                x: locationX,
+                y: locationY,
+                absoluteX: pageX,
+                absoluteY: pageY,
               },
             });
         }}>
