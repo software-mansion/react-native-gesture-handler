@@ -61,10 +61,13 @@ class TapGestureHandler extends React.Component {
   };
 
   render() {
-    const { children, style } = this.props;
+    const { children, maxDurationMs, style } = this.props;
 
     return (
-      <TouchableWithoutFeedback style={style} onPress={this.handlePress}>
+      <TouchableWithoutFeedback
+        style={style}
+        onPress={this.handlePress}
+        delayLongPress={maxDurationMs}>
         {children}
       </TouchableWithoutFeedback>
     );
