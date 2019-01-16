@@ -439,6 +439,7 @@ declare module 'react-native-gesture-handler/Swipeable' {
     rightThreshold?: number;
     overshootLeft?: boolean;
     overshootRight?: boolean;
+    overshootFriction?: number,
     onSwipeableLeftOpen?: () => void;
     onSwipeableRightOpen?: () => void;
     onSwipeableOpen?: () => void;
