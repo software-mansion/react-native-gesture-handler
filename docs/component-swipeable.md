@@ -38,6 +38,10 @@ a boolean value indicating if the swipeable panel can be pulled further than the
 a boolean value indicating if the swipeable panel can be pulled further than the right actions panel's width. It is set to `true` by default as long as the right panel render method is present.
 
 ---
+### `overshootFriction`
+a number that specifies how much the visual interaction will be delayed compared to the gesture distance at overshoot. Default value is 1, it mean no friction, for a native feel, try 8 or above.
+
+---
 ### `onSwipeableLeftOpen`
 method that is called when left action panel gets open.
 
