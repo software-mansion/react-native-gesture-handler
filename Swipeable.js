@@ -26,6 +26,7 @@ export type PropType = {
   rightThreshold?: number,
   overshootLeft?: boolean,
   overshootRight?: boolean,
+  overshootFriction?: number,
   onSwipeableLeftOpen?: Function,
   onSwipeableRightOpen?: Function,
   onSwipeableOpen?: Function,
@@ -57,6 +58,7 @@ type StateType = {
 export default class Swipeable extends Component<PropType, StateType> {
   static defaultProps = {
     friction: 1,
+    overshootFriction: 1,
     useNativeAnimations: true,
   };
   _onGestureEvent: ?AnimatedEvent;
@@ -90,6 +92,7 @@ export default class Swipeable extends Component<PropType, StateType> {
       this.props.friction !== props.friction ||
       this.props.overshootLeft !== props.overshootLeft ||
       this.props.overshootRight !== props.overshootRight ||
+      this.props.overshootFriction !== props.overshootFriction ||
       this.state.leftWidth !== state.leftWidth ||
       this.state.rightOffset !== state.rightOffset ||
       this.state.rowWidth !== state.rowWidth
@@ -99,7 +102,7 @@ export default class Swipeable extends Component<PropType, StateType> {
   }
 
   _updateAnimatedEvent = (props: PropType, state: StateType) => {
-    const { friction, useNativeAnimations } = props;
+    const { friction, overshootFriction, useNativeAnimations } = props;
     const { dragX, rowTranslation, leftWidth = 0, rowWidth = 0 } = state;
     const { rightOffset = rowWidth } = state;
     const rightWidth = Math.max(0, rowWidth - rightOffset);
@@ -116,12 +119,17 @@ export default class Swipeable extends Component<PropType, StateType> {
         outputRange: [0, 1],
       })
     ).interpolate({
-      inputRange: [-rightWidth - 1, -rightWidth, leftWidth, leftWidth + 1],
-      outputRange: [
-        -rightWidth - (overshootRight ? 1 : 0),
+      inputRange: [
+        -rightWidth - (overshootRight ? 1 : overshootFriction),
         -rightWidth,
         leftWidth,
-        leftWidth + (overshootLeft ? 1 : 0),
+        leftWidth + (overshootLeft ? 1 : overshootFriction),
+      ],
+      outputRange: [
+        -rightWidth - (overshootRight || overshootFriction > 1 ? 1 : 0),
+        -rightWidth,
+        leftWidth,
+        leftWidth + (overshootLeft || overshootFriction > 1 ? 1 : 0),
       ],
     });
     this._transX = transX;
@@ -130,7 +138,6 @@ export default class Swipeable extends Component<PropType, StateType> {
         ? transX.interpolate({
             inputRange: [-1, 0, leftWidth],
             outputRange: [0, 0, 1],
-            extrapolate: 'clamp',
           })
         : new Animated.Value(0);
     this._leftActionTranslate = this._showLeftAction.interpolate({
@@ -143,7 +150,6 @@ export default class Swipeable extends Component<PropType, StateType> {
         ? transX.interpolate({
             inputRange: [-rightWidth, 0, 1],
             outputRange: [1, 0, 0],
-            extrapolate: 'clamp',
           })
         : new Animated.Value(0);
     this._rightActionTranslate = this._showRightAction.interpolate({
