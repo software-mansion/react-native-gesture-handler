@@ -444,6 +444,10 @@ declare module 'react-native-gesture-handler/Swipeable' {
     onSwipeableRightOpen?: () => void;
     onSwipeableOpen?: () => void;
     onSwipeableClose?: () => void;
+    onSwipeableLeftWillOpen?: () => void;
+    onSwipeableRightWillOpen?: () => void;
+    onSwipeableWillOpen?: () => void;
+    onSwipeableWillClose?: () => void;
     renderLeftActions?: (
       progressAnimatedValue: Animated.Value,
       dragAnimatedValue: Animated.Value
