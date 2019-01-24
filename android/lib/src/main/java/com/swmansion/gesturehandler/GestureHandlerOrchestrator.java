@@ -281,7 +281,6 @@ public class GestureHandlerOrchestrator {
 
   private void deliverEventToGestureHandler(GestureHandler handler, MotionEvent event) {
     if (!isViewAttachedUnderWrapper(handler.getView())) {
-      handler.cancel();
       return;
     }
     if (!handler.wantEvents()) {
