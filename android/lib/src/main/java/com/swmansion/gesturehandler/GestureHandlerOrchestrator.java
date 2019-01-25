@@ -323,7 +323,12 @@ public class GestureHandlerOrchestrator {
    * for this handler and changing its state to failed of end appear to be good enough solution.
    */
   private boolean isViewAttachedUnderWrapper(@Nullable View view) {
-    if (view == null) return false;
+    if (view == null) {
+      return false;
+    }
+    if (view == mWrapperView) {
+      return true;
+    }
     @Nullable ViewParent parent = view.getParent();
     while (parent != null && parent != mWrapperView) {
       parent = parent.getParent();
