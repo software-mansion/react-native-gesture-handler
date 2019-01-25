@@ -23,12 +23,15 @@ export default class TouchableHighlight extends Component {
     onHideUnderlay: PropTypes.func,
   };
 
-  state = {
-    extraChildStyle: null,
-    extraUnderlayStyle: {
-      backgroundColor: 'black',
-    },
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      extraChildStyle: null,
+      extraUnderlayStyle: {
+        backgroundColor: props.underlayColor,
+      },
+    };
+  }
 
   // Copied from RN
   showUnderlay = () => {
