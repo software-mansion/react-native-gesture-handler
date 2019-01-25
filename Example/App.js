@@ -20,7 +20,7 @@ import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
 import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
 import forceTouch from './forcetouch';
-import touchables from './touchables';
+import { TouchablesIndex, TouchableExample } from './touchables';
 
 YellowBox.ignoreWarnings([
   'Warning: isMounted(...) is deprecated',
@@ -75,7 +75,7 @@ const SCREENS = {
     title: 'Two handlers simultaneously',
   },
   touchables: {
-    screen: touchables,
+    screen: TouchablesIndex,
     title: 'Touchables',
   },
   forceTouch: {
@@ -125,6 +125,10 @@ const ExampleApp = createStackNavigator(
   {
     Main: { screen: MainScreen },
     ...SCREENS,
+    TouchableExample: {
+      screen: TouchableExample,
+      title: 'Touchables',
+    },
   },
   {
     initialRouteName: 'Main',
