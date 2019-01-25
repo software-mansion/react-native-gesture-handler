@@ -43,8 +43,8 @@ UIManager.clearJSResponder = () => {
 // Add gesture specific events to RCTView's directEventTypes object exported via UIManager.
 // Once new event types are registered with react it is possible to dispatch these to other
 // view types as well.
-UIManager.RCTView.directEventTypes = {
-  ...UIManager.RCTView.directEventTypes,
+UIManager.genericDirectEventTypes = {
+  ...UIManager.genericDirectEventTypes,
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
   onGestureHandlerStateChange: {
     registrationName: 'onGestureHandlerStateChange',
