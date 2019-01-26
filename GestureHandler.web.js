@@ -25,13 +25,7 @@ function createStubHandler(name) {
     }
 
     render() {
-      const { children, ...rest } = this.props;
-
-      // We don't want to create another layer, so instead we just clone it
-      const child = React.Children.only(children);
-      return React.cloneElement(child, {
-        ...rest,
-      });
+      return this.props.children;
     }
   };
 }
@@ -41,22 +35,158 @@ function createStubHandler(name) {
 const NativeViewGestureHandler = createStubHandler('NativeViewGestureHandler');
 
 class TapGestureHandler extends React.Component {
+  static defaultProps = {
+    numberOfTaps: 1,
+    maxDurationMs: 500,
+    maxDelayMs: 500,
+    minPointers: 1,
+    maxDeltaX: Number.MAX_SAFE_INTEGER,
+    maxDeltaY: Number.MAX_SAFE_INTEGER,
+    maxDist: Number.MAX_SAFE_INTEGER,
+  };
+
   setNativeProps() {}
 
-  handlePress = ({ nativeEvent: { locationX, locationY, pageX, pageY } }) => {
+  isActivated = false;
+  touchBank = [];
+  timeout = null;
+
+  clearState = () => {
+    this.isActivated = false;
+    this.touchBank = [];
+    window.clearTimeout(this.timeout);
+  };
+
+  handleHandlerStateChange = nativeEvent => {
     const { enabled, onHandlerStateChange } = this.props;
 
     if (enabled !== false && onHandlerStateChange) {
       onHandlerStateChange({
-        nativeEvent: {
-          oldState: State.ACTIVE,
-          state: State.UNDETERMINED,
-          x: locationX,
-          y: locationY,
-          absoluteX: pageX,
-          absoluteY: pageY,
-        },
+        nativeEvent,
       });
+    }
+  };
+
+  handleFailed = ({
+    nativeEvent: {
+      locationX: x,
+      locationY: y,
+      pageX: absoluteX,
+      pageY: absoluteY,
+    },
+  }) => {
+    this.clearState();
+    this.handleHandlerStateChange({
+      oldState: State.ACTIVE,
+      state: State.FAILED,
+      x,
+      y,
+      absoluteX,
+      absoluteY,
+    });
+  };
+
+  handleEnd = ({
+    nativeEvent: {
+      locationX: x,
+      locationY: y,
+      pageX: absoluteX,
+      pageY: absoluteY,
+    },
+  }) => {
+    this.clearState();
+    this.handleHandlerStateChange({
+      oldState: State.ACTIVE,
+      state: State.END,
+      x,
+      y,
+      absoluteX,
+      absoluteY,
+    });
+  };
+
+  handleActivate = ({
+    nativeEvent: {
+      locationX: x,
+      locationY: y,
+      pageX: absoluteX,
+      pageY: absoluteY,
+    },
+  }) => {
+    this.isActivated = true;
+    this.handleHandlerStateChange({
+      oldState: State.UNDETERMINED,
+      state: State.ACTIVE,
+      x,
+      y,
+      absoluteX,
+      absoluteY,
+    });
+  };
+
+  handlePressIn = event => {
+    const { maxDelayMs } = this.props;
+
+    if (!this.isActivated) {
+      this.handleActivate(event);
+
+      // Cancel if not finished in time
+      this.timeout = window.setTimeout(() => {
+        if (this.isActivated) {
+          this.handleFailed(event);
+        }
+      }, maxDelayMs);
+    }
+  };
+
+  handlePressOut = event => {
+    const {
+      touchHistory: { touchBank = [] },
+    } = event;
+    const { maxDeltaX, maxDeltaY, maxDurationMs, numberOfTaps } = this.props;
+
+    this.touchBank = this.touchBank.concat(touchBank);
+
+    // Check if all touches are valid
+    const areTouchesValid = this.touchBank.every(touch => {
+      const {
+        currentPageX,
+        currentPageY,
+        currentTimeStamp,
+        startPageX,
+        startPageY,
+        startTimeStamp,
+      } = touch;
+
+      // Check if touch took longer than it may
+      if (startTimeStamp + maxDurationMs < currentTimeStamp) {
+        return false;
+      }
+
+      // Check if touch moved too far away
+      if (
+        startPageX + maxDeltaX < currentPageX ||
+        startPageX - maxDeltaX > currentPageX
+      ) {
+        return false;
+      }
+
+      // Check if touch moved too far away
+      if (
+        startPageY + maxDeltaY < currentPageY ||
+        startPageY - maxDeltaY > currentPageY
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
+    // Check if all touches were valid and the necessary number of touches was achieved
+    if (!areTouchesValid) {
+      this.handleFailed(event);
+    } else if (this.touchBank.length >= numberOfTaps) {
+      this.handleEnd(event);
     }
   };
 
@@ -66,7 +196,8 @@ class TapGestureHandler extends React.Component {
     return (
       <TouchableWithoutFeedback
         style={style}
-        onPress={this.handlePress}
+        onPressIn={this.handlePressIn}
+        onPressOut={this.handlePressOut}
         delayLongPress={maxDurationMs}>
         {children}
       </TouchableWithoutFeedback>
