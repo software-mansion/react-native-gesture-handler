@@ -14,6 +14,9 @@ declare module 'react-native-gesture-handler' {
     ToolbarAndroidProperties,
     ViewPagerAndroidProperties,
     DrawerLayoutAndroidProperties,
+    TouchableHighlightProperties,
+    TouchableOpacityProperties,
+    TouchableNativeFeedbackProperties,
     TouchableWithoutFeedbackProperties,
     Insets,
     ViewStyle,
@@ -382,6 +385,22 @@ declare module 'react-native-gesture-handler' {
 
   export class BorderlessButton extends React.Component<
     BorderlessButtonProperties
+  > {}
+
+  export class TouchableHighlight extends React.Component<
+    TouchableHighlightProperties
+  > {}
+
+  export class TouchableNativeFeedback extends React.Component<
+    TouchableNativeFeedbackProperties
+  > {}
+
+  export class TouchableOpacity extends React.Component<
+    TouchableOpacityProperties
+  > {}
+
+  export class TouchableWithoutFeedback extends React.Component<
+    TouchableWithoutFeedbackProperties
   > {}
 
   /* GESTURE HANDLER WRAPPED CLASSES */
