@@ -17,21 +17,6 @@ function getBlacklist() {
         __dirname
       )}/node_modules/create-react-class/node_modules/fbjs/*`
     ),
-    glob(
-      `${path.resolve(
-        __dirname
-      )}/node_modules/react-navigation/node_modules/hoist-non-react-statics/*`
-    ),
-    glob(
-      `${path.resolve(
-        __dirname
-      )}/node_modules/react-navigation-tabs/node_modules/hoist-non-react-statics/*`
-    ),
-    glob(
-      `${path.resolve(
-        __dirname
-      )}/node_modules/react-native-safe-area-view/node_modules/hoist-non-react-statics/*`
-    ),
   ];
   return blacklist(nodeModuleDirs);
 }

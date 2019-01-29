@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View, PanResponder } from 'react-native';
+import { StyleSheet, View, PanResponder } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { DraggableBox } from '../draggable';
-import { LoremIpsum } from '../common';
+import { Alert, LoremIpsum } from '../common';
 
 var CIRCLE_SIZE = 80;
 

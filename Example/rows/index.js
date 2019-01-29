@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -12,7 +12,7 @@ import {
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../config';
-import { LoremIpsum } from '../common';
+import { Alert, LoremIpsum } from '../common';
 
 const RATIO = 3;
 

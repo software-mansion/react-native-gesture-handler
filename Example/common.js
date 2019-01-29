@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Alert as RNAlert, Text, Platform, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   lipsum: {
@@ -13,14 +13,12 @@ export class LoremIpsum extends React.Component {
     style: styles.lipsum,
   };
   loremIpsum() {
-    return LOREM_IPSUM.split(' ').slice(0, this.props.words).join(' ');
+    return LOREM_IPSUM.split(' ')
+      .slice(0, this.props.words)
+      .join(' ');
   }
   render() {
-    return (
-      <Text style={this.props.style}>
-        {this.loremIpsum()}
-      </Text>
-    );
+    return <Text style={this.props.style}>{this.loremIpsum()}</Text>;
   }
 }
 
@@ -35,3 +33,13 @@ Praesent ac risus nec augue commodo semper eu eget quam. Donec aliquam sodales c
 
 Fusce interdum nisi a risus aliquet, non dictum metus cursus. Praesent imperdiet sapien orci, quis sodales metus aliquet id. Aliquam convallis pharetra erat. Fusce gravida diam ut tellus elementum sodales. Fusce varius congue neque, quis laoreet sapien blandit vestibulum. Donec congue libero sapien, nec varius risus viverra ut. Quisque eu maximus magna. Phasellus tortor nisi, tincidunt vitae dignissim nec, interdum vel mi. Ut accumsan urna finibus posuere mattis.
 `;
+
+export const Alert = {
+  alert: (title, message, buttons, options, type) => {
+    if (Platform.OS === 'web') {
+      window.alert(title);
+    } else {
+      RNAlert.alert(title, message, buttons, options, type);
+    }
+  },
+};

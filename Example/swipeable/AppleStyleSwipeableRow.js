@@ -5,6 +5,8 @@ import { RectButton } from 'react-native-gesture-handler';
 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
+import { Alert } from '../common';
+
 export default class AppleStyleSwipeableRow extends Component {
   renderLeftActions = (progress, dragX) => {
     const trans = dragX.interpolate({
@@ -32,7 +34,7 @@ export default class AppleStyleSwipeableRow extends Component {
     });
     const pressHandler = () => {
       this.close();
-      alert(text);
+      Alert.alert(text);
     };
     return (
       <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Alert,
   StyleSheet,
   ScrollView as RNScroll,
   Switch,
@@ -23,7 +22,7 @@ import { DraggableBox } from '../draggable';
 import { PinchableBox } from '../scaleAndRotate';
 import { PressBox } from '../multitap';
 
-import { LoremIpsum } from '../common';
+import { Alert, LoremIpsum } from '../common';
 
 const CHILD_REF = 'CHILD_REF';
 

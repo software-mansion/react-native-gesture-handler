@@ -9,6 +9,7 @@ import {
   DrawerLayoutAndroid,
   FlatList,
   TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import gestureHandlerRootHOC from './gestureHandlerRootHOC';
 import Directions from './Directions';
@@ -32,6 +33,32 @@ function createStubHandler(name) {
 
 // Create all Handler components with their respective handler functions
 // (at the moment only TapGestureHandler is properly supported)
+function handleHandlerStateChange(props, event, oldState, state) {
+  const { enabled, onHandlerStateChange } = props;
+
+  if (enabled !== false && onHandlerStateChange) {
+    const {
+      nativeEvent: {
+        locationX: x,
+        locationY: y,
+        pageX: absoluteX,
+        pageY: absoluteY,
+      },
+    } = event;
+
+    onHandlerStateChange({
+      nativeEvent: {
+        oldState,
+        state,
+        x,
+        y,
+        absoluteX,
+        absoluteY,
+      },
+    });
+  }
+}
+
 const NativeViewGestureHandler = createStubHandler('NativeViewGestureHandler');
 
 class TapGestureHandler extends React.Component {
@@ -47,92 +74,50 @@ class TapGestureHandler extends React.Component {
 
   setNativeProps() {}
 
-  isActivated = false;
+  hasBegun = false;
   touchBank = [];
   timeout = null;
 
   clearState = () => {
-    this.isActivated = false;
+    this.hasBegun = false;
     this.touchBank = [];
     window.clearTimeout(this.timeout);
   };
 
-  handleHandlerStateChange = nativeEvent => {
-    const { enabled, onHandlerStateChange } = this.props;
-
-    if (enabled !== false && onHandlerStateChange) {
-      onHandlerStateChange({
-        nativeEvent,
-      });
-    }
-  };
-
-  handleFailed = ({
-    nativeEvent: {
-      locationX: x,
-      locationY: y,
-      pageX: absoluteX,
-      pageY: absoluteY,
-    },
-  }) => {
+  handleFailed = event => {
     this.clearState();
-    this.handleHandlerStateChange({
-      oldState: State.ACTIVE,
-      state: State.FAILED,
-      x,
-      y,
-      absoluteX,
-      absoluteY,
-    });
+    handleHandlerStateChange(this.props, event, State.ACTIVE, State.FAILED);
   };
 
-  handleEnd = ({
-    nativeEvent: {
-      locationX: x,
-      locationY: y,
-      pageX: absoluteX,
-      pageY: absoluteY,
-    },
-  }) => {
+  handleEnd = event => {
     this.clearState();
-    this.handleHandlerStateChange({
-      oldState: State.ACTIVE,
-      state: State.END,
-      x,
-      y,
-      absoluteX,
-      absoluteY,
-    });
+    handleHandlerStateChange(this.props, event, State.ACTIVE, State.END);
   };
 
-  handleActivate = ({
-    nativeEvent: {
-      locationX: x,
-      locationY: y,
-      pageX: absoluteX,
-      pageY: absoluteY,
-    },
-  }) => {
-    this.isActivated = true;
-    this.handleHandlerStateChange({
-      oldState: State.UNDETERMINED,
-      state: State.ACTIVE,
-      x,
-      y,
-      absoluteX,
-      absoluteY,
-    });
+  handleActivate = event => {
+    handleHandlerStateChange(this.props, event, State.BEGAN, State.ACTIVE);
+  };
+
+  handleBegan = event => {
+    this.hasBegun = true;
+    handleHandlerStateChange(
+      this.props,
+      event,
+      State.UNDETERMINED,
+      State.BEGAN
+    );
   };
 
   handlePressIn = event => {
     const { maxDelayMs } = this.props;
 
-    if (!this.isActivated) {
-      this.handleActivate(event);
+    if (!this.hasBegun) {
+      event.persist();
+      this.handleBegan(event);
 
       // Cancel if not finished in time
       this.timeout = window.setTimeout(() => {
-        if (this.isActivated) {
+        if (this.hasBegun) {
           this.handleFailed(event);
         }
       }, maxDelayMs);
@@ -186,6 +171,7 @@ class TapGestureHandler extends React.Component {
     if (!areTouchesValid) {
       this.handleFailed(event);
     } else if (this.touchBank.length >= numberOfTaps) {
+      this.handleActivate(event);
       this.handleEnd(event);
     }
   };
@@ -224,8 +210,12 @@ function createStubButton(name) {
     static displayName = name;
 
     render() {
+      const { children, ...rest } = this.props;
+
       return (
-        <TouchableWithoutFeedback accessibilityRole="button" {...this.props} />
+        <TouchableWithoutFeedback accessibilityRole="button" {...rest}>
+          <View>{children}</View>
+        </TouchableWithoutFeedback>
       );
     }
   };

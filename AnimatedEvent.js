@@ -1,3 +1,3 @@
-import AnimatedEvent from 'react-native/Libraries/Animated/src/AnimatedEvent';
+import { Animated } from 'react-native';
 
-export default AnimatedEvent;
+export default Animated.Event;

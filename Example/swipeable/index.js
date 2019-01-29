@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { FlatList, RectButton } from 'react-native-gesture-handler';
 
 import AppleStyleSwipeableRow from './AppleStyleSwipeableRow';
 import GmailStyleSwipeableRow from './GmailStyleSwipeableRow';
+
+import { Alert } from '../common';
 
 const Row = ({ item }) => (
   <RectButton style={styles.rectButton} onPress={() => Alert.alert(item.from)}>

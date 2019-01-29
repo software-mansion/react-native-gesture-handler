@@ -48,8 +48,11 @@
     "prop-types": "^15.5.10"
   },
   "peerDependencies": {
-    "react": "> 15.0.0",
-    "react-native": ">= 0.50.0"
+    "react": ">= 16.3.2",
+    "react-art": ">= 16.3.2",
+    "react-dom": ">= 16.3.2",
+    "react-native": ">= 0.54.0",
+    "react-native-web": ">= 0.7"
   },
   "jest": {
     "preset": "jest-react-native"
@@ -65,7 +68,7 @@
     "jest-react-native": "16.0.0",
     "lint-staged": "^8.0.0-beta.1",
     "prettier": "^1.13.7",
-    "react": "^16.0.0",
+    "react": "^16.3",
     "react-native": "^0.50.1",
     "react-test-renderer": "15.3.2"
   },
