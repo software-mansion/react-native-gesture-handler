@@ -18,7 +18,6 @@ import {
   StatusBar,
   I18nManager,
 } from 'react-native';
-import { AnimatedEvent } from './AnimatedEvent';
 
 import { PanGestureHandler, TapGestureHandler, State } from './GestureHandler';
 
@@ -87,7 +86,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     Right: 'right',
   };
   _openValue: ?Animated.Interpolation;
-  _onGestureEvent: ?AnimatedEvent;
+  _onGestureEvent: ?Animated.Event;
   _accessibilityIsModalView = React.createRef();
   _pointerEventsView = React.createRef();
   _panGestureHandler = React.createRef();
