@@ -14,7 +14,7 @@ module.exports = {
       {
         test: /\.js$/,
         // Usually react-native* and react-navigation* modules need compilation
-        exclude: /node_modules\/(?!react-native|react-navigation)/,
+        exclude: /node_modules\/(?!react-native|@react-navigation|react-navigation)/,
         use: {
           loader: 'babel-loader',
           options: {
