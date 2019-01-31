@@ -1,187 +1,40 @@
 import React from 'react';
-import { TouchableWithoutFeedback, View } from 'react-native';
+import { NativeModules } from 'react-native';
 
-import State from './State';
+const { RNGestureHandlerModule, UIManager } = NativeModules;
 
-function handleHandlerStateChange(props, event, oldState, state) {
-  const { enabled, onHandlerStateChange } = props;
+// Wrap JS responder calls and notify gesture handler manager
+const {
+  setJSResponder: oldSetJSResponder,
+  clearJSResponder: oldClearJSResponder,
+} = UIManager;
+UIManager.setJSResponder = (tag, blockNativeResponder) => {
+  RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
+  oldSetJSResponder(tag, blockNativeResponder);
+};
+UIManager.clearJSResponder = () => {
+  RNGestureHandlerModule.handleClearJSResponder();
+  oldClearJSResponder();
+};
 
-  if (enabled !== false && onHandlerStateChange) {
-    const {
-      nativeEvent: {
-        locationX: x,
-        locationY: y,
-        pageX: absoluteX,
-        pageY: absoluteY,
-      },
-    } = event;
-
-    onHandlerStateChange({
-      nativeEvent: {
-        oldState,
-        state,
-        x,
-        y,
-        absoluteX,
-        absoluteY,
-        pointerInside: true,
-      },
-    });
-  }
-}
-
-function handleFailed(props, event) {
-  handleHandlerStateChange(props, event, State.ACTIVE, State.FAILED);
-}
-
-function handleEnd(props, event) {
-  handleHandlerStateChange(props, event, State.ACTIVE, State.END);
-}
-
-function handleActivate(props, event) {
-  handleHandlerStateChange(props, event, State.BEGAN, State.ACTIVE);
-}
-
-function handleBegan(props, event) {
-  handleHandlerStateChange(props, event, State.UNDETERMINED, State.BEGAN);
-}
-
-class UnimplementedGestureHandler extends React.Component {
-  render() {
-    return this.props.children;
-  }
-}
-
-const handlers = {
-  NativeViewGestureHandler: class NativeViewGestureHandler extends React.Component {
-    render() {
-      const { children } = this.props;
-
-      return children;
-    }
-  },
-
-  TapGestureHandler: class TapGestureHandler extends React.Component {
-    static defaultProps = {
-      numberOfTaps: 1,
-      maxDurationMs: 500,
-      maxDelayMs: 500,
-      minPointers: 1,
-      maxDeltaX: Number.MAX_SAFE_INTEGER,
-      maxDeltaY: Number.MAX_SAFE_INTEGER,
-      maxDist: Number.MAX_SAFE_INTEGER,
-    };
-
-    hasBegun = false;
-    touchBank = [];
-    timeout = null;
-
-    setNativeProps() {}
-
-    clearState = () => {
-      this.hasBegun = false;
-      this.touchBank = [];
-      window.clearTimeout(this.timeout);
-    };
-
-    handlePressIn = event => {
-      const { maxDelayMs } = this.props;
-
-      if (!this.hasBegun) {
-        event.persist();
-        this.hasBegun = true;
-        handleBegan(this.props, event);
-
-        // Cancel if not finished in time
-        this.timeout = window.setTimeout(() => {
-          if (this.hasBegun) {
-            this.clearState();
-            handleFailed(this.props, event);
-          }
-        }, maxDelayMs);
-      }
-    };
-
-    handlePressOut = event => {
-      const {
-        touchHistory: { touchBank = [] },
-      } = event;
-      const { maxDeltaX, maxDeltaY, maxDurationMs, numberOfTaps } = this.props;
-
-      this.touchBank = this.touchBank.concat(touchBank);
-
-      // Check if all touches are valid
-      const areTouchesValid = this.touchBank.every(touch => {
-        const {
-          currentPageX,
-          currentPageY,
-          currentTimeStamp,
-          startPageX,
-          startPageY,
-          startTimeStamp,
-        } = touch;
-
-        // Check if touch took longer than it may
-        if (startTimeStamp + maxDurationMs < currentTimeStamp) {
-          return false;
-        }
-
-        // Check if touch moved too far away
-        if (
-          startPageX + maxDeltaX < currentPageX ||
-          startPageX - maxDeltaX > currentPageX
-        ) {
-          return false;
-        }
-
-        // Check if touch moved too far away
-        if (
-          startPageY + maxDeltaY < currentPageY ||
-          startPageY - maxDeltaY > currentPageY
-        ) {
-          return false;
-        }
-
-        return true;
-      });
-
-      // Check if all touches were valid and the necessary number of touches was achieved
-      if (!areTouchesValid) {
-        this.clearState();
-        handleFailed(this.props, event);
-      } else if (this.touchBank.length >= numberOfTaps) {
-        handleActivate(this.props, event);
-        this.clearState();
-        handleEnd(this.props, event);
-      }
-    };
-
-    render() {
-      const { children, style } = this.props;
-
-      return (
-        <TouchableWithoutFeedback
-          style={style}
-          onPressIn={this.handlePressIn}
-          onPressOut={this.handlePressOut}>
-          {React.Children.only(children)}
-        </TouchableWithoutFeedback>
-      );
-    }
+// Add gesture specific events to RCTView's directEventTypes object exported via UIManager.
+// Once new event types are registered with react it is possible to dispatch these to other
+// view types as well.
+UIManager.RCTView.directEventTypes = {
+  ...UIManager.RCTView.directEventTypes,
+  onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+  onGestureHandlerStateChange: {
+    registrationName: 'onGestureHandlerStateChange',
   },
 };
 
 export default {
-  createGestureHandler: () => {},
-  attachGestureHandler: () => {},
-  updateGestureHandler: () => {},
-  dropGestureHandler: () => {},
+  ...RNGestureHandlerModule,
   getChildren: props => {
-    return props.children;
+    const child = React.Children.only(props.children);
+    return child.props.children;
   },
   render: (handlerName, props) => {
-    const Handler = handlers[handlerName] || UnimplementedGestureHandler;
-
-    return <Handler {...props} />;
+    return React.Children.only(props.children);
   },
 };
