@@ -167,7 +167,7 @@ const handlers = {
           style={style}
           onPressIn={this.handlePressIn}
           onPressOut={this.handlePressOut}>
-          <View>{children}</View>
+          {React.Children.only(children)}
         </TouchableWithoutFeedback>
       );
     }
