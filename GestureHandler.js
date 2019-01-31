@@ -11,7 +11,6 @@ import {
   ToolbarAndroid,
   ViewPagerAndroid,
   DrawerLayoutAndroid,
-  WebView,
   StyleSheet,
   FlatList,
   Platform,
@@ -715,7 +714,6 @@ const WrappedSwitch = createNativeWrapper(Switch, {
   disallowInterruption: true,
 });
 const WrappedTextInput = createNativeWrapper(TextInput);
-const WrappedWebView = createNativeWrapper(WebView);
 
 const WrappedToolbarAndroid = createNativeWrapper(ToolbarAndroid);
 const WrappedViewPagerAndroid = createNativeWrapper(ViewPagerAndroid, {
@@ -912,7 +910,6 @@ export {
   WrappedToolbarAndroid as ToolbarAndroid,
   WrappedViewPagerAndroid as ViewPagerAndroid,
   WrappedDrawerLayoutAndroid as DrawerLayoutAndroid,
-  WrappedWebView as WebView,
   NativeViewGestureHandler,
   TapGestureHandler,
   FlingGestureHandler,
