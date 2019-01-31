@@ -10,7 +10,6 @@ declare module 'react-native-gesture-handler' {
     SliderProperties,
     SwitchProperties,
     TextInputProperties,
-    WebViewProperties,
     ToolbarAndroidProperties,
     ViewPagerAndroidProperties,
     DrawerLayoutAndroidProperties,
@@ -431,10 +430,6 @@ declare module 'react-native-gesture-handler' {
 
   export class DrawerLayoutAndroid extends React.Component<
     NativeViewGestureHandlerProperties & DrawerLayoutAndroidProperties
-  > {}
-
-  export class WebView extends React.Component<
-    NativeViewGestureHandlerProperties & WebViewProperties
   > {}
 
   /* OTHER */
