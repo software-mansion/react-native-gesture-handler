@@ -12,6 +12,8 @@
     "DrawerLayout": "DrawerLayout",
     "component-swipeable": "Swipeable",
     "Swipeable": "Swipeable",
+    "component-touchables": "Touchales",
+    "Touchables": "Touchables",
     "contributing": "Contributing",
     "credits": "Credits",
     "example": "Running Example App",
