@@ -30,11 +30,11 @@ UIManager.RCTView.directEventTypes = {
 
 export default {
   ...RNGestureHandlerModule,
-  getChildren: function() {
-    const child = React.Children.only(this.props.children);
+  getChildren: props => {
+    const child = React.Children.only(props.children);
     return child.props.children;
   },
-  render: function render() {
-    return React.Children.only(this.props.children);
+  render: (handlerName, props) => {
+    return React.Children.only(props.children);
   },
 };

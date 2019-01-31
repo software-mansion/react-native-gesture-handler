@@ -150,7 +150,6 @@ function createHandler(
 
     constructor(props) {
       super(props);
-      this._handlerName = handlerName;
       this._handlerTag = handlerTag++;
       this._config = {};
       if (props.id) {
@@ -322,7 +321,7 @@ function createHandler(
       }
 
       const child = React.Children.only(this.props.children);
-      let children = GestureHandlerModule.getChildren.apply(this);
+      let children = GestureHandlerModule.getChildren(this.props);
       if (
         Touchable.TOUCH_TARGET_DEBUG &&
         child.type &&
@@ -340,7 +339,7 @@ function createHandler(
       }
 
       return React.cloneElement(
-        GestureHandlerModule.render.apply(this),
+        GestureHandlerModule.render(handlerName, this.props),
         {
           ref: this._refHandler,
           collapsable: false,

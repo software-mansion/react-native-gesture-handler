@@ -3,63 +3,57 @@ import { TouchableWithoutFeedback, View } from 'react-native';
 
 import State from './State';
 
-class BaseGestureHandler extends React.Component {
-  clearState = () => {};
+function handleHandlerStateChange(props, event, oldState, state) {
+  const { enabled, onHandlerStateChange } = props;
 
-  handleHandlerStateChange(event, oldState, state) {
-    const { enabled, onHandlerStateChange } = this.props;
+  if (enabled !== false && onHandlerStateChange) {
+    const {
+      nativeEvent: {
+        locationX: x,
+        locationY: y,
+        pageX: absoluteX,
+        pageY: absoluteY,
+      },
+    } = event;
 
-    if (enabled !== false && onHandlerStateChange) {
-      const {
-        nativeEvent: {
-          locationX: x,
-          locationY: y,
-          pageX: absoluteX,
-          pageY: absoluteY,
-        },
-      } = event;
-
-      onHandlerStateChange({
-        nativeEvent: {
-          oldState,
-          state,
-          x,
-          y,
-          absoluteX,
-          absoluteY,
-          pointerInside: true,
-        },
-      });
-    }
+    onHandlerStateChange({
+      nativeEvent: {
+        oldState,
+        state,
+        x,
+        y,
+        absoluteX,
+        absoluteY,
+        pointerInside: true,
+      },
+    });
   }
-
-  handleFailed = event => {
-    this.clearState();
-    this.handleHandlerStateChange(event, State.ACTIVE, State.FAILED);
-  };
-
-  handleEnd = event => {
-    this.clearState();
-    this.handleHandlerStateChange(event, State.ACTIVE, State.END);
-  };
-
-  handleActivate = event => {
-    this.handleHandlerStateChange(event, State.BEGAN, State.ACTIVE);
-  };
-
-  handleBegan = event => {
-    this.handleHandlerStateChange(event, State.UNDETERMINED, State.BEGAN);
-  };
 }
 
-class UnimplementedGestureHandler extends BaseGestureHandler {
+function handleFailed(props, event) {
+  handleHandlerStateChange(props, event, State.ACTIVE, State.FAILED);
+}
+
+function handleEnd(props, event) {
+  handleHandlerStateChange(props, event, State.ACTIVE, State.END);
+}
+
+function handleActivate(props, event) {
+  handleHandlerStateChange(props, event, State.BEGAN, State.ACTIVE);
+}
+
+function handleBegan(props, event) {
+  handleHandlerStateChange(props, event, State.UNDETERMINED, State.BEGAN);
+}
+
+class UnimplementedGestureHandler extends React.Component {
   render() {
     return this.props.children;
   }
 }
 
 const handlers = {
-  NativeViewGestureHandler: class NativeViewGestureHandler extends BaseGestureHandler {
+  NativeViewGestureHandler: class NativeViewGestureHandler extends React.Component {
     render() {
       const { children } = this.props;
 
@@ -67,7 +61,7 @@ const handlers = {
     }
   },
 
-  TapGestureHandler: class TapGestureHandler extends BaseGestureHandler {
+  TapGestureHandler: class TapGestureHandler extends React.Component {
     static defaultProps = {
       numberOfTaps: 1,
       maxDurationMs: 500,
@@ -96,12 +90,13 @@ const handlers = {
       if (!this.hasBegun) {
         event.persist();
         this.hasBegun = true;
-        this.handleBegan(event);
+        handleBegan(this.props, event);
 
         // Cancel if not finished in time
         this.timeout = window.setTimeout(() => {
           if (this.hasBegun) {
-            this.handleFailed(event);
+            this.clearState();
+            handleFailed(this.props, event);
           }
         }, maxDelayMs);
       }
@@ -152,10 +147,12 @@ const handlers = {
 
       // Check if all touches were valid and the necessary number of touches was achieved
       if (!areTouchesValid) {
-        this.handleFailed(event);
+        this.clearState();
+        handleFailed(this.props, event);
       } else if (this.touchBank.length >= numberOfTaps) {
-        this.handleActivate(event);
-        this.handleEnd(event);
+        handleActivate(this.props, event);
+        this.clearState();
+        handleEnd(this.props, event);
       }
     };
 
@@ -179,13 +176,12 @@ export default {
   attachGestureHandler: () => {},
   updateGestureHandler: () => {},
   dropGestureHandler: () => {},
-  getChildren: function() {
-    return this.props.children;
+  getChildren: props => {
+    return props.children;
   },
-  render: function render() {
-    const handlerName = this._handlerName;
+  render: (handlerName, props) => {
     const Handler = handlers[handlerName] || UnimplementedGestureHandler;
 
-    return <Handler {...this.props} />;
+    return <Handler {...props} />;
   },
 };
