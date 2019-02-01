@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View, Dimensions } from 'react-native';
 import {
   PanGestureHandler,
   NativeViewGestureHandler,
@@ -11,8 +11,8 @@ import { LoremIpsum } from '../common';
 import { USE_NATIVE_DRIVER } from '../config';
 
 const HEADER_HEIGHT = 50;
-
-const SNAP_POINTS_FROM_TOP = [50, 300, 550];
+const windowHeight = Dimensions.get('window').height;
+const SNAP_POINTS_FROM_TOP = [50, windowHeight * 0.4, windowHeight * 0.8];
 
 export class BottomSheet extends Component {
   masterdrawer = React.createRef();

@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import GestureHandlerButton from './GestureHandlerButton.web';
 import GestureHandlerModule from './GestureHandlerModule.web';
 import gestureHandlerRootHOC from './gestureHandlerRootHOC';
+
 import Directions from './Directions';
 import State from './State';
 import PlatformConstants from './PlatformConstants.web';

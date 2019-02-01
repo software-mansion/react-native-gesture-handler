@@ -14,6 +14,9 @@ declare module 'react-native-gesture-handler' {
     ToolbarAndroidProperties,
     ViewPagerAndroidProperties,
     DrawerLayoutAndroidProperties,
+    TouchableHighlightProperties,
+    TouchableOpacityProperties,
+    TouchableNativeFeedbackProperties,
     TouchableWithoutFeedbackProperties,
     Insets,
     ViewStyle,
@@ -384,6 +387,22 @@ declare module 'react-native-gesture-handler' {
     BorderlessButtonProperties
   > {}
 
+  export class TouchableHighlight extends React.Component<
+    TouchableHighlightProperties
+  > {}
+
+  export class TouchableNativeFeedback extends React.Component<
+    TouchableNativeFeedbackProperties
+  > {}
+
+  export class TouchableOpacity extends React.Component<
+    TouchableOpacityProperties
+  > {}
+
+  export class TouchableWithoutFeedback extends React.Component<
+    TouchableWithoutFeedbackProperties
+  > {}
+
   /* GESTURE HANDLER WRAPPED CLASSES */
 
   export class ScrollView extends React.Component<
@@ -439,10 +458,15 @@ declare module 'react-native-gesture-handler/Swipeable' {
     rightThreshold?: number;
     overshootLeft?: boolean;
     overshootRight?: boolean;
+    overshootFriction?: number,
     onSwipeableLeftOpen?: () => void;
     onSwipeableRightOpen?: () => void;
     onSwipeableOpen?: () => void;
     onSwipeableClose?: () => void;
+    onSwipeableLeftWillOpen?: () => void;
+    onSwipeableRightWillOpen?: () => void;
+    onSwipeableWillOpen?: () => void;
+    onSwipeableWillClose?: () => void;
     renderLeftActions?: (
       progressAnimatedValue: Animated.Value,
       dragAnimatedValue: Animated.Value
