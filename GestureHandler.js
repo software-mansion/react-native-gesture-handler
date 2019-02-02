@@ -20,7 +20,7 @@ import deepEqual from 'fbjs/lib/areEqual';
 import PropTypes from 'prop-types';
 
 import GestureHandlerButton from './GestureHandlerButton';
-import GestureHandlerModule from './GestureHandlerModule.web';
+import GestureHandlerModule from './GestureHandlerModule';
 import gestureHandlerRootHOC from './gestureHandlerRootHOC';
 
 import Directions from './Directions';
