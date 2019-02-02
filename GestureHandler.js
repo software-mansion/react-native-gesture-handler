@@ -25,7 +25,7 @@ import gestureHandlerRootHOC from './gestureHandlerRootHOC';
 
 import Directions from './Directions';
 import State from './State';
-import PlatformConstants from './PlatformConstants.web';
+import PlatformConstants from './PlatformConstants';
 
 let handlerTag = 1;
 const handlerIDToTag = {};
