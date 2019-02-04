@@ -45,6 +45,7 @@ export type PropType = {
   ) => any,
   useNativeAnimations: boolean,
   animationOptions?: Object,
+  containerStyle?: Object,
 };
 type StateType = {
   dragX: Animated.Value,
@@ -321,7 +322,7 @@ export default class Swipeable extends Component<PropType, StateType> {
         minDeltaX={10}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}>
-        <Animated.View onLayout={this._onRowLayout} style={styles.container}>
+        <Animated.View onLayout={this._onRowLayout} style={[styles.container, this.props.containerStyle]}>
           {left}
           {right}
           <TapGestureHandler

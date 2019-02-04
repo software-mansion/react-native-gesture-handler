@@ -81,6 +81,10 @@ method that is expected to return an action panel that is going to be revealed f
 ### `renderRightActions`
 method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
 
+---
+### `containerStyle`
+style object for the container (Animated.View), for example to override `overflow: 'hidden'`.
+
 ## Methods
 Using reference to `Swipeable` it's possible to trigger some actions on it
 
