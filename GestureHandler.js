@@ -14,6 +14,7 @@ import {
   WebView,
   StyleSheet,
   FlatList,
+  SectionList,
   Platform,
 } from 'react-native';
 import processColor from 'react-native/Libraries/StyleSheet/processColor';
@@ -704,6 +705,12 @@ function createNativeWrapper(Component, config = {}) {
 const WrappedScrollView = createNativeWrapper(ScrollView, {
   disallowInterruption: true,
 });
+
+const WrappedSectionList = createNativeWrapper(SectionList, {
+  disallowInterruption: true,
+  shouldCancelWhenOutside: false,
+});
+
 const WrappedSlider = createNativeWrapper(Slider, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: true,
@@ -931,4 +938,5 @@ export {
   FlatListWithGHScroll as FlatList,
   gestureHandlerRootHOC,
   Directions,
+  WrappedSectionList as SectionList
 };
