@@ -39,10 +39,51 @@
 		668E083D21BDD70900EDDF40 /* RNForceTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 668E083B21BDD70900EDDF40 /* RNForceTouchHandler.m */; };
 		66A291D5207D032400809C27 /* RNFlingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A291D3207D032400809C27 /* RNFlingHandler.m */; };
 		66A291D6207D032400809C27 /* RNFlingHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A291D4207D032400809C27 /* RNFlingHandler.h */; };
+		B5AF2F5E2208E55A0080319A /* RNGestureHandlerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC71E1F8FA0700086889F /* RNGestureHandlerButton.m */; };
+		B5AF2F5F2208E55A0080319A /* RNForceTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 668E083B21BDD70900EDDF40 /* RNForceTouchHandler.m */; };
+		B5AF2F602208E55A0080319A /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */; };
+		B5AF2F612208E55A0080319A /* RNLongPressHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7241F8FA1270086889F /* RNLongPressHandler.m */; };
+		B5AF2F622208E55A0080319A /* RNGestureHandlerEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 446E7FF71ED89A4B009282E7 /* RNGestureHandlerEvents.m */; };
+		B5AF2F632208E55A0080319A /* RNPanHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7281F8FA1270086889F /* RNPanHandler.m */; };
+		B5AF2F642208E55A0080319A /* RNGestureHandlerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7161F8F9C090086889F /* RNGestureHandlerRegistry.m */; };
+		B5AF2F652208E55A0080319A /* RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 448802DC1F6803DF00018214 /* RNGestureHandler.m */; };
+		B5AF2F662208E55A0080319A /* RNTapHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC72E1F8FA1270086889F /* RNTapHandler.m */; };
+		B5AF2F672208E55A0080319A /* RNGestureHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 446E7FDD1ED57CA6009282E7 /* RNGestureHandlerModule.m */; };
+		B5AF2F682208E55A0080319A /* RNRotationHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC72C1F8FA1270086889F /* RNRotationHandler.m */; };
+		B5AF2F692208E55A0080319A /* RNNativeViewHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7261F8FA1270086889F /* RNNativeViewHandler.m */; };
+		B5AF2F6A2208E55A0080319A /* RNRootViewGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7121F8F9B770086889F /* RNRootViewGestureRecognizer.m */; };
+		B5AF2F6B2208E55A0080319A /* RNFlingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A291D3207D032400809C27 /* RNFlingHandler.m */; };
+		B5AF2F6C2208E55A0080319A /* RNPinchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC72A1F8FA1270086889F /* RNPinchHandler.m */; };
+		B5AF2F6E2208E55A0080319A /* RNForceTouchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E083A21BDD70900EDDF40 /* RNForceTouchHandler.h */; };
+		B5AF2F6F2208E55A0080319A /* RNFlingHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A291D4207D032400809C27 /* RNFlingHandler.h */; };
+		B5AF2F702208E55A0080319A /* RNLongPressHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7231F8FA1270086889F /* RNLongPressHandler.h */; };
+		B5AF2F712208E55A0080319A /* RNGestureHandlerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 446E7FDC1ED57CA6009282E7 /* RNGestureHandlerModule.h */; };
+		B5AF2F722208E55A0080319A /* RNPinchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7291F8FA1270086889F /* RNPinchHandler.h */; };
+		B5AF2F732208E55A0080319A /* RNGestureHandlerRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7141F8F9BEF0086889F /* RNGestureHandlerRegistry.h */; };
+		B5AF2F742208E55A0080319A /* RNGestureHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 448802DB1F6803DF00018214 /* RNGestureHandler.h */; };
+		B5AF2F752208E55A0080319A /* RNRotationHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC72B1F8FA1270086889F /* RNRotationHandler.h */; };
+		B5AF2F762208E55A0080319A /* RNPanHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7271F8FA1270086889F /* RNPanHandler.h */; };
+		B5AF2F772208E55A0080319A /* RNGestureHandlerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 44BE34491F1E1ABA008679D1 /* RNGestureHandlerManager.h */; };
+		B5AF2F782208E55A0080319A /* RNGestureHandlerEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 446E7FF51ED89A31009282E7 /* RNGestureHandlerEvents.h */; };
+		B5AF2F792208E55A0080319A /* RNTapHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC72D1F8FA1270086889F /* RNTapHandler.h */; };
+		B5AF2F7A2208E55A0080319A /* RNRootViewGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7101F8F9B6C0086889F /* RNRootViewGestureRecognizer.h */; };
+		B5AF2F7B2208E55A0080319A /* RNNativeViewHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7251F8FA1270086889F /* RNNativeViewHandler.h */; };
+		B5AF2F7C2208E55A0080319A /* RNGestureHandlerState.h in Headers */ = {isa = PBXBuildFile; fileRef = 44384A781ECDE0DB006BAD02 /* RNGestureHandlerState.h */; };
+		B5AF2F7D2208E55A0080319A /* RNGestureHandlerButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC71D1F8FA0700086889F /* RNGestureHandlerButton.h */; };
+		B5AF2F7E2208E55A0080319A /* RNGestureHandlerDirection.h in Headers */ = {isa = PBXBuildFile; fileRef = 660F46732080D8F600B7B50D /* RNGestureHandlerDirection.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		58B511D91A9E6C8500147676 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B5AF2F802208E55A0080319A /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
@@ -87,10 +128,18 @@
 		668E083B21BDD70900EDDF40 /* RNForceTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNForceTouchHandler.m; path = Handlers/RNForceTouchHandler.m; sourceTree = "<group>"; };
 		66A291D3207D032400809C27 /* RNFlingHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFlingHandler.m; path = Handlers/RNFlingHandler.m; sourceTree = "<group>"; };
 		66A291D4207D032400809C27 /* RNFlingHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFlingHandler.h; path = Handlers/RNFlingHandler.h; sourceTree = "<group>"; };
+		B5AF2F842208E55A0080319A /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNGestureHandler.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		58B511D81A9E6C8500147676 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B5AF2F7F2208E55A0080319A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -152,6 +201,7 @@
 				44AEC71D1F8FA0700086889F /* RNGestureHandlerButton.h */,
 				44AEC71E1F8FA0700086889F /* RNGestureHandlerButton.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				B5AF2F842208E55A0080319A /* libRNGestureHandler.a */,
 			);
 			sourceTree = "<group>";
 		};
@@ -182,6 +232,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B5AF2F6D2208E55A0080319A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5AF2F6E2208E55A0080319A /* RNForceTouchHandler.h in Headers */,
+				B5AF2F6F2208E55A0080319A /* RNFlingHandler.h in Headers */,
+				B5AF2F702208E55A0080319A /* RNLongPressHandler.h in Headers */,
+				B5AF2F712208E55A0080319A /* RNGestureHandlerModule.h in Headers */,
+				B5AF2F722208E55A0080319A /* RNPinchHandler.h in Headers */,
+				B5AF2F732208E55A0080319A /* RNGestureHandlerRegistry.h in Headers */,
+				B5AF2F742208E55A0080319A /* RNGestureHandler.h in Headers */,
+				B5AF2F752208E55A0080319A /* RNRotationHandler.h in Headers */,
+				B5AF2F762208E55A0080319A /* RNPanHandler.h in Headers */,
+				B5AF2F772208E55A0080319A /* RNGestureHandlerManager.h in Headers */,
+				B5AF2F782208E55A0080319A /* RNGestureHandlerEvents.h in Headers */,
+				B5AF2F792208E55A0080319A /* RNTapHandler.h in Headers */,
+				B5AF2F7A2208E55A0080319A /* RNRootViewGestureRecognizer.h in Headers */,
+				B5AF2F7B2208E55A0080319A /* RNNativeViewHandler.h in Headers */,
+				B5AF2F7C2208E55A0080319A /* RNGestureHandlerState.h in Headers */,
+				B5AF2F7D2208E55A0080319A /* RNGestureHandlerButton.h in Headers */,
+				B5AF2F7E2208E55A0080319A /* RNGestureHandlerDirection.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -201,6 +275,24 @@
 			name = RNGestureHandler;
 			productName = RCTDataManager;
 			productReference = 134814201AA4EA6300B7C361 /* libRNGestureHandler.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		B5AF2F5C2208E55A0080319A /* RNGestureHandler-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B5AF2F812208E55A0080319A /* Build configuration list for PBXNativeTarget "RNGestureHandler-tvOS" */;
+			buildPhases = (
+				B5AF2F5D2208E55A0080319A /* Sources */,
+				B5AF2F6D2208E55A0080319A /* Headers */,
+				B5AF2F7F2208E55A0080319A /* Frameworks */,
+				B5AF2F802208E55A0080319A /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RNGestureHandler-tvOS";
+			productName = RCTDataManager;
+			productReference = B5AF2F842208E55A0080319A /* libRNGestureHandler.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -230,6 +322,7 @@
 			projectRoot = "";
 			targets = (
 				58B511DA1A9E6C8500147676 /* RNGestureHandler */,
+				B5AF2F5C2208E55A0080319A /* RNGestureHandler-tvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -254,6 +347,28 @@
 				44AEC7131F8F9B770086889F /* RNRootViewGestureRecognizer.m in Sources */,
 				66A291D5207D032400809C27 /* RNFlingHandler.m in Sources */,
 				44AEC7361F8FA1270086889F /* RNPinchHandler.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B5AF2F5D2208E55A0080319A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5AF2F5E2208E55A0080319A /* RNGestureHandlerButton.m in Sources */,
+				B5AF2F5F2208E55A0080319A /* RNForceTouchHandler.m in Sources */,
+				B5AF2F602208E55A0080319A /* RNGestureHandlerManager.m in Sources */,
+				B5AF2F612208E55A0080319A /* RNLongPressHandler.m in Sources */,
+				B5AF2F622208E55A0080319A /* RNGestureHandlerEvents.m in Sources */,
+				B5AF2F632208E55A0080319A /* RNPanHandler.m in Sources */,
+				B5AF2F642208E55A0080319A /* RNGestureHandlerRegistry.m in Sources */,
+				B5AF2F652208E55A0080319A /* RNGestureHandler.m in Sources */,
+				B5AF2F662208E55A0080319A /* RNTapHandler.m in Sources */,
+				B5AF2F672208E55A0080319A /* RNGestureHandlerModule.m in Sources */,
+				B5AF2F682208E55A0080319A /* RNRotationHandler.m in Sources */,
+				B5AF2F692208E55A0080319A /* RNNativeViewHandler.m in Sources */,
+				B5AF2F6A2208E55A0080319A /* RNRootViewGestureRecognizer.m in Sources */,
+				B5AF2F6B2208E55A0080319A /* RNFlingHandler.m in Sources */,
+				B5AF2F6C2208E55A0080319A /* RNPinchHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -345,6 +460,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_MODULE_NAME = RNGestureHandler;
 				PRODUCT_NAME = RNGestureHandler;
 				SKIP_INSTALL = YES;
 			};
@@ -361,8 +477,47 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_MODULE_NAME = RNGestureHandler;
 				PRODUCT_NAME = RNGestureHandler;
 				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		B5AF2F822208E55A0080319A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_MODULE_NAME = RNGestureHandler;
+				PRODUCT_NAME = RNGestureHandler;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 10.2;
+			};
+			name = Debug;
+		};
+		B5AF2F832208E55A0080319A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_MODULE_NAME = RNGestureHandler;
+				PRODUCT_NAME = RNGestureHandler;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 10.2;
 			};
 			name = Release;
 		};
@@ -383,6 +538,15 @@
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,
 				58B511F11A9E6C8500147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B5AF2F812208E55A0080319A /* Build configuration list for PBXNativeTarget "RNGestureHandler-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B5AF2F822208E55A0080319A /* Debug */,
+				B5AF2F832208E55A0080319A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
