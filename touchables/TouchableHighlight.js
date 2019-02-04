@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 
 /**
