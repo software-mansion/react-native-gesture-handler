@@ -10,6 +10,7 @@
 
 @implementation RNPinchGestureHandler
 
+#if !TARGET_OS_TV
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super initWithTag:tag])) {
@@ -26,6 +27,7 @@
             withVelocity:recognizer.velocity
             withNumberOfTouches:recognizer.numberOfTouches];
 }
+#endif
 
 @end
 
