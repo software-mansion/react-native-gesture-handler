@@ -671,10 +671,14 @@ function createNativeWrapper(Component, config = {}) {
             !methodName.startsWith('component') && // lifecycle methods
             !NATIVE_WRAPPER_BIND_BLACKLIST.has(methodName) && // other
             typeof source[methodName] === 'function' &&
-            source[methodName].prototype !== undefined && // determine if it's not bounded already
             this[methodName] === undefined
           ) {
-            this[methodName] = source[methodName].bind(node);
+            if (source[methodName].prototype) {
+              // determine if it's not bound already
+              this[methodName] = source[methodName].bind(node);
+            } else {
+              this[methodName] = source[methodName];
+            }
           }
         }
         source = Object.getPrototypeOf(source);
