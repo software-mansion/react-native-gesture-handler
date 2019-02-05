@@ -81,6 +81,13 @@ public class RNGestureHandlerButtonViewManager extends
       // We call `onTouchEvent` to and wait until button changes state to `pressed`, if it's pressed
       // we return true so that the gesture handler can activate
       onTouchEvent(ev);
+
+      // This workaround is made in order setting button as pressed immediately
+      int action = ev.getActionMasked();
+      if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+        setPressed(true);
+      }
+
       if (isPressed()) {
         return true;
       }

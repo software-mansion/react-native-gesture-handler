@@ -195,10 +195,7 @@ export default class GenericTouchable extends Component {
       // Need to handle case with external cancellation (e.g. by ScrollView)
       this.moveToState(TOUCHABLE_STATE.UNDETERMINED);
     } else if (
-      // This platform check is an implication of slightly different behavior of handlers on different platform.
-      // And Android "Active" state is achieving on first move of a finger, not on press in.
-      // On iOS event on "Began" is not delivered.
-      state === (Platform.OS === 'ios' ? State.ACTIVE : State.BEGAN) &&
+      state === State.ACTIVE &&
       this.STATE === TOUCHABLE_STATE.UNDETERMINED
     ) {
       // Moving inside requires
@@ -259,6 +256,7 @@ export default class GenericTouchable extends Component {
 
     return (
       <BaseButton
+        exclusive={false}
         onHandlerStateChange={this.props.disabled || this.onHandlerStateChange}
         onGestureEvent={this.onGestureEvent}
         hitSlop={this.props.hitSlop}
