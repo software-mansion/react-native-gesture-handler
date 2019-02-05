@@ -16,7 +16,6 @@ export const TOUCHABLE_STATE = {
   MOVED_OUTSIDE: 2,
 };
 
-
 const PublicPropTypes = {
   // Decided to drop not used fields from RN's implementation.
   // e.g. onBlur and onFocus as well as deprecated props.
@@ -42,12 +41,10 @@ const PublicPropTypes = {
   delayLongPress: PropTypes.number,
 };
 
-
 const InternalPropTypes = {
   extraButtonProps: PropTypes.object,
   onStateChange: PropTypes.func,
 };
-
 
 /**
  * GenericTouchable is not intented to be used as it.
@@ -123,16 +120,10 @@ export default class GenericTouchable extends Component {
     clearTimeout(this.pressOutTimeout);
     if (this.props.delayPressOut) {
       this.pressOutTimeout = setTimeout(() => {
-        if (this.STATE === TOUCHABLE_STATE.UNDETERMINED) {
-          this.moveToState(TOUCHABLE_STATE.BEGAN);
-        }
         this.moveToState(TOUCHABLE_STATE.UNDETERMINED);
         this.pressOutTimeout = null;
       }, this.props.delayPressOut);
     } else {
-      if (this.STATE === TOUCHABLE_STATE.UNDETERMINED) {
-        this.moveToState(TOUCHABLE_STATE.BEGAN);
-      }
       this.moveToState(TOUCHABLE_STATE.UNDETERMINED);
     }
   };
@@ -203,7 +194,7 @@ export default class GenericTouchable extends Component {
     } else if (state === State.END) {
       const shouldCallOnPress =
         !this.longPressDetected &&
-        this.STATE !== TOUCHABLE_STATE.MOVED_OUTSIDE &&
+        this.STATE === TOUCHABLE_STATE.BEGAN &&
         this.pressOutTimeout === null;
       this.handleGoToUndetermined();
       if (shouldCallOnPress) {

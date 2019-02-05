@@ -83,8 +83,7 @@ public class RNGestureHandlerButtonViewManager extends
       onTouchEvent(ev);
 
       // This workaround is made in order setting button as pressed immediately
-      int action = ev.getActionMasked();
-      if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+      if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
         setPressed(true);
       }
 
