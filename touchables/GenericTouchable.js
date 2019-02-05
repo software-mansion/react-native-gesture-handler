@@ -259,7 +259,6 @@ export default class GenericTouchable extends Component {
         onHandlerStateChange={this.props.disabled || this.onHandlerStateChange}
         onGestureEvent={this.onGestureEvent}
         hitSlop={this.props.hitSlop}
-        exclusiveTouch
         {...this.props.extraButtonProps}>
         <Animated.View {...coreProps} style={this.props.style}>
           {this.props.children}
