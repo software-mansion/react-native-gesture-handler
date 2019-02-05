@@ -643,7 +643,7 @@ function createNativeWrapper(Component, config = {}) {
             typeof source[methodName] === 'function' &&
             this[methodName] === undefined
           ) {
-            this[methodName] = source[methodName];
+            this[methodName] = source[methodName].bind(node);
           }
         }
         source = Object.getPrototypeOf(source);
