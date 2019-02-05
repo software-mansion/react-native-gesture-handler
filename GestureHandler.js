@@ -748,6 +748,7 @@ const RawButton = createNativeWrapper(
 class BaseButton extends React.Component {
   static propTypes = {
     ...RawButton.propTypes,
+    exclusiveTouch: PropTypes.bool,
     onPress: PropTypes.func,
     onActiveStateChange: PropTypes.func,
   };

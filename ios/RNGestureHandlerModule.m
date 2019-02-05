@@ -27,6 +27,8 @@ RCT_EXPORT_MODULE(RNGestureHandlerButton)
 
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 
+RCT_EXPORT_VIEW_PROPERTY(exclusiveTouch, BOOL)
+
 RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RNGestureHandlerButton)
 {
   if (json) {
