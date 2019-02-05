@@ -120,17 +120,17 @@ export default class GenericTouchable extends Component {
     clearTimeout(this.pressOutTimeout);
     if (this.props.delayPressOut) {
       this.pressOutTimeout = setTimeout(() => {
-        if (this.STATE === TOUCHABLE_STATE.UNDETERMINED) {
+        if (
+          this.STATE === TOUCHABLE_STATE.UNDETERMINED &&
+          this.pressInTimeout
+        ) {
           this.moveToState(TOUCHABLE_STATE.BEGAN);
         }
         this.moveToState(TOUCHABLE_STATE.UNDETERMINED);
         this.pressOutTimeout = null;
       }, this.props.delayPressOut);
     } else {
-      if (
-        this.STATE === TOUCHABLE_STATE.UNDETERMINED &&
-        this.props.delayPressIn
-      ) {
+      if (this.STATE === TOUCHABLE_STATE.UNDETERMINED && this.pressInTimeout) {
         this.moveToState(TOUCHABLE_STATE.BEGAN);
       }
       this.moveToState(TOUCHABLE_STATE.UNDETERMINED);
