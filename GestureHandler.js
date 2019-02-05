@@ -753,10 +753,6 @@ class BaseButton extends React.Component {
     onActiveStateChange: PropTypes.func,
   };
 
-  static defaultProps = {
-    exclusive: true,
-  };
-
   constructor(props) {
     super(props);
     this._lastActive = false;
