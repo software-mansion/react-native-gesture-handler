@@ -38,6 +38,7 @@
   self = [super init];
   if (self) {
     _hitTestEdgeInsets = UIEdgeInsetsZero;
+    [self setExclusiveTouch:YES];
   }
   return self;
 }
