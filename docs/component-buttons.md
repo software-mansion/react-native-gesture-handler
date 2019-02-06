@@ -34,6 +34,10 @@ function that gets triggered when the button gets pressed (analogous to `onPress
 defines color of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation used since API level 21. 
 
 ---
+### `exclusive` (**iOS only**)
+defines if more than one button could be pressed simultaneously. By defalut set `true`. 
+
+---
 ## `RectButton`
 
 This type of button component should be used when you deal with a rectangular elements or blocks of content that can be pressed, for example table rows or buttons with text and icons. This component provides a platform specific interaction, rendering a rectangular ripple on Android or highlighting the background on iOS and on older versions of Android. In addition to the props of [`BaseButton`](#basebutton-component), it accepts the following:
