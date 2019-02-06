@@ -5,7 +5,7 @@ sidebar_label: Touchables
 ---
 Basing on [native buttons](component-buttons.md) Gesture Handler exposes reimplementation of touchables, which follows expected behavior of these imported from React Native.
 
-Generally this implementation follows React Native's API, which could be could be found here:
+React Native could be found here:
  - [Touchable Highlight](https://facebook.github.io/react-native/docs/touchablehighlight)
  - [Touchable Opacity](https://facebook.github.io/react-native/docs/touchableopacity)
  - [Touchable Highlight](https://facebook.github.io/react-native/docs/touchablehighlight)
