@@ -454,7 +454,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
           ref={this._accessibilityIsModalView}
           accessibilityViewIsModal={this._drawerShown}
           style={[styles.drawerContainer, drawerStyles, drawerContainerStyle]}>
-          <View style={[styles.drawer, dynamicDrawerStyles]}>
+          <View style={dynamicDrawerStyles}>
             {this.props.renderNavigationView(this._openValue)}
           </View>
         </Animated.View>
@@ -508,7 +508,6 @@ export default class DrawerLayout extends Component<PropType, StateType> {
 }
 
 const styles = StyleSheet.create({
-  drawer: {},
   drawerContainer: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 1001,
