@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableWithoutFeedback, View } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 
 import State from './State';
 
@@ -180,7 +180,12 @@ export default {
     return props.children;
   },
   render: (handlerName, props) => {
-    const Handler = handlers[handlerName] || UnimplementedGestureHandler;
+    let Handler = handlers[handlerName];
+
+    if (!Handler) {
+      console.warn(`${handlerName} is not yet supported on web.`);
+      Handler = UnimplementedGestureHandler;
+    }
 
     return <Handler {...props} />;
   },
