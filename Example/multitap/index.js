@@ -8,23 +8,23 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 
-import { Alert, LoremIpsum } from '../common';
+import { alert, LoremIpsum } from '../common';
 
 export class PressBox extends Component {
   doubleTapRef = React.createRef();
   _onHandlerStateChange = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert("I'm being pressed for so long");
+      alert("I'm being pressed for so long");
     }
   };
   _onSingleTap = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert("I'm touched");
+      alert("I'm touched");
     }
   };
   _onDoubleTap = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert('D0able tap, good job!');
+      alert('D0able tap, good job!');
     }
   };
   render() {

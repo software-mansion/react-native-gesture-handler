@@ -4,7 +4,7 @@ import { StyleSheet, View, PanResponder } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { DraggableBox } from '../draggable';
-import { Alert, LoremIpsum } from '../common';
+import { alert, LoremIpsum } from '../common';
 
 var CIRCLE_SIZE = 80;
 
@@ -94,7 +94,7 @@ class PanResponderExample extends Component {
 
 export default class Example extends Component {
   _onClick = () => {
-    Alert.alert("I'm so touched");
+    alert("I'm so touched");
   };
   render() {
     return (

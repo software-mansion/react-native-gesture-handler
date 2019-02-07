@@ -6,10 +6,10 @@ import { FlatList, RectButton } from 'react-native-gesture-handler';
 import AppleStyleSwipeableRow from './AppleStyleSwipeableRow';
 import GmailStyleSwipeableRow from './GmailStyleSwipeableRow';
 
-import { Alert } from '../common';
+import { alert } from '../common';
 
 const Row = ({ item }) => (
-  <RectButton style={styles.rectButton} onPress={() => Alert.alert(item.from)}>
+  <RectButton style={styles.rectButton} onPress={() => alert(item.from)}>
     <Text style={styles.fromText}>{item.from}</Text>
     <Text numberOfLines={2} style={styles.messageText}>
       {item.message}
