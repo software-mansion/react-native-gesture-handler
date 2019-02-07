@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 
 import GestureHandlerButton from './GestureHandlerButton';
 import GestureHandlerModule from './GestureHandlerModule';
+import GestureHandlerRenderer from './GestureHandlerRenderer';
 import gestureHandlerRootHOC from './gestureHandlerRootHOC';
 
 import Directions from './Directions';
@@ -199,8 +200,49 @@ function createHandler(
       }
     };
 
-    componentWillUnmount() {
+    _createGestureHandler = newConfig => {
+      this._config = newConfig;
+
+      if (!GestureHandlerModule.createGestureHandler) {
+        return;
+      }
+
+      GestureHandlerModule.createGestureHandler(
+        handlerName,
+        this._handlerTag,
+        newConfig
+      );
+    };
+
+    _attachGestureHandler = newViewTag => {
+      this._viewTag = newViewTag;
+
+      if (!GestureHandlerModule.attachGestureHandler) {
+        return;
+      }
+
+      GestureHandlerModule.attachGestureHandler(this._handlerTag, newViewTag);
+    };
+
+    _updateGestureHandler = newConfig => {
+      this._config = newConfig;
+
+      if (!GestureHandlerModule.updateGestureHandler) {
+        return;
+      }
+
+      GestureHandlerModule.updateGestureHandler(this._handlerTag, newConfig);
+    };
+
+    _dropGestureHandler = () => {
+      if (!GestureHandlerModule.dropGestureHandler) {
+        return;
+      }
+
       GestureHandlerModule.dropGestureHandler(this._handlerTag);
+    };
+
+    componentWillUnmount() {
       if (this._updateEnqueued) {
         clearImmediate(this._updateEnqueued);
       }
@@ -210,12 +252,6 @@ function createHandler(
     }
 
     componentDidMount() {
-      this._viewTag = findNodeHandle(this._viewNode);
-      this._config = filterConfig(
-        transformProps ? transformProps(this.props) : this.props,
-        { ...this.constructor.propTypes, ...customNativeProps },
-        config
-      );
       if (hasUnresolvedRefs(this.props)) {
         // If there are unresolved refs (e.g. ".current" has not yet been set)
         // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
@@ -228,22 +264,21 @@ function createHandler(
           this._update();
         });
       }
-      GestureHandlerModule.createGestureHandler(
-        handlerName,
-        this._handlerTag,
-        this._config
+
+      this._createGestureHandler(
+        filterConfig(
+          transformProps ? transformProps(this.props) : this.props,
+          { ...this.constructor.propTypes, ...customNativeProps },
+          config
+        )
       );
-      GestureHandlerModule.attachGestureHandler(
-        this._handlerTag,
-        this._viewTag
-      );
+      this._attachGestureHandler(findNodeHandle(this._viewNode));
     }
 
     componentDidUpdate() {
       const viewTag = findNodeHandle(this._viewNode);
       if (this._viewTag !== viewTag) {
-        this._viewTag = viewTag;
-        GestureHandlerModule.attachGestureHandler(this._handlerTag, viewTag);
+        this._attachGestureHandler(viewTag);
       }
       this._update();
     }
@@ -255,11 +290,7 @@ function createHandler(
         config
       );
       if (!deepEqual(this._config, newConfig)) {
-        this._config = newConfig;
-        GestureHandlerModule.updateGestureHandler(
-          this._handlerTag,
-          this._config
-        );
+        this._updateGestureHandler(newConfig);
       }
     }
 
@@ -270,8 +301,7 @@ function createHandler(
         { ...this.constructor.propTypes, ...customNativeProps },
         config
       );
-      this._config = newConfig;
-      GestureHandlerModule.updateGestureHandler(this._handlerTag, this._config);
+      this._updateGestureHandler(newConfig);
     }
 
     render() {
@@ -321,34 +351,14 @@ function createHandler(
         }
       }
 
-      const child = React.Children.only(this.props.children);
-      let children = GestureHandlerModule.getChildren(this.props);
-      if (
-        Touchable.TOUCH_TARGET_DEBUG &&
-        child.type &&
-        (child.type === 'RNGestureHandlerButton' ||
-          child.type.name === 'View' ||
-          child.type.displayName === 'View')
-      ) {
-        children = React.Children.toArray(children);
-        children.push(
-          Touchable.renderDebugView({
-            color: 'mediumspringgreen',
-            hitSlop: child.props.hitSlop,
-          })
-        );
-      }
-
-      return React.cloneElement(
-        GestureHandlerModule.render(handlerName, this.props),
-        {
-          ref: this._refHandler,
-          collapsable: false,
-          onGestureHandlerEvent: gestureEventHandler,
-          onGestureHandlerStateChange: gestureStateEventHandler,
-        },
-        children
-      );
+      return GestureHandlerRenderer.render({
+        ...this.props,
+        handlerName,
+        ref: this._refHandler,
+        collapsable: false,
+        onGestureHandlerEvent: gestureEventHandler,
+        onGestureHandlerStateChange: gestureStateEventHandler,
+      });
     }
   }
   return Handler;

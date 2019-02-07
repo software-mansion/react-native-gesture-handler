@@ -370,6 +370,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       opacity: overlayOpacity,
       backgroundColor: this.props.overlayColor,
     };
+
     return (
       <TapGestureHandler onHandlerStateChange={this._onTapHandlerStateChange}>
         <Animated.View

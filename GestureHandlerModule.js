@@ -1,4 +1,3 @@
-import React from 'react';
 import { NativeModules } from 'react-native';
 
 const { RNGestureHandlerModule, UIManager } = NativeModules;
@@ -29,13 +28,4 @@ UIManager.genericDirectEventTypes = {
   },
 };
 
-export default {
-  ...RNGestureHandlerModule,
-  getChildren: props => {
-    const child = React.Children.only(props.children);
-    return child.props.children;
-  },
-  render: (handlerName, props) => {
-    return React.Children.only(props.children);
-  },
-};
+export default RNGestureHandlerModule;
