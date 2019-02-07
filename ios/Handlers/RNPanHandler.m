@@ -54,7 +54,7 @@
     _failOffsetYStart = NAN;
     _failOffsetYEnd = NAN;
     _hasCustomActivationCriteria = NO;
-#if !TARGET_OS_TV
+#ifndef TARGET_OS_TV
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
 #endif
   }
@@ -68,12 +68,11 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-#if !TARGET_OS_TV
+#ifndef TARGET_OS_TV
   if (_hasCustomActivationCriteria) {
     // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
     // the gesture too early before we are sure that all criteria (e.g. minimum distance
     // etc. are met)
-
     super.minimumNumberOfTouches = 20;
   } else {
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
@@ -102,15 +101,15 @@
       return;
     }
   }
-#if !TARGET_OS_TV
   if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
+#ifndef TARGET_OS_TV
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
     if ([self numberOfTouches] >= _realMinimumNumberOfTouches) {
       self.state = UIGestureRecognizerStateBegan;
       [self setTranslation:CGPointMake(0, 0) inView:self.view];
     }
-  }
 #endif
+  }
 }
 
 - (void)reset
@@ -207,7 +206,7 @@
   APPLY_FLOAT_PROP(failOffsetYStart);
   APPLY_FLOAT_PROP(failOffsetYEnd);
   
-#if !TARGET_OS_TV
+#ifndef TARGET_OS_TV
   APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
   APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
 #endif

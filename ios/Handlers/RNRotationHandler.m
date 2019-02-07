@@ -10,22 +10,27 @@
 
 @implementation RNRotationGestureHandler
 
-//- (instancetype)initWithTag:(NSNumber *)tag
-//{
-//    if ((self = [super initWithTag:tag])) {
-//        _recognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
-//    }
-//    return self;
-//}
+- (instancetype)initWithTag:(NSNumber *)tag
+{
+    if ((self = [super initWithTag:tag])) {
+        #ifndef TARGET_OS_TV
+        _recognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+        #endif
+    }
+    return self;
+}
 
-//- (RNGestureHandlerEventExtraData *)eventExtraData:(UIRotationGestureRecognizer *)recognizer
-//{
-//    return [RNGestureHandlerEventExtraData
-//            forRotation:recognizer.rotation
-//            withAnchorPoint:[recognizer locationInView:recognizer.view]
-//            withVelocity:recognizer.velocity
-//            withNumberOfTouches:recognizer.numberOfTouches];
-//}
+#ifndef TARGET_OS_TV
+_recognizer = [[UIRotation
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIRotationGestureRecognizer *)recognizer
+{
+    return [RNGestureHandlerEventExtraData
+            forRotation:recognizer.rotation
+            withAnchorPoint:[recognizer locationInView:recognizer.view]
+            withVelocity:recognizer.velocity
+            withNumberOfTouches:recognizer.numberOfTouches];
+}
+#endif
 
 @end
 
