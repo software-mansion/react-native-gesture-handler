@@ -1,6 +1,3 @@
-export default {
-  RIGHT: 1,
-  LEFT: 2,
-  UP: 4,
-  DOWN: 8,
-};
+import GestureHandlerModule from './GestureHandlerModule';
+
+export default GestureHandlerModule.Direction;
