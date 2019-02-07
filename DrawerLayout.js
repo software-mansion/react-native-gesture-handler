@@ -352,10 +352,16 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       this.props.drawerWidth,
       options.velocity ? options.velocity : 0
     );
+
+    // We need to force the update, otherwise the overlay is not rerendered and it would not be clickable
+    this.forceUpdate();
   };
 
   closeDrawer = (options: DrawerMovementOptionType = {}) => {
     this._animateDrawer(undefined, 0, options.velocity ? options.velocity : 0);
+
+    // We need to force the update, otherwise the overlay is not rerendered and it would be still clickable
+    this.forceUpdate();
   };
 
   _renderOverlay = () => {
