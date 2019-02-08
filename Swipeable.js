@@ -35,9 +35,12 @@ export type PropType = {
   onSwipeableRightWillOpen?: Function,
   onSwipeableWillOpen?: Function,
   onSwipeableWillClose?: Function,
+  handleSwipeableLeftRelease?: Function,
+  handleSwipeableRightRelease?: Function,
   renderLeftActions?: (
     progressAnimatedValue: any,
     dragAnimatedValue: any
+  
   ) => any,
   renderRightActions?: (
     progressAnimatedValue: any,
@@ -183,29 +186,43 @@ export default class Swipeable extends Component<PropType, StateType> {
       rightThreshold = rightWidth / 2,
     } = this.props;
 
-    const startOffsetX = this._currentOffset() + dragX / friction;
     const translationX = (dragX + DRAG_TOSS * velocityX) / friction;
 
-    let toValue = 0;
+    const params = {
+      toValue: 0,
+      startOffset: this._currentOffset() + dragX / friction,
+      velocity: velocityX / friction
+    };
+
     if (rowState === 0) {
       if (translationX > leftThreshold) {
-        toValue = leftWidth;
+        params.toValue = leftWidth;
       } else if (translationX < -rightThreshold) {
-        toValue = -rightWidth;
+        params.toValue = -rightWidth;
       }
     } else if (rowState === 1) {
       // swiped to left
       if (translationX > -leftThreshold) {
-        toValue = leftWidth;
+        params.toValue = leftWidth;
       }
     } else {
       // swiped to right
       if (translationX < rightThreshold) {
-        toValue = -rightWidth;
+        params.toValue = -rightWidth;
       }
     }
 
-    this._animateRow(startOffsetX, toValue, velocityX / friction);
+    if (params.toValue > 0 && this.props.handleSwipeableLeftRelease) {
+      const handled = this.props.handleSwipeableLeftRelease(params);
+      typeof handled === "object" && Object.assign(params, handled);
+    }
+
+    if (params.toValue < 0 && this.props.handleSwipeableRightRelease) {
+      const handled = this.props.handleSwipeableRightRelease(params);
+      typeof handled === 'object' && Object.assign(params, handled);
+    }
+
+    this._animateRow(params.startOffset, params.toValue, params.velocity);
   };
 
   _animateRow = (fromValue, toValue, velocityX) => {
