@@ -74,6 +74,16 @@ method that is called when action panel starts animating on open (either right o
 method that is called when action panel starts animating on close.
 
 ---
+### `handleSwipeableLeftRelease` and `handleSwipeableRightRelease`
+Methods that are called when the user releases the swipeable. The callback function is called with animation parameters and may be used to customize the resulting animation by returning an object that will be merged in. For example:
+```javascript
+handleSwipeableLeftRelease={({toValue, startOffset, velocity}) => {
+ //Use parameters if desired...
+ return { toValue: toValue 0 } //For example, this will prevent the action panel from opening
+}}
+```
+
+---
 ### `renderLeftActions`
 method that is expected to return an action panel that is going to be revealed from the left side when user swipes right.
 
