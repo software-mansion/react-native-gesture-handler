@@ -85,6 +85,10 @@ method that is expected to return an action panel that is going to be revealed f
 ### `containerStyle`
 style object for the container (Animated.View), for example to override `overflow: 'hidden'`.
 
+---
+### `childrenContainerStyle`
+style object for the children container (Animated.View), for example to apply `flex: 1`.
+
 ## Methods
 Using reference to `Swipeable` it's possible to trigger some actions on it
 
