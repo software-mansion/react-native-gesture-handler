@@ -46,6 +46,7 @@ export type PropType = {
   useNativeAnimations: boolean,
   animationOptions?: Object,
   containerStyle?: Object,
+  childrenContainerStyle?: Object,
 };
 type StateType = {
   dragX: Animated.Value,
@@ -330,9 +331,12 @@ export default class Swipeable extends Component<PropType, StateType> {
             onHandlerStateChange={this._onTapHandlerStateChange}>
             <Animated.View
               pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
-              style={{
-                transform: [{ translateX: this._transX }],
-              }}>
+              style={[
+                {
+                  transform: [{ translateX: this._transX }],
+                },
+                this.props.childrenContainerStyle
+              ]}>
               {children}
             </Animated.View>
           </TapGestureHandler>
