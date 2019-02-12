@@ -22,7 +22,6 @@ Whenever you use a native component that should handle touch events you can eith
  - `ToolbarAndroid` (**Android only**)
  - `ViewPagerAndroid` (**Android only**)
  - `DrawerLayoutAndroid` (**Android only**)
- - `WebView`
 
 
 Library exports a `State` object that provides a number of constants used to express the state of the handler. Here are the available constants:
