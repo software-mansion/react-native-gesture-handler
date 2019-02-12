@@ -12,7 +12,7 @@ import {
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../config';
-import { alert, LoremIpsum } from '../common';
+import { LoremIpsum } from '../common';
 
 const RATIO = 3;
 

@@ -4,7 +4,7 @@ import { StyleSheet, View, PanResponder } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { DraggableBox } from '../draggable';
-import { alert, LoremIpsum } from '../common';
+import { LoremIpsum } from '../common';
 
 var CIRCLE_SIZE = 80;
 

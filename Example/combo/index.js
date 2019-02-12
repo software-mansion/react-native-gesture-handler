@@ -22,7 +22,7 @@ import { DraggableBox } from '../draggable';
 import { PinchableBox } from '../scaleAndRotate';
 import { PressBox } from '../multitap';
 
-import { alert, LoremIpsum } from '../common';
+import { LoremIpsum } from '../common';
 
 const CHILD_REF = 'CHILD_REF';
 

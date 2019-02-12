@@ -8,7 +8,7 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 
-import { alert, LoremIpsum } from '../common';
+import { LoremIpsum } from '../common';
 
 export class PressBox extends Component {
   doubleTapRef = React.createRef();
