@@ -83,8 +83,7 @@ Here is a list of exposed components:
  - `ToolbarAndroid` (**Android only**)
  - `ViewPagerAndroid` (**Android only**)
  - `DrawerLayoutAndroid` (**Android only**)
- - `WebView`
-
+ 
 If you want to use other handlers or [buttons](component-buttons.md) nested in a `ScrollView` or you want to use [`waitFor`](handler-common.md#waitfor) property to define interaction between a handler and `ScrollView`
 
 ---
