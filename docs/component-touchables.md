@@ -44,8 +44,3 @@ import {
 ```
 
 For a comparison of both touchable implementations see our [touchables example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/touchables/index.js)
-
-
-
-
- 
