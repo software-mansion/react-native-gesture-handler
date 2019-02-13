@@ -672,7 +672,12 @@ function createNativeWrapper(Component, config = {}) {
             typeof source[methodName] === 'function' &&
             this[methodName] === undefined
           ) {
-            this[methodName] = source[methodName].bind(node);
+            if (source[methodName].prototype) {
+              // determine if it's not bound already
+              this[methodName] = source[methodName].bind(node);
+            } else {
+              this[methodName] = source[methodName];
+            }
           }
         }
         source = Object.getPrototypeOf(source);
