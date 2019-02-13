@@ -11,7 +11,7 @@ React Native's touchables API could be found here:
  - [Touchable Highlight](https://facebook.github.io/react-native/docs/touchablehighlight)
  - [Touchable Without Feedback](https://facebook.github.io/react-native/docs/touchablewithoutfeedback)
  
- All important props (but for `pressRetentionOffset`) has been copied and should behave in a similar way to original components. 
+ All major touchable properties (except from `pressRetentionOffset`) have been adopted and should behave in a similar way as with RN's touchables. 
  
  The motivation for using RNGH touchables as a replacement for these imported from React Native is to follow native behavior more strictly.
  These touchables and their feedback behavior are deeply integrated with native
