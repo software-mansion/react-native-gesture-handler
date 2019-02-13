@@ -18,7 +18,7 @@ React Native's touchables API can be found here:
  gesture ecosystem and could be connected with other native components (e.g. `ScrollView`) and Gesture Handlers easily and in a more predictable way, which 
  follows native apps' behavior.
  
- Our intention was to make switch for these touchables as simple as possible. In order to use RNGH's touchables you
+ Our intention was to make switch for these touchables as simple as possible. In order to use RNGH's touchables the only thing you need to do is to change library from which you import touchable components.
  need only to change imports of touchables.
  
  ### Example:
