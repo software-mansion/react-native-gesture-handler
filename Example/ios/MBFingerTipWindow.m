@@ -112,7 +112,9 @@
         _overlayWindow = [[MBFingerTipOverlayWindow alloc] initWithFrame:self.frame];
         
         _overlayWindow.userInteractionEnabled = NO;
+#if !TARGET_OS_TV
         _overlayWindow.windowLevel = UIWindowLevelStatusBar;
+#endif
         _overlayWindow.backgroundColor = [UIColor clearColor];
         _overlayWindow.hidden = NO;
     }

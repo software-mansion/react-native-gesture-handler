@@ -39,10 +39,51 @@
 		668E083D21BDD70900EDDF40 /* RNForceTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 668E083B21BDD70900EDDF40 /* RNForceTouchHandler.m */; };
 		66A291D5207D032400809C27 /* RNFlingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A291D3207D032400809C27 /* RNFlingHandler.m */; };
 		66A291D6207D032400809C27 /* RNFlingHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A291D4207D032400809C27 /* RNFlingHandler.h */; };
+		B5C32A0E220C603B000FFB8D /* RNGestureHandlerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC71E1F8FA0700086889F /* RNGestureHandlerButton.m */; };
+		B5C32A0F220C603B000FFB8D /* RNForceTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 668E083B21BDD70900EDDF40 /* RNForceTouchHandler.m */; };
+		B5C32A10220C603B000FFB8D /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44BE34471F1E1AAA008679D1 /* RNGestureHandlerManager.m */; };
+		B5C32A11220C603B000FFB8D /* RNLongPressHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7241F8FA1270086889F /* RNLongPressHandler.m */; };
+		B5C32A12220C603B000FFB8D /* RNGestureHandlerEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 446E7FF71ED89A4B009282E7 /* RNGestureHandlerEvents.m */; };
+		B5C32A13220C603B000FFB8D /* RNPanHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7281F8FA1270086889F /* RNPanHandler.m */; };
+		B5C32A14220C603B000FFB8D /* RNGestureHandlerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7161F8F9C090086889F /* RNGestureHandlerRegistry.m */; };
+		B5C32A15220C603B000FFB8D /* RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 448802DC1F6803DF00018214 /* RNGestureHandler.m */; };
+		B5C32A16220C603B000FFB8D /* RNTapHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC72E1F8FA1270086889F /* RNTapHandler.m */; };
+		B5C32A17220C603B000FFB8D /* RNGestureHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 446E7FDD1ED57CA6009282E7 /* RNGestureHandlerModule.m */; };
+		B5C32A18220C603B000FFB8D /* RNRotationHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC72C1F8FA1270086889F /* RNRotationHandler.m */; };
+		B5C32A19220C603B000FFB8D /* RNNativeViewHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7261F8FA1270086889F /* RNNativeViewHandler.m */; };
+		B5C32A1A220C603B000FFB8D /* RNRootViewGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC7121F8F9B770086889F /* RNRootViewGestureRecognizer.m */; };
+		B5C32A1B220C603B000FFB8D /* RNFlingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A291D3207D032400809C27 /* RNFlingHandler.m */; };
+		B5C32A1C220C603B000FFB8D /* RNPinchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AEC72A1F8FA1270086889F /* RNPinchHandler.m */; };
+		B5C32A1E220C603B000FFB8D /* RNForceTouchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E083A21BDD70900EDDF40 /* RNForceTouchHandler.h */; };
+		B5C32A1F220C603B000FFB8D /* RNFlingHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A291D4207D032400809C27 /* RNFlingHandler.h */; };
+		B5C32A20220C603B000FFB8D /* RNLongPressHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7231F8FA1270086889F /* RNLongPressHandler.h */; };
+		B5C32A21220C603B000FFB8D /* RNGestureHandlerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 446E7FDC1ED57CA6009282E7 /* RNGestureHandlerModule.h */; };
+		B5C32A22220C603B000FFB8D /* RNPinchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7291F8FA1270086889F /* RNPinchHandler.h */; };
+		B5C32A23220C603B000FFB8D /* RNGestureHandlerRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7141F8F9BEF0086889F /* RNGestureHandlerRegistry.h */; };
+		B5C32A24220C603B000FFB8D /* RNGestureHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 448802DB1F6803DF00018214 /* RNGestureHandler.h */; };
+		B5C32A25220C603B000FFB8D /* RNRotationHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC72B1F8FA1270086889F /* RNRotationHandler.h */; };
+		B5C32A26220C603B000FFB8D /* RNPanHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7271F8FA1270086889F /* RNPanHandler.h */; };
+		B5C32A27220C603B000FFB8D /* RNGestureHandlerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 44BE34491F1E1ABA008679D1 /* RNGestureHandlerManager.h */; };
+		B5C32A28220C603B000FFB8D /* RNGestureHandlerEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 446E7FF51ED89A31009282E7 /* RNGestureHandlerEvents.h */; };
+		B5C32A29220C603B000FFB8D /* RNTapHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC72D1F8FA1270086889F /* RNTapHandler.h */; };
+		B5C32A2A220C603B000FFB8D /* RNRootViewGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7101F8F9B6C0086889F /* RNRootViewGestureRecognizer.h */; };
+		B5C32A2B220C603B000FFB8D /* RNNativeViewHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC7251F8FA1270086889F /* RNNativeViewHandler.h */; };
+		B5C32A2C220C603B000FFB8D /* RNGestureHandlerState.h in Headers */ = {isa = PBXBuildFile; fileRef = 44384A781ECDE0DB006BAD02 /* RNGestureHandlerState.h */; };
+		B5C32A2D220C603B000FFB8D /* RNGestureHandlerButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 44AEC71D1F8FA0700086889F /* RNGestureHandlerButton.h */; };
+		B5C32A2E220C603B000FFB8D /* RNGestureHandlerDirection.h in Headers */ = {isa = PBXBuildFile; fileRef = 660F46732080D8F600B7B50D /* RNGestureHandlerDirection.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		58B511D91A9E6C8500147676 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B5C32A30220C603B000FFB8D /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
@@ -87,10 +128,18 @@
 		668E083B21BDD70900EDDF40 /* RNForceTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNForceTouchHandler.m; path = Handlers/RNForceTouchHandler.m; sourceTree = "<group>"; };
 		66A291D3207D032400809C27 /* RNFlingHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFlingHandler.m; path = Handlers/RNFlingHandler.m; sourceTree = "<group>"; };
 		66A291D4207D032400809C27 /* RNFlingHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFlingHandler.h; path = Handlers/RNFlingHandler.h; sourceTree = "<group>"; };
+		B5C32A36220C603B000FFB8D /* libRNGestureHandler-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRNGestureHandler-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		58B511D81A9E6C8500147676 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B5C32A2F220C603B000FFB8D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -152,6 +201,7 @@
 				44AEC71D1F8FA0700086889F /* RNGestureHandlerButton.h */,
 				44AEC71E1F8FA0700086889F /* RNGestureHandlerButton.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				B5C32A36220C603B000FFB8D /* libRNGestureHandler-tvOS.a */,
 			);
 			sourceTree = "<group>";
 		};
@@ -182,6 +232,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B5C32A1D220C603B000FFB8D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5C32A1E220C603B000FFB8D /* RNForceTouchHandler.h in Headers */,
+				B5C32A1F220C603B000FFB8D /* RNFlingHandler.h in Headers */,
+				B5C32A20220C603B000FFB8D /* RNLongPressHandler.h in Headers */,
+				B5C32A21220C603B000FFB8D /* RNGestureHandlerModule.h in Headers */,
+				B5C32A22220C603B000FFB8D /* RNPinchHandler.h in Headers */,
+				B5C32A23220C603B000FFB8D /* RNGestureHandlerRegistry.h in Headers */,
+				B5C32A24220C603B000FFB8D /* RNGestureHandler.h in Headers */,
+				B5C32A25220C603B000FFB8D /* RNRotationHandler.h in Headers */,
+				B5C32A26220C603B000FFB8D /* RNPanHandler.h in Headers */,
+				B5C32A27220C603B000FFB8D /* RNGestureHandlerManager.h in Headers */,
+				B5C32A28220C603B000FFB8D /* RNGestureHandlerEvents.h in Headers */,
+				B5C32A29220C603B000FFB8D /* RNTapHandler.h in Headers */,
+				B5C32A2A220C603B000FFB8D /* RNRootViewGestureRecognizer.h in Headers */,
+				B5C32A2B220C603B000FFB8D /* RNNativeViewHandler.h in Headers */,
+				B5C32A2C220C603B000FFB8D /* RNGestureHandlerState.h in Headers */,
+				B5C32A2D220C603B000FFB8D /* RNGestureHandlerButton.h in Headers */,
+				B5C32A2E220C603B000FFB8D /* RNGestureHandlerDirection.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -203,13 +277,31 @@
 			productReference = 134814201AA4EA6300B7C361 /* libRNGestureHandler.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		B5C32A0C220C603B000FFB8D /* RNGestureHandler-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B5C32A31220C603B000FFB8D /* Build configuration list for PBXNativeTarget "RNGestureHandler-tvOS" */;
+			buildPhases = (
+				B5C32A0D220C603B000FFB8D /* Sources */,
+				B5C32A1D220C603B000FFB8D /* Headers */,
+				B5C32A2F220C603B000FFB8D /* Frameworks */,
+				B5C32A30220C603B000FFB8D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RNGestureHandler-tvOS";
+			productName = RCTDataManager;
+			productReference = B5C32A36220C603B000FFB8D /* libRNGestureHandler-tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		58B511D31A9E6C8500147676 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 610;
 				ORGANIZATIONNAME = "Software Mansion";
 				TargetAttributes = {
 					58B511DA1A9E6C8500147676 = {
@@ -230,6 +322,7 @@
 			projectRoot = "";
 			targets = (
 				58B511DA1A9E6C8500147676 /* RNGestureHandler */,
+				B5C32A0C220C603B000FFB8D /* RNGestureHandler-tvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -257,9 +350,47 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B5C32A0D220C603B000FFB8D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5C32A0E220C603B000FFB8D /* RNGestureHandlerButton.m in Sources */,
+				B5C32A0F220C603B000FFB8D /* RNForceTouchHandler.m in Sources */,
+				B5C32A10220C603B000FFB8D /* RNGestureHandlerManager.m in Sources */,
+				B5C32A11220C603B000FFB8D /* RNLongPressHandler.m in Sources */,
+				B5C32A12220C603B000FFB8D /* RNGestureHandlerEvents.m in Sources */,
+				B5C32A13220C603B000FFB8D /* RNPanHandler.m in Sources */,
+				B5C32A14220C603B000FFB8D /* RNGestureHandlerRegistry.m in Sources */,
+				B5C32A15220C603B000FFB8D /* RNGestureHandler.m in Sources */,
+				B5C32A16220C603B000FFB8D /* RNTapHandler.m in Sources */,
+				B5C32A17220C603B000FFB8D /* RNGestureHandlerModule.m in Sources */,
+				B5C32A18220C603B000FFB8D /* RNRotationHandler.m in Sources */,
+				B5C32A19220C603B000FFB8D /* RNNativeViewHandler.m in Sources */,
+				B5C32A1A220C603B000FFB8D /* RNRootViewGestureRecognizer.m in Sources */,
+				B5C32A1B220C603B000FFB8D /* RNFlingHandler.m in Sources */,
+				B5C32A1C220C603B000FFB8D /* RNPinchHandler.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		3C75380331224952A9D19739 /* Testflight */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = RNGestureHandler;
+				SKIP_INSTALL = YES;
+			};
+			name = Testflight;
+		};
 		58B511ED1A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -366,6 +497,157 @@
 			};
 			name = Release;
 		};
+		64C7ABFB934A41BFB09378ED /* Testflight */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Testflight;
+		};
+		6E1E231AAE4C4EB5B94B5418 /* Testflight */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Testflight;
+		};
+		8F4E4CFC1C3048678D76E403 /* Testflight */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = RNGestureHandler;
+				SKIP_INSTALL = YES;
+			};
+			name = Testflight;
+		};
+		B5C32A32220C603B000FFB8D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		B5C32A33220C603B000FFB8D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		B5C32A34220C603B000FFB8D /* Testflight */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+			};
+			name = Testflight;
+		};
+		B5C32A35220C603B000FFB8D /* Testflight */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = RNGestureHandler;
+				SKIP_INSTALL = YES;
+			};
+			name = Testflight;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -374,6 +656,8 @@
 			buildConfigurations = (
 				58B511ED1A9E6C8500147676 /* Debug */,
 				58B511EE1A9E6C8500147676 /* Release */,
+				6E1E231AAE4C4EB5B94B5418 /* Testflight */,
+				64C7ABFB934A41BFB09378ED /* Testflight */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -383,6 +667,19 @@
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,
 				58B511F11A9E6C8500147676 /* Release */,
+				3C75380331224952A9D19739 /* Testflight */,
+				8F4E4CFC1C3048678D76E403 /* Testflight */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B5C32A31220C603B000FFB8D /* Build configuration list for PBXNativeTarget "RNGestureHandler-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B5C32A32220C603B000FFB8D /* Debug */,
+				B5C32A33220C603B000FFB8D /* Release */,
+				B5C32A34220C603B000FFB8D /* Testflight */,
+				B5C32A35220C603B000FFB8D /* Testflight */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
