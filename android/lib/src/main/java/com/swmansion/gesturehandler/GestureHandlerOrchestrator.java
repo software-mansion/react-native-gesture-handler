@@ -69,10 +69,6 @@ public class GestureHandlerOrchestrator {
 
   private float mMinAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL;
 
-  public GestureHandlerOrchestrator(ViewGroup wrapperView) {
-    this(wrapperView, new GestureHandlerRegistryImpl(), new ViewConfigurationHelperImpl());
-  }
-
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
           GestureHandlerRegistry registry,
@@ -348,7 +344,7 @@ public class GestureHandlerOrchestrator {
     ViewGroup parent = (ViewGroup) view.getParent();
     extractCoordsForView(parent, event, outputCoords);
     PointF childPoint = sTempPoint;
-    isTransformedTouchPointInView(outputCoords[0], outputCoords[1], parent, view, childPoint);
+    transformTouchPointToViewCoords(outputCoords[0], outputCoords[1], parent, view, childPoint);
     outputCoords[0] = childPoint.x;
     outputCoords[1] = childPoint.y;
   }
@@ -412,14 +408,19 @@ public class GestureHandlerOrchestrator {
     int childrenCount = viewGroup.getChildCount();
     for (int i = childrenCount - 1; i >= 0; i--) {
       View child = mViewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i);
-      PointF childPoint = sTempPoint;
-      if (canReceiveEvents(child)
-              && isTransformedTouchPointInView(coords[0], coords[1], viewGroup, child, childPoint)) {
+      if (canReceiveEvents(child)) {
+        PointF childPoint = sTempPoint;
+        transformTouchPointToViewCoords(coords[0], coords[1], viewGroup, child, childPoint);
         float restoreX = coords[0];
         float restoreY = coords[1];
         coords[0] = childPoint.x;
         coords[1] = childPoint.y;
-        boolean found = traverseWithPointerEvents(child, coords, pointerId);
+        boolean found = false;
+        if (!isClipping(child) || isTransformedTouchPointInView(coords[0], coords[1], child)) {
+          // we only consider the view if touch is inside the view bounds or if the view's children
+          // can render outside of the view bounds (overflow visible)
+          found = traverseWithPointerEvents(child, coords, pointerId);
+        }
         coords[0] = restoreX;
         coords[1] = restoreY;
         if (found) {
@@ -437,7 +438,8 @@ public class GestureHandlerOrchestrator {
     // TODO: this is not an ideal solution as we only consider ViewGroups that has no background set
     // TODO: ideally we should determine the pixel color under the given coordinates and return
     // false if the color is transparent
-    return !(view instanceof ViewGroup) || view.getBackground() != null;
+    boolean isLeafOrTransparent = !(view instanceof ViewGroup) || view.getBackground() != null;
+    return isLeafOrTransparent && isTransformedTouchPointInView(coords[0], coords[1], view);
   }
 
   private boolean traverseWithPointerEvents(View view, float coords[], int pointerId) {
@@ -473,7 +475,7 @@ public class GestureHandlerOrchestrator {
     return view.getVisibility() == View.VISIBLE && view.getAlpha() >= mMinAlphaForTraversal;
   }
 
-  private boolean isTransformedTouchPointInView(
+  private static void transformTouchPointToViewCoords(
           float x,
           float y,
           ViewGroup parent,
@@ -493,19 +495,16 @@ public class GestureHandlerOrchestrator {
       localY = localXY[1];
     }
     outLocalPoint.set(localX, localY);
+  }
 
-    boolean isWithinBounds = false;
-    ArrayList<GestureHandler> handlers = mHandlerRegistry.getHandlersForView(child);
-    if (handlers != null) {
-      for (int i = 0, size = handlers.size(); !isWithinBounds && i < size; i++) {
-        isWithinBounds = handlers.get(i).isWithinBounds(child, localX, localY);
-      }
-    }
-    if (!isWithinBounds) {
-      isWithinBounds = localX >= 0 && localX <= child.getWidth() && localY >= 0
-              && localY < child.getHeight();
-    }
-    return isWithinBounds;
+  private boolean isClipping(View view) {
+    // if view is not a view group it is clipping, otherwise we check for `getClipChildren` flag to
+    // be turned on and also confirm with the ViewConfigHelper implementation
+    return !(view instanceof ViewGroup) || mViewConfigHelper.isViewClippingChildren((ViewGroup) view);
+  }
+
+  private static boolean isTransformedTouchPointInView(float x, float y, View child) {
+    return x >= 0 && x <= child.getWidth() && y >= 0 && y < child.getHeight();
   }
 
   private static boolean shouldHandlerWaitForOther(GestureHandler handler, GestureHandler other) {
