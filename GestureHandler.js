@@ -13,6 +13,7 @@ import {
   DrawerLayoutAndroid,
   StyleSheet,
   FlatList,
+  SectionList,
   Platform,
 } from 'react-native';
 import processColor from 'react-native/Libraries/StyleSheet/processColor';
@@ -907,6 +908,13 @@ const FlatListWithGHScroll = props => (
   />
 );
 
+const SectionListWithGHScroll = props => (
+  <SectionList
+    {...props}
+    renderScrollComponent={props => <WrappedScrollView {...props} />}
+  />
+);
+
 export {
   WrappedScrollView as ScrollView,
   WrappedSlider as Slider,
@@ -931,6 +939,7 @@ export {
   BorderlessButton,
   /* Other */
   FlatListWithGHScroll as FlatList,
+  SectionListWithGHScroll as SectionList,
   gestureHandlerRootHOC,
   Directions,
 };
