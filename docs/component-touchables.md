@@ -6,9 +6,9 @@ sidebar_label: Touchables
 Gesture Handler library provides an implementation of RN's touchable components that are based on [native buttons](component-buttons.md) and does not rely on JS responder system utilized by RN. Our touchable implementation follows the same API and aims to be a drop-in replacement for touchables available in React Native.
 
 React Native's touchables API can be found here:
+ - [Touchable Native Feedback](https://facebook.github.io/react-native/docs/touchablenativefeedback)
  - [Touchable Highlight](https://facebook.github.io/react-native/docs/touchablehighlight)
  - [Touchable Opacity](https://facebook.github.io/react-native/docs/touchableopacity)
- - [Touchable Highlight](https://facebook.github.io/react-native/docs/touchablehighlight)
  - [Touchable Without Feedback](https://facebook.github.io/react-native/docs/touchablewithoutfeedback)
  
  All major touchable properties (except from `pressRetentionOffset`) have been adopted and should behave in a similar way as with RN's touchables. 
