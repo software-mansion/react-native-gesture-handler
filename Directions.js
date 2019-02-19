@@ -1,3 +1,5 @@
-import GestureHandlerModule from './GestureHandlerModule';
+import { NativeModules } from 'react-native';
 
-export default GestureHandlerModule.Direction;
+const { RNGestureHandlerModule } = NativeModules;
+
+export default RNGestureHandlerModule.Direction;

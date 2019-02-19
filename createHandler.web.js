@@ -47,6 +47,10 @@ function handleBegan(props, event) {
 }
 
 class UnimplementedGestureHandler extends React.Component {
+  setNativeProps = () => {
+    // Do nothing
+  };
+
   render() {
     return this.props.children;
   }
@@ -171,14 +175,29 @@ const handlers = {
   },
 };
 
-export default {
-  render: ({ handlerName, ...props }) => {
-    let Handler = handlers[handlerName];
-    if (!Handler) {
-      console.warn(`${handlerName} is not yet supported on web.`);
-      Handler = UnimplementedGestureHandler;
-    }
+export default function createHandler(handlerName, propTypes = {}) {
+  class Handler extends React.Component {
+    static displayName = handlerName;
 
-    return <Handler {...props} />;
-  },
-};
+    static propTypes = propTypes;
+
+    _refHandler = node => {
+      this._viewNode = node;
+    };
+
+    setNativeProps = (...args) => {
+      this._viewNode.setNativeProps(...args);
+    };
+
+    render() {
+      let Handler = handlers[handlerName];
+      if (!Handler) {
+        console.warn(`${handlerName} is not yet supported on web.`);
+        Handler = UnimplementedGestureHandler;
+      }
+
+      return <Handler ref={this._refHandler} {...this.props} />;
+    }
+  }
+  return Handler;
+}
