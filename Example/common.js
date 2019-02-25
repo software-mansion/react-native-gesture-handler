@@ -13,14 +13,12 @@ export class LoremIpsum extends React.Component {
     style: styles.lipsum,
   };
   loremIpsum() {
-    return LOREM_IPSUM.split(' ').slice(0, this.props.words).join(' ');
+    return LOREM_IPSUM.split(' ')
+      .slice(0, this.props.words)
+      .join(' ');
   }
   render() {
-    return (
-      <Text style={this.props.style}>
-        {this.loremIpsum()}
-      </Text>
-    );
+    return <Text style={this.props.style}>{this.loremIpsum()}</Text>;
   }
 }
 

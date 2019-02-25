@@ -16,7 +16,6 @@ export const TOUCHABLE_STATE = {
   MOVED_OUTSIDE: 2,
 };
 
-
 const PublicPropTypes = {
   // Decided to drop not used fields from RN's implementation.
   // e.g. onBlur and onFocus as well as deprecated props.
@@ -42,12 +41,10 @@ const PublicPropTypes = {
   delayLongPress: PropTypes.number,
 };
 
-
 const InternalPropTypes = {
   extraButtonProps: PropTypes.object,
   onStateChange: PropTypes.func,
 };
-
 
 /**
  * GenericTouchable is not intented to be used as it.

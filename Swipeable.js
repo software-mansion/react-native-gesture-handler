@@ -6,7 +6,6 @@
 
 import React, { Component } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import { AnimatedEvent } from 'react-native/Libraries/Animated/src/AnimatedEvent';
 
 import { PanGestureHandler, TapGestureHandler, State } from './GestureHandler';
 
@@ -63,7 +62,7 @@ export default class Swipeable extends Component<PropType, StateType> {
     overshootFriction: 1,
     useNativeAnimations: true,
   };
-  _onGestureEvent: ?AnimatedEvent;
+  _onGestureEvent: ?Animated.Event;
   _transX: ?Animated.Interpolation;
   _showLeftAction: ?Animated.Interpolation | ?Animated.Value;
   _leftActionTranslate: ?Animated.Interpolation;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, View, PanResponder } from 'react-native';
+import { StyleSheet, View, PanResponder } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -94,7 +94,7 @@ class PanResponderExample extends Component {
 
 export default class Example extends Component {
   _onClick = () => {
-    Alert.alert("I'm so touched");
+    alert("I'm so touched");
   };
   render() {
     return (

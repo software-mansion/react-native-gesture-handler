@@ -16,18 +16,27 @@
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "ios/",
-    "README.md",
-    "NATIVE_NAVIGATORS.md",
-    "GestureHandler.js",
-    "index.js",
-    "Swipeable.js",
+    "touchables/**/*.js",
+    "createHandler.js",
+    "createHandler.web.js",
+    "Directions.js",
+    "Directions.web.js",
     "DrawerLayout.js",
+    "GestureHandler.js",
+    "GestureHandlerButton.js",
+    "GestureHandlerButton.web.js",
     "gestureHandlerRootHOC.android.js",
     "gestureHandlerRootHOC.ios.js",
     "gestureHandlerRootHOC.js",
-    "touchables/**/*.js",
+    "index.js",
+    "PlatformConstants.js",
+    "PlatformConstants.web.js",
     "react-native-gesture-handler.d.ts",
-    "RNGestureHandler.podspec"
+    "README.md",
+    "RNGestureHandler.podspec",
+    "State.js",
+    "Swipeable.js",
+    "Swipeable.web.js"
   ],
   "repository": {
     "type": "git",
@@ -49,8 +58,11 @@
     "prop-types": "^15.5.10"
   },
   "peerDependencies": {
-    "react": "> 15.0.0",
-    "react-native": ">= 0.50.0"
+    "react": ">= 16.3.2",
+    "react-art": ">= 16.3.2",
+    "react-dom": ">= 16.3.2",
+    "react-native": ">= 0.54.0",
+    "react-native-web": ">= 0.7"
   },
   "jest": {
     "preset": "jest-react-native"
@@ -66,7 +78,7 @@
     "jest-react-native": "16.0.0",
     "lint-staged": "^8.0.0-beta.1",
     "prettier": "^1.13.7",
-    "react": "^16.0.0",
+    "react": "^16.3",
     "react-native": "^0.50.1",
     "react-test-renderer": "15.3.2"
   },

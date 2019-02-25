@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Alert,
   StyleSheet,
   ScrollView as RNScroll,
   Switch,
@@ -107,7 +106,7 @@ class ControlledSwitch extends React.Component {
 
 class Combo extends Component {
   _onClick = () => {
-    Alert.alert("I'm so touched");
+    alert("I'm so touched");
     this._scrollView.scrollTo({ y: 200, animated: true });
   };
   render() {
@@ -140,7 +139,7 @@ class Combo extends Component {
             <Swipeable>
               <RectButton
                 style={styles.rectButton}
-                onPress={() => Alert.alert('First row clicked')}>
+                onPress={() => alert('First row clicked')}>
                 <Text style={styles.buttonText}>
                   Swipe this row & observe highlight delay
                 </Text>
@@ -155,7 +154,7 @@ class Combo extends Component {
             <View style={styles.buttonDelimiter} />
             <RectButton
               style={styles.rectButton}
-              onPress={() => Alert.alert('Second row clicked')}>
+              onPress={() => alert('Second row clicked')}>
               <Text style={styles.buttonText}>
                 Second info icon will block scrolling
               </Text>
@@ -167,7 +166,7 @@ class Combo extends Component {
             <View style={styles.buttonDelimiter} />
             <RectButton
               style={styles.rectButton}
-              onPress={() => Alert.alert('Third row clicked')}>
+              onPress={() => alert('Third row clicked')}>
               <Text style={styles.buttonText}>
                 This one will cancel when you drag outside
               </Text>
