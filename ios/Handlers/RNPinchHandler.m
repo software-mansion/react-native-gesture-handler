@@ -13,14 +13,14 @@
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super initWithTag:tag])) {
-#ifndef TARGET_OS_TV
+#if !TARGET_OS_TV
         _recognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
 #endif
     }
     return self;
 }
 
-#ifndef TARGET_OS_TV
+#if !TARGET_OS_TV
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPinchGestureRecognizer *)recognizer
 {
     return [RNGestureHandlerEventExtraData
