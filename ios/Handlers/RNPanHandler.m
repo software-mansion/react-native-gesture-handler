@@ -102,7 +102,7 @@
     }
   }
   if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
-#if !ARGET_OS_TV
+#if !TARGET_OS_TV
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
     if ([self numberOfTouches] >= _realMinimumNumberOfTouches) {
       self.state = UIGestureRecognizerStateBegan;
