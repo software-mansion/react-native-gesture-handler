@@ -76,7 +76,7 @@
 
 - (void)performFeedbackIfRequired
 {
-#ifndef TARGET_OS_TV
+#if !TARGET_OS_TV
   if (_feedbackOnActivation) {
     if (@available(iOS 10.0, *)) {
       [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
