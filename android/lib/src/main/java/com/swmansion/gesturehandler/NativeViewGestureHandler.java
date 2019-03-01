@@ -5,6 +5,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager;
+
 public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHandler> {
 
   private boolean mShouldActivateOnStart;
@@ -86,7 +88,14 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
         view.onTouchEvent(event);
         activate();
       } else if (state != STATE_BEGAN) {
-        begin();
+        // setting flag for exclusive touch for buttons
+        if (view instanceof RNGestureHandlerButtonViewManager.ButtonViewGroup) {
+          if (((RNGestureHandlerButtonViewManager.ButtonViewGroup) view).setResponder()) {
+            begin();
+          }
+        } else {
+          begin();
+        }
       }
     } else if (state == STATE_ACTIVE) {
       view.onTouchEvent(event);
