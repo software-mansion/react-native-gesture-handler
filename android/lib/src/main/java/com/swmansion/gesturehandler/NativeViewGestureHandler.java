@@ -88,7 +88,7 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
         view.onTouchEvent(event);
         activate();
       } else if (state != STATE_BEGAN) {
-        // setting flag for exclusive touch for buttons
+        // setting flag for an exclusive touch for buttons
         if (view instanceof RNGestureHandlerButtonViewManager.ButtonViewGroup) {
           if (((RNGestureHandlerButtonViewManager.ButtonViewGroup) view).setResponder()) {
             begin();
