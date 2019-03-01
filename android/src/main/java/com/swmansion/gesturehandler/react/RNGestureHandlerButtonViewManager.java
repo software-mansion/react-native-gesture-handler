@@ -24,7 +24,7 @@ public class RNGestureHandlerButtonViewManager extends
   public static class ButtonViewGroup extends ViewGroup {
 
     static TypedValue sResolveOutValue = new TypedValue();
-    public static ButtonViewGroup sResponder;
+    static ButtonViewGroup sResponder;
 
     int mBackgroundColor = Color.TRANSPARENT;
     // Using object because of handling null representing no value set.
