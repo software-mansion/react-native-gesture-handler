@@ -3,7 +3,7 @@ export default {
   createGestureHandler: () => {},
   dropGestureHandler: () => {},
   updateGestureHandler: () => {},
-  Directions: {
+  Direction: {
     RIGHT: 1,
     LEFT: 2,
     UP: 4,
