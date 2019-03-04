@@ -94,10 +94,7 @@ export default class TouchableHighlight extends Component {
     return (
       <GenericTouchable
         {...rest}
-        style={{
-          ...style,
-          ...extraUnderlayStyle,
-        }}
+        style={[style, extraUnderlayStyle]}
         onStateChange={this.onStateChange}>
         {this.renderChildren()}
       </GenericTouchable>
