@@ -16,6 +16,7 @@
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "ios/",
+    "__mocks__",
     "touchables/**/*.js",
     "createHandler.js",
     "createHandler.web.js",
@@ -33,6 +34,8 @@
     "PlatformConstants.web.js",
     "react-native-gesture-handler.d.ts",
     "README.md",
+    "RNGestureHandlerModule.js",
+    "jestConfig.js",
     "RNGestureHandler.podspec",
     "State.js",
     "Swipeable.js",
@@ -80,7 +83,9 @@
     "prettier": "^1.13.7",
     "react": "^16.3",
     "react-native": "^0.50.1",
-    "react-test-renderer": "15.3.2"
+    "metro-react-native-babel-preset": "0.53.0",
+    "react-native-mock-render": "^0.1.2",
+    "react-test-renderer": "16.6.3"
   },
   "lint-staged": {
     "*.js": [

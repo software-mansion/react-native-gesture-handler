@@ -1,10 +1,11 @@
 import React from 'react';
 import { findNodeHandle, NativeModules, Touchable } from 'react-native';
 import deepEqual from 'fbjs/lib/areEqual';
+import RNGestureHandlerModule from './RNGestureHandlerModule';
 
 import State from './State';
 
-const { RNGestureHandlerModule, UIManager } = NativeModules;
+const { UIManager } = NativeModules;
 
 // Wrap JS responder calls and notify gesture handler manager
 const {
