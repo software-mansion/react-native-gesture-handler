@@ -482,7 +482,7 @@ declare module 'react-native-gesture-handler/Swipeable' {
 }
 
 declare module 'react-native-gesture-handler/DrawerLayout' {
-  import { Animated, StatusBarAnimation } from 'react-native';
+  import { Animated, StatusBarAnimation, StyleProp, ViewStyle } from 'react-native';
 
   interface DrawerLayoutProperties {
     renderNavigationView: (
