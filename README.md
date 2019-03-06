@@ -28,6 +28,13 @@ Then run `react-native run-android` or `react-native run-ios` (depending on whic
 
 You will need to have an Android or iOS device or emulator connected as well as `react-native-cli` package installed globally.
 
+## React native Support
+
+| version | react-native version |
+| ------- | -------------------- |
+| 1.1.0+  | 0.57.2+              | 
+| <1.1.0  | 0.50.0+              |
+
 ## License
 
 Gesture handler library is licensed under [The MIT License](LICENSE).
