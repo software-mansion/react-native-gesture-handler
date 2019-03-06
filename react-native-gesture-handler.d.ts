@@ -7,11 +7,9 @@ declare module 'react-native-gesture-handler' {
     Animated,
     FlatListProperties,
     ScrollViewProperties,
-    SliderProperties,
     SwitchProperties,
     TextInputProperties,
     ToolbarAndroidProperties,
-    ViewPagerAndroidProperties,
     DrawerLayoutAndroidProperties,
     TouchableHighlightProperties,
     TouchableOpacityProperties,
@@ -409,10 +407,6 @@ declare module 'react-native-gesture-handler' {
     NativeViewGestureHandlerProperties & ScrollViewProperties
   > {}
 
-  export class Slider extends React.Component<
-    NativeViewGestureHandlerProperties & SliderProperties
-  > {}
-
   export class Switch extends React.Component<
     NativeViewGestureHandlerProperties & SwitchProperties
   > {}
@@ -423,10 +417,6 @@ declare module 'react-native-gesture-handler' {
 
   export class ToolbarAndroid extends React.Component<
     NativeViewGestureHandlerProperties & ToolbarAndroidProperties
-  > {}
-
-  export class ViewPagerAndroid extends React.Component<
-    NativeViewGestureHandlerProperties & ViewPagerAndroidProperties
   > {}
 
   export class DrawerLayoutAndroid extends React.Component<
