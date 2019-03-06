@@ -613,4 +613,5 @@ export {
   FlatListWithGHScroll as FlatList,
   gestureHandlerRootHOC,
   Directions,
+  createNativeWrapper,
 };

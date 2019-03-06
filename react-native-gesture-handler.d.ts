@@ -433,6 +433,11 @@ declare module 'react-native-gesture-handler' {
     Component: React.ComponentType<any>,
     containerStyles?: StyleProp<ViewStyle>
   ): React.ComponentType<any>;
+
+  export function createNativeWrapper(
+    Component: React.ComponentType<any>,
+    config: NativeViewGestureHandlerProperties
+  ): React.ComponentType<any>;
 }
 
 declare module 'react-native-gesture-handler/Swipeable' {
