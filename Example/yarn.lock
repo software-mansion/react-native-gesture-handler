@@ -916,6 +916,16 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
+"@react-native-community/slider@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-1.0.1.tgz#6f0d83a8006b0e5aff60a4918822bee7a06e36fc"
+  integrity sha512-fLOTvYT2okDR7V85afP4TwOdUKzmrcFXtkoTcSGoQiNxTxshSZrzL19Gisc2fyFBK8qsZ/lxyoTe9VpuaGVoCg==
+
+"@react-native-community/viewpager@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-1.1.2.tgz#cf044478efae6f129bbf6908a574220e723c7852"
+  integrity sha512-qXYqupJTo7q0RgRzVuJvG/Yv7E1CychMjOc+HL4A6KVW6pmsjiurNajIIjTmBydlgKahfbLNUA00UKD5yjvJ0A==
+
 "@react-navigation/core@3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.0.2.tgz#8631801533a27d034a3b8421dfd0510a9f27dcf3"
@@ -5788,7 +5798,7 @@ merge-stream@^1.0.1:
   dependencies:
     readable-stream "^2.0.1"
 
-merge@1.2.1, merge@^1.2.0:
+merge@^1.2.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.1.tgz#38bebf80c3220a8a487b6fcfb3941bb11720c145"
   integrity sha512-VjFo4P5Whtj4vsLzsYBu5ayHhoHJ0UqNm7ibvShmbmoz7tGi0vXaoJbGdB+GmDMLUdg8DpQXEIeVDAe8MaABvQ==
