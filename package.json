@@ -16,7 +16,7 @@
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "ios/",
-    "__mocks__",
+    "__mocks__/",
     "touchables/**/*.js",
     "createHandler.js",
     "createHandler.web.js",
