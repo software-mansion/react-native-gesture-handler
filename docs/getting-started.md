@@ -22,7 +22,11 @@ Since the library uses native support for handling gestures, it requires an exte
 
 ### With [React Native](http://facebook.github.io/react-native/) app (no Expo)
 #### Requirements
-In order to install the newest version of a library it's requires to use v0.50+ of [React Native](http://facebook.github.io/react-native/).
+
+| version | react-native version |
+| ------- | -------------------- |
+| 1.1.0+  | 0.57.2+              | 
+| <1.1.0  | 0.50.0+              |
 
 Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for  [interactions](interactions.md) you need to use v.16.3 of [React](https://reactjs.org/)
 
