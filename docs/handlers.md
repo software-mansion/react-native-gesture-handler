@@ -16,11 +16,9 @@ Here are a gesture recognizers currently available in the package:
 
 Whenever you use a native component that should handle touch events you can either wrap it with `NativeViewGestureHandler` or import wrapper component exported by the library instead of importing it from `react-native` package. Here is the list of available components:
  - `ScrollView`
- - `Slider`
  - `Switch`
  - `TextInput`
  - `ToolbarAndroid` (**Android only**)
- - `ViewPagerAndroid` (**Android only**)
  - `DrawerLayoutAndroid` (**Android only**)
 
 
@@ -88,3 +86,17 @@ Library exports a `State` object that provides a number of constants used to exp
 
  - `direction`
  - `numberOfPointers`
+
+### `createNativeWrapper`
+
+If you want to create a gesture handler wrapper for your own custom component, you can use this utility function. For example, if you want to use [Slider](https://github.com/react-native-community/react-native-slider) with gesture handler, then you can implement it like this:
+
+```js
+const WrappedSlider = createNativeWrapper(Slider, {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: true,
+  disallowInterruption: true,
+});
+```
+
+The second argument is a config object of type [`NativeViewGestureHandlerProperties`](../react-native-gesture-handler.d.ts#L231) which accepts a list of properties you want to pass to the underlying gesture handler wrapper.

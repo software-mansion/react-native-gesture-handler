@@ -10,12 +10,13 @@ import {
 import {
   NativeViewGestureHandler,
   ScrollView as GHScroll,
-  Slider,
   State,
   TapGestureHandler,
   TextInput,
   RectButton,
+  createNativeWrapper,
 } from 'react-native-gesture-handler';
+import Slider from '@react-native-community/slider';
 
 import { Swipeable, InfoButton } from '../rows';
 import { DraggableBox } from '../draggable';
@@ -25,6 +26,12 @@ import { PressBox } from '../multitap';
 import { LoremIpsum } from '../common';
 
 const CHILD_REF = 'CHILD_REF';
+
+const WrappedSlider = createNativeWrapper(Slider, {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: true,
+  disallowInterruption: true,
+});
 
 class TouchableHighlight extends Component {
   static propTypes = View.propTypes;
@@ -122,7 +129,7 @@ class Combo extends Component {
               <Text>Hello</Text>
             </View>
           </TouchableHighlight>
-          <Slider style={styles.slider} />
+          <WrappedSlider style={styles.slider} />
           <TextInput
             style={styles.textinput}
             placeholder="Type something here!"

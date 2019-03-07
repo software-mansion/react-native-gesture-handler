@@ -126,6 +126,8 @@ android {
 }
 
 dependencies {
+    implementation project(':@react-native-community_viewpager')
+    implementation project(':@react-native-community_slider')
     compile project(':react-native-vector-icons')
     compile project(':react-native-gesture-handler')
     compile fileTree(dir: "libs", include: ["*.jar"])

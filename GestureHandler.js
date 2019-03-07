@@ -2,11 +2,9 @@ import React from 'react';
 import {
   Animated,
   ScrollView,
-  Slider,
   Switch,
   TextInput,
   ToolbarAndroid,
-  ViewPagerAndroid,
   DrawerLayoutAndroid,
   StyleSheet,
   FlatList,
@@ -403,11 +401,6 @@ function createNativeWrapper(Component, config = {}) {
 const WrappedScrollView = createNativeWrapper(ScrollView, {
   disallowInterruption: true,
 });
-const WrappedSlider = createNativeWrapper(Slider, {
-  shouldCancelWhenOutside: false,
-  shouldActivateOnStart: true,
-  disallowInterruption: true,
-});
 const WrappedSwitch = createNativeWrapper(Switch, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: true,
@@ -416,9 +409,6 @@ const WrappedSwitch = createNativeWrapper(Switch, {
 const WrappedTextInput = createNativeWrapper(TextInput);
 
 const WrappedToolbarAndroid = createNativeWrapper(ToolbarAndroid);
-const WrappedViewPagerAndroid = createNativeWrapper(ViewPagerAndroid, {
-  disallowInterruption: true,
-});
 const WrappedDrawerLayoutAndroid = createNativeWrapper(DrawerLayoutAndroid, {
   disallowInterruption: true,
 });
@@ -601,11 +591,9 @@ const FlatListWithGHScroll = props => (
 
 export {
   WrappedScrollView as ScrollView,
-  WrappedSlider as Slider,
   WrappedSwitch as Switch,
   WrappedTextInput as TextInput,
   WrappedToolbarAndroid as ToolbarAndroid,
-  WrappedViewPagerAndroid as ViewPagerAndroid,
   WrappedDrawerLayoutAndroid as DrawerLayoutAndroid,
   NativeViewGestureHandler,
   TapGestureHandler,
@@ -625,4 +613,5 @@ export {
   FlatListWithGHScroll as FlatList,
   gestureHandlerRootHOC,
   Directions,
+  createNativeWrapper,
 };
