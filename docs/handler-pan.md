@@ -185,7 +185,7 @@ class Circle extends Component {
     return (
       <PanGestureHandler
         onGestureEvent={this._onPanGestureEvent}>
-        <View style={{
+        <Animated.View style={{
           height: 150,
           justifyContent: 'center',
         }}>
@@ -196,7 +196,7 @@ class Circle extends Component {
                 transform: [{translateX: Animated.add(this._touchX, new Animated.Value(-circleRadius))}]
               }]}
           />
-        </View>
+        </Animated.View>
       </PanGestureHandler>
     );
   }
