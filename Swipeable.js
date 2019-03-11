@@ -351,10 +351,10 @@ const styles = StyleSheet.create({
   },
   leftActions: {
     ...StyleSheet.absoluteFillObject,
-    flexDirection: 'row',
+    flexDirection: I18nManager.isRTL? 'row-reverse': 'row',
   },
   rightActions: {
     ...StyleSheet.absoluteFillObject,
-    flexDirection: 'row-reverse',
+    flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
   },
 });
