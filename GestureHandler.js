@@ -352,6 +352,8 @@ function createNativeWrapper(Component, config = {}) {
     static propTypes = {
       ...Component.propTypes,
     };
+  
+    static displayName = Component.displayName || "ComponentWrapper";
 
     _refHandler = node => {
       // bind native component's methods
