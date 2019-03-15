@@ -459,12 +459,12 @@ declare module 'react-native-gesture-handler/Swipeable' {
     onSwipeableWillOpen?: () => void;
     onSwipeableWillClose?: () => void;
     renderLeftActions?: (
-      progressAnimatedValue: Animated.Value,
-      dragAnimatedValue: Animated.Value
+      progressAnimatedValue: Animated.Value | Animated.AnimatedInterpolation,
+      dragAnimatedValue: Animated.AnimatedInterpolation
     ) => React.ReactNode;
     renderRightActions?: (
-      progressAnimatedValue: Animated.Value,
-      dragAnimatedValue: Animated.Value
+      progressAnimatedValue: Animated.Value | Animated.AnimatedInterpolation,
+      dragAnimatedValue: Animated.AnimatedInterpolation
     ) => React.ReactNode;
     useNativeAnimations?: boolean;
   }
