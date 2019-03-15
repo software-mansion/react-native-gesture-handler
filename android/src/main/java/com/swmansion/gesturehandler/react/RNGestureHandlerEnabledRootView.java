@@ -37,6 +37,7 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
       }
     }catch (IllegalArgumentException e) {
       e.printStackTrace();
+      return false;
     }
     return false;
   }
