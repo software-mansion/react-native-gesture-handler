@@ -53,10 +53,10 @@ matrix:
       components:
       - tools
       - platform-tools
-      - build-tools-27.0.3
+      - build-tools-28.0.3
 
     install:
-    - yes | sdkmanager "platforms;android-26"
+    - yes | sdkmanager "platforms;android-28"
     - nvm install $NODE_VERSION
     - nvm use $NODE_VERSION
     - nvm alias default $NODE_VERSION
