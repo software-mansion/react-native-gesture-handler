@@ -35,12 +35,12 @@ defines color of native [ripple](https://developer.android.com/reference/android
 
 ---
 ### `exclusive` (**iOS only**)
-defines if more than one button could be pressed simultaneously. By defalut set `true`. 
+defines if more than one button could be pressed simultaneously. By default set `true`. 
 
 ---
 ## `RectButton`
 
-This type of button component should be used when you deal with a rectangular elements or blocks of content that can be pressed, for example table rows or buttons with text and icons. This component provides a platform specific interaction, rendering a rectangular ripple on Android or highlighting the background on iOS and on older versions of Android. In addition to the props of [`BaseButton`](#basebutton-component), it accepts the following:
+This type of button component should be used when you deal with rectangular elements or blocks of content that can be pressed, for example table rows or buttons with text and icons. This component provides a platform specific interaction, rendering a rectangular ripple on Android or highlighting the background on iOS and on older versions of Android. In addition to the props of [`BaseButton`](#basebutton-component), it accepts the following:
 
 Below is a list of properties specific to `RectButton` component:
 
@@ -71,7 +71,7 @@ opacity applied to the button when it is in an active state.
 ## Design patterns
 Components listed here were not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration their's design concepts.
 
-If you wish to get specific information about platforms design patters, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/ios/controls) and [Material.io guideline](https://material.io/design/components/buttons.html#text-button), which widely describe how to implement coherent design.
+If you wish to get specific information about platforms design patterns, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/ios/controls) and [Material.io guideline](https://material.io/design/components/buttons.html#text-button), which widely describe how to implement coherent design.
 
 This library allows to use native components with native feedback in adequate situations.
 

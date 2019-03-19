@@ -50,7 +50,7 @@ method that is called when left action panel gets open.
 method that is called when right action panel gets open.
 
 ---
-exa `onSwipeableOpen`
+### `onSwipeableOpen`
 method that is called when action panel gets open (either right or left).
 
 ---
