@@ -109,7 +109,7 @@ It should be used if you wish to handle non-crucial actions and supportive behav
 
 ### `PureNativeButton`
 
-Use `PureNativeButton` for accessing native Component used for build more complex buttons listed above.
+Use a `PureNativeButton` for accessing the native Component used for build more complex buttons listed above.
 It's normally is not recommended to use, but it might be useful if we want to wrap it using Animated or Reanimated.
 
 ```javascript
