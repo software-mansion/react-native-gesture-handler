@@ -916,10 +916,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@react-native-community/slider@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-1.0.1.tgz#6f0d83a8006b0e5aff60a4918822bee7a06e36fc"
-  integrity sha512-fLOTvYT2okDR7V85afP4TwOdUKzmrcFXtkoTcSGoQiNxTxshSZrzL19Gisc2fyFBK8qsZ/lxyoTe9VpuaGVoCg==
+"@react-native-community/slider@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-1.0.3.tgz#a49027519d56f4408356ebf04a7b226ce4001cda"
+  integrity sha512-IEg7AdayIAb9ZA8KMilTwINMNgSwhF5BXNqwvJ2XsRd+JF12/r5ho+t+GONu8m2rWcCehiiM/h4pds1B9FzMlQ==
 
 "@react-native-community/viewpager@^1.1.2":
   version "1.1.2"
