@@ -35,17 +35,12 @@ UIManager.genericDirectEventTypes = {
 let handlerTag = 1;
 const handlerIDToTag = {};
 
-// This check ensures that we do not pass
-// false positives(like null) or false negatives(functions)
-// that can possibly come from other libraries
-function isObject(obj) {
-  return obj === Object(obj);
-}
-
 function isConfigParam(param, name) {
+  // param !== Object(param) returns false if param is a function and 
+  // returns true if param is null
   return (
-    param &&
-    (!isObject(param) || !('__isNative' in param)) &&
+    param !== undefined &&
+    (param !== Object(param) || !('__isNative' in param)) &&
     name !== 'onHandlerStateChange' &&
     name !== 'onGestureEvent'
   );
