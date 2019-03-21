@@ -18,7 +18,7 @@ export default class TouchableHighlight extends Component {
     ...GenericTouchable.publicPropTypes,
     activeOpacity: PropTypes.number,
     underlayColor: PropTypes.string,
-    style: PropTypes.object,
+    style: PropTypes.any,
     onShowUnderlay: PropTypes.func,
     onHideUnderlay: PropTypes.func,
   };
