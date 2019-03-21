@@ -352,7 +352,7 @@ function createNativeWrapper(Component, config = {}) {
     static propTypes = {
       ...Component.propTypes,
     };
-  
+
     static displayName = Component.displayName || "ComponentWrapper";
 
     _refHandler = node => {
@@ -584,12 +584,13 @@ class BorderlessButton extends React.Component {
 
 /* Other */
 
-const FlatListWithGHScroll = props => (
+const FlatListWithGHScroll = React.forwardRef((props, ref) => (
   <FlatList
+    ref={ref}
     {...props}
-    renderScrollComponent={props => <WrappedScrollView {...props} />}
+    renderScrollComponent={scrollProps => <WrappedScrollView {...scrollProps} />}
   />
-);
+));
 
 export {
   WrappedScrollView as ScrollView,
