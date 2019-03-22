@@ -105,3 +105,41 @@ It should be used if you wish to handle non-crucial actions and supportive behav
 
 
 <img src="assets/iosmail.gif" width="280" />
+
+
+### `PureNativeButton`
+
+Use a `PureNativeButton` for accessing the native Component used for build more complex buttons listed above.
+It's normally is not recommended to use, but it might be useful if we want to wrap it using Animated or Reanimated.
+
+```javascript
+import { createNativeWrapper, PureNativeButton } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
+const { event, Value, createAnimatedComponent } = Animated;
+
+const AnimatedRawButton = createNativeWrapper(
+  createAnimatedComponent(PureNativeButton),
+  {
+    shouldCancelWhenOutside: false,
+    shouldActivateOnStart: false,
+  }
+);
+
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    const state = new Value();
+    this._onGestureEvent = event([
+      {
+        nativeEvent: { state },
+      },
+    ]);
+  }
+
+  render() {
+    return (
+      <AnimatedRawButton onHandlerStateChange={this._onGestureEvent}/>
+    );
+  }
+}
+```

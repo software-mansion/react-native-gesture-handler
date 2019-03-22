@@ -615,6 +615,7 @@ export {
   /* Other */
   FlatListWithGHScroll as FlatList,
   gestureHandlerRootHOC,
+  GestureHandlerButton as PureNativeButton,
   Directions,
   createNativeWrapper,
 };
