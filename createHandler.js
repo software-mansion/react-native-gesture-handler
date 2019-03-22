@@ -36,8 +36,8 @@ let handlerTag = 1;
 const handlerIDToTag = {};
 
 function isConfigParam(param, name) {
-  // param !== Object(param) returns false if param is a function and 
-  // returns true if param is null
+  // param !== Object(param) returns false if `param` is a function
+  // or an object and returns true if `param` is null
   return (
     param !== undefined &&
     (param !== Object(param) || !('__isNative' in param)) &&
