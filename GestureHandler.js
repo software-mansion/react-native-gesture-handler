@@ -353,6 +353,7 @@ function createNativeWrapper(Component, config = {}) {
     static propTypes = {
       ...Component.propTypes,
     };
+
     static displayName = Component.displayName || 'ComponentWrapper';
 
     _refHandler = node => {
@@ -391,17 +392,13 @@ function createNativeWrapper(Component, config = {}) {
         { ...config } // watch out not to modify config
       );
       return (
-        <NativeViewGestureHandler
-          {...gestureHandlerProps}
-          ref={this.props.innerRef}>
+        <NativeViewGestureHandler {...gestureHandlerProps}>
           <Component {...this.props} ref={this._refHandler} />
         </NativeViewGestureHandler>
       );
     }
   }
-  return React.forwardRef((props, ref) => (
-    <ComponentWrapper innerRef={ref} {...props} />
-  ));
+  return ComponentWrapper;
 }
 
 const WrappedScrollView = createNativeWrapper(ScrollView, {
@@ -432,7 +429,6 @@ State.print = state => {
 const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
-  disallowInterruption: false,
 });
 
 /* Buttons */
@@ -486,12 +482,10 @@ class BaseButton extends React.Component {
   render() {
     const { style, rippleColor, ...rest } = this.props;
 
-    console.warn(rest.simultaneousHandlers);
     return (
       <RawButton
         style={[{ overflow: 'hidden' }, style]}
         rippleColor={processColor(rippleColor)}
-        ref={this.props.innerRef}
         {...rest}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}
@@ -499,10 +493,6 @@ class BaseButton extends React.Component {
     );
   }
 }
-
-const BaseButtonWithForwardedRef = React.forwardRef((props, ref) => (
-  <BaseButton innerRef={ref} {...props} />
-));
 
 const AnimatedBaseButton = Animated.createAnimatedComponent(BaseButton);
 
@@ -622,7 +612,7 @@ export {
   State,
   /* Buttons */
   RawButton,
-  BaseButtonWithForwardedRef as BaseButton,
+  BaseButton,
   RectButton,
   BorderlessButton,
   /* Other */
