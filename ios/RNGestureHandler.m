@@ -93,6 +93,13 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
     } else {
         _shouldCancelWhenOutside = NO;
     }
+  
+    prop = config[@"cancelsTouchesInView"];
+    if (prop != nil) {
+      _recognizer.cancelsTouchesInView = [RCTConvert BOOL:prop];
+    } else {
+      _recognizer.cancelsTouchesInView = YES;
+    }
 
     prop = config[@"hitSlop"];
     if ([prop isKindOfClass:[NSNumber class]]) {

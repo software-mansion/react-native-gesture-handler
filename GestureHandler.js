@@ -40,6 +40,7 @@ const GestureHandlerPropTypes = {
     ),
   ]),
   shouldCancelWhenOutside: PropTypes.bool,
+  cancelsTouchesInView: PropTypes.bool,
   hitSlop: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.shape({
@@ -352,8 +353,7 @@ function createNativeWrapper(Component, config = {}) {
     static propTypes = {
       ...Component.propTypes,
     };
-
-    static displayName = Component.displayName || "ComponentWrapper";
+    static displayName = Component.displayName || 'ComponentWrapper';
 
     _refHandler = node => {
       // bind native component's methods
@@ -391,13 +391,17 @@ function createNativeWrapper(Component, config = {}) {
         { ...config } // watch out not to modify config
       );
       return (
-        <NativeViewGestureHandler {...gestureHandlerProps}>
+        <NativeViewGestureHandler
+          {...gestureHandlerProps}
+          ref={this.props.innerRef}>
           <Component {...this.props} ref={this._refHandler} />
         </NativeViewGestureHandler>
       );
     }
   }
-  return ComponentWrapper;
+  return React.forwardRef((props, ref) => (
+    <ComponentWrapper innerRef={ref} {...props} />
+  ));
 }
 
 const WrappedScrollView = createNativeWrapper(ScrollView, {
@@ -428,6 +432,7 @@ State.print = state => {
 const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
+  disallowInterruption: false,
 });
 
 /* Buttons */
@@ -481,10 +486,12 @@ class BaseButton extends React.Component {
   render() {
     const { style, rippleColor, ...rest } = this.props;
 
+    console.warn(rest.simultaneousHandlers);
     return (
       <RawButton
         style={[{ overflow: 'hidden' }, style]}
         rippleColor={processColor(rippleColor)}
+        ref={this.props.innerRef}
         {...rest}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}
@@ -492,6 +499,10 @@ class BaseButton extends React.Component {
     );
   }
 }
+
+const BaseButtonWithForwardedRef = React.forwardRef((props, ref) => (
+  <BaseButton innerRef={ref} {...props} />
+));
 
 const AnimatedBaseButton = Animated.createAnimatedComponent(BaseButton);
 
@@ -588,7 +599,9 @@ const FlatListWithGHScroll = React.forwardRef((props, ref) => (
   <FlatList
     ref={ref}
     {...props}
-    renderScrollComponent={scrollProps => <WrappedScrollView {...scrollProps} />}
+    renderScrollComponent={scrollProps => (
+      <WrappedScrollView {...scrollProps} />
+    )}
   />
 ));
 
@@ -609,7 +622,7 @@ export {
   State,
   /* Buttons */
   RawButton,
-  BaseButton,
+  BaseButtonWithForwardedRef as BaseButton,
   RectButton,
   BorderlessButton,
   /* Other */

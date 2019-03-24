@@ -34,6 +34,13 @@ Default value of this property is different depending on the handler type.
 Most of the handlers defaults to `true` but in case of the [`LongPressGestureHandler`](handler-longpress.md) and [`TapGestureHandler`](handler-tap.md)
 
 ---
+### `cancelsTouchesInView` (**iOS only**)
+Takes a boolean value and defaults to `true`.
+Determines if Gesture Handlers has to cancel touches for native components (native buttons). By default all Gesture Handler 
+cancel native buttons (it's also default on Android), but setting this flag to `false` disables this behavior. 
+For more details, visit [Apple docs](https://developer.apple.com/documentation/uikit/uigesturerecognizer/1624218-cancelstouchesinview)
+
+---
 ### `simultaneousHandlers`
 
 Accepts a react ref object or an array of refs to other handler components (refs should be created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html)). When set the handler will be allowed to [activate](state.md#active) even if one or more of the handlers provided by their refs are [active](state.md#active). It will also prevent the provided handlers from [cancelling](state.md#cancelled) current handler when they [activate](state.md#active). Read more in the [cross handler interaction](interactions.md#simultaneous-recognition) section.
