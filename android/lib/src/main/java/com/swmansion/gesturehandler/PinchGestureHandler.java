@@ -14,6 +14,9 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
   private float mStartingSpan;
   private float mSpanSlop;
 
+  private float focalX = Float.NaN;
+  private float focalY = Float.NaN;
+
   private ScaleGestureDetector.OnScaleGestureListener mGestureListener =
           new ScaleGestureDetector.OnScaleGestureListener() {
 
@@ -51,19 +54,14 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
 
   @Override
   protected void onHandle(MotionEvent event) {
-    if (getState() == STATE_UNDETERMINED) {
+    int state = getState();
+    if (state == STATE_UNDETERMINED) {
       Context context = getView().getContext();
       mLastVelocity = 0f;
       mLastScaleFactor = 1f;
       mScaleGestureDetector = new ScaleGestureDetector(context, mGestureListener);
       ViewConfiguration configuration = ViewConfiguration.get(context);
       mSpanSlop = configuration.getScaledTouchSlop();
-
-      begin();
-    }
-
-    if (mScaleGestureDetector != null) {
-      mScaleGestureDetector.onTouchEvent(event);
     }
 
     int activePointers = event.getPointerCount();
@@ -71,7 +69,23 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
       activePointers -= 1;
     }
 
-    if (getState() == STATE_ACTIVE && activePointers < 2) {
+    if (
+      mScaleGestureDetector != null &&
+      (state != STATE_ACTIVE || activePointers >= 2)
+    ) {
+      this.focalX = mScaleGestureDetector.getFocusX();
+      this.focalY = mScaleGestureDetector.getFocusY();
+    }
+
+    if (state == STATE_UNDETERMINED) {
+      begin();
+    }
+
+    if (mScaleGestureDetector != null) {
+      mScaleGestureDetector.onTouchEvent(event);
+    }
+
+    if (state == STATE_ACTIVE && activePointers < 2) {
       end();
     } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
       fail();
@@ -94,16 +108,10 @@ public class PinchGestureHandler extends GestureHandler<PinchGestureHandler> {
   }
 
   public float getFocalPointX() {
-    if (mScaleGestureDetector == null) {
-      return Float.NaN;
-    }
-    return mScaleGestureDetector.getFocusX();
+    return this.focalX;
   }
 
   public float getFocalPointY() {
-    if (mScaleGestureDetector == null) {
-      return Float.NaN;
-    }
-    return mScaleGestureDetector.getFocusY();
+    return this.focalY;
   }
 }
