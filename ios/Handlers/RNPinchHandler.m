@@ -8,7 +8,9 @@
 
 #import "RNPinchHandler.h"
 
-@implementation RNPinchGestureHandler
+@implementation RNPinchGestureHandler {
+  CGPoint _focalPoint;
+}
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
@@ -23,9 +25,12 @@
 #if !TARGET_OS_TV
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPinchGestureRecognizer *)recognizer
 {
+    if (recognizer.numberOfTouches > 1) {
+      _focalPoint = [recognizer locationInView:recognizer.view];
+    }
     return [RNGestureHandlerEventExtraData
             forPinch:recognizer.scale
-            withFocalPoint:[recognizer locationInView:recognizer.view]
+            withFocalPoint:_focalPoint
             withVelocity:recognizer.velocity
             withNumberOfTouches:recognizer.numberOfTouches];
 }
