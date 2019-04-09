@@ -1,7 +1,24 @@
+import Hammer from 'hammerjs';
 import React from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { findNodeHandle, TouchableWithoutFeedback, View } from 'react-native';
 
+import Directions from './Directions';
 import State from './State';
+
+// Map Hammer values to RNGH
+const EventMap = {
+  [Hammer.INPUT_START]: State.BEGAN,
+  [Hammer.INPUT_MOVE]: State.ACTIVE,
+  [Hammer.INPUT_END]: State.END,
+  [Hammer.INPUT_CANCEL]: State.FAILED,
+};
+
+const DirectionMap = {
+  [Hammer.DIRECTION_RIGHT]: Directions.RIGHT,
+  [Hammer.DIRECTION_LEFT]: Directions.LEFT,
+  [Hammer.DIRECTION_UP]: Directions.UP,
+  [Hammer.DIRECTION_DOWN]: Directions.DOWN,
+};
 
 function handleHandlerStateChange(props, event, oldState, state) {
   const { enabled, onHandlerStateChange } = props;
@@ -46,6 +63,132 @@ function handleBegan(props, event) {
   handleHandlerStateChange(props, event, State.UNDETERMINED, State.BEGAN);
 }
 
+function mapPropsToOptions(props) {
+  let options = {};
+  if ('minDist' in props) {
+    options.threshold = props.minDist;
+  }
+  if ('enabled' in props) {
+    options.enabled = props.enabled;
+  }
+  return options;
+}
+
+function asArray(value) {
+  return Array.isArray(value) ? value : [value];
+}
+
+function createGestureHandler(hammerClass, hammerGestureName) {
+  return class extends React.Component {
+    componentDidUpdate() {
+      if (this.hammer) {
+        this.sync();
+      }
+    }
+
+    componentWillUnmount() {
+      if (this.hammer) {
+        this.hammer.stop();
+        this.hammer.destroy();
+      }
+      this.hammer = null;
+    }
+
+    setRef = ref => {
+      this.view = findNodeHandle(ref);
+      this.hammer = new Hammer(this.view, {
+        recognizers: [[hammerClass]],
+      });
+
+      let oldState = State.UNDETERMINED;
+      let previousState = State.UNDETERMINED;
+      this.hammer.on('hammer.input', ev => {
+        const { onHandlerStateChange, onGestureEvent } = this.props;
+
+        const {
+          eventType,
+          deltaX,
+          deltaY,
+          velocityX,
+          velocityY,
+          velocity,
+          center,
+          rotation,
+          scale,
+        } = ev;
+
+        const state = EventMap[eventType];
+        const direction = DirectionMap[ev.direction];
+        if (state !== previousState) {
+          oldState = previousState;
+          previousState = state;
+        }
+        const nativeEvent = {
+          state,
+          direction,
+          oldState,
+          translationX: deltaX,
+          translationY: deltaY,
+          velocityX,
+          velocityY,
+          x: center.x,
+          y: center.y,
+          absoluteX: center.x,
+          absoluteY: center.y,
+          velocity,
+          rotation: rotation * 0.2,
+          scale,
+          // focalX
+          // focalY
+        };
+
+        const event = {
+          nativeEvent,
+          timeStamp: Date.now(),
+        };
+
+        if (ev.isFinal) {
+          oldState = State.UNDETERMINED;
+          previousState = State.UNDETERMINED;
+        }
+        if (onGestureEvent) {
+          onGestureEvent(event);
+        }
+        if (onHandlerStateChange) {
+          onHandlerStateChange(event);
+        }
+      });
+      this.sync();
+    };
+
+    sync = () => {
+      const { hammer, props } = this;
+
+      const gesture = hammer.get(hammerGestureName);
+      gesture.set(mapPropsToOptions(props));
+
+      if (props.simultaneousHandlers) {
+        const handlers = asArray(props.simultaneousHandlers);
+        hammer.get(hammerGestureName).recognizeWith(handlers);
+      }
+
+      if (props.waitFor) {
+        const handlers = asArray(props.waitFor);
+        hammer.get(hammerGestureName).requireFailure(handlers);
+      }
+    };
+
+    render() {
+      const { children, style } = this.props;
+      return (
+        <View style={style} ref={this.setRef}>
+          {children}
+        </View>
+      );
+    }
+  };
+}
+
 class UnimplementedGestureHandler extends React.Component {
   setNativeProps = () => {
     // Do nothing
@@ -64,7 +207,9 @@ const handlers = {
       return children;
     }
   },
-
+  PanGestureHandler: createGestureHandler(Hammer.Pan, 'pan'),
+  RotationGestureHandler: createGestureHandler(Hammer.Rotate, 'rotate'),
+  PinchGestureHandler: createGestureHandler(Hammer.Pinch, 'pinch'),
   TapGestureHandler: class TapGestureHandler extends React.Component {
     static defaultProps = {
       numberOfTaps: 1,
