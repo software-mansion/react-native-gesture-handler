@@ -17,7 +17,7 @@ See [set of properties inherited from base handler class](handler-common.md#prop
 ---
 ### `direction`
 
-Expressed allowed direction of movement. It's possible to set ona or many direction in one parameter:
+Expressed allowed direction of movement. It's possible to pass one or many directions in one parameter:
 ```js
 direction={Directions.RIGHT | Directions.LEFT}
 ```
