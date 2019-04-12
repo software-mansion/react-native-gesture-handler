@@ -57,10 +57,17 @@ const LongPressButton = () => (
   <LongPressGestureHandler
       onHandlerStateChange={({ nativeEvent }) => {
         if (nativeEvent.state === State.ACTIVE) {
-          Alert.alert("I'm being pressed for so long");
+          console.log('Long press active!');
         }
       }}
-      minDurationMs={800}>
+      onGestureEvent={({ nativeEvent }) => {
+      	const { x, y } = nativeEvent;
+        console.log(`Long press moved (x: ${x}, y: ${y})`);
+      }}
+      minDurationMs={800}
+      shouldCancelWhenOutside={false}  // allows for 'fat finger' presses near the edge of a button
+      maxDist={30}  // on Android, may need to be set artificially high, e.g. 5000
+      >
       <View style={styles.box} />
   </LongPressGestureHandler>
 );

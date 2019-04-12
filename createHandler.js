@@ -258,7 +258,7 @@ export default function createHandler(
         // In this case nested handlers are not going to be supported
         if (onGestureHandlerEvent) {
           throw new Error(
-            'Nesting touch handlers with native animated driver is not supported yet'
+            'Nesting touch handlers with native animated driver is not supported yet. You can wrap the nested handler in a React Native Animated component, e.g. Animated.View'
           );
         }
         gestureEventHandler = this.props.onGestureEvent;
@@ -268,7 +268,7 @@ export default function createHandler(
           typeof onGestureHandlerEvent !== 'function'
         ) {
           throw new Error(
-            'Nesting touch handlers with native animated driver is not supported yet'
+            'Nesting touch handlers with native animated driver is not supported yet. You can wrap the nested handler in a React Native Animated component, e.g. Animated.View'
           );
         }
       }
@@ -281,7 +281,7 @@ export default function createHandler(
         // In this case nested handlers are not going to be supported
         if (onGestureHandlerStateChange) {
           throw new Error(
-            'Nesting touch handlers with native animated driver is not supported yet'
+            'Nesting touch handlers with native animated driver is not supported yet. You can wrap the nested handler in a React Native Animated component, e.g. Animated.View'
           );
         }
         gestureStateEventHandler = this.props.onHandlerStateChange;
@@ -291,7 +291,7 @@ export default function createHandler(
           typeof onGestureHandlerStateChange !== 'function'
         ) {
           throw new Error(
-            'Nesting touch handlers with native animated driver is not supported yet'
+            'Nesting touch handlers with native animated driver is not supported yet. You can wrap the nested handler in a React Native Animated component, e.g. Animated.View'
           );
         }
       }

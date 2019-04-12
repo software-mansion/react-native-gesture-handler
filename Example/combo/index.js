@@ -179,7 +179,7 @@ class Combo extends Component {
               </Text>
               {/* Info icon will cancel when you drag your finger outside of its bounds and
                   then back unlike all the previous icons that would activate when you re-enter
-                  their activation area. This is a typical bahaviour for android but less frequent
+                  their activation area. This is a typical behaviour for android but less frequent
                   for most of the iOS native apps. */}
               <InfoButton shouldCancelWhenOutside name="third" />
             </RectButton>

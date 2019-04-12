@@ -13,9 +13,11 @@ Here are a gesture recognizers currently available in the package:
  - `RotationGestureHandler`
  - `FlingGestureHandler`
  - `ForceTouchGestureHandler`
+ - `NativeViewGestureHandler`
 
 Whenever you use a native component that should handle touch events you can either wrap it with `NativeViewGestureHandler` or import wrapper component exported by the library instead of importing it from `react-native` package. Here is the list of available components:
  - `ScrollView`
+ - `FlatList`
  - `Switch`
  - `TextInput`
  - `ToolbarAndroid` (**Android only**)
@@ -54,13 +56,13 @@ Library exports a `State` object that provides a number of constants used to exp
 
 #### `NativeViewGestureHandler` extra properties
 
- - `shouldActivateOnStart`
+ - `shouldActivateOnStart` (**Android only**)
  - `disallowInterruption`
 
 #### `LongPressGestureHandler` extra properties
 
  - `minDurationMs`
- - `maxDist`
+ - `maxDist` (**on Android, may need to set to a very large number, e.g. 5000, to prevent immediate cancellation**)
 
 #### `PanGestureHandler` extra properties
 
