@@ -30,7 +30,6 @@ When `true`, cancels all other gesture handlers when this `NativeViewGestureHand
 ## Example
 
 ```js
-
 const WrappedScrollView = () => (
 	<NativeViewGestureHandler>
 	  <Animated.ScrollView
