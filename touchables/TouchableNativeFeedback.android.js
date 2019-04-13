@@ -34,7 +34,7 @@ export default class TouchableNativeFeedback extends Component {
   static propTypes = {
     ...GenericTouchable.publicPropTypes,
     useForeground: PropTypes.bool,
-    background: PropTypes.string,
+    background: PropTypes.object,
     style: PropTypes.any,
   };
 
