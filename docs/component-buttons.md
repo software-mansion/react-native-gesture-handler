@@ -16,7 +16,7 @@ Currently Gesture handler library exposes three components that render native to
 
 On top of that all the buttons are wrapped with `NativeViewGestureHandler` and therefore allow for all the [common gesture handler properties](#common-gesturehandler-properties) and `NativeViewGestureHandler`'s [extra properties](#nativeviewgesturehandler-extra-properties) to be applied to them.
 
-**IMPORTANT**: In order to make buttons accessible, you have to give their immediate children `accessible` prop.
+**IMPORTANT**: In order to make buttons accessible, you have to wrap your children in a `View` with `accessible` prop.
 Example:
 ```javascript
   // Not accessible:
@@ -32,6 +32,7 @@ Example:
       </View>
     </RectButton>);
 ```
+If your children are alreade wrapped in some kind of `View` just add `accessible` prop to that View.
 
 ## `BaseButton`
 
