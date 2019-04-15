@@ -32,7 +32,7 @@ Example:
       </View>
     </RectButton>);
 ```
-If your children are alreade wrapped in some kind of `View` just add `accessible` prop to that View.
+If your children are already wrapped in some kind of `View` just add `accessible` prop to that View.
 
 ## `BaseButton`
 
