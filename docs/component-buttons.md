@@ -32,7 +32,7 @@ Example:
       </View>
     </RectButton>);
 ```
-It is applicable for both iOS and Android platform. On iOS you won't be able to even select the button, on Android you won't be able to click it in accessibility mode.
+It is applicable for both iOS and Android platform. On iOS, you won't be able to even select the button, on Android you won't be able to click it in accessibility mode.
 
 ## `BaseButton`
 
