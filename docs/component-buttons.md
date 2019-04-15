@@ -16,6 +16,23 @@ Currently Gesture handler library exposes three components that render native to
 
 On top of that all the buttons are wrapped with `NativeViewGestureHandler` and therefore allow for all the [common gesture handler properties](#common-gesturehandler-properties) and `NativeViewGestureHandler`'s [extra properties](#nativeviewgesturehandler-extra-properties) to be applied to them.
 
+**IMPORTANT**: In order to make buttons accessible, you have to give their immediate children `accessible` prop.
+Example:
+```javascript
+  // Not accessible:
+  const NotAccessibleButton = () => (
+    <RectButton onPress={this._onPress}>
+      <Text>Foo</Text>
+    </RectButton>);
+  // Accessible:
+  const AccessibleButton = () => (
+    <RectButton onPress={this._onPress}>
+      <View accessible>
+        <Text>Bar</Text>
+      </View>
+    </RectButton>);
+```
+
 ## `BaseButton`
 
 Can be used as a base class if you'd like to implement some custom interaction for when the button is pressed.
