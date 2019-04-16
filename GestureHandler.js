@@ -353,7 +353,7 @@ function createNativeWrapper(Component, config = {}) {
       ...Component.propTypes,
     };
 
-    static displayName = Component.displayName || "ComponentWrapper";
+    static displayName = Component.displayName || 'ComponentWrapper';
 
     _refHandler = node => {
       // bind native component's methods
@@ -442,6 +442,20 @@ class BaseButton extends React.Component {
   constructor(props) {
     super(props);
     this._lastActive = false;
+  }
+
+  componentDidMount() {
+    let accessibilitySetProperly = false;
+    React.Children.forEach(this.props.children, child => {
+      if (child.props.accessible !== undefined) {
+        accessibilitySetProperly = true;
+      }
+    });
+    if (!accessibilitySetProperly) {
+      console.warn(
+        'Content of BaseButton is not accesible. Consider adding accesible prop. If you dont wan’t to make it accesible, get rid of this warning by setting accesible prop explicitly to false.'
+      );
+    }
   }
 
   _handleEvent = ({ nativeEvent }) => {
@@ -588,7 +602,9 @@ const FlatListWithGHScroll = React.forwardRef((props, ref) => (
   <FlatList
     ref={ref}
     {...props}
-    renderScrollComponent={scrollProps => <WrappedScrollView {...scrollProps} />}
+    renderScrollComponent={scrollProps => (
+      <WrappedScrollView {...scrollProps} />
+    )}
   />
 ));
 
