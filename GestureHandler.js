@@ -347,18 +347,14 @@ const NATIVE_WRAPPER_PROPS_FILTER = {
   onGestureHandlerStateChange: PropTypes.func,
 };
 
-function createNativeWrapper(
-  Component,
-  config = {},
-  checkAccessibility = false
-) {
+function createNativeWrapper(Component, config = {}) {
   class ComponentWrapper extends React.Component {
     static propTypes = {
       ...Component.propTypes,
     };
 
     componentDidMount() {
-      if (checkAccessibility) {
+      if (config.checkAccessibility === true) {
         let accessibilitySetProperly = false;
         React.Children.forEach(this.props.children, child => {
           if (child.props.accessible !== undefined) {
@@ -445,14 +441,11 @@ State.print = state => {
   }
 };
 
-const RawButton = createNativeWrapper(
-  GestureHandlerButton,
-  {
-    shouldCancelWhenOutside: false,
-    shouldActivateOnStart: false,
-  },
-  true
-);
+const RawButton = createNativeWrapper(GestureHandlerButton, {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: false,
+  checkAccessibility: true,
+});
 
 /* Buttons */
 
