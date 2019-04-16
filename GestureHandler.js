@@ -363,7 +363,7 @@ function createNativeWrapper(Component, config = {}) {
         });
         if (!accessibilitySetProperly) {
           console.warn(
-            'Content of BaseButton is not accesible. Consider adding accesible prop. If you dont wan’t to make it accesible, get rid of this warning by setting accesible prop explicitly to false.'
+            "Wrapped component does not support accessibility features. Consider adding accessible prop. If you don't want to make it accessible, get rid of this warning by setting accessible prop explicitly to false."
           );
         }
       }
