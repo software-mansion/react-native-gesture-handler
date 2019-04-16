@@ -347,11 +347,31 @@ const NATIVE_WRAPPER_PROPS_FILTER = {
   onGestureHandlerStateChange: PropTypes.func,
 };
 
-function createNativeWrapper(Component, config = {}) {
+function createNativeWrapper(
+  Component,
+  config = {},
+  checkAccessibility = false
+) {
   class ComponentWrapper extends React.Component {
     static propTypes = {
       ...Component.propTypes,
     };
+
+    componentDidMount() {
+      if (checkAccessibility) {
+        let accessibilitySetProperly = false;
+        React.Children.forEach(this.props.children, child => {
+          if (child.props.accessible !== undefined) {
+            accessibilitySetProperly = true;
+          }
+        });
+        if (!accessibilitySetProperly) {
+          console.warn(
+            'Content of BaseButton is not accesible. Consider adding accesible prop. If you dont wan’t to make it accesible, get rid of this warning by setting accesible prop explicitly to false.'
+          );
+        }
+      }
+    }
 
     static displayName = Component.displayName || 'ComponentWrapper';
 
@@ -425,10 +445,14 @@ State.print = state => {
   }
 };
 
-const RawButton = createNativeWrapper(GestureHandlerButton, {
-  shouldCancelWhenOutside: false,
-  shouldActivateOnStart: false,
-});
+const RawButton = createNativeWrapper(
+  GestureHandlerButton,
+  {
+    shouldCancelWhenOutside: false,
+    shouldActivateOnStart: false,
+  },
+  true
+);
 
 /* Buttons */
 
@@ -442,20 +466,6 @@ class BaseButton extends React.Component {
   constructor(props) {
     super(props);
     this._lastActive = false;
-  }
-
-  componentDidMount() {
-    let accessibilitySetProperly = false;
-    React.Children.forEach(this.props.children, child => {
-      if (child.props.accessible !== undefined) {
-        accessibilitySetProperly = true;
-      }
-    });
-    if (!accessibilitySetProperly) {
-      console.warn(
-        'Content of BaseButton is not accesible. Consider adding accesible prop. If you dont wan’t to make it accesible, get rid of this warning by setting accesible prop explicitly to false.'
-      );
-    }
   }
 
   _handleEvent = ({ nativeEvent }) => {
