@@ -400,9 +400,9 @@ public class GestureHandler<T extends GestureHandler> {
       float height= mHitSlop[HIT_SLOP_HEIGHT_IDX];
       if (hitSlopSet(width)) {
         if (!hitSlopSet(padLeft)) {
-          left = padRight - width;
+          left = right - width;
         } else if (!hitSlopSet(padRight)) {
-          right = padLeft + width;
+          right = left + width;
         }
       }
       if (hitSlopSet(height)) {
