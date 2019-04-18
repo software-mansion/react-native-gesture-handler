@@ -40,7 +40,7 @@ function isConfigParam(param, name) {
   // or an object and returns true if `param` is null
   return (
     param !== undefined &&
-    (param !== Object(param) || !(param !== null && '__isNative' in param)) &&
+    (param !== Object(param) || !('__isNative' in param)) &&
     name !== 'onHandlerStateChange' &&
     name !== 'onGestureEvent'
   );
