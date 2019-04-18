@@ -480,23 +480,31 @@ declare module 'react-native-gesture-handler/Swipeable' {
 declare module 'react-native-gesture-handler/DrawerLayout' {
   import { Animated, StatusBarAnimation, StyleProp, ViewStyle } from 'react-native';
 
-  interface DrawerLayoutProperties {
+  export type DrawerPosition = 'left' | 'right';
+
+  export type DrawerState = 'Idle' | 'Dragging' | 'Settling';
+
+  export type DrawerType = 'front' | 'back' | 'slide';
+
+  export type DrawerKeyboardDismissMode = 'none' | 'on-drag';
+
+  export interface DrawerLayoutProperties {
     renderNavigationView: (
       progressAnimatedValue: Animated.Value
     ) => React.ReactNode;
-    drawerPosition?: 'left' | 'right';
+    drawerPosition?: DrawerPosition;
     drawerWidth?: number;
     drawerBackgroundColor?: string;
-    keyboardDismissMode?: 'none' | 'on-drag';
+    keyboardDismissMode?: DrawerKeyboardDismissMode;
     onDrawerClose?: () => void;
     onDrawerOpen?: () => void;
     onDrawerStateChanged?: (
-      newState: 'Idle' | 'Dragging' | 'Settling',
+      newState: DrawerState,
       drawerWillShow: boolean
     ) => void;
     useNativeAnimations?: boolean;
 
-    drawerType?: 'front' | 'back' | 'slide';
+    drawerType?: DrawerType;
     edgeWidth?: number;
     minSwipeDistance?: number;
     hideStatusBar?: boolean;
