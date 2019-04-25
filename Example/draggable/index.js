@@ -5,10 +5,36 @@ import {
   PanGestureHandler,
   ScrollView,
   State,
+  usePan,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../config';
 import { LoremIpsum } from '../common';
+
+function Pannable({
+  _translateX,
+  _translateY,
+  _onHandlerStateChange,
+  _onGestureEvent,
+  boxStyle,
+}) {
+  const pan = usePan({
+    onGestureEvent: _onGestureEvent,
+    onHandlerStateChange: _onHandlerStateChange,
+  });
+  return (
+    <Animated.View
+      {...pan}
+      style={[
+        styles.box,
+        {
+          transform: [{ translateX: _translateX }, { translateY: _translateY }],
+        },
+        boxStyle,
+      ]}
+    />
+  );
+}
 
 export class DraggableBox extends Component {
   constructor(props) {
@@ -40,23 +66,13 @@ export class DraggableBox extends Component {
   };
   render() {
     return (
-      <PanGestureHandler
-        {...this.props}
-        onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}>
-        <Animated.View
-          style={[
-            styles.box,
-            {
-              transform: [
-                { translateX: this._translateX },
-                { translateY: this._translateY },
-              ],
-            },
-            this.props.boxStyle,
-          ]}
-        />
-      </PanGestureHandler>
+      <Pannable
+        _translateX={this._translateX}
+        _translateY={this._translateY}
+        _onGestureEvent={this._onGestureEvent}
+        _onHandlerStateChange={this._onHandlerStateChange}
+        boxStyle={this.props.boxStyle}
+      />
     );
   }
 }

@@ -131,7 +131,7 @@ const ExampleApp = createStackNavigator(
     },
   },
   {
-    initialRouteName: 'Main',
+    initialRouteName: 'Draggable',
   }
 );
 

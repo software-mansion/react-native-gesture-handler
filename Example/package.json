@@ -16,10 +16,10 @@
     "hoist-non-react-statics": "^3.2.1",
     "invariant": "^2.2.4",
     "prop-types": "^15.6.2",
-    "react": "16.5.1",
+    "react": "16.8.6",
     "react-art": "^16.7.0",
     "react-dom": "^16.7.0",
-    "react-native": "^0.58.0-rc.2",
+    "react-native": "^0.59.5",
     "react-native-vector-icons": "5.0.0",
     "react-native-web": "^0.10.0-alpha.3",
     "react-navigation": "^3.1"

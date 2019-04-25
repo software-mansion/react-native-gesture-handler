@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import createHandler from './createHandler';
+import createHandler, { createHook } from './createHandler';
 import GestureHandlerButton from './GestureHandlerButton';
 import gestureHandlerRootHOC from './gestureHandlerRootHOC';
 
@@ -327,6 +327,49 @@ const PanGestureHandler = createHandler(
     failOffsetXEnd: true,
   }
 );
+
+const usePan = createHook(
+  'PanGestureHandler',
+  {
+    ...GestureHandlerPropTypes,
+    activeOffsetY: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+    activeOffsetX: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+    failOffsetY: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+    failOffsetX: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+    minDist: PropTypes.number,
+    minVelocity: PropTypes.number,
+    minVelocityX: PropTypes.number,
+    minVelocityY: PropTypes.number,
+    minPointers: PropTypes.number,
+    maxPointers: PropTypes.number,
+    avgTouches: PropTypes.bool,
+  },
+  {},
+  managePanProps,
+  {
+    activeOffsetYStart: true,
+    activeOffsetYEnd: true,
+    activeOffsetXStart: true,
+    activeOffsetXEnd: true,
+    failOffsetYStart: true,
+    failOffsetYEnd: true,
+    failOffsetXStart: true,
+    failOffsetXEnd: true,
+  }
+);
+
 const PinchGestureHandler = createHandler(
   'PinchGestureHandler',
   GestureHandlerPropTypes,
@@ -353,7 +396,7 @@ function createNativeWrapper(Component, config = {}) {
       ...Component.propTypes,
     };
 
-    static displayName = Component.displayName || "ComponentWrapper";
+    static displayName = Component.displayName || 'ComponentWrapper';
 
     _refHandler = node => {
       // bind native component's methods
@@ -588,7 +631,9 @@ const FlatListWithGHScroll = React.forwardRef((props, ref) => (
   <FlatList
     ref={ref}
     {...props}
-    renderScrollComponent={scrollProps => <WrappedScrollView {...scrollProps} />}
+    renderScrollComponent={scrollProps => (
+      <WrappedScrollView {...scrollProps} />
+    )}
   />
 ));
 
@@ -618,4 +663,5 @@ export {
   GestureHandlerButton as PureNativeButton,
   Directions,
   createNativeWrapper,
+  usePan,
 };
