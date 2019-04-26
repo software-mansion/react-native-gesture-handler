@@ -13,7 +13,10 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import createHandler, { createHook } from './createHandler';
+import createHandler, {
+  createHandlerAndHook,
+  createHook,
+} from './createHandler';
 import GestureHandlerButton from './GestureHandlerButton';
 import gestureHandlerRootHOC from './gestureHandlerRootHOC';
 
@@ -286,7 +289,7 @@ function managePanProps(props) {
   return transformPanGestureHandlerProps(props);
 }
 
-const PanGestureHandler = createHandler(
+const [PanGestureHandler, usePan] = createHandlerAndHook(
   'PanGestureHandler',
   {
     ...GestureHandlerPropTypes,
@@ -328,49 +331,7 @@ const PanGestureHandler = createHandler(
   }
 );
 
-const usePan = createHook(
-  'PanGestureHandler',
-  {
-    ...GestureHandlerPropTypes,
-    activeOffsetY: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.arrayOf(PropTypes.number),
-    ]),
-    activeOffsetX: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.arrayOf(PropTypes.number),
-    ]),
-    failOffsetY: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.arrayOf(PropTypes.number),
-    ]),
-    failOffsetX: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.arrayOf(PropTypes.number),
-    ]),
-    minDist: PropTypes.number,
-    minVelocity: PropTypes.number,
-    minVelocityX: PropTypes.number,
-    minVelocityY: PropTypes.number,
-    minPointers: PropTypes.number,
-    maxPointers: PropTypes.number,
-    avgTouches: PropTypes.bool,
-  },
-  {},
-  managePanProps,
-  {
-    activeOffsetYStart: true,
-    activeOffsetYEnd: true,
-    activeOffsetXStart: true,
-    activeOffsetXEnd: true,
-    failOffsetYStart: true,
-    failOffsetYEnd: true,
-    failOffsetXStart: true,
-    failOffsetXEnd: true,
-  }
-);
-
-const PinchGestureHandler = createHandler(
+const [PinchGestureHandler, usePinch] = createHandlerAndHook(
   'PinchGestureHandler',
   GestureHandlerPropTypes,
   {}
@@ -664,4 +625,5 @@ export {
   Directions,
   createNativeWrapper,
   usePan,
+  usePinch,
 };
