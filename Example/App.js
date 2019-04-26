@@ -20,6 +20,7 @@ import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
 import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
 import forceTouch from './forcetouch';
+import hooks from './hoooks';
 import { TouchablesIndex, TouchableExample } from './touchables';
 
 YellowBox.ignoreWarnings([
@@ -82,6 +83,10 @@ const SCREENS = {
     screen: forceTouch,
     title: 'Force touch',
   },
+  hooks: {
+    screen: hooks,
+    title: 'hooks',
+  },
 };
 
 class MainScreen extends React.Component {
@@ -131,7 +136,7 @@ const ExampleApp = createStackNavigator(
     },
   },
   {
-    initialRouteName: 'Draggable',
+    initialRouteName: 'Main',
   }
 );
 

@@ -154,7 +154,7 @@ export default function createHandler(
     _refHandler = node => {
       this._viewNode = node;
 
-      /* const child = React.Children.only(this.props.children);
+      const child = React.Children.only(this.props.children);
       const { ref } = child;
       if (ref !== null) {
         if (typeof ref === 'function') {
@@ -162,7 +162,7 @@ export default function createHandler(
         } else {
           ref.current = node;
         }
-      }*/
+      }
     };
 
     _createGestureHandler = newConfig => {
@@ -340,17 +340,13 @@ export function createHook(
   customNativeProps = {}
 ) {
   class Handler {
-    static displayName = handlerName;
-
-    static propTypes = propTypes;
-
-    constructor(props) {
-      this.props = props;
+    constructor(params) {
+      this.params = params;
       this._handlerTag = handlerTag++;
       this._config = {};
-      if (props.id) {
-        if (handlerIDToTag[props.id] !== undefined) {
-          throw new Error(`Handler with ID "${props.id}" already registered`);
+      if (params.id) {
+        if (handlerIDToTag[params.id] !== undefined) {
+          throw new Error(`Handler with ID "${params.id}" already registered`);
         }
         handlerIDToTag[props.id] = this._handlerTag;
       }
@@ -362,31 +358,24 @@ export function createHook(
 
     _onGestureHandlerEvent = event => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
-        this.props.onGestureEvent && this.props.onGestureEvent(event);
-      } else {
-        this.props.onGestureHandlerEvent &&
-          this.props.onGestureHandlerEvent(event);
+        this.params.onGestureEvent && this.params.onGestureEvent(event);
       }
     };
 
     _onGestureHandlerStateChange = event => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
-        this.props.onHandlerStateChange &&
-          this.props.onHandlerStateChange(event);
+        this.params.onHandlerStateChange &&
+          this.params.onHandlerStateChange(event);
 
         const stateEventName = stateToPropMappings[event.nativeEvent.state];
-        if (typeof this.props[stateEventName] === 'function') {
-          this.props[stateEventName](event);
+        if (typeof this.params[stateEventName] === 'function') {
+          this.params[stateEventName](event);
         }
-      } else {
-        this.props.onGestureHandlerStateChange &&
-          this.props.onGestureHandlerStateChange(event);
       }
     };
 
     _createGestureHandler = newConfig => {
       this._config = newConfig;
-
       RNGestureHandlerModule.createGestureHandler(
         handlerName,
         this._handlerTag,
@@ -408,17 +397,17 @@ export function createHook(
       RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
     };
 
-    componentWillUnmount() {
+    dropGestureHandler() {
       if (this._updateEnqueued) {
         clearImmediate(this._updateEnqueued);
       }
-      if (this.props.id) {
-        delete handlerIDToTag[this.props.id];
+      if (this.params.id) {
+        delete handlerIDToTag[this.params.id];
       }
     }
 
-    componentDidMount() {
-      if (hasUnresolvedRefs(this.props)) {
+    mountGestureHandler() {
+      if (hasUnresolvedRefs(this.params)) {
         this._updateEnqueued = setImmediate(() => {
           this._updateEnqueued = null;
           this._update();
@@ -427,7 +416,7 @@ export function createHook(
 
       this._createGestureHandler(
         filterConfig(
-          transformProps ? transformProps(this.props) : this.props,
+          transformProps ? transformProps(this.params) : this.params,
           { ...this.constructor.propTypes, ...customNativeProps },
           config
         )
@@ -435,7 +424,7 @@ export function createHook(
       this._attachGestureHandler(findNodeHandle(this._viewNode));
     }
 
-    componentDidUpdate() {
+    performUpdate() {
       const viewTag = findNodeHandle(this._viewNode);
       if (this._viewTag !== viewTag) {
         this._attachGestureHandler(viewTag);
@@ -445,7 +434,7 @@ export function createHook(
 
     _update() {
       const newConfig = filterConfig(
-        transformProps ? transformProps(this.props) : this.props,
+        transformProps ? transformProps(this.params) : this.params,
         { ...this.constructor.propTypes, ...customNativeProps },
         config
       );
@@ -453,29 +442,19 @@ export function createHook(
         this._updateGestureHandler(newConfig);
       }
     }
-
-    setNativeProps(updates) {
-      const mergedProps = { ...this.props, ...updates };
-      const newConfig = filterConfig(
-        transformProps ? transformProps(mergedProps) : mergedProps,
-        { ...this.constructor.propTypes, ...customNativeProps },
-        config
-      );
-      this._updateGestureHandler(newConfig);
-    }
   }
   return function(params) {
     const [currentHandler] = useState(new Handler(params));
     useEffect(() => {
       params.handlerRef && (params.handlerRef.current = currentHandler);
-      currentHandler.componentDidMount();
-      return () => currentHandler.componentWillUnmount();
+      currentHandler.mountGestureHandler();
+      return () => currentHandler.dropGestureHandler();
     }, []);
 
     useEffect(() => {
       if (deepEqual(currentHandler.props, params)) {
         currentHandler.props = params;
-        currentHandler.componentDidUpdate();
+        currentHandler.performUpdate();
       }
     });
 
