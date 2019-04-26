@@ -57,7 +57,7 @@ const onPinchHandlerStateChange = ({
   }
 };
 
-function Pannable({ boxStyle }) {
+export default function hooksExample() {
   const [
     {
       translateX,
@@ -129,23 +129,11 @@ function Pannable({ boxStyle }) {
               { scale: Animated.multiply(baseScale, pinchScale) },
             ],
           },
-          boxStyle,
+          styles.boxStyle,
         ]}
       />
     </Animated.View>
   );
-}
-
-export default class Example extends Component {
-  render() {
-    return (
-      <View style={styles.scrollView}>
-        <LoremIpsum words={40} />
-        <Pannable />
-        <LoremIpsum />
-      </View>
-    );
-  }
 }
 
 const styles = StyleSheet.create({
