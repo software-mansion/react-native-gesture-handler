@@ -13,10 +13,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import createHandler, {
-  createHandlerAndHook,
-  createHook,
-} from './createHandler';
+import createHandler, { createHandlerAndHook } from './createHandler';
 import GestureHandlerButton from './GestureHandlerButton';
 import gestureHandlerRootHOC from './gestureHandlerRootHOC';
 
@@ -70,7 +67,7 @@ const NativeViewGestureHandler = createHandler('NativeViewGestureHandler', {
   shouldActivateOnStart: PropTypes.bool,
   disallowInterruption: PropTypes.bool,
 });
-const TapGestureHandler = createHandler(
+const [TapGestureHandler, useTap] = createHandlerAndHook(
   'TapGestureHandler',
   {
     ...GestureHandlerPropTypes,
@@ -85,7 +82,7 @@ const TapGestureHandler = createHandler(
   {}
 );
 
-const FlingGestureHandler = createHandler(
+const [FlingGestureHandler, useFling] = createHandlerAndHook(
   'FlingGestureHandler',
   {
     ...GestureHandlerPropTypes,
@@ -95,19 +92,24 @@ const FlingGestureHandler = createHandler(
   {}
 );
 
+const forceWarn = console.warn(
+  'ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase'
+);
+
 class ForceTouchFallback extends React.Component {
   componentDidMount() {
-    console.warn(
-      'ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase'
-    );
+    forceWarn();
   }
   render() {
     return this.props.children;
   }
 }
 
-const ForceTouchGestureHandler = PlatformConstants.forceTouchAvailable
-  ? createHandler(
+const [
+  ForceTouchGestureHandler,
+  useForce,
+] = PlatformConstants.forceTouchAvailable
+  ? createHandlerAndHook(
       'ForceTouchGestureHandler',
       {
         ...GestureHandlerPropTypes,
@@ -117,12 +119,12 @@ const ForceTouchGestureHandler = PlatformConstants.forceTouchAvailable
       },
       {}
     )
-  : ForceTouchFallback;
+  : [ForceTouchFallback, forceWarn];
 
 ForceTouchGestureHandler.forceTouchAvailable =
   PlatformConstants.forceTouchAvailable || false;
 
-const LongPressGestureHandler = createHandler(
+const [LongPressGestureHandler, useLongPress] = createHandlerAndHook(
   'LongPressGestureHandler',
   {
     ...GestureHandlerPropTypes,
@@ -336,7 +338,7 @@ const [PinchGestureHandler, usePinch] = createHandlerAndHook(
   GestureHandlerPropTypes,
   {}
 );
-const RotationGestureHandler = createHandler(
+const [useRotation, RotationGestureHandler] = createHandlerAndHook(
   'RotationGestureHandler',
   GestureHandlerPropTypes,
   {}
@@ -624,6 +626,11 @@ export {
   GestureHandlerButton as PureNativeButton,
   Directions,
   createNativeWrapper,
+  useTap,
+  useFling,
+  useForce,
+  useLongPress,
   usePan,
   usePinch,
+  useRotation,
 };
