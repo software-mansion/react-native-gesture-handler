@@ -293,7 +293,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     // activate when gesture happens not further than SLOP away from the edge
     const hitSlop = fromLeft
       ? { left: 0, width: showing ? undefined : edgeWidth }
-      : { right: 0, width: showing ? undefined : edgeWidth };
+      : { right: I18nManager.isRTL ? this.state.containerWidth - edgeWidth : 0, width: showing ? undefined : edgeWidth };
     this._panGestureHandler.current &&
       this._panGestureHandler.current.setNativeProps({
         hitSlop,
@@ -495,7 +495,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     // activate when gesture happens not further than SLOP away from the edge
     const hitSlop = fromLeft
       ? { left: 0, width: this._drawerShown ? undefined : edgeWidth }
-      : { right: 0, width: this._drawerShown ? undefined : edgeWidth };
+      : { right: I18nManager.isRTL ? this.state.containerWidth - edgeWidth : 0, width: this._drawerShown ? undefined : edgeWidth };
 
     return (
       <PanGestureHandler
