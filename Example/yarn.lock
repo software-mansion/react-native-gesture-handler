@@ -916,15 +916,13 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@react-native-community/slider@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-1.0.3.tgz#a49027519d56f4408356ebf04a7b226ce4001cda"
-  integrity sha512-IEg7AdayIAb9ZA8KMilTwINMNgSwhF5BXNqwvJ2XsRd+JF12/r5ho+t+GONu8m2rWcCehiiM/h4pds1B9FzMlQ==
+"@react-native-community/slider@git+ssh://git@github.com:aarongrider/react-native-slider":
+  version "1.0.4"
+  resolved "git+ssh://git@github.com:aarongrider/react-native-slider#dfbff1e54b8218e161e03761a796bc295a4da792"
 
-"@react-native-community/viewpager@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-1.1.2.tgz#cf044478efae6f129bbf6908a574220e723c7852"
-  integrity sha512-qXYqupJTo7q0RgRzVuJvG/Yv7E1CychMjOc+HL4A6KVW6pmsjiurNajIIjTmBydlgKahfbLNUA00UKD5yjvJ0A==
+"@react-native-community/viewpager@git+ssh://git@github.com:aarongrider/react-native-viewpager":
+  version "1.1.6"
+  resolved "git+ssh://git@github.com:aarongrider/react-native-viewpager#24f31ff76573e455d548ac0189a58ad0e85fdf67"
 
 "@react-navigation/core@3.0.2":
   version "3.0.2"

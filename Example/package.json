@@ -10,8 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@react-native-community/slider": "^1.0.3",
-    "@react-native-community/viewpager": "^1.1.2",
+    "@react-native-community/slider": "git+ssh://git@github.com:aarongrider/react-native-slider",
+    "@react-native-community/viewpager": "git+ssh://git@github.com:aarongrider/react-native-viewpager",
     "fbjs": "^1.0.0",
     "hoist-non-react-statics": "^3.2.1",
     "invariant": "^2.2.4",
