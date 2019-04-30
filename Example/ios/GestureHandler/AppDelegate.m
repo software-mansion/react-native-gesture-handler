@@ -17,8 +17,6 @@
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
-  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
-
   MBFingerTipWindow *window = [[MBFingerTipWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   window.alwaysShowTouches = YES;
   self.window = window;
