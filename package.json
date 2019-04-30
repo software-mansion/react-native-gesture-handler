@@ -35,7 +35,7 @@
     "react-native-gesture-handler.d.ts",
     "README.md",
     "RNGestureHandlerModule.js",
-    "jestConfig.js",
+    "jestSetup.js",
     "RNGestureHandler.podspec",
     "State.js",
     "Swipeable.js",
