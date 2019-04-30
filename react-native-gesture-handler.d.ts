@@ -465,6 +465,8 @@ declare module 'react-native-gesture-handler/Swipeable' {
        * 
        * progressAnimatedValue: [0, 1]
        * dragAnimatedValue: [0, +]
+       * 
+       * To support `rtl` flexbox layouts use `flexDirection` styling.
        * */
     renderLeftActions?: (
         progressAnimatedValue: Animated.AnimatedInterpolation,
@@ -477,6 +479,8 @@ declare module 'react-native-gesture-handler/Swipeable' {
        * 
        * progressAnimatedValue: [0, 1]
        * dragAnimatedValue: [0, -]
+       * 
+       * To support `rtl` flexbox layouts use `flexDirection` styling.
        * */
     renderRightActions?: (
         progressAnimatedValue: Animated.AnimatedInterpolation,

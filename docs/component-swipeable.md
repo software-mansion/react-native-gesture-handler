@@ -50,7 +50,7 @@ method that is called when left action panel gets open.
 method that is called when right action panel gets open.
 
 ---
-exa `onSwipeableOpen`
+### `onSwipeableOpen`
 method that is called when action panel gets open (either right or left).
 
 ---
@@ -82,6 +82,8 @@ AnimatedValue: [startValue, endValue]
 progressAnimatedValue: [0, 1]
 dragAnimatedValue: [0, +]
 
+To support `rtl` flexbox layouts use `flexDirection` styling.
+
 ---
 ### `renderRightActions`
 method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
@@ -90,6 +92,8 @@ AnimatedValue: [startValue, endValue]
         
 progressAnimatedValue: [0, 1]
 dragAnimatedValue: [0, -]
+
+To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ---
 ### `containerStyle`
