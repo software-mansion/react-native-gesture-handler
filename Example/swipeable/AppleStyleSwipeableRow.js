@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View, I18nManager, Dimensions } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
 
@@ -25,10 +25,11 @@ export default class AppleStyleSwipeableRow extends Component {
       </RectButton>
     );
   };
-  renderRightAction = (text, color, x, progress) => {
+    renderRightAction = (text, color, x, progress) => {
+        const width = Dimensions.get('window').width;
     const trans = progress.interpolate({
       inputRange: [0, 1],
-      outputRange: [x, 0],
+        outputRange: [x, 0],
     });
     const pressHandler = () => {
       this.close();
@@ -44,13 +45,13 @@ export default class AppleStyleSwipeableRow extends Component {
       </Animated.View>
     );
   };
-  renderRightActions = progress => (
-    <View style={{ width: 192, flexDirection: 'row' }}>
-      {this.renderRightAction('More', '#C8C7CD', 192, progress)}
-      {this.renderRightAction('Flag', '#ffab00', 128, progress)}
-      {this.renderRightAction('More', '#dd2c00', 64, progress)}
-    </View>
-  );
+    renderRightActions = progress => (
+        <View style={{ width: 192, flexDirection: I18nManager.isRTL?'row-reverse':'row' }}>
+            {this.renderRightAction('More', '#C8C7CD', 192, progress)}
+            {this.renderRightAction('Flag', '#ffab00', 128, progress)}
+            {this.renderRightAction('More', '#dd2c00', 64, progress)}
+        </View>
+    );
   updateRef = ref => {
     this._swipeableRow = ref;
   };
