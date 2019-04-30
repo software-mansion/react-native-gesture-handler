@@ -23,4 +23,12 @@ module.exports = {
     providesModuleNodeModules: Object.keys(pkg.dependencies),
   },
   watchFolders: [path.resolve(__dirname, '..')],
+  transformer: {
+    getTransformOptions: async () => ({
+      transform: {
+        experimentalImportSupport: false,
+        inlineRequires: false,
+      },
+    }),
+  },
 };
