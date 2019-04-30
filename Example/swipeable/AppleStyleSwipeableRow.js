@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet, Text, View, I18nManager, Dimensions } from 'react-native';
+import { Animated, StyleSheet, Text, View, I18nManager } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
 
@@ -26,7 +26,6 @@ export default class AppleStyleSwipeableRow extends Component {
     );
   };
     renderRightAction = (text, color, x, progress) => {
-        const width = Dimensions.get('window').width;
     const trans = progress.interpolate({
       inputRange: [0, 1],
         outputRange: [x, 0],
