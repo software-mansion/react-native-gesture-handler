@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start --config ./metro.config.js --reset-cache",
+    "start": "node node_modules/react-native/local-cli/cli.js start --config metro.config.js",
     "ios": "react-native run-ios",
     "android": "react-native run-android",
     "web": "webpack-dev-server --open",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@react-native-community/slider": "^1.0.3",
-    "@react-native-community/viewpager": "^1.1.2",
+    "@react-native-community/viewpager": "^1.1.6",
     "fbjs": "^1.0.0",
     "hoist-non-react-statics": "^3.2.1",
     "invariant": "^2.2.4",
@@ -28,6 +28,7 @@
     "preset": "react-native"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.3",
     "@babel/plugin-proposal-class-properties": "^7.3.0",
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.3.1",
