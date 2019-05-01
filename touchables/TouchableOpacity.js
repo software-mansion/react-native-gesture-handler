@@ -14,7 +14,7 @@ export default class TouchableOpacity extends Component {
 
   static propTypes = {
     ...GenericTouchable.publicPropTypes,
-    style: PropTypes.object,
+    style: PropTypes.any,
     activeOpacity: PropTypes.number,
   };
 

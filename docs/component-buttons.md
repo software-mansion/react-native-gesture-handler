@@ -16,6 +16,24 @@ Currently Gesture handler library exposes three components that render native to
 
 On top of that all the buttons are wrapped with `NativeViewGestureHandler` and therefore allow for all the [common gesture handler properties](#common-gesturehandler-properties) and `NativeViewGestureHandler`'s [extra properties](#nativeviewgesturehandler-extra-properties) to be applied to them.
 
+**IMPORTANT**: In order to make buttons accessible, you have to wrap your children in a `View` with `accessible` prop.
+Example:
+```javascript
+  // Not accessible:
+  const NotAccessibleButton = () => (
+    <RectButton onPress={this._onPress}>
+      <Text>Foo</Text>
+    </RectButton>);
+  // Accessible:
+  const AccessibleButton = () => (
+    <RectButton onPress={this._onPress}>
+      <View accessible>
+        <Text>Bar</Text>
+      </View>
+    </RectButton>);
+```
+It is applicable for both iOS and Android platform. On iOS, you won't be able to even select the button, on Android you won't be able to click it in accessibility mode.
+
 ## `BaseButton`
 
 Can be used as a base class if you'd like to implement some custom interaction for when the button is pressed.
@@ -35,12 +53,12 @@ defines color of native [ripple](https://developer.android.com/reference/android
 
 ---
 ### `exclusive` (**iOS only**)
-defines if more than one button could be pressed simultaneously. By defalut set `true`. 
+defines if more than one button could be pressed simultaneously. By default set `true`. 
 
 ---
 ## `RectButton`
 
-This type of button component should be used when you deal with a rectangular elements or blocks of content that can be pressed, for example table rows or buttons with text and icons. This component provides a platform specific interaction, rendering a rectangular ripple on Android or highlighting the background on iOS and on older versions of Android. In addition to the props of [`BaseButton`](#basebutton-component), it accepts the following:
+This type of button component should be used when you deal with rectangular elements or blocks of content that can be pressed, for example table rows or buttons with text and icons. This component provides a platform specific interaction, rendering a rectangular ripple on Android or highlighting the background on iOS and on older versions of Android. In addition to the props of [`BaseButton`](#basebutton-component), it accepts the following:
 
 Below is a list of properties specific to `RectButton` component:
 
@@ -71,7 +89,7 @@ opacity applied to the button when it is in an active state.
 ## Design patterns
 Components listed here were not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration their's design concepts.
 
-If you wish to get specific information about platforms design patters, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/ios/controls) and [Material.io guideline](https://material.io/design/components/buttons.html#text-button), which widely describe how to implement coherent design.
+If you wish to get specific information about platforms design patterns, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/ios/controls) and [Material.io guideline](https://material.io/design/components/buttons.html#text-button), which widely describe how to implement coherent design.
 
 This library allows to use native components with native feedback in adequate situations.
 
@@ -105,3 +123,41 @@ It should be used if you wish to handle non-crucial actions and supportive behav
 
 
 <img src="assets/iosmail.gif" width="280" />
+
+
+### `PureNativeButton`
+
+Use a `PureNativeButton` for accessing the native Component used for build more complex buttons listed above.
+It's normally is not recommended to use, but it might be useful if we want to wrap it using Animated or Reanimated.
+
+```javascript
+import { createNativeWrapper, PureNativeButton } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
+const { event, Value, createAnimatedComponent } = Animated;
+
+const AnimatedRawButton = createNativeWrapper(
+  createAnimatedComponent(PureNativeButton),
+  {
+    shouldCancelWhenOutside: false,
+    shouldActivateOnStart: false,
+  }
+);
+
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    const state = new Value();
+    this._onGestureEvent = event([
+      {
+        nativeEvent: { state },
+      },
+    ]);
+  }
+
+  render() {
+    return (
+      <AnimatedRawButton onHandlerStateChange={this._onGestureEvent}/>
+    );
+  }
+}
+```

@@ -1,10 +1,11 @@
 import React from 'react';
 import { findNodeHandle, NativeModules, Touchable } from 'react-native';
 import deepEqual from 'fbjs/lib/areEqual';
+import RNGestureHandlerModule from './RNGestureHandlerModule';
 
 import State from './State';
 
-const { RNGestureHandlerModule, UIManager } = NativeModules;
+const { UIManager } = NativeModules;
 
 // Wrap JS responder calls and notify gesture handler manager
 const {
@@ -36,10 +37,11 @@ let handlerTag = 1;
 const handlerIDToTag = {};
 
 function isConfigParam(param, name) {
+  // param !== Object(param) returns false if `param` is a function
+  // or an object and returns true if `param` is null
   return (
     param !== undefined &&
-    typeof param !== 'function' &&
-    (typeof param !== 'object' || !('__isNative' in param)) &&
+    (param !== Object(param) || !('__isNative' in param)) &&
     name !== 'onHandlerStateChange' &&
     name !== 'onGestureEvent'
   );

@@ -103,21 +103,22 @@ class ForceTouchFallback extends React.Component {
   }
 }
 
-const ForceTouchGestureHandler = PlatformConstants.forceTouchAvailable
-  ? createHandler(
-      'ForceTouchGestureHandler',
-      {
-        ...GestureHandlerPropTypes,
-        minForce: PropTypes.number,
-        maxForce: PropTypes.number,
-        feedbackOnActivation: PropTypes.bool,
-      },
-      {}
-    )
-  : ForceTouchFallback;
+const ForceTouchGestureHandler =
+  PlatformConstants && PlatformConstants.forceTouchAvailable
+    ? createHandler(
+        'ForceTouchGestureHandler',
+        {
+          ...GestureHandlerPropTypes,
+          minForce: PropTypes.number,
+          maxForce: PropTypes.number,
+          feedbackOnActivation: PropTypes.bool,
+        },
+        {}
+      )
+    : ForceTouchFallback;
 
 ForceTouchGestureHandler.forceTouchAvailable =
-  PlatformConstants.forceTouchAvailable || false;
+  (PlatformConstants && PlatformConstants.forceTouchAvailable) || false;
 
 const LongPressGestureHandler = createHandler(
   'LongPressGestureHandler',
@@ -353,6 +354,8 @@ function createNativeWrapper(Component, config = {}) {
       ...Component.propTypes,
     };
 
+    static displayName = Component.displayName || "ComponentWrapper";
+
     _refHandler = node => {
       // bind native component's methods
       let source = node;
@@ -582,12 +585,13 @@ class BorderlessButton extends React.Component {
 
 /* Other */
 
-const FlatListWithGHScroll = props => (
+const FlatListWithGHScroll = React.forwardRef((props, ref) => (
   <FlatList
+    ref={ref}
     {...props}
-    renderScrollComponent={props => <WrappedScrollView {...props} />}
+    renderScrollComponent={scrollProps => <WrappedScrollView {...scrollProps} />}
   />
-);
+));
 
 export {
   WrappedScrollView as ScrollView,
@@ -612,6 +616,7 @@ export {
   /* Other */
   FlatListWithGHScroll as FlatList,
   gestureHandlerRootHOC,
+  GestureHandlerButton as PureNativeButton,
   Directions,
   createNativeWrapper,
 };
