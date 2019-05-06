@@ -37,7 +37,7 @@ matrix:
         - detox test -d --no-color --configuration ios.sim.debug --cleanup
 
     - language: android
-      dist: xenial
+      dist: trusty
       sudo: required
       jdk: oraclejdk8
       env: NODE_VERSION=10.11.0
