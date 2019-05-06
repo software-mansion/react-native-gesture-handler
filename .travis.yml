@@ -38,6 +38,7 @@ matrix:
     - detox test -d --no-color --configuration ios.sim.debug --cleanup
 
   - language: android
+    dist: trusty
     sudo: required
     jdk: oraclejdk8
     env: NODE_VERSION=10.11.0
@@ -53,7 +54,7 @@ matrix:
       components:
       - tools
       - platform-tools
-      - build-tools-27.0.3
+      - build-tools-28.0.3
 
     install:
     - yes | sdkmanager "platforms;android-28"
