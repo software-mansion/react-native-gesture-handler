@@ -1,7 +1,7 @@
 matrix:
   include:
   - language: objective-c
-    osx_image: xcode9
+    osx_image: xcode12
     xcode_sdk: iphonesimulator11.3
     xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
     env: NODE_VERSION=10.11.0
@@ -72,7 +72,7 @@ matrix:
     - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
 
   - language: objective-c
-    osx_image: xcode9
+    osx_image: xcode12
     xcode_sdk: iphonesimulator11.3
     xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
     env: NODE_VERSION=10.11.0
