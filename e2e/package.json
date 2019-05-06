@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start --config ../../../../metro.config.js",
+    "start": "node node_modules/react-native/local-cli/cli.js start --config ./metro.config.js",
     "test": "jest"
   },
   "dependencies": {
@@ -11,8 +11,8 @@
     "hoist-non-react-statics": "^3.2.1",
     "invariant": "^2.2.4",
     "prop-types": "^15.6.2",
-    "react": "16.5.1",
-    "react-native": "0.57.1",
+    "react": "16.8.3",
+    "react-native": "0.59.5",
     "react-native-vector-icons": "5.0.0",
     "react-navigation": "2.17.0"
   },
@@ -20,17 +20,17 @@
     "preset": "react-native"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.3",
     "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/core": "^7.2.0",
-    "@babel/runtime": "^7.2.0",
-    "mocha": "^5.2.0",
-    "detox": "^9.0.4",
-    "babel-jest": "23.6.0",
+    "@babel/runtime": "^7.4.3",
+    "babel-jest": "^24.7.1",
     "babel-plugin-module-resolver": "^3.1.1",
+    "detox": "^12.6.2",
     "glob-to-regexp": "^0.4.0",
-    "jest": "23.6.0",
-    "metro-react-native-babel-preset": "0.45.2",
-    "react-test-renderer": "^16.5.2"
+    "jest": "^24.7.1",
+    "metro-react-native-babel-preset": "^0.53.1",
+    "mocha": "^5.2.0",
+    "react-test-renderer": "16.8.3"
   },
   "detox": {
     "test-runner": "mocha",
