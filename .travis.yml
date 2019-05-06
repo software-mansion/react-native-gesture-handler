@@ -1,102 +1,102 @@
 matrix:
   include:
-  - language: objective-c
-    osx_image: xcode12
-    xcode_sdk: iphonesimulator11.3
-    xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
-    env: NODE_VERSION=10.11.0
+    - language: objective-c
+      osx_image: xcode12
+      xcode_sdk: iphonesimulator11.3
+      xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
+      env: NODE_VERSION=10.11.0
 
-    branches:
-      only:
-      - master
+      branches:
+        only:
+          - master
 
-    cache: yarn
+      cache: yarn
 
-    install:
-    - nvm --version
-    - echo $NODE_VERSION
-    - sudo launchctl limit maxfiles 2048 unlimited
-    - sudo ulimit -n 10000
-    - brew tap wix/brew
-    - brew install applesimutils
-    - nvm install $NODE_VERSION
-    - nvm use $NODE_VERSION
-    - nvm alias default $NODE_VERSION
-    - brew install yarn --without-node
-    - npm install -g react-native-cli
-    - npm install -g detox-cli
-    - cd e2e
-    - yarn
-    - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
-    - detox build --configuration ios.sim.debug
-    # lines below was done in order to kill server run by build
-    # since we require to run server with custom config
-    - killall -9 node > /dev/null &
-    - yarn start --reset-cache &
-    script:
-    - detox test -d --no-color --configuration ios.sim.debug --cleanup
+      install:
+        - nvm --version
+        - echo $NODE_VERSION
+        - sudo launchctl limit maxfiles 2048 unlimited
+        - sudo ulimit -n 10000
+        - brew tap wix/brew
+        - brew install applesimutils
+        - nvm install $NODE_VERSION
+        - nvm use $NODE_VERSION
+        - nvm alias default $NODE_VERSION
+        - brew install yarn --without-node
+        - npm install -g react-native-cli
+        - npm install -g detox-cli
+        - cd e2e
+        - yarn
+        - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
+        - detox build --configuration ios.sim.debug
+        # lines below was done in order to kill server run by build
+        # since we require to run server with custom config
+        - killall -9 node > /dev/null &
+        - yarn start --reset-cache &
+      script:
+        - detox test -d --no-color --configuration ios.sim.debug --cleanup
 
-  - language: android
-    sudo: required
-    jdk: oraclejdk8
-    env: NODE_VERSION=10.11.0
-    before_cache:
-    - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-    - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
-    cache:
-      directories:
-      - $HOME/.yarn-cache
-      - $HOME/.gradle/caches/
-      - $HOME/.gradle/wrapper/
-    android:
-      components:
-      - tools
-      - platform-tools
-    install:
-    - yes | sdkmanager "platforms;android-28"
-    - yes | sdkmanager "build-tools;28.0.3"
-    - nvm install $NODE_VERSION
-    - nvm use $NODE_VERSION
-    - nvm alias default $NODE_VERSION
-    - node --version
-    - npm install -g yarn
-    - npm install -g react-native-cli
-    - npm install -g detox-cli
-    - cd Example
-    - yarn
+    - language: android
+      dist: xenial
+      sudo: required
+      jdk: oraclejdk8
+      env: NODE_VERSION=10.11.0
+      before_cache:
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+        directories:
+          - $HOME/.yarn-cache
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
+      android:
+        components:
+          - tools
+          - platform-tools
+          - build-tools-28.0.3
+      install:
+        - yes | sdkmanager "platforms;android-28"
+        - nvm install $NODE_VERSION
+        - nvm use $NODE_VERSION
+        - nvm alias default $NODE_VERSION
+        - node --version
+        - npm install -g yarn
+        - npm install -g react-native-cli
+        - npm install -g detox-cli
+        - cd Example
+        - yarn
 
-    script:
-    - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
+      script:
+        - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
 
-  - language: objective-c
-    osx_image: xcode12
-    xcode_sdk: iphonesimulator11.3
-    xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
-    env: NODE_VERSION=10.11.0
+    - language: objective-c
+      osx_image: xcode12
+      xcode_sdk: iphonesimulator11.3
+      xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
+      env: NODE_VERSION=10.11.0
 
-    branches:
-      only:
-      - master
+      branches:
+        only:
+          - master
 
-    cache: yarn
+      cache: yarn
 
-    install:
-    - nvm --version
-    - echo $NODE_VERSION
-    - sudo launchctl limit maxfiles 2048 unlimited
-    - sudo ulimit -n 10000
-    - brew tap wix/brew
-    - brew install applesimutils
-    - nvm install $NODE_VERSION
-    - nvm use $NODE_VERSION
-    - nvm alias default $NODE_VERSION
-    - brew install yarn --without-node
-    - npm install -g react-native-cli
-    - npm install -g detox-cli
-    - cd Example
-    - yarn
-    - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
+      install:
+        - nvm --version
+        - echo $NODE_VERSION
+        - sudo launchctl limit maxfiles 2048 unlimited
+        - sudo ulimit -n 10000
+        - brew tap wix/brew
+        - brew install applesimutils
+        - nvm install $NODE_VERSION
+        - nvm use $NODE_VERSION
+        - nvm alias default $NODE_VERSION
+        - brew install yarn --without-node
+        - npm install -g react-native-cli
+        - npm install -g detox-cli
+        - cd Example
+        - yarn
+        - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
-    script:
-    - xcodebuild -project ./ios/GestureHandler.xcodeproj -scheme GestureHandler -configuration Debug -sdk iphonesimulator -derivedDataPath ./ios/build
-
+      script:
+        - xcodebuild -project ./ios/GestureHandler.xcodeproj -scheme GestureHandler -configuration Debug -sdk iphonesimulator -derivedDataPath ./ios/build
