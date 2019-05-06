@@ -22,7 +22,7 @@ matrix:
         - nvm install $NODE_VERSION
         - nvm use $NODE_VERSION
         - nvm alias default $NODE_VERSION
-        - brew install yarn --without-node
+        - brew install yarn --ignore-dependencies
         - npm install -g react-native-cli
         - npm install -g detox-cli
         - cd e2e
