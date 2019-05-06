@@ -56,7 +56,7 @@ matrix:
       - build-tools-27.0.3
 
     install:
-    - yes | sdkmanager "platforms;android-26"
+    - yes | sdkmanager "platforms;android-28"
     - nvm install $NODE_VERSION
     - nvm use $NODE_VERSION
     - nvm alias default $NODE_VERSION
