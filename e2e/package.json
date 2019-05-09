@@ -36,6 +36,12 @@
         "build": "xcodebuild -project ios/ExampleE2E.xcodeproj -destination 'platform=iOS Simulator,name=iPhone X' -scheme ExampleE2E -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES",
         "type": "ios.simulator",
         "name": "iPhone X"
+      },
+      "ios.sim.release": {
+        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/ExampleE2E.app",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -project ios/ExampleE2E.xcodeproj -destination 'platform=iOS Simulator,name=iPhone X' -scheme ExampleE2E -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES",
+        "type": "ios.simulator",
+        "name": "iPhone X"
       }
     },
     "test-runner": "mocha"

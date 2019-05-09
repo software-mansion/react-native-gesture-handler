@@ -2,8 +2,8 @@ matrix:
   include:
     - language: objective-c
       osx_image: xcode10.2
-      xcode_sdk: iphonesimulator11.3
-      xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
+      xcode_sdk: iphonesimulator12.2
+      xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
       env: NODE_VERSION=10.11.0
 
       branches:
@@ -35,7 +35,7 @@ matrix:
         - killall -9 node > /dev/null &
         - yarn start --reset-cache &
       script:
-        - detox test -c ios.sim.debug --no-color --headless --cleanup
+        - detox test -c ios.sim.release --no-color --headless --cleanup
 
     - language: android
       dist: trusty
