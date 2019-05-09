@@ -29,6 +29,7 @@ matrix:
         - cd e2e
         - yarn
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
+        - xcrun simctl boot "iPhone 7"
         - detox build --configuration ios.sim.debug
         # lines below was done in order to kill server run by build
         # since we require to run server with custom config
