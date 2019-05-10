@@ -4,7 +4,7 @@ matrix:
       osx_image: xcode10.2
       xcode_sdk: iphonesimulator12.2
       xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
-      env: NODE_VERSION=10.11.0
+      env: NODE_VERSION=10.15.3
 
       branches:
         only:
@@ -37,7 +37,7 @@ matrix:
       dist: trusty
       sudo: required
       jdk: oraclejdk8
-      env: NODE_VERSION=10.11.0
+      env: NODE_VERSION=10.15.3
       before_cache:
         - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
         - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
@@ -68,9 +68,9 @@ matrix:
 
     - language: objective-c
       osx_image: xcode10.2
-      xcode_sdk: iphonesimulator11.3
-      xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone 7
-      env: NODE_VERSION=10.11.0
+      xcode_sdk: iphonesimulator12.2
+      xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone X
+      env: NODE_VERSION=10.15.3
 
       branches:
         only:
