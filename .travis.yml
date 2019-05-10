@@ -30,10 +30,6 @@ matrix:
         - yarn
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
         - detox build -c ios.sim.release
-        # lines below was done in order to kill server run by build
-        # since we require to run server with custom config
-        - killall -9 node > /dev/null &
-        - yarn start --reset-cache &
       script:
         - detox test -c ios.sim.release --no-color --headless --cleanup
 
