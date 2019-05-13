@@ -21,7 +21,12 @@ function getBlacklist() {
     glob(
       `${path.resolve(
         __dirname
-      )}/node_modules/react-navigation/node_modules/hoist-non-react-statics/*`
+      )}/node_modules/@react-navigation/native/node_modules/hoist-non-react-statics/*`
+    ),
+    glob(
+      `${path.resolve(
+        __dirname
+      )}/node_modules/@react-navigation/core/node_modules/hoist-non-react-statics/*`
     ),
     glob(
       `${path.resolve(

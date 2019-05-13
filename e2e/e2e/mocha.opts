@@ -1,1 +1,1 @@
---recursive --timeout 240000 --bail
+--recursive --timeout 300000 --bail --file e2e/init.js
