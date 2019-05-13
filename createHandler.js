@@ -184,11 +184,8 @@ export default function createHandler(
       RNGestureHandlerModule.updateGestureHandler(this._handlerTag, newConfig);
     };
 
-    _dropGestureHandler = () => {
-      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
-    };
-
     componentWillUnmount() {
+      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
       if (this._updateEnqueued) {
         clearImmediate(this._updateEnqueued);
       }
