@@ -47,7 +47,46 @@ or with `npm` if you prefer:
   react-native link react-native-gesture-handler
 ```
 
-#### Android
+#### Manual Linking
+
+##### Android
+
+* add following line to your `app/build.gradle` dependencies:
+```diff
+dependencies { 
++ implementation project(':react-native-gesture-handler')
+  // ...other dependencies
+}
+```
+* add following lines to your `settings.gradle`:
+```diff
+rootProject.name = 'Example'
++ include ':react-native-gesture-handler'
++ project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-gesture-handler/android')
+
+include ':app'
+```
+
+* add following to your `MainApplication.java` file:
+```diff
++ import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+
+//...
+  @Override
+  protected List<ReactPackage> getPackages() {
+    return Arrays.<ReactPackage>asList(
+        new MainReactPackage(),
++       new RNGestureHandlerPackage()
+    );
+  }
+//...
+```
+
+##### iOS
+
+#### Additional Steps
+
+##### Android
 Follow the steps below:
 
 If you use one of the *native navigation libraries* (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you should follow [this separate guide](#with-wix-react-native-navigation-https-githubcom-wix-react-native-navigation) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that use a standard Android project layout.
@@ -80,7 +119,7 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-#### iOS
+##### iOS
 There is no additional configuration required on iOS except what follows in the next steps.
 
 ---
