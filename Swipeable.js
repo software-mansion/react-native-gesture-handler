@@ -25,7 +25,7 @@ export type PropType = {
   rightThreshold?: number,
   overshootLeft?: boolean,
   overshootRight?: boolean,
-  overshootFriction?: number,
+  overshootFriction: number,
   onSwipeableLeftOpen?: Function,
   onSwipeableRightOpen?: Function,
   onSwipeableOpen?: Function,
