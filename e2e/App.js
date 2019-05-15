@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, YellowBox } from 'react-native';
-import { createStackNavigator } from 'react-navigation';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import Multitap from './multitap';
@@ -63,6 +63,8 @@ const ExampleApp = createStackNavigator(
   }
 );
 
+const Container = createAppContainer(ExampleApp);
+
 const styles = StyleSheet.create({
   list: {
     backgroundColor: '#EFEFF4',
@@ -84,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExampleApp;
+export default Container;
