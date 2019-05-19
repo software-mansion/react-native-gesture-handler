@@ -95,6 +95,7 @@ function createGestureHandler(hammerClass, hammerGestureName) {
     }
 
     setRef = ref => {
+      this.ref = ref;
       this.view = findNodeHandle(ref);
       this.hammer = new Hammer(this.view, {
         recognizers: [[hammerClass]],
@@ -178,10 +179,14 @@ function createGestureHandler(hammerClass, hammerGestureName) {
       }
     };
 
+    setNativeProps = (...props) => {
+      this.ref.setNativeProps(...props);
+    };
+
     render() {
       const { children, style } = this.props;
       return (
-        <View style={style} ref={this.setRef}>
+        <View style={[{ flex: 1 }, style]} ref={this.setRef}>
           {children}
         </View>
       );
