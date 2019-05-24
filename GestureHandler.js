@@ -407,7 +407,7 @@ function createNativeWrapper(Component, config = {}) {
       // filter out props that should be passed to gesture handler wrapper
       const gestureHandlerProps = Object.keys(this.props).reduce(
         (props, key) => {
-          if (~NATIVE_WRAPPER_PROPS_FILTER.indexOf(key)) {
+          if (NATIVE_WRAPPER_PROPS_FILTER.indexOf(key) !== -1) {
             props[key] = this.props[key];
           }
           return props;
