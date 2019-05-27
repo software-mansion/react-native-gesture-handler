@@ -21,6 +21,7 @@ import Directions from './Directions';
 import State from './State';
 import PlatformConstants from './PlatformConstants';
 
+// If changed, add changes to NATIVE_WRAPPER_PROPS_FILTER as well
 const GestureHandlerPropTypes = {
   id: PropTypes.string,
   minPointers: PropTypes.number,
@@ -64,6 +65,8 @@ const GestureHandlerPropTypes = {
 
 const NativeViewGestureHandler = createHandler('NativeViewGestureHandler', {
   ...GestureHandlerPropTypes,
+
+  // If changed, add changes to NATIVE_WRAPPER_PROPS_FILTER as well
   shouldActivateOnStart: PropTypes.bool,
   disallowInterruption: PropTypes.bool,
 });
@@ -340,13 +343,34 @@ const RotationGestureHandler = createHandler(
 );
 
 const NATIVE_WRAPPER_BIND_BLACKLIST = new Set(['replaceState', 'isMounted']);
-const NATIVE_WRAPPER_PROPS_FILTER = {
-  // accept all gesture handler prop types plus native wrapper specific ones
-  ...NativeViewGestureHandler.propTypes,
-  // we want to pass gesture event handlers if registered
-  onGestureHandlerEvent: PropTypes.func,
-  onGestureHandlerStateChange: PropTypes.func,
-};
+
+/*
+ * This array should consist of:
+ *   - All keys in propTypes from NativeGestureHandler
+ *     (and all keys in GestureHandlerPropTypes)
+ *   - 'onGestureHandlerEvent'
+ *   - 'onGestureHandlerStateChange'
+ */
+const NATIVE_WRAPPER_PROPS_FILTER = [
+  'id',
+  'minPointers',
+  'enabled',
+  'waitFor',
+  'simultaneousHandlers',
+  'shouldCancelWhenOutside',
+  'hitSlop',
+  'onGestureEvent',
+  'onHandlerStateChange',
+  'onBegan',
+  'onFailed',
+  'onCancelled',
+  'onActivated',
+  'onEnded',
+  'shouldActivateOnStart',
+  'disallowInterruption',
+  'onGestureHandlerEvent',
+  'onGestureHandlerStateChange',
+];
 
 function createNativeWrapper(Component, config = {}) {
   class ComponentWrapper extends React.Component {
@@ -354,7 +378,7 @@ function createNativeWrapper(Component, config = {}) {
       ...Component.propTypes,
     };
 
-    static displayName = Component.displayName || "ComponentWrapper";
+    static displayName = Component.displayName || 'ComponentWrapper';
 
     _refHandler = node => {
       // bind native component's methods
@@ -384,7 +408,7 @@ function createNativeWrapper(Component, config = {}) {
       // filter out props that should be passed to gesture handler wrapper
       const gestureHandlerProps = Object.keys(this.props).reduce(
         (props, key) => {
-          if (key in NATIVE_WRAPPER_PROPS_FILTER) {
+          if (NATIVE_WRAPPER_PROPS_FILTER.indexOf(key) !== -1) {
             props[key] = this.props[key];
           }
           return props;
@@ -589,7 +613,9 @@ const FlatListWithGHScroll = React.forwardRef((props, ref) => (
   <FlatList
     ref={ref}
     {...props}
-    renderScrollComponent={scrollProps => <WrappedScrollView {...scrollProps} />}
+    renderScrollComponent={scrollProps => (
+      <WrappedScrollView {...scrollProps} />
+    )}
   />
 ));
 
