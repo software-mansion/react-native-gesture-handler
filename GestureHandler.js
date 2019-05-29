@@ -1,15 +1,10 @@
 import React from 'react';
 import {
   Animated,
-  ScrollView,
-  Switch,
-  TextInput,
-  ToolbarAndroid,
-  DrawerLayoutAndroid,
   StyleSheet,
-  FlatList,
   Platform,
   processColor,
+  default as ReactNative,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -425,22 +420,6 @@ function createNativeWrapper(Component, config = {}) {
   return ComponentWrapper;
 }
 
-const WrappedScrollView = createNativeWrapper(ScrollView, {
-  disallowInterruption: true,
-});
-const WrappedSwitch = createNativeWrapper(Switch, {
-  shouldCancelWhenOutside: false,
-  shouldActivateOnStart: true,
-  disallowInterruption: true,
-});
-const WrappedTextInput = createNativeWrapper(TextInput);
-
-const WrappedToolbarAndroid = createNativeWrapper(ToolbarAndroid);
-const WrappedDrawerLayoutAndroid = createNativeWrapper(DrawerLayoutAndroid, {
-  disallowInterruption: true,
-});
-WrappedDrawerLayoutAndroid.positions = DrawerLayoutAndroid.positions;
-
 State.print = state => {
   const keys = Object.keys(State);
   for (let i = 0; i < keys.length; i++) {
@@ -607,24 +586,59 @@ class BorderlessButton extends React.Component {
   }
 }
 
-/* Other */
+const MEMOIZED = {};
 
-const FlatListWithGHScroll = React.forwardRef((props, ref) => (
-  <FlatList
-    ref={ref}
-    {...props}
-    renderScrollComponent={scrollProps => (
-      <WrappedScrollView {...scrollProps} />
-    )}
-  />
-));
+function memoizeWrap(Component, config) {
+  const memoized = MEMOIZED[Component.displayName];
+  if (memoized) {
+    return memoized;
+  }
+  return (MEMOIZED[Component.displayName] = createNativeWrapper(
+    Component,
+    config
+  ));
+}
 
-export {
-  WrappedScrollView as ScrollView,
-  WrappedSwitch as Switch,
-  WrappedTextInput as TextInput,
-  WrappedToolbarAndroid as ToolbarAndroid,
-  WrappedDrawerLayoutAndroid as DrawerLayoutAndroid,
+module.exports = {
+  /* RN's components */
+  get ScrollView() {
+    return memoizeWrap(ReactNative.ScrollView, {
+      disallowInterruption: true,
+    });
+  },
+  get Switch() {
+    return memoizeWrap(ReactNative.Switch, {
+      shouldCancelWhenOutside: false,
+      shouldActivateOnStart: true,
+      disallowInterruption: true,
+    });
+  },
+  get TextInput() {
+    return memoizeWrap(ReactNative.TextInput);
+  },
+  get ToolbarAndroid() {
+    return memoizeWrap(ReactNative.ToolbarAndroid);
+  },
+  get DrawerLayoutAndroid() {
+    const DrawerLayoutAndroid = memoizeWrap(ReactNative.DrawerLayoutAndroid, {
+      disallowInterruption: true,
+    });
+    DrawerLayoutAndroid.positions = ReactNative.DrawerLayoutAndroid.positions;
+    return DrawerLayoutAndroid;
+  },
+  get FlatList() {
+    if (!MEMOIZED.FlatList) {
+      const ScrollView = this.ScrollView;
+      MEMOIZED.FlatList = React.forwardRef((props, ref) => (
+        <ReactNative.FlatList
+          ref={ref}
+          {...props}
+          renderScrollComponent={scrollProps => <ScrollView {...scrollProps} />}
+        />
+      ));
+    }
+    return MEMOIZED.FlatList;
+  },
   NativeViewGestureHandler,
   TapGestureHandler,
   FlingGestureHandler,
@@ -640,9 +654,8 @@ export {
   RectButton,
   BorderlessButton,
   /* Other */
-  FlatListWithGHScroll as FlatList,
   gestureHandlerRootHOC,
-  GestureHandlerButton as PureNativeButton,
+  PureNativeButton: GestureHandlerButton,
   Directions,
   createNativeWrapper,
 };
