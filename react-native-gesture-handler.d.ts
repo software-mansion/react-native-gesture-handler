@@ -426,8 +426,8 @@ declare module 'react-native-gesture-handler' {
 
   /* OTHER */
 
-  export class FlatList extends React.Component<
-    NativeViewGestureHandlerProperties & FlatListProperties<any>
+  export class FlatList<ItemT> extends React.Component<
+    NativeViewGestureHandlerProperties & FlatListProperties<ItemT>
   > {}
 
   export function gestureHandlerRootHOC(
