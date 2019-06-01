@@ -162,3 +162,5 @@ export class BorderlessButton extends React.Component {
     );
   }
 }
+
+export { default as PureNativeButton } from './GestureHandlerButton';
