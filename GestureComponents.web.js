@@ -5,6 +5,7 @@ import {
   Switch as RNSwitch,
   TextInput as RNTextInput,
   ToolbarAndroid as RNToolbarAndroid,
+  ScrollView as RNScrollView,
 } from 'react-native';
 
 import createNativeWrapper from './createNativeWrapper';
