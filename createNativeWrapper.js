@@ -2,6 +2,36 @@ import React from 'react';
 
 import NativeViewGestureHandler from './NativeViewGestureHandler';
 
+const NATIVE_WRAPPER_BIND_BLACKLIST = new Set(['replaceState', 'isMounted']);
+
+/*
+ * This array should consist of:
+ *   - All keys in propTypes from NativeGestureHandler
+ *     (and all keys in GestureHandlerPropTypes)
+ *   - 'onGestureHandlerEvent'
+ *   - 'onGestureHandlerStateChange'
+ */
+const NATIVE_WRAPPER_PROPS_FILTER = [
+  'id',
+  'minPointers',
+  'enabled',
+  'waitFor',
+  'simultaneousHandlers',
+  'shouldCancelWhenOutside',
+  'hitSlop',
+  'onGestureEvent',
+  'onHandlerStateChange',
+  'onBegan',
+  'onFailed',
+  'onCancelled',
+  'onActivated',
+  'onEnded',
+  'shouldActivateOnStart',
+  'disallowInterruption',
+  'onGestureHandlerEvent',
+  'onGestureHandlerStateChange',
+];
+
 export default function createNativeWrapper(Component, config = {}) {
   class ComponentWrapper extends React.Component {
     static propTypes = {
