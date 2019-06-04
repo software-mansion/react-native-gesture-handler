@@ -5,7 +5,6 @@ import {
   Slider,
   Switch,
   TextInput,
-  ToolbarAndroid,
   ViewPagerAndroid,
   DrawerLayoutAndroid,
   StyleSheet,
@@ -415,7 +414,6 @@ const WrappedSwitch = createNativeWrapper(Switch, {
 });
 const WrappedTextInput = createNativeWrapper(TextInput);
 
-const WrappedToolbarAndroid = createNativeWrapper(ToolbarAndroid);
 const WrappedViewPagerAndroid = createNativeWrapper(ViewPagerAndroid, {
   disallowInterruption: true,
 });
@@ -604,7 +602,6 @@ export {
   WrappedSlider as Slider,
   WrappedSwitch as Switch,
   WrappedTextInput as TextInput,
-  WrappedToolbarAndroid as ToolbarAndroid,
   WrappedViewPagerAndroid as ViewPagerAndroid,
   WrappedDrawerLayoutAndroid as DrawerLayoutAndroid,
   NativeViewGestureHandler,
