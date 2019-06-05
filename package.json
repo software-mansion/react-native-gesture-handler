@@ -1,6 +1,6 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
@@ -16,6 +16,7 @@
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "ios/",
+    "__mocks__/",
     "touchables/**/*.js",
     "createHandler.js",
     "createHandler.web.js",
@@ -23,6 +24,13 @@
     "Directions.web.js",
     "DrawerLayout.js",
     "GestureHandler.js",
+    "Gestures.js",
+    "GestureButtons.js",
+    "GestureComponents.js",
+    "GestureComponents.web.js",
+    "createNativeWrapper.js",
+    "GestureHandlerPropTypes.js",
+    "NativeViewGestureHandler.js",
     "GestureHandlerButton.js",
     "GestureHandlerButton.web.js",
     "gestureHandlerRootHOC.android.js",
@@ -33,6 +41,8 @@
     "PlatformConstants.web.js",
     "react-native-gesture-handler.d.ts",
     "README.md",
+    "RNGestureHandlerModule.js",
+    "jestSetup.js",
     "RNGestureHandler.podspec",
     "State.js",
     "Swipeable.js",
@@ -60,7 +70,7 @@
   },
   "peerDependencies": {
     "react": ">= 16.3.2",
-    "react-native": ">= 0.54.0"
+    "react-native": ">= 0.58.2"
   },
   "jest": {
     "preset": "jest-react-native"

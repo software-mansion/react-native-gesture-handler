@@ -1,5 +1,3 @@
-import { NativeModules } from 'react-native';
-
-const { RNGestureHandlerModule } = NativeModules;
+import RNGestureHandlerModule from './RNGestureHandlerModule';
 
 export default RNGestureHandlerModule.Direction;

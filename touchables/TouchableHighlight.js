@@ -27,9 +27,7 @@ export default class TouchableHighlight extends Component {
     super(props);
     this.state = {
       extraChildStyle: null,
-      extraUnderlayStyle: {
-        backgroundColor: props.underlayColor,
-      },
+      extraUnderlayStyle: null,
     };
   }
 

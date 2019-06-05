@@ -331,6 +331,12 @@ export default function createHandler(handlerName, propTypes = {}) {
 
     static propTypes = propTypes;
 
+    componentDidMount() {
+      if (!handlers[handlerName]) {
+        console.warn(`${handlerName} is not yet supported on web.`);
+      }
+    }
+
     _refHandler = node => {
       this._viewNode = node;
     };
@@ -340,11 +346,7 @@ export default function createHandler(handlerName, propTypes = {}) {
     };
 
     render() {
-      let Handler = handlers[handlerName];
-      if (!Handler) {
-        console.warn(`${handlerName} is not yet supported on web.`);
-        Handler = UnimplementedGestureHandler;
-      }
+      const Handler = handlers[handlerName] || UnimplementedGestureHandler;
 
       return <Handler ref={this._refHandler} {...this.props} />;
     }

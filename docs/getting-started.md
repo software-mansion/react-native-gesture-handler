@@ -118,3 +118,20 @@ export function registerScreens() {
 You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
 
 Remember that you need to wrap each screen that you use in your app with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
+
+### Testing
+
+In order to load mocks provided by the library add following to your jest config in `package.json`:
+
+```json 
+"setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
+```
+
+Example:
+
+```json
+"jest": {
+  "preset": "react-native",
+  "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
+}
+```
