@@ -369,7 +369,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     invariant(this._openValue, 'should be set');
     const overlayOpacity = this._openValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, 0.7],
+      outputRange: [0, 1],
       extrapolate: 'clamp',
     });
     const dynamicOverlayStyles = {
