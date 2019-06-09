@@ -31,7 +31,7 @@ Default value is `true`.
 Takes a boolean value.
 When `true` the handler will [cancel](state.md#cancelled) or [fail](state.md#failed) recognition (depending on its current state) whenever the finger leaves the area of the connected view.
 Default value of this property is different depending on the handler type.
-Most of the handlers defaults to `true` but in case of the [`LongPressGestureHandler`](handler-longpress.md) and [`TapGestureHandler`](handler-tap.md)
+Most of the handlers defaults to `false` but in case of the [`LongPressGestureHandler`](handler-longpress.md) and [`TapGestureHandler`](handler-tap.md) it defaults to `true`.
 
 ---
 ### `simultaneousHandlers`
