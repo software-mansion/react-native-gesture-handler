@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, PanResponder } from 'react-native';
+import { StyleSheet, View, PanResponder, I18nManager } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -80,14 +80,14 @@ class PanResponderExample extends Component {
   };
 
   _handlePanResponderMove = (e, gestureState) => {
-    this._circleStyles.style.left = this._previousLeft + gestureState.dx;
+    this._circleStyles.style.left = this._previousLeft + gestureState.dx * (I18nManager.isRTL ? -1 : 1);
     this._circleStyles.style.top = this._previousTop + gestureState.dy;
     this._updateNativeStyles();
   };
 
   _handlePanResponderEnd = (e, gestureState) => {
     this._unHighlight();
-    this._previousLeft += gestureState.dx;
+    this._previousLeft += gestureState.dx * (I18nManager.isRTL ? -1 : 1);
     this._previousTop += gestureState.dy;
   };
 }
