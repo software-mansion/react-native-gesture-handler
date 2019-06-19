@@ -20,6 +20,38 @@ const DirectionMap = {
   [Hammer.DIRECTION_DOWN]: Directions.DOWN,
 };
 
+function ensureConfig(config) {
+  const props = {};
+  if ('activeOffsetX' in config) {
+    props.activeOffsetX = getRangeValue(config.activeOffsetX);
+  }
+  if ('activeOffsetY' in config) {
+    props.activeOffsetY = getRangeValue(config.activeOffsetY);
+  }
+  if ('failOffsetY' in config) {
+    props.failOffsetY = getRangeValue(config.failOffsetY);
+  }
+  if ('failOffsetX' in config) {
+    props.failOffsetX = getRangeValue(config.failOffsetX);
+  }
+  return props;
+}
+
+function getRangeValue(value) {
+  if (Array.isArray(value)) {
+    if (!value.length || value.length > 2) {
+      throw new Error('Range value must only contain 2 values');
+    } else if (value.length === 1) {
+      return getRangeValue(value[0]);
+    }
+    return value;
+  } else {
+    return value < 0 ? [value, Infinity] : [-Infinity, value];
+  }
+}
+
+const rangeFromNumber = value => [-value, value];
+
 function handleHandlerStateChange(props, event, oldState, state) {
   const { enabled, onHandlerStateChange } = props;
 
@@ -63,23 +95,62 @@ function handleBegan(props, event) {
   handleHandlerStateChange(props, event, State.UNDETERMINED, State.BEGAN);
 }
 
-function mapPropsToOptions(props) {
-  let options = {};
-  if ('minDist' in props) {
-    options.threshold = props.minDist;
+const valueInRange = (value, range) => value >= range[0] || value <= range[1];
+
+const valueOutOfRange = (value, range) =>
+  value <= range[0] || value >= range[1];
+
+function validateCriteria(
+  { pointerLength, velocity, vx, vy, dx, dy },
+  {
+    minPointers,
+    maxPointers,
+    minVelocity,
+    minVelocityX,
+    minVelocityY,
+    failOffsetX,
+    failOffsetY,
+    activeOffsetX,
+    activeOffsetY,
   }
-  if ('enabled' in props) {
-    options.enabled = props.enabled;
+) {
+  const validPointerCount =
+    pointerLength >= minPointers && pointerLength <= maxPointers;
+  let isFastEnough = Math.abs(velocity) >= minVelocity;
+
+  if (
+    isFastEnough &&
+    typeof minVelocityX !== 'undefined' &&
+    Math.abs(vx) < minVelocityX
+  ) {
+    isFastEnough = false;
   }
-  return options;
+  if (
+    isFastEnough &&
+    typeof minVelocityY !== 'undefined' &&
+    Math.abs(vy) < minVelocityY
+  ) {
+    isFastEnough = false;
+  }
+
+  const isWithinBounds =
+    valueInRange(dx, failOffsetX) && valueInRange(dy, failOffsetY);
+
+  const isLongEnough =
+    valueOutOfRange(dx, activeOffsetX) && valueOutOfRange(dy, activeOffsetY);
+
+  return validPointerCount && isFastEnough && isWithinBounds && isLongEnough;
 }
 
 function asArray(value) {
   return Array.isArray(value) ? value : [value];
 }
 
-function createGestureHandler(hammerClass, hammerGestureName) {
+const DEG_RAD = Math.PI / 180;
+
+function createGestureHandler(input) {
   return class extends React.Component {
+    static defaultProps = { enabled: true, ...input.props };
     componentDidUpdate() {
       if (this.hammer) {
         this.sync();
@@ -97,15 +168,14 @@ function createGestureHandler(hammerClass, hammerGestureName) {
     setRef = ref => {
       this.ref = ref;
       this.view = findNodeHandle(ref);
-      this.hammer = new Hammer(this.view, {
-        recognizers: [[hammerClass]],
-      });
+      this.hammer = new Hammer(this.view, {});
+      input.start({ manager: this.hammer, props: this.props });
 
       let oldState = State.UNDETERMINED;
       let previousState = State.UNDETERMINED;
-      this.hammer.on('hammer.input', ev => {
+      let initialRotation = 0;
+      this.hammer.on('pan rotate pinch', ev => {
         const { onHandlerStateChange, onGestureEvent } = this.props;
-
         const {
           eventType,
           deltaX,
@@ -116,7 +186,16 @@ function createGestureHandler(hammerClass, hammerGestureName) {
           center,
           rotation,
           scale,
+          maxPointers: numberOfPointers,
         } = ev;
+
+        let deltaRotation = 0;
+        if (ev.type === 'rotate') {
+          if (ev.isFirst) {
+            initialRotation = rotation;
+          }
+          deltaRotation = (rotation - initialRotation) * DEG_RAD;
+        }
 
         const state = EventMap[eventType];
         const direction = DirectionMap[ev.direction];
@@ -125,27 +204,39 @@ function createGestureHandler(hammerClass, hammerGestureName) {
           previousState = state;
         }
         const nativeEvent = {
-          state,
           direction,
           oldState,
           translationX: deltaX,
           translationY: deltaY,
           velocityX,
           velocityY,
+          velocity,
+          rotation: deltaRotation,
+          scale,
+
           x: center.x,
           y: center.y,
           absoluteX: center.x,
           absoluteY: center.y,
-          velocity,
-          rotation: rotation * 0.2,
-          scale,
-          // focalX
-          // focalY
+          focalX: center.x,
+          focalY: center.y,
+          anchorX: center.x,
+          anchorY: center.y,
         };
 
+        const timeStamp = Date.now();
         const event = {
-          nativeEvent,
-          timeStamp: Date.now(),
+          nativeEvent: {
+            numberOfPointers,
+            state,
+            ...input.filter(nativeEvent),
+
+            // onHandlerStateChange only
+            handlerTag: null,
+            target: null,
+            oldState,
+          },
+          timeStamp,
         };
 
         if (ev.isFinal) {
@@ -163,19 +254,45 @@ function createGestureHandler(hammerClass, hammerGestureName) {
     };
 
     sync = () => {
-      const { hammer, props } = this;
+      const gesture = this.hammer.get(input.name);
 
-      const gesture = hammer.get(hammerGestureName);
-      gesture.set(mapPropsToOptions(props));
-
-      if (props.simultaneousHandlers) {
-        const handlers = asArray(props.simultaneousHandlers);
-        hammer.get(hammerGestureName).recognizeWith(handlers);
+      // Clear all
+      for (const recognizer of Object.values(gesture.simultaneous)) {
+        gesture.dropRecognizeWith(recognizer);
       }
 
-      if (props.waitFor) {
-        const handlers = asArray(props.waitFor);
-        hammer.get(hammerGestureName).requireFailure(handlers);
+      for (const recognizer of Object.values(gesture.requireFail)) {
+        gesture.dropRequireFailure(recognizer);
+      }
+
+      gesture.set({
+        pointers: this.props.minPointers,
+        enable: (recognizer, inputData) => {
+          if (!this.props.enabled) {
+            return false;
+          }
+          if (!inputData || !recognizer.options) {
+            return true;
+          }
+          if (input.enabled) {
+            return input.enabled(this.props, recognizer, inputData);
+          }
+          return true;
+        },
+      });
+
+      if (this.props.simultaneousHandlers) {
+        const handlers = asArray(this.props.simultaneousHandlers)
+          .filter(ref => ref.hammer)
+          .map(({ hammer }) => hammer);
+        gesture.recognizeWith(handlers);
+      }
+
+      if (this.props.waitFor) {
+        const handlers = asArray(this.props.waitFor)
+          .filter(ref => ref.hammer)
+          .map(({ hammer }) => hammer);
+        gesture.requireFailure(handlers);
       }
     };
 
@@ -205,16 +322,99 @@ class UnimplementedGestureHandler extends React.Component {
 }
 
 const handlers = {
-  NativeViewGestureHandler: class NativeViewGestureHandler extends React.Component {
-    render() {
-      const { children } = this.props;
-
-      return children;
-    }
-  },
-  PanGestureHandler: createGestureHandler(Hammer.Pan, 'pan'),
-  RotationGestureHandler: createGestureHandler(Hammer.Rotate, 'rotate'),
-  PinchGestureHandler: createGestureHandler(Hammer.Pinch, 'pinch'),
+  PanGestureHandler: createGestureHandler({
+    name: 'pan',
+    start({ manager, props }) {
+      manager.add(
+        new Hammer.Pan({
+          pointers: props.minPointers,
+          threshold: props.minDist,
+        })
+      );
+    },
+    enabled(props, recognizer, inputData) {
+      return validateCriteria(
+        {
+          pointerLength: inputData.maxPointers,
+          velocity: inputData.overallVelocity,
+          vx: inputData.velocityX,
+          vy: inputData.velocityY,
+          dx: inputData.deltaX,
+          dy: inputData.deltaY,
+        },
+        props
+      );
+    },
+    filter({
+      translationX,
+      translationY,
+      velocityX,
+      velocityY,
+      x,
+      y,
+      absoluteX,
+      absoluteY,
+    }) {
+      return {
+        translationX,
+        translationY,
+        velocityX,
+        velocityY,
+        x,
+        y,
+        absoluteX,
+        absoluteY,
+      };
+    },
+    props: {
+      activeOffsetY: rangeFromNumber(0),
+      activeOffsetX: rangeFromNumber(0),
+      failOffsetY: rangeFromNumber(Infinity),
+      failOffsetX: rangeFromNumber(Infinity),
+      minVelocity: 0,
+      minVelocityX: 0,
+      minVelocityY: 0,
+      minDist: 10,
+      minPointers: 1,
+      maxPointers: 1,
+    },
+  }),
+  RotationGestureHandler: createGestureHandler({
+    name: 'rotate',
+    start({ manager, props }) {
+      manager.add(new Hammer.Rotate({ pointers: props.minPointers }));
+    },
+    filter({ anchorX, anchorY, velocity, rotation }) {
+      return {
+        anchorX,
+        anchorY,
+        velocity,
+        rotation,
+      };
+    },
+    props: {
+      minPointers: 2,
+      maxPointers: 2,
+    },
+  }),
+  PinchGestureHandler: createGestureHandler({
+    name: 'pinch',
+    start({ manager, props }) {
+      manager.add(new Hammer.Pinch({ pointers: props.minPointers }));
+    },
+    filter({ scale, velocity, focalX, focalY }) {
+      return {
+        scale,
+        velocity,
+        focalX,
+        focalY,
+      };
+    },
+    props: {
+      minPointers: 2,
+      maxPointers: 2,
+    },
+  }),
   TapGestureHandler: class TapGestureHandler extends React.Component {
     static defaultProps = {
       numberOfTaps: 1,
