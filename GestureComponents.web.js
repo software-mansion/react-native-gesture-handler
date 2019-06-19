@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  View,
   DrawerLayoutAndroid as RNDrawerLayoutAndroid,
   FlatList as RNFlatList,
   Switch as RNSwitch,
@@ -20,10 +21,8 @@ export const Switch = createNativeWrapper(RNSwitch, {
   disallowInterruption: true,
 });
 export const TextInput = createNativeWrapper(RNTextInput);
-export const ToolbarAndroid = createNativeWrapper(RNToolbarAndroid);
-export const DrawerLayoutAndroid = createNativeWrapper(RNDrawerLayoutAndroid, {
-  disallowInterruption: true,
-});
+export const ToolbarAndroid = View;
+export const DrawerLayoutAndroid = View;
 DrawerLayoutAndroid.positions = RNDrawerLayoutAndroid.positions;
 
 export const FlatList = React.forwardRef((props, ref) => (

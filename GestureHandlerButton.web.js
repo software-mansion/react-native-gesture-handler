@@ -1,14 +1,14 @@
 import React from 'react';
-import { TouchableWithoutFeedback, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
-export default class RNGestureHandlerButton extends React.Component {
-  render() {
-    const { children, ...rest } = this.props;
-
-    return (
-      <TouchableWithoutFeedback accessibilityRole="button" {...rest}>
-        <View>{children}</View>
-      </TouchableWithoutFeedback>
-    );
-  }
-}
+// Use TouchableOpacity with the transparency disabled to most closely emulate
+// the native view's ability to wrap children and apply styles.
+export default React.forwardRef((props, ref) => (
+  <TouchableOpacity
+    ref={ref}
+    accessibilityRole="button"
+    {...props}
+    activeOpacity={1.0}
+    focusOpacity={1.0}
+  />
+));
