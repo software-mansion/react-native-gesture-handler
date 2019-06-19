@@ -67,10 +67,6 @@
     "invariant": "^2.2.2",
     "prop-types": "^15.5.10"
   },
-  "peerDependencies": {
-    "react": ">= 16.3.2",
-    "react-native": ">= 0.58.2"
-  },
   "jest": {
     "preset": "jest-react-native"
   },
