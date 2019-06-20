@@ -334,10 +334,12 @@ function createGestureHandler(input) {
           });
         }
       });
-      this.hammer.on(`${input.name}start`, ({ deltaX, deltaY }) => {
+      this.hammer.on(`${input.name}start`, ({ deltaX, deltaY, rotation }) => {
         this.isGestureRunning = true;
         this.__initialX = deltaX;
         this.__initialY = deltaY;
+
+        initialRotation = rotation;
       });
       this.hammer.on(`${input.name}end ${input.name}cancel`, () => {
         this.isGestureRunning = false;
@@ -358,13 +360,7 @@ function createGestureHandler(input) {
           maxPointers: numberOfPointers,
         } = ev;
 
-        let deltaRotation = 0;
-        if (ev.type === 'rotate') {
-          if (ev.isFirst) {
-            initialRotation = rotation;
-          }
-          deltaRotation = (rotation - initialRotation) * DEG_RAD;
-        }
+        let deltaRotation = (rotation - initialRotation) * DEG_RAD;
 
         const state = EventMap[eventType];
         const direction = DirectionMap[ev.direction];
