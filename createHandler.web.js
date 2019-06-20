@@ -77,6 +77,15 @@ const DirectionMap = {
 function ensureConfig(config) {
   const props = { ...config };
 
+  if ('minDeltaX' in config) {
+    console.warn('minDeltaX is deprecated in favor of activeOffsetX');
+    props.activeOffsetX = getLegacyRangeValue(config.minDeltaX);
+  }
+  if ('minDeltaY' in config) {
+    console.warn('minDeltaY is deprecated in favor of activeOffsetY');
+    props.activeOffsetY = getLegacyRangeValue(config.minDeltaY);
+  }
+
   if ('activeOffsetX' in config) {
     props.activeOffsetX = getRangeValue(config.activeOffsetX);
   }
@@ -88,16 +97,26 @@ function ensureConfig(config) {
     props.minDist = config.minDist;
   }
 
-  if ('failOffsetY' in config) {
-    props.failOffsetY = getRangeValue(config.failOffsetY);
-  } else {
-    props.failOffsetY = getRangeValue(Infinity);
+  if ('maxDeltaX' in config) {
+    console.warn('maxDeltaX is deprecated in favor of failOffsetX');
+    props.failOffsetX = getLegacyRangeValue(config.maxDeltaX);
+  }
+
+  if ('maxDeltaY' in config) {
+    console.warn('maxDeltaY is deprecated in favor of failOffsetY');
+    props.failOffsetY = getLegacyRangeValue(config.maxDeltaY);
   }
 
   if ('failOffsetX' in config) {
     props.failOffsetX = getRangeValue(config.failOffsetX);
   } else {
     props.failOffsetX = getRangeValue(Infinity);
+  }
+
+  if ('failOffsetY' in config) {
+    props.failOffsetY = getRangeValue(config.failOffsetY);
+  } else {
+    props.failOffsetY = getRangeValue(Infinity);
   }
 
   if (!('minPointers' in config)) {
@@ -127,6 +146,19 @@ function getRangeValue(value) {
     return value;
   } else {
     return value < 0 ? [value, Infinity] : [-Infinity, value];
+  }
+}
+
+function getLegacyRangeValue(value) {
+  if (Array.isArray(value)) {
+    if (!value.length || value.length > 2) {
+      throw new Error('Range value must only contain 2 values');
+    } else if (value.length === 1) {
+      return getLegacyRangeValue(value[0]);
+    }
+    return value;
+  } else {
+    return value < 0 ? [value, -value] : [-value, value];
   }
 }
 
