@@ -76,17 +76,24 @@ const DirectionMap = {
 // Validate the props
 function ensureConfig(config) {
   const props = { ...config };
+
   if ('activeOffsetX' in config) {
     props.activeOffsetX = getRangeValue(config.activeOffsetX);
   }
   if ('activeOffsetY' in config) {
     props.activeOffsetY = getRangeValue(config.activeOffsetY);
   }
+
+  if ('minDist' in config) {
+    props.minDist = config.minDist;
+  }
+
   if ('failOffsetY' in config) {
     props.failOffsetY = getRangeValue(config.failOffsetY);
   } else {
     props.failOffsetY = getRangeValue(Infinity);
   }
+
   if ('failOffsetX' in config) {
     props.failOffsetX = getRangeValue(config.failOffsetX);
   } else {
@@ -171,11 +178,14 @@ const valueInRange = (value, range) => value >= range[0] && value <= range[1];
 const valueOutOfRange = (value, range) =>
   value <= range[0] || value >= range[1];
 
+const getVectorLength = (x, y) => Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+
 function validateCriteria(
   { recognizer, pointerLength, velocity, vx, vy, dx, dy, ...inputData },
   {
     minPointers,
     maxPointers,
+    minDist,
     minVelocity,
     minVelocityX,
     minVelocityY,
@@ -209,10 +219,15 @@ function validateCriteria(
     valueInRange(dx, failOffsetX) && valueInRange(dy, failOffsetY);
 
   let isLongEnough = true;
+  // Order here matters for parity reasons.
+  if (isLongEnough && minDist != null) {
+    isLongEnough = getVectorLength(dx, dy) >= minDist;
+  }
 
   if (isLongEnough && activeOffsetX) {
     isLongEnough = valueOutOfRange(dx, activeOffsetX);
   }
+
   if (isLongEnough && activeOffsetY) {
     isLongEnough = valueOutOfRange(dy, activeOffsetY);
   }
@@ -255,9 +270,15 @@ function asArray(value) {
   return value == null ? [] : Array.isArray(value) ? value : [value];
 }
 
-function panDirectionForConfig({ activeOffsetX, activeOffsetY }) {
+function panDirectionForConfig({ activeOffsetX, activeOffsetY, minDist }) {
   let directions = [];
   let horizontalDirections = [];
+
+  // sigh
+  if (minDist != null) {
+    return Hammer.DIRECTION_ALL;
+  }
+
   if (activeOffsetX) {
     if (Math.abs(activeOffsetX[0]) !== Infinity)
       horizontalDirections.push(Hammer.DIRECTION_LEFT);
