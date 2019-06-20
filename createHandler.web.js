@@ -5,6 +5,20 @@ import { findNodeHandle, TouchableWithoutFeedback, View } from 'react-native';
 import Directions from './Directions';
 import State from './State';
 
+function logDirection(d) {
+  const maap = {
+    [Hammer.DIRECTION_ALL]: 'ALL',
+    [Hammer.DIRECTION_DOWN]: 'DOWN',
+    [Hammer.DIRECTION_HORIZONTAL]: 'HORIZONTAL',
+    [Hammer.DIRECTION_LEFT]: 'LEFT',
+    [Hammer.DIRECTION_NONE]: 'NONE',
+    [Hammer.DIRECTION_RIGHT]: 'RIGHT',
+    [Hammer.DIRECTION_UP]: 'UP',
+    [Hammer.DIRECTION_VERTICAL]: 'VERTICAL',
+  };
+  console.log(maap[d]);
+}
+
 function invokeNullableMethod(name, method, event) {
   if (method) {
     if (typeof method === 'function') {
@@ -61,9 +75,13 @@ function ensureConfig(config) {
   }
   if ('failOffsetY' in config) {
     props.failOffsetY = getRangeValue(config.failOffsetY);
+  } else {
+    props.failOffsetY = getRangeValue(Infinity);
   }
   if ('failOffsetX' in config) {
     props.failOffsetX = getRangeValue(config.failOffsetX);
+  } else {
+    props.failOffsetX = getRangeValue(Infinity);
   }
 
   if (!('minPointers' in config)) {
@@ -94,8 +112,6 @@ function getRangeValue(value) {
     return value < 0 ? [value, Infinity] : [-Infinity, value];
   }
 }
-
-const rangeFromNumber = value => [-value, value];
 
 function handleHandlerStateChange(props, event, oldState, state) {
   const { enabled, onHandlerStateChange } = props;
@@ -140,13 +156,13 @@ function handleBegan(props, event) {
   handleHandlerStateChange(props, event, State.UNDETERMINED, State.BEGAN);
 }
 
-const valueInRange = (value, range) => value >= range[0] || value <= range[1];
+const valueInRange = (value, range) => value >= range[0] && value <= range[1];
 
 const valueOutOfRange = (value, range) =>
   value <= range[0] || value >= range[1];
 
 function validateCriteria(
-  { pointerLength, velocity, vx, vy, dx, dy },
+  { recognizer, pointerLength, velocity, vx, vy, dx, dy, ...inputData },
   {
     minPointers,
     maxPointers,
@@ -179,17 +195,68 @@ function validateCriteria(
     isFastEnough = false;
   }
 
-  const isWithinBounds =
+  let isWithinBounds =
     valueInRange(dx, failOffsetX) && valueInRange(dy, failOffsetY);
 
-  const isLongEnough =
-    valueOutOfRange(dx, activeOffsetX) && valueOutOfRange(dy, activeOffsetY);
+  let isLongEnough = true;
 
+  if (isLongEnough && activeOffsetX) {
+    isLongEnough = valueOutOfRange(dx, activeOffsetX);
+  }
+  if (isLongEnough && activeOffsetY) {
+    isLongEnough = valueOutOfRange(dy, activeOffsetY);
+  }
+
+  console.log(
+    'success',
+    recognizer,
+    inputData,
+    validPointerCount && isFastEnough && isWithinBounds && isLongEnough
+  );
   return validPointerCount && isFastEnough && isWithinBounds && isLongEnough;
 }
 
 function asArray(value) {
   return Array.isArray(value) ? value : [value];
+}
+
+function panDirectionForConfig({ activeOffsetX, activeOffsetY }) {
+  let directions = [];
+  let horizontalDirections = [];
+  if (activeOffsetX) {
+    if (Math.abs(activeOffsetX[0]) !== Infinity)
+      horizontalDirections.push(Hammer.DIRECTION_LEFT);
+    if (Math.abs(activeOffsetX[1]) !== Infinity)
+      horizontalDirections.push(Hammer.DIRECTION_RIGHT);
+    if (horizontalDirections.length === 2)
+      horizontalDirections = [Hammer.DIRECTION_HORIZONTAL];
+    directions = directions.concat(horizontalDirections);
+  }
+  let verticalDirections = [];
+  if (activeOffsetY) {
+    if (Math.abs(activeOffsetY[0]) !== Infinity)
+      verticalDirections.push(Hammer.DIRECTION_UP);
+    if (Math.abs(activeOffsetY[1]) !== Infinity)
+      verticalDirections.push(Hammer.DIRECTION_DOWN);
+    if (verticalDirections.length === 2)
+      verticalDirections = [Hammer.DIRECTION_VERTICAL];
+    directions = directions.concat(verticalDirections);
+  }
+
+  if (!directions.length) {
+    return Hammer.DIRECTION_NONE;
+  }
+  if (
+    directions[0] === Hammer.DIRECTION_HORIZONTAL &&
+    directions[1] === Hammer.DIRECTION_VERTICAL
+  ) {
+    return Hammer.DIRECTION_ALL;
+  }
+  if (horizontalDirections.length && verticalDirections.length) {
+    return Hammer.DIRECTION_ALL;
+  }
+
+  return directions[0];
 }
 
 const DEG_RAD = Math.PI / 180;
@@ -218,15 +285,30 @@ function createGestureHandler(input) {
       this.hammer = null;
     }
 
+    isGestureRunning = false;
+
     setRef = ref => {
       this.ref = ref;
       this.view = findNodeHandle(ref);
-      this.hammer = new Hammer(this.view, {});
+      this.hammer = new Hammer(this.view, {
+        // touchAction: 'pan-right'
+      });
       input.start({ manager: this.hammer, props: this.props });
 
       let oldState = State.UNDETERMINED;
       let previousState = State.UNDETERMINED;
       let initialRotation = 0;
+
+      this.hammer.on('panstart pinchstart rotatestart', () => {
+        this.isGestureRunning = true;
+      });
+      this.hammer.on(
+        'panend pancancel pinchend pinchcancel rotateend rotatecancel',
+        () => {
+          this.isGestureRunning = false;
+        }
+      );
+
       this.hammer.on('pan rotate pinch', ev => {
         const { onHandlerStateChange, onGestureEvent } = this.props;
         const {
@@ -320,10 +402,16 @@ function createGestureHandler(input) {
       }
 
       gesture.set({
+        direction:
+          input.name === 'pan' ? panDirectionForConfig(this.config) : undefined,
         pointers: this.props.minPointers,
         enable: (recognizer, inputData) => {
           if (!this.props.enabled) {
+            this.isGestureRunning = false;
             return false;
+          }
+          if (this.isGestureRunning) {
+            return true;
           }
           if (!inputData || !recognizer.options) {
             return true;
@@ -388,6 +476,8 @@ const handlers = {
     enabled(props, recognizer, inputData) {
       return validateCriteria(
         {
+          ...inputData,
+          recognizer,
           pointerLength: inputData.maxPointers,
           velocity: inputData.overallVelocity,
           vx: inputData.velocityX,
@@ -420,10 +510,10 @@ const handlers = {
       };
     },
     props: {
-      activeOffsetY: rangeFromNumber(0),
-      activeOffsetX: rangeFromNumber(0),
-      failOffsetY: rangeFromNumber(Infinity),
-      failOffsetX: rangeFromNumber(Infinity),
+      // activeOffsetY: rangeFromNumber(0),
+      // activeOffsetX: rangeFromNumber(0),
+      // failOffsetY: rangeFromNumber(Infinity),
+      // failOffsetX: rangeFromNumber(Infinity),
       minVelocity: 0,
       minVelocityX: 0,
       minVelocityY: 0,
