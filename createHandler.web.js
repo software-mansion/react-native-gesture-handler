@@ -5,6 +5,37 @@ import { findNodeHandle, TouchableWithoutFeedback, View } from 'react-native';
 import Directions from './Directions';
 import State from './State';
 
+function invokeNullableMethod(name, method, event) {
+  if (method) {
+    if (typeof method === 'function') {
+      method(event);
+    } else {
+      if (
+        '__getHandler' in method &&
+        typeof method.__getHandler === 'function'
+      ) {
+        const handler = method.__getHandler();
+        invokeNullableMethod(name, handler, event);
+      } else {
+        if ('__nodeConfig' in method) {
+          const { argMapping } = method.__nodeConfig;
+          if (Array.isArray(argMapping)) {
+            for (const index in argMapping) {
+              const [key] = argMapping[index];
+              if (key in event.nativeEvent) {
+                method.__nodeConfig.argMapping[index] = [
+                  key,
+                  event.nativeEvent[key],
+                ];
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 // Map Hammer values to RNGH
 const EventMap = {
   [Hammer.INPUT_START]: State.BEGAN,
@@ -21,7 +52,7 @@ const DirectionMap = {
 };
 
 function ensureConfig(config) {
-  const props = {};
+  const props = { ...config };
   if ('activeOffsetX' in config) {
     props.activeOffsetX = getRangeValue(config.activeOffsetX);
   }
@@ -34,6 +65,20 @@ function ensureConfig(config) {
   if ('failOffsetX' in config) {
     props.failOffsetX = getRangeValue(config.failOffsetX);
   }
+
+  if (!('minPointers' in config)) {
+    props.minPointers = 1;
+  }
+
+  props.maxPointers = Math.max(
+    config.minPointers || 0,
+    config.maxPointers || 0
+  );
+
+  if (config.minPointers <= 0) {
+    throw new Error('minPointers must be larger than 0');
+  }
+
   return props;
 }
 
@@ -116,6 +161,7 @@ function validateCriteria(
 ) {
   const validPointerCount =
     pointerLength >= minPointers && pointerLength <= maxPointers;
+
   let isFastEnough = Math.abs(velocity) >= minVelocity;
 
   if (
@@ -151,10 +197,17 @@ const DEG_RAD = Math.PI / 180;
 function createGestureHandler(input) {
   return class extends React.Component {
     static defaultProps = { enabled: true, ...input.props };
+
+    constructor(props) {
+      super(props);
+      this.config = ensureConfig(props);
+    }
+
     componentDidUpdate() {
       if (this.hammer) {
         this.sync();
       }
+      this.config = ensureConfig(this.props);
     }
 
     componentWillUnmount() {
@@ -243,12 +296,13 @@ function createGestureHandler(input) {
           oldState = State.UNDETERMINED;
           previousState = State.UNDETERMINED;
         }
-        if (onGestureEvent) {
-          onGestureEvent(event);
-        }
-        if (onHandlerStateChange) {
-          onHandlerStateChange(event);
-        }
+
+        invokeNullableMethod('onGestureEvent', onGestureEvent, event);
+        invokeNullableMethod(
+          'onHandlerStateChange',
+          onHandlerStateChange,
+          event
+        );
       });
       this.sync();
     };
@@ -275,7 +329,7 @@ function createGestureHandler(input) {
             return true;
           }
           if (input.enabled) {
-            return input.enabled(this.props, recognizer, inputData);
+            return input.enabled(this.config, recognizer, inputData);
           }
           return true;
         },
@@ -328,7 +382,6 @@ const handlers = {
       manager.add(
         new Hammer.Pan({
           pointers: props.minPointers,
-          threshold: props.minDist,
         })
       );
     },
