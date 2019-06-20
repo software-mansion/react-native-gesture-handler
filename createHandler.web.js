@@ -161,6 +161,9 @@ const valueInRange = (value, range) => value >= range[0] && value <= range[1];
 const valueOutOfRange = (value, range) =>
   value <= range[0] || value >= range[1];
 
+const MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD = 0.1;
+const MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD = 5;
+
 function validateCriteria(
   { recognizer, pointerLength, velocity, vx, vy, dx, dy, ...inputData },
   {
@@ -207,6 +210,24 @@ function validateCriteria(
     isLongEnough = valueOutOfRange(dy, activeOffsetY);
   }
 
+  // We only use validateCriteria for panning.
+  // If this changes, then we'll need to check for the gesture type.
+  if (validPointerCount && pointerLength > 1) {
+    // Test if the pan had too much pinching or rotating.
+    if (
+      Math.abs(inputData.scale - 1) > MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD ||
+      Math.abs(inputData.deltaRotation) >
+        MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD
+    ) {
+      return {
+        success: false,
+        failed: true,
+      };
+    }
+  }
+
+  console.log(recognizer, inputData);
+
   return {
     success:
       validPointerCount && isFastEnough && isWithinBounds && isLongEnough,
@@ -215,7 +236,9 @@ function validateCriteria(
 }
 
 function asArray(value) {
-  return Array.isArray(value) ? value : [value];
+  if (value == null) return [];
+  const arr = Array.isArray(value) ? value : [value];
+  return arr; //.filter(v => v == null);
 }
 
 function panDirectionForConfig({ activeOffsetX, activeOffsetY }) {
@@ -287,6 +310,7 @@ function createGestureHandler(input) {
     hasGestureFailed = false;
 
     setRef = ref => {
+      this._viewNode = ref;
       this.ref = ref;
       this.view = findNodeHandle(ref);
       this.hammer = new Hammer(this.view, {
@@ -298,9 +322,10 @@ function createGestureHandler(input) {
       let previousState = State.UNDETERMINED;
       let initialRotation = 0;
 
-      this.hammer.on('hammer.input', ({ isFirst, isFinal }) => {
+      this.hammer.on('hammer.input', ({ isFirst, rotation, isFinal }) => {
         if (isFirst) {
           this.hasGestureFailed = false;
+          this.__initialRotation = rotation;
         }
         if (isFinal) {
           // in favor of a willFail otherwise the last frame of the gesture will be captured.
@@ -401,14 +426,14 @@ function createGestureHandler(input) {
     sync = () => {
       const gesture = this.hammer.get(input.name);
 
-      // Clear all
-      for (const recognizer of Object.values(gesture.simultaneous)) {
-        gesture.dropRecognizeWith(recognizer);
-      }
+      // // Clear all
+      // for (const recognizer of Object.values(gesture.simultaneous)) {
+      //   gesture.dropRecognizeWith(recognizer);
+      // }
 
-      for (const recognizer of Object.values(gesture.requireFail)) {
-        gesture.dropRequireFailure(recognizer);
-      }
+      // for (const recognizer of Object.values(gesture.requireFail)) {
+      //   gesture.dropRequireFailure(recognizer);
+      // }
 
       gesture.set({
         direction:
@@ -426,15 +451,50 @@ function createGestureHandler(input) {
           if (this.isGestureRunning) {
             return true;
           }
+
+          const waitFor = asArray(this.props.waitFor)
+            .map(({ current }) => current)
+            .filter(v => v);
+
+          console.log('should wait: ', input.name, waitFor);
+          if (waitFor.length) {
+            // Get the list of gestures that this gesture is still waiting for.
+            const stillWaiting = waitFor.filter(gesture => {
+              console.log('is still waiting: ', gesture);
+              return gesture.hasGestureFailed === false;
+            });
+            console.log(
+              input.name,
+              'Wait for: ',
+              waitFor.length,
+              stillWaiting.length
+            );
+
+            // Check to see if one of the gestures you're waiting for has started.
+            // If it has then the gesture should fail.
+            for (const gesture of stillWaiting) {
+              if (gesture.isGestureRunning) {
+                console.log(input.name, 'Force fail: ');
+                this.hasGestureFailed = true;
+                this.isGestureRunning = false;
+                return false;
+              }
+            }
+
+            // This should continue waiting.
+            if (stillWaiting.length) {
+              return false;
+            }
+          }
+
           if (!inputData || !recognizer.options) {
             return true;
           }
           if (input.enabled) {
-            const { success, failed } = input.enabled(
-              this.config,
-              recognizer,
-              inputData
-            );
+            const { success, failed } = input.enabled(this.config, recognizer, {
+              ...inputData,
+              deltaRotation: inputData.rotation - (this.__initialRotation || 0),
+            });
             if (failed) {
               this.hasGestureFailed = true;
             }
@@ -444,19 +504,19 @@ function createGestureHandler(input) {
         },
       });
 
-      if (this.props.simultaneousHandlers) {
-        const handlers = asArray(this.props.simultaneousHandlers)
-          .filter(ref => ref.hammer)
-          .map(({ hammer }) => hammer);
-        gesture.recognizeWith(handlers);
-      }
+      // if (this.props.simultaneousHandlers) {
+      //   const handlers = asArray(this.props.simultaneousHandlers)
+      //     .filter(ref => ref.hammer)
+      //     .map(({ hammer }) => hammer);
+      //   gesture.recognizeWith(handlers);
+      // }
 
-      if (this.props.waitFor) {
-        const handlers = asArray(this.props.waitFor)
-          .filter(ref => ref.hammer)
-          .map(({ hammer }) => hammer);
-        gesture.requireFailure(handlers);
-      }
+      // if (this.props.waitFor) {
+      //   const handlers = asArray(this.props.waitFor)
+      //     .filter(ref => ref.hammer)
+      //     .map(({ hammer }) => hammer);
+      //   gesture.requireFailure(handlers);
+      // }
     };
 
     setNativeProps = (...props) => {
@@ -538,7 +598,7 @@ const handlers = {
       minVelocity: 0,
       minVelocityX: 0,
       minVelocityY: 0,
-      minDist: 10,
+      // minDist: 10,
       minPointers: 1,
       maxPointers: 1,
     },
@@ -690,30 +750,15 @@ const handlers = {
 };
 
 export default function createHandler(handlerName, propTypes = {}) {
-  class Handler extends React.Component {
-    static displayName = handlerName;
-
-    static propTypes = propTypes;
-
-    componentDidMount() {
-      if (!handlers[handlerName]) {
-        console.warn(`${handlerName} is not yet supported on web.`);
-      }
-    }
-
-    _refHandler = node => {
-      this._viewNode = node;
-    };
-
-    setNativeProps = (...args) => {
-      this._viewNode.setNativeProps(...args);
-    };
-
-    render() {
-      const Handler = handlers[handlerName] || UnimplementedGestureHandler;
-
-      return <Handler ref={this._refHandler} {...this.props} />;
-    }
+  const InputHandler = handlers[handlerName] || UnimplementedGestureHandler;
+  if (!handlers[handlerName]) {
+    console.warn(`${handlerName} is not yet supported on web.`);
   }
+
+  const Handler = React.forwardRef((props, ref) => (
+    <InputHandler ref={ref} {...props} />
+  ));
+  Handler.displayName = handlerName;
+  Handler.propTypes = propTypes;
   return Handler;
 }
