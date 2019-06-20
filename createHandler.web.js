@@ -213,7 +213,11 @@ function validateCriteria(
     inputData,
     validPointerCount && isFastEnough && isWithinBounds && isLongEnough
   );
-  return validPointerCount && isFastEnough && isWithinBounds && isLongEnough;
+  return {
+    success:
+      validPointerCount && isFastEnough && isWithinBounds && isLongEnough,
+    failed: !isWithinBounds,
+  };
 }
 
 function asArray(value) {
@@ -286,6 +290,7 @@ function createGestureHandler(input) {
     }
 
     isGestureRunning = false;
+    hasGestureFailed = false;
 
     setRef = ref => {
       this.ref = ref;
@@ -299,6 +304,17 @@ function createGestureHandler(input) {
       let previousState = State.UNDETERMINED;
       let initialRotation = 0;
 
+      this.hammer.on('hammer.input', ({ isFirst, isFinal }) => {
+        if (isFirst) {
+          this.hasGestureFailed = false;
+        }
+        if (isFinal) {
+          // in favor of a willFail otherwise the last frame of the gesture will be captured.
+          setTimeout(() => {
+            this.hasGestureFailed = false;
+          });
+        }
+      });
       this.hammer.on('panstart pinchstart rotatestart', () => {
         this.isGestureRunning = true;
       });
@@ -408,6 +424,10 @@ function createGestureHandler(input) {
         enable: (recognizer, inputData) => {
           if (!this.props.enabled) {
             this.isGestureRunning = false;
+            this.hasGestureFailed = false;
+            return false;
+          }
+          if (this.hasGestureFailed) {
             return false;
           }
           if (this.isGestureRunning) {
@@ -417,7 +437,16 @@ function createGestureHandler(input) {
             return true;
           }
           if (input.enabled) {
-            return input.enabled(this.config, recognizer, inputData);
+            const { success, failed } = input.enabled(
+              this.config,
+              recognizer,
+              inputData
+            );
+            console.log('enabled?', success, failed);
+            if (failed) {
+              this.hasGestureFailed = true;
+            }
+            return success;
           }
           return true;
         },
