@@ -5,8 +5,9 @@ import { findNodeHandle, TouchableWithoutFeedback, View } from 'react-native';
 import Directions from './Directions';
 import State from './State';
 
-function logDirection(d) {
-  const maap = {
+/** 
+function logDirection(numericDirection) {
+  const names = {
     [Hammer.DIRECTION_ALL]: 'ALL',
     [Hammer.DIRECTION_DOWN]: 'DOWN',
     [Hammer.DIRECTION_HORIZONTAL]: 'HORIZONTAL',
@@ -16,14 +17,21 @@ function logDirection(d) {
     [Hammer.DIRECTION_UP]: 'UP',
     [Hammer.DIRECTION_VERTICAL]: 'VERTICAL',
   };
-  console.log(maap[d]);
+  console.log(names[numericDirection]);
 }
+*/
 
+const MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD = 0.1;
+const MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD = 7;
+const DEG_RAD = Math.PI / 180;
+
+// Used for sending data to a callback or AnimatedEvent
 function invokeNullableMethod(name, method, event) {
   if (method) {
     if (typeof method === 'function') {
       method(event);
     } else {
+      // For use with reanimated's AnimatedEvent
       if (
         '__getHandler' in method &&
         typeof method.__getHandler === 'function'
@@ -65,6 +73,7 @@ const DirectionMap = {
   [Hammer.DIRECTION_DOWN]: Directions.DOWN,
 };
 
+// Validate the props
 function ensureConfig(config) {
   const props = { ...config };
   if ('activeOffsetX' in config) {
@@ -100,6 +109,7 @@ function ensureConfig(config) {
   return props;
 }
 
+// Ensure the ranges work the same as native
 function getRangeValue(value) {
   if (Array.isArray(value)) {
     if (!value.length || value.length > 2) {
@@ -161,9 +171,6 @@ const valueInRange = (value, range) => value >= range[0] && value <= range[1];
 const valueOutOfRange = (value, range) =>
   value <= range[0] || value >= range[1];
 
-const MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD = 0.1;
-const MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD = 5;
-
 function validateCriteria(
   { recognizer, pointerLength, velocity, vx, vy, dx, dy, ...inputData },
   {
@@ -214,19 +221,28 @@ function validateCriteria(
   // If this changes, then we'll need to check for the gesture type.
   if (validPointerCount && pointerLength > 1) {
     // Test if the pan had too much pinching or rotating.
-    if (
-      Math.abs(inputData.scale - 1) > MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD ||
-      Math.abs(inputData.deltaRotation) >
-        MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD
-    ) {
+    const deltaScale = Math.abs(inputData.scale - 1);
+    const deltaRotation = Math.abs(inputData.deltaRotation);
+    if (deltaScale > MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD) {
+      // > If the threshold doesn't seem right.
+      // You can log the value which it failed at here:
+      // console.log('Pan failed: scale: ', deltaScale);
+
+      return {
+        success: false,
+        failed: true,
+      };
+    }
+    if (deltaRotation > MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD) {
+      // > If the threshold doesn't seem right.
+      // You can log the value which it failed at here:
+      // console.log('Pan failed: rotate: ', deltaRotation);
       return {
         success: false,
         failed: true,
       };
     }
   }
-
-  console.log(recognizer, inputData);
 
   return {
     success:
@@ -236,9 +252,7 @@ function validateCriteria(
 }
 
 function asArray(value) {
-  if (value == null) return [];
-  const arr = Array.isArray(value) ? value : [value];
-  return arr; //.filter(v => v == null);
+  return value == null ? [] : Array.isArray(value) ? value : [value];
 }
 
 function panDirectionForConfig({ activeOffsetX, activeOffsetY }) {
@@ -279,8 +293,6 @@ function panDirectionForConfig({ activeOffsetX, activeOffsetY }) {
 
   return directions[0];
 }
-
-const DEG_RAD = Math.PI / 180;
 
 function createGestureHandler(input) {
   return class extends React.Component {
@@ -325,11 +337,16 @@ function createGestureHandler(input) {
       this.hammer.on('hammer.input', ({ isFirst, rotation, isFinal }) => {
         if (isFirst) {
           this.hasGestureFailed = false;
+        }
+        // TODO: Bacon: Check against something other than null
+        // The isFirst value is not called when the first rotation is calculated.
+        if (this.__initialRotation === null && rotation !== 0) {
           this.__initialRotation = rotation;
         }
         if (isFinal) {
           // in favor of a willFail otherwise the last frame of the gesture will be captured.
           setTimeout(() => {
+            this.__initialRotation = null;
             this.hasGestureFailed = false;
           });
         }
@@ -422,15 +439,6 @@ function createGestureHandler(input) {
     sync = () => {
       const gesture = this.hammer.get(input.name);
 
-      // // Clear all
-      // for (const recognizer of Object.values(gesture.simultaneous)) {
-      //   gesture.dropRecognizeWith(recognizer);
-      // }
-
-      // for (const recognizer of Object.values(gesture.requireFail)) {
-      //   gesture.dropRequireFailure(recognizer);
-      // }
-
       gesture.set({
         direction:
           input.name === 'pan' ? panDirectionForConfig(this.config) : undefined,
@@ -448,36 +456,32 @@ function createGestureHandler(input) {
             return true;
           }
 
+          // The built-in hammer.js "waitFor" doesn't work across multiple views.
           const waitFor = asArray(this.props.waitFor)
             .map(({ current }) => current)
             .filter(v => v);
 
-          console.log('should wait: ', input.name, waitFor);
+          // Only process if there are views to wait for.
           if (waitFor.length) {
             // Get the list of gestures that this gesture is still waiting for.
-            const stillWaiting = waitFor.filter(gesture => {
-              console.log('is still waiting: ', gesture);
-              return gesture.hasGestureFailed === false;
-            });
-            console.log(
-              input.name,
-              'Wait for: ',
-              waitFor.length,
-              stillWaiting.length
+            // Use `=== false` in case a ref that isn't a gesture handler is used.
+            const stillWaiting = waitFor.filter(
+              gesture => gesture.hasGestureFailed === false
             );
 
             // Check to see if one of the gestures you're waiting for has started.
             // If it has then the gesture should fail.
             for (const gesture of stillWaiting) {
+              // When the target gesture has started, this gesture must force fail.
               if (gesture.isGestureRunning) {
-                console.log(input.name, 'Force fail: ');
+                // console.log('Force fail: ', input.name);
                 this.hasGestureFailed = true;
                 this.isGestureRunning = false;
                 return false;
               }
             }
 
-            // This should continue waiting.
+            // This gesture should continue waiting.
             if (stillWaiting.length) {
               return false;
             }
@@ -487,9 +491,17 @@ function createGestureHandler(input) {
             return true;
           }
           if (input.enabled) {
+            console.log(
+              'test pan: ',
+              this.__initialRotation,
+              inputData.rotation
+            );
             const { success, failed } = input.enabled(this.config, recognizer, {
               ...inputData,
-              deltaRotation: inputData.rotation - (this.__initialRotation || 0),
+              deltaRotation:
+                this.__initialRotation == null
+                  ? 0
+                  : inputData.rotation - this.__initialRotation,
             });
             if (failed) {
               this.hasGestureFailed = true;
@@ -499,20 +511,6 @@ function createGestureHandler(input) {
           return true;
         },
       });
-
-      // if (this.props.simultaneousHandlers) {
-      //   const handlers = asArray(this.props.simultaneousHandlers)
-      //     .filter(ref => ref.hammer)
-      //     .map(({ hammer }) => hammer);
-      //   gesture.recognizeWith(handlers);
-      // }
-
-      // if (this.props.waitFor) {
-      //   const handlers = asArray(this.props.waitFor)
-      //     .filter(ref => ref.hammer)
-      //     .map(({ hammer }) => hammer);
-      //   gesture.requireFailure(handlers);
-      // }
     };
 
     setNativeProps = (...props) => {
@@ -591,10 +589,11 @@ const handlers = {
       // activeOffsetX: rangeFromNumber(0),
       // failOffsetY: rangeFromNumber(Infinity),
       // failOffsetX: rangeFromNumber(Infinity),
+      // TODO: Bacon: Should `minDist` override activeOffsetY & activeOffsetX
+      // If so then scrolling will be disabled as the gesture could work in any direction.
       minVelocity: 0,
       minVelocityX: 0,
       minVelocityY: 0,
-      // minDist: 10,
       minPointers: 1,
       maxPointers: 1,
     },
