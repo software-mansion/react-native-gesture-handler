@@ -1,7 +1,7 @@
 import Hammer from 'hammerjs';
 import React from 'react';
-import { findNodeHandle, TouchableWithoutFeedback, View } from 'react-native';
-
+import { findNodeHandle, View } from 'react-native';
+import GestureHandlerButton from './GestureHandlerButton';
 import Directions from './Directions';
 import State from './State';
 
@@ -786,12 +786,12 @@ const handlers = {
       const { children, style } = this.props;
 
       return (
-        <TouchableWithoutFeedback
+        <GestureHandlerButton
           style={style}
           onPressIn={this.handlePressIn}
           onPressOut={this.handlePressOut}>
           {children}
-        </TouchableWithoutFeedback>
+        </GestureHandlerButton>
       );
     }
   },
