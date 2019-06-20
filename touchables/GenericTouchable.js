@@ -22,6 +22,7 @@ const PublicPropTypes = {
   accessible: PropTypes.bool,
   accessibilityLabel: PropTypes.node,
   accessibilityHint: PropTypes.string,
+  // TODO: Add web support https://github.com/facebook/react/pull/15261
   hitSlop: PropTypes.shape({
     top: PropTypes.number,
     left: PropTypes.number,
@@ -256,7 +257,9 @@ export default class GenericTouchable extends Component {
 
     return (
       <BaseButton
-        onHandlerStateChange={this.props.disabled ? null : this.onHandlerStateChange}
+        onHandlerStateChange={
+          this.props.disabled ? null : this.onHandlerStateChange
+        }
         onGestureEvent={this.onGestureEvent}
         hitSlop={this.props.hitSlop}
         {...this.props.extraButtonProps}>
