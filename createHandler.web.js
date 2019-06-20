@@ -309,22 +309,16 @@ function createGestureHandler(input) {
           });
         }
       });
-      this.hammer.on(
-        'panstart pinchstart rotatestart',
-        ({ deltaX, deltaY }) => {
-          this.isGestureRunning = true;
-          this.__initialX = deltaX;
-          this.__initialY = deltaY;
-        }
-      );
-      this.hammer.on(
-        'panend pancancel pinchend pinchcancel rotateend rotatecancel',
-        () => {
-          this.isGestureRunning = false;
-        }
-      );
+      this.hammer.on(`${input.name}start`, ({ deltaX, deltaY }) => {
+        this.isGestureRunning = true;
+        this.__initialX = deltaX;
+        this.__initialY = deltaY;
+      });
+      this.hammer.on(`${input.name}end ${input.name}cancel`, () => {
+        this.isGestureRunning = false;
+      });
 
-      this.hammer.on('pan rotate pinch', ev => {
+      this.hammer.on(input.name, ev => {
         const { onHandlerStateChange, onGestureEvent } = this.props;
         const {
           eventType,
