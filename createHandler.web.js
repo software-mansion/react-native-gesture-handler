@@ -207,12 +207,6 @@ function validateCriteria(
     isLongEnough = valueOutOfRange(dy, activeOffsetY);
   }
 
-  console.log(
-    'success',
-    recognizer,
-    inputData,
-    validPointerCount && isFastEnough && isWithinBounds && isLongEnough
-  );
   return {
     success:
       validPointerCount && isFastEnough && isWithinBounds && isLongEnough,
@@ -315,9 +309,14 @@ function createGestureHandler(input) {
           });
         }
       });
-      this.hammer.on('panstart pinchstart rotatestart', () => {
-        this.isGestureRunning = true;
-      });
+      this.hammer.on(
+        'panstart pinchstart rotatestart',
+        ({ deltaX, deltaY }) => {
+          this.isGestureRunning = true;
+          this.__initialX = deltaX;
+          this.__initialY = deltaY;
+        }
+      );
       this.hammer.on(
         'panend pancancel pinchend pinchcancel rotateend rotatecancel',
         () => {
@@ -357,8 +356,8 @@ function createGestureHandler(input) {
         const nativeEvent = {
           direction,
           oldState,
-          translationX: deltaX,
-          translationY: deltaY,
+          translationX: deltaX - (this.__initialX || 0),
+          translationY: deltaY - (this.__initialY || 0),
           velocityX,
           velocityY,
           velocity,
@@ -442,7 +441,6 @@ function createGestureHandler(input) {
               recognizer,
               inputData
             );
-            console.log('enabled?', success, failed);
             if (failed) {
               this.hasGestureFailed = true;
             }
