@@ -444,14 +444,6 @@ class GestureHandler {
           return false;
         }
 
-        // const validPointerCount =
-        //   inputData.maxPointers >= this.config.minPointers &&
-        //   inputData.maxPointers <= this.config.maxPointers;
-        // if (validPointerCount && inputData.preventDefault) {
-        // }
-
-        // console.log(recognizer, inputData, validPointerCount);
-
         if (this.hasGestureFailed) {
           return false;
         }
@@ -581,6 +573,7 @@ class PanGestureHandler extends GestureHandler {
       ...props,
     });
   }
+
   enabled(props, recognizer, inputData) {
     return validateCriteria(
       {
