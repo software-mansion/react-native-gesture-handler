@@ -84,9 +84,7 @@ export default class Swipeable extends Component<PropType, StateType> {
 
     this._onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: dragX } }],
-      {
-        useNativeDriver: props.useNativeAnimations,
-      }
+      { useNativeDriver: props.useNativeAnimations }
     );
   }
 
@@ -321,8 +319,7 @@ export default class Swipeable extends Component<PropType, StateType> {
     return (
       <PanGestureHandler
         {...this.props}
-        activeOffsetX={[-10, 10]}
-        failOffsetY={[-10, 10]}
+        minDeltaX={10}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}>
         <Animated.View
