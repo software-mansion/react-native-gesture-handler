@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Animated, Platform } from 'react-native';
-import { State, BaseButton } from '../GestureHandler';
 import PropTypes from 'prop-types';
+import { State, BaseButton } from '../GestureHandler';
 
 /**
  * Each touchable is a states' machine which preforms transitions.
@@ -22,7 +22,6 @@ const PublicPropTypes = {
   accessible: PropTypes.bool,
   accessibilityLabel: PropTypes.node,
   accessibilityHint: PropTypes.string,
-  // TODO: Add web support https://github.com/facebook/react/pull/15261
   hitSlop: PropTypes.shape({
     top: PropTypes.number,
     left: PropTypes.number,
