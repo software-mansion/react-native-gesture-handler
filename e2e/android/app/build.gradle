@@ -102,7 +102,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.swmansion.gesturehandler.react.example"
+        applicationId "com.swmansion.gesturehandler.example"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

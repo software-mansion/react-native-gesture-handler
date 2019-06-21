@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler.react;
+package com.swmansion.gesturehandler;
 
 import com.facebook.react.bridge.WritableMap;
 import com.swmansion.gesturehandler.GestureHandler;
