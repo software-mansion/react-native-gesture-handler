@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Animated, Platform } from 'react-native';
-import PropTypes from 'prop-types';
 import { State, BaseButton } from '../GestureHandler';
+import PropTypes from 'prop-types';
 
 /**
  * Each touchable is a states' machine which preforms transitions.
