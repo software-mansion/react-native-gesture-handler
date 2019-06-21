@@ -629,6 +629,11 @@ const Gestures = {
   PanGestureHandler,
   RotationGestureHandler,
   PinchGestureHandler,
+  TapGestureHandler: UnimplementedGestureHandler,
+  LongPressGestureHandler: UnimplementedGestureHandler,
+  ForceTouchGestureHandler: UnimplementedGestureHandler,
+  FlingGestureHandler: UnimplementedGestureHandler,
+  NativeViewHandler: UnimplementedGestureHandler,
 };
 
 let _gestureCache = {};
