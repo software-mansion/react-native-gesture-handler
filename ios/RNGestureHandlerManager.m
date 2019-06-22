@@ -144,23 +144,7 @@
 - (void)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
     didActivateInRootView:(UIView *)rootContentView
 {
-    // Cancel touches in RN's root view in order to cancel all in-js recognizers
 
-    // As scroll events are special-cased in RN responder implementation and sending them would
-    // trigger JS responder change, we don't cancel touches if the handler that got activated is
-    // a scroll recognizer. This way root view will keep sending touchMove and touchEnd events
-    // and therefore allow JS responder to properly release the responder at the end of the touch
-    // stream.
-    // NOTE: this is not a proper fix and solving this problem requires upstream fixes to RN. In
-    // particular if we have one PanHandler and ScrollView that can work simultaniously then when
-    // the Pan handler activates it would still tigger cancel events.
-    // Once the upstream fix lands the line below along with this comment can be removed
-    if ([gestureRecognizer.view isKindOfClass:[UIScrollView class]]) return;
-
-    UIView *parent = rootContentView.superview;
-    if ([parent isKindOfClass:[RCTRootView class]]) {
-        [(RCTRootView*)parent cancelTouches];
-    }
 }
 
 - (void)dealloc
