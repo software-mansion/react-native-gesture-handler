@@ -273,14 +273,37 @@ function panDirectionForConfig({ activeOffsetX, activeOffsetY, minDist }) {
   return directions[0];
 }
 
+let _gestureInstances = 0;
+
 class GestureHandler {
   isDiscrete = false;
+
+  constructor() {
+    this._gestureInstance = _gestureInstances++;
+  }
+
+  get id() {
+    return `${this.name}${this._gestureInstance}`;
+  }
 
   isGestureRunning = false;
   hasGestureFailed = false;
   view = null;
   config = {};
   hammer = null;
+  pendingGestures = {};
+
+  onWaitingEnded(gesture) {
+    console.warn('onWaitingEnded!', gesture.id);
+  }
+  removePendingGesture(id) {
+    console.warn('removePendingGesture!', id);
+    delete this.pendingGestures[id];
+  }
+  addPendingGesture(gesture) {
+    console.warn('addPendingGesture!', gesture.id);
+    this.pendingGestures[gesture.id] = gesture;
+  }
 
   enabled() {
     return { success: true };
@@ -295,7 +318,28 @@ class GestureHandler {
   }
 
   update({ enabled = true, ...props }) {
+    if (Array.isArray(this.config.waitFor)) {
+      for (const ref of this.config.waitFor) {
+        let gestureComponent = ref ? (ref.current ? ref.current : ref) : null;
+        const gesture = Module.getGestureHandlerNode(
+          gestureComponent._handlerTag
+        );
+        gesture.removePendingGesture(this.id);
+      }
+    }
+
     this.config = ensureConfig({ enabled, ...props });
+
+    if (Array.isArray(this.config.waitFor)) {
+      for (const ref of this.config.waitFor) {
+        let gestureComponent = ref ? (ref.current ? ref.current : ref) : null;
+        const gesture = Module.getGestureHandlerNode(
+          gestureComponent._handlerTag
+        );
+        gesture.addPendingGesture(this);
+      }
+    }
+
     if (this.hammer) {
       this.sync();
     }
@@ -402,6 +446,10 @@ class GestureHandler {
   }
 
   _cancelEvent = event => {
+    for (const gesture of Object.values(this.pendingGestures)) {
+      console.log('cancel teh boi: ', gesture);
+      gesture.onWaitingEnded(this);
+    }
     this._sendEvent({
       ...event,
       eventType: Hammer.INPUT_CANCEL,
@@ -414,7 +462,7 @@ class GestureHandler {
 
   setRef = ref => {
     if (ref == null) {
-      this._destroy();
+      this.destroy();
       this.view = null;
       return;
     }
@@ -591,9 +639,10 @@ class GestureHandler {
 
         // The built-in hammer.js "waitFor" doesn't work across multiple views.
         const waitFor = asArray(this.config.waitFor)
-          .map(({ current }) => current)
+          .map(({ _handlerTag, ...props }) => {
+            return Module.getGestureHandlerNode(_handlerTag);
+          })
           .filter(v => v);
-
         // Only process if there are views to wait for.
         if (waitFor.length) {
           // Get the list of gestures that this gesture is still waiting for.
@@ -606,7 +655,7 @@ class GestureHandler {
           // If it has then the gesture should fail.
           for (const gesture of stillWaiting) {
             // When the target gesture has started, this gesture must force fail.
-            if (gesture.isGestureRunning) {
+            if (!gesture.isDiscrete && gesture.isGestureRunning) {
               // console.log('Force fail: ', input.name);
               this.hasGestureFailed = true;
               this.isGestureRunning = false;
@@ -806,6 +855,17 @@ class TapGestureHandler extends GestureHandler {
     super._onEnd(...props);
   }
 
+  onWaitingEnded(gesture) {
+    console.warn('onWaitingEnded!', gesture.id);
+    if (gesture.name === 'tap') {
+      if (gesture._successfulTaps.length) {
+        const lastTap = gesture._successfulTaps.pop();
+        this._successfulTaps = gesture._successfulTaps;
+        this._onSuccessfulTap(lastTap);
+      }
+    }
+  }
+
   enabled(
     { minPointers, maxPointers, maxDist },
     recognizer,
@@ -982,6 +1042,9 @@ const Module = {
   },
   updateGestureHandler(handlerTag, newConfig) {
     getHandler(handlerTag).update(newConfig);
+  },
+  getGestureHandlerNode(handlerTag) {
+    return getHandler(handlerTag);
   },
   dropGestureHandler(handlerTag) {
     getHandler(handlerTag).destroy();
