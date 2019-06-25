@@ -812,6 +812,21 @@ class RotationGestureHandler extends GestureHandler {
     });
   }
 
+  enabled(
+    { minPointers, maxPointers, maxDist },
+    recognizer,
+    { maxPointers: pointerLength, deltaX: dx, deltaY: dy }
+  ) {
+    if (typeof pointerLength === 'undefined') {
+      return { success: false };
+    }
+    const validPointerCount =
+      pointerLength >= minPointers && pointerLength <= maxPointers;
+    return {
+      success: validPointerCount,
+      failed: pointerLength > maxPointers,
+    };
+  }
   start({ manager, props }) {
     manager.add(new Hammer.Rotate({ pointers: props.minPointers }));
   }
@@ -835,6 +850,22 @@ class PinchGestureHandler extends GestureHandler {
       maxPointers,
       ...props,
     });
+  }
+
+  enabled(
+    { minPointers, maxPointers, maxDist },
+    recognizer,
+    { maxPointers: pointerLength, deltaX: dx, deltaY: dy }
+  ) {
+    if (typeof pointerLength === 'undefined') {
+      return { success: false };
+    }
+    const validPointerCount =
+      pointerLength >= minPointers && pointerLength <= maxPointers;
+    return {
+      success: validPointerCount,
+      failed: pointerLength > maxPointers,
+    };
   }
 
   start({ manager, props }) {
