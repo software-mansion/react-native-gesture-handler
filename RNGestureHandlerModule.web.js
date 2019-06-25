@@ -72,6 +72,9 @@ function ensureConfig(config) {
     console.warn('maxDeltaY is deprecated in favor of failOffsetY');
     props.failOffsetY = getLegacyRangeValue(config.maxDeltaY);
   }
+  if ('maxDist' in config) {
+    props.maxDist = getLegacyRangeValue(config.maxDist);
+  }
 
   if ('failOffsetX' in config) {
     props.failOffsetX = getRangeValue(config.failOffsetX);
@@ -304,6 +307,98 @@ class GestureHandler {
     this.hammer = null;
   };
 
+  getState(type) {
+    return EventMap[type];
+  }
+
+  oldState = State.UNDETERMINED;
+  previousState = State.UNDETERMINED;
+  initialRotation = 0;
+
+  _transformEventData = ev => {
+    const {
+      eventType,
+      deltaX,
+      deltaY,
+      velocityX,
+      velocityY,
+      velocity,
+      center,
+      rotation,
+      scale,
+      maxPointers: numberOfPointers,
+    } = ev;
+
+    let deltaRotation = (rotation - this.initialRotation) * DEG_RAD;
+
+    const state = this.getState(eventType);
+    const direction = DirectionMap[ev.direction];
+    if (state !== this.previousState) {
+      this.oldState = this.previousState;
+      this.previousState = state;
+    }
+    const nativeEvent = {
+      direction,
+      oldState: this.oldState,
+      translationX: deltaX - (this.__initialX || 0),
+      translationY: deltaY - (this.__initialY || 0),
+      velocityX,
+      velocityY,
+      velocity,
+      rotation: deltaRotation,
+      scale,
+
+      x: center.x,
+      y: center.y,
+      absoluteX: center.x,
+      absoluteY: center.y,
+      focalX: center.x,
+      focalY: center.y,
+      anchorX: center.x,
+      anchorY: center.y,
+    };
+
+    const timeStamp = Date.now();
+    const event = {
+      nativeEvent: {
+        numberOfPointers,
+        state,
+        ...this.filter(nativeEvent),
+
+        // onHandlerStateChange only
+        handlerTag: this.handlerTag,
+        target: this.ref,
+        oldState: this.oldState,
+      },
+      timeStamp,
+    };
+
+    return event;
+  };
+
+  _sendEvent = ev => {
+    console.log('tap-send', ev.isFinal);
+    const {
+      onGestureHandlerStateChange: onHandlerStateChange,
+      onGestureHandlerEvent: onGestureEvent,
+    } = this.ref.props;
+
+    const event = this._transformEventData(ev);
+
+    if (ev.isFinal) {
+      this.oldState = State.UNDETERMINED;
+      this.previousState = State.UNDETERMINED;
+    }
+
+    invokeNullableMethod('onGestureEvent', onGestureEvent, event);
+    invokeNullableMethod('onHandlerStateChange', onHandlerStateChange, event);
+  };
+
+  _onEnd = event => {
+    this.isGestureRunning = false;
+    console.log('Tap.end');
+  };
+
   setRef = ref => {
     if (ref == null) {
       this._destroy();
@@ -318,121 +413,89 @@ class GestureHandler {
       // touchAction: 'pan-right'
     });
 
+    this.oldState = State.UNDETERMINED;
+    this.previousState = State.UNDETERMINED;
+    this.initialRotation = 0;
+
     this.start({ manager: this.hammer, props: this.config });
 
-    let oldState = State.UNDETERMINED;
-    let previousState = State.UNDETERMINED;
-    let initialRotation = 0;
-
-    this.hammer.on('hammer.input', ({ isFirst, rotation, isFinal }) => {
-      if (isFirst) {
-        this.hasGestureFailed = false;
-      }
-      // TODO: Bacon: Check against something other than null
-      // The isFirst value is not called when the first rotation is calculated.
-      if (this.__initialRotation === null && rotation !== 0) {
-        this.__initialRotation = rotation;
-      }
-      if (isFinal) {
-        // in favor of a willFail otherwise the last frame of the gesture will be captured.
-        setTimeout(() => {
-          this.__initialRotation = null;
-          this.hasGestureFailed = false;
-        });
-      }
-    });
-    this.hammer.on(`${this._name}start`, ({ deltaX, deltaY, rotation }) => {
+    const onStart = ({ deltaX, deltaY, rotation }) => {
       this.isGestureRunning = true;
       this.__initialX = deltaX;
       this.__initialY = deltaY;
+      this.initialRotation = rotation;
+    };
 
-      initialRotation = rotation;
-    });
-    this.hammer.on(`${this._name}end ${this._name}cancel`, () => {
-      this.isGestureRunning = false;
-    });
+    this.hammer.on(
+      'hammer.input',
+      ({ isFirst, rotation, isFinal, ...props }) => {
+        if (isFirst) {
+          this.hasGestureFailed = false;
 
-    this.hammer.on(this._name, ev => {
-      const {
-        onGestureHandlerStateChange: onHandlerStateChange,
-        onGestureHandlerEvent: onGestureEvent,
-      } = this.ref.props;
-      const {
-        eventType,
-        deltaX,
-        deltaY,
-        velocityX,
-        velocityY,
-        velocity,
-        center,
-        rotation,
-        scale,
-        maxPointers: numberOfPointers,
-      } = ev;
-
-      let deltaRotation = (rotation - initialRotation) * DEG_RAD;
-
-      const state = EventMap[eventType];
-      const direction = DirectionMap[ev.direction];
-      if (state !== previousState) {
-        oldState = previousState;
-        previousState = state;
+          // Tap Gesture start event
+          if (this.name === 'tap') {
+            const gesture = this.hammer.get(this.name);
+            const inputData = { isFirst, rotation, isFinal, ...props };
+            if (gesture.options.enable(gesture, inputData)) {
+              console.log('Tap.start', inputData);
+              onStart({ isFirst, rotation, isFinal, ...props });
+              this._sendEvent({ isFirst, rotation, isFinal, ...props });
+            }
+          }
+        }
+        // TODO: Bacon: Check against something other than null
+        // The isFirst value is not called when the first rotation is calculated.
+        if (this.__initialRotation === null && rotation !== 0) {
+          this.__initialRotation = rotation;
+        }
+        if (isFinal) {
+          // in favor of a willFail otherwise the last frame of the gesture will be captured.
+          setTimeout(() => {
+            this.__initialRotation = null;
+            this.hasGestureFailed = false;
+          });
+        }
       }
-      const nativeEvent = {
-        direction,
-        oldState,
-        translationX: deltaX - (this.__initialX || 0),
-        translationY: deltaY - (this.__initialY || 0),
-        velocityX,
-        velocityY,
-        velocity,
-        rotation: deltaRotation,
-        scale,
+    );
 
-        x: center.x,
-        y: center.y,
-        absoluteX: center.x,
-        absoluteY: center.y,
-        focalX: center.x,
-        focalY: center.y,
-        anchorX: center.x,
-        anchorY: center.y,
-      };
+    if (this.name !== 'tap') {
+      this.hammer.on(`${this.name}start`, onStart);
+    }
 
-      const timeStamp = Date.now();
-      const event = {
-        nativeEvent: {
-          numberOfPointers,
-          state,
-          ...this.filter(nativeEvent),
+    if (this.name === 'press') {
+      this.hammer.on(`${this.name}up`, () => {
+        this._onEnd();
+      });
+    } else {
+      this.hammer.on(`${this.name}end ${this.name}cancel`, () => {
+        this._onEnd();
+      });
+    }
 
-          // onHandlerStateChange only
-          handlerTag: this.handlerTag,
-          target: this.ref,
-          oldState,
-        },
-        timeStamp,
-      };
-
-      if (ev.isFinal) {
-        oldState = State.UNDETERMINED;
-        previousState = State.UNDETERMINED;
+    this.hammer.on(this.name, ev => {
+      if (this.name === 'tap') {
+        console.log('Tap.active', ev);
+        if (ev.eventType === Hammer.INPUT_END) {
+          this._sendEvent({ ...ev, eventType: Hammer.INPUT_MOVE });
+        }
+        // When handler gets activated it will turn into State.END immediately.
+        this._sendEvent({ ...ev, isFinal: true });
+        this._onEnd();
+      } else {
+        this._sendEvent(ev);
       }
-
-      invokeNullableMethod('onGestureEvent', onGestureEvent, event);
-      invokeNullableMethod('onHandlerStateChange', onHandlerStateChange, event);
     });
     this.sync();
   };
 
   sync = () => {
-    const gesture = this.hammer.get(this._name);
+    const gesture = this.hammer.get(this.name);
 
     if (!gesture) return;
 
     gesture.set({
       direction:
-        this._name === 'pan' ? panDirectionForConfig(this.config) : undefined,
+        this.name === 'pan' ? panDirectionForConfig(this.config) : undefined,
       pointers:
         this.config.minPointers === this.config.maxPointers
           ? this.config.minPointers
@@ -447,7 +510,7 @@ class GestureHandler {
         if (this.hasGestureFailed) {
           return false;
         }
-        if (this.isGestureRunning) {
+        if (this.isGestureRunning && this.name !== 'tap') {
           return true;
         }
 
@@ -495,6 +558,17 @@ class GestureHandler {
         });
 
         if (failed) {
+          // Simulate cancel event
+          if (this.name === 'tap' && this.isGestureRunning) {
+            this._sendEvent({
+              ...inputData,
+              eventType: Hammer.INPUT_CANCEL,
+              isFinal: true,
+            });
+            this._onEnd({
+              ...inputData,
+            });
+          }
           this.hasGestureFailed = true;
         }
         return success;
@@ -504,7 +578,7 @@ class GestureHandler {
 }
 
 class RotationGestureHandler extends GestureHandler {
-  _name = 'rotate';
+  name = 'rotate';
 
   update({ minPointers = 2, maxPointers = 2, ...props }) {
     return super.update({
@@ -529,7 +603,7 @@ class RotationGestureHandler extends GestureHandler {
 }
 
 class PinchGestureHandler extends GestureHandler {
-  _name = 'pinch';
+  name = 'pinch';
 
   update({ minPointers = 2, maxPointers = 2, ...props }) {
     return super.update({
@@ -554,7 +628,7 @@ class PinchGestureHandler extends GestureHandler {
 }
 
 class PanGestureHandler extends GestureHandler {
-  _name = 'pan';
+  name = 'pan';
 
   update({
     minVelocity = 0,
@@ -621,6 +695,126 @@ class PanGestureHandler extends GestureHandler {
   }
 }
 
+class TapGestureHandler extends GestureHandler {
+  name = 'tap';
+
+  update({
+    minDurationMs: time = 250,
+    numberOfTaps: tapCount = 1,
+    maxDelayMs: interval = 300,
+    maxDist = 2,
+    minPointers = 1,
+    maxPointers = 1,
+    ...props
+  }) {
+    console.log('update', {
+      time,
+      tapCount,
+      interval,
+      maxDist,
+      minPointers,
+      maxPointers,
+      ...props,
+    });
+
+    return super.update({
+      time,
+      tapCount,
+      interval,
+      maxDist,
+      minPointers,
+      maxPointers,
+      ...props,
+    });
+  }
+
+  enabled(
+    { minPointers, maxPointers, maxDist },
+    recognizer,
+    { maxPointers: pointerLength, deltaX: dx, deltaY: dy }
+  ) {
+    if (typeof pointerLength === 'undefined') {
+      return { success: true };
+    }
+
+    const validPointerCount =
+      pointerLength >= minPointers && pointerLength <= maxPointers;
+    let isWithinBounds = valueInRange(dx, maxDist) && valueInRange(dy, maxDist);
+    // if (validPointerCount) {
+    // }
+
+    console.log(
+      'Tap.enable:',
+      dx,
+      dy,
+      isWithinBounds,
+      validPointerCount,
+      pointerLength,
+      minPointers,
+      maxPointers
+    );
+    if (!isWithinBounds) {
+      return { failed: true };
+    }
+    return { success: validPointerCount };
+    // return { failed: true };
+  }
+
+  start({ manager, props }) {
+    manager.add(new Hammer.Tap({ pointers: props.minPointers }));
+  }
+
+  filter({ x, y, absoluteX, absoluteY }) {
+    return {
+      x,
+      y,
+      absoluteX,
+      absoluteY,
+    };
+  }
+}
+class LongPressGestureHandler extends GestureHandler {
+  name = 'press';
+
+  getState(type) {
+    return {
+      [Hammer.INPUT_START]: State.ACTIVE,
+      [Hammer.INPUT_MOVE]: State.ACTIVE,
+      [Hammer.INPUT_END]: State.END,
+      [Hammer.INPUT_CANCEL]: State.FAILED,
+    }[type];
+  }
+
+  update({
+    minDurationMs: time = 251,
+    maxDist: threshold = 9,
+    minPointers = 1,
+    maxPointers = 1,
+    ...props
+  }) {
+    return super.update({
+      time,
+      threshold,
+      minPointers,
+      maxPointers,
+      ...props,
+    });
+  }
+
+  start({ manager, props }) {
+    manager.add(new Hammer.Press({ pointers: props.minPointers }));
+  }
+
+  filter({ scale, velocity, focalX, focalY }) {
+    return {
+      scale,
+      velocity,
+      focalX,
+      focalY,
+    };
+  }
+}
+
 class UnimplementedGestureHandler extends GestureHandler {
   start() {}
 }
@@ -629,8 +823,8 @@ const Gestures = {
   PanGestureHandler,
   RotationGestureHandler,
   PinchGestureHandler,
-  TapGestureHandler: UnimplementedGestureHandler,
-  LongPressGestureHandler: UnimplementedGestureHandler,
+  TapGestureHandler,
+  LongPressGestureHandler,
   ForceTouchGestureHandler: UnimplementedGestureHandler,
   FlingGestureHandler: UnimplementedGestureHandler,
   NativeViewHandler: UnimplementedGestureHandler,
