@@ -43,50 +43,67 @@ function invokeNullableMethod(name, method, event) {
 function ensureConfig(config) {
   const props = { ...config };
 
-  if ('minDeltaX' in config) {
-    console.warn('minDeltaX is deprecated in favor of activeOffsetX');
-    props.activeOffsetX = getLegacyRangeValue(config.minDeltaX);
-  }
-  if ('minDeltaY' in config) {
-    console.warn('minDeltaY is deprecated in favor of activeOffsetY');
-    props.activeOffsetY = getLegacyRangeValue(config.minDeltaY);
-  }
+  // if ('minDeltaX' in config) {
+  //   console.warn('minDeltaX is deprecated in favor of activeOffsetX');
+  //   const [start, end] = getLegacyRangeValue(config.minDeltaX);
+  //   props.activeOffsetXStart = start;
+  //   props.activeOffsetXEnd = end;
+  // }
+  // if ('minDeltaY' in config) {
+  //   console.warn('minDeltaY is deprecated in favor of activeOffsetY');
+  //   const [start, end] = getLegacyRangeValue(config.minDeltaY);
+  //   props.activeOffsetYStart = start;
+  //   props.activeOffsetYEnd = end;
+  // }
 
-  if ('activeOffsetX' in config) {
-    props.activeOffsetX = getRangeValue(config.activeOffsetX);
-  }
-  if ('activeOffsetY' in config) {
-    props.activeOffsetY = getRangeValue(config.activeOffsetY);
-  }
+  // if ('activeOffsetX' in config) {
+  //   props.activeOffsetX = getRangeValue(config.activeOffsetX);
+
+  // }
+  // if ('activeOffsetY' in config) {
+  //   props.activeOffsetY = getRangeValue(config.activeOffsetY);
+  // }
 
   if ('minDist' in config) {
     props.minDist = config.minDist;
   }
 
-  if ('maxDeltaX' in config) {
-    console.warn('maxDeltaX is deprecated in favor of failOffsetX');
-    props.failOffsetX = getLegacyRangeValue(config.maxDeltaX);
-  }
+  // if ('maxDeltaX' in config) {
+  //   console.warn('maxDeltaX is deprecated in favor of failOffsetX');
+  //   const [start, end] = getLegacyRangeValue(config.maxDeltaX);
+  //   props.failOffsetXStart = start;
+  //   props.failOffsetXEnd = end;
+  // }
 
-  if ('maxDeltaY' in config) {
-    console.warn('maxDeltaY is deprecated in favor of failOffsetY');
-    props.failOffsetY = getLegacyRangeValue(config.maxDeltaY);
-  }
+  // if ('maxDeltaY' in config) {
+  //   console.warn('maxDeltaY is deprecated in favor of failOffsetY');
+  //   const [start, end] = getLegacyRangeValue(config.maxDeltaY);
+  //   props.failOffsetYStart = start;
+  //   props.failOffsetYEnd = end;
+  // }
   if ('maxDist' in config) {
     props.maxDist = getLegacyRangeValue(config.maxDist);
   }
 
-  if ('failOffsetX' in config) {
-    props.failOffsetX = getRangeValue(config.failOffsetX);
-  } else {
-    props.failOffsetX = getRangeValue(Infinity);
-  }
+  // if ('failOffsetX' in config) {
+  //   const [start, end] = getLegacyRangeValue(config.failOffsetX);
+  //   props.failOffsetXStart = start;
+  //   props.failOffsetXEnd = end;
+  // } else {
+  //   const [start, end] = getLegacyRangeValue(Number.MAX_SAFE_INTEGER);
+  //   props.failOffsetXStart = start;
+  //   props.failOffsetXEnd = end;
+  // }
 
-  if ('failOffsetY' in config) {
-    props.failOffsetY = getRangeValue(config.failOffsetY);
-  } else {
-    props.failOffsetY = getRangeValue(Infinity);
-  }
+  // if ('failOffsetY' in config) {
+  //   const [start, end] = getRangeValue(config.failOffsetY);
+  //   props.failOffsetYStart = start;
+  //   props.failOffsetYEnd = end;
+  // } else {
+  //   const [start, end] = getRangeValue(Number.MAX_SAFE_INTEGER);
+  //   props.failOffsetYStart = start;
+  //   props.failOffsetYEnd = end;
+  // }
 
   if (!('minPointers' in config)) {
     props.minPointers = 1;
@@ -101,6 +118,25 @@ function ensureConfig(config) {
     throw new Error('minPointers must be larger than 0');
   }
 
+  ['failOffsetXStart', 'failOffsetYStart'].forEach(prop => {
+    if (isUndefined(props[prop])) {
+      props[prop] = -Number.MAX_SAFE_INTEGER;
+    }
+  });
+
+  [
+    'failOffsetXEnd',
+    'failOffsetYEnd',
+    'activeOffsetXStart',
+    'activeOffsetXEnd',
+    'activeOffsetYStart',
+    'activeOffsetYEnd',
+  ].forEach(prop => {
+    if (isUndefined(props[prop])) {
+      props[prop] = Number.MAX_SAFE_INTEGER;
+    }
+  });
+
   return props;
 }
 
@@ -114,7 +150,9 @@ function getRangeValue(value) {
     }
     return value;
   } else {
-    return value < 0 ? [value, Infinity] : [-Infinity, value];
+    return value < 0
+      ? [value, Number.MAX_SAFE_INTEGER]
+      : [-Number.MAX_SAFE_INTEGER, value];
   }
 }
 
@@ -147,12 +185,19 @@ function validateCriteria(
     minVelocity,
     minVelocityX,
     minVelocityY,
-    failOffsetX,
-    failOffsetY,
-    activeOffsetX,
-    activeOffsetY,
+    failOffsetXStart,
+    failOffsetXEnd,
+    failOffsetYStart,
+    failOffsetYEnd,
+    activeOffsetXStart,
+    activeOffsetXEnd,
+    activeOffsetYStart,
+    activeOffsetYEnd,
   }
 ) {
+  if (isUndefined(pointerLength)) {
+    return { success: true };
+  }
   const validPointerCount =
     pointerLength >= minPointers && pointerLength <= maxPointers;
 
@@ -174,7 +219,16 @@ function validateCriteria(
   }
 
   let isWithinBounds =
-    valueInRange(dx, failOffsetX) && valueInRange(dy, failOffsetY);
+    valueInRange(dx, [failOffsetXStart, failOffsetXEnd]) &&
+    valueInRange(dy, [failOffsetYStart, failOffsetYEnd]);
+
+  if (!isWithinBounds) {
+    console.log('OOB', dx, [failOffsetXStart, failOffsetXEnd], dy, [
+      failOffsetYStart,
+      failOffsetYEnd,
+    ]);
+    return { failed: true };
+  }
 
   let isLongEnough = true;
   // Order here matters for parity reasons.
@@ -182,13 +236,21 @@ function validateCriteria(
     isLongEnough = getVectorLength(dx, dy) >= minDist;
   }
 
-  if (isLongEnough && activeOffsetX) {
-    isLongEnough = valueOutOfRange(dx, activeOffsetX);
+  if (isLongEnough) {
+    isLongEnough = valueOutOfRange(dx, [activeOffsetXStart, activeOffsetXEnd]);
   }
 
-  if (isLongEnough && activeOffsetY) {
-    isLongEnough = valueOutOfRange(dy, activeOffsetY);
+  if (isLongEnough) {
+    isLongEnough = valueOutOfRange(dy, [activeOffsetYStart, activeOffsetYEnd]);
   }
+  console.log('Test', isLongEnough);
+
+  // console.log("TEST", {
+  //   failOffsetXStart, failOffsetXEnd,
+  //   failOffsetYStart, failOffsetYEnd,
+  //   activeOffsetXStart, activeOffsetXEnd,
+  //   activeOffsetYStart, activeOffsetYEnd,
+  // })
 
   // We only use validateCriteria for panning.
   // If this changes, then we'll need to check for the gesture type.
@@ -218,9 +280,7 @@ function validateCriteria(
   }
 
   return {
-    success:
-      validPointerCount && isFastEnough && isWithinBounds && isLongEnough,
-    failed: !isWithinBounds,
+    success: validPointerCount && isFastEnough && isLongEnough,
   };
 }
 
@@ -228,34 +288,75 @@ function asArray(value) {
   return value == null ? [] : Array.isArray(value) ? value : [value];
 }
 
-function panDirectionForConfig({ activeOffsetX, activeOffsetY, minDist }) {
+const dirrs = {
+  [Hammer.DIRECTION_ALL]: 'ALL',
+  [Hammer.DIRECTION_LEFT]: 'LEFT',
+  [Hammer.DIRECTION_RIGHT]: 'RIGHT',
+  [Hammer.DIRECTION_HORIZONTAL]: 'HORIZONTAL',
+  [Hammer.DIRECTION_UP]: 'UP',
+  [Hammer.DIRECTION_DOWN]: 'DOWN',
+  [Hammer.DIRECTION_VERTICAL]: 'VERTICAL',
+  [Hammer.DIRECTION_NONE]: 'NONE',
+  [Hammer.DIRECTION_HORIZONTAL]: 'HORIZONTAL',
+  [Hammer.DIRECTION_VERTICAL]: 'VERTICAL',
+  [Hammer.DIRECTION_ALL]: 'ALL',
+  [Hammer.DIRECTION_ALL]: 'ALL',
+  [Hammer.DIRECTION_RIGHT]: 'RIGHT',
+  [Hammer.DIRECTION_LEFT]: 'LEFT',
+  [Hammer.DIRECTION_UP]: 'UP',
+  [Hammer.DIRECTION_DOWN]: 'DOWN',
+};
+
+const isUndefined = v => typeof v === 'undefined';
+
+function panDirectionForConfig(config) {
+  const {
+    activeOffsetXStart,
+    activeOffsetXEnd,
+    activeOffsetYStart,
+    activeOffsetYEnd,
+    minDist,
+  } = config;
   let directions = [];
   let horizontalDirections = [];
 
+  console.log('panDirectionForConfig', config);
   // sigh
   if (minDist != null) {
     return Hammer.DIRECTION_ALL;
   }
 
-  if (activeOffsetX) {
-    if (Math.abs(activeOffsetX[0]) !== Infinity)
-      horizontalDirections.push(Hammer.DIRECTION_LEFT);
-    if (Math.abs(activeOffsetX[1]) !== Infinity)
-      horizontalDirections.push(Hammer.DIRECTION_RIGHT);
-    if (horizontalDirections.length === 2)
-      horizontalDirections = [Hammer.DIRECTION_HORIZONTAL];
-    directions = directions.concat(horizontalDirections);
-  }
+  if (
+    !isUndefined(activeOffsetXStart) &&
+    Math.abs(activeOffsetXStart) !== Number.MAX_SAFE_INTEGER
+  )
+    horizontalDirections.push(Hammer.DIRECTION_LEFT);
+  if (
+    !isUndefined(activeOffsetXEnd) &&
+    Math.abs(activeOffsetXEnd) !== Number.MAX_SAFE_INTEGER
+  )
+    horizontalDirections.push(Hammer.DIRECTION_RIGHT);
+  if (horizontalDirections.length === 2)
+    horizontalDirections = [Hammer.DIRECTION_HORIZONTAL];
+
+  directions = directions.concat(horizontalDirections);
   let verticalDirections = [];
-  if (activeOffsetY) {
-    if (Math.abs(activeOffsetY[0]) !== Infinity)
-      verticalDirections.push(Hammer.DIRECTION_UP);
-    if (Math.abs(activeOffsetY[1]) !== Infinity)
-      verticalDirections.push(Hammer.DIRECTION_DOWN);
-    if (verticalDirections.length === 2)
-      verticalDirections = [Hammer.DIRECTION_VERTICAL];
-    directions = directions.concat(verticalDirections);
-  }
+
+  if (
+    !isUndefined(activeOffsetYStart) &&
+    Math.abs(activeOffsetYStart) !== Number.MAX_SAFE_INTEGER
+  )
+    verticalDirections.push(Hammer.DIRECTION_UP);
+  if (
+    !isUndefined(activeOffsetYEnd) &&
+    Math.abs(activeOffsetYEnd) !== Number.MAX_SAFE_INTEGER
+  )
+    verticalDirections.push(Hammer.DIRECTION_DOWN);
+
+  if (verticalDirections.length === 2)
+    verticalDirections = [Hammer.DIRECTION_VERTICAL];
+
+  directions = directions.concat(verticalDirections);
 
   if (!directions.length) {
     return Hammer.DIRECTION_NONE;
@@ -423,7 +524,6 @@ class GestureHandler {
   };
 
   _sendEvent = ev => {
-    console.log('tap-send', ev.isFinal);
     const {
       onGestureHandlerStateChange: onHandlerStateChange,
       onGestureHandlerEvent: onGestureEvent,
@@ -442,12 +542,11 @@ class GestureHandler {
 
   _onEnd(event) {
     this.isGestureRunning = false;
-    console.log('Tap.end');
+    console.log(`${this.name}.end`);
   }
 
   _cancelEvent = event => {
     for (const gesture of Object.values(this.pendingGestures)) {
-      console.log('cancel teh boi: ', gesture);
       gesture.onWaitingEnded(this);
     }
     this._sendEvent({
@@ -470,9 +569,7 @@ class GestureHandler {
     this.ref = ref;
 
     this.view = findNodeHandle(ref);
-    this.hammer = new Hammer(this.view, {
-      // touchAction: 'pan-right'
-    });
+    this.hammer = new Hammer(this.view, {});
 
     this.oldState = State.UNDETERMINED;
     this.previousState = State.UNDETERMINED;
@@ -490,6 +587,12 @@ class GestureHandler {
     this.hammer.on(
       'hammer.input',
       ({ isFirst, rotation, isFinal, ...props }) => {
+        if (!this.config.enabled) {
+          this.hasGestureFailed = false;
+          this.isGestureRunning = false;
+          return;
+        }
+
         if (isFirst) {
           this.hasGestureFailed = false;
         }
@@ -507,7 +610,7 @@ class GestureHandler {
             // Tap Gesture start event
             const gesture = this.hammer.get(this.name);
             if (gesture.options.enable(gesture, inputData)) {
-              console.log('Tap.start', inputData);
+              console.log(`${this.name}.start`);
               onStart({ isFirst, rotation, isFinal, ...props });
               this._sendEvent({ isFirst, rotation, isFinal, ...props });
             }
@@ -537,12 +640,7 @@ class GestureHandler {
       }
     );
 
-    if (this.name === 'press') {
-      // this.hammer.on(`${this.name}up`, () => {
-      //   console.log('press.up');
-      //   this._onEnd();
-      // });
-    } else if (!this.isDiscrete) {
+    if (!this.isDiscrete) {
       this.hammer.on(`${this.name}start`, onStart);
       this.hammer.on(`${this.name}end ${this.name}cancel`, () => {
         this._onEnd();
@@ -550,7 +648,7 @@ class GestureHandler {
     }
 
     this.hammer.on(this.name, ev => {
-      console.log('Press', ev);
+      console.log(`${this.name}.event`, ev);
       if (this.isDiscrete) {
         if (this.name === 'press') {
           this.isGestureRunning = true;
@@ -585,7 +683,7 @@ class GestureHandler {
     clearTimeout(this._multiTapTimer);
     this._successfulTaps.push(ev);
     console.log(
-      'Add tap',
+      'tap.add',
       this._successfulTaps,
       this.config.taps,
       this.config.time
@@ -593,14 +691,13 @@ class GestureHandler {
     if (this._successfulTaps.length < this.config.taps) {
       this.isGestureRunning = false;
       this._multiTapTimer = setTimeout(() => {
-        console.log('Timeout');
+        console.log('Multi-tap: Timeout');
         this._cancelEvent(ev);
       }, this.config.time);
       return;
     }
-    console.log('Finally');
 
-    console.log('Tap.active', ev);
+    console.log('tap.completed', ev);
     if (ev.eventType === Hammer.INPUT_END) {
       this._sendEvent({ ...ev, eventType: Hammer.INPUT_MOVE });
     }
@@ -611,14 +708,18 @@ class GestureHandler {
 
   onSuccess() {}
 
+  getDirection() {
+    return undefined;
+  }
+
   sync = () => {
     const gesture = this.hammer.get(this.name);
 
     if (!gesture) return;
 
+    if (this.name === 'pan') console.log('dirrr', dirrs[this.getDirection()]);
     gesture.set({
-      direction:
-        this.name === 'pan' ? panDirectionForConfig(this.config) : undefined,
+      direction: this.getDirection(),
       pointers:
         this.config.minPointers === this.config.maxPointers
           ? this.config.minPointers
@@ -633,6 +734,7 @@ class GestureHandler {
         if (this.hasGestureFailed) {
           return false;
         }
+
         if (this.isGestureRunning && !this.isDiscrete) {
           return true;
         }
@@ -751,6 +853,10 @@ class PinchGestureHandler extends GestureHandler {
 
 class PanGestureHandler extends GestureHandler {
   name = 'pan';
+
+  getDirection() {
+    return panDirectionForConfig(this.config);
+  }
 
   update({
     minVelocity = 0,
