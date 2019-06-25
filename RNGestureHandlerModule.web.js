@@ -399,6 +399,17 @@ class GestureHandler {
     console.log('Tap.end');
   };
 
+  _cancelEvent = event => {
+    this._sendEvent({
+      ...event,
+      eventType: Hammer.INPUT_CANCEL,
+      isFinal: true,
+    });
+    this._onEnd({
+      ...event,
+    });
+  };
+
   setRef = ref => {
     if (ref == null) {
       this._destroy();
@@ -435,15 +446,30 @@ class GestureHandler {
 
         // Attempt to create a touch-down event by checking if a valid tap hasn't started yet, then validating the input.
         if (this.name === 'tap') {
-          if (!this.hasGestureFailed && !this.isGestureRunning) {
+          const inputData = { isFirst, rotation, isFinal, ...props };
+
+          if (
+            !this.hasGestureFailed &&
+            !this.isGestureRunning &&
+            // Prevent multi-pointer events from misfiring.
+            !isFinal
+          ) {
             // Tap Gesture start event
             const gesture = this.hammer.get(this.name);
-            const inputData = { isFirst, rotation, isFinal, ...props };
             if (gesture.options.enable(gesture, inputData)) {
               console.log('Tap.start', inputData);
               onStart({ isFirst, rotation, isFinal, ...props });
               this._sendEvent({ isFirst, rotation, isFinal, ...props });
             }
+          }
+          if (isFinal && props.maxPointers > 1) {
+            setTimeout(() => {
+              // Handle case where one finger presses slightly
+              // after the first finger on a multi-tap event
+              if (this.isGestureRunning) {
+                this._cancelEvent(inputData);
+              }
+            });
           }
         }
         // TODO: Bacon: Check against something other than null
@@ -477,13 +503,16 @@ class GestureHandler {
 
     this.hammer.on(this.name, ev => {
       if (this.name === 'tap') {
-        console.log('Tap.active', ev);
-        if (ev.eventType === Hammer.INPUT_END) {
-          this._sendEvent({ ...ev, eventType: Hammer.INPUT_MOVE });
+        // Prevent a multi-pointer tap from firing on each pointer exiting.
+        if (this.isGestureRunning) {
+          console.log('Tap.active', ev);
+          if (ev.eventType === Hammer.INPUT_END) {
+            this._sendEvent({ ...ev, eventType: Hammer.INPUT_MOVE });
+          }
+          // When handler gets activated it will turn into State.END immediately.
+          this._sendEvent({ ...ev, isFinal: true });
+          this._onEnd();
         }
-        // When handler gets activated it will turn into State.END immediately.
-        this._sendEvent({ ...ev, isFinal: true });
-        this._onEnd();
       } else {
         this._sendEvent(ev);
       }
@@ -563,14 +592,7 @@ class GestureHandler {
         if (failed) {
           // Simulate cancel event
           if (this.name === 'tap' && this.isGestureRunning) {
-            this._sendEvent({
-              ...inputData,
-              eventType: Hammer.INPUT_CANCEL,
-              isFinal: true,
-            });
-            this._onEnd({
-              ...inputData,
-            });
+            this._cancelEvent(inputData);
           }
           this.hasGestureFailed = true;
         }
