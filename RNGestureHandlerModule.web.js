@@ -274,6 +274,8 @@ function panDirectionForConfig({ activeOffsetX, activeOffsetY, minDist }) {
 }
 
 class GestureHandler {
+  isDiscrete = false;
+
   isGestureRunning = false;
   hasGestureFailed = false;
   view = null;
@@ -487,22 +489,37 @@ class GestureHandler {
       }
     );
 
-    if (this.name !== 'tap') {
-      this.hammer.on(`${this.name}start`, onStart);
-    }
-
     if (this.name === 'press') {
-      this.hammer.on(`${this.name}up`, () => {
-        this._onEnd();
-      });
-    } else {
+      // this.hammer.on(`${this.name}up`, () => {
+      //   console.log('press.up');
+      //   this._onEnd();
+      // });
+    } else if (!this.isDiscrete) {
+      this.hammer.on(`${this.name}start`, onStart);
       this.hammer.on(`${this.name}end ${this.name}cancel`, () => {
         this._onEnd();
       });
     }
 
     this.hammer.on(this.name, ev => {
-      if (this.name === 'tap') {
+      console.log('Press', ev);
+      if (this.isDiscrete) {
+        if (this.name === 'press') {
+          this.isGestureRunning = true;
+          this._sendEvent({
+            ...ev,
+            eventType: Hammer.INPUT_MOVE,
+            isFirst: true,
+          });
+          // When handler gets activated it will turn into State.END immediately.
+          this._sendEvent({
+            ...ev,
+            eventType: Hammer.INPUT_END,
+            isFinal: true,
+          });
+          this._onEnd();
+          return;
+        }
         // Prevent a multi-pointer tap from firing on each pointer exiting.
         if (this.isGestureRunning) {
           console.log('Tap.active', ev);
@@ -542,7 +559,7 @@ class GestureHandler {
         if (this.hasGestureFailed) {
           return false;
         }
-        if (this.isGestureRunning && this.name !== 'tap') {
+        if (this.isGestureRunning && !this.isDiscrete) {
           return true;
         }
 
@@ -591,8 +608,13 @@ class GestureHandler {
 
         if (failed) {
           // Simulate cancel event
-          if (this.name === 'tap' && this.isGestureRunning) {
-            this._cancelEvent(inputData);
+          if (this.isDiscrete) {
+            // Long press never starts so we can't rely on the running event boolean.
+            if (this.name === 'press') {
+              this._cancelEvent(inputData);
+            } else if (this.isGestureRunning) {
+              this._cancelEvent(inputData);
+            }
           }
           this.hasGestureFailed = true;
         }
@@ -722,7 +744,7 @@ class PanGestureHandler extends GestureHandler {
 
 class TapGestureHandler extends GestureHandler {
   name = 'tap';
-
+  isDiscrete = true;
   update({
     minDurationMs: time = 250,
     numberOfTaps: tapCount = 1,
@@ -805,6 +827,7 @@ class TapGestureHandler extends GestureHandler {
 }
 class LongPressGestureHandler extends GestureHandler {
   name = 'press';
+  isDiscrete = true;
 
   getState(type) {
     return {
@@ -817,18 +840,55 @@ class LongPressGestureHandler extends GestureHandler {
 
   update({
     minDurationMs: time = 251,
-    maxDist: threshold = 9,
+    maxDist = 9,
     minPointers = 1,
     maxPointers = 1,
     ...props
   }) {
     return super.update({
       time,
-      threshold,
+      maxDist,
       minPointers,
       maxPointers,
       ...props,
     });
+  }
+
+  enabled(
+    { minPointers, maxPointers, maxDist },
+    recognizer,
+    { maxPointers: pointerLength, deltaX: dx, deltaY: dy }
+  ) {
+    if (typeof pointerLength === 'undefined') {
+      return { success: true };
+    }
+
+    const validPointerCount =
+      pointerLength >= minPointers && pointerLength <= maxPointers;
+    const isWithinBounds =
+      valueInRange(dx, maxDist) && valueInRange(dy, maxDist);
+
+    console.log(
+      'Press.enable:',
+      dx,
+      dy,
+      isWithinBounds,
+      validPointerCount,
+      pointerLength,
+      minPointers,
+      maxPointers
+    );
+    if (!isWithinBounds) {
+      return { failed: true };
+    }
+
+    // A user probably won't land a multi-pointer tap on the first tick (so we cannot just cancel each time)
+    // but if the gesture is running and the user adds or subtracts another pointer then it should fail.
+    if (!validPointerCount && this.isGestureRunning) {
+      return { failed: true };
+    }
+    return { success: validPointerCount };
+    // return { failed: true };
   }
 
   start({ manager, props }) {
