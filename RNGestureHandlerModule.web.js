@@ -431,9 +431,12 @@ class GestureHandler {
       ({ isFirst, rotation, isFinal, ...props }) => {
         if (isFirst) {
           this.hasGestureFailed = false;
+        }
 
-          // Tap Gesture start event
-          if (this.name === 'tap') {
+        // Attempt to create a touch-down event by checking if a valid tap hasn't started yet, then validating the input.
+        if (this.name === 'tap') {
+          if (!this.hasGestureFailed && !this.isGestureRunning) {
+            // Tap Gesture start event
             const gesture = this.hammer.get(this.name);
             const inputData = { isFirst, rotation, isFinal, ...props };
             if (gesture.options.enable(gesture, inputData)) {
@@ -739,9 +742,8 @@ class TapGestureHandler extends GestureHandler {
 
     const validPointerCount =
       pointerLength >= minPointers && pointerLength <= maxPointers;
-    let isWithinBounds = valueInRange(dx, maxDist) && valueInRange(dy, maxDist);
-    // if (validPointerCount) {
-    // }
+    const isWithinBounds =
+      valueInRange(dx, maxDist) && valueInRange(dy, maxDist);
 
     console.log(
       'Tap.enable:',
@@ -754,6 +756,12 @@ class TapGestureHandler extends GestureHandler {
       maxPointers
     );
     if (!isWithinBounds) {
+      return { failed: true };
+    }
+
+    // A user probably won't land a multi-pointer tap on the first tick (so we cannot just cancel each time)
+    // but if the gesture is running and the user adds or subtracts another pointer then it should fail.
+    if (!validPointerCount && this.isGestureRunning) {
       return { failed: true };
     }
     return { success: validPointerCount };
