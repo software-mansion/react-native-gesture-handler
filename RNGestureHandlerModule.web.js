@@ -396,10 +396,10 @@ class GestureHandler {
     invokeNullableMethod('onHandlerStateChange', onHandlerStateChange, event);
   };
 
-  _onEnd = event => {
+  _onEnd(event) {
     this.isGestureRunning = false;
     console.log('Tap.end');
-  };
+  }
 
   _cancelEvent = event => {
     this._sendEvent({
@@ -522,13 +522,7 @@ class GestureHandler {
         }
         // Prevent a multi-pointer tap from firing on each pointer exiting.
         if (this.isGestureRunning) {
-          console.log('Tap.active', ev);
-          if (ev.eventType === Hammer.INPUT_END) {
-            this._sendEvent({ ...ev, eventType: Hammer.INPUT_MOVE });
-          }
-          // When handler gets activated it will turn into State.END immediately.
-          this._sendEvent({ ...ev, isFinal: true });
-          this._onEnd();
+          this._onSuccessfulTap(ev);
         }
       } else {
         this._sendEvent(ev);
@@ -536,6 +530,38 @@ class GestureHandler {
     });
     this.sync();
   };
+
+  _successfulTaps = [];
+
+  _onSuccessfulTap = ev => {
+    clearTimeout(this._multiTapTimer);
+    this._successfulTaps.push(ev);
+    console.log(
+      'Add tap',
+      this._successfulTaps,
+      this.config.taps,
+      this.config.time
+    );
+    if (this._successfulTaps.length < this.config.taps) {
+      this.isGestureRunning = false;
+      this._multiTapTimer = setTimeout(() => {
+        console.log('Timeout');
+        this._cancelEvent(ev);
+      }, this.config.time);
+      return;
+    }
+    console.log('Finally');
+
+    console.log('Tap.active', ev);
+    if (ev.eventType === Hammer.INPUT_END) {
+      this._sendEvent({ ...ev, eventType: Hammer.INPUT_MOVE });
+    }
+    // When handler gets activated it will turn into State.END immediately.
+    this._sendEvent({ ...ev, isFinal: true });
+    this._onEnd();
+  };
+
+  onSuccess() {}
 
   sync = () => {
     const gesture = this.hammer.get(this.name);
@@ -746,8 +772,8 @@ class TapGestureHandler extends GestureHandler {
   name = 'tap';
   isDiscrete = true;
   update({
-    minDurationMs: time = 250,
-    numberOfTaps: tapCount = 1,
+    minDurationMs: time = 525,
+    numberOfTaps: taps = 1,
     maxDelayMs: interval = 300,
     maxDist = 2,
     minPointers = 1,
@@ -756,7 +782,7 @@ class TapGestureHandler extends GestureHandler {
   }) {
     console.log('update', {
       time,
-      tapCount,
+      taps,
       interval,
       maxDist,
       minPointers,
@@ -766,13 +792,18 @@ class TapGestureHandler extends GestureHandler {
 
     return super.update({
       time,
-      tapCount,
+      taps,
       interval,
       maxDist,
       minPointers,
       maxPointers,
       ...props,
     });
+  }
+
+  _onEnd(...props) {
+    this._successfulTaps = [];
+    super._onEnd(...props);
   }
 
   enabled(
