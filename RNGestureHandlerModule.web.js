@@ -39,92 +39,54 @@ function invokeNullableMethod(name, method, event) {
   }
 }
 
+const bindNumericValue = (key, config) => {
+  if (key in config && config[key] != null) return config[key];
+  return Number.isNaN;
+};
 // Validate the props
 function ensureConfig(config) {
   const props = { ...config };
 
-  // if ('minDeltaX' in config) {
-  //   console.warn('minDeltaX is deprecated in favor of activeOffsetX');
-  //   const [start, end] = getLegacyRangeValue(config.minDeltaX);
-  //   props.activeOffsetXStart = start;
-  //   props.activeOffsetXEnd = end;
-  // }
-  // if ('minDeltaY' in config) {
-  //   console.warn('minDeltaY is deprecated in favor of activeOffsetY');
-  //   const [start, end] = getLegacyRangeValue(config.minDeltaY);
-  //   props.activeOffsetYStart = start;
-  //   props.activeOffsetYEnd = end;
-  // }
-
-  // if ('activeOffsetX' in config) {
-  //   props.activeOffsetX = getRangeValue(config.activeOffsetX);
-
-  // }
-  // if ('activeOffsetY' in config) {
-  //   props.activeOffsetY = getRangeValue(config.activeOffsetY);
-  // }
-
   if ('minDist' in config) {
     props.minDist = config.minDist;
+    props.minDistSq = props.minDist * props.minDist;
   }
-
-  // if ('maxDeltaX' in config) {
-  //   console.warn('maxDeltaX is deprecated in favor of failOffsetX');
-  //   const [start, end] = getLegacyRangeValue(config.maxDeltaX);
-  //   props.failOffsetXStart = start;
-  //   props.failOffsetXEnd = end;
-  // }
-
-  // if ('maxDeltaY' in config) {
-  //   console.warn('maxDeltaY is deprecated in favor of failOffsetY');
-  //   const [start, end] = getLegacyRangeValue(config.maxDeltaY);
-  //   props.failOffsetYStart = start;
-  //   props.failOffsetYEnd = end;
-  // }
+  if ('minVelocity' in config) {
+    props.minVelocity = config.minVelocity;
+    props.minVelocitySq = props.minVelocity * props.minVelocity;
+  }
   if ('maxDist' in config) {
     props.maxDist = getLegacyRangeValue(config.maxDist);
   }
-
-  // if ('failOffsetX' in config) {
-  //   const [start, end] = getLegacyRangeValue(config.failOffsetX);
-  //   props.failOffsetXStart = start;
-  //   props.failOffsetXEnd = end;
-  // } else {
-  //   const [start, end] = getLegacyRangeValue(Number.MAX_SAFE_INTEGER);
-  //   props.failOffsetXStart = start;
-  //   props.failOffsetXEnd = end;
+  // if (!('minPointers' in config)) {
+  //   props.minPointers = 1;
   // }
 
-  // if ('failOffsetY' in config) {
-  //   const [start, end] = getRangeValue(config.failOffsetY);
-  //   props.failOffsetYStart = start;
-  //   props.failOffsetYEnd = end;
-  // } else {
-  //   const [start, end] = getRangeValue(Number.MAX_SAFE_INTEGER);
-  //   props.failOffsetYStart = start;
-  //   props.failOffsetYEnd = end;
+  // props.maxPointers = Math.max(config.minPointers || 0, config.maxPointers || 0);
+
+  // if (config.minPointers <= 0) {
+  //   throw new Error('minPointers must be larger than 0');
   // }
 
-  if (!('minPointers' in config)) {
-    props.minPointers = 1;
+  if ('waitFor' in config) {
+    props.waitFor = asArray(config.waitFor)
+      .map(({ _handlerTag }) => Module.getGestureHandlerNode(_handlerTag))
+      .filter(v => v);
+  } else {
+    props.waitFor = null;
   }
-
-  props.maxPointers = Math.max(
-    config.minPointers || 0,
-    config.maxPointers || 0
-  );
-
-  if (config.minPointers <= 0) {
-    throw new Error('minPointers must be larger than 0');
-  }
-
-  ['failOffsetXStart', 'failOffsetYStart'].forEach(prop => {
-    if (isUndefined(props[prop])) {
-      props[prop] = -Number.MAX_SAFE_INTEGER;
-    }
-  });
 
   [
+    'minPointers',
+    'maxPointers',
+    'minDist',
+    'maxDist',
+    'maxDistSq',
+    'minVelocitySq',
+    'minDistSq',
+    'minVelocity',
+    'failOffsetXStart',
+    'failOffsetYStart',
     'failOffsetXEnd',
     'failOffsetYEnd',
     'activeOffsetXStart',
@@ -133,7 +95,7 @@ function ensureConfig(config) {
     'activeOffsetYEnd',
   ].forEach(prop => {
     if (isUndefined(props[prop])) {
-      props[prop] = Number.MAX_SAFE_INTEGER;
+      props[prop] = Number.NaN;
     }
   });
 
@@ -141,20 +103,18 @@ function ensureConfig(config) {
 }
 
 // Ensure the ranges work the same as native
-function getRangeValue(value) {
-  if (Array.isArray(value)) {
-    if (!value.length || value.length > 2) {
-      throw new Error('Range value must only contain 2 values');
-    } else if (value.length === 1) {
-      return getRangeValue(value[0]);
-    }
-    return value;
-  } else {
-    return value < 0
-      ? [value, Number.MAX_SAFE_INTEGER]
-      : [-Number.MAX_SAFE_INTEGER, value];
-  }
-}
+// function getRangeValue(value) {
+//   if (Array.isArray(value)) {
+//     if (!value.length || value.length > 2) {
+//       throw new Error('Range value must only contain 2 values');
+//     } else if (value.length === 1) {
+//       return getRangeValue(value[0]);
+//     }
+//     return value;
+//   } else {
+//     return value < 0 ? [value, Number.MAX_SAFE_INTEGER] : [-Number.MAX_SAFE_INTEGER, value];
+//   }
+// }
 
 function getLegacyRangeValue(value) {
   if (Array.isArray(value)) {
@@ -169,215 +129,134 @@ function getLegacyRangeValue(value) {
   }
 }
 
-const valueInRange = (value, range) => value >= range[0] && value <= range[1];
+// const valueInRange = (value, range) => value >= range[0] && value <= range[1];
 
-const valueOutOfRange = (value, range) =>
-  value <= range[0] || value >= range[1];
+// const valueOutOfRange = (value, range) => value <= range[0] || value >= range[1];
 
-const getVectorLength = (x, y) => Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+// const getVectorLength = (x, y) => Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 
-function validateCriteria(
-  { recognizer, pointerLength, velocity, vx, vy, dx, dy, ...inputData },
-  {
-    minPointers,
-    maxPointers,
-    minDist,
-    minVelocity,
-    minVelocityX,
-    minVelocityY,
-    failOffsetXStart,
-    failOffsetXEnd,
-    failOffsetYStart,
-    failOffsetYEnd,
-    activeOffsetXStart,
-    activeOffsetXEnd,
-    activeOffsetYStart,
-    activeOffsetYEnd,
-  }
-) {
-  if (isUndefined(pointerLength)) {
-    return { success: true };
-  }
-  const validPointerCount =
-    pointerLength >= minPointers && pointerLength <= maxPointers;
+// function validateCriteria(
+//   { recognizer, pointerLength, velocity, vx, vy, dx, dy, ...inputData },
+//   {
+//     minPointers,
+//     maxPointers,
+//     minDist,
+//     minVelocity,
+//     minVelocityX,
+//     minVelocityY,
+//     failOffsetXStart,
+//     failOffsetXEnd,
+//     failOffsetYStart,
+//     failOffsetYEnd,
+//     activeOffsetXStart,
+//     activeOffsetXEnd,
+//     activeOffsetYStart,
+//     activeOffsetYEnd,
+//   }
+// ) {
+//   if (isUndefined(pointerLength)) {
+//     return { success: true };
+//   }
+//   const validPointerCount = pointerLength >= minPointers && pointerLength <= maxPointers;
 
-  let isFastEnough = Math.abs(velocity) >= minVelocity;
+//   let isFastEnough = Math.abs(velocity) >= minVelocity;
 
-  if (
-    isFastEnough &&
-    typeof minVelocityX !== 'undefined' &&
-    Math.abs(vx) < minVelocityX
-  ) {
-    isFastEnough = false;
-  }
-  if (
-    isFastEnough &&
-    typeof minVelocityY !== 'undefined' &&
-    Math.abs(vy) < minVelocityY
-  ) {
-    isFastEnough = false;
-  }
+//   if (isFastEnough && typeof minVelocityX !== 'undefined' && Math.abs(vx) < minVelocityX) {
+//     isFastEnough = false;
+//   }
+//   if (isFastEnough && typeof minVelocityY !== 'undefined' && Math.abs(vy) < minVelocityY) {
+//     isFastEnough = false;
+//   }
 
-  let isWithinBounds =
-    valueInRange(dx, [failOffsetXStart, failOffsetXEnd]) &&
-    valueInRange(dy, [failOffsetYStart, failOffsetYEnd]);
+//   let isWithinBounds =
+//     valueInRange(dx, [failOffsetXStart, failOffsetXEnd]) &&
+//     valueInRange(dy, [failOffsetYStart, failOffsetYEnd]);
 
-  if (!isWithinBounds) {
-    console.log('OOB', dx, [failOffsetXStart, failOffsetXEnd], dy, [
-      failOffsetYStart,
-      failOffsetYEnd,
-    ]);
-    return { failed: true };
-  }
+//   if (!isWithinBounds) {
+//     console.log('OOB', dx, [failOffsetXStart, failOffsetXEnd], dy, [
+//       failOffsetYStart,
+//       failOffsetYEnd,
+//     ]);
+//     return { failed: true };
+//   }
 
-  let isLongEnough = true;
-  // Order here matters for parity reasons.
-  if (isLongEnough && minDist != null) {
-    isLongEnough = getVectorLength(dx, dy) >= minDist;
-  }
+//   let isLongEnough = true;
+//   // Order here matters for parity reasons.
+//   if (isLongEnough && minDist != null) {
+//     isLongEnough = getVectorLength(dx, dy) >= minDist;
+//   }
 
-  if (isLongEnough) {
-    isLongEnough = valueOutOfRange(dx, [activeOffsetXStart, activeOffsetXEnd]);
-  }
+//   if (isLongEnough) {
+//     isLongEnough = valueOutOfRange(dx, [activeOffsetXStart, activeOffsetXEnd]);
+//   }
 
-  if (isLongEnough) {
-    isLongEnough = valueOutOfRange(dy, [activeOffsetYStart, activeOffsetYEnd]);
-  }
-  console.log('Test', isLongEnough);
+//   if (isLongEnough) {
+//     isLongEnough = valueOutOfRange(dy, [activeOffsetYStart, activeOffsetYEnd]);
+//   }
+//   console.log('Test', isLongEnough);
 
-  // console.log("TEST", {
-  //   failOffsetXStart, failOffsetXEnd,
-  //   failOffsetYStart, failOffsetYEnd,
-  //   activeOffsetXStart, activeOffsetXEnd,
-  //   activeOffsetYStart, activeOffsetYEnd,
-  // })
+//   // console.log("TEST", {
+//   //   failOffsetXStart, failOffsetXEnd,
+//   //   failOffsetYStart, failOffsetYEnd,
+//   //   activeOffsetXStart, activeOffsetXEnd,
+//   //   activeOffsetYStart, activeOffsetYEnd,
+//   // })
 
-  // We only use validateCriteria for panning.
-  // If this changes, then we'll need to check for the gesture type.
-  if (validPointerCount && pointerLength > 1) {
-    // Test if the pan had too much pinching or rotating.
-    const deltaScale = Math.abs(inputData.scale - 1);
-    const deltaRotation = Math.abs(inputData.deltaRotation);
-    if (deltaScale > MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD) {
-      // > If the threshold doesn't seem right.
-      // You can log the value which it failed at here:
-      // console.log('Pan failed: scale: ', deltaScale);
+//   // We only use validateCriteria for panning.
+//   // If this changes, then we'll need to check for the gesture type.
+//   if (validPointerCount && pointerLength > 1) {
+//     // Test if the pan had too much pinching or rotating.
+//     const deltaScale = Math.abs(inputData.scale - 1);
+//     const deltaRotation = Math.abs(inputData.deltaRotation);
+//     if (deltaScale > MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD) {
+//       // > If the threshold doesn't seem right.
+//       // You can log the value which it failed at here:
+//       // console.log('Pan failed: scale: ', deltaScale);
 
-      return {
-        success: false,
-        failed: true,
-      };
-    }
-    if (deltaRotation > MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD) {
-      // > If the threshold doesn't seem right.
-      // You can log the value which it failed at here:
-      // console.log('Pan failed: rotate: ', deltaRotation);
-      return {
-        success: false,
-        failed: true,
-      };
-    }
-  }
+//       return {
+//         success: false,
+//         failed: true,
+//       };
+//     }
+//     if (deltaRotation > MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD) {
+//       // > If the threshold doesn't seem right.
+//       // You can log the value which it failed at here:
+//       // console.log('Pan failed: rotate: ', deltaRotation);
+//       return {
+//         success: false,
+//         failed: true,
+//       };
+//     }
+//   }
 
-  return {
-    success: validPointerCount && isFastEnough && isLongEnough,
-  };
-}
+//   return {
+//     success: validPointerCount && isFastEnough && isLongEnough,
+//   };
+// }
 
 function asArray(value) {
   return value == null ? [] : Array.isArray(value) ? value : [value];
 }
 
 const dirrs = {
-  [Hammer.DIRECTION_ALL]: 'ALL',
-  [Hammer.DIRECTION_LEFT]: 'LEFT',
-  [Hammer.DIRECTION_RIGHT]: 'RIGHT',
   [Hammer.DIRECTION_HORIZONTAL]: 'HORIZONTAL',
   [Hammer.DIRECTION_UP]: 'UP',
   [Hammer.DIRECTION_DOWN]: 'DOWN',
   [Hammer.DIRECTION_VERTICAL]: 'VERTICAL',
   [Hammer.DIRECTION_NONE]: 'NONE',
-  [Hammer.DIRECTION_HORIZONTAL]: 'HORIZONTAL',
-  [Hammer.DIRECTION_VERTICAL]: 'VERTICAL',
-  [Hammer.DIRECTION_ALL]: 'ALL',
   [Hammer.DIRECTION_ALL]: 'ALL',
   [Hammer.DIRECTION_RIGHT]: 'RIGHT',
   [Hammer.DIRECTION_LEFT]: 'LEFT',
-  [Hammer.DIRECTION_UP]: 'UP',
-  [Hammer.DIRECTION_DOWN]: 'DOWN',
 };
 
 const isUndefined = v => typeof v === 'undefined';
 
-function panDirectionForConfig(config) {
-  const {
-    activeOffsetXStart,
-    activeOffsetXEnd,
-    activeOffsetYStart,
-    activeOffsetYEnd,
-    minDist,
-  } = config;
-  let directions = [];
-  let horizontalDirections = [];
-
-  console.log('panDirectionForConfig', config);
-  // sigh
-  if (minDist != null) {
-    return Hammer.DIRECTION_ALL;
-  }
-
-  if (
-    !isUndefined(activeOffsetXStart) &&
-    Math.abs(activeOffsetXStart) !== Number.MAX_SAFE_INTEGER
-  )
-    horizontalDirections.push(Hammer.DIRECTION_LEFT);
-  if (
-    !isUndefined(activeOffsetXEnd) &&
-    Math.abs(activeOffsetXEnd) !== Number.MAX_SAFE_INTEGER
-  )
-    horizontalDirections.push(Hammer.DIRECTION_RIGHT);
-  if (horizontalDirections.length === 2)
-    horizontalDirections = [Hammer.DIRECTION_HORIZONTAL];
-
-  directions = directions.concat(horizontalDirections);
-  let verticalDirections = [];
-
-  if (
-    !isUndefined(activeOffsetYStart) &&
-    Math.abs(activeOffsetYStart) !== Number.MAX_SAFE_INTEGER
-  )
-    verticalDirections.push(Hammer.DIRECTION_UP);
-  if (
-    !isUndefined(activeOffsetYEnd) &&
-    Math.abs(activeOffsetYEnd) !== Number.MAX_SAFE_INTEGER
-  )
-    verticalDirections.push(Hammer.DIRECTION_DOWN);
-
-  if (verticalDirections.length === 2)
-    verticalDirections = [Hammer.DIRECTION_VERTICAL];
-
-  directions = directions.concat(verticalDirections);
-
-  if (!directions.length) {
-    return Hammer.DIRECTION_NONE;
-  }
-  if (
-    directions[0] === Hammer.DIRECTION_HORIZONTAL &&
-    directions[1] === Hammer.DIRECTION_VERTICAL
-  ) {
-    return Hammer.DIRECTION_ALL;
-  }
-  if (horizontalDirections.length && verticalDirections.length) {
-    return Hammer.DIRECTION_ALL;
-  }
-
-  return directions[0];
-}
-
 let _gestureInstances = 0;
 
 class GestureHandler {
-  isDiscrete = false;
+  get isDiscrete() {
+    return false;
+  }
 
   constructor() {
     this._gestureInstance = _gestureInstances++;
@@ -385,6 +264,10 @@ class GestureHandler {
 
   get id() {
     return `${this.name}${this._gestureInstance}`;
+  }
+
+  getConfig() {
+    return this.config;
   }
 
   isGestureRunning = false;
@@ -418,25 +301,32 @@ class GestureHandler {
     throw new Error('Must override GestureHandler.start()');
   }
 
-  update({ enabled = true, ...props }) {
+  updateHasCustomActivationCriteria(config) {
+    return true;
+  }
+
+  _clearSelfAsPending = () => {
     if (Array.isArray(this.config.waitFor)) {
-      for (const ref of this.config.waitFor) {
-        let gestureComponent = ref ? (ref.current ? ref.current : ref) : null;
-        const gesture = Module.getGestureHandlerNode(
-          gestureComponent._handlerTag
-        );
+      for (const gesture of this.config.waitFor) {
         gesture.removePendingGesture(this.id);
       }
     }
+  };
+
+  update({ enabled = true, ...props }) {
+    this._clearSelfAsPending();
 
     this.config = ensureConfig({ enabled, ...props });
-
+    this._hasCustomActivationCriteria = this.updateHasCustomActivationCriteria(
+      this.config
+    );
+    console.log(
+      'Gesture.update',
+      this.config,
+      this._hasCustomActivationCriteria
+    );
     if (Array.isArray(this.config.waitFor)) {
-      for (const ref of this.config.waitFor) {
-        let gestureComponent = ref ? (ref.current ? ref.current : ref) : null;
-        const gesture = Module.getGestureHandlerNode(
-          gestureComponent._handlerTag
-        );
+      for (const gesture of this.config.waitFor) {
         gesture.addPendingGesture(this);
       }
     }
@@ -444,9 +334,12 @@ class GestureHandler {
     if (this.hammer) {
       this.sync();
     }
+    return this.config;
   }
 
   destroy = () => {
+    this._clearSelfAsPending();
+
     if (this.hammer) {
       this.hammer.stop();
       this.hammer.destroy();
@@ -575,7 +468,7 @@ class GestureHandler {
     this.previousState = State.UNDETERMINED;
     this.initialRotation = 0;
 
-    this.start({ manager: this.hammer, props: this.config });
+    this.start({ manager: this.hammer, props: this.getConfig() });
 
     const onStart = ({ deltaX, deltaY, rotation }) => {
       this.isGestureRunning = true;
@@ -642,9 +535,7 @@ class GestureHandler {
 
     if (!this.isDiscrete) {
       this.hammer.on(`${this.name}start`, onStart);
-      this.hammer.on(`${this.name}end ${this.name}cancel`, () => {
-        this._onEnd();
-      });
+      this.hammer.on(`${this.name}end ${this.name}cancel`, this._onEnd);
     }
 
     this.hammer.on(this.name, ev => {
@@ -690,10 +581,12 @@ class GestureHandler {
     );
     if (this._successfulTaps.length < this.config.taps) {
       this.isGestureRunning = false;
-      this._multiTapTimer = setTimeout(() => {
-        console.log('Multi-tap: Timeout');
-        this._cancelEvent(ev);
-      }, this.config.time);
+      if (!isnan(this.config.maxDuration)) {
+        this._multiTapTimer = setTimeout(() => {
+          console.log('Multi-tap: Timeout');
+          this._cancelEvent(ev);
+        }, this.config.maxDuration);
+      }
       return;
     }
 
@@ -706,10 +599,26 @@ class GestureHandler {
     this._onEnd();
   };
 
+  get shouldEnableGestureOnSetup() {
+    throw new Error('Must override GestureHandler.shouldEnableGestureOnSetup');
+  }
+
   onSuccess() {}
 
   getDirection() {
     return undefined;
+  }
+
+  _getPendingGestures() {
+    if (Array.isArray(this.config.waitFor) && this.config.waitFor.length) {
+      // Get the list of gestures that this gesture is still waiting for.
+      // Use `=== false` in case a ref that isn't a gesture handler is used.
+      const stillWaiting = this.config.waitFor.filter(
+        ({ hasGestureFailed }) => hasGestureFailed === false
+      );
+      return stillWaiting;
+    }
+    return [];
   }
 
   sync = () => {
@@ -718,17 +627,28 @@ class GestureHandler {
     if (!gesture) return;
 
     if (this.name === 'pan') console.log('dirrr', dirrs[this.getDirection()]);
+
+    const pointers =
+      this.config.minPointers === this.config.maxPointers
+        ? this.config.minPointers
+        : 0;
     gesture.set({
       direction: this.getDirection(),
-      pointers:
-        this.config.minPointers === this.config.maxPointers
-          ? this.config.minPointers
-          : 0,
+      pointers,
       enable: (recognizer, inputData = {}) => {
         if (!this.config.enabled) {
           this.isGestureRunning = false;
           this.hasGestureFailed = false;
           return false;
+        }
+
+        // Prevent events before the system is ready.
+        if (
+          !inputData ||
+          !recognizer.options ||
+          isUndefined(inputData.maxPointers)
+        ) {
+          return this.shouldEnableGestureOnSetup;
         }
 
         if (this.hasGestureFailed) {
@@ -740,19 +660,10 @@ class GestureHandler {
         }
 
         // The built-in hammer.js "waitFor" doesn't work across multiple views.
-        const waitFor = asArray(this.config.waitFor)
-          .map(({ _handlerTag, ...props }) => {
-            return Module.getGestureHandlerNode(_handlerTag);
-          })
-          .filter(v => v);
         // Only process if there are views to wait for.
-        if (waitFor.length) {
-          // Get the list of gestures that this gesture is still waiting for.
-          // Use `=== false` in case a ref that isn't a gesture handler is used.
-          const stillWaiting = waitFor.filter(
-            gesture => gesture.hasGestureFailed === false
-          );
-
+        const stillWaiting = this._getPendingGestures();
+        // This gesture should continue waiting.
+        if (stillWaiting.length) {
           // Check to see if one of the gestures you're waiting for has started.
           // If it has then the gesture should fail.
           for (const gesture of stillWaiting) {
@@ -764,18 +675,16 @@ class GestureHandler {
               return false;
             }
           }
-
-          // This gesture should continue waiting.
-          if (stillWaiting.length) {
-            return false;
-          }
+          // This gesture shouldn't start until the others have finished.
+          return false;
         }
 
-        if (!inputData || !recognizer.options) {
+        // Use default behaviour
+        if (!this._hasCustomActivationCriteria) {
           return true;
         }
 
-        const { success, failed } = this.enabled(this.config, recognizer, {
+        const { success, failed } = this.enabled(this.getConfig(), recognizer, {
           ...inputData,
           deltaRotation:
             this.__initialRotation == null
@@ -801,9 +710,7 @@ class GestureHandler {
   };
 }
 
-class RotationGestureHandler extends GestureHandler {
-  name = 'rotate';
-
+class IndiscreteGestureHandler extends GestureHandler {
   update({ minPointers = 2, maxPointers = 2, ...props }) {
     return super.update({
       minPointers,
@@ -812,21 +719,30 @@ class RotationGestureHandler extends GestureHandler {
     });
   }
 
+  get shouldEnableGestureOnSetup() {
+    return false;
+  }
+
   enabled(
     { minPointers, maxPointers, maxDist },
     recognizer,
     { maxPointers: pointerLength, deltaX: dx, deltaY: dy }
   ) {
-    if (typeof pointerLength === 'undefined') {
-      return { success: false };
+    if (pointerLength > maxPointers) {
+      return { failed: true };
     }
-    const validPointerCount =
-      pointerLength >= minPointers && pointerLength <= maxPointers;
+    const validPointerCount = pointerLength >= minPointers;
     return {
       success: validPointerCount,
-      failed: pointerLength > maxPointers,
     };
   }
+}
+
+class RotationGestureHandler extends IndiscreteGestureHandler {
+  get name() {
+    return 'rotate';
+  }
+
   start({ manager, props }) {
     manager.add(new Hammer.Rotate({ pointers: props.minPointers }));
   }
@@ -841,31 +757,9 @@ class RotationGestureHandler extends GestureHandler {
   }
 }
 
-class PinchGestureHandler extends GestureHandler {
-  name = 'pinch';
-
-  update({ minPointers = 2, maxPointers = 2, ...props }) {
-    return super.update({
-      minPointers,
-      maxPointers,
-      ...props,
-    });
-  }
-
-  enabled(
-    { minPointers, maxPointers, maxDist },
-    recognizer,
-    { maxPointers: pointerLength, deltaX: dx, deltaY: dy }
-  ) {
-    if (typeof pointerLength === 'undefined') {
-      return { success: false };
-    }
-    const validPointerCount =
-      pointerLength >= minPointers && pointerLength <= maxPointers;
-    return {
-      success: validPointerCount,
-      failed: pointerLength > maxPointers,
-    };
+class PinchGestureHandler extends IndiscreteGestureHandler {
+  get name() {
+    return 'pinch';
   }
 
   start({ manager, props }) {
@@ -882,47 +776,324 @@ class PinchGestureHandler extends GestureHandler {
   }
 }
 
+const isnan = v => Number.isNaN(v);
+const TEST_MIN_IF_NOT_NAN = (value, limit) =>
+  !isnan(limit) &&
+  ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit));
+const VEC_LEN_SQ = ({ x = 0, y = 0 } = {}) => x * x + y * y;
+const TEST_MAX_IF_NOT_NAN = (value, max) =>
+  !isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max));
 class PanGestureHandler extends GestureHandler {
-  name = 'pan';
-
+  get name() {
+    return 'pan';
+  }
   getDirection() {
-    return panDirectionForConfig(this.config);
+    const config = this.getConfig();
+    const {
+      activeOffsetXStart,
+      activeOffsetXEnd,
+      activeOffsetYStart,
+      activeOffsetYEnd,
+      minDist,
+    } = config;
+    let directions = [];
+    let horizontalDirections = [];
+
+    console.log('panDirectionForConfig', config);
+    // sigh
+    if (!isnan(minDist)) {
+      return Hammer.DIRECTION_ALL;
+    }
+
+    if (!isnan(activeOffsetXStart))
+      horizontalDirections.push(Hammer.DIRECTION_LEFT);
+    if (!isnan(activeOffsetXEnd))
+      horizontalDirections.push(Hammer.DIRECTION_RIGHT);
+    if (horizontalDirections.length === 2)
+      horizontalDirections = [Hammer.DIRECTION_HORIZONTAL];
+
+    directions = directions.concat(horizontalDirections);
+    let verticalDirections = [];
+
+    if (!isnan(activeOffsetYStart))
+      verticalDirections.push(Hammer.DIRECTION_UP);
+    if (!isnan(activeOffsetYEnd))
+      verticalDirections.push(Hammer.DIRECTION_DOWN);
+
+    if (verticalDirections.length === 2)
+      verticalDirections = [Hammer.DIRECTION_VERTICAL];
+
+    directions = directions.concat(verticalDirections);
+
+    if (!directions.length) {
+      return Hammer.DIRECTION_NONE;
+    }
+    if (
+      directions[0] === Hammer.DIRECTION_HORIZONTAL &&
+      directions[1] === Hammer.DIRECTION_VERTICAL
+    ) {
+      return Hammer.DIRECTION_ALL;
+    }
+    if (horizontalDirections.length && verticalDirections.length) {
+      return Hammer.DIRECTION_ALL;
+    }
+
+    return directions[0];
+  }
+
+  getConfig() {
+    if (!this._hasCustomActivationCriteria) {
+      // Default config
+      // If no params have been defined then this config should emulate the native gesture as closely as possible.
+      return {
+        minDistSq: 10,
+      };
+    }
+    return this.config;
+  }
+
+  shouldFailUnderCustomCriteria(
+    { x, y },
+    { failOffsetXStart, failOffsetXEnd, failOffsetYStart, failOffsetYEnd }
+  ) {
+    return (
+      (!isnan(failOffsetXStart) && x < failOffsetXStart) ||
+      (!isnan(failOffsetXEnd) && x > failOffsetXEnd) ||
+      (!isnan(failOffsetYStart) && y < failOffsetYStart) ||
+      (!isnan(failOffsetYEnd) && y > failOffsetYEnd)
+    );
+  }
+
+  shouldActivateUnderCustomCriteria(
+    { x, y, velocity },
+    {
+      activeOffsetXStart,
+      activeOffsetXEnd,
+      activeOffsetYStart,
+      activeOffsetYEnd,
+      minDistSq,
+      minVelocityX,
+      minVelocityY,
+      minVelocitySq,
+    }
+  ) {
+    if (!isnan(activeOffsetXStart) && x < activeOffsetXStart) {
+      return true;
+    }
+    if (!isnan(activeOffsetXEnd) && x > activeOffsetXEnd) {
+      return true;
+    }
+    if (!isnan(activeOffsetYStart) && y < activeOffsetYStart) {
+      return true;
+    }
+    if (!isnan(activeOffsetYEnd) && y > activeOffsetYEnd) {
+      return true;
+    }
+
+    if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ({ x, y }), minDistSq)) {
+      return true;
+    }
+
+    if (TEST_MIN_IF_NOT_NAN(velocity.x, minVelocityX)) {
+      return true;
+    }
+    if (TEST_MIN_IF_NOT_NAN(velocity.y, minVelocityY)) {
+      return true;
+    }
+    if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ(velocity), minVelocitySq)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  _shouldMultiFingerPanFail({ pointerLength, scale, deltaRotation }) {
+    if (pointerLength <= 1) {
+      return false;
+    }
+
+    // Test if the pan had too much pinching or rotating.
+    const deltaScale = Math.abs(scale - 1);
+    const absDeltaRotation = Math.abs(deltaRotation);
+    if (deltaScale > MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD) {
+      // > If the threshold doesn't seem right.
+      // You can log the value which it failed at here:
+      // console.log('Pan failed: scale: ', deltaScale);
+      return true;
+    }
+    if (absDeltaRotation > MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD) {
+      // > If the threshold doesn't seem right.
+      // You can log the value which it failed at here:
+      // console.log('Pan failed: rotate: ', absDeltaRotation);
+      return true;
+    }
+
+    return false;
+  }
+
+  updateHasCustomActivationCriteria({
+    minDistSq,
+    minVelocityX,
+    activeOffsetXStart,
+    activeOffsetYStart,
+    minVelocityY,
+    activeOffsetXEnd,
+    activeOffsetYEnd,
+    minVelocitySq,
+  }) {
+    console.log('updateHasCustomActivationCriteria', {
+      minDistSq,
+      minVelocityX,
+      activeOffsetXStart,
+      activeOffsetYStart,
+      minVelocityY,
+      activeOffsetXEnd,
+      activeOffsetYEnd,
+      minVelocitySq,
+    });
+    return (
+      !isnan(minDistSq) ||
+      !isnan(minVelocityX) ||
+      !isnan(minVelocityY) ||
+      !isnan(minVelocitySq) ||
+      !isnan(activeOffsetXStart) ||
+      !isnan(activeOffsetXEnd) ||
+      !isnan(activeOffsetYStart) ||
+      !isnan(activeOffsetYEnd)
+    );
   }
 
   update({
-    minVelocity = 0,
-    minVelocityX = 0,
-    minVelocityY = 0,
-    minPointers = 1,
-    maxPointers = 1,
+    minVelocity = Number.NaN,
+    minVelocityX = Number.NaN,
+    minVelocityY = Number.NaN,
+    minPointers = Number.NaN,
+    maxPointers = Number.NaN,
+    minDist = Number.NaN,
+    activeOffsetXStart = Number.NaN,
+    activeOffsetXEnd = Number.NaN,
+    failOffsetXStart = Number.NaN,
+    failOffsetXEnd = Number.NaN,
+    activeOffsetYStart = Number.NaN,
+    activeOffsetYEnd = Number.NaN,
+    failOffsetYStart = Number.NaN,
+    failOffsetYEnd = Number.NaN,
+
     ...props
   }) {
+    // this.validateConfig(this.config)
     return super.update({
       minVelocity,
       minVelocityX,
       minVelocityY,
       minPointers,
       maxPointers,
+      minDist,
+      activeOffsetXStart,
+      activeOffsetXEnd,
+      failOffsetXStart,
+      failOffsetXEnd,
+      activeOffsetYStart,
+      activeOffsetYEnd,
+      failOffsetYStart,
+      failOffsetYEnd,
+
       ...props,
     });
   }
 
-  enabled(props, recognizer, inputData) {
-    return validateCriteria(
-      {
-        ...inputData,
-        recognizer,
-        pointerLength: inputData.maxPointers,
-        velocity: inputData.overallVelocity,
-        vx: inputData.velocityX,
-        vy: inputData.velocityY,
-        dx: inputData.deltaX,
-        dy: inputData.deltaY,
-      },
-      props
-    );
+  validateConfig(config = {}) {
+    const isNum = v => isnan(v) || typeof v === 'number';
+    const isBool = v => typeof v === 'boolean';
+
+    const valid = {
+      enabled: isBool,
+      minDistSq: isNum,
+      minVelocityX: isNum,
+      minVelocityY: isNum,
+      // TODO: Bacon: remove `minVelocity`
+      minVelocity: isNum,
+      minVelocitySq: isNum,
+      activeOffsetXStart: isNum,
+      activeOffsetXEnd: isNum,
+      failOffsetXStart: isNum,
+      failOffsetXEnd: isNum,
+      activeOffsetYStart: isNum,
+      activeOffsetYEnd: isNum,
+      failOffsetYStart: isNum,
+      failOffsetYEnd: isNum,
+      hasCustomActivationCriteria: isBool,
+      minPointers: isNum,
+      maxPointers: isNum,
+    };
+    const keys = Object.keys(valid);
+
+    let invalidKeys = [];
+    for (const key of Object.keys(config)) {
+      if (keys.includes(key)) {
+        if (valid[key](config[key])) {
+          console.warn('Invalid type: ' + key + ': ' + config[key]);
+        }
+      } else {
+        invalidKeys.push(key);
+      }
+    }
+
+    if (invalidKeys.length) {
+      throw new Error('Invalid config props found: ' + invalidKeys.join(', '));
+    }
+    return config;
   }
 
+  get shouldEnableGestureOnSetup() {
+    return true;
+  }
+
+  enabled(props, recognizer, inputData) {
+    const translation = { x: inputData.deltaX, y: inputData.deltaY };
+    if (this.shouldFailUnderCustomCriteria(translation, props)) {
+      return { failed: true };
+    }
+
+    const velocity = { x: inputData.velocityX, y: inputData.velocityY };
+    if (
+      this._hasCustomActivationCriteria &&
+      this.shouldActivateUnderCustomCriteria(
+        { ...translation, velocity },
+        props
+      )
+    ) {
+      if (
+        this._shouldMultiFingerPanFail({
+          pointerLength: inputData.maxPointers,
+          scale: inputData.scale,
+          deltaRotation: inputData.deltaRotation,
+        })
+      ) {
+        return {
+          failed: true,
+        };
+      }
+      return { success: true };
+    }
+
+    return { success: false };
+    // return validateCriteria(
+    //   {
+    //     ...inputData,
+    //     recognizer,
+    //     pointerLength: inputData.maxPointers,
+    //     velocity: inputData.overallVelocity,
+    //     vx: inputData.velocityX,
+    //     vy: inputData.velocityY,
+    //     dx: inputData.deltaX,
+    //     dy: inputData.deltaY,
+    //   },
+    //   props
+    // );
+  }
+
+  // The event object that is returned
   filter({
     translationX,
     translationY,
@@ -954,22 +1125,104 @@ class PanGestureHandler extends GestureHandler {
   }
 }
 
-class TapGestureHandler extends GestureHandler {
-  name = 'tap';
-  isDiscrete = true;
+class DiscreteGestureHandler extends GestureHandler {
+  get isDiscrete() {
+    return true;
+  }
+
+  shouldFailUnderCustomCriteria({ x, y }, { maxDeltaX, maxDeltaY, maxDistSq }) {
+    // TODO: Bacon:
+    // if (_gestureHandler.shouldCancelWhenOutside) {
+    //   if (![_gestureHandler containsPointInView]) {
+    //     return YES;
+    //   }
+    // }
+    return (
+      TEST_MAX_IF_NOT_NAN(Math.abs(x), maxDeltaX) ||
+      TEST_MAX_IF_NOT_NAN(Math.abs(y), maxDeltaY) ||
+      TEST_MAX_IF_NOT_NAN(Math.abs(y * y + x + x), maxDistSq)
+    );
+  }
+
+  filter({ x, y, absoluteX, absoluteY }) {
+    return {
+      x,
+      y,
+      absoluteX,
+      absoluteY,
+    };
+  }
+
+  get shouldEnableGestureOnSetup() {
+    return true;
+  }
+
+  enabled(
+    { minPointers, maxPointers, maxDist, maxDeltaX, maxDeltaY, maxDistSq },
+    recognizer,
+    { maxPointers: pointerLength, deltaX: dx, deltaY: dy }
+  ) {
+    const translation = { x: dx, y: dy };
+    if (
+      this.shouldFailUnderCustomCriteria(translation, {
+        maxDeltaX,
+        maxDeltaY,
+        maxDistSq,
+      })
+    ) {
+      return { failed: true };
+    }
+
+    const validPointerCount =
+      pointerLength >= minPointers && pointerLength <= maxPointers;
+
+    console.log(
+      'Tap.enable:',
+      dx,
+      dy,
+      validPointerCount,
+      pointerLength,
+      minPointers,
+      maxPointers
+    );
+    // A user probably won't land a multi-pointer tap on the first tick (so we cannot just cancel each time)
+    // but if the gesture is running and the user adds or subtracts another pointer then it should fail.
+    if (!validPointerCount && this.isGestureRunning) {
+      return { failed: true };
+    }
+    return { success: validPointerCount };
+    // return { failed: true };
+  }
+}
+
+class TapGestureHandler extends DiscreteGestureHandler {
+  get name() {
+    return 'tap';
+  }
+
+  get _tapsSoFar() {
+    return this._successfulTaps.length;
+  }
+
   update({
-    minDurationMs: time = 525,
-    numberOfTaps: taps = 1,
-    maxDelayMs: interval = 300,
+    maxDeltaX = Number.NaN,
+    maxDeltaY = Number.NaN,
+    maxDuration = Number.NaN,
+    numberOfTaps = 1,
+    minDurationMs = 525,
+    maxDelayMs = Number.NaN,
     maxDist = 2,
     minPointers = 1,
     maxPointers = 1,
+    // minDurationMs: time = 525,
+    // numberOfTaps: taps = 1,
+    // maxDelayMs: interval = 300,
     ...props
   }) {
     console.log('update', {
-      time,
-      taps,
-      interval,
+      // time,
+      // taps,
+      // interval,
       maxDist,
       minPointers,
       maxPointers,
@@ -977,9 +1230,12 @@ class TapGestureHandler extends GestureHandler {
     });
 
     return super.update({
-      time,
-      taps,
-      interval,
+      numberOfTaps,
+      maxDeltaX,
+      maxDeltaY,
+      maxDuration,
+      minDurationMs,
+      maxDelayMs,
       maxDist,
       minPointers,
       maxPointers,
@@ -1003,59 +1259,14 @@ class TapGestureHandler extends GestureHandler {
     }
   }
 
-  enabled(
-    { minPointers, maxPointers, maxDist },
-    recognizer,
-    { maxPointers: pointerLength, deltaX: dx, deltaY: dy }
-  ) {
-    if (typeof pointerLength === 'undefined') {
-      return { success: true };
-    }
-
-    const validPointerCount =
-      pointerLength >= minPointers && pointerLength <= maxPointers;
-    const isWithinBounds =
-      valueInRange(dx, maxDist) && valueInRange(dy, maxDist);
-
-    console.log(
-      'Tap.enable:',
-      dx,
-      dy,
-      isWithinBounds,
-      validPointerCount,
-      pointerLength,
-      minPointers,
-      maxPointers
-    );
-    if (!isWithinBounds) {
-      return { failed: true };
-    }
-
-    // A user probably won't land a multi-pointer tap on the first tick (so we cannot just cancel each time)
-    // but if the gesture is running and the user adds or subtracts another pointer then it should fail.
-    if (!validPointerCount && this.isGestureRunning) {
-      return { failed: true };
-    }
-    return { success: validPointerCount };
-    // return { failed: true };
-  }
-
   start({ manager, props }) {
     manager.add(new Hammer.Tap({ pointers: props.minPointers }));
   }
-
-  filter({ x, y, absoluteX, absoluteY }) {
-    return {
-      x,
-      y,
-      absoluteX,
-      absoluteY,
-    };
-  }
 }
-class LongPressGestureHandler extends GestureHandler {
-  name = 'press';
-  isDiscrete = true;
+class LongPressGestureHandler extends DiscreteGestureHandler {
+  get name() {
+    return 'press';
+  }
 
   getState(type) {
     return {
@@ -1082,54 +1293,8 @@ class LongPressGestureHandler extends GestureHandler {
     });
   }
 
-  enabled(
-    { minPointers, maxPointers, maxDist },
-    recognizer,
-    { maxPointers: pointerLength, deltaX: dx, deltaY: dy }
-  ) {
-    if (typeof pointerLength === 'undefined') {
-      return { success: true };
-    }
-
-    const validPointerCount =
-      pointerLength >= minPointers && pointerLength <= maxPointers;
-    const isWithinBounds =
-      valueInRange(dx, maxDist) && valueInRange(dy, maxDist);
-
-    console.log(
-      'Press.enable:',
-      dx,
-      dy,
-      isWithinBounds,
-      validPointerCount,
-      pointerLength,
-      minPointers,
-      maxPointers
-    );
-    if (!isWithinBounds) {
-      return { failed: true };
-    }
-
-    // A user probably won't land a multi-pointer tap on the first tick (so we cannot just cancel each time)
-    // but if the gesture is running and the user adds or subtracts another pointer then it should fail.
-    if (!validPointerCount && this.isGestureRunning) {
-      return { failed: true };
-    }
-    return { success: validPointerCount };
-    // return { failed: true };
-  }
-
   start({ manager, props }) {
     manager.add(new Hammer.Press({ pointers: props.minPointers }));
-  }
-
-  filter({ scale, velocity, focalX, focalY }) {
-    return {
-      scale,
-      velocity,
-      focalX,
-      focalY,
-    };
   }
 }
 
