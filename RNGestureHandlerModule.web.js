@@ -6,6 +6,13 @@ const MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD = 0.1;
 const MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD = 7;
 const DEG_RAD = Math.PI / 180;
 
+const isnan = v => Number.isNaN(v);
+const TEST_MIN_IF_NOT_NAN = (value, limit) =>
+  !isnan(limit) && ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit));
+const VEC_LEN_SQ = ({ x = 0, y = 0 } = {}) => x * x + y * y;
+const TEST_MAX_IF_NOT_NAN = (value, max) =>
+  !isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max));
+  
 // Used for sending data to a callback or AnimatedEvent
 function invokeNullableMethod(name, method, event) {
   if (method) {
@@ -591,82 +598,80 @@ class GestureHandler {
 
   sync = () => {
     const gesture = this.hammer.get(this.name);
-
     if (!gesture) return;
 
+    const enable = (recognizer, inputData = {}) => {
+      if (!this.config.enabled) {
+        this.isGestureRunning = false;
+        this.hasGestureFailed = false;
+        return false;
+      }
+
+      // Prevent events before the system is ready.
+      if (!inputData || !recognizer.options || isUndefined(inputData.maxPointers)) {
+        return this.shouldEnableGestureOnSetup;
+      }
+
+      if (this.hasGestureFailed) {
+        return false;
+      }
+
+      if (this.isGestureRunning && !this.isDiscrete) {
+        return true;
+      }
+
+      if (!this.isDiscrete) {
+        // The built-in hammer.js "waitFor" doesn't work across multiple views.
+        // Only process if there are views to wait for.
+        this._stillWaiting = this._getPendingGestures();
+        // This gesture should continue waiting.
+        if (this._stillWaiting.length) {
+          // Check to see if one of the gestures you're waiting for has started.
+          // If it has then the gesture should fail.
+          for (const gesture of this._stillWaiting) {
+            // When the target gesture has started, this gesture must force fail.
+            if (!gesture.isDiscrete && gesture.isGestureRunning) {
+              // console.log('Force fail: ', input.name);
+              this.hasGestureFailed = true;
+              this.isGestureRunning = false;
+              return false;
+            }
+          }
+          // This gesture shouldn't start until the others have finished.
+          return false;
+        }
+      }
+
+      // Use default behaviour
+      if (!this._hasCustomActivationCriteria) {
+        return true;
+      }
+
+      const deltaRotation =
+        this.__initialRotation == null ? 0 : inputData.rotation - this.__initialRotation;
+      const { success, failed } = this.enabled(this.getConfig(), recognizer, {
+        ...inputData,
+        deltaRotation,
+      });
+
+      if (failed) {
+        // Simulate cancel event
+        if (this.isDiscrete) {
+          // Long press never starts so we can't rely on the running event boolean.
+          if (this.name === 'press') {
+            this._cancelEvent(inputData);
+          } else if (this.isGestureRunning) {
+            this._cancelEvent(inputData);
+          }
+        }
+        this.hasGestureFailed = true;
+      }
+      return success;
+    };
+    
     const params = this._getHammerConfig();
-    console.log('params', params);
-    gesture.set({
-      ...params,
-      enable: (recognizer, inputData = {}) => {
-        if (!this.config.enabled) {
-          this.isGestureRunning = false;
-          this.hasGestureFailed = false;
-          return false;
-        }
 
-        // Prevent events before the system is ready.
-        if (!inputData || !recognizer.options || isUndefined(inputData.maxPointers)) {
-          return this.shouldEnableGestureOnSetup;
-        }
-
-        if (this.hasGestureFailed) {
-          return false;
-        }
-
-        if (this.isGestureRunning && !this.isDiscrete) {
-          return true;
-        }
-
-        if (!this.isDiscrete) {
-          // The built-in hammer.js "waitFor" doesn't work across multiple views.
-          // Only process if there are views to wait for.
-          this._stillWaiting = this._getPendingGestures();
-          // This gesture should continue waiting.
-          if (this._stillWaiting.length) {
-            // Check to see if one of the gestures you're waiting for has started.
-            // If it has then the gesture should fail.
-            for (const gesture of this._stillWaiting) {
-              // When the target gesture has started, this gesture must force fail.
-              if (!gesture.isDiscrete && gesture.isGestureRunning) {
-                // console.log('Force fail: ', input.name);
-                this.hasGestureFailed = true;
-                this.isGestureRunning = false;
-                return false;
-              }
-            }
-            // This gesture shouldn't start until the others have finished.
-            return false;
-          }
-        }
-
-        // Use default behaviour
-        if (!this._hasCustomActivationCriteria) {
-          return true;
-        }
-
-        const deltaRotation =
-          this.__initialRotation == null ? 0 : inputData.rotation - this.__initialRotation;
-        const { success, failed } = this.enabled(this.getConfig(), recognizer, {
-          ...inputData,
-          deltaRotation,
-        });
-
-        if (failed) {
-          // Simulate cancel event
-          if (this.isDiscrete) {
-            // Long press never starts so we can't rely on the running event boolean.
-            if (this.name === 'press') {
-              this._cancelEvent(inputData);
-            } else if (this.isGestureRunning) {
-              this._cancelEvent(inputData);
-            }
-          }
-          this.hasGestureFailed = true;
-        }
-        return success;
-      },
-    });
+    gesture.set({ ...params, enable });
   };
 }
 
@@ -686,7 +691,7 @@ class IndiscreteGestureHandler extends GestureHandler {
   enabled(
     { minPointers, maxPointers },
     recognizer,
-    { maxPointers: pointerLength, deltaX: dx, deltaY: dy }
+    { maxPointers: pointerLength }
   ) {
     if (pointerLength > maxPointers) {
       return { failed: true };
@@ -736,12 +741,6 @@ class PinchGestureHandler extends IndiscreteGestureHandler {
   }
 }
 
-const isnan = v => Number.isNaN(v);
-const TEST_MIN_IF_NOT_NAN = (value, limit) =>
-  !isnan(limit) && ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit));
-const VEC_LEN_SQ = ({ x = 0, y = 0 } = {}) => x * x + y * y;
-const TEST_MAX_IF_NOT_NAN = (value, max) =>
-  !isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max));
 class PanGestureHandler extends GestureHandler {
   get name() {
     return 'pan';
