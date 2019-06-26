@@ -428,30 +428,36 @@ class GestureHandler {
     invokeNullableMethod('onHandlerStateChange', onHandlerStateChange, event);
   };
 
-  _onEnd(event) {
-    this.isGestureRunning = false;
+  _cancelPendingGestures(event) {
     for (const gesture of Object.values(this.pendingGestures)) {
-      if (gesture.isGestureRunning) {
+      if (gesture && gesture.isGestureRunning) {
         gesture.hasGestureFailed = true;
-        // TODO: Send Event
         gesture._cancelEvent(event);
       }
     }
-    console.log(`${this.name}.end`);
   }
 
-  _cancelEvent = event => {
+  _notifyPendingGestures() {
     for (const gesture of Object.values(this.pendingGestures)) {
-      gesture.onWaitingEnded(this);
+      if (gesture) {
+        gesture.onWaitingEnded(this);
+      }
     }
+  }
+
+  _onEnd(event) {
+    this.isGestureRunning = false;
+    this._cancelPendingGestures(event);
+  }
+
+  _cancelEvent(event) {
+    this._notifyPendingGestures();
     this._sendEvent({
       ...event,
       eventType: Hammer.INPUT_CANCEL,
       isFinal: true,
     });
-    this._onEnd({
-      ...event,
-    });
+    this._onEnd(event);
   };
 
   onRawEvent(ev) {
@@ -538,8 +544,8 @@ class GestureHandler {
 
   setupEvents() {
     if (!this.isDiscrete) {
-      this.hammer.on(`${this.name}start`, this.onStart);
-      this.hammer.on(`${this.name}end ${this.name}cancel`, this._onEnd);
+      this.hammer.on(`${this.name}start`, event => this.onStart(event));
+      this.hammer.on(`${this.name}end ${this.name}cancel`, (event) => this._onEnd(event));
     }
     this.hammer.on(this.name, ev => this.onMainEvent(ev));
   }
@@ -617,10 +623,10 @@ class GestureHandler {
           // Only process if there are views to wait for.
           this._stillWaiting = this._getPendingGestures();
           // This gesture should continue waiting.
-          if (stillWaiting.length) {
+          if (this._stillWaiting.length) {
             // Check to see if one of the gestures you're waiting for has started.
             // If it has then the gesture should fail.
-            for (const gesture of stillWaiting) {
+            for (const gesture of this._stillWaiting) {
               // When the target gesture has started, this gesture must force fail.
               if (!gesture.isDiscrete && gesture.isGestureRunning) {
                 // console.log('Force fail: ', input.name);
