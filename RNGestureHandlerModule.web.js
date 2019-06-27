@@ -40,10 +40,6 @@ function invokeNullableMethod(name, method, event) {
   }
 }
 
-// const bindNumericValue = (key, config) => {
-//   if (key in config && config[key] != null) return config[key];
-//   return Number.isNaN;
-// };
 // Validate the props
 function ensureConfig(config) {
   const props = { ...config };
@@ -60,16 +56,6 @@ function ensureConfig(config) {
     props.maxDist = config.maxDist;
     props.maxDistSq = config.maxDist * config.maxDist;
   }
-  // if (!('minPointers' in config)) {
-  //   props.minPointers = 1;
-  // }
-
-  // props.maxPointers = Math.max(config.minPointers || 0, config.maxPointers || 0);
-
-  // if (config.minPointers <= 0) {
-  //   throw new Error('minPointers must be larger than 0');
-  // }
-
   if ('waitFor' in config) {
     props.waitFor = asArray(config.waitFor)
       .map(({ _handlerTag }) => Module.getGestureHandlerNode(_handlerTag))
@@ -100,141 +86,8 @@ function ensureConfig(config) {
       props[prop] = Number.NaN;
     }
   });
-
   return props;
 }
-
-// Ensure the ranges work the same as native
-// function getRangeValue(value) {
-//   if (Array.isArray(value)) {
-//     if (!value.length || value.length > 2) {
-//       throw new Error('Range value must only contain 2 values');
-//     } else if (value.length === 1) {
-//       return getRangeValue(value[0]);
-//     }
-//     return value;
-//   } else {
-//     return value < 0 ? [value, Number.MAX_SAFE_INTEGER] : [-Number.MAX_SAFE_INTEGER, value];
-//   }
-// }
-
-function getLegacyRangeValue(value) {
-  if (Array.isArray(value)) {
-    if (!value.length || value.length > 2) {
-      throw new Error('Range value must only contain 2 values');
-    } else if (value.length === 1) {
-      return getLegacyRangeValue(value[0]);
-    }
-    return value;
-  } else {
-    return value < 0 ? [value, -value] : [-value, value];
-  }
-}
-
-// const valueInRange = (value, range) => value >= range[0] && value <= range[1];
-
-// const valueOutOfRange = (value, range) => value <= range[0] || value >= range[1];
-
-// const getVectorLength = (x, y) => Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-
-// function validateCriteria(
-//   { recognizer, pointerLength, velocity, vx, vy, dx, dy, ...inputData },
-//   {
-//     minPointers,
-//     maxPointers,
-//     minDist,
-//     minVelocity,
-//     minVelocityX,
-//     minVelocityY,
-//     failOffsetXStart,
-//     failOffsetXEnd,
-//     failOffsetYStart,
-//     failOffsetYEnd,
-//     activeOffsetXStart,
-//     activeOffsetXEnd,
-//     activeOffsetYStart,
-//     activeOffsetYEnd,
-//   }
-// ) {
-//   if (isUndefined(pointerLength)) {
-//     return { success: true };
-//   }
-//   const validPointerCount = pointerLength >= minPointers && pointerLength <= maxPointers;
-
-//   let isFastEnough = Math.abs(velocity) >= minVelocity;
-
-//   if (isFastEnough && typeof minVelocityX !== 'undefined' && Math.abs(vx) < minVelocityX) {
-//     isFastEnough = false;
-//   }
-//   if (isFastEnough && typeof minVelocityY !== 'undefined' && Math.abs(vy) < minVelocityY) {
-//     isFastEnough = false;
-//   }
-
-//   let isWithinBounds =
-//     valueInRange(dx, [failOffsetXStart, failOffsetXEnd]) &&
-//     valueInRange(dy, [failOffsetYStart, failOffsetYEnd]);
-
-//   if (!isWithinBounds) {
-//     console.log('OOB', dx, [failOffsetXStart, failOffsetXEnd], dy, [
-//       failOffsetYStart,
-//       failOffsetYEnd,
-//     ]);
-//     return { failed: true };
-//   }
-
-//   let isLongEnough = true;
-//   // Order here matters for parity reasons.
-//   if (isLongEnough && minDist != null) {
-//     isLongEnough = getVectorLength(dx, dy) >= minDist;
-//   }
-
-//   if (isLongEnough) {
-//     isLongEnough = valueOutOfRange(dx, [activeOffsetXStart, activeOffsetXEnd]);
-//   }
-
-//   if (isLongEnough) {
-//     isLongEnough = valueOutOfRange(dy, [activeOffsetYStart, activeOffsetYEnd]);
-//   }
-//   console.log('Test', isLongEnough);
-
-//   // console.log("TEST", {
-//   //   failOffsetXStart, failOffsetXEnd,
-//   //   failOffsetYStart, failOffsetYEnd,
-//   //   activeOffsetXStart, activeOffsetXEnd,
-//   //   activeOffsetYStart, activeOffsetYEnd,
-//   // })
-
-//   // We only use validateCriteria for panning.
-//   // If this changes, then we'll need to check for the gesture type.
-//   if (validPointerCount && pointerLength > 1) {
-//     // Test if the pan had too much pinching or rotating.
-//     const deltaScale = Math.abs(inputData.scale - 1);
-//     const deltaRotation = Math.abs(inputData.deltaRotation);
-//     if (deltaScale > MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD) {
-//       // > If the threshold doesn't seem right.
-//       // You can log the value which it failed at here:
-//       // console.log('Pan failed: scale: ', deltaScale);
-
-//       return {
-//         success: false,
-//         failed: true,
-//       };
-//     }
-//     if (deltaRotation > MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD) {
-//       // > If the threshold doesn't seem right.
-//       // You can log the value which it failed at here:
-//       // console.log('Pan failed: rotate: ', deltaRotation);
-//       return {
-//         success: false,
-//         failed: true,
-//       };
-//     }
-//   }
-
-//   return {
-//     success: validPointerCount && isFastEnough && isLongEnough,
-//   };
-// }
 
 function asArray(value) {
   return value == null ? [] : Array.isArray(value) ? value : [value];
@@ -262,6 +115,18 @@ const isUndefined = v => typeof v === 'undefined';
 let _gestureInstances = 0;
 
 class GestureHandler {
+
+  isGestureRunning = false;
+  hasGestureFailed = false;
+  view = null;
+  config = {};
+  hammer = null;
+  pendingGestures = {};
+
+  get id() {
+    return `${this.name}${this._gestureInstance}`;
+  }
+
   get isDiscrete() {
     return false;
   }
@@ -270,20 +135,9 @@ class GestureHandler {
     this._gestureInstance = _gestureInstances++;
   }
 
-  get id() {
-    return `${this.name}${this._gestureInstance}`;
-  }
-
   getConfig() {
     return this.config;
   }
-
-  isGestureRunning = false;
-  hasGestureFailed = false;
-  view = null;
-  config = {};
-  hammer = null;
-  pendingGestures = {};
 
   onWaitingEnded(gesture) {
     console.warn('onWaitingEnded!', gesture.id);
@@ -579,7 +433,7 @@ class GestureHandler {
   }
 
   onMainEvent(ev) {
-    console.log(`${this.name}.event`, ev);
+    // console.log(`${this.name}.event`, ev);
     this._sendEvent(ev);
   }
 
@@ -1206,7 +1060,6 @@ class TapGestureHandler extends DiscreteGestureHandler {
       // Tap Gesture start event
       const gesture = this.hammer.get(this.name);
       if (gesture.options.enable(gesture, ev)) {
-        console.log(`${this.name}.start`);
         clearTimeout(this._multiTapTimer);
 
         this.onStart(ev);
@@ -1240,16 +1093,6 @@ class TapGestureHandler extends DiscreteGestureHandler {
     maxPointers = 1,
     ...props
   }) {
-    console.log('update', {
-      // time,
-      // taps,
-      // interval,
-      maxDist,
-      minPointers,
-      maxPointers,
-      ...props,
-    });
-
     return super.update({
       shouldCancelWhenOutside,
       numberOfTaps,
@@ -1346,10 +1189,13 @@ class PressGestureHandler extends DiscreteGestureHandler {
     this.isGestureRunning = true;
     clearTimeout(this._delaysContentTouchesTimer);
     this._initialEvent = ev;
-    this._delaysContentTouchesTimer = setTimeout(() => {
-      this._sendGestureStartedEvent(this._initialEvent);
-      this._initialEvent = null;
-    }, this.shouldDelayTouches ? CONTENT_TOUCHES_DELAY : 1);
+    this._delaysContentTouchesTimer = setTimeout(
+      () => {
+        this._sendGestureStartedEvent(this._initialEvent);
+        this._initialEvent = null;
+      },
+      this.shouldDelayTouches ? CONTENT_TOUCHES_DELAY : 1
+    );
   }
 
   _sendGestureStartedEvent(ev) {
@@ -1514,7 +1360,7 @@ const Gestures = {
 let _gestureCache = {};
 
 const Module = {
-  get Directions() {
+  get Direction() {
     return {
       RIGHT: 1,
       LEFT: 2,
@@ -1567,10 +1413,10 @@ const EventMap = {
 };
 
 const DirectionMap = {
-  [Hammer.DIRECTION_RIGHT]: Module.Directions.RIGHT,
-  [Hammer.DIRECTION_LEFT]: Module.Directions.LEFT,
-  [Hammer.DIRECTION_UP]: Module.Directions.UP,
-  [Hammer.DIRECTION_DOWN]: Module.Directions.DOWN,
+  [Hammer.DIRECTION_RIGHT]: Module.Direction.RIGHT,
+  [Hammer.DIRECTION_LEFT]: Module.Direction.LEFT,
+  [Hammer.DIRECTION_UP]: Module.Direction.UP,
+  [Hammer.DIRECTION_DOWN]: Module.Direction.DOWN,
 };
 
 export default Module;
