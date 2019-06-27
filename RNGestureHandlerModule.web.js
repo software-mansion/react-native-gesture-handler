@@ -161,8 +161,8 @@ class GestureHandler {
     return nativeEvent;
   }
 
-  start({ manager, props }) {
-    throw new Error('Must override GestureHandler.start()');
+  createNativeGesture({ manager, props }) {
+    throw new Error('Must override GestureHandler.createNativeGesture()');
   }
 
   updateHasCustomActivationCriteria(config) {
@@ -390,7 +390,7 @@ class GestureHandler {
     this.previousState = State.UNDETERMINED;
     this.initialRotation = 0;
 
-    this.start({ manager: this.hammer, props: this.getConfig() });
+    this.createNativeGesture({ manager: this.hammer, props: this.getConfig() });
 
     this.hammer.on('hammer.input', ev => {
       if (!this.config.enabled) {
@@ -572,7 +572,7 @@ class RotationGestureHandler extends IndiscreteGestureHandler {
     return 'rotate';
   }
 
-  start({ manager, props }) {
+  createNativeGesture({ manager, props }) {
     manager.add(new Hammer.Rotate({ pointers: props.minPointers }));
   }
 
@@ -591,7 +591,7 @@ class PinchGestureHandler extends IndiscreteGestureHandler {
     return 'pinch';
   }
 
-  start({ manager, props }) {
+  createNativeGesture({ manager, props }) {
     manager.add(new Hammer.Pinch({ pointers: props.minPointers }));
   }
 
@@ -729,7 +729,16 @@ class FlingGestureHandler extends GestureHandler {
   }
 
   // The event object that is returned
-  parseNativeEvent({ translationX, translationY, velocityX, velocityY, x, y, absoluteX, absoluteY }) {
+  parseNativeEvent({
+    translationX,
+    translationY,
+    velocityX,
+    velocityY,
+    x,
+    y,
+    absoluteX,
+    absoluteY,
+  }) {
     return {
       translationX,
       translationY,
@@ -754,7 +763,7 @@ class FlingGestureHandler extends GestureHandler {
     });
   }
 
-  start({ manager, props }) {
+  createNativeGesture({ manager, props }) {
     manager.add(
       new Hammer.Swipe({
         pointers: props.minPointers,
@@ -1062,7 +1071,16 @@ class PanGestureHandler extends GestureHandler {
   }
 
   // The event object that is returned
-  parseNativeEvent({ translationX, translationY, velocityX, velocityY, x, y, absoluteX, absoluteY }) {
+  parseNativeEvent({
+    translationX,
+    translationY,
+    velocityX,
+    velocityY,
+    x,
+    y,
+    absoluteX,
+    absoluteY,
+  }) {
     return {
       translationX,
       translationY,
@@ -1075,7 +1093,7 @@ class PanGestureHandler extends GestureHandler {
     };
   }
 
-  start({ manager, props }) {
+  createNativeGesture({ manager, props }) {
     manager.add(
       new Hammer.Pan({
         pointers: props.minPointers,
@@ -1265,7 +1283,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
     }
   }
 
-  start({ manager, props }) {
+  createNativeGesture({ manager, props }) {
     manager.add(
       new Hammer.Tap({
         taps: props.numberOfTaps,
@@ -1403,7 +1421,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
     });
   }
 
-  start({ manager, props }) {
+  createNativeGesture({ manager, props }) {
     manager.add(new Hammer.Press({ pointers: props.minPointers }));
   }
 }
@@ -1486,7 +1504,7 @@ class LongPressGestureHandler extends PressGestureHandler {
 }
 
 class UnimplementedGestureHandler extends GestureHandler {
-  start() {}
+  createNativeGesture() {}
 }
 
 const Gestures = {
