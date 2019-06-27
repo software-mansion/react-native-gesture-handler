@@ -2,6 +2,9 @@ import Hammer from 'hammerjs';
 import { findNodeHandle } from 'react-native';
 import State from './State';
 
+const CONTENT_TOUCHES_DELAY = 240;
+const CONTENT_TOUCHES_QUICK_TAP_END_DELAY = 50;
+
 const MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD = 0.1;
 const MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD = 7;
 const DEG_RAD = Math.PI / 180;
@@ -154,7 +157,7 @@ class GestureHandler {
     return { success: true };
   }
 
-  filter(nativeEvent) {
+  parseNativeEvent(nativeEvent) {
     return nativeEvent;
   }
 
@@ -265,7 +268,7 @@ class GestureHandler {
         numberOfPointers,
         state,
         pointerInside,
-        ...this.filter(nativeEvent),
+        ...this.parseNativeEvent(nativeEvent),
 
         // onHandlerStateChange only
         handlerTag: this.handlerTag,
@@ -573,7 +576,7 @@ class RotationGestureHandler extends IndiscreteGestureHandler {
     manager.add(new Hammer.Rotate({ pointers: props.minPointers }));
   }
 
-  filter({ anchorX, anchorY, velocity, rotation }) {
+  parseNativeEvent({ anchorX, anchorY, velocity, rotation }) {
     return {
       anchorX,
       anchorY,
@@ -592,7 +595,7 @@ class PinchGestureHandler extends IndiscreteGestureHandler {
     manager.add(new Hammer.Pinch({ pointers: props.minPointers }));
   }
 
-  filter({ scale, velocity, focalX, focalY }) {
+  parseNativeEvent({ scale, velocity, focalX, focalY }) {
     return {
       scale,
       velocity,
@@ -726,7 +729,7 @@ class FlingGestureHandler extends GestureHandler {
   }
 
   // The event object that is returned
-  filter({ translationX, translationY, velocityX, velocityY, x, y, absoluteX, absoluteY }) {
+  parseNativeEvent({ translationX, translationY, velocityX, velocityY, x, y, absoluteX, absoluteY }) {
     return {
       translationX,
       translationY,
@@ -1059,7 +1062,7 @@ class PanGestureHandler extends GestureHandler {
   }
 
   // The event object that is returned
-  filter({ translationX, translationY, velocityX, velocityY, x, y, absoluteX, absoluteY }) {
+  parseNativeEvent({ translationX, translationY, velocityX, velocityY, x, y, absoluteX, absoluteY }) {
     return {
       translationX,
       translationY,
@@ -1105,7 +1108,7 @@ class DiscreteGestureHandler extends GestureHandler {
     );
   }
 
-  filter({ x, y, absoluteX, absoluteY, ...props }) {
+  parseNativeEvent({ x, y, absoluteX, absoluteY, ...props }) {
     return {
       x,
       y,
@@ -1140,7 +1143,6 @@ class DiscreteGestureHandler extends GestureHandler {
       return { failed: true };
     }
     return { success: validPointerCount };
-    // return { failed: true };
   }
 }
 
@@ -1273,8 +1275,6 @@ class TapGestureHandler extends DiscreteGestureHandler {
     );
   }
 }
-const CONTENT_TOUCHES_DELAY = 240;
-const CONTENT_TOUCHES_QUICK_TAP_END_DELAY = 50;
 
 class PressGestureHandler extends DiscreteGestureHandler {
   get name() {
