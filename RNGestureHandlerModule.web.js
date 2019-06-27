@@ -96,22 +96,22 @@ function asArray(value) {
   return value == null ? [] : Array.isArray(value) ? value : [value];
 }
 
-const eventTypes = {
-  [Hammer.INPUT_START]: 'START',
-  [Hammer.INPUT_MOVE]: 'MOVE',
-  [Hammer.INPUT_END]: 'END',
-  [Hammer.INPUT_CANCEL]: 'CANCEL',
-};
-const dirrs = {
-  [Hammer.DIRECTION_HORIZONTAL]: 'HORIZONTAL',
-  [Hammer.DIRECTION_UP]: 'UP',
-  [Hammer.DIRECTION_DOWN]: 'DOWN',
-  [Hammer.DIRECTION_VERTICAL]: 'VERTICAL',
-  [Hammer.DIRECTION_NONE]: 'NONE',
-  [Hammer.DIRECTION_ALL]: 'ALL',
-  [Hammer.DIRECTION_RIGHT]: 'RIGHT',
-  [Hammer.DIRECTION_LEFT]: 'LEFT',
-};
+// const eventTypes = {
+//   [Hammer.INPUT_START]: 'START',
+//   [Hammer.INPUT_MOVE]: 'MOVE',
+//   [Hammer.INPUT_END]: 'END',
+//   [Hammer.INPUT_CANCEL]: 'CANCEL',
+// };
+// const dirrs = {
+//   [Hammer.DIRECTION_HORIZONTAL]: 'HORIZONTAL',
+//   [Hammer.DIRECTION_UP]: 'UP',
+//   [Hammer.DIRECTION_DOWN]: 'DOWN',
+//   [Hammer.DIRECTION_VERTICAL]: 'VERTICAL',
+//   [Hammer.DIRECTION_NONE]: 'NONE',
+//   [Hammer.DIRECTION_ALL]: 'ALL',
+//   [Hammer.DIRECTION_RIGHT]: 'RIGHT',
+//   [Hammer.DIRECTION_LEFT]: 'LEFT',
+// };
 
 const isUndefined = v => typeof v === 'undefined';
 
@@ -177,7 +177,7 @@ class GestureHandler {
     }
   };
 
-  update({ enabled = true, ...props }) {
+  updateGestureConfig({ enabled = true, ...props }) {
     this._clearSelfAsPending();
 
     this.config = ensureConfig({ enabled, ...props });
@@ -339,7 +339,7 @@ class GestureHandler {
   }
 
   onRawEvent(ev) {
-    const { isFirst, rotation, isFinal, ...props } = ev;
+    const { isFirst, isFinal, ...props } = ev;
 
     if (isFirst) {
       this.hasGestureFailed = false;
@@ -544,8 +544,8 @@ class GestureHandler {
 }
 
 class IndiscreteGestureHandler extends GestureHandler {
-  update({ minPointers = 2, maxPointers = 2, ...props }) {
-    return super.update({
+  updateGestureConfig({ minPointers = 2, maxPointers = 2, ...props }) {
+    return super.updateGestureConfig({
       minPointers,
       maxPointers,
       ...props,
@@ -751,12 +751,12 @@ class FlingGestureHandler extends GestureHandler {
     };
   }
 
-  update({ numberOfPointers = 1, direction, ...props }) {
+  updateGestureConfig({ numberOfPointers = 1, direction, ...props }) {
     if (isnan(direction) || typeof direction !== 'number') {
       throw new GesturePropError('direction', direction, 'number');
     }
     // this.validateConfig(this.config)
-    return super.update({
+    return super.updateGestureConfig({
       numberOfPointers,
       direction,
       ...props,
@@ -947,7 +947,7 @@ class PanGestureHandler extends GestureHandler {
     );
   }
 
-  update({
+  updateGestureConfig({
     minVelocity = Number.NaN,
     minVelocityX = Number.NaN,
     minVelocityY = Number.NaN,
@@ -966,7 +966,7 @@ class PanGestureHandler extends GestureHandler {
     ...props
   }) {
     // this.validateConfig(this.config)
-    return super.update({
+    return super.updateGestureConfig({
       minVelocity,
       minVelocityX,
       minVelocityY,
@@ -1244,7 +1244,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
     };
   }
 
-  update({
+  updateGestureConfig({
     shouldCancelWhenOutside = true,
     maxDeltaX = Number.NaN,
     maxDeltaY = Number.NaN,
@@ -1257,7 +1257,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
     maxPointers = 1,
     ...props
   }) {
-    return super.update({
+    return super.updateGestureConfig({
       shouldCancelWhenOutside,
       numberOfTaps,
       maxDeltaX,
@@ -1399,7 +1399,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
     }
   }
 
-  update({
+  updateGestureConfig({
     shouldActivateOnStart = false,
     disallowInterruption = false,
     shouldCancelWhenOutside = true,
@@ -1409,7 +1409,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
     maxPointers = 1,
     ...props
   }) {
-    return super.update({
+    return super.updateGestureConfig({
       shouldActivateOnStart,
       disallowInterruption,
       shouldCancelWhenOutside,
@@ -1548,7 +1548,7 @@ const Module = {
     getHandler(handlerTag).setRef(newViewTag);
   },
   updateGestureHandler(handlerTag, newConfig) {
-    getHandler(handlerTag).update(newConfig);
+    getHandler(handlerTag).updateGestureConfig(newConfig);
   },
   getGestureHandlerNode(handlerTag) {
     return getHandler(handlerTag);
