@@ -1293,12 +1293,14 @@ class PressGestureHandler extends DiscreteGestureHandler {
   }
 
   get minDurationMs() {
-    return isnan(this.config.minDurationMs) ? 10 : this.config.minDurationMs;
+    return isnan(this.config.minDurationMs) ? 5 : this.config.minDurationMs;
   }
 
   get maxDist() {
     return isnan(this.config.maxDist) ? 9 : this.config.maxDist;
   }
+
+  shouldDelayTouches = true;
 
   updateHasCustomActivationCriteria({ shouldCancelWhenOutside, maxDistSq }) {
     return shouldCancelWhenOutside || !isnan(maxDistSq);
@@ -1340,6 +1342,17 @@ class PressGestureHandler extends DiscreteGestureHandler {
 
   _onGestureStart(ev) {
     this.isGestureRunning = true;
+    clearTimeout(this._delaysContentTouchesTimer);
+    this._initialEvent = ev;
+    this._delaysContentTouchesTimer = setTimeout(() => {
+      this._sendGestureStartedEvent(this._initialEvent);
+      this._initialEvent = null;
+    }, this.shouldDelayTouches ? 240 : 1);
+  }
+
+  _sendGestureStartedEvent(ev) {
+    clearTimeout(this._delaysContentTouchesTimer);
+    this._delaysContentTouchesTimer = null;
     this._sendEvent({
       ...ev,
       eventType: Hammer.INPUT_MOVE,
@@ -1347,9 +1360,26 @@ class PressGestureHandler extends DiscreteGestureHandler {
     });
   }
 
+  forceInvalidate(event) {
+    super.forceInvalidate(event);
+    clearTimeout(this._delaysContentTouchesTimer);
+    this._delaysContentTouchesTimer = null;
+    this._initialEvent = null;
+  }
+
   onRawEvent(ev) {
     super.onRawEvent(ev);
     if (ev.isFinal && this.isGestureRunning) {
+      let timeout = 1;
+      if (this._delaysContentTouchesTimer) {
+        // aesthetic timing for a quick tap
+        // We haven't activated the tap right away to emulate iOS `delaysContentTouches`
+        // Now we must send the initial activation event and wait a set amount of time before firing the end event.
+        timeout = 50;
+        this._sendGestureStartedEvent(this._initialEvent);
+        this._initialEvent = null;
+
+      }
       setTimeout(() => {
         this._sendEvent({
           ...ev,
@@ -1357,7 +1387,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
           isFinal: true,
         });
         this._onEnd();
-      });
+      }, timeout);
     }
   }
 
@@ -1391,35 +1421,32 @@ class NativeViewGestureHandler extends PressGestureHandler {
   onRawEvent(ev) {
     super.onRawEvent(ev);
     if (!ev.isFinal) {
-  
       // if (this.ref instanceof ScrollView) {
-        // console.log('REF', typeof this.ref, this.ref instanceof ScrollView, this.ref);
-        if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ({ x: ev.deltaX, y: ev.deltaY }), 10)) {
-          if (this.config.disallowInterruption) {
-            const gestures = Object.values(_gestureCache).filter(
-              (gesture) => {
-                const { handlerTag, view, isGestureRunning } = gesture;
+      // console.log('REF', typeof this.ref, this.ref instanceof ScrollView, this.ref);
+      if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ({ x: ev.deltaX, y: ev.deltaY }), 10)) {
+        if (this.config.disallowInterruption) {
+          const gestures = Object.values(_gestureCache).filter(gesture => {
+            const { handlerTag, view, isGestureRunning } = gesture;
 
-                return (
-                  // Check if this gesture isn't self
-                  handlerTag !== this.handlerTag && 
-                  // Ensure the gesture needs to be cancelled
-                  isGestureRunning && 
-                  // ScrollView can cancel discrete gestures like taps and presses
-                  (gesture instanceof DiscreteGestureHandler) && 
-                  // Ensure a view exists and is a child of the current view
-                  view && 
-                  this.view.contains(view)
-                  );
-              }
+            return (
+              // Check if this gesture isn't self
+              handlerTag !== this.handlerTag &&
+              // Ensure the gesture needs to be cancelled
+              isGestureRunning &&
+              // ScrollView can cancel discrete gestures like taps and presses
+              gesture instanceof DiscreteGestureHandler &&
+              // Ensure a view exists and is a child of the current view
+              view &&
+              this.view.contains(view)
             );
-            // Cancel all of the gestures that passed the filter
-            for (const gesture of gestures) {
-              // TODO: Bacon: Send some cached event.
-              gesture.forceInvalidate(ev);
-            }
+          });
+          // Cancel all of the gestures that passed the filter
+          for (const gesture of gestures) {
+            // TODO: Bacon: Send some cached event.
+            gesture.forceInvalidate(ev);
           }
         }
+      }
       // }
     }
   }
