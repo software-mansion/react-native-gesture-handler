@@ -1286,6 +1286,8 @@ class TapGestureHandler extends DiscreteGestureHandler {
     );
   }
 }
+const CONTENT_TOUCHES_DELAY = 240;
+const CONTENT_TOUCHES_QUICK_TAP_END_DELAY = 50;
 
 class PressGestureHandler extends DiscreteGestureHandler {
   get name() {
@@ -1347,7 +1349,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
     this._delaysContentTouchesTimer = setTimeout(() => {
       this._sendGestureStartedEvent(this._initialEvent);
       this._initialEvent = null;
-    }, this.shouldDelayTouches ? 240 : 1);
+    }, this.shouldDelayTouches ? CONTENT_TOUCHES_DELAY : 1);
   }
 
   _sendGestureStartedEvent(ev) {
@@ -1370,15 +1372,14 @@ class PressGestureHandler extends DiscreteGestureHandler {
   onRawEvent(ev) {
     super.onRawEvent(ev);
     if (ev.isFinal && this.isGestureRunning) {
-      let timeout = 1;
+      let timeout;
       if (this._delaysContentTouchesTimer) {
         // aesthetic timing for a quick tap
         // We haven't activated the tap right away to emulate iOS `delaysContentTouches`
         // Now we must send the initial activation event and wait a set amount of time before firing the end event.
-        timeout = 50;
+        timeout = CONTENT_TOUCHES_QUICK_TAP_END_DELAY;
         this._sendGestureStartedEvent(this._initialEvent);
         this._initialEvent = null;
-
       }
       setTimeout(() => {
         this._sendEvent({
