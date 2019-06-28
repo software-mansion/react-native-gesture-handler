@@ -8,7 +8,6 @@ class NativeViewGestureHandler extends PressGestureHandler {
     super.onRawEvent(ev);
     if (!ev.isFinal) {
       // if (this.ref instanceof ScrollView) {
-      // console.log('REF', typeof this.ref, this.ref instanceof ScrollView, this.ref);
       if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ({ x: ev.deltaX, y: ev.deltaY }), 10)) {
         if (this.config.disallowInterruption) {
           const gestures = Object.values(NodeManager.getNodes()).filter(gesture => {

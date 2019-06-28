@@ -37,7 +37,6 @@ class PanGestureHandler extends DraggingGestureHandler {
     let directions = [];
     let horizontalDirections = [];
 
-    // sigh
     if (!isnan(minDist)) {
       return Hammer.DIRECTION_ALL;
     }
@@ -116,13 +115,11 @@ class PanGestureHandler extends DraggingGestureHandler {
     if (deltaScale > MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD) {
       // > If the threshold doesn't seem right.
       // You can log the value which it failed at here:
-      // console.log('Pan failed: scale: ', deltaScale);
       return true;
     }
     if (absDeltaRotation > MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD) {
       // > If the threshold doesn't seem right.
       // You can log the value which it failed at here:
-      // console.log('Pan failed: rotate: ', absDeltaRotation);
       return true;
     }
 
@@ -168,7 +165,6 @@ class PanGestureHandler extends DraggingGestureHandler {
       }
       return { success: true };
     }
-
     return { success: false };
   }
 }

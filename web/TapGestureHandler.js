@@ -27,7 +27,6 @@ class TapGestureHandler extends DiscreteGestureHandler {
       this.onSuccessfulTap(ev);
     } else {
       // Prevent multiple-touches
-      console.log('tap.prevent multi');
     }
   }
 

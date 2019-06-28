@@ -221,7 +221,7 @@ class GestureHandler {
   }
 
   transformNativeEvent(event) {
-    return {}
+    return {};
   }
 
   sendEvent = nativeEvent => {
@@ -408,7 +408,6 @@ class GestureHandler {
           for (const gesture of this._stillWaiting) {
             // When the target gesture has started, this gesture must force fail.
             if (!gesture.isDiscrete && gesture.isGestureRunning) {
-              // console.log('Force fail: ', input.name);
               this.hasGestureFailed = true;
               this.isGestureRunning = false;
               return false;

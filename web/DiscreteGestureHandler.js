@@ -56,7 +56,6 @@ class DiscreteGestureHandler extends GestureHandler {
       // but if the gesture is running and the user adds or subtracts another pointer then it should fail.
       (!validPointerCount && this.isGestureRunning)
     ) {
-      console.log('Failed', this.id, { validPointerCount });
       return { failed: true };
     }
 
