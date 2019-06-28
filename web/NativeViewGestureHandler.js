@@ -13,7 +13,6 @@ class NativeViewGestureHandler extends PressGestureHandler {
         if (this.config.disallowInterruption) {
           const gestures = Object.values(NodeManager.getNodes()).filter(gesture => {
             const { handlerTag, view, isGestureRunning } = gesture;
-
             return (
               // Check if this gesture isn't self
               handlerTag !== this.handlerTag &&
@@ -33,7 +32,6 @@ class NativeViewGestureHandler extends PressGestureHandler {
           }
         }
       }
-      // }
     }
   }
 }

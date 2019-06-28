@@ -26,7 +26,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
   simulateCancelEvent(inputData) {
     // Long press never starts so we can't rely on the running event boolean.
     this.hasGestureFailed = true;
-    this._cancelEvent(inputData);
+    this.cancelEvent(inputData);
   }
 
   updateHasCustomActivationCriteria({ shouldCancelWhenOutside, maxDistSq }) {
@@ -54,16 +54,16 @@ class PressGestureHandler extends DiscreteGestureHandler {
     return this.config;
   }
 
-  _getHammerConfig() {
+  getHammerConfig() {
     return {
-      ...super._getHammerConfig(),
+      ...super.getHammerConfig(),
       // threshold: this.maxDist,
       time: this.minDurationMs,
     };
   }
 
   onMainEvent(ev) {
-    this._onGestureStart(ev);
+    this.onGestureStart(ev);
   }
 
   shouldDelayTouchForEvent({ pointerType }) {
@@ -71,20 +71,20 @@ class PressGestureHandler extends DiscreteGestureHandler {
     return this.shouldDelayTouches && pointerType === 'touch';
   }
 
-  _onGestureStart(ev) {
+  onGestureStart(ev) {
     this.isGestureRunning = true;
-    clearTimeout(this._delaysContentTouchesTimer);
-    this._initialEvent = ev;
-    this._delaysContentTouchesTimer = fireAfterInterval(() => {
-      this._sendGestureStartedEvent(this._initialEvent);
-      this._initialEvent = null;
+    clearTimeout(this.visualFeedbackTimer);
+    this.initialEvent = ev;
+    this.visualFeedbackTimer = fireAfterInterval(() => {
+      this.sendGestureStartedEvent(this.initialEvent);
+      this.initialEvent = null;
     }, this.shouldDelayTouchForEvent(ev) && CONTENT_TOUCHES_DELAY);
   }
 
-  _sendGestureStartedEvent(ev) {
-    clearTimeout(this._delaysContentTouchesTimer);
-    this._delaysContentTouchesTimer = null;
-    this._sendEvent({
+  sendGestureStartedEvent(ev) {
+    clearTimeout(this.visualFeedbackTimer);
+    this.visualFeedbackTimer = null;
+    this.sendEvent({
       ...ev,
       eventType: Hammer.INPUT_MOVE,
       isFirst: true,
@@ -93,30 +93,30 @@ class PressGestureHandler extends DiscreteGestureHandler {
 
   forceInvalidate(event) {
     super.forceInvalidate(event);
-    clearTimeout(this._delaysContentTouchesTimer);
-    this._delaysContentTouchesTimer = null;
-    this._initialEvent = null;
+    clearTimeout(this.visualFeedbackTimer);
+    this.visualFeedbackTimer = null;
+    this.initialEvent = null;
   }
 
   onRawEvent(ev) {
     super.onRawEvent(ev);
     if (ev.isFinal && this.isGestureRunning) {
       let timeout;
-      if (this._delaysContentTouchesTimer) {
+      if (this.visualFeedbackTimer) {
         // Aesthetic timing for a quick tap.
         // We haven't activated the tap right away to emulate iOS `delaysContentTouches`
         // Now we must send the initial activation event and wait a set amount of time before firing the end event.
         timeout = CONTENT_TOUCHES_QUICK_TAP_END_DELAY;
-        this._sendGestureStartedEvent(this._initialEvent);
-        this._initialEvent = null;
+        this.sendGestureStartedEvent(this.initialEvent);
+        this.initialEvent = null;
       }
       fireAfterInterval(() => {
-        this._sendEvent({
+        this.sendEvent({
           ...ev,
           eventType: Hammer.INPUT_END,
           isFinal: true,
         });
-        this._onEnd();
+        this.onEnd();
       }, timeout);
     }
   }

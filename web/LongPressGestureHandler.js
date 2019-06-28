@@ -29,9 +29,9 @@ class LongPressGestureHandler extends PressGestureHandler {
     return this.config;
   }
 
-  _getHammerConfig() {
+  getHammerConfig() {
     return {
-      ...super._getHammerConfig(),
+      ...super.getHammerConfig(),
       // threshold: this.maxDist,
       time: this.minDurationMs,
     };

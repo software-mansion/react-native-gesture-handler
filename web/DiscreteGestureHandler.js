@@ -15,7 +15,7 @@ class DiscreteGestureHandler extends GestureHandler {
     { maxDeltaX, maxDeltaY, maxDistSq, shouldCancelWhenOutside }
   ) {
     if (shouldCancelWhenOutside) {
-      if (!this._isPointInView({ x, y })) {
+      if (!this.isPointInView({ x, y })) {
         return true;
       }
     }

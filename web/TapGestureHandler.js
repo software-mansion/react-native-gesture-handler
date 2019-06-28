@@ -18,31 +18,30 @@ class TapGestureHandler extends DiscreteGestureHandler {
 
   simulateCancelEvent(inputData) {
     if (this.isGestureRunning) {
-      this._cancelEvent(inputData);
+      this.cancelEvent(inputData);
     }
   }
 
   onMainEvent(ev) {
-    console.log('onMainEvent');
     if (this.isGestureRunning) {
-      this._onSuccessfulTap(ev);
+      this.onSuccessfulTap(ev);
     } else {
       // Prevent multiple-touches
       console.log('tap.prevent multi');
     }
   }
 
-  _onSuccessfulTap = ev => {
+  onSuccessfulTap = ev => {
     if (this._getPendingGestures().length) {
       this._shouldFireEndEvent = ev;
       return;
     }
     if (ev.eventType === Hammer.INPUT_END) {
-      this._sendEvent({ ...ev, eventType: Hammer.INPUT_MOVE });
+      this.sendEvent({ ...ev, eventType: Hammer.INPUT_MOVE });
     }
     // When handler gets activated it will turn into State.END immediately.
-    this._sendEvent({ ...ev, isFinal: true });
-    this._onEnd(ev);
+    this.sendEvent({ ...ev, isFinal: true });
+    this.onEnd(ev);
   };
 
   get maxDelayMs() {
@@ -65,7 +64,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
         clearTimeout(this._multiTapTimer);
 
         this.onStart(ev);
-        this._sendEvent(ev);
+        this.sendEvent(ev);
       }
     }
     if (ev.isFinal && ev.maxPointers > 1) {
@@ -73,7 +72,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
         // Handle case where one finger presses slightly
         // after the first finger on a multi-tap event
         if (this.isGestureRunning) {
-          this._cancelEvent(ev);
+          this.cancelEvent(ev);
         }
       });
     }
@@ -89,7 +88,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
       if (ev.maxPointers > 1) {
         setTimeout(() => {
           if (this.isGestureRunning) {
-            this._cancelEvent(ev);
+            this.cancelEvent(ev);
           }
         });
       }
@@ -99,7 +98,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
       // Create time out for multi-taps.
       this._timer = setTimeout(() => {
         this.hasGestureFailed = true;
-        this._cancelEvent(ev);
+        this.cancelEvent(ev);
       }, this.maxDelayMs);
     } else if (!this.hasGestureFailed && !this.isGestureRunning) {
       // Tap Gesture start event
@@ -108,14 +107,14 @@ class TapGestureHandler extends DiscreteGestureHandler {
         clearTimeout(this._multiTapTimer);
 
         this.onStart(ev);
-        this._sendEvent(ev);
+        this.sendEvent(ev);
       }
     }
   }
 
-  _getHammerConfig() {
+  getHammerConfig() {
     return {
-      ...super._getHammerConfig(),
+      ...super.getHammerConfig(),
       taps: isnan(this.config.numberOfTaps) ? 1 : this.config.numberOfTaps,
       interval: this.maxDelayMs,
       time:
@@ -152,14 +151,14 @@ class TapGestureHandler extends DiscreteGestureHandler {
     });
   }
 
-  _onEnd(...props) {
+  onEnd(...props) {
     clearTimeout(this._timer);
-    super._onEnd(...props);
+    super.onEnd(...props);
   }
 
   onWaitingEnded(gesture) {
     if (this._shouldFireEndEvent) {
-      this._onSuccessfulTap(this._shouldFireEndEvent);
+      this.onSuccessfulTap(this._shouldFireEndEvent);
       this._shouldFireEndEvent = null;
     }
   }

@@ -15,7 +15,7 @@ class FlingGestureHandler extends GestureHandler {
   }
 
   onMainEvent(event) {
-    this._sendEvent({
+    this.sendEvent({
       ...event,
       eventType: Hammer.INPUT_MOVE,
       isFinal: false,
@@ -23,7 +23,7 @@ class FlingGestureHandler extends GestureHandler {
     });
     this.isGestureRunning = false;
     this.hasGestureFailed = false;
-    this._sendEvent({
+    this.sendEvent({
       ...event,
       eventType: Hammer.INPUT_END,
       isFinal: true,
@@ -40,7 +40,7 @@ class FlingGestureHandler extends GestureHandler {
     if (ev.isFinal) {
       setTimeout(() => {
         if (this.isGestureRunning) {
-          this._cancelEvent(ev);
+          this.cancelEvent(ev);
         }
       });
     } else if (!this.hasGestureFailed && !this.isGestureRunning) {
@@ -48,19 +48,19 @@ class FlingGestureHandler extends GestureHandler {
       const gesture = this.hammer.get(this.name);
       if (gesture.options.enable(gesture, ev)) {
         this.onStart(ev);
-        this._sendEvent(ev);
+        this.sendEvent(ev);
       }
     }
   }
 
-  _getHammerConfig() {
+  getHammerConfig() {
     return {
       pointers: this.config.numberOfPointers,
       direction: this.getDirection(),
     };
   }
 
-  _getTargetDirections(direction) {
+  getTargetDirections(direction) {
     const directions = [];
     if (direction & Direction.RIGHT) {
       directions.push(Hammer.DIRECTION_RIGHT);

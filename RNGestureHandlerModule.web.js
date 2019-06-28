@@ -34,8 +34,8 @@ export default {
     NodeManager.createGestureHandler(handlerTag, new GestureClass());
     this.updateGestureHandler(handlerTag, config);
   },
-  attachGestureHandler(handlerTag, newViewTag) {
-    NodeManager.getHandler(handlerTag).setRef(newViewTag);
+  attachGestureHandler(handlerTag, newView) {
+    NodeManager.getHandler(handlerTag).setView(newView);
   },
   updateGestureHandler(handlerTag, newConfig) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);

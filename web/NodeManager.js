@@ -1,24 +1,24 @@
-let _gestureCache = {};
+let gestures = {};
 
 export function getHandler(tag) {
-  if (tag in _gestureCache) return _gestureCache[tag];
+  if (tag in gestures) return gestures[tag];
 
   throw new Error('No handler for tag ' + tag);
 }
 
 export function createGestureHandler(handlerTag, handler) {
-  if (handlerTag in _gestureCache) {
+  if (handlerTag in gestures) {
     throw new Error('Handler with tag ' + handlerTag + ' already exists');
   }
-  _gestureCache[handlerTag] = handler;
-  _gestureCache[handlerTag].handlerTag = handlerTag;
+  gestures[handlerTag] = handler;
+  gestures[handlerTag].handlerTag = handlerTag;
 }
 
 export function dropGestureHandler(handlerTag) {
   getHandler(handlerTag).destroy();
-  delete _gestureCache[handlerTag];
+  delete gestures[handlerTag];
 }
 
 export function getNodes() {
-  return { ..._gestureCache };
+  return { ...gestures };
 }

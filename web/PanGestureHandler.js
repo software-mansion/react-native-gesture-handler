@@ -22,9 +22,9 @@ class PanGestureHandler extends GestureHandler {
     });
   }
 
-  _getHammerConfig() {
+  getHammerConfig() {
     return {
-      ...super._getHammerConfig(),
+      ...super.getHammerConfig(),
       direction: this.getDirection(),
     };
   }
@@ -142,7 +142,7 @@ class PanGestureHandler extends GestureHandler {
     return false;
   }
 
-  _shouldMultiFingerPanFail({ pointerLength, scale, deltaRotation }) {
+  shouldMultiFingerPanFail({ pointerLength, scale, deltaRotation }) {
     if (pointerLength <= 1) {
       return false;
     }
@@ -284,7 +284,7 @@ class PanGestureHandler extends GestureHandler {
       )
     ) {
       if (
-        this._shouldMultiFingerPanFail({
+        this.shouldMultiFingerPanFail({
           pointerLength: inputData.maxPointers,
           scale: inputData.scale,
           deltaRotation: inputData.deltaRotation,

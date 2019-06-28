@@ -105,6 +105,10 @@ class GestureHandler {
     return false;
   }
 
+  get shouldEnableGestureOnSetup() {
+    throw new Error('Must override GestureHandler.shouldEnableGestureOnSetup');
+  }
+
   constructor() {
     this._gestureInstance = _gestureInstances++;
   }
@@ -141,7 +145,7 @@ class GestureHandler {
     return true;
   }
 
-  _clearSelfAsPending = () => {
+  clearSelfAsPending = () => {
     if (Array.isArray(this.config.waitFor)) {
       for (const gesture of this.config.waitFor) {
         gesture.removePendingGesture(this.id);
@@ -150,7 +154,7 @@ class GestureHandler {
   };
 
   updateGestureConfig({ enabled = true, ...props }) {
-    this._clearSelfAsPending();
+    this.clearSelfAsPending();
 
     this.config = ensureConfig({ enabled, ...props });
     this._hasCustomActivationCriteria = this.updateHasCustomActivationCriteria(this.config);
@@ -167,7 +171,7 @@ class GestureHandler {
   }
 
   destroy = () => {
-    this._clearSelfAsPending();
+    this.clearSelfAsPending();
 
     if (this.hammer) {
       this.hammer.stop();
@@ -176,7 +180,7 @@ class GestureHandler {
     this.hammer = null;
   };
 
-  _isPointInView = ({ x, y }) => {
+  isPointInView = ({ x, y }) => {
     const rect = this.view.getBoundingClientRect();
     const pointerInside = x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
     return pointerInside;
@@ -190,7 +194,7 @@ class GestureHandler {
   previousState = State.UNDETERMINED;
   initialRotation = 0;
 
-  _transformEventData = ev => {
+  transformEventData(ev) {
     const {
       eventType,
       deltaX,
@@ -206,7 +210,7 @@ class GestureHandler {
 
     let deltaRotation = (rotation - this.initialRotation) * DEG_RAD;
     const changedTouch = ev.changedPointers[0];
-    const pointerInside = this._isPointInView({ x: changedTouch.clientX, y: changedTouch.clientY });
+    const pointerInside = this.isPointInView({ x: changedTouch.clientX, y: changedTouch.clientY });
 
     const state = this.getState(eventType);
     const direction = DirectionMap[ev.direction];
@@ -251,15 +255,15 @@ class GestureHandler {
     };
 
     return event;
-  };
+  }
 
-  _sendEvent = nativeEvent => {
+  sendEvent = nativeEvent => {
     const {
       onGestureHandlerStateChange: onHandlerStateChange,
       onGestureHandlerEvent: onGestureEvent,
     } = this.ref.props;
 
-    const event = this._transformEventData(nativeEvent);
+    const event = this.transformEventData(nativeEvent);
 
     // Reset the state for the next gesture
     if (nativeEvent.isFinal) {
@@ -271,16 +275,16 @@ class GestureHandler {
     invokeNullableMethod('onHandlerStateChange', onHandlerStateChange, event);
   };
 
-  _cancelPendingGestures(event) {
+  cancelPendingGestures(event) {
     for (const gesture of Object.values(this.pendingGestures)) {
       if (gesture && gesture.isGestureRunning) {
         gesture.hasGestureFailed = true;
-        gesture._cancelEvent(event);
+        gesture.cancelEvent(event);
       }
     }
   }
 
-  _notifyPendingGestures() {
+  notifyPendingGestures() {
     for (const gesture of Object.values(this.pendingGestures)) {
       if (gesture) {
         gesture.onWaitingEnded(this);
@@ -288,26 +292,26 @@ class GestureHandler {
     }
   }
 
-  _onEnd(event) {
+  onEnd(event) {
     this.isGestureRunning = false;
-    this._cancelPendingGestures(event);
+    this.cancelPendingGestures(event);
   }
 
   forceInvalidate(event) {
     if (this.isGestureRunning) {
       this.hasGestureFailed = true;
-      this._cancelEvent(event);
+      this.cancelEvent(event);
     }
   }
 
-  _cancelEvent(event) {
-    this._notifyPendingGestures();
-    this._sendEvent({
+  cancelEvent(event) {
+    this.notifyPendingGestures();
+    this.sendEvent({
       ...event,
       eventType: Hammer.INPUT_CANCEL,
       isFinal: true,
     });
-    this._onEnd(event);
+    this.onEnd(event);
   }
 
   onRawEvent({ isFirst }) {
@@ -316,7 +320,7 @@ class GestureHandler {
     }
   }
 
-  setRef = ref => {
+  setView(ref) {
     if (ref == null) {
       this.destroy();
       this.view = null;
@@ -360,12 +364,12 @@ class GestureHandler {
 
     this.setupEvents();
     this.sync();
-  };
+  }
 
   setupEvents() {
     if (!this.isDiscrete) {
       this.hammer.on(`${this.name}start`, event => this.onStart(event));
-      this.hammer.on(`${this.name}end ${this.name}cancel`, event => this._onEnd(event));
+      this.hammer.on(`${this.name}end ${this.name}cancel`, event => this.onEnd(event));
     }
     this.hammer.on(this.name, ev => this.onMainEvent(ev));
   }
@@ -378,11 +382,7 @@ class GestureHandler {
   }
 
   onMainEvent(ev) {
-    this._sendEvent(ev);
-  }
-
-  get shouldEnableGestureOnSetup() {
-    throw new Error('Must override GestureHandler.shouldEnableGestureOnSetup');
+    this.sendEvent(ev);
   }
 
   onSuccess() {}
@@ -399,7 +399,7 @@ class GestureHandler {
     return [];
   }
 
-  _getHammerConfig() {
+  getHammerConfig() {
     const pointers =
       this.config.minPointers === this.config.maxPointers ? this.config.minPointers : 0;
     return {
@@ -471,7 +471,7 @@ class GestureHandler {
       return success;
     };
 
-    const params = this._getHammerConfig();
+    const params = this.getHammerConfig();
     gesture.set({ ...params, enable });
   };
 
