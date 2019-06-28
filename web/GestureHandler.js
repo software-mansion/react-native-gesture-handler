@@ -1,9 +1,9 @@
 import Hammer from 'hammerjs';
 import { findNodeHandle } from 'react-native';
 
-import { DirectionMap, EventMap, DEG_RAD } from './constants';
-import * as NodeManager from './NodeManager';
 import State from '../State';
+import { EventMap } from './constants';
+import * as NodeManager from './NodeManager';
 
 // Used for sending data to a callback or AnimatedEvent
 function invokeNullableMethod(name, method, event) {
@@ -96,6 +96,9 @@ class GestureHandler {
   config = {};
   hammer = null;
   pendingGestures = {};
+  oldState = State.UNDETERMINED;
+  previousState = State.UNDETERMINED;
+  initialRotation = 0;
 
   get id() {
     return `${this.name}${this._gestureInstance}`;
@@ -190,71 +193,35 @@ class GestureHandler {
     return EventMap[type];
   }
 
-  oldState = State.UNDETERMINED;
-  previousState = State.UNDETERMINED;
-  initialRotation = 0;
-
-  transformEventData(ev) {
-    const {
-      eventType,
-      deltaX,
-      deltaY,
-      velocityX,
-      velocityY,
-      velocity,
-      center,
-      rotation,
-      scale,
-      maxPointers: numberOfPointers,
-    } = ev;
-
-    let deltaRotation = (rotation - this.initialRotation) * DEG_RAD;
-    const changedTouch = ev.changedPointers[0];
+  transformEventData(event) {
+    const { eventType, maxPointers: numberOfPointers } = event;
+    // const direction = DirectionMap[ev.direction];
+    const changedTouch = event.changedPointers[0];
     const pointerInside = this.isPointInView({ x: changedTouch.clientX, y: changedTouch.clientY });
 
     const state = this.getState(eventType);
-    const direction = DirectionMap[ev.direction];
     if (state !== this.previousState) {
       this.oldState = this.previousState;
       this.previousState = state;
     }
-    const nativeEvent = {
-      direction,
-      oldState: this.oldState,
-      translationX: deltaX - (this.__initialX || 0),
-      translationY: deltaY - (this.__initialY || 0),
-      velocityX,
-      velocityY,
-      velocity,
-      rotation: deltaRotation,
-      scale,
-      x: center.x,
-      y: center.y,
-      absoluteX: center.x,
-      absoluteY: center.y,
-      focalX: center.x,
-      focalY: center.y,
-      anchorX: center.x,
-      anchorY: center.y,
-    };
 
-    const timeStamp = Date.now();
-    const event = {
+    return {
       nativeEvent: {
         numberOfPointers,
         state,
         pointerInside,
-        ...this.parseNativeEvent(nativeEvent),
-
+        ...this.transformNativeEvent(event),
         // onHandlerStateChange only
         handlerTag: this.handlerTag,
         target: this.ref,
         oldState: this.oldState,
       },
-      timeStamp,
+      timeStamp: Date.now(),
     };
+  }
 
-    return event;
+  transformNativeEvent(event) {
+    return {}
   }
 
   sendEvent = nativeEvent => {

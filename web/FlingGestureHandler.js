@@ -122,26 +122,16 @@ class FlingGestureHandler extends GestureHandler {
     return { success: validPointerCount };
   }
 
-  // The event object that is returned
-  parseNativeEvent({
-    translationX,
-    translationY,
-    velocityX,
-    velocityY,
-    x,
-    y,
-    absoluteX,
-    absoluteY,
-  }) {
+  transformNativeEvent({ deltaX, deltaY, velocityX, velocityY, center: { x, y } }) {
     return {
-      translationX,
-      translationY,
+      translationX: deltaX - (this.__initialX || 0),
+      translationY: deltaY - (this.__initialY || 0),
+      absoluteX: x,
+      absoluteY: y,
       velocityX,
       velocityY,
       x,
       y,
-      absoluteX,
-      absoluteY,
     };
   }
 

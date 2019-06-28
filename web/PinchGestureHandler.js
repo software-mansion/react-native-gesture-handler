@@ -11,12 +11,12 @@ class PinchGestureHandler extends IndiscreteGestureHandler {
     return new Hammer.Pinch({ pointers: minPointers });
   }
 
-  parseNativeEvent({ scale, velocity, focalX, focalY }) {
+  transformNativeEvent({ scale, velocity, center }) {
     return {
-      scale,
+      focalX: center.x,
+      focalY: center.y,
       velocity,
-      focalX,
-      focalY,
+      scale,
     };
   }
 }

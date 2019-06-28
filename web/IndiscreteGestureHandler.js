@@ -4,16 +4,16 @@ import GestureHandler from './GestureHandler';
  * The base class for **Rotation** and **Pinch** gesture handlers.
  */
 class IndiscreteGestureHandler extends GestureHandler {
+  get shouldEnableGestureOnSetup() {
+    return false;
+  }
+
   updateGestureConfig({ minPointers = 2, maxPointers = 2, ...props }) {
     return super.updateGestureConfig({
       minPointers,
       maxPointers,
       ...props,
     });
-  }
-
-  get shouldEnableGestureOnSetup() {
-    return false;
   }
 
   isGestureEnabledForEvent(

@@ -270,6 +270,19 @@ class PanGestureHandler extends GestureHandler {
     return config;
   }
 
+  transformNativeEvent({ deltaX, deltaY, velocityX, velocityY, center }) {
+    return {
+      translationX: deltaX - (this.__initialX || 0),
+      translationY: deltaY - (this.__initialY || 0),
+      absoluteX: center.x,
+      absoluteY: center.y,
+      x: center.x,
+      y: center.y,
+      velocityX,
+      velocityY,
+    };
+  }
+
   isGestureEnabledForEvent(props, recognizer, inputData) {
     if (this.shouldFailUnderCustomCriteria(inputData, props)) {
       return { failed: true };
@@ -298,29 +311,6 @@ class PanGestureHandler extends GestureHandler {
     }
 
     return { success: false };
-  }
-
-  // The event object that is returned
-  parseNativeEvent({
-    translationX,
-    translationY,
-    velocityX,
-    velocityY,
-    x,
-    y,
-    absoluteX,
-    absoluteY,
-  }) {
-    return {
-      translationX,
-      translationY,
-      velocityX,
-      velocityY,
-      x,
-      y,
-      absoluteX,
-      absoluteY,
-    };
   }
 }
 

@@ -26,12 +26,12 @@ class DiscreteGestureHandler extends GestureHandler {
     );
   }
 
-  parseNativeEvent({ x, y, absoluteX, absoluteY, ...props }) {
+  transformNativeEvent({ x, y }) {
     return {
+      absoluteX: x,
+      absoluteY: y,
       x,
       y,
-      absoluteX,
-      absoluteY,
     };
   }
 
