@@ -17,11 +17,11 @@ class PressGestureHandler extends DiscreteGestureHandler {
     return isnan(this.config.maxDist) ? 9 : this.config.maxDist;
   }
 
-  shouldDelayTouches = true;
-
-  createNativeGesture({ minPointers }) {
-    return new Hammer.Press({ pointers: minPointers });
+  get NativeGestureClass() {
+    return Hammer.Press;
   }
+
+  shouldDelayTouches = true;
 
   simulateCancelEvent(inputData) {
     // Long press never starts so we can't rely on the running event boolean.

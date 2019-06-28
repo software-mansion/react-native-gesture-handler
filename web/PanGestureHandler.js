@@ -12,10 +12,8 @@ class PanGestureHandler extends DraggingGestureHandler {
     return 'pan';
   }
 
-  createNativeGesture({ minPointers }) {
-    return new Hammer.Pan({
-      pointers: minPointers,
-    });
+  get NativeGestureClass() {
+    return Hammer.Pan;
   }
 
   getHammerConfig() {

@@ -140,8 +140,8 @@ class GestureHandler {
     return nativeEvent;
   }
 
-  createNativeGesture(props) {
-    throw new Error('Must override GestureHandler.createNativeGesture()');
+  get NativeGestureClass() {
+    throw new Error('Must override GestureHandler.NativeGestureClass');
   }
 
   updateHasCustomActivationCriteria(config) {
@@ -303,7 +303,8 @@ class GestureHandler {
     this.previousState = State.UNDETERMINED;
     this.initialRotation = 0;
 
-    const gesture = this.createNativeGesture(this.getConfig());
+    const { NativeGestureClass } = this;
+    const gesture = new NativeGestureClass(this.getHammerConfig());
     this.hammer.add(gesture);
 
     this.hammer.on('hammer.input', ev => {

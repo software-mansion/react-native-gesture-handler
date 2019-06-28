@@ -8,15 +8,13 @@ class RotationGestureHandler extends IndiscreteGestureHandler {
     return 'rotate';
   }
 
-  createNativeGesture({ minPointers }) {
-    return new Hammer.Rotate({ pointers: minPointers });
+  get NativeGestureClass() {
+    return Hammer.Rotate;
   }
 
   transformNativeEvent({ rotation, velocity, center }) {
-    const deltaRotation = (rotation - this.initialRotation) * DEG_RAD;
-
     return {
-      rotation: deltaRotation,
+      rotation: (rotation - this.initialRotation) * DEG_RAD,
       anchorX: center.x,
       anchorY: center.y,
       velocity,

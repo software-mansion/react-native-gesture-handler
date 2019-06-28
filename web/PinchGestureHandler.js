@@ -7,8 +7,8 @@ class PinchGestureHandler extends IndiscreteGestureHandler {
     return 'pinch';
   }
 
-  createNativeGesture({ minPointers }) {
-    return new Hammer.Pinch({ pointers: minPointers });
+  get NativeGestureClass() {
+    return Hammer.Pinch;
   }
 
   transformNativeEvent({ scale, velocity, center }) {

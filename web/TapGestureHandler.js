@@ -8,12 +8,8 @@ class TapGestureHandler extends DiscreteGestureHandler {
     return 'tap';
   }
 
-  createNativeGesture({ numberOfTaps, minPointers }) {
-    return new Hammer.Tap({
-      taps: numberOfTaps,
-      event: this.name,
-      pointers: minPointers,
-    });
+  get NativeGestureClass() {
+    return Hammer.Tap;
   }
 
   simulateCancelEvent(inputData) {
@@ -112,6 +108,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
   getHammerConfig() {
     return {
       ...super.getHammerConfig(),
+      event: this.name,
       taps: isnan(this.config.numberOfTaps) ? 1 : this.config.numberOfTaps,
       interval: this.maxDelayMs,
       time:

@@ -10,6 +10,10 @@ class FlingGestureHandler extends DraggingGestureHandler {
     return 'swipe';
   }
 
+  get NativeGestureClass() {
+    return Hammer.Swipe;
+  }
+
   onGestureActivated(event) {
     this.sendEvent({
       ...event,
@@ -122,17 +126,10 @@ class FlingGestureHandler extends DraggingGestureHandler {
     if (isnan(direction) || typeof direction !== 'number') {
       throw new GesturePropError('direction', direction, 'number');
     }
-    // this.validateConfig(this.config)
     return super.updateGestureConfig({
       numberOfPointers,
       direction,
       ...props,
-    });
-  }
-
-  createNativeGesture({ numberOfPointers }) {
-    return new Hammer.Swipe({
-      pointers: numberOfPointers,
     });
   }
 }
