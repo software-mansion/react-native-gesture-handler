@@ -1294,6 +1294,14 @@ class TapGestureHandler extends DiscreteGestureHandler {
   }
 }
 
+function fireAfterInterval(method, interval) {
+  if (!interval) {
+    method();
+    return null;
+  }
+  return setTimeout(() => method(), interval);
+}
+
 class PressGestureHandler extends DiscreteGestureHandler {
   get name() {
     return 'press';
@@ -1346,17 +1354,19 @@ class PressGestureHandler extends DiscreteGestureHandler {
     this._onGestureStart(ev);
   }
 
+  shouldDelayTouchForEvent({ pointerType }) {
+    // Don't disable event for mouse input
+    return this.shouldDelayTouches && pointerType === 'touch';
+  }
+
   _onGestureStart(ev) {
     this.isGestureRunning = true;
     clearTimeout(this._delaysContentTouchesTimer);
     this._initialEvent = ev;
-    this._delaysContentTouchesTimer = setTimeout(
-      () => {
-        this._sendGestureStartedEvent(this._initialEvent);
-        this._initialEvent = null;
-      },
-      this.shouldDelayTouches ? CONTENT_TOUCHES_DELAY : 1
-    );
+    this._delaysContentTouchesTimer = fireAfterInterval(() => {
+      this._sendGestureStartedEvent(this._initialEvent);
+      this._initialEvent = null;
+    }, this.shouldDelayTouchForEvent(ev) && CONTENT_TOUCHES_DELAY);
   }
 
   _sendGestureStartedEvent(ev) {
@@ -1381,14 +1391,14 @@ class PressGestureHandler extends DiscreteGestureHandler {
     if (ev.isFinal && this.isGestureRunning) {
       let timeout;
       if (this._delaysContentTouchesTimer) {
-        // aesthetic timing for a quick tap
+        // Aesthetic timing for a quick tap.
         // We haven't activated the tap right away to emulate iOS `delaysContentTouches`
         // Now we must send the initial activation event and wait a set amount of time before firing the end event.
         timeout = CONTENT_TOUCHES_QUICK_TAP_END_DELAY;
         this._sendGestureStartedEvent(this._initialEvent);
         this._initialEvent = null;
       }
-      setTimeout(() => {
+      fireAfterInterval(() => {
         this._sendEvent({
           ...ev,
           eventType: Hammer.INPUT_END,
