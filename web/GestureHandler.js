@@ -16,7 +16,6 @@ class GestureHandler {
   pendingGestures = {};
   oldState = State.UNDETERMINED;
   previousState = State.UNDETERMINED;
-  initialRotation = 0;
 
   get id() {
     return `${this.name}${this._gestureInstance}`;
@@ -217,7 +216,6 @@ class GestureHandler {
 
     this.oldState = State.UNDETERMINED;
     this.previousState = State.UNDETERMINED;
-    this.initialRotation = 0;
 
     const { NativeGestureClass } = this;
     const gesture = new NativeGestureClass(this.getHammerConfig());
@@ -234,13 +232,13 @@ class GestureHandler {
 
       // TODO: Bacon: Check against something other than null
       // The isFirst value is not called when the first rotation is calculated.
-      if (this._initialRotation === null && ev.rotation !== 0) {
-        this._initialRotation = ev.rotation;
+      if (this.initialRotation === null && ev.rotation !== 0) {
+        this.initialRotation = ev.rotation;
       }
       if (ev.isFinal) {
         // in favor of a willFail otherwise the last frame of the gesture will be captured.
         setTimeout(() => {
-          this._initialRotation = null;
+          this.initialRotation = null;
           this.hasGestureFailed = false;
         });
       }
@@ -341,7 +339,7 @@ class GestureHandler {
       }
 
       const deltaRotation =
-        this._initialRotation == null ? 0 : inputData.rotation - this._initialRotation;
+        this.initialRotation == null ? 0 : inputData.rotation - this.initialRotation;
       const { success, failed } = this.isGestureEnabledForEvent(this.getConfig(), recognizer, {
         ...inputData,
         deltaRotation,
