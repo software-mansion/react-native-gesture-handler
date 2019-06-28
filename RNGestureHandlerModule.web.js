@@ -153,7 +153,7 @@ class GestureHandler {
     this.pendingGestures[gesture.id] = gesture;
   }
 
-  enabled() {
+  isGestureEnabledForEvent() {
     return { success: true };
   }
 
@@ -281,16 +281,16 @@ class GestureHandler {
     return event;
   };
 
-  _sendEvent = ev => {
+  _sendEvent = nativeEvent => {
     const {
       onGestureHandlerStateChange: onHandlerStateChange,
       onGestureHandlerEvent: onGestureEvent,
     } = this.ref.props;
 
-    const event = this._transformEventData(ev);
+    const event = this._transformEventData(nativeEvent);
 
     // Reset the state for the next gesture
-    if (ev.isFinal) {
+    if (nativeEvent.isFinal) {
       this.oldState = State.UNDETERMINED;
       this.previousState = State.UNDETERMINED;
     }
@@ -338,39 +338,9 @@ class GestureHandler {
     this._onEnd(event);
   }
 
-  onRawEvent(ev) {
-    const { isFirst, isFinal, ...props } = ev;
-
+  onRawEvent({ isFirst }) {
     if (isFirst) {
       this.hasGestureFailed = false;
-    }
-
-    // Attempt to create a touch-down event by checking if a valid tap hasn't started yet, then validating the input.
-    if (this.name === 'tap') {
-      if (
-        !this.hasGestureFailed &&
-        !this.isGestureRunning &&
-        // Prevent multi-pointer events from misfiring.
-        !isFinal
-      ) {
-        // Tap Gesture start event
-        const gesture = this.hammer.get(this.name);
-        if (gesture.options.enable(gesture, ev)) {
-          clearTimeout(this._multiTapTimer);
-
-          this.onStart(ev);
-          this._sendEvent(ev);
-        }
-      }
-      if (isFinal && props.maxPointers > 1) {
-        setTimeout(() => {
-          // Handle case where one finger presses slightly
-          // after the first finger on a multi-tap event
-          if (this.isGestureRunning) {
-            this._cancelEvent(ev);
-          }
-        });
-      }
     }
   }
 
@@ -468,7 +438,7 @@ class GestureHandler {
     const gesture = this.hammer.get(this.name);
     if (!gesture) return;
 
-    const enable = (recognizer, inputData = {}) => {
+    const enable = (recognizer, inputData) => {
       if (!this.config.enabled) {
         this.isGestureRunning = false;
         this.hasGestureFailed = false;
@@ -484,11 +454,10 @@ class GestureHandler {
         return false;
       }
 
-      if (this.isGestureRunning && !this.isDiscrete) {
-        return true;
-      }
-
       if (!this.isDiscrete) {
+        if (this.isGestureRunning) {
+          return true;
+        }
         // The built-in hammer.js "waitFor" doesn't work across multiple views.
         // Only process if there are views to wait for.
         this._stillWaiting = this._getPendingGestures();
@@ -517,22 +486,13 @@ class GestureHandler {
 
       const deltaRotation =
         this.__initialRotation == null ? 0 : inputData.rotation - this.__initialRotation;
-      const { success, failed } = this.enabled(this.getConfig(), recognizer, {
+      const { success, failed } = this.isGestureEnabledForEvent(this.getConfig(), recognizer, {
         ...inputData,
         deltaRotation,
       });
 
       if (failed) {
-        // Simulate cancel event
-        if (this.isDiscrete) {
-          // Long press never starts so we can't rely on the running event boolean.
-          if (this.name === 'press') {
-            this.hasGestureFailed = true;
-            this._cancelEvent(inputData);
-          } else if (this.isGestureRunning) {
-            this._cancelEvent(inputData);
-          }
-        }
+        this.simulateCancelEvent(inputData);
         this.hasGestureFailed = true;
       }
       return success;
@@ -541,6 +501,8 @@ class GestureHandler {
     const params = this._getHammerConfig();
     gesture.set({ ...params, enable });
   };
+
+  simulateCancelEvent(inputData) {}
 }
 
 class IndiscreteGestureHandler extends GestureHandler {
@@ -556,7 +518,11 @@ class IndiscreteGestureHandler extends GestureHandler {
     return false;
   }
 
-  enabled({ minPointers, maxPointers }, recognizer, { maxPointers: pointerLength }) {
+  isGestureEnabledForEvent(
+    { minPointers, maxPointers },
+    recognizer,
+    { maxPointers: pointerLength }
+  ) {
     if (pointerLength > maxPointers) {
       return { failed: true };
     }
@@ -707,7 +673,7 @@ class FlingGestureHandler extends GestureHandler {
     return Hammer.DIRECTION_ALL;
   }
 
-  enabled(
+  isGestureEnabledForEvent(
     {
       minPointers,
       maxPointers,
@@ -847,19 +813,19 @@ class PanGestureHandler extends GestureHandler {
   }
 
   shouldFailUnderCustomCriteria(
-    { x, y },
+    { deltaX, deltaY },
     { failOffsetXStart, failOffsetXEnd, failOffsetYStart, failOffsetYEnd }
   ) {
     return (
-      (!isnan(failOffsetXStart) && x < failOffsetXStart) ||
-      (!isnan(failOffsetXEnd) && x > failOffsetXEnd) ||
-      (!isnan(failOffsetYStart) && y < failOffsetYStart) ||
-      (!isnan(failOffsetYEnd) && y > failOffsetYEnd)
+      (!isnan(failOffsetXStart) && deltaX < failOffsetXStart) ||
+      (!isnan(failOffsetXEnd) && deltaX > failOffsetXEnd) ||
+      (!isnan(failOffsetYStart) && deltaY < failOffsetYStart) ||
+      (!isnan(failOffsetYEnd) && deltaY > failOffsetYEnd)
     );
   }
 
   shouldActivateUnderCustomCriteria(
-    { x, y, velocity },
+    { deltaX, deltaY, velocity },
     {
       activeOffsetXStart,
       activeOffsetXEnd,
@@ -871,20 +837,20 @@ class PanGestureHandler extends GestureHandler {
       minVelocitySq,
     }
   ) {
-    if (!isnan(activeOffsetXStart) && x < activeOffsetXStart) {
+    if (!isnan(activeOffsetXStart) && deltaX < activeOffsetXStart) {
       return true;
     }
-    if (!isnan(activeOffsetXEnd) && x > activeOffsetXEnd) {
+    if (!isnan(activeOffsetXEnd) && deltaX > activeOffsetXEnd) {
       return true;
     }
-    if (!isnan(activeOffsetYStart) && y < activeOffsetYStart) {
+    if (!isnan(activeOffsetYStart) && deltaY < activeOffsetYStart) {
       return true;
     }
-    if (!isnan(activeOffsetYEnd) && y > activeOffsetYEnd) {
+    if (!isnan(activeOffsetYEnd) && deltaY > activeOffsetYEnd) {
       return true;
     }
 
-    if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ({ x, y }), minDistSq)) {
+    if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ({ x: deltaX, y: deltaY }), minDistSq)) {
       return true;
     }
 
@@ -1029,16 +995,18 @@ class PanGestureHandler extends GestureHandler {
     return config;
   }
 
-  enabled(props, recognizer, inputData) {
-    const translation = { x: inputData.deltaX, y: inputData.deltaY };
-    if (this.shouldFailUnderCustomCriteria(translation, props)) {
+  isGestureEnabledForEvent(props, recognizer, inputData) {
+    if (this.shouldFailUnderCustomCriteria(inputData, props)) {
       return { failed: true };
     }
 
     const velocity = { x: inputData.velocityX, y: inputData.velocityY };
     if (
       this._hasCustomActivationCriteria &&
-      this.shouldActivateUnderCustomCriteria({ ...translation, velocity }, props)
+      this.shouldActivateUnderCustomCriteria(
+        { deltaX: inputData.deltaX, deltaY: inputData.deltaY, velocity },
+        props
+      )
     ) {
       if (
         this._shouldMultiFingerPanFail({
@@ -1106,12 +1074,13 @@ class DiscreteGestureHandler extends GestureHandler {
   get isDiscrete() {
     return true;
   }
+
   get shouldEnableGestureOnSetup() {
     return true;
   }
 
   shouldFailUnderCustomCriteria(
-    { x, y },
+    { x, y, deltaX, deltaY },
     { maxDeltaX, maxDeltaY, maxDistSq, shouldCancelWhenOutside }
   ) {
     if (shouldCancelWhenOutside) {
@@ -1120,9 +1089,9 @@ class DiscreteGestureHandler extends GestureHandler {
       }
     }
     return (
-      TEST_MAX_IF_NOT_NAN(Math.abs(x), maxDeltaX) ||
-      TEST_MAX_IF_NOT_NAN(Math.abs(y), maxDeltaY) ||
-      TEST_MAX_IF_NOT_NAN(Math.abs(y * y + x + x), maxDistSq)
+      TEST_MAX_IF_NOT_NAN(Math.abs(deltaX), maxDeltaX) ||
+      TEST_MAX_IF_NOT_NAN(Math.abs(deltaY), maxDeltaY) ||
+      TEST_MAX_IF_NOT_NAN(Math.abs(deltaY * deltaY + deltaX * deltaX), maxDistSq)
     );
   }
 
@@ -1135,31 +1104,31 @@ class DiscreteGestureHandler extends GestureHandler {
     };
   }
 
-  enabled(
+  isGestureEnabledForEvent(
     { minPointers, maxPointers, maxDist, maxDeltaX, maxDeltaY, maxDistSq, shouldCancelWhenOutside },
     recognizer,
-    { maxPointers: pointerLength, deltaX: dx, deltaY: dy, ...props }
+    { maxPointers: pointerLength, center, deltaX, deltaY, ...props }
   ) {
-    const translation = { x: dx, y: dy };
+    const validPointerCount = pointerLength >= minPointers && pointerLength <= maxPointers;
+
     if (
       this.shouldFailUnderCustomCriteria(
-        { ...translation },
+        { ...center, deltaX, deltaY },
         {
           maxDeltaX,
           maxDeltaY,
           maxDistSq,
           shouldCancelWhenOutside,
         }
-      )
+      ) ||
+      // A user probably won't land a multi-pointer tap on the first tick (so we cannot just cancel each time)
+      // but if the gesture is running and the user adds or subtracts another pointer then it should fail.
+      (!validPointerCount && this.isGestureRunning)
     ) {
+      console.log('Failed', this.id, { validPointerCount });
       return { failed: true };
     }
-    const validPointerCount = pointerLength >= minPointers && pointerLength <= maxPointers;
-    // A user probably won't land a multi-pointer tap on the first tick (so we cannot just cancel each time)
-    // but if the gesture is running and the user adds or subtracts another pointer then it should fail.
-    if (!validPointerCount && this.isGestureRunning) {
-      return { failed: true };
-    }
+
     return { success: validPointerCount };
   }
 }
@@ -1169,7 +1138,14 @@ class TapGestureHandler extends DiscreteGestureHandler {
     return 'tap';
   }
 
+  simulateCancelEvent(inputData) {
+    if (this.isGestureRunning) {
+      this._cancelEvent(inputData);
+    }
+  }
+
   onMainEvent(ev) {
+    console.log('onMainEvent');
     if (this.isGestureRunning) {
       this._onSuccessfulTap(ev);
     } else {
@@ -1197,6 +1173,33 @@ class TapGestureHandler extends DiscreteGestureHandler {
 
   onRawEvent(ev) {
     super.onRawEvent(ev);
+
+    // Attempt to create a touch-down event by checking if a valid tap hasn't started yet, then validating the input.
+    if (
+      !this.hasGestureFailed &&
+      !this.isGestureRunning &&
+      // Prevent multi-pointer events from misfiring.
+      !ev.isFinal
+    ) {
+      // Tap Gesture start event
+      const gesture = this.hammer.get(this.name);
+      if (gesture.options.enable(gesture, ev)) {
+        clearTimeout(this._multiTapTimer);
+
+        this.onStart(ev);
+        this._sendEvent(ev);
+      }
+    }
+    if (ev.isFinal && ev.maxPointers > 1) {
+      setTimeout(() => {
+        // Handle case where one finger presses slightly
+        // after the first finger on a multi-tap event
+        if (this.isGestureRunning) {
+          this._cancelEvent(ev);
+        }
+      });
+    }
+
     if (this.hasGestureFailed) {
       return;
     }
@@ -1305,6 +1308,12 @@ function fireAfterInterval(method, interval) {
 class PressGestureHandler extends DiscreteGestureHandler {
   get name() {
     return 'press';
+  }
+
+  simulateCancelEvent(inputData) {
+    // Long press never starts so we can't rely on the running event boolean.
+    this.hasGestureFailed = true;
+    this._cancelEvent(inputData);
   }
 
   get minDurationMs() {
