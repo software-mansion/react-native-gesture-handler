@@ -8,6 +8,14 @@ class TapGestureHandler extends DiscreteGestureHandler {
     return 'tap';
   }
 
+  createNativeGesture({ numberOfTaps, minPointers }) {
+    return new Hammer.Tap({
+      taps: numberOfTaps,
+      event: this.name,
+      pointers: minPointers,
+    });
+  }
+
   simulateCancelEvent(inputData) {
     if (this.isGestureRunning) {
       this._cancelEvent(inputData);
@@ -154,16 +162,6 @@ class TapGestureHandler extends DiscreteGestureHandler {
       this._onSuccessfulTap(this._shouldFireEndEvent);
       this._shouldFireEndEvent = null;
     }
-  }
-
-  createNativeGesture({ manager, props }) {
-    manager.add(
-      new Hammer.Tap({
-        taps: props.numberOfTaps,
-        event: this.name,
-        pointers: props.minPointers,
-      })
-    );
   }
 }
 export default TapGestureHandler;

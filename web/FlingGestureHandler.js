@@ -157,12 +157,10 @@ class FlingGestureHandler extends GestureHandler {
     });
   }
 
-  createNativeGesture({ manager, props }) {
-    manager.add(
-      new Hammer.Swipe({
-        pointers: props.minPointers,
-      })
-    );
+  createNativeGesture({ numberOfPointers }) {
+    return new Hammer.Swipe({
+      pointers: numberOfPointers,
+    });
   }
 }
 

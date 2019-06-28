@@ -9,12 +9,6 @@ class PressGestureHandler extends DiscreteGestureHandler {
     return 'press';
   }
 
-  simulateCancelEvent(inputData) {
-    // Long press never starts so we can't rely on the running event boolean.
-    this.hasGestureFailed = true;
-    this._cancelEvent(inputData);
-  }
-
   get minDurationMs() {
     return isnan(this.config.minDurationMs) ? 5 : this.config.minDurationMs;
   }
@@ -24,6 +18,16 @@ class PressGestureHandler extends DiscreteGestureHandler {
   }
 
   shouldDelayTouches = true;
+
+  createNativeGesture({ minPointers }) {
+    return new Hammer.Press({ pointers: minPointers });
+  }
+
+  simulateCancelEvent(inputData) {
+    // Long press never starts so we can't rely on the running event boolean.
+    this.hasGestureFailed = true;
+    this._cancelEvent(inputData);
+  }
 
   updateHasCustomActivationCriteria({ shouldCancelWhenOutside, maxDistSq }) {
     return shouldCancelWhenOutside || !isnan(maxDistSq);
@@ -137,10 +141,6 @@ class PressGestureHandler extends DiscreteGestureHandler {
       maxPointers,
       ...props,
     });
-  }
-
-  createNativeGesture({ manager, props }) {
-    manager.add(new Hammer.Press({ pointers: props.minPointers }));
   }
 }
 export default PressGestureHandler;

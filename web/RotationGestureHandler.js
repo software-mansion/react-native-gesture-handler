@@ -7,8 +7,8 @@ class RotationGestureHandler extends IndiscreteGestureHandler {
     return 'rotate';
   }
 
-  createNativeGesture({ manager, props }) {
-    manager.add(new Hammer.Rotate({ pointers: props.minPointers }));
+  createNativeGesture({ minPointers }) {
+    return new Hammer.Rotate({ pointers: minPointers });
   }
 
   parseNativeEvent({ anchorX, anchorY, velocity, rotation }) {

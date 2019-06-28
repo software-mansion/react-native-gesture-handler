@@ -16,6 +16,12 @@ class PanGestureHandler extends GestureHandler {
     return true;
   }
 
+  createNativeGesture({ minPointers }) {
+    return new Hammer.Pan({
+      pointers: minPointers,
+    });
+  }
+
   _getHammerConfig() {
     return {
       ...super._getHammerConfig(),
@@ -292,19 +298,6 @@ class PanGestureHandler extends GestureHandler {
     }
 
     return { success: false };
-    // return validateCriteria(
-    //   {
-    //     ...inputData,
-    //     recognizer,
-    //     pointerLength: inputData.maxPointers,
-    //     velocity: inputData.overallVelocity,
-    //     vx: inputData.velocityX,
-    //     vy: inputData.velocityY,
-    //     dx: inputData.deltaX,
-    //     dy: inputData.deltaY,
-    //   },
-    //   props
-    // );
   }
 
   // The event object that is returned
@@ -328,14 +321,6 @@ class PanGestureHandler extends GestureHandler {
       absoluteX,
       absoluteY,
     };
-  }
-
-  createNativeGesture({ manager, props }) {
-    manager.add(
-      new Hammer.Pan({
-        pointers: props.minPointers,
-      })
-    );
   }
 }
 
