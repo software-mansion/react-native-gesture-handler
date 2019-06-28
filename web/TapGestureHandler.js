@@ -22,11 +22,9 @@ class TapGestureHandler extends DiscreteGestureHandler {
     }
   }
 
-  onMainEvent(ev) {
+  onGestureActivated(ev) {
     if (this.isGestureRunning) {
       this.onSuccessfulTap(ev);
-    } else {
-      // Prevent multiple-touches
     }
   }
 
@@ -40,7 +38,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
     }
     // When handler gets activated it will turn into State.END immediately.
     this.sendEvent({ ...ev, isFinal: true });
-    this.onEnd(ev);
+    this.onGestureEnded(ev);
   };
 
   get maxDelayMs() {
@@ -150,9 +148,9 @@ class TapGestureHandler extends DiscreteGestureHandler {
     });
   }
 
-  onEnd(...props) {
+  onGestureEnded(...props) {
     clearTimeout(this._timer);
-    super.onEnd(...props);
+    super.onGestureEnded(...props);
   }
 
   onWaitingEnded(gesture) {

@@ -62,7 +62,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
     };
   }
 
-  onMainEvent(ev) {
+  onGestureActivated(ev) {
     this.onGestureStart(ev);
   }
 
@@ -116,7 +116,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
           eventType: Hammer.INPUT_END,
           isFinal: true,
         });
-        this.onEnd();
+        this.onGestureEnded();
       }, timeout);
     }
   }

@@ -10,7 +10,7 @@ class FlingGestureHandler extends DraggingGestureHandler {
     return 'swipe';
   }
 
-  onMainEvent(event) {
+  onGestureActivated(event) {
     this.sendEvent({
       ...event,
       eventType: Hammer.INPUT_MOVE,

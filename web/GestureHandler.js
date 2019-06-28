@@ -259,7 +259,7 @@ class GestureHandler {
     }
   }
 
-  onEnd(event) {
+  onGestureEnded(event) {
     this.isGestureRunning = false;
     this.cancelPendingGestures(event);
   }
@@ -278,7 +278,7 @@ class GestureHandler {
       eventType: Hammer.INPUT_CANCEL,
       isFinal: true,
     });
-    this.onEnd(event);
+    this.onGestureEnded(event);
   }
 
   onRawEvent({ isFirst }) {
@@ -336,9 +336,9 @@ class GestureHandler {
   setupEvents() {
     if (!this.isDiscrete) {
       this.hammer.on(`${this.name}start`, event => this.onStart(event));
-      this.hammer.on(`${this.name}end ${this.name}cancel`, event => this.onEnd(event));
+      this.hammer.on(`${this.name}end ${this.name}cancel`, event => this.onGestureEnded(event));
     }
-    this.hammer.on(this.name, ev => this.onMainEvent(ev));
+    this.hammer.on(this.name, ev => this.onGestureActivated(ev));
   }
 
   onStart({ deltaX, deltaY, rotation }) {
@@ -348,7 +348,7 @@ class GestureHandler {
     this.initialRotation = rotation;
   }
 
-  onMainEvent(ev) {
+  onGestureActivated(ev) {
     this.sendEvent(ev);
   }
 
