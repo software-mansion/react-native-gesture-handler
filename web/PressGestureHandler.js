@@ -1,8 +1,9 @@
 import Hammer from 'hammerjs';
-import DiscreteGestureHandler from './DiscreteGestureHandler';
-import { isnan, fireAfterInterval } from './utils';
-import { CONTENT_TOUCHES_QUICK_TAP_END_DELAY, CONTENT_TOUCHES_DELAY } from './constants';
+
 import State from '../State';
+import { CONTENT_TOUCHES_DELAY, CONTENT_TOUCHES_QUICK_TAP_END_DELAY } from './constants';
+import DiscreteGestureHandler from './DiscreteGestureHandler';
+import { fireAfterInterval, isnan } from './utils';
 
 class PressGestureHandler extends DiscreteGestureHandler {
   get name() {

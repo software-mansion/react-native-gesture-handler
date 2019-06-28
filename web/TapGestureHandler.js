@@ -12,6 +12,10 @@ class TapGestureHandler extends DiscreteGestureHandler {
     return Hammer.Tap;
   }
 
+  get maxDelayMs() {
+    return isnan(this.config.maxDelayMs) ? 300 : this.config.maxDelayMs;
+  }
+
   simulateCancelEvent(inputData) {
     if (this.isGestureRunning) {
       this.cancelEvent(inputData);
@@ -36,10 +40,6 @@ class TapGestureHandler extends DiscreteGestureHandler {
     this.sendEvent({ ...ev, isFinal: true });
     this.onGestureEnded(ev);
   };
-
-  get maxDelayMs() {
-    return isnan(this.config.maxDelayMs) ? 300 : this.config.maxDelayMs;
-  }
 
   onRawEvent(ev) {
     super.onRawEvent(ev);

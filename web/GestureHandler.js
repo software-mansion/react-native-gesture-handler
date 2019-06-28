@@ -5,88 +5,6 @@ import State from '../State';
 import { EventMap } from './constants';
 import * as NodeManager from './NodeManager';
 
-// Used for sending data to a callback or AnimatedEvent
-function invokeNullableMethod(name, method, event) {
-  if (method) {
-    if (typeof method === 'function') {
-      method(event);
-    } else {
-      // For use with reanimated's AnimatedEvent
-      if ('__getHandler' in method && typeof method.__getHandler === 'function') {
-        const handler = method.__getHandler();
-        invokeNullableMethod(name, handler, event);
-      } else {
-        if ('__nodeConfig' in method) {
-          const { argMapping } = method.__nodeConfig;
-          if (Array.isArray(argMapping)) {
-            for (const index in argMapping) {
-              const [key] = argMapping[index];
-              if (key in event.nativeEvent) {
-                method.__nodeConfig.argMapping[index] = [key, event.nativeEvent[key]];
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-// Validate the props
-function ensureConfig(config) {
-  const props = { ...config };
-
-  if ('minDist' in config) {
-    props.minDist = config.minDist;
-    props.minDistSq = props.minDist * props.minDist;
-  }
-  if ('minVelocity' in config) {
-    props.minVelocity = config.minVelocity;
-    props.minVelocitySq = props.minVelocity * props.minVelocity;
-  }
-  if ('maxDist' in config) {
-    props.maxDist = config.maxDist;
-    props.maxDistSq = config.maxDist * config.maxDist;
-  }
-  if ('waitFor' in config) {
-    props.waitFor = asArray(config.waitFor)
-      .map(({ _handlerTag }) => NodeManager.getHandler(_handlerTag))
-      .filter(v => v);
-  } else {
-    props.waitFor = null;
-  }
-
-  [
-    'minPointers',
-    'maxPointers',
-    'minDist',
-    'maxDist',
-    'maxDistSq',
-    'minVelocitySq',
-    'minDistSq',
-    'minVelocity',
-    'failOffsetXStart',
-    'failOffsetYStart',
-    'failOffsetXEnd',
-    'failOffsetYEnd',
-    'activeOffsetXStart',
-    'activeOffsetXEnd',
-    'activeOffsetYStart',
-    'activeOffsetYEnd',
-  ].forEach(prop => {
-    if (isUndefined(props[prop])) {
-      props[prop] = Number.NaN;
-    }
-  });
-  return props;
-}
-
-function asArray(value) {
-  return value == null ? [] : Array.isArray(value) ? value : [value];
-}
-
-const isUndefined = v => typeof v === 'undefined';
-
 let _gestureInstances = 0;
 
 class GestureHandler {
@@ -120,9 +38,7 @@ class GestureHandler {
     return this.config;
   }
 
-  onWaitingEnded(gesture) {
-    console.warn('onWaitingEnded!', gesture.id);
-  }
+  onWaitingEnded(gesture) {}
 
   removePendingGesture(id) {
     delete this.pendingGestures[id];
@@ -318,13 +234,13 @@ class GestureHandler {
 
       // TODO: Bacon: Check against something other than null
       // The isFirst value is not called when the first rotation is calculated.
-      if (this.__initialRotation === null && ev.rotation !== 0) {
-        this.__initialRotation = ev.rotation;
+      if (this._initialRotation === null && ev.rotation !== 0) {
+        this._initialRotation = ev.rotation;
       }
       if (ev.isFinal) {
         // in favor of a willFail otherwise the last frame of the gesture will be captured.
         setTimeout(() => {
-          this.__initialRotation = null;
+          this._initialRotation = null;
           this.hasGestureFailed = false;
         });
       }
@@ -387,7 +303,7 @@ class GestureHandler {
       }
 
       // Prevent events before the system is ready.
-      if (!inputData || !recognizer.options || isUndefined(inputData.maxPointers)) {
+      if (!inputData || !recognizer.options || typeof inputData.maxPointers === 'undefined') {
         return this.shouldEnableGestureOnSetup;
       }
 
@@ -425,7 +341,7 @@ class GestureHandler {
       }
 
       const deltaRotation =
-        this.__initialRotation == null ? 0 : inputData.rotation - this.__initialRotation;
+        this._initialRotation == null ? 0 : inputData.rotation - this._initialRotation;
       const { success, failed } = this.isGestureEnabledForEvent(this.getConfig(), recognizer, {
         ...inputData,
         deltaRotation,
@@ -443,6 +359,86 @@ class GestureHandler {
   };
 
   simulateCancelEvent(inputData) {}
+}
+
+// Used for sending data to a callback or AnimatedEvent
+function invokeNullableMethod(name, method, event) {
+  if (method) {
+    if (typeof method === 'function') {
+      method(event);
+    } else {
+      // For use with reanimated's AnimatedEvent
+      if ('__getHandler' in method && typeof method.__getHandler === 'function') {
+        const handler = method.__getHandler();
+        invokeNullableMethod(name, handler, event);
+      } else {
+        if ('__nodeConfig' in method) {
+          const { argMapping } = method.__nodeConfig;
+          if (Array.isArray(argMapping)) {
+            for (const index in argMapping) {
+              const [key] = argMapping[index];
+              if (key in event.nativeEvent) {
+                method.__nodeConfig.argMapping[index] = [key, event.nativeEvent[key]];
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Validate the props
+function ensureConfig(config) {
+  const props = { ...config };
+
+  if ('minDist' in config) {
+    props.minDist = config.minDist;
+    props.minDistSq = props.minDist * props.minDist;
+  }
+  if ('minVelocity' in config) {
+    props.minVelocity = config.minVelocity;
+    props.minVelocitySq = props.minVelocity * props.minVelocity;
+  }
+  if ('maxDist' in config) {
+    props.maxDist = config.maxDist;
+    props.maxDistSq = config.maxDist * config.maxDist;
+  }
+  if ('waitFor' in config) {
+    props.waitFor = asArray(config.waitFor)
+      .map(({ _handlerTag }) => NodeManager.getHandler(_handlerTag))
+      .filter(v => v);
+  } else {
+    props.waitFor = null;
+  }
+
+  [
+    'minPointers',
+    'maxPointers',
+    'minDist',
+    'maxDist',
+    'maxDistSq',
+    'minVelocitySq',
+    'minDistSq',
+    'minVelocity',
+    'failOffsetXStart',
+    'failOffsetYStart',
+    'failOffsetXEnd',
+    'failOffsetYEnd',
+    'activeOffsetXStart',
+    'activeOffsetXEnd',
+    'activeOffsetYStart',
+    'activeOffsetYEnd',
+  ].forEach(prop => {
+    if (typeof props[prop] === 'undefined') {
+      props[prop] = Number.NaN;
+    }
+  });
+  return props;
+}
+
+function asArray(value) {
+  return value == null ? [] : Array.isArray(value) ? value : [value];
 }
 
 export default GestureHandler;

@@ -1,4 +1,5 @@
 import Hammer from 'hammerjs';
+
 import State from '../State';
 
 export const CONTENT_TOUCHES_DELAY = 240;
