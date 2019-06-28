@@ -2,16 +2,12 @@ import Hammer from 'hammerjs';
 
 import { Direction } from './constants';
 import { GesturePropError } from './Errors';
-import GestureHandler from './GestureHandler';
+import DraggingGestureHandler from './DraggingGestureHandler';
 import { isnan } from './utils';
 
-class FlingGestureHandler extends GestureHandler {
+class FlingGestureHandler extends DraggingGestureHandler {
   get name() {
     return 'swipe';
-  }
-
-  get shouldEnableGestureOnSetup() {
-    return true;
   }
 
   onMainEvent(event) {
@@ -120,19 +116,6 @@ class FlingGestureHandler extends GestureHandler {
       return { failed: true };
     }
     return { success: validPointerCount };
-  }
-
-  transformNativeEvent({ deltaX, deltaY, velocityX, velocityY, center: { x, y } }) {
-    return {
-      translationX: deltaX - (this.__initialX || 0),
-      translationY: deltaY - (this.__initialY || 0),
-      absoluteX: x,
-      absoluteY: y,
-      velocityX,
-      velocityY,
-      x,
-      y,
-    };
   }
 
   updateGestureConfig({ numberOfPointers = 1, direction, ...props }) {

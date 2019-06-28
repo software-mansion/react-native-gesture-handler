@@ -4,16 +4,12 @@ import {
   MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD,
   MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD,
 } from './constants';
-import GestureHandler from './GestureHandler';
+import DraggingGestureHandler from './DraggingGestureHandler';
 import { isnan, TEST_MIN_IF_NOT_NAN, VEC_LEN_SQ } from './utils';
 
-class PanGestureHandler extends GestureHandler {
+class PanGestureHandler extends DraggingGestureHandler {
   get name() {
     return 'pan';
-  }
-
-  get shouldEnableGestureOnSetup() {
-    return true;
   }
 
   createNativeGesture({ minPointers }) {
@@ -206,7 +202,7 @@ class PanGestureHandler extends GestureHandler {
 
     ...props
   }) {
-    // this.validateConfig(this.config)
+    // validateConfig(this.config)
     return super.updateGestureConfig({
       minVelocity,
       minVelocityX,
@@ -225,62 +221,6 @@ class PanGestureHandler extends GestureHandler {
 
       ...props,
     });
-  }
-
-  validateConfig(config = {}) {
-    const isNum = v => isnan(v) || typeof v === 'number';
-    const isBool = v => typeof v === 'boolean';
-
-    const valid = {
-      enabled: isBool,
-      minDistSq: isNum,
-      minVelocityX: isNum,
-      minVelocityY: isNum,
-      // TODO: Bacon: remove `minVelocity`
-      minVelocity: isNum,
-      minVelocitySq: isNum,
-      activeOffsetXStart: isNum,
-      activeOffsetXEnd: isNum,
-      failOffsetXStart: isNum,
-      failOffsetXEnd: isNum,
-      activeOffsetYStart: isNum,
-      activeOffsetYEnd: isNum,
-      failOffsetYStart: isNum,
-      failOffsetYEnd: isNum,
-      hasCustomActivationCriteria: isBool,
-      minPointers: isNum,
-      maxPointers: isNum,
-    };
-    const keys = Object.keys(valid);
-
-    let invalidKeys = [];
-    for (const key of Object.keys(config)) {
-      if (keys.includes(key)) {
-        if (valid[key](config[key])) {
-          console.warn('Invalid type: ' + key + ': ' + config[key]);
-        }
-      } else {
-        invalidKeys.push(key);
-      }
-    }
-
-    if (invalidKeys.length) {
-      throw new Error('Invalid config props found: ' + invalidKeys.join(', '));
-    }
-    return config;
-  }
-
-  transformNativeEvent({ deltaX, deltaY, velocityX, velocityY, center }) {
-    return {
-      translationX: deltaX - (this.__initialX || 0),
-      translationY: deltaY - (this.__initialY || 0),
-      absoluteX: center.x,
-      absoluteY: center.y,
-      x: center.x,
-      y: center.y,
-      velocityX,
-      velocityY,
-    };
   }
 
   isGestureEnabledForEvent(props, recognizer, inputData) {
@@ -312,6 +252,49 @@ class PanGestureHandler extends GestureHandler {
 
     return { success: false };
   }
+}
+
+function validateConfig(config = {}) {
+  const isNum = v => isnan(v) || typeof v === 'number';
+  const isBool = v => typeof v === 'boolean';
+
+  const valid = {
+    enabled: isBool,
+    minDistSq: isNum,
+    minVelocityX: isNum,
+    minVelocityY: isNum,
+    // TODO: Bacon: remove `minVelocity`
+    minVelocity: isNum,
+    minVelocitySq: isNum,
+    activeOffsetXStart: isNum,
+    activeOffsetXEnd: isNum,
+    failOffsetXStart: isNum,
+    failOffsetXEnd: isNum,
+    activeOffsetYStart: isNum,
+    activeOffsetYEnd: isNum,
+    failOffsetYStart: isNum,
+    failOffsetYEnd: isNum,
+    hasCustomActivationCriteria: isBool,
+    minPointers: isNum,
+    maxPointers: isNum,
+  };
+  const keys = Object.keys(valid);
+
+  let invalidKeys = [];
+  for (const key of Object.keys(config)) {
+    if (keys.includes(key)) {
+      if (valid[key](config[key])) {
+        console.warn('Invalid type: ' + key + ': ' + config[key]);
+      }
+    } else {
+      invalidKeys.push(key);
+    }
+  }
+
+  if (invalidKeys.length) {
+    throw new Error('Invalid config props found: ' + invalidKeys.join(', '));
+  }
+  return config;
 }
 
 export default PanGestureHandler;
