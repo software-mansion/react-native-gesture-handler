@@ -83,59 +83,26 @@ class PanGestureHandler extends DraggingGestureHandler {
     return this.config;
   }
 
-  shouldFailUnderCustomCriteria(
-    { deltaX, deltaY },
-    { failOffsetXStart, failOffsetXEnd, failOffsetYStart, failOffsetYEnd }
-  ) {
+  shouldFailUnderCustomCriteria({ deltaX, deltaY }, criteria) {
     return (
-      (!isnan(failOffsetXStart) && deltaX < failOffsetXStart) ||
-      (!isnan(failOffsetXEnd) && deltaX > failOffsetXEnd) ||
-      (!isnan(failOffsetYStart) && deltaY < failOffsetYStart) ||
-      (!isnan(failOffsetYEnd) && deltaY > failOffsetYEnd)
+      (!isnan(criteria.failOffsetXStart) && deltaX < criteria.failOffsetXStart) ||
+      (!isnan(criteria.failOffsetXEnd) && deltaX > criteria.failOffsetXEnd) ||
+      (!isnan(criteria.failOffsetYStart) && deltaY < criteria.failOffsetYStart) ||
+      (!isnan(criteria.failOffsetYEnd) && deltaY > criteria.failOffsetYEnd)
     );
   }
 
-  shouldActivateUnderCustomCriteria(
-    { deltaX, deltaY, velocity },
-    {
-      activeOffsetXStart,
-      activeOffsetXEnd,
-      activeOffsetYStart,
-      activeOffsetYEnd,
-      minDistSq,
-      minVelocityX,
-      minVelocityY,
-      minVelocitySq,
-    }
-  ) {
-    if (!isnan(activeOffsetXStart) && deltaX < activeOffsetXStart) {
-      return true;
-    }
-    if (!isnan(activeOffsetXEnd) && deltaX > activeOffsetXEnd) {
-      return true;
-    }
-    if (!isnan(activeOffsetYStart) && deltaY < activeOffsetYStart) {
-      return true;
-    }
-    if (!isnan(activeOffsetYEnd) && deltaY > activeOffsetYEnd) {
-      return true;
-    }
-
-    if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ({ x: deltaX, y: deltaY }), minDistSq)) {
-      return true;
-    }
-
-    if (TEST_MIN_IF_NOT_NAN(velocity.x, minVelocityX)) {
-      return true;
-    }
-    if (TEST_MIN_IF_NOT_NAN(velocity.y, minVelocityY)) {
-      return true;
-    }
-    if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ(velocity), minVelocitySq)) {
-      return true;
-    }
-
-    return false;
+  shouldActivateUnderCustomCriteria({ deltaX, deltaY, velocity }, criteria) {
+    return (
+      (!isnan(criteria.activeOffsetXStart) && deltaX < criteria.activeOffsetXStart) ||
+      (!isnan(criteria.activeOffsetXEnd) && deltaX > criteria.activeOffsetXEnd) ||
+      (!isnan(criteria.activeOffsetYStart) && deltaY < criteria.activeOffsetYStart) ||
+      (!isnan(criteria.activeOffsetYEnd) && deltaY > criteria.activeOffsetYEnd) ||
+      TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ({ x: deltaX, y: deltaY }), criteria.minDistSq) ||
+      TEST_MIN_IF_NOT_NAN(velocity.x, criteria.minVelocityX) ||
+      TEST_MIN_IF_NOT_NAN(velocity.y, criteria.minVelocityY) ||
+      TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ(velocity), criteria.minVelocitySq)
+    );
   }
 
   shouldMultiFingerPanFail({ pointerLength, scale, deltaRotation }) {
@@ -162,65 +129,17 @@ class PanGestureHandler extends DraggingGestureHandler {
     return false;
   }
 
-  updateHasCustomActivationCriteria({
-    minDistSq,
-    minVelocityX,
-    activeOffsetXStart,
-    activeOffsetYStart,
-    minVelocityY,
-    activeOffsetXEnd,
-    activeOffsetYEnd,
-    minVelocitySq,
-  }) {
+  updateHasCustomActivationCriteria(criteria) {
     return (
-      !isnan(minDistSq) ||
-      !isnan(minVelocityX) ||
-      !isnan(minVelocityY) ||
-      !isnan(minVelocitySq) ||
-      !isnan(activeOffsetXStart) ||
-      !isnan(activeOffsetXEnd) ||
-      !isnan(activeOffsetYStart) ||
-      !isnan(activeOffsetYEnd)
+      !isnan(criteria.minDistSq) ||
+      !isnan(criteria.minVelocityX) ||
+      !isnan(criteria.minVelocityY) ||
+      !isnan(criteria.minVelocitySq) ||
+      !isnan(criteria.activeOffsetXStart) ||
+      !isnan(criteria.activeOffsetXEnd) ||
+      !isnan(criteria.activeOffsetYStart) ||
+      !isnan(criteria.activeOffsetYEnd)
     );
-  }
-
-  updateGestureConfig({
-    minVelocity = Number.NaN,
-    minVelocityX = Number.NaN,
-    minVelocityY = Number.NaN,
-    minPointers = Number.NaN,
-    maxPointers = Number.NaN,
-    minDist = Number.NaN,
-    activeOffsetXStart = Number.NaN,
-    activeOffsetXEnd = Number.NaN,
-    failOffsetXStart = Number.NaN,
-    failOffsetXEnd = Number.NaN,
-    activeOffsetYStart = Number.NaN,
-    activeOffsetYEnd = Number.NaN,
-    failOffsetYStart = Number.NaN,
-    failOffsetYEnd = Number.NaN,
-
-    ...props
-  }) {
-    // validateConfig(this.config)
-    return super.updateGestureConfig({
-      minVelocity,
-      minVelocityX,
-      minVelocityY,
-      minPointers,
-      maxPointers,
-      minDist,
-      activeOffsetXStart,
-      activeOffsetXEnd,
-      failOffsetXStart,
-      failOffsetXEnd,
-      activeOffsetYStart,
-      activeOffsetYEnd,
-      failOffsetYStart,
-      failOffsetYEnd,
-
-      ...props,
-    });
   }
 
   isGestureEnabledForEvent(props, recognizer, inputData) {
