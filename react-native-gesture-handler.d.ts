@@ -442,7 +442,7 @@ declare module 'react-native-gesture-handler' {
 }
 
 declare module 'react-native-gesture-handler/Swipeable' {
-  import { Animated } from 'react-native';
+  import { Animated, StyleProp, ViewStyle } from 'react-native';
 
   interface SwipeableProperties {
     friction?: number;
@@ -468,6 +468,8 @@ declare module 'react-native-gesture-handler/Swipeable' {
       dragAnimatedValue: Animated.AnimatedInterpolation
     ) => React.ReactNode;
     useNativeAnimations?: boolean;
+    containerStyle?: StyleProp<ViewStyle>;
+    childrenContainerStyle?: StyleProp<ViewStyle>;
   }
 
   export default class Swipeable extends React.Component<SwipeableProperties> {
