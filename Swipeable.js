@@ -11,13 +11,6 @@ import { PanGestureHandler, TapGestureHandler, State } from './GestureHandler';
 
 const DRAG_TOSS = 0.05;
 
-// Math.sign polyfill for iOS 8.x
-if (!Math.sign) {
-  Math.sign = function(x) {
-    return Number(x > 0) - Number(x < 0) || +x;
-  };
-}
-
 export type PropType = {
   children: any,
   friction: number,
@@ -25,7 +18,7 @@ export type PropType = {
   rightThreshold?: number,
   overshootLeft?: boolean,
   overshootRight?: boolean,
-  overshootFriction?: number,
+  overshootFriction: number,
   onSwipeableLeftOpen?: Function,
   onSwipeableRightOpen?: Function,
   onSwipeableOpen?: Function,
@@ -88,7 +81,7 @@ export default class Swipeable extends Component<PropType, StateType> {
     );
   }
 
-  componentWillUpdate(props: PropType, state: StateType) {
+  UNSAFE_componentWillUpdate(props: PropType, state: StateType) {
     if (
       this.props.friction !== props.friction ||
       this.props.overshootLeft !== props.overshootLeft ||

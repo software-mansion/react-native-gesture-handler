@@ -1,3 +1,5 @@
 export default {
-  forceTouchAvailable: false,
+  get forceTouchAvailable() {
+    return false;
+  },
 };

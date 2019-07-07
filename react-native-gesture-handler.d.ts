@@ -426,8 +426,8 @@ declare module 'react-native-gesture-handler' {
 
   /* OTHER */
 
-  export class FlatList extends React.Component<
-    NativeViewGestureHandlerProperties & FlatListProperties<any>
+  export class FlatList<ItemT> extends React.Component<
+    NativeViewGestureHandlerProperties & FlatListProperties<ItemT>
   > {}
 
   export function gestureHandlerRootHOC(
@@ -442,7 +442,7 @@ declare module 'react-native-gesture-handler' {
 }
 
 declare module 'react-native-gesture-handler/Swipeable' {
-  import { Animated } from 'react-native';
+  import { Animated, StyleProp, ViewStyle } from 'react-native';
 
   interface SwipeableProperties {
     friction?: number;
@@ -488,6 +488,8 @@ declare module 'react-native-gesture-handler/Swipeable' {
         dragAnimatedValue: Animated.AnimatedInterpolation
     ) => React.ReactNode;
     useNativeAnimations?: boolean;
+    containerStyle?: StyleProp<ViewStyle>;
+    childrenContainerStyle?: StyleProp<ViewStyle>;
   }
 
   export default class Swipeable extends React.Component<SwipeableProperties> {
@@ -506,6 +508,8 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
 
   export type DrawerType = 'front' | 'back' | 'slide';
 
+  export type DrawerLockMode = 'unlocked' | 'locked-closed' | 'locked-open';
+
   export type DrawerKeyboardDismissMode = 'none' | 'on-drag';
 
   export interface DrawerLayoutProperties {
@@ -515,6 +519,7 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
     drawerPosition?: DrawerPosition;
     drawerWidth?: number;
     drawerBackgroundColor?: string;
+    drawerLockMode?: DrawerLockMode;
     keyboardDismissMode?: DrawerKeyboardDismissMode;
     onDrawerClose?: () => void;
     onDrawerOpen?: () => void;

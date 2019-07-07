@@ -7,10 +7,27 @@ import State from './State';
 
 const { UIManager } = NativeModules;
 
+const customGHEventsConfig = {
+  onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+  onGestureHandlerStateChange: {
+    registrationName: 'onGestureHandlerStateChange',
+  },
+};
+
+// Add gesture specific events to genericDirectEventTypes object exported from UIManager
+// native module.
+// Once new event types are registered with react it is possible to dispatch these
+// events to all kind of native views.
+UIManager.genericDirectEventTypes = {
+  ...UIManager.genericDirectEventTypes,
+  ...customGHEventsConfig,
+};
+
 // Wrap JS responder calls and notify gesture handler manager
 const {
   setJSResponder: oldSetJSResponder,
   clearJSResponder: oldClearJSResponder,
+  getConstants: oldGetConstants,
 } = UIManager;
 UIManager.setJSResponder = (tag, blockNativeResponder) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
@@ -20,17 +37,17 @@ UIManager.clearJSResponder = () => {
   RNGestureHandlerModule.handleClearJSResponder();
   oldClearJSResponder();
 };
-
-// Add gesture specific events to genericDirectEventTypes object exported from UIManager
-// native module.
-// Once new event types are registered with react it is possible to dispatch these
-// events to all kind of native views.
-UIManager.genericDirectEventTypes = {
-  ...UIManager.genericDirectEventTypes,
-  onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
-  onGestureHandlerStateChange: {
-    registrationName: 'onGestureHandlerStateChange',
-  },
+// We also add GH specific events to the constants object returned by
+// UIManager.getConstants to make it work with the newest version of RN
+UIManager.getConstants = () => {
+  const constants = oldGetConstants();
+  return {
+    ...constants,
+    genericDirectEventTypes: {
+      ...constants.genericDirectEventTypes,
+      ...customGHEventsConfig,
+    },
+  };
 };
 
 let handlerTag = 1;
