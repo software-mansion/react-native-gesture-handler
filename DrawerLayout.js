@@ -450,7 +450,8 @@ export default class DrawerLayout extends Component<PropType, StateType> {
               : styles.containerInFront,
             containerStyles,
             contentContainerStyle,
-          ]}>
+          ]}
+          importantForAccessibility={this._drawerShown ? "no-hide-descendants" : "yes"}>
           {typeof this.props.children === 'function'
             ? this.props.children(this._openValue)
             : this.props.children}
