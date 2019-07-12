@@ -47,7 +47,7 @@ npm install --save react-native-gesture-handler
 
 #### Linking
 
-> **Important**: This step is only applicable for React Native 0.59 or lower. Since v0.60 linking happens automatically.
+> **Important**: You only need to do this step if you're using React Native 0.59 or lower. Since v0.60, linking happens automatically.
 
 ```bash
 react-native link react-native-gesture-handler
