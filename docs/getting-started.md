@@ -10,49 +10,59 @@ The motivation for building this library was to address the performance limitati
 We recommend [this talk](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) in which he explains issues with the responder system.
 
 In a nutshell, the library provides:
- - A way to use a platform's native touch handling system for recognizing pinch, rotation and pan (besides a few other gestures).
- - The ability to define relations between gesture handlers, e.g. when you have a pan handler in `ScrollView` you can make that `ScrollView` wait until it knows pan won't recognize.
- - Mechanisms to use touchables that run in native thread and follow platform default behavior; e.g. in the event they are in a scrollable component, turning into pressed state is slightly delayed to prevent it from highlighting when you fling.
- - The possibility to implement smooth gesture interactions thanks to Animated Native Driver &mdash; interactions will be responsive even when the JS thread is overloaded.
 
+- A way to use a platform's native touch handling system for recognizing pinch, rotation and pan (besides a few other gestures).
+- The ability to define relations between gesture handlers, e.g. when you have a pan handler in `ScrollView` you can make that `ScrollView` wait until it knows pan won't recognize.
+- Mechanisms to use touchables that run in native thread and follow platform default behavior; e.g. in the event they are in a scrollable component, turning into pressed state is slightly delayed to prevent it from highlighting when you fling.
+- The possibility to implement smooth gesture interactions thanks to Animated Native Driver &mdash; interactions will be responsive even when the JS thread is overloaded.
 
 ## Installation
 
 Since the library uses native support for handling gestures, it requires an extended installation to the norm.
 
 ### With [React Native](http://facebook.github.io/react-native/) app (no Expo)
+
 #### Requirements
 
-| version | react-native version |
-| ------- | -------------------- |
-| 1.1.0+  | 0.57.2+              | 
-| <1.1.0  | 0.50.0+              |
+| version | `react-native` version |
+| ------- | ---------------------- |
+| 1.1.0+  | 0.57.2+                |
+| <1.1.0  | 0.50.0+                |
 
-Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for  [interactions](interactions.md) you need to use v.16.3 of [React](https://reactjs.org/)
-
+Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](interactions.md) you need to use v16.3 of [React](https://reactjs.org/)
 
 #### JS
+
 First, install the library using `yarn`:
+
 ```bash
-  yarn add react-native-gesture-handler
+yarn add react-native-gesture-handler
 ```
 
 or with `npm` if you prefer:
+
 ```bash
-  npm install --save react-native-gesture-handler
+npm install --save react-native-gesture-handler
 ```
 
 #### Linking
+
+> **Important**: This step is only applicable for React Native 0.59 or lower. Since v0.60 linking happens automatically.
+
 ```bash
-  react-native link react-native-gesture-handler
+react-native link react-native-gesture-handler
 ```
 
 #### Android
+
 Follow the steps below:
 
-If you use one of the *native navigation libraries* (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you should follow [this separate guide](#with-wix-react-native-navigation-https-githubcom-wix-react-native-navigation) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that use a standard Android project layout.
+If you use one of the _native navigation libraries_ (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you should follow [this separate guide](#with-wix-react-native-navigation-https-githubcom-wix-react-native-navigation) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that use a standard Android project layout.
+
+##### Updating `MainActivity.java`
 
 Update your `MainActivity.java` file (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating `ReactRootView` instance and then use the root view wrapper provided by this library. Do not forget to import `ReactActivityDelegate`, `ReactRootView`, and `RNGestureHandlerEnabledRootView`:
+
 ```diff
 package com.swmansion.gesturehandler.react.example;
 
@@ -80,14 +90,48 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
+##### Running jetifier
+
+> **Important:** This step is only necessary if you're on React Native 0.60 or greater.
+
+React Native 0.60 migrated from Support Library to AndroidX. React Native Gesture Handler is not yet compatible with AndroidX. Until then, please use [`jetifier`](https://www.npmjs.com/package/jetifier) to make it work with newest React Native:
+
+```sh
+yarn add jetifier
+```
+
+or with npm:
+
+```sh
+npm install --save-dev jetifier
+```
+
+We recommend using "postinstall" phase to run it. You can add it in your `package.json` file:
+
+```json
+{
+  "scripts": {
+    "postinstall": "jetify"
+  }
+}
+```
+
 #### iOS
+
 There is no additional configuration required on iOS except what follows in the next steps.
 
----
-Now you're all set. Run your app with `react-native run-android` or `react-native run-ios`
+If you're in a CocoaPods project (the default setup since React Native 0.60), make sure to install pods before you run your app:
 
+```sh
+cd ios && pod install
+```
+
+---
+
+Now you're all set. Run your app with `react-native run-android` or `react-native run-ios`.
 
 ### With [Expo](https://expo.io)
+
 Gesture Handler is already part of Expo and there is no extra configuration required. However, consider that the Expo SDK team may take some time to include the newest version of the library - so Expo might not always support all our latest features as soon as they are out.
 
 ### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
@@ -97,7 +141,7 @@ If you are using a native navigation library like [wix/react-native-navigation](
 Instead of changing Java code you will need to wrap every screen component using `gestureHandlerRootHOC` on the JS side. This can be done for example at the stage when you register your screens. Here's an example:
 
 ```js
-import { gestureHandlerRootHOC } from 'react-native-gesture-handler'
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { Navigation } from 'react-native-navigation';
 
 import FirstTabScreen from './FirstTabScreen';
@@ -107,11 +151,14 @@ import PushedScreen from './PushedScreen';
 // register all screens of the app (including internal ones)
 export function registerScreens() {
   Navigation.registerComponent('example.FirstTabScreen', () =>
-    gestureHandlerRootHOC(FirstTabScreen));
+    gestureHandlerRootHOC(FirstTabScreen)
+  );
   Navigation.registerComponent('example.SecondTabScreen', () =>
-    gestureHandlerRootHOC(SecondTabScreen));
+    gestureHandlerRootHOC(SecondTabScreen)
+  );
   Navigation.registerComponent('example.PushedScreen', () =>
-    gestureHandlerRootHOC(PushedScreen));
+    gestureHandlerRootHOC(PushedScreen)
+  );
 }
 ```
 
@@ -123,7 +170,7 @@ Remember that you need to wrap each screen that you use in your app with `gestur
 
 In order to load mocks provided by the library add following to your jest config in `package.json`:
 
-```json 
+```json
 "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
 ```
 
