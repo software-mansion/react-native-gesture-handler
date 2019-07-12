@@ -97,7 +97,7 @@ public class MainActivity extends ReactActivity {
 React Native 0.60 migrated from Support Library to AndroidX. React Native Gesture Handler is not yet compatible with AndroidX. Until then, please use [`jetifier`](https://www.npmjs.com/package/jetifier) to make it work with newest React Native:
 
 ```sh
-yarn add jetifier
+yarn add --dev jetifier
 ```
 
 or with npm:
