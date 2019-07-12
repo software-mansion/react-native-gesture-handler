@@ -94,7 +94,19 @@ public class MainActivity extends ReactActivity {
 
 > **Important:** You only need to do this step if you're on React Native 0.60 or greater.
 
-React Native 0.60 migrated from Support Library to AndroidX. React Native Gesture Handler is not yet compatible with AndroidX. Until then, please use [`jetifier`](https://www.npmjs.com/package/jetifier) to make it work with newest React Native:
+React Native 0.60 migrated from Support Library to AndroidX. React Native Gesture Handler is not yet compatible with AndroidX. Until then, please use [`jetifier`](https://www.npmjs.com/package/jetifier) to make it work with newest React Native.
+
+We recommend using "postinstall" phase to run it. You can add it in your `package.json` file:
+
+```json
+{
+  "scripts": {
+    "postinstall": "jetify"
+  }
+}
+```
+
+Then add `jetifier` to your project dev dependencies:
 
 ```sh
 yarn add --dev jetifier
@@ -106,15 +118,7 @@ or with npm:
 npm install --save-dev jetifier
 ```
 
-We recommend using "postinstall" phase to run it. You can add it in your `package.json` file:
-
-```json
-{
-  "scripts": {
-    "postinstall": "jetify"
-  }
-}
-```
+And that's it. The "postinstall" script will now run `jetify` command for you.
 
 #### iOS
 
