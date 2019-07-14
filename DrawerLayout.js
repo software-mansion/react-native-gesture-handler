@@ -80,6 +80,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     minSwipeDistance: 3,
     overlayColor: 'black',
     drawerLockMode: 'unlocked',
+    shouldOpenOffsetX: 0
   };
 
   static positions = {
@@ -238,7 +239,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
   };
 
   _handleRelease = nativeEvent => {
-    const { drawerWidth, drawerPosition, drawerType } = this.props;
+    const { drawerWidth, drawerPosition, drawerType, shouldOpenOffsetX } = this.props;
     const { containerWidth } = this.state;
     let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
 
@@ -262,7 +263,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       dragX + dragOffsetBasedOnStart + (this._drawerShown ? drawerWidth : 0);
     const projOffsetX = startOffsetX + DRAG_TOSS * velocityX;
 
-    const shouldOpen = projOffsetX > drawerWidth / 2;
+    const shouldOpen = shouldOpenOffsetX || projOffsetX > drawerWidth / 2;
 
     if (shouldOpen) {
       this._animateDrawer(startOffsetX, drawerWidth, velocityX);

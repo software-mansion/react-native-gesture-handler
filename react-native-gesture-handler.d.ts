@@ -511,6 +511,7 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
 
     drawerType?: DrawerType;
     edgeWidth?: number;
+    shouldOpenOffsetX?: number;
     minSwipeDistance?: number;
     hideStatusBar?: boolean;
     statusBarAnimation?: StatusBarAnimation;
