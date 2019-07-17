@@ -13,9 +13,6 @@ android {
         targetSdkVersion safeExtGet('targetSdkVersion', 25)
         versionCode 1
         versionName "1.0"
-        ndk {
-            abiFilters "armeabi-v7a", "x86"
-        }
     }
 
     // Include "lib/" as sources, unfortunetely react-native link can't handle
@@ -28,5 +25,5 @@ android {
 
 dependencies {
     //noinspection GradleDynamicVersion
-    compileOnly 'com.facebook.react:react-native:+'
+    implementation 'com.facebook.react:react-native:+'
 }
