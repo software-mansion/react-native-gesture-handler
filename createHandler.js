@@ -1,11 +1,20 @@
 import React from 'react';
-import { findNodeHandle, NativeModules, Touchable } from 'react-native';
+import {
+  findNodeHandle as findNodeHandleRN,
+  NativeModules,
+  Touchable,
+  Platform,
+} from 'react-native';
 import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from './RNGestureHandlerModule';
-
 import State from './State';
 
-const { UIManager } = NativeModules;
+function findNodeHandle(node) {
+  if (Platform.OS === 'web') return node;
+  return findNodeHandleRN(node);
+}
+
+const { UIManager = {} } = NativeModules;
 
 const customGHEventsConfig = {
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
@@ -25,9 +34,9 @@ UIManager.genericDirectEventTypes = {
 
 // Wrap JS responder calls and notify gesture handler manager
 const {
-  setJSResponder: oldSetJSResponder,
-  clearJSResponder: oldClearJSResponder,
-  getConstants: oldGetConstants,
+  setJSResponder: oldSetJSResponder = () => {},
+  clearJSResponder: oldClearJSResponder = () => {},
+  getConstants: oldGetConstants = () => ({}),
 } = UIManager;
 UIManager.setJSResponder = (tag, blockNativeResponder) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
@@ -88,6 +97,9 @@ function transformIntoHandlerTags(handlerIDs) {
     handlerIDs = [handlerIDs];
   }
 
+  if (Platform.OS === 'web') {
+    return handlerIDs.map(({ current }) => current).filter(handle => handle);
+  }
   // converts handler string IDs into their numeric tags
   return handlerIDs
     .map(

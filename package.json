@@ -16,12 +16,11 @@
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "ios/",
+    "web/",
     "__mocks__/",
     "touchables/**/*.js",
     "createHandler.js",
-    "createHandler.web.js",
     "Directions.js",
-    "Directions.web.js",
     "DrawerLayout.js",
     "GestureHandler.js",
     "Gestures.js",
@@ -42,11 +41,11 @@
     "react-native-gesture-handler.d.ts",
     "README.md",
     "RNGestureHandlerModule.js",
+    "RNGestureHandlerModule.web.js",
     "jestSetup.js",
     "RNGestureHandler.podspec",
     "State.js",
-    "Swipeable.js",
-    "Swipeable.web.js"
+    "Swipeable.js"
   ],
   "repository": {
     "type": "git",
@@ -63,6 +62,7 @@
   },
   "homepage": "https://github.com/kmagiera/react-native-gesture-handler#readme",
   "dependencies": {
+    "hammerjs": "^2.0.8",
     "hoist-non-react-statics": "^2.3.1",
     "invariant": "^2.2.2",
     "prop-types": "^15.5.10"

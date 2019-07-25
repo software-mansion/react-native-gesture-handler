@@ -14,6 +14,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+
     }
 
 
@@ -27,5 +28,5 @@ android {
 
 dependencies {
     //noinspection GradleDynamicVersion
-    compileOnly 'com.facebook.react:react-native:+'
+    implementation 'com.facebook.react:react-native:+'
 }
