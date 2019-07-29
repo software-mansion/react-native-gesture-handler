@@ -78,7 +78,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     drawerType: 'front',
     edgeWidth: 20,
     minSwipeDistance: 3,
-    overlayColor: 'black',
+    overlayColor: 'rgba(0, 0, 0, 0.7)',
     drawerLockMode: 'unlocked',
   };
 
