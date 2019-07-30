@@ -225,6 +225,22 @@ declare module 'react-native-gesture-handler' {
           bottom?: number;
           vertical?: number;
           horizontal?: number;
+        }
+      | {
+          width: number;
+          left: number;
+        }
+      | {
+          width: number;
+          right: number;
+        }
+      | {
+          height: number;
+          top: number;
+        }
+      | {
+          height: number;
+          bottom: number;
         };
   }
 
