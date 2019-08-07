@@ -110,7 +110,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     this._updateAnimatedEvent(props, this.state);
   }
 
-  componentWillUpdate(props: PropType, state: StateType) {
+  UNSAFE_componentWillUpdate(props: PropType, state: StateType) {
     if (
       this.props.drawerPosition !== props.drawerPosition ||
       this.props.drawerWidth !== props.drawerWidth ||
