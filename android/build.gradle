@@ -14,9 +14,7 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
-
     }
-
 
     // Include "lib/" as sources, unfortunetely react-native link can't handle
     // setting up alternative gradle modules. We still have "lib" defined as a
