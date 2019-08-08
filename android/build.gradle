@@ -13,7 +13,6 @@ android {
         targetSdkVersion safeExtGet('targetSdkVersion', 25)
         versionCode 1
         versionName "1.0"
-        multiDexEnabled true
     }
 
     // Include "lib/" as sources, unfortunetely react-native link can't handle
