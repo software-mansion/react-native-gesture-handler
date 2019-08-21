@@ -1,6 +1,6 @@
 package com.swmansion.gesturehandler.react;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public interface RNGestureHandlerRootInterface {
   @Nullable RNGestureHandlerRootHelper getRootHelper();
