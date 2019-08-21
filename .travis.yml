@@ -61,6 +61,7 @@ matrix:
         - npm install -g react-native-cli
         - cd Example
         - yarn
+        - yarn run jetify
 
       script:
         - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
