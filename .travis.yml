@@ -63,8 +63,6 @@ matrix:
         - yarn
 
       script:
-        - ls
-        - pwd
         - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
 
     - language: objective-c
