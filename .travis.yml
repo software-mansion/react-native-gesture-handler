@@ -63,7 +63,7 @@ matrix:
         - yarn
 
       script:
-        - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
+        - ./gradlew android:assembleDebug assembleAndroidTest -DtestBuildType=debug
 
     - language: objective-c
       osx_image: xcode10.2
