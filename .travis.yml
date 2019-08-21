@@ -65,7 +65,7 @@ matrix:
       script:
         - ls
         - pwd
-        - ./gradlew android:assembleDebug assembleAndroidTest -DtestBuildType=debug
+        - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
 
     - language: objective-c
       osx_image: xcode10.2
