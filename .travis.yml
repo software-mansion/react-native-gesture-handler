@@ -51,8 +51,8 @@ matrix:
           - tools
           - platform-tools
           - build-tools-28.0.3
+          - android-28
       install:
-        - yes | sdkmanager "platforms;android-28"
         - nvm install $NODE_VERSION
         - nvm use $NODE_VERSION
         - nvm alias default $NODE_VERSION
@@ -61,6 +61,7 @@ matrix:
         - npm install -g react-native-cli
         - cd Example
         - yarn
+        - yarn run jetify
 
       script:
         - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug

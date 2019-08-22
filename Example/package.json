@@ -10,16 +10,16 @@
     "test": "jest"
   },
   "dependencies": {
-    "@react-native-community/slider": "^1.0.3",
+    "@react-native-community/slider": "^2.0.0",
     "@react-native-community/viewpager": "^1.1.6",
     "fbjs": "^1.0.0",
     "hoist-non-react-statics": "^3.2.1",
     "invariant": "^2.2.4",
     "prop-types": "^15.6.2",
-    "react": "16.8.6",
-    "react-art": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "react-native": "^0.59.8",
+    "react": "^16.8.6",
+    "react-art": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-native": "^0.60.0",
     "react-native-vector-icons": "5.0.0",
     "react-native-web": "^0.10.0-alpha.3",
     "react-navigation": "^3.1"

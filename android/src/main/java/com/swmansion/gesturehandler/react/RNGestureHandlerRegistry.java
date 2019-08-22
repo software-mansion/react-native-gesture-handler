@@ -8,7 +8,7 @@ import com.swmansion.gesturehandler.GestureHandlerRegistry;
 
 import java.util.ArrayList;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
 

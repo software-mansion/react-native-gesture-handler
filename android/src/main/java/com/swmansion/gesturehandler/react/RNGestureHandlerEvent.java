@@ -1,6 +1,6 @@
 package com.swmansion.gesturehandler.react;
 
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -8,7 +8,7 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.swmansion.gesturehandler.GestureHandler;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class RNGestureHandlerEvent extends Event<RNGestureHandlerEvent> {
 
