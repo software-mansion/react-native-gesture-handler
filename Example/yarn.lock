@@ -1317,10 +1317,10 @@
     shell-quote "1.6.1"
     ws "^1.1.0"
 
-"@react-native-community/slider@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-1.0.3.tgz#a49027519d56f4408356ebf04a7b226ce4001cda"
-  integrity sha512-IEg7AdayIAb9ZA8KMilTwINMNgSwhF5BXNqwvJ2XsRd+JF12/r5ho+t+GONu8m2rWcCehiiM/h4pds1B9FzMlQ==
+"@react-native-community/slider@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-2.0.0.tgz#3d68f68db185fb44d812f66d05d2d7842adfd3db"
+  integrity sha512-ORokHwQnwXzas+PYQO+G8IxArRVtw2xZdx2C0wV+oQiKbhDl8DBcM6gGT6dNB3VGxVNesWX/3K0IIfVjp4zH0A==
 
 "@react-native-community/viewpager@^1.1.6":
   version "1.1.6"
