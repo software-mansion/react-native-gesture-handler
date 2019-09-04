@@ -45,5 +45,8 @@
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.1.14"
+  },
+  "resolutions": {
+    "fsevents": "1.2.9"
   }
 }
