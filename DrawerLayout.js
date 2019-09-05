@@ -78,7 +78,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     drawerType: 'front',
     edgeWidth: 20,
     minSwipeDistance: 3,
-    overlayColor: 'rgba(0, 0, 0, 0.7)',
+    overlayColor: 'black',
     drawerLockMode: 'unlocked',
   };
 
@@ -110,7 +110,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     this._updateAnimatedEvent(props, this.state);
   }
 
-  UNSAFE_componentWillUpdate(props: PropType, state: StateType) {
+  componentDidUpdate(props: PropType, state: StateType) {
     if (
       this.props.drawerPosition !== props.drawerPosition ||
       this.props.drawerWidth !== props.drawerWidth ||
@@ -369,7 +369,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     invariant(this._openValue, 'should be set');
     const overlayOpacity = this._openValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, 1],
+      outputRange: [0, 0.7],
       extrapolate: 'clamp',
     });
     const dynamicOverlayStyles = {
@@ -450,8 +450,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
               : styles.containerInFront,
             containerStyles,
             contentContainerStyle,
-          ]}
-          importantForAccessibility={this._drawerShown ? "no-hide-descendants" : "yes"}>
+          ]}>
           {typeof this.props.children === 'function'
             ? this.props.children(this._openValue)
             : this.props.children}
