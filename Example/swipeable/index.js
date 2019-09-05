@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { FlatList, RectButton } from 'react-native-gesture-handler';
 
 import AppleStyleSwipeableRow from './AppleStyleSwipeableRow';
+import AppleStyleSwipeableWithDefaultActionsRow from './AppleStyleSwipeableWithDefaultActionsRow';
 import GmailStyleSwipeableRow from './GmailStyleSwipeableRow';
 
 const Row = ({ item }) => (
@@ -19,18 +20,29 @@ const Row = ({ item }) => (
 );
 
 const SwipeableRow = ({ item, index }) => {
-  if (index % 2 === 0) {
-    return (
-      <AppleStyleSwipeableRow>
-        <Row item={item} />
-      </AppleStyleSwipeableRow>
-    );
-  } else {
-    return (
-      <GmailStyleSwipeableRow>
-        <Row item={item} />
-      </GmailStyleSwipeableRow>
-    );
+  const remainder = index % 3;
+  switch (remainder) {
+    case 0:
+      return (
+        <AppleStyleSwipeableRow>
+          <Row item={item} />
+        </AppleStyleSwipeableRow>
+      );
+    case 1:
+      return (
+        <AppleStyleSwipeableWithDefaultActionsRow>
+          <Row item={item} />
+        </AppleStyleSwipeableWithDefaultActionsRow>
+      );
+    case 2:
+      return (
+        <GmailStyleSwipeableRow>
+          <Row item={item} />
+        </GmailStyleSwipeableRow>
+      );
+    default:
+      console.debug('Unknown type of Swipeable row example requested');
+      return null;
   }
 };
 

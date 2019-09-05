@@ -20,6 +20,7 @@
     "react-art": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-native": "^0.60.0",
+    "react-native-responsive-screen": "^1.2.2",
     "react-native-vector-icons": "5.0.0",
     "react-native-web": "^0.10.0-alpha.3",
     "react-navigation": "^3.1"
