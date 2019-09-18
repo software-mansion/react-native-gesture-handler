@@ -10,7 +10,7 @@
         "fbjs": "./node_modules/fbjs",
         "hoist-non-react-statics": "./node_modules/hammerjs",
         "invariant": "./node_modules/invariant",
-        "prop-types": "./node_modules/prop-types",
+        "prop-types": "./node_modules/prop-types"
       }
     }]
   ]
