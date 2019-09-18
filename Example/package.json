@@ -14,6 +14,7 @@
     "@react-native-community/viewpager": "^1.1.6",
     "fbjs": "^1.0.0",
     "hoist-non-react-statics": "^3.2.1",
+    "hammerjs": "^2.0.8",
     "invariant": "^2.2.4",
     "prop-types": "^15.6.2",
     "react": "16.9.0",
