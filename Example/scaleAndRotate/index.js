@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Animated, StyleSheet } from 'react-native';
 
 import {
   PanGestureHandler,
