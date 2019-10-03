@@ -108,7 +108,13 @@ method that opens component on right side.
 ### Example:
 
 See the [swipeable example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/swipeable/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo).
+
 ```js
+import React, { Component } from "react";
+import { Animated, StyleSheet, View } from "react-native";
+import { RectButton } from "react-native-gesture-handler";
+import Swipeable from "react-native-gesture-handler/Swipeable";
+
 class AppleStyleSwipeableRow extends Component {
   renderLeftActions = (progress, dragX) => {
     const trans = dragX.interpolate({
