@@ -532,7 +532,7 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
     hideStatusBar?: boolean;
     statusBarAnimation?: StatusBarAnimation;
     overlayColor?: string;
-    containerStyle?: StyleProp<ViewStyle>;
+    contentContainerStyle?: StyleProp<ViewStyle>;
   }
 
   interface DrawerMovementOptionType {
