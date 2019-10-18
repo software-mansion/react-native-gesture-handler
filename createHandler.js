@@ -2,6 +2,7 @@ import React from 'react';
 import {
   findNodeHandle as findNodeHandleRN,
   NativeModules,
+  NativeEventEmitter,
   Touchable,
   Platform,
 } from 'react-native';
@@ -15,6 +16,20 @@ function findNodeHandle(node) {
 }
 
 const { UIManager = {} } = NativeModules;
+
+// We need to hook up one listener so that react-native will call
+// into our module and bless our events declared there in supportedEvents
+// of RNGestureHandlerModule.m. Otherwise when we start sending
+// events later, we might crash (seemingly only in release builds) with
+// an error like:
+//   Unsupported top level event type "onGestureHandlerEvent"
+// Fixes: https://github.com/kmagiera/react-native-gesture-handler/issues/320
+const unusedEmitter = new NativeEventEmitter(NativeModules.RNGestureHandlerModule)
+// It's not enough to create an emitter -- you must also add a listener because
+// react-native does this initialization lazily
+const subscription = unusedEmitter.addListener("onGestureHandlerEvent",function(next){console.warn(next)})
+// Now that our events are blessed by the system we can let go of the listener
+subscription.remove()
 
 const customGHEventsConfig = {
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
