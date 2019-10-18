@@ -27,7 +27,7 @@ const { UIManager = {} } = NativeModules;
 const unusedEmitter = new NativeEventEmitter(NativeModules.RNGestureHandlerModule)
 // It's not enough to create an emitter -- you must also add a listener because
 // react-native does this initialization lazily
-const subscription = unusedEmitter.addListener("onGestureHandlerEvent",function(next){console.warn(next)})
+const subscription = unusedEmitter.addListener("onGestureHandlerEvent",function(next){})
 // Now that our events are blessed by the system we can let go of the listener
 subscription.remove()
 
