@@ -46,7 +46,7 @@ You may check if it's possible to use `ForceTouchGestureHandler` with `ForceTouc
 
 ## Example
 
-See the [force touch handler example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/forcetouch/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
+See the [force touch handler example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/forcetouch/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo).
 
 ```js
 <ForceTouchGestureHandler
