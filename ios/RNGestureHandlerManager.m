@@ -159,7 +159,9 @@
 
     UIView *parent = rootContentView.superview;
     if ([parent isKindOfClass:[RCTRootView class]]) {
-        [(RCTRootView*)parent cancelTouches];
+      // Previously we were using cancelTouches method from RCTRootView.
+      // Now it's deprecated and we call cancel directly on touchHandler of contentView
+      [(RCTTouchHandler *)[[parent valueForKey:@"contentView"] valueForKey:@"touchHandler"] cancel];
     }
 }
 
