@@ -76,10 +76,24 @@ method that is called when action panel starts animating on close.
 ---
 ### `renderLeftActions`
 method that is expected to return an action panel that is going to be revealed from the left side when user swipes right.
+This map describes the values to use as inputRange for extra interpolation:
+AnimatedValue: [startValue, endValue]
+        
+progressAnimatedValue: [0, 1]
+dragAnimatedValue: [0, +]
+
+To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ---
 ### `renderRightActions`
 method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
+This map describes the values to use as inputRange for extra interpolation:
+AnimatedValue: [startValue, endValue]
+        
+progressAnimatedValue: [0, 1]
+dragAnimatedValue: [0, -]
+
+To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ---
 ### `containerStyle`

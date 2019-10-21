@@ -476,12 +476,32 @@ declare module 'react-native-gesture-handler/Swipeable' {
     onSwipeableRightWillOpen?: () => void;
     onSwipeableWillOpen?: () => void;
     onSwipeableWillClose?: () => void;
+    /**
+     * 
+     * This map describes the values to use as inputRange for extra interpolation:
+     * AnimatedValue: [startValue, endValue]
+     * 
+     * progressAnimatedValue: [0, 1]
+     * dragAnimatedValue: [0, +]
+     * 
+     * To support `rtl` flexbox layouts use `flexDirection` styling.
+     * */
     renderLeftActions?: (
-      progressAnimatedValue: Animated.Value | Animated.AnimatedInterpolation,
+      progressAnimatedValue: Animated.AnimatedInterpolation,
       dragAnimatedValue: Animated.AnimatedInterpolation
     ) => React.ReactNode;
+    /**
+     * 
+     * This map describes the values to use as inputRange for extra interpolation:
+     * AnimatedValue: [startValue, endValue]
+     * 
+     * progressAnimatedValue: [0, 1]
+     * dragAnimatedValue: [0, -]
+     * 
+     * To support `rtl` flexbox layouts use `flexDirection` styling.
+     * */
     renderRightActions?: (
-      progressAnimatedValue: Animated.Value | Animated.AnimatedInterpolation,
+      progressAnimatedValue: Animated.AnimatedInterpolation,
       dragAnimatedValue: Animated.AnimatedInterpolation
     ) => React.ReactNode;
     useNativeAnimations?: boolean;
