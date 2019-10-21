@@ -62,6 +62,7 @@ When the given number of fingers is placed on the screen and handler hasn't yet 
 Range along X axis (in points) where fingers travels without activation of handler. Moving outside of this range implies activation of handler. Range can be given as an array or a single number.
  If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
  If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+ 
 ---
 ### `activeOffsetY`
 
