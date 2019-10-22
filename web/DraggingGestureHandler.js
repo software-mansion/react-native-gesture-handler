@@ -6,6 +6,7 @@ class DraggingGestureHandler extends GestureHandler {
   }
 
   transformNativeEvent({ deltaX, deltaY, velocityX, velocityY, center: { x, y } }) {
+    const rect = this.view.getBoundingClientRect(); 
     return {
       translationX: deltaX - (this.__initialX || 0),
       translationY: deltaY - (this.__initialY || 0),
@@ -13,8 +14,8 @@ class DraggingGestureHandler extends GestureHandler {
       absoluteY: y,
       velocityX,
       velocityY,
-      x,
-      y,
+      x: x - rect.left,
+      y: y - rect.top,
     };
   }
 }
