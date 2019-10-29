@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, YellowBox } from 'react-native';
-import { createAppContainer, createStackNavigator } from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import SwipeableTable from './swipeable';

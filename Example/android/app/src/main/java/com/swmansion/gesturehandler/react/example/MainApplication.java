@@ -6,9 +6,6 @@ import android.content.Context;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-import com.reactnativecommunity.viewpager.RNCViewPagerPackage;
-import com.reactnativecommunity.slider.ReactSliderPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -31,9 +28,6 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       @SuppressWarnings("UnnecessaryLocalVariable")
       List<ReactPackage> packages = new PackageList(this).getPackages();
-      packages.add(new RNCViewPagerPackage());
-      packages.add(new RNCViewPagerPackage());
-      packages.add(new VectorIconsPackage());
       packages.add(new RNGestureHandlerPackage());
       return packages;
     }
