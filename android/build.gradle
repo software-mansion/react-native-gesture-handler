@@ -16,7 +16,7 @@ allprojects {
         maven { url 'https://maven.google.com' }
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url("$rootDir/../../react-native/android")
+            url("$rootDir/react-native/android")
         }
     }
 }
@@ -48,5 +48,5 @@ android {
 
 dependencies {
     //noinspection GradleDynamicVersion
-    implementation 'com.facebook.react:react-native:+'
+    implementation 'com.facebook.react:react-native:0.60.5'
 }
