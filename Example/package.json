@@ -36,6 +36,7 @@
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.3.1",
     "@babel/runtime": "^7.6.0",
+    "@react-native-community/cli": "^1.9.4",
     "babel-jest": "^24.9.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-module-resolver": "^3.1.1",

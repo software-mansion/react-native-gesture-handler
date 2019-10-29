@@ -85,7 +85,7 @@ export default class GenericTouchable extends Component {
 
   // handlePressIn in called on first touch on traveling inside component.
   // Handles state transition with delay.
-  handlePressIn = () => {
+  handlePressIn() {
     if (this.props.delayPressIn) {
       this.pressInTimeout = setTimeout(() => {
         this.moveToState(TOUCHABLE_STATE.BEGAN);
@@ -102,7 +102,7 @@ export default class GenericTouchable extends Component {
   };
   // handleMoveOutside in called on traveling outside component.
   // Handles state transition with delay.
-  handleMoveOutside = () => {
+  handleMoveOutside() {
     if (this.props.delayPressOut) {
       this.pressOutTimeout =
         this.pressOutTimeout ||
@@ -116,7 +116,7 @@ export default class GenericTouchable extends Component {
   };
 
   // handleGoToUndetermined transits to UNDETERMINED state with proper delay
-  handleGoToUndetermined = () => {
+  handleGoToUndetermined() {
     clearTimeout(this.pressOutTimeout);
     if (this.props.delayPressOut) {
       this.pressOutTimeout = setTimeout(() => {
@@ -150,7 +150,7 @@ export default class GenericTouchable extends Component {
   }
 
   // All states' transitions are defined here.
-  moveToState = newState => {
+  moveToState(newState) {
     if (newState === this.STATE) {
       // Ignore dummy transitions
       return;
@@ -223,15 +223,15 @@ export default class GenericTouchable extends Component {
     this.reset();
   }
 
-  onMoveIn = () => {
+  onMoveIn() {
     if (this.STATE === TOUCHABLE_STATE.MOVED_OUTSIDE) {
-      // This call is not throttles with delays (like in RN's implementation).
+      // This call is not throttled with delays (like in RN's implementation).
       this.moveToState(TOUCHABLE_STATE.BEGAN);
     }
   };
 
-  onMoveOut = () => {
-    // long press shouldn't be longer detected
+  onMoveOut() {
+    // long press should no longer be detected
     clearTimeout(this.longPressTimeout);
     this.longPressTimeout = null;
     if (this.STATE === TOUCHABLE_STATE.BEGAN) {

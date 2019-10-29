@@ -76,10 +76,24 @@ method that is called when action panel starts animating on close.
 ---
 ### `renderLeftActions`
 method that is expected to return an action panel that is going to be revealed from the left side when user swipes right.
+This map describes the values to use as inputRange for extra interpolation:
+AnimatedValue: [startValue, endValue]
+        
+progressAnimatedValue: [0, 1]
+dragAnimatedValue: [0, +]
+
+To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ---
 ### `renderRightActions`
 method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
+This map describes the values to use as inputRange for extra interpolation:
+AnimatedValue: [startValue, endValue]
+        
+progressAnimatedValue: [0, 1]
+dragAnimatedValue: [0, -]
+
+To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ---
 ### `containerStyle`
@@ -107,8 +121,14 @@ method that opens component on right side.
 
 ### Example:
 
-See the [swipeable example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/swipeable/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
+See the [swipeable example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/swipeable/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo).
+
 ```js
+import React, { Component } from "react";
+import { Animated, StyleSheet, View } from "react-native";
+import { RectButton } from "react-native-gesture-handler";
+import Swipeable from "react-native-gesture-handler/Swipeable";
+
 class AppleStyleSwipeableRow extends Component {
   renderLeftActions = (progress, dragX) => {
     const trans = dragX.interpolate({

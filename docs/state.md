@@ -21,7 +21,7 @@ Each state has its own section underneath describing the details.
 
 We can monitor handler's state changes using [`onHandlerStateChange`](handler-common.md#onhandlerstatechange) callback and accessed from [`state`](handler-common.md#state) attribute of the event.
 
-The [`state`](handler-common.md#state) as provided in the event attribute can be matched agains one of the constants exported under `State` object (see the example below).
+The [`state`](handler-common.md#state) as provided in the event attribute can be matched against one of the constants exported under `State` object (see the example below).
 The constants corresponds
 
 ```
@@ -45,7 +45,7 @@ class Demo extends Component {
 
 ## State flows
 
-The most typical flow of the state is when the gesture handler first picks up the initial touch events, then at some point it reognizes the touches and after the end of the gesture is recognized it resets back to the initial state. The flow looks as follows (longer arrows represent that there are possibly more touch events received before the state changes):
+The most typical flow of the state is when the gesture handler first picks up the initial touch events, then at some point it recognizes the touches and after the end of the gesture is recognized it resets back to the initial state. The flow looks as follows (longer arrows represent that there are possibly more touch events received before the state changes):
 
 [`UNDETERMINED`](#undetermined) -> [`BEGAN`](#began) ------> [`ACTIVE`](#active) ------> [`END`](#end) -> [`UNDETERMINED`](#undetermined)
 
