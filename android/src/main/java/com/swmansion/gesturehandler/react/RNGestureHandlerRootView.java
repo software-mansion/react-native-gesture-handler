@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 public class RNGestureHandlerRootView extends ReactViewGroup {
 
   private @Nullable RNGestureHandlerRootHelper mRootHelper;
+  private Boolean interceptTouchOutside = false;
 
   public RNGestureHandlerRootView(Context context) {
     super(context);
@@ -23,6 +24,15 @@ public class RNGestureHandlerRootView extends ReactViewGroup {
     if (mRootHelper == null) {
       mRootHelper = new RNGestureHandlerRootHelper((ReactContext) getContext(), this);
     }
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    return interceptTouchOutside;
+  }
+
+  public void setInterceptTouchOutside(Boolean interceptTouchOutside) {
+    this.interceptTouchOutside = interceptTouchOutside;
   }
 
   public void tearDown() {

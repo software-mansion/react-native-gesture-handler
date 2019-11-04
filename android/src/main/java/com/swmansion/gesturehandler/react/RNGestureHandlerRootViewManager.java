@@ -4,6 +4,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.util.Map;
 
@@ -32,6 +33,11 @@ public class RNGestureHandlerRootViewManager extends ViewGroupManager<RNGestureH
   @Override
   public void onDropViewInstance(RNGestureHandlerRootView view) {
     view.tearDown();
+  }
+
+  @ReactProp(name = "interceptTouchOutside", defaultBoolean = false)
+  public void setInterceptTouchOutside(RNGestureHandlerRootView view, @Nullable Boolean interceptTouchOutside) {
+    view.setInterceptTouchOutside(interceptTouchOutside);
   }
 
   /**

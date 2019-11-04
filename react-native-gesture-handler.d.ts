@@ -449,7 +449,10 @@ declare module 'react-native-gesture-handler' {
 
   export function gestureHandlerRootHOC(
     Component: React.ComponentType<any>,
-    containerStyles?: StyleProp<ViewStyle>
+    config: {
+      containerStyles?: StyleProp<ViewStyle>,
+      interceptTouchOutside?: boolean
+    }
   ): React.ComponentType<any>;
 
   export function createNativeWrapper(
