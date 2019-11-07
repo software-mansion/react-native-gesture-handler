@@ -1,7 +1,7 @@
-import { View } from 'react-native'
+import { View, ScrollView } from 'react-native'
 
 export default {
-  ScrollVew: View,
+  ScrollView,
   PanGestureHandler: View,
   attachGestureHandler: () => {},
   createGestureHandler: () => {},
