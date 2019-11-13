@@ -1,4 +1,8 @@
+import { View, ScrollView } from 'react-native'
+
 export default {
+  ScrollView,
+  PanGestureHandler: View,
   attachGestureHandler: () => {},
   createGestureHandler: () => {},
   dropGestureHandler: () => {},
