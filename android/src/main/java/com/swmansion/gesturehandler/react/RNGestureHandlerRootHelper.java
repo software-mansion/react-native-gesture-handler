@@ -1,7 +1,6 @@
 package com.swmansion.gesturehandler.react;
 
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -50,10 +49,6 @@ public class RNGestureHandlerRootHelper {
 
     mReactRootView = findRootViewTag(wrappedView);
 
-    Log.i(
-            ReactConstants.TAG,
-            "[GESTURE HANDLER] Initialize gesture handler for root view " + mReactRootView);
-
     mContext = context;
     mOrchestrator = new GestureHandlerOrchestrator(
             wrappedView, registry, new RNViewConfigurationHelper());
@@ -68,9 +63,6 @@ public class RNGestureHandlerRootHelper {
   }
 
   public void tearDown() {
-    Log.i(
-            ReactConstants.TAG,
-            "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + mReactRootView);
     RNGestureHandlerModule module = mContext.getNativeModule(RNGestureHandlerModule.class);
     module.getRegistry().dropHandler(mJSGestureHandler.getTag());
     module.unregisterRootHelper(this);
