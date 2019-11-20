@@ -32,6 +32,7 @@ Since the library uses native support for handling gestures, it requires an exte
 
 | version | `react-native` version |
 | ------- | ---------------------- |
+| 1.4.0+  | 0.60.0+                |
 | 1.1.0+  | 0.57.2+                |
 | <1.1.0  | 0.50.0+                |
 
