@@ -161,9 +161,10 @@
 
 - (void)dealloc
 {
-    if ([_rootViews count] > 0) {
-        RCTLogError(@"Tearing down gesture handler registered for views %@", _rootViews);
-    }
+    // this actually happens when reloading.
+    // if ([_rootViews count] > 0) {
+    //     RCTLogError(@"Tearing down gesture handler registered for views %@", _rootViews);
+    // }
 }
 
 #pragma mark Events
