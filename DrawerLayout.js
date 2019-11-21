@@ -307,7 +307,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       this.props.drawerPosition === 'left' ? 0 : this.state.containerWidth
     );
 
-    if (fromValue !== undefined) {
+    if (fromValue != null) {
       let nextFramePosition = fromValue;
       if (this.props.useNativeAnimations) {
         // When using native driver, we predict the next position of the animation
@@ -451,7 +451,9 @@ export default class DrawerLayout extends Component<PropType, StateType> {
             containerStyles,
             contentContainerStyle,
           ]}
-          importantForAccessibility={this._drawerShown ? "no-hide-descendants" : "yes"}>
+          importantForAccessibility={
+            this._drawerShown ? 'no-hide-descendants' : 'yes'
+          }>
           {typeof this.props.children === 'function'
             ? this.props.children(this._openValue)
             : this.props.children}
