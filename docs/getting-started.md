@@ -113,7 +113,7 @@ If you're in a CocoaPods project (the default setup since React Native 0.60), ma
 cd ios && pod install
 ```
 
-For React Native 0.60 or greater, add the library as the first import in your index.js file:
+For React Native 0.61 or greater, add the library as the first import in your index.js file:
 
 ```
 import 'react-native-gesture-handler';
