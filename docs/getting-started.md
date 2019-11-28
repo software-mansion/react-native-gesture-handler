@@ -115,6 +115,12 @@ If you're in a CocoaPods project (the default setup since React Native 0.60), ma
 cd ios && pod install
 ```
 
+For React Native 0.61 or greater, add the library as the first import in your index.js file:
+
+```
+import 'react-native-gesture-handler';
+```
+
 ---
 
 Now you're all set. Run your app with `react-native run-android` or `react-native run-ios`.
