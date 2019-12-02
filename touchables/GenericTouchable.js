@@ -256,6 +256,7 @@ export default class GenericTouchable extends Component {
 
     return (
       <BaseButton
+        style={this.props.containerStyle}
         onHandlerStateChange={
           this.props.disabled ? null : this.onHandlerStateChange
         }

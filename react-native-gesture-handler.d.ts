@@ -403,21 +403,25 @@ declare module 'react-native-gesture-handler' {
     BorderlessButtonProperties
   > {}
 
+  export interface ContainedTouchableProperties {
+    containerStyle?: StyleProp<ViewStyle>
+  }
+
   export class TouchableHighlight extends React.Component<
-    TouchableHighlightProperties
-  > {}
+    TouchableHighlightProperties | ContainedTouchableProperties
+    > {}
 
   export class TouchableNativeFeedback extends React.Component<
-    TouchableNativeFeedbackProperties
-  > {}
+    TouchableNativeFeedbackProperties | ContainedTouchableProperties
+    > {}
 
   export class TouchableOpacity extends React.Component<
-    TouchableOpacityProperties
-  > {}
+    TouchableOpacityProperties | ContainedTouchableProperties
+    > {}
 
   export class TouchableWithoutFeedback extends React.Component<
-    TouchableWithoutFeedbackProperties
-  > {}
+    TouchableWithoutFeedbackProperties | ContainedTouchableProperties
+    > {}
 
   /* GESTURE HANDLER WRAPPED CLASSES */
 
