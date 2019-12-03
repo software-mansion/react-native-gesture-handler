@@ -311,8 +311,8 @@ export default class Swipeable extends Component<PropType, StateType> {
 
     return (
       <PanGestureHandler
+        activeOffsetX={[-10, 10]}
         {...this.props}
-        minDeltaX={10}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}>
         <Animated.View
