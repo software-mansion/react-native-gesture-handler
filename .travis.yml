@@ -56,8 +56,8 @@ matrix:
         - brew install yarn --ignore-dependencies
         - npm install -g react-native-cli
         - cd Example
-        - cd ios && pod install && cd ..
         - yarn
+        - cd ios && pod install && cd ..
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
       script:
