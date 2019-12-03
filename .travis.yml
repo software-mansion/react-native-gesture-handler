@@ -1,38 +1,5 @@
 matrix:
   include:
-    - language: objective-c
-      osx_image: xcode10.2
-      xcode_sdk: iphonesimulator12.2
-      xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
-      env: NODE_VERSION=10.15.3
-
-      branches:
-        only:
-          - master
-
-      cache: yarn
-
-      install:
-        - nvm --version
-        - echo $NODE_VERSION
-        - sudo launchctl limit maxfiles 2048 unlimited
-        - sudo ulimit -n 10000
-        - brew tap wix/brew
-        - brew install applesimutils
-        - nvm install $NODE_VERSION
-        - nvm use $NODE_VERSION
-        - nvm alias default $NODE_VERSION
-        - brew install yarn --ignore-dependencies
-        - npm install -g react-native-cli
-        - npm install -g detox-cli
-        - yarn
-        - cd e2e
-        - yarn
-        - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
-        - detox build -c ios.sim.release > /dev/null
-      script:
-        - detox test -c ios.sim.release --no-color --headless --cleanup
-
     - language: android
       dist: trusty
       sudo: required
@@ -89,6 +56,7 @@ matrix:
         - brew install yarn --ignore-dependencies
         - npm install -g react-native-cli
         - cd Example
+        - cd ios && pod install && cd ..
         - yarn
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
