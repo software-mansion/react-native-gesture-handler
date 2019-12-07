@@ -451,15 +451,15 @@ declare module 'react-native-gesture-handler' {
     NativeViewGestureHandlerProperties & FlatListProperties<ItemT>
   > {}
 
-  export function gestureHandlerRootHOC(
-    Component: React.ComponentType<any>,
+  export function gestureHandlerRootHOC<P = {}>(
+    Component: React.ComponentType<P>,
     containerStyles?: StyleProp<ViewStyle>
-  ): React.ComponentType<any>;
+  ): React.ComponentType<P>;
 
-  export function createNativeWrapper(
-    Component: React.ComponentType<any>,
+  export function createNativeWrapper<P = {}>(
+    Component: React.ComponentType<P>,
     config: NativeViewGestureHandlerProperties
-  ): React.ComponentType<any>;
+  ): React.ComponentType<P>;
 }
 
 declare module 'react-native-gesture-handler/Swipeable' {
