@@ -372,6 +372,7 @@ declare module 'react-native-gesture-handler' {
     extends NativeViewGestureHandlerProperties {
     exclusive?: boolean;
     testID?: string;
+    accessibilityLabel?: string;
   }
 
   export interface BaseButtonProperties extends RawButtonProperties {
