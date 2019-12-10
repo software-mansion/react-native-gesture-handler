@@ -22,7 +22,7 @@ DerivedData
 *.xcuserstate
 
 # CocoaPods
-/ios/Pods/
+**/ios/Pods
 
 # Android/IntelliJ
 #
