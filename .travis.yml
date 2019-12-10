@@ -28,6 +28,9 @@ matrix:
         - yarn
         - cd e2e
         - yarn
+        - cd ios
+        - pod install
+        - cd ..
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
         - detox build -c ios.sim.release > /dev/null
       script:
@@ -90,6 +93,9 @@ matrix:
         - npm install -g react-native-cli
         - cd Example
         - yarn
+        - cd ios
+        - pod install
+        - cd ..
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
       script:
