@@ -223,7 +223,7 @@ PODS:
     - ReactCommon/jscallinvoker (= 0.61.2)
   - RNCViewpager (1.1.6):
     - React
-  - RNGestureHandler (1.5.0):
+  - RNGestureHandler (1.5.2):
     - React
   - RNVectorIcons (5.0.0):
     - React
@@ -265,7 +265,7 @@ DEPENDENCIES:
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - boost-for-react-native
 
 EXTERNAL SOURCES:
@@ -359,10 +359,10 @@ SPEC CHECKSUMS:
   React-RCTVibration: fb54c732fd20405a76598e431aa2f8c2bf527de9
   ReactCommon: 5848032ed2f274fcb40f6b9ec24067787c42d479
   RNCViewpager: cb80bdd78432921ec6c5309e0e1122fa8727a416
-  RNGestureHandler: a4ddde1ffc6e590c8127b8b7eabfdade45475c74
+  RNGestureHandler: 946a7691e41df61e2c4b1884deab41a4cdc3afff
   RNVectorIcons: f066f73bf4f25564d7ee7b1bb150e3b431f3a194
   Yoga: 14927e37bd25376d216b150ab2a561773d57911f
 
 PODFILE CHECKSUM: a83f92e4df9398430911cc5e219c5d655820c4d6
 
-COCOAPODS: 1.7.3
+COCOAPODS: 1.8.0
