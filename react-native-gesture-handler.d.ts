@@ -1,4 +1,4 @@
-// Project: https://github.com/kmagiera/react-native-gesture-handler
+// Project: https://github.com/software-mansion/react-native-gesture-handler
 // TypeScript Version: 2.6.2
 
 declare module 'react-native-gesture-handler' {
@@ -481,13 +481,13 @@ declare module 'react-native-gesture-handler/Swipeable' {
     onSwipeableWillOpen?: () => void;
     onSwipeableWillClose?: () => void;
     /**
-     * 
+     *
      * This map describes the values to use as inputRange for extra interpolation:
      * AnimatedValue: [startValue, endValue]
-     * 
+     *
      * progressAnimatedValue: [0, 1]
      * dragAnimatedValue: [0, +]
-     * 
+     *
      * To support `rtl` flexbox layouts use `flexDirection` styling.
      * */
     renderLeftActions?: (
@@ -495,13 +495,13 @@ declare module 'react-native-gesture-handler/Swipeable' {
       dragAnimatedValue: Animated.AnimatedInterpolation
     ) => React.ReactNode;
     /**
-     * 
+     *
      * This map describes the values to use as inputRange for extra interpolation:
      * AnimatedValue: [startValue, endValue]
-     * 
+     *
      * progressAnimatedValue: [0, 1]
      * dragAnimatedValue: [0, -]
-     * 
+     *
      * To support `rtl` flexbox layouts use `flexDirection` styling.
      * */
     renderRightActions?: (

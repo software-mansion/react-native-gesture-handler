@@ -2,19 +2,19 @@ const siteConfig = {
   title: 'React Native Gesture Handler',
   tagline:
     'Declarative API exposing platform native touch and gesture system to React Native.',
-  url: 'https://kmagiera.github.io',
+  url: 'https://software-mansion.github.io',
   baseUrl: '/react-native-gesture-handler/',
 
   // Used for publishing and more
   projectName: 'react-native-gesture-handler',
-  organizationName: 'kmagiera',
+  organizationName: 'software-mansion',
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     { doc: 'getting-started', label: 'Docs' },
     { page: 'help', label: 'Help' },
     {
-      href: 'https://github.com/kmagiera/react-native-gesture-handler',
+      href: 'https://github.com/software-mansion/react-native-gesture-handler',
       label: 'GitHub',
     },
     { search: true },
@@ -56,8 +56,9 @@ const siteConfig = {
 
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
-  repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler',
-  editUrl: 'https://github.com/kmagiera/react-native-gesture-handler/edit/master/docs/',
+  repoUrl: 'https://github.com/software-mansion/react-native-gesture-handler',
+  editUrl:
+    'https://github.com/software-mansion/react-native-gesture-handler/edit/master/docs/',
 };
 
 module.exports = siteConfig;
