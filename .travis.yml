@@ -99,4 +99,4 @@ matrix:
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
       script:
-        - xcodebuild -project ios/GestureHandler.xcodeproj -destination 'platform=iOS Simulator,name=iPhone X' -scheme GestureHandler -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES
+        - xcodebuild -workspace ios/GestureHandler.xcworkspace -destination 'platform=iOS Simulator,name=iPhone X' -scheme GestureHandler -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES
