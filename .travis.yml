@@ -93,9 +93,7 @@ matrix:
         - npm install -g react-native-cli
         - cd Example
         - yarn
-        - cd ios
-        - pod install
-        - cd ..
+        - cd ios && pod install && cd..
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
       script:
