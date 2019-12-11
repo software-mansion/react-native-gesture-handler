@@ -21,6 +21,9 @@ DerivedData
 *.ipa
 *.xcuserstate
 
+# CocoaPods
+**/ios/Pods
+
 # Android/IntelliJ
 #
 build/

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "start": "react-native start",
     "ios": "react-native run-ios",
     "android": "react-native run-android",
     "web": "webpack-dev-server --open",
@@ -39,7 +39,7 @@
     "@react-native-community/cli": "^1.9.4",
     "babel-jest": "^24.9.0",
     "babel-loader": "^8.0.5",
-    "babel-plugin-module-resolver": "^3.1.1",
+    "babel-plugin-module-resolver": "^3.2.0",
     "babel-preset-react-native": "^4.0.1",
     "glob-to-regexp": "^0.4.0",
     "jest": "^24.9.0",
