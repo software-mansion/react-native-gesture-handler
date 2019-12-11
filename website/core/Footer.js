@@ -41,17 +41,17 @@ class Footer extends React.Component {
           </div>
           <div>
             <h5>More</h5>
-            <a href="https://github.com/kmagiera/react-native-gesture-handler">
+            <a href="https://github.com/software-mansion/react-native-gesture-handler">
               GitHub
             </a>
-            <a href="https://github.com/kmagiera/react-native-gesture-handler/issues">
+            <a href="https://github.com/software-mansion/react-native-gesture-handler/issues">
               Issues
             </a>
             <a
               className="github-button"
               href={this.props.config.repoUrl}
               data-icon="octicon-star"
-              data-count-href="/kmagiera/react-native-gesture-handler"
+              data-count-href="/software-mansion/react-native-gesture-handler"
               data-show-count={true}
               data-count-aria-label="# stargazers on GitHub"
               aria-label="Star this project on GitHub">
