@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="150" src="https://kmagiera.github.io/react-native-gesture-handler/img/ghlogo.svg" />
+  <img height="150" src="https://software-mansion.github.io/react-native-gesture-handler/img/ghlogo.svg" />
   <h1 align="center">React Native Gesture Handler</h1>
   <h3 align="center">Declarative API exposing platform native touch and gesture system to React Native.</h3>
 </p>
@@ -11,11 +11,11 @@ It makes touch interactions and gesture tracking not only smooth, but also depen
 
 ## Installation
 
-Check [getting started](https://kmagiera.github.io/react-native-gesture-handler/docs/getting-started.html) section of our docs for the detailed installation instructions.
+Check [getting started](https://software-mansion.github.io/react-native-gesture-handler/docs/getting-started.html) section of our docs for the detailed installation instructions.
 
 ## Documentation
 
-Check out our dedicated documentation page for info about this library, API reference and more: [https://kmagiera.github.io/react-native-gesture-handler](https://kmagiera.github.io/react-native-gesture-handler)
+Check out our dedicated documentation page for info about this library, API reference and more: [https://software-mansion.github.io/react-native-gesture-handler](https://software-mansion.github.io/react-native-gesture-handler)
 
 ## Examples
 
