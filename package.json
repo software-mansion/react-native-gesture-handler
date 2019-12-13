@@ -50,7 +50,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kmagiera/react-native-gesture-handler.git"
+    "url": "git+https://github.com/software-mansion/react-native-gesture-handler.git"
   },
   "author": {
     "email": "krzys.magiera@gmail.com",
@@ -59,9 +59,9 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "bugs": {
-    "url": "https://github.com/kmagiera/react-native-gesture-handler/issues"
+    "url": "https://github.com/software-mansion/react-native-gesture-handler/issues"
   },
-  "homepage": "https://github.com/kmagiera/react-native-gesture-handler#readme",
+  "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
   "dependencies": {
     "hammerjs": "^2.0.8",
     "hoist-non-react-statics": "^2.3.1",

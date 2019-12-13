@@ -7,7 +7,7 @@ title: Troubleshooting
 
 Thanks for giving this library a try! We are sorry that you might have encountered issues though. Here is how you can seek help:
 
-1. Search over the [issues on Github](https://github.com/kmagiera/react-native-gesture-handler/issues). There is a chance someone had this problem in the past and it has been resolved!
+1. Search over the [issues on Github](https://github.com/software-mansion/react-native-gesture-handler/issues). There is a chance someone had this problem in the past and it has been resolved!
 
 2. When sure your problem hasn't been reported or was reported but the proposed solution doesn't work for you please follow [our issue reporting guidelines](#reporting-issues).
 

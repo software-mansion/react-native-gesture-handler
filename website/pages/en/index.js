@@ -90,7 +90,7 @@ class HomeSplash extends React.Component {
             className="github-button"
             href={siteConfig.repoUrl}
             data-icon="octicon-star"
-            data-count-href="/kmagiera/react-native-gesture-handler"
+            data-count-href="/software-mansion/react-native-gesture-handler"
             data-show-count={true}
             data-count-aria-label="# stargazers on GitHub"
             aria-label="Star this project on GitHub">

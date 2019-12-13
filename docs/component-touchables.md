@@ -43,4 +43,4 @@ import {
 } from 'react-native-gesture-handler'
 ```
 
-For a comparison of both touchable implementations see our [touchables example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/touchables/index.js)
+For a comparison of both touchable implementations see our [touchables example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/touchables/index.js)
