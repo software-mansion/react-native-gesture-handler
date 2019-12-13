@@ -4,14 +4,19 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "test:web": "EXPO_WEB_E2E_ENV=development jest -c e2e/jest.config.web.json",
+    "test:web:prod": "EXPO_WEB_E2E_ENV=production jest -c e2e/jest.config.web.json"
   },
   "dependencies": {
+    "expo": "^36.0.0",
     "fbjs": "^1.0.0",
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2",
     "react": "16.9.0",
+    "react-dom": "^16.12.0",
     "react-native": "0.61.2",
+    "react-native-web": "^0.11.7",
     "react-navigation": "^3.9.1"
   },
   "devDependencies": {
@@ -20,18 +25,23 @@
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.3.1",
     "@babel/runtime": "^7.6.0",
+    "@expo/webpack-config": "^0.10.6",
     "@react-native-community/cli": "^1.9.4",
     "babel-jest": "^24.8.0",
     "babel-plugin-module-resolver": "^3.2.0",
     "detox": "^14.8.0",
     "glob-to-regexp": "^0.4.1",
     "jest": "^24.9.0",
+    "jest-expo-puppeteer": "^0.0.0",
     "metro-react-native-babel-preset": "^0.56.0",
     "mocha": "^6.1.4",
     "react-test-renderer": "16.9.0"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "testMatch": [
+      "e2e/*.spec.native.js"
+    ]
   },
   "detox": {
     "configurations": {

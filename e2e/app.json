@@ -1,0 +1,6 @@
+{
+  "expo": {
+    "entryPoint": "expo/AppEntry",
+    "web": { "build": { "babel": { "root": "../" } } }
+  }
+}

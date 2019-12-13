@@ -19,7 +19,7 @@ export class PressBox extends Component {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm being pressed for so long");
       this.setState({
-        lastGH: 'Long press',
+        lastGH: 'long_press',
       });
     }
   };
@@ -27,7 +27,7 @@ export class PressBox extends Component {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm touched");
       this.setState({
-        lastGH: 'Single tap',
+        lastGH: 'single_tap',
       });
     }
   };
@@ -35,7 +35,7 @@ export class PressBox extends Component {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert('Double tap, good job!');
       this.setState({
-        lastGH: 'Double tap',
+        lastGH: 'double_tap',
       });
     }
   };
@@ -57,7 +57,9 @@ export class PressBox extends Component {
           </TapGestureHandler>
         </LongPressGestureHandler>
         {this.state.lastGH && (
-          <Text>{`${this.state.lastGH} has been activated`}</Text>
+          <Text testID={this.state.lastGH}>{`${
+            this.state.lastGH
+          } has been activated`}</Text>
         )}
       </View>
     );
