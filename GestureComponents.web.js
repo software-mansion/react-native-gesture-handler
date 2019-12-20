@@ -4,7 +4,6 @@ import {
   FlatList as RNFlatList,
   Switch as RNSwitch,
   TextInput as RNTextInput,
-  ToolbarAndroid as RNToolbarAndroid,
   ScrollView as RNScrollView,
 } from 'react-native';
 
@@ -20,7 +19,6 @@ export const Switch = createNativeWrapper(RNSwitch, {
   disallowInterruption: true,
 });
 export const TextInput = createNativeWrapper(RNTextInput);
-export const ToolbarAndroid = createNativeWrapper(RNToolbarAndroid);
 export const DrawerLayoutAndroid = createNativeWrapper(RNDrawerLayoutAndroid, {
   disallowInterruption: true,
 });
