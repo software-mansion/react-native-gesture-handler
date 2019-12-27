@@ -5,6 +5,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper;
+
 public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHandler> {
 
   private boolean mShouldActivateOnStart;
@@ -58,6 +60,11 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
       // interrupting the current handler
       return false;
     }
+
+    if (handler instanceof RNGestureHandlerRootHelper.RootViewGestureHandler) {
+      return false;
+    }
+
     // otherwise we can only return `true` if already in an active state
     return state == STATE_ACTIVE && canBeInterrupted;
   }

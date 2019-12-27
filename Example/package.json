@@ -6,7 +6,8 @@
     "start": "react-native start",
     "ios": "react-native run-ios",
     "android": "react-native run-android",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "npx jetify"
   },
   "dependencies": {
     "@react-native-community/slider": "^2.0.0",
@@ -15,6 +16,7 @@
     "hammerjs": "^2.0.8",
     "hoist-non-react-statics": "^3.2.1",
     "invariant": "^2.2.4",
+    "jetifier": "^1.6.5",
     "prop-types": "^15.6.2",
     "react": "16.9.0",
     "react-native": "0.61.2",

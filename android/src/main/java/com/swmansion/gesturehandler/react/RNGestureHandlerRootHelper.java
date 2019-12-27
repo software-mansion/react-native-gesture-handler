@@ -80,7 +80,7 @@ public class RNGestureHandlerRootHelper {
     return mReactRootView;
   }
 
-  private class RootViewGestureHandler extends GestureHandler {
+  public class RootViewGestureHandler extends GestureHandler {
     @Override
     protected void onHandle(MotionEvent event) {
       int currentState = getState();
