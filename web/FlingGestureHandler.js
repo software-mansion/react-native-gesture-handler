@@ -1,4 +1,4 @@
-import Hammer from 'hammerjs';
+import Hammer from '@egjs/hammerjs';
 
 import { Direction } from './constants';
 import { GesturePropError } from './Errors';

@@ -1,4 +1,4 @@
-import Hammer from 'hammerjs';
+import Hammer from '@egjs/hammerjs';
 import { findNodeHandle } from 'react-native';
 
 import State from '../State';

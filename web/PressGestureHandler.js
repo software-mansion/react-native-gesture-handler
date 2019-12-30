@@ -1,4 +1,4 @@
-import Hammer from 'hammerjs';
+import Hammer from '@egjs/hammerjs';
 
 import State from '../State';
 import {
