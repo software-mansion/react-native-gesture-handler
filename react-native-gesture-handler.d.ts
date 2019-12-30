@@ -466,7 +466,9 @@ declare module 'react-native-gesture-handler' {
 declare module 'react-native-gesture-handler/Swipeable' {
   import { Animated, StyleProp, ViewStyle } from 'react-native';
   import { PanGestureHandlerProperties } from 'react-native-gesture-handler'
-  interface SwipeableProperties extends Omit<PanGestureHandlerProperties, 'onGestureEvent' | 'onHandlerStateChange'> {
+  type SwipeableExcludes = Exclude<keyof PanGestureHandlerProperties, 'onGestureEvent' | 'onHandlerStateChange'>
+
+  interface SwipeableProperties extends Pick<PanGestureHandlerProperties, SwipeableExcludes> {
     friction?: number;
     leftThreshold?: number;
     rightThreshold?: number;
