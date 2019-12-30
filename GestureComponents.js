@@ -25,6 +25,7 @@ module.exports = {
   get ScrollView() {
     return memoizeWrap(ReactNative.ScrollView, {
       disallowInterruption: true,
+      shouldCancelWhenOutside: false,
     });
   },
   get Switch() {
