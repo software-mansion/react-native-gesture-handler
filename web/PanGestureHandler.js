@@ -1,4 +1,4 @@
-import Hammer from 'hammerjs';
+import Hammer from '@egjs/hammerjs';
 
 import {
   MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD,
