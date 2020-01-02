@@ -18,7 +18,6 @@ Whenever you use a native component that should handle touch events you can eith
  - `ScrollView`
  - `Switch`
  - `TextInput`
- - `ToolbarAndroid` (**Android only**)
  - `DrawerLayoutAndroid` (**Android only**)
 
 

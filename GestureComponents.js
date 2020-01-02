@@ -11,10 +11,7 @@ function memoizeWrap(Component, config) {
   }
   let memoized = MEMOIZED.get(Component);
   if (!memoized) {
-    memoized = createNativeWrapper(
-      Component,
-      config
-    );
+    memoized = createNativeWrapper(Component, config);
     MEMOIZED.set(Component, memoized);
   }
   return memoized;
@@ -37,9 +34,6 @@ module.exports = {
   },
   get TextInput() {
     return memoizeWrap(ReactNative.TextInput);
-  },
-  get ToolbarAndroid() {
-    return memoizeWrap(ReactNative.ToolbarAndroid);
   },
   get DrawerLayoutAndroid() {
     const DrawerLayoutAndroid = memoizeWrap(ReactNative.DrawerLayoutAndroid, {
