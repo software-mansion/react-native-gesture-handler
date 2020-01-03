@@ -1,4 +1,8 @@
+import { View, ScrollView } from 'react-native'
+
 export default {
+  ScrollView,
+  PanGestureHandler: View,
   attachGestureHandler: () => {},
   createGestureHandler: () => {},
   dropGestureHandler: () => {},
@@ -9,5 +13,5 @@ export default {
     UP: 4,
     DOWN: 8,
   },
-  State: { BEGAN: 'BEGAN', FAILED: 'FAILED', ACTIVE: 'ACTIVE', END: 'END' },
+  State: { BEGAN: 'BEGAN', FAILED: 'FAILED', ACTIVE: 'ACTIVE', END: 'END', UNDETERMINED: 'UNDETERMINED' },
 };

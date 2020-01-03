@@ -1,11 +1,12 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "1.4.1",
+  "version": "1.5.3",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "web": "expo start:web"
   },
   "main": "index.js",
   "types": "react-native-gesture-handler.d.ts",
@@ -49,7 +50,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kmagiera/react-native-gesture-handler.git"
+    "url": "git+https://github.com/software-mansion/react-native-gesture-handler.git"
   },
   "author": {
     "email": "krzys.magiera@gmail.com",
@@ -58,11 +59,12 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "bugs": {
-    "url": "https://github.com/kmagiera/react-native-gesture-handler/issues"
+    "url": "https://github.com/software-mansion/react-native-gesture-handler/issues"
   },
-  "homepage": "https://github.com/kmagiera/react-native-gesture-handler#readme",
+  "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
   "dependencies": {
-    "hammerjs": "^2.0.8",
+    "@egjs/hammerjs": "^2.0.17",
+    "hammerjs": "https://github.com/naver/hammer.js.git",
     "hoist-non-react-statics": "^2.3.1",
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2"
@@ -71,18 +73,22 @@
     "preset": "jest-react-native"
   },
   "devDependencies": {
+    "@expo/webpack-config": "^0.10.4",
     "@types/react": "^16.8.6",
     "@types/react-native": "^0.60.0",
     "babel-jest": "16.0.0",
-    "babel-preset-react-native": "1.9.0",
-    "flow-bin": "^0.56.0",
+    "babel-preset-expo": "^7.1.0",
+    "expo": "^35.0.1",
+    "flow-bin": "^0.98.0",
     "husky": "^0.14.3",
     "jest": "^24.7.1",
     "jest-react-native": "16.0.0",
     "lint-staged": "^8.0.0-beta.1",
     "prettier": "^1.13.7",
     "react": "^16.8.6",
+    "react-dom": "^16.12.0",
     "react-native": "^0.60.0",
+    "react-native-web": "^0.11.7",
     "react-test-renderer": "16.8.6"
   },
   "lint-staged": {

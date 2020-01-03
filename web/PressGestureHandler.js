@@ -1,9 +1,12 @@
-import Hammer from 'hammerjs';
+import Hammer from '@egjs/hammerjs';
 
 import State from '../State';
-import { CONTENT_TOUCHES_DELAY, CONTENT_TOUCHES_QUICK_TAP_END_DELAY } from './constants';
+import {
+  CONTENT_TOUCHES_DELAY,
+  CONTENT_TOUCHES_QUICK_TAP_END_DELAY,
+} from './constants';
 import DiscreteGestureHandler from './DiscreteGestureHandler';
-import { fireAfterInterval, isnan } from './utils';
+import { fireAfterInterval, isValidNumber, isnan } from './utils';
 
 class PressGestureHandler extends DiscreteGestureHandler {
   get name() {
@@ -31,7 +34,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
   }
 
   updateHasCustomActivationCriteria({ shouldCancelWhenOutside, maxDistSq }) {
-    return shouldCancelWhenOutside || !isnan(maxDistSq);
+    return shouldCancelWhenOutside || !isValidNumber(maxDistSq);
   }
 
   getState(type) {

@@ -3,7 +3,14 @@
   "plugins": [
     ["module-resolver", {
       "alias": {
-        "react-native-gesture-handler": "../"
+        "react-native-gesture-handler": "../",
+        "react": "./node_modules/react",
+        "react-native": "./node_modules/react-native",
+        "hammerjs": "./node_modules/hammerjs",
+        "fbjs": "./node_modules/fbjs",
+        "hoist-non-react-statics": "./node_modules/hoist-non-react-statics",
+        "invariant": "./node_modules/invariant",
+        "prop-types": "./node_modules/prop-types"
       }
     }]
   ]

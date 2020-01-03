@@ -1,8 +1,8 @@
-import Hammer from 'hammerjs';
+import Hammer from '@egjs/hammerjs';
 
 import State from '../State';
 import PressGestureHandler from './PressGestureHandler';
-import { isnan } from './utils';
+import { isnan, isValidNumber } from './utils';
 
 class LongPressGestureHandler extends PressGestureHandler {
   get minDurationMs() {
@@ -14,7 +14,7 @@ class LongPressGestureHandler extends PressGestureHandler {
   }
 
   updateHasCustomActivationCriteria({ maxDistSq }) {
-    return !isnan(maxDistSq);
+    return !isValidNumber(maxDistSq);
   }
 
   getConfig() {

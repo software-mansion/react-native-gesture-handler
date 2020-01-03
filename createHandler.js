@@ -31,12 +31,20 @@ UIManager.genericDirectEventTypes = {
   ...UIManager.genericDirectEventTypes,
   ...customGHEventsConfig,
 };
+// In newer versions of RN the `genericDirectEventTypes` is located in the object
+// returned by UIManager.getConstants(), we need to add it there as well to make
+// it compatible with RN 61+
+if (UIManager.getConstants) {
+  UIManager.getConstants().genericDirectEventTypes = {
+    ...UIManager.getConstants().genericDirectEventTypes,
+    ...customGHEventsConfig,
+  };
+}
 
 // Wrap JS responder calls and notify gesture handler manager
 const {
   setJSResponder: oldSetJSResponder = () => {},
   clearJSResponder: oldClearJSResponder = () => {},
-  getConstants: oldGetConstants = () => ({}),
 } = UIManager;
 UIManager.setJSResponder = (tag, blockNativeResponder) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
@@ -45,18 +53,6 @@ UIManager.setJSResponder = (tag, blockNativeResponder) => {
 UIManager.clearJSResponder = () => {
   RNGestureHandlerModule.handleClearJSResponder();
   oldClearJSResponder();
-};
-// We also add GH specific events to the constants object returned by
-// UIManager.getConstants to make it work with the newest version of RN
-UIManager.getConstants = () => {
-  const constants = oldGetConstants();
-  return {
-    ...constants,
-    genericDirectEventTypes: {
-      ...constants.genericDirectEventTypes,
-      ...customGHEventsConfig,
-    },
-  };
 };
 
 let handlerTag = 1;

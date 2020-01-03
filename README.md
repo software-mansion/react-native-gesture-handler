@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="150" src="https://kmagiera.github.io/react-native-gesture-handler/img/ghlogo.svg" />
+  <img height="150" src="https://software-mansion.github.io/react-native-gesture-handler/img/ghlogo.svg" />
   <h1 align="center">React Native Gesture Handler</h1>
   <h3 align="center">Declarative API exposing platform native touch and gesture system to React Native.</h3>
 </p>
@@ -11,20 +11,25 @@ It makes touch interactions and gesture tracking not only smooth, but also depen
 
 ## Installation
 
-Check [getting started](https://kmagiera.github.io/react-native-gesture-handler/docs/getting-started.html) section of our docs for the detailed installation instructions.
+Check [getting started](https://software-mansion.github.io/react-native-gesture-handler/docs/getting-started.html) section of our docs for the detailed installation instructions.
 
 ## Documentation
 
-Check out our dedicated documentation page for info about this library, API reference and more: [https://kmagiera.github.io/react-native-gesture-handler](https://kmagiera.github.io/react-native-gesture-handler)
+Check out our dedicated documentation page for info about this library, API reference and more: [https://software-mansion.github.io/react-native-gesture-handler](https://software-mansion.github.io/react-native-gesture-handler)
 
 ## Examples
 
 If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `Example/` folder and run:
+
 ```bash
   yarn install
 ```
 
-Then run `react-native run-android` or `react-native run-ios` (depending on which platform you want to run the example app on).
+If you are running on ios, run `pod install` in the ios folder
+
+Run `yarn start` to start the metro bundler
+
+Run `react-native run-android` or `react-native run-ios` (depending on which platform you want to run the example app on).
 
 You will need to have an Android or iOS device or emulator connected as well as `react-native-cli` package installed globally.
 
@@ -32,7 +37,8 @@ You will need to have an Android or iOS device or emulator connected as well as 
 
 | version | react-native version |
 | ------- | -------------------- |
-| 1.1.0+  | 0.57.2+              | 
+| 1.4.0+  | 0.60.0+              |
+| 1.1.0+  | 0.57.2+              |
 | <1.1.0  | 0.50.0+              |
 
 ## License

@@ -3,16 +3,16 @@ id: example
 title: Running Example App
 ---
 
-Example app code is located under [`Example/`](https://github.com/kmagiera/react-native-gesture-handler/tree/master/Example) folder in the repo.
+Example app code is located under [`Example/`](https://github.com/software-mansion/react-native-gesture-handler/tree/master/Example) folder in the repo.
 It showcases the majority of the Gesture Handler library features.
 The app consist of the list of single screen examples presenting the capabilities of the library.
-Each example is located under a separate folder under [`Example/`](https://github.com/kmagiera/react-native-gesture-handler/tree/master/Example).
+Each example is located under a separate folder under [`Example/`](https://github.com/software-mansion/react-native-gesture-handler/tree/master/Example).
 
 <img src="assets/sampleapp.gif" width="180" height="320" />
 
 ## Running example app on Expo
 
-You can run example app on [Expo](https://expo.io). Follow instructions under [this link](https://exp.host/@osdnk/gesturehandlerexample) to do so. Note that the app published to Expo is not the most up to date version. We publish updates whenever new version of Expo SDK is released. If you wish to try the most up to date version you will have to run example app locally. For that see below 👇
+You can run example app on [Expo](https://expo.io). Follow instructions under [this link](https://expo.io/@sauzy3450/react-native-gesture-handler-demo) to do so. Note that the app published to Expo is not the most up to date version. We publish updates whenever new version of Expo SDK is released. If you wish to try the most up to date version you will have to run example app locally. For that see below 👇
 
 ## Running example app locally
 
@@ -22,7 +22,7 @@ The example app is a regular React Native app, so in case of problems or to lear
 In order to run example app you need to clone the repo first:
 
 ```bash
-git clone git@github.com:kmagiera/react-native-gesture-handler.git
+git clone git@github.com:software-mansion/react-native-gesture-handler.git
 ```
 
 Then go to the library folder:

@@ -40,7 +40,7 @@ Position expressed in points along Y axis of center anchor point of gesture
 
 ## Example
 
-See the [scale and rotation example](https://github.com/kmagiera/react-native-gesture-handler/blob/master/Example/scaleAndRotate/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://exp.host/@osdnk/gesturehandlerexample).
+See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/scaleAndRotate/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo).
 
 ```js
 export class PinchableBox extends React.Component {
