@@ -318,7 +318,7 @@ public class GestureHandler<T extends GestureHandler> {
     }
   }
 
-  private void moveToState(int newState) {
+  protected void moveToState(int newState) {
     if (mState == newState) {
       return;
     }

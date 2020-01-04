@@ -9,6 +9,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
@@ -19,6 +20,9 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.swmansion.gesturehandler.BaseDragGestureHandler;
+import com.swmansion.gesturehandler.DragGestureHandler;
+import com.swmansion.gesturehandler.DropGestureHandler;
 import com.swmansion.gesturehandler.FlingGestureHandler;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.LongPressGestureHandler;
@@ -33,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.Nullable;
+import javax.annotation.Nullable;
 
 import static com.swmansion.gesturehandler.GestureHandler.HIT_SLOP_NONE;
 
@@ -80,7 +84,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_MAX_POINTERS = "maxPointers";
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
   private static final String KEY_NUMBER_OF_POINTERS = "numberOfPointers";
-  private static final String KEY_DIRECTION= "direction";
+  private static final String KEY_DIRECTION = "direction";
+  private static final String KEY_DRAG_DATA = "data";
+  private static final String KEY_DRAG_TYPE = "type";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
           implements RNGestureHandlerEventDataExtractor<T> {
@@ -424,6 +430,90 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
   }
 
+  private static abstract class BaseDragGestureHandlerFactory<T extends BaseDragGestureHandler<ReadableMap>> extends HandlerFactory<T> {
+
+    private static class ReactDragGestureHandler extends DragGestureHandler<ReadableMap> {
+
+    }
+
+    private static class DragGestureHandlerFactory extends HandlerFactory<ReactDragGestureHandler> {
+      @Override
+      public Class<ReactDragGestureHandler> getType() {
+        return ReactDragGestureHandler.class;
+      }
+
+      @Override
+      public String getName() {
+        return "DragGestureHandler";
+      }
+
+      @Override
+      public ReactDragGestureHandler create(Context context) {
+        return new ReactDragGestureHandler();
+      }
+    }
+
+    private static class ReactDropGestureHandler extends DropGestureHandler<ReadableMap> {
+
+    }
+
+    private static class DropGestureHandlerFactory extends HandlerFactory<ReactDropGestureHandler> {
+      @Override
+      public Class<ReactDropGestureHandler> getType() {
+        return ReactDropGestureHandler.class;
+      }
+
+      @Override
+      public String getName() {
+        return "DropGestureHandler";
+      }
+
+      @Override
+      public ReactDropGestureHandler create(Context context) {
+        return new ReactDropGestureHandler();
+      }
+
+      @Override
+      public void extractEventData(ReactDropGestureHandler handler, WritableMap eventData) {
+        super.extractEventData(handler, eventData);
+        eventData.putMap("data", handler.getData());
+      }
+    }
+
+    @Override
+    public void configure(T handler, ReadableMap config) {
+      super.configure(handler, config);
+      if(config.hasKey(KEY_DRAG_TYPE)) {
+        ArrayList<Integer> types = new ArrayList<>();
+        ReadableType readableType = config.getType(KEY_DRAG_TYPE);
+        if (readableType == ReadableType.Number) {
+          types.add(config.getInt(KEY_DRAG_TYPE));
+        } else if (readableType == ReadableType.Array) {
+          ReadableArray typeArr = config.getArray(KEY_DRAG_TYPE);
+          if (typeArr != null) {
+            for (int i = 0; i < typeArr.size(); i++) {
+              types.add(typeArr.getInt(i));
+            }
+          }
+        }
+        handler.setType(types);
+      }
+
+      if(config.hasKey(KEY_DRAG_DATA) && config.getType(KEY_DRAG_DATA) == ReadableType.Map) {
+        handler.setData(config.getMap(KEY_DRAG_DATA));
+      }
+    }
+
+    @Override
+    public void extractEventData(T handler, WritableMap eventData) {
+      super.extractEventData(handler, eventData);
+      //eventData.putInt("dragState", handler.getDragState());
+      eventData.putInt("dragTarget", handler.getDragTarget());
+      eventData.putInt("dropTarget", handler.getDropTarget());
+    }
+
+  }
+
   private OnTouchEventListener mEventListener = new OnTouchEventListener() {
     @Override
     public void onTouchEvent(GestureHandler handler, MotionEvent event) {
@@ -443,7 +533,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           new PanGestureHandlerFactory(),
           new PinchGestureHandlerFactory(),
           new RotationGestureHandlerFactory(),
-          new FlingGestureHandlerFactory()
+          new FlingGestureHandlerFactory(),
+          new BaseDragGestureHandlerFactory.DragGestureHandlerFactory(),
+          new BaseDragGestureHandlerFactory.DropGestureHandlerFactory(),
   };
   private final RNGestureHandlerRegistry mRegistry = new RNGestureHandlerRegistry();
 
@@ -646,7 +738,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     return null;
   }
 
-  private @Nullable HandlerFactory findFactoryForHandler(GestureHandler handler) {
+  private @Nullable
+  HandlerFactory findFactoryForHandler(GestureHandler handler) {
     for (int i = 0; i < mHandlerFactories.length; i++) {
       HandlerFactory factory = mHandlerFactories[i];
       if (factory.getType().equals(handler.getClass())) {

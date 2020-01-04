@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import androidx.annotation.Nullable;
+import javax.annotation.Nullable;
 
 public class GestureHandlerOrchestrator {
 

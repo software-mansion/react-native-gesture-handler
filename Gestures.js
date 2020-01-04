@@ -44,15 +44,15 @@ class ForceTouchFallback extends React.Component {
 export const ForceTouchGestureHandler =
   PlatformConstants && PlatformConstants.forceTouchAvailable
     ? createHandler(
-        'ForceTouchGestureHandler',
-        {
-          ...GestureHandlerPropTypes,
-          minForce: PropTypes.number,
-          maxForce: PropTypes.number,
-          feedbackOnActivation: PropTypes.bool,
-        },
-        {}
-      )
+      'ForceTouchGestureHandler',
+      {
+        ...GestureHandlerPropTypes,
+        minForce: PropTypes.number,
+        maxForce: PropTypes.number,
+        feedbackOnActivation: PropTypes.bool,
+      },
+      {}
+    )
     : ForceTouchFallback;
 
 ForceTouchGestureHandler.forceTouchAvailable =
@@ -273,6 +273,31 @@ export const PinchGestureHandler = createHandler(
 );
 export const RotationGestureHandler = createHandler(
   'RotationGestureHandler',
+  GestureHandlerPropTypes,
+  {}
+);
+export const DragGestureHandler = createHandler(
+  'DragGestureHandler',
+  {
+    ...GestureHandlerPropTypes,
+    data: PropTypes.object,
+    type: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.number),
+    ]),
+  },
+  {
+    data: { a: true },
+    type: 0
+  },
+  null,
+  {
+    data: true,
+    type: true
+  }
+);
+export const DropGestureHandler = createHandler(
+  'DropGestureHandler',
   GestureHandlerPropTypes,
   {}
 );
