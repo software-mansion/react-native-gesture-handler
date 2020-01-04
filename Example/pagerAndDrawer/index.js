@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text } from 'react-native';
 
 export default class Example extends Component {
+  static platforms = ['android'];
   render() {
     return <Text>Sorry, this is a demo of android-only native components</Text>;
   }
