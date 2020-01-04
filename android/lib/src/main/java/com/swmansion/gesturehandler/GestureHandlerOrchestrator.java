@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.view.ViewParent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -91,12 +93,13 @@ public class GestureHandlerOrchestrator {
    * Should be called from the view wrapper
    */
   public boolean onTouchEvent(MotionEvent event) {
+    Log.d("DragDrop", "onTouchEvent: " + event);
     mIsHandlingTouch = true;
     int action = event.getActionMasked();
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
       extractGestureHandlers(event);
     } else if (action == MotionEvent.ACTION_CANCEL) {
-      cancelAll();
+      cancelAllExceptDragGestureHandlers();
     }
     deliverEventToGestureHandlers(event);
     mIsHandlingTouch = false;
@@ -260,9 +263,19 @@ public class GestureHandlerOrchestrator {
     }
   }
 
-  private void cancelAll() {
+  //private static ArrayList<Class<GestureHandler>> cancelExceptionList = new
+
+  private void cancelAllExceptDragGestureHandlers() {
+    ArrayList<Class<? extends GestureHandler>> cancelExceptionList = new ArrayList<>(1);
+    cancelExceptionList.add(BaseDragGestureHandler.class);
+    cancelAllExcept(cancelExceptionList);
+  }
+
+  private <T> void cancelAllExcept(ArrayList<Class<? extends GestureHandler>> exceptionList) {
     for (int i = mAwaitingHandlersCount - 1; i >= 0; i--) {
-      mAwaitingHandlers[i].cancel();
+      if (!exceptionList.contains(mAwaitingHandlers[i].getClass())) {
+        mAwaitingHandlers[i].cancel();
+      }
     }
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
@@ -271,7 +284,9 @@ public class GestureHandlerOrchestrator {
       mPreparedHandlers[i] = mGestureHandlers[i];
     }
     for (int i = handlersCount - 1; i >= 0; i--) {
-      mPreparedHandlers[i].cancel();
+      if (!exceptionList.contains(mPreparedHandlers[i].getClass())) {
+        mPreparedHandlers[i].cancel();
+      }
     }
   }
 

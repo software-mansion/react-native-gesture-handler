@@ -1,18 +1,22 @@
 package com.swmansion.gesturehandler.react;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
@@ -33,8 +37,14 @@ import com.swmansion.gesturehandler.PinchGestureHandler;
 import com.swmansion.gesturehandler.RotationGestureHandler;
 import com.swmansion.gesturehandler.TapGestureHandler;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -457,6 +467,44 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     }
 
+    private static class MapResolver implements BaseDragGestureHandler.DataResolver<ReadableMap> {
+
+      private ReadableMap mSource;
+
+      MapResolver(ReadableMap map) {
+        mSource = map;
+      }
+
+      private void handleError(JSONException e) {
+        throw new JSApplicationIllegalArgumentException("DragGestureHandler received bad data", e);
+      }
+
+      @Override
+      public String toString() {
+        try {
+          return JSONUtil.toString(mSource);
+        } catch (JSONException e) {
+          handleError(e);
+          return null;
+        }
+      }
+
+      @Override
+      public ReadableMap fromString(String source) {
+        try {
+          return JSONUtil.fromString(source);
+        } catch (JSONException e) {
+          handleError(e);
+          return null;
+        }
+      }
+
+      @Override
+      public ReadableMap data() {
+        return mSource;
+      }
+    }
+
     private static class DropGestureHandlerFactory extends HandlerFactory<ReactDropGestureHandler> {
       @Override
       public Class<ReactDropGestureHandler> getType() {
@@ -483,6 +531,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void configure(T handler, ReadableMap config) {
       super.configure(handler, config);
+      Log.d("DragDrop", "configure: " + config);
       if(config.hasKey(KEY_DRAG_TYPE)) {
         ArrayList<Integer> types = new ArrayList<>();
         ReadableType readableType = config.getType(KEY_DRAG_TYPE);
@@ -500,7 +549,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
 
       if(config.hasKey(KEY_DRAG_DATA) && config.getType(KEY_DRAG_DATA) == ReadableType.Map) {
-        handler.setData(config.getMap(KEY_DRAG_DATA));
+        handler.setData(new MapResolver(config.getMap(KEY_DRAG_DATA)));
       }
     }
 
