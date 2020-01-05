@@ -11,6 +11,7 @@
   "dependencies": {
     "@react-native-community/slider": "^2.0.0",
     "@react-native-community/viewpager": "^1.1.6",
+    "@react-navigation/web": "^1.0.0-alpha.9",
     "fbjs": "^1.0.0",
     "hammerjs": "^2.0.8",
     "hoist-non-react-statics": "^3.2.1",
