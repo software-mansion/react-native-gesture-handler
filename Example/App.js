@@ -7,7 +7,8 @@ import {
   YellowBox,
   Platform,
 } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createBrowserApp } from '@react-navigation/web';
 import { createStackNavigator } from 'react-navigation-stack';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
@@ -143,7 +144,7 @@ class MainScreenItem extends React.Component {
 
 const ExampleApp = createStackNavigator(
   {
-    Main: { screen: MainScreen },
+    Main: { screen: MainScreen, path: '' },
     ...SCREENS,
     TouchableExample: {
       screen: TouchableExample,
@@ -182,4 +183,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default createAppContainer(ExampleApp);
+const createApp = Platform.select({
+  web: input => createBrowserApp(input, { history: 'hash' }),
+  default: input => createAppContainer(input),
+});
+
+const defaultNavigator = createSwitchNavigator({
+  main: { screen: ExampleApp, path: '' },
+});
+defaultNavigator.path = '';
+
+export default createApp(defaultNavigator);
