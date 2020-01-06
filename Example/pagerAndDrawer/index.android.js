@@ -17,6 +17,7 @@ const Page = ({ backgroundColor, text }) => (
 );
 
 export default class Example extends Component {
+  static platforms = ['android'];
   render() {
     const navigationView = (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>

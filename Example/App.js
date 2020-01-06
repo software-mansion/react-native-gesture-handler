@@ -97,7 +97,16 @@ class MainScreen extends React.Component {
     title: '✌️ Gesture Handler Demo',
   };
   render() {
-    const data = Object.keys(SCREENS).map(key => ({ key }));
+    const data = Object.keys(SCREENS)
+      .map(key => {
+        const item = SCREENS[key];
+        const isDisabled = item.screen.platforms
+          ? !item.screen.platforms.includes(Platform.OS)
+          : false;
+        return { key, title: item.title || key, isDisabled };
+      })
+      .sort((a, b) => !!a.isDisabled - !!b.isDisabled);
+
     return (
       <FlatList
         style={styles.list}
@@ -120,10 +129,13 @@ const ItemSeparator = () => <View style={styles.separator} />;
 class MainScreenItem extends React.Component {
   _onPress = () => this.props.onPressItem(this.props.item);
   render() {
-    const { key } = this.props.item;
+    const { title, isDisabled } = this.props.item;
     return (
-      <RectButton style={styles.button} onPress={this._onPress}>
-        <Text style={styles.buttonText}>{SCREENS[key].title || key}</Text>
+      <RectButton
+        pointerEvents={isDisabled ? 'none' : 'auto'}
+        style={[styles.button, isDisabled && { opacity: 0.5 }]}
+        onPress={this._onPress}>
+        <Text style={styles.buttonText}>{title}</Text>
       </RectButton>
     );
   }
