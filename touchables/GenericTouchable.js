@@ -197,7 +197,7 @@ export default class GenericTouchable extends Component {
       // This platform check is an implication of slightly different behavior of handlers on different platform.
       // And Android "Active" state is achieving on first move of a finger, not on press in.
       // On iOS event on "Began" is not delivered.
-      state === (Platform.OS === 'ios' ? State.ACTIVE : State.BEGAN) &&
+      state === (Platform.OS !== 'android' ? State.ACTIVE : State.BEGAN) &&
       this.STATE === TOUCHABLE_STATE.UNDETERMINED
     ) {
       // Moving inside requires
