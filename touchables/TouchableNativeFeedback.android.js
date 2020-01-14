@@ -19,8 +19,7 @@ export default class TouchableNativeFeedback extends Component {
     borderless,
   });
 
-  static canUseNativeForeground = () =>
-    Platform.OS === 'android' && Platform.Version >= 23;
+  static canUseNativeForeground = () => Platform.Version >= 23;
 
   static defaultProps = {
     ...GenericTouchable.defaultProps,

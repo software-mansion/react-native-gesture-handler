@@ -1,6 +1,6 @@
 import ViewPagerAndroid from '@react-native-community/viewpager';
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import {
   createNativeWrapper,
   DrawerLayoutAndroid,
@@ -54,7 +54,7 @@ export default class Example extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === 'ios' ? 20 : 0,
+    paddingTop: 0,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
