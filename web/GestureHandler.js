@@ -16,6 +16,7 @@ class GestureHandler {
   pendingGestures = {};
   oldState = State.UNDETERMINED;
   previousState = State.UNDETERMINED;
+  lastSentState = null;
 
   get id() {
     return `${this.name}${this._gestureInstance}`;
@@ -160,7 +161,10 @@ class GestureHandler {
     }
 
     invokeNullableMethod('onGestureEvent', onGestureEvent, event);
-    invokeNullableMethod('onHandlerStateChange', onHandlerStateChange, event);
+    if (this.lastSentState !== event.nativeEvent.state) {
+      this.lastSentState = event.nativeEvent.state;
+      invokeNullableMethod('onHandlerStateChange', onHandlerStateChange, event);
+    }
   };
 
   cancelPendingGestures(event) {
@@ -222,6 +226,7 @@ class GestureHandler {
 
     this.oldState = State.UNDETERMINED;
     this.previousState = State.UNDETERMINED;
+    this.lastSentState = null;
 
     const { NativeGestureClass } = this;
     const gesture = new NativeGestureClass(this.getHammerConfig());
@@ -265,6 +270,7 @@ class GestureHandler {
   }
 
   onStart({ deltaX, deltaY, rotation }) {
+    this.lastSentState = null;
     this.isGestureRunning = true;
     this.__initialX = deltaX;
     this.__initialY = deltaY;
