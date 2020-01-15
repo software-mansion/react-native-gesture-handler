@@ -154,12 +154,6 @@ class GestureHandler {
 
     const event = this.transformEventData(nativeEvent);
 
-    // Reset the state for the next gesture
-    if (nativeEvent.isFinal) {
-      this.oldState = State.UNDETERMINED;
-      this.previousState = State.UNDETERMINED;
-    }
-
     invokeNullableMethod('onGestureEvent', onGestureEvent, event);
     if (this.lastSentState !== event.nativeEvent.state) {
       this.lastSentState = event.nativeEvent.state;
@@ -270,7 +264,11 @@ class GestureHandler {
   }
 
   onStart({ deltaX, deltaY, rotation }) {
+    // Reset the state for the next gesture
+    this.oldState = State.UNDETERMINED;
+    this.previousState = State.UNDETERMINED;
     this.lastSentState = null;
+
     this.isGestureRunning = true;
     this.__initialX = deltaX;
     this.__initialY = deltaY;
