@@ -6,6 +6,7 @@ import {
 } from './constants';
 import DraggingGestureHandler from './DraggingGestureHandler';
 import { isValidNumber, isnan, TEST_MIN_IF_NOT_NAN, VEC_LEN_SQ } from './utils';
+import State from '../State';
 
 class PanGestureHandler extends DraggingGestureHandler {
   get name() {
@@ -21,6 +22,18 @@ class PanGestureHandler extends DraggingGestureHandler {
       ...super.getHammerConfig(),
       direction: this.getDirection(),
     };
+  }
+
+  getState(type) {
+    const nextState = super.getState(type);
+    // Ensure that the first state sent is `BEGAN` and not `ACTIVE`
+    if (
+      this.previousState === State.UNDETERMINED &&
+      nextState === State.ACTIVE
+    ) {
+      return State.BEGAN;
+    }
+    return nextState;
   }
 
   getDirection() {
