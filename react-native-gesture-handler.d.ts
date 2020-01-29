@@ -17,6 +17,7 @@ declare module 'react-native-gesture-handler' {
     Insets,
     ViewStyle,
     StyleProp,
+    ViewProps,
   } from 'react-native';
 
   /* GESTURE HANDLER STATE */
@@ -452,6 +453,8 @@ declare module 'react-native-gesture-handler' {
   export class FlatList<ItemT> extends React.Component<
     NativeViewGestureHandlerProperties & FlatListProperties<ItemT>
   > {}
+
+  export const GestureHandlerRootView: ReactComponentType<ViewProps>;
 
   export function gestureHandlerRootHOC<P = {}>(
     Component: React.ComponentType<P>,

@@ -157,6 +157,26 @@ You can check out [this example project](https://github.com/henrikra/nativeNavig
 
 Remember that you need to wrap each screen that you use in your app with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
 
+### For library authors
+
+If you're using gesture handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration in `MainActivity.java` for the user.
+
+```js
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+export default MyComponent() {
+  return (
+    <GestureHandlerRootView>
+      {/* content */}
+    </GestureHandlerRootView>
+  )
+}
+```
+
+If you use props such as `shouldCancelWhenOutside`, `simultaneousHandlers`, `waitFor` etc. with gesture handlers, the handlers need to be mounted under a single `GestureHandlerRootView`. So it's important to keep the `GestureHandlerRootView` as close to the actual root view as possible.
+
+Note that `GestureHandlerRootView` acts like a normal `View`. So if you want it to fill the screen, you will need to pass `{ flex: 1 }` like you'll need to do with a normal `View`. By default, it'll take the size of the content nested inside.
+
 ### Testing
 
 In order to load mocks provided by the library add following to your jest config in `package.json`:
