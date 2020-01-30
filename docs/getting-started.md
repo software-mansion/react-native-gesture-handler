@@ -186,7 +186,7 @@ export default function Example() {
 
 If you're using gesture handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration in `MainActivity.java` for the user.
 
-```jsx
+```js
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default MyComponent() {
