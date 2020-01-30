@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, Modal, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -9,7 +9,6 @@ import {
 
 import { USE_NATIVE_DRIVER } from '../config';
 import { LoremIpsum } from '../common';
-import gestureHandlerRootHOC from '../../gestureHandlerRootHOC';
 
 export class DraggableBox extends Component {
   constructor(props) {
@@ -62,26 +61,14 @@ export class DraggableBox extends Component {
   }
 }
 
-const ExampleWithHoc = gestureHandlerRootHOC(
-  class Example extends Component {
-    render() {
-      return (
-        <View style={styles.scrollView}>
-          <LoremIpsum words={40} />
-          <DraggableBox />
-          <LoremIpsum />
-        </View>
-      );
-    }
-  }
-);
-
-export default class WrappedExample extends React.Component {
+export default class Example extends Component {
   render() {
     return (
-      <Modal animationType="slide" transparent={false}>
-        <ExampleWithHoc />
-      </Modal>
+      <View style={styles.scrollView}>
+        <LoremIpsum words={40} />
+        <DraggableBox />
+        <LoremIpsum />
+      </View>
     );
   }
 }
