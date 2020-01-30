@@ -1,6 +1,5 @@
 package com.facebook.react.views.modal;
 
-
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.ViewParent;
