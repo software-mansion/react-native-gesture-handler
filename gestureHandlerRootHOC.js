@@ -7,10 +7,10 @@ export default function gestureHandlerRootHOC(
   Component,
   containerStyles = undefined
 ) {
-  function Wrapper() {
+  function Wrapper(props) {
     return (
       <GestureHandlerRootView style={[styles.container, containerStyles]}>
-        <Component {...this.props} />
+        <Component {...props} />
       </GestureHandlerRootView>
     );
   }
