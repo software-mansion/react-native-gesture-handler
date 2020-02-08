@@ -26,12 +26,14 @@ class DiscreteGestureHandler extends GestureHandler {
     );
   }
 
-  transformNativeEvent({ x, y }) {
+  transformNativeEvent({ center: { x, y } }) {
+    const rect = this.view.getBoundingClientRect();
+
     return {
       absoluteX: x,
       absoluteY: y,
-      x,
-      y,
+      x: x - rect.left,
+      y: y - rect.top,
     };
   }
 
