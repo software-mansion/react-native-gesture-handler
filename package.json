@@ -23,6 +23,7 @@
     "createHandler.js",
     "Directions.js",
     "DrawerLayout.js",
+    "DrawerLayout.d.ts",
     "GestureHandler.js",
     "Gestures.js",
     "GestureButtons.js",
