@@ -1,4 +1,5 @@
 declare module 'react-native-gesture-handler/Swipeable' {
+  import * as React from 'react'
   import { Animated, StyleProp, ViewStyle } from 'react-native';
   import { PanGestureHandlerProperties } from 'react-native-gesture-handler'
   type SwipeableExcludes = Exclude<keyof PanGestureHandlerProperties, 'onGestureEvent' | 'onHandlerStateChange'>
