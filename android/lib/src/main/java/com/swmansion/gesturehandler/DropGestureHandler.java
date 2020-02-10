@@ -23,6 +23,14 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T> {
 
     @Override
     protected void onHandle(DragEvent event) {
+        if (!isSameType(event)) {
+            if (getState() == STATE_ACTIVE) {
+                cancel();
+            } else {
+                fail();
+            }
+        }
+
         int action = event.getAction();
         boolean pointerIsInside = isWithinBounds();
         boolean stateChange = pointerIsInside != mPointerState;
@@ -61,10 +69,5 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T> {
     @Override
     public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
         return super.shouldRecognizeSimultaneously(handler) || (mDragHandler != null && handler == mDragHandler);
-    }
-
-    @Override
-    public String toString() {
-        return "DropGestureHandler:" + isWithinBounds() +  getView();
     }
 }
