@@ -40,9 +40,15 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T> {
 
         mPointerState = pointerIsInside;
 
+        if (!stateChange && !pointerIsInside) {
+            mIsActive = false;
+            return;
+        } else {
+            mIsActive = true;
+        }
+
         DragEvent ev = DragGestureUtils.obtain(event, mDragAction, getX(), getY(), action == DragEvent.ACTION_DROP && pointerIsInside);
         super.onHandle(ev);
-        Log.d("Drop", "onHandle: " + stateToString(getState()) + "  " + event);
     }
 
     @Override
