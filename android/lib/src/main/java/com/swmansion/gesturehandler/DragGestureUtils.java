@@ -1,5 +1,7 @@
 package com.swmansion.gesturehandler;
 
+import android.content.ClipData;
+import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -15,9 +17,20 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 public class DragGestureUtils {
+    static ClipData clipData() {
+        Intent intent = new Intent(Intent.ACTION_RUN);
+        ArrayList<Integer> types = new ArrayList<>();
+        types.add(0);
+        types.add(1);
+        intent.putIntegerArrayListExtra(DragDropGestureHandler.KEY_TYPE, types);
+        intent.putExtra(DragDropGestureHandler.KEY_SOURCE_APP, "hello");
+        return new ClipData(DragDropGestureHandler.DRAG_EVENT_NAME, DragDropGestureHandler.DRAG_EVENT_MIME_TYPES, new ClipData.Item(intent));
+    }
+
     static DragEvent obtain(DragEvent event, int action, float x, float y, boolean result) {
         Parcel parcel = Parcel.obtain();
         event.writeToParcel(parcel, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+        parcel.appendFrom(parcel, 0, parcel.dataSize());
         parcel.setDataPosition(0);
         parcel.writeInt(action);
         parcel.writeFloat(x);
