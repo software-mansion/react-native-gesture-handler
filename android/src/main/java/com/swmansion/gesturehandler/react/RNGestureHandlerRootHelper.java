@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler.react;
 
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -126,6 +127,12 @@ public class RNGestureHandlerRootHelper {
     } else {
       return false;
     }
+  }
+
+  public void dispatchDragEvent(DragEvent ev) {
+    mPassingTouch = true;
+    mOrchestrator.onDragEvent(ev);
+    mPassingTouch = false;
   }
 
   private void tryCancelAllHandlers() {

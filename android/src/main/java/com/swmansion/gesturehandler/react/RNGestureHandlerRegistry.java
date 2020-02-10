@@ -1,8 +1,11 @@
 package com.swmansion.gesturehandler.react;
 
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
+import com.swmansion.gesturehandler.DragGestureHandler;
+import com.swmansion.gesturehandler.DropGestureHandler;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerRegistry;
 
@@ -15,13 +18,26 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
   private final SparseArray<GestureHandler> mHandlers = new SparseArray<>();
   private final SparseArray<Integer> mAttachedTo = new SparseArray<>();
   private final SparseArray<ArrayList<GestureHandler>> mHandlersForView = new SparseArray<>();
+  private ArrayList<DragGestureHandler> mDragHandlers = new ArrayList<>();
+  private ArrayList<DropGestureHandler> mDropZoneHandlers = new ArrayList<>();
 
   public synchronized void registerHandler(GestureHandler handler) {
     mHandlers.put(handler.getTag(), handler);
+    if (handler instanceof DragGestureHandler) {
+      mDragHandlers.add((DragGestureHandler) handler);
+    } else if (handler instanceof DropGestureHandler) {
+      mDropZoneHandlers.add((DropGestureHandler) handler);
+    }
+    Log.d("DragDrop", "registerHandler: " + handler + "  " + mDropZoneHandlers.size());
   }
 
   public synchronized @Nullable GestureHandler getHandler(int handlerTag) {
     return mHandlers.get(handlerTag);
+  }
+
+  @Override
+  public synchronized ArrayList<DropGestureHandler> getDropHandlers() {
+    return mDropZoneHandlers;
   }
 
   public synchronized boolean attachHandlerToView(int handlerTag, int viewTag) {
@@ -67,6 +83,12 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
       // receive touch events. This means that before we remove it from the registry we need to
       // "cancel" it so that orchestrator does no longer keep a reference to it.
       handler.cancel();
+    }
+
+    if (handler instanceof DragGestureHandler) {
+      mDragHandlers.remove((DragGestureHandler) handler);
+    } else if (handler instanceof DropGestureHandler) {
+      mDropZoneHandlers.add((DropGestureHandler) handler);
     }
   }
 

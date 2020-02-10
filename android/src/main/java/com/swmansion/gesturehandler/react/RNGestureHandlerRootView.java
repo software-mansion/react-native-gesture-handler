@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler.react;
 
 import android.content.Context;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 
 import com.facebook.infer.annotation.Assertions;
@@ -29,6 +30,12 @@ public class RNGestureHandlerRootView extends ReactViewGroup {
     if (mRootHelper != null) {
       mRootHelper.tearDown();
     }
+  }
+
+  @Override
+  public boolean dispatchDragEvent(DragEvent event) {
+    Assertions.assertNotNull(mRootHelper).dispatchDragEvent(event);
+    return super.dispatchDragEvent(event);
   }
 
   @Override

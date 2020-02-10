@@ -5,11 +5,14 @@ import android.content.ClipDescription;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.os.Build;
+import android.graphics.PointF;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
@@ -46,15 +49,37 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
 
 
     protected static int getFlags() {
+        /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ | View.DRAG_FLAG_GLOBAL_URI_WRITE;
         }
+
+         */
         return 0;
     }
 
-    private static boolean isDragEvent(DragEvent event) {
-        Log.d("DragDrop", "isDragEvent: " + event.getClipDescription());
-        return event.getClipDescription() != null && event.getClipDescription().hasMimeType(DRAG_MIME_TYPE);
+    public static boolean shouldHandleEvent(DragEvent event) {
+        if (event.getClipDescription() != null) {
+            for (int i = 0; i < event.getClipDescription().getMimeTypeCount(); i++) {
+                if (event.getClipDescription().getMimeType(i).equals(DRAG_MIME_TYPE)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static int extractDragTarget(DragEvent event) {
+        if (event.getClipData() == null) {
+            return View.NO_ID;
+        } else {
+            return event
+                    .getClipData()
+                    .getItemAt(0)
+                    .getIntent()
+                    .getIntExtra(KEY_DRAG_TARGET, View.NO_ID);
+        }
     }
 
     private static int extractRawDragState(int dragEventAction) {
@@ -78,36 +103,56 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
         return extractRawDragState(dragEventAction) + STATE_NS;
     }
 
+    private DragEvent adaptEvent(DragEvent event) {
+        Parcel parcel = Parcel.obtain();
+        event.writeToParcel(parcel, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+        PointF localPoint = new PointF();
+        GestureHandlerOrchestrator.transformTouchPointToViewCoords(event.getX(), event.getY(),(ViewGroup) getView().getParent(), getView(), localPoint);
+        return obtain(event, event.getAction(), localPoint.x, localPoint.y);
+    }
+
+    static DragEvent obtain(DragEvent event, int action, float x, float y) {
+        Parcel parcel = Parcel.obtain();
+        event.writeToParcel(parcel, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+        parcel.setDataPosition(0);
+        parcel.writeInt(action);
+        parcel.writeFloat(x);
+        parcel.writeFloat(y);
+        parcel.setDataPosition(0);
+        return DragEvent.CREATOR.createFromParcel(parcel);
+    }
+
+
     private final ArrayList<Integer> mDTypes = new ArrayList<>();
     private T mData;
     private DataResolver<T> mDataResolver;
     private int mDragState = DragEvent.ACTION_DRAG_ENDED;
-    private int mDragTarget = -1;
-    private int mDropTarget = -1;
     private boolean mAttachedListener = false;
+    private View mTarget;
 
     public BaseDragGestureHandler() {
         super();
-        setShouldCancelWhenOutside(false);
     }
 
     public ArrayList<Integer> getType() {
         return mDTypes;
     }
 
-    public void setType(ArrayList<Integer> types) {
+    public BaseDragGestureHandler<T> setType(ArrayList<Integer> types) {
         mDTypes.clear();
         if (types != null) {
             mDTypes.addAll(types);
         }
+        return this;
     }
 
     public T getData() {
         return mData;
     }
 
-    public void setData(DataResolver<T> dataResolver) {
+    public BaseDragGestureHandler<T> setData(DataResolver<T> dataResolver) {
         mDataResolver = dataResolver;
+        return this;
     }
 
     public int getDragState() {
@@ -119,12 +164,20 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
     }
 
     public int getDropTarget() {
-        return mDropTarget;
+        return -1;
+    }
+
+    public View getTarget() {
+        return mTarget;
+    }
+
+    public void setTarget(View view) {
+        mTarget = view;
     }
 
     private ClipData createClipData() {
         Intent intent = new Intent(Intent.ACTION_RUN);
-        intent.putExtra(KEY_DRAG_TARGET, getView().getId());
+        intent.putExtra(KEY_DROP_TARGET, getView().getId());
         intent.putIntegerArrayListExtra(KEY_TYPE, mDTypes);
         intent.putExtra(KEY_SOURCE_APP, getView().getContext().getPackageName());
         if (mDataResolver != null) {
@@ -134,13 +187,13 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
     }
 
     private void handleExtraData(DragEvent event) {
-        if (event.getClipData() == null) {
+        if (event.getClipData() == null || getView() == null) {
             return;
         }
         Intent dataIntent = event.getClipData().getItemAt(0).getIntent();
         int tag = getView().getId();
         int action = event.getAction();
-        if (action == DragEvent.ACTION_DRAG_ENTERED && tag != dataIntent.getIntExtra(KEY_DRAG_TARGET, -1)) {
+        if (action == DragEvent.ACTION_DRAG_ENTERED && tag != dataIntent.getIntExtra(KEY_DRAG_TARGET, View.NO_ID)) {
             dataIntent.putExtra(KEY_DROP_TARGET, tag);
             mData = mDataResolver.fromString(dataIntent.getStringExtra(KEY_DATA));
         } else if (action == DragEvent.ACTION_DRAG_EXITED || action == DragEvent.ACTION_DRAG_ENDED) {
@@ -149,13 +202,17 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
     }
 
     protected boolean isSameType(DragEvent event) {
-        if (isDragEvent(event)) {
+        return true;
+        /*
+        Log.d("DragDrop", "isSameType: "+ shouldHandleEvent(event) + "  " + event);
+
+        if (shouldHandleEvent(event)) {
             ArrayList<Integer> types = event
                     .getClipData()
                     .getItemAt(0)
                     .getIntent()
                     .getIntegerArrayListExtra(KEY_TYPE);
-
+            Log.d("DragDrop", "isSameType: " + types + " " + mDTypes);
             for (int t: types) {
                 if (mDTypes.contains(t)) {
                     return true;
@@ -164,56 +221,49 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
         }
 
         return false;
+
+         */
     }
 
-    private class SyncedDragShadowBuilder extends View.DragShadowBuilder {
+    private static class SyncedDragShadowBuilder extends View.DragShadowBuilder {
+        private View mView;
+        SyncedDragShadowBuilder(View view) {
+            mView = view;
+        }
+
         @Override
         public void onDrawShadow(Canvas canvas) {
-            BaseDragGestureHandler.this.getView().draw(canvas);
+            mView.draw(canvas);
         }
     }
 
     final void startDragging() {
+        mOrchestrator.mIsDragging = true;
         ClipData data = createClipData();
         View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(getView());
+        //View.DragShadowBuilder shadowBuilder = new SyncedDragShadowBuilder(getView());
         int flags = getFlags();
-
+        getView().startDrag(data, shadowBuilder, null, flags);
+        /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             getView().startDragAndDrop(data, shadowBuilder, null, flags);
         } else {
             getView().startDrag(data, shadowBuilder, null, flags);
         }
+
+         */
     }
 
     @Override
     public boolean onDrag(@Nullable View v, DragEvent event) {
-        /*
+        Log.d("Drag", "onDrag: handling drag event for "+v);
         if (!isSameType(event)) {
             fail();
             return false;
         }
 
-
-         */
-
         mDragState = extractDragState(event.getAction());
         handleExtraData(event);
-
-        mDropTarget = v != null ? v.getId() : -1;
-        if (v != null) {
-            v.setBackgroundColor(Color.BLUE);
-            v.invalidate();
-        }
-
-        if (mDragState == STATE_START) {
-            activate();
-        } else if (mDragState == STATE_END || mDragState == STATE_DROP) {
-            moveToState(mDragState);
-            end();
-            minorReset();
-        } else if (getState() != mDragState) {
-            //moveToState(mDragState);
-        }
 
         return true;
     }
@@ -226,17 +276,19 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
         if (!mAttachedListener) {
             mAttachedListener = true;
             getView().setOnDragListener(this);
+            setTarget(getView());
+            begin();
         }
     }
 
-    private void minorReset() {
-        mDragTarget = -1;
-        mDropTarget = -1;
+    @Override
+    protected void onHandle(DragEvent event) {
+        onDrag(getView(), event);
     }
 
     @Override
     protected void onReset() {
-        minorReset();
         mAttachedListener = false;
     }
+
 }

@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 
 import com.facebook.react.ReactInstanceManager;
@@ -21,6 +22,14 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
 
   public RNGestureHandlerEnabledRootView(Context context, AttributeSet attrs) {
     super(context, attrs);
+  }
+
+  @Override
+  public boolean dispatchDragEvent(DragEvent event) {
+    if (mGestureRootHelper != null) {
+      mGestureRootHelper.dispatchDragEvent(event);
+    }
+    return super.dispatchDragEvent(event);
   }
 
   @Override
