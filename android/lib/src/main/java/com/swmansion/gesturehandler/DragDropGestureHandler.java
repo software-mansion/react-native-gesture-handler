@@ -4,21 +4,16 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.PointF;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
-public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHandler<T>> implements View.OnDragListener {
+public class DragDropGestureHandler<T> extends GestureHandler<DragDropGestureHandler<T>> implements View.OnDragListener {
 
     public interface DataResolver<T> {
         String toString();
@@ -103,26 +98,6 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
         return extractRawDragState(dragEventAction) + STATE_NS;
     }
 
-    private DragEvent adaptEvent(DragEvent event) {
-        Parcel parcel = Parcel.obtain();
-        event.writeToParcel(parcel, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-        PointF localPoint = new PointF();
-        GestureHandlerOrchestrator.transformTouchPointToViewCoords(event.getX(), event.getY(),(ViewGroup) getView().getParent(), getView(), localPoint);
-        return obtain(event, event.getAction(), localPoint.x, localPoint.y);
-    }
-
-    static DragEvent obtain(DragEvent event, int action, float x, float y) {
-        Parcel parcel = Parcel.obtain();
-        event.writeToParcel(parcel, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-        parcel.setDataPosition(0);
-        parcel.writeInt(action);
-        parcel.writeFloat(x);
-        parcel.writeFloat(y);
-        parcel.setDataPosition(0);
-        return DragEvent.CREATOR.createFromParcel(parcel);
-    }
-
-
     private final ArrayList<Integer> mDTypes = new ArrayList<>();
     private T mData;
     private DataResolver<T> mDataResolver;
@@ -130,7 +105,7 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
     private boolean mAttachedListener = false;
     private View mTarget;
 
-    public BaseDragGestureHandler() {
+    public DragDropGestureHandler() {
         super();
     }
 
@@ -138,7 +113,7 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
         return mDTypes;
     }
 
-    public BaseDragGestureHandler<T> setType(ArrayList<Integer> types) {
+    public DragDropGestureHandler<T> setType(ArrayList<Integer> types) {
         mDTypes.clear();
         if (types != null) {
             mDTypes.addAll(types);
@@ -150,7 +125,7 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
         return mData;
     }
 
-    public BaseDragGestureHandler<T> setData(DataResolver<T> dataResolver) {
+    public DragDropGestureHandler<T> setData(DataResolver<T> dataResolver) {
         mDataResolver = dataResolver;
         return this;
     }
@@ -173,6 +148,8 @@ public class BaseDragGestureHandler<T> extends GestureHandler<BaseDragGestureHan
 
     public void setTarget(View view) {
         mTarget = view;
+        //mTarget.setOnDragListener(this);
+        //mAttachedListener = true;
     }
 
     private ClipData createClipData() {

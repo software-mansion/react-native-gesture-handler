@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
-public class DragGestureHandler<T> extends BaseDragGestureHandler<T> {
+public class DragGestureHandler<T> extends DragDropGestureHandler<T> {
 
     ArrayList<DropGestureHandler<T>> mDropHandlers = new ArrayList<>();
 

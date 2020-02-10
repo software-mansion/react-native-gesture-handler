@@ -333,57 +333,15 @@ public class GestureHandler<T extends GestureHandler> {
     }
   }
 
-  private DragEvent adaptEvent(DragEvent event) {
-    Parcel parcel = Parcel.obtain();
-    event.writeToParcel(parcel, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-    PointF localPoint = new PointF();
-    GestureHandlerOrchestrator.transformTouchPointToViewCoords(event.getX(), event.getY(),(ViewGroup) getView().getParent(), getView(), localPoint);
-    parcel.setDataPosition(0);
-    parcel.writeInt(event.getAction());
-    parcel.writeFloat(localPoint.x);
-    parcel.writeFloat(localPoint.y);
-    parcel.setDataPosition(0);
-    return DragEvent.CREATOR.createFromParcel(parcel);
-    /*
-    parcel.writeInt(event.getResult() ? 1 : 0); // Result
-    Parcel clipData = Parcel.obtain();
-    event.getClipData().writeToParcel(clipData, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-    clipData.writeParcelable();
-    parcel.writeParcelable(event.getClipData()); // No Clipdata
-    parcel.writeInt(0); // No Clip Description
-    parcel.setDataPosition(0);
-    return DragEvent.CREATOR.createFromParcel(parcel);
-
-     */
-  }
-
-  PointF traverseDragEventPointer(DragEvent event, ViewParent root, View view) {
-    PointF localPoint = new PointF(event.getX(), event.getY());
-    ArrayList<ViewParent> tree = new ArrayList<>();
-    if (!(view == null || view == root)) {
-      @Nullable ViewParent parent = view.getParent();
-      tree.add(parent);
-      while (parent != null && parent != root) {
-        parent = parent.getParent();
-        tree.add(parent);
-      }
-      for (int i = tree.size() - 1; i >= 0; i--) {
-        GestureHandlerOrchestrator.transformTouchPointToViewCoords(
-                localPoint.x, localPoint.y,(ViewGroup) tree.get(i), (View) tree.get(i - 1), localPoint);
-      }
-    }
-
-    return localPoint;
-  }
-
   public final void handle(DragEvent origEvent) {
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED
-            || mState == STATE_END ) {
+            || mState == STATE_END || mTrackedPointersCount < 1) {
       return;
     }
 
-    PointF localPoint = new PointF();
-    GestureHandlerOrchestrator.transformTouchPointToViewCoords(origEvent.getX(), origEvent.getY(),(ViewGroup) getView().getParent(), getView(), localPoint);
+    PointF localPoint = DragGestureUtils.traverseDragEventPointer(origEvent, getView().getRootView(), getView());
+    //PointF localPoint = new PointF();
+    //GestureHandlerOrchestrator.transformTouchPointToViewCoords(origEvent.getX(), origEvent.getY(),(ViewGroup) getView().getParent(), getView(), localPoint);
 
 
     /*
