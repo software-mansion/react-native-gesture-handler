@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler;
 
 import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Parcel;
@@ -17,25 +18,45 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 public class DragGestureUtils {
-    static ClipData clipData() {
-        Intent intent = new Intent(Intent.ACTION_RUN);
-        ArrayList<Integer> types = new ArrayList<>();
-        types.add(0);
-        types.add(1);
-        intent.putIntegerArrayListExtra(DragDropGestureHandler.KEY_TYPE, types);
-        intent.putExtra(DragDropGestureHandler.KEY_SOURCE_APP, "hello");
-        return new ClipData(DragDropGestureHandler.DRAG_EVENT_NAME, DragDropGestureHandler.DRAG_EVENT_MIME_TYPES, new ClipData.Item(intent));
+
+    static int getFlags() {
+        /*
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ | View.DRAG_FLAG_GLOBAL_URI_WRITE;
+        }
+
+         */
+        return 0;
     }
 
-    static DragEvent obtain(DragEvent event, int action, float x, float y, boolean result) {
+    static DragEvent obtain(DragEvent event) {
+        int flags = Parcelable.PARCELABLE_WRITE_RETURN_VALUE;
         Parcel parcel = Parcel.obtain();
-        event.writeToParcel(parcel, Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
-        parcel.appendFrom(parcel, 0, parcel.dataSize());
+        event.writeToParcel(parcel, flags);
+        return DragEvent.CREATOR.createFromParcel(parcel);
+    }
+
+    static DragEvent obtain(int action, float x, float y, boolean result,
+                            @Nullable ClipData clipData, @Nullable ClipDescription clipDescription) {
+        int flags = Parcelable.PARCELABLE_WRITE_RETURN_VALUE;
+        Parcel parcel = Parcel.obtain();
         parcel.setDataPosition(0);
         parcel.writeInt(action);
         parcel.writeFloat(x);
         parcel.writeFloat(y);
         parcel.writeInt(result ? 1 : 0);
+        if (clipData == null) {
+            parcel.writeInt(0);
+        } else {
+            parcel.writeInt(1);
+            clipData.writeToParcel(parcel, flags);
+        }
+        if (clipDescription == null) {
+            parcel.writeInt(0);
+        } else {
+            parcel.writeInt(1);
+            clipDescription.writeToParcel(parcel, flags);
+        }
         parcel.setDataPosition(0);
         return DragEvent.CREATOR.createFromParcel(parcel);
     }

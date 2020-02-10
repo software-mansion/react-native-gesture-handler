@@ -35,6 +35,8 @@ import com.swmansion.gesturehandler.ViewConfigurationHelper;
 
 import java.util.ArrayList;
 
+import static com.swmansion.gesturehandler.GestureHandler.STATE_END;
+
 public class MainActivity extends Activity {
 
   private GHRootView wrapper;
@@ -96,6 +98,10 @@ public class MainActivity extends Activity {
     ArrayList<Integer> dragTypes = new ArrayList<>();
     dragTypes.add(0);
     dragTypes.add(1);
+
+      ArrayList<Integer> dragTypesB = new ArrayList<>();
+      dragTypesB.add(3);
+      dragTypesB.add(4);
 
       mOrchestrator = new GestureHandlerOrchestrator(
               wrapper, mRegistry, new ViewConfigurationHelper() {
@@ -171,7 +177,7 @@ public class MainActivity extends Activity {
 
                   @Override
                   public void onDragEvent(DragDropGestureHandler<Object> handler, DragEvent event) {
-                      Log.d("Drag listener", "Drag Change1 " + event.getAction() + " " + event.getX());
+                      Log.d("Drag listener", "Drag Change1 " + event.getAction() + " " + handler.getDropTarget());
                   }
 
                   @Override
@@ -190,7 +196,7 @@ public class MainActivity extends Activity {
 
                   @Override
                   public void onDragEvent(DragDropGestureHandler<Object> handler, DragEvent event) {
-                      Log.d("Drop listener", "Drop Change1 " + event.getAction() + " " + event.getX());
+                      Log.d("Drop listener", "Drop Change1 " + event.getAction() + " " + handler.getDragTarget());
                       int action = event.getAction();
                       final View view = handler.getView();
                       switch (action) {
@@ -202,12 +208,6 @@ public class MainActivity extends Activity {
                               break;
                           case DragEvent.ACTION_DROP:
                               view.setBackgroundColor(Color.BLUE);
-                              view.postDelayed(new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      view.setBackgroundColor(Color.GRAY);
-                                  }
-                              }, 1000);
                               break;
                           default:
                               //view.setBackgroundColor(Color.GRAY);
@@ -219,6 +219,15 @@ public class MainActivity extends Activity {
                   @Override
                   public void onStateChange(DragDropGestureHandler<Object> handler, int newState, int oldState) {
                       Log.d("Drop", "Drop Change " + GestureHandler.stateToString(newState));
+                      if (newState == STATE_END) {
+                          final View view = handler.getView();
+                          view.postDelayed(new Runnable() {
+                              @Override
+                              public void run() {
+                                  view.setBackgroundColor(Color.parseColor("#c5cae9"));
+                              }
+                          }, 1000);
+                      }
                   }
               });
 
@@ -356,7 +365,7 @@ public class MainActivity extends Activity {
 
                 @Override
               public void onStateChange(PanGestureHandler handler, int newState, int oldState) {
-                  if (newState == GestureHandler.STATE_END) {
+                  if (newState == STATE_END) {
                       largeBlock.setTranslationX(0);
                       largeBlock.setTranslationY(0);
                   }
