@@ -19,11 +19,8 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
     } else {
       listToAdd.add(handler);
     }
-    if (handler instanceof DropGestureHandler || handler instanceof DragGestureHandler) {
-      ((DragDropGestureHandler) handler).setTarget(view);
-      if (handler instanceof DropGestureHandler) {
-        mDropHandlers.add((DropGestureHandler) handler);
-      }
+    if (handler instanceof DropGestureHandler) {
+      mDropHandlers.add((DropGestureHandler) handler);
     }
     return handler;
   }

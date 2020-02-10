@@ -9,10 +9,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.swmansion.gesturehandler.DropGestureHandler;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
 import com.swmansion.gesturehandler.GestureHandlerRegistry;
 import com.swmansion.gesturehandler.GestureHandlerRegistryImpl;
+import com.swmansion.gesturehandler.OnTouchEventListener;
 
 public class GHRootView extends FrameLayout {
 
@@ -40,16 +42,17 @@ public class GHRootView extends FrameLayout {
     public void init(GestureHandlerOrchestrator orchestrator, GestureHandlerRegistryImpl registry) {
         mOrchestrator = orchestrator;
         registry.registerHandlerForView(this, new RootViewGestureHandler());
+        //registry.registerHandlerForView(this, new DropGestureHandler());
     }
 
     @Override
     public boolean dispatchDragEvent(DragEvent event) {
-        return/* mOrchestrator.onDragEvent(event) && */super.dispatchDragEvent(event);
+        return mOrchestrator.onDragEvent(event);//super.dispatchDragEvent(event);
     }
 
     @Override
     public boolean onDragEvent(DragEvent event) {
-        return /*mOrchestrator.onDragEvent(event) &&*/ super.onDragEvent(event);
+        return mOrchestrator.onDragEvent(event);//super.onDragEvent(event);
     }
 
     @Override

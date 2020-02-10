@@ -8,45 +8,57 @@ import androidx.annotation.Nullable;
 
 public class DropGestureHandler<T> extends DragDropGestureHandler<T> {
 
-    @Nullable DragGestureHandler<T> mDragHandler;
+    private @Nullable DragGestureHandler<T> mDragHandler;
+    private int mDragAction;
+    private boolean mPointerState = false;
+
+    public DropGestureHandler() {
+        super();
+        setShouldCancelWhenOutside(false);
+    }
 
     public void setDragHandler(@Nullable DragGestureHandler<T> dragHandler) {
         mDragHandler = dragHandler;
     }
 
     @Override
-    public boolean isWithinBounds() {
-        return super.isWithinBounds();
+    protected void onHandle(DragEvent event) {
+        int action = event.getAction();
+        boolean pointerIsInside = isWithinBounds();
+        boolean stateChange = pointerIsInside != mPointerState;
+
+        mDragAction = action;
+        if (action != DragEvent.ACTION_DRAG_STARTED && action != DragEvent.ACTION_DRAG_ENDED) {
+            if (stateChange && pointerIsInside) {
+                mDragAction = DragEvent.ACTION_DRAG_ENTERED;
+            } else if (stateChange) {
+                mDragAction = DragEvent.ACTION_DRAG_EXITED;
+            } else if (pointerIsInside && action != DragEvent.ACTION_DROP) {
+                mDragAction = DragEvent.ACTION_DRAG_LOCATION;
+            }
+        }
+
+        mPointerState = pointerIsInside;
+
+        DragEvent ev = DragGestureUtils.obtain(event, mDragAction, getX(), getY(), action == DragEvent.ACTION_DROP && pointerIsInside);
+        super.onHandle(ev);
+        Log.d("Drop", "onHandle: " + stateToString(getState()) + "  " + event);
     }
 
     @Override
     protected void onReset() {
         super.onReset();
         mDragHandler = null;
-    }
-
-    @Override
-    protected void onHandle(DragEvent event) {
-        super.onHandle(event);
-        Log.d("Drop", "onHandleDrop " + event);
-    }
-
-    @Override
-    public boolean onDrag(@Nullable View v, DragEvent event) {
-        super.onDrag(v, event);
-        int action = event.getAction();
-        Log.d("Drag", "onDrag: inner state " + action);
-        if (getState() == STATE_BEGAN) {
-            activate();
-        } else if (action == DragEvent.ACTION_DROP || action == DragEvent.ACTION_DRAG_ENDED) {
-            end();
-        }
-
-        return true;
+        mPointerState = false;
     }
 
     @Override
     public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
         return super.shouldRecognizeSimultaneously(handler) || (mDragHandler != null && handler == mDragHandler);
+    }
+
+    @Override
+    public String toString() {
+        return "DropGestureHandler:" + isWithinBounds() +  getView();
     }
 }

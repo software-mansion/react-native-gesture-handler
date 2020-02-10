@@ -335,24 +335,12 @@ public class GestureHandler<T extends GestureHandler> {
 
   public final void handle(DragEvent origEvent) {
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED
-            || mState == STATE_END || mTrackedPointersCount < 1) {
+            || mState == STATE_END/* || mTrackedPointersCount < 1*/) {
       return;
     }
 
-    PointF localPoint = DragGestureUtils.traverseDragEventPointer(origEvent, getView().getRootView(), getView());
-    //PointF localPoint = new PointF();
-    //GestureHandlerOrchestrator.transformTouchPointToViewCoords(origEvent.getX(), origEvent.getY(),(ViewGroup) getView().getParent(), getView(), localPoint);
-
-
-    /*
-    DragEvent event = adaptEvent(origEvent);
-    mX = event.getX();
-    mY = event.getY();
-    mNumberOfPointers = 1;
-
-     */
-    mX = localPoint.x;
-    mY = localPoint.y;
+    mX = origEvent.getX();
+    mY = origEvent.getY();
     mNumberOfPointers = 1;
 
     mWithinBounds = isWithinBounds(mView, mX, mY);

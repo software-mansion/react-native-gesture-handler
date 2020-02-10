@@ -3,7 +3,6 @@ package com.swmansion.gesturehandler;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -97,7 +96,7 @@ public class GestureHandlerOrchestrator {
    * Should be called from the view wrapper
    */
   public boolean onTouchEvent(MotionEvent event) {
-    //Log.d("DragDrop", "onTouchEvent: " + event);
+    Log.d("DragDrop", "onTouchEvent: " + mIsDragging + " " + event);
     mIsHandlingTouch = true;
     int action = event.getActionMasked();
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
@@ -117,74 +116,33 @@ public class GestureHandlerOrchestrator {
 
   public boolean onDragEvent(DragEvent event) {
     int action = event.getAction();
-    int motionAction = MotionEvent.ACTION_MOVE;
-    int dragTag = BaseDragGestureHandler.extractDragTarget(event);
-    boolean shouldHandle = BaseDragGestureHandler.shouldHandleEvent(event);
-    ArrayList<DragGestureHandler> dragGestureHandlers = new ArrayList<>();
-
-    View target = mWrapperView.findViewById(dragTag);
 
     //Log.d("DragDrop", String.format("onDragEvent %s %s %s %s", action, dragTag, shouldHandle, event));
-
+/*
+handled by dragger
     if (shouldHandle && action == DragEvent.ACTION_DRAG_STARTED) {
       mIsDragging = true;
-      motionAction = MotionEvent.ACTION_DOWN;
-      mStartTime = System.currentTimeMillis();
-    } else if (action == DragEvent.ACTION_DRAG_ENDED || action == DragEvent.ACTION_DROP) {
-      motionAction = MotionEvent.ACTION_UP;
     }
 
+
+ */
     extractGestureHandlers(event);
     mIsHandlingTouch = true;
     deliverEventToGestureHandlers(event);
-    //MotionEvent.obtain(mStartTime, System.currentTimeMillis(), motionAction, event.getX(), event.getY(), 0);
-    /*
-    for (GestureHandler handler: mHandlerRegistry.getHandlersForView(target)) {
-      if (handler instanceof DragGestureHandler) {
-        ((DragGestureHandler) handler).onDrag(target, event);
-      }
+    if (action == DragEvent.ACTION_DROP) {
+      deliverEventToGestureHandlers(DragGestureUtils.obtain(event, DragEvent.ACTION_DRAG_ENDED, event.getX(), event.getY(), false));
     }
-    /*
-    for (DropGestureHandler handler: dropZones) {
-      handler.onDrag(target, event);
-    }
-
-     */
     mIsHandlingTouch = false;
 
-    if (action == DragEvent.ACTION_DRAG_ENDED || action == DragEvent.ACTION_DROP) {
+    if (action == DragEvent.ACTION_DRAG_ENDED) {
       mIsDragging = false;
       scheduleFinishedHandlersCleanup();
-      /*
-      for (GestureHandler handler: mHandlerRegistry.getHandlersForView(target)) {
-        if (handler instanceof DragGestureHandler) {
-          if (handler.getState() == GestureHandler.STATE_BEGAN) {
-            handler.cancel();
-          } else if (handler.getState() == GestureHandler.STATE_ACTIVE) {
-            handler.end();
-          }
-          handler.reset();
-        }
-      }
-      for (GestureHandler handler: dropZones) {
-        if (handler.getState() == GestureHandler.STATE_BEGAN) {
-          handler.cancel();
-        } else if (handler.getState() == GestureHandler.STATE_ACTIVE) {
-          handler.end();
-        }
-        handler.reset();
-      }
-
-      cleanupAwaitingHandlers();
-      cleanupFinishedHandlers();
-
-       */
     }
-
 
     if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
       cleanupFinishedHandlers();
     }
+
     return mIsDragging;
   }
 
@@ -200,7 +158,7 @@ public class GestureHandlerOrchestrator {
     boolean shouldCleanEmptyCells = false;
     for (int i = mGestureHandlersCount - 1; i >= 0; i--) {
       GestureHandler handler = mGestureHandlers[i];
-      if (isFinished(handler.getState()) && !handler.mIsAwaiting /*&& (handler instanceof BaseDragGestureHandler && !mIsDragging)*/) {
+      if (isFinished(handler.getState()) && !handler.mIsAwaiting) {
         mGestureHandlers[i] = null;
         shouldCleanEmptyCells = true;
         handler.reset();
@@ -354,43 +312,14 @@ public class GestureHandlerOrchestrator {
     // should be tested)
     Arrays.sort(mPreparedHandlers, 0, handlersCount, sHandlersComparator);
     for (int i = 0; i < handlersCount; i++) {
+      //Log.d("DragDrop", "deliverEventToGestureHandlers: " + mPreparedHandlers[i]);
       deliverEventToGestureHandler(mPreparedHandlers[i], event);
     }
   }
 
-  private void deliverEventToGestureHandler(final GestureHandler handler, DragEvent event) {
-    if (!isViewAttachedUnderWrapper(handler.getView()) && !(handler instanceof DropGestureHandler)) {
-      handler.cancel();
-      return;
-    }
-    if (!handler.wantEvents()) {
-      return;
-    }
-    int action = event.getAction();
-    float[] coords = sTempCoords;
-    extractCoordsForView(handler.getView(), event, coords);
-
-    handler.handle(event);
-    if (handler.mIsActive) {
-      handler.dispatchDragEvent(event);
-      /*
-      if (handler instanceof DragGestureHandler) {
-        for (int i = 0; i < mGestureHandlersCount; i++) {
-          if (mGestureHandlers[i] instanceof DropGestureHandler) {
-            mGestureHandlers[i].handle(event);
-          }
-        }
-      }
-
-       */
-    }
-  }
-
-  //private static ArrayList<Class<GestureHandler>> cancelExceptionList = new
-
   private void cancelAllExceptDragGestureHandlers() {
     ArrayList<Class<? extends GestureHandler>> cancelExceptionList = new ArrayList<>(1);
-    cancelExceptionList.add(BaseDragGestureHandler.class);
+    cancelExceptionList.add(DragDropGestureHandler.class);
     cancelAllExcept(cancelExceptionList);
   }
 
@@ -453,6 +382,44 @@ public class GestureHandlerOrchestrator {
       handler.stopTrackingPointer(pointerId);
     }
   }
+
+  private void deliverEventToGestureHandler(final GestureHandler handler, DragEvent event) {
+    if (!isViewAttachedUnderWrapper(handler.getView()) || !(handler instanceof DragDropGestureHandler)) {
+      handler.cancel();
+      return;
+    }
+    if (!handler.wantEvents()) {
+      return;
+    }
+    int action = event.getAction();
+    float[] coords = sTempCoords;
+    extractCoordsForView(handler.getView(), event, coords);
+    DragEvent ev = DragGestureUtils.obtain(event, event.getAction(), coords[0], coords[1], false);
+
+    handler.handle(ev);
+    if (handler.mIsActive) {
+      handler.dispatchDragEvent(ev);
+
+      /*
+      if (handler instanceof DragGestureHandler) {
+        for (int i = 0; i < mGestureHandlersCount; i++) {
+          if (mGestureHandlers[i] instanceof DropGestureHandler) {
+            mGestureHandlers[i].handle(event);
+          }
+        }
+      }
+
+       */
+    }
+
+
+    // if event was of type UP or POINTER_UP we request handler to stop tracking now that
+    // the event has been dispatched
+    if (action == DragEvent.ACTION_DRAG_ENDED) {
+      handler.stopTrackingPointer(0);
+    }
+  }
+
 
   /**
    * isViewAttachedUnderWrapper checks whether all of parents for view related to handler
@@ -522,7 +489,6 @@ public class GestureHandlerOrchestrator {
     if (mGestureHandlersCount >= mGestureHandlers.length) {
       throw new IllegalStateException("Too many recognizers");
     }
-    //Log.d("Drag", "recordHandlerIfNotPresent: " + handler);
     mGestureHandlers[mGestureHandlersCount++] = handler;
     handler.mIsActive = false;
     handler.mIsAwaiting = false;
@@ -536,7 +502,6 @@ public class GestureHandlerOrchestrator {
     if (handlers != null) {
       for (int i = 0, size = handlers.size(); i < size; i++) {
         GestureHandler handler = handlers.get(i);
-        //Log.d("Drag", "recordViewHandlersForPointer: " + handler);
         if (handler.isEnabled() && handler.isWithinBounds(view, coords[0], coords[1])) {
           recordHandlerIfNotPresent(handler, view);
           handler.startTrackingPointer(pointerId);
@@ -555,6 +520,7 @@ public class GestureHandlerOrchestrator {
 
     if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
       ArrayList<DropGestureHandler> dropZones = new ArrayList<>();
+      /*
       for (DropGestureHandler dropHandler: mHandlerRegistry.getDropHandlers()) {
         if (dropHandler.isSameType(event)) {
           //dropHandler.prepare(mWrapperView, this);
@@ -569,6 +535,8 @@ public class GestureHandlerOrchestrator {
           ((DragGestureHandler) handler).setDropHandlers(dropZones);
         }
       }
+
+       */
     }
   }
 
@@ -621,7 +589,6 @@ public class GestureHandlerOrchestrator {
 
   private boolean traverseWithPointerEvents(View view, float coords[], int pointerId) {
     PointerEventsConfig pointerEvents = mViewConfigHelper.getPointerEventsConfigForView(view);
-    //Log.d("Drag", "traverseWithPointerEvents: " + pointerEvents.name());
     if (pointerEvents == PointerEventsConfig.NONE) {
       // This view and its children can't be the target
       return false;
