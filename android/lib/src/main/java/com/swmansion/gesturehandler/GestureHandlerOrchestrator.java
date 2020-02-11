@@ -396,7 +396,7 @@ public class GestureHandlerOrchestrator {
   }
 
   private void deliverEventToGestureHandler(final GestureHandler handler, DragEvent event) {
-    if (!isViewAttachedUnderWrapper(handler.getView()) || !(handler instanceof DragDropGestureHandler)) {
+    if (!isViewAttachedUnderWrapper(handler.getView())) {
       handler.cancel();
       return;
     }
