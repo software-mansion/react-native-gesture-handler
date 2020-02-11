@@ -25,14 +25,6 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
   }
 
   @Override
-  public boolean dispatchDragEvent(DragEvent event) {
-    if (mGestureRootHelper != null) {
-      mGestureRootHelper.dispatchDragEvent(event);
-    }
-    return super.dispatchDragEvent(event);
-  }
-
-  @Override
   public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
     if (mGestureRootHelper != null) {
       mGestureRootHelper.requestDisallowInterceptTouchEvent(disallowIntercept);
@@ -46,6 +38,14 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
       return true;
     }
     return super.dispatchTouchEvent(ev);
+  }
+
+  @Override
+  public boolean dispatchDragEvent(DragEvent event) {
+    if (mGestureRootHelper != null && mGestureRootHelper.dispatchDragEvent(event)) {
+      return true;
+    }
+    return super.dispatchDragEvent(event);
   }
 
   /**
