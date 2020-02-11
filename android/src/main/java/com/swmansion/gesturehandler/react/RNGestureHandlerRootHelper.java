@@ -11,6 +11,7 @@ import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.swmansion.gesturehandler.DragGestureUtils;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
 
@@ -82,6 +83,8 @@ public class RNGestureHandlerRootHelper {
   }
 
   private class RootViewGestureHandler extends GestureHandler {
+    private DragGestureUtils.DerivedMotionEvent mDerivedMotionEventHelper;
+
     @Override
     protected void onHandle(MotionEvent event) {
       int currentState = getState();
@@ -92,6 +95,25 @@ public class RNGestureHandlerRootHelper {
       if (event.getActionMasked() == MotionEvent.ACTION_UP) {
         end();
       }
+    }
+
+    @Override
+    protected void onHandle(DragEvent event) {
+      Log.d("Drag", "onHandle: root helper " + stateToString(getState() )+ " " + event.getAction());
+      int currentState = getState();
+      if (currentState == STATE_UNDETERMINED) {
+        begin();
+        mShouldIntercept = false;
+      }
+      if (event.getAction() == DragEvent.ACTION_DRAG_ENDED || event.getAction() == DragEvent.ACTION_DROP) {
+        end();
+      }
+      if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+        mDerivedMotionEventHelper = new DragGestureUtils.DerivedMotionEvent();
+      }
+//      MotionEvent ev = mDerivedMotionEventHelper.obtain(event);
+//      mReactRootView.dispatchTouchEvent(ev);
+//      ev.recycle();
     }
 
     @Override
@@ -129,10 +151,11 @@ public class RNGestureHandlerRootHelper {
     }
   }
 
-  public void dispatchDragEvent(DragEvent ev) {
+  public boolean dispatchDragEvent(DragEvent ev) {
     mPassingTouch = true;
-    mOrchestrator.onDragEvent(ev);
+    boolean retVal = mOrchestrator.onDragEvent(ev);
     mPassingTouch = false;
+    return retVal;
   }
 
   private void tryCancelAllHandlers() {
