@@ -1,4 +1,4 @@
-import React, { Component, useRef } from 'react';
+import React, { Component, useRef, useState, useCallback } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
 import {
@@ -90,6 +90,19 @@ export class DraggableBox extends Component {
 export default function DragExample(props) {
   const scrollRef = useRef();
   const dragRef = useRef();
+  const [dropState, setDropState] = useState(0);
+  const [isInside, move] = useState(false);
+  const cb = useCallback(e => {
+    const d = e.nativeEvent.dragState;
+    setDropState(d);
+    if (d === 5) {
+      move(true)
+    } else if (d === 6) {
+      move(false)
+    }
+  });
+
+  console.log(isInside)
   return (
     <ScrollView
       style={styles.scrollView}
@@ -103,8 +116,9 @@ export default function DragExample(props) {
         //simultaneousHandlers={scrollRef}
         type={[0]}
         data={{ a: 'b' }}
-        onGestureEvent={e => console.log(e.nativeEvent)}
-        onHandlerStateChange={e => console.log('drag', e.nativeEvent)}
+        //onGestureEvent={e => console.log('dragG', e.nativeEvent.dragState)}
+        //onHandlerStateChange={e => console.log('drag', e.nativeEvent.dragState)}
+        onHandlerStateChange={cb}
       //enabled={false}
       >
         <Animated.View
@@ -117,13 +131,14 @@ export default function DragExample(props) {
       <LoremIpsum words={40} />
       <DropGestureHandler
         type={0}
-        onGestureEvent={e => console.log('dropG', e.nativeEvent)}
-        onHandlerStateChange={e => console.log('drop', e.nativeEvent)}
+        onGestureEvent={cb}
+        onHandlerStateChange={cb}
       >
         <Animated.View
           style={[
             styles.box,
             props.boxStyle,
+            isInside && { backgroundColor: dropState === 3 ? 'blue' : 'red' },
           ]}
         />
       </DropGestureHandler>
