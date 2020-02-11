@@ -1,20 +1,14 @@
 package com.swmansion.gesturehandler.example;
 
 import android.content.Context;
-import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.FrameLayout;
 
-import com.swmansion.gesturehandler.DropGestureHandler;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
-import com.swmansion.gesturehandler.GestureHandlerRegistry;
 import com.swmansion.gesturehandler.GestureHandlerRegistryImpl;
-import com.swmansion.gesturehandler.OnTouchEventListener;
 
 public class GHRootView extends FrameLayout {
 
