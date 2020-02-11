@@ -17,6 +17,7 @@ declare module 'react-native-gesture-handler' {
     Insets,
     ViewStyle,
     StyleProp,
+    ViewProps,
   } from 'react-native';
 
   /* GESTURE HANDLER STATE */
@@ -126,6 +127,12 @@ declare module 'react-native-gesture-handler' {
     y: number;
     absoluteX: number;
     absoluteY: number;
+  }
+
+  export interface LongPressGestureHandlerGestureEvent
+    extends GestureHandlerGestureEvent {
+    nativeEvent: GestureHandlerGestureEventNativeEvent &
+      LongPressGestureHandlerEventExtra;
   }
 
   interface PanGestureHandlerEventExtra {
@@ -277,7 +284,7 @@ declare module 'react-native-gesture-handler' {
     extends GestureHandlerProperties {
     minDurationMs?: number;
     maxDist?: number;
-    onGestureEvent?: (event: GestureHandlerGestureEvent) => void;
+    onGestureEvent?: (event: LongPressGestureHandlerGestureEvent) => void;
     onHandlerStateChange?: (event: LongPressGestureHandlerStateChangeEvent) => void;
   }
 
@@ -446,6 +453,8 @@ declare module 'react-native-gesture-handler' {
   export class FlatList<ItemT> extends React.Component<
     NativeViewGestureHandlerProperties & FlatListProperties<ItemT>
     > { }
+
+  export const GestureHandlerRootView: ReactComponentType<ViewProps>;
 
   export function gestureHandlerRootHOC<P = {}>(
     Component: React.ComponentType<P>,
