@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
 
-public abstract class DragDropGestureHandler<T> extends GestureHandler<DragDropGestureHandler<T>> implements View.OnDragListener {
+public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler> extends GestureHandler<C> implements View.OnDragListener {
 
     final ArrayList<Integer> mDTypes = new ArrayList<>();
     private T mData;
@@ -26,21 +26,21 @@ public abstract class DragDropGestureHandler<T> extends GestureHandler<DragDropG
         return mDTypes;
     }
 
-    public DragDropGestureHandler<T> setType(ArrayList<Integer> types) {
+    public C setType(ArrayList<Integer> types) {
         mDTypes.clear();
         if (types != null) {
             mDTypes.addAll(types);
         }
-        return this;
+        return (C) this;
     }
 
     public T getData() {
         return mData;
     }
 
-    public DragDropGestureHandler<T> setData(DragGestureUtils.DataResolver<T> dataResolver) {
+    public C setData(DragGestureUtils.DataResolver<T> dataResolver) {
         mDataResolver = dataResolver;
-        return this;
+        return (C) this;
     }
 
     public abstract int getDragTarget();

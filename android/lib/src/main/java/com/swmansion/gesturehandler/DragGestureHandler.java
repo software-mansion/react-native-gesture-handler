@@ -19,7 +19,7 @@ import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DRAG_TARGET;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPE;
 
-public class DragGestureHandler<T> extends DragDropGestureHandler<T> {
+public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGestureHandler<T>> {
 
     private ArrayList<DropGestureHandler<T>> mDropHandlers = new ArrayList<>();
     private @Nullable DropGestureHandler<T> mDropHandler;

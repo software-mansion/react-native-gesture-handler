@@ -1,12 +1,11 @@
 package com.swmansion.gesturehandler;
 
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
-public class DropGestureHandler<T> extends DragDropGestureHandler<T> {
+public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGestureHandler<T>> {
 
     private @Nullable DragGestureHandler<T> mDragHandler;
     private int mDragAction;
