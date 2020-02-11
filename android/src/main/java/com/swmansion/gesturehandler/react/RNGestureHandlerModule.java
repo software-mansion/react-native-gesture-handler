@@ -832,6 +832,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       return;
     }
     if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+      if (handler instanceof DropGestureHandler && !((DropGestureHandler) handler).isActiveDropZone()) {
+        return;
+      }
       HandlerFactory handlerFactory = findFactoryForHandler(handler);
       EventDispatcher eventDispatcher = getReactApplicationContext()
               .getNativeModule(UIManagerModule.class)
