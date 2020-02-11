@@ -1,5 +1,5 @@
 import React, { Component, useRef, useState, useCallback } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View, Text } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -94,6 +94,7 @@ export default function DragExample(props) {
   const [isInside, move] = useState(false);
   const cb = useCallback(e => {
     const d = e.nativeEvent.dragState;
+    console.log(e.nativeEvent)
     setDropState(d);
     if (d === 5) {
       move(true)
@@ -110,7 +111,6 @@ export default function DragExample(props) {
       simultaneousHandlers={dragRef}
     >
       <LoremIpsum words={40} />
-      <DraggableBox />
       <DragGestureHandler
         ref={dragRef}
         //simultaneousHandlers={scrollRef}
@@ -118,7 +118,7 @@ export default function DragExample(props) {
         data={{ a: 'b' }}
         //onGestureEvent={e => console.log('dragG', e.nativeEvent.dragState)}
         //onHandlerStateChange={e => console.log('drag', e.nativeEvent.dragState)}
-        onHandlerStateChange={cb}
+        onHandlerStateChange={e => e.nativeEvent.state === State.BEGAN && move(false)}
       //enabled={false}
       >
         <Animated.View
@@ -126,7 +126,9 @@ export default function DragExample(props) {
             styles.box,
             props.boxStyle
           ]}
-        />
+        >
+          <Text>Drag Me</Text>
+        </Animated.View>
       </DragGestureHandler>
       <LoremIpsum words={40} />
       <DropGestureHandler
@@ -140,7 +142,9 @@ export default function DragExample(props) {
             props.boxStyle,
             isInside && { backgroundColor: dropState === 3 ? 'blue' : 'red' },
           ]}
-        />
+        >
+          <Text>{isInside && dropState === 3 ? `THANKS` : `Drop Here or don't`}</Text>
+        </Animated.View>
       </DropGestureHandler>
       <LoremIpsum />
     </ScrollView>
@@ -158,5 +162,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'plum',
     margin: 10,
     zIndex: 200,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
 });
