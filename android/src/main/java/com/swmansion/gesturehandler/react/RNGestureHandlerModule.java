@@ -2,21 +2,19 @@ package com.swmansion.gesturehandler.react;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.facebook.react.ReactRootView;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
@@ -24,8 +22,9 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.swmansion.gesturehandler.BaseDragGestureHandler;
+import com.swmansion.gesturehandler.DragDropGestureHandler;
 import com.swmansion.gesturehandler.DragGestureHandler;
+import com.swmansion.gesturehandler.DragGestureUtils;
 import com.swmansion.gesturehandler.DropGestureHandler;
 import com.swmansion.gesturehandler.FlingGestureHandler;
 import com.swmansion.gesturehandler.GestureHandler;
@@ -37,14 +36,10 @@ import com.swmansion.gesturehandler.PinchGestureHandler;
 import com.swmansion.gesturehandler.RotationGestureHandler;
 import com.swmansion.gesturehandler.TapGestureHandler;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -440,13 +435,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private static abstract class BaseDragGestureHandlerFactory<T extends BaseDragGestureHandler<ReadableMap>> extends HandlerFactory<T> {
+  private static abstract class DragDropGestureHandlerFactory<T extends DragDropGestureHandler> extends HandlerFactory<T> {
 
     private static class ReactDragGestureHandler extends DragGestureHandler<ReadableMap> {
 
     }
 
-    private static class DragGestureHandlerFactory extends HandlerFactory<ReactDragGestureHandler> {
+    private static class DragGestureHandlerFactory extends DragDropGestureHandlerFactory<ReactDragGestureHandler> {
+
       @Override
       public Class<ReactDragGestureHandler> getType() {
         return ReactDragGestureHandler.class;
@@ -467,7 +463,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     }
 
-    private static class MapResolver implements BaseDragGestureHandler.DataResolver<ReadableMap> {
+    private static class MapResolver implements DragGestureUtils.DataResolver<ReadableMap> {
 
       private ReadableMap mSource;
 
@@ -505,7 +501,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
     }
 
-    private static class DropGestureHandlerFactory extends HandlerFactory<ReactDropGestureHandler> {
+    private static class DropGestureHandlerFactory extends DragDropGestureHandlerFactory<ReactDropGestureHandler> {
       @Override
       public Class<ReactDropGestureHandler> getType() {
         return ReactDropGestureHandler.class;
@@ -556,9 +552,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void extractEventData(T handler, WritableMap eventData) {
       super.extractEventData(handler, eventData);
-      //eventData.putInt("dragState", handler.getDragState());
+      eventData.putInt("dragState", handler.getDragAction());
       eventData.putInt("dragTarget", handler.getDragTarget());
       eventData.putInt("dropTarget", handler.getDropTarget());
+      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.getX()));
+      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getY()));
     }
 
   }
@@ -567,6 +565,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void onTouchEvent(GestureHandler handler, MotionEvent event) {
       RNGestureHandlerModule.this.onTouchEvent(handler, event);
+    }
+
+    @Override
+    public void onDragEvent(GestureHandler handler, DragEvent event) {
+      RNGestureHandlerModule.this.onDragEvent(handler, event);
     }
 
     @Override
@@ -583,8 +586,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           new PinchGestureHandlerFactory(),
           new RotationGestureHandlerFactory(),
           new FlingGestureHandlerFactory(),
-          new BaseDragGestureHandlerFactory.DragGestureHandlerFactory(),
-          new BaseDragGestureHandlerFactory.DropGestureHandlerFactory(),
+          new DragDropGestureHandlerFactory.DragGestureHandlerFactory(),
+          new DragDropGestureHandlerFactory.DropGestureHandlerFactory(),
   };
   private final RNGestureHandlerRegistry mRegistry = new RNGestureHandlerRegistry();
 
@@ -680,6 +683,13 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             "LEFT", GestureHandler.DIRECTION_LEFT,
             "UP", GestureHandler.DIRECTION_UP,
             "DOWN", GestureHandler.DIRECTION_DOWN
+    ), "DragState", MapBuilder.of(
+            "BEGAN", DragEvent.ACTION_DRAG_STARTED,
+            "ACTIVE", DragEvent.ACTION_DRAG_LOCATION,
+            "DROP", DragEvent.ACTION_DROP,
+            "END", DragEvent.ACTION_DRAG_ENDED,
+            "ENTERED", DragEvent.ACTION_DRAG_ENTERED,
+            "EXITED", DragEvent.ACTION_DRAG_EXITED
     ));
   }
 
@@ -799,6 +809,21 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   private void onTouchEvent(GestureHandler handler, MotionEvent motionEvent) {
+    if (handler.getTag() < 0) {
+      // root containers use negative tags, we don't need to dispatch events for them to the JS
+      return;
+    }
+    if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+      HandlerFactory handlerFactory = findFactoryForHandler(handler);
+      EventDispatcher eventDispatcher = getReactApplicationContext()
+              .getNativeModule(UIManagerModule.class)
+              .getEventDispatcher();
+      RNGestureHandlerEvent event = RNGestureHandlerEvent.obtain(handler, handlerFactory);
+      eventDispatcher.dispatchEvent(event);
+    }
+  }
+
+  private void onDragEvent(GestureHandler handler, DragEvent dragEvent) {
     if (handler.getTag() < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return;
