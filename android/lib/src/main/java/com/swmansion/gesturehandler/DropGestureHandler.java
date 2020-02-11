@@ -32,24 +32,6 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T> {
         return mIsActiveDropHandler;
     }
 
-/*
-    private void handleExtraData(DragEvent source, DragEvent dest) {
-        if (source.getClipData() == null || getView() == null) {
-            return;
-        }
-        Intent dataIntent = source.getClipData().getItemAt(0).getIntent();
-        int tag = getView().getId();
-        int action = source.getAction();
-        if (action == DragEvent.ACTION_DRAG_ENTERED && tag != dataIntent.getIntExtra(KEY_DRAG_TARGET, View.NO_ID)) {
-            dataIntent.putExtra(KEY_DROP_TARGET, tag);
-            mData = mDataResolver.fromString(dataIntent.getStringExtra(KEY_DATA));
-        } else if (action == DragEvent.ACTION_DRAG_EXITED || action == DragEvent.ACTION_DRAG_ENDED) {
-            dataIntent.removeExtra(KEY_DROP_TARGET);
-        }
-        dest.getClipData().p
-    }
-
- */
     @Override
     protected void onHandle(DragEvent event) {
         int action = event.getAction();

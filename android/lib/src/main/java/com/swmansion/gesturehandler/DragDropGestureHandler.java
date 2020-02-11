@@ -8,38 +8,13 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
+
 public abstract class DragDropGestureHandler<T> extends GestureHandler<DragDropGestureHandler<T>> implements View.OnDragListener {
 
-    public interface DataResolver<T> {
-        String toString();
-        T fromString(String source);
-        T data();
-    }
-
-    public static final String DRAG_EVENT_NAME = "GESTURE_HANDLER_DRAG_EVENT";
-    public static final String DRAG_MIME_TYPE = "GESTURE_HANDLER_CLIP_DATA";
-
-    public static final String KEY_DATA = "data";
-    public static final String KEY_SOURCE_APP = "sourceApp";
-    public static final String KEY_DRAG_TARGET = "dragTarget";
-    public static final String KEY_DROP_TARGET = "dropTarget";
-    public static final String KEY_TYPE = "type";
-
-    public static int extractDragTarget(DragEvent event) {
-        if (event.getClipData() == null) {
-            return View.NO_ID;
-        } else {
-            return event
-                    .getClipData()
-                    .getItemAt(0)
-                    .getIntent()
-                    .getIntExtra(KEY_DRAG_TARGET, View.NO_ID);
-        }
-    }
-
     final ArrayList<Integer> mDTypes = new ArrayList<>();
-    T mData;
-    DataResolver<T> mDataResolver;
+    private T mData;
+    DragGestureUtils.DataResolver<T> mDataResolver;
     private boolean mAttachedListener = false;
 
     public DragDropGestureHandler() {
@@ -63,7 +38,7 @@ public abstract class DragDropGestureHandler<T> extends GestureHandler<DragDropG
         return mData;
     }
 
-    public DragDropGestureHandler<T> setData(DataResolver<T> dataResolver) {
+    public DragDropGestureHandler<T> setData(DragGestureUtils.DataResolver<T> dataResolver) {
         mDataResolver = dataResolver;
         return this;
     }

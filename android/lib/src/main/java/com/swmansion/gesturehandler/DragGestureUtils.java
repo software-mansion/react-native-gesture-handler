@@ -19,6 +19,15 @@ import java.util.ArrayList;
 
 public class DragGestureUtils {
 
+    public static final String DRAG_EVENT_NAME = "GESTURE_HANDLER_DRAG_EVENT";
+    public static final String DRAG_MIME_TYPE = "GESTURE_HANDLER_CLIP_DATA";
+
+    public static final String KEY_DATA = "data";
+    public static final String KEY_SOURCE_APP = "sourceApp";
+    public static final String KEY_DRAG_TARGET = "dragTarget";
+    public static final String KEY_DROP_TARGET = "dropTarget";
+    public static final String KEY_TYPE = "type";
+
     static int getFlags() {
         /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -98,6 +107,11 @@ public class DragGestureUtils {
         }
     }
 
+    public interface DataResolver<T> {
+        String toString();
+        T fromString(String source);
+        T data();
+    }
 
 
 }
