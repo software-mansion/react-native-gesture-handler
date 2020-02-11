@@ -10,9 +10,10 @@ This component allows for implementing swipeable rows or similar interaction. It
 
 ### Usage:
 
-Similarly to the `DrawerLayout`, `Swipeable` component isn't exported by default from the `react-native-gesture-handler` package. To use it, import it in the following way:
+To use it, import it in the following way:
+
 ```js
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { Swipeable } from 'react-native-gesture-handler';
 ```
 
 ## Properties
