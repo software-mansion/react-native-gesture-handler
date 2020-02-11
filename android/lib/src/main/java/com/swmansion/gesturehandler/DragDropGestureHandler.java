@@ -143,7 +143,7 @@ public abstract class DragDropGestureHandler<T> extends GestureHandler<DragDropG
         int action = event.getAction();
         if (action == DragEvent.ACTION_DRAG_STARTED || getState() == STATE_BEGAN) {
             activate();
-        } else if (action == DragEvent.ACTION_DRAG_ENDED) {
+        } else if (action == DragEvent.ACTION_DRAG_ENDED || action == DragEvent.ACTION_DROP) {
             end();
         }
 
