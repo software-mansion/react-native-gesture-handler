@@ -71,8 +71,8 @@ public class GestureHandlerOrchestrator {
 
   private float mMinAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL;
 
-  protected boolean mIsDragging = false;
-  private long mStartTime;
+  boolean mIsDragging = false;
+  private DragGestureUtils.DerivedMotionEvent derivedMotionEventHelper;
 
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
@@ -101,8 +101,6 @@ public class GestureHandlerOrchestrator {
     int action = event.getActionMasked();
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
       extractGestureHandlers(event);
-    } else if (action == MotionEvent.ACTION_CANCEL && mIsDragging) {
-      event.setAction(MotionEvent.ACTION_MOVE);
     } else if (action == MotionEvent.ACTION_CANCEL) {
       cancelAll();
     }
@@ -119,6 +117,12 @@ public class GestureHandlerOrchestrator {
     extractGestureHandlers(event);
     mIsHandlingTouch = true;
     deliverEventToGestureHandlers(event);
+    if (action == DragEvent.ACTION_DRAG_STARTED) {
+      derivedMotionEventHelper = new DragGestureUtils.DerivedMotionEvent();
+    }
+    MotionEvent motionEvent = derivedMotionEventHelper.obtain(event);
+    onTouchEvent(motionEvent);
+    motionEvent.recycle();
     if (action == DragEvent.ACTION_DROP) {
       deliverEventToGestureHandlers(DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, event.getX(), event.getY(),
               false,  event.getClipData(), event.getClipDescription()));
@@ -295,6 +299,7 @@ public class GestureHandlerOrchestrator {
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
     int handlersCount = mGestureHandlersCount;
+    DropGestureHandler handler;
     System.arraycopy(mGestureHandlers, 0, mPreparedHandlers, 0, handlersCount);
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
@@ -310,12 +315,12 @@ public class GestureHandlerOrchestrator {
         break;
       }
     }
-
-    DropGestureHandler handler;
     for (int i = 0; i < handlersCount; i++) {
       if (mPreparedHandlers[i] instanceof DropGestureHandler) {
         handler = (DropGestureHandler) mPreparedHandlers[i];
-        activeDraggable.addDropHandler(handler);
+        if (activeDraggable != null) {
+          activeDraggable.addDropHandler(handler);
+        }
         handler.setDragHandler(activeDraggable);
       }
     }
@@ -384,7 +389,7 @@ public class GestureHandlerOrchestrator {
     event.setLocation(oldX, oldY);
     // if event was of type UP or POINTER_UP we request handler to stop tracking now that
     // the event has been dispatched
-    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
+    if ((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) && !(mIsDragging && handler instanceof DragDropGestureHandler)) {
       int pointerId = event.getPointerId(event.getActionIndex());
       handler.stopTrackingPointer(pointerId);
     }
