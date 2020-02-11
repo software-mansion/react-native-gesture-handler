@@ -119,10 +119,11 @@ public class GestureHandlerOrchestrator {
     deliverEventToGestureHandlers(event);
     if (action == DragEvent.ACTION_DRAG_STARTED) {
       derivedMotionEventHelper = new DragGestureUtils.DerivedMotionEvent();
+    } else {
+      MotionEvent motionEvent = derivedMotionEventHelper.obtain(event);
+      onTouchEvent(motionEvent);
+      motionEvent.recycle();
     }
-    MotionEvent motionEvent = derivedMotionEventHelper.obtain(event);
-    onTouchEvent(motionEvent);
-    motionEvent.recycle();
     if (action == DragEvent.ACTION_DROP) {
       deliverEventToGestureHandlers(DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, event.getX(), event.getY(),
               false,  event.getClipData(), event.getClipDescription()));
