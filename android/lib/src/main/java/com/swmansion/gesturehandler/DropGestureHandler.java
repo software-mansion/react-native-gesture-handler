@@ -32,7 +32,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         mDragHandler = dragHandler;
     }
 
-    public boolean isActive() {
+    public boolean isActiveDropZone() {
         return mIsActiveDropHandler;
     }
 

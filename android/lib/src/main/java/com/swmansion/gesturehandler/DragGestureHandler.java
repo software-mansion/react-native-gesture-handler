@@ -97,11 +97,11 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         mDragAction = event.getAction();
         if (event.getAction() != DragEvent.ACTION_DRAG_STARTED || event.getAction() != DragEvent.ACTION_DRAG_ENDED) {
             for (DropGestureHandler<T> handler: mDropHandlers) {
-                if (handler.isActive() && handler != mDropHandler) {
+                if (handler.isActiveDropZone() && handler != mDropHandler) {
                     mDropHandler = handler;
                     mDragAction = DragEvent.ACTION_DRAG_ENTERED;
                     break;
-                } else if (!handler.isActive() && mDropHandler != null && handler == mDropHandler) {
+                } else if (!handler.isActiveDropZone() && mDropHandler != null && handler == mDropHandler) {
                     mDropHandler = null;
                     mDragAction = DragEvent.ACTION_DRAG_EXITED;
                 }
