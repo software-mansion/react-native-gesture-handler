@@ -14,7 +14,7 @@ import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import SwipeableTable from './swipeable';
 import Rows from './rows';
 import Multitap from './multitap';
-import Draggable from './draggable';
+import Draggable from './draggable/drag';
 import ScaleAndRotate from './scaleAndRotate';
 import PagerAndDrawer from './pagerAndDrawer';
 import PanAndScroll from './panAndScroll';
