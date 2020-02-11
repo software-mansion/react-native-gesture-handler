@@ -225,46 +225,51 @@ public class MainActivity extends Activity {
                     }
                 });
 
+        OnTouchEventListener onDropEventListener = new OnDragEventListenerImpl<DropGestureHandler<Object>>() {
+            @Override
+            public void onDragEvent(DropGestureHandler<Object> handler, DragEvent event) {
+                Log.d("Drop", "Drop action " + event.getAction() + ", dragTarget " + handler.getDragTarget());
+                int action = event.getAction();
+                final View view = handler.getView();
+                switch (action) {
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        view.setBackgroundColor(Color.GREEN);
+                        break;
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        view.setBackgroundColor(Color.TRANSPARENT);
+                        break;
+                    case DragEvent.ACTION_DROP:
+                        view.setBackgroundColor(Color.BLUE);
+                        break;
+                    default:
+                        //view.setBackgroundColor(Color.GRAY);
+                        break;
+                }
+                view.invalidate();
+            }
+
+            @Override
+            public void onStateChange(DropGestureHandler<Object> handler, int newState, int oldState) {
+                Log.d("Drop", "state " + GestureHandler.stateToString(newState));
+                if (newState == STATE_END) {
+                    final View view = handler.getView();
+                    view.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.setBackgroundColor(Color.parseColor("#c5cae9"));
+                        }
+                    }, 1000);
+                }
+            }
+        };
+
+        registry.registerHandlerForView(scrollView, new DropGestureHandler<>())
+                .setType(dragTypes)
+                .setOnTouchEventListener(onDropEventListener);
+
         registry.registerHandlerForView(largeBlock, new DropGestureHandler<>())
                 .setType(dragTypes)
-                .setOnTouchEventListener(new OnDragEventListenerImpl<DropGestureHandler<Object>>() {
-                    @Override
-                    public void onDragEvent(DropGestureHandler<Object> handler, DragEvent event) {
-                        Log.d("Drop", "Drop action " + event.getAction() + ", dragTarget " + handler.getDragTarget());
-                        int action = event.getAction();
-                        final View view = handler.getView();
-                        switch (action) {
-                            case DragEvent.ACTION_DRAG_ENTERED:
-                                view.setBackgroundColor(Color.GREEN);
-                                break;
-                            case DragEvent.ACTION_DRAG_EXITED:
-                                view.setBackgroundColor(Color.TRANSPARENT);
-                                break;
-                            case DragEvent.ACTION_DROP:
-                                view.setBackgroundColor(Color.BLUE);
-                                break;
-                            default:
-                                //view.setBackgroundColor(Color.GRAY);
-                                break;
-                        }
-                        view.invalidate();
-                    }
-
-                    @Override
-                    public void onStateChange(DropGestureHandler<Object> handler, int newState, int oldState) {
-                        Log.d("Drop", "state " + GestureHandler.stateToString(newState));
-                        if (newState == STATE_END) {
-                            final View view = handler.getView();
-                            view.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    view.setBackgroundColor(Color.parseColor("#c5cae9"));
-                                }
-                            }, 1000);
-                        }
-                    }
-                });
-
+                .setOnTouchEventListener(onDropEventListener);
 
 
         registry.registerHandlerForView(block, new TapGestureHandler())
