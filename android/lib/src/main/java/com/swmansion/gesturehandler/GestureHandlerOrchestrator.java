@@ -96,7 +96,6 @@ public class GestureHandlerOrchestrator {
    * Should be called from the view wrapper
    */
   public boolean onTouchEvent(MotionEvent event) {
-    Log.d("DragDrop", "onTouchEvent: " + mIsDragging + " " + event);
     mIsHandlingTouch = true;
     int action = event.getActionMasked();
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
