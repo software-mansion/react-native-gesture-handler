@@ -47,12 +47,12 @@ public class GHRootView extends FrameLayout {
 
     @Override
     public boolean dispatchDragEvent(DragEvent event) {
-        return mOrchestrator.onDragEvent(event);//super.dispatchDragEvent(event);
+        return mOrchestrator.onDragEvent(event);
     }
 
     @Override
     public boolean onDragEvent(DragEvent event) {
-        return mOrchestrator.onDragEvent(event);//super.onDragEvent(event);
+        return mOrchestrator.onDragEvent(event);
     }
 
     @Override

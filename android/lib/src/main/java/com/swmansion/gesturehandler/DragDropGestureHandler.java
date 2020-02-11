@@ -1,9 +1,5 @@
 package com.swmansion.gesturehandler;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.content.Intent;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
