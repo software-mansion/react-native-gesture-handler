@@ -89,11 +89,11 @@ public class DragGestureUtils {
         return localPoint;
     }
 
-    static class DerivedMotionEvent {
+    public static class DerivedMotionEvent {
         private long downTime;
         private int mAction;
 
-        MotionEvent obtain(DragEvent event) {
+        public MotionEvent obtain(DragEvent event) {
             int dAction = event.getAction();
             if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
                 downTime = SystemClock.uptimeMillis();

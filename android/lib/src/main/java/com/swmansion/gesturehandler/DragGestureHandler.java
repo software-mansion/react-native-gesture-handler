@@ -35,6 +35,11 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         return mDropHandler != null && mDropHandler.getView() != null ? mDropHandler.getView().getId() : View.NO_ID;
     }
 
+    @Override
+    public int getDragAction() {
+        return mDragAction;
+    }
+
     ClipData createClipData() {
         Intent intent = new Intent(Intent.ACTION_RUN);
         intent.putExtra(KEY_DRAG_TARGET, getView().getId());

@@ -45,6 +45,7 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
 
     public abstract int getDragTarget();
     public abstract int getDropTarget();
+    public abstract int getDragAction();
 
 
     public boolean shouldHandleEvent(DragEvent event) {

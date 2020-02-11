@@ -23,6 +23,11 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         return getView() != null ? getView().getId() : View.NO_ID;
     }
 
+    @Override
+    public int getDragAction() {
+        return mDragAction;
+    }
+
     public void setDragHandler(@Nullable DragGestureHandler<T> dragHandler) {
         mDragHandler = dragHandler;
     }
