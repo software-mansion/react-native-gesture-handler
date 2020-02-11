@@ -12,10 +12,18 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_EVENT_NAME;
+import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
+import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
+import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DRAG_TARGET;
+import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
+import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPE;
+
 public class DragGestureHandler<T> extends DragDropGestureHandler<T> {
 
     private ArrayList<DropGestureHandler<T>> mDropHandlers = new ArrayList<>();
     private @Nullable DropGestureHandler<T> mDropHandler;
+    private int mDragAction;
 
     @Override
     public int getDragTarget() {
@@ -81,23 +89,37 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T> {
 
     @Override
     protected void onHandle(DragEvent event) {
-        super.onHandle(event);
+        mDragAction = event.getAction();
         if (event.getAction() != DragEvent.ACTION_DRAG_STARTED || event.getAction() != DragEvent.ACTION_DRAG_ENDED) {
             for (DropGestureHandler<T> handler: mDropHandlers) {
-                if (handler.isActive()) {
+                if (handler.isActive() && handler != mDropHandler) {
                     mDropHandler = handler;
+                    mDragAction = DragEvent.ACTION_DRAG_ENTERED;
                     break;
-                } else if (mDropHandler != null && handler == mDropHandler) {
+                } else if (!handler.isActive() && mDropHandler != null && handler == mDropHandler) {
                     mDropHandler = null;
+                    mDragAction = DragEvent.ACTION_DRAG_EXITED;
                 }
             }
         }
+
+        DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), event.getResult(),
+                event.getClipData(), event.getClipDescription());
+        super.onHandle(ev);
+    }
+
+    @Override
+    void dispatchDragEvent(DragEvent event) {
+        DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), event.getResult(),
+                event.getClipData(), event.getClipDescription());
+        super.dispatchDragEvent(ev);
     }
 
     @Override
     protected void onReset() {
         super.onReset();
         mDropHandlers.clear();
+        mDragAction = DragEvent.ACTION_DRAG_ENDED;
     }
 
     private static class SyncedDragShadowBuilder extends View.DragShadowBuilder {
