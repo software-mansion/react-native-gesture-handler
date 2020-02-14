@@ -21,7 +21,7 @@ public class RNGestureHandlerRootHelper {
   private final ReactContext mContext;
   private final GestureHandlerOrchestrator mOrchestrator;
   private final GestureHandler mJSGestureHandler;
-  private final ViewGroup mReactRootView;
+  private final ViewGroup mRootView;
 
   private boolean mShouldIntercept = false;
   private boolean mPassingTouch = false;
@@ -49,11 +49,11 @@ public class RNGestureHandlerRootHelper {
     RNGestureHandlerModule module = context.getNativeModule(RNGestureHandlerModule.class);
     RNGestureHandlerRegistry registry = module.getRegistry();
 
-    mReactRootView = findRootViewTag(wrappedView);
+    mRootView = findRootViewTag(wrappedView);
 
     Log.i(
             ReactConstants.TAG,
-            "[GESTURE HANDLER] Initialize gesture handler for root view " + mReactRootView);
+            "[GESTURE HANDLER] Initialize gesture handler for root view " + mRootView);
 
     mContext = context;
     mOrchestrator = new GestureHandlerOrchestrator(
@@ -71,14 +71,14 @@ public class RNGestureHandlerRootHelper {
   public void tearDown() {
     Log.i(
             ReactConstants.TAG,
-            "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + mReactRootView);
+            "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + mRootView);
     RNGestureHandlerModule module = mContext.getNativeModule(RNGestureHandlerModule.class);
     module.getRegistry().dropHandler(mJSGestureHandler.getTag());
     module.unregisterRootHelper(this);
   }
 
   public ViewGroup getRootView() {
-    return mReactRootView;
+    return mRootView;
   }
 
   private class RootViewGestureHandler extends GestureHandler {
@@ -100,10 +100,10 @@ public class RNGestureHandlerRootHelper {
       long time = SystemClock.uptimeMillis();
       MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
       event.setAction(MotionEvent.ACTION_CANCEL);
-      if (mReactRootView instanceof ReactRootView) {
-        ((ReactRootView) mReactRootView).onChildStartedNativeGesture(event);
+      if (mRootView instanceof ReactRootView) {
+        ((ReactRootView) mRootView).onChildStartedNativeGesture(event);
       } else {
-        RNGHModalUtils.dialogRootViewGroupOnChildStartedNativeGesture(mReactRootView, event);
+        RNGHModalUtils.dialogRootViewGroupOnChildStartedNativeGesture(mRootView, event);
       }
     }
   }
