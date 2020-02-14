@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.view.DragEvent;
@@ -24,6 +25,12 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     private ArrayList<DropGestureHandler<T>> mDropHandlers = new ArrayList<>();
     private @Nullable DropGestureHandler<T> mDropHandler;
     private int mDragAction;
+    private boolean mIsDragging = false;
+
+    public DragGestureHandler(Context context) {
+        super(context);
+        setShouldCancelWhenOutside(false);
+    }
 
     @Override
     public int getDragTarget() {
@@ -66,6 +73,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
 
     private void startDragging() {
         mOrchestrator.mIsDragging = true;
+        mIsDragging = true;
         ClipData data = createClipData();
         View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(getView());
         //View.DragShadowBuilder shadowBuilder = new SyncedDragShadowBuilder(getView());
@@ -84,18 +92,16 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
      */
     @Override
     protected void onHandle(MotionEvent event) {
-        if (getState() != STATE_BEGAN && getState() != STATE_ACTIVE) {
-            super.onHandle(event);
-            if (getState() == STATE_BEGAN) {
-                startDragging();
-            }
+        super.onHandle(event);
+        if (getState() == STATE_BEGAN && !mOrchestrator.mIsDragging) {
+            startDragging();
         }
     }
 
     @Override
     protected void onHandle(DragEvent event) {
         mDragAction = event.getAction();
-        if (event.getAction() != DragEvent.ACTION_DRAG_STARTED || event.getAction() != DragEvent.ACTION_DRAG_ENDED) {
+        if (event.getAction() != DragEvent.ACTION_DRAG_STARTED && event.getAction() != DragEvent.ACTION_DRAG_ENDED) {
             for (DropGestureHandler<T> handler: mDropHandlers) {
                 if (handler.isActiveDropZone() && handler != mDropHandler) {
                     mDropHandler = handler;
@@ -107,7 +113,6 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
                 }
             }
         }
-
         DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), event.getResult(),
                 event.getClipData(), event.getClipDescription());
         super.onHandle(ev);
@@ -123,6 +128,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     @Override
     protected void onReset() {
         super.onReset();
+        mIsDragging = false;
         mDropHandlers.clear();
         mDragAction = DragEvent.ACTION_DRAG_ENDED;
     }

@@ -5,7 +5,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 
-public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
+public class PanGestureHandler<T extends PanGestureHandler> extends GestureHandler<T> {
 
   private static float MIN_VALUE_IGNORE = Float.MAX_VALUE;
   private static float MAX_VALUE_IGNORE = Float.MIN_VALUE;

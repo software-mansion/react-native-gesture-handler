@@ -38,13 +38,6 @@ public class DragGestureUtils {
         return 0;
     }
 
-    static DragEvent obtain(DragEvent event) {
-        int flags = Parcelable.PARCELABLE_WRITE_RETURN_VALUE;
-        Parcel parcel = Parcel.obtain();
-        event.writeToParcel(parcel, flags);
-        return DragEvent.CREATOR.createFromParcel(parcel);
-    }
-
     static DragEvent obtain(int action, float x, float y, boolean result,
                             @Nullable ClipData clipData, @Nullable ClipDescription clipDescription) {
         int flags = Parcelable.PARCELABLE_WRITE_RETURN_VALUE;
@@ -92,18 +85,37 @@ public class DragGestureUtils {
     public static class DerivedMotionEvent {
         private long downTime;
         private int mAction;
+        private MotionEvent motionEvent;
+
+        public static int getAction(int dragAction) {
+            if (dragAction == DragEvent.ACTION_DRAG_STARTED) {
+                return MotionEvent.ACTION_DOWN;
+            } else if (dragAction == DragEvent.ACTION_DRAG_ENDED || dragAction == DragEvent.ACTION_DROP) {
+                return MotionEvent.ACTION_UP;
+            } else {
+                return MotionEvent.ACTION_MOVE;
+            }
+        }
+
+        public static void adapt(MotionEvent motionEvent, DragEvent dragEvent) {
+            adapt(motionEvent, dragEvent.getAction(), dragEvent.getX(), dragEvent.getY());
+        }
+
+        public static void adapt(MotionEvent motionEvent, int dragAction, float x, float y) {
+            motionEvent.setAction(getAction(dragAction));
+            motionEvent.setLocation(x, y);
+        }
 
         public MotionEvent obtain(DragEvent event) {
-            int dAction = event.getAction();
-            if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+            return obtain(event.getAction(), event.getX(), event.getY());
+        }
+
+        public MotionEvent obtain(int dragAction, float x, float y) {
+            if (dragAction == DragEvent.ACTION_DRAG_STARTED) {
                 downTime = SystemClock.uptimeMillis();
-                mAction = MotionEvent.ACTION_DOWN;
-            } else if (dAction == DragEvent.ACTION_DRAG_ENDED || dAction == DragEvent.ACTION_DROP) {
-                mAction = MotionEvent.ACTION_UP;
-            } else {
-                mAction = MotionEvent.ACTION_MOVE;
             }
-            return MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), mAction, event.getX(), event.getY(), 0);
+            mAction = getAction(dragAction);
+            return MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), mAction, x, y, 0);
         }
     }
 

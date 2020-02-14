@@ -1,25 +1,23 @@
 package com.swmansion.gesturehandler;
 
+import android.content.Context;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
-import android.view.View;
-
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
 
-public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler> extends GestureHandler<C> implements View.OnDragListener {
+public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler> extends PanGestureHandler<C> {
 
     final ArrayList<Integer> mDTypes = new ArrayList<>();
     private T mData;
     DragGestureUtils.DataResolver<T> mDataResolver;
-    private boolean mAttachedListener = false;
 
-    public DragDropGestureHandler() {
-        super();
-        setShouldCancelWhenOutside(false);
+    public DragDropGestureHandler(Context context) {
+        super(context);
+        super.setShouldCancelWhenOutside(false);
     }
 
     public ArrayList<Integer> getType() {
@@ -48,7 +46,7 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
     public abstract int getDragAction();
 
 
-    public boolean shouldHandleEvent(DragEvent event) {
+    private boolean shouldHandleEvent(DragEvent event) {
         if (event.getClipDescription() != null) {
             String desc;
             for (int i = 0; i < event.getClipDescription().getMimeTypeCount(); i++) {
@@ -83,52 +81,44 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
         return false;
     }
 
-    private void attachListener() {
-        if (!mAttachedListener) {
-            mAttachedListener = true;
-            getView().setOnDragListener(this);
-            begin();
-        }
-    }
-
-    /**
-     * once handling begins {@link android.view.View.OnDragListener} handles gesture decision making
-     */
     @Override
     protected void onHandle(MotionEvent event) {
-        attachListener();
+        if (mOrchestrator.mIsDragging && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_POINTER_UP)) {
+            MotionEvent ev = MotionEvent.obtain(event);
+            ev.setAction(MotionEvent.ACTION_MOVE);
+            super.onHandle(ev);
+            ev.recycle();
+        } else {
+            super.onHandle(event);
+        }
     }
 
     @Override
     protected void onHandle(DragEvent event) {
-        attachListener();
-        onDrag(getView(), event);
-    }
-
-    @Override
-    public boolean onDrag(@Nullable View v, DragEvent event) {
         if (!shouldHandleEvent(event)) {
             if (getState() == STATE_ACTIVE) {
                 cancel();
             } else {
                 fail();
             }
-            return false;
         }
 
         int action = event.getAction();
         if (action == DragEvent.ACTION_DRAG_STARTED || getState() == STATE_BEGAN) {
             activate();
-        } else if (action == DragEvent.ACTION_DRAG_ENDED || action == DragEvent.ACTION_DROP) {
+        } else if (action == DragEvent.ACTION_DRAG_ENDED) {
             end();
         }
-
-        return true;
     }
 
     @Override
-    protected void onReset() {
-        mAttachedListener = false;
+    public C setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
+        return (C) this;
+    }
+
+    @Override
+    public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
+        return super.shouldRecognizeSimultaneously(handler) || handler instanceof DragDropGestureHandler;
     }
 
 }

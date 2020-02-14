@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler;
 
+import android.content.Context;
 import android.view.DragEvent;
 import android.view.View;
 
@@ -12,6 +13,10 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     private boolean mResult;
     private boolean mPointerState = false;
     private boolean mIsActiveDropHandler;
+
+    public DropGestureHandler(Context context) {
+        super(context);
+    }
 
     @Override
     public int getDragTarget() {
@@ -54,6 +59,8 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
             } else if (!pointerIsInside) {
                 mIsActiveDropHandler = false;
             }
+        } else if (action == DragEvent.ACTION_DRAG_ENDED) {
+            mIsActiveDropHandler = false;
         }
         mPointerState = pointerIsInside;
 

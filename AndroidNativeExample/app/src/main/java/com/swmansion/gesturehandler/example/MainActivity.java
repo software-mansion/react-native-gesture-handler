@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler.example;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
@@ -150,7 +151,7 @@ public class MainActivity extends Activity {
 
                     @Override
                     public boolean shouldRecognizeSimultaneously(GestureHandler handler, GestureHandler otherHandler) {
-                        return otherHandler instanceof DragDropGestureHandler || handler instanceof DragDropGestureHandler;
+                        return false;//otherHandler instanceof DragDropGestureHandler || handler instanceof DragDropGestureHandler;
                     }
 
                     @Override
@@ -190,17 +191,30 @@ public class MainActivity extends Activity {
                     }
                 });
 
-        registry.registerHandlerForView(block, new DragGestureHandler<>())
+        registry.registerHandlerForView(block, new DragGestureHandler<>(this))
                 .setType(dragTypes)
                 .setOnTouchEventListener(new OnDragEventListenerImpl<DragGestureHandler<Object>>() {
                     @Override
                     public void onDragEvent(DragGestureHandler<Object> handler, DragEvent event) {
                         Log.d("Drag", "Drag action " + event.getAction() + ", dropTarget " + handler.getDropTarget());
+                        int action = event.getAction();
+                        final View view = handler.getView();
+                        switch (action) {
+                            case DragEvent.ACTION_DRAG_ENTERED:
+                                view.setBackgroundColor(Color.BLUE);
+                                break;
+                            case DragEvent.ACTION_DRAG_LOCATION:
+                                break;
+                            default:
+                                view.setBackgroundColor(Color.RED);
+                                break;
+                        }
+                        view.invalidate();
                     }
 
                     @Override
                     public void onStateChange(DragGestureHandler<Object> handler, int newState, int oldState) {
-
+                        Log.d("Drag", "onStateChange: " + handler.stateToString(oldState)+" to " + handler.stateToString(newState));
                     }
                 })
                 .setInteractionController(new GestureHandlerInteractionController() {
@@ -216,7 +230,8 @@ public class MainActivity extends Activity {
 
                     @Override
                     public boolean shouldRecognizeSimultaneously(GestureHandler handler, GestureHandler otherHandler) {
-                        return true;//otherHandler.getView() == scrollView;
+                        //return true;//otherHandler.getView() == scrollView;
+                        return false;
                     }
 
                     @Override
@@ -225,10 +240,16 @@ public class MainActivity extends Activity {
                     }
                 });
 
-        OnTouchEventListener onDropEventListener = new OnDragEventListenerImpl<DropGestureHandler<Object>>() {
+        OnTouchEventListener onDropEventListener = new OnTouchEventListener<DropGestureHandler<Object>>() {
+            @Override
+            public void onTouchEvent(DropGestureHandler<Object> handler, MotionEvent event) {
+
+            }
+
             @Override
             public void onDragEvent(DropGestureHandler<Object> handler, DragEvent event) {
-                Log.d("Drop", "Drop action " + event.getAction() + ", dragTarget " + handler.getDragTarget());
+                Log.d("Drop", "Drop action " + event.getAction() + ", dragTarget " + handler.getDragTarget() + "" +
+                        " " + new PointF(handler.getLastRelativePositionX(), handler.getLastRelativePositionY()));
                 int action = event.getAction();
                 final View view = handler.getView();
                 switch (action) {
@@ -262,12 +283,14 @@ public class MainActivity extends Activity {
                 }
             }
         };
-
-        registry.registerHandlerForView(scrollView, new DropGestureHandler<>())
+/*
+        registry.registerHandlerForView(scrollView, new DropGestureHandler<>(this))
                 .setType(dragTypes)
                 .setOnTouchEventListener(onDropEventListener);
 
-        registry.registerHandlerForView(largeBlock, new DropGestureHandler<>())
+
+ */
+        registry.registerHandlerForView(largeBlock, new DropGestureHandler<>(this))
                 .setType(dragTypes)
                 .setOnTouchEventListener(onDropEventListener);
 

@@ -2,7 +2,6 @@ package com.swmansion.gesturehandler;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,7 +71,7 @@ public class GestureHandlerOrchestrator {
   private float mMinAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL;
 
   boolean mIsDragging = false;
-  private DragGestureUtils.DerivedMotionEvent derivedMotionEventHelper;
+  private MotionEvent mEventForDragging;
 
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
@@ -97,6 +96,7 @@ public class GestureHandlerOrchestrator {
    */
   public boolean onTouchEvent(MotionEvent event) {
     mIsHandlingTouch = true;
+    boolean lastDragState = mIsDragging;
     int action = event.getActionMasked();
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
       extractGestureHandlers(event);
@@ -104,6 +104,9 @@ public class GestureHandlerOrchestrator {
       cancelAll();
     }
     deliverEventToGestureHandlers(event);
+    if (mIsDragging && !lastDragState) {
+      mEventForDragging = event;
+    }
     mIsHandlingTouch = false;
     if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
       cleanupFinishedHandlers();
@@ -115,29 +118,22 @@ public class GestureHandlerOrchestrator {
     int action = event.getAction();
     extractGestureHandlers(event);
     mIsHandlingTouch = true;
+    DragGestureUtils.DerivedMotionEvent.adapt(mEventForDragging, event);
+    deliverEventToGestureHandlers(mEventForDragging);
     deliverEventToGestureHandlers(event);
-    if (action == DragEvent.ACTION_DRAG_STARTED) {
-      derivedMotionEventHelper = new DragGestureUtils.DerivedMotionEvent();
-    } else {
-      MotionEvent motionEvent = derivedMotionEventHelper.obtain(event);
-      onTouchEvent(motionEvent);
-      motionEvent.recycle();
-    }
     if (action == DragEvent.ACTION_DROP) {
       deliverEventToGestureHandlers(DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, event.getX(), event.getY(),
-              false,  event.getClipData(), event.getClipDescription()));
+              event.getResult(),  event.getClipData(), event.getClipDescription()));
     }
     mIsHandlingTouch = false;
-
     if (action == DragEvent.ACTION_DRAG_ENDED) {
       mIsDragging = false;
       scheduleFinishedHandlersCleanup();
+      //mEventForDragging.recycle();
     }
-
     if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
       cleanupFinishedHandlers();
     }
-
     return mIsDragging;
   }
 
@@ -325,7 +321,14 @@ public class GestureHandlerOrchestrator {
       }
     }
     for (int i = 0; i < handlersCount; i++) {
-      deliverEventToGestureHandler(mPreparedHandlers[i], event);
+      if (mPreparedHandlers[i] instanceof DropGestureHandler) {
+        deliverEventToGestureHandler(mPreparedHandlers[i], event);
+      }
+    }
+    for (int i = 0; i < handlersCount; i++) {
+      if (!(mPreparedHandlers[i] instanceof DropGestureHandler)) {
+        deliverEventToGestureHandler(mPreparedHandlers[i], event);
+      }
     }
   }
 
@@ -514,6 +517,27 @@ public class GestureHandlerOrchestrator {
     return found;
   }
 
+  private void traverseDropGestureHandlersForView(View view) {
+    GestureHandler handler;
+    ArrayList<GestureHandler> handlers = mHandlerRegistry.getHandlersForView(view);
+    if (handlers != null) {
+      for (int i = handlers.size() - 1; i >= 0; i--) {
+        handler = handlers.get(i);
+        if (handler instanceof DropGestureHandler) {
+          recordHandlerIfNotPresent(handler, view);
+          handler.startTrackingPointer(0);
+          addAwaitingHandler(handler);
+        }
+      }
+    }
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = ((ViewGroup) view);
+      for (int i = viewGroup.getChildCount() - 1; i >= 0; i++) {
+        traverseDropGestureHandlersForView(viewGroup.getChildAt(i));
+      }
+    }
+  }
+
   private void extractGestureHandlers(DragEvent event) {
     sTempCoords[0] = event.getX();
     sTempCoords[1] = event.getY();
@@ -521,7 +545,7 @@ public class GestureHandlerOrchestrator {
     extractGestureHandlers(mWrapperView, sTempCoords, 0);
 
     if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-      ArrayList<DropGestureHandler> dropZones = new ArrayList<>();
+      //traverseDropGestureHandlersForView(mWrapperView);
       /*
       for (DropGestureHandler dropHandler: mHandlerRegistry.getDropHandlers()) {
         if (dropHandler.isSameType(event)) {

@@ -339,12 +339,6 @@ public class GestureHandler<T extends GestureHandler> {
       return;
     }
 
-    mX = origEvent.getX();
-    mY = origEvent.getY();
-    mNumberOfPointers = 1;
-
-    mWithinBounds = isWithinBounds(mView, mX, mY);
-
     if (mShouldCancelWhenOutside && !mWithinBounds) {
       if (mState == STATE_ACTIVE) {
         cancel();
@@ -353,11 +347,6 @@ public class GestureHandler<T extends GestureHandler> {
       }
       return;
     }
-
-    mLastX = origEvent.getX();
-    mLastY = origEvent.getY();
-    mLastEventOffsetX = mLastX - mX;
-    mLastEventOffsetY = mLastY - mY;
 
     onHandle(origEvent);
   }

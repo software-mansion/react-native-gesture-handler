@@ -2,10 +2,14 @@ package com.swmansion.gesturehandler.example;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
 
+import com.swmansion.gesturehandler.DragGestureUtils;
+import com.swmansion.gesturehandler.DropGestureHandler;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
 import com.swmansion.gesturehandler.GestureHandlerRegistryImpl;
@@ -36,16 +40,23 @@ public class GHRootView extends FrameLayout {
     public void init(GestureHandlerOrchestrator orchestrator, GestureHandlerRegistryImpl registry) {
         mOrchestrator = orchestrator;
         registry.registerHandlerForView(this, new RootViewGestureHandler());
-        //registry.registerHandlerForView(this, new DropGestureHandler());
+        setOnDragListener(new OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                return true;
+            }
+        });
     }
 
     @Override
     public boolean dispatchDragEvent(DragEvent event) {
+        super.dispatchDragEvent(event);
         return mOrchestrator.onDragEvent(event);
     }
 
     @Override
     public boolean onDragEvent(DragEvent event) {
+        super.onDragEvent(event);
         return mOrchestrator.onDragEvent(event);
     }
 
