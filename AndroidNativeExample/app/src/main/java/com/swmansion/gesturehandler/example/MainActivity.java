@@ -16,7 +16,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.swmansion.gesturehandler.DragDropGestureHandler;
 import com.swmansion.gesturehandler.BaseGestureHandlerInteractionController;
 import com.swmansion.gesturehandler.DragGestureHandler;
 import com.swmansion.gesturehandler.DropGestureHandler;
@@ -48,6 +47,7 @@ public class MainActivity extends Activity {
     private SeekBar seekBar;
     private View block;
     private View largeBlock;
+    private View blockChild;
     private Switch switchView;
     private TextView textView;
 
@@ -95,6 +95,7 @@ public class MainActivity extends Activity {
         button = findViewById(R.id.button);
         seekBar = findViewById(R.id.seekbar);
         block = findViewById(R.id.block);
+        blockChild = findViewById(R.id.block_child);
         largeBlock = findViewById(R.id.large_block);
         switchView = findViewById(R.id.switchView);
 
@@ -138,6 +139,7 @@ public class MainActivity extends Activity {
 
         GestureHandlerRegistryImpl registry = mRegistry;
         registry.registerHandlerForView(scrollView, new NativeViewGestureHandler())
+                .setEnabled(false)
                 .setInteractionController(new GestureHandlerInteractionController() {
                     @Override
                     public boolean shouldWaitForHandlerFailure(GestureHandler handler, GestureHandler otherHandler) {
@@ -290,6 +292,38 @@ public class MainActivity extends Activity {
 
 
  */
+        registry.registerHandlerForView(blockChild, new DropGestureHandler<>(this))
+                .setType(dragTypes)
+                .setOnTouchEventListener(new OnDragEventListenerImpl<DropGestureHandler<Object>>() {
+                    @Override
+                    public void onDragEvent(DropGestureHandler<Object> handler, DragEvent event) {
+                        Log.d("Drop", "Drop CHILD action " + event.getAction() + ", dragTarget " + handler.getDragTarget() + "" +
+                                " " + new PointF(handler.getLastRelativePositionX(), handler.getLastRelativePositionY()));
+                        int action = event.getAction();
+                        final View view = handler.getView();
+                        switch (action) {
+                            case DragEvent.ACTION_DRAG_ENTERED:
+                                view.setBackgroundColor(Color.BLACK);
+                                break;
+                            case DragEvent.ACTION_DRAG_EXITED:
+                                view.setBackgroundColor(Color.YELLOW);
+                                break;
+                            case DragEvent.ACTION_DROP:
+                                view.setBackgroundColor(Color.GREEN);
+                                break;
+                            default:
+                                //view.setBackgroundColor(Color.GRAY);
+                                break;
+                        }
+                        view.invalidate();
+                    }
+
+                    @Override
+                    public void onStateChange(DropGestureHandler<Object> handler, int newState, int oldState) {
+
+                    }
+                });
+
         registry.registerHandlerForView(largeBlock, new DropGestureHandler<>(this))
                 .setType(dragTypes)
                 .setOnTouchEventListener(onDropEventListener);

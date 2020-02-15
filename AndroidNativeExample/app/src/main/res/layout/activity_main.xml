@@ -34,12 +34,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"/>
-            <View
+            <LinearLayout
                 android:id="@+id/large_block"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_gravity="center"
-                android:background="#c5cae9" />
+                android:background="#c5cae9"
+                android:orientation="vertical">
+                <View
+                    android:id="@+id/block_child"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:background="#ff0000" />
+            </LinearLayout>
             <TextView
                 android:id="@+id/text"
                 android:text="@string/lorem_ipsum"
