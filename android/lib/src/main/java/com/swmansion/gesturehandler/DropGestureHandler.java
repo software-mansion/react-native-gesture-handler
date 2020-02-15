@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler;
 import android.content.Context;
 import android.view.DragEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
@@ -12,7 +13,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     private int mDragAction;
     private boolean mResult;
     private boolean mPointerState = false;
-    private boolean mIsActiveDropHandler;
+    private boolean mBlockUntilNextDragExit = false;
 
     public DropGestureHandler(Context context) {
         super(context);
@@ -37,30 +38,39 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         mDragHandler = dragHandler;
     }
 
-    public boolean isActiveDropZone() {
-        return mIsActiveDropHandler;
+    void forceExit() {
+        if (getState() == STATE_BEGAN || getState() == STATE_ACTIVE) {
+            cancel();
+            mBlockUntilNextDragExit = true;
+        }
     }
 
+    /**
+     * @param event receives an event with {@link DragGestureHandler} {@link DragEvent} action
+     */
     @Override
     protected void onHandle(DragEvent event) {
         int action = event.getAction();
         boolean pointerIsInside = isWithinBounds();
         boolean stateChange = pointerIsInside != mPointerState;
-
         mDragAction = action;
-        mIsActiveDropHandler = true;
-        if (action != DragEvent.ACTION_DRAG_STARTED && action != DragEvent.ACTION_DRAG_ENDED) {
+        boolean progressEvent = action != DragEvent.ACTION_DRAG_STARTED && action != DragEvent.ACTION_DRAG_ENDED;
+
+        if (action == DragEvent.ACTION_DRAG_ENTERED || action == DragEvent.ACTION_DRAG_ENDED ||
+                action == DragEvent.ACTION_DRAG_EXITED) {
+            mBlockUntilNextDragExit = false;
+        }
+        if (mBlockUntilNextDragExit) {
+            return;
+        }
+        if (progressEvent) {
             if (stateChange && pointerIsInside) {
                 mDragAction = DragEvent.ACTION_DRAG_ENTERED;
             } else if (stateChange) {
                 mDragAction = DragEvent.ACTION_DRAG_EXITED;
             } else if (pointerIsInside && action != DragEvent.ACTION_DROP) {
                 mDragAction = DragEvent.ACTION_DRAG_LOCATION;
-            } else if (!pointerIsInside) {
-                mIsActiveDropHandler = false;
             }
-        } else if (action == DragEvent.ACTION_DRAG_ENDED) {
-            mIsActiveDropHandler = false;
         }
         mPointerState = pointerIsInside;
 
@@ -69,15 +79,17 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
                 event.getClipData(), event.getClipDescription());
         super.onHandle(ev);
+        if (!pointerIsInside && mIsActive && progressEvent) {
+            cancel();
+        }
+        DragGestureUtils.recycle(ev);
     }
 
     @Override
     void dispatchDragEvent(DragEvent event) {
-        if (mIsActiveDropHandler) {
-            DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
-                    event.getClipData(), event.getClipDescription());
-            super.dispatchDragEvent(ev);
-        }
+        DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
+                event.getClipData(), event.getClipDescription());
+        super.dispatchDragEvent(ev);
     }
 
     @Override

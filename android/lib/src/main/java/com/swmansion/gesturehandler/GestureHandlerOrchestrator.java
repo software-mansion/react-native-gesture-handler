@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +47,24 @@ public class GestureHandlerOrchestrator {
                 return 1; // only B is awaiting, A is inactive
               }
               return 0; // both A and B are inactive, stable order matters
+            }
+          };
+
+  private static final Comparator<GestureHandler> sDragDropHandlersComparator =
+          new Comparator<GestureHandler>() {
+            @Override
+            public int compare(GestureHandler a, GestureHandler b) {
+              if (a instanceof DropGestureHandler && b instanceof DropGestureHandler) {
+                return -sHandlersComparator.compare(a, b);
+              } else if (a instanceof DropGestureHandler && b instanceof DragGestureHandler) {
+                // we want to deliver the DragEvent to DropGestureHandlers first so that we can determine which
+                // DropGestureHandler is the one that should capture the DragEvent
+                return -1;
+              } else if (a instanceof DragGestureHandler && b instanceof DropGestureHandler) {
+                return 1;
+              } else {
+                return sHandlersComparator.compare(a, b);
+              }
             }
           };
 
@@ -116,15 +136,24 @@ public class GestureHandlerOrchestrator {
 
   public boolean onDragEvent(DragEvent event) {
     int action = event.getAction();
+    if (action == DragEvent.ACTION_DRAG_ENDED) {
+      event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, mEventForDragging.getX(), mEventForDragging.getY(),
+              event.getResult(), event.getClipData(), event.getClipDescription());
+    }
     extractGestureHandlers(event);
     mIsHandlingTouch = true;
     DragGestureUtils.DerivedMotionEvent.adapt(mEventForDragging, event);
     deliverEventToGestureHandlers(mEventForDragging);
     deliverEventToGestureHandlers(event);
+    /*
     if (action == DragEvent.ACTION_DROP) {
-      deliverEventToGestureHandlers(DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, event.getX(), event.getY(),
-              event.getResult(),  event.getClipData(), event.getClipDescription()));
+      DragEvent ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, event.getX(), event.getY(),
+              event.getResult(),  event.getClipData(), event.getClipDescription());
+      deliverEventToGestureHandlers(ev);
+      DragGestureUtils.recycle(ev);
     }
+
+     */
     mIsHandlingTouch = false;
     if (action == DragEvent.ACTION_DRAG_ENDED) {
       mIsDragging = false;
@@ -295,40 +324,89 @@ public class GestureHandlerOrchestrator {
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
     int handlersCount = mGestureHandlersCount;
+    DragGestureHandler activeDragHandler = null;
     DropGestureHandler handler;
+    DragEvent ev = event;
+    boolean isCaptured = false;
     System.arraycopy(mGestureHandlers, 0, mPreparedHandlers, 0, handlersCount);
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
     // order in which handlers has been added ("most direct" children goes first). Therefore we rely
     // on Arrays.sort providing a stable sort (as children are registered in order in which they
     // should be tested)
-    Arrays.sort(mPreparedHandlers, 0, handlersCount, sHandlersComparator);
-
-    DragGestureHandler activeDraggable = null;
+    Arrays.sort(mPreparedHandlers, 0, handlersCount, sDragDropHandlersComparator);
+    // set activeDragHandler
     for (int i = 0; i < handlersCount; i++) {
       if (mPreparedHandlers[i] instanceof DragGestureHandler && mPreparedHandlers[i].mIsActive) {
-        activeDraggable = (DragGestureHandler) mPreparedHandlers[i];
+        activeDragHandler = (DragGestureHandler) mPreparedHandlers[i];
         break;
       }
     }
+    // deliver event to DropGestureHandlers
+    Log.d("DragDropCap", "--------------------------------------------------: ");
     for (int i = 0; i < handlersCount; i++) {
       if (mPreparedHandlers[i] instanceof DropGestureHandler) {
         handler = (DropGestureHandler) mPreparedHandlers[i];
-        if (activeDraggable != null) {
-          activeDraggable.addDropHandler(handler);
+        handler.setDragHandler(activeDragHandler);
+        //Log.d("DragDrop", String.format("delv: %s %s %s %s %s", handler, handler.mIsActive, handler.stateToString(handler.getState()), isCaptured, ev.getAction()));
+        if (!isCaptured) {
+          boolean pActive = handler.mIsActive;
+          deliverEventToGestureHandler(mPreparedHandlers[i], ev);
+          boolean overrideEvent = false;
+          Log.d("DragDropCap", String.format("delv: %s %s %s %s", handler, handler.mIsActive, handler.stateToString(handler.getState()), ev.getAction()));
+          // handler.getState() == GestureHandler.STATE_BEGAN || handler.getState() == GestureHandler.STATE_ACTIVE
+          if (handler.mIsActive) {
+            isCaptured = true;
+            if (activeDragHandler != null) {
+              activeDragHandler.setDropHandler(handler);
+            }
+            overrideEvent = true;
+          } else if (pActive) {
+            if (activeDragHandler != null) {
+              activeDragHandler.setDropHandler(null);
+            }
+            overrideEvent = true;
+          }
+          if (overrideEvent) {
+            ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_EXITED, event.getX(), event.getY(), event.getResult(),
+                    event.getClipData(), event.getClipDescription());
+          }
+        } else {
+          deliverEventToGestureHandler(handler, ev);
+          if (handler.mIsActive) {
+            handler.forceExit();
+          }
         }
-        handler.setDragHandler(activeDraggable);
       }
     }
-    for (int i = 0; i < handlersCount; i++) {
-      if (mPreparedHandlers[i] instanceof DropGestureHandler) {
-        deliverEventToGestureHandler(mPreparedHandlers[i], event);
+    // adapt event for DragGestureHandler
+    int action = event.getAction();
+    boolean shouldChangeAction = !(activeDragHandler == null ||
+            (activeDragHandler.getDropHandler() == null && activeDragHandler.getLastDropHandler() == null) ||
+            action == DragEvent.ACTION_DRAG_STARTED || action == DragEvent.ACTION_DRAG_ENDED
+            || action == DragEvent.ACTION_DRAG_EXITED);
+    int realAction = action;
+    if (shouldChangeAction) {
+      if (activeDragHandler.getDropHandler() != null && activeDragHandler.getLastDropHandler() == null) {
+        realAction = DragEvent.ACTION_DRAG_ENTERED;
+      } else if (activeDragHandler.getDropHandler() == null && activeDragHandler.getLastDropHandler() != null) {
+        realAction = DragEvent.ACTION_DRAG_EXITED;
+      } else if (activeDragHandler.getDropHandler() != null && activeDragHandler.getLastDropHandler() != null &&
+            activeDragHandler.getDropHandler() != activeDragHandler.getLastDropHandler()) {
+        for (int i = 0; i < handlersCount; i++) {
+          deliverEventToGestureHandler(mPreparedHandlers[i], ev);
+        }
+        realAction = DragEvent.ACTION_DRAG_ENTERED;
       }
     }
+    DragEvent realEvent = DragGestureUtils.obtain(realAction, event.getX(), event.getY(), event.getResult(),
+            event.getClipData(), event.getClipDescription());
     for (int i = 0; i < handlersCount; i++) {
-      if (!(mPreparedHandlers[i] instanceof DropGestureHandler)) {
-        deliverEventToGestureHandler(mPreparedHandlers[i], event);
-      }
+      deliverEventToGestureHandler(mPreparedHandlers[i], realEvent);
+    }
+    DragGestureUtils.recycle(realEvent);
+    if (ev != event) {
+      DragGestureUtils.recycle(ev);
     }
   }
 
@@ -411,8 +489,7 @@ public class GestureHandlerOrchestrator {
     float[] coords = sTempCoords;
     extractCoordsForView(handler.getView(), event, coords);
     DragEvent ev = DragGestureUtils.obtain(event.getAction(), coords[0], coords[1],
-            false, event.getClipData(), event.getClipDescription());
-
+            event.getResult(), event.getClipData(), event.getClipDescription());
     handler.handle(ev);
     if (handler.mIsActive) {
       handler.dispatchDragEvent(ev);
@@ -538,6 +615,16 @@ public class GestureHandlerOrchestrator {
     }
   }
 
+  private void extractGestureHandlers(MotionEvent event) {
+    int actionIndex = event.getActionIndex();
+    int pointerId = event.getPointerId(actionIndex);
+    sTempCoords[0] = event.getX(actionIndex);
+    sTempCoords[1] = event.getY(actionIndex);
+    traverseWithPointerEvents(mWrapperView, sTempCoords, pointerId);
+    extractGestureHandlers(mWrapperView, sTempCoords, pointerId);
+  }
+
+
   private void extractGestureHandlers(DragEvent event) {
     sTempCoords[0] = event.getX();
     sTempCoords[1] = event.getY();
@@ -564,15 +651,6 @@ public class GestureHandlerOrchestrator {
 
        */
     }
-  }
-
-  private void extractGestureHandlers(MotionEvent event) {
-    int actionIndex = event.getActionIndex();
-    int pointerId = event.getPointerId(actionIndex);
-    sTempCoords[0] = event.getX(actionIndex);
-    sTempCoords[1] = event.getY(actionIndex);
-    traverseWithPointerEvents(mWrapperView, sTempCoords, pointerId);
-    extractGestureHandlers(mWrapperView, sTempCoords, pointerId);
   }
 
   private boolean extractGestureHandlers(ViewGroup viewGroup, float[] coords, int pointerId) {

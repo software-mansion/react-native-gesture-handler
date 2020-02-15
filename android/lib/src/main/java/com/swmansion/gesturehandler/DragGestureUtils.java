@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.view.ViewParent;
 
 import androidx.annotation.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class DragGestureUtils {
@@ -61,6 +63,18 @@ public class DragGestureUtils {
         }
         parcel.setDataPosition(0);
         return DragEvent.CREATOR.createFromParcel(parcel);
+    }
+
+    @SuppressLint("PrivateApi")
+    static void recycle(DragEvent event) {
+        Method recycle = null;
+        try {
+            recycle = DragEvent.class.getDeclaredMethod("recycle");
+            recycle.setAccessible(true);
+            recycle.invoke(event);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     static PointF traverseDragEventPointer(DragEvent event, View root, View view) {

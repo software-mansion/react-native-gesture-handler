@@ -77,13 +77,13 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
                 }
             }
         }
-
         return false;
     }
 
     @Override
     protected void onHandle(MotionEvent event) {
-        if (mOrchestrator.mIsDragging && (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_POINTER_UP)) {
+        if (mOrchestrator.mIsDragging &&
+                (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_POINTER_UP)) {
             MotionEvent ev = MotionEvent.obtain(event);
             ev.setAction(MotionEvent.ACTION_MOVE);
             super.onHandle(ev);
@@ -95,19 +95,17 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
 
     @Override
     protected void onHandle(DragEvent event) {
-        if (!shouldHandleEvent(event)) {
-            if (getState() == STATE_ACTIVE) {
-                cancel();
-            } else {
-                fail();
-            }
-        }
-
         int action = event.getAction();
+        if (!shouldHandleEvent(event) && action != DragEvent.ACTION_DRAG_ENDED) {
+            fail();
+            return;
+        }
         if (action == DragEvent.ACTION_DRAG_STARTED || getState() == STATE_BEGAN) {
             activate();
-        } else if (action == DragEvent.ACTION_DRAG_ENDED) {
+        } else if (action == DragEvent.ACTION_DRAG_ENDED && getState() == STATE_ACTIVE) {
             end();
+        } else if (action == DragEvent.ACTION_DRAG_ENDED) {
+            fail();
         }
     }
 
