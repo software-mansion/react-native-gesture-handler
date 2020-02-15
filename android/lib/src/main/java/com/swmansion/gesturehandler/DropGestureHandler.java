@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         mDragHandler = dragHandler;
     }
 
-    void forceExit() {
+    void block() {
         if (getState() == STATE_BEGAN || getState() == STATE_ACTIVE) {
             cancel();
             mBlockUntilNextDragExit = true;
@@ -56,8 +57,9 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         mDragAction = action;
         boolean progressEvent = action != DragEvent.ACTION_DRAG_STARTED && action != DragEvent.ACTION_DRAG_ENDED;
 
-        if (action == DragEvent.ACTION_DRAG_ENTERED || action == DragEvent.ACTION_DRAG_ENDED ||
-                action == DragEvent.ACTION_DRAG_EXITED) {
+        if (mBlockUntilNextDragExit && (action == DragEvent.ACTION_DRAG_ENTERED || action == DragEvent.ACTION_DRAG_ENDED ||
+                action == DragEvent.ACTION_DRAG_EXITED)) {
+            stateChange = true;
             mBlockUntilNextDragExit = false;
         }
         if (mBlockUntilNextDragExit) {
@@ -73,9 +75,8 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
             }
         }
         mPointerState = pointerIsInside;
-
+        Log.d("Drop", "mDragAction: " + mDragAction);
         mResult = action == DragEvent.ACTION_DROP && pointerIsInside;
-
         DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
                 event.getClipData(), event.getClipDescription());
         super.onHandle(ev);
