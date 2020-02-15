@@ -31,7 +31,6 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
 
     public DragGestureHandler(Context context) {
         super(context);
-        setShouldCancelWhenOutside(false);
     }
 
     public DropGestureHandler<T> getDropHandler() {
@@ -49,6 +48,9 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     }
 
     void setDropHandler(@Nullable DropGestureHandler<T> handler) {
+        if (handler == mDropHandler) {
+            return;
+        }
         mLastDropHandler = mDropHandler;
         mDropHandler = handler;
         if (handler != null) {

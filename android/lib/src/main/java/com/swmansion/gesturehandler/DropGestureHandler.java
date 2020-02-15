@@ -46,6 +46,17 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         }
     }
 
+    void release() {
+        if (mBlockUntilNextDragExit) {
+            mBlockUntilNextDragExit = false;
+        }
+    }
+
+    @Override
+    public boolean wantEvents() {
+        return super.wantEvents() && !mBlockUntilNextDragExit;
+    }
+
     /**
      * @param event receives an event with {@link DragGestureHandler} {@link DragEvent} action
      */
@@ -53,18 +64,21 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     protected void onHandle(DragEvent event) {
         int action = event.getAction();
         boolean pointerIsInside = isWithinBounds();
-        boolean stateChange = pointerIsInside != mPointerState;
+        boolean stateChange = pointerIsInside != mPointerState || (action == DragEvent.ACTION_DRAG_EXITED && mPointerState);
         mDragAction = action;
-        boolean progressEvent = action != DragEvent.ACTION_DRAG_STARTED && action != DragEvent.ACTION_DRAG_ENDED;
-
-        if (mBlockUntilNextDragExit && (action == DragEvent.ACTION_DRAG_ENTERED || action == DragEvent.ACTION_DRAG_ENDED ||
-                action == DragEvent.ACTION_DRAG_EXITED)) {
+        mPointerState = pointerIsInside;
+        boolean progressEvent = action != DragEvent.ACTION_DRAG_STARTED && action != DragEvent.ACTION_DRAG_ENDED
+                && action != DragEvent.ACTION_DRAG_EXITED;
+/*
+        if (mBlockUntilNextDragExit && action == DragEvent.ACTION_DRAG_ENTERED) {
             stateChange = true;
             mBlockUntilNextDragExit = false;
         }
-        if (mBlockUntilNextDragExit) {
+        if (mBlockUntilNextDragExit && action == DragEvent.ACTION_DRAG_LOCATION) {
             return;
         }
+
+ */
         if (progressEvent) {
             if (stateChange && pointerIsInside) {
                 mDragAction = DragEvent.ACTION_DRAG_ENTERED;
@@ -74,8 +88,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
                 mDragAction = DragEvent.ACTION_DRAG_LOCATION;
             }
         }
-        mPointerState = pointerIsInside;
-        Log.d("Drop", "mDragAction: " + mDragAction);
+
         mResult = action == DragEvent.ACTION_DROP && pointerIsInside;
         DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
                 event.getClipData(), event.getClipDescription());

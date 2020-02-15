@@ -343,7 +343,7 @@ public class GestureHandlerOrchestrator {
       }
     }
     // deliver event to DropGestureHandlers
-    // first check for active handlers
+    // first check for active handlers to determine DragEvent action
     for (int i = 0; i < handlersCount; i++) {
       if (mPreparedHandlers[i] instanceof DropGestureHandler) {
         handler = (DropGestureHandler) mPreparedHandlers[i];
@@ -359,7 +359,9 @@ public class GestureHandlerOrchestrator {
                 ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_EXITED, event.getX(), event.getY(), event.getResult(),
                         event.getClipData(), event.getClipDescription());
                 for (int j = 0; j < handlersCount; j++) {
-                  deliverEventToGestureHandler(mPreparedHandlers[j], ev);
+                  if (mPreparedHandlers[j] != handler) {
+                    deliverEventToGestureHandler(mPreparedHandlers[j], ev);
+                  }
                 }
                 DragGestureUtils.recycle(ev);
               }
@@ -381,42 +383,22 @@ public class GestureHandlerOrchestrator {
         handler.setDragHandler(activeDragHandler);
         if (activeDropHandler == null || handler != activeDropHandler) {
           deliverEventToGestureHandler(handler, ev);
+          /*
           if (handler.mIsActive && activeDropHandler != null) {
             handler.block();
+          } else {
+            handler.release();
           }
+
+           */
         }
       }
     }
-    //DragGestureUtils.recycle(ev);
-    // deliver event for DragGestureHandler
-    /*
-    int action = event.getAction();
-    boolean shouldChangeAction = !(activeDragHandler == null ||
-            (activeDragHandler.getDropHandler() == null && activeDragHandler.getLastDropHandler() == null) ||
-            action == DragEvent.ACTION_DRAG_STARTED || action == DragEvent.ACTION_DRAG_ENDED
-            || action == DragEvent.ACTION_DRAG_EXITED);
-    int realAction = action;
-    if (shouldChangeAction) {
-      if (activeDragHandler.getDropHandler() != null && activeDragHandler.getLastDropHandler() == null) {
-        realAction = DragEvent.ACTION_DRAG_ENTERED;
-      } else if (activeDragHandler.getDropHandler() == null && activeDragHandler.getLastDropHandler() != null) {
-        realAction = DragEvent.ACTION_DRAG_EXITED;
-      } else if (activeDragHandler.getDropHandler() != null && activeDragHandler.getLastDropHandler() != null &&
-            activeDragHandler.getDropHandler() != activeDragHandler.getLastDropHandler()) {
-        for (int i = 0; i < handlersCount; i++) {
-          deliverEventToGestureHandler(mPreparedHandlers[i], ev);
-        }
-        realAction = DragEvent.ACTION_DRAG_ENTERED;
-      }
-    }
-
-
-    DragEvent realEvent = DragGestureUtils.obtain(action, event.getX(), event.getY(), event.getResult(),
-            event.getClipData(), event.getClipDescription());
-
-     */
+    // deliver event to DragGestureHandler
     for (int i = 0; i < handlersCount; i++) {
-      deliverEventToGestureHandler(mPreparedHandlers[i], ev);
+      if (!(mPreparedHandlers[i] instanceof DropGestureHandler)) {
+        deliverEventToGestureHandler(mPreparedHandlers[i], ev);
+      }
     }
     DragGestureUtils.recycle(ev);
   }

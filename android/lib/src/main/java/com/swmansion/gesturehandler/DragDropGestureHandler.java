@@ -109,8 +109,9 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
         }
     }
 
+    // override this permanently
     @Override
-    public C setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
+    public final C setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
         return (C) this;
     }
 
