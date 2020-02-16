@@ -120,7 +120,12 @@ public class GestureHandlerOrchestrator {
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
       extractGestureHandlers(event);
     } else if (action == MotionEvent.ACTION_CANCEL) {
-      cancelAll();
+      if (mIsDragging) {
+        // This occurs when a drag gesture starts, seizing the interaction
+        event.setAction(MotionEvent.ACTION_MOVE);
+      } else {
+        cancelAll();
+      }
     }
     deliverEventToGestureHandlers(event);
     if (mIsDragging && !lastDragState) {
