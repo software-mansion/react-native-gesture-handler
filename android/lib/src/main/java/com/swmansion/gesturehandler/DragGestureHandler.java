@@ -41,6 +41,10 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         return mLastDropHandler;
     }
 
+    public ArrayList<DropGestureHandler<T>> getDropHandlers() {
+        return mDropHandlers;
+    }
+
     void addDropHandler(@NonNull DropGestureHandler<T> handler) {
         if (!mDropHandlers.contains(handler)) {
             mDropHandlers.add(0, handler);

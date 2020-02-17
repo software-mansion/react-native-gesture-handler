@@ -35,8 +35,16 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         return mDragAction;
     }
 
+    public @Nullable DragGestureHandler<T> getDragHandler() {
+        return mDragHandler;
+    }
+
     public void setDragHandler(@Nullable DragGestureHandler<T> dragHandler) {
         mDragHandler = dragHandler;
+    }
+
+    public int getDropActivationIndex() {
+        return mDragHandler != null ? mDragHandler.getDropHandlers().indexOf(this) : -1;
     }
 
     void block() {
@@ -93,7 +101,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
                 event.getClipData(), event.getClipDescription());
         super.onHandle(ev);
-        if (!pointerIsInside && mIsActive && progressEvent) {
+        if ((!pointerIsInside && mIsActive && progressEvent) || action == DragEvent.ACTION_DRAG_EXITED) {
             cancel();
         }
         DragGestureUtils.recycle(ev);
