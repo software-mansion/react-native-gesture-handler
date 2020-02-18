@@ -84,7 +84,6 @@ public class RNGestureHandlerRootHelper {
   }
 
   private class RootViewGestureHandler extends GestureHandler {
-    private DragGestureUtils.DerivedMotionEvent mDerivedMotionEventHelper;
 
     @Override
     protected void onHandle(MotionEvent event) {
@@ -106,15 +105,9 @@ public class RNGestureHandlerRootHelper {
         begin();
         mShouldIntercept = false;
       }
-      if (event.getAction() == DragEvent.ACTION_DRAG_ENDED || event.getAction() == DragEvent.ACTION_DROP) {
+      if (event.getAction() == DragEvent.ACTION_DRAG_ENDED) {
         end();
       }
-      if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-        mDerivedMotionEventHelper = new DragGestureUtils.DerivedMotionEvent();
-      }
-//      MotionEvent ev = mDerivedMotionEventHelper.obtain(event);
-//      mReactRootView.dispatchTouchEvent(ev);
-//      ev.recycle();
     }
 
     @Override
