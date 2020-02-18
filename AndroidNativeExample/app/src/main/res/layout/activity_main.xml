@@ -28,6 +28,9 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center"
+                android:rotation="30"
+                android:scaleX="-1.5"
+                android:elevation="1dp"
                 android:background="#ff0000" />
             <Switch
                 android:id="@+id/switchView"

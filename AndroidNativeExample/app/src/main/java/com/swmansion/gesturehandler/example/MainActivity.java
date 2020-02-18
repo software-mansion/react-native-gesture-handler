@@ -51,6 +51,7 @@ public class MainActivity extends Activity {
     private View blockChild;
     private Switch switchView;
     private TextView textView;
+    private boolean enableShadow = true;
 
     private final GestureHandlerRegistryImpl mRegistry = new GestureHandlerRegistryImpl() {
         @Override
@@ -197,16 +198,6 @@ public class MainActivity extends Activity {
         mOrchestrator.setMinimumAlphaForTraversal(0.1f);
         wrapper.init(mOrchestrator, mRegistry);
 
-
-        // Native click events should work as expected assuming the view is wrapped with
-        // NativeViewGestureHandler
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "I'm touched", Toast.LENGTH_SHORT).show();
-            }
-        });
-
         GestureHandlerRegistryImpl registry = mRegistry;
         GestureHandlerInteractionManager interactionManager = new GestureHandlerInteractionManager();
 
@@ -348,17 +339,56 @@ public class MainActivity extends Activity {
                     }
                 });
 
-        GestureHandler dragHandler = new DragGestureHandler<>(this)
+        final DragDropEventListener<DragGestureHandler<Object>> dragEventListener = new DragDropEventListener<DragGestureHandler<Object>>() {
+            private View[] shadows = new View[]{null, button, switchView, largeBlock};
+            private int i = 0;
+
+            @Override
+            public void onDragEvent(DragGestureHandler<Object> handler, DragEvent event) {
+                super.onDragEvent(handler, event);
+                if (!enableShadow) {
+                    handler.getView().setTranslationX(handler.getTranslationX());
+                    handler.getView().setTranslationY(handler.getTranslationY());
+                    if (isFinished(handler.getState())) {
+                        handler.getView().setTranslationX(0);
+                        handler.getView().setTranslationY(0);
+                    }
+                }
+            }
+
+            @Override
+            public void onStateChange(DragGestureHandler<Object> handler, int newState, int oldState) {
+                super.onStateChange(handler, newState, oldState);
+                if (isFinished(newState)) {
+                    if (enableShadow) {
+                        handler.setShadowBuilderView(shadows[i++%shadows.length]);
+                    }
+                }
+            }
+        }
+                .setColorForAction(DragEvent.ACTION_DRAG_STARTED, Color.BLUE)
+                .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.MAGENTA)
+                .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
+                .setColorForState(STATE_END, Color.RED);
+
+        final DragGestureHandler dragHandler = new DragGestureHandler<>(this)
                 .setType(dragTypes)
-                .setOnTouchEventListener(
-                        new DragDropEventListener<DragGestureHandler<Object>>()
-                                .setColorForAction(DragEvent.ACTION_DRAG_STARTED, Color.BLUE)
-                                .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.MAGENTA)
-                                .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
-                                .setColorForState(STATE_END, Color.RED)
-                );
+                .setOnTouchEventListener(dragEventListener);
 
-
+        // Native click events should work as expected assuming the view is wrapped with
+        // NativeViewGestureHandler
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "I'm touched", Toast.LENGTH_SHORT).show();
+                enableShadow = !enableShadow;
+                dragHandler.setEnableShadow(enableShadow);
+                int color = enableShadow ? Color.RED : Color.YELLOW;
+                dragEventListener.setColorForState(STATE_END, color);
+                block.setBackgroundColor(color);
+                block.invalidate();
+            }
+        });
         //
         registry.registerHandlerForView(scrollView, scrollHandler);
         registry.registerHandlerForView(button, new NativeViewGestureHandler())
