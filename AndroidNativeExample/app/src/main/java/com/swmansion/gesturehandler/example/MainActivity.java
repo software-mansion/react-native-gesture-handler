@@ -168,6 +168,7 @@ public class MainActivity extends Activity {
         blockChild = findViewById(R.id.block_child);
         largeBlock = findViewById(R.id.large_block);
         switchView = findViewById(R.id.switchView);
+        final View[] shadows = new View[]{button, switchView, largeBlock, null};
 
         ArrayList<Integer> dragTypes = new ArrayList<>();
         dragTypes.add(0);
@@ -339,37 +340,35 @@ public class MainActivity extends Activity {
                     }
                 });
 
-        final DragDropEventListener<DragGestureHandler<Object>> dragEventListener = new DragDropEventListener<DragGestureHandler<Object>>() {
-            private View[] shadows = new View[]{null, button, switchView, largeBlock};
-            private int i = 0;
+        final DragDropEventListener<DragGestureHandler<Object>> dragEventListener =
+                new DragDropEventListener<DragGestureHandler<Object>>() {
 
-            @Override
-            public void onDragEvent(DragGestureHandler<Object> handler, DragEvent event) {
-                super.onDragEvent(handler, event);
-                if (!enableShadow) {
-                    handler.getView().setTranslationX(handler.getTranslationX());
-                    handler.getView().setTranslationY(handler.getTranslationY());
-                    if (isFinished(handler.getState())) {
-                        handler.getView().setTranslationX(0);
-                        handler.getView().setTranslationY(0);
+                    @Override
+                    public void onDragEvent(DragGestureHandler<Object> handler, DragEvent event) {
+                        super.onDragEvent(handler, event);
+                        if (!enableShadow) {
+                            handler.getView().setTranslationX(handler.getTranslationX());
+                            handler.getView().setTranslationY(handler.getTranslationY());
+                            if (isFinished(handler.getState())) {
+                                handler.getView().setTranslationX(0);
+                                handler.getView().setTranslationY(0);
+                            }
+                        }
+                        if (event.getAction() == DragEvent.ACTION_DROP) {
+                            assert handler.getDropHandler() != null;
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    String.format("Dropped %s on %s",
+                                            handler.getView().getClass().getSimpleName(),
+                                            handler.getDropHandler().getView().getClass().getSimpleName()),
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
-            }
-
-            @Override
-            public void onStateChange(DragGestureHandler<Object> handler, int newState, int oldState) {
-                super.onStateChange(handler, newState, oldState);
-                if (isFinished(newState)) {
-                    if (enableShadow) {
-                        handler.setShadowBuilderView(shadows[i++%shadows.length]);
-                    }
-                }
-            }
-        }
-                .setColorForAction(DragEvent.ACTION_DRAG_STARTED, Color.BLUE)
-                .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.MAGENTA)
-                .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
-                .setColorForState(STATE_END, Color.RED);
+                        .setColorForAction(DragEvent.ACTION_DRAG_STARTED, Color.BLUE)
+                        .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.MAGENTA)
+                        .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
+                        .setColorForState(STATE_END, Color.RED);
 
         final DragGestureHandler dragHandler = new DragGestureHandler<>(this)
                 .setType(dragTypes)
@@ -378,9 +377,18 @@ public class MainActivity extends Activity {
         // Native click events should work as expected assuming the view is wrapped with
         // NativeViewGestureHandler
         button.setOnClickListener(new View.OnClickListener() {
+            private int i = 0;
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "I'm touched", Toast.LENGTH_SHORT).show();
+                if (enableShadow) {
+                    dragHandler.setShadowBuilderView(shadows[i++%shadows.length]);
+                }
+            }
+        });
+        switchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 enableShadow = !enableShadow;
                 dragHandler.setEnableShadow(enableShadow);
                 int color = enableShadow ? Color.RED : Color.YELLOW;
@@ -391,8 +399,12 @@ public class MainActivity extends Activity {
         });
         //
         registry.registerHandlerForView(scrollView, scrollHandler);
+        registry.registerHandlerForView(scrollView, new DropGestureHandler<>(this)
+                .setOnTouchEventListener(new DragDropEventListener<DropGestureHandler<Object>>()));
         registry.registerHandlerForView(button, new NativeViewGestureHandler())
                 .setShouldActivateOnStart(true);
+        registry.registerHandlerForView(button, new DropGestureHandler<>(this)
+                .setOnTouchEventListener(new DragDropEventListener<DropGestureHandler<Object>>()));
         registry.registerHandlerForView(seekBar, new NativeViewGestureHandler())
                 .setDisallowInterruption(true)
                 .setShouldActivateOnStart(true)
@@ -402,7 +414,6 @@ public class MainActivity extends Activity {
                 .setDisallowInterruption(true)
                 .setShouldCancelWhenOutside(false)
                 .setHitSlop(20);
-
 
         registry.registerHandlerForView(block, longPressHandler);
         registry.registerHandlerForView(block, dragHandler);
