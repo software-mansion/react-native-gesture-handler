@@ -56,7 +56,9 @@ public class GestureHandlerOrchestrator {
             @Override
             public int compare(GestureHandler a, GestureHandler b) {
               if (a instanceof DropGestureHandler && b instanceof DropGestureHandler) {
-                return -sHandlersComparator.compare(a, b);
+                // we need the exact opposite of sHandlersComparator
+                int order = sHandlersComparator.compare(a, b);
+                return order == 0 ? -1: -order;
               } else if (a instanceof DropGestureHandler && b instanceof DragGestureHandler) {
                 return -1;
               } else if (a instanceof DragGestureHandler && b instanceof DropGestureHandler) {
@@ -170,7 +172,6 @@ public class GestureHandlerOrchestrator {
       cleanupFinishedHandlers();
     }
     motionEvent.recycle();
-
     return mIsDragging;
   }
 
