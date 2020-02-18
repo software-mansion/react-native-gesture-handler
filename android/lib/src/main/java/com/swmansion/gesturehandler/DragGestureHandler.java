@@ -180,7 +180,8 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     @Override
     protected void onHandle(DragEvent event) {
         int action = event.getAction();
-        if (action == DragEvent.ACTION_DRAG_ENTERED && mDropHandler == null) {
+        if ((action == DragEvent.ACTION_DRAG_ENTERED || (action == DragEvent.ACTION_DROP && !isForeignEvent(event)))
+                && mDropHandler == null) {
             mDragAction = DragEvent.ACTION_DRAG_LOCATION;
         } else {
             mDragAction = action;
