@@ -56,6 +56,12 @@
                 android:text="@string/lorem_ipsum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+            <View
+                android:id="@+id/block_child2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:background="#ff0000" />
         </LinearLayout>
     </ScrollView>
 

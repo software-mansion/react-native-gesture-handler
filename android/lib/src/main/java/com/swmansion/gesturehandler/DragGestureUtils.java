@@ -99,8 +99,8 @@ public class DragGestureUtils {
     public static class DerivedMotionEvent {
         private long downTime;
 
-        public static int getAction(int dragAction) {
-            if (dragAction == DragEvent.ACTION_DRAG_STARTED) {
+        private static int getAction(int dragAction, boolean isForeignEvent) {
+            if (dragAction == DragEvent.ACTION_DRAG_STARTED && isForeignEvent) {
                 return MotionEvent.ACTION_DOWN;
             } else if (dragAction == DragEvent.ACTION_DRAG_ENDED || dragAction == DragEvent.ACTION_DROP) {
                 return MotionEvent.ACTION_UP;
@@ -109,20 +109,21 @@ public class DragGestureUtils {
             }
         }
 
-        public static void adapt(MotionEvent motionEvent, int dragAction, float x, float y) {
-            motionEvent.setAction(getAction(dragAction));
-            motionEvent.setLocation(x, y);
-        }
-
         public MotionEvent obtain(DragEvent event) {
-            return obtain(event.getAction(), event.getX(), event.getY());
+            return obtain(event.getAction(), event.getX(), event.getY(), DragDropGestureHandler.isForeignEvent(event));
         }
 
-        public MotionEvent obtain(int dragAction, float x, float y) {
+        public MotionEvent obtain(int dragAction, float x, float y, boolean isForeignEvent) {
             if (dragAction == DragEvent.ACTION_DRAG_STARTED) {
                 downTime = SystemClock.uptimeMillis();
             }
-            return MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), getAction(dragAction), x, y, 0);
+            return MotionEvent.obtain(
+                    downTime,
+                    SystemClock.uptimeMillis(),
+                    getAction(dragAction, isForeignEvent),
+                    x,
+                    y,
+                    0);
         }
     }
 

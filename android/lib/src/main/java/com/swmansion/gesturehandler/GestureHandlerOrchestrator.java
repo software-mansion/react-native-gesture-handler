@@ -164,7 +164,7 @@ public class GestureHandlerOrchestrator {
     extractGestureHandlers(event);
     deliverEventToGestureHandlers(motionEvent);
     deliverEventToGestureHandlers(event);
-    // // TODO: 18/02/2020 maybe the system doesn't fire a END after a drop
+    // // TODO: 18/02/2020 maybe the system doesn't fire an END after a drop
     /*
     if (action == DragEvent.ACTION_DROP) {
       DragEvent ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, event.getX(), event.getY(),
@@ -436,7 +436,13 @@ public class GestureHandlerOrchestrator {
         }
       }
     }
-    if (activeDragHandler != null && activeDropHandler == null && activeDragHandler.getDropHandler() != null) {
+
+    // ENTER/DROP action can be wrong because of the registered RootView intercepting Drag events.
+    // If the origin is foreign then the action is preserved.
+    if ((action == DragEvent.ACTION_DRAG_ENTERED || (action == DragEvent.ACTION_DROP))
+            && activeDropHandler == null && !DragDropGestureHandler.isForeignEvent(event)) {
+      action = DragEvent.ACTION_DRAG_LOCATION;
+    } else if (activeDragHandler != null && activeDropHandler == null && activeDragHandler.getDropHandler() != null) {
       action = DragEvent.ACTION_DRAG_EXITED;
     }
 
@@ -445,8 +451,7 @@ public class GestureHandlerOrchestrator {
     // deliver event to DropGestureHandlers
     for (int i = 0; i < count; i++) {
       handler = handlers[i];
-      if (handler != activeDropHandler) {
-        assert handler != null;
+      if (handler != activeDropHandler && handler != null) {
         deliverEventToGestureHandler(handler, ev);
       }
     }

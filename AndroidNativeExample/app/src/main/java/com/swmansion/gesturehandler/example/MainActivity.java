@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -49,6 +50,7 @@ public class MainActivity extends Activity {
     private View block;
     private View largeBlock;
     private View blockChild;
+    private View blockChild2;
     private Switch switchView;
     private TextView textView;
     private boolean enableShadow = true;
@@ -166,6 +168,7 @@ public class MainActivity extends Activity {
         seekBar = findViewById(R.id.seekbar);
         block = findViewById(R.id.block);
         blockChild = findViewById(R.id.block_child);
+        blockChild2 = findViewById(R.id.block_child2);
         largeBlock = findViewById(R.id.large_block);
         switchView = findViewById(R.id.switchView);
         final View[] shadows = new View[]{button, switchView, largeBlock, null};
@@ -340,18 +343,35 @@ public class MainActivity extends Activity {
                     }
                 });
 
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        final int height = displayMetrics.heightPixels;
+
         final DragDropEventListener<DragGestureHandler<Object>> dragEventListener =
                 new DragDropEventListener<DragGestureHandler<Object>>() {
-
+                    private float dy, y = 0;
                     @Override
                     public void onDragEvent(DragGestureHandler<Object> handler, DragEvent event) {
                         super.onDragEvent(handler, event);
+
+                        if (event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
+                            if (Math.abs(handler.getLastAbsolutePositionY()) < 100) {
+                                dy = Math.max(Math.abs(event.getY() - y), Math.abs(dy));
+                                scrollView.smoothScrollBy(0, (int) -dy);
+                            } else if (Math.abs(height - handler.getLastAbsolutePositionY()) < 100) {
+                                dy = Math.max(Math.abs(event.getY() - y), Math.abs(dy));
+                                scrollView.smoothScrollBy(0, (int) dy);
+                            }
+                        }
+                        y = event.getY();
+
                         if (!enableShadow) {
-                            handler.getView().setTranslationX(handler.getTranslationX());
-                            handler.getView().setTranslationY(handler.getTranslationY());
+                            View view = handler.getView();
+                            view.setTranslationX(handler.getTranslationX() + scrollView.getScrollX());
+                            view.setTranslationY(handler.getTranslationY() + scrollView.getScrollY());
                             if (isFinished(handler.getState())) {
-                                handler.getView().setTranslationX(0);
-                                handler.getView().setTranslationY(0);
+                                view.setTranslationX(0);
+                                view.setTranslationY(0);
                             }
                         }
                         if (event.getAction() == DragEvent.ACTION_DROP) {
@@ -395,12 +415,30 @@ public class MainActivity extends Activity {
                 dragEventListener.setColorForState(STATE_END, color);
                 block.setBackgroundColor(color);
                 block.invalidate();
+                Toast.makeText(
+                        MainActivity.this,
+                        enableShadow ? "Drag shadow ENABLED" : "Drag shadow DISABLED",
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
+
+        DropGestureHandler sDropHandler = new DropGestureHandler<>(this)
+                .setOnTouchEventListener(new DragDropEventListener<DropGestureHandler<Object>>());
         //
-        registry.registerHandlerForView(scrollView, scrollHandler);
-        registry.registerHandlerForView(scrollView, new DropGestureHandler<>(this)
-                .setOnTouchEventListener(new DragDropEventListener<DropGestureHandler<Object>>()));
+        registry.registerHandlerForView(scrollView, scrollHandler)
+        .setOnTouchEventListener(new OnTouchEventListenerImpl<NativeViewGestureHandler>() {
+            @Override
+            public void onTouchEvent(NativeViewGestureHandler handler, MotionEvent event) {
+                Log.d("Scroll", "scroll: " + event);
+            }
+
+            @Override
+            public void onStateChange(NativeViewGestureHandler handler, int newState, int oldState) {
+                Log.d("Scroll", "scroll state: " + GestureHandler.stateToString(newState));
+            }
+        });
+        registry.registerHandlerForView(scrollView, sDropHandler);
         registry.registerHandlerForView(button, new NativeViewGestureHandler())
                 .setShouldActivateOnStart(true);
         registry.registerHandlerForView(button, new DropGestureHandler<>(this)
@@ -437,6 +475,23 @@ public class MainActivity extends Activity {
                                 .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
                 );
 
+        registry.registerHandlerForView(blockChild2, new DropGestureHandler<>(this))
+                .setType(dragTypes)
+                .setOnTouchEventListener(
+                        new DragDropEventListener<DropGestureHandler<Object>>() {
+                            @Override
+                            public void onStateChange(DropGestureHandler<Object> handler, int newState, int oldState) {
+                                super.onStateChange(handler, newState, oldState);
+                                if (newState == STATE_END) {
+                                    scrollView.smoothScrollTo(0, 0);
+                                }
+                            }
+                        }
+                                .setColorForState(GestureHandler.STATE_ACTIVE, Color.GREEN)
+                                .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.RED)
+                                .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
+                );
+
         registry.registerHandlerForView(largeBlock, new DropGestureHandler<>(this))
                 .setType(dragTypes)
                 .setOnTouchEventListener(
@@ -453,23 +508,26 @@ public class MainActivity extends Activity {
         registry.registerHandlerForView(largeBlock, pinchHandler);
         registry.registerHandlerForView(largeBlock, panHandler);
 
-        interactionManager.configureInteractions(panHandler, null,
+        interactionManager.configureInteractions(panHandler,
+                new int[]{dragHandler.getTag()},
                 new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
         interactionManager.configureInteractions(rotationHandler, null,
                 new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
         interactionManager.configureInteractions(pinchHandler, null,
                 new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
         interactionManager.configureInteractions(scrollHandler,
-                new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()},
-                new int[]{dragHandler.getTag()});
+                new int[]{dragHandler.getTag(), panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()},
+                new int[]{sDropHandler.getTag()});
         interactionManager.configureInteractions(dragHandler,
                 new int[]{tapHandler.getTag(), doubleTapHandler.getTag(), longPressHandler.getTag()},
-                new int[]{scrollHandler.getTag()});
+                null);
         interactionManager.configureInteractions(longPressHandler,
                 null, new int[]{dragHandler.getTag()});
         interactionManager.configureInteractions(tapHandler,
                 new int[]{doubleTapHandler.getTag(), longPressHandler.getTag()}, null);
         interactionManager.configureInteractions(doubleTapHandler,
                 new int[]{longPressHandler.getTag()}, null);
+        interactionManager.configureInteractions(sDropHandler,
+                null, new int[]{scrollHandler.getTag()});
     }
 }
