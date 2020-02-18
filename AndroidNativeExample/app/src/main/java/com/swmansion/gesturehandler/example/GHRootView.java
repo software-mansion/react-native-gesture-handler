@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler.example;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.DragEvent;
@@ -20,6 +21,7 @@ public class GHRootView extends FrameLayout {
 
     private boolean mShouldIntercept = false;
     private boolean mPassingTouch = false;
+    private RootViewGestureHandler mRootViewGestureHandler;
 
     public GHRootView(Context context) {
         super(context);
@@ -39,7 +41,8 @@ public class GHRootView extends FrameLayout {
 
     public void init(GestureHandlerOrchestrator orchestrator, GestureHandlerRegistryImpl registry) {
         mOrchestrator = orchestrator;
-        registry.registerHandlerForView(this, new RootViewGestureHandler());
+        mRootViewGestureHandler = new RootViewGestureHandler();
+        registry.registerHandlerForView(this, mRootViewGestureHandler);
         setOnDragListener(new OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
@@ -49,20 +52,8 @@ public class GHRootView extends FrameLayout {
     }
 
     @Override
-    public boolean dispatchDragEvent(DragEvent event) {
-        super.dispatchDragEvent(event);
-        return mOrchestrator.onDragEvent(event);
-    }
-
-    @Override
-    public boolean onDragEvent(DragEvent event) {
-        super.onDragEvent(event);
-        return mOrchestrator.onDragEvent(event);
-    }
-
-    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return mOrchestrator.onTouchEvent(ev);
+        return mOrchestrator.onTouchEvent(ev) || super.onInterceptTouchEvent(ev);
     }
 
     @Override
@@ -74,12 +65,39 @@ public class GHRootView extends FrameLayout {
         mOrchestrator.onTouchEvent(ev);
         mPassingTouch = false;
 
-        return mShouldIntercept;
+        return mShouldIntercept || super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        // If this method gets called it means that some native view is attempting to grab lock for
+        // touch event delivery. In that case we cancel all gesture recognizers
+        if (mOrchestrator != null && !mPassingTouch) {
+            // if we are in the process of delivering touch events via GH orchestrator, we don't want to
+            // treat it as a native gesture capturing the lock
+            mRootViewGestureHandler.tryCancelAllHandlers();
+        }
+        super.requestDisallowInterceptTouchEvent(disallowIntercept);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return mOrchestrator.onTouchEvent(event);
+        return mOrchestrator.onTouchEvent(event) || super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean dispatchDragEvent(DragEvent ev) {
+        mPassingTouch = true;
+        super.dispatchDragEvent(ev);
+        boolean retVal = mOrchestrator.onDragEvent(ev);
+        mPassingTouch = false;
+        return retVal;
+    }
+
+    @Override
+    public boolean onDragEvent(DragEvent event) {
+        super.onDragEvent(event);
+        return mOrchestrator.onDragEvent(event);
     }
 
     class RootViewGestureHandler extends GestureHandler {
@@ -96,15 +114,29 @@ public class GHRootView extends FrameLayout {
         }
 
         @Override
-        protected void onCancel() {
-            mShouldIntercept = true;
-/*
-            long time = SystemClock.uptimeMillis();
-            MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
-            event.setAction(MotionEvent.ACTION_CANCEL);
-            mOrchestrator.onTouchEvent(event);
-*/
+        protected void onHandle(DragEvent event) {
+            int currentState = getState();
+            if (currentState == STATE_UNDETERMINED) {
+                begin();
+                mShouldIntercept = false;
+            }
+            if (event.getAction() == DragEvent.ACTION_DRAG_ENDED) {
+                end();
+            }
         }
 
+        @Override
+        protected void onCancel() {
+            mShouldIntercept = true;
+        }
+
+        private void tryCancelAllHandlers() {
+            // In order to cancel handlers we activate handler that is hooked to the root view
+            if (getState() == GestureHandler.STATE_BEGAN) {
+                // Try activate main JS handler
+                activate();
+                end();
+            }
+        }
     }
 }
