@@ -1,18 +1,10 @@
 package com.swmansion.gesturehandler;
 
-import android.graphics.PointF;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 
-import androidx.annotation.Nullable;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class GestureHandler<T extends GestureHandler> {
@@ -335,7 +327,7 @@ public class GestureHandler<T extends GestureHandler> {
 
   public final void handle(DragEvent origEvent) {
     if (!mEnabled || mState == STATE_CANCELLED || mState == STATE_FAILED
-            || mState == STATE_END/* || mTrackedPointersCount < 1*/) {
+            || mState == STATE_END || mTrackedPointersCount < 1) {
       return;
     }
 
@@ -517,9 +509,9 @@ public class GestureHandler<T extends GestureHandler> {
     return null;
   }
 
-  public GestureHandler setOnTouchEventListener(OnTouchEventListener<T> listener) {
+  public T setOnTouchEventListener(OnTouchEventListener<T> listener) {
     mListener = listener;
-    return this;
+    return (T) this;
   }
 
   @Override

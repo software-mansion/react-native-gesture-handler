@@ -20,6 +20,12 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
         super.setShouldCancelWhenOutside(false);
     }
 
+    // to operate as expected DragDropGestureHandler must not cancel when outside so we override this permanently
+    @Override
+    public final C setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
+        return (C) this;
+    }
+
     public ArrayList<Integer> getType() {
         return mDTypes;
     }
@@ -44,7 +50,6 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
     public abstract int getDragTarget();
     public abstract int getDropTarget();
     public abstract int getDragAction();
-
 
     private boolean shouldHandleEvent(DragEvent event) {
         if (event.getClipDescription() != null) {
@@ -84,6 +89,8 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
     protected void onHandle(MotionEvent event) {
         if (mOrchestrator.mIsDragging &&
                 (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_POINTER_UP)) {
+            // this condition is met once a drag interaction has ended
+            // in which case we don't want PanGestureHandler to handle state decision making
             MotionEvent ev = MotionEvent.obtain(event);
             ev.setAction(MotionEvent.ACTION_MOVE);
             super.onHandle(ev);
@@ -95,29 +102,17 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
 
     @Override
     protected void onHandle(DragEvent event) {
+        // PanGestureHandler is in charge of moving to BEGIN/ACTIVE state
         int action = event.getAction();
-        if (!shouldHandleEvent(event) && action != DragEvent.ACTION_DRAG_ENDED) {
+        if (!shouldHandleEvent(event)) {
             fail();
             return;
         }
-        if (action == DragEvent.ACTION_DRAG_STARTED || getState() == STATE_BEGAN) {
-            activate();
-        } else if (action == DragEvent.ACTION_DRAG_ENDED && getState() == STATE_ACTIVE) {
+        if (action == DragEvent.ACTION_DRAG_ENDED && getState() == STATE_ACTIVE) {
             end();
         } else if (action == DragEvent.ACTION_DRAG_ENDED) {
             fail();
         }
-    }
-
-    // override this permanently
-    @Override
-    public final C setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
-        return (C) this;
-    }
-
-    @Override
-    public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
-        return super.shouldRecognizeSimultaneously(handler) || handler instanceof DragDropGestureHandler;
     }
 
 }

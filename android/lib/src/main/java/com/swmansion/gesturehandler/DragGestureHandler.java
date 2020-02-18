@@ -5,6 +5,7 @@ import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,10 +46,12 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         return mDropHandlers;
     }
 
-    void addDropHandler(@NonNull DropGestureHandler<T> handler) {
+    boolean addDropHandler(@NonNull DropGestureHandler<T> handler) {
         if (!mDropHandlers.contains(handler)) {
             mDropHandlers.add(0, handler);
+            return true;
         }
+        return false;
     }
 
     void setDropHandler(@Nullable DropGestureHandler<T> handler) {
@@ -78,7 +81,12 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         return mDragAction;
     }
 
-    ClipData createClipData() {
+    @Override
+    public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
+        return super.shouldRecognizeSimultaneously(handler) || handler instanceof DropGestureHandler;
+    }
+
+    private ClipData createClipData() {
         Intent intent = new Intent(Intent.ACTION_RUN);
         intent.putExtra(KEY_DRAG_TARGET, getView().getId());
         intent.putIntegerArrayListExtra(KEY_TYPE, mDTypes);
@@ -118,45 +126,13 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     @Override
     protected void onHandle(MotionEvent event) {
         super.onHandle(event);
-        if (getState() == STATE_BEGAN && !mOrchestrator.mIsDragging) {
+        if (getState() == STATE_ACTIVE && !mOrchestrator.mIsDragging) {
             startDragging();
         }
     }
 
     @Override
     protected void onHandle(DragEvent event) {
-        /*
-        DragEvent ev;
-        mDragAction = event.getAction();
-        mLastDropHandler = mDropHandler;
-        if (event.getAction() != DragEvent.ACTION_DRAG_STARTED && event.getAction() != DragEvent.ACTION_DRAG_ENDED) {
-            for (DropGestureHandler<T> handler: mDropHandlers) {
-                if (handler.mIsActive && handler != mDropHandler) {
-                    mDropHandler = handler;
-                    mDragAction = DragEvent.ACTION_DRAG_ENTERED;
-                    break;
-                }
-            }
-            for (DropGestureHandler<T> handler: mDropHandlers) {
-                if (!handler.mIsActive && mDropHandler != null && handler == mLastDropHandler) {
-                    if (handler == mDropHandler) {
-                        mDropHandler = null;
-                        mDragAction = DragEvent.ACTION_DRAG_EXITED;
-                    } else {
-                        // This condition is met when there are overlapping DropGestureHandlers
-                        // in which case we should emit DragEvent.ACTION_DRAG_EXITED before DragEvent.ACTION_DRAG_ENTERED
-                        ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_EXITED, getX(), getY(), event.getResult(),
-                                event.getClipData(), event.getClipDescription());
-                        handler.dispatchDragEvent(ev);
-                    }
-                    break;
-                }
-            }
-        }
-        ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), event.getResult(),
-                event.getClipData(), event.getClipDescription());
-
-         */
         mDragAction = event.getAction();
         super.onHandle(event);
     }

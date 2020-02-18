@@ -98,8 +98,6 @@ public class DragGestureUtils {
 
     public static class DerivedMotionEvent {
         private long downTime;
-        private int mAction;
-        private MotionEvent motionEvent;
 
         public static int getAction(int dragAction) {
             if (dragAction == DragEvent.ACTION_DRAG_STARTED) {
@@ -109,10 +107,6 @@ public class DragGestureUtils {
             } else {
                 return MotionEvent.ACTION_MOVE;
             }
-        }
-
-        public static void adapt(MotionEvent motionEvent, DragEvent dragEvent) {
-            adapt(motionEvent, dragEvent.getAction(), dragEvent.getX(), dragEvent.getY());
         }
 
         public static void adapt(MotionEvent motionEvent, int dragAction, float x, float y) {
@@ -128,8 +122,7 @@ public class DragGestureUtils {
             if (dragAction == DragEvent.ACTION_DRAG_STARTED) {
                 downTime = SystemClock.uptimeMillis();
             }
-            mAction = getAction(dragAction);
-            return MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), mAction, x, y, 0);
+            return MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), getAction(dragAction), x, y, 0);
         }
     }
 
