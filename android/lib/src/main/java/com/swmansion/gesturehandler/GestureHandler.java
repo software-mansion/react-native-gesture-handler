@@ -477,7 +477,8 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   protected void onHandle(DragEvent event) {
-    moveToState(STATE_FAILED);
+    // other handlers should have the ability to run simultaneously during a DragEvent
+    // this is why we do not move to FAIL state
   }
 
   protected void onStateChange(int newState, int previousState) {
