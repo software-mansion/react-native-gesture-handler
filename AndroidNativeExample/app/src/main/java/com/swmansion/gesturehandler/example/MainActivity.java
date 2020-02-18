@@ -142,8 +142,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onDragEvent(DropGestureHandler<Object> handler, DragEvent event) {
-            Log.d("Drop", "Drop action " + event.getAction() + ", dragTarget " + handler.getDragTarget() + "" +
-                    " " + new PointF(handler.getLastRelativePositionX(), handler.getLastRelativePositionY()));
+            Log.d("Drop", "Drop action " + event.getAction() + ", " + handler);
             int action = event.getAction();
             if (actionToColor.containsKey(action)) {
                 //Log.d("DropColor", "onDragEvent: " + actionToColor.get(action) +  "   "+ actionToColor.containsKey(action));
@@ -153,7 +152,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onStateChange(DropGestureHandler<Object> handler, int newState, int oldState) {
-            Log.d("Drop", "state " + GestureHandler.stateToString(newState));
+            Log.d("Drop", "state " + GestureHandler.stateToString(newState) + " " + handler);
             Integer color = stateToColor.containsKey(newState + ',' + oldState) ?
                     stateToColor.get(newState + ',' + oldState) :
                     stateToColor.containsKey(newState) ?

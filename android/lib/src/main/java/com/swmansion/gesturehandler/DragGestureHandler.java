@@ -72,8 +72,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
 
     @Override
     public int getDropTarget() {
-        DropGestureHandler handler = mDragAction == DragEvent.ACTION_DRAG_EXITED ? mLastDropHandler : mDropHandler;
-        return handler != null && handler.getView() != null ? handler.getView().getId() : View.NO_ID;
+        return mDropHandler != null && mDropHandler.getView() != null ? mDropHandler.getView().getId() : View.NO_ID;
     }
 
     @Override
@@ -150,7 +149,6 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         mIsDragging = false;
         mDropHandlers.clear();
         mDragAction = DragEvent.ACTION_DRAG_ENDED;
-        //// TODO: 15/02/2020 reset mDropHandler mLastDropHandler ?
         mDropHandler = null;
         mLastDropHandler = null;
     }

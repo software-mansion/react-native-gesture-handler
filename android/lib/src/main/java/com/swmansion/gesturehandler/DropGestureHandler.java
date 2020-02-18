@@ -12,6 +12,8 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     private int mDragAction;
     private boolean mResult;
     private boolean mPointerState = false;
+    private boolean mShouldCancelNext = false;
+    private boolean mAwaitingCancellation = false;
 
     private static boolean isProgressEvent(DragEvent event) {
         int action = event.getAction();
@@ -50,7 +52,18 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
         return super.shouldRecognizeSimultaneously(handler) || handler instanceof DragGestureHandler;
     }
-    
+
+    @Override
+    protected boolean shouldActivate() {
+        return super.shouldActivate() && mDragHandler != null && mDragHandler.getDropHandler() == this;
+    }
+
+    void tryCancel() {
+        if (mShouldCancelNext) {
+            cancel();
+        }
+    }
+
     /**
      * @param event receives an event with {@link DragGestureHandler} {@link DragEvent} action
      */
@@ -58,6 +71,9 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     protected void onHandle(DragEvent event) {
         if (!mOrchestrator.mIsDragging) {
             fail();
+            return;
+        } else if (mShouldCancelNext) {
+            return;
         }
 
         int action = event.getAction();
@@ -75,7 +91,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
                 mDragAction = DragEvent.ACTION_DRAG_ENTERED;
             } else if (!pointerIsInside) {
                 mDragAction = DragEvent.ACTION_DRAG_EXITED;
-            }else {
+            } else {
                 mDragAction = DragEvent.ACTION_DRAG_LOCATION;
             }
         } else {
@@ -90,7 +106,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         DragGestureUtils.recycle(ev);
 
         if (mDragAction == DragEvent.ACTION_DRAG_EXITED) {
-            cancel();
+            mShouldCancelNext = true;
         }
     }
 
@@ -109,5 +125,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         mPointerState = false;
         mDragAction = DragEvent.ACTION_DRAG_ENDED;
         mResult = false;
+        mShouldCancelNext = false;
+        mAwaitingCancellation = false;
     }
 }

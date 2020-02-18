@@ -384,14 +384,13 @@ public class GestureHandlerOrchestrator {
       if (handlers[i] != null) {
         handler = handlers[i];
         deliverEventToGestureHandler(handlers[i], event);
-        if (handler.mIsActive) {
+        if (handler.mIsActive || handler.getState() == GestureHandler.STATE_BEGAN) {
           activeDropHandler = handler;
           if (activeDragHandler != null) {
             boolean fireExit = activeDragHandler.getDropHandler() != null && activeDragHandler.getDropHandler() != handler;
             if (activeDragHandler.getDropHandler() != handler) {
               action = DragEvent.ACTION_DRAG_ENTERED;
             }
-            activeDragHandler.setDropHandler(handler);
             if (fireExit) {
               ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_EXITED, event.getX(), event.getY(), event.getResult(),
                       event.getClipData(), event.getClipDescription());
@@ -404,18 +403,19 @@ public class GestureHandlerOrchestrator {
               deliverEventToGestureHandler(activeDragHandler, ev);
               DragGestureUtils.recycle(ev);
             }
+            activeDragHandler.setDropHandler(handler);
           }
           break;
         }
       }
     }
     if (activeDragHandler != null && activeDropHandler == null && activeDragHandler.getDropHandler() != null) {
-      activeDragHandler.setDropHandler(null);
       action = DragEvent.ACTION_DRAG_EXITED;
     }
-    // deliver
+
     ev = DragGestureUtils.obtain(action, event.getX(), event.getY(), event.getResult(),
             event.getClipData(), event.getClipDescription());
+    // deliver event to DropGestureHandlers
     for (int i = 0; i < count; i++) {
       handler = handlers[i];
       if (handler != activeDropHandler) {
@@ -423,12 +423,23 @@ public class GestureHandlerOrchestrator {
         deliverEventToGestureHandler(handler, ev);
       }
     }
-    // deliver event to DragGestureHandler
-    // and to other handlers so they can get cancelled
+    // deliver event to DragGestureHandler and to other handlers so they can get cancelled
     for (int i = 0; i < handlersCount; i++) {
       if (!(mPreparedHandlers[i] instanceof DropGestureHandler)) {
         deliverEventToGestureHandler(mPreparedHandlers[i], ev);
       }
+    }
+
+    // finalize
+    // once the event has been delivered we can clear the activeDropHandler if necessary
+    // and cancel exited DropGestureHandlers (this is important for DragGestureHandler event data)
+    if (activeDragHandler != null && action == DragEvent.ACTION_DRAG_EXITED) {
+      activeDragHandler.setDropHandler(null);
+    }
+    for (int i = 0; i < count; i++) {
+      handler = handlers[i];
+      assert handler != null;
+      handler.tryCancel();
     }
     DragGestureUtils.recycle(ev);
   }

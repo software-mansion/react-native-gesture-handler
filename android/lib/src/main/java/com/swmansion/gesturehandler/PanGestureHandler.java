@@ -137,7 +137,7 @@ public class PanGestureHandler<T extends PanGestureHandler> extends GestureHandl
     return this;
   }
 
-  private boolean shouldActivate() {
+  protected boolean shouldActivate() {
     float dx = mLastX - mStartX + mOffsetX;
     if (mActiveOffsetXStart != MIN_VALUE_IGNORE && dx < mActiveOffsetXStart) {
       return true;
