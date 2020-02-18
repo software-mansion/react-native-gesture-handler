@@ -1,7 +1,6 @@
 package com.swmansion.gesturehandler.react;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.view.ViewGroup;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -354,12 +352,21 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static abstract class DragDropGestureHandlerFactory<T extends DragDropGestureHandler> extends PanGestureHandlerBaseFactory<T> {
 
     private static class ReactDragGestureHandler extends DragGestureHandler<ReadableMap> {
+      ReactApplicationContext mContext;
       ReactDragGestureHandler(Context context) {
         super(context);
+        mContext = (ReactApplicationContext) context;
+      }
+
+      ReactApplicationContext getContext() {
+        return mContext;
       }
     }
 
     private static class DragGestureHandlerFactory extends DragDropGestureHandlerFactory<ReactDragGestureHandler> {
+
+      private static final String KEY_SHADOW_ENABLED = "shadowEnabled";
+      private static final String KEY_SHADOW_VIEW_TAG = "shadowViewTag";
 
       @Override
       public Class<ReactDragGestureHandler> getType() {
@@ -374,6 +381,30 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       @Override
       public ReactDragGestureHandler create(Context context) {
         return new ReactDragGestureHandler(context);
+      }
+
+      @Override
+      public void configure(final ReactDragGestureHandler handler, ReadableMap config) {
+        super.configure(handler, config);
+        if(config.hasKey(KEY_SHADOW_ENABLED)) {
+          handler.setEnableShadow(config.getBoolean(KEY_SHADOW_ENABLED));
+        }
+        if(config.hasKey(KEY_SHADOW_VIEW_TAG)) {
+          if (config.getType(KEY_SHADOW_VIEW_TAG) == ReadableType.Null) {
+            handler.setShadowBuilderView(null);
+          } else if (config.getType(KEY_SHADOW_VIEW_TAG) == ReadableType.Number) {
+            final int shadowViewTag = config.getInt(KEY_SHADOW_VIEW_TAG);
+            handler.getContext()
+                    .getNativeModule(UIManagerModule.class)
+                    .addUIBlock(new UIBlock() {
+                      @Override
+                      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+                        View view = nativeViewHierarchyManager.resolveView(shadowViewTag);
+                        handler.setShadowBuilderView(view);
+                      }
+                    });
+          }
+        }
       }
     }
 
