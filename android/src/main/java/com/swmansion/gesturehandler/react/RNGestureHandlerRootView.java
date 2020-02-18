@@ -65,14 +65,6 @@ public class RNGestureHandlerRootView extends ReactViewGroup {
   }
 
   @Override
-  public boolean dispatchDragEvent(DragEvent event) {
-    if (Assertions.assertNotNull(mRootHelper).dispatchDragEvent(event)) {
-      return true;
-    }
-    return super.dispatchDragEvent(event);
-  }
-
-  @Override
   public boolean dispatchTouchEvent(MotionEvent ev) {
     if (mEnabled && Assertions.assertNotNull(mRootHelper).dispatchTouchEvent(ev)) {
       return true;
@@ -87,4 +79,14 @@ public class RNGestureHandlerRootView extends ReactViewGroup {
     }
     super.requestDisallowInterceptTouchEvent(disallowIntercept);
   }
+
+  @Override
+  public boolean dispatchDragEvent(DragEvent event) {
+    boolean handleNative = super.dispatchDragEvent(event);
+    if (Assertions.assertNotNull(mRootHelper).dispatchDragEvent(event)) {
+      return true;
+    }
+    return handleNative;
+  }
+
 }
