@@ -4,7 +4,6 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -69,6 +68,20 @@ public class GestureHandlerOrchestrator {
             }
           };
 
+  private static final GestureHandlerAssertions sAssertHandler = new GestureHandlerAssertions() {
+    @Override
+    public boolean assertTrue(GestureHandler handler) {
+      return true;
+    }
+  };
+
+  private static final GestureHandlerAssertions sAssertDropHandler = new GestureHandlerAssertions() {
+    @Override
+    public boolean assertTrue(GestureHandler handler) {
+      return handler instanceof DropGestureHandler;
+    }
+  };
+
   private final ViewGroup mWrapperView;
   private final GestureHandlerRegistry mHandlerRegistry;
   private final ViewConfigurationHelper mViewConfigHelper;
@@ -95,6 +108,8 @@ public class GestureHandlerOrchestrator {
   private DragGestureUtils.DerivedMotionEvent mDerivedMotionEvent = new DragGestureUtils.DerivedMotionEvent();
   private ClipDescription mLastClipDescription;
   private ClipData mLastClipData;
+  private float mLastDragX;
+  private float mLastDragY;
 
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
@@ -142,13 +157,14 @@ public class GestureHandlerOrchestrator {
     int action = event.getAction();
     MotionEvent motionEvent = mDerivedMotionEvent.obtain(event);
     if (action == DragEvent.ACTION_DRAG_ENDED) {
-      event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, motionEvent.getX(), motionEvent.getY(),
+      event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, mLastDragX, mLastDragY,
               event.getResult(), mLastClipData, mLastClipDescription);
     }
     mIsHandlingTouch = true;
     extractGestureHandlers(event);
     deliverEventToGestureHandlers(motionEvent);
     deliverEventToGestureHandlers(event);
+    // // TODO: 18/02/2020 maybe the system doesn't fire a END after a drop
     /*
     if (action == DragEvent.ACTION_DROP) {
       DragEvent ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, event.getX(), event.getY(),
@@ -161,17 +177,20 @@ public class GestureHandlerOrchestrator {
     mIsHandlingTouch = false;
     if (action == DragEvent.ACTION_DRAG_ENDED) {
       mIsDragging = false;
-      scheduleFinishedHandlersCleanup();
       mLastClipDescription = null;
       mLastClipData = null;
     } else {
       mLastClipDescription = event.getClipDescription();
       mLastClipData = event.getClipData();
-    }
-    if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
-      cleanupFinishedHandlers();
+      mLastDragX = event.getX();
+      mLastDragY = event.getY();
     }
     motionEvent.recycle();
+    if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
+      cleanupFinishedHandlers();
+    } else {
+      cleanupFinishedDropHandlers();
+    }
     return mIsDragging;
   }
 
@@ -184,10 +203,18 @@ public class GestureHandlerOrchestrator {
   }
 
   private void cleanupFinishedHandlers() {
+    cleanupFinishedHandlers(sAssertHandler);
+  }
+
+  private void cleanupFinishedDropHandlers() {
+    cleanupFinishedHandlers(sAssertDropHandler);
+  }
+
+  private void cleanupFinishedHandlers(GestureHandlerAssertions assertHandler) {
     boolean shouldCleanEmptyCells = false;
     for (int i = mGestureHandlersCount - 1; i >= 0; i--) {
       GestureHandler handler = mGestureHandlers[i];
-      if (isFinished(handler.getState()) && !handler.mIsAwaiting) {
+      if (isFinished(handler.getState()) && !handler.mIsAwaiting && assertHandler.assertTrue(handler)) {
         mGestureHandlers[i] = null;
         shouldCleanEmptyCells = true;
         handler.reset();
@@ -436,7 +463,7 @@ public class GestureHandlerOrchestrator {
     if (activeDragHandler != null && action == DragEvent.ACTION_DRAG_EXITED) {
       activeDragHandler.setDropHandler(null);
     }
-    for (int i = 0; i < count; i++) {
+    for (int i = count - 1; i >= 0; i--) {
       handler = handlers[i];
       assert handler != null;
       handler.tryCancel();

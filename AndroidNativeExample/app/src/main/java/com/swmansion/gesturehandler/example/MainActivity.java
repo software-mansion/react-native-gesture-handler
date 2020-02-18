@@ -364,7 +364,8 @@ public class MainActivity extends Activity {
                 .setOnTouchEventListener(new OnDragEventListenerImpl<DragGestureHandler<Object>>() {
                     @Override
                     public void onDragEvent(DragGestureHandler<Object> handler, DragEvent event) {
-                        Log.d("Drag", "Drag action " + event.getAction() + ", dropTarget " + handler.getDropTarget());
+                        Log.d("Drag", "Drag action " + event.getAction() + ", dropTarget " + handler.getDropTarget() + " " +
+                                new PointF(event.getX(), event.getY()));
                         int action = event.getAction();
                         final View view = handler.getView();
                         switch (action) {

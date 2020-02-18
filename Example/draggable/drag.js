@@ -6,7 +6,8 @@ import {
   ScrollView,
   State,
   DragGestureHandler,
-  DropGestureHandler
+  DropGestureHandler,
+  TapGestureHandler
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../config';
@@ -44,6 +45,7 @@ export class DraggableBox extends Component {
 
   _panRef = React.createRef();
   _dragRef = React.createRef();
+  _tapRef = React.createRef();
 
   render() {
     return (
@@ -55,31 +57,40 @@ export class DraggableBox extends Component {
         waitFor={this._dragRef}
         enabled={false}
       >
-        <Animated.View collapsable={false}>
-          <DragGestureHandler
-            ref={this._dragRef}
-            //simultaneousHandlers={this._panRef}
-            type={[0]}
-            {...this.props}
-            data={{ a: 'b' }}
-            onGestureEvent={e => console.log(e.nativeEvent)}
-            onHandlerStateChange={e => console.log('drag', e.nativeEvent)}
-          //enabled={false}
-          >
-            <Animated.View
-              style={[
-                styles.box,
-                {
-                  transform: [
-                    { translateX: this._translateX },
-                    { translateY: this._translateY },
-                  ],
-                },
-                this.props.boxStyle,
-              ]}
-            />
-          </DragGestureHandler>
-        </Animated.View>
+        <TapGestureHandler
+          ref={this._tapRef}
+          onGestureEvent={e => console.log('tap')}
+          onHandlerStateChange={e => console.log('tap')}
+          numberOfTaps={1}
+        >
+          <Animated.View collapsable={false}>
+            <DragGestureHandler
+              ref={this._dragRef}
+              waitFor={this._tapRef}
+              //simultaneousHandlers={this._panRef}
+              type={[0]}
+              {...this.props}
+              data={{ a: 'b' }}
+              onGestureEvent={e => console.log(e.nativeEvent)}
+              onHandlerStateChange={e => console.log('drag', e.nativeEvent)}
+              enabled={false}
+            >
+              <Animated.View
+                style={[
+                  styles.box,
+                  {
+                    transform: [
+                      { translateX: this._translateX },
+                      { translateY: this._translateY },
+                    ],
+                  },
+                  this.props.boxStyle,
+                ]}
+              />
+            </DragGestureHandler>
+          </Animated.View>
+
+        </TapGestureHandler>
       </PanGestureHandler>
 
 
@@ -116,7 +127,7 @@ export default function DragExample(props) {
         //simultaneousHandlers={scrollRef}
         type={[0]}
         data={{ a: 'b' }}
-        //onGestureEvent={e => console.log('dragG', e.nativeEvent.dragState)}
+        onGestureEvent={e => console.log('dragG', e.nativeEvent.dragState)}
         //onHandlerStateChange={e => console.log('drag', e.nativeEvent.dragState)}
         onHandlerStateChange={e => e.nativeEvent.state === State.BEGAN && move(false)}
       //enabled={false}

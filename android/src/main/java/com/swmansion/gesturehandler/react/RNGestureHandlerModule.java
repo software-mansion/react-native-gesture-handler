@@ -447,7 +447,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void configure(T handler, ReadableMap config) {
       super.configure(handler, config);
-      Log.d("DragDrop", "configure: " + config);
       if(config.hasKey(KEY_DRAG_TYPE)) {
         ArrayList<Integer> types = new ArrayList<>();
         ReadableType readableType = config.getType(KEY_DRAG_TYPE);
