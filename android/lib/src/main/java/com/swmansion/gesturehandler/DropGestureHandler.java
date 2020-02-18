@@ -50,7 +50,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
         return super.shouldRecognizeSimultaneously(handler) || handler instanceof DragGestureHandler;
     }
-
+    
     /**
      * @param event receives an event with {@link DragGestureHandler} {@link DragEvent} action
      */
@@ -64,14 +64,18 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         boolean pointerIsInside = isWithinBounds();
 
         if (isProgressEvent(event)) {
-            if (pointerIsInside && !mPointerState) {
+            if (action == DragEvent.ACTION_DROP) {
+                if (mIsActive) {
+                    mDragAction = DragEvent.ACTION_DROP;
+                    mResult = true;
+                } else {
+                    mDragAction = DragEvent.ACTION_DRAG_ENDED;
+                }
+            } else if (pointerIsInside && !mPointerState) {
                 mDragAction = DragEvent.ACTION_DRAG_ENTERED;
             } else if (!pointerIsInside) {
                 mDragAction = DragEvent.ACTION_DRAG_EXITED;
-            } else if (action == DragEvent.ACTION_DROP && mIsActive) {
-                mDragAction = DragEvent.ACTION_DROP;
-                mResult = true;
-            } else {
+            }else {
                 mDragAction = DragEvent.ACTION_DRAG_LOCATION;
             }
         } else {
