@@ -5,14 +5,19 @@ import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.util.Log;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.os.Build;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_EVENT_NAME;
@@ -29,9 +34,22 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     private @Nullable DropGestureHandler<T> mLastDropHandler = null;
     private int mDragAction;
     private boolean mIsDragging = false;
+    private @Nullable View mShadowBuilderView;
+    private boolean mShadowEnabled = true;
+    private float mOriginalElevation;
 
     public DragGestureHandler(Context context) {
         super(context);
+    }
+
+    public DragGestureHandler<T> setShadowBuilderView(@Nullable View view) {
+        mShadowBuilderView = view;
+        return this;
+    }
+
+    public DragGestureHandler<T> setEnableShadow(boolean enable) {
+        mShadowEnabled = enable;
+        return this;
     }
 
     public DropGestureHandler<T> getDropHandler() {
@@ -109,12 +127,41 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         );
     }
 
+    private void setElevation() {
+        View view = getView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mOriginalElevation = view.getElevation();
+            view.setElevation(Float.MAX_VALUE);
+        } else {
+            mOriginalElevation = ViewCompat.getElevation(view);
+            ViewCompat.setElevation(view, Integer.MAX_VALUE);
+        }
+    }
+
+    private void resetElevation() {
+        View view = getView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.setElevation(mOriginalElevation);
+        } else {
+            ViewCompat.setElevation(view, mOriginalElevation);
+        }
+    }
+
     private void startDragging() {
         mOrchestrator.mIsDragging = true;
         mIsDragging = true;
         ClipData data = createClipData();
-        View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(getView());
-        //View.DragShadowBuilder shadowBuilder = new SyncedDragShadowBuilder(getView());
+        View.DragShadowBuilder shadowBuilder;
+        if (mShadowEnabled) {
+            //View.DragShadowBuilder = new SyncedDragShadowBuilder(getView());
+            shadowBuilder = new View.DragShadowBuilder(
+                    mShadowBuilderView != null ?
+                            mShadowBuilderView :
+                            getView());
+        } else {
+            shadowBuilder = new View.DragShadowBuilder(null);
+            setElevation();
+        }
         int flags = DragGestureUtils.getFlags();
         getView().startDrag(data, shadowBuilder, null, flags);
     }
@@ -149,6 +196,14 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     }
 
     @Override
+    protected void onStateChange(int newState, int previousState) {
+        if (GestureHandlerOrchestrator.isFinished(newState) && !mShadowEnabled) {
+           resetElevation();
+        }
+        super.onStateChange(newState, previousState);
+    }
+
+    @Override
     protected void onReset() {
         super.onReset();
         mIsDragging = false;
@@ -159,14 +214,28 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     }
 
     private static class SyncedDragShadowBuilder extends View.DragShadowBuilder {
-        private View mView;
+        private WeakReference<View> mView;
         SyncedDragShadowBuilder(View view) {
-            mView = view;
+            //super(view);
+            mView = new WeakReference<>(view);
         }
 
         @Override
         public void onDrawShadow(Canvas canvas) {
-            mView.draw(canvas);
+            final View view = mView.get();
+            if (view != null) {
+                view.draw(canvas);
+            }
+            Paint paint = new Paint();
+            paint.setColor(Color.rgb((int)(Math.random()*255),(int)(Math.random()*255),(int)(Math.random()*255)));
+            canvas.drawRect(0,0, 50, 50, paint);
+        }
+
+        @Override
+        public void onProvideShadowMetrics(Point shadowSize, Point shadowTouchPoint) {
+            final View view = mView.get();
+            shadowSize.set(view.getWidth(), view.getHeight());
+            shadowTouchPoint.set(shadowSize.x / 2, shadowSize.y / 2);
         }
     }
 }

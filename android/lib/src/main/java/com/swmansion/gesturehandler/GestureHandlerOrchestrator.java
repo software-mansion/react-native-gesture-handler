@@ -465,8 +465,9 @@ public class GestureHandlerOrchestrator {
     }
     for (int i = count - 1; i >= 0; i--) {
       handler = handlers[i];
-      assert handler != null;
-      handler.tryCancel();
+      if(handler != null) {
+        handler.tryCancel();
+      }
     }
     DragGestureUtils.recycle(ev);
   }
@@ -800,7 +801,7 @@ public class GestureHandlerOrchestrator {
     return true;
   }
 
-  private static boolean isFinished(int state) {
+  static boolean isFinished(int state) {
     return state == GestureHandler.STATE_CANCELLED || state == GestureHandler.STATE_FAILED
             || state == GestureHandler.STATE_END;
   }

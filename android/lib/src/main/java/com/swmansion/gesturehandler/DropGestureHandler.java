@@ -59,8 +59,9 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     }
 
     void tryCancel() {
-        if (mShouldCancelNext) {
+        if (mShouldCancelNext && !mAwaitingCancellation) {
             cancel();
+            mAwaitingCancellation = true;
         }
     }
 
@@ -69,7 +70,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
      */
     @Override
     protected void onHandle(DragEvent event) {
-        if (!mOrchestrator.mIsDragging) {
+        if (!mOrchestrator.mIsDragging || !shouldHandleEvent(event)) {
             fail();
             return;
         } else if (mShouldCancelNext) {

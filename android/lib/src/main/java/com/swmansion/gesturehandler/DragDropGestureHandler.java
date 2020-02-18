@@ -51,8 +51,10 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
     public abstract int getDropTarget();
     public abstract int getDragAction();
 
-    private boolean shouldHandleEvent(DragEvent event) {
-        if (event.getClipDescription() != null) {
+    protected boolean shouldHandleEvent(DragEvent event) {
+        if (mDTypes.size() == 0) {
+            return true;
+        } else if (event.getClipDescription() != null) {
             String desc;
             for (int i = 0; i < event.getClipDescription().getMimeTypeCount(); i++) {
                 desc = event.getClipDescription().getMimeType(i);
@@ -104,10 +106,6 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
     protected void onHandle(DragEvent event) {
         // PanGestureHandler is in charge of moving to BEGIN/ACTIVE state
         int action = event.getAction();
-        if (!shouldHandleEvent(event)) {
-            fail();
-            return;
-        }
         if (action == DragEvent.ACTION_DRAG_ENDED && getState() == STATE_ACTIVE) {
             end();
         } else if (action == DragEvent.ACTION_DRAG_ENDED) {
