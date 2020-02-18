@@ -11,7 +11,6 @@ import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.swmansion.gesturehandler.DragGestureUtils;
 import com.facebook.react.views.modal.RNGHModalUtils;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
@@ -99,7 +98,6 @@ public class RNGestureHandlerRootHelper {
 
     @Override
     protected void onHandle(DragEvent event) {
-      Log.d("Drag", "onHandle: root helper " + stateToString(getState() )+ " " + event.getAction());
       int currentState = getState();
       if (currentState == STATE_UNDETERMINED) {
         begin();

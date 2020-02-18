@@ -42,10 +42,11 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
 
   @Override
   public boolean dispatchDragEvent(DragEvent event) {
+    boolean handleNative = super.dispatchDragEvent(event);
     if (mGestureRootHelper != null && mGestureRootHelper.dispatchDragEvent(event)) {
       return true;
     }
-    return super.dispatchDragEvent(event);
+    return handleNative;
   }
 
   /**
