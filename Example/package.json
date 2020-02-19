@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@react-native-community/slider": "^2.0.0",
-    "@react-native-community/viewpager": "^1.1.6",
+    "@react-native-community/viewpager": "^3.3.0",
     "@react-navigation/web": "^1.0.0-alpha.9",
     "fbjs": "^1.0.0",
     "hammerjs": "^2.0.8",
@@ -31,6 +31,8 @@
     "@babel/core": "^7.6.0",
     "@babel/runtime": "^7.6.0",
     "@react-native-community/cli": "^1.9.4",
+    "@types/react": "^16.9.20",
+    "@types/react-native": "^0.61.15",
     "babel-jest": "^24.9.0",
     "babel-plugin-module-resolver": "^3.2.0",
     "glob-to-regexp": "^0.4.0",
