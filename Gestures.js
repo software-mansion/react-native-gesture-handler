@@ -306,5 +306,7 @@ export const DropGestureHandler = createHandler(
       PropTypes.arrayOf(PropTypes.number),
     ]).isRequired
   },
-  {}
+  {},
+  null,
+  { type: true }
 );
