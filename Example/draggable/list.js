@@ -16,7 +16,7 @@ function DropZone({ item, index, shadowEnabled, swap }) {
       move(false)
     } else if (state == State.END) {
       setDropState(true)
-      console.log('swapping', index, data.index);
+      console.log('swapping', index, data);
       swap(index, data.index)
     }
   });
@@ -37,7 +37,7 @@ function DropZone({ item, index, shadowEnabled, swap }) {
     translateX.setValue(0);
     translateY.setValue(0);
     if (e.nativeEvent.state === State.END) {
-      console.log(e.nativeEvent)
+      //console.log(e.nativeEvent)
     }
   });
 

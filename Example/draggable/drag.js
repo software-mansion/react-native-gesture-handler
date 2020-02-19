@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   box: {
-    width: 150,
-    height: 150,
+    width: 50,
+    height: 50,
     alignSelf: 'center',
     backgroundColor: 'plum',
     margin: 10,
