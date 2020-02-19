@@ -285,12 +285,16 @@ export const DragGestureHandler = createHandler(
       PropTypes.number,
       PropTypes.arrayOf(PropTypes.number),
     ]).isRequired,
+    shadowEnabled: PropTypes.bool,
+    shadowViewTag: PropTypes.number
   },
   {},
   null,
   {
     data: true,
-    type: true
+    type: true,
+    shadowEnabled: true,
+    shadowViewTag: true
   }
 );
 export const DropGestureHandler = createHandler(
