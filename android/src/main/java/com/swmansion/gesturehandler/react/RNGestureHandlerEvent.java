@@ -8,7 +8,7 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.swmansion.gesturehandler.GestureHandler;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class RNGestureHandlerEvent extends Event<RNGestureHandlerEvent> {
 
