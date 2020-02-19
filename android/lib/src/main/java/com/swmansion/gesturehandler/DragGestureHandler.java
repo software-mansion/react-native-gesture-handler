@@ -25,7 +25,7 @@ import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DRAG_TARGET;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
-import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPE;
+import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPES;
 
 public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGestureHandler<T>> {
 
@@ -111,7 +111,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     private ClipData createClipData() {
         Intent intent = new Intent(Intent.ACTION_RUN);
         intent.putExtra(KEY_DRAG_TARGET, getView().getId());
-        intent.putIntegerArrayListExtra(KEY_TYPE, mDTypes);
+        intent.putIntegerArrayListExtra(KEY_TYPES, mDTypes);
         intent.putExtra(KEY_SOURCE_APP, getView().getContext().getPackageName());
         if (mDataResolver != null) {
             intent.putExtra(KEY_DATA, mDataResolver.stringify());

@@ -53,14 +53,14 @@ function DropZone({ item, index, shadowEnabled, swap }) {
       //simultaneousHandlers={scrollRef}
       onGestureEvent={onGestureEvent}
       onHandlerStateChange={onHandlerStateChange}
-      type={item % 2 === 0 ? [0, 1] : 1}
+      types={item % 2 === 0 ? [0, 1] : 1}
       data={{ index, item }}
       shadowViewTag={shadowTag}
       shadowEnabled={shadowEnabled}
     >
       <Animated.View collapsable={false}>
         <DropGestureHandler
-          type={item % 2 === 0 ? 0 : 1}
+          types={item % 2 === 0 ? 0 : 1}
           onHandlerStateChange={cb}
         >
           <Animated.View

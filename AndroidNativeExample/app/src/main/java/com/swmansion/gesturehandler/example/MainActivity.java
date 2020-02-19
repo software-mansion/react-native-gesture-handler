@@ -422,8 +422,8 @@ public class MainActivity extends Activity {
                         .setColorForState(STATE_END, Color.RED);
 
         final DragGestureHandler<String[]> dragHandler = new DragGestureHandler<String[]>(this)
-                .setType(dragTypes)
-                .setData(new DataResolverStringImpl())
+                .setTypes(dragTypes)
+                .setDataResolver(new DataResolverStringImpl())
                 .setOnTouchEventListener(dragEventListener);
 
         // Native click events should work as expected assuming the view is wrapped with
@@ -456,7 +456,7 @@ public class MainActivity extends Activity {
         });
 
         DropGestureHandler sDropHandler = new DropGestureHandler<String[]>(this)
-                .setData(new DataResolverStringImpl())
+                .setDataResolver(new DataResolverStringImpl())
                 .setOnTouchEventListener(new DragDropEventListener<String[], DropGestureHandler<String[]>>());
         //
         registry.registerHandlerForView(scrollView, scrollHandler)
@@ -491,7 +491,7 @@ public class MainActivity extends Activity {
 
         registry.registerHandlerForView(scrollView, new DropGestureHandler<>(this))
                 .setEnabled(false)
-                .setType(dragTypes)
+                .setTypes(dragTypes)
                 .setOnTouchEventListener(
                         new DragDropEventListener<Object, DropGestureHandler<Object>>()
                                 .setColorForState(GestureHandler.STATE_ACTIVE, Color.GREEN)
@@ -500,7 +500,7 @@ public class MainActivity extends Activity {
                 );
 
         registry.registerHandlerForView(blockChild, new DropGestureHandler<>(this))
-                .setType(dragTypes)
+                .setTypes(dragTypes)
                 .setOnTouchEventListener(
                         new DragDropEventListener<Object, DropGestureHandler<Object>>()
                                 .setColorForState(GestureHandler.STATE_ACTIVE, Color.GREEN)
@@ -509,7 +509,7 @@ public class MainActivity extends Activity {
                 );
 
         registry.registerHandlerForView(blockChild2, new DropGestureHandler<>(this))
-                .setType(dragTypes)
+                .setTypes(dragTypes)
                 .setOnTouchEventListener(
                         new DragDropEventListener<Object, DropGestureHandler<Object>>() {
                             @Override
@@ -526,7 +526,7 @@ public class MainActivity extends Activity {
                 );
 
         registry.registerHandlerForView(largeBlock, new DropGestureHandler<>(this))
-                .setType(dragTypes)
+                .setTypes(dragTypes)
                 .setOnTouchEventListener(
                         new DragDropEventListener<Object, DropGestureHandler<Object>>()
                                 .setColorForState(GestureHandler.STATE_ACTIVE, Color.YELLOW)

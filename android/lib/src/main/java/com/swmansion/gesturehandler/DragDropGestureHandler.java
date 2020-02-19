@@ -29,7 +29,7 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
         return mDTypes;
     }
 
-    public C setType(ArrayList<Integer> types) {
+    public C setTypes(ArrayList<Integer> types) {
         mDTypes.clear();
         if (types != null) {
             mDTypes.addAll(types);
@@ -37,7 +37,7 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
         return (C) this;
     }
 
-    public C setData(DragGestureUtils.DataResolver<T> dataResolver) {
+    public C setDataResolver(DragGestureUtils.DataResolver<T> dataResolver) {
         mDataResolver = dataResolver;
         return (C) this;
     }

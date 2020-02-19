@@ -28,7 +28,7 @@ public class DragGestureUtils {
     public static final String KEY_SOURCE_APP = "sourceApp";
     public static final String KEY_DRAG_TARGET = "dragTarget";
     public static final String KEY_DROP_TARGET = "dropTarget";
-    public static final String KEY_TYPE = "type";
+    public static final String KEY_TYPES = "types";
 
     static int getFlags() {
         /*

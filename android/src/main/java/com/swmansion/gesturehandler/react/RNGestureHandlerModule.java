@@ -91,7 +91,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_NUMBER_OF_POINTERS = "numberOfPointers";
   private static final String KEY_DIRECTION = "direction";
   private static final String KEY_DRAG_DATA = "data";
-  private static final String KEY_DRAG_TYPE = "type";
+  private static final String KEY_DRAG_TYPES = "types";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
           implements RNGestureHandlerEventDataExtractor<T> {
@@ -411,7 +411,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     private static class ReactDropGestureHandler extends DropGestureHandler<ReadableMap> {
       ReactDropGestureHandler(Context context) {
         super(context);
-        setData(sCommonResolver);
+        setDataResolver(sCommonResolver);
       }
     }
 
@@ -484,24 +484,24 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void configure(T handler, ReadableMap config) {
       super.configure(handler, config);
-      if(config.hasKey(KEY_DRAG_TYPE)) {
+      if(config.hasKey(KEY_DRAG_TYPES)) {
         ArrayList<Integer> types = new ArrayList<>();
-        ReadableType readableType = config.getType(KEY_DRAG_TYPE);
+        ReadableType readableType = config.getType(KEY_DRAG_TYPES);
         if (readableType == ReadableType.Number) {
-          types.add(config.getInt(KEY_DRAG_TYPE));
+          types.add(config.getInt(KEY_DRAG_TYPES));
         } else if (readableType == ReadableType.Array) {
-          ReadableArray typeArr = config.getArray(KEY_DRAG_TYPE);
+          ReadableArray typeArr = config.getArray(KEY_DRAG_TYPES);
           if (typeArr != null) {
             for (int i = 0; i < typeArr.size(); i++) {
               types.add(typeArr.getInt(i));
             }
           }
         }
-        handler.setType(types);
+        handler.setTypes(types);
       }
 
       if(config.hasKey(KEY_DRAG_DATA) && config.getType(KEY_DRAG_DATA) == ReadableType.Map) {
-        handler.setData(new MapResolver(config.getMap(KEY_DRAG_DATA)));
+        handler.setDataResolver(new MapResolver(config.getMap(KEY_DRAG_DATA)));
       }
     }
 
