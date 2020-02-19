@@ -20,6 +20,8 @@ declare module 'react-native-gesture-handler' {
     ViewProps,
   } from 'react-native';
 
+  type Map = { [index: string]: any };
+
   /* GESTURE HANDLER STATE */
 
   export enum Directions {
@@ -36,6 +38,15 @@ declare module 'react-native-gesture-handler' {
     CANCELLED,
     ACTIVE,
     END,
+  }
+
+  export enum DragState {
+    BEGAN,
+    ACTIVE,
+    DROPPED,
+    END,
+    ENTERED,
+    EXITED
   }
 
   /* STATE CHANGE EVENTS */
@@ -132,7 +143,7 @@ declare module 'react-native-gesture-handler' {
   export interface LongPressGestureHandlerGestureEvent
     extends GestureHandlerGestureEvent {
     nativeEvent: GestureHandlerGestureEventNativeEvent &
-      LongPressGestureHandlerEventExtra;
+    LongPressGestureHandlerEventExtra;
   }
 
   interface PanGestureHandlerEventExtra {
@@ -156,6 +167,40 @@ declare module 'react-native-gesture-handler' {
     extends GestureHandlerGestureEvent {
     nativeEvent: GestureHandlerGestureEventNativeEvent &
     PanGestureHandlerEventExtra;
+  }
+
+  interface DragGestureHandlerEventExtra extends PanGestureHandlerEventExtra {
+    dragTarget: number,
+    dropTarget: number,
+    dragState: DragState
+  }
+
+  export interface DragGestureHandlerStateChangeEvent
+    extends GestureHandlerStateChangeEvent {
+    nativeEvent: GestureHandlerStateChangeNativeEvent &
+    DragGestureHandlerEventExtra;
+  }
+
+  export interface DragGestureHandlerGestureEvent
+    extends GestureHandlerGestureEvent {
+    nativeEvent: GestureHandlerGestureEventNativeEvent &
+    DragGestureHandlerEventExtra;
+  }
+
+  interface DropGestureHandlerEventExtra<T extends Map> extends DragGestureHandlerEventExtra {
+    data: T | null
+  }
+
+  export interface DropGestureHandlerStateChangeEvent<T>
+    extends GestureHandlerStateChangeEvent {
+    nativeEvent: GestureHandlerStateChangeNativeEvent &
+    DropGestureHandlerEventExtra<T>;
+  }
+
+  export interface DropGestureHandlerGestureEvent<T extends Map>
+    extends GestureHandlerGestureEvent {
+    nativeEvent: GestureHandlerGestureEventNativeEvent &
+    DropGestureHandlerEventExtra<T>;
   }
 
   interface PinchGestureHandlerEventExtra {
@@ -316,6 +361,21 @@ declare module 'react-native-gesture-handler' {
     onHandlerStateChange?: (event: PanGestureHandlerStateChangeEvent) => void;
   }
 
+  export interface DragGestureHandlerProperties<T extends Map> extends PanGestureHandlerProperties {
+    types?: number | number[],
+    data?: T,
+    shadowEnabled?: boolean,
+    shadowViewTag?: number,
+    onGestureEvent?: (event: DragGestureHandlerGestureEvent) => void,
+    onHandlerStateChange?: (event: DragGestureHandlerStateChangeEvent) => void
+  }
+
+  export interface DropGestureHandlerProperties<T extends Map> extends PanGestureHandlerProperties {
+    types?: number | number[],
+    onGestureEvent?: (event: DropGestureHandlerGestureEvent<T>) => void,
+    onHandlerStateChange?: (event: DropGestureHandlerStateChangeEvent<T>) => void
+  }
+
   export interface PinchGestureHandlerProperties
     extends GestureHandlerProperties {
     onGestureEvent?: (event: PinchGestureHandlerGestureEvent) => void;
@@ -354,6 +414,14 @@ declare module 'react-native-gesture-handler' {
 
   export class PanGestureHandler extends React.Component<
     PanGestureHandlerProperties
+    > { }
+
+  export class DragGestureHandler<T extends Map> extends React.Component<
+    DragGestureHandlerProperties<T>
+    > { }
+
+  export class DropGestureHandler<T extends Map> extends React.Component<
+    DropGestureHandlerProperties<T>
     > { }
 
   export class PinchGestureHandler extends React.Component<
