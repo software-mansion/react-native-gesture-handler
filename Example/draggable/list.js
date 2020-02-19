@@ -1,11 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Animated, StyleSheet, Text } from 'react-native';
+import { Animated, StyleSheet, Text, findNodeHandle } from 'react-native';
 import { DragGestureHandler, DropGestureHandler, FlatList, State } from 'react-native-gesture-handler';
 import { USE_NATIVE_DRIVER } from '../config';
 
 function DropZone({ item, index, shadowEnabled, swap }) {
   const [dropState, setDropState] = useState(false);
   const [isInside, move] = useState(false);
+  const [tag, setTag] = useState(null);
   const cb = useCallback(e => {
     const { dragState, state, oldState, data } = e.nativeEvent;
     if (state == State.BEGAN) {
@@ -40,6 +41,12 @@ function DropZone({ item, index, shadowEnabled, swap }) {
       //console.log(e.nativeEvent)
     }
   });
+  const [shadowTag, setShadowTag] = useState(null);
+  const onShadowRef = useCallback(r => {
+    if (r && r.getNode() && item % 2 === 0) {
+      setShadowTag(findNodeHandle(r.getNode()))
+    }
+  }, [item]);
 
   return (
     <DragGestureHandler
@@ -48,7 +55,7 @@ function DropZone({ item, index, shadowEnabled, swap }) {
       onHandlerStateChange={onHandlerStateChange}
       type={item % 2 === 0 ? [0, 1] : 1}
       data={{ index, item }}
-      //shadowViewTag={tag}
+      shadowViewTag={shadowTag}
       shadowEnabled={shadowEnabled}
     >
       <Animated.View collapsable={false}>
@@ -70,6 +77,16 @@ function DropZone({ item, index, shadowEnabled, swap }) {
             ]}
           >
             <Text style={{ color: dropState ? 'white' : 'black' }}>{item}</Text>
+            <Animated.View
+              collapsable={false}
+              ref={onShadowRef}
+              style={[
+                styles.box,
+                { borderRadius: 50, opacity: 0, position: 'absolute' }
+              ]}
+            >
+              <Text style={{ color: dropState ? 'white' : 'black' }}>{item}</Text>
+            </Animated.View>
           </Animated.View>
         </DropGestureHandler>
       </Animated.View>

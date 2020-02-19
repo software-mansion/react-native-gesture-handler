@@ -163,7 +163,6 @@ export default function DragExample(props) {
         onGestureEvent={draggable1.onGestureEvent}
         onHandlerStateChange={draggable1.onHandlerStateChange}
         type={[0, 2, 3]}
-        text={dropZone1.text || 'I\'m hungry'}
         ref={dropZone1.onRef}
         //waitFor={this._tapRef}
         //simultaneousHandlers={this._panRef}
@@ -186,7 +185,7 @@ export default function DragExample(props) {
                     dropZone1.setText(!draggable1.shadowEnabled ? 'shadow enabled' : 'shadow disabled');
                     draggable1.setShadowEnabled(!draggable1.shadowEnabled);
                     setTimeout(() => {
-                      dropZone1.setText(text)
+                      dropZone1.setText(text);
                     }, 1000);
                   }
                 }}
@@ -199,7 +198,7 @@ export default function DragExample(props) {
                     dropZone1.dropStyle
                   ]}
                 >
-                  <Text numberOfLines={5} ellipsizeMode='tail'>{dropZone1.text || 'I\'m hungry'}</Text>
+                  <Text numberOfLines={5} ellipsizeMode='tail'>{dropZone1.text || 'I\'m hungry, tap me to change the way I drag'}</Text>
                 </Animated.View>
               </TapGestureHandler>
             </Animated.View>
