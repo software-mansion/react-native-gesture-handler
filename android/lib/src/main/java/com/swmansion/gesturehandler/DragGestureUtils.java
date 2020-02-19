@@ -128,8 +128,8 @@ public class DragGestureUtils {
     }
 
     public interface DataResolver<T> {
-        String toString();
-        T fromString(String source);
+        String stringify();
+        T parse(String source);
         T data();
     }
 

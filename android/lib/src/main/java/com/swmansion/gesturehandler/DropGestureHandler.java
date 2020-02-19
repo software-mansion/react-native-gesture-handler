@@ -1,10 +1,13 @@
 package com.swmansion.gesturehandler;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.view.DragEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+
+import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 
 public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGestureHandler<T>> {
 
@@ -14,6 +17,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     private boolean mPointerState = false;
     private boolean mShouldCancelNext = false;
     private boolean mAwaitingCancellation = false;
+    private @Nullable ClipData mLastClipData;
 
     private static boolean isProgressEvent(DragEvent event) {
         int action = event.getAction();
@@ -28,6 +32,13 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     @Override
     public int getDragTarget() {
         return mDragHandler != null && mDragHandler.getView() != null ? mDragHandler.getView().getId() : View.NO_ID;
+    }
+
+    @Override
+    public T getData() {
+        return mLastClipData != null ?
+                mDataResolver.parse(mLastClipData.getItemAt(0).getIntent().getStringExtra(KEY_DATA)) :
+                null;
     }
 
     @Override
@@ -100,6 +111,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         }
 
         mPointerState = pointerIsInside;
+        mLastClipData = event.getClipData();
 
         DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
                 event.getClipData(), event.getClipDescription());
@@ -128,5 +140,6 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         mResult = false;
         mShouldCancelNext = false;
         mAwaitingCancellation = false;
+        mLastClipData = null;
     }
 }

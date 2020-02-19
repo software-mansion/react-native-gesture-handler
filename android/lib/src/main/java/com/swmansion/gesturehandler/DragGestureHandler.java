@@ -64,6 +64,11 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         return mDropHandlers;
     }
 
+    @Override
+    public T getData() {
+        return mDataResolver != null ? mDataResolver.data() : null;
+    }
+
     boolean addDropHandler(@NonNull DropGestureHandler<T> handler) {
         if (!mDropHandlers.contains(handler)) {
             mDropHandlers.add(0, handler);
@@ -109,7 +114,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         intent.putIntegerArrayListExtra(KEY_TYPE, mDTypes);
         intent.putExtra(KEY_SOURCE_APP, getView().getContext().getPackageName());
         if (mDataResolver != null) {
-            intent.putExtra(KEY_DATA, mDataResolver.toString());
+            intent.putExtra(KEY_DATA, mDataResolver.stringify());
         }
         StringBuilder str = new StringBuilder(DRAG_MIME_TYPE + ":");
         for (int t: mDTypes) {

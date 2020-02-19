@@ -1,7 +1,6 @@
 package com.swmansion.gesturehandler;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 
@@ -38,15 +37,12 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
         return (C) this;
     }
 
-    public T getData() {
-        return mData;
-    }
-
     public C setData(DragGestureUtils.DataResolver<T> dataResolver) {
         mDataResolver = dataResolver;
         return (C) this;
     }
 
+    public abstract T getData();
     public abstract int getDragTarget();
     public abstract int getDropTarget();
     public abstract int getDragAction();

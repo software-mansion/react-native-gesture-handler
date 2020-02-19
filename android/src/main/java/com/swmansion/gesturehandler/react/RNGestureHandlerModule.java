@@ -411,13 +411,19 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     private static class ReactDropGestureHandler extends DropGestureHandler<ReadableMap> {
       ReactDropGestureHandler(Context context) {
         super(context);
+        setData(sCommonResolver);
       }
     }
+
+    private static MapResolver sCommonResolver = new MapResolver();
 
     private static class MapResolver implements DragGestureUtils.DataResolver<ReadableMap> {
 
       private ReadableMap mSource;
 
+      MapResolver() {
+        mSource = null;
+      }
       MapResolver(ReadableMap map) {
         mSource = map;
       }
@@ -427,7 +433,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
 
       @Override
-      public String toString() {
+      public String stringify() {
         try {
           return JSONUtil.toString(mSource);
         } catch (JSONException e) {
@@ -437,7 +443,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
 
       @Override
-      public ReadableMap fromString(String source) {
+      public ReadableMap parse(String source) {
         try {
           return JSONUtil.fromString(source);
         } catch (JSONException e) {
