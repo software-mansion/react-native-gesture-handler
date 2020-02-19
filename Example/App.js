@@ -16,6 +16,7 @@ import SwipeableTable from './swipeable';
 import Rows from './rows';
 import Multitap from './multitap';
 import Draggable from './draggable/drag';
+import DraggableList from './draggable/list';
 import ScaleAndRotate from './scaleAndRotate';
 import PagerAndDrawer from './pagerAndDrawer';
 import PanAndScroll from './panAndScroll';
@@ -41,7 +42,8 @@ YellowBox.ignoreWarnings([
 const SCREENS = {
   Rows: { screen: Rows, title: 'Table rows & buttons' },
   Multitap: { screen: Multitap },
-  Draggable: { screen: Draggable },
+  Draggable: { screen: Draggable, title: 'Drag & Drop' },
+  DraggableList: { screen: DraggableList, title: 'Drag & Drop in FlatList' },
   ScaleAndRotate: { screen: ScaleAndRotate, title: 'Scale, rotate & tilt' },
   ScaleAndRotateSimultaneously: {
     screen: doubleScalePinchAndRotate,

@@ -1,6 +1,5 @@
 import { AppRegistry } from 'react-native';
 
-//import ExampleApp from './App';
-import Draggable from './draggable/drag';
+import ExampleApp from './App';
 
-AppRegistry.registerComponent('Example', () => Draggable);
+AppRegistry.registerComponent('Example', () => ExampleApp);
