@@ -16,11 +16,11 @@ import java.util.Iterator;
 
 public class JSONUtil {
 
-    static WritableMap fromString(String stringifiedMap) throws JSONException {
+    static WritableMap parse(String stringifiedMap) throws JSONException {
         return convertJsonToMap(new JSONObject(stringifiedMap));
     }
 
-    static String toString(ReadableMap map) throws JSONException {
+    static String stringify(ReadableMap map) throws JSONException {
         return convertMapToJson(map).toString();
     }
 

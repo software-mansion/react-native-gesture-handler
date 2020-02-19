@@ -435,7 +435,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       @Override
       public String stringify() {
         try {
-          return JSONUtil.toString(mSource);
+          return JSONUtil.stringify(mSource);
         } catch (JSONException e) {
           handleError(e);
           return null;
@@ -445,7 +445,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       @Override
       public ReadableMap parse(String source) {
         try {
-          return JSONUtil.fromString(source);
+          return JSONUtil.parse(source);
         } catch (JSONException e) {
           handleError(e);
           return null;
