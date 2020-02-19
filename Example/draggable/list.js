@@ -101,7 +101,7 @@ export default function DragExample(props) {
         <Text style={{ fontSize: 20 }}>Drag & Drop has FINALLY arrived to React Native!</Text>
         <Text>Try swapping between the numbers.</Text>
         <Text>Even numbers can be swapped with any number.</Text>
-        <Text>Odd numbers can be swapped only on with odd numbers.</Text>
+        <Text>Odd numbers can be swapped only with odd numbers.</Text>
         <Text>Happy swapping</Text>
       </>}
       numColumns={5}
