@@ -36,8 +36,13 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
 
     @Override
     public T getData() {
-        return mLastClipData != null ?
-                mDataResolver.parse(mLastClipData.getItemAt(0).getIntent().getStringExtra(KEY_DATA)) :
+        return mLastClipData != null && mDataResolver != null ?
+                mDataResolver.parse(
+                        mLastClipData
+                                .getItemAt(0)
+                                .getIntent()
+                                .getStringExtra(KEY_DATA)
+                ) :
                 null;
     }
 
