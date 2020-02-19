@@ -16,7 +16,7 @@ function DropZone({ item, index, shadowEnabled, swap }) {
       move(false)
     } else if (state == State.END) {
       setDropState(true)
-      console.log('swapping', index, data);
+      console.log('swapping', { index, item }, data);
       swap(index, data.index)
     }
   });
