@@ -43,7 +43,7 @@ declare module 'react-native-gesture-handler' {
   export enum DragState {
     BEGAN,
     ACTIVE,
-    DROPPED,
+    DROP,
     END,
     ENTERED,
     EXITED

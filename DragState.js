@@ -1,7 +1,7 @@
 const DragState = {
   BEGAN: 1,
   ACTIVE: 2,
-  DROPPED: 3,
+  DROP: 3,
   END: 4,
   ENTERED: 5,
   EXITED: 6
