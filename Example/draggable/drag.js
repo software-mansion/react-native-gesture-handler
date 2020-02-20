@@ -11,6 +11,9 @@ import {
 
 import { USE_NATIVE_DRIVER } from '../config';
 import { LoremIpsum, LOREM_IPSUM } from '../common';
+import { PinchableBox } from '../scaleAndRotate/index';
+
+const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 const dropZoneReg = [];
 
@@ -39,20 +42,22 @@ function useDraggaable() {
     }
   }, [translateX, translateY]);
 
-  const style = useMemo(() => {
+  const extractStyle = useCallback((...transformations) => {
     return {
       transform: [
         { translateX },
         { translateY },
+        ...transformations
       ],
     }
   }, [translateX, translateY]);
 
-  return { onGestureEvent, onHandlerStateChange, style, shadowTag, onShadowRef, shadowEnabled, setShadowEnabled }
+  return { onGestureEvent, onHandlerStateChange, extractStyle, shadowTag, onShadowRef, shadowEnabled, setShadowEnabled }
 }
 
 function useDropZone() {
   const [dropState, setDropState] = useState(-1);
+  const dragRef = useRef();
   const [tag, setTag] = useState(null);
   const [text, setText] = useState(null);
   const onHandlerStateChange = useCallback(e => {
@@ -73,14 +78,17 @@ function useDropZone() {
       console.log(`dropping ${JSON.stringify(data)} to ${dropTarget} from ${dragTarget}`)
       setDropState(1);
       setTimeout(() => setDropState(-1), 1000)
-      if (data.text) {
+      if (data && data.text) {
         setText(data.text);
         const found = dropZoneReg.find((val) => dragTarget && val.tag === dragTarget);
         found && found.setText('I feel light')
       }
     }
   }, [tag]);
-  const onRef = useCallback(r => setTag(r && findNodeHandle(r) || null), []);
+  const onRef = useCallback(r => {
+    setTag(r && findNodeHandle(r) || null);
+    dragRef.current = r;
+  }, []);
   const dropStyle = useMemo(() => {
     let color;
     switch (dropState) {
@@ -96,7 +104,7 @@ function useDropZone() {
     }
     return { backgroundColor: color };
   }, [dropState]);
-  const reg = { dropState, tag, text, setText, onHandlerStateChange, onRef, dropStyle, setDropState };
+  const reg = { dropState, tag, text, setText, onHandlerStateChange, onRef, dropStyle, setDropState, dragRef };
   useMemo(() => {
     const index = dropZoneReg.findIndex((val) => val.tag === tag);
     index > -1 && dropZoneReg.splice(index, 1);
@@ -107,28 +115,59 @@ function useDropZone() {
 
 export default function DragExample(props) {
   const scrollRef = useRef();
-  const dragRef = useRef();
   const dropRef3 = useRef();
+  const panRef = useRef();
+  const pinchRef = useRef();
+  const rotationRef = useRef();
   const dropZone1 = useDropZone();
   const dropZone2 = useDropZone();
   const dropZone3 = useDropZone();
   const textDropZone1 = useDropZone();
+  const innerDropZone = useDropZone();
   const draggable1 = useDraggaable();
+  const shadowViewRef = useRef();
+  const [color, setColor] = useState('black');
+
+  const scrollX = useMemo(() => new Animated.Value(0), []);
+  const scrollY = useMemo(() => new Animated.Value(0), []);
+  const onScroll = useMemo(() => Animated.event(
+    [
+      {
+        nativeEvent: {
+          contentOffset: {
+            scrollX,
+            scrollY
+          }
+        },
+      },
+    ],
+    { useNativeDriver: USE_NATIVE_DRIVER }
+  ));
 
   useEffect(() => {
-    setTimeout(() => scrollRef.current && scrollRef.current.scrollTo({ x: 0, y: 150 }), 50)
-  }, [])
+    setTimeout(() => scrollRef.current && scrollRef.current.scrollTo({ x: 0, y: 150 }), 50);
+    const rgb = new Array(3).fill(0).map(() => Math.random() * 255);
+    const t = setInterval(() => setColor(`rgb(${rgb.join(',')})`), 5000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    if (dropZone3.text) {
+      setTimeout(() => dropZone3.setText(null), 1000)
+    }
+  }, [dropZone3.text]);
 
   return (
     <ScrollView
-      style={styles.scrollView}
+      style={styles.default}
       ref={scrollRef}
-      simultaneousHandlers={dragRef}
       contentOffset={{ x: 0, y: 50 }}
       onHandlerStateChange={e => console.log('scroll', e.nativeEvent)}
+      simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
+    //onScroll={onScroll}
     >
       <Animated.Image
-        ref={draggable1.onShadowRef}
+        ref={shadowViewRef}
         style={[
           styles.pinchableImage,
         ]}
@@ -136,10 +175,12 @@ export default function DragExample(props) {
       />
       <LoremIpsum words={40} />
       <DragGestureHandler
-        ref={dropZone3.onRef}
+        ref={innerDropZone.onRef}
         types={[0, 1]}
-        data={{ a: 'b', text: dropZone3.text }}
-        shadowViewTag={draggable1.shadowTag}
+        data={{ a: 'b', text: innerDropZone.text }}
+        //shadowViewTag={draggable1.shadowTag}
+        shadow={shadowViewRef}
+        waitFor={scrollRef}
       >
         <DropGestureHandler
           types={[2, 3]}
@@ -152,7 +193,22 @@ export default function DragExample(props) {
               dropZone3.dropStyle
             ]}
           >
-            <Text numberOfLines={5} ellipsizeMode='tail'>{dropZone3.text || 'Drag Me'}</Text>
+            {dropZone3.text &&
+              <Text style={{ fontWeight: 'bold' }}>
+                You MISSED
+              </Text>
+            }
+            <DropGestureHandler
+              types={[2, 3]}
+              onHandlerStateChange={innerDropZone.onHandlerStateChange}
+            >
+              <Text
+                style={[innerDropZone.dropStyle, { padding: 20 }]}
+                numberOfLines={5}
+                ellipsizeMode='tail'>
+                {innerDropZone.text || 'Drag Me'}
+              </Text>
+            </DropGestureHandler>
           </Animated.View>
         </DropGestureHandler>
       </DragGestureHandler>
@@ -161,18 +217,16 @@ export default function DragExample(props) {
         onHandlerStateChange={draggable1.onHandlerStateChange}
         types={[0, 2, 3]}
         ref={dropZone1.onRef}
-        //waitFor={this._tapRef}
-        //simultaneousHandlers={this._panRef}
         data={{
           a: ['b', 'foo', 'bar'],
           text: dropZone1.text || 'I\'m hungry'
         }}
         shadowEnabled={draggable1.shadowEnabled}
+        shadow={() => <Animated.View style={{ width: 50, height: 50, backgroundColor: color }} />}
       >
         <Animated.View collapsable={false}>
           <DropGestureHandler
             types={[1]}
-
             onHandlerStateChange={dropZone1.onHandlerStateChange}
           >
             <Animated.View collapsable={false}>
@@ -195,7 +249,7 @@ export default function DragExample(props) {
                 <Animated.View
                   style={[
                     styles.pane,
-                    draggable1.style,
+                    draggable1.extractStyle(),
                     dropZone1.dropStyle
                   ]}
                 >
@@ -232,20 +286,40 @@ export default function DragExample(props) {
           ]}
         >
           <Text>{dropZone2.dropState === 1 ? `THANKS` || dropZone2.text : `Drop Here or don't`}</Text>
+
         </Animated.View>
       </DropGestureHandler>
+      <DragGestureHandler
+        types={[1, 2]}
+        data={{ foo: 'bar', text: LOREM_IPSUM }}
+        ref={textDropZone1.onRef}
+        simultaneousHandlers={[scrollRef, panRef, pinchRef, rotationRef]}
+        waitFor={[panRef, pinchRef, rotationRef]}
+      >
+        <Animated.View style={{ flex: 1, height: 500 }}>
+          <PinchableBox
+            ref={r => {
+              if (r) {
+                panRef.current = r.panRef;
+                pinchRef.current = r.pinchRef;
+                rotationRef.current = r.rotationRef;
+              }
+            }}
+          />
+        </Animated.View>
+      </DragGestureHandler>
       <LoremIpsum />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
+  default: {
     flex: 1,
   },
   box: {
-    width: 75,
-    height: 75,
+    width: 120,
+    height: 120,
     alignSelf: 'center',
     backgroundColor: 'plum',
     margin: 10,
