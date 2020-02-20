@@ -333,7 +333,7 @@ declare module 'react-native-gesture-handler' {
     onHandlerStateChange?: (event: LongPressGestureHandlerStateChangeEvent) => void;
   }
 
-  export interface PanGestureHandlerProperties extends GestureHandlerProperties {
+  interface PanGestureHandlerProps extends GestureHandlerProperties {
     /** @deprecated  use activeOffsetX*/
     minDeltaX?: number;
     /** @deprecated  use activeOffsetY*/
@@ -357,20 +357,24 @@ declare module 'react-native-gesture-handler' {
     minPointers?: number;
     maxPointers?: number;
     avgTouches?: boolean;
+  }
+
+  export interface PanGestureHandlerProperties extends PanGestureHandlerProps {
     onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
     onHandlerStateChange?: (event: PanGestureHandlerStateChangeEvent) => void;
   }
 
-  export interface DragGestureHandlerProperties<T extends Map> extends PanGestureHandlerProperties {
+  export interface DragGestureHandlerProperties<T extends Map> extends PanGestureHandlerProps {
     types?: number | number[],
     data?: T,
     shadowEnabled?: boolean,
     shadowViewTag?: number,
+    shadow?: React.ReactElement | React.RefObject<any> | React.FunctionComponent,
     onGestureEvent?: (event: DragGestureHandlerGestureEvent) => void,
     onHandlerStateChange?: (event: DragGestureHandlerStateChangeEvent) => void
   }
 
-  export interface DropGestureHandlerProperties<T extends Map> extends PanGestureHandlerProperties {
+  export interface DropGestureHandlerProperties<T extends Map> extends PanGestureHandlerProps {
     types?: number | number[],
     onGestureEvent?: (event: DropGestureHandlerGestureEvent<T>) => void,
     onHandlerStateChange?: (event: DropGestureHandlerStateChangeEvent<T>) => void

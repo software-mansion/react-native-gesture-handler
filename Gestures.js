@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { findNodeHandle, View } from 'react-native';
 
 import createHandler from './createHandler';
 import GestureHandlerPropTypes from './GestureHandlerPropTypes';
@@ -276,7 +277,8 @@ export const RotationGestureHandler = createHandler(
   GestureHandlerPropTypes,
   {}
 );
-export const DragGestureHandler = createHandler(
+
+const DragGestureHandlerBase = createHandler(
   'DragGestureHandler',
   {
     ...GestureHandlerPropTypes,
@@ -286,10 +288,19 @@ export const DragGestureHandler = createHandler(
       PropTypes.arrayOf(PropTypes.number),
     ]).isRequired,
     shadowEnabled: PropTypes.bool,
-    shadowViewTag: PropTypes.number
+    shadowViewTag: PropTypes.number,
+    shadow: PropTypes.oneOfType([
+      PropTypes.element,
+      PropTypes.func,
+      PropTypes.object,
+    ])
   },
   {},
-  null,
+  (props) => {
+    const { shadow, ...res } = props;
+    // `shadow` prop is handled by DragGestureHandler
+    return res;
+  },
   {
     data: true,
     types: true,
@@ -297,6 +308,79 @@ export const DragGestureHandler = createHandler(
     shadowViewTag: true
   }
 );
+export class DragGestureHandler extends DragGestureHandlerBase {
+
+  _shadowRef = React.createRef();
+
+  componentDidMount() {
+    const { shadow } = this.props;
+    super.componentDidMount();
+    if (this._needsToRenderShadow() || (shadow && shadow.current === null)) {
+      // resolve `shadow` prop ref
+      if (this._updateEnqueued) {
+        clearImmediate(this._updateEnqueued);
+      }
+      this._updateEnqueued = setImmediate(() => {
+        this._updateEnqueued = null;
+        this._update();
+      });
+    }
+  }
+
+  _needsToRenderShadow() {
+    const { shadow } = this.props;
+    return typeof shadow === 'function' || React.isValidElement(shadow);
+  }
+
+  _renderShadow() {
+    const { shadow } = this.props;
+    return typeof shadow === 'function' ?
+      shadow() :
+      React.isValidElement(shadow) ?
+        shadow :
+        null;
+  }
+
+  _filterConfig() {
+    const config = super._filterConfig();
+    const { shadowViewTag, shadow } = this.props;
+    if (shadowViewTag) {
+      // remains the same
+    } else if (this._needsToRenderShadow()) {
+      config.shadowViewTag = this._shadowRef.current ? findNodeHandle(this._shadowRef.current) : null;
+    } else if (shadow && shadow.current) {
+      config.shadowViewTag = shadow.current ? findNodeHandle(shadow.current) : null;
+    }
+    return config;
+  }
+
+  _shadowHandler = (ref) => {
+    this._shadowRef = ref;
+    if (this._shadowRef) {
+      this._update();
+    }
+  }
+
+  render() {
+    const base = super.render();
+    const shadow = this._needsToRenderShadow() && (
+      <View
+        collapsable={false}
+        pointerEvents='none'
+        style={{ position: 'absolute', opacity: 0 }}
+      >
+        {React.cloneElement(this._renderShadow(), { ref: this._shadowRef })}
+      </View>
+    );
+    return (
+      <>
+        {base}
+        {shadow}
+      </>
+    );
+  }
+}
+
 export const DropGestureHandler = createHandler(
   'DropGestureHandler',
   {
