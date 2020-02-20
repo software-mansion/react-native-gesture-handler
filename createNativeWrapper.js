@@ -64,6 +64,10 @@ export default function createNativeWrapper(Component, config = {}) {
       }
     };
 
+    _gestureRefHandler = node => {
+      this._handlerTag = node ? node._handlerTag : null;
+    }
+
     render() {
       // filter out props that should be passed to gesture handler wrapper
       const gestureHandlerProps = Object.keys(this.props).reduce(
@@ -76,7 +80,7 @@ export default function createNativeWrapper(Component, config = {}) {
         { ...config } // watch out not to modify config
       );
       return (
-        <NativeViewGestureHandler {...gestureHandlerProps}>
+        <NativeViewGestureHandler {...gestureHandlerProps} ref={this._gestureRefHandler}>
           <Component {...this.props} ref={this._refHandler} />
         </NativeViewGestureHandler>
       );
