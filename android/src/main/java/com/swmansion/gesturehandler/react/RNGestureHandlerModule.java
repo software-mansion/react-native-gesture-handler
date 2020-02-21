@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler.react;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -19,6 +20,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -352,14 +354,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static abstract class DragDropGestureHandlerFactory<T extends DragDropGestureHandler> extends PanGestureHandlerBaseFactory<T> {
 
     private static class ReactDragGestureHandler extends DragGestureHandler<ReadableMap> {
-      ReactApplicationContext mContext;
       ReactDragGestureHandler(Context context) {
         super(context);
-        mContext = (ReactApplicationContext) context;
-      }
-
-      ReactApplicationContext getContext() {
-        return mContext;
       }
     }
 
@@ -394,7 +390,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             handler.setShadowBuilderView(null);
           } else if (config.getType(KEY_SHADOW_VIEW_TAG) == ReadableType.Number) {
             final int shadowViewTag = config.getInt(KEY_SHADOW_VIEW_TAG);
-            handler.getContext()
+            ((ReactApplicationContext) handler.getContext())
                     .getNativeModule(UIManagerModule.class)
                     .addUIBlock(new UIBlock() {
                       @Override
@@ -411,20 +407,21 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     private static class ReactDropGestureHandler extends DropGestureHandler<ReadableMap> {
       ReactDropGestureHandler(Context context) {
         super(context);
-        setDataResolver(sCommonResolver);
+        setDataResolver(new MapResolver((ReactApplicationContext) getContext()));
       }
     }
-
-    private static MapResolver sCommonResolver = new MapResolver();
 
     private static class MapResolver implements DragGestureUtils.DataResolver<ReadableMap> {
 
       private ReadableMap mSource;
+      private final ReactApplicationContext mContext;
 
-      MapResolver() {
+      MapResolver(ReactApplicationContext context) {
+        mContext = context;
         mSource = null;
       }
-      MapResolver(ReadableMap map) {
+      MapResolver(ReactApplicationContext context, ReadableMap map) {
+        mContext = context;
         mSource = map;
       }
 
@@ -456,6 +453,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       public ReadableMap data() {
         return mSource;
       }
+
+      @Override
+      public Activity getActivity() {
+        return mContext.getCurrentActivity();
+      }
     }
 
     private static class DropGestureHandlerFactory extends DragDropGestureHandlerFactory<ReactDropGestureHandler> {
@@ -478,6 +480,10 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       public void extractEventData(ReactDropGestureHandler handler, WritableMap eventData) {
         super.extractEventData(handler, eventData);
         eventData.putMap("data", handler.getData());
+        String sourceID = handler.getLastSourceAppID();
+        if (sourceID != null && !sourceID.equals(handler.getContext().getPackageName())) {
+          eventData.putString("sourceAppID", sourceID);
+        }
       }
     }
 
@@ -501,7 +507,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
 
       if(config.hasKey(KEY_DRAG_DATA) && config.getType(KEY_DRAG_DATA) == ReadableType.Map) {
-        handler.setDataResolver(new MapResolver(config.getMap(KEY_DRAG_DATA)));
+        handler.setDataResolver(
+                new MapResolver(
+                        (ReactApplicationContext) handler.getContext(),
+                        config.getMap(KEY_DRAG_DATA)
+                )
+        );
       }
     }
 

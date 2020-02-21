@@ -1,13 +1,17 @@
 package com.swmansion.gesturehandler;
 
-import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.view.DragEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.view.DragAndDropPermissionsCompat;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
+import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
 
 public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGestureHandler<T>> {
 
@@ -17,7 +21,8 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     private boolean mPointerState = false;
     private boolean mShouldCancelNext = false;
     private boolean mAwaitingCancellation = false;
-    private @Nullable ClipData mLastClipData;
+    private String mLastEventData;
+    private String mLastSourceAppID;
 
     private static boolean isProgressEvent(DragEvent event) {
         int action = event.getAction();
@@ -36,13 +41,8 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
 
     @Override
     public T getData() {
-        return mLastClipData != null && mDataResolver != null ?
-                mDataResolver.parse(
-                        mLastClipData
-                                .getItemAt(0)
-                                .getIntent()
-                                .getStringExtra(KEY_DATA)
-                ) :
+        return mLastEventData != null && mDataResolver != null ?
+                mDataResolver.parse(mLastEventData) :
                 null;
     }
 
@@ -58,6 +58,10 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
 
     public @Nullable DragGestureHandler<T> getDragHandler() {
         return mDragHandler;
+    }
+
+    public @Nullable String getLastSourceAppID() {
+        return mLastSourceAppID;
     }
 
     public void setDragHandler(@Nullable DragGestureHandler<T> dragHandler) {
@@ -101,6 +105,19 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
                 if (mIsActive) {
                     mDragAction = DragEvent.ACTION_DROP;
                     mResult = true;
+                    DragAndDropPermissionsCompat dropPermissions = null;
+                    if (mDataResolver != null && mDataResolver.getActivity() != null) {
+                        dropPermissions = ActivityCompat
+                                .requestDragAndDropPermissions(mDataResolver.getActivity(), event);
+                    }
+                    Intent intent = event.getClipData()
+                            .getItemAt(0)
+                            .getIntent();
+                    mLastEventData = intent.getStringExtra(KEY_DATA);
+                    mLastSourceAppID = intent.getStringExtra(KEY_SOURCE_APP);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && dropPermissions != null) {
+                        dropPermissions.release();
+                    }
                 } else {
                     mDragAction = DragEvent.ACTION_DRAG_ENDED;
                 }
@@ -116,7 +133,6 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         }
 
         mPointerState = pointerIsInside;
-        mLastClipData = event.getClipData();
 
         DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
                 event.getClipData(), event.getClipDescription());
@@ -145,6 +161,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         mResult = false;
         mShouldCancelNext = false;
         mAwaitingCancellation = false;
-        mLastClipData = null;
+        mLastEventData = null;
+        mLastSourceAppID = null;
     }
 }

@@ -13,10 +13,16 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
     final ArrayList<Integer> mDTypes = new ArrayList<>();
     private T mData;
     DragGestureUtils.DataResolver<T> mDataResolver;
+    private final Context mContext;
 
     public DragDropGestureHandler(Context context) {
         super(context);
+        mContext = context;
         super.setShouldCancelWhenOutside(false);
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 
     // to operate as expected DragDropGestureHandler must not cancel when outside so we override this permanently
@@ -47,6 +53,11 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
     public abstract int getDropTarget();
     public abstract int getDragAction();
 
+    /**
+     *
+     * @param event
+     * @return true if the {@link DragEvent} does not originate from this library
+     */
     static boolean isForeignEvent(DragEvent event) {
         if (event.getClipDescription() != null) {
             String desc;

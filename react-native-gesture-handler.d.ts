@@ -188,7 +188,15 @@ declare module 'react-native-gesture-handler' {
   }
 
   interface DropGestureHandlerEventExtra<T extends Map> extends DragGestureHandlerEventExtra {
-    data: T | null
+    /**
+     * The data received from the DragGestureHandler
+     */
+    data: T | null,
+    /**
+     * The id of the app the event originated from.
+     * This property will be available once a drop occurs for an event that originated from a different app.
+     */
+    sourceAppID?: string
   }
 
   export interface DropGestureHandlerStateChangeEvent<T>
@@ -365,7 +373,13 @@ declare module 'react-native-gesture-handler' {
   }
 
   export interface DragGestureHandlerProperties<T extends Map> extends PanGestureHandlerProps {
+    /**
+     * Enum that is used to determine if a DropGestureHandler can handle the DragGestureHandler event.
+     */
     types?: number | number[],
+    /**
+     * The data to pass to DropGestureHandler once a drop occurs
+     */
     data?: T,
     shadowEnabled?: boolean,
     shadowViewTag?: number,
@@ -375,6 +389,9 @@ declare module 'react-native-gesture-handler' {
   }
 
   export interface DropGestureHandlerProperties<T extends Map> extends PanGestureHandlerProps {
+    /**
+     * Enum that is used to determine if a DropGestureHandler can handle the DragGestureHandler event.
+     */
     types?: number | number[],
     onGestureEvent?: (event: DropGestureHandlerGestureEvent<T>) => void,
     onHandlerStateChange?: (event: DropGestureHandlerStateChangeEvent<T>) => void
