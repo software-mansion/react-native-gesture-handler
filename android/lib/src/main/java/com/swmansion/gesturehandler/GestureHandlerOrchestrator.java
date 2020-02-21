@@ -164,16 +164,13 @@ public class GestureHandlerOrchestrator {
     extractGestureHandlers(event);
     deliverEventToGestureHandlers(motionEvent);
     deliverEventToGestureHandlers(event);
-    // // TODO: 18/02/2020 maybe the system doesn't fire an END after a drop
-    /*
+    // sometimes the system fails to fire a ENDED event after a DROP
     if (action == DragEvent.ACTION_DROP) {
       DragEvent ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, event.getX(), event.getY(),
-              event.getResult(),  event.getClipData(), event.getClipDescription());
+              event.getResult(), event.getClipData(), event.getClipDescription());
       deliverEventToGestureHandlers(ev);
       DragGestureUtils.recycle(ev);
     }
-
-     */
     mIsHandlingTouch = false;
     if (action == DragEvent.ACTION_DRAG_ENDED) {
       mIsDragging = false;
