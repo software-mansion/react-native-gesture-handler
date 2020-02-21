@@ -138,7 +138,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onDragEvent(T handler, DragEvent event) {
-            String data = handler.getData() != null ? DataResolverStringImpl.marshall((String[]) handler.getData()) : "";
+            String data = handler.getData() != null ? marshall((String[]) handler.getData()) : "";
             Log.d("Drag", "action " + event.getAction() + ", " + handler + ", " + data);
             int action = event.getAction();
             if (actionToColor.containsKey(action)) {
@@ -160,7 +160,16 @@ public class MainActivity extends Activity {
         }
     }
 
-    private static class DataResolverStringImpl implements DragGestureUtils.DataResolver<String[]> {
+    private static String marshall(@NonNull String[] data) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < data.length; i++) {
+            builder.append(data[i]);
+            builder.append(",");
+        }
+        return builder.toString();
+    }
+
+    private class DataResolverStringImpl implements DragGestureUtils.DataResolver<String[]> {
         @Override
         public String[] parse(String source) {
             return source.split(",");
@@ -177,13 +186,9 @@ public class MainActivity extends Activity {
             return marshall(data());
         }
 
-        static String marshall(@NonNull String[] data) {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < data.length; i++) {
-                builder.append(data[i]);
-                builder.append(",");
-            }
-            return builder.toString();
+        @Override
+        public Activity getActivity() {
+            return MainActivity.this;
         }
     }
 
@@ -531,7 +536,8 @@ public class MainActivity extends Activity {
                         new DragDropEventListener<Object, DropGestureHandler<Object>>()
                                 .setColorForState(GestureHandler.STATE_ACTIVE, Color.YELLOW)
                                 .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
-                                .setColorForAction(DragEvent.ACTION_DROP, Color.CYAN)
+                                //.setColorForAction(DragEvent.ACTION_DROP, Color.CYAN)
+                                .setColorForState(STATE_END, Color.CYAN)
                 );
 
 
