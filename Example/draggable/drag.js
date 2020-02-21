@@ -61,7 +61,7 @@ function useDropZone() {
   const [tag, setTag] = useState(null);
   const [text, setText] = useState(null);
   const onHandlerStateChange = useCallback(e => {
-    const { state, oldState, data, dragTarget, dropTarget } = e.nativeEvent;
+    const { state, oldState, data, dragTarget, dropTarget, sourceAppID } = e.nativeEvent;
     if (state == State.BEGAN) {
       //setDropState(false);
     } else if (state == State.ACTIVE) {
@@ -74,8 +74,9 @@ function useDropZone() {
       }
     } else if (state == State.CANCELLED) {
       setDropState(-1);
-    } else if (state == State.END) {
-      console.log(`dropping ${JSON.stringify(data)} to ${dropTarget} from ${dragTarget}`)
+    } else if (state == State.END /*&& oldState == State.ACTIVE*/) {
+      console.log(sourceAppID)
+      console.log(`dropping ${JSON.stringify(data)} to ${dropTarget} from ${dragTarget}`, oldState)
       setDropState(1);
       setTimeout(() => setDropState(-1), 1000)
       if (data && data.text) {
