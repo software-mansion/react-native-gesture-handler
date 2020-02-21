@@ -15,7 +15,7 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
     DragGestureUtils.DataResolver<T> mDataResolver;
     private final Context mContext;
 
-    public DragDropGestureHandler(Context context) {
+    DragDropGestureHandler(Context context) {
         super(context);
         mContext = context;
         super.setShouldCancelWhenOutside(false);
@@ -71,7 +71,7 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
         return true;
     }
 
-    protected boolean shouldHandleEvent(DragEvent event) {
+    boolean shouldHandleEvent(DragEvent event) {
         if (mDTypes.size() == 0) {
             return true;
         } else if (event.getClipDescription() != null) {

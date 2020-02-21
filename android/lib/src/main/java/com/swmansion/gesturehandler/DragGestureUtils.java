@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.content.Intent;
-import android.graphics.PointF;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,13 +11,8 @@ import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import androidx.annotation.Nullable;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 
 public class DragGestureUtils {
 
