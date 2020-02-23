@@ -1,16 +1,11 @@
 package com.swmansion.gesturehandler.example;
 
 import android.content.Context;
-import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.FrameLayout;
 
-import com.swmansion.gesturehandler.DragGestureUtils;
-import com.swmansion.gesturehandler.DropGestureHandler;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
 import com.swmansion.gesturehandler.GestureHandlerRegistryImpl;
@@ -43,12 +38,6 @@ public class GHRootView extends FrameLayout {
         mOrchestrator = orchestrator;
         mRootViewGestureHandler = new RootViewGestureHandler();
         registry.registerHandlerForView(this, mRootViewGestureHandler);
-        setOnDragListener(new OnDragListener() {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                return true;
-            }
-        });
     }
 
     @Override
@@ -91,13 +80,8 @@ public class GHRootView extends FrameLayout {
         super.dispatchDragEvent(ev);
         boolean retVal = mOrchestrator.onDragEvent(ev);
         mPassingTouch = false;
-        return retVal;
-    }
-
-    @Override
-    public boolean onDragEvent(DragEvent event) {
-        super.onDragEvent(event);
-        return mOrchestrator.onDragEvent(event);
+        // we must return true so this view will receive events
+        return true;
     }
 
     class RootViewGestureHandler extends GestureHandler {
@@ -115,11 +99,6 @@ public class GHRootView extends FrameLayout {
 
         @Override
         protected void onHandle(DragEvent event) {
-            int currentState = getState();
-            if (currentState == STATE_UNDETERMINED) {
-                begin();
-                mShouldIntercept = false;
-            }
             if (event.getAction() == DragEvent.ACTION_DRAG_ENDED) {
                 end();
             }

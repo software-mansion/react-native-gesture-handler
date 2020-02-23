@@ -100,7 +100,7 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
                 (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_POINTER_UP)) {
             // this condition is met once a drag interaction has ended
             // in which case we don't want PanGestureHandler to handle state decision making
-            event.setAction(MotionEvent.ACTION_MOVE);
+            return;
         }
         super.onHandle(event);
         event.setAction(origAction);

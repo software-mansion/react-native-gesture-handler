@@ -23,6 +23,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     private boolean mAwaitingCancellation = false;
     private String mLastEventData;
     private String mLastSourceAppID;
+    boolean mIsActiveDropHandler = false;
 
     private static boolean isProgressEvent(DragEvent event) {
         int action = event.getAction();
@@ -75,7 +76,7 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
 
     @Override
     protected boolean shouldActivate() {
-        return super.shouldActivate() && mDragHandler != null && mDragHandler.getDropHandler() == this;
+        return super.shouldActivate() && mIsActiveDropHandler;
     }
 
     void tryCancel() {
@@ -133,7 +134,6 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         }
 
         mPointerState = pointerIsInside;
-
         DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
                 event.getClipData(), event.getClipDescription());
         super.onHandle(ev);
@@ -163,5 +163,6 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         mAwaitingCancellation = false;
         mLastEventData = null;
         mLastSourceAppID = null;
+        mIsActiveDropHandler = false;
     }
 }

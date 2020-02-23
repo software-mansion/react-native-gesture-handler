@@ -156,15 +156,25 @@ public class GestureHandlerOrchestrator {
 
   public boolean onDragEvent(DragEvent event) {
     int action = event.getAction();
-    MotionEvent motionEvent = mDerivedMotionEvent.obtain(event);
     if (action == DragEvent.ACTION_DRAG_STARTED) {
       // make sure mDropHandlers is empty
       // crucial in case an END event was missed
       mDropHandlers.clear();
     } else if (action == DragEvent.ACTION_DRAG_ENDED) {
+      /*
       event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, mLastDragX, mLastDragY,
               event.getResult(), mLastClipData, mLastClipDescription);
+
+       */
+    }  else if (action == DragEvent.ACTION_DRAG_LOCATION && !mIsDragging) {
+      // this is met when in multi window
+      // a START event is fired across apps and after that only if hte pointer is in bounds the event is fired
+      // therefore we treat the first LOCATION as a START event
+      mIsDragging = true;
+      event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_STARTED, event.getX(), event.getY(),
+              event.getResult(), event.getClipData(), event.getClipDescription());
     }
+    MotionEvent motionEvent = mDerivedMotionEvent.obtain(event);
     mIsHandlingTouch = true;
     extractGestureHandlers(event);
     deliverEventToGestureHandlers(motionEvent);
@@ -386,6 +396,7 @@ public class GestureHandlerOrchestrator {
         if (handler.mIsActive) {
           lastActiveDropHandler = handler;
         }
+        handler.mIsActiveDropHandler = false;
         if (!mDropHandlers.contains(handler)) {
           mDropHandlers.add(0, handler);
         }
@@ -401,6 +412,7 @@ public class GestureHandlerOrchestrator {
         deliverEventToGestureHandler(handlers[i], event);
         if (handler.mIsActive || handler.getState() == GestureHandler.STATE_BEGAN) {
           activeDropHandler = handler;
+          handler.mIsActiveDropHandler = true;
           if (lastActiveDropHandler != handler) {
             action = DragEvent.ACTION_DRAG_ENTERED;
             if (lastActiveDropHandler != null) {

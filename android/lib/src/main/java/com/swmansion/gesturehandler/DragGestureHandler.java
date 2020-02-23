@@ -4,21 +4,13 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
 import android.os.Build;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_EVENT_NAME;
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;

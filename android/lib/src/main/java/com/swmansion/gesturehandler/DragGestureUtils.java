@@ -110,8 +110,7 @@ public class DragGestureUtils {
             int dragAction = event.getAction();
             if (dragAction == DragEvent.ACTION_DRAG_STARTED) {
                 downTime = SystemClock.uptimeMillis();
-                // maybe consider a different default action instead of MOVE
-                motionAction = isForeignEvent(event) ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_MOVE;
+                motionAction = MotionEvent.ACTION_MOVE;
             } else if (dragAction == DragEvent.ACTION_DRAG_ENDED || dragAction == DragEvent.ACTION_DROP) {
                 motionAction = MotionEvent.ACTION_UP;
             } else {
