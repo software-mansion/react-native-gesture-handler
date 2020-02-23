@@ -501,6 +501,7 @@ public class MainActivity extends Activity {
                         new DragDropEventListener<Object, DropGestureHandler<Object>>()
                                 .setColorForState(GestureHandler.STATE_ACTIVE, Color.GREEN)
                                 .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.RED)
+                                .setColorForState(GestureHandler.STATE_FAILED, Color.RED)
                                 .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
                 );
 
@@ -510,6 +511,7 @@ public class MainActivity extends Activity {
                         new DragDropEventListener<Object, DropGestureHandler<Object>>()
                                 .setColorForState(GestureHandler.STATE_ACTIVE, Color.GREEN)
                                 .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.RED)
+                                .setColorForState(GestureHandler.STATE_FAILED, Color.RED)
                                 .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
                 );
 
@@ -527,6 +529,7 @@ public class MainActivity extends Activity {
                         }
                                 .setColorForState(GestureHandler.STATE_ACTIVE, Color.GREEN)
                                 .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.RED)
+                                .setColorForState(GestureHandler.STATE_FAILED, Color.RED)
                                 .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
                 );
 
@@ -536,6 +539,7 @@ public class MainActivity extends Activity {
                         new DragDropEventListener<Object, DropGestureHandler<Object>>()
                                 .setColorForState(GestureHandler.STATE_ACTIVE, Color.YELLOW)
                                 .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
+                                .setColorForState(GestureHandler.STATE_FAILED, Color.BLACK)
                                 //.setColorForAction(DragEvent.ACTION_DROP, Color.CYAN)
                                 .setColorForState(STATE_END, Color.CYAN)
                 );
