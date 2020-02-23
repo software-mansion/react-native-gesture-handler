@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { findNodeHandle, View } from 'react-native';
+import { findNodeHandle, View, ViewPropTypes, requireNativeComponent, StyleSheet } from 'react-native';
 
 import createHandler from './createHandler';
 import GestureHandlerPropTypes from './GestureHandlerPropTypes';
@@ -310,6 +310,23 @@ const DragGestureHandlerBase = createHandler(
 );
 export class DragGestureHandler extends DragGestureHandlerBase {
 
+  static GestureHandlerDragShadowView = requireNativeComponent(
+    'GestureHandlerDragShadowView',
+    {
+      name: 'GestureHandlerDragShadowView',
+      propTypes: {
+        ...ViewPropTypes,
+      },
+    }
+  );
+
+  static _defaultStyle = StyleSheet.create({
+    shadow: {
+      position: 'absolute',
+      opacity: 0
+    }
+  });
+
   _shadowRef = React.createRef();
 
   componentDidMount() {
@@ -364,13 +381,15 @@ export class DragGestureHandler extends DragGestureHandlerBase {
   render() {
     const base = super.render();
     const shadow = this._needsToRenderShadow() && (
-      <View
+      <DragGestureHandler.GestureHandlerDragShadowView
         collapsable={false}
         pointerEvents='none'
-        style={{ position: 'absolute', opacity: 0 }}
+        style={DragGestureHandler._defaultStyle.shadow}
+        ref={this._shadowRef}
+        dragGestureHandlerTag={this._handlerTag}
       >
-        {React.cloneElement(this._renderShadow(), { ref: this._shadowRef })}
-      </View>
+        {this._renderShadow()}
+      </DragGestureHandler.GestureHandlerDragShadowView>
     );
     return (
       <>

@@ -44,6 +44,13 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
 
     public DragGestureHandler<T> setShadowBuilderView(@Nullable View view) {
         mShadowBuilderView = view;
+        if (mIsDragging && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
+                    mShadowBuilderView != null ?
+                            mShadowBuilderView :
+                            getView());
+            getView().updateDragShadow(shadowBuilder);
+        }
         return this;
     }
 
@@ -82,7 +89,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     public int getDropTarget() {
         if (mDropHandler != null && mDropHandler.getView() != null) {
             return mDropHandler.getView().getId();
-        } else if (!mSourceAppID.equals(getContext().getPackageName())) {
+        } else if (mSourceAppID != null && !mSourceAppID.equals(getContext().getPackageName())) {
             return 0;
         } else {
             return View.NO_ID;
