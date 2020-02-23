@@ -2,12 +2,15 @@ package com.swmansion.gesturehandler.react;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -17,6 +20,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.PixelUtil;
@@ -424,17 +428,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         mSource = map;
       }
 
-      private void handleError(JSONException e) {
-        throw new JSApplicationIllegalArgumentException("DragGestureHandler received bad data", e);
-      }
-
       @Override
       public String stringify() {
         try {
           return JSONUtil.stringify(mSource);
         } catch (JSONException e) {
-          handleError(e);
-          return null;
+          throw new JSApplicationIllegalArgumentException("DragGestureHandler received bad data", e);
         }
       }
 
@@ -443,8 +442,10 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         try {
           return JSONUtil.parse(source);
         } catch (JSONException e) {
-          handleError(e);
-          return null;
+          Log.e(ReactConstants.TAG, "[GESTURE HANDLER] Could not parse drag event data to JSON, raw data: " + source, e);
+          WritableMap data = Arguments.createMap();
+          data.putString("rawData", source);
+          return data;
         }
       }
 
