@@ -53,24 +53,6 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
     public abstract int getDropTarget();
     public abstract int getDragAction();
 
-    /**
-     *
-     * @param event
-     * @return true if the {@link DragEvent} does not originate from this library
-     */
-    static boolean isForeignEvent(DragEvent event) {
-        if (event.getClipDescription() != null) {
-            String desc;
-            for (int i = 0; i < event.getClipDescription().getMimeTypeCount(); i++) {
-                desc = event.getClipDescription().getMimeType(i);
-                if (desc.contains(DRAG_MIME_TYPE)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     boolean shouldHandleEvent(DragEvent event) {
         if (mDTypes.size() == 0) {
             return true;

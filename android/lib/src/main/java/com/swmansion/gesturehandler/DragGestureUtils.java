@@ -60,6 +60,7 @@ public class DragGestureUtils {
     @SuppressLint("PrivateApi")
     static void recycle(DragEvent event) {
         /*
+        // commented because of warning
         try {
             Method recycle = DragEvent.class.getDeclaredMethod("recycle");
             recycle.setAccessible(true);
@@ -68,6 +69,37 @@ public class DragGestureUtils {
             e.printStackTrace();
         }
          */
+    }
+
+    /**
+     *
+     * @param event
+     * @return true if the {@link DragEvent} does not originate from this library
+     */
+    static boolean isForeignEvent(DragEvent event) {
+        if (event.getClipDescription() != null) {
+            String desc;
+            for (int i = 0; i < event.getClipDescription().getMimeTypeCount(); i++) {
+                desc = event.getClipDescription().getMimeType(i);
+                if (desc.contains(DRAG_MIME_TYPE)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    static @Nullable String getEventPackageName(DragEvent event) {
+        if (event.getClipDescription() != null) {
+            String desc;
+            for (int i = 0; i < event.getClipDescription().getMimeTypeCount(); i++) {
+                desc = event.getClipDescription().getMimeType(i);
+                if (desc.contains(KEY_SOURCE_APP)) {
+                    return desc.split(":")[1];
+                }
+            }
+        }
+        return null;
     }
 
     public static class DerivedMotionEvent {
@@ -79,7 +111,7 @@ public class DragGestureUtils {
             if (dragAction == DragEvent.ACTION_DRAG_STARTED) {
                 downTime = SystemClock.uptimeMillis();
                 // maybe consider a different default action instead of MOVE
-                motionAction = DragDropGestureHandler.isForeignEvent(event) ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_MOVE;
+                motionAction = isForeignEvent(event) ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_MOVE;
             } else if (dragAction == DragEvent.ACTION_DRAG_ENDED || dragAction == DragEvent.ACTION_DROP) {
                 motionAction = MotionEvent.ACTION_UP;
             } else {
@@ -102,6 +134,5 @@ public class DragGestureUtils {
         T data();
         Activity getActivity();
     }
-
 
 }

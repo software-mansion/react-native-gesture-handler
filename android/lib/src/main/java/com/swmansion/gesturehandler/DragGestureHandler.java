@@ -29,7 +29,6 @@ import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPES;
 
 public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGestureHandler<T>> {
 
-    private ArrayList<DropGestureHandler<T>> mDropHandlers = new ArrayList<>();
     private @Nullable DropGestureHandler<T> mDropHandler = null;
     private @Nullable DropGestureHandler<T> mLastDropHandler = null;
     private int mDragAction;
@@ -37,6 +36,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     private @Nullable View mShadowBuilderView;
     private boolean mShadowEnabled = true;
     private float mOriginalElevation;
+    private String mSourceAppID;
 
     public DragGestureHandler(Context context) {
         super(context);
@@ -60,21 +60,9 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         return mLastDropHandler;
     }
 
-    public ArrayList<DropGestureHandler<T>> getDropHandlers() {
-        return mDropHandlers;
-    }
-
     @Override
     public T getData() {
         return mDataResolver != null ? mDataResolver.data() : null;
-    }
-
-    boolean addDropHandler(@NonNull DropGestureHandler<T> handler) {
-        if (!mDropHandlers.contains(handler)) {
-            mDropHandlers.add(0, handler);
-            return true;
-        }
-        return false;
     }
 
     void setDropHandler(@Nullable DropGestureHandler<T> handler) {
@@ -83,9 +71,6 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         }
         mLastDropHandler = mDropHandler;
         mDropHandler = handler;
-        if (handler != null) {
-            addDropHandler(handler);
-        }
     }
 
     @Override
@@ -95,7 +80,13 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
 
     @Override
     public int getDropTarget() {
-        return mDropHandler != null && mDropHandler.getView() != null ? mDropHandler.getView().getId() : View.NO_ID;
+        if (mDropHandler != null && mDropHandler.getView() != null) {
+            return mDropHandler.getView().getId();
+        } else if (!mSourceAppID.equals(getContext().getPackageName())) {
+            return 0;
+        } else {
+            return View.NO_ID;
+        }
     }
 
     @Override
@@ -109,10 +100,11 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     }
 
     private ClipData createClipData() {
+        String packageName = getView().getContext().getPackageName();
         Intent intent = new Intent(Intent.ACTION_RUN);
         intent.putExtra(KEY_DRAG_TARGET, getView().getId());
         intent.putIntegerArrayListExtra(KEY_TYPES, mDTypes);
-        intent.putExtra(KEY_SOURCE_APP, getView().getContext().getPackageName());
+        intent.putExtra(KEY_SOURCE_APP, packageName);
         if (mDataResolver != null) {
             intent.putExtra(KEY_DATA, mDataResolver.stringify());
         }
@@ -126,7 +118,8 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
                 DRAG_EVENT_NAME,
                 new String[] {
                         ClipDescription.MIMETYPE_TEXT_INTENT,
-                        str.toString()
+                        str.toString(),
+                        String.format("%s:%s", KEY_SOURCE_APP, packageName)
                 },
                 new ClipData.Item(intent)
         );
@@ -158,7 +151,6 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         ClipData data = createClipData();
         View.DragShadowBuilder shadowBuilder;
         if (mShadowEnabled) {
-            //View.DragShadowBuilder = new SyncedDragShadowBuilder(getView());
             shadowBuilder = new View.DragShadowBuilder(
                     mShadowBuilderView != null ?
                             mShadowBuilderView :
@@ -185,6 +177,9 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     @Override
     protected void onHandle(DragEvent event) {
         mDragAction = event.getAction();
+        if (mDragAction == DragEvent.ACTION_DRAG_STARTED) {
+            mSourceAppID = DragGestureUtils.getEventPackageName(event);
+        }
         super.onHandle(event);
     }
 
@@ -207,35 +202,10 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     protected void onReset() {
         super.onReset();
         mIsDragging = false;
-        mDropHandlers.clear();
         mDragAction = DragEvent.ACTION_DRAG_ENDED;
         mDropHandler = null;
         mLastDropHandler = null;
+        mSourceAppID = null;
     }
 
-    private static class SyncedDragShadowBuilder extends View.DragShadowBuilder {
-        private WeakReference<View> mView;
-        SyncedDragShadowBuilder(View view) {
-            //super(view);
-            mView = new WeakReference<>(view);
-        }
-
-        @Override
-        public void onDrawShadow(Canvas canvas) {
-            final View view = mView.get();
-            if (view != null) {
-                view.draw(canvas);
-            }
-            Paint paint = new Paint();
-            paint.setColor(Color.rgb((int)(Math.random()*255),(int)(Math.random()*255),(int)(Math.random()*255)));
-            canvas.drawRect(0,0, 50, 50, paint);
-        }
-
-        @Override
-        public void onProvideShadowMetrics(Point shadowSize, Point shadowTouchPoint) {
-            final View view = mView.get();
-            shadowSize.set(view.getWidth(), view.getHeight());
-            shadowTouchPoint.set(shadowSize.x / 2, shadowSize.y / 2);
-        }
-    }
 }
