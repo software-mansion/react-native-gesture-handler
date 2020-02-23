@@ -4,7 +4,9 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Build;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,6 +31,14 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     private boolean mShadowEnabled = true;
     private float mOriginalElevation;
     private String mSourceAppID;
+    private View.DragShadowBuilder mInvisibleShadow = new View.DragShadowBuilder() {
+        @Override
+        public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
+            View v = DragGestureHandler.this.getView();
+            outShadowSize.set(v.getWidth(), v.getHeight());
+            outShadowTouchPoint.set(v.getWidth(), v.getHeight());
+        }
+    };
 
     public DragGestureHandler(Context context) {
         super(context);
@@ -155,11 +165,20 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
                             mShadowBuilderView :
                             getView());
         } else {
-            shadowBuilder = new View.DragShadowBuilder(null);
+            shadowBuilder = mInvisibleShadow;
             setElevation();
         }
         int flags = DragGestureUtils.getFlags();
-        getView().startDrag(data, shadowBuilder, null, flags);
+        try {
+            getView().startDrag(data, shadowBuilder, null, flags);
+        } catch (Throwable throwable) {
+            resetElevation();
+            getView().startDrag(data, new View.DragShadowBuilder(getView()), null, flags);
+            Log.e(
+                    "GestureHandler",
+                    String.format("Failed to start dragging with DragShadow %s of view %s", shadowBuilder, mShadowBuilderView),
+                    throwable);
+        }
     }
 
     /**
