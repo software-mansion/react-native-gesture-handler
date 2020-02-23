@@ -193,6 +193,10 @@ declare module 'react-native-gesture-handler' {
      */
     data: T | null,
     /**
+     * The raw data received from the event in case of a JSON parsing error
+     */
+    rawData?: string,
+    /**
      * The id of the app the event originated from.
      * This property will be available once a drop occurs for an event that originated from a different app.
      */

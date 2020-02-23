@@ -86,7 +86,7 @@ public class RNGestureHandlerRootView extends ReactViewGroup {
     if (Assertions.assertNotNull(mRootHelper).dispatchDragEvent(event)) {
       return true;
     }
-    return handleNative;
+    return true;
   }
 
 }

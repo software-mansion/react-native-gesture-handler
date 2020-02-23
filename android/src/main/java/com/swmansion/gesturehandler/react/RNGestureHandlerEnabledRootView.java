@@ -46,7 +46,7 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     if (mGestureRootHelper != null && mGestureRootHelper.dispatchDragEvent(event)) {
       return true;
     }
-    return handleNative;
+    return true;
   }
 
   /**
