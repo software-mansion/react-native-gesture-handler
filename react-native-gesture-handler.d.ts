@@ -49,6 +49,16 @@ declare module 'react-native-gesture-handler' {
     EXITED
   }
 
+  export enum DragMode {
+    MOVE,
+    COPY
+  }
+
+  enum DragModeName {
+    move,
+    copy
+  }
+
   /* STATE CHANGE EVENTS */
 
   export interface GestureHandlerGestureEventNativeEvent {
@@ -388,6 +398,12 @@ declare module 'react-native-gesture-handler' {
     shadowEnabled?: boolean,
     shadowViewTag?: number,
     shadow?: React.ReactElement | React.RefObject<any> | React.FunctionComponent,
+    /**
+     * Set to `copy` or `DragMode.COPY` if you want the view to remain visible at the starting position while dragging, achieving a copy effect.
+     * Otherwise, the default value is `move`.
+     * Works only when `shadowEnabled` is true.
+     */
+    dragMode?: DragMode | keyof typeof DragModeName,
     onGestureEvent?: (event: DragGestureHandlerGestureEvent) => void,
     onHandlerStateChange?: (event: DragGestureHandlerStateChangeEvent) => void
   }

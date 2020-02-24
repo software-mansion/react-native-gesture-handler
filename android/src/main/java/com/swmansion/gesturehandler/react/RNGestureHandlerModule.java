@@ -98,6 +98,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
   private static final String KEY_NUMBER_OF_POINTERS = "numberOfPointers";
   private static final String KEY_DIRECTION = "direction";
+  private static final String DRAG_MODE_MOVE = "move";
+  private static final String DRAG_MODE_COPY = "copy";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
           implements RNGestureHandlerEventDataExtractor<T> {
@@ -374,8 +376,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       private static final String KEY_SHADOW_ENABLED = "shadowEnabled";
       private static final String KEY_SHADOW_VIEW_TAG = "shadowViewTag";
       private static final String KEY_DRAG_MODE = "dragMode";
-      private static final String DRAG_MODE_MOVE = "move";
-      private static final String DRAG_MODE_COPY = "copy";
 
       @Override
       public Class<ReactDragGestureHandler> getType() {
@@ -776,6 +776,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             "END", DragEvent.ACTION_DRAG_ENDED,
             "ENTERED", DragEvent.ACTION_DRAG_ENTERED,
             "EXITED", DragEvent.ACTION_DRAG_EXITED
+    ), "DragMode", MapBuilder.of(
+            "MOVE", DragGestureUtils.DRAG_MODE_MOVE,
+            "COPY", DragGestureUtils.DRAG_MODE_COPY
     ));
   }
 

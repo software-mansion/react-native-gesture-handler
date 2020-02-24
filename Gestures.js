@@ -5,6 +5,7 @@ import { findNodeHandle, View, ViewPropTypes, requireNativeComponent, StyleSheet
 import createHandler from './createHandler';
 import GestureHandlerPropTypes from './GestureHandlerPropTypes';
 import PlatformConstants from './PlatformConstants';
+import { DragMode } from './DragConstants';
 
 export const TapGestureHandler = createHandler(
   'TapGestureHandler',
@@ -293,6 +294,10 @@ const DragGestureHandlerBase = createHandler(
       PropTypes.element,
       PropTypes.func,
       PropTypes.object,
+    ]),
+    dragMode: PropTypes.oneOf([
+      ...Object.keys(DragMode).map(key => key.toLowerCase()),
+      ...Object.keys(DragMode).map(key => DragMode[key])
     ])
   },
   {},
@@ -305,7 +310,8 @@ const DragGestureHandlerBase = createHandler(
     data: true,
     types: true,
     shadowEnabled: true,
-    shadowViewTag: true
+    shadowViewTag: true,
+    dragMode: true
   }
 );
 export class DragGestureHandler extends DragGestureHandlerBase {

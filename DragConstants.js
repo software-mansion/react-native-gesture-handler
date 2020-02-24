@@ -1,3 +1,7 @@
+import RNGestureHandlerModule from './RNGestureHandlerModule';
+
+export const DragMode = RNGestureHandlerModule.DragMode;
+
 const DragState = {
   BEGAN: 1,
   ACTIVE: 2,
