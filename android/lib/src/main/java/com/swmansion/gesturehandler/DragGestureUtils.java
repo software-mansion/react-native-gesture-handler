@@ -20,10 +20,12 @@ public class DragGestureUtils {
     public static final String DRAG_MIME_TYPE = "GESTURE_HANDLER_CLIP_DATA";
 
     public static final String KEY_DATA = "data";
-    public static final String KEY_SOURCE_APP = "sourceApp";
+    public static final String KEY_SOURCE_APP = "sourceAppID";
     public static final String KEY_DRAG_TARGET = "dragTarget";
     public static final String KEY_DROP_TARGET = "dropTarget";
     public static final String KEY_TYPES = "types";
+    public static final int DRAG_MODE_MOVE = 0;
+    public static final int DRAG_MODE_COPY = 1;
 
     static int getFlags() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

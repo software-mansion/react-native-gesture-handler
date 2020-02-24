@@ -16,6 +16,8 @@ import androidx.core.view.ViewCompat;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_EVENT_NAME;
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
+import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MODE_COPY;
+import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MODE_MOVE;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DRAG_TARGET;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
@@ -29,6 +31,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     private boolean mIsDragging = false;
     private @Nullable View mShadowBuilderView;
     private boolean mShadowEnabled = true;
+    private int mDragMode = DRAG_MODE_MOVE;
     private float mOriginalElevation;
     private String mSourceAppID;
     private View.DragShadowBuilder mInvisibleShadow = new View.DragShadowBuilder() {
@@ -39,6 +42,10 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
             outShadowTouchPoint.set(v.getWidth(), v.getHeight());
         }
     };
+    private static final String DEBUG_TAG = "GestureHandler";
+    public String getDebugTag() {
+        return DEBUG_TAG;
+    }
 
     public DragGestureHandler(Context context) {
         super(context);
@@ -58,6 +65,18 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
 
     public DragGestureHandler<T> setEnableShadow(boolean enable) {
         mShadowEnabled = enable;
+        return this;
+    }
+
+    public DragGestureHandler<T> setDragMode(int mode) {
+        if (mIsDragging) {
+            if (mode == DRAG_MODE_MOVE) {
+                getView().setVisibility(View.INVISIBLE);
+            } else if (mode == DRAG_MODE_COPY) {
+                getView().setVisibility(View.VISIBLE);
+            }
+        }
+        mDragMode = mode;
         return this;
     }
 
@@ -159,11 +178,15 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         mIsDragging = true;
         ClipData data = createClipData();
         View.DragShadowBuilder shadowBuilder;
-        if (mShadowEnabled) {
+        if (mShadowEnabled || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mDataResolver.getActivity().isInMultiWindowMode())) {
             shadowBuilder = new View.DragShadowBuilder(
                     mShadowBuilderView != null ?
                             mShadowBuilderView :
                             getView());
+            if (!mShadowEnabled) {
+                Log.i(getDebugTag(),
+                        "[GESTURE HANDLER] Overriding configuration: drag shadow must be enabled in multi window mode");
+            }
         } else {
             shadowBuilder = mInvisibleShadow;
             setElevation();
@@ -175,9 +198,15 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
             resetElevation();
             getView().startDrag(data, new View.DragShadowBuilder(getView()), null, flags);
             Log.e(
-                    "GestureHandler",
-                    String.format("Failed to start dragging with DragShadow %s of view %s", shadowBuilder, mShadowBuilderView),
+                    getDebugTag(),
+                    String.format(
+                            "[GESTURE HANDLER] Failed to start dragging with DragShadow %s of view %s, defaulting",
+                            shadowBuilder,
+                            mShadowBuilderView),
                     throwable);
+        }
+        if (mDragMode == DRAG_MODE_MOVE) {
+            getView().setVisibility(View.INVISIBLE);
         }
     }
 
@@ -210,8 +239,13 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
 
     @Override
     protected void onStateChange(int newState, int previousState) {
-        if (GestureHandlerOrchestrator.isFinished(newState) && !mShadowEnabled) {
-           resetElevation();
+        if (GestureHandlerOrchestrator.isFinished(newState)) {
+            if (!mShadowEnabled) {
+                resetElevation();
+            }
+            if (mDragMode == DRAG_MODE_MOVE) {
+                getView().setVisibility(View.VISIBLE);
+            }
         }
         super.onStateChange(newState, previousState);
     }

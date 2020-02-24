@@ -49,6 +49,9 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 
+import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
+import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
+import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPES;
 import static com.swmansion.gesturehandler.GestureHandler.HIT_SLOP_NONE;
 
 @ReactModule(name=RNGestureHandlerModule.MODULE_NAME)
@@ -95,8 +98,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
   private static final String KEY_NUMBER_OF_POINTERS = "numberOfPointers";
   private static final String KEY_DIRECTION = "direction";
-  private static final String KEY_DRAG_DATA = "data";
-  private static final String KEY_DRAG_TYPES = "types";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
           implements RNGestureHandlerEventDataExtractor<T> {
@@ -359,6 +360,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     private static class ReactDragGestureHandler extends DragGestureHandler<ReadableMap> {
       ReactDragGestureHandler(Context context) {
         super(context);
+        setDataResolver(new MapResolver((ReactApplicationContext) getContext()));
+      }
+
+      @Override
+      public String getDebugTag() {
+        return ReactConstants.TAG;
       }
     }
 
@@ -366,6 +373,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
       private static final String KEY_SHADOW_ENABLED = "shadowEnabled";
       private static final String KEY_SHADOW_VIEW_TAG = "shadowViewTag";
+      private static final String KEY_DRAG_MODE = "dragMode";
+      private static final String DRAG_MODE_MOVE = "move";
+      private static final String DRAG_MODE_COPY = "copy";
 
       @Override
       public Class<ReactDragGestureHandler> getType() {
@@ -385,13 +395,15 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       @Override
       public void configure(final ReactDragGestureHandler handler, ReadableMap config) {
         super.configure(handler, config);
+        ReadableType type;
         if(config.hasKey(KEY_SHADOW_ENABLED)) {
           handler.setEnableShadow(config.getBoolean(KEY_SHADOW_ENABLED));
         }
         if(config.hasKey(KEY_SHADOW_VIEW_TAG)) {
-          if (config.getType(KEY_SHADOW_VIEW_TAG) == ReadableType.Null) {
+          type = config.getType(KEY_SHADOW_VIEW_TAG);
+          if (type == ReadableType.Null) {
             handler.setShadowBuilderView(null);
-          } else if (config.getType(KEY_SHADOW_VIEW_TAG) == ReadableType.Number) {
+          } else if (type == ReadableType.Number) {
             final int shadowViewTag = config.getInt(KEY_SHADOW_VIEW_TAG);
             ((ReactApplicationContext) handler.getContext())
                     .getNativeModule(UIManagerModule.class)
@@ -402,6 +414,27 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
                         handler.setShadowBuilderView(view);
                       }
                     });
+          }
+        }
+        if (config.hasKey(KEY_DRAG_MODE)) {
+          type = config.getType(KEY_DRAG_MODE);
+          if (type == ReadableType.Number) {
+            handler.setDragMode(config.getInt(KEY_DRAG_MODE));
+          } else if (type == ReadableType.String) {
+            int mode;
+            switch (config.getString(KEY_DRAG_MODE)) {
+              case DRAG_MODE_MOVE:
+                mode = DragGestureUtils.DRAG_MODE_MOVE;
+                break;
+              case DRAG_MODE_COPY:
+                mode = DragGestureUtils.DRAG_MODE_COPY;
+                break;
+                default:
+                  throw new JSApplicationIllegalArgumentException(
+                          String.format("[GESTURE HANDLER] received bad %s prop of value %s",
+                                  KEY_DRAG_MODE, config.getString(KEY_DRAG_MODE)));
+            }
+            handler.setDragMode(mode);
           }
         }
       }
@@ -482,7 +515,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         eventData.putMap("data", handler.getData());
         String sourceID = handler.getLastSourceAppID();
         if (sourceID != null && !sourceID.equals(handler.getContext().getPackageName())) {
-          eventData.putString("sourceAppID", sourceID);
+          eventData.putString(KEY_SOURCE_APP, sourceID);
         }
       }
     }
@@ -490,13 +523,13 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     @Override
     public void configure(T handler, ReadableMap config) {
       super.configure(handler, config);
-      if(config.hasKey(KEY_DRAG_TYPES)) {
+      if(config.hasKey(KEY_TYPES)) {
         ArrayList<Integer> types = new ArrayList<>();
-        ReadableType readableType = config.getType(KEY_DRAG_TYPES);
+        ReadableType readableType = config.getType(KEY_TYPES);
         if (readableType == ReadableType.Number) {
-          types.add(config.getInt(KEY_DRAG_TYPES));
+          types.add(config.getInt(KEY_TYPES));
         } else if (readableType == ReadableType.Array) {
-          ReadableArray typeArr = config.getArray(KEY_DRAG_TYPES);
+          ReadableArray typeArr = config.getArray(KEY_TYPES);
           if (typeArr != null) {
             for (int i = 0; i < typeArr.size(); i++) {
               types.add(typeArr.getInt(i));
@@ -506,11 +539,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         handler.setTypes(types);
       }
 
-      if(config.hasKey(KEY_DRAG_DATA) && config.getType(KEY_DRAG_DATA) == ReadableType.Map) {
+      if(config.hasKey(KEY_DATA) && config.getType(KEY_DATA) == ReadableType.Map) {
         handler.setDataResolver(
                 new MapResolver(
                         (ReactApplicationContext) handler.getContext(),
-                        config.getMap(KEY_DRAG_DATA)
+                        config.getMap(KEY_DATA)
                 )
         );
       }
