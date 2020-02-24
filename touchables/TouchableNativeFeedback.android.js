@@ -1,6 +1,7 @@
-import GenericTouchable from './GenericTouchable';
+import { Platform } from 'react-native';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import GenericTouchable from './GenericTouchable';
 
 /**
  * TouchableNativeFeedback behaves slightly different than RN's TouchableNativeFeedback.
