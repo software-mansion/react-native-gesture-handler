@@ -42,6 +42,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
             outShadowTouchPoint.set(v.getWidth(), v.getHeight());
         }
     };
+    private boolean mIsInvisible = false;
     private static final String DEBUG_TAG = "GestureHandler";
     public String getDebugTag() {
         return DEBUG_TAG;
@@ -69,11 +70,13 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     }
 
     public DragGestureHandler<T> setDragMode(int mode) {
-        if (mIsDragging) {
+        if (mIsDragging && mShadowEnabled) {
             if (mode == DRAG_MODE_MOVE) {
                 getView().setVisibility(View.INVISIBLE);
+                mIsInvisible = true;
             } else if (mode == DRAG_MODE_COPY) {
                 getView().setVisibility(View.VISIBLE);
+                mIsInvisible = false;
             }
         }
         mDragMode = mode;
@@ -205,8 +208,9 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
                             mShadowBuilderView),
                     throwable);
         }
-        if (mDragMode == DRAG_MODE_MOVE) {
+        if (mDragMode == DRAG_MODE_MOVE && mShadowEnabled) {
             getView().setVisibility(View.INVISIBLE);
+            mIsInvisible = true;
         }
     }
 
@@ -243,8 +247,9 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
             if (!mShadowEnabled) {
                 resetElevation();
             }
-            if (mDragMode == DRAG_MODE_MOVE) {
+            if (mDragMode == DRAG_MODE_MOVE && mIsInvisible) {
                 getView().setVisibility(View.VISIBLE);
+                mIsInvisible = false;
             }
         }
         super.onStateChange(newState, previousState);
@@ -258,6 +263,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         mDropHandler = null;
         mLastDropHandler = null;
         mSourceAppID = null;
+        mIsInvisible = false;
     }
 
 }
