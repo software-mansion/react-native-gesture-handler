@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -27,9 +28,18 @@ public class RNDragShadowViewManager extends ViewGroupManager<RNDragShadowViewMa
         void updateDragShadow() {
             ThemedReactContext context = (ThemedReactContext) getContext();
             RNGestureHandlerRegistry registry = context.getNativeModule(RNGestureHandlerModule.class).getRegistry();
-            DragGestureHandler handler = (DragGestureHandler) registry.getHandler(mTag);
+            final DragGestureHandler handler = (DragGestureHandler) registry.getHandler(mTag);
             if (handler != null) {
-                handler.setShadowBuilderView(this);
+                if (UiThreadUtil.isOnUiThread()) {
+                    handler.setShadowBuilderView(this);
+                } else {
+                    UiThreadUtil.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            handler.setShadowBuilderView(RNDragShadowView.this);
+                        }
+                    });
+                }
             }
         }
     }
