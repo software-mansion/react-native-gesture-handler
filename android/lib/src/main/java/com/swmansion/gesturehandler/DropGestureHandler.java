@@ -12,6 +12,7 @@ import androidx.core.view.DragAndDropPermissionsCompat;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
+import static com.swmansion.gesturehandler.DragGestureUtils.isProgressEvent;
 
 public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGestureHandler<T>> {
 
@@ -24,12 +25,6 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     private String mLastEventData;
     private String mLastSourceAppID;
     boolean mIsActiveDropHandler = false;
-
-    private static boolean isProgressEvent(DragEvent event) {
-        int action = event.getAction();
-        return action != DragEvent.ACTION_DRAG_STARTED && action != DragEvent.ACTION_DRAG_ENDED
-                && action != DragEvent.ACTION_DRAG_EXITED;
-    }
 
     public DropGestureHandler(Context context) {
         super(context);
@@ -165,4 +160,5 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
         mLastSourceAppID = null;
         mIsActiveDropHandler = false;
     }
+
 }
