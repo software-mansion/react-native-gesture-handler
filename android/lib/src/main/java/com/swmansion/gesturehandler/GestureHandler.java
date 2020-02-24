@@ -476,8 +476,12 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   protected void onHandle(DragEvent event) {
-    // other handlers should have the ability to run simultaneously during a DragEvent
-    // this is why we do not move to FAIL state
+    // non drag/drop handlers should have the ability to run simultaneously during a DragEvent
+    // this is why we do not move to FAIL state as long as the drag event is bound to the root view
+    int action = event.getAction();
+    if (action == DragEvent.ACTION_DRAG_EXITED && (mState == STATE_BEGAN || mState == STATE_ACTIVE)) {
+      fail();
+    }
   }
 
   protected void onStateChange(int newState, int previousState) {

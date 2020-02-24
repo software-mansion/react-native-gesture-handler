@@ -40,15 +40,6 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
     return super.dispatchTouchEvent(ev);
   }
 
-  @Override
-  public boolean dispatchDragEvent(DragEvent event) {
-    boolean handleNative = super.dispatchDragEvent(event);
-    if (mGestureRootHelper != null && mGestureRootHelper.dispatchDragEvent(event)) {
-      return true;
-    }
-    return true;
-  }
-
   /**
    * This method is used to enable root view to start processing touch events through the gesture
    * handler library logic. Unless this method is called (which happens as a result of instantiating

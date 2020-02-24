@@ -4,6 +4,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
@@ -15,7 +16,7 @@ import com.facebook.react.views.modal.RNGHModalUtils;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator;
 
-public class RNGestureHandlerRootHelper {
+public class RNGestureHandlerRootHelper implements View.OnDragListener {
 
   private static final float MIN_ALPHA_FOR_TOUCH = 0.1f;
 
@@ -23,6 +24,7 @@ public class RNGestureHandlerRootHelper {
   private final GestureHandlerOrchestrator mOrchestrator;
   private final GestureHandler mJSGestureHandler;
   private final ViewGroup mReactRootView;
+  private final ViewGroup mWrappedView;
 
   private boolean mShouldIntercept = false;
   private boolean mPassingTouch = false;
@@ -42,6 +44,7 @@ public class RNGestureHandlerRootHelper {
 
   public RNGestureHandlerRootHelper(ReactContext context, ViewGroup wrappedView) {
     UiThreadUtil.assertOnUiThread();
+    mWrappedView = wrappedView;
     int wrappedViewTag = wrappedView.getId();
     if (wrappedViewTag < 1) {
       throw new IllegalStateException("Expect view tag to be set for " + wrappedView);
@@ -65,6 +68,7 @@ public class RNGestureHandlerRootHelper {
     mJSGestureHandler.setTag(-wrappedViewTag);
     registry.registerHandler(mJSGestureHandler);
     registry.attachHandlerToView(mJSGestureHandler.getTag(), wrappedViewTag);
+    mWrappedView.setOnDragListener(this);
 
     module.registerRootHelper(this);
   }
@@ -76,6 +80,7 @@ public class RNGestureHandlerRootHelper {
     RNGestureHandlerModule module = mContext.getNativeModule(RNGestureHandlerModule.class);
     module.getRegistry().dropHandler(mJSGestureHandler.getTag());
     module.unregisterRootHelper(this);
+    mWrappedView.setOnDragListener(null);
   }
 
   public ViewGroup getRootView() {
@@ -147,11 +152,12 @@ public class RNGestureHandlerRootHelper {
     }
   }
 
-  public boolean dispatchDragEvent(DragEvent ev) {
+  @Override
+  public boolean onDrag(View v, DragEvent event) {
     mPassingTouch = true;
-    boolean retVal = mOrchestrator.onDragEvent(ev);
+    mOrchestrator.onDragEvent(event);
     mPassingTouch = false;
-    return retVal;
+    return true;
   }
 
   private void tryCancelAllHandlers() {

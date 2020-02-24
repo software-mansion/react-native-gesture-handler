@@ -2,8 +2,10 @@ package com.swmansion.gesturehandler.example;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.swmansion.gesturehandler.GestureHandler;
@@ -38,6 +40,15 @@ public class GHRootView extends FrameLayout {
         mOrchestrator = orchestrator;
         mRootViewGestureHandler = new RootViewGestureHandler();
         registry.registerHandlerForView(this, mRootViewGestureHandler);
+        setOnDragListener(new OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                mPassingTouch = true;
+                mOrchestrator.onDragEvent(event);
+                mPassingTouch = false;
+                return true;
+            }
+        });
     }
 
     @Override
@@ -72,16 +83,6 @@ public class GHRootView extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return mOrchestrator.onTouchEvent(event) || super.onTouchEvent(event);
-    }
-
-    @Override
-    public boolean dispatchDragEvent(DragEvent ev) {
-        mPassingTouch = true;
-        super.dispatchDragEvent(ev);
-        boolean retVal = mOrchestrator.onDragEvent(ev);
-        mPassingTouch = false;
-        // we must return true so this view will receive events
-        return true;
     }
 
     class RootViewGestureHandler extends GestureHandler {

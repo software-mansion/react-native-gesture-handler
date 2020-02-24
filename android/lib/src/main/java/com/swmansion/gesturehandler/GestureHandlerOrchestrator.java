@@ -161,18 +161,10 @@ public class GestureHandlerOrchestrator {
       // crucial in case an END event was missed
       mDropHandlers.clear();
     } else if (action == DragEvent.ACTION_DRAG_ENDED) {
-      /*
       event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, mLastDragX, mLastDragY,
               event.getResult(), mLastClipData, mLastClipDescription);
-
-       */
-    }  else if (action == DragEvent.ACTION_DRAG_LOCATION && !mIsDragging) {
-      // this is met when in multi window
-      // a START event is fired across apps and after that only if hte pointer is in bounds the event is fired
-      // therefore we treat the first LOCATION as a START event
+    } else if (action == DragEvent.ACTION_DRAG_ENTERED) {
       mIsDragging = true;
-      event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_STARTED, event.getX(), event.getY(),
-              event.getResult(), event.getClipData(), event.getClipDescription());
     }
     MotionEvent motionEvent = mDerivedMotionEvent.obtain(event);
     mIsHandlingTouch = true;
@@ -203,6 +195,12 @@ public class GestureHandlerOrchestrator {
       cleanupFinishedHandlers();
     } else {
       cleanupFinishedDropHandlers();
+    }
+    if (action == DragEvent.ACTION_DRAG_EXITED) {
+      // this condition is met when app is in multi window mode and the pointer has exited the root view
+      // we want to keep the DragGestureHandler active if present and cancel the rest
+      cleanupAwaitingHandlers();
+      cleanupFinishedHandlers();
     }
     return mIsDragging;
   }
@@ -439,9 +437,9 @@ public class GestureHandlerOrchestrator {
       }
     }
 
-    // ENTER/DROP action can be wrong because of the registered RootView intercepting Drag events.
+    // DROP action can be wrong because of the registered RootView intercepting Drag events.
     // If the origin is foreign then the action is preserved.
-    if ((action == DragEvent.ACTION_DRAG_ENTERED || (action == DragEvent.ACTION_DROP)) && activeDropHandler == null) {
+    if (action == DragEvent.ACTION_DROP && activeDropHandler == null) {
       action = DragEvent.ACTION_DRAG_LOCATION;
     } else if (activeDropHandler == null && lastActiveDropHandler != null) {
       action = DragEvent.ACTION_DRAG_EXITED;
@@ -657,6 +655,9 @@ public class GestureHandlerOrchestrator {
   }
 
   private void extractGestureHandlers(DragEvent event) {
+    if (event.getAction() == DragEvent.ACTION_DRAG_ENDED) {
+      return;
+    }
     sTempCoords[0] = event.getX();
     sTempCoords[1] = event.getY();
     traverseWithPointerEvents(mWrapperView, sTempCoords, 0);

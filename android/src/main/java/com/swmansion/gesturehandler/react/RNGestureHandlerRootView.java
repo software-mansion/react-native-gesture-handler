@@ -80,13 +80,4 @@ public class RNGestureHandlerRootView extends ReactViewGroup {
     super.requestDisallowInterceptTouchEvent(disallowIntercept);
   }
 
-  @Override
-  public boolean dispatchDragEvent(DragEvent event) {
-    boolean handleNative = super.dispatchDragEvent(event);
-    if (Assertions.assertNotNull(mRootHelper).dispatchDragEvent(event)) {
-      return true;
-    }
-    return true;
-  }
-
 }
