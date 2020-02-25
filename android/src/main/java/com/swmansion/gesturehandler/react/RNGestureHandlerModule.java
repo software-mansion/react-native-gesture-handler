@@ -12,7 +12,9 @@ import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -53,6 +55,7 @@ import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPES;
 import static com.swmansion.gesturehandler.GestureHandler.HIT_SLOP_NONE;
+import static com.swmansion.gesturehandler.GestureHandler.STATE_END;
 
 @ReactModule(name=RNGestureHandlerModule.MODULE_NAME)
 public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
@@ -494,6 +497,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
 
     private static class DropGestureHandlerFactory extends DragDropGestureHandlerFactory<ReactDropGestureHandler> {
+
+      private static final String KEY_DRAG_DATA_PASS_PROPS = "nativeProps";
+
       @Override
       public Class<ReactDropGestureHandler> getType() {
         return ReactDropGestureHandler.class;
@@ -512,7 +518,23 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       @Override
       public void extractEventData(ReactDropGestureHandler handler, WritableMap eventData) {
         super.extractEventData(handler, eventData);
-        eventData.putMap("data", handler.getData());
+        ReadableMap data = handler.getData();
+        if (data != null && handler.getState() == STATE_END &&
+                data.hasKey(KEY_DRAG_DATA_PASS_PROPS) &&
+                data.getType(KEY_DRAG_DATA_PASS_PROPS) == ReadableType.Map &&
+                handler.getDropTarget() > 0) {
+          final ReadableMap props = data.getMap(KEY_DRAG_DATA_PASS_PROPS);
+          final int tag = handler.getDropTarget();
+          final ReactApplicationContext context = ((ReactApplicationContext) handler.getContext());
+          context.runOnUiQueueThread(new Runnable() {
+            @Override
+            public void run() {
+              UIManagerModule uiManagerModule = context.getNativeModule(UIManagerModule.class);
+              uiManagerModule.synchronouslyUpdateViewOnUIThread(tag, props);
+            }
+          });
+        }
+        eventData.putMap("data", data);
         String sourceID = handler.getLastSourceAppID();
         if (sourceID != null && !sourceID.equals(handler.getContext().getPackageName())) {
           eventData.putString(KEY_SOURCE_APP, sourceID);
