@@ -19,7 +19,6 @@ public class RNGestureHandlerPackage implements ReactPackage {
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     return Arrays.<ViewManager>asList(
             new RNGestureHandlerRootViewManager(),
-            new RNGestureHandlerButtonViewManager(),
-            new RNDragShadowViewManager());
+            new RNGestureHandlerButtonViewManager());
   }
 }

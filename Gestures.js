@@ -316,16 +316,6 @@ const DragGestureHandlerBase = createHandler(
 );
 export class DragGestureHandler extends DragGestureHandlerBase {
 
-  static GestureHandlerDragShadowView = requireNativeComponent(
-    'GestureHandlerDragShadowView',
-    {
-      name: 'GestureHandlerDragShadowView',
-      propTypes: {
-        ...ViewPropTypes,
-      },
-    }
-  );
-
   static _defaultStyle = StyleSheet.create({
     shadow: {
       position: 'absolute',
@@ -378,8 +368,8 @@ export class DragGestureHandler extends DragGestureHandlerBase {
   }
 
   _shadowHandler = (ref) => {
-    this._shadowRef = ref;
-    if (this._shadowRef) {
+    this._shadowRef.current = ref;
+    if (ref) {
       this._update();
     }
   }
@@ -387,20 +377,18 @@ export class DragGestureHandler extends DragGestureHandlerBase {
   render() {
     const base = super.render();
     const shadow = this._needsToRenderShadow() && (
-      <DragGestureHandler.GestureHandlerDragShadowView
+      <View
         collapsable={false}
         pointerEvents='none'
         style={DragGestureHandler._defaultStyle.shadow}
-        ref={this._shadowRef}
-        dragGestureHandlerTag={this._handlerTag}
       >
-        {this._renderShadow()}
-      </DragGestureHandler.GestureHandlerDragShadowView>
+        {React.cloneElement(this._renderShadow(), { ref: this._shadowHandler })}
+      </View>
     );
     return (
       <>
-        {base}
         {shadow}
+        {base}
       </>
     );
   }
