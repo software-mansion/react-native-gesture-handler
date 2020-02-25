@@ -1,9 +1,11 @@
 package com.swmansion.gesturehandler.example;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -390,7 +392,11 @@ public class MainActivity extends Activity {
                     public void onDragEvent(DragGestureHandler<String[]> handler, DragEvent event) {
                         super.onDragEvent(handler, event);
 
-                        if (event.getAction() == DragEvent.ACTION_DRAG_LOCATION) {
+                        boolean scroll = true;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && MainActivity.this.isInMultiWindowMode()) {
+                            scroll = false;
+                        }
+                        if (event.getAction() == DragEvent.ACTION_DRAG_LOCATION && scroll) {
                             if (Math.abs(handler.getLastAbsolutePositionY()) < 100) {
                                 dy = Math.max(Math.abs(event.getY() - y), Math.abs(dy));
                                 scrollView.smoothScrollBy(0, (int) -dy);
@@ -399,6 +405,7 @@ public class MainActivity extends Activity {
                                 scrollView.smoothScrollBy(0, (int) dy);
                             }
                         }
+
                         y = event.getY();
 
                         if (!enableShadow) {
@@ -573,4 +580,5 @@ public class MainActivity extends Activity {
         interactionManager.configureInteractions(sDropHandler,
                 null, new int[]{scrollHandler.getTag()});
     }
+
 }
