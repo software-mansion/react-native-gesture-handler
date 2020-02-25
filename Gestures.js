@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useRef, useImperativeHandle, useMemo, useCallback } from 'react';
 import { findNodeHandle, View, ViewPropTypes, requireNativeComponent, StyleSheet } from 'react-native';
 
 import createHandler from './createHandler';
@@ -303,7 +303,9 @@ const DragGestureHandlerBase = createHandler(
   {},
   (props) => {
     const { shadow, ...res } = props;
-    // `shadow` prop is handled by DragGestureHandler
+    if (shadow && shadow.current) {
+      res.shadowViewTag = shadow.current ? findNodeHandle(shadow.current) : null;
+    }
     return res;
   },
   {
@@ -314,70 +316,73 @@ const DragGestureHandlerBase = createHandler(
     dragMode: true
   }
 );
-export class DragGestureHandler extends DragGestureHandlerBase {
-
-  static _defaultStyle = StyleSheet.create({
-    shadow: {
-      position: 'absolute',
-      opacity: 0
-    }
-  });
-
-  _shadowRef = React.createRef();
-
-  _needsToRenderShadow() {
-    const { shadow } = this.props;
-    return typeof shadow === 'function' || React.isValidElement(shadow);
+const styles = StyleSheet.create({
+  shadowWrapper: {
+    position: 'absolute',
+    opacity: 0
   }
+});
 
-  _filterConfig() {
-    const config = super._filterConfig();
-    const { shadowViewTag, shadow } = this.props;
-    if (shadowViewTag) {
-      // remains the same
-    } else if (this._needsToRenderShadow()) {
-      config.shadowViewTag = this._shadowRef.current ? findNodeHandle(this._shadowRef.current) : null;
-    } else if (shadow && shadow.current) {
-      config.shadowViewTag = shadow.current ? findNodeHandle(shadow.current) : null;
+function DragGestureHandlerWrapper(props, ref) {
+  const dragHandler = useRef();
+  const shadowHandler = useRef();
+  useImperativeHandle(ref, () => dragHandler.current, [dragHandler]);
+  useEffect(() => {
+    let t;
+    if (props.shadow) {
+      t = setImmediate(() => {
+        const isElementProp = typeof props.shadow === 'function' || React.isValidElement(props.shadow);
+        let shadowViewTag = null;
+        if (isElementProp) {
+          shadowViewTag = shadowHandler.current ? findNodeHandle(shadowHandler.current) : null;
+        } else if (props.shadow.current) {
+          shadowViewTag = props.shadow.current ? findNodeHandle(props.shadow.current) : null;
+        }
+        dragHandler.current && dragHandler.current.setNativeProps({ shadowViewTag });
+        clearImmediate(t);
+      });
     }
-    return config;
-  }
+    return () => clearImmediate(t);
+  }, [props.shadow]);
 
-  _renderShadow() {
-    const { shadow } = this.props;
-    return typeof shadow === 'function' ?
+  const refHandler = useCallback((r) => {
+    const shadowViewTag = r ? findNodeHandle(r) : null;
+    shadowHandler.current = r;
+    dragHandler.current && dragHandler.current.setNativeProps({ shadowViewTag });
+  }, []);
+
+  const shadowEl = useMemo(() => {
+    const { shadow } = props;
+    const element = typeof shadow === 'function' ?
       shadow() :
       React.isValidElement(shadow) ?
         shadow :
         null;
-  }
-
-  _shadowHandler = (ref) => {
-    this._shadowRef.current = ref;
-    if (ref) {
-      this._update();
+    if (element === null) {
+      return null;
+    } else {
+      return (
+        <View
+          collapsable={false}
+          pointerEvents='none'
+          style={styles.shadowWrapper}
+        >
+          {React.cloneElement(element, {
+            ref: refHandler
+          })}
+        </View>
+      );
     }
-  }
-
-  render() {
-    const base = super.render();
-    const shadow = this._needsToRenderShadow() && (
-      <View
-        collapsable={false}
-        pointerEvents='none'
-        style={DragGestureHandler._defaultStyle.shadow}
-      >
-        {React.cloneElement(this._renderShadow(), { ref: this._shadowHandler })}
-      </View>
-    );
-    return (
-      <>
-        {shadow}
-        {base}
-      </>
-    );
-  }
+  }, [props.shadow]);
+  return (
+    <>
+      {shadowEl}
+      <DragGestureHandlerBase ref={dragHandler} {...props} />
+    </>
+  );
 }
+export const DragGestureHandler = React.forwardRef(DragGestureHandlerWrapper);
+DragGestureHandler.propTypes = DragGestureHandlerBase.propTypes;
 
 export const DropGestureHandler = createHandler(
   'DropGestureHandler',

@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.view.ViewCompat;
 
+import java.util.ArrayList;
+
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_EVENT_NAME;
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MODE_COPY;
@@ -25,7 +27,8 @@ import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DRAG_TARGET;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPES;
 
-public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGestureHandler<T>> implements ViewTreeObserver.OnDrawListener {
+public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGestureHandler<T>>
+        implements ViewTreeObserver.OnDrawListener, ViewTreeObserver.OnGlobalLayoutListener {
 
     private @Nullable DropGestureHandler<T> mDropHandler = null;
     private @Nullable DropGestureHandler<T> mLastDropHandler = null;
@@ -36,6 +39,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     private int mDragMode = DRAG_MODE_MOVE;
     private float mOriginalElevation;
     private String mSourceAppID;
+    private final ArrayList<View> mViewsAwaitingCleanup = new ArrayList<>();
     private View.DragShadowBuilder mInvisibleShadow = new View.DragShadowBuilder() {
         @Override
         public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
@@ -57,15 +61,29 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     public DragGestureHandler<T> setShadowBuilderView(@Nullable final View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && view != mShadowBuilderView) {
             if (mShadowBuilderView != null) {
-                mShadowBuilderView.getViewTreeObserver().removeOnDrawListener(this);
+                mViewsAwaitingCleanup.add(mShadowBuilderView);
             }
             if (view != null) {
-                view.getViewTreeObserver().addOnDrawListener(this);
+                ViewTreeObserver treeObserver = view.getViewTreeObserver();
+                treeObserver.addOnDrawListener(this);
+                treeObserver.addOnGlobalLayoutListener(this);
             }
             updateDragShadow();
         }
         mShadowBuilderView = view;
         return this;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onGlobalLayout() {
+        ViewTreeObserver treeObserver;
+        for (View view: mViewsAwaitingCleanup) {
+            treeObserver = view.getViewTreeObserver();
+            treeObserver.removeOnDrawListener(this);
+            treeObserver.removeOnGlobalLayoutListener(this);
+        }
+        mViewsAwaitingCleanup.clear();
     }
 
     public DragGestureHandler<T> setEnableShadow(boolean enable) {
