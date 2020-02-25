@@ -325,33 +325,9 @@ export class DragGestureHandler extends DragGestureHandlerBase {
 
   _shadowRef = React.createRef();
 
-  componentDidMount() {
-    const { shadow } = this.props;
-    super.componentDidMount();
-    if (this._needsToRenderShadow() || (shadow && shadow.current === null)) {
-      // resolve `shadow` prop ref
-      if (this._updateEnqueued) {
-        clearImmediate(this._updateEnqueued);
-      }
-      this._updateEnqueued = setImmediate(() => {
-        this._updateEnqueued = null;
-        this._update();
-      });
-    }
-  }
-
   _needsToRenderShadow() {
     const { shadow } = this.props;
     return typeof shadow === 'function' || React.isValidElement(shadow);
-  }
-
-  _renderShadow() {
-    const { shadow } = this.props;
-    return typeof shadow === 'function' ?
-      shadow() :
-      React.isValidElement(shadow) ?
-        shadow :
-        null;
   }
 
   _filterConfig() {
@@ -365,6 +341,15 @@ export class DragGestureHandler extends DragGestureHandlerBase {
       config.shadowViewTag = shadow.current ? findNodeHandle(shadow.current) : null;
     }
     return config;
+  }
+
+  _renderShadow() {
+    const { shadow } = this.props;
+    return typeof shadow === 'function' ?
+      shadow() :
+      React.isValidElement(shadow) ?
+        shadow :
+        null;
   }
 
   _shadowHandler = (ref) => {

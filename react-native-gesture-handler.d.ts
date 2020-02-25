@@ -386,17 +386,24 @@ declare module 'react-native-gesture-handler' {
     onHandlerStateChange?: (event: PanGestureHandlerStateChangeEvent) => void;
   }
 
-  export interface DragGestureHandlerProperties<T extends Map> extends PanGestureHandlerProps {
+  export interface DragGestureHandlerProperties<T extends Map & { nativeProps?: Map }> extends PanGestureHandlerProps {
     /**
      * Enum that is used to determine if a DropGestureHandler can handle the DragGestureHandler event.
      */
     types?: number | number[],
     /**
-     * The data to pass to DropGestureHandler once a drop occurs
+     * The data to pass to DropGestureHandler once a drop occurs.
+     * Passing `nativeProps` will update the drop target with the passed props once a drop occurs.
      */
     data?: T,
+    /**
+     * This will be overridden to `true` when in multi window mode.
+     */
     shadowEnabled?: boolean,
     shadowViewTag?: number,
+    /**
+     * A convience for providing a shadow instead of passing `shadowViewTag`.
+     */
     shadow?: React.ReactElement | React.RefObject<any> | React.FunctionComponent,
     /**
      * Set to `copy` or `DragMode.COPY` if you want the view to remain visible at the starting position while dragging, achieving a copy effect.
