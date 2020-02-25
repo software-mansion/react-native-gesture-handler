@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react';
-import { Animated, StyleSheet, Text, findNodeHandle } from 'react-native';
+import { Animated, StyleSheet, Text, findNodeHandle, Image, processColor } from 'react-native';
 
 import {
   ScrollView,
@@ -22,7 +22,8 @@ function useDraggaable() {
   const translateY = useMemo(() => new Animated.Value(0), []);
   const [shadowTag, setShadowTag] = useState(null);
   const [shadowEnabled, setShadowEnabled] = useState(true);
-  const onShadowRef = useCallback(r => setShadowTag(r && findNodeHandle(r) || null), []);
+  //const onShadowRef = useCallback(r => setShadowTag(r && findNodeHandle(r) || null), []);
+  const shadowRef = useRef();
   const onGestureEvent = useMemo(() => Animated.event(
     [
       {
@@ -52,7 +53,7 @@ function useDraggaable() {
     }
   }, [translateX, translateY]);
 
-  return { onGestureEvent, onHandlerStateChange, extractStyle, shadowTag, onShadowRef, shadowEnabled, setShadowEnabled }
+  return { onGestureEvent, onHandlerStateChange, extractStyle, shadowTag, shadowRef, shadowEnabled, setShadowEnabled }
 }
 
 function useDropZone() {
@@ -128,6 +129,7 @@ export default function DragExample(props) {
   const draggable1 = useDraggaable();
   const shadowViewRef = useRef();
   const [color, setColor] = useState('black');
+  const [displayShadowImage, setDisplayShadowImage] = useState(false);
 
   const scrollX = useMemo(() => new Animated.Value(0), []);
   const scrollY = useMemo(() => new Animated.Value(0), []);
@@ -147,10 +149,19 @@ export default function DragExample(props) {
 
   useEffect(() => {
     setTimeout(() => scrollRef.current && scrollRef.current.scrollTo({ x: 0, y: 150 }), 50);
-    const rgb = new Array(3).fill(0).map(() => Math.random() * 255);
-    const t = setInterval(() => setColor(`rgb(${rgb.join(',')})`), 5000);
+    const t = setInterval(() => {
+      const rgb = new Array(3).fill(0).map(() => Math.random() * 255);
+      setColor(`rgb(${rgb.join(',')})`);
+    }, 1000);
     return () => clearInterval(t);
   }, []);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setDisplayShadowImage(!displayShadowImage);
+    }, 1000);
+    return () => clearInterval(t);
+  }, [displayShadowImage]);
 
   useEffect(() => {
     if (dropZone3.text) {
@@ -163,7 +174,7 @@ export default function DragExample(props) {
       style={styles.default}
       ref={scrollRef}
       contentOffset={{ x: 0, y: 50 }}
-      onHandlerStateChange={e => console.log('scroll', e.nativeEvent)}
+      //onHandlerStateChange={e => console.log('scroll', e.nativeEvent)}
       simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
     //onScroll={onScroll}
     >
@@ -220,10 +231,26 @@ export default function DragExample(props) {
         ref={dropZone1.onRef}
         data={{
           a: ['b', 'foo', 'bar'],
-          text: dropZone1.text || 'I\'m hungry'
+          text: dropZone1.text || 'I\'m hungry',
+          nativeProps: {
+            source: require('../scaleAndRotate/swmansion.png'),
+            width: 250,
+            backgroundColor: processColor('gold')
+          }
         }}
         shadowEnabled={draggable1.shadowEnabled}
-        shadow={() => <Animated.View style={{ width: 50, height: 50, backgroundColor: color }} />}
+        shadow={() => (
+          <Animated.View
+            collapsable={false}
+            style={{ backgroundColor: 'pink', padding: 10, position: 'absolute', opacity: 0 }}
+          >
+            <Animated.View style={{ width: 50, height: 50, backgroundColor: color }} />
+            {displayShadowImage ?
+              <Animated.View style={{ width: 50, height: 50, backgroundColor: color }} /> :
+              <Image source={require('../scaleAndRotate/swmansion.png')} />}
+          </Animated.View>
+        )}
+        dragMode='copy'
       >
         <Animated.View collapsable={false}>
           <DropGestureHandler
