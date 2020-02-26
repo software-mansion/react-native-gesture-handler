@@ -49,6 +49,8 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         }
     };
     private boolean mIsInvisible = false;
+    private boolean mLastShadowVisible;
+    private boolean mDidWarn = false;
     private static final String DEBUG_TAG = "GestureHandler";
     public String getDebugTag() {
         return DEBUG_TAG;
@@ -74,20 +76,11 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         return this;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    @Override
-    public void onGlobalLayout() {
-        ViewTreeObserver treeObserver;
-        for (View view: mViewsAwaitingCleanup) {
-            treeObserver = view.getViewTreeObserver();
-            treeObserver.removeOnDrawListener(this);
-            treeObserver.removeOnGlobalLayoutListener(this);
-        }
-        mViewsAwaitingCleanup.clear();
-    }
-
     public DragGestureHandler<T> setEnableShadow(boolean enable) {
         mShadowEnabled = enable;
+        if (mIsDragging && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            updateDragShadow();
+        }
         return this;
     }
 
@@ -181,19 +174,21 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onDraw() {
-        updateDragShadow();
+        if (mShadowEnabled) {
+            updateDragShadow();
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void updateDragShadow() {
-        if (!mIsDragging) {
-            return;
+    @Override
+    public void onGlobalLayout() {
+        ViewTreeObserver treeObserver;
+        for (View view: mViewsAwaitingCleanup) {
+            treeObserver = view.getViewTreeObserver();
+            treeObserver.removeOnDrawListener(this);
+            treeObserver.removeOnGlobalLayoutListener(this);
         }
-        View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(
-                mShadowBuilderView != null ?
-                        mShadowBuilderView :
-                        getView());
-        getView().updateDragShadow(shadowBuilder);
+        mViewsAwaitingCleanup.clear();
     }
 
     private void setElevation() {
@@ -229,10 +224,13 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
             if (!mShadowEnabled) {
                 Log.i(getDebugTag(),
                         "[GESTURE HANDLER] Overriding configuration: drag shadow must be enabled in multi window mode");
+                mDidWarn = true;
             }
+            mLastShadowVisible = true;
         } else {
             shadowBuilder = mInvisibleShadow;
             setElevation();
+            mLastShadowVisible = false;
         }
         int flags = DragGestureUtils.getFlags();
         try {
@@ -240,6 +238,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         } catch (Throwable throwable) {
             resetElevation();
             getView().startDrag(data, new View.DragShadowBuilder(getView()), null, flags);
+            mLastShadowVisible = true;
             Log.e(
                     getDebugTag(),
                     String.format(
@@ -248,9 +247,39 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
                             mShadowBuilderView),
                     throwable);
         }
-        if (mDragMode == DRAG_MODE_MOVE && mShadowEnabled) {
+        if (mDragMode == DRAG_MODE_MOVE && mLastShadowVisible) {
             getView().setVisibility(View.INVISIBLE);
             mIsInvisible = true;
+        }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void updateDragShadow() {
+        if (!mIsDragging) {
+            return;
+        }
+        View.DragShadowBuilder shadowBuilder;
+        boolean nextShadowVisible;
+        if (mShadowEnabled || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mDataResolver.getActivity().isInMultiWindowMode())) {
+            shadowBuilder = new View.DragShadowBuilder(
+                    mShadowBuilderView != null ?
+                            mShadowBuilderView :
+                            getView());
+            nextShadowVisible = true;
+            if (!mShadowEnabled && !mDidWarn) {
+                Log.i(getDebugTag(),
+                        "[GESTURE HANDLER] Overriding configuration: drag shadow must be enabled in multi window mode");
+                mDidWarn = true;
+            }
+        } else {
+            shadowBuilder = mInvisibleShadow;
+            nextShadowVisible = false;
+        }
+        boolean hasChanged = !(!mLastShadowVisible && !nextShadowVisible);
+        if (hasChanged) {
+            getView().updateDragShadow(shadowBuilder);
+            mLastShadowVisible = nextShadowVisible;
         }
     }
 
@@ -270,6 +299,8 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         mDragAction = event.getAction();
         if (mDragAction == DragEvent.ACTION_DRAG_STARTED) {
             mSourceAppID = DragGestureUtils.getEventPackageName(event);
+        } else if (mDragAction == DragEvent.ACTION_DRAG_ENDED) {
+            mIsDragging = false;
         }
         super.onHandle(event);
     }
@@ -304,6 +335,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         mLastDropHandler = null;
         mSourceAppID = null;
         mIsInvisible = false;
+        mDidWarn = false;
     }
 
 }
