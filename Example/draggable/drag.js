@@ -76,8 +76,7 @@ function useDropZone() {
     } else if (state == State.CANCELLED) {
       setDropState(-1);
     } else if (state == State.END /*&& oldState == State.ACTIVE*/) {
-      console.log(sourceAppID)
-      console.log(`dropping ${JSON.stringify(data)} to ${dropTarget} from ${dragTarget}`, oldState)
+      console.log(`dropping ${JSON.stringify(data)} to ${dropTarget} from ${dragTarget}, appID: ${sourceAppID}`, oldState)
       setDropState(1);
       setTimeout(() => setDropState(-1), 1000)
       if (data && data.text) {
@@ -242,11 +241,13 @@ export default function DragExample(props) {
         shadow={() => (
           <Animated.View
             collapsable={false}
-            style={{ backgroundColor: 'pink', padding: 10, position: 'absolute', opacity: 0 }}
+            style={styles.dragShadowWrapper}
           >
-            <Animated.View style={{ width: 50, height: 50, backgroundColor: color }} />
+            <Animated.View
+              style={[styles.dragShadow, { backgroundColor: color }]}
+            />
             {displayShadowImage ?
-              <Animated.View style={{ width: 50, height: 50, backgroundColor: color }} /> :
+              <Animated.View style={[styles.dragShadow, { backgroundColor: color }]} /> :
               <Image source={require('../scaleAndRotate/swmansion.png')} />}
           </Animated.View>
         )}
@@ -281,7 +282,11 @@ export default function DragExample(props) {
                     dropZone1.dropStyle
                   ]}
                 >
-                  <Text numberOfLines={5} ellipsizeMode='tail'>{dropZone1.text || 'I\'m hungry, tap me to change the way I drag'}</Text>
+                  <Text
+                    numberOfLines={5}
+                    ellipsizeMode='tail'>
+                    {dropZone1.text || 'I\'m hungry, tap me to change the way I drag'}
+                  </Text>
                 </Animated.View>
               </TapGestureHandler>
             </Animated.View>
@@ -372,4 +377,14 @@ const styles = StyleSheet.create({
     opacity: 0,
     position: 'absolute'
   },
+  dragShadow: {
+    width: 50,
+    height: 50,
+  },
+  dragShadowWrapper: {
+    backgroundColor: 'pink',
+    padding: 10,
+    position: 'absolute',
+    opacity: 0
+  }
 });
