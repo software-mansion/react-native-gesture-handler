@@ -76,7 +76,7 @@ function useDropZone() {
     } else if (state == State.CANCELLED) {
       setDropState(-1);
     } else if (state == State.END /*&& oldState == State.ACTIVE*/) {
-      console.log(`dropping ${JSON.stringify(data)} to ${dropTarget} from ${dragTarget}, appID: ${sourceAppID}`, oldState)
+      console.log(`dropping ${JSON.stringify(data)} to ${dropTarget} from ${dragTarget}`, sourceAppID ? `appID: ${sourceAppID}` : '', State.print(oldState))
       setDropState(1);
       setTimeout(() => setDropState(-1), 1000)
       if (data && data.text) {
