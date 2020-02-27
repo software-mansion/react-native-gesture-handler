@@ -128,8 +128,6 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     public int getDropTarget() {
         if (mDropHandler != null && mDropHandler.getView() != null) {
             return mDropHandler.getView().getId();
-        } else if (mSourceAppID != null && !mSourceAppID.equals(getContext().getPackageName())) {
-            return 0;
         } else {
             return View.NO_ID;
         }

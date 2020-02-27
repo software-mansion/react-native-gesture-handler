@@ -31,15 +31,17 @@ public class DropGestureHandler<T> extends DragDropGestureHandler<T, DropGesture
     }
 
     @Override
-    public int getDragTarget() {
-        return mDragHandler != null && mDragHandler.getView() != null ? mDragHandler.getView().getId() : View.NO_ID;
-    }
-
-    @Override
     public T getData() {
         return mLastEventData != null && mDataResolver != null ?
                 mDataResolver.parse(mLastEventData) :
                 null;
+    }
+
+    @Override
+    public int getDragTarget() {
+        return mDragHandler != null && mDragHandler.getView() != null ?
+                mDragHandler.getView().getId() : 
+                View.NO_ID;
     }
 
     @Override
