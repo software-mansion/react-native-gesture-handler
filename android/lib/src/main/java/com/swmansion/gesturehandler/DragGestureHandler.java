@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -87,11 +89,9 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     public DragGestureHandler<T> setDragMode(int mode) {
         if (mIsDragging && mShadowEnabled) {
             if (mode == DRAG_MODE_MOVE) {
-                getView().setVisibility(View.INVISIBLE);
-                mIsInvisible = true;
+                setViewVisibility(false);
             } else if (mode == DRAG_MODE_COPY) {
-                getView().setVisibility(View.VISIBLE);
-                mIsInvisible = false;
+                setViewVisibility(true);
             }
         }
         mDragMode = mode;
@@ -209,6 +209,16 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         }
     }
 
+    public void setVisibility(boolean visible) {
+        // must override this when using react-native
+        getView().setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void setViewVisibility(boolean visible) {
+        setVisibility(visible);
+        mIsInvisible = !visible;
+    }
+
     private void startDragging() {
         mOrchestrator.mIsDragging = true;
         mIsDragging = true;
@@ -246,8 +256,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
                     throwable);
         }
         if (mDragMode == DRAG_MODE_MOVE && mLastShadowVisible) {
-            getView().setVisibility(View.INVISIBLE);
-            mIsInvisible = true;
+            setViewVisibility(false);
         }
     }
 
@@ -322,8 +331,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
                 resetElevation();
             }
             if (mDragMode == DRAG_MODE_MOVE && mIsInvisible) {
-                getView().setVisibility(View.VISIBLE);
-                mIsInvisible = false;
+                setViewVisibility(true);
             }
         }
         super.onStateChange(newState, previousState);
