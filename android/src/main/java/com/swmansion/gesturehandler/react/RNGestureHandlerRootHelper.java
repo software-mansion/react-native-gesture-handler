@@ -23,7 +23,7 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
   private final ReactContext mContext;
   private final GestureHandlerOrchestrator mOrchestrator;
   private final GestureHandler mJSGestureHandler;
-  private final ViewGroup mReactRootView;
+  private final ViewGroup mRootView;
   private final ViewGroup mWrappedView;
 
   private boolean mShouldIntercept = false;
@@ -36,8 +36,7 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
       parent = parent.getParent();
     }
     if (parent == null) {
-      throw new IllegalStateException("View " + viewGroup + " has not been mounted under" +
-              " ReactRootView");
+      throw new IllegalStateException("View " + viewGroup + " has not been mounted under" + " ReactRootView");
     }
     return (ViewGroup) parent;
   }
@@ -53,15 +52,12 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
     RNGestureHandlerModule module = context.getNativeModule(RNGestureHandlerModule.class);
     RNGestureHandlerRegistry registry = module.getRegistry();
 
-    mReactRootView = findRootViewTag(wrappedView);
+    mRootView = findRootViewTag(wrappedView);
 
-    Log.i(
-            ReactConstants.TAG,
-            "[GESTURE HANDLER] Initialize gesture handler for root view " + mReactRootView);
+    Log.i(ReactConstants.TAG, "[GESTURE HANDLER] Initialize gesture handler for root view " + mRootView);
 
     mContext = context;
-    mOrchestrator = new GestureHandlerOrchestrator(
-            wrappedView, registry, new RNViewConfigurationHelper());
+    mOrchestrator = new GestureHandlerOrchestrator(wrappedView, registry, new RNViewConfigurationHelper());
     mOrchestrator.setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH);
 
     mJSGestureHandler = new RootViewGestureHandler();
@@ -74,9 +70,7 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
   }
 
   public void tearDown() {
-    Log.i(
-            ReactConstants.TAG,
-            "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + mReactRootView);
+    Log.i(ReactConstants.TAG, "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + mRootView);
     RNGestureHandlerModule module = mContext.getNativeModule(RNGestureHandlerModule.class);
     module.getRegistry().dropHandler(mJSGestureHandler.getTag());
     module.unregisterRootHelper(this);
@@ -84,7 +78,7 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
   }
 
   public ViewGroup getRootView() {
-    return mReactRootView;
+    return mRootView;
   }
 
   private class RootViewGestureHandler extends GestureHandler {
@@ -119,27 +113,31 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
       long time = SystemClock.uptimeMillis();
       MotionEvent event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
       event.setAction(MotionEvent.ACTION_CANCEL);
-      if (mReactRootView instanceof ReactRootView) {
-        ((ReactRootView) mReactRootView).onChildStartedNativeGesture(event);
+      if (mRootView instanceof ReactRootView) {
+        ((ReactRootView) mRootView).onChildStartedNativeGesture(event);
       } else {
-        RNGHModalUtils.dialogRootViewGroupOnChildStartedNativeGesture(mReactRootView, event);
+        RNGHModalUtils.dialogRootViewGroupOnChildStartedNativeGesture(mRootView, event);
       }
     }
   }
 
   public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-    // If this method gets called it means that some native view is attempting to grab lock for
+    // If this method gets called it means that some native view is attempting to
+    // grab lock for
     // touch event delivery. In that case we cancel all gesture recognizers
     if (mOrchestrator != null && !mPassingTouch) {
-      // if we are in the process of delivering touch events via GH orchestrator, we don't want to
+      // if we are in the process of delivering touch events via GH orchestrator, we
+      // don't want to
       // treat it as a native gesture capturing the lock
       tryCancelAllHandlers();
     }
   }
 
   public boolean dispatchTouchEvent(MotionEvent ev) {
-    // We mark `mPassingTouch` before we get into `mOrchestrator.onTouchEvent` so that we can tell
-    // if `requestDisallow` has been called as a result of a normal gesture handling process or
+    // We mark `mPassingTouch` before we get into `mOrchestrator.onTouchEvent` so
+    // that we can tell
+    // if `requestDisallow` has been called as a result of a normal gesture handling
+    // process or
     // as a result of one of the gesture handlers activating
     mPassingTouch = true;
     mOrchestrator.onTouchEvent(ev);
@@ -161,7 +159,8 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
   }
 
   private void tryCancelAllHandlers() {
-    // In order to cancel handlers we activate handler that is hooked to the root view
+    // In order to cancel handlers we activate handler that is hooked to the root
+    // view
     if (mJSGestureHandler != null && mJSGestureHandler.getState() == GestureHandler.STATE_BEGAN) {
       // Try activate main JS handler
       mJSGestureHandler.activate();
@@ -169,7 +168,7 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
     }
   }
 
-  /*package*/ void handleSetJSResponder(final int viewTag, final boolean blockNativeResponder) {
+  /* package */ void handleSetJSResponder(final int viewTag, final boolean blockNativeResponder) {
     if (blockNativeResponder) {
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override

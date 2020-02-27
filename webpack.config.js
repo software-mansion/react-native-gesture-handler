@@ -28,7 +28,7 @@ module.exports = async function(env, argv) {
             alias: {
               'react-native-gesture-handler': './',
               react: './node_modules/react',
-              hammerjs: './node_modules/hammerjs',
+              '@egjs/hammerjs': './node_modules/@egjs/hammerjs',
               fbjs: './node_modules/fbjs',
               'hoist-non-react-statics':
                 './node_modules/hoist-non-react-statics',

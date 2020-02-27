@@ -1,7 +1,11 @@
 matrix:
   include:
     - language: objective-c
+      os: osx
       osx_image: xcode10.2
+      xcode_workspace: './e2e/ios/ExampleE2E.xcworkspace'
+      xcode_scheme: ExampleE2E
+      podfile: './e2e/ios/Podfile'
       xcode_sdk: iphonesimulator12.2
       xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
       env: NODE_VERSION=10.15.3
@@ -70,7 +74,11 @@ matrix:
         - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
 
     - language: objective-c
+      os: osx
       osx_image: xcode10.2
+      xcode_workspace: './Example/ios/GestureHandler.xcworkspace'
+      xcode_scheme: GestureHandler
+      podfile: './Example/ios/Podfile'
       xcode_sdk: iphonesimulator12.2
       xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone X
       env: NODE_VERSION=10.15.3

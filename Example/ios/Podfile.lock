@@ -223,7 +223,7 @@ PODS:
     - ReactCommon/jscallinvoker (= 0.61.2)
   - RNCViewpager (1.1.6):
     - React
-  - RNGestureHandler (1.5.6):
+  - RNGestureHandler (1.6.0):
     - React
   - RNVectorIcons (5.0.0):
     - React
@@ -359,7 +359,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: fb54c732fd20405a76598e431aa2f8c2bf527de9
   ReactCommon: 5848032ed2f274fcb40f6b9ec24067787c42d479
   RNCViewpager: cb80bdd78432921ec6c5309e0e1122fa8727a416
-  RNGestureHandler: 911d3b110a7a233a34c4f800e7188a84b75319c6
+  RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
   RNVectorIcons: f066f73bf4f25564d7ee7b1bb150e3b431f3a194
   Yoga: 14927e37bd25376d216b150ab2a561773d57911f
 
