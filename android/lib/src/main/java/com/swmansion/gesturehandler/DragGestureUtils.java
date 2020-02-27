@@ -113,6 +113,10 @@ public class DragGestureUtils {
     public static class DerivedMotionEvent {
         private long downTime;
 
+        public void setDownTime() {
+            downTime = SystemClock.uptimeMillis();
+        }
+
         public MotionEvent obtain(DragEvent event) {
             int motionAction;
             int dragAction = event.getAction();

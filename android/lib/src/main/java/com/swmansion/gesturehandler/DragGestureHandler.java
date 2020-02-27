@@ -278,8 +278,12 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         }
         boolean hasChanged = !(!mLastShadowVisible && !nextShadowVisible);
         if (hasChanged) {
-            getView().updateDragShadow(shadowBuilder);
-            mLastShadowVisible = nextShadowVisible;
+            try {
+                getView().updateDragShadow(shadowBuilder);
+                mLastShadowVisible = nextShadowVisible;
+            } catch (Throwable throwable) {
+                Log.e(getDebugTag(), "[GESTURE HANDLER] error while trying to update drag shadow", throwable);
+            }
         }
     }
 
@@ -297,9 +301,10 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     @Override
     protected void onHandle(DragEvent event) {
         mDragAction = event.getAction();
-        if (mDragAction == DragEvent.ACTION_DRAG_STARTED) {
+        if (mSourceAppID == null) {
             mSourceAppID = DragGestureUtils.getEventPackageName(event);
-        } else if (mDragAction == DragEvent.ACTION_DRAG_ENDED) {
+        }
+        if (mDragAction == DragEvent.ACTION_DRAG_ENDED) {
             mIsDragging = false;
         }
         super.onHandle(event);

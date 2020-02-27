@@ -111,6 +111,7 @@ public class GestureHandlerOrchestrator {
   private float mLastDragX;
   private float mLastDragY;
   private ArrayList<DropGestureHandler> mDropHandlers = new ArrayList<>();
+  private boolean mFlagNextDragLocationEvent;
 
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
@@ -160,15 +161,33 @@ public class GestureHandlerOrchestrator {
       // make sure mDropHandlers is empty
       // crucial in case an END event was missed
       mDropHandlers.clear();
+      // STARTED event has unreliable x, y so we don't handle it
+      return false;
+    } else if (action == DragEvent.ACTION_DRAG_ENTERED) {
+      // ENTERED event is fired without x, y data so we flag the next event in order to set it's action to ENTERED
+      mIsDragging = true;
+      mFlagNextDragLocationEvent = true;
+      return true;
+    } else if (mFlagNextDragLocationEvent && action == DragEvent.ACTION_DRAG_LOCATION) {
+      mLastDragX = event.getX();
+      mLastDragY = event.getY();
+      mFlagNextDragLocationEvent = false;
+      event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENTERED, event.getX(), event.getY(),
+              event.getResult(), event.getClipData(), event.getClipDescription());
+      mDerivedMotionEvent.setDownTime();
+    } else if (action == DragEvent.ACTION_DRAG_EXITED) {
+      event = DragGestureUtils.obtain(action, mLastDragX, mLastDragY,
+              event.getResult(), event.getClipData(), event.getClipDescription());
     } else if (action == DragEvent.ACTION_DRAG_ENDED) {
       event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, mLastDragX, mLastDragY,
               event.getResult(), mLastClipData, mLastClipDescription);
-    } else if (action == DragEvent.ACTION_DRAG_ENTERED) {
-      mIsDragging = true;
     }
+
     MotionEvent motionEvent = mDerivedMotionEvent.obtain(event);
     mIsHandlingTouch = true;
-    extractGestureHandlers(event);
+    if (action == DragEvent.ACTION_DRAG_LOCATION) {
+      extractGestureHandlers(event);
+    }
     deliverEventToGestureHandlers(motionEvent);
     deliverEventToGestureHandlers(event);
     // sometimes the system fails to fire a ENDED event after a DROP
@@ -184,11 +203,14 @@ public class GestureHandlerOrchestrator {
       mLastClipDescription = null;
       mLastClipData = null;
       mDropHandlers.clear();
+      mFlagNextDragLocationEvent = false;
     } else {
       mLastClipDescription = event.getClipDescription();
       mLastClipData = event.getClipData();
-      mLastDragX = event.getX();
-      mLastDragY = event.getY();
+      if (action == DragEvent.ACTION_DRAG_LOCATION) {
+        mLastDragX = event.getX();
+        mLastDragY = event.getY();
+      }
     }
     motionEvent.recycle();
     if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
@@ -655,9 +677,6 @@ public class GestureHandlerOrchestrator {
   }
 
   private void extractGestureHandlers(DragEvent event) {
-    if (event.getAction() == DragEvent.ACTION_DRAG_ENDED) {
-      return;
-    }
     sTempCoords[0] = event.getX();
     sTempCoords[1] = event.getY();
     traverseWithPointerEvents(mWrapperView, sTempCoords, 0);
