@@ -24,7 +24,6 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
   private final GestureHandlerOrchestrator mOrchestrator;
   private final GestureHandler mJSGestureHandler;
   private final ViewGroup mRootView;
-  private final ViewGroup mWrappedView;
 
   private boolean mShouldIntercept = false;
   private boolean mPassingTouch = false;
@@ -43,7 +42,6 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
 
   public RNGestureHandlerRootHelper(ReactContext context, ViewGroup wrappedView) {
     UiThreadUtil.assertOnUiThread();
-    mWrappedView = wrappedView;
     int wrappedViewTag = wrappedView.getId();
     if (wrappedViewTag < 1) {
       throw new IllegalStateException("Expect view tag to be set for " + wrappedView);
@@ -64,8 +62,7 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
     mJSGestureHandler.setTag(-wrappedViewTag);
     registry.registerHandler(mJSGestureHandler);
     registry.attachHandlerToView(mJSGestureHandler.getTag(), wrappedViewTag);
-    mWrappedView.setOnDragListener(this);
-
+    mRootView.setOnDragListener(this);
     module.registerRootHelper(this);
   }
 
@@ -73,8 +70,8 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
     Log.i(ReactConstants.TAG, "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + mRootView);
     RNGestureHandlerModule module = mContext.getNativeModule(RNGestureHandlerModule.class);
     module.getRegistry().dropHandler(mJSGestureHandler.getTag());
+    mRootView.setOnDragListener(null);
     module.unregisterRootHelper(this);
-    mWrappedView.setOnDragListener(null);
   }
 
   public ViewGroup getRootView() {
@@ -152,6 +149,7 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
 
   @Override
   public boolean onDrag(View v, DragEvent event) {
+    Log.d("DragDrop", "onDrag: " + event + "  " + v);
     mPassingTouch = true;
     mOrchestrator.onDragEvent(event);
     mPassingTouch = false;
