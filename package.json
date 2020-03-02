@@ -67,7 +67,7 @@
   "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
   "dependencies": {
     "@egjs/hammerjs": "^2.0.17",
-    "hoist-non-react-statics": "^2.3.1",
+    "hoist-non-react-statics": "^3.3.0",
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2"
   },
