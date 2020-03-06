@@ -551,6 +551,9 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
     keyboardDismissMode?: DrawerKeyboardDismissMode;
     onDrawerClose?: () => void;
     onDrawerOpen?: () => void;
+    onDrawerSlide?: (
+      position: number
+    ) => void;
     onDrawerStateChanged?: (
       newState: DrawerState,
       drawerWillShow: boolean
