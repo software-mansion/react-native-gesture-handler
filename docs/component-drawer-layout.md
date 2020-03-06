@@ -51,6 +51,22 @@ color (default to `"black"`) of a semi-transparent overlay to be displayed on to
 function. This attribute is present in the standard implementation already and is one of the required params. Gesture handler version of DrawerLayout make it possible for the function passed as `renderNavigationView` to take an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened). This can be used by the drawer component to animated its children while the drawer is opening or closing.
 
 ---
+### `onDrawerClose`
+function. This function is called when the drawer is closed.
+
+---
+### `onDrawerOpen`
+function. This function is called when the drawer is opened.
+
+---
+### `onDrawerSlide`
+function. This function is called as a drawer sliding open from touch events. The progress of the drawer opening/closing is passed back as 0 when closed and 1 when opened.
+
+---
+### `onDrawerStateChanged`
+function. This function is called when the status of the drawer changes. Possible values that can be passed back are: 'Idle', 'Dragging', and 'Settling'.
+
+---
 ### `children`
 component or function. Children is a component which is rendered by default and is wrapped by drawer. However, it could be also a render function which takes an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened) is the same way like `renderNavigationView` prop.
 
@@ -58,6 +74,11 @@ component or function. Children is a component which is rendered by default and 
 See the [drawer example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/horizontalDrawer/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo).
 ```js
 class Drawerable extends Component {
+  handleDrawerSlide = status => {
+    // outputs a value between 0 and 1
+    console.log(status);
+  }
+
   renderDrawer = () => {
     return (
       <View>
@@ -74,7 +95,8 @@ class Drawerable extends Component {
           drawerPosition={DrawerLayout.positions.Right}
           drawerType='front'
           drawerBackgroundColor="#ddd"
-          renderNavigationView={this.renderDrawer}>
+          renderNavigationView={this.renderDrawer}
+          onDrawerSlide={this.handleDrawerSlide}>
           <View>
             <Text>
               Hello, it's me
