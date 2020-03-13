@@ -63,6 +63,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
     NSArray<NSNumber *> *_handlersToWaitFor;
     NSArray<NSNumber *> *_simultaneousHandlers;
     RNGHHitSlop _hitSlop;
+    uint16_t _eventCoalescingKey;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -158,30 +159,37 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(RNGestureHandlerEventExtraData *)extraData
 {
-    id touchEvent = [[RNGestureHandlerEvent alloc] initWithRactTag:reactTag
-                                                        handlerTag:_tag
-                                                             state:state
-                                                         extraData:extraData];
-
     if (state != _lastState) {
-        if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
-            [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
-                                                                                         handlerTag:_tag
-                                                                                              state:RNGestureHandlerStateActive
-                                                                                          prevState:_lastState
-                                                                                          extraData:extraData]];
+        if (state == RNGestureHandlerStateActive) {
+            // Generate a unique coalescing-key each time the gesture-handler becomes active. All events will have
+            // the same coalescing-key allowing RCTEventDispatcher to coalesce RNGestureHandlerEvents when events are
+            // generated faster than they can be treated by JS thread
+            static uint16_t nextEventCoalescingKey = 0;
+            self->_eventCoalescingKey = nextEventCoalescingKey++;
+            
+        } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
+            [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
+                                                                                          handlerTag:_tag
+                                                                                               state:RNGestureHandlerStateActive
+                                                                                           prevState:_lastState
+                                                                                           extraData:extraData]];
             _lastState = RNGestureHandlerStateActive;
         }
-        id stateEvent = [[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
-                                                                  handlerTag:_tag
-                                                                       state:state
-                                                                   prevState:_lastState
-                                                                   extraData:extraData];
+        id stateEvent = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
+                                                                   handlerTag:_tag
+                                                                        state:state
+                                                                    prevState:_lastState
+                                                                    extraData:extraData];
         [self.emitter sendStateChangeEvent:stateEvent];
         _lastState = state;
     }
 
     if (state == RNGestureHandlerStateActive) {
+        id touchEvent = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
+                                                             handlerTag:_tag
+                                                                  state:state
+                                                              extraData:extraData
+                                                          coalescingKey:self->_eventCoalescingKey];
         [self.emitter sendTouchEvent:touchEvent];
     }
 }
