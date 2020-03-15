@@ -64,7 +64,7 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
     mJSGestureHandler.setTag(-wrappedViewTag);
     registry.registerHandler(mJSGestureHandler);
     registry.attachHandlerToView(mJSGestureHandler.getTag(), wrappedViewTag);
-    mRootView.setOnDragListener(this);
+    mWrappedView.setOnDragListener(this);
     module.registerRootHelper(this);
   }
 
