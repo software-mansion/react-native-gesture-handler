@@ -378,7 +378,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         final View view = getView();
         ((ReactApplicationContext) getContext())
                 .getNativeModule(UIManagerModule.class)
-                .addUIBlock(new UIBlock() {
+                .prependUIBlock(new UIBlock() {
                   @Override
                   public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
                     view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
