@@ -287,7 +287,7 @@ const DragGestureHandlerBase = createHandler(
     types: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.arrayOf(PropTypes.number),
-    ]).isRequired,
+    ]),
     shadowEnabled: PropTypes.bool,
     shadowViewTag: PropTypes.number,
     shadow: PropTypes.oneOfType([
@@ -391,7 +391,7 @@ export const DropGestureHandler = createHandler(
     types: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.arrayOf(PropTypes.number),
-    ]).isRequired
+    ])
   },
   {},
   null,
