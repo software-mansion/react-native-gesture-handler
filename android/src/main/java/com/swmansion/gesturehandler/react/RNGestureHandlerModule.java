@@ -8,13 +8,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -29,6 +28,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.yoga.YogaDisplay;
 import com.swmansion.gesturehandler.DragDropGestureHandler;
 import com.swmansion.gesturehandler.DragGestureHandler;
 import com.swmansion.gesturehandler.DragGestureUtils;
@@ -48,8 +48,6 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import androidx.annotation.Nullable;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
@@ -373,6 +371,26 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         return ReactConstants.TAG;
       }
 
+      /**
+       * This is used to handle UI changes natively for responsiveness in the case which
+       * {@link DragGestureHandler#setDragMode(int)} was set to {@link DragGestureUtils#DRAG_MODE_MOVE},
+       * making the drag target seem as if it were moved from it's parent after the drop has occurred.
+       * JS is still in charge of actually removing the view.
+       */
+      @Override
+      public void onDrop() {
+        ReactApplicationContext context = ((ReactApplicationContext) getContext());
+        final UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+        final int tag = getView().getId();
+        context.runOnNativeModulesQueueThread(new Runnable() {
+          @Override
+          public void run() {
+            uiManager.getUIImplementation()
+                    .resolveShadowNode(tag)
+                    .setDisplay(YogaDisplay.NONE);
+          }
+        });
+      }
     }
 
     private static class DragGestureHandlerFactory extends DragDropGestureHandlerFactory<ReactDragGestureHandler> {

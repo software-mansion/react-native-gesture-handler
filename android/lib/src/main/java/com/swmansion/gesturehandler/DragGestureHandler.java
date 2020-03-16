@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -16,6 +14,7 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.UiThread;
 import androidx.core.view.ViewCompat;
 
 import java.util.ArrayList;
@@ -39,6 +38,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     private @Nullable View mShadowBuilderView;
     private boolean mShadowEnabled = true;
     private int mDragMode = DRAG_MODE_MOVE;
+    private boolean mResult = false;
     private float mOriginalElevation;
     private String mSourceAppID;
     private final ArrayList<View> mViewsAwaitingCleanup = new ArrayList<>();
@@ -223,16 +223,26 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         });
     }
 
+    @UiThread
+    public void setVisibility(View view, boolean visible) {
+        view.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     private void setViewVisibility(final boolean visible) {
         final View view = getView();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+                setVisibility(view, visible);
                 mIsInvisible = !visible;
             }
         });
     }
+
+    /**
+     * Fired only when {@link DragGestureHandler#mDragMode} is set to {@link DragGestureUtils#DRAG_MODE_MOVE}
+     */
+    public void onDrop() { }
 
     private void startDragging() {
         mOrchestrator.mIsDragging = true;
@@ -274,7 +284,6 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
             setViewVisibility(false);
         }
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void updateDragShadow() {
@@ -326,7 +335,9 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         if (mSourceAppID == null) {
             mSourceAppID = DragGestureUtils.getEventPackageName(event);
         }
-        if (mDragAction == DragEvent.ACTION_DRAG_ENDED) {
+        if (mDragAction == DragEvent.ACTION_DROP) {
+            mResult = true;
+        } else if (mDragAction == DragEvent.ACTION_DRAG_ENDED) {
             mIsDragging = false;
         }
         super.onHandle(event);
@@ -334,7 +345,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
 
     @Override
     void dispatchDragEvent(DragEvent event) {
-        DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), event.getResult(),
+        DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
                 event.getClipData(), event.getClipDescription());
         super.dispatchDragEvent(ev);
     }
@@ -345,8 +356,12 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
             if (!mShadowEnabled) {
                 resetElevation();
             }
-            if (mDragMode == DRAG_MODE_MOVE && mIsInvisible) {
-                setViewVisibility(true);
+            if (mDragMode == DRAG_MODE_MOVE) {
+                if (mResult) {
+                    onDrop();
+                } else if (mIsInvisible) {
+                    setViewVisibility(true);
+                }
             }
         }
         super.onStateChange(newState, previousState);
@@ -356,6 +371,7 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
     protected void onReset() {
         super.onReset();
         mIsDragging = false;
+        mResult = false;
         mDragAction = DragEvent.ACTION_DRAG_ENDED;
         mDropHandler = null;
         mLastDropHandler = null;
