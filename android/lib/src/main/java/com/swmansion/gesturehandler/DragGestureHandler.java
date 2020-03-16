@@ -189,29 +189,49 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         mViewsAwaitingCleanup.clear();
     }
 
+    private void runOnUiThread(Runnable runnable) {
+        mDataResolver.getActivity().runOnUiThread(runnable);
+    }
+
     private void setElevation() {
-        View view = getView();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mOriginalElevation = view.getElevation();
-            view.setElevation(Float.MAX_VALUE);
-        } else {
-            mOriginalElevation = ViewCompat.getElevation(view);
-            ViewCompat.setElevation(view, Integer.MAX_VALUE);
-        }
+        final View view = getView();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mOriginalElevation = view.getElevation();
+                    view.setElevation(Float.MAX_VALUE);
+                } else {
+                    mOriginalElevation = ViewCompat.getElevation(view);
+                    ViewCompat.setElevation(view, Integer.MAX_VALUE);
+                }
+            }
+        });
     }
 
     private void resetElevation() {
-        View view = getView();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            view.setElevation(mOriginalElevation);
-        } else {
-            ViewCompat.setElevation(view, mOriginalElevation);
-        }
+        final View view = getView();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    view.setElevation(mOriginalElevation);
+                } else {
+                    ViewCompat.setElevation(view, mOriginalElevation);
+                }
+            }
+        });
     }
 
-    public void setVisibility(boolean visible) {
+    public void setVisibility(final boolean visible) {
         // must override this when using react-native
-        getView().setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        final View view = getView();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+            }
+        });
     }
 
     private void setViewVisibility(boolean visible) {
