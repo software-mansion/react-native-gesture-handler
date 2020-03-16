@@ -3,18 +3,12 @@ package com.swmansion.gesturehandler;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.DragAndDropPermissionsCompat;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Iterator;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
@@ -36,18 +30,9 @@ public class DropGestureHandler<T, M> extends DragDropGestureHandler<T, M, DropG
         super(context);
     }
 
-    @Override
-    public M getData() throws JSONException {
+    public M getData() {
         if (mLastEventData != null && mDataResolver != null) {
-            JSONObject jsonObject = new JSONObject(mLastEventData);
-            SparseArray<String> out = new SparseArray<>();
-            Iterator<String> iterator = jsonObject.keys();
-            while (iterator.hasNext()) {
-                String key = iterator.next();
-                Object value = jsonObject.get(key);
-                out.put(Integer.valueOf(key), (String)value);
-            }
-            return mDataResolver.parse(out);
+            return mDataResolver.parse(mLastEventData);
         } else {
             return null;
         }

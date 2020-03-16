@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.os.Build;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,9 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.UiThread;
 import androidx.core.view.ViewCompat;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -37,7 +33,7 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
 
     private @Nullable DropGestureHandler<T, M> mDropHandler = null;
     private @Nullable DropGestureHandler<T, M> mLastDropHandler = null;
-    @Nullable DragGestureHandler[] mEventSimultaneousDragHandlers;
+    @Nullable DragGestureHandler[] mJoiningDragHandlers;
 
     private int mDragAction;
     private boolean mIsDragging = false;
@@ -112,17 +108,6 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
         return mLastDropHandler;
     }
 
-    @Override
-    public M getData() throws JSONException {
-        if (mDataResolver != null) {
-            SparseArray<String> out = new SparseArray<>();
-            out.put(getTag(), mDataResolver.stringify());
-            return mDataResolver.parse(out);
-        } else {
-            return null;
-        }
-    }
-
     void setDropHandler(@Nullable DropGestureHandler<T, M> handler) {
         if (handler == mDropHandler) {
             return;
@@ -159,11 +144,11 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
         GestureHandler handler;
         int[] mSimultaneousDragHandlers = mInteractionController.getSimultaneousRelations(this);
         if (mSimultaneousDragHandlers != null && mSimultaneousDragHandlers.length > 0) {
-            mEventSimultaneousDragHandlers = new DragGestureHandler[mSimultaneousDragHandlers.length];
+            mJoiningDragHandlers = new DragGestureHandler[mSimultaneousDragHandlers.length];
             for (int i = 0; i < mSimultaneousDragHandlers.length; i++) {
                 handler = mOrchestrator.getHandler(mSimultaneousDragHandlers[i]);
                 if (handler instanceof DragGestureHandler) {
-                    mEventSimultaneousDragHandlers[i] = (DragGestureHandler) handler;
+                    mJoiningDragHandlers[i] = (DragGestureHandler) handler;
                 }
             }
         }
@@ -176,18 +161,13 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
         intent.putIntegerArrayListExtra(KEY_TYPES, mDTypes);
         intent.putExtra(KEY_SOURCE_APP, packageName);
         if (mDataResolver != null) {
-            JSONObject object = new JSONObject();
-            try {
-                object.put(String.valueOf(getTag()), mDataResolver.stringify());
-                if (mEventSimultaneousDragHandlers != null && mEventSimultaneousDragHandlers.length > 0) {
-                    for (DragGestureHandler handler: mEventSimultaneousDragHandlers) {
-                        object.put(String.valueOf(handler.getTag()), handler.mDataResolver.stringify());
-                    }
-                }
-            } catch (JSONException e) {
-                Log.e(getDebugTag(), "[GESTURE HANDLER] unable to create clip data for drag event", e);
+            int size = mJoiningDragHandlers != null ? mJoiningDragHandlers.length : 0;
+            DragGestureHandler[] handlers = new DragGestureHandler[size + 1];
+            handlers[0] = this;
+            if (mJoiningDragHandlers != null && size > 0) {
+                System.arraycopy(mJoiningDragHandlers, 0, handlers, 1, size);
             }
-            intent.putExtra(KEY_DATA, object.toString());
+            intent.putExtra(KEY_DATA, mDataResolver.stringify(handlers));
         }
         StringBuilder str = new StringBuilder(DRAG_MIME_TYPE + ":");
         for (int t: mDTypes) {
@@ -403,8 +383,8 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
             }
         }
         super.onStateChange(newState, previousState);
-        if (mIsDragging && mEventSimultaneousDragHandlers != null && mEventSimultaneousDragHandlers.length > 0) {
-            for (DragGestureHandler handler: mEventSimultaneousDragHandlers) {
+        if (mIsDragging && mJoiningDragHandlers != null && mJoiningDragHandlers.length > 0) {
+            for (DragGestureHandler handler: mJoiningDragHandlers) {
                 handler.moveToState(newState);
             }
         }
@@ -418,7 +398,7 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
         mDragAction = DragEvent.ACTION_DRAG_ENDED;
         mDropHandler = null;
         mLastDropHandler = null;
-        mEventSimultaneousDragHandlers = null;
+        mJoiningDragHandlers = null;
         mSourceAppID = null;
         mIsInvisible = false;
         mDidWarn = false;

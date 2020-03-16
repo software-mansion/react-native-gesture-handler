@@ -3,7 +3,6 @@ package com.swmansion.gesturehandler.react;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,7 +21,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
@@ -47,6 +45,7 @@ import com.swmansion.gesturehandler.PinchGestureHandler;
 import com.swmansion.gesturehandler.RotationGestureHandler;
 import com.swmansion.gesturehandler.TapGestureHandler;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
@@ -58,7 +57,6 @@ import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPES;
 import static com.swmansion.gesturehandler.GestureHandler.HIT_SLOP_NONE;
 import static com.swmansion.gesturehandler.GestureHandler.STATE_END;
-import static com.swmansion.gesturehandler.react.RNGestureHandlerInteractionManager.KEY_SIMULTANEOUS_HANDLERS;
 
 @ReactModule(name=RNGestureHandlerModule.MODULE_NAME)
 public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
@@ -489,32 +487,34 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
 
       @Override
-      public String stringify() {
-        try {
-          return JSONUtil.stringify(mSource);
-        } catch (JSONException e) {
-          throw new JSApplicationIllegalArgumentException("DragGestureHandler received bad data", e);
+      public String stringify(DragGestureHandler<ReadableMap, ReadableArray>[] handlers) {
+        JSONArray data = new JSONArray();
+        WritableMap source;
+        for (DragGestureHandler<ReadableMap, ReadableArray> handler : handlers) {
+          source = new WritableNativeMap();
+          source.merge(handler.getDataResolver().data());
+          source.putInt("target", handler.getTag());
+          try {
+            data.put(JSONUtil.convertMapToJson(source));
+          } catch (JSONException e) {
+            Log.e(ReactConstants.TAG, "[GESTURE HANDLER] Could not parse drag event data to JSON, raw data: " + source, e);
+          }
         }
+        return data.toString();
       }
 
       @Override
-      public ReadableArray parse(SparseArray<String> sources) {
-        WritableArray out = new WritableNativeArray();
-        WritableMap map;
-        String value;
-        for (int i = 0; i < sources.size(); i++) {
-          value = sources.valueAt(i);
-          try {
-            map = JSONUtil.parse(value);
-          } catch (JSONException e) {
-            Log.e(ReactConstants.TAG, "[GESTURE HANDLER] Could not parse drag event data to JSON, raw data: " + value, e);
-            map = Arguments.createMap();
-            map.putString("rawData", value);
-          }
-          map.putInt("target", sources.keyAt(i));
+      public ReadableArray parse(String sources) {
+        try {
+          return JSONUtil.convertJsonToArray(new JSONArray(sources));
+        } catch (JSONException e) {
+          Log.e(ReactConstants.TAG, "[GESTURE HANDLER] Could not parse drag event data to JSON, raw data: " + sources, e);
+          WritableMap map = Arguments.createMap();
+          WritableArray out = Arguments.createArray();
+          map.putString("rawData", sources);
           out.pushMap(map);
+          return out;
         }
-        return out;
       }
 
       @Override
@@ -550,16 +550,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       @Override
       public void extractEventData(ReactDropGestureHandler handler, WritableMap eventData) {
         super.extractEventData(handler, eventData);
-        ReadableArray data = null;
-        try {
-          data = handler.getData();
-        } catch (JSONException e) {
-          Log.e(ReactConstants.TAG, "[GESTURE HANDLER] Could not parse drag event data to JSON", e);
-        }
+        ReadableArray data = handler.getData();
         ReadableMap dataFragment;
         final WritableMap props = new WritableNativeMap();
         if (data != null && handler.getState() == STATE_END && handler.getDropTarget() > 0) {
-          //  merge passProps map
+          //  merge props
           for (int i = data.size() - 1; i >= 0; i--) {
             dataFragment = data.getMap(i);
             if (dataFragment != null && dataFragment.hasKey(KEY_DRAG_DATA_PASS_PROPS) &&
@@ -567,15 +562,17 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
               props.merge(dataFragment.getMap(KEY_DRAG_DATA_PASS_PROPS));
             }
           }
-          final int tag = handler.getDropTarget();
-          final ReactApplicationContext context = ((ReactApplicationContext) handler.getContext());
-          context.runOnUiQueueThread(new Runnable() {
-            @Override
-            public void run() {
-              UIManagerModule uiManagerModule = context.getNativeModule(UIManagerModule.class);
-              uiManagerModule.synchronouslyUpdateViewOnUIThread(tag, props);
-            }
-          });
+          if (props.keySetIterator().hasNextKey()) {
+            final int tag = handler.getDropTarget();
+            final ReactApplicationContext context = ((ReactApplicationContext) handler.getContext());
+            context.runOnUiQueueThread(new Runnable() {
+              @Override
+              public void run() {
+                UIManagerModule uiManagerModule = context.getNativeModule(UIManagerModule.class);
+                uiManagerModule.synchronouslyUpdateViewOnUIThread(tag, props);
+              }
+            });
+          }
         }
         eventData.putArray("data", data);
         String sourceID = handler.getLastSourceAppID();

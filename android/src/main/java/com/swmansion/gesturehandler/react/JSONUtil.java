@@ -16,15 +16,7 @@ import java.util.Iterator;
 
 class JSONUtil {
 
-    static WritableMap parse(String stringifiedMap) throws JSONException {
-        return convertJsonToMap(new JSONObject(stringifiedMap));
-    }
-
-    static String stringify(ReadableMap map) throws JSONException {
-        return convertMapToJson(map).toString();
-    }
-
-    private static WritableMap convertJsonToMap(JSONObject jsonObject) throws JSONException {
+    static WritableMap convertJsonToMap(JSONObject jsonObject) throws JSONException {
         WritableMap map = new WritableNativeMap();
 
         Iterator<String> iterator = jsonObject.keys();
@@ -50,7 +42,7 @@ class JSONUtil {
         return map;
     }
 
-    private static WritableArray convertJsonToArray(JSONArray jsonArray) throws JSONException {
+    static WritableArray convertJsonToArray(JSONArray jsonArray) throws JSONException {
         WritableArray array = new WritableNativeArray();
 
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -74,7 +66,7 @@ class JSONUtil {
         return array;
     }
 
-    private static JSONObject convertMapToJson(ReadableMap readableMap) throws JSONException {
+    static JSONObject convertMapToJson(ReadableMap readableMap) throws JSONException {
         JSONObject object = new JSONObject();
         ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
         while (iterator.hasNextKey()) {
@@ -103,7 +95,7 @@ class JSONUtil {
         return object;
     }
 
-    private static JSONArray convertArrayToJson(ReadableArray readableArray) throws JSONException {
+    static JSONArray convertArrayToJson(ReadableArray readableArray) throws JSONException {
         JSONArray array = new JSONArray();
         for (int i = 0; i < readableArray.size(); i++) {
             switch (readableArray.getType(i)) {
