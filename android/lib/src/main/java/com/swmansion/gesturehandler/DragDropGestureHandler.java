@@ -4,15 +4,16 @@ import android.content.Context;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
 
-public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler> extends PanGestureHandler<C> {
+public abstract class DragDropGestureHandler<T, M, C extends DragDropGestureHandler> extends PanGestureHandler<C> {
 
     final ArrayList<Integer> mDTypes = new ArrayList<>();
-    private T mData;
-    DragGestureUtils.DataResolver<T> mDataResolver;
+    DragGestureUtils.DataResolver<T, M> mDataResolver;
     private final Context mContext;
 
     DragDropGestureHandler(Context context) {
@@ -43,12 +44,12 @@ public abstract class DragDropGestureHandler<T, C extends DragDropGestureHandler
         return (C) this;
     }
 
-    public C setDataResolver(DragGestureUtils.DataResolver<T> dataResolver) {
+    public C setDataResolver(DragGestureUtils.DataResolver<T, M> dataResolver) {
         mDataResolver = dataResolver;
         return (C) this;
     }
 
-    public abstract T getData();
+    public abstract M getData() throws JSONException;
     public abstract int getDragTarget();
     public abstract int getDropTarget();
     public abstract int getDragAction();

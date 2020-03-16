@@ -62,6 +62,11 @@ public class GestureHandlerInteractionManager implements GestureHandlerInteracti
         return false;
     }
 
+    @Override
+    public int[] getSimultaneousRelations(GestureHandler handler) {
+        return mSimultaneousRelations.get(handler.getTag(), new int[0]);
+    }
+
     public void reset() {
         mWaitForRelations.clear();
         mSimultaneousRelations.clear();

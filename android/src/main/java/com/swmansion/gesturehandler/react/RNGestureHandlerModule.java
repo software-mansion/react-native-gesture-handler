@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,7 +20,10 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
@@ -54,6 +58,7 @@ import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPES;
 import static com.swmansion.gesturehandler.GestureHandler.HIT_SLOP_NONE;
 import static com.swmansion.gesturehandler.GestureHandler.STATE_END;
+import static com.swmansion.gesturehandler.react.RNGestureHandlerInteractionManager.KEY_SIMULTANEOUS_HANDLERS;
 
 @ReactModule(name=RNGestureHandlerModule.MODULE_NAME)
 public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
@@ -360,7 +365,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   private static abstract class DragDropGestureHandlerFactory<T extends DragDropGestureHandler> extends PanGestureHandlerBaseFactory<T> {
 
-    private static class ReactDragGestureHandler extends DragGestureHandler<ReadableMap> {
+    private static class ReactDragGestureHandler extends DragGestureHandler<ReadableMap, ReadableArray> {
       ReactDragGestureHandler(Context context) {
         super(context);
         setDataResolver(new MapResolver((ReactApplicationContext) getContext()));
@@ -462,14 +467,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
     }
 
-    private static class ReactDropGestureHandler extends DropGestureHandler<ReadableMap> {
+    private static class ReactDropGestureHandler extends DropGestureHandler<ReadableMap, ReadableArray> {
       ReactDropGestureHandler(Context context) {
         super(context);
         setDataResolver(new MapResolver((ReactApplicationContext) getContext()));
       }
     }
 
-    private static class MapResolver implements DragGestureUtils.DataResolver<ReadableMap> {
+    private static class MapResolver implements DragGestureUtils.DataResolver<ReadableMap, ReadableArray> {
 
       private ReadableMap mSource;
       private final ReactApplicationContext mContext;
@@ -493,15 +498,23 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
 
       @Override
-      public ReadableMap parse(String source) {
-        try {
-          return JSONUtil.parse(source);
-        } catch (JSONException e) {
-          Log.e(ReactConstants.TAG, "[GESTURE HANDLER] Could not parse drag event data to JSON, raw data: " + source, e);
-          WritableMap data = Arguments.createMap();
-          data.putString("rawData", source);
-          return data;
+      public ReadableArray parse(SparseArray<String> sources) {
+        WritableArray out = new WritableNativeArray();
+        WritableMap map;
+        String value;
+        for (int i = 0; i < sources.size(); i++) {
+          value = sources.valueAt(i);
+          try {
+            map = JSONUtil.parse(value);
+          } catch (JSONException e) {
+            Log.e(ReactConstants.TAG, "[GESTURE HANDLER] Could not parse drag event data to JSON, raw data: " + value, e);
+            map = Arguments.createMap();
+            map.putString("rawData", value);
+          }
+          map.putInt("target", sources.keyAt(i));
+          out.pushMap(map);
         }
+        return out;
       }
 
       @Override
@@ -537,12 +550,23 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       @Override
       public void extractEventData(ReactDropGestureHandler handler, WritableMap eventData) {
         super.extractEventData(handler, eventData);
-        ReadableMap data = handler.getData();
-        if (data != null && handler.getState() == STATE_END &&
-                data.hasKey(KEY_DRAG_DATA_PASS_PROPS) &&
-                data.getType(KEY_DRAG_DATA_PASS_PROPS) == ReadableType.Map &&
-                handler.getDropTarget() > 0) {
-          final ReadableMap props = data.getMap(KEY_DRAG_DATA_PASS_PROPS);
+        ReadableArray data = null;
+        try {
+          data = handler.getData();
+        } catch (JSONException e) {
+          Log.e(ReactConstants.TAG, "[GESTURE HANDLER] Could not parse drag event data to JSON", e);
+        }
+        ReadableMap dataFragment;
+        final WritableMap props = new WritableNativeMap();
+        if (data != null && handler.getState() == STATE_END && handler.getDropTarget() > 0) {
+          //  merge passProps map
+          for (int i = data.size() - 1; i >= 0; i--) {
+            dataFragment = data.getMap(i);
+            if (dataFragment != null && dataFragment.hasKey(KEY_DRAG_DATA_PASS_PROPS) &&
+                    dataFragment.getType(KEY_DRAG_DATA_PASS_PROPS) == ReadableType.Map) {
+              props.merge(dataFragment.getMap(KEY_DRAG_DATA_PASS_PROPS));
+            }
+          }
           final int tag = handler.getDropTarget();
           final ReactApplicationContext context = ((ReactApplicationContext) handler.getContext());
           context.runOnUiQueueThread(new Runnable() {
@@ -553,7 +577,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             }
           });
         }
-        eventData.putMap("data", data);
+        eventData.putArray("data", data);
         String sourceID = handler.getLastSourceAppID();
         if (sourceID != null && !sourceID.equals(handler.getContext().getPackageName())) {
           eventData.putString(KEY_SOURCE_APP, sourceID);

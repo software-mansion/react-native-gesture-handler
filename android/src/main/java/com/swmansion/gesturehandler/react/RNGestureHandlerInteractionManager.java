@@ -8,7 +8,7 @@ import com.swmansion.gesturehandler.GestureHandlerInteractionManager;
 public class RNGestureHandlerInteractionManager extends GestureHandlerInteractionManager {
 
   private static final String KEY_WAIT_FOR = "waitFor";
-  private static final String KEY_SIMULTANEOUS_HANDLERS = "simultaneousHandlers";
+  static final String KEY_SIMULTANEOUS_HANDLERS = "simultaneousHandlers";
 
   private int[] convertHandlerTagsArray(ReadableMap config, String key) {
     ReadableArray array = config.getArray(key);
@@ -20,7 +20,6 @@ public class RNGestureHandlerInteractionManager extends GestureHandlerInteractio
   }
 
   public void configureInteractions(GestureHandler handler, ReadableMap config) {
-    handler.setInteractionController(this);
     super.configureInteractions(
             handler,
             config.hasKey(KEY_WAIT_FOR) ? convertHandlerTagsArray(config, KEY_WAIT_FOR) : null,

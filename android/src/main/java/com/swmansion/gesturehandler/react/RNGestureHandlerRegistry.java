@@ -20,6 +20,7 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
     mHandlers.put(handler.getTag(), handler);
   }
 
+  @Override
   public synchronized @Nullable GestureHandler getHandler(int handlerTag) {
     return mHandlers.get(handlerTag);
   }

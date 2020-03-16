@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
+import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -139,9 +140,9 @@ public class DragGestureUtils {
         }
     }
 
-    public interface DataResolver<T> {
+    public interface DataResolver<T, M> {
         String stringify();
-        T parse(String source);
+        M parse(SparseArray<String> sources);
         T data();
         Activity getActivity();
     }
