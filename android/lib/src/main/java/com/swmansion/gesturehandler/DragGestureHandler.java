@@ -223,20 +223,15 @@ public class DragGestureHandler<T> extends DragDropGestureHandler<T, DragGesture
         });
     }
 
-    public void setVisibility(final boolean visible) {
-        // must override this when using react-native
+    private void setViewVisibility(final boolean visible) {
         final View view = getView();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+                mIsInvisible = !visible;
             }
         });
-    }
-
-    private void setViewVisibility(boolean visible) {
-        setVisibility(visible);
-        mIsInvisible = !visible;
     }
 
     private void startDragging() {

@@ -373,18 +373,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         return ReactConstants.TAG;
       }
 
-      @Override
-      public void setVisibility(final boolean visible) {
-        final View view = getView();
-        ((ReactApplicationContext) getContext())
-                .getNativeModule(UIManagerModule.class)
-                .prependUIBlock(new UIBlock() {
-                  @Override
-                  public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-                    view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-                  }
-                });
-      }
     }
 
     private static class DragGestureHandlerFactory extends DragDropGestureHandlerFactory<ReactDragGestureHandler> {
