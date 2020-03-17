@@ -112,6 +112,7 @@ public class GestureHandlerOrchestrator {
   private float mLastDragY;
   private ArrayList<DropGestureHandler> mDropHandlers = new ArrayList<>();
   private boolean mFlagNextDragLocationEvent;
+  private boolean mNeedsToPrepareJoiningHandlers;
 
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
@@ -129,6 +130,10 @@ public class GestureHandlerOrchestrator {
    */
   public void setMinimumAlphaForTraversal(float alpha) {
     mMinAlphaForTraversal = alpha;
+  }
+
+  GestureHandler getHandler(int tag) {
+    return mHandlerRegistry.getHandler(tag);
   }
 
   /**
@@ -161,6 +166,7 @@ public class GestureHandlerOrchestrator {
       // make sure mDropHandlers is empty
       // crucial in case an END event was missed
       mDropHandlers.clear();
+      mNeedsToPrepareJoiningHandlers = true;
       // STARTED event has unreliable x, y so we don't handle it
       return false;
     } else if (action == DragEvent.ACTION_DRAG_ENTERED) {
@@ -198,6 +204,7 @@ public class GestureHandlerOrchestrator {
       DragGestureUtils.recycle(ev);
     }
     mIsHandlingTouch = false;
+    mNeedsToPrepareJoiningHandlers = false;
     if (action == DragEvent.ACTION_DRAG_ENDED) {
       mIsDragging = false;
       mLastClipDescription = null;
@@ -250,10 +257,7 @@ public class GestureHandlerOrchestrator {
       if (isFinished(handler.getState()) && !handler.mIsAwaiting && assertHandler.assertTrue(handler)) {
         mGestureHandlers[i] = null;
         shouldCleanEmptyCells = true;
-        handler.reset();
-        handler.mIsActive = false;
-        handler.mIsAwaiting = false;
-        handler.mActivationIndex = Integer.MAX_VALUE;
+        resetHandler(handler);
       }
     }
     if (shouldCleanEmptyCells) {
@@ -266,6 +270,13 @@ public class GestureHandlerOrchestrator {
       mGestureHandlersCount = out;
     }
     mFinishedHandlersCleanupScheduled = false;
+  }
+
+  private void resetHandler(GestureHandler handler) {
+    handler.reset();
+    handler.mIsActive = false;
+    handler.mIsAwaiting = false;
+    handler.mActivationIndex = Integer.MAX_VALUE;
   }
 
   private boolean hasOtherHandlerToWaitFor(GestureHandler handler) {
@@ -447,6 +458,7 @@ public class GestureHandlerOrchestrator {
               }
               if (activeDragHandler != null) {
                 deliverEventToGestureHandler(activeDragHandler, ev);
+                deliverEventToJoiningDragHandlers(ev, activeDragHandler);
               }
               DragGestureUtils.recycle(ev);
             }
@@ -458,7 +470,6 @@ public class GestureHandlerOrchestrator {
         }
       }
     }
-
     // DROP action can be wrong because of the registered RootView intercepting Drag events.
     // If the origin is foreign then the action is preserved.
     if (action == DragEvent.ACTION_DROP && activeDropHandler == null) {
@@ -482,6 +493,8 @@ public class GestureHandlerOrchestrator {
         deliverEventToGestureHandler(mPreparedHandlers[i], ev);
       }
     }
+    // deliver event to joining drag handlers
+    deliverEventToJoiningDragHandlers(ev, activeDragHandler);
 
     // finalize
     // once the event has been delivered we can clear the activeDropHandler if necessary
@@ -496,6 +509,35 @@ public class GestureHandlerOrchestrator {
       }
     }
     DragGestureUtils.recycle(ev);
+  }
+
+  private void deliverEventToJoiningDragHandlers(DragEvent event, DragGestureHandler eventHandler) {
+    if (eventHandler != null) {
+      @Nullable DragGestureHandler[] joiningDragHandlers = eventHandler.mJoiningDragHandlers;
+      if (joiningDragHandlers != null && joiningDragHandlers.length > 0) {
+        for (DragGestureHandler dragHandler: eventHandler.mJoiningDragHandlers) {
+          if (mNeedsToPrepareJoiningHandlers) {
+            prepareHandler(dragHandler, eventHandler.getView());
+            dragHandler.moveToState(GestureHandler.STATE_BEGAN);
+            dragHandler.moveToState(GestureHandler.STATE_ACTIVE);
+          }
+          deliverEventToGestureHandler(dragHandler, event);
+        }
+      }
+    }
+    mNeedsToPrepareJoiningHandlers = false;
+  }
+
+  private void cleanupJoiningDragHandlers(DragEvent event, DragGestureHandler eventHandler) {
+    if (eventHandler != null) {
+      @Nullable DragGestureHandler[] joiningDragHandlers = eventHandler.mJoiningDragHandlers;
+      if (joiningDragHandlers != null && joiningDragHandlers.length > 0) {
+        for (DragGestureHandler dragHandler: eventHandler.mJoiningDragHandlers) {
+          resetHandler(dragHandler);
+        }
+      }
+    }
+    mNeedsToPrepareJoiningHandlers = false;
   }
 
   private void cancelAll() {
@@ -645,6 +687,10 @@ public class GestureHandlerOrchestrator {
       throw new IllegalStateException("Too many recognizers");
     }
     mGestureHandlers[mGestureHandlersCount++] = handler;
+    prepareHandler(handler, view);
+  }
+
+  private void prepareHandler(GestureHandler handler, View view) {
     handler.mIsActive = false;
     handler.mIsAwaiting = false;
     handler.mActivationIndex = Integer.MAX_VALUE;
