@@ -107,7 +107,7 @@ class DragDropUtil {
         @Override
         public void onDragEvent(T handler, DragEvent event) {
             int action = event.getAction();
-            Log.d("Drag", "action " + event.getAction() + ", " + printData(handler));
+            Log.d("Drag", "action " + event.getAction() + ", " + printData(handler) + " " + handler);
             if (actionToColor.containsKey(action)) {
                 setBackgroundColor(handler.getView(), actionToColor.get(action));
             }
@@ -206,7 +206,6 @@ class DragDropUtil {
             for (String source: sources.split("&")) {
                 out.add(new DragDataObject(source));
             }
-            Log.d("Drag", "parse: " + sources + " " + out);
             return out;
         }
 

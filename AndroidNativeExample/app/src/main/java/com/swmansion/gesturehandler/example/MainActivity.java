@@ -474,7 +474,7 @@ public class MainActivity extends Activity {
 
         interactionManager.configureInteractions(panHandler,
                 new int[]{dragHandler.getTag()},
-                new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag(), buttonDragHandler.getTag()});
+                new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
         interactionManager.configureInteractions(rotationHandler, null,
                 new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
         interactionManager.configureInteractions(pinchHandler, null,
@@ -484,7 +484,7 @@ public class MainActivity extends Activity {
                 new int[]{sDropHandler.getTag()});
         interactionManager.configureInteractions(dragHandler,
                 new int[]{tapHandler.getTag(), doubleTapHandler.getTag(), longPressHandler.getTag()},
-                null);
+                new int[]{buttonDragHandler.getTag()});
         interactionManager.configureInteractions(longPressHandler,
                 null, new int[]{dragHandler.getTag()});
         interactionManager.configureInteractions(tapHandler,
