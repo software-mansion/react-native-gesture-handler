@@ -139,9 +139,9 @@ public class DragGestureUtils {
         }
     }
 
-    public interface DataResolver<T, M> {
-        String stringify(DragGestureHandler<T, M>[] handlers);
-        M parse(String sources);
+    public interface DataResolver<T, S> {
+        String stringify(DragGestureHandler<T, S>[] handlers);
+        S parse(String sources);
         T data();
         Activity getActivity();
     }

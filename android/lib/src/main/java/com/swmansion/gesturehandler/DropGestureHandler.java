@@ -10,13 +10,15 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.DragAndDropPermissionsCompat;
 
+import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
+
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
 import static com.swmansion.gesturehandler.DragGestureUtils.isProgressEvent;
 
-public class DropGestureHandler<T, M> extends DragDropGestureHandler<T, M, DropGestureHandler<T, M>> {
+public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolver<T, S>, DropGestureHandler<T, S>> {
 
-    private @Nullable DragGestureHandler<T, M> mDragHandler;
+    private @Nullable DragGestureHandler<T, S> mDragHandler;
     private int mDragAction;
     private boolean mResult;
     private boolean mPointerState = false;
@@ -30,7 +32,7 @@ public class DropGestureHandler<T, M> extends DragDropGestureHandler<T, M, DropG
         super(context);
     }
 
-    public M getData() {
+    public S getData() {
         if (mLastEventData != null && mDataResolver != null) {
             return mDataResolver.parse(mLastEventData);
         } else {
@@ -55,7 +57,7 @@ public class DropGestureHandler<T, M> extends DragDropGestureHandler<T, M, DropG
         return mDragAction;
     }
 
-    public @Nullable DragGestureHandler<T, M> getDragHandler() {
+    public @Nullable DragGestureHandler<T, S> getDragHandler() {
         return mDragHandler;
     }
 
@@ -63,7 +65,7 @@ public class DropGestureHandler<T, M> extends DragDropGestureHandler<T, M, DropG
         return mLastSourceAppID;
     }
 
-    public void setDragHandler(@Nullable DragGestureHandler<T, M> dragHandler) {
+    public void setDragHandler(@Nullable DragGestureHandler<T, S> dragHandler) {
         mDragHandler = dragHandler;
     }
 

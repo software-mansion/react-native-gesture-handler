@@ -10,10 +10,11 @@ import java.util.ArrayList;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
 
-public abstract class DragDropGestureHandler<T, M, C extends DragDropGestureHandler> extends PanGestureHandler<C> {
+@SuppressWarnings("unchecked cast")
+public abstract class DragDropGestureHandler<T extends DataResolver, S extends DragDropGestureHandler<T, S>> extends PanGestureHandler<S> {
 
     final ArrayList<Integer> mDTypes = new ArrayList<>();
-    DragGestureUtils.DataResolver<T, M> mDataResolver;
+    T mDataResolver;
     private final Context mContext;
 
     DragDropGestureHandler(Context context) {
@@ -28,29 +29,29 @@ public abstract class DragDropGestureHandler<T, M, C extends DragDropGestureHand
 
     // to operate as expected DragDropGestureHandler must not cancel when outside so we override this permanently
     @Override
-    public final C setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
-        return (C) this;
+    public final S setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
+        return (S) this;
     }
 
-    public ArrayList<Integer> getType() {
+    public ArrayList<Integer> getTypes() {
         return mDTypes;
     }
 
-    public C setTypes(ArrayList<Integer> types) {
+    public S setTypes(ArrayList<Integer> types) {
         mDTypes.clear();
         if (types != null) {
             mDTypes.addAll(types);
         }
-        return (C) this;
+        return (S) this;
     }
 
-    public DataResolver<T, M> getDataResolver() {
+    public T getDataResolver() {
         return mDataResolver;
     }
 
-    public C setDataResolver(DataResolver<T, M> dataResolver) {
+    public S setDataResolver(T dataResolver) {
         mDataResolver = dataResolver;
-        return (C) this;
+        return (S) this;
     }
 
     public abstract int getDragTarget();

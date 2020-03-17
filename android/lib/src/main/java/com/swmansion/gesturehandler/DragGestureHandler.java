@@ -17,6 +17,8 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.UiThread;
 import androidx.core.view.ViewCompat;
 
+import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
+
 import java.util.ArrayList;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_EVENT_NAME;
@@ -28,11 +30,11 @@ import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DRAG_TARGET;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPES;
 
-public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragGestureHandler<T, M>>
+public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolver<T, S>, DragGestureHandler<T, S>>
         implements ViewTreeObserver.OnDrawListener, ViewTreeObserver.OnGlobalLayoutListener {
 
-    private @Nullable DropGestureHandler<T, M> mDropHandler = null;
-    private @Nullable DropGestureHandler<T, M> mLastDropHandler = null;
+    private @Nullable DropGestureHandler<T, S> mDropHandler = null;
+    private @Nullable DropGestureHandler<T, S> mLastDropHandler = null;
     @Nullable DragGestureHandler[] mJoiningDragHandlers;
 
     private int mDragAction;
@@ -64,7 +66,7 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
         super(context);
     }
 
-    public DragGestureHandler<T, M> setShadowBuilderView(@Nullable final View view) {
+    public DragGestureHandler<T, S> setShadowBuilderView(@Nullable final View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && view != mShadowBuilderView) {
             if (mShadowBuilderView != null) {
                 mViewsAwaitingCleanup.add(mShadowBuilderView);
@@ -80,7 +82,7 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
         return this;
     }
 
-    public DragGestureHandler<T, M> setEnableShadow(boolean enable) {
+    public DragGestureHandler<T, S> setEnableShadow(boolean enable) {
         mShadowEnabled = enable;
         if (mIsDragging && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             updateDragShadow();
@@ -88,7 +90,7 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
         return this;
     }
 
-    public DragGestureHandler<T, M> setDragMode(int mode) {
+    public DragGestureHandler<T, S> setDragMode(int mode) {
         if (mIsDragging && mShadowEnabled) {
             if (mode == DRAG_MODE_MOVE) {
                 setViewVisibility(false);
@@ -100,15 +102,15 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
         return this;
     }
 
-    public DropGestureHandler<T, M> getDropHandler() {
+    public DropGestureHandler<T, S> getDropHandler() {
         return mDropHandler;
     }
 
-    public DropGestureHandler<T, M> getLastDropHandler() {
+    public DropGestureHandler<T, S> getLastDropHandler() {
         return mLastDropHandler;
     }
 
-    void setDropHandler(@Nullable DropGestureHandler<T, M> handler) {
+    void setDropHandler(@Nullable DropGestureHandler<T, S> handler) {
         if (handler == mDropHandler) {
             return;
         }
@@ -142,15 +144,19 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
 
     private void prepareSimultaneousHandlersForEvent() {
         GestureHandler handler;
+        DragGestureHandler dragHandler;
         int[] mSimultaneousDragHandlers = mInteractionController.getSimultaneousRelations(this);
         if (mSimultaneousDragHandlers != null && mSimultaneousDragHandlers.length > 0) {
-            mJoiningDragHandlers = new DragGestureHandler[mSimultaneousDragHandlers.length];
-            for (int i = 0; i < mSimultaneousDragHandlers.length; i++) {
-                handler = mOrchestrator.getHandler(mSimultaneousDragHandlers[i]);
-                if (handler instanceof DragGestureHandler) {
-                    mJoiningDragHandlers[i] = (DragGestureHandler) handler;
+            ArrayList<DragGestureHandler> joiningHandler = new ArrayList<>();
+            for (int handlerTag : mSimultaneousDragHandlers) {
+                handler = mOrchestrator.getHandler(handlerTag);
+                if (handler instanceof DragGestureHandler && handler != this) {
+                    dragHandler = (DragGestureHandler) handler;
+                    joiningHandler.add(dragHandler);
+                    dragHandler.mIsDragging = true;
                 }
             }
+            mJoiningDragHandlers = joiningHandler.toArray(new DragGestureHandler[0]);
         }
     }
 
@@ -383,11 +389,14 @@ public class DragGestureHandler<T, M> extends DragDropGestureHandler<T, M, DragG
             }
         }
         super.onStateChange(newState, previousState);
+        /*
         if (mIsDragging && mJoiningDragHandlers != null && mJoiningDragHandlers.length > 0) {
             for (DragGestureHandler handler: mJoiningDragHandlers) {
                 handler.moveToState(newState);
             }
         }
+
+         */
     }
 
     @Override
