@@ -154,8 +154,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         return super.shouldRecognizeSimultaneously(handler) || handler instanceof DropGestureHandler;
     }
 
-    @Override
-    protected void onPrepare() {
+    private void prepareJoiningHandlers() {
         mActiveDragHandlers.clear();
         mActiveDragHandlers.add(this);
         if (mInteractionController != null) {
@@ -278,6 +277,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     private void startDragging() {
+        prepareJoiningHandlers();
         mOrchestrator.startDragging(mActiveDragHandlers);
         mIsDragging = true;
         mDragTargetTags = new int[mActiveDragHandlers.size()];

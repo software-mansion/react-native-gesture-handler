@@ -189,7 +189,6 @@ public class GestureHandler<T extends GestureHandler> {
 
     mView = view;
     mOrchestrator = orchestrator;
-    onPrepare();
   }
 
   private int findNextLocalPointerId() {
@@ -471,8 +470,6 @@ public class GestureHandler<T extends GestureHandler> {
       moveToState(STATE_END);
     }
   }
-
-  protected void onPrepare() {}
 
   protected void onHandle(MotionEvent event) {
     moveToState(STATE_FAILED);
