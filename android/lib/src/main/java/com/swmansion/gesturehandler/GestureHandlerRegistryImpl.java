@@ -42,7 +42,7 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
   }
 
   @Override
-  public View getViewForHandler(DragGestureHandler handler) {
+  public View getViewForHandler(GestureHandler handler) {
     return mViewForTag.get(handler.getTag());
   }
 }

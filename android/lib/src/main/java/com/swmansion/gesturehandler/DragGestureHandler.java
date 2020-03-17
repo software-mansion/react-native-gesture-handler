@@ -40,7 +40,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
     private int mDragAction;
     private boolean mIsDragging = false;
-    private boolean mIsJoining = false;
+    boolean mIsJoining = false;
     private @Nullable View mShadowBuilderView;
     private boolean mShadowEnabled = true;
     private int mDragMode = DRAG_MODE_MOVE;
@@ -113,16 +113,16 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     void setDropHandler(@Nullable DropGestureHandler<T, S> handler) {
-        if (handler == mDropHandler) {
-            return;
-        }
-        mLastDropHandler = mDropHandler;
-        mDropHandler = handler;
         if (mJoiningDragHandlers != null && mJoiningDragHandlers.length > 0) {
             for (DragGestureHandler dragHandler: mJoiningDragHandlers) {
                 dragHandler.setDropHandler(handler);
             }
         }
+        if (handler == mDropHandler) {
+            return;
+        }
+        mLastDropHandler = mDropHandler;
+        mDropHandler = handler;
     }
 
     @Override
@@ -158,7 +158,8 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         return views;
     }
 
-    private void prepareSimultaneousHandlersForEvent() {
+    @Override
+    protected void onPrepare() {
         mActiveDragHandlers.clear();
         if (mInteractionController != null) {
             GestureHandler handler;
@@ -177,7 +178,6 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             }
         }
         mActiveDragHandlers.add(0, this);
-        mOrchestrator.prepareJoiningDragHandlers(this);
     }
 
     private ClipData createClipData() {
@@ -275,9 +275,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             @Override
             public void run() {
                 for (View view: views) {
-                    if (view != null) {
-                        setVisibility(view, visible);
-                    }
+                    setVisibility(view, visible);
                 }
                 mIsInvisible = !visible;
             }
@@ -292,7 +290,6 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     private void startDragging() {
         mOrchestrator.mIsDragging = true;
         mIsDragging = true;
-        prepareSimultaneousHandlersForEvent();
         ClipData data = createClipData();
         View.DragShadowBuilder shadowBuilder;
         if (mShadowEnabled || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mDataResolver.getActivity().isInMultiWindowMode())) {
@@ -383,10 +380,11 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         }
         if (mDragAction == DragEvent.ACTION_DROP) {
             mResult = true;
-        } else if (mDragAction == DragEvent.ACTION_DRAG_ENDED) {
-            mIsDragging = false;
         }
         super.onHandle(event);
+        if (mDragAction == DragEvent.ACTION_DRAG_ENDED) {
+            mIsDragging = false;
+        }
     }
 
     @Override
@@ -410,15 +408,12 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                 }
             }
         }
-        super.onStateChange(newState, previousState);
-        /*
-        if (mIsDragging && mJoiningDragHandlers != null && mJoiningDragHandlers.length > 0) {
+        super.onStateChange(newState, previousState);/*
+        if ((newState == STATE_ACTIVE ) && mJoiningDragHandlers != null && mJoiningDragHandlers.length > 0) {
             for (DragGestureHandler handler: mJoiningDragHandlers) {
-                handler.moveToState(newState);
+                handler.moveToState(STATE_BEGAN);
             }
-        }
-
-         */
+        }*/
     }
 
     @Override
@@ -431,6 +426,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         mDropHandler = null;
         mLastDropHandler = null;
         mJoiningDragHandlers = null;
+        mActiveDragHandlers.clear();
         mSourceAppID = null;
         mIsInvisible = false;
         mDidWarn = false;

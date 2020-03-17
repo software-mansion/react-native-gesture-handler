@@ -108,6 +108,7 @@ public class MainActivity extends Activity {
             }
             if (event.getAction() == DragEvent.ACTION_DROP) {
                 assert handler.getDropHandler() != null;
+                Log.d("Drag!", "onDragEvent: " + handler);
                 Toast.makeText(
                         MainActivity.this,
                         String.format("Dropped %s on %s",
