@@ -143,6 +143,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     private void prepareSimultaneousHandlersForEvent() {
+        if (mInteractionController == null) return;
         GestureHandler handler;
         DragGestureHandler dragHandler;
         int[] mSimultaneousDragHandlers = mInteractionController.getSimultaneousRelations(this);
@@ -248,7 +249,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
     @UiThread
     public void setVisibility(View view, boolean visible) {
-        view.setVisibility(visible ? View.VISIBLE : View.GONE);
+        view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void setViewVisibility(final boolean visible) {
@@ -389,14 +390,11 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             }
         }
         super.onStateChange(newState, previousState);
-        /*
         if (mIsDragging && mJoiningDragHandlers != null && mJoiningDragHandlers.length > 0) {
             for (DragGestureHandler handler: mJoiningDragHandlers) {
                 handler.moveToState(newState);
             }
         }
-
-         */
     }
 
     @Override
