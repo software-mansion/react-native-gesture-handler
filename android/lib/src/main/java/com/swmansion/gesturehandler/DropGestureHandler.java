@@ -47,6 +47,12 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                 View.NO_ID;
     }
 
+    @Nullable
+    @Override
+    public int[] getDragTargets() {
+        return mDragHandler != null ? mDragHandler.getDragTargets() : null;
+    }
+
     @Override
     public int getDropTarget() {
         return getView() != null ? getView().getId() : View.NO_ID;
@@ -65,7 +71,7 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         return mLastSourceAppID;
     }
 
-    public void setDragHandler(@Nullable DragGestureHandler<T, S> dragHandler) {
+    void setDragHandler(@Nullable DragGestureHandler<T, S> dragHandler) {
         mDragHandler = dragHandler;
     }
 

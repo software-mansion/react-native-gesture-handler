@@ -21,6 +21,7 @@ declare module 'react-native-gesture-handler' {
   } from 'react-native';
 
   type Map = { [index: string]: any };
+  type DataMap = Map & { target: number };
 
   /* GESTURE HANDLER STATE */
 
@@ -181,6 +182,7 @@ declare module 'react-native-gesture-handler' {
 
   interface DragGestureHandlerEventExtra extends PanGestureHandlerEventExtra {
     dragTarget: number,
+    dragTargets: number[],
     dropTarget: number,
     dragState: DragState
   }
@@ -197,11 +199,11 @@ declare module 'react-native-gesture-handler' {
     DragGestureHandlerEventExtra;
   }
 
-  interface DropGestureHandlerEventExtra<T extends Map> extends DragGestureHandlerEventExtra {
+  interface DropGestureHandlerEventExtra<T extends DataMap> extends DragGestureHandlerEventExtra {
     /**
      * The data received from the DragGestureHandler
      */
-    data: T | null,
+    data: T[] | null,
     /**
      * The raw data received from the event in case of a JSON parsing error
      */
@@ -219,7 +221,7 @@ declare module 'react-native-gesture-handler' {
     DropGestureHandlerEventExtra<T>;
   }
 
-  export interface DropGestureHandlerGestureEvent<T extends Map>
+  export interface DropGestureHandlerGestureEvent<T extends DataMap>
     extends GestureHandlerGestureEvent {
     nativeEvent: GestureHandlerGestureEventNativeEvent &
     DropGestureHandlerEventExtra<T>;
@@ -415,7 +417,7 @@ declare module 'react-native-gesture-handler' {
     onHandlerStateChange?: (event: DragGestureHandlerStateChangeEvent) => void
   }
 
-  export interface DropGestureHandlerProperties<T extends Map> extends PanGestureHandlerProps {
+  export interface DropGestureHandlerProperties<T extends DataMap> extends PanGestureHandlerProps {
     /**
      * Enum that is used to determine if a DropGestureHandler can handle the DragGestureHandler event.
      */
@@ -464,11 +466,11 @@ declare module 'react-native-gesture-handler' {
     PanGestureHandlerProperties
     > { }
 
-  export class DragGestureHandler<T extends Map> extends React.Component<
+  export class DragGestureHandler<T extends DataMap> extends React.Component<
     DragGestureHandlerProperties<T>
     > { }
 
-  export class DropGestureHandler<T extends Map> extends React.Component<
+  export class DropGestureHandler<T extends DataMap> extends React.Component<
     DropGestureHandlerProperties<T>
     > { }
 

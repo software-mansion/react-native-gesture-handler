@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 
+import androidx.annotation.Nullable;
+
 import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
 
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ public abstract class DragDropGestureHandler<T extends DataResolver, S extends D
     }
 
     public abstract int getDragTarget();
+    public abstract @Nullable int[] getDragTargets();
     public abstract int getDropTarget();
     public abstract int getDragAction();
 
@@ -81,12 +84,14 @@ public abstract class DragDropGestureHandler<T extends DataResolver, S extends D
                         pos++;
                     }
 
-                    if (types.size() > 0 && mDTypes.size() > 0) {
+                    if (types.size() > 0) {
                         for (int t: types) {
                             if (mDTypes.contains(t)) {
                                 return true;
                             }
                         }
+                    } else {
+                        return true;
                     }
                 }
             }

@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useImperativeHandle, useMemo, useCallback } from 'react';
-import { findNodeHandle, View, ViewPropTypes, requireNativeComponent, StyleSheet } from 'react-native';
-
+import React, { useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
+import { findNodeHandle, StyleSheet, View } from 'react-native';
 import createHandler from './createHandler';
 import GestureHandlerPropTypes from './GestureHandlerPropTypes';
 import PlatformConstants from './PlatformConstants';
@@ -227,6 +226,17 @@ function managePanProps(props) {
   return transformPanGestureHandlerProps(props);
 }
 
+const panHandlerNativeProps = {
+  activeOffsetYStart: true,
+  activeOffsetYEnd: true,
+  activeOffsetXStart: true,
+  activeOffsetXEnd: true,
+  failOffsetYStart: true,
+  failOffsetYEnd: true,
+  failOffsetXStart: true,
+  failOffsetXEnd: true,
+}
+
 export const PanGestureHandler = createHandler(
   'PanGestureHandler',
   {
@@ -257,16 +267,7 @@ export const PanGestureHandler = createHandler(
   },
   {},
   managePanProps,
-  {
-    activeOffsetYStart: true,
-    activeOffsetYEnd: true,
-    activeOffsetXStart: true,
-    activeOffsetXEnd: true,
-    failOffsetYStart: true,
-    failOffsetYEnd: true,
-    failOffsetXStart: true,
-    failOffsetXEnd: true,
-  }
+  panHandlerNativeProps
 );
 export const PinchGestureHandler = createHandler(
   'PinchGestureHandler',
@@ -283,7 +284,8 @@ const DragGestureHandlerBase = createHandler(
   'DragGestureHandler',
   {
     ...GestureHandlerPropTypes,
-    data: PropTypes.object.isRequired,
+    ...PanGestureHandler.propTypes,
+    data: PropTypes.object,
     types: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.arrayOf(PropTypes.number),
@@ -306,9 +308,10 @@ const DragGestureHandlerBase = createHandler(
     if (shadow && shadow.current) {
       res.shadowViewTag = shadow.current ? findNodeHandle(shadow.current) : null;
     }
-    return res;
+    return managePanProps(res);
   },
   {
+    ...panHandlerNativeProps,
     data: true,
     types: true,
     shadowEnabled: true,
@@ -383,6 +386,7 @@ function DragGestureHandlerWrapper(props, ref) {
 }
 export const DragGestureHandler = React.forwardRef(DragGestureHandlerWrapper);
 DragGestureHandler.propTypes = DragGestureHandlerBase.propTypes;
+DragGestureHandler.displayName = 'DragGestureHandler';
 
 export const DropGestureHandler = createHandler(
   'DropGestureHandler',
@@ -394,6 +398,9 @@ export const DropGestureHandler = createHandler(
     ])
   },
   {},
-  null,
-  { types: true }
+  managePanProps,
+  {
+    ...panHandlerNativeProps,
+    types: true
+  }
 );

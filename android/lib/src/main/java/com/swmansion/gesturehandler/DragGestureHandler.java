@@ -36,6 +36,8 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     private @Nullable DropGestureHandler<T, S> mDropHandler = null;
     private @Nullable DropGestureHandler<T, S> mLastDropHandler = null;
     private final ArrayList<DragGestureHandler> mActiveDragHandlers = new ArrayList<>();
+    private View[] mDragTargets;
+    private int[] mDragTargetTags;
 
     private int mDragAction;
     private boolean mIsDragging = false;
@@ -127,6 +129,12 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         return getView() != null ? getView().getId() : View.NO_ID;
     }
 
+    @Nullable
+    @Override
+    public int[] getDragTargets() {
+        return mDragTargetTags;
+    }
+
     @Override
     public int getDropTarget() {
         if (mDropHandler != null && mDropHandler.getView() != null) {
@@ -146,15 +154,6 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         return super.shouldRecognizeSimultaneously(handler) || handler instanceof DropGestureHandler;
     }
 
-    private View[] getActionableViews() {
-        final View[] views = new View[mActiveDragHandlers.size()];
-        for (int i = 0; i < mActiveDragHandlers.size(); i++) {
-            DragGestureHandler handler = mActiveDragHandlers.get(i);
-            views[i] = handler.getView();
-        }
-        return views;
-    }
-
     @Override
     protected void onPrepare() {
         mActiveDragHandlers.clear();
@@ -166,7 +165,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             if (mSimultaneousDragHandlers != null && mSimultaneousDragHandlers.length > 0) {
                 for (int handlerTag : mSimultaneousDragHandlers) {
                     handler = mOrchestrator.getHandler(handlerTag);
-                    if (handler instanceof DragGestureHandler && handler != this) {
+                    if (handler instanceof DragGestureHandler && handler != this && !mActiveDragHandlers.contains(handler)) {
                         dragHandler = (DragGestureHandler) handler;
                         mActiveDragHandlers.add(dragHandler);
                         dragHandler.mIsJoining = true;
@@ -227,7 +226,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     private void setElevation() {
-        final View[] views = getActionableViews();
+        final View[] views = mDragTargets;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -245,7 +244,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     private void resetElevation() {
-        final View[] views = getActionableViews();
+        final View[] views = mDragTargets;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -266,7 +265,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     private void setViewVisibility(final boolean visible) {
-        final View[] views = getActionableViews();
+        final View[] views = mDragTargets;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -278,14 +277,16 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         });
     }
 
-    /**
-     * Fired only when {@link DragGestureHandler#mDragMode} is set to {@link DragGestureUtils#DRAG_MODE_MOVE}
-     */
-    public void onDrop() { }
-
     private void startDragging() {
         mOrchestrator.startDragging(mActiveDragHandlers);
         mIsDragging = true;
+        mDragTargetTags = new int[mActiveDragHandlers.size()];
+        mDragTargets = new View[mActiveDragHandlers.size()];
+        for (int i = 0; i < mActiveDragHandlers.size(); i++) {
+            DragGestureHandler handler = mActiveDragHandlers.get(i);
+            mDragTargets[i] = handler.getView();
+            mDragTargetTags[i] = handler.getView().getId();
+        }
         ClipData data = createClipData();
         View.DragShadowBuilder shadowBuilder;
         if (mShadowEnabled || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mDataResolver.getActivity().isInMultiWindowMode())) {
@@ -390,9 +391,15 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         super.dispatchDragEvent(ev);
     }
 
+    /**
+     * Fired only when {@link DragGestureHandler#mDragMode} is set to {@link DragGestureUtils#DRAG_MODE_MOVE}
+     * SubClasses should override this method to handle the {@link DragGestureHandler} UI
+     */
+    public void onDrop() { }
+
     @Override
     protected void onStateChange(int newState, int previousState) {
-        if (GestureHandlerOrchestrator.isFinished(newState)) {
+        if (GestureHandlerOrchestrator.isFinished(newState) && mIsDragging) {
             if (!mShadowEnabled) {
                 resetElevation();
             }
@@ -417,6 +424,8 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         mDropHandler = null;
         mLastDropHandler = null;
         mActiveDragHandlers.clear();
+        mDragTargets = null;
+        mDragTargetTags = null;
         mSourceAppID = null;
         mIsInvisible = false;
         mDidWarn = false;

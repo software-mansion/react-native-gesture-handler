@@ -236,9 +236,11 @@ public class GestureHandlerOrchestrator {
 
   void startDragging(ArrayList<DragGestureHandler> dragHandlers) {
     mDragEventMaster = dragHandlers.get(0);
+    View view;
     for (int i = 1; i < dragHandlers.size(); i++) {
       DragGestureHandler dragHandler = dragHandlers.get(i);
-      recordHandlerIfNotPresent(dragHandler);
+      view = mHandlerRegistry.getViewForHandler(dragHandler);
+      recordHandlerIfNotPresent(dragHandler, view);
       dragHandler.startTrackingPointer(0);
       dragHandler.moveToState(GestureHandler.STATE_BEGAN);
     }
@@ -645,10 +647,6 @@ public class GestureHandlerOrchestrator {
     mAwaitingHandlers[mAwaitingHandlersCount++] = handler;
     handler.mIsAwaiting = true;
     handler.mActivationIndex = mActivationIndex++;
-  }
-
-  void recordHandlerIfNotPresent(GestureHandler handler) {
-    recordHandlerIfNotPresent(handler, mHandlerRegistry.getViewForHandler(handler));
   }
 
   private void recordHandlerIfNotPresent(GestureHandler handler, View view) {
