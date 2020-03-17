@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler.example;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -10,7 +11,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import com.swmansion.gesturehandler.DragDropGestureHandler;
 import com.swmansion.gesturehandler.DragGestureHandler;
 import com.swmansion.gesturehandler.DragGestureUtils;
 import com.swmansion.gesturehandler.DropGestureHandler;
@@ -21,26 +21,41 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class DragDropUtil<O extends Object, M extends Object> {
+class DragDropUtil {
     
-    public static class DragGestureHandlerImpl extends DragGestureHandler<String[], ArrayList<DragDataObject>> {
+    static class DragGestureHandlerImpl extends DragGestureHandler<String[], ArrayList<DragDataObject>> {
         DragGestureHandlerImpl(Context context) {
             super(context);
+            setDataResolver(new CustomDataResolver((Activity) context));
+            //setDragMode(DragGestureUtils.DRAG_MODE_COPY);
+        }
+
+        @Override
+        public void onDrop() {
+            getView().setVisibility(View.VISIBLE);
         }
     }
 
-    public static class DropGestureHandlerImpl extends DropGestureHandler<String[], ArrayList<DragDataObject>> {
+    static class DropGestureHandlerImpl extends DropGestureHandler<String[], ArrayList<DragDataObject>> {
         DropGestureHandlerImpl(Context context) {
             super(context);
+            setDataResolver(new CustomDataResolver((Activity) context));
         }
+
+    }
+
+    static class DragEventListenerImpl extends
+            DragDropEventListener<DragGestureHandler<String[], ArrayList<DragDataObject>>, DragEventListenerImpl> {
+
+    }
+
+    static class DropEventListenerImpl extends
+            DragDropEventListener<DropGestureHandler<String[], ArrayList<DragDataObject>>, DropEventListenerImpl> {
 
     }
 
     @SuppressWarnings("unchecked cast")
-    public static class DragDropEventListener<O extends Object,
-            M extends Object,
-            T extends DragDropGestureHandler<O, M, T>,
-            ME extends DragDropEventListener<O, M, T, ME>>
+    static class DragDropEventListener<T extends GestureHandler, S extends DragDropEventListener<T, S>> 
             implements OnTouchEventListener<T> {
 
         private HashMap<Integer, Integer> actionToColor = new HashMap<>();
@@ -48,19 +63,19 @@ public class DragDropUtil<O extends Object, M extends Object> {
         private Integer bgc = null;
         private Integer currentBgc = null;
 
-        ME setColorForAction(int action, int color) {
+        S setColorForAction(int action, int color) {
             actionToColor.put(action, color);
-            return (ME) this;
+            return (S) this;
         }
 
-        ME setColorForState(int state, int color) {
+        S setColorForState(int state, int color) {
             stateToColor.put(state, color);
-            return (ME) this;
+            return (S) this;
         }
 
-        ME setColorForState(int state, int oldState, int color) {
+        S setColorForState(int state, int oldState, int color) {
             stateToColor.put(state + "," + oldState, color);
-            return (ME) this;
+            return (S) this;
         }
 
         private void setBackgroundColor(View view, int color) {
@@ -77,9 +92,8 @@ public class DragDropUtil<O extends Object, M extends Object> {
 
         private String printData(T handler) {
             if (handler instanceof DropGestureHandler) {
-                Object d = ((DropGestureHandler) handler).getData();
-                String data = d != null ? marshall((ArrayList<DragDataObject>) d) : "";
-                return handler + ", " + data;
+                Object data = ((DropGestureHandler) handler).getData();
+                return data == null ? "" : data.toString();
             } else {
                 return "";
             }
@@ -113,24 +127,18 @@ public class DragDropUtil<O extends Object, M extends Object> {
         }
     }
 
-    public static class DragEventListenerImpl extends
-            DragDropEventListener<String[], ArrayList<DragDataObject>, DragGestureHandlerImpl, DragEventListenerImpl> {
-
-    }
-
-    public static class DropEventListenerImpl extends
-            DragDropEventListener<DropGestureHandlerImpl, DropEventListenerImpl> {
-
-    }
-
-    public static String marshall(@NonNull ArrayList<DragDataObject> data) {
+    static String marshall(@NonNull ArrayList<DragDataObject> data) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < data.size(); i++) {
             builder.append(data.get(i).handlerTag);
             builder.append("=");
-            for (String datum : data.get(i).data) {
+            String[] strings = data.get(i).data;
+            for (int i1 = 0; i1 < strings.length; i1++) {
+                String datum = strings[i1];
                 builder.append(datum);
-                builder.append(",");
+                if (i1 < strings.length - 1) {
+                    builder.append(",");
+                }
             }
             if (i < data.size() - 1) {
                 builder.append("&");
@@ -139,7 +147,7 @@ public class DragDropUtil<O extends Object, M extends Object> {
         return builder.toString();
     }
 
-    public static class DragDataObject {
+    static class DragDataObject {
         int handlerTag;
         String[] data;
 
@@ -177,15 +185,18 @@ public class DragDropUtil<O extends Object, M extends Object> {
         }
     }
 
-    public static abstract class CustomDataResolver implements DragGestureUtils.DataResolver<String[], ArrayList<DragDataObject>> {
+    static class CustomDataResolver implements DragGestureUtils.DataResolver<String[], ArrayList<DragDataObject>> {
 
         private String[] mData;
+        private final Activity mActivity;
 
-        CustomDataResolver() {
+        CustomDataResolver(Activity activity) {
+            mActivity = activity;
             mData = new String[]{"a","b","c"};
         }
 
-        CustomDataResolver(String[] data) {
+        CustomDataResolver(Activity activity, String[] data) {
+            mActivity = activity;
             mData = data;
         }
 
@@ -195,6 +206,7 @@ public class DragDropUtil<O extends Object, M extends Object> {
             for (String source: sources.split("&")) {
                 out.add(new DragDataObject(source));
             }
+            Log.d("Drag", "parse: " + sources + " " + out);
             return out;
         }
 
@@ -210,6 +222,11 @@ public class DragDropUtil<O extends Object, M extends Object> {
         @Override
         public String[] data() {
             return mData;
+        }
+
+        @Override
+        public Activity getActivity() {
+            return mActivity;
         }
     }
 
