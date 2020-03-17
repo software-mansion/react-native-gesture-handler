@@ -9,5 +9,6 @@ import java.util.ArrayList;
 
 public interface GestureHandlerRegistry {
   ArrayList<GestureHandler> getHandlersForView(View view);
+  View getViewForHandler(DragGestureHandler handler);
   @Nullable GestureHandler getHandler(int handlerTag);
 }

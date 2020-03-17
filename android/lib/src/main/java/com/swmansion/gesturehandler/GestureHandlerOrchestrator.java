@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -502,6 +503,9 @@ public class GestureHandlerOrchestrator {
     if (activeDragHandler != null && action == DragEvent.ACTION_DRAG_EXITED) {
       activeDragHandler.setDropHandler(null);
     }
+    if (activeDragHandler != null && action == DragEvent.ACTION_DRAG_ENDED) {
+      cleanupJoiningDragHandlers(activeDragHandler);
+    }
     for (int i = count - 1; i >= 0; i--) {
       handler = handlers[i];
       if(handler != null) {
@@ -511,33 +515,41 @@ public class GestureHandlerOrchestrator {
     DragGestureUtils.recycle(ev);
   }
 
+  void prepareJoiningDragHandlers(DragGestureHandler eventHandler) {
+    if (eventHandler != null) {
+      @Nullable DragGestureHandler[] joiningDragHandlers = eventHandler.mJoiningDragHandlers;
+      if (joiningDragHandlers != null && joiningDragHandlers.length > 0) {
+        for (DragGestureHandler dragHandler: eventHandler.mJoiningDragHandlers) {
+          prepareHandler(dragHandler, mHandlerRegistry.getViewForHandler(dragHandler));
+          dragHandler.startTrackingPointer(0);
+          dragHandler.moveToState(GestureHandler.STATE_BEGAN);
+          dragHandler.moveToState(GestureHandler.STATE_ACTIVE);
+        }
+      }
+    }
+  }
+
   private void deliverEventToJoiningDragHandlers(DragEvent event, DragGestureHandler eventHandler) {
     if (eventHandler != null) {
       @Nullable DragGestureHandler[] joiningDragHandlers = eventHandler.mJoiningDragHandlers;
       if (joiningDragHandlers != null && joiningDragHandlers.length > 0) {
         for (DragGestureHandler dragHandler: eventHandler.mJoiningDragHandlers) {
-          if (mNeedsToPrepareJoiningHandlers) {
-            prepareHandler(dragHandler, eventHandler.getView());
-            dragHandler.moveToState(GestureHandler.STATE_BEGAN);
-            dragHandler.moveToState(GestureHandler.STATE_ACTIVE);
-          }
           deliverEventToGestureHandler(dragHandler, event);
         }
       }
     }
-    mNeedsToPrepareJoiningHandlers = false;
   }
 
-  private void cleanupJoiningDragHandlers(DragEvent event, DragGestureHandler eventHandler) {
+  private void cleanupJoiningDragHandlers(DragGestureHandler eventHandler) {
     if (eventHandler != null) {
       @Nullable DragGestureHandler[] joiningDragHandlers = eventHandler.mJoiningDragHandlers;
       if (joiningDragHandlers != null && joiningDragHandlers.length > 0) {
         for (DragGestureHandler dragHandler: eventHandler.mJoiningDragHandlers) {
+          dragHandler.stopTrackingPointer(0);
           resetHandler(dragHandler);
         }
       }
     }
-    mNeedsToPrepareJoiningHandlers = false;
   }
 
   private void cancelAll() {

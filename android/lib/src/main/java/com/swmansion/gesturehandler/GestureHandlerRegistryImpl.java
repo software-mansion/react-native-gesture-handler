@@ -11,6 +11,7 @@ import java.util.WeakHashMap;
 public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
 
   private final WeakHashMap<View, ArrayList<GestureHandler>> mHandlersForView = new WeakHashMap<>();
+  private final SparseArray<View> mViewForTag = new SparseArray<>();
   private final SparseArray<GestureHandler> mHandlers = new SparseArray<>();
 
   public <T extends GestureHandler> T registerHandlerForView(View view, T handler) {
@@ -24,6 +25,7 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
     }
     if (mHandlers.get(handler.getTag()) == null) {
       mHandlers.put(handler.getTag(), handler);
+      mViewForTag.put(handler.getTag(), view);
     }
     return handler;
   }
@@ -37,6 +39,11 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
   @Override
   public GestureHandler getHandler(int handlerTag) {
     return mHandlers.get(handlerTag);
+  }
+
+  @Override
+  public View getViewForHandler(DragGestureHandler handler) {
+    return mViewForTag.get(handler.getTag());
   }
 }
 

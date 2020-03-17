@@ -35,10 +35,12 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
     private @Nullable DropGestureHandler<T, S> mDropHandler = null;
     private @Nullable DropGestureHandler<T, S> mLastDropHandler = null;
+    private final ArrayList<DragGestureHandler> mActiveDragHandlers = new ArrayList<>();
     @Nullable DragGestureHandler[] mJoiningDragHandlers;
 
     private int mDragAction;
     private boolean mIsDragging = false;
+    private boolean mIsJoining = false;
     private @Nullable View mShadowBuilderView;
     private boolean mShadowEnabled = true;
     private int mDragMode = DRAG_MODE_MOVE;
@@ -116,6 +118,11 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         }
         mLastDropHandler = mDropHandler;
         mDropHandler = handler;
+        if (mJoiningDragHandlers != null && mJoiningDragHandlers.length > 0) {
+            for (DragGestureHandler dragHandler: mJoiningDragHandlers) {
+                dragHandler.setDropHandler(handler);
+            }
+        }
     }
 
     @Override
@@ -142,23 +149,35 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         return super.shouldRecognizeSimultaneously(handler) || handler instanceof DropGestureHandler;
     }
 
-    private void prepareSimultaneousHandlersForEvent() {
-        if (mInteractionController == null) return;
-        GestureHandler handler;
-        DragGestureHandler dragHandler;
-        int[] mSimultaneousDragHandlers = mInteractionController.getSimultaneousRelations(this);
-        if (mSimultaneousDragHandlers != null && mSimultaneousDragHandlers.length > 0) {
-            ArrayList<DragGestureHandler> joiningHandler = new ArrayList<>();
-            for (int handlerTag : mSimultaneousDragHandlers) {
-                handler = mOrchestrator.getHandler(handlerTag);
-                if (handler instanceof DragGestureHandler && handler != this) {
-                    dragHandler = (DragGestureHandler) handler;
-                    joiningHandler.add(dragHandler);
-                    dragHandler.mIsDragging = true;
-                }
-            }
-            mJoiningDragHandlers = joiningHandler.toArray(new DragGestureHandler[0]);
+    private View[] getActionableViews() {
+        final View[] views = new View[mActiveDragHandlers.size()];
+        for (int i = 0; i < mActiveDragHandlers.size(); i++) {
+            DragGestureHandler handler = mActiveDragHandlers.get(i);
+            views[i] = handler.getView();
         }
+        return views;
+    }
+
+    private void prepareSimultaneousHandlersForEvent() {
+        mActiveDragHandlers.clear();
+        if (mInteractionController != null) {
+            GestureHandler handler;
+            DragGestureHandler dragHandler;
+            int[] mSimultaneousDragHandlers = mInteractionController.getSimultaneousRelations(this);
+            if (mSimultaneousDragHandlers != null && mSimultaneousDragHandlers.length > 0) {
+                for (int handlerTag : mSimultaneousDragHandlers) {
+                    handler = mOrchestrator.getHandler(handlerTag);
+                    if (handler instanceof DragGestureHandler && handler != this) {
+                        dragHandler = (DragGestureHandler) handler;
+                        mActiveDragHandlers.add(dragHandler);
+                        dragHandler.mIsJoining = true;
+                    }
+                }
+                mJoiningDragHandlers = mActiveDragHandlers.toArray(new DragGestureHandler[0]);
+            }
+        }
+        mActiveDragHandlers.add(0, this);
+        mOrchestrator.prepareJoiningDragHandlers(this);
     }
 
     private ClipData createClipData() {
@@ -168,13 +187,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         intent.putIntegerArrayListExtra(KEY_TYPES, mDTypes);
         intent.putExtra(KEY_SOURCE_APP, packageName);
         if (mDataResolver != null) {
-            int size = mJoiningDragHandlers != null ? mJoiningDragHandlers.length : 0;
-            DragGestureHandler[] handlers = new DragGestureHandler[size + 1];
-            handlers[0] = this;
-            if (mJoiningDragHandlers != null && size > 0) {
-                System.arraycopy(mJoiningDragHandlers, 0, handlers, 1, size);
-            }
-            intent.putExtra(KEY_DATA, mDataResolver.stringify(handlers));
+            intent.putExtra(KEY_DATA, mDataResolver.stringify(mActiveDragHandlers.toArray(new DragGestureHandler[0])));
         }
         StringBuilder str = new StringBuilder(DRAG_MIME_TYPE + ":");
         for (int t: mDTypes) {
@@ -218,30 +231,34 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     private void setElevation() {
-        final View view = getView();
+        final View[] views = getActionableViews();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    mOriginalElevation = view.getElevation();
-                    view.setElevation(Float.MAX_VALUE);
-                } else {
-                    mOriginalElevation = ViewCompat.getElevation(view);
-                    ViewCompat.setElevation(view, Integer.MAX_VALUE);
+                for (View view: views) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mOriginalElevation = view.getElevation();
+                        view.setElevation(Float.MAX_VALUE);
+                    } else {
+                        mOriginalElevation = ViewCompat.getElevation(view);
+                        ViewCompat.setElevation(view, Integer.MAX_VALUE);
+                    }
                 }
             }
         });
     }
 
     private void resetElevation() {
-        final View view = getView();
+        final View[] views = getActionableViews();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    view.setElevation(mOriginalElevation);
-                } else {
-                    ViewCompat.setElevation(view, mOriginalElevation);
+                for (View view: views) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        view.setElevation(mOriginalElevation);
+                    } else {
+                        ViewCompat.setElevation(view, mOriginalElevation);
+                    }
                 }
             }
         });
@@ -253,11 +270,15 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     private void setViewVisibility(final boolean visible) {
-        final View view = getView();
+        final View[] views = getActionableViews();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                setVisibility(view, visible);
+                for (View view: views) {
+                    if (view != null) {
+                        setVisibility(view, visible);
+                    }
+                }
                 mIsInvisible = !visible;
             }
         });
@@ -390,17 +411,21 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             }
         }
         super.onStateChange(newState, previousState);
+        /*
         if (mIsDragging && mJoiningDragHandlers != null && mJoiningDragHandlers.length > 0) {
             for (DragGestureHandler handler: mJoiningDragHandlers) {
                 handler.moveToState(newState);
             }
         }
+
+         */
     }
 
     @Override
     protected void onReset() {
         super.onReset();
         mIsDragging = false;
+        mIsJoining = false;
         mResult = false;
         mDragAction = DragEvent.ACTION_DRAG_ENDED;
         mDropHandler = null;
