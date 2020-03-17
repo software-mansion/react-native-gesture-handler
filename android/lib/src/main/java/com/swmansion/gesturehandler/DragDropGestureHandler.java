@@ -97,17 +97,14 @@ public abstract class DragDropGestureHandler<T extends DataResolver, S extends D
     @Override
     protected void onHandle(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
+            // This condition is met once a drag interaction has ended
+            // in which case we don't want PanGestureHandler to handle state decision making
             if (!mOrchestrator.mIsDragging) {
-                // intercept this so that PanGestureHandler will not handle it, setting state to END which is not correct
                 cancel();
-                return;
-            } else {
-                // this condition is met once a drag interaction has ended
-                // in which case we don't want PanGestureHandler to handle state decision making
-                return;
             }
+        } else {
+            super.onHandle(event);
         }
-        super.onHandle(event);
     }
 
     @Override

@@ -112,7 +112,7 @@ public class GestureHandlerOrchestrator {
   private float mLastDragY;
   private ArrayList<DropGestureHandler> mDropHandlers = new ArrayList<>();
   private boolean mFlagNextDragLocationEvent;
-  private boolean mShouldRecordJoiningDragHandlers;
+  private @Nullable DragGestureHandler mDragEventMaster;
 
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
@@ -167,7 +167,6 @@ public class GestureHandlerOrchestrator {
       // crucial in case an END event was missed
       mDropHandlers.clear();
       cleanupFinishedHandlers();
-      mShouldRecordJoiningDragHandlers = true;
       // STARTED event has unreliable x, y so we don't handle it
       return false;
     } else if (action == DragEvent.ACTION_DRAG_ENTERED) {
@@ -207,6 +206,7 @@ public class GestureHandlerOrchestrator {
     mIsHandlingTouch = false;
     if (action == DragEvent.ACTION_DRAG_ENDED) {
       mIsDragging = false;
+      mDragEventMaster = null;
       mLastClipDescription = null;
       mLastClipData = null;
       mDropHandlers.clear();
@@ -234,7 +234,14 @@ public class GestureHandlerOrchestrator {
     return mIsDragging;
   }
 
-  void startDragging() {
+  void startDragging(ArrayList<DragGestureHandler> dragHandlers) {
+    mDragEventMaster = dragHandlers.get(0);
+    for (int i = 1; i < dragHandlers.size(); i++) {
+      DragGestureHandler dragHandler = dragHandlers.get(i);
+      recordHandlerIfNotPresent(dragHandler);
+      dragHandler.startTrackingPointer(0);
+      dragHandler.moveToState(GestureHandler.STATE_BEGAN);
+    }
     mIsDragging = true;
   }
 
@@ -261,7 +268,10 @@ public class GestureHandlerOrchestrator {
       if (isFinished(handler.getState()) && !handler.mIsAwaiting && assertHandler.assertTrue(handler)) {
         mGestureHandlers[i] = null;
         shouldCleanEmptyCells = true;
-        resetHandler(handler);
+        handler.reset();
+        handler.mIsActive = false;
+        handler.mIsAwaiting = false;
+        handler.mActivationIndex = Integer.MAX_VALUE;
       }
     }
     if (shouldCleanEmptyCells) {
@@ -274,13 +284,6 @@ public class GestureHandlerOrchestrator {
       mGestureHandlersCount = out;
     }
     mFinishedHandlersCleanupScheduled = false;
-  }
-
-  private void resetHandler(GestureHandler handler) {
-    handler.reset();
-    handler.mIsActive = false;
-    handler.mIsAwaiting = false;
-    handler.mActivationIndex = Integer.MAX_VALUE;
   }
 
   private boolean hasOtherHandlerToWaitFor(GestureHandler handler) {
@@ -416,15 +419,7 @@ public class GestureHandlerOrchestrator {
     // we want to deliver the DragEvent to the most direct DropGestureHandlers first, regardless of their active state
     // so that we can determine which DropGestureHandler is the one that should capture the DragEvent
     Arrays.sort(mPreparedHandlers, 0, handlersCount, sDragDropHandlersComparator);
-    // set activeDragHandler
-    for (int i = 0; i < handlersCount; i++) {
-      if (mPreparedHandlers[i] instanceof DragGestureHandler && mPreparedHandlers[i].mIsActive &&
-              !((DragGestureHandler) mPreparedHandlers[i]).mIsJoining) {
-        activeDragHandler = (DragGestureHandler) mPreparedHandlers[i];
-        recordJoiningDragHandlersIfNotPresent(activeDragHandler);
-        break;
-      }
-    }
+    activeDragHandler = mDragEventMaster;
     // prepare DropGestureHandlers
     for (int i = 0; i < handlersCount; i++) {
       if (mPreparedHandlers[i] instanceof DropGestureHandler) {
@@ -516,17 +511,6 @@ public class GestureHandlerOrchestrator {
       }
     }
     DragGestureUtils.recycle(ev);
-  }
-
-  private void recordJoiningDragHandlersIfNotPresent(DragGestureHandler eventHandler) {
-    DragGestureHandler[] joiningDragHandlers = eventHandler.mJoiningDragHandlers;
-    if (mShouldRecordJoiningDragHandlers && joiningDragHandlers != null && joiningDragHandlers.length > 0) {
-      mShouldRecordJoiningDragHandlers = false;
-      for (DragGestureHandler dragHandler: joiningDragHandlers) {
-        recordHandlerIfNotPresent(dragHandler);
-        dragHandler.startTrackingPointer(0);
-      }
-    }
   }
 
   private void cancelAll() {
