@@ -22,7 +22,7 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
     } else {
       listToAdd.add(handler);
     }
-    if (mHandlers.indexOfValue(handler) == -1) {
+    if (mHandlers.get(handler.getTag()) == null) {
       mHandlers.put(handler.getTag(), handler);
     }
     return handler;
