@@ -316,7 +316,8 @@ const DragGestureHandlerBase = createHandler(
     types: true,
     shadowEnabled: true,
     shadowViewTag: true,
-    dragMode: true
+    shadowConfig: true,
+    dragMode: true,
   }
 );
 const styles = StyleSheet.create({

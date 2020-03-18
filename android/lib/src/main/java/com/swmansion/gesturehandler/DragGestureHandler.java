@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Build;
@@ -493,8 +494,10 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
         public void setConfig(Config config) {
             mConfig = config;
+            mConfig.isRTL =true;
             mConfig.minAlpha = Math.max(config.minAlpha, 0);
             mConfig.maxAlpha = Math.min(config.maxAlpha, 1);
+            Log.d("Drag!", "setConfig: " + mConfig.offset);
         }
 
         private boolean shouldRenderMultipleShadows() {
@@ -533,32 +536,33 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
         @Override
         public void onDrawShadow(Canvas canvas) {
-            if (!shouldRenderMultipleShadows()) {
+            canvas.save();
+            int size = !shouldRenderMultipleShadows() ? 1 : mViews.length;
+            if (size == 1) {
+                View view = mViews[0];
+                canvas.translate(Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
                 draw(canvas, 0);
-            } else {
-                canvas.save();
-                if (mConfig.isRTL) {
-                    canvas.translate(-Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
-                    canvas.translate(getSize().x, 0);
-                    int j;
-                    for (int i = mViews.length - 1; i >=0; i--) {
-                        j = mViews.length - 1 - i;
-                        canvas.save();
-                        canvas.translate(-mViews[i].getWidth() - mConfig.margin.x * j, mConfig.margin.y * j);
-                        draw(canvas, i);
-                        canvas.restore();
-                    }
-                } else {
-                    canvas.translate(Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
-                    for (int i = mViews.length - 1; i >= 0; i--) {
-                        if (i != mViews.length - 1) {
-                            canvas.translate(mConfig.margin.x, mConfig.margin.y);
-                        }
-                        draw(canvas, i);
-                    }
+            } else if (mConfig.isRTL) {
+                canvas.translate(-Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
+                canvas.translate(getSize().x, 0);
+                int j;
+                for (int i = size - 1; i >=0; i--) {
+                    j = size - 1 - i;
+                    canvas.save();
+                    canvas.translate(-mViews[i].getWidth() - mConfig.margin.x * j, mConfig.margin.y * j);
+                    draw(canvas, i);
+                    canvas.restore();
                 }
-                canvas.restore();
+            } else {
+                canvas.translate(Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
+                for (int i = size - 1; i >= 0; i--) {
+                    if (i != size - 1) {
+                        canvas.translate(mConfig.margin.x, mConfig.margin.y);
+                    }
+                    draw(canvas, i);
+                }
             }
+            canvas.restore();
         }
 
         @Override
@@ -573,22 +577,22 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                     outShadowTouchPoint.set(
                             size.x - mViews[0].getWidth() / 2 - margin.x,
                             mViews[0].getHeight() / 2 + margin.y);
+                    outShadowTouchPoint.offset(
+                            -Math.max(mConfig.offset.x, 0) * 2,
+                            Math.abs(Math.min(mConfig.offset.y, 0)) * 2);
                 } else {
                     outShadowTouchPoint.set(
                             mViews[0].getWidth() / 2 + margin.x,
                             mViews[0].getHeight() / 2 + margin.y);
+                    outShadowTouchPoint.offset(
+                            Math.abs(Math.min(mConfig.offset.x, 0)) * 2,
+                            Math.abs(Math.min(mConfig.offset.y, 0)) * 2);
                 }
             } else {
+                View view = mViews[0];
                 outShadowTouchPoint.set(
-                        outShadowSize.x / 2,
-                        outShadowSize.y / 2);
-            }
-            //  finalize offset
-            if (mConfig.isRTL) {
-                outShadowTouchPoint.offset(
-                        -Math.max(mConfig.offset.x, 0) * 2,
-                        Math.abs(Math.min(mConfig.offset.y, 0)) * 2);
-            } else {
+                        view.getWidth() / 2,
+                        view.getHeight() / 2);
                 outShadowTouchPoint.offset(
                         Math.abs(Math.min(mConfig.offset.x, 0)) * 2,
                         Math.abs(Math.min(mConfig.offset.y, 0)) * 2);

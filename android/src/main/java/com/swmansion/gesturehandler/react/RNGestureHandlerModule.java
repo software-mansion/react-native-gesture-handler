@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler.react;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -26,6 +27,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIBlock;
@@ -429,7 +431,14 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     private static class ReactDragGestureHandler extends DragGestureHandler<ReadableMap, ReadableArray> {
       ReactDragGestureHandler(Context context) {
         super(context);
-        setDataResolver(new MapResolver((ReactApplicationContext) getContext()));
+        setDataResolver(new MapResolver((ReactApplicationContext) context));
+        setShadowConfig(new MultiDragShadowBuilder.Config());
+      }
+
+      @Override
+      public DragGestureHandler<ReadableMap, ReadableArray> setShadowConfig(MultiDragShadowBuilder.Config config) {
+        config.isRTL = I18nUtil.getInstance().isRTL(getContext());
+        return super.setShadowConfig(config);
       }
 
       @Override
@@ -464,6 +473,11 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       private static final String KEY_SHADOW_ENABLED = "shadowEnabled";
       private static final String KEY_SHADOW_VIEW_TAG = "shadowViewTag";
       private static final String KEY_DRAG_MODE = "dragMode";
+      private static final String KEY_DRAG_SHADOW_CONFIG = "shadowConfig";
+      private static final String KEY_DRAG_SHADOW_CONFIG_MARGIN = "margin";
+      private static final String KEY_DRAG_SHADOW_CONFIG_OFFSET = "offset";
+      private static final String KEY_DRAG_SHADOW_CONFIG_OPACITY = "opacity";
+      private static final String KEY_DRAG_SHADOW_CONFIG_ENABLED = "multiShadowEnabled";
 
       @Override
       public Class<ReactDragGestureHandler> getType() {
@@ -525,13 +539,38 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             handler.setDragMode(mode);
           }
         }
+        if (config.hasKey(KEY_DRAG_SHADOW_CONFIG)) {
+          ReadableMap shadowConfigIn = config.getMap(KEY_DRAG_SHADOW_CONFIG);
+          DragGestureHandler.MultiDragShadowBuilder.Config shadowConfig = new DragGestureHandler.MultiDragShadowBuilder.Config();
+          if (shadowConfigIn.hasKey(KEY_DRAG_SHADOW_CONFIG_ENABLED)) {
+            shadowConfig.multiShadowEnabled = shadowConfigIn.getBoolean(KEY_DRAG_SHADOW_CONFIG_ENABLED);
+          }
+          if (shadowConfigIn.hasKey(KEY_DRAG_SHADOW_CONFIG_MARGIN)) {
+            ReadableArray marginIn = shadowConfigIn.getArray(KEY_DRAG_SHADOW_CONFIG_MARGIN);
+            shadowConfig.margin = new Point(
+                    (int) PixelUtil.toPixelFromDIP(marginIn.getInt(0)),
+                    (int) PixelUtil.toPixelFromDIP(marginIn.getInt(1)));
+          }
+          if (shadowConfigIn.hasKey(KEY_DRAG_SHADOW_CONFIG_OFFSET)) {
+            ReadableArray offsetIn = shadowConfigIn.getArray(KEY_DRAG_SHADOW_CONFIG_OFFSET);
+            shadowConfig.offset = new Point(
+                    (int) PixelUtil.toPixelFromDIP(offsetIn.getInt(0)),
+                    (int) PixelUtil.toPixelFromDIP(offsetIn.getInt(1)));
+          }
+          if (shadowConfigIn.hasKey(KEY_DRAG_SHADOW_CONFIG_OPACITY)) {
+            ReadableArray opacityRange = shadowConfigIn.getArray(KEY_DRAG_SHADOW_CONFIG_OPACITY);
+            shadowConfig.minAlpha = (float) opacityRange.getDouble(0);
+            shadowConfig.maxAlpha = (float) opacityRange.getDouble(1);
+          }
+          handler.setShadowConfig(shadowConfig);
+        }
       }
     }
 
     private static class ReactDropGestureHandler extends DropGestureHandler<ReadableMap, ReadableArray> {
       ReactDropGestureHandler(Context context) {
         super(context);
-        setDataResolver(new MapResolver((ReactApplicationContext) getContext()));
+        setDataResolver(new MapResolver((ReactApplicationContext) context));
       }
     }
 

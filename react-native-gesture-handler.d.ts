@@ -408,6 +408,33 @@ declare module 'react-native-gesture-handler' {
      */
     shadow?: React.ReactElement | React.RefObject<any> | React.FunctionComponent,
     /**
+     * Configuration for multiple drag shadow instance
+     * Has effect only when passing additional DragGestureHandlers via `simultaneousHandlers`
+     */
+    shadowConfig?: {
+      /**
+       * Margin to render between multiple shadows
+       * Has effect only when passing additional DragGestureHandlers via `simultaneousHandlers`
+       * [horizontalMargin, verticalMargin]
+       */
+      margin?: number[],
+      /**
+       * Offset to apply on the shadow
+       * [horizontalOffset, verticalOffset]
+       */
+      offset?: number[]
+      /**
+       * Opacity range to render shadows with
+       * When rendering a single shadow it's opacity will be set to `maxOpacity`
+       * [minOpacity, maxOpacity]
+       */
+      opacity?: number[],
+      /**
+       * default: true
+       */
+      multiShadowEnabled?: boolean
+    }
+    /**
      * Set to `copy` or `DragMode.COPY` if you want the view to remain visible at the starting position while dragging, achieving a copy effect.
      * Otherwise, the default value is `move`.
      * Works only when `shadowEnabled` is true.

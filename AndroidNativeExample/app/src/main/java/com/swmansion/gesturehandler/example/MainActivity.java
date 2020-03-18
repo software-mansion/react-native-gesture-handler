@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler.example;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -347,6 +348,14 @@ public class MainActivity extends Activity {
                 .setDataResolver(new CustomDataResolver(this, new String[]{"x", "y", "z"}))
                 .setOnTouchEventListener(dragEventListener);
 
+        final DragGestureHandler buttonDragHandler = new DragGestureHandlerImpl(this)
+                .setOnTouchEventListener(new CustomDragListener())
+                .setTypes(dragTypes);
+
+        final DragGestureHandler.MultiDragShadowBuilder.Config config = new DragGestureHandler.MultiDragShadowBuilder.Config();
+        buttonDragHandler.setShadowConfig(config);
+        config.offset = new Point(300, 150);
+
         // Native click events should work as expected assuming the view is wrapped with
         // NativeViewGestureHandler
         button.setOnClickListener(new View.OnClickListener() {
@@ -357,6 +366,8 @@ public class MainActivity extends Activity {
                 if (enableShadow) {
                     dragHandler.setShadowBuilderView(shadows[i++%shadows.length]);
                 }
+
+                config.offset.y *= -1;
             }
         });
         switchView.setOnClickListener(new View.OnClickListener() {
@@ -368,6 +379,7 @@ public class MainActivity extends Activity {
                 dragEventListener.setColorForState(STATE_END, color);
                 block.setBackgroundColor(color);
                 block.invalidate();
+                config.isRTL = !config.isRTL;
                 Toast.makeText(
                         MainActivity.this,
                         enableShadow ? "Drag shadow ENABLED" : "Drag shadow DISABLED",
@@ -392,12 +404,9 @@ public class MainActivity extends Activity {
             }
         });
         registry.registerHandlerForView(scrollView, sDropHandler);
+
         registry.registerHandlerForView(button, new NativeViewGestureHandler())
                 .setShouldActivateOnStart(true);
-
-        DragGestureHandler buttonDragHandler = new DragGestureHandlerImpl(this)
-                .setOnTouchEventListener(new CustomDragListener())
-                .setTypes(dragTypes);
         registry.registerHandlerForView(button, buttonDragHandler);
         registry.registerHandlerForView(button, new DropGestureHandlerImpl(this)
                 .setOnTouchEventListener(new DropEventListenerImpl()));
