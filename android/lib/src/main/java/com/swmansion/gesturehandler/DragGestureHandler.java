@@ -464,7 +464,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             public boolean multiShadowEnabled = true;
             public boolean isRTL = false;
             public Point margin = new Point(25, 25);
-            public Point offset = new Point(-80, -80);
+            public Point offset = new Point(0, 0);
             public float minAlpha = 0.3f;
             public float maxAlpha = 0.9f;
         } 
@@ -493,7 +493,6 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
         public void setConfig(Config config) {
             mConfig = config;
-            mConfig.isRTL=true;
             mConfig.minAlpha = Math.max(config.minAlpha, 0);
             mConfig.maxAlpha = Math.min(config.maxAlpha, 1);
         }
@@ -539,7 +538,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             } else {
                 canvas.save();
                 if (mConfig.isRTL) {
-                    //canvas.translate(Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
+                    canvas.translate(-Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
                     canvas.translate(getSize().x, 0);
                     int j;
                     for (int i = mViews.length - 1; i >=0; i--) {
@@ -586,28 +585,14 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             }
             //  finalize offset
             if (mConfig.isRTL) {
-
                 outShadowTouchPoint.offset(
-                        -Math.min(mConfig.offset.x, 0),
-                        -Math.min(mConfig.offset.y, 0));
-
-
-                /*
-                outShadowTouchPoint.offset(
-                        -mConfig.offset.x,
-                        -mConfig.offset.y);
-                /*
-                outShadowTouchPoint.offset(
-                        Math.abs(Math.min(mConfig.offset.x, 0)),
-                        Math.abs(Math.min(mConfig.offset.y, 0)));
-
-                 */
+                        -Math.max(mConfig.offset.x, 0) * 2,
+                        Math.abs(Math.min(mConfig.offset.y, 0)) * 2);
             } else {
                 outShadowTouchPoint.offset(
                         Math.abs(Math.min(mConfig.offset.x, 0)) * 2,
                         Math.abs(Math.min(mConfig.offset.y, 0)) * 2);
             }
-
             super.onProvideShadowMetrics(outShadowSize, outShadowTouchPoint);
         }
     }
