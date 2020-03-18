@@ -32,7 +32,9 @@ class DragDropUtil {
 
         @Override
         public void onDrop() {
-            getView().setVisibility(View.VISIBLE);
+            for (View view: getViews()) {
+                view.setVisibility(View.VISIBLE);
+            }
         }
     }
 
