@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState, useContext } from 'react';
+import React, { useCallback, useMemo, useRef, useState, useContext, useEffect } from 'react';
 import { Animated, StyleSheet, Text, findNodeHandle } from 'react-native';
 import { DragGestureHandler, DropGestureHandler, FlatList, State, LongPressGestureHandler } from 'react-native-gesture-handler';
 import { USE_NATIVE_DRIVER } from '../config';
@@ -17,11 +17,12 @@ Context = React.createContext({
 });
 
 function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
+  const __item = item.item;
+  const __isSelected = item.selected;
   const context = useContext(Context);
   const [dropState, setDropState] = useState(false);
   const [isInside, move] = useState(false);
   const [tag, setTag] = useState(null);
-  const [selected, setSelected] = useState(false);
   const cb = useCallback(e => {
     const { dragState, state, oldState, data } = e.nativeEvent;
     if (state == State.BEGAN) {
@@ -32,9 +33,8 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
       move(false)
     } else if (state == State.END) {
       setDropState(true)
-      console.log('swapping', { index, item }, data);
-      //swap(index, data.index)
-      bulkMove([data[0].item], item);
+      console.log('changing list', { index, item }, data);
+      context.handle(data.map(value => value.item), __item)
     }
   }, []);
   const translateX = useMemo(() => new Animated.Value(0), []);
@@ -55,14 +55,14 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
     translateX.setValue(0);
     translateY.setValue(0);
     if (e.nativeEvent.state === State.END) {
-      context.refs = [];
+      context.selected = [];
       //console.log(e.nativeEvent)
     }
   }, [context]);
 
   const [shadowTag, setShadowTag] = useState(null);
   const onShadowRef = useCallback(r => {
-    if (r && r.getNode() && item % 2 === 0) {
+    if (r && r.getNode() && __item % 2 === 0) {
       setShadowTag(findNodeHandle(r.getNode()))
     }
   }, [item]);
@@ -73,19 +73,19 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
   const toggleSelection = useCallback((e) => {
     const { state } = e.nativeEvent;
     if (state === State.ACTIVE) {
-      const rr = [longPressRef];
-      if (!context.isSelected(ref)) {
-        rr.push(...context.refs);
-        context.add(ref)
-      } else {
-        context.remove(ref);
-      }
-      ref.current && ref.current.setNativeProps({
-        simultaneousHandlers: rr
-      })
-      context.toggleSelection(ref);
+      context.toggleSelection(ref, __item)
     }
-  }, [selected, ref, context]);
+  }, [ref, context]);
+
+  useEffect(() => {
+    const rr = [longPressRef];
+    if (__isSelected) {
+      rr.push(...context.refs);
+    }
+    ref.current && ref.current.setNativeProps({
+      simultaneousHandlers: rr
+    });
+  })
 
   return (
     <DragGestureHandler
@@ -93,8 +93,8 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
       ref={ref}
       onGestureEvent={onGestureEvent}
       onHandlerStateChange={onHandlerStateChange}
-      types={item % 2 === 0 ? [0, 1] : 1}
-      data={{ index, item }}
+      types={__item % 2 === 0 ? [0, 1] : 1}
+      data={{ index, item: __item }}
       shadowViewTag={shadowTag}
       shadowEnabled={shadowEnabled}
     >
@@ -104,7 +104,7 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
           ref={longPressRef}
         >
           <DropGestureHandler
-            types={item % 2 === 0 ? 0 : 1}
+            types={__item % 2 === 0 ? 0 : 1}
             onHandlerStateChange={cb}
           >
             <Animated.View
@@ -117,11 +117,11 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
                   ],
                   zIndex: 500000
                 },
-                context.isSelected(ref) && { borderColor: 'magenta', borderWidth: 5 },
-                isInside && { backgroundColor: item % 2 === 0 ? 'yellow' : 'red' } || dropState && { backgroundColor: 'blue' },
+                __isSelected && { borderColor: 'magenta', borderWidth: 5 },
+                isInside && { backgroundColor: __item % 2 === 0 ? 'yellow' : 'red' } || dropState && { backgroundColor: 'blue' },
               ]}
             >
-              <Text style={{ color: dropState ? 'white' : 'black' }}>{item}</Text>
+              <Text style={{ color: dropState ? 'white' : 'black' }}>{__item}</Text>
               <Animated.View
                 collapsable={false}
                 ref={onShadowRef}
@@ -130,7 +130,7 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
                   { borderRadius: 50, opacity: 0, position: 'absolute' }
                 ]}
               >
-                <Text style={{ color: dropState ? 'white' : 'black' }}>{item}</Text>
+                <Text style={{ color: dropState ? 'white' : 'black' }}>{__item}</Text>
               </Animated.View>
             </Animated.View>
           </DropGestureHandler>
@@ -145,56 +145,66 @@ export default function DragExample(props) {
   const scrollRef = useRef();
   const dragRef = useRef();
   const shadowRef = useRef();
-  const [data, setData] = useState(new Array(50).fill(0).map((v, i) => i + 1));
+  const selected = useRef([]);
+  const [data, setData] = useState(new Array(50).fill(0).map((v, i) => ({ item: i + 1, selected: false })));
   const [isInside, move] = useState(false);
   const [tag, setTag] = useState(null);
 
   const swap = useCallback((from, to) => {
     const out = data.map((val, i, arr) => {
-      if (i === from) return arr[to];
-      if (i === to) return arr[from];
+      const { item } = val;
+      console.log(item, from, to)
+      if (item === from) return arr.find(v => v.item === to);
+      if (item === to) return arr.find(v => v.item === from);
       return arr[i];
-    });
+    }).map(v => ({ ...v, selected: false }));
     setData(out);
   }, [data]);
 
   const bulkMove = useCallback((from, to) => {
     const source = data.filter((val, i, arr) => {
-      return from.some((v) => v === val);
+      return from.some((v) => v.item === val.item);
     });
     const out = data.filter((val, i, arr) => {
-      return !source.some((v) => v === val);
+      return !source.some((v) => v.item === val.item);
     });
     const index = out.findIndex((val, i, arr) => {
       return val === to;
     });
     out.splice(index + 1, 0, ...source);
-    setData(out);
+    setData(out.map(v => ({ ...v, selected: false })));
   }, [data]);
 
   const context = useMemo(() => {
     return {
-      refs: [],
-      selected: [],
-      add(ref) {
-        this.refs.indexOf(ref) === -1 && this.refs.push(ref);
-        console.log('add', this.refs.length)
+      get selected() {
+        return selected.current;
       },
-      remove(ref) {
-        this.refs.indexOf(ref) !== -1 && this.refs.splice(this.refs.indexOf(ref), 1);
+      set selected(value) {
+        selected.current = value;
+      },
+      get refs() {
+        return this.selected.map(value => value.ref);
       },
       handle(from, to) {
-        bulkMove(Array.isArray(from) ? from : [from], to);
-        //swap(Array.isArray(from) ? from[0] : from, to);
+        const arr = Array.isArray(from) ? from : [from];
+        arr.length === 1 ? swap(arr[0], to) : bulkMove(arr, to);
+        this.selected = [];
       },
-      toggleSelection(ref) {
-        this.selected.indexOf(ref) === -1 ? this.selected.push(ref) : this.refs.splice(this.refs.indexOf(ref), 1);
+      findItemIndex(item) {
+        return this.selected.findIndex((value) => value.item === item);
       },
-      isSelected(ref) {
-        return ref.current && this.selected.indexOf(ref) > -1;
+      toggleSelection(ref, item) {
+        const index = this.findItemIndex(item);
+        index === -1 ? this.selected.push({ ref, item }) : this.selected.splice(index, 1);
+        const out = data.map(value => ({ ...value, selected: this.isSelected(value.item) }));
+        setData(out);
+      },
+      isSelected(item) {
+        return this.findItemIndex(item) !== -1;
       }
     }
-  }, [])
+  }, [data])
 
   return (
     <Context.Provider value={context}>
@@ -212,8 +222,8 @@ export default function DragExample(props) {
         simultaneousHandlers={dragRef}
         //onHandlerStateChange={e => console.log('scroll', e.nativeEvent)}
         data={data}
-        renderItem={(data) => <DropZone {...data} shadowEnabled={true} swap={swap} bulkMove={bulkMove} />}
-        keyExtractor={(item, index) => `DropZone${item}`}
+        renderItem={(data) => <DropZone {...data} shadowEnabled={true} />}
+        keyExtractor={(item, index) => `DropZone${item.item}`}
       />
     </Context.Provider>
   );

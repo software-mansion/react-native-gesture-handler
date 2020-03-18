@@ -79,8 +79,9 @@ function useDropZone() {
       console.log(`dropping ${JSON.stringify(data)} to ${dropTarget} from ${dragTarget}`, sourceAppID ? `appID: ${sourceAppID}` : '', State.print(oldState))
       setDropState(1);
       setTimeout(() => setDropState(-1), 1000)
-      if (data && data.text) {
-        setText(data.text);
+      if (data) {
+        const datum = data.find((value) => value.text);
+        setText(datum.text);
         const found = dropZoneReg.find((val) => dragTarget && val.tag === dragTarget);
         found && found.setText('I feel light')
       }
@@ -126,6 +127,7 @@ export default function DragExample(props) {
   const textDropZone1 = useDropZone();
   const innerDropZone = useDropZone();
   const draggable1 = useDraggaable();
+  const draggable2 = useDraggaable();
   const shadowViewRef = useRef();
   const [color, setColor] = useState('black');
   const [displayShadowImage, setDisplayShadowImage] = useState(false);
@@ -252,6 +254,8 @@ export default function DragExample(props) {
           </Animated.View>
         )}
         dragMode='copy'
+        simultaneousHandlers={[dropZone3.dragRef, dropZone2.dragRef]}
+      //simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
       >
         <Animated.View collapsable={false}>
           <DropGestureHandler
@@ -307,29 +311,36 @@ export default function DragExample(props) {
           </Animated.View>
         </DropGestureHandler>
       </DragGestureHandler>
-      <DropGestureHandler
-        types={[0, 1]}
-        onHandlerStateChange={dropZone2.onHandlerStateChange}
+      <DragGestureHandler
+        simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
       >
-        <Animated.View
-          style={[
-            styles.box,
-            props.boxStyle,
-            dropZone2.dropStyle,
-          ]}
+        <DropGestureHandler
+          types={[0, 1]}
+          onHandlerStateChange={dropZone2.onHandlerStateChange}
         >
-          <Text>{dropZone2.dropState === 1 ? `THANKS` || dropZone2.text : `Drop Here or don't`}</Text>
+          <Animated.View
+            style={[
+              styles.box,
+              props.boxStyle,
+              dropZone2.dropStyle
+            ]}
+          >
+            <Text>{dropZone2.dropState === 1 ? `THANKS` || dropZone2.text : `Drop Here or don't`}</Text>
 
-        </Animated.View>
-      </DropGestureHandler>
+          </Animated.View>
+        </DropGestureHandler>
+      </DragGestureHandler>
       <DragGestureHandler
         types={[1, 2]}
         data={{ foo: 'bar', text: LOREM_IPSUM }}
         ref={textDropZone1.onRef}
-        simultaneousHandlers={[scrollRef, panRef, pinchRef, rotationRef]}
-        waitFor={[panRef, pinchRef, rotationRef]}
+        simultaneousHandlers={[panRef, pinchRef, rotationRef]}
+        onGestureEvent={draggable2.onGestureEvent}
+        onHandlerStateChange={draggable2.onHandlerStateChange}
+        shadowEnabled={draggable2.shadowEnabled}
+
       >
-        <Animated.View style={{ flex: 1, height: 500 }}>
+        <Animated.View style={[{ flex: 1, height: 500 }, draggable2.extractStyle()]}>
           <PinchableBox
             ref={r => {
               if (r) {
