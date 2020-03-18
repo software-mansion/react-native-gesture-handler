@@ -55,8 +55,6 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
     translateX.setValue(0);
     translateY.setValue(0);
     if (e.nativeEvent.state === State.END) {
-      context.selected = [];
-      //console.log(e.nativeEvent)
     }
   }, [context]);
 
@@ -78,12 +76,12 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
   }, [ref, context]);
 
   useEffect(() => {
-    const rr = [longPressRef];
+    const arr = [longPressRef];
     if (__isSelected) {
-      rr.push(...context.refs);
+      arr.push(...context.refs);
     }
     ref.current && ref.current.setNativeProps({
-      simultaneousHandlers: rr
+      simultaneousHandlers: arr
     });
   })
 
@@ -150,30 +148,6 @@ export default function DragExample(props) {
   const [isInside, move] = useState(false);
   const [tag, setTag] = useState(null);
 
-  const swap = useCallback((from, to) => {
-    const out = data.map((val, i, arr) => {
-      const { item } = val;
-      console.log(item, from, to)
-      if (item === from) return arr.find(v => v.item === to);
-      if (item === to) return arr.find(v => v.item === from);
-      return arr[i];
-    }).map(v => ({ ...v, selected: false }));
-    setData(out);
-  }, [data]);
-
-  const bulkMove = useCallback((from, to) => {
-    const source = data.filter((val, i, arr) => {
-      return from.some((v) => v.item === val.item);
-    });
-    const out = data.filter((val, i, arr) => {
-      return !source.some((v) => v.item === val.item);
-    });
-    const index = out.findIndex((val, i, arr) => {
-      return val === to;
-    });
-    out.splice(index + 1, 0, ...source);
-    setData(out.map(v => ({ ...v, selected: false })));
-  }, [data]);
 
   const context = useMemo(() => {
     return {
@@ -187,9 +161,31 @@ export default function DragExample(props) {
         return this.selected.map(value => value.ref);
       },
       handle(from, to) {
-        const arr = Array.isArray(from) ? from : [from];
-        arr.length === 1 ? swap(arr[0], to) : bulkMove(arr, to);
+        from.length === 1 ? this.swap(from[0], to) : this.shift(from, to);
         this.selected = [];
+      },
+      shift(from, to) {
+        const source = data.filter((val, i, arr) => {
+          return from.some((v) => v === val.item);
+        });
+        const out = data.filter((val, i, arr) => {
+          return !from.some((v) => v === val.item);
+        });
+        const index = out.findIndex((val, i, arr) => {
+          return val.item === to;
+        });
+        out.splice(index, 0, ...source);
+        setData(out.map(v => ({ ...v, selected: false })));
+      },
+      swap(from, to) {
+        const out = data.map((val, i, arr) => {
+          const { item } = val;
+          console.log(item, from, to)
+          if (item === from) return arr.find(v => v.item === to);
+          if (item === to) return arr.find(v => v.item === from);
+          return arr[i];
+        }).map(v => ({ ...v, selected: false }));
+        setData(out);
       },
       findItemIndex(item) {
         return this.selected.findIndex((value) => value.item === item);
@@ -204,7 +200,7 @@ export default function DragExample(props) {
         return this.findItemIndex(item) !== -1;
       }
     }
-  }, [data])
+  }, [data,])
 
   return (
     <Context.Provider value={context}>
