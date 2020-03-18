@@ -89,7 +89,7 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
     <DragGestureHandler
       simultaneousHandlers={longPressRef}
       ref={ref}
-      onGestureEvent={onGestureEvent}
+      onGestureEvent={e => console.log(e.nativeEvent)}
       onHandlerStateChange={onHandlerStateChange}
       types={__item % 2 === 0 ? [0, 1] : 1}
       data={{ index, item: __item }}

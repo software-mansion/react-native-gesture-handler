@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react';
-import { Animated, StyleSheet, Text, findNodeHandle, Image, processColor } from 'react-native';
+import { Animated, StyleSheet, Text, findNodeHandle, Image, processColor, I18nManager } from 'react-native';
 
 import {
   ScrollView,
@@ -12,7 +12,7 @@ import {
 import { USE_NATIVE_DRIVER } from '../config';
 import { LoremIpsum, LOREM_IPSUM } from '../common';
 import { PinchableBox } from '../scaleAndRotate/index';
-
+I18nManager.allowRTL(true);
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 const dropZoneReg = [];
@@ -313,6 +313,12 @@ export default function DragExample(props) {
       </DragGestureHandler>
       <DragGestureHandler
         simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
+        shadowConfig={{
+          opacity: [0.3, 1],
+          margin: [20, 30],
+          offset: [-50, 50],
+          //multiShadowEnabled: false
+        }}
       >
         <DropGestureHandler
           types={[0, 1]}
