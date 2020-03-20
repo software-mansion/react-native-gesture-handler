@@ -12,8 +12,8 @@
 
 #import <React/RCTConvert.h>
 
-// RNBetterTapGestureRecognizer extends UIGestureRecognizer instead of UITapGestureRecognizer 
-// because the latter does not allow for parameters like maxDelay, maxDuration, minPointers, 
+// RNBetterTapGestureRecognizer extends UIGestureRecognizer instead of UITapGestureRecognizer
+// because the latter does not allow for parameters like maxDelay, maxDuration, minPointers,
 // maxDelta to be configured. Using our custom implementation of tap recognizer we are able
 // to support these.
 
@@ -26,6 +26,16 @@
 @property (nonatomic) CGFloat maxDeltaX;
 @property (nonatomic) CGFloat maxDeltaY;
 @property (nonatomic) NSInteger minPointers;
+// Memoizing positions and number of pointers are necessary
+// since it might happen that changing state of recognizer could
+// be delayed in order to wait for failure of another gesture recognition.
+// Then data might be requested after raising finger which will
+// lead to filling them with zeros if they are not memoized.
+// This issue is only reasonable with continuous handlers and is
+// handled properly with with implementation based on UIKit's recognizer
+@property (nonatomic) CGPoint memoizedAbsolutePosition;
+@property (nonatomic) CGPoint memoizedPosition;
+@property (nonatomic) NSInteger memoizedNumberOfPointers;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
@@ -92,18 +102,18 @@
   if (numberOfTouches > _maxNumberOfTouches) {
     _maxNumberOfTouches = numberOfTouches;
   }
-  
+
   if (self.state != UIGestureRecognizerStatePossible) {
     return;
   }
-  
+
   if ([self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
     [self triggerAction];
     [self reset];
     return;
   }
-  
+
   self.state = UIGestureRecognizerStatePossible;
   [self triggerAction];
 }
@@ -120,7 +130,7 @@
       return YES;
     }
   }
-  
+
   CGPoint trans = [self translationInView];
   if (TEST_MAX_IF_NOT_NAN(fabs(trans.x), _maxDeltaX)) {
     return YES;
@@ -138,6 +148,9 @@
 {
   [super touchesEnded:touches withEvent:event];
   if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
+    _memoizedPosition = [self locationInView:self.view];
+    _memoizedAbsolutePosition = [self locationInView:self.view.window];
+    _memoizedNumberOfPointers = self.numberOfTouches;
     self.state = UIGestureRecognizerStateEnded;
     [self reset];
   } else {
@@ -180,27 +193,43 @@
 {
   [super configure:config];
   RNBetterTapGestureRecognizer *recognizer = (RNBetterTapGestureRecognizer *)_recognizer;
-  
+
   APPLY_INT_PROP(numberOfTaps);
   APPLY_INT_PROP(minPointers);
   APPLY_FLOAT_PROP(maxDeltaX);
   APPLY_FLOAT_PROP(maxDeltaY);
-  
+
   id prop = config[@"maxDelayMs"];
   if (prop != nil) {
     recognizer.maxDelay = [RCTConvert CGFloat:prop] / 1000.0;
   }
-  
+
   prop = config[@"maxDurationMs"];
   if (prop != nil) {
     recognizer.maxDuration = [RCTConvert CGFloat:prop] / 1000.0;
   }
-  
+
   prop = config[@"maxDist"];
   if (prop != nil) {
     CGFloat dist = [RCTConvert CGFloat:prop];
     recognizer.maxDistSq = dist * dist;
   }
+}
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(RNBetterTapGestureRecognizer *)recognizer
+{
+  if (recognizer.numberOfTouches == 0) {
+    // this condition is fulfilled if pointer is raised and it happens
+    // if is waiting for another one.
+    return [RNGestureHandlerEventExtraData
+            forPosition:recognizer.memoizedPosition
+            withAbsolutePosition:recognizer.memoizedAbsolutePosition
+            withNumberOfTouches:recognizer.memoizedNumberOfPointers];
+  }
+  return [RNGestureHandlerEventExtraData
+          forPosition:[recognizer locationInView:recognizer.view]
+          withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+          withNumberOfTouches:recognizer.numberOfTouches];
 }
 
 @end
