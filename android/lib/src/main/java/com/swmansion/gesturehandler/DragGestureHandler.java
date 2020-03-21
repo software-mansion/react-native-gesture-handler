@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Build;
@@ -36,7 +35,7 @@ import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_TYPES;
 
 public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolver<T, S>, DragGestureHandler<T, S>>
-        implements ViewTreeObserver.OnDrawListener, ViewTreeObserver.OnGlobalLayoutListener {
+        implements ViewTreeObserver.OnDrawListener {
 
     private @Nullable DropGestureHandler<T, S> mDropHandler = null;
     private @Nullable DropGestureHandler<T, S> mLastDropHandler = null;
@@ -55,7 +54,6 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     private boolean mResult = false;
     private float mOriginalElevation;
     private String mSourceAppID;
-    private final ArrayList<View> mViewsAwaitingCleanup = new ArrayList<>();
     private View.DragShadowBuilder mInvisibleShadow = new View.DragShadowBuilder() {
         @Override
         public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
@@ -77,15 +75,36 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         mShadowConfig = new MultiDragShadowBuilder.Config();
     }
 
+    private void scheduleShadowListenerTask(final View view, final boolean action) {
+        ViewTreeObserver treeObserver = view.getViewTreeObserver();
+        try {
+            if (action) {
+                treeObserver.addOnDrawListener(this);
+            } else {
+                treeObserver.removeOnDrawListener(this);
+            }
+        } catch (Throwable throwable) {
+            /**
+             * {@link ViewTreeObserver#addOnDrawListener(ViewTreeObserver.OnDrawListener)} throws when view is drawing
+             * so we try again
+             */
+            throwable.printStackTrace();
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    scheduleShadowListenerTask(view, action);
+                }
+            });
+        }
+    }
+
     public DragGestureHandler<T, S> setShadowBuilderView(@Nullable final View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && view != mShadowBuilderView) {
             if (mShadowBuilderView != null) {
-                mViewsAwaitingCleanup.add(mShadowBuilderView);
+                scheduleShadowListenerTask(mShadowBuilderView, false);
             }
             if (view != null) {
-                ViewTreeObserver treeObserver = view.getViewTreeObserver();
-                treeObserver.addOnDrawListener(this);
-                treeObserver.addOnGlobalLayoutListener(this);
+                scheduleShadowListenerTask(view, true);
             }
             updateDragShadow();
         }
@@ -100,10 +119,18 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
     public DragGestureHandler<T, S> setEnableShadow(boolean enable) {
         mShadowEnabled = enable;
-        if (mIsDragging && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             updateDragShadow();
         }
         return this;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onDraw() {
+        if (mShadowEnabled) {
+            updateDragShadow();
+        }
     }
 
     public DragGestureHandler<T, S> setDragMode(int mode) {
@@ -218,30 +245,6 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         );
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    @Override
-    public void onDraw() {
-        if (mShadowEnabled) {
-            if (mIsJoining && mDragMaster != null) {
-                mDragMaster.updateDragShadow();
-            } else {
-                updateDragShadow();
-            }
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    @Override
-    public void onGlobalLayout() {
-        ViewTreeObserver treeObserver;
-        for (View view: mViewsAwaitingCleanup) {
-            treeObserver = view.getViewTreeObserver();
-            treeObserver.removeOnDrawListener(this);
-            treeObserver.removeOnGlobalLayoutListener(this);
-        }
-        mViewsAwaitingCleanup.clear();
-    }
-
     private void runOnUiThread(Runnable runnable) {
         mDataResolver.getActivity().runOnUiThread(runnable);
     }
@@ -351,6 +354,10 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void updateDragShadow() {
+        if (mIsJoining && mDragMaster != null) {
+            mDragMaster.updateDragShadow();
+            return;
+        }
         if (!mIsDragging) {
             return;
         }
@@ -402,6 +409,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         super.onHandle(event);
         if (mDragAction == DragEvent.ACTION_DRAG_ENDED) {
             mIsDragging = false;
+            mIsJoining = false;
         }
     }
 
@@ -497,7 +505,6 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             mConfig.isRTL =true;
             mConfig.minAlpha = Math.max(config.minAlpha, 0);
             mConfig.maxAlpha = Math.min(config.maxAlpha, 1);
-            Log.d("Drag!", "setConfig: " + mConfig.offset);
         }
 
         private boolean shouldRenderMultipleShadows() {
@@ -537,8 +544,8 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         @Override
         public void onDrawShadow(Canvas canvas) {
             canvas.save();
-            int size = !shouldRenderMultipleShadows() ? 1 : mViews.length;
-            if (size == 1) {
+            int shadowCount = !shouldRenderMultipleShadows() ? 1 : mViews.length;
+            if (shadowCount == 1) {
                 View view = mViews[0];
                 canvas.translate(Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
                 draw(canvas, 0);
@@ -546,8 +553,8 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                 canvas.translate(-Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
                 canvas.translate(getSize().x, 0);
                 int j;
-                for (int i = size - 1; i >=0; i--) {
-                    j = size - 1 - i;
+                for (int i = shadowCount - 1; i >=0; i--) {
+                    j = shadowCount - 1 - i;
                     canvas.save();
                     canvas.translate(-mViews[i].getWidth() - mConfig.margin.x * j, mConfig.margin.y * j);
                     draw(canvas, i);
@@ -555,8 +562,8 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                 }
             } else {
                 canvas.translate(Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
-                for (int i = size - 1; i >= 0; i--) {
-                    if (i != size - 1) {
+                for (int i = shadowCount - 1; i >= 0; i--) {
+                    if (i != shadowCount - 1) {
                         canvas.translate(mConfig.margin.x, mConfig.margin.y);
                     }
                     draw(canvas, i);
