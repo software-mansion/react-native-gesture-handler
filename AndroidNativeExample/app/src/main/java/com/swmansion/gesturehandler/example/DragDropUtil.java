@@ -27,14 +27,12 @@ class DragDropUtil {
         DragGestureHandlerImpl(Context context) {
             super(context);
             setDataResolver(new CustomDataResolver((Activity) context));
-            //setDragMode(DragGestureUtils.DRAG_MODE_COPY);
+            setDragMode(DragGestureUtils.DRAG_MODE_MOVE_RESTORE);
         }
 
         @Override
         public void onDrop() {
-            for (View view: getViews()) {
-                view.setVisibility(View.VISIBLE);
-            }
+            super.onDrop();
         }
     }
 
