@@ -73,12 +73,6 @@ public class DragGestureUtils {
          */
     }
 
-    static boolean isProgressEvent(DragEvent event) {
-        int action = event.getAction();
-        return action != DragEvent.ACTION_DRAG_STARTED && action != DragEvent.ACTION_DRAG_ENDED
-                && action != DragEvent.ACTION_DRAG_EXITED;
-    }
-
     /**
      *
      * @param event

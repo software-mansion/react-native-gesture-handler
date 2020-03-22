@@ -14,7 +14,6 @@ import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
-import static com.swmansion.gesturehandler.DragGestureUtils.isProgressEvent;
 
 public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolver<T, S>, DropGestureHandler<T, S>> {
 
@@ -26,7 +25,7 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     private boolean mAwaitingCancellation = false;
     private String mLastEventData;
     private String mLastSourceAppID;
-    boolean mIsActiveDropHandler = false;
+    boolean mShouldActivate = false;
 
     public DropGestureHandler(Context context) {
         super(context);
@@ -82,8 +81,9 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
     @Override
     protected boolean shouldActivate() {
-        return super.shouldActivate() && mIsActiveDropHandler;
+        return super.shouldActivate() && mShouldActivate;
     }
+
 
     void tryCancel() {
         if (mShouldCancelNext && !mAwaitingCancellation) {
@@ -106,8 +106,10 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
         int action = event.getAction();
         boolean pointerIsInside = isWithinBounds();
+        boolean isProgressEvent = action != DragEvent.ACTION_DRAG_STARTED && action != DragEvent.ACTION_DRAG_ENDED
+                && action != DragEvent.ACTION_DRAG_EXITED;
 
-        if (isProgressEvent(event)) {
+        if (isProgressEvent) {
             if (action == DragEvent.ACTION_DROP) {
                 if (mIsActive) {
                     mDragAction = DragEvent.ACTION_DROP;
@@ -169,7 +171,7 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         mAwaitingCancellation = false;
         mLastEventData = null;
         mLastSourceAppID = null;
-        mIsActiveDropHandler = false;
+        mShouldActivate = false;
     }
 
 }

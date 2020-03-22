@@ -50,24 +50,6 @@ public class GestureHandlerOrchestrator {
             }
           };
 
-  private static final Comparator<GestureHandler> sDragDropHandlersComparator =
-          new Comparator<GestureHandler>() {
-            @Override
-            public int compare(GestureHandler a, GestureHandler b) {
-              if (a instanceof DropGestureHandler && b instanceof DropGestureHandler) {
-                // we need the exact opposite of sHandlersComparator
-                int order = sHandlersComparator.compare(a, b);
-                return order == 0 ? -1: -order;
-              } else if (a instanceof DropGestureHandler && b instanceof DragGestureHandler) {
-                return -1;
-              } else if (a instanceof DragGestureHandler && b instanceof DropGestureHandler) {
-                return 1;
-              } else {
-                return sHandlersComparator.compare(a, b);
-              }
-            }
-          };
-
   private static final GestureHandlerAssertions sAssertHandler = new GestureHandlerAssertions() {
     @Override
     public boolean assertTrue(GestureHandler handler) {
@@ -110,9 +92,18 @@ public class GestureHandlerOrchestrator {
   private ClipData mLastClipData;
   private float mLastDragX;
   private float mLastDragY;
-  private ArrayList<DropGestureHandler> mDropHandlers = new ArrayList<>();
   private boolean mFlagNextDragLocationEvent;
   private @Nullable DragGestureHandler mDragEventMaster;
+  private final DropGestureHandler[] mDropHandlers
+          = new DropGestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
+  private final DropGestureHandler[] mPrevEventDropHandlers
+          = new DropGestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
+  private final DropGestureHandler[] mPreparedDropHandlers
+          = new DropGestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
+  private final DropGestureHandler[] mPrevDropHandlers
+          = new DropGestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
+  private int mDropHandlersCount = 0;
+  private int mPrevEventDropHandlersCount = 0;
 
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
@@ -163,10 +154,6 @@ public class GestureHandlerOrchestrator {
   public boolean onDragEvent(DragEvent event) {
     int action = event.getAction();
     if (action == DragEvent.ACTION_DRAG_STARTED) {
-      // make sure mDropHandlers is empty
-      // crucial in case an END event was missed
-      mDropHandlers.clear();
-      cleanupFinishedHandlers();
       // STARTED event has unreliable x, y so we don't handle it
       return false;
     } else if (action == DragEvent.ACTION_DRAG_ENTERED) {
@@ -188,7 +175,6 @@ public class GestureHandlerOrchestrator {
       event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, mLastDragX, mLastDragY,
               event.getResult(), mLastClipData, mLastClipDescription);
     }
-
     MotionEvent motionEvent = mDerivedMotionEvent.obtain(event);
     mIsHandlingTouch = true;
     if (action == DragEvent.ACTION_DRAG_LOCATION) {
@@ -209,8 +195,8 @@ public class GestureHandlerOrchestrator {
       mDragEventMaster = null;
       mLastClipDescription = null;
       mLastClipData = null;
-      mDropHandlers.clear();
       mFlagNextDragLocationEvent = false;
+      cleanupDropHandlers(false);
     } else {
       mLastClipDescription = event.getClipDescription();
       mLastClipData = event.getClipData();
@@ -261,6 +247,22 @@ public class GestureHandlerOrchestrator {
 
   private void cleanupFinishedDropHandlers() {
     cleanupFinishedHandlers(sAssertDropHandler);
+  }
+
+  private void cleanupDropHandlers(boolean copy) {
+    mDropHandlersCount = 0;
+    int out = 0;
+    for (int i = 0; i < mDropHandlers.length; i++) {
+      mPrevEventDropHandlers[i] = null;
+      if (copy && mDropHandlers[i] != null) {
+        mPrevEventDropHandlers[out++] = mDropHandlers[i];
+      }
+      mDropHandlers[i] = null;
+    }
+    mPrevEventDropHandlersCount = out;
+    if (out > 0) {
+      Arrays.sort(mPrevEventDropHandlers, 0, out, sHandlersComparator);
+    }
   }
 
   private void cleanupFinishedHandlers(GestureHandlerAssertions assertHandler) {
@@ -411,71 +413,75 @@ public class GestureHandlerOrchestrator {
 
   public void deliverEventToGestureHandlers(DragEvent event) {
     int handlersCount = mGestureHandlersCount;
-    DragGestureHandler activeDragHandler = null;
+    int dropHandlersCount = mDropHandlersCount;
+    int prevDropHandlersCount = mPrevEventDropHandlersCount;
+    DragGestureHandler activeDragHandler = mDragEventMaster;
     DropGestureHandler activeDropHandler = null;
     DropGestureHandler lastActiveDropHandler = null;
     DropGestureHandler handler;
     DragEvent ev;
     int action = event.getAction();
+
     System.arraycopy(mGestureHandlers, 0, mPreparedHandlers, 0, handlersCount);
-    // we want to deliver the DragEvent to the most direct DropGestureHandlers first, regardless of their active state
-    // so that we can determine which DropGestureHandler is the one that should capture the DragEvent
-    Arrays.sort(mPreparedHandlers, 0, handlersCount, sDragDropHandlersComparator);
-    activeDragHandler = mDragEventMaster;
-    // prepare DropGestureHandlers
-    for (int i = 0; i < handlersCount; i++) {
-      if (mPreparedHandlers[i] instanceof DropGestureHandler) {
-        handler = (DropGestureHandler) mPreparedHandlers[i];
-        handler.setDragHandler(activeDragHandler);
-        if (handler.mIsActive) {
-          lastActiveDropHandler = handler;
-        }
-        handler.mIsActiveDropHandler = false;
-        if (!mDropHandlers.contains(handler)) {
-          mDropHandlers.add(0, handler);
-        }
+    System.arraycopy(mDropHandlers, 0, mPreparedDropHandlers, 0, dropHandlersCount);
+    System.arraycopy(mPrevEventDropHandlers, 0, mPrevDropHandlers, 0, prevDropHandlersCount);
+    Arrays.sort(mPreparedHandlers, 0, handlersCount, sHandlersComparator);
+
+    // check for active handlers
+    for (int i = 0; i < prevDropHandlersCount; i++) {
+      handler = mPrevDropHandlers[i];
+      if (handler.mIsActive) {
+        lastActiveDropHandler = handler;
+        break;
       }
     }
-    int count = mDropHandlers.size();
-    DropGestureHandler[] handlers = mDropHandlers.toArray(new DropGestureHandler[count]);
-    // deliver event to DropGestureHandlers
-    // try capturing the event by checking for active handlers
-    for (int i = 0; i < count; i++) {
-      if (handlers[i] != null) {
-        handler = handlers[i];
-        deliverEventToGestureHandler(handlers[i], event);
-        if (handler.mIsActive || handler.getState() == GestureHandler.STATE_BEGAN) {
-          activeDropHandler = handler;
-          handler.mIsActiveDropHandler = true;
-          if (lastActiveDropHandler != handler) {
-            action = DragEvent.ACTION_DRAG_ENTERED;
-            if (lastActiveDropHandler != null) {
-              // fire exit event
-              ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_EXITED, event.getX(), event.getY(), event.getResult(),
-                      event.getClipData(), event.getClipDescription());
-              for (int j = 0; j < count; j++) {
-                if (handlers[j] != handler) {
-                  assert handlers[j] != null;
-                  deliverEventToGestureHandler(handlers[j], ev);
-                }
-              }
-              if (activeDragHandler != null) {
-                for (int j = 0; j < handlersCount; j++) {
-                  if (mPreparedHandlers[j] instanceof DragGestureHandler) {
-                    deliverEventToGestureHandler(mPreparedHandlers[j], ev);
-                  }
-                }
-              }
-              DragGestureUtils.recycle(ev);
+    boolean activeDropHandlerDidChange = false;
+    for (int i = 0; i < dropHandlersCount; i++) {
+      handler = mPreparedDropHandlers[i];
+      if (handler.getState() == GestureHandler.STATE_BEGAN) {
+        handler.mShouldActivate = true;
+      }
+      if (handler.mIsActive || handler.shouldActivate()) {
+        activeDropHandler = handler;
+        activeDropHandlerDidChange = lastActiveDropHandler != activeDropHandler;
+        break;
+      }
+    }
+    for (int i = 0; i < dropHandlersCount; i++) {
+      handler = mPreparedDropHandlers[i];
+      handler.setDragHandler(activeDragHandler);
+      if (activeDropHandler != null && activeDropHandler != handler) {
+        handler.mShouldActivate = false;
+      } else if (activeDropHandler == null) {
+        handler.mShouldActivate = true;
+      }
+    }
+    if (activeDropHandlerDidChange) {
+      action = DragEvent.ACTION_DRAG_ENTERED;
+      if (lastActiveDropHandler != null) {
+        // fire exit event
+        ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_EXITED, event.getX(), event.getY(), event.getResult(),
+                event.getClipData(), event.getClipDescription());
+        for (int j = 0; j < prevDropHandlersCount; j++) {
+          handler = mPrevDropHandlers[j];
+          if (handler != activeDropHandler) {
+            deliverEventToGestureHandler(handler, ev);
+          }
+        }
+        if (activeDragHandler != null) {
+          for (int j = 0; j < handlersCount; j++) {
+            if (mPreparedHandlers[j] instanceof DragGestureHandler) {
+              deliverEventToGestureHandler(mPreparedHandlers[j], ev);
             }
           }
-          if (activeDragHandler != null) {
-            activeDragHandler.setDropHandler(handler);
-          }
-          break;
         }
+        DragGestureUtils.recycle(ev);
       }
     }
+    if (activeDragHandler != null) {
+      activeDragHandler.setDropHandler(activeDropHandler);
+    }
+
     // DROP action can be wrong because of the registered RootView intercepting Drag events.
     // If the origin is foreign then the action is preserved.
     if (action == DragEvent.ACTION_DROP && activeDropHandler == null) {
@@ -483,15 +489,27 @@ public class GestureHandlerOrchestrator {
     } else if (activeDropHandler == null && lastActiveDropHandler != null) {
       action = DragEvent.ACTION_DRAG_EXITED;
     }
-
     ev = DragGestureUtils.obtain(action, event.getX(), event.getY(), event.getResult(),
             event.getClipData(), event.getClipDescription());
     // deliver event to DropGestureHandlers
-    for (int i = 0; i < count; i++) {
-      handler = handlers[i];
-      if (handler != activeDropHandler && handler != null) {
-        deliverEventToGestureHandler(handler, ev);
+    boolean purePrev;
+    for (int i = 0; i < prevDropHandlersCount; i++) {
+      handler = mPrevDropHandlers[i];
+      if (handler.mIsActive) {
+        purePrev = true;
+        for (int j = 0; j < dropHandlersCount; j++) {
+          if (mPreparedDropHandlers[j] == handler) {
+            purePrev = false;
+            break;
+          }
+        }
+        if (purePrev) {
+          deliverEventToGestureHandler(handler, ev);
+        }
       }
+    }
+    for (int i = 0; i < dropHandlersCount; i++) {
+      deliverEventToGestureHandler(mPreparedDropHandlers[i], ev);
     }
     // deliver event to DragGestureHandlers and to other handlers so they can get cancelled
     for (int i = 0; i < handlersCount; i++) {
@@ -499,15 +517,9 @@ public class GestureHandlerOrchestrator {
         deliverEventToGestureHandler(mPreparedHandlers[i], ev);
       }
     }
-
     // finalize
-    // once the event has been delivered we can clear the activeDropHandler if necessary
-    // and cancel exited DropGestureHandlers (this is important for DragGestureHandler event data)
-    if (activeDragHandler != null && action == DragEvent.ACTION_DRAG_EXITED) {
-      activeDragHandler.setDropHandler(null);
-    }
-    for (int i = count - 1; i >= 0; i--) {
-      handler = handlers[i];
+    for (int i = dropHandlersCount - 1; i >= 0; i--) {
+      handler = mPrevDropHandlers[i];
       if(handler != null) {
         handler.tryCancel();
       }
@@ -650,7 +662,9 @@ public class GestureHandlerOrchestrator {
   }
 
   private void recordHandlerIfNotPresent(GestureHandler handler, View view) {
-    if (mIsDragging && !(handler instanceof DropGestureHandler)) {
+    if (handler instanceof DropGestureHandler && mIsDragging) {
+      recordHandlerIfNotPresent((DropGestureHandler) handler);
+    } else if (mIsDragging) {
       return;
     }
     for (int i = 0; i < mGestureHandlersCount; i++) {
@@ -666,6 +680,18 @@ public class GestureHandlerOrchestrator {
     handler.mIsAwaiting = false;
     handler.mActivationIndex = Integer.MAX_VALUE;
     handler.prepare(view, this);
+  }
+
+  private void recordHandlerIfNotPresent(DropGestureHandler handler) {
+    for (int i = 0; i < mDropHandlersCount; i++) {
+      if (mDropHandlers[i] == handler) {
+        return;
+      }
+    }
+    if (mDropHandlersCount >= mDropHandlers.length) {
+      throw new IllegalStateException("Too many recognizers");
+    }
+    mDropHandlers[mDropHandlersCount++] = handler;
   }
 
   private boolean recordViewHandlersForPointer(View view, float[] coords, int pointerId) {
@@ -696,6 +722,7 @@ public class GestureHandlerOrchestrator {
   private void extractGestureHandlers(DragEvent event) {
     sTempCoords[0] = event.getX();
     sTempCoords[1] = event.getY();
+    cleanupDropHandlers(true);
     traverseWithPointerEvents(mWrapperView, sTempCoords, 0);
     extractGestureHandlers(mWrapperView, sTempCoords, 0);
   }
