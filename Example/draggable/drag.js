@@ -301,6 +301,7 @@ export default function DragExample(props) {
         types={[1, 2]}
         data={{ foo: 'bar', text: LOREM_IPSUM }}
         ref={textDropZone1.onRef}
+        dragMode="move"
       >
         <DropGestureHandler
           types={[0]}
@@ -313,6 +314,7 @@ export default function DragExample(props) {
       </DragGestureHandler>
       <DragGestureHandler
         simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
+        dragMode="move-restore"
         shadowConfig={{
           opacity: [0.3, 1],
           margin: [20, 30],
