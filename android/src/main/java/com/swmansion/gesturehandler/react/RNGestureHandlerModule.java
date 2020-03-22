@@ -105,8 +105,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
   private static final String KEY_NUMBER_OF_POINTERS = "numberOfPointers";
   private static final String KEY_DIRECTION = "direction";
-  private static final String DRAG_MODE_MOVE = "move";
-  private static final String DRAG_MODE_COPY = "copy";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
           implements RNGestureHandlerEventDataExtractor<T> {
@@ -454,17 +452,26 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
        */
       @Override
       public void onDrop() {
-        ReactApplicationContext context = ((ReactApplicationContext) getContext());
-        final UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
-        final int tag = getView().getId();
-        context.runOnNativeModulesQueueThread(new Runnable() {
-          @Override
-          public void run() {
-            uiManager.getUIImplementation()
-                    .resolveShadowNode(tag)
-                    .setDisplay(YogaDisplay.NONE);
+        super.onDrop();
+        if (getDragMode() == DragGestureUtils.DRAG_MODE_MOVE) {
+          ReactApplicationContext context = ((ReactApplicationContext) getContext());
+          final UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+          View[] views = getViews();
+          final int[] tags = new int[views.length];
+          for (int i = 0; i < views.length; i++) {
+            tags[i] = views[i].getId();
           }
-        });
+          context.runOnNativeModulesQueueThread(new Runnable() {
+            @Override
+            public void run() {
+              for (int tag: tags) {
+                uiManager.getUIImplementation()
+                        .resolveShadowNode(tag)
+                        .setDisplay(YogaDisplay.NONE);
+              }
+            }
+          });
+        }
       }
     }
 
@@ -473,6 +480,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       private static final String KEY_SHADOW_ENABLED = "shadowEnabled";
       private static final String KEY_SHADOW_VIEW_TAG = "shadowViewTag";
       private static final String KEY_DRAG_MODE = "dragMode";
+      private static final String DRAG_MODE_MOVE = "move";
+      private static final String DRAG_MODE_MOVE_RESTORE = "move-restore";
+      private static final String DRAG_MODE_COPY = "copy";
       private static final String KEY_DRAG_SHADOW_CONFIG = "shadowConfig";
       private static final String KEY_DRAG_SHADOW_CONFIG_MARGIN = "margin";
       private static final String KEY_DRAG_SHADOW_CONFIG_OFFSET = "offset";
@@ -527,6 +537,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             switch (config.getString(KEY_DRAG_MODE)) {
               case DRAG_MODE_MOVE:
                 mode = DragGestureUtils.DRAG_MODE_MOVE;
+                break;
+              case DRAG_MODE_MOVE_RESTORE:
+                mode = DragGestureUtils.DRAG_MODE_MOVE_RESTORE;
                 break;
               case DRAG_MODE_COPY:
                 mode = DragGestureUtils.DRAG_MODE_COPY;
@@ -895,6 +908,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
             "EXITED", DragEvent.ACTION_DRAG_EXITED
     ), "DragMode", MapBuilder.of(
             "MOVE", DragGestureUtils.DRAG_MODE_MOVE,
+            "MOVE_RESTORE", DragGestureUtils.DRAG_MODE_MOVE_RESTORE,
             "COPY", DragGestureUtils.DRAG_MODE_COPY
     ));
   }

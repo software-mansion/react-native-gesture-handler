@@ -22,6 +22,7 @@ import androidx.core.view.ViewCompat;
 
 import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_EVENT_NAME;
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MODE_COPY;
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MODE_MOVE;
+import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MODE_MOVE_RESTORE;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DRAG_TARGET;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
@@ -99,16 +101,17 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     public DragGestureHandler<T, S> setShadowBuilderView(@Nullable final View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && view != mShadowBuilderView) {
-            if (mShadowBuilderView != null) {
-                scheduleShadowListenerTask(mShadowBuilderView, false);
+        View prevShadowBuilderView = mShadowBuilderView;
+        mShadowBuilderView = view;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && view != prevShadowBuilderView) {
+            if (prevShadowBuilderView != null) {
+                scheduleShadowListenerTask(prevShadowBuilderView, false);
             }
             if (view != null) {
                 scheduleShadowListenerTask(view, true);
             }
             updateDragShadow();
         }
-        mShadowBuilderView = view;
         return this;
     }
 
@@ -133,9 +136,13 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         }
     }
 
+    public int getDragMode() {
+        return mDragMode;
+    }
+
     public DragGestureHandler<T, S> setDragMode(int mode) {
         if (mIsDragging && mShadowEnabled) {
-            if (mode == DRAG_MODE_MOVE) {
+            if (mode == DRAG_MODE_MOVE || mode == DRAG_MODE_MOVE_RESTORE) {
                 setViewVisibility(false);
             } else if (mode == DRAG_MODE_COPY) {
                 setViewVisibility(true);
@@ -195,7 +202,8 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
     @Override
     public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
-        return super.shouldRecognizeSimultaneously(handler) || handler instanceof DropGestureHandler;
+        return super.shouldRecognizeSimultaneously(handler) || handler instanceof DropGestureHandler ||
+                (mIsJoining && mDragMaster != null && mDragMaster.mActiveDragHandlers.contains(handler));
     }
 
     private void prepareJoiningHandlers() {
@@ -347,7 +355,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                             mShadowBuilderView),
                     throwable);
         }
-        if (mDragMode == DRAG_MODE_MOVE && mLastShadowVisible) {
+        if ((mDragMode == DRAG_MODE_MOVE || mDragMode == DRAG_MODE_MOVE_RESTORE) && mLastShadowVisible) {
             setViewVisibility(false);
         }
     }
@@ -421,10 +429,13 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     /**
-     * Fired only when {@link DragGestureHandler#mDragMode} is set to {@link DragGestureUtils#DRAG_MODE_MOVE}
      * SubClasses should override this method to handle the {@link DragGestureHandler} UI
      */
-    public void onDrop() { }
+    public void onDrop() {
+        if (mDragMode == DRAG_MODE_MOVE_RESTORE) {
+            setViewVisibility(true);
+        }
+    }
 
     @Override
     protected void onStateChange(int newState, int previousState) {
@@ -432,12 +443,10 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             if (!mShadowEnabled) {
                 resetElevation();
             }
-            if (mDragMode == DRAG_MODE_MOVE) {
-                if (mResult) {
-                    onDrop();
-                } else if (mIsInvisible) {
-                    setViewVisibility(true);
-                }
+            if (mResult) {
+                onDrop();
+            } else if (mIsInvisible && (mDragMode == DRAG_MODE_MOVE || mDragMode == DRAG_MODE_MOVE_RESTORE)) {
+                setViewVisibility(true);
             }
         }
         super.onStateChange(newState, previousState);
@@ -485,24 +494,30 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         public MultiDragShadowBuilder(List<DragGestureHandler> handlers, Config config) {
             ArrayList<View> views = new ArrayList<>();
             DragGestureHandler handler;
+            View view;
             int size = 0;
             for (int i = 0; i < handlers.size(); i++) {
                 handler = handlers.get(i);
                 if (handler.mShadowEnabled) {
-                    views.add(handler.mShadowBuilderView != null ? handler.mShadowBuilderView : handler.getView());
+                    view = handler.mShadowBuilderView != null ? handler.mShadowBuilderView : handler.getView();
+                    views.add(view);
                 }
             }
             init(views.toArray(new View[0]), config);
         }
 
         private void init(View[] views, Config config) {
-            mViews = views;
+            mViews = new View[views.length];
+            System.arraycopy(views, 0, mViews, 0, views.length);
             setConfig(config);
+        }
+
+        private View viewAt(int i) {
+            return mViews[i];
         }
 
         public void setConfig(Config config) {
             mConfig = config;
-            mConfig.isRTL =true;
             mConfig.minAlpha = Math.max(config.minAlpha, 0);
             mConfig.maxAlpha = Math.min(config.maxAlpha, 1);
         }
@@ -515,15 +530,18 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             int w = 0;
             int h = 0;
             int j;
+            View view;
             if (shouldRenderMultipleShadows()) {
                 for (int i = 0; i < mViews.length; i++) {
                     j = mViews.length - 1 - i;
-                    w = Math.max(mViews[i].getWidth() + j * mConfig.margin.x, w);
-                    h = Math.max(mViews[i].getHeight() + j * mConfig.margin.y, h);
+                    view = viewAt(i);
+                    w = Math.max(view.getWidth() + j * mConfig.margin.x, w);
+                    h = Math.max(view.getHeight() + j * mConfig.margin.y, h);
                 }
             } else {
-                w = mViews[0].getWidth();
-                h = mViews[0].getHeight();
+                view = viewAt(0);
+                w = view.getWidth();
+                h = view.getHeight();
             }
             w += Math.abs(mConfig.offset.x);
             h += Math.abs(mConfig.offset.y);
@@ -532,7 +550,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
         private void draw(Canvas canvas, int i) {
             float d = !shouldRenderMultipleShadows() ? 0 : (mConfig.minAlpha - mConfig.maxAlpha) / (mViews.length - 1);
-            View view = mViews[i];
+            View view = viewAt(i);
             Bitmap canvasBitmap = Bitmap.createBitmap(view.getWidth(), view.getWidth(), Bitmap.Config.ARGB_8888);
             mTempCanvas.setBitmap(canvasBitmap);
             view.draw(mTempCanvas);
@@ -546,7 +564,6 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             canvas.save();
             int shadowCount = !shouldRenderMultipleShadows() ? 1 : mViews.length;
             if (shadowCount == 1) {
-                View view = mViews[0];
                 canvas.translate(Math.abs(mConfig.offset.x), Math.abs(mConfig.offset.y));
                 draw(canvas, 0);
             } else if (mConfig.isRTL) {
@@ -556,7 +573,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                 for (int i = shadowCount - 1; i >=0; i--) {
                     j = shadowCount - 1 - i;
                     canvas.save();
-                    canvas.translate(-mViews[i].getWidth() - mConfig.margin.x * j, mConfig.margin.y * j);
+                    canvas.translate(-viewAt(i).getWidth() - mConfig.margin.x * j, mConfig.margin.y * j);
                     draw(canvas, i);
                     canvas.restore();
                 }
@@ -576,30 +593,30 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
             Point size = getSize();
             outShadowSize.set(size.x, size.y);
+            View firstView = viewAt(0);
             if (shouldRenderMultipleShadows()) {
                 Point margin = new Point(
                         mConfig.margin.x * (mViews.length - 1),
                         mConfig.margin.y * (mViews.length - 1));
                 if (mConfig.isRTL) {
                     outShadowTouchPoint.set(
-                            size.x - mViews[0].getWidth() / 2 - margin.x,
-                            mViews[0].getHeight() / 2 + margin.y);
+                            size.x - firstView.getWidth() / 2 - margin.x,
+                            firstView.getHeight() / 2 + margin.y);
                     outShadowTouchPoint.offset(
                             -Math.max(mConfig.offset.x, 0) * 2,
                             Math.abs(Math.min(mConfig.offset.y, 0)) * 2);
                 } else {
                     outShadowTouchPoint.set(
-                            mViews[0].getWidth() / 2 + margin.x,
-                            mViews[0].getHeight() / 2 + margin.y);
+                            firstView.getWidth() / 2 + margin.x,
+                            firstView.getHeight() / 2 + margin.y);
                     outShadowTouchPoint.offset(
                             Math.abs(Math.min(mConfig.offset.x, 0)) * 2,
                             Math.abs(Math.min(mConfig.offset.y, 0)) * 2);
                 }
             } else {
-                View view = mViews[0];
                 outShadowTouchPoint.set(
-                        view.getWidth() / 2,
-                        view.getHeight() / 2);
+                        firstView.getWidth() / 2,
+                        firstView.getHeight() / 2);
                 outShadowTouchPoint.offset(
                         Math.abs(Math.min(mConfig.offset.x, 0)) * 2,
                         Math.abs(Math.min(mConfig.offset.y, 0)) * 2);

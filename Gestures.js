@@ -298,7 +298,7 @@ const DragGestureHandlerBase = createHandler(
       PropTypes.object,
     ]),
     dragMode: PropTypes.oneOf([
-      ...Object.keys(DragMode).map(key => key.toLowerCase()),
+      ...Object.keys(DragMode).map(key => key.toLowerCase().replace(/_/g, '-')),
       ...Object.keys(DragMode).map(key => DragMode[key])
     ])
   },

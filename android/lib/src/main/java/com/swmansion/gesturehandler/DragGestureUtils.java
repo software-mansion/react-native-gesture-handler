@@ -25,7 +25,8 @@ public class DragGestureUtils {
     public static final String KEY_DROP_TARGET = "dropTarget";
     public static final String KEY_TYPES = "types";
     public static final int DRAG_MODE_MOVE = 0;
-    public static final int DRAG_MODE_COPY = 1;
+    public static final int DRAG_MODE_MOVE_RESTORE = 1;
+    public static final int DRAG_MODE_COPY = 2;
 
     static int getFlags() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
