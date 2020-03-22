@@ -341,11 +341,12 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         ClipData data = createClipData();
         int flags = DragGestureUtils.getFlags();
         View.DragShadowBuilder shadowBuilder = createDragShadow();
+        View view = getView();
         try {
-            getView().startDrag(data, shadowBuilder, null, flags);
+            view.startDrag(data, shadowBuilder, null, flags);
         } catch (Throwable throwable) {
             resetElevation();
-            getView().startDrag(data, new View.DragShadowBuilder(getView()), null, flags);
+            view.startDrag(data, new View.DragShadowBuilder(getView()), null, flags);
             mLastShadowVisible = true;
             Log.e(
                     getDebugTag(),
