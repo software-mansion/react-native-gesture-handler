@@ -80,8 +80,8 @@ function useDropZone() {
       setDropState(1);
       setTimeout(() => setDropState(-1), 1000)
       if (data) {
-        const datum = data.find((value) => value.text);
-        setText(datum.text);
+        const datum = data.find((value) => value.text || value.rawData);
+        setText(datum.text || datum.rawData);
         const found = dropZoneReg.find((val) => dragTarget && val.tag === dragTarget);
         found && found.setText('I feel light')
       }
@@ -316,7 +316,7 @@ export default function DragExample(props) {
         shadowConfig={{
           opacity: [0.3, 1],
           margin: [20, 30],
-          offset: [-50, 50],
+          offset: [50, -50],
           //multiShadowEnabled: false
         }}
       >
