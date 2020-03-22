@@ -169,8 +169,14 @@ class DragDropUtil {
         DragDataObject(String rawData) {
             this();
             String[] keyVal = rawData.split("=");
-            handlerTag = Integer.valueOf(keyVal[0]);
-            data = keyVal[1].split(",");
+            try {
+                handlerTag = Integer.valueOf(keyVal[0]);
+                data = keyVal[1].split(",");
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+                handlerTag = -1;
+                data = keyVal;
+            }
         }
 
         @NonNull

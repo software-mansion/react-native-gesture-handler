@@ -42,6 +42,8 @@ import com.swmansion.gesturehandler.example.DragDropUtil.DropEventListenerImpl;
 import com.swmansion.gesturehandler.example.DragDropUtil.DropGestureHandlerImpl;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.swmansion.gesturehandler.GestureHandler.STATE_END;
 
@@ -58,6 +60,7 @@ public class MainActivity extends Activity {
     private Switch switchView;
     private TextView textView;
     private boolean enableShadow = true;
+    private final Timer timer = new Timer();
 
     private final GestureHandlerRegistryImpl mRegistry = new GestureHandlerRegistryImpl() {
         @Override
@@ -126,6 +129,12 @@ public class MainActivity extends Activity {
         if (hasFocus) {
             //hideSystemUI();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        timer.cancel();
     }
 
     private void hideSystemUI() {
@@ -343,6 +352,12 @@ public class MainActivity extends Activity {
                         .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
                         .setColorForState(STATE_END, Color.RED);
 
+        final DragEventListenerImpl dragEventListener2 = new CustomDragListener()
+                .setColorForAction(DragEvent.ACTION_DRAG_STARTED, Color.CYAN)
+                .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.YELLOW)
+                .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
+                .setColorForState(STATE_END, Color.RED);
+
         final DragGestureHandler dragHandler = new DragGestureHandlerImpl(this)
                 .setTypes(dragTypes)
                 .setDataResolver(new CustomDataResolver(this, new String[]{"x", "y", "z"}))
@@ -356,6 +371,18 @@ public class MainActivity extends Activity {
         buttonDragHandler.setShadowConfig(config);
         config.offset = new Point(300, 150);
 
+        timer.scheduleAtFixedRate(new TimerTask() {
+            private int i = 0;
+            @Override
+            public void run() {
+                if (enableShadow) {
+                    i++;
+                    buttonDragHandler.setShadowBuilderView(shadows[(i + 2)%shadows.length]);
+                    dragHandler.setShadowBuilderView(shadows[i%shadows.length]);
+                }
+            }
+        }, 0, 1000);
+
         // Native click events should work as expected assuming the view is wrapped with
         // NativeViewGestureHandler
         button.setOnClickListener(new View.OnClickListener() {
@@ -366,7 +393,6 @@ public class MainActivity extends Activity {
                 if (enableShadow) {
                     dragHandler.setShadowBuilderView(shadows[i++%shadows.length]);
                 }
-
                 config.offset.y *= -1;
             }
         });
