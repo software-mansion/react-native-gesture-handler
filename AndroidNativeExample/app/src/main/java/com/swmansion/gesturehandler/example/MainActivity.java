@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.swmansion.gesturehandler.DragGestureHandler;
+import com.swmansion.gesturehandler.DragGestureUtils;
 import com.swmansion.gesturehandler.DropGestureHandler;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerInteractionManager;
@@ -113,12 +114,22 @@ public class MainActivity extends Activity {
             if (event.getAction() == DragEvent.ACTION_DROP) {
                 assert handler.getDropHandler() != null;
                 Log.d("Drag!", "onDragEvent: " + handler);
-                Toast.makeText(
-                        MainActivity.this,
-                        String.format("Dropped %s on %s",
-                                handler.getView().getClass().getSimpleName(),
-                                handler.getDropHandler().getView().getClass().getSimpleName()),
-                        Toast.LENGTH_SHORT).show();
+                if (handler.getDropHandler() != null) {
+                    Toast.makeText(
+                            MainActivity.this,
+                            String.format("Dropped %s on %s",
+                                    handler.getView().getClass().getSimpleName(),
+                                    handler.getDropHandler().getView().getClass().getSimpleName()),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(
+                            MainActivity.this,
+                            String.format("Dropped %s in %s",
+                                    handler.getView().getClass().getSimpleName(),
+                                    handler.getSourceAppID()),
+                            Toast.LENGTH_SHORT).show();
+                }
+
             }
         }
     }
@@ -135,6 +146,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         timer.cancel();
+        mOrchestrator.tearDown();
     }
 
     private void hideSystemUI() {
@@ -429,7 +441,6 @@ public class MainActivity extends Activity {
                 Log.d("Scroll", "scroll state: " + GestureHandler.stateToString(newState));
             }
         });
-        registry.registerHandlerForView(scrollView, sDropHandler);
 
         registry.registerHandlerForView(button, new NativeViewGestureHandler())
                 .setShouldActivateOnStart(true);
@@ -450,7 +461,7 @@ public class MainActivity extends Activity {
 
         registry.registerHandlerForView(block, longPressHandler);
         registry.registerHandlerForView(block, dragHandler);
-
+/*
         registry.registerHandlerForView(scrollView, new DropGestureHandlerImpl(this))
                 .setEnabled(false)
                 .setTypes(dragTypes)
@@ -461,6 +472,8 @@ public class MainActivity extends Activity {
                                 .setColorForState(GestureHandler.STATE_FAILED, Color.RED)
                                 .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
                 );
+
+ */
 
         registry.registerHandlerForView(blockChild, new DropGestureHandlerImpl(this))
                 .setTypes(dragTypes)
