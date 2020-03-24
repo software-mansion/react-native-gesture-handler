@@ -200,6 +200,10 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         return mDragAction;
     }
 
+    public String getSourceAppID() {
+        return mSourceAppID;
+    }
+
     @Override
     public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
         return super.shouldRecognizeSimultaneously(handler) || handler instanceof DropGestureHandler ||
@@ -227,7 +231,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         }
     }
 
-    private ClipData createClipData() {
+    ClipData createClipData() {
         String packageName = getView().getContext().getPackageName();
         Intent intent = new Intent(Intent.ACTION_RUN);
         intent.putExtra(KEY_DRAG_TARGET, getView().getId());
@@ -430,7 +434,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     /**
-     * SubClasses should override this method to handle the {@link DragGestureHandler} UI
+     * Subclasses should override this method to handle the {@link DragGestureHandler} UI
      */
     public void onDrop() {
         if (mDragMode == DRAG_MODE_MOVE_RESTORE) {
@@ -501,7 +505,9 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                 handler = handlers.get(i);
                 if (handler.mShadowEnabled) {
                     view = handler.mShadowBuilderView != null ? handler.mShadowBuilderView : handler.getView();
-                    views.add(view);
+                    if (view.getWidth() > 0 && view.getHeight() > 0) {
+                        views.add(view);
+                    }
                 }
             }
             init(views.toArray(new View[0]), config);

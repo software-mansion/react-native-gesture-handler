@@ -2,8 +2,12 @@ package com.swmansion.gesturehandler;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -103,6 +107,99 @@ public class DragGestureUtils {
             }
         }
         return null;
+    }
+
+    static class DragEventBroadcastManager {
+
+        private final Context mContext;
+
+        DragEventBroadcastManager(Context context) {
+            mContext = context;
+        }
+
+        DragEventBroadcastManager(Context context, BroadcastReceiver receiver) {
+            mContext = context;
+            register(receiver);
+        }
+
+        void broadcast(DragEvent event, DropGestureHandler handler) {
+            DragEventBroadcast eventBroadcast = new DragEventBroadcast(mContext, event, handler);
+            if (eventBroadcast.shouldBroadcastEvent()) {
+                eventBroadcast.broadcast();
+            }
+        }
+
+        @Nullable
+        DragEventBroadcast obtain(Intent intent) {
+            if (intent.getAction() != null && intent.getAction().contains(DragEventBroadcast.INTENT_ACTION)) {
+                DragEventBroadcast eventBroadcast = new DragEventBroadcast(mContext);
+                eventBroadcast.action = intent.getIntExtra(DragEventBroadcast.KEY_ACTION, DragEvent.ACTION_DRAG_EXITED);
+                eventBroadcast.dropTargetID = intent.getIntExtra(DragEventBroadcast.KEY_DROP_HANDLER_ID, View.NO_ID);
+                eventBroadcast.sourcePackageName = mContext.getPackageName();
+                eventBroadcast.targetPackageName = intent.getStringExtra(DragEventBroadcast.KEY_TARGET_PACKAGE_NAME);
+                return eventBroadcast;
+            }
+            return null;
+        }
+
+        void register(BroadcastReceiver receiver) {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(DragEventBroadcast.INTENT_ACTION);
+            mContext.registerReceiver(receiver, filter);
+        }
+
+        void unregister(BroadcastReceiver receiver) {
+            mContext.unregisterReceiver(receiver);
+        }
+    }
+
+    static class DragEventBroadcast {
+
+        static final String KEY_ACTION = "action";
+        static final String KEY_DROP_HANDLER_ID = "dropTargetID";
+        static final String KEY_TARGET_PACKAGE_NAME = "targetPackageName";
+        private static final String PACKAGE_NAME = "com.swmansion.gesturehandler";
+        static final String INTENT_ACTION = PACKAGE_NAME + "." + DRAG_EVENT_NAME;
+
+        int action;
+        int dropTargetID;
+        String sourcePackageName;
+        String targetPackageName;
+        private final Context mContext;
+
+        private DragEventBroadcast(Context context) {
+            mContext = context;
+        }
+
+        private DragEventBroadcast(Context context, DragEvent event, DropGestureHandler handler) {
+            mContext = context;
+            action = event.getAction();
+            dropTargetID = handler != null ? handler.getDropTarget() : View.NO_ID;
+            sourcePackageName = DragGestureUtils.getEventPackageName(event);
+            targetPackageName = context.getPackageName();
+        }
+
+        private boolean isExternalEvent() {
+            return sourcePackageName != null && !sourcePackageName.equals(targetPackageName);
+        }
+
+        private boolean isBroadcastAction() {
+            return action == DragEvent.ACTION_DRAG_ENTERED || action == DragEvent.ACTION_DRAG_EXITED || action == DragEvent.ACTION_DROP;
+        }
+
+        private boolean shouldBroadcastEvent() {
+            return isExternalEvent() && isBroadcastAction();
+        }
+
+        private void broadcast() {
+            Intent intent = new Intent();
+            intent.setPackage(sourcePackageName);
+            intent.setAction(INTENT_ACTION);
+            intent.putExtra(KEY_ACTION, action);
+            intent.putExtra(KEY_DROP_HANDLER_ID, dropTargetID);
+            intent.putExtra(KEY_TARGET_PACKAGE_NAME, targetPackageName);
+            mContext.sendBroadcast(intent, null);
+        }
     }
 
     public static class DerivedMotionEvent {
