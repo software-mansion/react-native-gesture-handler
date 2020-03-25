@@ -184,8 +184,6 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
       cleanupFinishedHandlers();
     } else if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
       cleanupFinishedHandlers();
-    } else {
-      //cleanupFinishedDropHandlers();
     }
     return mIsDragging;
   }

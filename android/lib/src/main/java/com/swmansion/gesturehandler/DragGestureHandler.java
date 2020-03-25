@@ -22,7 +22,6 @@ import androidx.core.view.ViewCompat;
 
 import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +55,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     private boolean mResult = false;
     private float mOriginalElevation;
     private String mSourceAppID;
-    private View.DragShadowBuilder mInvisibleShadow = new View.DragShadowBuilder() {
+    private final View.DragShadowBuilder mInvisibleShadow = new View.DragShadowBuilder() {
         @Override
         public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
             View v = DragGestureHandler.this.getView();
