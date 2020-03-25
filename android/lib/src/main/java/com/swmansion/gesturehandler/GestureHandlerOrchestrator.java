@@ -55,13 +55,15 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
             }
           };
 
+  interface GestureHandlerAssertions<T extends GestureHandler> {
+    boolean assertTrue(T handler);
+  }
   private static final GestureHandlerAssertions sAssertHandler = new GestureHandlerAssertions() {
     @Override
     public boolean assertTrue(GestureHandler handler) {
       return true;
     }
   };
-
   private static final GestureHandlerAssertions sAssertDropHandler = new GestureHandlerAssertions() {
     @Override
     public boolean assertTrue(GestureHandler handler) {
@@ -240,37 +242,31 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    Log.d("Dragger", "onReceive: action=" + intent.getIntExtra("action", 0) +
-            " id="+ intent.getIntExtra(DragEventBroadcast.KEY_DROP_HANDLER_ID, -1));
-    try {
-      DragEventBroadcast eventBroadcast = mBroadcastManager.obtain(intent);
-      if (eventBroadcast == null || mDragEventMaster == null) {
-        return;
-      }
-      ClipData clipData = mDragEventMaster.createClipData();
-      DragEvent event  = DragGestureUtils.obtain(
-              eventBroadcast.action,
-              0,
-              0,
-              eventBroadcast.action == DragEvent.ACTION_DROP,
-              clipData,
-              clipData.getDescription());
-      GestureHandler handler;
-      int handlersCount = mGestureHandlersCount;
-      GestureHandler[] handlers = new GestureHandler[handlersCount];
-      System.arraycopy(mGestureHandlers, 0, handlers, 0, handlersCount);
-      Arrays.sort(handlers, 0, handlersCount, sHandlersComparator);
-      for (int j = 0; j < handlersCount; j++) {
-        handler = handlers[j];
-        if (handler instanceof DragGestureHandler && handler.mIsActive) {
-          ((DragGestureHandler) handler).setDropHandler(null);
-          deliverEventToGestureHandler(handler, event);
-        }
-      }
-      DragGestureUtils.recycle(event);
-    } catch (Throwable throwable) {
-      Log.e("dragger", "onReceive ERROR ", throwable);
+    DragEventBroadcast eventBroadcast = mBroadcastManager.obtain(intent);
+    if (eventBroadcast == null || mDragEventMaster == null) {
+      return;
     }
+    ClipData clipData = mDragEventMaster.createClipData();
+    DragEvent event  = DragGestureUtils.obtain(
+            eventBroadcast.action,
+            0,
+            0,
+            eventBroadcast.action == DragEvent.ACTION_DROP,
+            clipData,
+            clipData.getDescription());
+    GestureHandler handler;
+    int handlersCount = mGestureHandlersCount;
+    GestureHandler[] handlers = new GestureHandler[handlersCount];
+    System.arraycopy(mGestureHandlers, 0, handlers, 0, handlersCount);
+    Arrays.sort(handlers, 0, handlersCount, sHandlersComparator);
+    for (int j = 0; j < handlersCount; j++) {
+      handler = handlers[j];
+      if (handler instanceof DragGestureHandler && handler.mIsActive) {
+        ((DragGestureHandler) handler).setDropHandler(null);
+        deliverEventToGestureHandler(handler, event);
+      }
+    }
+    DragGestureUtils.recycle(event);
   }
 
   private void scheduleFinishedHandlersCleanup() {
@@ -472,9 +468,51 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
         handler.mShouldActivate = true;
       }
     }
+    /*
+    boolean exists;
+    boolean didExit = false;
+    ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_EXITED, event.getX(), event.getY(), event.getResult(),
+            event.getClipData(), event.getClipDescription());
+    for (int i = 0; i < dropGestureHandlers.size(); i++) {
+      handler = dropGestureHandlers.get(i);
+      if (handler.mIsActive) {
+        exists = false;
+        for (int j = 0; j < dropHandlersCount; j++) {
+          if (handler == mPreparedDropHandlers[j]) {
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) {
+          deliverEventToGestureHandler(handler, ev);
+          didExit = true;
+        }
+      }
+    }
+    if (didExit) {
+      if (activeDragHandler != null) {
+        for (int j = 0; j < handlersCount; j++) {
+          if (mPreparedHandlers[j] instanceof DragGestureHandler) {
+            deliverEventToGestureHandler(mPreparedHandlers[j], ev);
+          }
+        }
+      } else {
+        mBroadcastManager.broadcast(ev, lastActiveDropHandler);
+      }
+    }
+    DragGestureUtils.recycle(ev);
+
+     */
+
+
+    Log.d("Drag#", "prev= " +
+            mLastDropHandler +" curr="+ activeDropHandler + " action=" + action + " ??" +activeDropHandlerDidChange);
+    boolean isExitEvent = (action == DragEvent.ACTION_DRAG_LOCATION && activeDropHandler == null && lastActiveDropHandler != null) ||
+            action == DragEvent.ACTION_DRAG_EXITED;
     // set action
-    if (activeDropHandlerDidChange) {
+    if (action == DragEvent.ACTION_DRAG_LOCATION && activeDropHandlerDidChange) {
       action = DragEvent.ACTION_DRAG_ENTERED;
+      mLastDropHandler = activeDropHandler;
       if (lastActiveDropHandler != null) {
         // fire exit event
         ev = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_EXITED, event.getX(), event.getY(), event.getResult(),
@@ -496,7 +534,6 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
         }
         DragGestureUtils.recycle(ev);
       }
-      mLastDropHandler = activeDropHandler;
     } else if (action == DragEvent.ACTION_DROP && activeDropHandler == null) {
       /**
        * DROP action can be wrong because of the registered RootView intercepting Drag events.
@@ -504,10 +541,10 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
        * is in charge of handling it.
        */
       action = DragEvent.ACTION_DRAG_LOCATION;
-    } else if (action == DragEvent.ACTION_DRAG_LOCATION && activeDropHandler == null && lastActiveDropHandler != null) {
+    } else if (isExitEvent) {
       action = DragEvent.ACTION_DRAG_EXITED;
       mLastDropHandler = null;
-    } else if (action == DragEvent.ACTION_DRAG_EXITED || action == DragEvent.ACTION_DRAG_ENDED) {
+    } else if (action == DragEvent.ACTION_DRAG_ENDED) {
       mLastDropHandler = null;
     }
     if (activeDragHandler != null) {
@@ -516,19 +553,21 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
     ev = DragGestureUtils.obtain(action, event.getX(), event.getY(), event.getResult(),
             event.getClipData(), event.getClipDescription());
     // deliver event to DropGestureHandlers
-    boolean purePrev;
-    for (int i = 0; i < prevDropHandlersCount; i++) {
-      handler = mPrevDropHandlers[i];
-      if (handler.mIsActive) {
-        purePrev = true;
-        for (int j = 0; j < dropHandlersCount; j++) {
-          if (mPreparedDropHandlers[j] == handler) {
-            purePrev = false;
-            break;
+    if (isExitEvent) {
+      boolean purePrev;
+      for (int i = 0; i < prevDropHandlersCount; i++) {
+        handler = mPrevDropHandlers[i];
+        if (handler.mIsActive) {
+          purePrev = true;
+          for (int j = 0; j < dropHandlersCount; j++) {
+            if (mPreparedDropHandlers[j] == handler) {
+              purePrev = false;
+              break;
+            }
           }
-        }
-        if (purePrev) {
-          deliverEventToGestureHandler(handler, ev);
+          if (purePrev) {
+            deliverEventToGestureHandler(handler, ev);
+          }
         }
       }
     }
@@ -542,14 +581,6 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
       }
     }
     mBroadcastManager.broadcast(ev, activeDropHandler != null ? activeDropHandler : lastActiveDropHandler);
-
-    // finalize
-    for (int i = dropHandlersCount - 1; i >= 0; i--) {
-      handler = mPrevDropHandlers[i];
-      if(handler != null) {
-        handler.tryCancel();
-      }
-    }
     DragGestureUtils.recycle(ev);
   }
 
@@ -898,4 +929,5 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
     return state == GestureHandler.STATE_CANCELLED || state == GestureHandler.STATE_FAILED
             || state == GestureHandler.STATE_END;
   }
+
 }
