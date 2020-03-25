@@ -503,12 +503,8 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             int size = 0;
             for (int i = 0; i < handlers.size(); i++) {
                 handler = handlers.get(i);
-                if (handler.mShadowEnabled) {
-                    view = handler.mShadowBuilderView != null ? handler.mShadowBuilderView : handler.getView();
-                    if (view.getWidth() > 0 && view.getHeight() > 0) {
-                        views.add(view);
-                    }
-                }
+                view = handler.mShadowBuilderView != null ? handler.mShadowBuilderView : handler.getView();
+                views.add(view);
             }
             init(views.toArray(new View[0]), config);
         }
@@ -558,6 +554,9 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         private void draw(Canvas canvas, int i) {
             float d = !shouldRenderMultipleShadows() ? 0 : (mConfig.minAlpha - mConfig.maxAlpha) / (mViews.length - 1);
             View view = viewAt(i);
+            if (view.getWidth() == 0 && view.getHeight() == 0) {
+                return;
+            }
             Bitmap canvasBitmap = Bitmap.createBitmap(view.getWidth(), view.getWidth(), Bitmap.Config.ARGB_8888);
             mTempCanvas.setBitmap(canvasBitmap);
             view.draw(mTempCanvas);
