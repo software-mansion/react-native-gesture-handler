@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 
@@ -21,8 +22,6 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     private int mDragAction;
     private boolean mResult;
     private boolean mPointerState = false;
-    private boolean mShouldCancelNext = false;
-    private boolean mAwaitingCancellation = false;
     private String mLastEventData;
     private String mLastSourceAppID;
     boolean mShouldActivate = false;
@@ -84,14 +83,6 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         return super.shouldActivate() && mShouldActivate;
     }
 
-
-    void tryCancel() {
-        if (mShouldCancelNext && !mAwaitingCancellation) {
-            cancel();
-            mAwaitingCancellation = true;
-        }
-    }
-
     /**
      * @param event receives an event with {@link DragGestureHandler} {@link DragEvent} action
      */
@@ -99,8 +90,6 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     protected void onHandle(DragEvent event) {
         if (!mOrchestrator.mIsDragging || !shouldHandleEvent(event)) {
             fail();
-            return;
-        } else if (mShouldCancelNext) {
             return;
         }
 
@@ -140,7 +129,7 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         } else {
             mDragAction = action;
         }
-
+        Log.d("Dragger", "drop actionIn=" + action + " actionOut=" + mDragAction + "   " + this);
         mPointerState = pointerIsInside;
         DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
                 event.getClipData(), event.getClipDescription());
@@ -148,7 +137,7 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         DragGestureUtils.recycle(ev);
 
         if (mDragAction == DragEvent.ACTION_DRAG_EXITED) {
-            mShouldCancelNext = true;
+            cancel();
         }
     }
 
@@ -167,8 +156,6 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         mPointerState = false;
         mDragAction = DragEvent.ACTION_DRAG_ENDED;
         mResult = false;
-        mShouldCancelNext = false;
-        mAwaitingCancellation = false;
         mLastEventData = null;
         mLastSourceAppID = null;
         mShouldActivate = false;
