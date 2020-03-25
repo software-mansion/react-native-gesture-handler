@@ -376,8 +376,12 @@ public class MainActivity extends Activity {
                 .setOnTouchEventListener(dragEventListener);
 
         final DragGestureHandler buttonDragHandler = new DragGestureHandlerImpl(this)
-                .setOnTouchEventListener(new CustomDragListener())
-                .setTypes(dragTypes);
+                .setOnTouchEventListener(new CustomDragListener()
+                        .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.MAGENTA)
+                        .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.DKGRAY)
+                        .setColorForAction(DragEvent.ACTION_DRAG_ENDED, Color.LTGRAY))
+                .setTypes(dragTypes)
+                .setDragMode(DragGestureUtils.DRAG_MODE_COPY);
 
         final DragGestureHandler.MultiDragShadowBuilder.Config config = new DragGestureHandler.MultiDragShadowBuilder.Config();
         buttonDragHandler.setShadowConfig(config);
