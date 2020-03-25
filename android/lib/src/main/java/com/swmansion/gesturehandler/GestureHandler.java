@@ -67,6 +67,7 @@ public class GestureHandler<T extends GestureHandler> {
   /*package*/ int mActivationIndex; // set and accessed only by the orchestrator
   /*package*/ boolean mIsActive; // set and accessed only by the orchestrator
   /*package*/ boolean mIsAwaiting; // set and accessed only by the orchestrator
+  /*package*/ int mDropActivationIndex = Integer.MAX_VALUE; // set and accessed only by the orchestrator
 
   private static boolean hitSlopSet(float value) {
     return !Float.isNaN(value);

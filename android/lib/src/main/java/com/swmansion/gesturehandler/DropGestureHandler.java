@@ -3,7 +3,6 @@ package com.swmansion.gesturehandler;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 
@@ -21,10 +20,8 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     private @Nullable DragGestureHandler<T, S> mDragHandler;
     private int mDragAction;
     private boolean mResult;
-    private boolean mPointerState = false;
     private String mLastEventData;
     private String mLastSourceAppID;
-    boolean mShouldActivate = false;
 
     public DropGestureHandler(Context context) {
         super(context);
@@ -80,7 +77,8 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
     @Override
     protected boolean shouldActivate() {
-        return super.shouldActivate() && mShouldActivate;
+        // activate only when is the top most drop handler on screen
+        return mDropActivationIndex == 0 && super.shouldActivate();
     }
 
     /**
@@ -92,45 +90,31 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             fail();
             return;
         }
-
         int action = event.getAction();
-        boolean pointerIsInside = isWithinBounds();
-        boolean isProgressEvent = action != DragEvent.ACTION_DRAG_STARTED && action != DragEvent.ACTION_DRAG_ENDED
-                && action != DragEvent.ACTION_DRAG_EXITED;
-
-        if (isProgressEvent) {
-            if (action == DragEvent.ACTION_DROP) {
-                if (mIsActive) {
-                    mDragAction = DragEvent.ACTION_DROP;
-                    mResult = true;
-                    DragAndDropPermissionsCompat dropPermissions = null;
-                    if (mDataResolver != null && mDataResolver.getActivity() != null) {
-                        dropPermissions = ActivityCompat
-                                .requestDragAndDropPermissions(mDataResolver.getActivity(), event);
-                    }
-                    Intent intent = event.getClipData()
-                            .getItemAt(0)
-                            .getIntent();
-                    mLastEventData = intent.getStringExtra(KEY_DATA);
-                    mLastSourceAppID = intent.getStringExtra(KEY_SOURCE_APP);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && dropPermissions != null) {
-                        dropPermissions.release();
-                    }
-                } else {
-                    mDragAction = DragEvent.ACTION_DRAG_ENDED;
+        if (action == DragEvent.ACTION_DROP) {
+            if (getState() == STATE_ACTIVE) {
+                mDragAction = DragEvent.ACTION_DROP;
+                mResult = true;
+                DragAndDropPermissionsCompat dropPermissions = null;
+                if (mDataResolver != null && mDataResolver.getActivity() != null) {
+                    dropPermissions = ActivityCompat
+                            .requestDragAndDropPermissions(mDataResolver.getActivity(), event);
                 }
-            } else if (pointerIsInside && !mPointerState) {
-                mDragAction = DragEvent.ACTION_DRAG_ENTERED;
-            } else if (!pointerIsInside) {
-                mDragAction = DragEvent.ACTION_DRAG_EXITED;
+                Intent intent = event.getClipData()
+                        .getItemAt(0)
+                        .getIntent();
+                mLastEventData = intent.getStringExtra(KEY_DATA);
+                mLastSourceAppID = intent.getStringExtra(KEY_SOURCE_APP);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && dropPermissions != null) {
+                    dropPermissions.release();
+                }
             } else {
-                mDragAction = DragEvent.ACTION_DRAG_LOCATION;
+                mDragAction = DragEvent.ACTION_DRAG_ENDED;
             }
         } else {
             mDragAction = action;
         }
-        Log.d("Dragger", "drop actionIn=" + action + " actionOut=" + mDragAction + "   " + this);
-        mPointerState = pointerIsInside;
+
         DragEvent ev = DragGestureUtils.obtain(mDragAction, getX(), getY(), mResult,
                 event.getClipData(), event.getClipDescription());
         super.onHandle(ev);
@@ -138,6 +122,13 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
         if (mDragAction == DragEvent.ACTION_DRAG_EXITED) {
             cancel();
+        } else if (!isWithinBounds()) {
+            int state = getState();
+            if (state == STATE_ACTIVE) {
+                cancel();
+            } else if (state == STATE_BEGAN) {
+                fail();
+            }
         }
     }
 
@@ -153,12 +144,10 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     protected void onReset() {
         super.onReset();
         mDragHandler = null;
-        mPointerState = false;
         mDragAction = DragEvent.ACTION_DRAG_ENDED;
         mResult = false;
         mLastEventData = null;
         mLastSourceAppID = null;
-        mShouldActivate = false;
     }
 
 }
