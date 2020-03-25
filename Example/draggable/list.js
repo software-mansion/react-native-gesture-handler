@@ -16,7 +16,7 @@ Context = React.createContext({
   }
 });
 
-function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
+function DropZone({ item, index, shadowEnabled }) {
   const __item = item.item;
   const __isSelected = item.selected;
   const context = useContext(Context);
@@ -81,7 +81,7 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
       arr.push(...context.refs);
     }
     ref.current && ref.current.setNativeProps({
-      simultaneousHandlers: arr
+      simultaneousHandlers: arr.reverse()
     });
   })
 
@@ -89,12 +89,16 @@ function DropZone({ item, index, shadowEnabled, swap, bulkMove }) {
     <DragGestureHandler
       simultaneousHandlers={longPressRef}
       ref={ref}
-      onGestureEvent={e => console.log(e.nativeEvent)}
-      onHandlerStateChange={onHandlerStateChange}
+      //onGestureEvent={e => console.log(e.nativeEvent)}
+      //onHandlerStateChange={onHandlerStateChange}
       types={__item % 2 === 0 ? [0, 1] : 1}
       data={{ index, item: __item }}
       shadowViewTag={shadowTag}
       shadowEnabled={shadowEnabled}
+      shadowConfig={{
+        offset: [-25, -25],
+        margin: [50, 20]
+      }}
     >
       <Animated.View collapsable={false}>
         <LongPressGestureHandler
@@ -200,14 +204,14 @@ export default function DragExample(props) {
         return this.findItemIndex(item) !== -1;
       }
     }
-  }, [data,])
+  }, [data])
 
   return (
     <Context.Provider value={context}>
       <FlatList
         ListHeaderComponent={() => <>
           <Text style={{ fontSize: 20 }}>Drag & Drop has FINALLY arrived to React Native!</Text>
-          <Text>Try swapping between the numbers.</Text>
+          <Text>Try swapping between the numbers, use LongPress for multi-selection.</Text>
           <Text>Even numbers can be swapped with any number.</Text>
           <Text>Odd numbers can be swapped only with odd numbers.</Text>
           <Text>Happy swapping</Text>
