@@ -81,7 +81,7 @@ function DropZone({ item, index, shadowEnabled }) {
       arr.push(...context.refs);
     }
     ref.current && ref.current.setNativeProps({
-      simultaneousHandlers: arr.reverse()
+      simultaneousHandlers: arr
     });
   })
 

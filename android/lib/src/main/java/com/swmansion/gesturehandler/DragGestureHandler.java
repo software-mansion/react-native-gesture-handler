@@ -23,6 +23,8 @@ import androidx.core.view.ViewCompat;
 import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_EVENT_NAME;
@@ -503,14 +505,20 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
             for (int i = 0; i < handlers.size(); i++) {
                 handler = handlers.get(i);
                 view = handler.mShadowBuilderView != null ? handler.mShadowBuilderView : handler.getView();
-                views.add(view);
+                // The first view, the master of the drag gesture, should be drawn at the top of the shadow stack
+                // the rest should be drawn from bottom top top so we reverse the order accordingly
+                if (i == 0) {
+                    views.add(view);
+                } else {
+                    views.add(1, view);
+                }
+
             }
             init(views.toArray(new View[0]), config);
         }
 
         private void init(View[] views, Config config) {
-            mViews = new View[views.length];
-            System.arraycopy(views, 0, mViews, 0, views.length);
+            mViews = views;
             setConfig(config);
         }
 
