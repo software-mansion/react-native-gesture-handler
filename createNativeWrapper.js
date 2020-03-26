@@ -1,8 +1,6 @@
-import React from 'react';
+import React, { useImperativeHandle, useRef } from 'react';
 
 import NativeViewGestureHandler from './NativeViewGestureHandler';
-
-const NATIVE_WRAPPER_BIND_BLACKLIST = new Set(['replaceState', 'isMounted']);
 
 /*
  * This array should consist of:
@@ -33,58 +31,38 @@ const NATIVE_WRAPPER_PROPS_FILTER = [
 ];
 
 export default function createNativeWrapper(Component, config = {}) {
-  class ComponentWrapper extends React.Component {
-    static propTypes = {
-      ...Component.propTypes,
-    };
-
-    static displayName = Component.displayName || 'ComponentWrapper';
-
-    _refHandler = node => {
-      // bind native component's methods
-      let source = node;
-      while (source != null) {
-        for (let methodName of Object.getOwnPropertyNames(source)) {
-          if (
-            !methodName.startsWith('_') && // private methods
-            !methodName.startsWith('component') && // lifecycle methods
-            !NATIVE_WRAPPER_BIND_BLACKLIST.has(methodName) && // other
-            typeof source[methodName] === 'function' &&
-            this[methodName] === undefined
-          ) {
-            if (source[methodName].prototype) {
-              // determine if it's not bound already
-              this[methodName] = source[methodName].bind(node);
-            } else {
-              this[methodName] = source[methodName];
-            }
-          }
+  const ComponentWrapper = React.forwardRef((props, ref) => {
+    // filter out props that should be passed to gesture handler wrapper
+    const gestureHandlerProps = Object.keys(props).reduce(
+      (res, key) => {
+        if (NATIVE_WRAPPER_PROPS_FILTER.indexOf(key) !== -1) {
+          res[key] = props[key];
         }
-        source = Object.getPrototypeOf(source);
+        return res;
+      },
+      { ...config } // watch out not to modify config
+    );
+    const _ref = useRef();
+    const _gestureHandlerRef = useRef();
+    useImperativeHandle(ref, () => {
+      const node = _gestureHandlerRef.current;
+      if (_ref.current && node) {
+        // add handlerTag for relations config
+        _ref.current._handlerTag = node ? node._handlerTag : null;
       }
-    };
+      return _ref.current;
+    }, [_ref, _gestureHandlerRef]);
+    return (
+      <NativeViewGestureHandler {...gestureHandlerProps} ref={_gestureHandlerRef}>
+        <Component {...props} ref={_ref} />
+      </NativeViewGestureHandler>
+    );
+  });
 
-    _gestureRefHandler = node => {
-      this._handlerTag = node ? node._handlerTag : null;
-    }
+  ComponentWrapper.propTypes = {
+    ...Component.propTypes,
+  };
+  ComponentWrapper.displayName = Component.displayName || 'ComponentWrapper';
 
-    render() {
-      // filter out props that should be passed to gesture handler wrapper
-      const gestureHandlerProps = Object.keys(this.props).reduce(
-        (props, key) => {
-          if (NATIVE_WRAPPER_PROPS_FILTER.indexOf(key) !== -1) {
-            props[key] = this.props[key];
-          }
-          return props;
-        },
-        { ...config } // watch out not to modify config
-      );
-      return (
-        <NativeViewGestureHandler {...gestureHandlerProps} ref={this._gestureRefHandler}>
-          <Component {...this.props} ref={this._refHandler} />
-        </NativeViewGestureHandler>
-      );
-    }
-  }
   return ComponentWrapper;
 }
