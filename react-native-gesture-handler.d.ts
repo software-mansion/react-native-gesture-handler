@@ -52,7 +52,7 @@ declare module 'react-native-gesture-handler' {
 
   export enum DragMode {
     MOVE,
-    /** After drop has occures, restores visibilty to the DragGestureHandler's view  */
+    /** After drop occurs, restores visibility to the DragGestureHandler's view  */
     MOVE_RESTORE,
     COPY
   }
