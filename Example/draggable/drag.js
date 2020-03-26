@@ -180,8 +180,10 @@ export default function DragExample(props) {
       style={styles.default}
       ref={scrollRef}
       contentOffset={{ x: 0, y: 50 }}
-      //onHandlerStateChange={e => console.log('scroll', e.nativeEvent)}
-      simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
+      disallowInterruption
+      shouldActivateOnStart
+    //onHandlerStateChange={e => console.log('scroll', e.nativeEvent)}
+    //simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
     //onScroll={onScroll}
     >
       <Animated.Image
@@ -198,7 +200,7 @@ export default function DragExample(props) {
         data={{ a: 'b', text: innerDropZone.text }}
         //shadowViewTag={draggable1.shadowTag}
         shadow={shadowViewRef}
-        waitFor={scrollRef}
+        simultaneousHandlers={scrollRef}
       >
         <DropGestureHandler
           types={[2, 3]}
