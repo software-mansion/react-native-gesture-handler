@@ -21,7 +21,8 @@ declare module 'react-native-gesture-handler' {
   } from 'react-native';
 
   type Map = { [index: string]: any };
-  type DataMap = Map & { target: number };
+  type DragData<T extends Map> = T & { nativeProps?: Map };
+  type DropData<T extends Map> = (DragData<T> | { rawData: string }) & { readonly target: number };
 
   /* GESTURE HANDLER STATE */
 
@@ -201,15 +202,11 @@ declare module 'react-native-gesture-handler' {
     DragGestureHandlerEventExtra;
   }
 
-  interface DropGestureHandlerEventExtra<T extends DataMap> extends DragGestureHandlerEventExtra {
+  interface DropGestureHandlerEventExtra<T extends Map> extends DragGestureHandlerEventExtra {
     /**
      * The data received from the DragGestureHandler
      */
-    data: T[] | null,
-    /**
-     * The raw data received from the event in case of a JSON parsing error
-     */
-    rawData?: string,
+    data: DropData<T>[] | null,
     /**
      * The id of the app the event originated from.
      * This property will be available once a drop occurs for an event that originated from a different app.
@@ -223,7 +220,7 @@ declare module 'react-native-gesture-handler' {
     DropGestureHandlerEventExtra<T>;
   }
 
-  export interface DropGestureHandlerGestureEvent<T extends DataMap>
+  export interface DropGestureHandlerGestureEvent<T extends Map>
     extends GestureHandlerGestureEvent {
     nativeEvent: GestureHandlerGestureEventNativeEvent &
     DropGestureHandlerEventExtra<T>;
@@ -390,7 +387,7 @@ declare module 'react-native-gesture-handler' {
     onHandlerStateChange?: (event: PanGestureHandlerStateChangeEvent) => void;
   }
 
-  export interface DragGestureHandlerProperties<T extends Map & { nativeProps?: Map }> extends PanGestureHandlerProps {
+  export interface DragGestureHandlerProperties<T extends Map> extends PanGestureHandlerProps {
     /**
      * Enum that is used to determine if a DropGestureHandler can handle the DragGestureHandler event.
      */
@@ -399,7 +396,7 @@ declare module 'react-native-gesture-handler' {
      * The data to pass to DropGestureHandler once a drop occurs.
      * Passing `nativeProps` will update the drop target with the passed props once a drop occurs.
      */
-    data?: T,
+    data?: DragData<T>,
     /**
      * This will be overridden to `true` when in multi window mode.
      */
@@ -408,7 +405,7 @@ declare module 'react-native-gesture-handler' {
     /**
      * A convience for providing a shadow instead of passing `shadowViewTag`.
      */
-    shadow?: React.ReactElement | React.RefObject<any> | React.FunctionComponent,
+    shadow?: React.ReactElement | React.RefObject<any> | React.FunctionComponent | number,
     /**
      * Configuration for multiple drag shadow instance
      * Has effect only when passing additional DragGestureHandlers via `simultaneousHandlers`
@@ -450,7 +447,7 @@ declare module 'react-native-gesture-handler' {
     onHandlerStateChange?: (event: DragGestureHandlerStateChangeEvent) => void
   }
 
-  export interface DropGestureHandlerProperties<T extends DataMap> extends PanGestureHandlerProps {
+  export interface DropGestureHandlerProperties<T extends Map> extends PanGestureHandlerProps {
     /**
      * Enum that is used to determine if a DropGestureHandler can handle the DragGestureHandler event.
      */
@@ -499,11 +496,11 @@ declare module 'react-native-gesture-handler' {
     PanGestureHandlerProperties
     > { }
 
-  export class DragGestureHandler<T extends DataMap> extends React.Component<
+  export class DragGestureHandler<T extends Map> extends React.Component<
     DragGestureHandlerProperties<T>
     > { }
 
-  export class DropGestureHandler<T extends DataMap> extends React.Component<
+  export class DropGestureHandler<T extends Map> extends React.Component<
     DropGestureHandlerProperties<T>
     > { }
 
