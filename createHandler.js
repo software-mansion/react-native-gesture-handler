@@ -254,7 +254,7 @@ export default function createHandler(
     }
 
     _update() {
-      newConfig = this._filterConfig();
+      const newConfig = this._filterConfig();
       if (!deepEqual(this._config, newConfig)) {
         this._updateGestureHandler(newConfig);
       }
