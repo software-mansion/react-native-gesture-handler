@@ -22,7 +22,10 @@ declare module 'react-native-gesture-handler' {
 
   type Map = { [index: string]: any };
   type DragData<T extends Map> = T & { nativeProps?: Map };
-  type DropData<T extends Map> = (DragData<T> | { rawData: string }) & { readonly target: number };
+  type DropData<T extends Map> = (DragData<T> | {
+    /**This property will be available if an error occured while trying to parse the data */
+    rawData: string
+  }) & { readonly target: number };
 
   /* GESTURE HANDLER STATE */
 
@@ -60,6 +63,7 @@ declare module 'react-native-gesture-handler' {
 
   enum DragModeName {
     move,
+    move_restore,
     copy
   }
 
