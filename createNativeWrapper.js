@@ -46,11 +46,12 @@ export default function createNativeWrapper(Component, config = {}) {
     const _gestureHandlerRef = useRef();
     useImperativeHandle(ref, () => {
       const node = _gestureHandlerRef.current;
+      // add handlerTag for relations config
       if (_ref.current && node) {
-        // add handlerTag for relations config
         _ref.current._handlerTag = node ? node._handlerTag : null;
+        return _ref.current;
       }
-      return _ref.current;
+      return null;
     }, [_ref, _gestureHandlerRef]);
     return (
       <NativeViewGestureHandler {...gestureHandlerProps} ref={_gestureHandlerRef}>
