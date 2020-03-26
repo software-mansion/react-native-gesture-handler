@@ -72,6 +72,8 @@ public class RNGestureHandlerEvent extends Event<RNGestureHandlerEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), EVENT_NAME, mExtraData);
+    if (mExtraData != null) {
+      rctEventEmitter.receiveEvent(getViewTag(), EVENT_NAME, mExtraData);
+    }
   }
 }
