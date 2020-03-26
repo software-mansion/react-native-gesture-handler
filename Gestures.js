@@ -296,6 +296,7 @@ const DragGestureHandlerBase = createHandler(
       PropTypes.element,
       PropTypes.func,
       PropTypes.object,
+      PropTypes.number
     ]),
     dragMode: PropTypes.oneOf([
       ...Object.keys(DragMode).map(key => key.toLowerCase().replace(/_/g, '-')),
@@ -305,7 +306,9 @@ const DragGestureHandlerBase = createHandler(
   {},
   (props) => {
     const { shadow, ...res } = props;
-    if (shadow && shadow.current) {
+    if (shadow && typeof shadow === 'number') {
+      res.shadowViewTag = shadow;
+    } else if (shadow && shadow.current) {
       res.shadowViewTag = shadow.current ? findNodeHandle(shadow.current) : null;
     }
     return managePanProps(res);
@@ -333,7 +336,7 @@ function DragGestureHandlerWrapper(props, ref) {
   useImperativeHandle(ref, () => dragHandler.current, [dragHandler]);
   useEffect(() => {
     let t;
-    if (props.shadow) {
+    if (props.shadow && typeof props.shadow !== 'number') {
       t = setImmediate(() => {
         const isElementProp = typeof props.shadow === 'function' || React.isValidElement(props.shadow);
         let shadowViewTag = null;
