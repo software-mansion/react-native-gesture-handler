@@ -24,24 +24,29 @@ function useDraggaable() {
   const [shadowEnabled, setShadowEnabled] = useState(true);
   //const onShadowRef = useCallback(r => setShadowTag(r && findNodeHandle(r) || null), []);
   const shadowRef = useRef();
-  const onGestureEvent = useMemo(() => Animated.event(
-    [
-      {
-        nativeEvent: {
-          translationX: translateX,
-          translationY: translateY,
+  const onGestureEvent = useMemo(() =>
+    Animated.event(
+      [
+        {
+          nativeEvent: {
+            translationX: translateX,
+            translationY: translateY,
+          },
         },
-      },
-    ],
-    { useNativeDriver: USE_NATIVE_DRIVER }
-  ), [translateX, translateY]);
+      ],
+      { useNativeDriver: USE_NATIVE_DRIVER }
+    ), [translateX, translateY]);
 
   const onHandlerStateChange = useCallback((event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      translateX.setValue(0);
-      translateY.setValue(0);
+      const config = { toValue: 0, useNativeDriver: true };
+      Animated.parallel([
+        Animated.spring(translateX, config),
+        Animated.spring(translateY, config)
+      ]).start()
     }
   }, [translateX, translateY]);
+
 
   const extractStyle = useCallback((...transformations) => {
     return {
@@ -346,7 +351,7 @@ export default function DragExample(props) {
         onGestureEvent={draggable2.onGestureEvent}
         onHandlerStateChange={draggable2.onHandlerStateChange}
         shadowEnabled={draggable2.shadowEnabled}
-
+      //dragMode='copy'
       >
         <Animated.View style={[{ flex: 1, height: 500 }, draggable2.extractStyle()]}>
           <PinchableBox
