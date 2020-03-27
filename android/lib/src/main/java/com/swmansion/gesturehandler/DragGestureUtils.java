@@ -18,6 +18,8 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 public class DragGestureUtils {
 
     public static final String DRAG_EVENT_NAME = "GESTURE_HANDLER_DRAG_EVENT";
@@ -112,6 +114,7 @@ public class DragGestureUtils {
     static class DragEventBroadcastManager {
 
         private final Context mContext;
+        private final ArrayList<BroadcastReceiver> mReceivers = new ArrayList<>();
 
         DragEventBroadcastManager(Context context) {
             mContext = context;
@@ -143,13 +146,26 @@ public class DragGestureUtils {
         }
 
         void register(BroadcastReceiver receiver) {
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(DragEventBroadcast.INTENT_ACTION);
-            mContext.registerReceiver(receiver, filter);
+            if (!mReceivers.contains(receiver)) {
+                IntentFilter filter = new IntentFilter();
+                filter.addAction(DragEventBroadcast.INTENT_ACTION);
+                mContext.registerReceiver(receiver, filter);
+                mReceivers.add(receiver);
+            }
         }
 
         void unregister(BroadcastReceiver receiver) {
-            mContext.unregisterReceiver(receiver);
+            if (mReceivers.contains(receiver)) {
+                mReceivers.remove(receiver);
+                mContext.unregisterReceiver(receiver);
+            }
+        }
+
+        void unregisterAll() {
+            for(BroadcastReceiver receiver : mReceivers) {
+                mContext.unregisterReceiver(receiver);
+            }
+            mReceivers.clear();
         }
     }
 
