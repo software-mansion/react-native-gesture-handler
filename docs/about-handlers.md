@@ -74,7 +74,7 @@ class Multitap extends Component {
 ---
 ### Using native components
 
-Gesture handler library exposes a set of components normally available in React Native that are wrapped in [`NativeViewGestureHandler`](handler-native.md).
+Gesture handler library exposes a set of components normally available in React Native that are wrapped in [`NativeViewGestureHandler`](handlers.md).
 Here is a list of exposed components:
  - `ScrollView`
  - `FlatList`
