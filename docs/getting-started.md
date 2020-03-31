@@ -30,24 +30,22 @@ Since the library uses native support for handling gestures, it requires an exte
 
 #### Requirements
 
-| version | `react-native` version |
-| ------- | ---------------------- |
-| 1.4.0+  | 0.60.0+                |
-| 1.1.0+  | 0.57.2+                |
-| <1.1.0  | 0.50.0+                |
+| version    | `react-native` version |
+| -------    | ---------------------- |
+| 1.4.0+     | 0.60.0+                |
+| 1.1.0+     | 0.57.2+                |
+| &lt;1.1.0  | 0.50.0+                |
 
 Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](interactions.md) you need to use v16.3 of [React](https://reactjs.org/)
 
 #### JS
 
 First, install the library using `yarn`:
-
 ```bash
 yarn add react-native-gesture-handler
 ```
 
 or with `npm` if you prefer:
-
 ```bash
 npm install --save react-native-gesture-handler
 ```
@@ -109,14 +107,13 @@ Make sure to [update the React Native CLI to the latest version](https://github.
 
 There is no additional configuration required on iOS except what follows in the next steps.
 
-If you're in a CocoaPods project (the default setup since React Native 0.60), make sure to install pods before you run your app:
-
+If you're in a CocoaPods project (the default setup since React Native 0.60),
+make sure to install pods before you run your app:
 ```sh
 cd ios && pod install
 ```
 
 For React Native 0.61 or greater, add the library as the first import in your index.js file:
-
 ```
 import 'react-native-gesture-handler';
 ```
@@ -161,7 +158,7 @@ Remember that you need to wrap each screen that you use in your app with `gestur
 On Android RNGH does not work by default because modals are not located under React Native Root view in native hierarchy.
 In order to make it workable, components need to be wrapped with `gestureHandlerRootHOC` (it's no-op on iOS and web).
 
-E.g. 
+E.g.
 ```js
 const ExampleWithHoc = gestureHandlerRootHOC(
   function GestureExample() {
@@ -180,7 +177,7 @@ export default function Example() {
     </Modal>
   );
 }
-``` 
+```
 
 ### For library authors
 
@@ -205,13 +202,11 @@ Note that `GestureHandlerRootView` acts like a normal `View`. So if you want it 
 ### Testing
 
 In order to load mocks provided by the library add following to your jest config in `package.json`:
-
 ```json
 "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
 ```
 
 Example:
-
 ```json
 "jest": {
   "preset": "react-native",
