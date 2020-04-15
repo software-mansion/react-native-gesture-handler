@@ -19,14 +19,14 @@ export type PropType = {
   overshootLeft?: boolean,
   overshootRight?: boolean,
   overshootFriction: number,
-  onSwipeableLeftOpen?: Function,
-  onSwipeableRightOpen?: Function,
-  onSwipeableOpen?: Function,
-  onSwipeableClose?: Function,
-  onSwipeableLeftWillOpen?: Function,
-  onSwipeableRightWillOpen?: Function,
-  onSwipeableWillOpen?: Function,
-  onSwipeableWillClose?: Function,
+  onSwipeableLeftOpen?: (fromValue, velocityX) => void,
+  onSwipeableRightOpen?: (fromValue, velocityX) => void,
+  onSwipeableOpen?: (fromValue, velocityX) => void,
+  onSwipeableClose?: (fromValue, velocityX) => void,
+  onSwipeableLeftWillOpen?: (fromValue, velocityX) => void,
+  onSwipeableRightWillOpen?: (fromValue, velocityX) => void,
+  onSwipeableWillOpen?: (fromValue, velocityX) => void,
+  onSwipeableWillClose?: (fromValue, velocityX) => void,
   renderLeftActions?: (
     progressAnimatedValue: any,
     dragAnimatedValue: any
@@ -218,28 +218,28 @@ export default class Swipeable extends Component<PropType, StateType> {
     }).start(({ finished }) => {
       if (finished) {
         if (toValue > 0 && this.props.onSwipeableLeftOpen) {
-          this.props.onSwipeableLeftOpen();
+          this.props.onSwipeableLeftOpen(fromValue, velocityX);
         } else if (toValue < 0 && this.props.onSwipeableRightOpen) {
-          this.props.onSwipeableRightOpen();
+          this.props.onSwipeableRightOpen(fromValue, velocityX);
         }
 
         if (toValue === 0) {
-          this.props.onSwipeableClose && this.props.onSwipeableClose();
+          this.props.onSwipeableClose && this.props.onSwipeableClose(fromValue, velocityX);
         } else {
-          this.props.onSwipeableOpen && this.props.onSwipeableOpen();
+          this.props.onSwipeableOpen && this.props.onSwipeableOpen(fromValue, velocityX);
         }
       }
     });
     if (toValue > 0 && this.props.onSwipeableLeftWillOpen) {
-      this.props.onSwipeableLeftWillOpen();
+      this.props.onSwipeableLeftWillOpen(fromValue, velocityX);
     } else if (toValue < 0 && this.props.onSwipeableRightWillOpen) {
-      this.props.onSwipeableRightWillOpen();
+      this.props.onSwipeableRightWillOpen(fromValue, velocityX);
     }
 
     if (toValue === 0) {
-      this.props.onSwipeableWillClose && this.props.onSwipeableWillClose();
+      this.props.onSwipeableWillClose && this.props.onSwipeableWillClose(fromValue, velocityX);
     } else {
-      this.props.onSwipeableWillOpen && this.props.onSwipeableWillOpen();
+      this.props.onSwipeableWillOpen && this.props.onSwipeableWillOpen(fromValue, velocityX);
     }
   };
 
