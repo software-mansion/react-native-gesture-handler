@@ -446,8 +446,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
           new RotationGestureHandlerFactory(),
           new FlingGestureHandlerFactory()
   };
-  private final RNGestureHandlerRegistry mRegistry = new RNGestureHandlerRegistry();
-
+  private final RNGestureHandlerRegistry mRegistry;
   private RNGestureHandlerInteractionManager mInteractionManager =
           new RNGestureHandlerInteractionManager();
   private List<RNGestureHandlerRootHelper> mRoots = new ArrayList<>();
@@ -455,6 +454,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   public RNGestureHandlerModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    mRegistry = new RNGestureHandlerRegistry(reactContext);
   }
 
   @Override
