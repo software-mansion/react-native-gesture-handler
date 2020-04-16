@@ -157,15 +157,23 @@ public class DragGestureUtils {
         void unregister(BroadcastReceiver receiver) {
             if (mReceivers.contains(receiver)) {
                 mReceivers.remove(receiver);
-                mContext.unregisterReceiver(receiver);
+                safeUnregister(receiver);
             }
         }
 
         void unregisterAll() {
             for(BroadcastReceiver receiver : mReceivers) {
-                mContext.unregisterReceiver(receiver);
+                safeUnregister(receiver);
             }
             mReceivers.clear();
+        }
+
+        private void safeUnregister(BroadcastReceiver receiver) {
+          try {
+            mContext.unregisterReceiver(receiver);
+          } catch (Throwable throwable) {
+            throwable.printStackTrace();
+          }
         }
     }
 
