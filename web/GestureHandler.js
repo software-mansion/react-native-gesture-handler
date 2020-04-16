@@ -216,7 +216,11 @@ class GestureHandler {
     this.ref = ref;
 
     this.view = findNodeHandle(ref);
-    this.hammer = new Hammer.Manager(this.view);
+    this.hammer = new Hammer.Manager(this.view, {
+      cssProps: {
+        userSelect: 'auto',
+      },
+    });
 
     this.oldState = State.UNDETERMINED;
     this.previousState = State.UNDETERMINED;
