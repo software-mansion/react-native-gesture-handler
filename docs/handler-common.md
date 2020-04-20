@@ -44,6 +44,11 @@ Accepts a react ref object or an array of refs to other handler components (refs
 Accepts a react ref object or an array of refs to other handler components (refs should be created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html)). When set the handler will not [activate](state.md#active) as long as the handlers provided by their refs are in [began](state.md#began) state. Read more in the [cross handler interaction](interactions.md#awaiting-other-handlers) section.
 
 ---
+### `waitForGroup`
+
+Accepts a string. Handlers that have `waitForGroup` prop set to the same string can't be active simultaneously. This prop is intended to simplify prevention of simultaneous activation for handlers located inside `FlatList` item views.
+
+---
 ### `hitSlop`
 
 This parameter enables control over what part of the connected view area can be used to [begin](state.md#began) recognizing the gesture.
