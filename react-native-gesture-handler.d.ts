@@ -220,6 +220,7 @@ declare module 'react-native-gesture-handler' {
     id?: string;
     enabled?: boolean;
     waitFor?: React.Ref<any> | React.Ref<any>[];
+    waitForGroup?: string;
     simultaneousHandlers?: React.Ref<any> | React.Ref<any>[];
     shouldCancelWhenOutside?: boolean;
     hitSlop?:

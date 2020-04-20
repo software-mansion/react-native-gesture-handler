@@ -12,6 +12,7 @@ const GestureHandlerPropTypes = {
       PropTypes.oneOfType([PropTypes.string, PropTypes.object])
     ),
   ]),
+  waitForGroup: PropTypes.string,
   simultaneousHandlers: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object,

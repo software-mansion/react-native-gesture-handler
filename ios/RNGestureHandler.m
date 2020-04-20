@@ -65,6 +65,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     NSArray<NSNumber *> *_simultaneousHandlers;
     RNGHHitSlop _hitSlop;
     uint16_t _eventCoalescingKey;
+    NSString *_waitForGroup;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -88,6 +89,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
     _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
     _simultaneousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
+    _waitForGroup = [RCTConvert NSString:config[@"waitForGroup"]];
 
     id prop = config[@"enabled"];
     if (prop != nil) {
@@ -250,6 +252,9 @@ shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRec
 {
     RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
     if ([handler isKindOfClass:[RNNativeViewGestureHandler class]]) {
+        if (_waitForGroup != nil && [_waitForGroup isEqualToString:handler->_waitForGroup]) {
+            return YES;
+        }
         for (NSNumber *handlerTag in handler->_handlersToWaitFor) {
             if ([_tag isEqual:handlerTag]) {
                 return YES;
@@ -263,9 +268,12 @@ shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRec
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    if ([_handlersToWaitFor count]) {
+    if ([_handlersToWaitFor count] || _waitForGroup != nil) {
         RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
         if (handler != nil) {
+            if (_waitForGroup != nil && [_waitForGroup isEqualToString:handler->_waitForGroup]) {
+                return YES;
+            }
             for (NSNumber *handlerTag in _handlersToWaitFor) {
                 if ([handler.tag isEqual:handlerTag]) {
                     return YES;
@@ -309,12 +317,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    [self reset];
-
-    if ([_handlersToWaitFor count]) {
+    if ([_handlersToWaitFor count] || _waitForGroup != nil) {
         for (RNGestureHandler *handler in [allGestureHandlers allObjects]) {
             if (handler != nil
                 && (handler.state == RNGestureHandlerStateActive || handler->_recognizer.state == UIGestureRecognizerStateBegan)) {
+                if (_waitForGroup != nil && [_waitForGroup isEqualToString:handler->_waitForGroup]) {
+                    return NO;
+                }
                 for (NSNumber *handlerTag in _handlersToWaitFor) {
                     if ([handler.tag isEqual:handlerTag]) {
                         return NO;
@@ -324,6 +333,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
     }
 
+    [self reset];
     return YES;
 }
 

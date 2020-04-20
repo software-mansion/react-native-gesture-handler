@@ -509,7 +509,10 @@ public class GestureHandlerOrchestrator {
 
   private static boolean shouldHandlerWaitForOther(GestureHandler handler, GestureHandler other) {
     return handler != other && (handler.shouldWaitForHandlerFailure(other)
-            || other.shouldRequireToWaitForFailure(handler));
+            || other.shouldRequireToWaitForFailure(handler)
+            || (handler.getWaitForGroup() != null
+                && !other.mIsAwaiting
+                && handler.getWaitForGroup().equals(other.getWaitForGroup())));
   }
 
   private static boolean canRunSimultaneously(GestureHandler a, GestureHandler b) {

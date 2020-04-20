@@ -82,6 +82,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_PAN_AVG_TOUCHES = "avgTouches";
   private static final String KEY_NUMBER_OF_POINTERS = "numberOfPointers";
   private static final String KEY_DIRECTION= "direction";
+  private static final String KEY_WAIT_FOR_GROUP = "waitForGroup";
 
   private abstract static class HandlerFactory<T extends GestureHandler>
           implements RNGestureHandlerEventDataExtractor<T> {
@@ -101,6 +102,9 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       }
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config);
+      }
+      if (config.hasKey(KEY_WAIT_FOR_GROUP)) {
+        handler.setWaitForGroup(config.getString(KEY_WAIT_FOR_GROUP));
       }
     }
 

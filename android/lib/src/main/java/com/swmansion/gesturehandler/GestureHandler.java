@@ -62,6 +62,7 @@ public class GestureHandler<T extends GestureHandler> {
 
   private boolean mShouldCancelWhenOutside;
   private int mNumberOfPointers = 0;
+  private String mWaitForGroup;
 
   private GestureHandlerOrchestrator mOrchestrator;
   private OnTouchEventListener<T> mListener;
@@ -146,6 +147,14 @@ public class GestureHandler<T extends GestureHandler> {
   public T setInteractionController(GestureHandlerInteractionController controller) {
     mInteractionController = controller;
     return (T) this;
+  }
+
+  public void setWaitForGroup(String waitForGroup) {
+    mWaitForGroup = waitForGroup;
+  }
+
+  public String getWaitForGroup() {
+    return mWaitForGroup;
   }
 
   public void setTag(int tag) {

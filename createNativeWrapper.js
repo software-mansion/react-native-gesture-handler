@@ -14,6 +14,7 @@ const NATIVE_WRAPPER_PROPS_FILTER = [
   'minPointers',
   'enabled',
   'waitFor',
+  'waitForGroup',
   'simultaneousHandlers',
   'shouldCancelWhenOutside',
   'hitSlop',
