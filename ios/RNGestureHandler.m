@@ -58,6 +58,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
     return rect;
 }
 
+static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 @implementation RNGestureHandler {
     NSArray<NSNumber *> *_handlersToWaitFor;
@@ -72,6 +73,13 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
         _tag = tag;
         _lastState = RNGestureHandlerStateUndetermined;
         _hitSlop = RNGHHitSlopEmpty;
+
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            allGestureHandlers = [NSHashTable weakObjectsHashTable];
+        });
+
+        [allGestureHandlers addObject:self];
     }
     return self;
 }
@@ -166,7 +174,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
             // generated faster than they can be treated by JS thread
             static uint16_t nextEventCoalescingKey = 0;
             self->_eventCoalescingKey = nextEventCoalescingKey++;
-            
+
         } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
             [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                                                           handlerTag:_tag
@@ -302,6 +310,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     [self reset];
+
+    if ([_handlersToWaitFor count]) {
+        for (RNGestureHandler *handler in [allGestureHandlers allObjects]) {
+            if (handler != nil
+                && (handler.state == RNGestureHandlerStateActive || handler->_recognizer.state == UIGestureRecognizerStateBegan)) {
+                for (NSNumber *handlerTag in _handlersToWaitFor) {
+                    if ([handler.tag isEqual:handlerTag]) {
+                        return NO;
+                    }
+                }
+            }
+        }
+    }
+
     return YES;
 }
 
