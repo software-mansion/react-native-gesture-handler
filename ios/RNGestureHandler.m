@@ -309,8 +309,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    [self reset];
-
     if ([_handlersToWaitFor count]) {
         for (RNGestureHandler *handler in [allGestureHandlers allObjects]) {
             if (handler != nil
@@ -324,6 +322,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
     }
 
+    [self reset];
     return YES;
 }
 
