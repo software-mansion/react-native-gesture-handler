@@ -63,7 +63,7 @@ declare module 'react-native-gesture-handler' {
 
   enum DragModeName {
     move,
-    move_restore,
+    'move-restore',
     copy
   }
 
