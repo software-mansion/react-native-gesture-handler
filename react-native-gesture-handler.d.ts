@@ -404,12 +404,14 @@ declare module 'react-native-gesture-handler' {
      */
     data?: DragData<T>,
     /**
-     * This will be overridden to `true` when in multi window mode.
+     * The tag of the view to render as the drag shadow.
+     * Use `shadow` props instead.
+     * Using the wrapped view as the drag shadow is the default behavior.
      */
-    shadowEnabled?: boolean,
     shadowViewTag?: number,
     /**
      * A convience for providing a shadow instead of passing `shadowViewTag`.
+     * Using the wrapped view as the drag shadow is the default behavior.
      */
     shadow?: React.ReactElement | React.RefObject<any> | React.FunctionComponent | number,
     /**
