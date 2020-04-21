@@ -32,6 +32,7 @@ import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MODE_COPY;
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MODE_MOVE;
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MODE_MOVE_RESTORE;
+import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MODE_NONE;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DATA;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_DRAG_TARGET;
 import static com.swmansion.gesturehandler.DragGestureUtils.KEY_SOURCE_APP;
@@ -121,7 +122,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         return this;
     }
 
-    public DragGestureHandler<T, S> setEnableShadow(boolean enable) {
+    DragGestureHandler<T, S> setEnableShadow(boolean enable) {
         mShadowEnabled = enable;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             updateDragShadow();
@@ -142,6 +143,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     public DragGestureHandler<T, S> setDragMode(int mode) {
+        setEnableShadow(mode != DRAG_MODE_NONE);
         if (mIsDragging && mShadowEnabled) {
             if (mode == DRAG_MODE_MOVE || mode == DRAG_MODE_MOVE_RESTORE) {
                 setViewVisibility(false);
@@ -322,6 +324,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                 Log.i(getDebugTag(),
                         "[GESTURE HANDLER] Overriding configuration: drag shadow must be enabled in multi window mode");
                 mDidWarn = true;
+                mDragMode = DRAG_MODE_MOVE;
             }
             mLastShadowVisible = true;
         } else {
@@ -384,6 +387,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                 Log.i(getDebugTag(),
                         "[GESTURE HANDLER] Overriding configuration: drag shadow must be enabled in multi window mode");
                 mDidWarn = true;
+                mDragMode = DRAG_MODE_MOVE;
             }
         } else {
             shadowBuilder = mInvisibleShadow;

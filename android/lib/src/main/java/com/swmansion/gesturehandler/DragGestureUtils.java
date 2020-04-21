@@ -33,6 +33,7 @@ public class DragGestureUtils {
     public static final int DRAG_MODE_MOVE = 0;
     public static final int DRAG_MODE_MOVE_RESTORE = 1;
     public static final int DRAG_MODE_COPY = 2;
+    public static final int DRAG_MODE_NONE = 3;
 
     static int getFlags() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

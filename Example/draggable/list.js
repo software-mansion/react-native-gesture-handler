@@ -94,7 +94,7 @@ function DropZone({ item, index, shadowEnabled }) {
       types={__item % 2 === 0 ? [0, 1] : 1}
       data={{ index, item: __item }}
       shadowViewTag={shadowTag}
-      shadowEnabled={shadowEnabled}
+      dragMode={shadowEnabled ? 'move' : 'none'}
       shadowConfig={{
         offset: [-25, -25],
         margin: [50, 20]

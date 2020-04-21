@@ -290,7 +290,6 @@ const DragGestureHandlerBase = createHandler(
       PropTypes.number,
       PropTypes.arrayOf(PropTypes.number),
     ]),
-    shadowEnabled: PropTypes.bool,
     shadowViewTag: PropTypes.number,
     shadow: PropTypes.oneOfType([
       PropTypes.element,
@@ -317,7 +316,6 @@ const DragGestureHandlerBase = createHandler(
     ...panHandlerNativeProps,
     data: true,
     types: true,
-    shadowEnabled: true,
     shadowViewTag: true,
     shadowConfig: true,
     dragMode: true,

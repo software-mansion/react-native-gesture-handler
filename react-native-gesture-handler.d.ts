@@ -58,13 +58,15 @@ declare module 'react-native-gesture-handler' {
     MOVE,
     /** After drop occurs, restores visibility to the DragGestureHandler's view  */
     MOVE_RESTORE,
-    COPY
+    COPY,
+    NONE
   }
 
   enum DragModeName {
     move,
     'move-restore',
-    copy
+    copy,
+    none
   }
 
   /* STATE CHANGE EVENTS */
@@ -443,8 +445,9 @@ declare module 'react-native-gesture-handler' {
      * Otherwise, set to `move` or `move-restore` for a move effect. 
      * The `move-restore` mode restores the view's visibilty after a drop, to customize this behavior use `move` mode.
      * Notice: You are in charge of unmounting views in any case.
+     * Set to `none` or `DragMode.NONE` To handle the drag effect yourself as you would with `PanGestureHandler`. 
+     * IMPORTANT: `none` effect will be overridden to `move` when in multi window mode.
      * The default value is `move`.
-     * Works only when `shadowEnabled` is true.
      */
     dragMode?: DragMode | keyof typeof DragModeName,
     onGestureEvent?: (event: DragGestureHandlerGestureEvent) => void,

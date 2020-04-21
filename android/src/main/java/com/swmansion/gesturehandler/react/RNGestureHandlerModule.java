@@ -477,12 +477,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
     private static class DragGestureHandlerFactory extends DragDropGestureHandlerFactory<ReactDragGestureHandler> {
 
-      private static final String KEY_SHADOW_ENABLED = "shadowEnabled";
       private static final String KEY_SHADOW_VIEW_TAG = "shadowViewTag";
       private static final String KEY_DRAG_MODE = "dragMode";
       private static final String DRAG_MODE_MOVE = "move";
       private static final String DRAG_MODE_MOVE_RESTORE = "move-restore";
       private static final String DRAG_MODE_COPY = "copy";
+      private static final String DRAG_MODE_NONE = "none";
       private static final String KEY_DRAG_SHADOW_CONFIG = "shadowConfig";
       private static final String KEY_DRAG_SHADOW_CONFIG_MARGIN = "margin";
       private static final String KEY_DRAG_SHADOW_CONFIG_OFFSET = "offset";
@@ -508,9 +508,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       public void configure(final ReactDragGestureHandler handler, ReadableMap config) {
         super.configure(handler, config);
         ReadableType type;
-        if(config.hasKey(KEY_SHADOW_ENABLED)) {
-          handler.setEnableShadow(config.getBoolean(KEY_SHADOW_ENABLED));
-        }
         if(config.hasKey(KEY_SHADOW_VIEW_TAG)) {
           type = config.getType(KEY_SHADOW_VIEW_TAG);
           if (type == ReadableType.Null) {
@@ -544,10 +541,13 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
               case DRAG_MODE_COPY:
                 mode = DragGestureUtils.DRAG_MODE_COPY;
                 break;
-                default:
-                  throw new JSApplicationIllegalArgumentException(
-                          String.format("[GESTURE HANDLER] received bad %s prop of value %s",
-                                  KEY_DRAG_MODE, config.getString(KEY_DRAG_MODE)));
+              case DRAG_MODE_NONE:
+                mode = DragGestureUtils.DRAG_MODE_NONE;
+                break;
+              default:
+                throw new JSApplicationIllegalArgumentException(
+                  String.format("[GESTURE HANDLER] received bad %s prop of value %s",
+                    KEY_DRAG_MODE, config.getString(KEY_DRAG_MODE)));
             }
             handler.setDragMode(mode);
           }
@@ -909,7 +909,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     ), "DragMode", MapBuilder.of(
             "MOVE", DragGestureUtils.DRAG_MODE_MOVE,
             "MOVE_RESTORE", DragGestureUtils.DRAG_MODE_MOVE_RESTORE,
-            "COPY", DragGestureUtils.DRAG_MODE_COPY
+            "COPY", DragGestureUtils.DRAG_MODE_COPY,
+            "NONE", DragGestureUtils.DRAG_MODE_NONE
     ));
   }
 

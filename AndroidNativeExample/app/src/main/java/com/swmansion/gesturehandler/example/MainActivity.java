@@ -380,7 +380,7 @@ public class MainActivity extends Activity {
                         .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.DKGRAY)
                         .setColorForAction(DragEvent.ACTION_DRAG_ENDED, Color.LTGRAY))
                 .setTypes(dragTypes)
-                .setDragMode(DragGestureUtils.DRAG_MODE_COPY);
+                .setDragMode(DragGestureUtils.DRAG_MODE_NONE);
 
         final DragGestureHandler.MultiDragShadowBuilder.Config config = new DragGestureHandler.MultiDragShadowBuilder.Config();
         buttonDragHandler.setShadowConfig(config);
@@ -415,7 +415,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 enableShadow = !enableShadow;
-                dragHandler.setEnableShadow(enableShadow);
+                dragHandler.setDragMode(enableShadow ? DragGestureUtils.DRAG_MODE_MOVE_RESTORE : DragGestureUtils.DRAG_MODE_NONE);
                 int color = enableShadow ? Color.RED : Color.YELLOW;
                 dragEventListener.setColorForState(STATE_END, color);
                 block.setBackgroundColor(color);

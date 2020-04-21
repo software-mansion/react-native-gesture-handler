@@ -247,7 +247,6 @@ export default function DragExample(props) {
             backgroundColor: processColor('gold')
           }
         }}
-        shadowEnabled={draggable1.shadowEnabled}
         shadow={() => (
           <Animated.View
             collapsable={false}
@@ -261,7 +260,7 @@ export default function DragExample(props) {
               <Image source={require('../scaleAndRotate/swmansion.png')} />}
           </Animated.View>
         )}
-        dragMode='copy'
+        dragMode={draggable1.shadowEnabled ? 'copy' : 'none'}
         simultaneousHandlers={[dropZone3.dragRef, dropZone2.dragRef]}
       //simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
       >
@@ -353,8 +352,7 @@ export default function DragExample(props) {
         simultaneousHandlers={[panRef, pinchRef, rotationRef]}
         onGestureEvent={draggable2.onGestureEvent}
         onHandlerStateChange={draggable2.onHandlerStateChange}
-        shadowEnabled={draggable2.shadowEnabled}
-      //dragMode='copy'
+        dragMode={draggable2.shadowEnabled ? 'move' : 'none'}
       >
         <Animated.View style={[{ flex: 1, height: 500 }, draggable2.extractStyle()]}>
           <PinchableBox
