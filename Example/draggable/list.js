@@ -39,7 +39,7 @@ function DropZone({ item, index, shadowEnabled }) {
   }, []);
   const translateX = useMemo(() => new Animated.Value(0), []);
   const translateY = useMemo(() => new Animated.Value(0), []);
-  const onGestureEvent = useMemo(() => Animated.event(
+  const onDragGestureEvent = useMemo(() => Animated.event(
     [
       {
         nativeEvent: {
@@ -51,10 +51,17 @@ function DropZone({ item, index, shadowEnabled }) {
     { useNativeDriver: USE_NATIVE_DRIVER }
   ), []);
 
-  const onHandlerStateChange = useCallback((e) => {
-    translateX.setValue(0);
-    translateY.setValue(0);
-    if (e.nativeEvent.state === State.END) {
+  const onDragStateChange = useCallback((e) => {
+    if (e.nativeEvent.state === State.BEGAN) {
+      //wrapper.current.setNativeProps({ zIndex: 500000 });
+    } else if (e.nativeEvent.oldState === State.ACTIVE) {
+      const config = { toValue: 0, useNativeDriver: true };
+      Animated.parallel([
+        Animated.spring(translateX, config),
+        Animated.spring(translateY, config),
+      ]).start(() => {
+        //wrapper.current.setNativeProps({ zIndex: 1 })
+      })
     }
   }, [context]);
 
@@ -67,6 +74,7 @@ function DropZone({ item, index, shadowEnabled }) {
 
   const ref = useRef();
   const longPressRef = useRef();
+  const wrapper = useRef();
 
   const toggleSelection = useCallback((e) => {
     const { state } = e.nativeEvent;
@@ -89,8 +97,8 @@ function DropZone({ item, index, shadowEnabled }) {
     <DragGestureHandler
       simultaneousHandlers={longPressRef}
       ref={ref}
-      //onGestureEvent={e => console.log(e.nativeEvent)}
-      //onHandlerStateChange={onHandlerStateChange}
+      onGestureEvent={onDragGestureEvent}
+      onHandlerStateChange={onDragStateChange}
       types={__item % 2 === 0 ? [0, 1] : 1}
       data={{ index, item: __item }}
       shadowViewTag={shadowTag}
@@ -100,7 +108,7 @@ function DropZone({ item, index, shadowEnabled }) {
         margin: [50, 20]
       }}
     >
-      <Animated.View collapsable={false}>
+      <Animated.View collapsable={false} ref={wrapper}>
         <LongPressGestureHandler
           onHandlerStateChange={toggleSelection}
           ref={longPressRef}
@@ -117,7 +125,6 @@ function DropZone({ item, index, shadowEnabled }) {
                     { translateX: translateX },
                     { translateY: translateY },
                   ],
-                  zIndex: 500000
                 },
                 __isSelected && { borderColor: 'magenta', borderWidth: 5 },
                 isInside && { backgroundColor: __item % 2 === 0 ? 'yellow' : 'red' } || dropState && { backgroundColor: 'blue' },
@@ -204,7 +211,9 @@ export default function DragExample(props) {
         return this.findItemIndex(item) !== -1;
       }
     }
-  }, [data])
+  }, [data]);
+
+  const numColumns = 5;
 
   return (
     <Context.Provider value={context}>
@@ -216,13 +225,13 @@ export default function DragExample(props) {
           <Text>Odd numbers can be swapped only with odd numbers.</Text>
           <Text>Happy swapping</Text>
         </>}
-        numColumns={5}
+        numColumns={numColumns}
         style={styles.scrollView}
         ref={scrollRef}
         simultaneousHandlers={dragRef}
         //onHandlerStateChange={e => console.log('scroll', e.nativeEvent)}
         data={data}
-        renderItem={(data) => <DropZone {...data} shadowEnabled={true} />}
+        renderItem={(data) => <DropZone {...data} shadowEnabled={data.index % numColumns !== 0} />}
         keyExtractor={(item, index) => `DropZone${item.item}`}
       />
     </Context.Provider>
@@ -239,7 +248,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'plum',
     margin: 10,
-    zIndex: 200,
     alignItems: 'center',
     justifyContent: 'center'
   },
