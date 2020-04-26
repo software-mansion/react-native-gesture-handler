@@ -112,7 +112,10 @@ export class RectButton extends React.Component {
     const resolvedStyle = StyleSheet.flatten(style ?? {});
 
     return (
-      <BaseButton {...rest} onActiveStateChange={this._onActiveStateChange}>
+      <BaseButton
+        {...rest}
+        style={resolvedStyle}
+        onActiveStateChange={this._onActiveStateChange}>
         <Animated.View
           style={[
             btnStyles.underlay,
