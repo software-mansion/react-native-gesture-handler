@@ -220,7 +220,7 @@ declare module 'react-native-gesture-handler' {
     id?: string;
     enabled?: boolean;
     waitFor?: React.Ref<any> | React.Ref<any>[];
-    waitForGroup?: string;
+    waitForGroup?: string | React.Ref<WaitForGroup>;
     simultaneousHandlers?: React.Ref<any> | React.Ref<any>[];
     shouldCancelWhenOutside?: boolean;
     hitSlop?:
@@ -466,6 +466,10 @@ declare module 'react-native-gesture-handler' {
     Component: React.ComponentType<P>,
     config: NativeViewGestureHandlerProperties
   ): React.ComponentType<P>;
+
+  export class WaitForGroup extends React.Component<{}> {}
+
+  export function useWaitForGroup(): string
 }
 
 declare module 'react-native-gesture-handler/Swipeable' {

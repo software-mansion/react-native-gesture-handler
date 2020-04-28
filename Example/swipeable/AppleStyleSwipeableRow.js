@@ -45,7 +45,11 @@ export default class AppleStyleSwipeableRow extends Component {
     );
   };
   renderRightActions = progress => (
-    <View style={{ width: 192, flexDirection: I18nManager.isRTL? 'row-reverse' : 'row' }}>
+    <View
+      style={{
+        width: 192,
+        flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+      }}>
       {this.renderRightAction('More', '#C8C7CD', 192, progress)}
       {this.renderRightAction('Flag', '#ffab00', 128, progress)}
       {this.renderRightAction('More', '#dd2c00', 64, progress)}
@@ -58,7 +62,7 @@ export default class AppleStyleSwipeableRow extends Component {
     this._swipeableRow.close();
   };
   render() {
-    const { children } = this.props;
+    const { children, waitForGroup } = this.props;
     return (
       <Swipeable
         ref={this.updateRef}
@@ -66,7 +70,8 @@ export default class AppleStyleSwipeableRow extends Component {
         leftThreshold={30}
         rightThreshold={40}
         renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}>
+        renderRightActions={this.renderRightActions}
+        waitForGroup={waitForGroup}>
         {children}
       </Swipeable>
     );

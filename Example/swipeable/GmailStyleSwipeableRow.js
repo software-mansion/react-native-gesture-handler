@@ -50,7 +50,8 @@ export default class GmailStyleSwipeableRow extends Component {
     this._swipeableRow.close();
   };
   render() {
-    const { children } = this.props;
+    const { children, waitForGroup } = this.props;
+
     return (
       <Swipeable
         ref={this.updateRef}
@@ -58,7 +59,8 @@ export default class GmailStyleSwipeableRow extends Component {
         leftThreshold={80}
         rightThreshold={40}
         renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}>
+        renderRightActions={this.renderRightActions}
+        waitForGroup={waitForGroup}>
         {children}
       </Swipeable>
     );
@@ -71,18 +73,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#388e3c',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse'
+    flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
   },
   actionIcon: {
     width: 30,
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
   rightAction: {
     alignItems: 'center',
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     backgroundColor: '#dd2c00',
     flex: 1,
-    justifyContent: 'flex-end'
-  }
+    justifyContent: 'flex-end',
+  },
 });
-

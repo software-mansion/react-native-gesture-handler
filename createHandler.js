@@ -77,6 +77,9 @@ function filterConfig(props, validProps, defaults = {}) {
       let value = props[key];
       if (key === 'simultaneousHandlers' || key === 'waitFor') {
         value = transformIntoHandlerTags(props[key]);
+      } else if (key === 'waitForGroup') {
+        const group = props[key];
+        value = typeof group === 'string' ? group : group?.current?._groupTag;
       } else if (key === 'hitSlop') {
         if (typeof value !== 'object') {
           value = { top: value, left: value, bottom: value, right: value };
@@ -114,7 +117,11 @@ function hasUnresolvedRefs(props) {
     }
     return refs.some(r => r && r.current === null);
   };
-  return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
+  return (
+    extract(props['simultaneousHandlers']) ||
+    extract(props['waitFor']) ||
+    extract(props['waitForGroup'])
+  );
 }
 
 const stateToPropMappings = {

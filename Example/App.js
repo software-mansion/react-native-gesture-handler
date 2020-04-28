@@ -13,6 +13,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import SwipeableTable from './swipeable';
+import SwipeableWaitForGroup from './swipeableAndWaitForGroup';
 import Rows from './rows';
 import Multitap from './multitap';
 import Draggable from './draggable';
@@ -55,6 +56,10 @@ const SCREENS = {
   SwipeableTable: {
     screen: SwipeableTable,
     title: 'Gesture handler based SwipeableRow',
+  },
+  SwipeableWaitForGroup: {
+    screen: SwipeableWaitForGroup,
+    title: 'Only one active Swipeable at a time',
   },
   PanAndScroll: {
     screen: PanAndScroll,
