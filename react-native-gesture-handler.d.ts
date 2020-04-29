@@ -487,14 +487,14 @@ declare module 'react-native-gesture-handler/Swipeable' {
     overshootLeft?: boolean;
     overshootRight?: boolean;
     overshootFriction?: number,
-    onSwipeableLeftOpen?: (fromValue: string, velocityX: string) => void;
-    onSwipeableRightOpen?: (fromValue: string, velocityX: string) => void;
-    onSwipeableOpen?: (fromValue: string, velocityX: string) => void;
-    onSwipeableClose?: (fromValue: string, velocityX: string) => void;
-    onSwipeableLeftWillOpen?: (fromValue: string, velocityX: string) => void;
-    onSwipeableRightWillOpen?: (fromValue: string, velocityX: string) => void;
-    onSwipeableWillOpen?: (fromValue: string, velocityX: string) => void;
-    onSwipeableWillClose?: (fromValue: string, velocityX: string) => void;
+    onSwipeableLeftOpen?: ({fromValue: string, velocityX: string}) => void;
+    onSwipeableRightOpen?: ({fromValue: string, velocityX: string}) => void;
+    onSwipeableOpen?: ({fromValue: string, velocityX: string}) => void;
+    onSwipeableClose?: ({fromValue: string, velocityX: string}) => void;
+    onSwipeableLeftWillOpen?: ({fromValue: string, velocityX: string}) => void;
+    onSwipeableRightWillOpen?: ({fromValue: string, velocityX: string}) => void;
+    onSwipeableWillOpen?: ({fromValue: string, velocityX: string}) => void;
+    onSwipeableWillClose?: ({fromValue: string, velocityX: string}) => void;
     onStartDrag?: () => void
     /**
      *
