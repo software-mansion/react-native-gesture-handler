@@ -20,14 +20,14 @@ export type PropType = {
   overshootRight?: boolean,
   overshootFriction: number,
   onStartDrag?: () => void,
-  onSwipeableLeftOpen?: (fromValue, velocityX) => void,
-  onSwipeableRightOpen?: (fromValue, velocityX) => void,
-  onSwipeableOpen?: (fromValue, velocityX) => void,
-  onSwipeableClose?: (fromValue, velocityX) => void,
-  onSwipeableLeftWillOpen?: (fromValue, velocityX) => void,
-  onSwipeableRightWillOpen?: (fromValue, velocityX) => void,
-  onSwipeableWillOpen?: (fromValue, velocityX) => void,
-  onSwipeableWillClose?: (fromValue, velocityX) => void,
+  onSwipeableLeftOpen?: (fromValue: string, velocityX: string) => void,
+  onSwipeableRightOpen?: (fromValue: string, velocityX: string) => void,
+  onSwipeableOpen?: (fromValue: string, velocityX: string) => void,
+  onSwipeableClose?: (fromValue: string, velocityX: string) => void,
+  onSwipeableLeftWillOpen?: (fromValue: string, velocityX: string) => void,
+  onSwipeableRightWillOpen?: (fromValue: string, velocityX: string) => void,
+  onSwipeableWillOpen?: (fromValue: string, velocityX: string) => void,
+  onSwipeableWillClose?: (fromValue: string, velocityX: string) => void,
   renderLeftActions?: (
     progressAnimatedValue: any,
     dragAnimatedValue: any
@@ -222,28 +222,28 @@ export default class Swipeable extends Component<PropType, StateType> {
     }).start(({ finished }) => {
       if (finished) {
         if (toValue > 0 && this.props.onSwipeableLeftOpen) {
-          this.props.onSwipeableLeftOpen(fromValue, velocityX);
+          this.props.onSwipeableLeftOpen({fromValue, velocityX});
         } else if (toValue < 0 && this.props.onSwipeableRightOpen) {
-          this.props.onSwipeableRightOpen(fromValue, velocityX);
+          this.props.onSwipeableRightOpen({fromValue, velocityX});
         }
 
         if (toValue === 0) {
-          this.props.onSwipeableClose && this.props.onSwipeableClose(fromValue, velocityX);
+          this.props.onSwipeableClose && this.props.onSwipeableClose({fromValue, velocityX});
         } else {
-          this.props.onSwipeableOpen && this.props.onSwipeableOpen(fromValue, velocityX);
+          this.props.onSwipeableOpen && this.props.onSwipeableOpen({fromValue, velocityX});
         }
       }
     });
     if (toValue > 0 && this.props.onSwipeableLeftWillOpen) {
-      this.props.onSwipeableLeftWillOpen(fromValue, velocityX);
+      this.props.onSwipeableLeftWillOpen({fromValue, velocityX});
     } else if (toValue < 0 && this.props.onSwipeableRightWillOpen) {
-      this.props.onSwipeableRightWillOpen(fromValue, velocityX);
+      this.props.onSwipeableRightWillOpen({fromValue, velocityX});
     }
 
     if (toValue === 0) {
-      this.props.onSwipeableWillClose && this.props.onSwipeableWillClose(fromValue, velocityX);
+      this.props.onSwipeableWillClose && this.props.onSwipeableWillClose({fromValue, velocityX});
     } else {
-      this.props.onSwipeableWillOpen && this.props.onSwipeableWillOpen(fromValue, velocityX);
+      this.props.onSwipeableWillOpen && this.props.onSwipeableWillOpen({fromValue, velocityX});
     }
   };
 
