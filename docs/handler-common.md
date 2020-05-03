@@ -46,7 +46,7 @@ Accepts a react ref object or an array of refs to other handler components (refs
 ---
 ### `waitForGroup`
 
-Accepts a string or a react ref to `WaitForGroup` element. Handlers that have `waitForGroup` prop set to the same object can't be active simultaneously. This prop is intended to simplify prevention of simultaneous activation for handlers located inside `FlatList` item views. Value for this prop can also be obtained from `useWaitForGroup` hook - [usage example](../Example/swipeableAndWaitForGroup/index.js).
+Accepts a string or a react ref to `WaitForGroup` element. Handlers that have `waitForGroup` prop set to the same object can't be active simultaneously. This prop is intended to simplify prevention of simultaneous activation for handlers located inside `FlatList` item views. Value for this prop can also be obtained from `useWaitForGroup` hook - [usage example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/swipeableAndWaitForGroup/index.js).
 
 ---
 ### `hitSlop`
