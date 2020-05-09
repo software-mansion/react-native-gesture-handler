@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
   }
 });
 
-function DragGestureHandlerWrapper(props, ref) {
+const DragGestureHandlerWrapper = React.forwardRef((props, ref) => {
   const dragHandler = useRef();
   const shadowHandler = useRef();
   useImperativeHandle(ref, () => dragHandler.current, [dragHandler]);
@@ -385,8 +385,8 @@ function DragGestureHandlerWrapper(props, ref) {
       <DragGestureHandlerBase ref={dragHandler} {...props} />
     </>
   );
-}
-export const DragGestureHandler = React.forwardRef(DragGestureHandlerWrapper);
+});
+export const DragGestureHandler = React.memo(DragGestureHandlerWrapper);
 DragGestureHandler.propTypes = DragGestureHandlerBase.propTypes;
 DragGestureHandler.displayName = 'DragGestureHandler';
 
