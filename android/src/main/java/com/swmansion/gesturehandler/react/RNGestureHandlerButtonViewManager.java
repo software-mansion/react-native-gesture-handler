@@ -59,7 +59,7 @@ public class RNGestureHandlerButtonViewManager extends
     }
 
     public void setRippleRadius(Integer radius) {
-			mRippleRadius = radius;
+      mRippleRadius = radius;
       mNeedBackgroundUpdate = true;
     }
 
