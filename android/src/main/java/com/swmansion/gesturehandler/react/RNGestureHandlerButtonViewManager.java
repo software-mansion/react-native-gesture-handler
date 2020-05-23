@@ -36,6 +36,8 @@ public class RNGestureHandlerButtonViewManager extends
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
     boolean mNeedBackgroundUpdate = false;
+    public static final String SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground";
+    public static final String SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless";
 
 
     public ButtonViewGroup(Context context) {
@@ -154,8 +156,8 @@ public class RNGestureHandlerButtonViewManager extends
 
     private Drawable createSelectableDrawable() {
       final int version = Build.VERSION.SDK_INT;
-      String identifier = mUseBorderless && version >= 21 ? "selectableItemBackgroundBorderless"
-              : "selectableItemBackground";
+      String identifier = mUseBorderless && version >= 21 ? SELECTABLE_ITEM_BACKGROUND_BORDERLESS
+              : SELECTABLE_ITEM_BACKGROUND;
       int attrID = getAttrId(getContext(), identifier);
       getContext().getTheme().resolveAttribute(attrID, sResolveOutValue, true);
       if (version >= 21) {
@@ -168,9 +170,9 @@ public class RNGestureHandlerButtonViewManager extends
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static int getAttrId(Context context, String attr) {
       SoftAssertions.assertNotNull(attr);
-      if ("selectableItemBackground".equals(attr)) {
+      if (SELECTABLE_ITEM_BACKGROUND.equals(attr)) {
         return android.R.attr.selectableItemBackground;
-      } else if ("selectableItemBackgroundBorderless".equals(attr)) {
+      } else if (SELECTABLE_ITEM_BACKGROUND_BORDERLESS.equals(attr)) {
         return android.R.attr.selectableItemBackgroundBorderless;
       } else {
         return context.getResources().getIdentifier(attr, "attr", "android");
