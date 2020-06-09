@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="150" src="https://software-mansion.github.io/react-native-gesture-handler/img/ghlogo.svg" />
+  <img height="150" src="https://docs.swmansion.com/react-native-gesture-handler/img/ghlogo.svg" />
   <h1 align="center">React Native Gesture Handler</h1>
   <h3 align="center">Declarative API exposing platform native touch and gesture system to React Native.</h3>
 </p>
@@ -11,11 +11,11 @@ It makes touch interactions and gesture tracking not only smooth, but also depen
 
 ## Installation
 
-Check [getting started](https://software-mansion.github.io/react-native-gesture-handler/docs/getting-started.html) section of our docs for the detailed installation instructions.
+Check [getting started](https://docs.swmansion.com/react-native-gesture-handler/docs/getting-started.html) section of our docs for the detailed installation instructions.
 
 ## Documentation
 
-Check out our dedicated documentation page for info about this library, API reference and more: [https://software-mansion.github.io/react-native-gesture-handler](https://software-mansion.github.io/react-native-gesture-handler)
+Check out our dedicated documentation page for info about this library, API reference and more: [https://docs.swmansion.com/react-native-gesture-handler/](https://docs.swmansion.com/react-native-gesture-handler)
 
 ## Examples
 
@@ -50,4 +50,4 @@ Gesture handler library is licensed under [The MIT License](LICENSE).
 This project is supported by amazing people from [Expo.io](https://expo.io) and [Software Mansion](https://swmansion.com)
 
 [![expo](https://avatars2.githubusercontent.com/u/12504344?v=3&s=100 "Expo.io")](https://expo.io)
-[![swm](https://avatars0.githubusercontent.com/u/56880679?v=3&s=100 "Software Mansion")](https://swmansion.com)
+[![swm](https://logo.swmansion.com/logo?color=white&variant=desktop&width=150&tag=react-native-gesture-handler-github "Software Mansion")](https://swmansion.com)
