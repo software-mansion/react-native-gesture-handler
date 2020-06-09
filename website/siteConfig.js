@@ -43,6 +43,7 @@ const siteConfig = {
     apiKey: 'fc5e7cc8717893ac4fab5c1541116e02',
     indexName: 'react_native_gesture_handler',
   },
+  gaTrackingId: 'UA-41044622-6',
 
   // Add custom scripts here that would be placed in <script> tags
   scripts: ['https://buttons.github.io/buttons.js'],
