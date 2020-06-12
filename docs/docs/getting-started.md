@@ -158,20 +158,20 @@ You can check out [this example project](https://github.com/henrikra/nativeNavig
 Remember that you need to wrap each screen that you use in your app with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
 
 ### Usage with modals on Android
+
 On Android RNGH does not work by default because modals are not located under React Native Root view in native hierarchy.
 In order to make it workable, components need to be wrapped with `gestureHandlerRootHOC` (it's no-op on iOS and web).
 
-E.g. 
+E.g.
+
 ```js
-const ExampleWithHoc = gestureHandlerRootHOC(
-  function GestureExample() {
-    return (
-      <View>
-        <DraggableBox />
-      </View>
-    );
-  }
-);
+const ExampleWithHoc = gestureHandlerRootHOC(function GestureExample() {
+  return (
+    <View>
+      <DraggableBox />
+    </View>
+  );
+});
 
 export default function Example() {
   return (
@@ -180,7 +180,7 @@ export default function Example() {
     </Modal>
   );
 }
-``` 
+```
 
 ### For library authors
 

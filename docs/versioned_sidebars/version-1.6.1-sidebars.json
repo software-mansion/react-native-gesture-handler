@@ -1,0 +1,112 @@
+{
+  "version-1.6.1/docs": [
+    {
+      "type": "category",
+      "label": "Basics",
+      "items": [
+        {
+          "type": "doc",
+          "id": "version-1.6.1/getting-started"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/about-handlers"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/state"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/interactions"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/example"
+        }
+      ]
+    },
+    {
+      "type": "category",
+      "label": "Handlers",
+      "items": [
+        {
+          "type": "doc",
+          "id": "version-1.6.1/handler-common"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/handler-pan"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/handler-tap"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/handler-longpress"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/handler-rotation"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/handler-fling"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/handler-pinch"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/handler-force"
+        }
+      ]
+    },
+    {
+      "type": "category",
+      "label": "Components",
+      "items": [
+        {
+          "type": "doc",
+          "id": "version-1.6.1/component-buttons"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/component-swipeable"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/component-touchables"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/component-drawer-layout"
+        }
+      ]
+    },
+    {
+      "type": "category",
+      "label": "Other",
+      "items": [
+        {
+          "type": "doc",
+          "id": "version-1.6.1/contributing"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/troubleshooting"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/resources"
+        },
+        {
+          "type": "doc",
+          "id": "version-1.6.1/credits"
+        }
+      ]
+    }
+  ]
+}
