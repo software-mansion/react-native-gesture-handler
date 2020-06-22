@@ -104,24 +104,32 @@ class PressGestureHandler extends DiscreteGestureHandler {
 
   onRawEvent(ev) {
     super.onRawEvent(ev);
-    if (ev.isFinal && this.isGestureRunning) {
-      let timeout;
-      if (this.visualFeedbackTimer) {
-        // Aesthetic timing for a quick tap.
-        // We haven't activated the tap right away to emulate iOS `delaysContentTouches`
-        // Now we must send the initial activation event and wait a set amount of time before firing the end event.
-        timeout = CONTENT_TOUCHES_QUICK_TAP_END_DELAY;
-        this.sendGestureStartedEvent(this.initialEvent);
-        this.initialEvent = null;
-      }
-      fireAfterInterval(() => {
+    if (this.isGestureRunning) {
+      if (ev.isFinal) {
+        let timeout;
+        if (this.visualFeedbackTimer) {
+          // Aesthetic timing for a quick tap.
+          // We haven't activated the tap right away to emulate iOS `delaysContentTouches`
+          // Now we must send the initial activation event and wait a set amount of time before firing the end event.
+          timeout = CONTENT_TOUCHES_QUICK_TAP_END_DELAY;
+          this.sendGestureStartedEvent(this.initialEvent);
+          this.initialEvent = null;
+        }
+        fireAfterInterval(() => {
+          this.sendEvent({
+            ...ev,
+            eventType: Hammer.INPUT_END,
+            isFinal: true,
+          });
+          this.onGestureEnded();
+        }, timeout);
+      } else {
         this.sendEvent({
           ...ev,
-          eventType: Hammer.INPUT_END,
-          isFinal: true,
+          eventType: Hammer.INPUT_MOVE,
+          isFinal: false,
         });
-        this.onGestureEnded();
-      }, timeout);
+      }
     }
   }
 
