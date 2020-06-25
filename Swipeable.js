@@ -19,6 +19,8 @@ export type PropType = {
   overshootLeft?: boolean,
   overshootRight?: boolean,
   overshootFriction: number,
+  onSwipeStart?: Function,
+  onSwipeEnd?: Function,
   onSwipeableLeftOpen?: Function,
   onSwipeableRightOpen?: Function,
   onSwipeableOpen?: Function,
@@ -160,7 +162,11 @@ export default class Swipeable extends Component<PropType, StateType> {
   };
 
   _onHandlerStateChange = ({ nativeEvent }) => {
+    if (nativeEvent.state === State.ACTIVE) {
+      this.props.onSwipeStart && this.props.onSwipeStart()
+    }
     if (nativeEvent.oldState === State.ACTIVE) {
+      this.props.onSwipeEnd && this.props.onSwipeEnd()
       this._handleRelease(nativeEvent);
     }
   };
