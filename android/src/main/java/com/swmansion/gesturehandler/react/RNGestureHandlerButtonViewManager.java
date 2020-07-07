@@ -250,8 +250,8 @@ public class RNGestureHandlerButtonViewManager extends
   }
 
   @ReactProp(name = "rippleRadius")
-  public void setRippleRadius(ButtonViewGroup view, Integer rippleColor) {
-    view.setRippleRadius(rippleColor);
+  public void setRippleRadius(ButtonViewGroup view, Integer rippleRadius) {
+    view.setRippleRadius(rippleRadius);
   }
 
   @Override
