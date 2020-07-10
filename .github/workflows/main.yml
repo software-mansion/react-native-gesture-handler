@@ -23,6 +23,6 @@ jobs:
       - name: Publish generated content to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
-          FOLDER: docs/build/react-native-gesture-handler
+          FOLDER: website/build/react-native-gesture-handler
           BRANCH: gh-pages
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
