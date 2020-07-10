@@ -126,7 +126,7 @@ const Features = props => (
       },
       {
         content:
-          'Gesture Handler library ships with a set of components that aims to provide best possible interations such as SwipeableRow or Drawer. More components to come!',
+          'Gesture Handler library ships with a set of components that aims to provide the best possible interactions such as SwipeableRow or Drawer. More components to come!',
         title: 'Use cross platform components built with Gesture Handler',
       },
       {
