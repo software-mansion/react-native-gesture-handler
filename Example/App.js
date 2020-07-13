@@ -133,7 +133,7 @@ class MainScreenItem extends React.Component {
     const { title, isDisabled } = this.props.item;
     return (
       <RectButton
-        pointerEvents={isDisabled ? 'none' : 'auto'}
+        {...(isDisabled && { pointerEvents: 'none' })}
         style={[styles.button, isDisabled && { opacity: 0.5 }]}
         onPress={this._onPress}>
         <Text style={styles.buttonText}>{title}</Text>
