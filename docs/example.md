@@ -61,4 +61,3 @@ react-native run-ios
 ```
 
 You will need to have an Android or iOS device or emulator connected and `react-native-cli` package installed globally.
-

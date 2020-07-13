@@ -10,7 +10,8 @@ This component allows for implementing swipeable rows or similar interaction. It
 
 ### Usage:
 
-Similarly to the `DrawerLayout`, `Swipeable` component isn't exported by default from the `react-native-gesture-handler` package. To use it, import it in the following way:
+Similarly to the `DrawerLayout`, `Swipeable` component isn't exported by default from the `react-native-gesture-handler` package.
+To use it, import it in the following way:
 ```js
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 ```
@@ -19,7 +20,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 ---
 ### `friction`
- a number that specifies how much the visual interaction will be delayed compared to the gesture distance. e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
+a number that specifies how much the visual interaction will be delayed compared to the gesture distance. e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
 
 ---
 ### `leftThreshold`
@@ -78,7 +79,7 @@ method that is called when action panel starts animating on close.
 method that is expected to return an action panel that is going to be revealed from the left side when user swipes right.
 This map describes the values to use as inputRange for extra interpolation:
 AnimatedValue: [startValue, endValue]
-        
+
 progressAnimatedValue: [0, 1]
 dragAnimatedValue: [0, +]
 
@@ -89,7 +90,7 @@ To support `rtl` flexbox layouts use `flexDirection` styling.
 method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
 This map describes the values to use as inputRange for extra interpolation:
 AnimatedValue: [startValue, endValue]
-        
+
 progressAnimatedValue: [0, 1]
 dragAnimatedValue: [0, -]
 
@@ -104,6 +105,7 @@ style object for the container (Animated.View), for example to override `overflo
 style object for the children container (Animated.View), for example to apply `flex: 1`.
 
 ## Methods
+
 Using reference to `Swipeable` it's possible to trigger some actions on it
 
 ---
@@ -117,7 +119,6 @@ method that opens component on left side.
 ---
 ### `openRight`
 method that opens component on right side.
-
 
 ### Example:
 

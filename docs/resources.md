@@ -11,7 +11,7 @@ title: Learning Resources
 
 ## Talks and workshops
 
-[Declarative future of gestures and animations in React Native](https://www.youtube.com/watch?v=kdq4z2708VM) by by [Krzysztof Magiera](https://twitter.com/kzzzf) - talk that explains motivation behind creating gesture handler library. It also presents [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) and how and when it can be used with gesture handler.
+[Declarative future of gestures and animations in React Native](https://www.youtube.com/watch?v=kdq4z2708VM) by [Krzysztof Magiera](https://twitter.com/kzzzf) - talk that explains motivation behind creating gesture handler library. It also presents [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) and how and when it can be used with gesture handler.
 
 [React Native workshop with Expo team @ReactEurope 2018](https://youtu.be/JSIoE_ReeDk?t=41m49s) by [Brent Vetne](https://twitter.com/notbrent) – great workshop explaining gesture handler in details and presenting a few exercises that will help get you started.
 

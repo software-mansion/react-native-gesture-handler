@@ -8,7 +8,8 @@ This is a cross-platform replacement for React Native's [DrawerLayoutAndroid](ht
 
 ## Usage:
 
-`DrawerLayout` component isn't exported by default from the `react-native-gesture-handler` package. To use it, import it in the following way:
+`DrawerLayout` component isn't exported by default from the `react-native-gesture-handler` package.
+To use it, import it in the following way:
 ```js
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 ```
@@ -55,7 +56,9 @@ function. This attribute is present in the standard implementation already and i
 component or function. Children is a component which is rendered by default and is wrapped by drawer. However, it could be also a render function which takes an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened) is the same way like `renderNavigationView` prop.
 
 ## Example:
+
 See the [drawer example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/horizontalDrawer/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo).
+
 ```js
 class Drawerable extends Component {
   renderDrawer = () => {
@@ -85,7 +88,4 @@ class Drawerable extends Component {
     );
   }
 }
-
 ```
-
-

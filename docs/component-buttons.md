@@ -6,7 +6,6 @@ sidebar_label: Buttons
 
 <img src="assets/samplebutton.gif" width="280" />
 
-
 Gesture handler library provides native components that can act as buttons. These can be treated as a replacement to `TouchableHighlight` or `TouchableOpacity` from RN core. Gesture handler's buttons recognize touches in native which makes the recognition process deterministic, allows for rendering ripples on Android in highly performant way (`TouchableNativeFeedback` requires that touch event does a roundtrip to JS before we can update ripple effect, which makes ripples lag a bit on older phones), and provides native and platform default interaction for buttons that are placed in a scrollable container (in which case the interaction is slightly delayed to prevent button from highlighting when you fling).
 
 Currently Gesture handler library exposes three components that render native touchable elements under the hood:
@@ -19,19 +18,22 @@ On top of that all the buttons are wrapped with `NativeViewGestureHandler` and t
 **IMPORTANT**: In order to make buttons accessible, you have to wrap your children in a `View` with `accessible` prop.
 Example:
 ```javascript
-  // Not accessible:
-  const NotAccessibleButton = () => (
-    <RectButton onPress={this._onPress}>
-      <Text>Foo</Text>
-    </RectButton>);
-  // Accessible:
-  const AccessibleButton = () => (
-    <RectButton onPress={this._onPress}>
-      <View accessible>
-        <Text>Bar</Text>
-      </View>
-    </RectButton>);
+// Not accessible:
+const NotAccessibleButton = () => (
+  <RectButton onPress={this._onPress}>
+    <Text>Foo</Text>
+  </RectButton>
+);
+// Accessible:
+const AccessibleButton = () => (
+  <RectButton onPress={this._onPress}>
+    <View accessible>
+      <Text>Bar</Text>
+    </View>
+  </RectButton>
+);
 ```
+
 It is applicable for both iOS and Android platform. On iOS, you won't be able to even select the button, on Android you won't be able to click it in accessibility mode.
 
 ## `BaseButton`
@@ -49,11 +51,11 @@ function that gets triggered when the button gets pressed (analogous to `onPress
 
 ---
 ### `rippleColor` (**Android only**)
-defines color of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation used since API level 21. 
+defines color of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation used since API level 21.
 
 ---
 ### `exclusive` (**iOS only**)
-defines if more than one button could be pressed simultaneously. By default set `true`. 
+defines if more than one button could be pressed simultaneously. By default set `true`.
 
 ---
 ## `RectButton`
@@ -87,6 +89,7 @@ opacity applied to the button when it is in an active state.
 ---
 
 ## Design patterns
+
 Components listed here were not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration their's design concepts.
 
 If you wish to get specific information about platforms design patterns, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/ios/controls) and [Material.io guideline](https://material.io/design/components/buttons.html#text-button), which widely describe how to implement coherent design.
@@ -101,16 +104,12 @@ Below we list some of the common usecases for button components to be used along
 
 If you have a list with clickable items or have an action button that need to display as a separate UI block (vs being inlined in a text) you should use `RectButton`. It changes opacity on click and additionally supports a ripple effect on Android.
 
-
 <img src="assets/androidsettings.gif" width="280" />
-
-
 <img src="assets/iossettings.gif" width="280" />
-
 
 To determine emphasis of button it's vital to use fill color or leave it transparent especially on Android.
 For medium emphasis you may consider outlined buttons which are used for lower impact than fill buttons.
- 
+
 <img src="assets/androidbutton.gif" width="280" />
 
 ### Icon or text only buttons
@@ -118,12 +117,8 @@ For medium emphasis you may consider outlined buttons which are used for lower i
 Use `BorderlessButton` for simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered, whereas on iOS the button will be dimmed.
 It should be used if you wish to handle non-crucial actions and supportive behaviour.
 
-
 <img src="assets/androidmail.gif" width="280" />
-
-
 <img src="assets/iosmail.gif" width="280" />
-
 
 ### `PureNativeButton`
 
