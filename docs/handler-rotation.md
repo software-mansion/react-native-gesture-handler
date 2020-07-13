@@ -28,12 +28,12 @@ The rotation of the gesture in radians.
 Velocity of the pan gesture the current moment. The value is expressed in point units per second.
 
 ---
-### `focalX`
-Position expressed in points along X axis of center anchor point of gesture
+### `anchorX`
+Position expressed in points along X axis of center anchor point of gesture 
 
 ---
-### `focalY`
-Position expressed in points along Y axis of center anchor point of gesture
+### `anchorY`
+Position expressed in points along Y axis of center anchor point of gesture  
 
 ## Example
 
