@@ -23,18 +23,20 @@
 <p>On top of that all the buttons are wrapped with <code>NativeViewGestureHandler</code> and therefore allow for all the <a href="#common-gesturehandler-properties">common gesture handler properties</a> and <code>NativeViewGestureHandler</code>'s <a href="#nativeviewgesturehandler-extra-properties">extra properties</a> to be applied to them.</p>
 <p><strong>IMPORTANT</strong>: In order to make buttons accessible, you have to wrap your children in a <code>View</code> with <code>accessible</code> prop.
 Example:</p>
-<pre><code class="hljs css javascript">  <span class="hljs-comment">// Not accessible:</span>
-  <span class="hljs-keyword">const</span> NotAccessibleButton = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">RectButton</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPress}</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Foo<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">RectButton</span>&gt;</span></span>);
-  <span class="hljs-comment">// Accessible:</span>
-  <span class="hljs-keyword">const</span> AccessibleButton = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">RectButton</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPress}</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">accessible</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Bar<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">RectButton</span>&gt;</span></span>);
+<pre><code class="hljs css javascript"><span class="hljs-comment">// Not accessible:</span>
+<span class="hljs-keyword">const</span> NotAccessibleButton = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">RectButton</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPress}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Foo<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">RectButton</span>&gt;</span></span>
+);
+<span class="hljs-comment">// Accessible:</span>
+<span class="hljs-keyword">const</span> AccessibleButton = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">RectButton</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPress}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">accessible</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Bar<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">RectButton</span>&gt;</span></span>
+);
 </code></pre>
 <p>It is applicable for both iOS and Android platform. On iOS, you won't be able to even select the button, on Android you won't be able to click it in accessibility mode.</p>
 <h2><a class="anchor" aria-hidden="true" id="basebutton"></a><a href="#basebutton" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>BaseButton</code></h2>
@@ -79,16 +81,16 @@ Example:</p>
 <p>Below we list some of the common usecases for button components to be used along with the type of button that should be used according to the platform specific design guidelines.</p>
 <h3><a class="anchor" aria-hidden="true" id="lists-and-action-buttons"></a><a href="#lists-and-action-buttons" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Lists and action buttons</h3>
 <p>If you have a list with clickable items or have an action button that need to display as a separate UI block (vs being inlined in a text) you should use <code>RectButton</code>. It changes opacity on click and additionally supports a ripple effect on Android.</p>
-<p><img src="assets/androidsettings.gif" width="280" /></p>
-<p><img src="assets/iossettings.gif" width="280" /></p>
+<p><img src="assets/androidsettings.gif" width="280" />
+<img src="assets/iossettings.gif" width="280" /></p>
 <p>To determine emphasis of button it's vital to use fill color or leave it transparent especially on Android.
 For medium emphasis you may consider outlined buttons which are used for lower impact than fill buttons.</p>
 <p><img src="assets/androidbutton.gif" width="280" /></p>
 <h3><a class="anchor" aria-hidden="true" id="icon-or-text-only-buttons"></a><a href="#icon-or-text-only-buttons" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Icon or text only buttons</h3>
 <p>Use <code>BorderlessButton</code> for simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered, whereas on iOS the button will be dimmed.
 It should be used if you wish to handle non-crucial actions and supportive behaviour.</p>
-<p><img src="assets/androidmail.gif" width="280" /></p>
-<p><img src="assets/iosmail.gif" width="280" /></p>
+<p><img src="assets/androidmail.gif" width="280" />
+<img src="assets/iosmail.gif" width="280" /></p>
 <h3><a class="anchor" aria-hidden="true" id="purenativebutton"></a><a href="#purenativebutton" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>PureNativeButton</code></h3>
 <p>Use a <code>PureNativeButton</code> for accessing the native Component used for build more complex buttons listed above.
 It's normally is not recommended to use, but it might be useful if we want to wrap it using Animated or Reanimated.</p>
