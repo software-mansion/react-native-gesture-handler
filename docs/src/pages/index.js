@@ -6,27 +6,40 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
 
-const heroImageUrl = 'img/swm-react-native-reanimated-illu-top-05.svg';
+const heroImageUrl = 'img/pinch-reworked.svg';
 const sectionImageUrl = 'img/swm-react-native-reanimated-illu-kon-06.svg';
-const screenshotUrl = 'img/3.gif';
+const screenshotUrl = 'gifs/sampleswipeable.gif';
 
 const boxes = [
   {
-    title: <>Animate with more ease than ever before👍</>,
+    title: <>Use platform native gesture recognizers👍</>,
     description: (
       <>
-        Complexity reduced from tens to just a few methods. Try it out today:
-        Check out our <a href="docs/about">Documentation</a>.
+        With Gesture Handler touch stream handling happens on the UI thread and uses APIs native to each platform.
       </>
     ),
   },
   {
-    title: <>Native Performance and Precise Animations</>,
+    title: <>Works with Animated API</>,
     description: (
       <>
-        Declare your animations in JS, but have them run on the native thread!
-        🧙 The API affords new levels of precision and detailed control of your
-        animations. 🕹
+        Pass and process gesture specific data to React Native's Animated library and build smooth gesture based experiences with useNativeDriver flag.
+      </>
+    ),
+  },
+  {
+    title: <>Use cross platform components built with Gesture Handler</>,
+    description: (
+      <>
+        Gesture Handler library ships with a set of components that aims to provide best possible interations such as SwipeableRow or Drawer. More components to come!
+      </>
+    ),
+  },
+  {
+    title: <>Available in Expo.io</>,
+    description: (
+      <>
+        Gesture Handler is available for you to use with <a href="https://expo.io/">Expo</a> and to play with on <a href="https://snack.expo.io/">Snack</a>.
       </>
     ),
   },
@@ -43,7 +56,7 @@ const exampleUrl =
 const playgroundUrl =
   'https://github.com/software-mansion-labs/reanimated-2-playground';
 const tryItOutDecription =
-  'Check out the documentation and learn how to quickly get up and running with Reanimated. Take a look at our API guides to familiarize with the API.';
+  'Check out the documentation and learn how to quickly get up and running with Gesture Handler. Take a look at our API guides to get familiarize with it.';
 
 function InfoBox({ title, description }) {
   return (
@@ -79,8 +92,8 @@ function Hero() {
                   'button button--primary button--lg',
                   styles.getStarted
                 )}
-                to={blogUrl}>
-                Read Blog Post
+                to="https://expo.io/@sauzy3450/react-native-gesture-handler-demo">
+                Try demo app on Expo
               </Link>
             </div>
           </div>
@@ -111,7 +124,7 @@ function SectionImage() {
 
 function SectionBoxes() {
   return (
-    <div className="col col--8 section-boxes">
+    <div className="col col--12 section-boxes">
       {boxes &&
         boxes.length > 0 && (
           <div className="row box-container">
@@ -171,7 +184,6 @@ function Home() {
           <div className="container">
             <div className="row row--box-section">
               <SectionBoxes />
-              <SectionImage />
             </div>
           </div>
         </section>
@@ -182,34 +194,14 @@ function Home() {
               <div className="col col--7 text--center col--bottom-section">
                 <h2>Try it out</h2>
                 <p>{tryItOutDecription}</p>
-                <div class="item screenshot-container">
-                  <img src={screenshotUrl} alt="Reanimated screenshot" />
-                </div>
-                <div>
-                  <Link
-                    className={classnames(
-                      'button button--primary button--lg',
-                      styles.getStarted
-                    )}
-                    to={exampleUrl}>
-                    Example on GitHub
-                  </Link>
-
-                  <Link
-                    className={classnames(
-                      'button button--primary button--lg',
-                      styles.getStarted
-                    )}
-                    to={playgroundUrl}>
-                    Playground App
-                  </Link>
-                </div>
                 <p>
-                  Or just go to{' '}
-                  <a href="docs/installation">Documentation page</a> to see how
-                  you can run it locally with React Native on both Android and
-                  iOS.
+                  Try our showcase app or <a href="https://expo.io/@sauzy3450/react-native-gesture-handler-demo">get it here using Expo</a>.
+                  Or just <a href="/react-native-gesture-handler/docs/example">go to this page</a> to see how you can run it
+                  locally with React Native on both Android and iOS.
                 </p>
+                <div class="item screenshot-container">
+                  <img src={screenshotUrl} alt="Gesture handler screenshot" />
+                </div>
               </div>
             </div>
           </div>
