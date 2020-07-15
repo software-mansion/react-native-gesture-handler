@@ -12,4 +12,3 @@ The easiest way to get started with contributing code is by:
  - Updating the [documentation](https://github.com/software-mansion/react-native-gesture-handler/blob/master/docs) whenever you see some information is unclear, missing or out of date.
 
 Code is only one way how you can contribute. You may want to consider [replying on issues](https://github.com/software-mansion/react-native-gesture-handler/issues) if you know how to help.
-

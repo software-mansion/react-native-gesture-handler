@@ -5,13 +5,13 @@ sidebar_label: DrawerLayout
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import GifGallery from '@site/components/GifGallery'
 
 This is a cross-platform replacement for React Native's [DrawerLayoutAndroid](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) component. It provides a compatible API but allows for the component to be used on both Android and iOS. Please refer to [React Native docs](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) for the detailed usage for standard parameters.
 
 ## Usage:
 
-`DrawerLayout` component isn't exported by default from the `react-native-gesture-handler` package.
-To use it, import it in the following way:
+`DrawerLayout` component isn't exported by default from the `react-native-gesture-handler` package. To use it, import it in the following way:
 
 ```js
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
@@ -28,13 +28,19 @@ On top of the standard list of parameters DrawerLayout has an additional set of 
 possible values are: `front`, `back` or `slide` (default is `front`). It specifies the way the drawer will be displayed. When set to `front` the drawer will slide in and out along with the gesture and will display on top of the content view. When `back` is used the drawer displays behind the content view and can be revealed with gesture of pulling the content view to the side. Finally `slide` option makes the drawer appear like it is attached to the side of the content view; when you pull both content view and drawer will follow the gesture.
 
 Type `slide`:
-<img src={useBaseUrl("gifs/drawer-slide.gif")} width="280" />
+<GifGallery>
+  <img src={useBaseUrl("gifs/drawer-slide.gif")} width="280" />
+</GifGallery>
 
 Type `front`:
-<img src={useBaseUrl("gifs/drawer-front.gif")} width="280" />
+<GifGallery>
+  <img src={useBaseUrl("gifs/drawer-front.gif")} width="280" />
+</GifGallery>
 
 Type `back`:
-<img src={useBaseUrl("gifs/drawer-back.gif")} width="280" />
+<GifGallery>
+  <img src={useBaseUrl("gifs/drawer-back.gif")} width="280" />
+</GifGallery>
 
 ---
 

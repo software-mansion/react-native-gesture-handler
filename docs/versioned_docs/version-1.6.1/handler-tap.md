@@ -4,11 +4,10 @@ title: TapGestureHandler
 sidebar_label: TapGestureHandler
 ---
 
-A discrete gesture handler that recognizes tap (or many taps).  
+A discrete gesture handler that recognizes tap (or many taps).
 
-Tap gestures detect one or more fingers touching the screen briefly. 
-The fingers involved in these gestures must not move significantly from the initial touch points, 
-and you can configure the number of times the fingers must touch the screen and allowable distance. 
+Tap gestures detect one or more fingers touching the screen briefly.
+The fingers involved in these gestures must not move significantly from the initial touch points, and you can configure the number of times the fingers must touch the screen and allowable distance.
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
 For the handler to be [activated](state.md#active) the specified number of fingers must tap the view a specified number of times in proper time and with short enough delay. When handler gets activated it will turn into [END](state.md#end) state immediately.
@@ -28,11 +27,11 @@ Time expressed in milliseconds which defines how fast finger has to be released 
 
 ---
 ### `maxDelayMs`
-Time expressed in milliseconds which could pass before next tap if many taps are required 
+Time expressed in milliseconds which could pass before next tap if many taps are required
 
 ---
 ### `numberOfTaps`
-A number of tap event required to  [activate](state.md#active) handler
+A number of tap event required to [activate](state.md#active) handler
 
 ---
 ### `maxDeltaX`
@@ -49,9 +48,8 @@ When the finger travels the given distance expressed in points along Y axis and 
 
 When the finger travels the given distance expressed in points and handler hasn't yet [activated](state.md#active) it will fail recognizing the gesture.
 
-
-
 ## Event data
+
 See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `TapGestureHandler`:
 
 ---

@@ -29,14 +29,12 @@ A maximal pressure that could be applied for handler. If the pressure is greater
 ### `feedbackOnActivation`
 Boolean value defining if haptic feedback has to be performed on activation.
 
-
 ## Event data
 See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `ForceTouchGestureHandler`:
 
 ---
 ### `force`
 The pressure of a touch.
-
 
 ## Static method
 

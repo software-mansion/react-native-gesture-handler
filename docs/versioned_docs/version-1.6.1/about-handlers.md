@@ -42,7 +42,6 @@ An example of continuous handler is [`PanGestureHandler`](handler-pan.md) that o
 On the other hand, discrete gesture handlers once [activated](state.md#active) will not stay in the active state but will [end](state.md#ended) immediately.
 [`LongPressGestureHandler`](handler-longpress.md) is a discrete handler, as it only detects if the finger is placed for a sufficiently long period of time, it does not track finger movements (as that's the responsibility of [`PanGestureHandler`](handler-pan.md)).
 
-
 ---
 ### Nesting handlers
 
@@ -74,14 +73,14 @@ class Multitap extends Component {
 ---
 ### Using native components
 
-Gesture handler library exposes a set of components normally available in React Native that are wrapped in [`NativeViewGestureHandler`](handler-native.md).
+Gesture handler library exposes a set of components normally available in React Native that are wrapped in [`NativeViewGestureHandler`](handlers.md).
 Here is a list of exposed components:
  - `ScrollView`
  - `FlatList`
  - `Switch`
  - `TextInput`
  - `DrawerLayoutAndroid` (**Android only**)
- 
+
 If you want to use other handlers or [buttons](component-buttons.md) nested in a `ScrollView` or you want to use [`waitFor`](handler-common.md#waitfor) property to define interaction between a handler and `ScrollView`
 
 ---
@@ -127,4 +126,3 @@ class Draggable extends Component {
   }
 };
 ```
-

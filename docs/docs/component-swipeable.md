@@ -5,7 +5,7 @@ sidebar_label: Swipeable
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import GifGallery from '../components/GifGallery'
+import GifGallery from '@site/components/GifGallery'
 
 <GifGallery>
   <img src={useBaseUrl("gifs/sampleswipeable.gif")} height="120" />

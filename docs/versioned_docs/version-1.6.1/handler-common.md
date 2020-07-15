@@ -89,6 +89,3 @@ Current [state](state.md) of the handler. Expressed as one of the constants expo
 ### `numberOfPointers`
 
 Represents the number of pointers (fingers) currently placed on the screen.
-
-
-

@@ -6,16 +6,17 @@ sidebar_label: RotationGestureHandler
 
 A continuous gesture handler that recognizes rotation gesture and allows for tracking its movement.
 
-The handler [activates](state.md#active) when fingers are placed on the screen and change their position in a proper way. 
+The handler [activates](state.md#active) when fingers are placed on the screen and change their position in a proper way.
 Gesture callback can be used for continuous tracking of the rotation gesture. It provides information about the rotation, anchor (focal) point of gesture and progress of rotating.
-
 
 The handler is implemented using [UIRotationGestureRecognizer](https://developer.apple.com/documentation/uikit/uirotationgesturerecognizer) on iOS and from scratch on Android.
 
 ## Properties
-Properties provided to `RotationGestureHandler`  do not extend [common set of properties from base handler class](handler-common.md#properties).
+
+Properties provided to `RotationGestureHandler` do not extend [common set of properties from base handler class](handler-common.md#properties).
 
 ## Event data
+
 See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
 
 ---
@@ -76,5 +77,4 @@ class RotableBox extends React.Component {
     );
   }
 }
-
 ```
