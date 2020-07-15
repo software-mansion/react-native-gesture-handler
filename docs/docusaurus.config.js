@@ -20,7 +20,7 @@ module.exports = {
       links: [
         {
           label: 'Docs',
-          to: 'docs',
+          to: 'docs/getting-started',
           position: 'left',
           activeBaseRegex: `docs/(?!next)`,
           items: [
