@@ -16,13 +16,13 @@ jobs:
         run: >-
           git config --local user.email "action@github.com"
           && git config --local user.name "GitHub Action"
-          && cd website
+          && cd docs
           && yarn
           && yarn build
 
       - name: Publish generated content to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
-          FOLDER: website/build/react-native-gesture-handler
+          FOLDER: docs/build
           BRANCH: gh-pages
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
