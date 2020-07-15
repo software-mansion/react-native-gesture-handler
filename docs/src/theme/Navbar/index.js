@@ -234,7 +234,6 @@ function Navbar() {
                   [styles.hideLogoText]: isSearchBarExpanded,
                 })}>
                 {title}
-                <span className="badge badge--info">V2 alpha</span>
               </strong>
             )}
           </Link>
