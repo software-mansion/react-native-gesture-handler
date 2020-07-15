@@ -54,6 +54,10 @@
     _failOffsetYStart = NAN;
     _failOffsetYEnd = NAN;
     _hasCustomActivationCriteria = NO;
+      
+    if (@available(iOS 13.4, *)) {
+        self.allowedScrollTypesMask = UIScrollTypeMaskAll;
+    }
 #if !TARGET_OS_TV
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
 #endif
