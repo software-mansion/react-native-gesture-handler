@@ -23,7 +23,6 @@ module.exports = {
       {
         fromExtensions: ['html'],
         createRedirects: function(path) {
-          console.error('XD');
           // redirect to /docs from /docs/getting-started,
           // as introduction has been made the home doc
           if (allDocHomesPaths.includes(path)) {
@@ -126,10 +125,15 @@ module.exports = {
       links: [
         {
           label: 'Docs',
-          to: 'docs', // "fake" link
+          to: 'docs/getting-started', // "fake" link
           position: 'left',
           activeBaseRegex: `docs/(?!next)`,
           items: [
+            {
+              label: 'Master',
+              to: 'docs/next/',
+              activeBaseRegex: `docs/next`,
+            },
             {
               label: versions[0],
               to: 'docs/',
@@ -139,11 +143,6 @@ module.exports = {
               label: version,
               to: `docs/${version}/`,
             })),
-            {
-              label: 'Master/Unreleased',
-              to: 'docs/next/',
-              activeBaseRegex: `docs/next`,
-            },
           ],
         },
         {
