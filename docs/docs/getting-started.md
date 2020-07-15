@@ -122,8 +122,6 @@ For React Native 0.61 or greater, add the library as the first import in your in
 import 'react-native-gesture-handler';
 ```
 
----
-
 Now you're all set. Run your app with `react-native run-android` or `react-native run-ios`.
 
 ### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)

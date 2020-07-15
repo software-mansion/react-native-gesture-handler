@@ -5,7 +5,7 @@ sidebar_label: DrawerLayout
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import GifGallery from '../components/GifGallery'
+import GifGallery from '@site/components/GifGallery'
 
 This is a cross-platform replacement for React Native's [DrawerLayoutAndroid](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) component. It provides a compatible API but allows for the component to be used on both Android and iOS. Please refer to [React Native docs](http://facebook.github.io/react-native/docs/drawerlayoutandroid.html) for the detailed usage for standard parameters.
 
@@ -20,8 +20,6 @@ import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 ## Properties:
 
 On top of the standard list of parameters DrawerLayout has an additional set of attributes to customize its behavior. Please refer to the list below:
-
----
 
 ### `drawerType`
 
@@ -42,37 +40,25 @@ Type `back`:
   <img src={useBaseUrl("gifs/drawer-back.gif")} width="280" />
 </GifGallery>
 
----
-
 ### `edgeWidth`
 
 number, allows for defining how far from the edge of the content view the gesture should activate.
-
----
 
 ### `hideStatusBar`
 
 boolean, when set to `true` Drawer component will use [StatusBar](http://facebook.github.io/react-native/docs/statusbar.html) API to hide the OS status bar whenever the drawer is pulled or when its in an "open" state.
 
----
-
 ### `statusBarAnimation`
 
 possible values are: `slide`, `none` or `fade` (defaults to `slide`). Can be used when `hideStatusBar` is set to `true` and will select the animation used for hiding/showing the status bar. See [StatusBar](http://facebook.github.io/react-native/docs/statusbar.html#statusbaranimation) documentation for more details.
-
----
 
 ### `overlayColor`
 
 color (default to `"black"`) of a semi-transparent overlay to be displayed on top of the content view when drawer gets open. A solid color should be used as the opacity is added by the Drawer itself and the opacity of the overlay is animated (from 0% to 70%).
 
----
-
 ### `renderNavigationView`
 
 function. This attribute is present in the standard implementation already and is one of the required params. Gesture handler version of DrawerLayout make it possible for the function passed as `renderNavigationView` to take an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened). This can be used by the drawer component to animated its children while the drawer is opening or closing.
-
----
 
 ### `children`
 

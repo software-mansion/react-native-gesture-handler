@@ -18,15 +18,14 @@ So when a gesture handler recognizes a gesture, it [cancels](state.md#cancelled)
 This behavior can be altered using [`simultaneousHandlers`](handler-common.md#simultaneousHandlers) property that is available for all type of handlers.
 The property takes a ref or an array of refs to other handlers.
 Handlers connected this way will be allowed to be in an [active](state.md#active) state at the same time.
+
 <!-- Moreover, when the given handler [activates](state.md#active) it will -->
 
----
 ### Use cases
 
 Simultaneous recognition needs to be used when implementing a photo preview component that allows for zooming in (scaling) the photo, rotating the photo and panning it while it is zoomed in.
 In this case we would use a [`PinchGestureHandler`](handler-pinch.md), [`RotationGestureHandler`](handler-rotation.md) and [`PanGestureHandler`](handler-pan.md) that all would have to recognize simultaneously.
 
----
 ### Example
 
 See the ["Scale, rotate & tilt" example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/scaleAndRotate/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo).
@@ -51,7 +50,12 @@ class PinchableBox extends React.Component {
             onHandlerStateChange={this._onPinchHandlerStateChange}>
             <Animated.View style={styles.container} collapsable={false}>
               <Animated.Image
-                style={[styles.pinchableImage, { /* events-related transformations */ }]}
+                style={[
+                  styles.pinchableImage,
+                  {
+                    /* events-related transformations */
+                  },
+                ]}
               />
             </Animated.View>
           </PinchGestureHandler>
@@ -64,14 +68,12 @@ class PinchableBox extends React.Component {
 
 ## Awaiting other handlers
 
----
 ### Use cases
 
 A good example where awaiting is necessary is when we want to have a single and double tap handlers registered for one view (button).
 In such a case we need to make single tap handler await double tap.
 Otherwise if we try to perform a double tap the single tap handler will fire just after we hit the button for the first time and therefore [cancel](state.md#cancelled) double tap handler.
 
----
 ### Example
 
 See the ["Multitap" example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/multitap/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo).
@@ -80,13 +82,17 @@ See the ["Multitap" example](https://github.com/software-mansion/react-native-ge
 const doubleTap = React.createRef();
 const PressBox = () => (
   <TapGestureHandler
-    onHandlerStateChange={({ nativeEvent }) => nativeEvent.state === State.ACTIVE && Alert.alert('Single tap!')}
+    onHandlerStateChange={({ nativeEvent }) =>
+      nativeEvent.state === State.ACTIVE && Alert.alert('Single tap!')
+    }
     waitFor={doubleTap}>
     <TapGestureHandler
       ref={doubleTap}
-      onHandlerStateChange={({ nativeEvent }) => nativeEvent.state === State.ACTIVE && Alert.alert('You\'re so fast')}
+      onHandlerStateChange={({ nativeEvent }) =>
+        nativeEvent.state === State.ACTIVE && Alert.alert("You're so fast")
+      }
       numberOfTaps={2}>
-      <View style={styles.box}/>
+      <View style={styles.box} />
     </TapGestureHandler>
   </TapGestureHandler>
 );
