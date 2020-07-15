@@ -3,12 +3,14 @@ id: example
 title: Running Example App
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 Example app code is located under [`Example/`](https://github.com/software-mansion/react-native-gesture-handler/tree/master/Example) folder in the repo.
 It showcases the majority of the Gesture Handler library features.
 The app consist of the list of single screen examples presenting the capabilities of the library.
 Each example is located under a separate folder under [`Example/`](https://github.com/software-mansion/react-native-gesture-handler/tree/master/Example).
 
-<img src="assets/sampleapp.gif" width="180" height="320" />
+<img src={useBaseUrl("gifs/sampleapp.gif")} width="180" height="320" />
 
 ## Running example app on Expo
 
@@ -26,36 +28,43 @@ git clone git@github.com:software-mansion/react-native-gesture-handler.git
 ```
 
 Then go to the library folder:
+
 ```bash
 cd react-native-gesture-handler/
 ```
 
 Install dependencies of library with the following command:
+
 ```bash
 yarn
 ```
 
 Then go to the `Example` folder:
+
 ```bash
 cd Example
 ```
 
 Install dependencies of example with the following command:
+
 ```bash
 yarn
 ```
 
 Run development server:
+
 ```bash
 yarn start
 ```
 
 Finally run one of the commands below in order to build, install and launch the app on Android:
+
 ```bash
 react-native run-android
 ```
 
 or on iOS:
+
 ```bash
 react-native run-ios
 ```
