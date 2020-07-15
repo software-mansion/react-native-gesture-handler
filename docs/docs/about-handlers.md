@@ -19,19 +19,18 @@ When one gesture becomes [active](state.md#active), it cancels all the other ges
 Gesture handler components do not instantiate a native view in the view hierarchy. Instead, they are kept in library's own registry and are only connected to native views. When using any of the gesture handler components, it is important for it to have a native view rendered as a child.
 Since handler components don't have corresponding views in the hierarchy, the events registered with them are actually hooked into the underlying view.
 
----
 ### Available gesture handlers
 
 Currently, the library provides the following list of gestures. Their parameters and attributes they provide to gesture events are documented under each gesture page:
- - [`PanGestureHandler`](handler-pan.md)
- - [`TapGestureHandler`](handler-tap.md)
- - [`LongPressGestureHandler`](handler-longpress.md)
- - [`RotationGestureHandler`](handler-rotation.md)
- - [`FlingGestureHandler`](handler-fling.md)
- - [`PinchGestureHandler`](handler-pinch.md)
- - [`ForceTouchGestureHandler`](handler-force.md)
 
----
+- [`PanGestureHandler`](handler-pan.md)
+- [`TapGestureHandler`](handler-tap.md)
+- [`LongPressGestureHandler`](handler-longpress.md)
+- [`RotationGestureHandler`](handler-rotation.md)
+- [`FlingGestureHandler`](handler-fling.md)
+- [`PinchGestureHandler`](handler-pinch.md)
+- [`ForceTouchGestureHandler`](handler-force.md)
+
 ### Discrete vs continuous
 
 We distinguish two types of gestures: discrete and continuous.
@@ -42,7 +41,6 @@ An example of continuous handler is [`PanGestureHandler`](handler-pan.md) that o
 On the other hand, discrete gesture handlers once [activated](state.md#active) will not stay in the active state but will [end](state.md#ended) immediately.
 [`LongPressGestureHandler`](handler-longpress.md) is a discrete handler, as it only detects if the finger is placed for a sufficiently long period of time, it does not track finger movements (as that's the responsibility of [`PanGestureHandler`](handler-pan.md)).
 
----
 ### Nesting handlers
 
 Handlers component can be nested. In any case it is recommended that the innermost handler renders a native view component. There are some limitations that apply when [using `useNativeDriver` flag](#events-with-usenativedriver). An example of nested handlers:
@@ -70,26 +68,26 @@ class Multitap extends Component {
 }
 ```
 
----
 ### Using native components
 
 Gesture handler library exposes a set of components normally available in React Native that are wrapped in [`NativeViewGestureHandler`](handlers.md).
 Here is a list of exposed components:
- - `ScrollView`
- - `FlatList`
- - `Switch`
- - `TextInput`
- - `DrawerLayoutAndroid` (**Android only**)
+
+- `ScrollView`
+- `FlatList`
+- `Switch`
+- `TextInput`
+- `DrawerLayoutAndroid` (**Android only**)
 
 If you want to use other handlers or [buttons](component-buttons.md) nested in a `ScrollView` or you want to use [`waitFor`](handler-common.md#waitfor) property to define interaction between a handler and `ScrollView`
 
----
 ### Events with `useNativeDriver`
 
 Because handler components does not instantiate native views but instead hook up under their child views when using `Animated.event` it is not supported currently for two gestures to be directly nested.
 To workaround this limitation we recommend that a `<Animated.View>` component is placed in between the handlers.
 
 Instead of doing:
+
 ```js
 const PanAndRotate = () => (
   <PanGestureHandler onGestureEvent={Animated.event({ ... }, { useNativeDriver: true })}>
@@ -101,6 +99,7 @@ const PanAndRotate = () => (
 ```
 
 You need to place an `<Animated.View>` in between the handlers:
+
 ```js
 const PanAndRotate = () => (
   <PanGestureHandler onGestureEvent={Animated.event({ ... }, { useNativeDriver: true })}>
