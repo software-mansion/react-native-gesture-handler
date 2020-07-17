@@ -69,6 +69,7 @@ export type EventType = {
 
 export type DrawerMovementOptionType = {
   velocity?: number,
+  speed?: number,
 };
 
 export default class DrawerLayout extends Component<PropType, StateType> {
@@ -303,7 +304,12 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       });
   };
 
-  _animateDrawer = (fromValue: ?number, toValue: number, velocity: number) => {
+  _animateDrawer = (
+    fromValue: ?number,
+    toValue: number,
+    velocity: number,
+    speed: ?number
+  ) => {
     this.state.dragX.setValue(0);
     this.state.touchX.setValue(
       this.props.drawerPosition === 'left' ? 0 : this.state.containerWidth
@@ -336,6 +342,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       bounciness: 0,
       toValue,
       useNativeDriver: this.props.useNativeAnimations,
+      speed: speed != null ? speed : undefined,
     }).start(({ finished }) => {
       if (finished) {
         this._emitStateChanged(IDLE, willShow);
