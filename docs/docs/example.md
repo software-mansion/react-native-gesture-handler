@@ -4,7 +4,7 @@ title: Running Example App
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import GifGallery from '../components/GifGallery'
+import GifGallery from '@site/components/GifGallery'
 
 Example app code is located under [`Example/`](https://github.com/software-mansion/react-native-gesture-handler/tree/master/Example) folder in the repo.
 It showcases the majority of the Gesture Handler library features.

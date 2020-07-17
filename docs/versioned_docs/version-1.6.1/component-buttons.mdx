@@ -5,8 +5,11 @@ sidebar_label: Buttons
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import GifGallery from '@site/components/GifGallery'
 
-<img src={useBaseUrl("gifs/samplebutton.gif")} width="280" />
+<GifGallery>
+  <img src={useBaseUrl("gifs/samplebutton.gif")} width="280" />
+</GifGallery>
 
 Gesture handler library provides native components that can act as buttons. These can be treated as a replacement to `TouchableHighlight` or `TouchableOpacity` from RN core. Gesture handler's buttons recognize touches in native which makes the recognition process deterministic, allows for rendering ripples on Android in highly performant way (`TouchableNativeFeedback` requires that touch event does a roundtrip to JS before we can update ripple effect, which makes ripples lag a bit on older phones), and provides native and platform default interaction for buttons that are placed in a scrollable container (in which case the interaction is slightly delayed to prevent button from highlighting when you fling).
 
@@ -50,23 +53,25 @@ Below is a list of properties specific to `BaseButton` component:
 
 function that gets triggered when button changes from inactive to active and vice versa. It passes active state as a boolean variable as a first parameter for that method.
 
----
+
 
 ### `onPress`
 
 function that gets triggered when the button gets pressed (analogous to `onPress` in `TouchableHighlight` from RN core).
 
----
+
 
 ### `rippleColor` (**Android only**)
+
 defines color of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation used since API level 21.
 
----
+
 
 ### `exclusive` (**iOS only**)
+
 defines if more than one button could be pressed simultaneously. By default set `true`.
 
----
+
 
 ## `RectButton`
 
@@ -74,13 +79,13 @@ This type of button component should be used when you deal with rectangular elem
 
 Below is a list of properties specific to `RectButton` component:
 
----
+
 
 ### `underlayColor`
 
 this is the background color that will be dimmed when button is in active state.
 
----
+
 
 ### `activeOpacity` (**iOS only**)
 
@@ -92,19 +97,19 @@ This type of button component should be used with simple icon-only or text-only 
 
 Below is a list of properties specific to `BorderlessButton` component:
 
----
+
 
 ### `borderless` (**Android only**)
 
 set this to `false` if you want the ripple animation to render only within view bounds.
 
----
+
 
 ### `activeOpacity` (**iOS only**)
 
 opacity applied to the button when it is in an active state.
 
----
+
 
 ## Design patterns
 
@@ -122,23 +127,27 @@ Below we list some of the common usecases for button components to be used along
 
 If you have a list with clickable items or have an action button that need to display as a separate UI block (vs being inlined in a text) you should use `RectButton`. It changes opacity on click and additionally supports a ripple effect on Android.
 
-<img src={useBaseUrl("gifs/androidsettings.gif")} width="280" />
-
-<img src={useBaseUrl("gifs/iossettings.gif")} width="280" />
+<GifGallery>
+  <img src={useBaseUrl("gifs/androidsettings.gif")} width="280" />
+  <img src={useBaseUrl("gifs/iossettings.gif")} width="280" />
+</GifGallery>
 
 To determine emphasis of button it's vital to use fill color or leave it transparent especially on Android.
 For medium emphasis you may consider outlined buttons which are used for lower impact than fill buttons.
 
-<img src={useBaseUrl("gifs/androidbutton.gif")} width="280" />
+<GifGallery>
+  <img src={useBaseUrl("gifs/androidbutton.gif")} width="280" />
+</GifGallery>
 
 ### Icon or text only buttons
 
 Use `BorderlessButton` for simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered, whereas on iOS the button will be dimmed.
 It should be used if you wish to handle non-crucial actions and supportive behaviour.
 
-<img src={useBaseUrl("gifs/androidmail.gif")} width="280" />
-
-<img src={useBaseUrl("gifs/iosmail.gif")} width="280" />
+<GifGallery>
+  <img src={useBaseUrl("gifs/androidmail.gif")} width="280" />
+  <img src={useBaseUrl("gifs/iosmail.gif")} width="280" />
+</GifGallery>
 
 ### `PureNativeButton`
 

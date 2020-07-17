@@ -15,7 +15,8 @@ const boxes = [
     title: <>Use platform native gesture recognizers👍</>,
     description: (
       <>
-        With Gesture Handler touch stream handling happens on the UI thread and uses APIs native to each platform.
+        With Gesture Handler touch stream handling happens on the UI thread and
+        uses APIs native to each platform.
       </>
     ),
   },
@@ -23,7 +24,9 @@ const boxes = [
     title: <>Works with Animated API</>,
     description: (
       <>
-        Pass and process gesture specific data to React Native's Animated library and build smooth gesture based experiences with useNativeDriver flag.
+        Pass and process gesture specific data to React Native's Animated
+        library and build smooth gesture based experiences with useNativeDriver
+        flag.
       </>
     ),
   },
@@ -31,7 +34,9 @@ const boxes = [
     title: <>Use cross platform components built with Gesture Handler</>,
     description: (
       <>
-        Gesture Handler library ships with a set of components that aims to provide best possible interations such as SwipeableRow or Drawer. More components to come!
+        Gesture Handler library ships with a set of components that aims to
+        provide best possible interations such as SwipeableRow or Drawer. More
+        components to come!
       </>
     ),
   },
@@ -39,7 +44,9 @@ const boxes = [
     title: <>Available in Expo.io</>,
     description: (
       <>
-        Gesture Handler is available for you to use with <a href="https://expo.io/">Expo</a> and to play with on <a href="https://snack.expo.io/">Snack</a>.
+        Gesture Handler is available for you to use with{' '}
+        <a href="https://expo.io/">Expo</a> and to play with on{' '}
+        <a href="https://snack.expo.io/">Snack</a>.
       </>
     ),
   },
@@ -195,11 +202,17 @@ function Home() {
                 <h2>Try it out</h2>
                 <p>{tryItOutDecription}</p>
                 <p>
-                  Try our showcase app or <a href="https://expo.io/@sauzy3450/react-native-gesture-handler-demo">get it here using Expo</a>.
-                  Or just <a href="/react-native-gesture-handler/docs/example">go to this page</a> to see how you can run it
-                  locally with React Native on both Android and iOS.
+                  Try our showcase app or{' '}
+                  <a href="https://expo.io/@sauzy3450/react-native-gesture-handler-demo">
+                    get it here using Expo
+                  </a>. Or just{' '}
+                  <a href="/react-native-gesture-handler/docs/example">
+                    go to this page
+                  </a>{' '}
+                  to see how you can run it locally with React Native on both
+                  Android and iOS.
                 </p>
-                <div class="item screenshot-container">
+                <div className="item screenshot-container">
                   <img src={screenshotUrl} alt="Gesture handler screenshot" />
                 </div>
               </div>

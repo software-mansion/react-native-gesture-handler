@@ -17,31 +17,30 @@ Since this behaviour is only provided on some iOS devices, this handler should n
 
 See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `ForceTouchGestureHandler` component:
 
----
 ### `minForce`
+
 A minimal pressure that is required before handler can [activate](state.md#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
 
----
 ### `maxForce`
+
 A maximal pressure that could be applied for handler. If the pressure is greater, handler [fails](state.md#failed). Should be a value from range `[0.0, 1.0]`.
 
----
 ### `feedbackOnActivation`
+
 Boolean value defining if haptic feedback has to be performed on activation.
 
-
 ## Event data
+
 See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `ForceTouchGestureHandler`:
 
----
 ### `force`
-The pressure of a touch.
 
+The pressure of a touch.
 
 ## Static method
 
----
 ### `forceTouchAvailable`
+
 You may check if it's possible to use `ForceTouchGestureHandler` with `ForceTouchGestureHandler.forceTouchAvailable`
 
 ## Example

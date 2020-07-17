@@ -19,21 +19,21 @@ Properties provided to `RotationGestureHandler` do not extend [common set of pro
 
 See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
 
----
 ### `rotation`
+
 The rotation of the gesture in radians.
 
----
 ### `velocity`
+
 Velocity of the pan gesture the current moment. The value is expressed in point units per second.
 
----
 ### `anchorX`
-Position expressed in points along X axis of center anchor point of gesture 
 
----
+Position expressed in points along X axis of center anchor point of gesture
+
 ### `anchorY`
-Position expressed in points along Y axis of center anchor point of gesture  
+
+Position expressed in points along Y axis of center anchor point of gesture
 
 ## Example
 
@@ -63,17 +63,15 @@ class RotableBox extends React.Component {
       <RotationGestureHandler
         onGestureEvent={this._onRotateGestureEvent}
         onHandlerStateChange={this._onRotateHandlerStateChange}>
-          <Animated.Image
-            style={[
-              styles.pinchableImage,
-              {
-                transform: [
-                  { perspective: 200 },
-                  { rotate: this._rotateStr },
-                ],
-              }]}
-          />
-        </RotationGestureHandler>
+        <Animated.Image
+          style={[
+            styles.pinchableImage,
+            {
+              transform: [{ perspective: 200 }, { rotate: this._rotateStr }],
+            },
+          ]}
+        />
+      </RotationGestureHandler>
     );
   }
 }

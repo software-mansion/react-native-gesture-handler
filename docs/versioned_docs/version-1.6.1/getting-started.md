@@ -30,11 +30,11 @@ Since the library uses native support for handling gestures, it requires an exte
 
 #### Requirements
 
-| version | `react-native` version |
-| ------- | ---------------------- |
-| 1.4.0+  | 0.60.0+                |
-| 1.1.0+  | 0.57.2+                |
-| <1.1.0  | 0.50.0+                |
+| version   | `react-native` version |
+| --------- | ---------------------- |
+| 1.4.0+    | 0.60.0+                |
+| 1.1.0+    | 0.57.2+                |
+| &lt;1.1.0 | 0.50.0+                |
 
 Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](interactions.md) you need to use v16.3 of [React](https://reactjs.org/)
 
@@ -109,7 +109,8 @@ Make sure to [update the React Native CLI to the latest version](https://github.
 
 There is no additional configuration required on iOS except what follows in the next steps.
 
-If you're in a CocoaPods project (the default setup since React Native 0.60), make sure to install pods before you run your app:
+If you're in a CocoaPods project (the default setup since React Native 0.60),
+make sure to install pods before you run your app:
 
 ```sh
 cd ios && pod install

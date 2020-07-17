@@ -251,7 +251,6 @@ export default class GenericTouchable extends Component {
       accessibilityStates: this.props.accessibilityStates,
       accessibilityTraits: this.props.accessibilityTraits,
       nativeID: this.props.nativeID,
-      testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
     };
@@ -266,6 +265,7 @@ export default class GenericTouchable extends Component {
         hitSlop={this.props.hitSlop}
         shouldActivateOnStart={this.props.shouldActivateOnStart}
         disallowInterruption={this.props.disallowInterruption}
+        testID={this.props.testID}
         {...this.props.extraButtonProps}>
         <Animated.View {...coreProps} style={this.props.style}>
           {this.props.children}
