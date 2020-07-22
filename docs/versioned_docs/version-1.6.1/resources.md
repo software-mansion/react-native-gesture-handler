@@ -7,7 +7,7 @@ title: Learning Resources
 
 [Gesture Handler Example App](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example) – official gesture handler "showcase" app.
 
-[Gesture Handler Example on Expo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo) – the official app you can install and play with using [Expo](https://expo.io).
+[Gesture Handler Example on Expo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo) – the official app you can install and play with using [Expo](https://expo.io).
 
 ## Talks and workshops
 

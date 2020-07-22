@@ -82,7 +82,7 @@ class HomeSplash extends React.Component {
             <Button href={docUrl('getting-started.html', language)}>
               Read the docs
             </Button>
-            <Button href="https://expo.io/@sauzy3450/react-native-gesture-handler-demo">
+            <Button href="https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo">
               Try demo app on Expo
             </Button>
           </PromoSection>
@@ -142,7 +142,7 @@ const TryOut = props => (
   <Block id="try">
     {[
       {
-        content: `Check out the [documentation](docs/getting-started.html) and learn how to quickly get up and running with Gesture Handler. Take a look at our API guides to get familiarize with the API. \n\n Try our showcase app or [get it here using Expo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo). Or just [go to this page](docs/example.html) to see how you can run it locally with React Native on both Android and iOS.`,
+        content: `Check out the [documentation](docs/getting-started.html) and learn how to quickly get up and running with Gesture Handler. Take a look at our API guides to get familiarize with the API. \n\n Try our showcase app or [get it here using Expo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo). Or just [go to this page](docs/example.html) to see how you can run it locally with React Native on both Android and iOS.`,
         image: imgUrl('sampleswipeable.gif'),
         imageAlign: 'left',
         title: 'Try it Out',

@@ -99,7 +99,7 @@ function Hero() {
                   'button button--primary button--lg',
                   styles.getStarted
                 )}
-                to="https://expo.io/@sauzy3450/react-native-gesture-handler-demo">
+                to="https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo">
                 Try demo app on Expo
               </Link>
             </div>
@@ -132,12 +132,13 @@ function SectionImage() {
 function SectionBoxes() {
   return (
     <div className="col col--12 section-boxes">
-      {boxes &&
-        boxes.length > 0 && (
-          <div className="row box-container">
-            {boxes.map((props, idx) => <InfoBox key={idx} {...props} />)}
-          </div>
-        )}
+      {boxes && boxes.length > 0 && (
+        <div className="row box-container">
+          {boxes.map((props, idx) => (
+            <InfoBox key={idx} {...props} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -203,9 +204,10 @@ function Home() {
                 <p>{tryItOutDecription}</p>
                 <p>
                   Try our showcase app or{' '}
-                  <a href="https://expo.io/@sauzy3450/react-native-gesture-handler-demo">
+                  <a href="https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo">
                     get it here using Expo
-                  </a>. Or just{' '}
+                  </a>
+                  . Or just{' '}
                   <a href="/react-native-gesture-handler/docs/example">
                     go to this page
                   </a>{' '}
