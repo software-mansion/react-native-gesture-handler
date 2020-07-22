@@ -1,6 +1,6 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
