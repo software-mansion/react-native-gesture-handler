@@ -1,5 +1,4 @@
 <p align="center">
-  <img height="150" src="https://docs.swmansion.com/react-native-gesture-handler/img/ghlogo.svg" />
   <h1 align="center">React Native Gesture Handler</h1>
   <h3 align="center">Declarative API exposing platform native touch and gesture system to React Native.</h3>
 </p>
