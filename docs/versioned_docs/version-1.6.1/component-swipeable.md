@@ -127,7 +127,7 @@ method that opens component on right side.
 
 ### Example:
 
-See the [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/swipeable/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo).
+See the [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/swipeable/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 import React, { Component } from 'react';
