@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
-#import <React/RCTBridgeModule.h>
-#import <React/RCTUIManager.h>
+@class RCTUIManager;
+@class RCTEventDispatcher;
 
 @interface RNGestureHandlerManager : NSObject
 
