@@ -3,6 +3,8 @@ package com.swmansion.gesturehandler;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.facebook.react.bridge.UiThreadUtil;
+
 import java.util.Arrays;
 
 public class GestureHandler<T extends GestureHandler> {
@@ -104,7 +106,12 @@ public class GestureHandler<T extends GestureHandler> {
     if (mView != null) {
       // If view is set then handler is in "active" state. In that case we want to "cancel" handler
       // when it changes enabled state so that it gets cleared from the orchestrator
-      cancel();
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          cancel();
+        }
+      });
     }
     mEnabled = enabled;
     return (T) this;
@@ -326,6 +333,7 @@ public class GestureHandler<T extends GestureHandler> {
   }
 
   private void moveToState(int newState) {
+    UiThreadUtil.assertOnUiThread();
     if (mState == newState) {
       return;
     }
