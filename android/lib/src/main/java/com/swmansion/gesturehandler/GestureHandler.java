@@ -30,7 +30,7 @@ public class GestureHandler<T extends GestureHandler> {
   public static final int DIRECTION_UP = 4;
   public static final int DIRECTION_DOWN = 8;
 
-  private static int MAX_POINTERS_COUNT = 11;
+  private static int MAX_POINTERS_COUNT = 12;
   private static MotionEvent.PointerProperties[] sPointerProps;
   private static MotionEvent.PointerCoords[] sPointerCoords;
 
