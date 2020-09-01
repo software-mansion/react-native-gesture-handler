@@ -14,7 +14,7 @@ export default class TouchableOpacity extends Component {
 
   static propTypes = {
     ...GenericTouchable.publicPropTypes,
-    style: PropTypes.object,
+    style: PropTypes.any,
     activeOpacity: PropTypes.number,
   };
 
@@ -51,10 +51,12 @@ export default class TouchableOpacity extends Component {
     return (
       <GenericTouchable
         {...rest}
-        style={{
-          ...style,
-          opacity: this.opacity,
-        }}
+        style={[
+          style,
+          {
+            opacity: this.opacity,
+          },
+        ]}
         onStateChange={this.onStateChange}>
         {this.props.children ? this.props.children : <View />}
       </GenericTouchable>

@@ -262,6 +262,13 @@ const TOUCHABLES = [
   },
   {
     type: TouchableNativeFeedback,
+    background: A => A.Ripple('blue', true, 30),
+    color: 'green',
+    renderChild: renderSampleBox,
+    text: 'TouchableNativeFeedback (Ripple, borderless: true, radius: 30)',
+  },
+  {
+    type: TouchableNativeFeedback,
     background: A => A.Ripple('darkslategrey', false),
     color: 'dodgerblue',
     renderChild: renderSampleBox,

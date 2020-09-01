@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, I18nManager } from 'react-native';
 
 import { FlatList, RectButton } from 'react-native-gesture-handler';
+
+//  To toggle LTR/RTL uncomment the next line
+// I18nManager.allowRTL(true);
 
 import AppleStyleSwipeableRow from './AppleStyleSwipeableRow';
 import GmailStyleSwipeableRow from './GmailStyleSwipeableRow';

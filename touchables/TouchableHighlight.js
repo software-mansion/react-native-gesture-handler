@@ -18,7 +18,7 @@ export default class TouchableHighlight extends Component {
     ...GenericTouchable.publicPropTypes,
     activeOpacity: PropTypes.number,
     underlayColor: PropTypes.string,
-    style: PropTypes.object,
+    style: PropTypes.any,
     onShowUnderlay: PropTypes.func,
     onHideUnderlay: PropTypes.func,
   };
@@ -27,9 +27,7 @@ export default class TouchableHighlight extends Component {
     super(props);
     this.state = {
       extraChildStyle: null,
-      extraUnderlayStyle: {
-        backgroundColor: props.underlayColor,
-      },
+      extraUnderlayStyle: null,
     };
   }
 
@@ -94,10 +92,7 @@ export default class TouchableHighlight extends Component {
     return (
       <GenericTouchable
         {...rest}
-        style={{
-          ...style,
-          ...extraUnderlayStyle,
-        }}
+        style={[style, extraUnderlayStyle]}
         onStateChange={this.onStateChange}>
         {this.renderChildren()}
       </GenericTouchable>

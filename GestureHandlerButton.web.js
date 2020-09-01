@@ -1,14 +1,6 @@
 import React from 'react';
-import { TouchableWithoutFeedback, View } from 'react-native';
+import { View } from 'react-native';
 
-export default class RNGestureHandlerButton extends React.Component {
-  render() {
-    const { children, ...rest } = this.props;
-
-    return (
-      <TouchableWithoutFeedback accessibilityRole="button" {...rest}>
-        <View>{children}</View>
-      </TouchableWithoutFeedback>
-    );
-  }
-}
+export default React.forwardRef((props, ref) => (
+  <View ref={ref} accessibilityRole="button" {...props} />
+));

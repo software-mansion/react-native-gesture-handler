@@ -1,15 +1,50 @@
 import React from 'react';
-import { findNodeHandle, NativeModules, Touchable } from 'react-native';
+import {
+  findNodeHandle as findNodeHandleRN,
+  NativeModules,
+  Touchable,
+  Platform,
+} from 'react-native';
 import deepEqual from 'fbjs/lib/areEqual';
-
+import RNGestureHandlerModule from './RNGestureHandlerModule';
 import State from './State';
 
-const { RNGestureHandlerModule, UIManager } = NativeModules;
+function findNodeHandle(node) {
+  if (Platform.OS === 'web') return node;
+  return findNodeHandleRN(node);
+}
+
+const { UIManager = {} } = NativeModules;
+
+const customGHEventsConfig = {
+  onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+  onGestureHandlerStateChange: {
+    registrationName: 'onGestureHandlerStateChange',
+  },
+};
+
+// Add gesture specific events to genericDirectEventTypes object exported from UIManager
+// native module.
+// Once new event types are registered with react it is possible to dispatch these
+// events to all kind of native views.
+UIManager.genericDirectEventTypes = {
+  ...UIManager.genericDirectEventTypes,
+  ...customGHEventsConfig,
+};
+// In newer versions of RN the `genericDirectEventTypes` is located in the object
+// returned by UIManager.getConstants(), we need to add it there as well to make
+// it compatible with RN 61+
+if (UIManager.getConstants) {
+  UIManager.getConstants().genericDirectEventTypes = {
+    ...UIManager.getConstants().genericDirectEventTypes,
+    ...customGHEventsConfig,
+  };
+}
 
 // Wrap JS responder calls and notify gesture handler manager
 const {
-  setJSResponder: oldSetJSResponder,
-  clearJSResponder: oldClearJSResponder,
+  setJSResponder: oldSetJSResponder = () => {},
+  clearJSResponder: oldClearJSResponder = () => {},
 } = UIManager;
 UIManager.setJSResponder = (tag, blockNativeResponder) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
@@ -20,26 +55,15 @@ UIManager.clearJSResponder = () => {
   oldClearJSResponder();
 };
 
-// Add gesture specific events to genericDirectEventTypes object exported from UIManager
-// native module.
-// Once new event types are registered with react it is possible to dispatch these
-// events to all kind of native views.
-UIManager.genericDirectEventTypes = {
-  ...UIManager.genericDirectEventTypes,
-  onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
-  onGestureHandlerStateChange: {
-    registrationName: 'onGestureHandlerStateChange',
-  },
-};
-
 let handlerTag = 1;
 const handlerIDToTag = {};
 
 function isConfigParam(param, name) {
+  // param !== Object(param) returns false if `param` is a function
+  // or an object and returns true if `param` is null
   return (
     param !== undefined &&
-    typeof param !== 'function' &&
-    (typeof param !== 'object' || !('__isNative' in param)) &&
+    (param !== Object(param) || !('__isNative' in param)) &&
     name !== 'onHandlerStateChange' &&
     name !== 'onGestureEvent'
   );
@@ -69,6 +93,9 @@ function transformIntoHandlerTags(handlerIDs) {
     handlerIDs = [handlerIDs];
   }
 
+  if (Platform.OS === 'web') {
+    return handlerIDs.map(({ current }) => current).filter(handle => handle);
+  }
   // converts handler string IDs into their numeric tags
   return handlerIDs
     .map(
@@ -182,11 +209,8 @@ export default function createHandler(
       RNGestureHandlerModule.updateGestureHandler(this._handlerTag, newConfig);
     };
 
-    _dropGestureHandler = () => {
-      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
-    };
-
     componentWillUnmount() {
+      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
       if (this._updateEnqueued) {
         clearImmediate(this._updateEnqueued);
       }

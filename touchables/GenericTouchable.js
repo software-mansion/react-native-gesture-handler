@@ -39,6 +39,8 @@ const PublicPropTypes = {
   delayPressIn: PropTypes.number,
   delayPressOut: PropTypes.number,
   delayLongPress: PropTypes.number,
+  shouldActivateOnStart: PropTypes.bool,
+  disallowInterruption: PropTypes.bool,
 };
 
 const InternalPropTypes = {
@@ -57,7 +59,7 @@ export default class GenericTouchable extends Component {
 
   // The prop type collections have to be outside of the class, as metro
   // at this time does not compile `this.foo` correctly if HMR is enabled.
-  // https://github.com/kmagiera/react-native-gesture-handler/pull/406#issuecomment-453779977
+  // https://github.com/software-mansion/react-native-gesture-handler/pull/406#issuecomment-453779977
   static propTypes = {
     ...InternalPropTypes,
     ...PublicPropTypes,
@@ -85,7 +87,7 @@ export default class GenericTouchable extends Component {
 
   // handlePressIn in called on first touch on traveling inside component.
   // Handles state transition with delay.
-  handlePressIn = () => {
+  handlePressIn() {
     if (this.props.delayPressIn) {
       this.pressInTimeout = setTimeout(() => {
         this.moveToState(TOUCHABLE_STATE.BEGAN);
@@ -99,10 +101,10 @@ export default class GenericTouchable extends Component {
         (this.props.delayPressIn || 0) + (this.props.delayLongPress || 0);
       this.longPressTimeout = setTimeout(this.onLongPressDetected, time);
     }
-  };
+  }
   // handleMoveOutside in called on traveling outside component.
   // Handles state transition with delay.
-  handleMoveOutside = () => {
+  handleMoveOutside() {
     if (this.props.delayPressOut) {
       this.pressOutTimeout =
         this.pressOutTimeout ||
@@ -113,10 +115,10 @@ export default class GenericTouchable extends Component {
     } else {
       this.moveToState(TOUCHABLE_STATE.MOVED_OUTSIDE);
     }
-  };
+  }
 
   // handleGoToUndetermined transits to UNDETERMINED state with proper delay
-  handleGoToUndetermined = () => {
+  handleGoToUndetermined() {
     clearTimeout(this.pressOutTimeout);
     if (this.props.delayPressOut) {
       this.pressOutTimeout = setTimeout(() => {
@@ -132,7 +134,7 @@ export default class GenericTouchable extends Component {
       }
       this.moveToState(TOUCHABLE_STATE.UNDETERMINED);
     }
-  };
+  }
 
   componentDidMount() {
     this.reset();
@@ -150,7 +152,7 @@ export default class GenericTouchable extends Component {
   }
 
   // All states' transitions are defined here.
-  moveToState = newState => {
+  moveToState(newState) {
     if (newState === this.STATE) {
       // Ignore dummy transitions
       return;
@@ -173,7 +175,7 @@ export default class GenericTouchable extends Component {
     this.props.onStateChange && this.props.onStateChange(this.STATE, newState);
     // ... and make transition.
     this.STATE = newState;
-  };
+  }
 
   onGestureEvent = ({ nativeEvent: { pointerInside } }) => {
     if (this.pointerInside !== pointerInside) {
@@ -195,7 +197,7 @@ export default class GenericTouchable extends Component {
       // This platform check is an implication of slightly different behavior of handlers on different platform.
       // And Android "Active" state is achieving on first move of a finger, not on press in.
       // On iOS event on "Began" is not delivered.
-      state === (Platform.OS === 'ios' ? State.ACTIVE : State.BEGAN) &&
+      state === (Platform.OS !== 'android' ? State.ACTIVE : State.BEGAN) &&
       this.STATE === TOUCHABLE_STATE.UNDETERMINED
     ) {
       // Moving inside requires
@@ -223,21 +225,21 @@ export default class GenericTouchable extends Component {
     this.reset();
   }
 
-  onMoveIn = () => {
+  onMoveIn() {
     if (this.STATE === TOUCHABLE_STATE.MOVED_OUTSIDE) {
-      // This call is not throttles with delays (like in RN's implementation).
+      // This call is not throttled with delays (like in RN's implementation).
       this.moveToState(TOUCHABLE_STATE.BEGAN);
     }
-  };
+  }
 
-  onMoveOut = () => {
-    // long press shouldn't be longer detected
+  onMoveOut() {
+    // long press should no longer be detected
     clearTimeout(this.longPressTimeout);
     this.longPressTimeout = null;
     if (this.STATE === TOUCHABLE_STATE.BEGAN) {
       this.handleMoveOutside();
     }
-  };
+  }
 
   render() {
     const coreProps = {
@@ -249,16 +251,21 @@ export default class GenericTouchable extends Component {
       accessibilityStates: this.props.accessibilityStates,
       accessibilityTraits: this.props.accessibilityTraits,
       nativeID: this.props.nativeID,
-      testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
     };
 
     return (
       <BaseButton
-        onHandlerStateChange={this.props.disabled || this.onHandlerStateChange}
+        style={this.props.containerStyle}
+        onHandlerStateChange={
+          this.props.disabled ? null : this.onHandlerStateChange
+        }
         onGestureEvent={this.onGestureEvent}
         hitSlop={this.props.hitSlop}
+        shouldActivateOnStart={this.props.shouldActivateOnStart}
+        disallowInterruption={this.props.disallowInterruption}
+        testID={this.props.testID}
         {...this.props.extraButtonProps}>
         <Animated.View {...coreProps} style={this.props.style}>
           {this.props.children}

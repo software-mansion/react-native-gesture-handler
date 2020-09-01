@@ -1,6 +1,7 @@
-import GenericTouchable from './GenericTouchable';
+import { Platform } from 'react-native';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import GenericTouchable from './GenericTouchable';
 
 /**
  * TouchableNativeFeedback behaves slightly different than RN's TouchableNativeFeedback.
@@ -9,18 +10,22 @@ import PropTypes from 'prop-types';
  * it follows native behaviours.
  */
 export default class TouchableNativeFeedback extends Component {
-  static SelectableBackground = () => ({ type: 'SelectableBackground' });
-  static SelectableBackgroundBorderless = () => ({
-    type: 'SelectableBackgroundBorderless',
+  static SelectableBackground = rippleRadius => ({
+    type: 'SelectableBackground',
+    rippleRadius,
   });
-  static Ripple = (color, borderless) => ({
+  static SelectableBackgroundBorderless = rippleRadius => ({
+    type: 'SelectableBackgroundBorderless',
+    rippleRadius,
+  });
+  static Ripple = (color, borderless, rippleRadius) => ({
     type: 'Ripple',
     color,
     borderless,
+    rippleRadius,
   });
 
-  static canUseNativeForeground = () =>
-    Platform.OS === 'android' && Platform.Version >= 23;
+  static canUseNativeForeground = () => Platform.Version >= 23;
 
   static defaultProps = {
     ...GenericTouchable.defaultProps,
@@ -34,24 +39,26 @@ export default class TouchableNativeFeedback extends Component {
   static propTypes = {
     ...GenericTouchable.publicPropTypes,
     useForeground: PropTypes.bool,
-    background: PropTypes.string,
-    style: PropTypes.object,
+    background: PropTypes.object,
+    style: PropTypes.any,
   };
 
-  getExtraButtonProps = () => {
+  getExtraButtonProps() {
     const extraProps = {};
     const { background } = this.props;
     if (background) {
       if (background.type === 'Ripple') {
         extraProps['borderless'] = background.borderless;
         extraProps['rippleColor'] = background.color;
+        extraProps['rippleRadius'] = background.rippleRadius;
       } else if (background.type === 'SelectableBackgroundBorderless') {
         extraProps['borderless'] = true;
+        extraProps['rippleRadius'] = background.rippleRadius;
       }
     }
     extraProps['foreground'] = this.props.useForeground;
     return extraProps;
-  };
+  }
   render() {
     const { style = {}, ...rest } = this.props;
     return (
