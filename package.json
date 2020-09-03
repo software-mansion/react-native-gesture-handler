@@ -6,7 +6,8 @@
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
     "precommit": "lint-staged",
-    "web": "expo start:web"
+    "web": "expo start:web",
+    "release": "npm login && release-it"
   },
   "main": "index.js",
   "types": "react-native-gesture-handler.d.ts",
@@ -85,21 +86,25 @@
     "husky": "^0.14.3",
     "jest": "^24.7.1",
     "jest-react-native": "16.0.0",
-    "lint-staged": "^8.0.0-beta.1",
+    "lint-staged": "^10.2.11",
     "prettier": "^1.13.7",
     "react": "^16.8.6",
     "react-dom": "^16.12.0",
     "react-native": "^0.60.0",
     "react-native-web": "^0.11.7",
-    "react-test-renderer": "16.8.6"
+    "react-test-renderer": "16.8.6",
+    "release-it": "^13.6.5"
   },
   "lint-staged": {
     "*.js": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
-  "resolutions": {
-    "fsevents": "1.2.4"
+  "release-it": {
+    "hooks": {
+      "before:git:bump": [
+        "# check if version corresponds to changes in native files  \n git diff --name-only ${latestVersion} HEAD | egrep \"(android/.*)|(ios/.*)\" -q && egrep '\\.0$' -q <<< ${version}"
+      ]
+    }
   }
 }
