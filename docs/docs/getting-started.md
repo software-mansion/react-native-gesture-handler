@@ -2,6 +2,7 @@
 id: getting-started
 title: Getting Started
 sidebar_label: Getting Started
+slug: /
 ---
 
 Gesture Handler aims to replace React Native's built in touch system called [Gesture Responder System](http://facebook.github.io/react-native/docs/gesture-responder-system.html).

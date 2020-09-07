@@ -79,7 +79,7 @@ Here is a list of exposed components:
 - `TextInput`
 - `DrawerLayoutAndroid` (**Android only**)
 
-If you want to use other handlers or [buttons](component-buttons.md) nested in a `ScrollView` or you want to use [`waitFor`](handler-common.md#waitfor) property to define interaction between a handler and `ScrollView`
+If you want to use other handlers or [buttons](component-buttons.mdx) nested in a `ScrollView` or you want to use [`waitFor`](handler-common.md#waitfor) property to define interaction between a handler and `ScrollView`
 
 ### Events with `useNativeDriver`
 

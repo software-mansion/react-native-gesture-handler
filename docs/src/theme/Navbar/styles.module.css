@@ -11,7 +11,7 @@
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 768px) {
   .hideLogoText {
     display: none;
   }
@@ -24,5 +24,3 @@
 .navbarHidden {
   top: calc(var(--ifm-navbar-height) * -1) !important;
 }
-
-
