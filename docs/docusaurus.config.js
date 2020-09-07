@@ -1,11 +1,14 @@
 const path = require('path');
 const versions = require('./versions.json');
+console.log(versions);
 
 const allDocHomesPaths = [
-  '/docs/',
   '/docs/next/',
+  '/docs/',
   ...versions.slice(1).map(version => `/docs/${version}/`),
 ];
+
+const baseUrl = process.env.BASE_URL || '/';
 
 module.exports = {
   title: 'React Native Gesture Handler',
@@ -13,31 +16,15 @@ module.exports = {
     'Declarative API exposing platform native touch and gesture system to React Native.',
   organizationName: 'software-mansion',
   projectName: 'react-native-gesture-handler',
-  baseUrl: '/react-native-gesture-handler/',
+  baseUrl,
   url: 'https://docs.swmansion.com',
   favicon: 'img/SWM_Fav_192x192.png',
-  plugins: [
-    [
-      '@docusaurus/plugin-google-analytics',
-      '@docusaurus/plugin-client-redirects',
-      {
-        fromExtensions: ['html'],
-        createRedirects: function(path) {
-          // redirect to /docs from /docs/getting-started,
-          // as introduction has been made the home doc
-          if (allDocHomesPaths.includes(path)) {
-            return [`${path}/getting-started`];
-          }
-        },
-      },
-    ],
-  ],
   presets: [
     [
       '@docusaurus/preset-classic',
       {
+        debug: false,
         docs: {
-          homePageId: 'getting-started',
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
@@ -50,7 +37,7 @@ module.exports = {
     ],
   ],
   themeConfig: {
-    disableDarkMode: true,
+    colorMode: { disableSwitch: true },
     prism: {
       theme: {
         plain: {
@@ -122,32 +109,31 @@ module.exports = {
     },
     navbar: {
       title: 'React Native Gesture Handler',
-      links: [
+      items: [
+        // {
+        //   label: 'Docs',
+        //   to: 'docs/getting-started', // "fake" link
+        //   position: 'right',
+        //   activeBaseRegex: `docs/(?!next)`,
+        //   items: [
+        //     {
+        //       label: 'Master',
+        //       to: 'docs/',
+        //       activeBaseRegex: `docs/next`,
+        //     },
+        //     {
+        //       label: versions[0],
+        //       to: 'docs/stable',
+        //       activeBaseRegex: `docs/(?!${versions.join('|')}|next)`,
+        //     },
+        //     ...versions.slice(1).map(version => ({
+        //       label: version,
+        //       to: `docs/${version}/`,
+        //     })),
+        //   ],
+        // },
         {
-          label: 'Docs',
-          to: 'docs/getting-started', // "fake" link
-          position: 'left',
-          activeBaseRegex: `docs/(?!next)`,
-          items: [
-            {
-              label: 'Master',
-              to: 'docs/next/',
-              activeBaseRegex: `docs/next`,
-            },
-            {
-              label: versions[0],
-              to: 'docs/',
-              activeBaseRegex: `docs/(?!${versions.join('|')}|next)`,
-            },
-            ...versions.slice(1).map(version => ({
-              label: version,
-              to: `docs/${version}/`,
-            })),
-          ],
-        },
-        {
-          href:
-            'https://github.com/software-mansion/react-native-gesture-handler/',
+          href: 'https://github.com/facebook/docusaurus',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',

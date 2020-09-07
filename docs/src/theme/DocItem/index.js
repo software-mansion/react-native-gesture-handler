@@ -4,57 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import React from 'react';
-
 import Head from '@docusaurus/Head';
-import isInternalUrl from '@docusaurus/isInternalUrl';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import DocPaginator from '@theme/DocPaginator';
-import useTOCHighlight from '@theme/hooks/useTOCHighlight';
-
-import classnames from 'classnames';
+import DocVersionSuggestions from '@theme/DocVersionSuggestions';
+import TOC from '@theme/TOC';
+import clsx from 'clsx';
 import styles from './styles.module.css';
-
-const LINK_CLASS_NAME = 'table-of-contents__link';
-const ACTIVE_LINK_CLASS_NAME = 'table-of-contents__link--active';
-const TOP_OFFSET = 100;
-
-function DocTOC({ headings }) {
-  useTOCHighlight(LINK_CLASS_NAME, ACTIVE_LINK_CLASS_NAME, TOP_OFFSET);
-  return (
-    <div className="col col--3">
-      <div className={styles.tableOfContents}>
-        <Headings headings={headings} />
-      </div>
-    </div>
-  );
-}
-
-/* eslint-disable jsx-a11y/control-has-associated-label */
-function Headings({ headings, isChild }) {
-  if (!headings.length) {
-    return null;
-  }
-  return (
-    <ul
-      className={
-        isChild ? '' : 'table-of-contents table-of-contents__left-border'
-      }>
-      {headings.map(heading => (
-        <li key={heading.id}>
-          <a
-            href={`#${heading.id}`}
-            className={LINK_CLASS_NAME}
-            dangerouslySetInnerHTML={{ __html: heading.value }}
-          />
-          <Headings isChild headings={heading.children} />
-        </li>
-      ))}
-    </ul>
-  );
-}
+import {
+  useActivePlugin,
+  useVersions,
+  useActiveVersion,
+} from '@theme/hooks/useDocs';
 
 function DocItem(props) {
   const { siteConfig = {} } = useDocusaurusContext();
@@ -68,7 +31,6 @@ function DocItem(props) {
     editUrl,
     lastUpdatedAt,
     lastUpdatedBy,
-    version,
   } = metadata;
   const {
     frontMatter: {
@@ -78,13 +40,19 @@ function DocItem(props) {
       hide_table_of_contents: hideTableOfContents = true,
     },
   } = DocContent;
+  const { pluginId } = useActivePlugin({
+    failfast: true,
+  });
+  const versions = useVersions(pluginId);
+  const version = useActiveVersion(pluginId); // If site is not versioned or only one version is included
+  // we don't show the version badge
+  // See https://github.com/facebook/docusaurus/issues/3362
 
+  const showVersionBadge = versions.length > 1;
   const metaTitle = title ? `${title} | ${siteTitle}` : siteTitle;
-  let metaImageUrl = siteUrl + useBaseUrl(metaImage);
-  if (!isInternalUrl(metaImage)) {
-    metaImageUrl = metaImage;
-  }
-
+  const metaImageUrl = useBaseUrl(metaImage, {
+    absolute: true,
+  });
   return (
     <>
       <Head>
@@ -94,10 +62,9 @@ function DocItem(props) {
         {description && (
           <meta property="og:description" content={description} />
         )}
-        {keywords &&
-          keywords.length && (
-            <meta name="keywords" content={keywords.join(',')} />
-          )}
+        {keywords && keywords.length && (
+          <meta name="keywords" content={keywords.join(',')} />
+        )}
         {metaImage && <meta property="og:image" content={metaImageUrl} />}
         {metaImage && <meta property="twitter:image" content={metaImageUrl} />}
         {metaImage && (
@@ -107,21 +74,19 @@ function DocItem(props) {
         {permalink && <link rel="canonical" href={siteUrl + permalink} />}
       </Head>
       <div
-        className={classnames(
-          'container padding-vert--lg',
-          styles.docItemWrapper
-        )}>
-        <div className="row row--docitem">
+        className={clsx('container padding-vert--lg', styles.docItemWrapper)}>
+        <div className="row">
           <div
-            className={classnames('col', {
+            className={clsx('col', {
               [styles.docItemCol]: !hideTableOfContents,
             })}>
+            <DocVersionSuggestions />
             <div className={styles.docItemContainer}>
               <article>
-                {version && (
+                {showVersionBadge && (
                   <div>
                     <span className="badge badge--secondary">
-                      Version: {version}
+                      Version: {version.label}
                     </span>
                   </div>
                 )}
@@ -171,11 +136,11 @@ function DocItem(props) {
                                 on{' '}
                                 <time
                                   dateTime={new Date(
-                                    lastUpdatedAt * 1000,
+                                    lastUpdatedAt * 1000
                                   ).toISOString()}
                                   className={styles.docLastUpdatedAt}>
                                   {new Date(
-                                    lastUpdatedAt * 1000,
+                                    lastUpdatedAt * 1000
                                   ).toLocaleDateString()}
                                 </time>
                                 {lastUpdatedBy && ' '}
@@ -206,8 +171,11 @@ function DocItem(props) {
               </div> */}
             </div>
           </div>
-          {!hideTableOfContents &&
-            DocContent.rightToc && <DocTOC headings={DocContent.rightToc} />}
+          {!hideTableOfContents && DocContent.rightToc && (
+            <div className="col col--3">
+              <TOC headings={DocContent.rightToc} />
+            </div>
+          )}
         </div>
       </div>
     </>

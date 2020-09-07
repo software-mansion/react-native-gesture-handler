@@ -4,23 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 import React from 'react';
-import classnames from 'classnames';
-
+import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import GitHubButton from 'react-github-btn';
-
-import useLogo from '@theme/hooks/useLogo';
-
 import styles from './styles.module.css';
+import GitHubButton from 'react-github-btn';
+import useLogo from '@theme/hooks/useLogo';
 
 function FooterLink({ to, href, label, prependBaseUrlToHref, ...props }) {
   const toUrl = useBaseUrl(to);
-  const normalizedHref = useBaseUrl(href, true);
-
+  const normalizedHref = useBaseUrl(href, {
+    forcePrependBaseUrl: true,
+  });
   return (
     <Link
       className="footer__link-item"
@@ -48,7 +45,10 @@ function Footer() {
   const { siteConfig = {} } = context;
   const { themeConfig = {} } = siteConfig;
   const { footer } = themeConfig;
+  const { copyright, links = [], logo = {} } = footer || {};
+  const logoUrl = useBaseUrl(logo.src);
 
+  // added
   const logoLink = 'https://www.swmansion.com/';
   const logoAlt = 'Software Mansion logo';
   const logoImageUrl = useBaseUrl('/img/swmLogo.svg');
@@ -59,9 +59,10 @@ function Footer() {
 
   return (
     <footer
-      className={classnames('footer', {
+      className={clsx('footer', {
         'footer--dark': footer.style === 'dark',
       })}>
+      {/*changed */}
       <div className="footer-container">
         <Link className="navbar__brand footer-image-link" to={logoLink}>
           {logoImageUrl != null && (

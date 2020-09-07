@@ -4,7 +4,7 @@ title: Touchables
 sidebar_label: Touchables
 ---
 
-Gesture Handler library provides an implementation of RN's touchable components that are based on [native buttons](component-buttons.md) and does not rely on JS responder system utilized by RN. Our touchable implementation follows the same API and aims to be a drop-in replacement for touchables available in React Native.
+Gesture Handler library provides an implementation of RN's touchable components that are based on [native buttons](component-buttons.mdx) and does not rely on JS responder system utilized by RN. Our touchable implementation follows the same API and aims to be a drop-in replacement for touchables available in React Native.
 
 React Native's touchables API can be found here:
 
