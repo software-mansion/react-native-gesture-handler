@@ -5,17 +5,13 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-    compileSdkVersion safeExtGet("compileSdkVersion", 25)
-    buildToolsVersion safeExtGet("buildToolsVersion", '25.0.2')
+    compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 16)
-        targetSdkVersion safeExtGet('targetSdkVersion', 25)
+        targetSdkVersion safeExtGet('targetSdkVersion', 28)
         versionCode 1
         versionName "1.0"
-        ndk {
-            abiFilters "armeabi-v7a", "x86"
-        }
     }
 
     // Include "lib/" as sources, unfortunetely react-native link can't handle
@@ -28,5 +24,5 @@ android {
 
 dependencies {
     //noinspection GradleDynamicVersion
-    compileOnly 'com.facebook.react:react-native:+'
+    implementation 'com.facebook.react:react-native:+'
 }

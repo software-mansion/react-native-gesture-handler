@@ -5,19 +5,11 @@
 // to move faster and fix possible issues quicker
 
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import { AnimatedEvent } from 'react-native/Libraries/Animated/src/AnimatedEvent';
+import { Animated, StyleSheet, View, I18nManager } from 'react-native';
 
 import { PanGestureHandler, TapGestureHandler, State } from './GestureHandler';
 
 const DRAG_TOSS = 0.05;
-
-// Math.sign polyfill for iOS 8.x
-if (!Math.sign) {
-  Math.sign = function(x) {
-    return Number(x > 0) - Number(x < 0) || +x;
-  };
-}
 
 export type PropType = {
   children: any,
@@ -26,7 +18,7 @@ export type PropType = {
   rightThreshold?: number,
   overshootLeft?: boolean,
   overshootRight?: boolean,
-  overshootFriction?: number,
+  overshootFriction: number,
   onSwipeableLeftOpen?: Function,
   onSwipeableRightOpen?: Function,
   onSwipeableOpen?: Function,
@@ -45,6 +37,8 @@ export type PropType = {
   ) => any,
   useNativeAnimations: boolean,
   animationOptions?: Object,
+  containerStyle?: Object,
+  childrenContainerStyle?: Object,
 };
 type StateType = {
   dragX: Animated.Value,
@@ -61,7 +55,7 @@ export default class Swipeable extends Component<PropType, StateType> {
     overshootFriction: 1,
     useNativeAnimations: true,
   };
-  _onGestureEvent: ?AnimatedEvent;
+  _onGestureEvent: ?Animated.Event;
   _transX: ?Animated.Interpolation;
   _showLeftAction: ?Animated.Interpolation | ?Animated.Value;
   _leftActionTranslate: ?Animated.Interpolation;
@@ -87,7 +81,7 @@ export default class Swipeable extends Component<PropType, StateType> {
     );
   }
 
-  componentWillUpdate(props: PropType, state: StateType) {
+  UNSAFE_componentWillUpdate(props: PropType, state: StateType) {
     if (
       this.props.friction !== props.friction ||
       this.props.overshootLeft !== props.overshootLeft ||
@@ -317,11 +311,13 @@ export default class Swipeable extends Component<PropType, StateType> {
 
     return (
       <PanGestureHandler
+        activeOffsetX={[-10, 10]}
         {...this.props}
-        minDeltaX={10}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}>
-        <Animated.View onLayout={this._onRowLayout} style={styles.container}>
+        <Animated.View
+          onLayout={this._onRowLayout}
+          style={[styles.container, this.props.containerStyle]}>
           {left}
           {right}
           <TapGestureHandler
@@ -329,9 +325,12 @@ export default class Swipeable extends Component<PropType, StateType> {
             onHandlerStateChange={this._onTapHandlerStateChange}>
             <Animated.View
               pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
-              style={{
-                transform: [{ translateX: this._transX }],
-              }}>
+              style={[
+                {
+                  transform: [{ translateX: this._transX }],
+                },
+                this.props.childrenContainerStyle,
+              ]}>
               {children}
             </Animated.View>
           </TapGestureHandler>
@@ -347,10 +346,10 @@ const styles = StyleSheet.create({
   },
   leftActions: {
     ...StyleSheet.absoluteFillObject,
-    flexDirection: 'row',
+    flexDirection: I18nManager.isRTL? 'row-reverse': 'row',
   },
   rightActions: {
     ...StyleSheet.absoluteFillObject,
-    flexDirection: 'row-reverse',
+    flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
   },
 });

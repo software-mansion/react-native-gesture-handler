@@ -18,7 +18,6 @@ import {
   StatusBar,
   I18nManager,
 } from 'react-native';
-import { AnimatedEvent } from 'react-native/Libraries/Animated/src/AnimatedEvent';
 
 import { PanGestureHandler, TapGestureHandler, State } from './GestureHandler';
 
@@ -79,7 +78,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     drawerType: 'front',
     edgeWidth: 20,
     minSwipeDistance: 3,
-    overlayColor: 'black',
+    overlayColor: 'rgba(0, 0, 0, 0.7)',
     drawerLockMode: 'unlocked',
   };
 
@@ -88,7 +87,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     Right: 'right',
   };
   _openValue: ?Animated.Interpolation;
-  _onGestureEvent: ?AnimatedEvent;
+  _onGestureEvent: ?Animated.Event;
   _accessibilityIsModalView = React.createRef();
   _pointerEventsView = React.createRef();
   _panGestureHandler = React.createRef();
@@ -111,7 +110,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     this._updateAnimatedEvent(props, this.state);
   }
 
-  componentWillUpdate(props: PropType, state: StateType) {
+  UNSAFE_componentWillUpdate(props: PropType, state: StateType) {
     if (
       this.props.drawerPosition !== props.drawerPosition ||
       this.props.drawerWidth !== props.drawerWidth ||
@@ -308,7 +307,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       this.props.drawerPosition === 'left' ? 0 : this.state.containerWidth
     );
 
-    if (fromValue !== undefined) {
+    if (fromValue != null) {
       let nextFramePosition = fromValue;
       if (this.props.useNativeAnimations) {
         // When using native driver, we predict the next position of the animation
@@ -353,10 +352,16 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       this.props.drawerWidth,
       options.velocity ? options.velocity : 0
     );
+
+    // We need to force the update, otherwise the overlay is not rerendered and it would not be clickable
+    this.forceUpdate();
   };
 
   closeDrawer = (options: DrawerMovementOptionType = {}) => {
     this._animateDrawer(undefined, 0, options.velocity ? options.velocity : 0);
+
+    // We need to force the update, otherwise the overlay is not rerendered and it would be still clickable
+    this.forceUpdate();
   };
 
   _renderOverlay = () => {
@@ -364,13 +369,14 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     invariant(this._openValue, 'should be set');
     const overlayOpacity = this._openValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, 0.7],
+      outputRange: [0, 1],
       extrapolate: 'clamp',
     });
     const dynamicOverlayStyles = {
       opacity: overlayOpacity,
       backgroundColor: this.props.overlayColor,
     };
+
     return (
       <TapGestureHandler onHandlerStateChange={this._onTapHandlerStateChange}>
         <Animated.View
@@ -444,7 +450,10 @@ export default class DrawerLayout extends Component<PropType, StateType> {
               : styles.containerInFront,
             containerStyles,
             contentContainerStyle,
-          ]}>
+          ]}
+          importantForAccessibility={
+            this._drawerShown ? 'no-hide-descendants' : 'yes'
+          }>
           {typeof this.props.children === 'function'
             ? this.props.children(this._openValue)
             : this.props.children}
@@ -455,7 +464,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
           ref={this._accessibilityIsModalView}
           accessibilityViewIsModal={this._drawerShown}
           style={[styles.drawerContainer, drawerStyles, drawerContainerStyle]}>
-          <View style={[styles.drawer, dynamicDrawerStyles]}>
+          <View style={dynamicDrawerStyles}>
             {this.props.renderNavigationView(this._openValue)}
           </View>
         </Animated.View>
@@ -509,7 +518,6 @@ export default class DrawerLayout extends Component<PropType, StateType> {
 }
 
 const styles = StyleSheet.create({
-  drawer: { flex: 0 },
   drawerContainer: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 1001,

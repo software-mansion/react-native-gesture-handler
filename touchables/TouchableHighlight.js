@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import PropTypes from 'prop-types';
 
 /**
@@ -18,17 +18,18 @@ export default class TouchableHighlight extends Component {
     ...GenericTouchable.publicPropTypes,
     activeOpacity: PropTypes.number,
     underlayColor: PropTypes.string,
-    style: PropTypes.object,
+    style: PropTypes.any,
     onShowUnderlay: PropTypes.func,
     onHideUnderlay: PropTypes.func,
   };
 
-  state = {
-    extraChildStyle: null,
-    extraUnderlayStyle: {
-      backgroundColor: 'black',
-    },
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      extraChildStyle: null,
+      extraUnderlayStyle: null,
+    };
+  }
 
   // Copied from RN
   showUnderlay = () => {
@@ -91,10 +92,7 @@ export default class TouchableHighlight extends Component {
     return (
       <GenericTouchable
         {...rest}
-        style={{
-          ...style,
-          ...extraUnderlayStyle,
-        }}
+        style={[style, extraUnderlayStyle]}
         onStateChange={this.onStateChange}>
         {this.renderChildren()}
       </GenericTouchable>

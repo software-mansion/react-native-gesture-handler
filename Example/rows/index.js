@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -8,7 +8,6 @@ import {
   RectButton,
   BorderlessButton,
   LongPressGestureHandler,
-  BaseButton,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../config';
@@ -114,7 +113,7 @@ export const InfoButton = props => (
   <BorderlessButton
     {...props}
     style={styles.infoButton}
-    onPress={() => Alert.alert(`${props.name} info button clicked`)}>
+    onPress={() => alert(`${props.name} info button clicked`)}>
     <View style={styles.infoButtonBorders}>
       <Text style={styles.infoButtonText}>i</Text>
     </View>
@@ -132,7 +131,7 @@ export default class Example extends Component {
           <Swipeable>
             <RectButton
               style={styles.rectButton}
-              onPress={() => Alert.alert('First row clicked')}>
+              onPress={() => alert('First row clicked')}>
               <Text style={styles.buttonText}>
                 Swipe this row & observe highlight delay
               </Text>
@@ -147,7 +146,7 @@ export default class Example extends Component {
           <View style={styles.buttonDelimiter} />
           <RectButton
             style={styles.rectButton}
-            onPress={() => Alert.alert('Second row clicked')}>
+            onPress={() => alert('Second row clicked')}>
             <Text style={styles.buttonText}>
               Second info icon will block scrolling
             </Text>
@@ -160,7 +159,7 @@ export default class Example extends Component {
           <RectButton
             rippleColor="red"
             style={styles.rectButton}
-            onPress={() => Alert.alert('Third row clicked')}>
+            onPress={() => alert('Third row clicked')}>
             <Text style={styles.buttonText}>
               This one will cancel when you drag outside
             </Text>
@@ -175,7 +174,7 @@ export default class Example extends Component {
             <RectButton
               enabled={false}
               style={styles.rectButton}
-              onPress={() => Alert.alert('Fourth row clicked')}>
+              onPress={() => alert('Fourth row clicked')}>
               <Text style={styles.buttonText}>
                 This row is "disabled" but you can swipe it
               </Text>
@@ -184,12 +183,12 @@ export default class Example extends Component {
           </Swipeable>
           <LongPressGestureHandler
             onHandlerStateChange={({ nativeEvent }) =>
-              nativeEvent.state === State.ACTIVE && Alert.alert('Long')
+              nativeEvent.state === State.ACTIVE && alert('Long')
             }>
             <RectButton
               rippleColor="red"
               style={styles.rectButton}
-              onPress={() => Alert.alert('Fifth row clicked')}>
+              onPress={() => alert('Fifth row clicked')}>
               <Text style={styles.buttonText}>
                 Clickable row with long press handler
               </Text>

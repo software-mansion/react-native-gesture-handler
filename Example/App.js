@@ -1,6 +1,15 @@
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, YellowBox } from 'react-native';
-import { createStackNavigator } from 'react-navigation';
+import {
+  Text,
+  View,
+  FlatList,
+  StyleSheet,
+  YellowBox,
+  Platform,
+} from 'react-native';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createBrowserApp } from '@react-navigation/web';
+import { createStackNavigator } from 'react-navigation-stack';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import SwipeableTable from './swipeable';
@@ -20,7 +29,7 @@ import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import BottomSheet from './bottomSheet/index';
 import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
 import forceTouch from './forcetouch';
-import touchables from './touchables';
+import { TouchablesIndex, TouchableExample } from './touchables';
 
 YellowBox.ignoreWarnings([
   'Warning: isMounted(...) is deprecated',
@@ -75,7 +84,7 @@ const SCREENS = {
     title: 'Two handlers simultaneously',
   },
   touchables: {
-    screen: touchables,
+    screen: TouchablesIndex,
     title: 'Touchables',
   },
   forceTouch: {
@@ -89,7 +98,16 @@ class MainScreen extends React.Component {
     title: '✌️ Gesture Handler Demo',
   };
   render() {
-    const data = Object.keys(SCREENS).map(key => ({ key }));
+    const data = Object.keys(SCREENS)
+      .map(key => {
+        const item = SCREENS[key];
+        const isDisabled = item.screen.platforms
+          ? !item.screen.platforms.includes(Platform.OS)
+          : false;
+        return { key, title: item.title || key, isDisabled };
+      })
+      .sort((a, b) => !!a.isDisabled - !!b.isDisabled);
+
     return (
       <FlatList
         style={styles.list}
@@ -112,10 +130,13 @@ const ItemSeparator = () => <View style={styles.separator} />;
 class MainScreenItem extends React.Component {
   _onPress = () => this.props.onPressItem(this.props.item);
   render() {
-    const { key } = this.props.item;
+    const { title, isDisabled } = this.props.item;
     return (
-      <RectButton style={styles.button} onPress={this._onPress}>
-        <Text style={styles.buttonText}>{SCREENS[key].title || key}</Text>
+      <RectButton
+        {...(isDisabled && { pointerEvents: 'none' })}
+        style={[styles.button, isDisabled && { opacity: 0.5 }]}
+        onPress={this._onPress}>
+        <Text style={styles.buttonText}>{title}</Text>
       </RectButton>
     );
   }
@@ -123,10 +144,20 @@ class MainScreenItem extends React.Component {
 
 const ExampleApp = createStackNavigator(
   {
-    Main: { screen: MainScreen },
+    Main: { screen: MainScreen, path: '' },
     ...SCREENS,
+    TouchableExample: {
+      screen: TouchableExample,
+      title: 'Touchables',
+    },
   },
   {
+    ...Platform.select({
+      web: {
+        headerMode: 'screen',
+      },
+      default: {},
+    }),
     initialRouteName: 'Main',
   }
 );
@@ -152,4 +183,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExampleApp;
+const createApp = Platform.select({
+  web: input => createBrowserApp(input, { history: 'hash' }),
+  default: input => createAppContainer(input),
+});
+
+const defaultNavigator = createSwitchNavigator({
+  main: { screen: ExampleApp, path: '' },
+});
+defaultNavigator.path = '';
+
+export default createApp(defaultNavigator);

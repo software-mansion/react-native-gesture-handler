@@ -4,7 +4,7 @@ import {
   PanGestureHandler,
   NativeViewGestureHandler,
   State,
-  TapGestureHandler
+  TapGestureHandler,
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../common';

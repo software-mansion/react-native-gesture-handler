@@ -17,7 +17,6 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
 } from 'react-native-gesture-handler';
-import { createStackNavigator } from 'react-navigation';
 
 const BOX_SIZE = 80;
 
@@ -121,6 +120,7 @@ const TOUCHABLES = [
   {
     type: TouchableHighlight,
     props: {
+      underlayColor: 'white',
       onPressIn: () => console.warn('press in'),
       onPressOut: () => console.warn('press out'),
       onPress: () => console.warn('press'),
@@ -262,6 +262,13 @@ const TOUCHABLES = [
   },
   {
     type: TouchableNativeFeedback,
+    background: A => A.Ripple('blue', true, 30),
+    color: 'green',
+    renderChild: renderSampleBox,
+    text: 'TouchableNativeFeedback (Ripple, borderless: true, radius: 30)',
+  },
+  {
+    type: TouchableNativeFeedback,
     background: A => A.Ripple('darkslategrey', false),
     color: 'dodgerblue',
     renderChild: renderSampleBox,
@@ -288,10 +295,7 @@ class Item extends React.Component {
   }
 }
 
-class TouchableExample extends Component {
-  static navigationOptions = {
-    title: 'Animated & GH',
-  };
+export class TouchableExample extends Component {
   state = {
     useScrollView: true,
   };
@@ -340,10 +344,8 @@ class TouchableExample extends Component {
     );
   }
 }
-class Touchables extends Component {
-  static navigationOptions = {
-    header: null,
-  };
+
+export class TouchablesIndex extends Component {
   render() {
     return (
       <FlatList
@@ -355,7 +357,7 @@ class Touchables extends Component {
           <Item
             {...props}
             onPressItem={() =>
-              this.props.navigation.navigate('Example', {
+              this.props.navigation.navigate('TouchableExample', {
                 item: props.item.text,
               })
             }
@@ -365,16 +367,6 @@ class Touchables extends Component {
     );
   }
 }
-
-export default createStackNavigator(
-  {
-    Main: { screen: Touchables },
-    Example: { screen: TouchableExample },
-  },
-  {
-    initialRouteName: 'Main',
-  }
-);
 
 const styles = StyleSheet.create({
   list: {

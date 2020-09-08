@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, I18nManager } from 'react-native';
 
 import { FlatList, RectButton } from 'react-native-gesture-handler';
+
+//  To toggle LTR/RTL uncomment the next line
+// I18nManager.allowRTL(true);
 
 import AppleStyleSwipeableRow from './AppleStyleSwipeableRow';
 import GmailStyleSwipeableRow from './GmailStyleSwipeableRow';
 
 const Row = ({ item }) => (
-  <RectButton style={styles.rectButton} onPress={() => Alert.alert(item.from)}>
+  <RectButton style={styles.rectButton} onPress={() => alert(item.from)}>
     <Text style={styles.fromText}>{item.from}</Text>
     <Text numberOfLines={2} style={styles.messageText}>
       {item.message}
