@@ -24,7 +24,6 @@
     "createHandler.js",
     "Directions.js",
     "DrawerLayout.js",
-    "GestureHandler.js",
     "Gestures.js",
     "GestureButtons.js",
     "GestureComponents.js",

@@ -19,7 +19,8 @@ import {
   I18nManager,
 } from 'react-native';
 
-import { PanGestureHandler, TapGestureHandler, State } from './GestureHandler';
+import { PanGestureHandler, TapGestureHandler } from './Gestures';
+import { State } from './State';
 
 const DRAG_TOSS = 0.05;
 

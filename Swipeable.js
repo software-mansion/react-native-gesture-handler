@@ -7,7 +7,8 @@
 import React, { Component } from 'react';
 import { Animated, StyleSheet, View, I18nManager } from 'react-native';
 
-import { PanGestureHandler, TapGestureHandler, State } from './GestureHandler';
+import { PanGestureHandler, TapGestureHandler } from './Gestures';
+import { State } from './State';
 
 const DRAG_TOSS = 0.05;
 
@@ -346,7 +347,7 @@ const styles = StyleSheet.create({
   },
   leftActions: {
     ...StyleSheet.absoluteFillObject,
-    flexDirection: I18nManager.isRTL? 'row-reverse': 'row',
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
   },
   rightActions: {
     ...StyleSheet.absoluteFillObject,
