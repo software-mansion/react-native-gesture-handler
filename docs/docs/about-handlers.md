@@ -41,6 +41,8 @@ An example of continuous handler is [`PanGestureHandler`](handler-pan.md) that o
 On the other hand, discrete gesture handlers once [activated](state.md#active) will not stay in the active state but will [end](state.md#ended) immediately.
 [`LongPressGestureHandler`](handler-longpress.md) is a discrete handler, as it only detects if the finger is placed for a sufficiently long period of time, it does not track finger movements (as that's the responsibility of [`PanGestureHandler`](handler-pan.md)).
 
+Keep in mind that `onGestureEvent` is only generated in the continous gesture handlers and you shouldn't use it in the `TapGestureHandler` and others discrete handlers.
+
 ### Nesting handlers
 
 Handlers component can be nested. In any case it is recommended that the innermost handler renders a native view component. There are some limitations that apply when [using `useNativeDriver` flag](#events-with-usenativedriver). An example of nested handlers:
