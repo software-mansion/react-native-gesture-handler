@@ -23,25 +23,25 @@ Properties provided to `PinchGestureHandler` do not extend [common set of proper
 
 See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `PinchGestureHandler`:
 
----
 ### `scale`
+
 The scale factor relative to the points of the two touches in screen coordinates.
 
----
 ### `velocity`
+
 Velocity of the pan gesture the current moment. The value is expressed in point units per second.
 
----
 ### `focalX`
+
 Position expressed in points along X axis of center anchor point of gesture
 
----
 ### `focalY`
+
 Position expressed in points along Y axis of center anchor point of gesture
 
 ## Example
 
-See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/scaleAndRotate/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://expo.io/@sauzy3450/react-native-gesture-handler-demo).
+See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/scaleAndRotate/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 export class PinchableBox extends React.Component {
@@ -72,10 +72,7 @@ export class PinchableBox extends React.Component {
             style={[
               styles.pinchableImage,
               {
-                transform: [
-                  { perspective: 200 },
-                  { scale: this._scale },
-                ],
+                transform: [{ perspective: 200 }, { scale: this._scale }],
               },
             ]}
           />

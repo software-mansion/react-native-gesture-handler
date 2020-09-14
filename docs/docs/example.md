@@ -4,7 +4,7 @@ title: Running Example App
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import GifGallery from '../components/GifGallery'
+import GifGallery from '@site/components/GifGallery'
 
 Example app code is located under [`Example/`](https://github.com/software-mansion/react-native-gesture-handler/tree/master/Example) folder in the repo.
 It showcases the majority of the Gesture Handler library features.
@@ -17,7 +17,7 @@ Each example is located under a separate folder under [`Example/`](https://githu
 
 ## Running example app on Expo
 
-You can run example app on [Expo](https://expo.io). Follow instructions under [this link](https://expo.io/@sauzy3450/react-native-gesture-handler-demo) to do so. Note that the app published to Expo is not the most up to date version. We publish updates whenever new version of Expo SDK is released. If you wish to try the most up to date version you will have to run example app locally. For that see below 👇
+You can run example app on [Expo](https://expo.io). Follow instructions under [this link](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo) to do so. Note that the app published to Expo is not the most up to date version. We publish updates whenever new version of Expo SDK is released. If you wish to try the most up to date version you will have to run example app locally. For that see below 👇
 
 ## Running example app locally
 

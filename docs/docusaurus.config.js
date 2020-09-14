@@ -1,53 +1,43 @@
+const path = require('path');
 const versions = require('./versions.json');
+console.log(versions);
+
+const allDocHomesPaths = [
+  '/docs/next/',
+  '/docs/',
+  ...versions.slice(1).map(version => `/docs/${version}/`),
+];
+
+const baseUrl = process.env.BASE_URL || '/';
 
 module.exports = {
   title: 'React Native Gesture Handler',
   tagline:
     'Declarative API exposing platform native touch and gesture system to React Native.',
-  url: 'https://docs.swmansion.com/react-native-gesture-handler/',
-  baseUrl: '/react-native-gesture-handler/',
+  organizationName: 'software-mansion',
+  projectName: 'react-native-gesture-handler',
+  baseUrl,
+  url: 'https://docs.swmansion.com',
   favicon: 'img/SWM_Fav_192x192.png',
-  organizationName: 'software-mansion', // Usually your GitHub org/user name.
-  projectName: 'react-native-gesture-handler', // Usually your repo name.
+  presets: [
+    [
+      '@docusaurus/preset-classic',
+      {
+        debug: false,
+        docs: {
+          path: 'docs',
+          sidebarPath: require.resolve('./sidebars.js'),
+          editUrl:
+            'https://github.com/software-mansion/react-native-gesture-handler/tree/master/docs',
+        },
+        theme: {
+          customCss: require.resolve('./src/css/custom.css'),
+        },
+      },
+    ],
+  ],
   themeConfig: {
-    disableDarkMode: true,
-    googleAnalytics: {
-      trackingID: 'UA-41044622-6',
-      anonymizeIP: true, // Should IPs be anonymized?
-    },
-    navbar: {
-      title: 'React Native Gesture Handler',
-      links: [
-        {
-          label: 'Docs',
-          to: 'docs/getting-started',
-          position: 'left',
-          activeBaseRegex: `docs/(?!next)`,
-          items: [
-            {
-              label: versions[0],
-              to: 'docs/',
-              activeBaseRegex: `docs/(?!${versions.join('|')}|next)`,
-            },
-            {
-              label: 'Master',
-              to: 'docs/next/',
-              activeBasePath: 'docs/next',
-            },
-            ...versions.slice(1).map(version => ({
-              label: version,
-              to: `docs/${version}/`,
-            })),
-          ],
-        },
-        {
-          href:
-            'https://github.com/software-mansion/react-native-gesture-handler',
-          label: '',
-          position: 'right',
-        },
-      ],
-    },
+    colorMode: { disableSwitch: true },
     prism: {
       theme: {
         plain: {
@@ -112,27 +102,46 @@ module.exports = {
           },
         ],
       },
-      // darkTheme: require('prism-react-renderer/themes/dracula'),
+    },
+    googleAnalytics: {
+      trackingID: 'UA-41044622-6',
+      anonymizeIP: true, // Should IPs be anonymized?
+    },
+    navbar: {
+      title: 'React Native Gesture Handler',
+      items: [
+        // {
+        //   label: 'Docs',
+        //   to: 'docs/getting-started', // "fake" link
+        //   position: 'right',
+        //   activeBaseRegex: `docs/(?!next)`,
+        //   items: [
+        //     {
+        //       label: 'Master',
+        //       to: 'docs/',
+        //       activeBaseRegex: `docs/next`,
+        //     },
+        //     {
+        //       label: versions[0],
+        //       to: 'docs/stable',
+        //       activeBaseRegex: `docs/(?!${versions.join('|')}|next)`,
+        //     },
+        //     ...versions.slice(1).map(version => ({
+        //       label: version,
+        //       to: `docs/${version}/`,
+        //     })),
+        //   ],
+        // },
+        {
+          href: 'https://github.com/facebook/docusaurus',
+          position: 'right',
+          className: 'header-github-link',
+          'aria-label': 'GitHub repository',
+        },
+      ],
     },
     footer: {
       style: 'dark',
     },
   },
-  presets: [
-    [
-      '@docusaurus/preset-classic',
-      {
-        docs: {
-          homePageId: 'getting-started',
-          path: 'docs',
-          sidebarPath: require.resolve('./sidebars.js'),
-          editUrl:
-            'https://github.com/software-mansion/react-native-gesture-handler/tree/master/docs',
-        },
-        theme: {
-          customCss: require.resolve('./src/css/custom.css'),
-        },
-      },
-    ],
-  ],
 };
