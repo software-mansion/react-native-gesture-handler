@@ -33,7 +33,7 @@ target "ExampleE2E" do
   pod "glog", :podspec => "../node_modules/react-native/third-party-podspecs/glog.podspec"
   pod "Folly", :podspec => "../node_modules/react-native/third-party-podspecs/Folly.podspec"
 
-  pod "RNGestureHandler", :path => "../../"
+  pod "RNGestureHandler", :path => "../../../"
 
   use_native_modules!
 end
