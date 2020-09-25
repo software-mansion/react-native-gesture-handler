@@ -10,7 +10,7 @@ module.exports = api => {
             'module-resolver',
             {
               alias: {
-                'react-native-gesture-handler': '../',
+                'react-native-gesture-handler': '../../',
               },
             },
           ]
@@ -19,7 +19,7 @@ module.exports = api => {
             {
               alias: {
                 '@babel': './node_modules/@babel',
-                'react-native-gesture-handler': '../',
+                'react-native-gesture-handler': '../../',
                 react: './node_modules/react',
                 'react-native': './node_modules/react-native',
                 '@egjs/hammerjs': './node_modules/@egjs/hammerjs',
