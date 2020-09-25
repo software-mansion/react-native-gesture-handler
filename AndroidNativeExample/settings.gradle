@@ -1,4 +1,0 @@
-include ':app'
-
-include ':gesture-handler'
-project(':gesture-handler').projectDir = new File(rootProject.projectDir, '../android/lib')
