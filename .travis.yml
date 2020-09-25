@@ -30,7 +30,7 @@ matrix:
         - npm install -g react-native-cli
         - npm install -g detox-cli
         - yarn
-        - cd e2e
+        - cd ci/e2e
         - yarn
         - cd ios
         - pod install
@@ -66,7 +66,7 @@ matrix:
         - node --version
         - npm install -g yarn
         - npm install -g react-native-cli
-        - cd Example
+        - cd examples/Example
         - yarn
         - yarn run jetify
 
@@ -99,7 +99,7 @@ matrix:
         - nvm alias default $NODE_VERSION
         - brew install yarn --ignore-dependencies
         - npm install -g react-native-cli
-        - cd Example
+        - cd examples/Example
         - yarn
         - cd ios
         - pod install
