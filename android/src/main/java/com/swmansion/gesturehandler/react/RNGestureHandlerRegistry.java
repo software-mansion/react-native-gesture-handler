@@ -4,10 +4,8 @@ import android.util.SparseArray;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerRegistry;
