@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.GestureHandlerRegistry;
@@ -103,13 +104,11 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
   }
 
   @Override
-  @UiThread
   public synchronized View getViewForHandler(GestureHandler handler) {
     Integer tag = mAttachedTo.get(handler.getTag());
     if (tag != null) {
       return mContext.getNativeModule(UIManagerModule.class).resolveView(tag);
-    } else {
-      return null;
     }
+    return null;
   }
 }
