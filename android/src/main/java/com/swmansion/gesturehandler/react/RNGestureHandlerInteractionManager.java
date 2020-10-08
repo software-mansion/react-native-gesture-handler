@@ -26,4 +26,5 @@ public class RNGestureHandlerInteractionManager extends GestureHandlerInteractio
       config.hasKey(KEY_SIMULTANEOUS_HANDLERS) ? convertHandlerTagsArray(config, KEY_SIMULTANEOUS_HANDLERS) : null
     );
   }
+
 }
