@@ -197,7 +197,7 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
       view = mHandlerRegistry.getViewForHandler(dragHandler);
       recordHandlerIfNotPresent(dragHandler, view);
       dragHandler.startTrackingPointer(0);
-      dragHandler.moveToState(GestureHandler.STATE_BEGAN);
+      dragHandler.begin();
     }
     mIsDragging = true;
   }
