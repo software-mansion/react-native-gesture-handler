@@ -58,10 +58,10 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
     }
   }
 
-  public void dropHandlersForView(View view) {
+  public synchronized void dropHandlersForView(View view) {
     ArrayList<GestureHandler> handlers = mHandlersForView.get(view);
     if (handlers != null) {
-      for (GestureHandler handler: handlers) {
+      for (GestureHandler handler: handlers.toArray(new GestureHandler[0])) {
         dropHandler(handler.getTag());
       }
     }
