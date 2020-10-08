@@ -248,7 +248,7 @@ export default function createHandler(
     _filterConfig(props = this.props) {
       return filterConfig(
         transformProps ? transformProps(props) : props,
-        { ...this.constructor.propTypes, ...customNativeProps },
+        { ...this.constructor.propTypes || propTypes, ...customNativeProps },
         config
       );
     }

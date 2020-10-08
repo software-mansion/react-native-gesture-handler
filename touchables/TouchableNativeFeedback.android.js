@@ -10,14 +10,19 @@ import GenericTouchable from './GenericTouchable';
  * it follows native behaviours.
  */
 export default class TouchableNativeFeedback extends Component {
-  static SelectableBackground = () => ({ type: 'SelectableBackground' });
-  static SelectableBackgroundBorderless = () => ({
-    type: 'SelectableBackgroundBorderless',
+  static SelectableBackground = rippleRadius => ({
+    type: 'SelectableBackground',
+    rippleRadius,
   });
-  static Ripple = (color, borderless) => ({
+  static SelectableBackgroundBorderless = rippleRadius => ({
+    type: 'SelectableBackgroundBorderless',
+    rippleRadius,
+  });
+  static Ripple = (color, borderless, rippleRadius) => ({
     type: 'Ripple',
     color,
     borderless,
+    rippleRadius,
   });
 
   static canUseNativeForeground = () => Platform.Version >= 23;
@@ -38,20 +43,22 @@ export default class TouchableNativeFeedback extends Component {
     style: PropTypes.any,
   };
 
-  getExtraButtonProps = () => {
+  getExtraButtonProps() {
     const extraProps = {};
     const { background } = this.props;
     if (background) {
       if (background.type === 'Ripple') {
         extraProps['borderless'] = background.borderless;
         extraProps['rippleColor'] = background.color;
+        extraProps['rippleRadius'] = background.rippleRadius;
       } else if (background.type === 'SelectableBackgroundBorderless') {
         extraProps['borderless'] = true;
+        extraProps['rippleRadius'] = background.rippleRadius;
       }
     }
     extraProps['foreground'] = this.props.useForeground;
     return extraProps;
-  };
+  }
   render() {
     const { style = {}, ...rest } = this.props;
     return (

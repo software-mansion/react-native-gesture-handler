@@ -143,11 +143,7 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
     mOrchestrator.onTouchEvent(ev);
     mPassingTouch = false;
 
-    if (mShouldIntercept) {
-      return true;
-    } else {
-      return false;
-    }
+    return mShouldIntercept;
   }
 
   @Override

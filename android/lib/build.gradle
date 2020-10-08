@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 repositories {
-    maven { url 'http://repo1.maven.org/maven2' }
+    maven { url 'https://repo1.maven.org/maven2' }
 }
 
 android {
