@@ -90,6 +90,7 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
   @Nullable DropGestureHandler mLastDropHandler;
   private boolean mIsDragOrigin = false;
   private int mDropActivationIndex = 0;
+  private boolean mBlockDragEvent = false;
 
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
@@ -146,11 +147,14 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
     int action = event.getAction();
     if (action == DragEvent.ACTION_DRAG_STARTED) {
       // In case the app is in multi-window mode and the drag event originated from a different app
+      mBlockDragEvent = false;
       mIsDragging = true;
     } else if (action == DragEvent.ACTION_DRAG_ENTERED) {
       mDerivedMotionEvent.setDownTime();
       // false ENTERED event received because of root view's drag listener so we don't handle it
       return true;
+    } else if (mBlockDragEvent) {
+      return false;
     }
     mIsHandlingTouch = true;
     if (action == DragEvent.ACTION_DRAG_LOCATION) {
@@ -170,14 +174,18 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
     }
     mIsHandlingTouch = false;
     // cleanup
-    if (action == DragEvent.ACTION_DRAG_ENDED) {
+    if (action == DragEvent.ACTION_DRAG_ENDED || action == DragGestureUtils.ACTION_DRAG_CANCELLED) {
       mIsDragging = false;
       mDragEventMaster = null;
       mLastDropHandler = null;
       mIsDragOrigin = false;
     }
     // cleanup handlers
-    if (action == DragEvent.ACTION_DRAG_EXITED) {
+      if (action == DragGestureUtils.ACTION_DRAG_CANCELLED) {
+        mBlockDragEvent = true;
+        cancelAll();
+      }
+      if (action == DragEvent.ACTION_DRAG_EXITED) {
       // this condition is met when app is in multi window mode and the pointer has exited the root view
       // we want to keep the DragGestureHandler active if present and cancel the rest
       cleanupAwaitingHandlers();
@@ -200,6 +208,13 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
       dragHandler.begin();
     }
     mIsDragging = true;
+  }
+
+  void cancelDragging() {
+    DragEvent cancelEvent = DragGestureUtils.obtain(DragGestureUtils.ACTION_DRAG_CANCELLED, 0, 0,
+      false, null, null);
+    onDragEvent(cancelEvent);
+    DragGestureUtils.recycle(cancelEvent);
   }
 
   /**

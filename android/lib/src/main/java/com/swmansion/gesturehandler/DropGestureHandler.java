@@ -86,13 +86,18 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
      */
     @Override
     protected void onHandle(DragEvent event) {
+        int state = getState();
         if (!mOrchestrator.mIsDragging || !shouldHandleEvent(event)) {
+          if (state == STATE_ACTIVE) {
+            cancel();
+          } else if (state == STATE_BEGAN) {
             fail();
-            return;
+          }
+          return;
         }
         int action = event.getAction();
         if (action == DragEvent.ACTION_DROP) {
-            if (getState() == STATE_ACTIVE) {
+            if (state == STATE_ACTIVE) {
                 mDragAction = DragEvent.ACTION_DROP;
                 mResult = true;
                 DragAndDropPermissionsCompat dropPermissions = null;
@@ -123,7 +128,6 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         if (mDragAction == DragEvent.ACTION_DRAG_EXITED) {
             cancel();
         } else if (!isWithinBounds()) {
-            int state = getState();
             if (state == STATE_ACTIVE) {
                 cancel();
             } else if (state == STATE_BEGAN) {
@@ -149,5 +153,4 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         mLastEventData = null;
         mLastSourceAppID = null;
     }
-
 }

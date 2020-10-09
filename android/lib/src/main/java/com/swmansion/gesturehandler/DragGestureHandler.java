@@ -17,14 +17,12 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.UiThread;
 import androidx.core.view.ViewCompat;
 
+import com.facebook.react.bridge.UiThreadUtil;
 import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_EVENT_NAME;
@@ -56,7 +54,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     private int mDragMode = DRAG_MODE_MOVE;
     private MultiDragShadowBuilder.Config mShadowConfig;
     private boolean mResult = false;
-    private float mOriginalElevation;
+    private float[] mOriginalElevation;
     private String mSourceAppID;
     private final View.DragShadowBuilder mInvisibleShadow = new View.DragShadowBuilder() {
         @Override
@@ -68,6 +66,8 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     };
     private boolean mIsInvisible = false;
     private boolean mLastShadowVisible;
+    private @Nullable Runnable mDragCanceller;
+
     private boolean mDidWarn = false;
     private static final String DEBUG_TAG = "GestureHandler";
     public String getDebugTag() {
@@ -186,7 +186,13 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     public View[] getViews() {
-        return mDragTargets;
+      if (mDragTargets == null) {
+        return new View[0];
+      } else {
+        View[] views = new View[mDragTargets.length];
+        System.arraycopy(mDragTargets, 0, views, 0, mDragTargets.length);
+        return views;
+      }
     }
 
     @Override
@@ -265,55 +271,65 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     private void setElevation() {
-        final View[] views = mDragTargets;
+        final View[] views = getViews();
+        mOriginalElevation = new float[mActiveDragHandlers.size()];
+        if (views.length == 0) return;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                for (View view: views) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        mOriginalElevation = view.getElevation();
-                        view.setElevation(Float.MAX_VALUE);
-                    } else {
-                        mOriginalElevation = ViewCompat.getElevation(view);
-                        ViewCompat.setElevation(view, Integer.MAX_VALUE);
-                    }
+              for (int i = 0; i < views.length; i++) {
+                View view = views[i];
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                  mOriginalElevation[i] = view.getElevation();
+                  view.setElevation(Float.MAX_VALUE);
+                } else {
+                  mOriginalElevation[i] = ViewCompat.getElevation(view);
+                  ViewCompat.setElevation(view, Integer.MAX_VALUE);
                 }
+              }
             }
         });
     }
 
     private void resetElevation() {
-        final View[] views = mDragTargets;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (View view: views) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        view.setElevation(mOriginalElevation);
-                    } else {
-                        ViewCompat.setElevation(view, mOriginalElevation);
-                    }
-                }
-            }
-        });
+        resetElevation(getViews());
     }
 
-    @UiThread
-    public void setVisibility(View view, boolean visible) {
-        view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    private void resetElevation(final View[] views) {
+      if (views.length == 0) return;
+      runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          for (int i = 0; i < views.length; i++) {
+            View view = views[i];
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+              view.setElevation(mOriginalElevation[i]);
+            } else {
+              ViewCompat.setElevation(view, mOriginalElevation[i]);
+            }
+          }
+        }
+      });
     }
 
     private void setViewVisibility(final boolean visible) {
-        final View[] views = mDragTargets;
+        setViewVisibility(getViews(), visible);
+    }
+
+    private void setViewVisibility(final View[] views, final boolean visible) {
+      if (views.length == 0) {
+        mIsInvisible = !visible;
+      } else {
         runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (View view: views) {
-                    setVisibility(view, visible);
-                }
-                mIsInvisible = !visible;
+          @Override
+          public void run() {
+            for (View view: views) {
+              view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
             }
+            mIsInvisible = !visible;
+          }
         });
+      }
     }
 
     private View.DragShadowBuilder createDragShadow() {
@@ -417,18 +433,15 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
     @Override
     protected void onHandle(DragEvent event) {
-        mDragAction = event.getAction();
-        if (mSourceAppID == null) {
-            mSourceAppID = DragGestureUtils.getEventPackageName(event);
-        }
-        if (mDragAction == DragEvent.ACTION_DROP) {
-            mResult = true;
-        }
-        super.onHandle(event);
-        if (mDragAction == DragEvent.ACTION_DRAG_ENDED) {
-            mIsDragging = false;
-            mIsJoining = false;
-        }
+      mDragAction = event.getAction();
+      if (mSourceAppID == null) {
+        mSourceAppID = DragGestureUtils.getEventPackageName(event);
+      }
+      if (mDragAction == DragEvent.ACTION_DROP) {
+        mResult = true;
+        onDrop();
+      }
+      super.onHandle(event);
     }
 
     @Override
@@ -447,24 +460,83 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         }
     }
 
-    @Override
-    protected void onStateChange(int newState, int previousState) {
-        if (GestureHandlerOrchestrator.isFinished(newState) && mIsDragging) {
-            if (!mShadowEnabled) {
-                resetElevation();
+  /**
+   * The cancellation sequence and logic - it is fairly complex, hence the explanation:
+   * {@link GestureHandler#cancel()}
+   *        called when a handler gets detached from a view (for any reason) or when another handler grabs the gesture
+   * {@link DragGestureHandler#onCancel()}
+   *        fills {@link DragGestureHandler#mDragCanceller} with a {@link Runnable} that will fire a cancellation sequence
+   *        upon {@link GestureHandlerOrchestrator}.
+   *        {@link DragGestureHandler#mDragCanceller} can't be called from this method because at time of execution the handler won't
+   *        be in {@link GestureHandler#STATE_CANCELLED} so if we run the cancellation at this point it will skip the state change
+   *        because is it most likely that the {@link DragEvent#ACTION_DRAG_ENDED} event will be received before the state propagates,
+   *        which will cause a bloody mess.
+   * {@link GestureHandler#moveToState(int)}
+   *        propagates handler state.
+   * {@link GestureHandlerOrchestrator#onHandlerStateChange(GestureHandler, int, int)}
+   * {@link GestureHandlerOrchestrator#cleanupFinishedHandlers()}
+   *        resets the handler, nullifying both {@link DragGestureHandler#mOrchestrator} and {@link DragGestureHandler#getView()}
+   * {@link DragGestureHandler#onStateChange(int, int)}
+   *        runs and finalizes the cancellation of the drag gesture
+   *
+   * Caveat:
+   * android devices lower than version N can't control or cancel the drag event once it's started or modify the drag shadow
+   * meaning that the cancellation will not remove the drag shadow, only a user's gesture will
+   */
+  @Override
+    protected void onCancel() {
+      if (mIsDragging) {
+        mDragCanceller = new Runnable() {
+          GestureHandlerOrchestrator orchestrator = mOrchestrator;
+          View view = getView();
+          @Override
+          public void run() {
+            orchestrator.cancelDragging();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+              //  removes the drag shadow and fires a drag END event.
+              view.cancelDragAndDrop();
             }
-            if (mResult) {
-                onDrop();
-            } else if (mIsInvisible && (mDragMode == DRAG_MODE_MOVE || mDragMode == DRAG_MODE_MOVE_RESTORE)) {
-                setViewVisibility(true);
-            }
-        }
-        super.onStateChange(newState, previousState);
+          }
+        };
+      }
     }
 
-    @Override
+  @Override
+  protected void onStateChange(int newState, int previousState) {
+    super.onStateChange(newState, previousState);
+    if (newState == GestureHandler.STATE_CANCELLED && mDragCanceller != null) {
+      mDragCanceller.run();
+      mDragCanceller = null;
+    }
+  }
+
+  /**
+   * reset elevation and visibility according to drop result, dragMode and shadowEnabled props
+   */
+  private void resetHandlerViewState() {
+    if (mIsDragging) {
+      if (!mShadowEnabled) {
+        resetElevation();
+      }
+      if (!mResult && mIsInvisible && (mDragMode == DRAG_MODE_MOVE || mDragMode == DRAG_MODE_MOVE_RESTORE)) {
+        // TODO: 10/10/2020 avoid flickering in case the handler has been reset because it's view is being removed from the tree
+        // we don't want the view reappearing just to get removed a few frames later
+        // but I don't have an idea how to deal with this problem
+        UiThreadUtil.runOnUiThread(new Runnable() {
+          View[] views = getViews();
+          @Override
+          public void run() {
+            setViewVisibility(views, true);
+          }
+        });
+      }
+    }
+  }
+
+  @Override
     protected void onReset() {
         super.onReset();
+        resetHandlerViewState();
         mIsDragging = false;
         mIsJoining = false;
         mDragMaster = null;
