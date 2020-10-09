@@ -3,7 +3,6 @@ package com.swmansion.gesturehandler;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 
