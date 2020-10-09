@@ -523,15 +523,16 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         resetElevation();
       }
       if (!mResult && mIsInvisible && (mDragMode == DRAG_MODE_MOVE || mDragMode == DRAG_MODE_MOVE_RESTORE)) {
-        // using postDelayed to avoid flickering in case the handler has been reset because it's view is being removed from the tree
-        // we don't want the view reappearing (e.g dragMode == 'move_restore') just to get removed a few frames later
+        // TODO: 10/10/2020 avoid flickering in case the handler has been reset because it's view is being removed from the tree
+        // we don't want the view reappearing just to get removed a few frames later
+        // but I don't have an idea how to deal with this problem
         UiThreadUtil.runOnUiThread(new Runnable() {
           View[] views = getViews();
           @Override
           public void run() {
             setViewVisibility(views, true);
           }
-        }, 50);
+        });
       }
     }
   }
