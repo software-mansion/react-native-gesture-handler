@@ -136,6 +136,7 @@ export default function DragExample(props) {
   const shadowViewRef = useRef();
   const [color, setColor] = useState('black');
   const [displayShadowImage, setDisplayShadowImage] = useState(false);
+  const [renderElement, setRenderElement] = useState(true);
 
   const scrollX = useMemo(() => new Animated.Value(0), []);
   const scrollY = useMemo(() => new Animated.Value(0), []);
@@ -304,21 +305,31 @@ export default function DragExample(props) {
           </DropGestureHandler>
         </Animated.View>
       </DragGestureHandler>
-      <DragGestureHandler
-        types={[1, 2]}
-        data={{ foo: 'bar', text: LOREM_IPSUM }}
-        ref={textDropZone1.onRef}
-        dragMode="move"
-      >
-        <DropGestureHandler
-          types={[0]}
-          onHandlerStateChange={textDropZone1.onHandlerStateChange}
+      {
+        renderElement &&
+        <DragGestureHandler
+          types={[1, 2]}
+          data={{ foo: 'bar', text: LOREM_IPSUM }}
+          ref={textDropZone1.onRef}
+          dragMode="move"
+          onHandlerStateChange={e => {
+            const { state } = e.nativeEvent;
+            if (state !== State.ACTIVE) return;
+            setTimeout(() => {
+              setRenderElement(false);
+            }, 1500)
+          }}
         >
-          <Animated.View style={textDropZone1.dropStyle}>
-            <LoremIpsum words={40} />
-          </Animated.View>
-        </DropGestureHandler>
-      </DragGestureHandler>
+          <DropGestureHandler
+            types={[0]}
+            onHandlerStateChange={textDropZone1.onHandlerStateChange}
+          >
+            <Animated.View style={textDropZone1.dropStyle}>
+              <LoremIpsum words={40} />
+            </Animated.View>
+          </DropGestureHandler>
+        </DragGestureHandler>
+      }
       <DragGestureHandler
         simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
         dragMode="move-restore"
