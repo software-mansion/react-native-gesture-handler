@@ -479,6 +479,9 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
    * {@link DragGestureHandler#onStateChange(int, int)}
    *        runs and finalizes the cancellation of the drag gesture
    *
+   * Caveat:
+   * android devices lower than version N can't control or cancel the drag event once it's started or modify the drag shadow
+   * meaning that the cancellation will not remove the drag shadow, only a user's gesture will
    */
   @Override
     protected void onCancel() {
@@ -488,17 +491,10 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
           View view = getView();
           @Override
           public void run() {
+            orchestrator.cancelDragging();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
               //  removes the drag shadow and fires a drag END event.
               view.cancelDragAndDrop();
-            } else {
-              //  caveat
-              //  android devices lower than version N can't control or cancel the drag event once it's started or modify the drag shadow
-              //  meaning that the cancellation will not remove the drag shadow, only a user's gesture will
-              DragEvent event = DragGestureUtils.obtain(DragEvent.ACTION_DRAG_ENDED, 0, 0,
-                false, null, null);
-              orchestrator.onDragEvent(event);
-              DragGestureUtils.recycle(event);
             }
           }
         };
