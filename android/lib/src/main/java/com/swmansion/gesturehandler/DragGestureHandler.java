@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.view.ViewCompat;
 
+import com.facebook.react.bridge.UiThreadUtil;
 import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
 
 import java.util.ArrayList;
@@ -522,7 +523,13 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         resetElevation();
       }
       if (!mResult && mIsInvisible && (mDragMode == DRAG_MODE_MOVE || mDragMode == DRAG_MODE_MOVE_RESTORE)) {
-        setViewVisibility(true);
+        // using postDelayed to avoid flickering in case a the handler has been reset because it's view is being removed from the tree
+        UiThreadUtil.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            setViewVisibility(true);
+          }
+        }, 50);
       }
     }
   }
