@@ -241,6 +241,15 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         }
     }
 
+    private void tryRemoveFromJoiningHandlers() {
+      if (mIsJoining && mDragMaster != null && !GestureHandlerOrchestrator.isFinished(mDragMaster.getState())) {
+        mDragMaster.mActiveDragHandlers.remove(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          mDragMaster.updateDragShadow();
+        }
+      }
+    }
+
     ClipData createClipData() {
         String packageName = getView().getContext().getPackageName();
         Intent intent = new Intent(Intent.ACTION_RUN);
@@ -499,6 +508,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
           }
         };
       }
+      tryRemoveFromJoiningHandlers();
     }
 
   @Override
@@ -514,6 +524,10 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     if (newState == GestureHandler.STATE_CANCELLED && mDragCanceller != null) {
       mDragCanceller.run();
       mDragCanceller = null;
+    }
+    if (GestureHandlerOrchestrator.isFinished(newState)) {
+      resetHandlerViewState();
+      tryRemoveFromJoiningHandlers();
     }
   }
 
@@ -545,7 +559,6 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
   @Override
     protected void onReset() {
         super.onReset();
-        resetHandlerViewState();
         mIsDragging = false;
         mIsJoining = false;
         mDragMaster = null;
