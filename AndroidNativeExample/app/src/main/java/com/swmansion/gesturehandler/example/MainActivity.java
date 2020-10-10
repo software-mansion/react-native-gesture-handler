@@ -34,6 +34,7 @@ import com.swmansion.gesturehandler.PinchGestureHandler;
 import com.swmansion.gesturehandler.PointerEventsConfig;
 import com.swmansion.gesturehandler.RotationGestureHandler;
 import com.swmansion.gesturehandler.TapGestureHandler;
+import com.swmansion.gesturehandler.UiThreadUtil;
 import com.swmansion.gesturehandler.ViewConfigurationHelper;
 import com.swmansion.gesturehandler.example.DragDropUtil.CustomDataResolver;
 import com.swmansion.gesturehandler.example.DragDropUtil.DragDataObject;
@@ -43,6 +44,8 @@ import com.swmansion.gesturehandler.example.DragDropUtil.DropEventListenerImpl;
 import com.swmansion.gesturehandler.example.DragDropUtil.DropGestureHandlerImpl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,6 +65,22 @@ public class MainActivity extends Activity {
     private TextView textView;
     private boolean enableShadow = true;
     private final Timer timer = new Timer();
+
+  private GestureHandler panHandler;
+  private GestureHandler rotationHandler;
+  private GestureHandler pinchHandler;
+  private NativeViewGestureHandler scrollHandler;
+  private GestureHandler doubleTapHandler;
+  private GestureHandler tapHandler;
+  private GestureHandler longPressHandler;
+  private DragEventListenerImpl dragEventListener;
+  private DragEventListenerImpl dragEventListener2;
+  private DragGestureHandler dragHandler;
+  private DragGestureHandler buttonDragHandler;
+  private DropGestureHandler sDropHandler;
+
+  private List<Integer> dragTypes = Arrays.asList(0, 1);
+  private List<Integer> dragTypesB = Arrays.asList(3, 4);
 
     private final GestureHandlerRegistryImpl mRegistry = new GestureHandlerRegistryImpl() {
         @Override
@@ -187,14 +206,6 @@ public class MainActivity extends Activity {
         switchView = findViewById(R.id.switchView);
         final View[] shadows = new View[]{button, switchView, largeBlock, null};
 
-        ArrayList<Integer> dragTypes = new ArrayList<>();
-        dragTypes.add(0);
-        dragTypes.add(1);
-
-        ArrayList<Integer> dragTypesB = new ArrayList<>();
-        dragTypesB.add(3);
-        dragTypesB.add(4);
-
         mOrchestrator = new GestureHandlerOrchestrator(
                 wrapper, mRegistry, new ViewConfigurationHelper() {
             @Override
@@ -216,173 +227,189 @@ public class MainActivity extends Activity {
         mOrchestrator.setMinimumAlphaForTraversal(0.1f);
         wrapper.init(mOrchestrator, mRegistry);
 
-        GestureHandlerRegistryImpl registry = mRegistry;
-        GestureHandlerInteractionManager interactionManager = new GestureHandlerInteractionManager();
+      panHandler = new PanGestureHandler<>(this)
+              .setMinDist(2)
+              .setMaxPointers(1)
+              .setShouldCancelWhenOutside(false)
+              .setOnTouchEventListener(new OnTouchEventListenerImpl<PanGestureHandler>() {
+                  @Override
+                  public void onTouchEvent(PanGestureHandler handler, MotionEvent event) {
+                      if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+                          largeBlock.setTranslationX(handler.getTranslationX());
+                          largeBlock.setTranslationY(handler.getTranslationY());
+                      }
+                  }
 
-        final GestureHandler panHandler = new PanGestureHandler<>(this)
-                .setMinDist(2)
-                .setMaxPointers(1)
-                .setShouldCancelWhenOutside(false)
-                .setOnTouchEventListener(new OnTouchEventListenerImpl<PanGestureHandler>() {
-                    @Override
-                    public void onTouchEvent(PanGestureHandler handler, MotionEvent event) {
-                        if (handler.getState() == GestureHandler.STATE_ACTIVE) {
-                            largeBlock.setTranslationX(handler.getTranslationX());
-                            largeBlock.setTranslationY(handler.getTranslationY());
-                        }
-                    }
+                  @Override
+                  public void onStateChange(PanGestureHandler handler, int newState, int oldState) {
+                      if (newState == STATE_END) {
+                          largeBlock.setTranslationX(0);
+                          largeBlock.setTranslationY(0);
+                      }
 
-                    @Override
-                    public void onStateChange(PanGestureHandler handler, int newState, int oldState) {
-                        if (newState == STATE_END) {
-                            largeBlock.setTranslationX(0);
-                            largeBlock.setTranslationY(0);
-                        }
+                  }
 
-                    }
+              });
 
+      rotationHandler = new RotationGestureHandler()
+              .setOnTouchEventListener(new OnTouchEventListener<RotationGestureHandler>() {
+
+                  private double mRotation = 0f;
+
+                  @Override
+                  public void onTouchEvent(RotationGestureHandler handler, MotionEvent event) {
+                      if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+                          largeBlock.setRotation((float) Math.toDegrees(mRotation + handler.getRotation()));
+                      }
+                  }
+
+                  @Override
+                  public void onDragEvent(RotationGestureHandler handler, DragEvent event) {
+
+                  }
+
+                  @Override
+                  public void onStateChange(RotationGestureHandler handler, int newState, int oldState) {
+                      if (oldState == GestureHandler.STATE_ACTIVE) {
+                          mRotation += handler.getRotation();
+                      }
+                  }
+              });
+
+      pinchHandler = new PinchGestureHandler()
+              .setOnTouchEventListener(new OnTouchEventListener<PinchGestureHandler>() {
+
+                  private double mScale = 1f;
+
+                  @Override
+                  public void onTouchEvent(PinchGestureHandler handler, MotionEvent event) {
+                      if (handler.getState() == GestureHandler.STATE_ACTIVE) {
+                          largeBlock.setScaleX((float) (mScale * handler.getScale()));
+                          largeBlock.setScaleY((float) (mScale * handler.getScale()));
+                      }
+                  }
+
+                  @Override
+                  public void onDragEvent(PinchGestureHandler handler, DragEvent event) {
+
+                  }
+
+                  @Override
+                  public void onStateChange(PinchGestureHandler handler, int newState, int oldState) {
+                      if (oldState == GestureHandler.STATE_ACTIVE) {
+                          mScale *= handler.getScale();
+                      }
+                  }
+              });
+
+      scrollHandler = new NativeViewGestureHandler()
+              .setDisallowInterruption(true);
+
+      doubleTapHandler = new TapGestureHandler()
+              .setNumberOfTaps(2)
+              .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
+                  @Override
+                  public void onTouchEvent(TapGestureHandler handler, MotionEvent event) {
+                  }
+
+                  @Override
+                  public void onDragEvent(TapGestureHandler handler, DragEvent event) {
+
+                  }
+
+                  @Override
+                  public void onStateChange(TapGestureHandler handler, int newState, int oldState) {
+                      if (newState == GestureHandler.STATE_ACTIVE) {
+                          Toast.makeText(MainActivity.this, "I'm d0able tapped", Toast.LENGTH_SHORT).show();
+                      }
+                  }
+              });
+
+      tapHandler = new TapGestureHandler()
+              .setNumberOfTaps(1)
+              .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
+                  @Override
+                  public void onTouchEvent(TapGestureHandler handler, MotionEvent event) {
+                  }
+
+                  @Override
+                  public void onDragEvent(TapGestureHandler handler, DragEvent event) {
+
+                  }
+
+                  @Override
+                  public void onStateChange(TapGestureHandler handler, int newState, int oldState) {
+                      if (newState == GestureHandler.STATE_ACTIVE) {
+                          Toast.makeText(MainActivity.this, "I'm tapped once", Toast.LENGTH_SHORT).show();
+                      }
+                  }
+              });
+
+      longPressHandler = new LongPressGestureHandler(this)
+              .setShouldCancelWhenOutside(true)
+              .setOnTouchEventListener(new OnTouchEventListener<LongPressGestureHandler>() {
+                  @Override
+                  public void onTouchEvent(LongPressGestureHandler handler, MotionEvent event) {
+                  }
+
+                  @Override
+                  public void onDragEvent(LongPressGestureHandler handler, DragEvent event) {
+
+                  }
+
+                  @Override
+                  public void onStateChange(LongPressGestureHandler handler, int newState, int oldState) {
+                      if (newState == GestureHandler.STATE_ACTIVE) {
+                          Toast.makeText(MainActivity.this, "Long press", Toast.LENGTH_SHORT).show();
+                      }
+                  }
+              });
+
+      dragEventListener = new CustomDragListener() {
+        @Override
+        public void onStateChange(DragGestureHandler<String[], ArrayList<DragDataObject>> handler, int newState, int oldState) {
+          super.onStateChange(handler, newState, oldState);
+          if (newState == GestureHandler.STATE_ACTIVE) {
+            new Timer().schedule(new TimerTask() {
+              @Override
+              public void run() {
+                UiThreadUtil.runOnUiThread(new Runnable() {
+                  @Override
+                  public void run() {
+                    dragHandler.cancel();
+                    Toast.makeText(getApplicationContext(), "Drag gesture CANCELLED programmatically", Toast.LENGTH_SHORT).show();
+                  }
                 });
+              }
+            }, 3500);
+          }
+        }
+      }
+                      .setColorForAction(DragEvent.ACTION_DRAG_STARTED, Color.BLUE)
+                      .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.MAGENTA)
+                      .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
+                      .setColorForState(STATE_END, Color.RED);
 
-        GestureHandler rotationHandler = new RotationGestureHandler()
-                .setOnTouchEventListener(new OnTouchEventListener<RotationGestureHandler>() {
-
-                    private double mRotation = 0f;
-
-                    @Override
-                    public void onTouchEvent(RotationGestureHandler handler, MotionEvent event) {
-                        if (handler.getState() == GestureHandler.STATE_ACTIVE) {
-                            largeBlock.setRotation((float) Math.toDegrees(mRotation + handler.getRotation()));
-                        }
-                    }
-
-                    @Override
-                    public void onDragEvent(RotationGestureHandler handler, DragEvent event) {
-
-                    }
-
-                    @Override
-                    public void onStateChange(RotationGestureHandler handler, int newState, int oldState) {
-                        if (oldState == GestureHandler.STATE_ACTIVE) {
-                            mRotation += handler.getRotation();
-                        }
-                    }
-                });
-
-        GestureHandler pinchHandler = new PinchGestureHandler()
-                .setOnTouchEventListener(new OnTouchEventListener<PinchGestureHandler>() {
-
-                    private double mScale = 1f;
-
-                    @Override
-                    public void onTouchEvent(PinchGestureHandler handler, MotionEvent event) {
-                        if (handler.getState() == GestureHandler.STATE_ACTIVE) {
-                            largeBlock.setScaleX((float) (mScale * handler.getScale()));
-                            largeBlock.setScaleY((float) (mScale * handler.getScale()));
-                        }
-                    }
-
-                    @Override
-                    public void onDragEvent(PinchGestureHandler handler, DragEvent event) {
-
-                    }
-
-                    @Override
-                    public void onStateChange(PinchGestureHandler handler, int newState, int oldState) {
-                        if (oldState == GestureHandler.STATE_ACTIVE) {
-                            mScale *= handler.getScale();
-                        }
-                    }
-                });
-
-        NativeViewGestureHandler scrollHandler = new NativeViewGestureHandler()
-                .setDisallowInterruption(true);
-
-        GestureHandler doubleTapHandler = new TapGestureHandler()
-                .setNumberOfTaps(2)
-                .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
-                    @Override
-                    public void onTouchEvent(TapGestureHandler handler, MotionEvent event) {
-                    }
-
-                    @Override
-                    public void onDragEvent(TapGestureHandler handler, DragEvent event) {
-
-                    }
-
-                    @Override
-                    public void onStateChange(TapGestureHandler handler, int newState, int oldState) {
-                        if (newState == GestureHandler.STATE_ACTIVE) {
-                            Toast.makeText(MainActivity.this, "I'm d0able tapped", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-        GestureHandler tapHandler = new TapGestureHandler()
-                .setNumberOfTaps(1)
-                .setOnTouchEventListener(new OnTouchEventListener<TapGestureHandler>() {
-                    @Override
-                    public void onTouchEvent(TapGestureHandler handler, MotionEvent event) {
-                    }
-
-                    @Override
-                    public void onDragEvent(TapGestureHandler handler, DragEvent event) {
-
-                    }
-
-                    @Override
-                    public void onStateChange(TapGestureHandler handler, int newState, int oldState) {
-                        if (newState == GestureHandler.STATE_ACTIVE) {
-                            Toast.makeText(MainActivity.this, "I'm tapped once", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-        GestureHandler longPressHandler = new LongPressGestureHandler(this)
-                .setShouldCancelWhenOutside(true)
-                .setOnTouchEventListener(new OnTouchEventListener<LongPressGestureHandler>() {
-                    @Override
-                    public void onTouchEvent(LongPressGestureHandler handler, MotionEvent event) {
-                    }
-
-                    @Override
-                    public void onDragEvent(LongPressGestureHandler handler, DragEvent event) {
-
-                    }
-
-                    @Override
-                    public void onStateChange(LongPressGestureHandler handler, int newState, int oldState) {
-                        if (newState == GestureHandler.STATE_ACTIVE) {
-                            Toast.makeText(MainActivity.this, "Long press", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-        final DragEventListenerImpl dragEventListener = new CustomDragListener()
-                        .setColorForAction(DragEvent.ACTION_DRAG_STARTED, Color.BLUE)
-                        .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.MAGENTA)
-                        .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
-                        .setColorForState(STATE_END, Color.RED);
-
-        final DragEventListenerImpl dragEventListener2 = new CustomDragListener()
+      dragEventListener2 = new CustomDragListener()
                 .setColorForAction(DragEvent.ACTION_DRAG_STARTED, Color.CYAN)
                 .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.YELLOW)
                 .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
                 .setColorForState(STATE_END, Color.RED);
 
-        final DragGestureHandler dragHandler = new DragGestureHandlerImpl(this)
+      dragHandler = new DragGestureHandlerImpl(this)
                 .setTypes(dragTypes)
                 .setDataResolver(new CustomDataResolver(this, new String[]{"x", "y", "z"}))
                 .setOnTouchEventListener(dragEventListener);
 
-        final DragGestureHandler buttonDragHandler = new DragGestureHandlerImpl(this)
-                .setOnTouchEventListener(new CustomDragListener()
-                        .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.MAGENTA)
-                        .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.DKGRAY)
-                        .setColorForAction(DragEvent.ACTION_DRAG_ENDED, Color.LTGRAY))
-                .setTypes(dragTypes)
-                .setDragMode(DragGestureUtils.DRAG_MODE_NONE);
+      buttonDragHandler = new DragGestureHandlerImpl(this)
+              .setOnTouchEventListener(new CustomDragListener()
+                      .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.MAGENTA)
+                      .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.DKGRAY)
+                      .setColorForAction(DragEvent.ACTION_DRAG_ENDED, Color.LTGRAY))
+              .setTypes(dragTypes)
+              .setDragMode(DragGestureUtils.DRAG_MODE_NONE);
 
-        final DragGestureHandler.MultiDragShadowBuilder.Config config = new DragGestureHandler.MultiDragShadowBuilder.Config();
+      final DragGestureHandler.MultiDragShadowBuilder.Config config = new DragGestureHandler.MultiDragShadowBuilder.Config();
         buttonDragHandler.setShadowConfig(config);
         config.offset = new Point(300, 150);
 
@@ -411,6 +438,7 @@ public class MainActivity extends Activity {
                 config.offset.y *= -1;
             }
         });
+
         switchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -429,41 +457,47 @@ public class MainActivity extends Activity {
             }
         });
 
-        DropGestureHandler sDropHandler = new DropGestureHandlerImpl(this)
-                .setOnTouchEventListener(new DropEventListenerImpl());
-        //
-        registry.registerHandlerForView(scrollView, scrollHandler)
-        .setOnTouchEventListener(new OnTouchEventListenerImpl<NativeViewGestureHandler>() {
-            @Override
-            public void onTouchEvent(NativeViewGestureHandler handler, MotionEvent event) {
-                Log.d("Scroll", "scroll: " + event);
-            }
+      sDropHandler = new DropGestureHandlerImpl(this)
+              .setOnTouchEventListener(new DropEventListenerImpl());
 
-            @Override
-            public void onStateChange(NativeViewGestureHandler handler, int newState, int oldState) {
-                Log.d("Scroll", "scroll state: " + GestureHandler.stateToString(newState));
-            }
+      registerHandlers();
+      configureInteractions();
+
+    }
+
+    void registerHandlers() {
+      mRegistry.registerHandlerForView(scrollView, scrollHandler)
+        .setOnTouchEventListener(new OnTouchEventListenerImpl<NativeViewGestureHandler>() {
+          @Override
+          public void onTouchEvent(NativeViewGestureHandler handler, MotionEvent event) {
+            Log.d("Scroll", "scroll: " + event);
+          }
+
+          @Override
+          public void onStateChange(NativeViewGestureHandler handler, int newState, int oldState) {
+            Log.d("Scroll", "scroll state: " + GestureHandler.stateToString(newState));
+          }
         });
 
-        registry.registerHandlerForView(button, new NativeViewGestureHandler())
-                .setShouldActivateOnStart(true);
-        registry.registerHandlerForView(button, buttonDragHandler);
-        registry.registerHandlerForView(button, new DropGestureHandlerImpl(this)
-                .setOnTouchEventListener(new DropEventListenerImpl()));
+      mRegistry.registerHandlerForView(button, new NativeViewGestureHandler())
+        .setShouldActivateOnStart(true);
+      mRegistry.registerHandlerForView(button, buttonDragHandler);
+      mRegistry.registerHandlerForView(button, new DropGestureHandlerImpl(this)
+        .setOnTouchEventListener(new DropEventListenerImpl()));
 
 
-        registry.registerHandlerForView(seekBar, new NativeViewGestureHandler())
-                .setDisallowInterruption(true)
-                .setShouldActivateOnStart(true)
-                .setShouldCancelWhenOutside(false);
-        registry.registerHandlerForView(switchView, new NativeViewGestureHandler())
-                .setShouldActivateOnStart(true)
-                .setDisallowInterruption(true)
-                .setShouldCancelWhenOutside(false)
-                .setHitSlop(20);
+      mRegistry.registerHandlerForView(seekBar, new NativeViewGestureHandler())
+        .setDisallowInterruption(true)
+        .setShouldActivateOnStart(true)
+        .setShouldCancelWhenOutside(false);
+      mRegistry.registerHandlerForView(switchView, new NativeViewGestureHandler())
+        .setShouldActivateOnStart(true)
+        .setDisallowInterruption(true)
+        .setShouldCancelWhenOutside(false)
+        .setHitSlop(20);
 
-        registry.registerHandlerForView(block, longPressHandler);
-        registry.registerHandlerForView(block, dragHandler);
+      mRegistry.registerHandlerForView(block, longPressHandler);
+      mRegistry.registerHandlerForView(block, dragHandler);
 /*
         registry.registerHandlerForView(scrollView, new DropGestureHandlerImpl(this))
                 .setEnabled(false)
@@ -478,73 +512,73 @@ public class MainActivity extends Activity {
 
  */
 
-        registry.registerHandlerForView(blockChild, new DropGestureHandlerImpl(this))
-                .setTypes(dragTypes)
-                .setOnTouchEventListener(
-                        new DropEventListenerImpl()
-                                .setColorForState(GestureHandler.STATE_ACTIVE, Color.GREEN)
-                                .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.RED)
-                                .setColorForState(GestureHandler.STATE_FAILED, Color.RED)
-                                .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
-                );
+      mRegistry.registerHandlerForView(blockChild, new DropGestureHandlerImpl(this))
+        .setTypes(dragTypes)
+        .setOnTouchEventListener(
+          new DropEventListenerImpl()
+            .setColorForState(GestureHandler.STATE_ACTIVE, Color.GREEN)
+            .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.RED)
+            .setColorForState(GestureHandler.STATE_FAILED, Color.RED)
+            .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
+        );
 
-        registry.registerHandlerForView(blockChild2, new DropGestureHandlerImpl(this))
-                .setTypes(dragTypes)
-                .setOnTouchEventListener(
-                        new DropEventListenerImpl() {
-                            @Override
-                            public void onStateChange(DropGestureHandler<String[], ArrayList<DragDataObject>> handler, int newState, int oldState) {
-                                super.onStateChange(handler, newState, oldState);
-                                if (newState == STATE_END) {
-                                    scrollView.smoothScrollTo(0, 0);
-                                }
-                            }
-                        }
-                                .setColorForState(GestureHandler.STATE_ACTIVE, Color.GREEN)
-                                .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.RED)
-                                .setColorForState(GestureHandler.STATE_FAILED, Color.RED)
-                                .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
-                );
+      mRegistry.registerHandlerForView(blockChild2, new DropGestureHandlerImpl(this))
+        .setTypes(dragTypes)
+        .setOnTouchEventListener(
+          new DropEventListenerImpl() {
+            @Override
+            public void onStateChange(DropGestureHandler<String[], ArrayList<DragDataObject>> handler, int newState, int oldState) {
+              super.onStateChange(handler, newState, oldState);
+              if (newState == STATE_END) {
+                scrollView.smoothScrollTo(0, 0);
+              }
+            }
+          }
+            .setColorForState(GestureHandler.STATE_ACTIVE, Color.GREEN)
+            .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.RED)
+            .setColorForState(GestureHandler.STATE_FAILED, Color.RED)
+            .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
+        );
 
-        registry.registerHandlerForView(largeBlock, new DropGestureHandlerImpl(this))
-                .setTypes(dragTypes)
-                .setOnTouchEventListener(
-                        new DropEventListenerImpl()
-                                .setColorForState(GestureHandler.STATE_ACTIVE, Color.YELLOW)
-                                .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
-                                .setColorForState(GestureHandler.STATE_FAILED, Color.BLACK)
-                                //.setColorForAction(DragEvent.ACTION_DROP, Color.CYAN)
-                                .setColorForState(STATE_END, Color.CYAN)
-                );
-
-
-        registry.registerHandlerForView(block, doubleTapHandler);
-        registry.registerHandlerForView(block, tapHandler);
-        registry.registerHandlerForView(largeBlock, rotationHandler);
-        registry.registerHandlerForView(largeBlock, pinchHandler);
-        registry.registerHandlerForView(largeBlock, panHandler);
-
-        interactionManager.configureInteractions(panHandler,
-                new int[]{dragHandler.getTag()},
-                new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
-        interactionManager.configureInteractions(rotationHandler, null,
-                new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
-        interactionManager.configureInteractions(pinchHandler, null,
-                new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
-        interactionManager.configureInteractions(scrollHandler,
-                new int[]{dragHandler.getTag(), panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()},
-                new int[]{sDropHandler.getTag()});
-        interactionManager.configureInteractions(dragHandler,
-                new int[]{tapHandler.getTag(), doubleTapHandler.getTag(), longPressHandler.getTag()},
-                new int[]{buttonDragHandler.getTag()});
-        interactionManager.configureInteractions(longPressHandler,
-                null, new int[]{dragHandler.getTag()});
-        interactionManager.configureInteractions(tapHandler,
-                new int[]{doubleTapHandler.getTag(), longPressHandler.getTag()}, null);
-        interactionManager.configureInteractions(doubleTapHandler,
-                new int[]{longPressHandler.getTag()}, null);
-        interactionManager.configureInteractions(sDropHandler,
-                null, new int[]{scrollHandler.getTag()});
+      mRegistry.registerHandlerForView(largeBlock, new DropGestureHandlerImpl(this))
+        .setTypes(dragTypes)
+        .setOnTouchEventListener(
+          new DropEventListenerImpl()
+            .setColorForState(GestureHandler.STATE_ACTIVE, Color.YELLOW)
+            .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
+            .setColorForState(GestureHandler.STATE_FAILED, Color.BLACK)
+            //.setColorForAction(DragEvent.ACTION_DROP, Color.CYAN)
+            .setColorForState(STATE_END, Color.CYAN)
+        );
+      mRegistry.registerHandlerForView(block, doubleTapHandler);
+      mRegistry.registerHandlerForView(block, tapHandler);
+      mRegistry.registerHandlerForView(largeBlock, rotationHandler);
+      mRegistry.registerHandlerForView(largeBlock, pinchHandler);
+      mRegistry.registerHandlerForView(largeBlock, panHandler);
     }
 
+  GestureHandlerInteractionManager interactionManager = new GestureHandlerInteractionManager();
+    void configureInteractions() {
+      interactionManager.configureInteractions(panHandler,
+        new int[]{dragHandler.getTag()},
+        new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
+      interactionManager.configureInteractions(rotationHandler, null,
+        new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
+      interactionManager.configureInteractions(pinchHandler, null,
+        new int[]{panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()});
+      interactionManager.configureInteractions(scrollHandler,
+        new int[]{dragHandler.getTag(), panHandler.getTag(), rotationHandler.getTag(), pinchHandler.getTag()},
+        new int[]{sDropHandler.getTag()});
+      interactionManager.configureInteractions(dragHandler,
+        new int[]{tapHandler.getTag(), doubleTapHandler.getTag(), longPressHandler.getTag()},
+        new int[]{buttonDragHandler.getTag()});
+      interactionManager.configureInteractions(longPressHandler,
+        null, new int[]{dragHandler.getTag()});
+      interactionManager.configureInteractions(tapHandler,
+        new int[]{doubleTapHandler.getTag(), longPressHandler.getTag()}, null);
+      interactionManager.configureInteractions(doubleTapHandler,
+        new int[]{longPressHandler.getTag()}, null);
+      interactionManager.configureInteractions(sDropHandler,
+        null, new int[]{scrollHandler.getTag()});
+    }
 }
