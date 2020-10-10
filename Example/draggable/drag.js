@@ -137,6 +137,7 @@ export default function DragExample(props) {
   const [color, setColor] = useState('black');
   const [displayShadowImage, setDisplayShadowImage] = useState(false);
   const [renderElement, setRenderElement] = useState(true);
+  const [renderElementB, setRenderElementB] = useState(true);
 
   const scrollX = useMemo(() => new Animated.Value(0), []);
   const scrollY = useMemo(() => new Animated.Value(0), []);
@@ -234,79 +235,82 @@ export default function DragExample(props) {
           </Animated.View>
         </DropGestureHandler>
       </DragGestureHandler>
-      <DragGestureHandler
-        onGestureEvent={draggable1.onGestureEvent}
-        onHandlerStateChange={draggable1.onHandlerStateChange}
-        types={[0, 2, 3]}
-        ref={dropZone1.onRef}
-        data={{
-          a: ['b', 'foo', 'bar'],
-          text: dropZone1.text || 'I\'m hungry',
-          nativeProps: {
-            source: require('../scaleAndRotate/swmansion.png'),
-            width: 250,
-            backgroundColor: processColor('gold')
-          }
-        }}
-        shadow={() => (
-          <Animated.View
-            collapsable={false}
-            style={styles.dragShadowWrapper}
-          >
-            <Animated.View
-              style={[styles.dragShadow, { backgroundColor: color }]}
-            />
-            {displayShadowImage ?
-              <Animated.View style={[styles.dragShadow, { backgroundColor: color }]} /> :
-              <Image source={require('../scaleAndRotate/swmansion.png')} />}
-          </Animated.View>
-        )}
-        dragMode={draggable1.shadowEnabled ? 'copy' : 'none'}
-        simultaneousHandlers={[dropZone3.dragRef, dropZone2.dragRef]}
-      //simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
-      >
-        <Animated.View collapsable={false}>
-          <DropGestureHandler
-            types={[1]}
-            onHandlerStateChange={dropZone1.onHandlerStateChange}
-          >
-            <Animated.View collapsable={false}>
-              <TapGestureHandler
-                ref={this._tapRef}
-                onGestureEvent={() => console.log('tap')}
-                onHandlerStateChange={e => {
-                  const { state, oldState } = e.nativeEvent;
-                  if (state === State.END && oldState === State.ACTIVE) {
-                    const text = dropZone1.text;
-                    dropZone1.setText(!draggable1.shadowEnabled ? 'shadow enabled' : 'shadow disabled');
-                    draggable1.setShadowEnabled(!draggable1.shadowEnabled);
-                    setTimeout(() => {
-                      dropZone1.setText(text);
-                    }, 1000);
-                  }
-                }}
-                numberOfTaps={1}
-              >
-                <Animated.View
-                  style={[
-                    styles.pane,
-                    draggable1.extractStyle(),
-                    dropZone1.dropStyle
-                  ]}
-                >
-                  <Text
-                    numberOfLines={5}
-                    ellipsizeMode='tail'>
-                    {dropZone1.text || 'I\'m hungry, tap me to change the way I drag'}
-                  </Text>
-                </Animated.View>
-              </TapGestureHandler>
-            </Animated.View>
-          </DropGestureHandler>
-        </Animated.View>
-      </DragGestureHandler>
       {
         renderElement &&
+        <DragGestureHandler
+          onGestureEvent={draggable1.onGestureEvent}
+          onHandlerStateChange={draggable1.onHandlerStateChange}
+          types={[0, 2, 3]}
+          ref={dropZone1.onRef}
+          data={{
+            a: ['b', 'foo', 'bar'],
+            text: dropZone1.text || 'I\'m hungry',
+            nativeProps: {
+              source: require('../scaleAndRotate/swmansion.png'),
+              width: 250,
+              backgroundColor: processColor('gold')
+            }
+          }}
+          shadow={() => (
+            <Animated.View
+              collapsable={false}
+              style={styles.dragShadowWrapper}
+            >
+              <Animated.View
+                style={[styles.dragShadow, { backgroundColor: color }]}
+              />
+              {displayShadowImage ?
+                <Animated.View style={[styles.dragShadow, { backgroundColor: color }]} /> :
+                <Image source={require('../scaleAndRotate/swmansion.png')} />}
+            </Animated.View>
+          )}
+          dragMode={draggable1.shadowEnabled ? 'copy' : 'none'}
+          simultaneousHandlers={[dropZone3.dragRef, dropZone2.dragRef]}
+        //simultaneousHandlers={dropZoneReg.map(val => val.dragRef)}
+        >
+          <Animated.View collapsable={false}>
+            <DropGestureHandler
+              types={[1]}
+              onHandlerStateChange={dropZone1.onHandlerStateChange}
+            >
+              <Animated.View collapsable={false}>
+                <TapGestureHandler
+                  ref={this._tapRef}
+                  onGestureEvent={() => console.log('tap')}
+                  onHandlerStateChange={e => {
+                    const { state, oldState } = e.nativeEvent;
+                    if (state === State.END && oldState === State.ACTIVE) {
+                      const text = dropZone1.text;
+                      dropZone1.setText(!draggable1.shadowEnabled ? 'shadow enabled' : 'shadow disabled');
+                      draggable1.setShadowEnabled(!draggable1.shadowEnabled);
+                      setTimeout(() => {
+                        dropZone1.setText(text);
+                      }, 1000);
+                    }
+                  }}
+                  numberOfTaps={1}
+                >
+                  <Animated.View
+                    style={[
+                      styles.pane,
+                      draggable1.extractStyle(),
+                      dropZone1.dropStyle
+                    ]}
+                  >
+                    <Text
+                      numberOfLines={5}
+                      ellipsizeMode='tail'>
+                      {dropZone1.text || 'I\'m hungry, tap me to change the way I drag'}
+                    </Text>
+                  </Animated.View>
+                </TapGestureHandler>
+              </Animated.View>
+            </DropGestureHandler>
+          </Animated.View>
+        </DragGestureHandler>
+      }
+      {
+        renderElementB &&
         <DragGestureHandler
           types={[1, 2]}
           data={{ foo: 'bar', text: LOREM_IPSUM }}
@@ -316,8 +320,11 @@ export default function DragExample(props) {
             const { state } = e.nativeEvent;
             if (state !== State.ACTIVE) return;
             setTimeout(() => {
-              setRenderElement(false);
-            }, 1500)
+              setRenderElementB(false);
+            }, 1500);
+            setTimeout(() => {
+              setRenderElementB(true);
+            }, 5000);
           }}
         >
           <DropGestureHandler
@@ -338,6 +345,16 @@ export default function DragExample(props) {
           margin: [20, 30],
           offset: [50, -50],
           //multiShadowEnabled: false
+        }}
+        onHandlerStateChange={e => {
+          const { state } = e.nativeEvent;
+          if (state !== State.ACTIVE) return;
+          setTimeout(() => {
+            setRenderElement(false);
+          }, 1500);
+          setTimeout(() => {
+            setRenderElement(true);
+          }, 5000);
         }}
       >
         <DropGestureHandler
