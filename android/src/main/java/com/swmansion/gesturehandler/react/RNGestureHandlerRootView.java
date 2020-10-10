@@ -35,12 +35,6 @@ public class RNGestureHandlerRootView extends ReactViewGroup {
 
   public RNGestureHandlerRootView(Context context) {
     super(context);
-    setOnDragListener(new OnDragListener() {
-      @Override
-      public boolean onDrag(View v, DragEvent event) {
-        return true;
-      }
-    });
   }
 
   @Override
