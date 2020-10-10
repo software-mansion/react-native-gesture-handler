@@ -153,7 +153,8 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
       mDerivedMotionEvent.setDownTime();
       // false ENTERED event received because of root view's drag listener so we don't handle it
       return true;
-    } else if (mBlockDragEvent) {
+    } else if (action != DragEvent.ACTION_DRAG_ENDED && mBlockDragEvent) {
+      // logic for drag cancellation sequence
       return false;
     }
     mIsHandlingTouch = true;
