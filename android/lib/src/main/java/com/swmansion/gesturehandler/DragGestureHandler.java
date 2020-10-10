@@ -416,6 +416,10 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
      */
     @Override
     protected void onHandle(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP && mIsDragging) {
+          cancel();
+          return;
+        }
         super.onHandle(event);
         if (getState() == STATE_ACTIVE && !mOrchestrator.mIsDragging) {
             startDragging();

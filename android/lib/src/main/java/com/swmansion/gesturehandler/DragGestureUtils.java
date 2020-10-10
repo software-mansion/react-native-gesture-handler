@@ -24,7 +24,6 @@ public class DragGestureUtils {
 
     public static final String DRAG_EVENT_NAME = "GESTURE_HANDLER_DRAG_EVENT";
     public static final String DRAG_MIME_TYPE = "GESTURE_HANDLER_CLIP_DATA";
-    public static final int ACTION_DRAG_CANCELLED = 0;
 
     public static final String KEY_DATA = "data";
     public static final String KEY_SOURCE_APP = "sourceAppID";
