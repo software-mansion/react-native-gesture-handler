@@ -131,7 +131,7 @@ class DragDropUtil {
         @Override
         public void onStateChange(final T handler, int newState, int oldState) {
             log("state " + GestureHandler.stateToString(newState) + " " + handler);
-            if (newState == GestureHandler.STATE_ACTIVE) {
+            if (newState == GestureHandler.STATE_BEGAN) {
               resetView = new Runnable() {
                 View view = handler.getView();
                 @Override

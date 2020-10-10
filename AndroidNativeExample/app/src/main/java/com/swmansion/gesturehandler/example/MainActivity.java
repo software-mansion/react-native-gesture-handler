@@ -544,10 +544,10 @@ public class MainActivity extends Activity {
         .setShouldCancelWhenOutside(false)
         .setHitSlop(20);
 
-      //mRegistry.registerHandlerForView(block, longPressHandler);
+      mRegistry.registerHandlerForView(block, longPressHandler);
       mRegistry.registerHandlerForView(block, dragHandler);
-      //mRegistry.registerHandlerForView(block, doubleTapHandler);
-      //mRegistry.registerHandlerForView(block, tapHandler);
+      mRegistry.registerHandlerForView(block, doubleTapHandler);
+      mRegistry.registerHandlerForView(block, tapHandler);
 
       mRegistry.registerHandlerForView(blockChild, new DropGestureHandlerImpl(this))
         .setTypes(dragTypes)
@@ -583,7 +583,6 @@ public class MainActivity extends Activity {
           new DropEventListenerImpl()
             .setColorForState(GestureHandler.STATE_ACTIVE, Color.YELLOW)
             .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
-            .setColorForState(GestureHandler.STATE_FAILED, Color.BLACK)
             //.setColorForAction(DragEvent.ACTION_DROP, Color.CYAN)
             .setColorForState(STATE_END, Color.CYAN)
         );
