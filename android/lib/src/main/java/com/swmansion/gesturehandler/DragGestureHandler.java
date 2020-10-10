@@ -266,15 +266,11 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         );
     }
 
-    private void runOnUiThread(Runnable runnable) {
-        mDataResolver.getActivity().runOnUiThread(runnable);
-    }
-
     private void setElevation() {
         final View[] views = getViews();
         mOriginalElevation = new float[mActiveDragHandlers.size()];
         if (views.length == 0) return;
-        runOnUiThread(new Runnable() {
+        UiThreadUtil.runOnUiThread(new Runnable() {
             @Override
             public void run() {
               for (int i = 0; i < views.length; i++) {
@@ -297,7 +293,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
 
     private void resetElevation(final View[] views) {
       if (views.length == 0) return;
-      runOnUiThread(new Runnable() {
+      UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public void run() {
           for (int i = 0; i < views.length; i++) {
@@ -320,7 +316,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
       if (views.length == 0) {
         mIsInvisible = !visible;
       } else {
-        runOnUiThread(new Runnable() {
+        UiThreadUtil.runOnUiThread(new Runnable() {
           @Override
           public void run() {
             for (View view: views) {
