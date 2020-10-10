@@ -313,16 +313,14 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     }
 
     private void setViewVisibility(final View[] views, final boolean visible) {
-      if (views.length == 0) {
-        mIsInvisible = !visible;
-      } else {
+      mIsInvisible = !visible;
+      if (views.length > 0) {
         UiThreadUtil.runOnUiThread(new Runnable() {
           @Override
           public void run() {
             for (View view: views) {
               view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
             }
-            mIsInvisible = !visible;
           }
         });
       }
@@ -375,9 +373,6 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
                             shadowBuilder,
                             mShadowBuilderView),
                     throwable);
-        }
-        if ((mDragMode == DRAG_MODE_MOVE || mDragMode == DRAG_MODE_MOVE_RESTORE) && mLastShadowVisible) {
-            setViewVisibility(false);
         }
     }
 
@@ -432,6 +427,10 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
       mDragAction = event.getAction();
       if (mSourceAppID == null) {
         mSourceAppID = DragGestureUtils.getEventPackageName(event);
+      }
+      if (mDragAction == DragEvent.ACTION_DRAG_STARTED && mIsDragging
+        && (mDragMode == DRAG_MODE_MOVE || mDragMode == DRAG_MODE_MOVE_RESTORE) && mLastShadowVisible) {
+        setViewVisibility(false);
       }
       if (mDragAction == DragEvent.ACTION_DROP) {
         mResult = true;
@@ -518,13 +517,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         // TODO: 10/10/2020 avoid flickering in case the handler has been reset because it's view is being removed from the tree
         // we don't want the view reappearing just to get removed a few frames later
         // but I don't have an idea how to deal with this problem
-        UiThreadUtil.runOnUiThread(new Runnable() {
-          View[] views = getViews();
-          @Override
-          public void run() {
-            setViewVisibility(views, true);
-          }
-        });
+        setViewVisibility(true);
       }
     }
   }

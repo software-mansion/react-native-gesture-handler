@@ -2,7 +2,6 @@ package com.swmansion.gesturehandler;
 
 import android.content.Context;
 import android.view.DragEvent;
-import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
 
@@ -30,7 +29,11 @@ public abstract class DragDropGestureHandler<T extends DataResolver, S extends D
         return mContext;
     }
 
-    // to operate as expected DragDropGestureHandler must not cancel when outside so we override this permanently
+  /**
+   * to operate as expected DragDropGestureHandler must not cancel when outside so we override this permanently
+   * @param shouldCancelWhenOutside
+   * @return
+   */
     @Override
     public final S setShouldCancelWhenOutside(boolean shouldCancelWhenOutside) {
         return (S) this;
@@ -98,18 +101,6 @@ public abstract class DragDropGestureHandler<T extends DataResolver, S extends D
             }
         }
         return false;
-    }
-
-    @Override
-    protected void onHandle(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            // we don't want PanGestureHandler to handle state decision making for up event
-            if (!mOrchestrator.mIsDragging) {
-                cancel();
-            }
-        } else {
-            super.onHandle(event);
-        }
     }
 
     @Override
