@@ -146,7 +146,7 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
   public boolean onDragEvent(DragEvent event) {
     int action = event.getAction();
     if (action == DragEvent.ACTION_DRAG_STARTED) {
-      // In case the app is in multi-window mode and the drag event originated from a different app
+      // In case the app is in multi-window mode and the drag event originated from a different app, we set mIsDragging
       mIsDragging = true;
       mIgnoreDragEvent = false;
     } else if (action == DragEvent.ACTION_DRAG_ENTERED) {
