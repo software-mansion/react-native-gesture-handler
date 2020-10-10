@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.swmansion.gesturehandler.DragGestureUtils.DRAG_MIME_TYPE;
 
@@ -39,7 +40,7 @@ public abstract class DragDropGestureHandler<T extends DataResolver, S extends D
         return mDTypes;
     }
 
-    public S setTypes(ArrayList<Integer> types) {
+    public S setTypes(List<Integer> types) {
         mDTypes.clear();
         if (types != null) {
             mDTypes.addAll(types);
