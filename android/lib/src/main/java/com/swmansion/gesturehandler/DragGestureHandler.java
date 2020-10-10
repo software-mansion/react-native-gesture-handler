@@ -19,7 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.view.ViewCompat;
 
-import com.facebook.react.bridge.UiThreadUtil;
+//import com.facebook.react.bridge.UiThreadUtil;
 import com.swmansion.gesturehandler.DragGestureUtils.DataResolver;
 
 import java.util.ArrayList;

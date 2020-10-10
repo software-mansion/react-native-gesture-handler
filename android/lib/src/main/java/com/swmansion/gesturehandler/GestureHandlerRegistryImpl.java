@@ -5,7 +5,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import com.facebook.react.bridge.UiThreadUtil;
+//import com.facebook.react.bridge.UiThreadUtil;
 
 import java.util.ArrayList;
 import java.util.WeakHashMap;

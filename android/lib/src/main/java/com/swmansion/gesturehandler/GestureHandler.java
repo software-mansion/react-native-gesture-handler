@@ -4,7 +4,7 @@ import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.facebook.react.bridge.UiThreadUtil;
+//import com.facebook.react.bridge.UiThreadUtil;
 
 import java.util.Arrays;
 
