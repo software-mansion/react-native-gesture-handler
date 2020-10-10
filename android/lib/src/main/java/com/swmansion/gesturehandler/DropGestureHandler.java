@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -81,7 +82,21 @@ public class DropGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         return mDropActivationIndex == 0 && super.shouldActivate();
     }
 
-    /**
+    @Override
+    protected void onHandle(MotionEvent event) {
+      if (!mOrchestrator.mIsDragging) {
+        int state = getState();
+        if (state == STATE_ACTIVE) {
+          cancel();
+        } else {
+          fail();
+        }
+        return;
+      }
+      super.onHandle(event);
+    }
+
+  /**
      * @param event receives an event with {@link DragGestureHandler} {@link DragEvent} action
      */
     @Override
