@@ -62,6 +62,8 @@ class DragDropUtil {
         private HashMap<Object, Integer> stateToColor = new HashMap<>();
         private Integer bgc = null;
         private Integer currentBgc = null;
+        private boolean verbose = false;
+        private Runnable resetView;
 
         S setColorForAction(int action, int color) {
             actionToColor.put(action, color);
@@ -76,6 +78,15 @@ class DragDropUtil {
         S setColorForState(int state, int oldState, int color) {
             stateToColor.put(state + "," + oldState, color);
             return (S) this;
+        }
+
+        S setVerbosity(boolean verbose) {
+          this.verbose = verbose;
+          return (S) this;
+        }
+
+        private void resetBackgroundColor(View view) {
+            if (bgc != null) setBackgroundColor(view, bgc);
         }
 
         private void setBackgroundColor(View view, int color) {
@@ -99,6 +110,10 @@ class DragDropUtil {
             }
         }
 
+        private void log(String msg) {
+          if (verbose) Log.d("Drag", msg);
+        }
+
         @Override
         public void onTouchEvent(T handler, MotionEvent event) {
 
@@ -107,15 +122,24 @@ class DragDropUtil {
         @Override
         public void onDragEvent(T handler, DragEvent event) {
             int action = event.getAction();
-            Log.d("Drag", "action " + event.getAction() + ", " + printData(handler) + " " + handler);
+            log("action " + event.getAction() + ", " + printData(handler) + " " + handler);
             if (actionToColor.containsKey(action)) {
                 setBackgroundColor(handler.getView(), actionToColor.get(action));
             }
         }
 
         @Override
-        public void onStateChange(T handler, int newState, int oldState) {
-            Log.d("Drag", "state " + GestureHandler.stateToString(newState) + " " + handler);
+        public void onStateChange(final T handler, int newState, int oldState) {
+            log("state " + GestureHandler.stateToString(newState) + " " + handler);
+            if (newState == GestureHandler.STATE_ACTIVE) {
+              resetView = new Runnable() {
+                View view = handler.getView();
+                @Override
+                public void run() {
+                  resetBackgroundColor(view);
+                }
+              };
+            }
             Integer color = stateToColor.containsKey(newState + ',' + oldState) ?
                     stateToColor.get(newState + ',' + oldState) :
                     stateToColor.containsKey(newState) ?
@@ -123,6 +147,9 @@ class DragDropUtil {
                             null;
             if (color != null) {
                 setBackgroundColor(handler.getView(), color);
+            } else if (newState == GestureHandler.STATE_CANCELLED && resetView != null) {
+                resetView.run();
+                resetView = null;
             }
         }
     }

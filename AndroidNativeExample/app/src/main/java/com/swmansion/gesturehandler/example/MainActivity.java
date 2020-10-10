@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
     private View block;
     private View largeBlock;
     private View blockChild;
-    private View blockChild2;
+    private View blockAtEnd;
     private Switch switchView;
     private TextView textView;
     private boolean enableShadow = true;
@@ -95,6 +95,7 @@ public class MainActivity extends Activity {
     class CustomDragListener extends DragEventListenerImpl {
         private float dy, y = 0;
         private final int height;
+        private Runnable resetTranslation;
 
         CustomDragListener() {
             DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -103,7 +104,7 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void onDragEvent(DragGestureHandler<String[], ArrayList<DragDataObject>> handler, DragEvent event) {
+        public void onDragEvent(final DragGestureHandler<String[], ArrayList<DragDataObject>> handler, DragEvent event) {
             super.onDragEvent(handler, event);
             boolean scroll = true;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && MainActivity.this.isInMultiWindowMode()) {
@@ -120,14 +121,25 @@ public class MainActivity extends Activity {
             }
 
             y = event.getY();
-
             if (!enableShadow) {
                 View view = handler.getView();
                 view.setTranslationX(handler.getTranslationX() + scrollView.getScrollX());
                 view.setTranslationY(handler.getTranslationY() + scrollView.getScrollY());
-                if (isFinished(handler.getState())) {
-                    view.setTranslationX(0);
-                    view.setTranslationY(0);
+                if (resetTranslation == null) {
+                  resetTranslation = new Runnable() {
+                    View view = handler.getView();
+                    @Override
+                    public void run() {
+                      if (isFinished(handler.getState())) {
+                        view.setTranslationX(0);
+                        view.setTranslationY(0);
+                        resetTranslation = null;
+                      }
+                    }
+                  };
+                }
+                if (resetTranslation != null) {
+                  resetTranslation.run();
                 }
             }
             if (event.getAction() == DragEvent.ACTION_DROP) {
@@ -149,6 +161,14 @@ public class MainActivity extends Activity {
                 }
 
             }
+        }
+
+        @Override
+        public void onStateChange(DragGestureHandler<String[], ArrayList<DragDataObject>> handler, int newState, int oldState) {
+          super.onStateChange(handler, newState, oldState);
+          if (resetTranslation != null) {
+            resetTranslation.run();
+          }
         }
     }
 
@@ -201,7 +221,7 @@ public class MainActivity extends Activity {
         seekBar = findViewById(R.id.seekbar);
         block = findViewById(R.id.block);
         blockChild = findViewById(R.id.block_child);
-        blockChild2 = findViewById(R.id.block_child2);
+        blockAtEnd = findViewById(R.id.block_child2);
         largeBlock = findViewById(R.id.large_block);
         switchView = findViewById(R.id.switchView);
         final View[] shadows = new View[]{button, switchView, largeBlock, null};
@@ -366,11 +386,14 @@ public class MainActivity extends Activity {
               });
 
       dragEventListener = new CustomDragListener() {
+        Timer timer;
+        TimerTask task;
+
         @Override
         public void onStateChange(DragGestureHandler<String[], ArrayList<DragDataObject>> handler, int newState, int oldState) {
           super.onStateChange(handler, newState, oldState);
           if (newState == GestureHandler.STATE_ACTIVE) {
-            new Timer().schedule(new TimerTask() {
+            task = new TimerTask() {
               @Override
               public void run() {
                 UiThreadUtil.runOnUiThread(new Runnable() {
@@ -381,14 +404,20 @@ public class MainActivity extends Activity {
                   }
                 });
               }
-            }, 3500);
+            };
+            timer = new Timer();
+            timer.schedule(task, 3500);
+          } else if (isFinished(newState) && timer != null) {
+            timer.cancel();
+            timer = null;
           }
         }
       }
                       .setColorForAction(DragEvent.ACTION_DRAG_STARTED, Color.BLUE)
                       .setColorForAction(DragEvent.ACTION_DRAG_ENTERED, Color.MAGENTA)
                       .setColorForAction(DragEvent.ACTION_DRAG_EXITED, Color.BLACK)
-                      .setColorForState(STATE_END, Color.RED);
+                      .setColorForState(STATE_END, Color.RED)
+                      .setVerbosity(true);
 
       dragEventListener2 = new CustomDragListener()
                 .setColorForAction(DragEvent.ACTION_DRAG_STARTED, Color.CYAN)
@@ -468,38 +497,24 @@ public class MainActivity extends Activity {
     void registerHandlers() {
       mRegistry.registerHandlerForView(scrollView, scrollHandler)
         .setOnTouchEventListener(new OnTouchEventListenerImpl<NativeViewGestureHandler>() {
+          private boolean verbose = false;
+
+          private void log(String msg) {
+            if (verbose) Log.d("Scroll", msg);
+          }
+
           @Override
           public void onTouchEvent(NativeViewGestureHandler handler, MotionEvent event) {
-            Log.d("Scroll", "scroll: " + event);
+            log("scroll: " + event);
           }
 
           @Override
           public void onStateChange(NativeViewGestureHandler handler, int newState, int oldState) {
-            Log.d("Scroll", "scroll state: " + GestureHandler.stateToString(newState));
+            log("scroll state: " + GestureHandler.stateToString(newState));
           }
         });
-
-      mRegistry.registerHandlerForView(button, new NativeViewGestureHandler())
-        .setShouldActivateOnStart(true);
-      mRegistry.registerHandlerForView(button, buttonDragHandler);
-      mRegistry.registerHandlerForView(button, new DropGestureHandlerImpl(this)
-        .setOnTouchEventListener(new DropEventListenerImpl()));
-
-
-      mRegistry.registerHandlerForView(seekBar, new NativeViewGestureHandler())
-        .setDisallowInterruption(true)
-        .setShouldActivateOnStart(true)
-        .setShouldCancelWhenOutside(false);
-      mRegistry.registerHandlerForView(switchView, new NativeViewGestureHandler())
-        .setShouldActivateOnStart(true)
-        .setDisallowInterruption(true)
-        .setShouldCancelWhenOutside(false)
-        .setHitSlop(20);
-
-      mRegistry.registerHandlerForView(block, longPressHandler);
-      mRegistry.registerHandlerForView(block, dragHandler);
-/*
-        registry.registerHandlerForView(scrollView, new DropGestureHandlerImpl(this))
+      /*
+        mRegistry.registerHandlerForView(scrollView, new DropGestureHandlerImpl(this))
                 .setEnabled(false)
                 .setTypes(dragTypes)
                 .setOnTouchEventListener(
@@ -512,6 +527,28 @@ public class MainActivity extends Activity {
 
  */
 
+      mRegistry.registerHandlerForView(button, new NativeViewGestureHandler())
+        .setShouldActivateOnStart(true);
+      mRegistry.registerHandlerForView(button, buttonDragHandler);
+      mRegistry.registerHandlerForView(button, new DropGestureHandlerImpl(this)
+        .setOnTouchEventListener(new DropEventListenerImpl()));
+
+      mRegistry.registerHandlerForView(seekBar, new NativeViewGestureHandler())
+        .setDisallowInterruption(true)
+        .setShouldActivateOnStart(true)
+        .setShouldCancelWhenOutside(false);
+
+      mRegistry.registerHandlerForView(switchView, new NativeViewGestureHandler())
+        .setShouldActivateOnStart(true)
+        .setDisallowInterruption(true)
+        .setShouldCancelWhenOutside(false)
+        .setHitSlop(20);
+
+      //mRegistry.registerHandlerForView(block, longPressHandler);
+      mRegistry.registerHandlerForView(block, dragHandler);
+      //mRegistry.registerHandlerForView(block, doubleTapHandler);
+      //mRegistry.registerHandlerForView(block, tapHandler);
+
       mRegistry.registerHandlerForView(blockChild, new DropGestureHandlerImpl(this))
         .setTypes(dragTypes)
         .setOnTouchEventListener(
@@ -522,7 +559,7 @@ public class MainActivity extends Activity {
             .setColorForAction(DragEvent.ACTION_DROP, Color.BLUE)
         );
 
-      mRegistry.registerHandlerForView(blockChild2, new DropGestureHandlerImpl(this))
+      mRegistry.registerHandlerForView(blockAtEnd, new DropGestureHandlerImpl(this))
         .setTypes(dragTypes)
         .setOnTouchEventListener(
           new DropEventListenerImpl() {
@@ -550,8 +587,6 @@ public class MainActivity extends Activity {
             //.setColorForAction(DragEvent.ACTION_DROP, Color.CYAN)
             .setColorForState(STATE_END, Color.CYAN)
         );
-      mRegistry.registerHandlerForView(block, doubleTapHandler);
-      mRegistry.registerHandlerForView(block, tapHandler);
       mRegistry.registerHandlerForView(largeBlock, rotationHandler);
       mRegistry.registerHandlerForView(largeBlock, pinchHandler);
       mRegistry.registerHandlerForView(largeBlock, panHandler);
