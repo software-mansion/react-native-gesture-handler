@@ -90,6 +90,7 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
   @Nullable DropGestureHandler mLastDropHandler;
   private boolean mIsDragOrigin = false;
   private int mDropActivationIndex = 0;
+  private boolean mIgnoreDragEvent = false;
 
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
@@ -147,10 +148,13 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
     if (action == DragEvent.ACTION_DRAG_STARTED) {
       // In case the app is in multi-window mode and the drag event originated from a different app
       mIsDragging = true;
+      mIgnoreDragEvent = false;
     } else if (action == DragEvent.ACTION_DRAG_ENTERED) {
       mDerivedMotionEvent.setDownTime();
       // false ENTERED event received because of root view's drag listener so we don't handle it
       return true;
+    } else if (action != DragEvent.ACTION_DRAG_ENDED && mIgnoreDragEvent) {
+      return false;
     }
     mIsHandlingTouch = true;
     if (action == DragEvent.ACTION_DRAG_LOCATION) {
@@ -209,6 +213,7 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
     if (!mWrapperView.dispatchDragEvent(endEvent)) {
       onDragEvent(endEvent);
     }
+    mIgnoreDragEvent = true;
     DragGestureUtils.recycle(endEvent);
   }
 
