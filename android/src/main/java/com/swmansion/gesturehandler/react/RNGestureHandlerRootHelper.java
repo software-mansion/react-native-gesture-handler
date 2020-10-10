@@ -149,9 +149,9 @@ public class RNGestureHandlerRootHelper implements View.OnDragListener {
   @Override
   public boolean onDrag(View v, DragEvent event) {
     mPassingTouch = true;
-    mOrchestrator.onDragEvent(event);
+    boolean value = mOrchestrator.onDragEvent(event);
     mPassingTouch = false;
-    return true;
+    return value;
   }
 
   private void tryCancelAllHandlers() {
