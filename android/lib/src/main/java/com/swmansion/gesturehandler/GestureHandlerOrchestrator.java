@@ -179,6 +179,8 @@ public class GestureHandlerOrchestrator extends BroadcastReceiver {
       mDragEventMaster = null;
       mLastDropHandler = null;
       mIsDragOrigin = false;
+      // cancel remaining handlers that originated from the MotionEvent
+      cancelAll();
     }
     // cleanup handlers
     if (action == DragEvent.ACTION_DRAG_EXITED) {
