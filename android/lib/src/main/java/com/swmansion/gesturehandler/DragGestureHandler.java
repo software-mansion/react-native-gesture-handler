@@ -67,6 +67,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
     private boolean mIsInvisible = false;
     private boolean mLastShadowVisible;
     private @Nullable Runnable mDragCanceller;
+    private long mResetViewStateDelay = 0;
 
     private boolean mDidWarn = false;
     private static final String DEBUG_TAG = "GestureHandler";
@@ -482,7 +483,7 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
    * android devices lower than version N can't control or cancel the drag event once it's started or modify the drag shadow
    * meaning that the cancellation will not remove the drag shadow, only a user's gesture will
    */
-  @Override
+    @Override
     protected void onCancel() {
       if (mIsDragging) {
         mDragCanceller = new Runnable() {
@@ -499,6 +500,13 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         };
       }
     }
+
+  @Override
+  public void detach() {
+    mResetViewStateDelay = 250;
+    super.detach();
+    mResetViewStateDelay = 0;
+  }
 
   @Override
   protected void onStateChange(int newState, int previousState) {
@@ -518,10 +526,18 @@ public class DragGestureHandler<T, S> extends DragDropGestureHandler<DataResolve
         resetElevation();
       }
       if (!mResult && mIsInvisible && (mDragMode == DRAG_MODE_MOVE || mDragMode == DRAG_MODE_MOVE_RESTORE)) {
-        // TODO: 10/10/2020 avoid flickering in case the handler has been reset because it's view is being removed from the tree
-        // we don't want the view reappearing just to get removed a few frames later
-        // but I don't have an idea how to deal with this problem
-        setViewVisibility(true);
+        // We want to avoid flickering in case the handler has been reset after being cancelled
+        // because it's view is being removed from the tree.
+        // We don't want the view reappearing just to get removed a few frames later
+        // so we use postDelayed to reset visibility after react has unmounted the view.
+        UiThreadUtil.runOnUiThread(new Runnable() {
+          final View[] views = getViews();
+
+          @Override
+          public void run() {
+            setViewVisibility(views, true);
+          }
+        }, mResetViewStateDelay);
       }
     }
   }

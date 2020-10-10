@@ -51,7 +51,7 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          handler.cancel();
+          handler.detach();
         }
       });
     }

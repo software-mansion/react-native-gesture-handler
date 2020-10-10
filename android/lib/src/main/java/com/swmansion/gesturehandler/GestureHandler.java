@@ -463,6 +463,10 @@ public class GestureHandler<T extends GestureHandler> {
     return posX >= left && posX <= right && posY >= top && posY <= bottom;
   }
 
+  public void detach() {
+    cancel();
+  }
+
   public final void cancel() {
     if (mState == STATE_ACTIVE || mState == STATE_UNDETERMINED || mState == STATE_BEGAN) {
       onCancel();
