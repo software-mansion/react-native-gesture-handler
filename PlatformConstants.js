@@ -1,3 +1,3 @@
-import { NativeModules } from 'react-native';
+import { Platform } from 'react-native';
 
-export default NativeModules.PlatformConstants;
+export default Platform.constants;
