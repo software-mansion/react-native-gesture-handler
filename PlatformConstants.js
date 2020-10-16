@@ -1,3 +1,3 @@
 import { Platform } from 'react-native';
 
-export default Platform.constants;
+export default NativeModules?.PlatformConstants ?? Platform.constants;
