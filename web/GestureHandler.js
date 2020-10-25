@@ -72,7 +72,8 @@ class GestureHandler {
     }
   };
 
-  updateGestureConfig({ enabled = true, ...props }) {
+  updateGestureConfig({ enabled = true, ...props }, _props) {
+    this._props = _props;
     this.clearSelfAsPending();
 
     this.config = ensureConfig({ enabled, ...props });

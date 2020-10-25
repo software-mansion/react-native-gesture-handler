@@ -217,7 +217,18 @@ export default function createHandler(
     _updateGestureHandler = newConfig => {
       this._config = newConfig;
 
-      RNGestureHandlerModule.updateGestureHandler(this._handlerTag, newConfig);
+      if (Platform.OS === 'web') {
+        RNGestureHandlerModule.updateGestureHandler(
+          this._handlerTag,
+          newConfig,
+          this.props
+        );
+      } else {
+        RNGestureHandlerModule.updateGestureHandler(
+          this._handlerTag,
+          newConfig
+        );
+      }
     };
 
     componentWillUnmount() {

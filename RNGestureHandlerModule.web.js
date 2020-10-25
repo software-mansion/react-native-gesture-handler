@@ -39,8 +39,8 @@ export default {
   attachGestureHandler(handlerTag, newView, props) {
     NodeManager.getHandler(handlerTag).setView(newView, props);
   },
-  updateGestureHandler(handlerTag, newConfig) {
-    NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+  updateGestureHandler(handlerTag, newConfig, props) {
+    NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig, props);
   },
   getGestureHandlerNode(handlerTag) {
     return NodeManager.getHandler(handlerTag);
