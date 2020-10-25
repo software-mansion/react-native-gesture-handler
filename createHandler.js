@@ -200,7 +200,18 @@ export default function createHandler(
     _attachGestureHandler = newViewTag => {
       this._viewTag = newViewTag;
 
-      RNGestureHandlerModule.attachGestureHandler(this._handlerTag, newViewTag);
+      if (Platform.OS === 'web') {
+        RNGestureHandlerModule.attachGestureHandler(
+          this._handlerTag,
+          newViewTag,
+          this.props
+        );
+      } else {
+        RNGestureHandlerModule.attachGestureHandler(
+          this._handlerTag,
+          newViewTag
+        );
+      }
     };
 
     _updateGestureHandler = newConfig => {
