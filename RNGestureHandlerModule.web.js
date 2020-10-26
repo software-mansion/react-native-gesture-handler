@@ -27,20 +27,20 @@ export default {
   handleClearJSResponder() {
     console.warn('handleClearJSResponder: ');
   },
-  createGestureHandler(handlerName, handlerTag, config, events) {
+  createGestureHandler(handlerName, handlerTag, config) {
     if (!(handlerName in Gestures))
       throw new Error(
         `react-native-gesture-handler: ${handlerName} is not supported on web.`
       );
     const GestureClass = Gestures[handlerName];
     NodeManager.createGestureHandler(handlerTag, new GestureClass());
-    this.updateGestureHandler(handlerTag, config, events);
+    this.updateGestureHandler(handlerTag, config);
   },
-  attachGestureHandler(handlerTag, newView, events) {
-    NodeManager.getHandler(handlerTag).setView(newView, events);
+  attachGestureHandler(handlerTag, newView, propsRef) {
+    NodeManager.getHandler(handlerTag).setView(newView, propsRef);
   },
-  updateGestureHandler(handlerTag, newConfig, events) {
-    NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig, events);
+  updateGestureHandler(handlerTag, newConfig) {
+    NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
   },
   getGestureHandlerNode(handlerTag) {
     return NodeManager.getHandler(handlerTag);

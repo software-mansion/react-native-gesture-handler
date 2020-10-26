@@ -141,6 +141,8 @@ export default function createHandler(
       super(props);
       this._handlerTag = handlerTag++;
       this._config = {};
+      this._propsRef = React.createRef(props);
+
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);
@@ -189,36 +191,28 @@ export default function createHandler(
 
     _createGestureHandler = newConfig => {
       this._config = newConfig;
-      this._events = this._getEventProps();
 
       RNGestureHandlerModule.createGestureHandler(
         handlerName,
         this._handlerTag,
-        newConfig,
-        Platform.OS === 'web' ? this._events : undefined
+        newConfig
       );
     };
 
     _attachGestureHandler = newViewTag => {
       this._viewTag = newViewTag;
-      this._events = this._getEventProps();
 
       RNGestureHandlerModule.attachGestureHandler(
         this._handlerTag,
         newViewTag,
-        Platform.OS === 'web' ? this._events : undefined
+        Platform.OS === 'web' ? this._propsRef : undefined
       );
     };
 
     _updateGestureHandler = newConfig => {
-      this._events = this._getEventProps();
       this._config = newConfig;
 
-      RNGestureHandlerModule.updateGestureHandler(
-        this._handlerTag,
-        newConfig,
-        Platform.OS === 'web' ? this._events : undefined
-      );
+      RNGestureHandlerModule.updateGestureHandler(this._handlerTag, newConfig);
     };
 
     componentWillUnmount() {
@@ -255,10 +249,14 @@ export default function createHandler(
           config
         )
       );
+      this._propsRef.current = this.props;
+
       this._attachGestureHandler(findNodeHandle(this._viewNode));
     }
 
     componentDidUpdate() {
+      this._propsRef.current = this.props;
+
       const viewTag = findNodeHandle(this._viewNode);
       if (this._viewTag !== viewTag) {
         this._attachGestureHandler(viewTag);
@@ -272,24 +270,9 @@ export default function createHandler(
         { ...(this.constructor.propTypes || propTypes), ...customNativeProps },
         config
       );
-      if (!deepEqual(this._config, newConfig) || this._isEventsPropsUpdated()) {
+      if (!deepEqual(this._config, newConfig)) {
         this._updateGestureHandler(newConfig);
       }
-    }
-
-    _getEventProps() {
-      const { onHandlerStateChange, onGestureEvent } = this.props;
-      return { onHandlerStateChange, onGestureEvent };
-    }
-
-    _isEventsPropsUpdated() {
-      if (Platform.OS !== 'web') {
-        return false;
-      }
-
-      const _events = this._getEventProps();
-
-      return !deepEqual(this._events, _events);
     }
 
     setNativeProps(updates) {
