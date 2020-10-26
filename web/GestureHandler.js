@@ -72,8 +72,8 @@ class GestureHandler {
     }
   };
 
-  updateGestureConfig({ enabled = true, ...props }, _props) {
-    this._props = _props;
+  updateGestureConfig({ enabled = true, ...props }, events) {
+    this._events = events;
     this.clearSelfAsPending();
 
     this.config = ensureConfig({ enabled, ...props });
@@ -148,7 +148,7 @@ class GestureHandler {
   }
 
   sendEvent = nativeEvent => {
-    const { onHandlerStateChange, onGestureEvent } = this._props;
+    const { onHandlerStateChange, onGestureEvent } = this._events;
 
     const event = this.transformEventData(nativeEvent);
 
@@ -204,14 +204,14 @@ class GestureHandler {
     }
   }
 
-  setView(ref, props) {
+  setView(ref, events) {
     if (ref == null) {
       this.destroy();
       this.view = null;
       return;
     }
 
-    this._props = props;
+    this._events = events;
     this.ref = ref;
 
     this.view = findNodeHandle(ref);
