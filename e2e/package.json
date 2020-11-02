@@ -23,7 +23,7 @@
     "@react-native-community/cli": "^1.9.4",
     "babel-jest": "^24.8.0",
     "babel-plugin-module-resolver": "^3.2.0",
-    "detox": "^14.8.0",
+    "detox": "^17.10.0",
     "glob-to-regexp": "^0.4.1",
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.56.0",
