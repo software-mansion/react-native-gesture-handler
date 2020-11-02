@@ -36,7 +36,7 @@ matrix:
         - pod install
         - cd ..
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
-        - detox build -c ios.sim.release > /dev/null
+        - detox build -c ios.sim.release
       script:
         - detox test -c ios.sim.release --no-color --headless --cleanup
 
