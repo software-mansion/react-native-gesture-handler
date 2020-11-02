@@ -79,8 +79,8 @@ matrix:
       xcode_workspace: './Example/ios/GestureHandler.xcworkspace'
       xcode_scheme: GestureHandler
       podfile: './Example/ios/Podfile'
-      xcode_sdk: iphonesimulator12.4
-      xcode_destination: platform=iOS Simulator,OS=12.4,name=iPhone X
+      xcode_sdk: iphonesimulator12.2
+      xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
       env: NODE_VERSION=10.19.0
 
       branches:
@@ -107,4 +107,4 @@ matrix:
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
       script:
-        - xcodebuild -workspace ios/GestureHandler.xcworkspace -destination 'platform=iOS Simulator,name=iPhone X' -scheme GestureHandler -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES
+        - xcodebuild -workspace ios/GestureHandler.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme GestureHandler -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES
