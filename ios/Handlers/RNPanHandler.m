@@ -54,10 +54,6 @@
     _failOffsetYStart = NAN;
     _failOffsetYEnd = NAN;
     _hasCustomActivationCriteria = NO;
-      
-    if (@available(iOS 13.4, *)) {
-        self.allowedScrollTypesMask = UIScrollTypeMaskAll;
-    }
 #if !TARGET_OS_TV
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
 #endif
@@ -209,6 +205,16 @@
   APPLY_FLOAT_PROP(activeOffsetYEnd);
   APPLY_FLOAT_PROP(failOffsetYStart);
   APPLY_FLOAT_PROP(failOffsetYEnd);
+  
+  if (@available(iOS 13.4, *)) {
+    id prop = config[@"iosEnableTouchpadTwoFingerGesture"];
+    if(prop != nil){
+      bool iosEnableTouchpadTwoFingerGesture = [RCTConvert BOOL:prop];
+      if(iosEnableTouchpadTwoFingerGesture){
+        recognizer.allowedScrollTypesMask = UIScrollTypeMaskAll;
+      }
+    }
+  }
   
 #if !TARGET_OS_TV
   APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");

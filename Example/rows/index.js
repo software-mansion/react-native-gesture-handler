@@ -128,7 +128,7 @@ export default class Example extends Component {
           waitFor={['dragbox', 'image_pinch', 'image_rotation', 'image_tilt']}
           style={styles.scrollView}>
           <LoremIpsum words={40} />
-          <Swipeable>
+          <Swipeable iosEnableTouchpadTwoFingerGesture>
             <RectButton
               style={styles.rectButton}
               onPress={() => alert('First row clicked')}>
@@ -170,7 +170,7 @@ export default class Example extends Component {
             <InfoButton shouldCancelWhenOutside name="third" />
           </RectButton>
           <View style={styles.buttonDelimiter} />
-          <Swipeable>
+          <Swipeable iosEnableTouchpadTwoFingerGesture>
             <RectButton
               enabled={false}
               style={styles.rectButton}
