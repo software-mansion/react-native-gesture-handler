@@ -151,6 +151,10 @@ X coordinate of the current position of the pointer (finger or a leading pointer
 
 Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. The value is expressed in point units. It is recommended to use it instead of [`y`](#y) in cases when the original view can be transformed as an effect of the gesture.
 
+### `iosEnableTouchpadTwoFingerGesture`
+
+Enables two-finger gestures on supported platforms, for example iPads with touchpads. If not enabled the gesture will require click + drag, with iosEnableTouchpadTwoFingerGesture two-finger swipe will also trigger the gesture.
+
 ## Example
 
 See the [draggable example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/draggable/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).

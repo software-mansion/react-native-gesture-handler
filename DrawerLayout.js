@@ -50,7 +50,7 @@ export type PropType = {
   drawerContainerStyle?: any,
   contentContainerStyle?: any,
   onGestureRef?: Function,
-  iosEnableTouchpadTwoFingerGesture?: Boolean
+  iosEnableTouchpadTwoFingerGesture?: Boolean,
 
   // Properties not yet supported
   // onDrawerSlide?: Function
@@ -81,7 +81,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     minSwipeDistance: 3,
     overlayColor: 'rgba(0, 0, 0, 0.7)',
     drawerLockMode: 'unlocked',
-    iosEnableTouchpadTwoFingerGesture: false
+    iosEnableTouchpadTwoFingerGesture: false,
   };
 
   static positions = {

@@ -125,6 +125,10 @@ method that opens component on left side.
 
 method that opens component on right side.
 
+### `iosEnableTouchpadTwoFingerGesture`
+
+Enables two-finger gestures on supported platforms, for example iPads with touchpads. If not enabled the gesture will require click + drag, with iosEnableTouchpadTwoFingerGesture two-finger swipe will also trigger the gesture.
+
 ### Example:
 
 See the [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/Example/swipeable/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
