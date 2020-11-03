@@ -23,7 +23,7 @@
     "@react-native-community/cli": "^1.9.4",
     "babel-jest": "^24.8.0",
     "babel-plugin-module-resolver": "^3.2.0",
-    "detox": "^14.8.0",
+    "detox": "^17.10.0",
     "glob-to-regexp": "^0.4.1",
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.56.0",
@@ -37,13 +37,13 @@
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/ExampleE2E.app",
-        "build": "xcodebuild -workspace ios/ExampleE2E.xcworkspace -destination 'platform=iOS Simulator,name=iPhone X' -scheme ExampleE2E -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES",
+        "build": "xcodebuild -workspace ios/ExampleE2E.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme ExampleE2E -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES",
         "type": "ios.simulator",
         "name": "iPhone X"
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/ExampleE2E.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/ExampleE2E.xcworkspace -destination 'platform=iOS Simulator,name=iPhone X' -scheme ExampleE2E -parallelizeTargets -configuration Release -derivedDataPath ios/build -UseModernBuildSystem=YES",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/ExampleE2E.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme ExampleE2E -parallelizeTargets -configuration Release -derivedDataPath ios/build -UseModernBuildSystem=YES",
         "type": "ios.simulator",
         "name": "iPhone X"
       }

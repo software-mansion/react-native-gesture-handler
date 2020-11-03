@@ -409,7 +409,7 @@ public class GestureHandler<T extends GestureHandler> {
         left -= padLeft;
       }
       if (hitSlopSet(padTop)) {
-        top -= padBottom;
+        top -= padTop;
       }
       if (hitSlopSet(padRight)) {
         right += padRight;
@@ -428,9 +428,9 @@ public class GestureHandler<T extends GestureHandler> {
         }
       }
       if (hitSlopSet(height)) {
-        if (!hitSlopSet(top)) {
+        if (!hitSlopSet(padTop)) {
           top = bottom - height;
-        } else if (!hitSlopSet(bottom)) {
+        } else if (!hitSlopSet(padBottom)) {
           bottom = top + height;
         }
       }

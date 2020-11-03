@@ -236,7 +236,10 @@ export default function createHandler(
       this._createGestureHandler(
         filterConfig(
           transformProps ? transformProps(this.props) : this.props,
-          { ...this.constructor.propTypes, ...customNativeProps },
+          {
+            ...(this.constructor.propTypes || propTypes),
+            ...customNativeProps,
+          },
           config
         )
       );
@@ -254,7 +257,7 @@ export default function createHandler(
     _update() {
       const newConfig = filterConfig(
         transformProps ? transformProps(this.props) : this.props,
-        { ...this.constructor.propTypes, ...customNativeProps },
+        { ...(this.constructor.propTypes || propTypes), ...customNativeProps },
         config
       );
       if (!deepEqual(this._config, newConfig)) {
@@ -266,7 +269,7 @@ export default function createHandler(
       const mergedProps = { ...this.props, ...updates };
       const newConfig = filterConfig(
         transformProps ? transformProps(mergedProps) : mergedProps,
-        { ...this.constructor.propTypes, ...customNativeProps },
+        { ...(this.constructor.propTypes || propTypes), ...customNativeProps },
         config
       );
       this._updateGestureHandler(newConfig);
