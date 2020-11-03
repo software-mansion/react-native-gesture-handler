@@ -115,6 +115,10 @@ Minimum distance along Y (in points) axis the finger (or multiple finger) need t
 
 ### `avgTouches` (Android only)
 
+### `iosEnableTouchpadTwoFingerGesture` (iOS only)
+
+Enables two-finger gestures on supported platforms, for example iPads with touchpads. If not enabled the gesture will require click + drag, with iosEnableTouchpadTwoFingerGesture two-finger swipe will also trigger the gesture.
+
 ## Event data
 
 See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `PanGestureHandler`:
@@ -150,10 +154,6 @@ X coordinate of the current position of the pointer (finger or a leading pointer
 ### `absoluteY`
 
 Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. The value is expressed in point units. It is recommended to use it instead of [`y`](#y) in cases when the original view can be transformed as an effect of the gesture.
-
-### `iosEnableTouchpadTwoFingerGesture`
-
-Enables two-finger gestures on supported platforms, for example iPads with touchpads. If not enabled the gesture will require click + drag, with iosEnableTouchpadTwoFingerGesture two-finger swipe will also trigger the gesture.
 
 ## Example
 

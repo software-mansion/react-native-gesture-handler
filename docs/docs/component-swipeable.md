@@ -109,6 +109,10 @@ style object for the container (Animated.View), for example to override `overflo
 
 style object for the children container (Animated.View), for example to apply `flex: 1`.
 
+### `iosEnableTouchpadTwoFingerGesture` (iOS only)
+
+Enables two-finger gestures on supported platforms, for example iPads with touchpads. If not enabled the gesture will require click + drag, with iosEnableTouchpadTwoFingerGesture two-finger swipe will also trigger the gesture.
+
 ## Methods
 
 Using reference to `Swipeable` it's possible to trigger some actions on it
@@ -124,10 +128,6 @@ method that opens component on left side.
 ### `openRight`
 
 method that opens component on right side.
-
-### `iosEnableTouchpadTwoFingerGesture`
-
-Enables two-finger gestures on supported platforms, for example iPads with touchpads. If not enabled the gesture will require click + drag, with iosEnableTouchpadTwoFingerGesture two-finger swipe will also trigger the gesture.
 
 ### Example:
 
