@@ -50,7 +50,7 @@ export type PropType = {
   drawerContainerStyle?: any,
   contentContainerStyle?: any,
   onGestureRef?: Function,
-  enableTrackpadTwoFingerGesture?: Boolean,
+  enableTrackpadTwoFingerGesture?: boolean,
 
   // Properties not yet supported
   // onDrawerSlide?: Function
