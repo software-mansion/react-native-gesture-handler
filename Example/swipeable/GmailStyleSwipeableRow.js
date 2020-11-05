@@ -56,7 +56,7 @@ export default class GmailStyleSwipeableRow extends Component {
         ref={this.updateRef}
         friction={2}
         leftThreshold={80}
-        iosEnableTouchpadTwoFingerGesture
+        enableTrackpadTwoFingerGesture
         rightThreshold={40}
         renderLeftActions={this.renderLeftActions}
         renderRightActions={this.renderRightActions}>

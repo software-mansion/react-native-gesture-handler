@@ -84,7 +84,7 @@ export default class Example extends Component {
           ref={drawer => {
             this.drawer = drawer;
           }}
-          iosEnableTouchpadTwoFingerGesture
+          enableTrackpadTwoFingerGesture
           drawerWidth={200}
           keyboardDismissMode="on-drag"
           drawerPosition={

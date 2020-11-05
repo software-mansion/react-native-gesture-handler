@@ -63,7 +63,7 @@ export default class AppleStyleSwipeableRow extends Component {
       <Swipeable
         ref={this.updateRef}
         friction={2}
-        iosEnableTouchpadTwoFingerGesture
+        enableTrackpadTwoFingerGesture
         leftThreshold={30}
         rightThreshold={40}
         renderLeftActions={this.renderLeftActions}

@@ -207,10 +207,10 @@
   APPLY_FLOAT_PROP(failOffsetYEnd);
   
   if (@available(iOS 13.4, *)) {
-    id prop = config[@"iosEnableTouchpadTwoFingerGesture"];
+    id prop = config[@"enableTrackpadTwoFingerGesture"];
     if(prop != nil){
-      bool iosEnableTouchpadTwoFingerGesture = [RCTConvert BOOL:prop];
-      if(iosEnableTouchpadTwoFingerGesture){
+      bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:prop];
+      if(enableTrackpadTwoFingerGesture){
         recognizer.allowedScrollTypesMask = UIScrollTypeMaskAll;
       }
     }
