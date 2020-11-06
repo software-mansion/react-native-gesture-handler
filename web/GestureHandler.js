@@ -147,7 +147,7 @@ class GestureHandler {
   }
 
   sendEvent = nativeEvent => {
-    const { onHandlerStateChange, onGestureEvent } = this._propsRef.current;
+    const { onHandlerStateChange, onGestureEvent } = this.propsRef.current;
 
     const event = this.transformEventData(nativeEvent);
 
@@ -210,7 +210,7 @@ class GestureHandler {
       return;
     }
 
-    this._propsRef = propsRef;
+    this.propsRef = propsRef;
     this.ref = ref;
 
     this.view = findNodeHandle(ref);
