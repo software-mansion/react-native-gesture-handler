@@ -256,14 +256,11 @@ export default function createHandler(
           config
         )
       );
-      this._propsRef.current = this.props;
 
       this._attachGestureHandler(findNodeHandle(this._viewNode));
     }
 
     componentDidUpdate() {
-      this._propsRef.current = this.props;
-
       const viewTag = findNodeHandle(this._viewNode);
       if (this._viewTag !== viewTag) {
         this._attachGestureHandler(viewTag);
@@ -338,6 +335,12 @@ export default function createHandler(
           );
         }
       }
+      const events = {
+        onGestureHandlerEvent: gestureEventHandler,
+        onGestureHandlerStateChange: gestureStateEventHandler,
+      };
+
+      this._propsRef.current = events;
 
       const child = React.Children.only(this.props.children);
       let grandChildren = child.props.children;
@@ -356,13 +359,13 @@ export default function createHandler(
           })
         );
       }
+
       return React.cloneElement(
         child,
         {
           ref: this._refHandler,
           collapsable: false,
-          onGestureHandlerEvent: gestureEventHandler,
-          onGestureHandlerStateChange: gestureStateEventHandler,
+          ...events,
         },
         grandChildren
       );

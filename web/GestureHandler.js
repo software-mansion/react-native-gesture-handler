@@ -147,14 +147,21 @@ class GestureHandler {
   }
 
   sendEvent = nativeEvent => {
-    const { onHandlerStateChange, onGestureEvent } = this.propsRef.current;
+    const {
+      onGestureHandlerEvent,
+      onGestureHandlerStateChange,
+    } = this.propsRef.current;
 
     const event = this.transformEventData(nativeEvent);
 
-    invokeNullableMethod('onGestureEvent', onGestureEvent, event);
+    invokeNullableMethod('onGestureEvent', onGestureHandlerEvent, event);
     if (this.lastSentState !== event.nativeEvent.state) {
       this.lastSentState = event.nativeEvent.state;
-      invokeNullableMethod('onHandlerStateChange', onHandlerStateChange, event);
+      invokeNullableMethod(
+        'onHandlerStateChange',
+        onGestureHandlerStateChange,
+        event
+      );
     }
   };
 
