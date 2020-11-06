@@ -22,21 +22,25 @@ declare module 'react-native-gesture-handler' {
 
   /* GESTURE HANDLER STATE */
 
-  export enum Directions {
-    RIGHT = 1,
-    LEFT = 2,
-    UP = 4,
-    DOWN = 8,
+  export const Directions: {
+    readonly RIGHT: 1
+    readonly LEFT: 2
+    readonly UP: 4
+    readonly DOWN: 8
   }
 
-  export enum State {
-    UNDETERMINED = 0,
-    FAILED,
-    BEGAN,
-    CANCELLED,
-    ACTIVE,
-    END,
+  export type Directions = typeof Directions[keyof typeof Directions]
+
+  export const State: {
+    readonly UNDETERMINED: 0
+    readonly FAILED: 1
+    readonly BEGAN: 2
+    readonly CANCELLED: 3
+    readonly ACTIVE: 4
+    readonly END: 5
   }
+
+  export type State = typeof State[keyof typeof State]
 
   /* STATE CHANGE EVENTS */
 
