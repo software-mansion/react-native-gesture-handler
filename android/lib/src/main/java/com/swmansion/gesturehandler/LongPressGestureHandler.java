@@ -42,7 +42,7 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
             activate();
           }
         }, mMinDurationMs);
-      } else {
+      } else if (mMinDurationMs == 0) {
         activate();
       }
     }
