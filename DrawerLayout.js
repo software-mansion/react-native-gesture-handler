@@ -342,7 +342,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       bounciness: 0,
       toValue,
       useNativeDriver: this.props.useNativeAnimations,
-      speed: speed != null ? speed : undefined,
+      speed: speed ?? undefined,
     }).start(({ finished }) => {
       if (finished) {
         this._emitStateChanged(IDLE, willShow);
