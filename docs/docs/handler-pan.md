@@ -115,6 +115,10 @@ Minimum distance along Y (in points) axis the finger (or multiple finger) need t
 
 ### `avgTouches` (Android only)
 
+### `enableTrackpadTwoFingerGesture` (iOS only)
+
+Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+
 ## Event data
 
 See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `PanGestureHandler`:

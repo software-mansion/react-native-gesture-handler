@@ -316,6 +316,7 @@ declare module 'react-native-gesture-handler' {
     minPointers?: number;
     maxPointers?: number;
     avgTouches?: boolean;
+    enableTrackpadTwoFingerGesture?: boolean;
     onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
     onHandlerStateChange?: (event: PanGestureHandlerStateChangeEvent) => void;
   }

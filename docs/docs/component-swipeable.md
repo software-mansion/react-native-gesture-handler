@@ -109,6 +109,10 @@ style object for the container (Animated.View), for example to override `overflo
 
 style object for the children container (Animated.View), for example to apply `flex: 1`.
 
+### `enableTrackpadTwoFingerGesture` (iOS only)
+
+Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+
 ## Methods
 
 Using reference to `Swipeable` it's possible to trigger some actions on it

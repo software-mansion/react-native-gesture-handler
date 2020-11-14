@@ -5,6 +5,7 @@ declare module 'react-native-gesture-handler/Swipeable' {
   type SwipeableExcludes = Exclude<keyof PanGestureHandlerProperties, 'onGestureEvent' | 'onHandlerStateChange'>
 
   interface SwipeableProperties extends Pick<PanGestureHandlerProperties, SwipeableExcludes> {
+    enableTrackpadTwoFingerGesture?: boolean;
     friction?: number;
     leftThreshold?: number;
     rightThreshold?: number;

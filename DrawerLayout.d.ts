@@ -36,6 +36,7 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
     statusBarAnimation?: StatusBarAnimation;
     overlayColor?: string;
     contentContainerStyle?: StyleProp<ViewStyle>;
+    enableTrackpadTwoFingerGesture?: boolean;
   }
 
   interface DrawerMovementOptionType {
