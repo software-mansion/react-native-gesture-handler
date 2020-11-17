@@ -29,13 +29,15 @@ export default {
   },
   createGestureHandler(handlerName, handlerTag, config) {
     if (!(handlerName in Gestures))
-      throw new Error(`react-native-gesture-handler: ${handlerName} is not supported on web.`);
+      throw new Error(
+        `react-native-gesture-handler: ${handlerName} is not supported on web.`
+      );
     const GestureClass = Gestures[handlerName];
     NodeManager.createGestureHandler(handlerTag, new GestureClass());
     this.updateGestureHandler(handlerTag, config);
   },
-  attachGestureHandler(handlerTag, newView) {
-    NodeManager.getHandler(handlerTag).setView(newView);
+  attachGestureHandler(handlerTag, newView, propsRef) {
+    NodeManager.getHandler(handlerTag).setView(newView, propsRef);
   },
   updateGestureHandler(handlerTag, newConfig) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
