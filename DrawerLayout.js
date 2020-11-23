@@ -200,7 +200,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       useNativeDriver: props.useNativeAnimations
     };
 
-    if( this.props.onDrawerSlide ) {
+    if(this.props.onDrawerSlide) {
       gestureOptions.listener = ev => {
         const translationX = Math.floor(Math.abs(ev.nativeEvent.translationX));
         const position = translationX / this.state.containerWidth;
