@@ -141,6 +141,8 @@ export default function createHandler(
       super(props);
       this._handlerTag = handlerTag++;
       this._config = {};
+      this._propsRef = React.createRef(props);
+
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);
@@ -200,7 +202,18 @@ export default function createHandler(
     _attachGestureHandler = newViewTag => {
       this._viewTag = newViewTag;
 
-      RNGestureHandlerModule.attachGestureHandler(this._handlerTag, newViewTag);
+      if (Platform.OS === 'web') {
+        RNGestureHandlerModule.attachGestureHandler(
+          this._handlerTag,
+          newViewTag,
+          this._propsRef
+        );
+      } else {
+        RNGestureHandlerModule.attachGestureHandler(
+          this._handlerTag,
+          newViewTag
+        );
+      }
     };
 
     _updateGestureHandler = newConfig => {
@@ -236,10 +249,14 @@ export default function createHandler(
       this._createGestureHandler(
         filterConfig(
           transformProps ? transformProps(this.props) : this.props,
-          { ...this.constructor.propTypes, ...customNativeProps },
+          {
+            ...(this.constructor.propTypes || propTypes),
+            ...customNativeProps,
+          },
           config
         )
       );
+
       this._attachGestureHandler(findNodeHandle(this._viewNode));
     }
 
@@ -254,7 +271,7 @@ export default function createHandler(
     _update() {
       const newConfig = filterConfig(
         transformProps ? transformProps(this.props) : this.props,
-        { ...this.constructor.propTypes, ...customNativeProps },
+        { ...(this.constructor.propTypes || propTypes), ...customNativeProps },
         config
       );
       if (!deepEqual(this._config, newConfig)) {
@@ -266,7 +283,7 @@ export default function createHandler(
       const mergedProps = { ...this.props, ...updates };
       const newConfig = filterConfig(
         transformProps ? transformProps(mergedProps) : mergedProps,
-        { ...this.constructor.propTypes, ...customNativeProps },
+        { ...(this.constructor.propTypes || propTypes), ...customNativeProps },
         config
       );
       this._updateGestureHandler(newConfig);
@@ -318,6 +335,12 @@ export default function createHandler(
           );
         }
       }
+      const events = {
+        onGestureHandlerEvent: gestureEventHandler,
+        onGestureHandlerStateChange: gestureStateEventHandler,
+      };
+
+      this._propsRef.current = events;
 
       const child = React.Children.only(this.props.children);
       let grandChildren = child.props.children;
@@ -336,13 +359,13 @@ export default function createHandler(
           })
         );
       }
+
       return React.cloneElement(
         child,
         {
           ref: this._refHandler,
           collapsable: false,
-          onGestureHandlerEvent: gestureEventHandler,
-          onGestureHandlerStateChange: gestureStateEventHandler,
+          ...events,
         },
         grandChildren
       );

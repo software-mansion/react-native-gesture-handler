@@ -60,11 +60,10 @@ export class BaseButton extends React.Component {
   };
 
   render() {
-    const { style, rippleColor, ...rest } = this.props;
+    const { rippleColor, ...rest } = this.props;
 
     return (
       <RawButton
-        style={[{ overflow: 'hidden' }, style]}
         rippleColor={processColor(rippleColor)}
         {...rest}
         onGestureEvent={this._onGestureEvent}
@@ -108,15 +107,27 @@ export class RectButton extends React.Component {
   };
 
   render() {
-    const { children, ...rest } = this.props;
+    const { children, style, ...rest } = this.props;
+
+    const resolvedStyle = StyleSheet.flatten(style ?? {});
 
     return (
-      <BaseButton {...rest} onActiveStateChange={this._onActiveStateChange}>
+      <BaseButton
+        {...rest}
+        style={resolvedStyle}
+        onActiveStateChange={this._onActiveStateChange}>
         <Animated.View
           style={[
             btnStyles.underlay,
-            { opacity: this._opacity },
-            { backgroundColor: this.props.underlayColor },
+            {
+              opacity: this._opacity,
+              backgroundColor: this.props.underlayColor,
+              borderRadius: resolvedStyle.borderRadius,
+              borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
+              borderTopRightRadius: resolvedStyle.borderTopRightRadius,
+              borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
+              borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
+            },
           ]}
         />
         {children}

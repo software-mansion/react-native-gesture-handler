@@ -113,6 +113,7 @@ export class BottomSheet extends Component {
               ref={this.drawerheader}
               simultaneousHandlers={[this.scroll, this.masterdrawer]}
               shouldCancelWhenOutside={false}
+              enableTrackpadTwoFingerGesture
               onGestureEvent={this._onGestureEvent}
               onHandlerStateChange={this._onHeaderHandlerStateChange}>
               <Animated.View style={styles.header} />
@@ -122,6 +123,7 @@ export class BottomSheet extends Component {
               simultaneousHandlers={[this.scroll, this.masterdrawer]}
               shouldCancelWhenOutside={false}
               onGestureEvent={this._onGestureEvent}
+              enableTrackpadTwoFingerGesture
               onHandlerStateChange={this._onHandlerStateChange}>
               <Animated.View style={styles.container}>
                 <NativeViewGestureHandler

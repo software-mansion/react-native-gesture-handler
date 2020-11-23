@@ -143,7 +143,7 @@ class Combo extends Component {
           <PressBox />
           <ControlledSwitch />
           <View style={styles.table}>
-            <Swipeable>
+            <Swipeable enableTrackpadTwoFingerGesture>
               <RectButton
                 style={styles.rectButton}
                 onPress={() => alert('First row clicked')}>

@@ -22,21 +22,25 @@ declare module 'react-native-gesture-handler' {
 
   /* GESTURE HANDLER STATE */
 
-  export enum Directions {
-    RIGHT = 1,
-    LEFT = 2,
-    UP = 4,
-    DOWN = 8,
+  export const Directions: {
+    readonly RIGHT: 1
+    readonly LEFT: 2
+    readonly UP: 4
+    readonly DOWN: 8
   }
 
-  export enum State {
-    UNDETERMINED = 0,
-    FAILED,
-    BEGAN,
-    CANCELLED,
-    ACTIVE,
-    END,
+  export type Directions = typeof Directions[keyof typeof Directions]
+
+  export const State: {
+    readonly UNDETERMINED: 0
+    readonly FAILED: 1
+    readonly BEGAN: 2
+    readonly CANCELLED: 3
+    readonly ACTIVE: 4
+    readonly END: 5
   }
+
+  export type State = typeof State[keyof typeof State]
 
   /* STATE CHANGE EVENTS */
 
@@ -312,6 +316,7 @@ declare module 'react-native-gesture-handler' {
     minPointers?: number;
     maxPointers?: number;
     avgTouches?: boolean;
+    enableTrackpadTwoFingerGesture?: boolean;
     onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
     onHandlerStateChange?: (event: PanGestureHandlerStateChangeEvent) => void;
   }
@@ -434,7 +439,10 @@ declare module 'react-native-gesture-handler' {
 
   export class ScrollView extends React.Component<
     NativeViewGestureHandlerProperties & ScrollViewProperties
-  > {}
+  > {
+    scrollTo(y?: number | { x?: number; y?: number; animated?: boolean }, x?: number, animated?: boolean): void;
+    scrollToEnd(options?: { animated: boolean }): void;
+  }
 
   export class Switch extends React.Component<
     NativeViewGestureHandlerProperties & SwitchProperties
@@ -452,7 +460,12 @@ declare module 'react-native-gesture-handler' {
 
   export class FlatList<ItemT> extends React.Component<
     NativeViewGestureHandlerProperties & FlatListProperties<ItemT>
-  > {}
+  > {
+    scrollToEnd: (params?: { animated?: boolean }) => void;
+    scrollToIndex: (params: { animated?: boolean; index: number; viewOffset?: number; viewPosition?: number }) => void;
+    scrollToItem: (params: { animated?: boolean; item: ItemT; viewPosition?: number }) => void;
+    scrollToOffset: (params: { animated?: boolean; offset: number }) => void;
+  }
 
   export const GestureHandlerRootView: React.ComponentType<ViewProps>;
 
@@ -465,116 +478,4 @@ declare module 'react-native-gesture-handler' {
     Component: React.ComponentType<P>,
     config: NativeViewGestureHandlerProperties
   ): React.ComponentType<P>;
-}
-
-declare module 'react-native-gesture-handler/Swipeable' {
-  import { Animated, StyleProp, ViewStyle } from 'react-native';
-  import { PanGestureHandlerProperties } from 'react-native-gesture-handler'
-  type SwipeableExcludes = Exclude<keyof PanGestureHandlerProperties, 'onGestureEvent' | 'onHandlerStateChange'>
-
-  interface SwipeableProperties extends Pick<PanGestureHandlerProperties, SwipeableExcludes> {
-    friction?: number;
-    leftThreshold?: number;
-    rightThreshold?: number;
-    overshootLeft?: boolean;
-    overshootRight?: boolean;
-    overshootFriction?: number,
-    onSwipeableLeftOpen?: () => void;
-    onSwipeableRightOpen?: () => void;
-    onSwipeableOpen?: () => void;
-    onSwipeableClose?: () => void;
-    onSwipeableLeftWillOpen?: () => void;
-    onSwipeableRightWillOpen?: () => void;
-    onSwipeableWillOpen?: () => void;
-    onSwipeableWillClose?: () => void;
-    /**
-     *
-     * This map describes the values to use as inputRange for extra interpolation:
-     * AnimatedValue: [startValue, endValue]
-     *
-     * progressAnimatedValue: [0, 1]
-     * dragAnimatedValue: [0, +]
-     *
-     * To support `rtl` flexbox layouts use `flexDirection` styling.
-     * */
-    renderLeftActions?: (
-      progressAnimatedValue: Animated.AnimatedInterpolation,
-      dragAnimatedValue: Animated.AnimatedInterpolation
-    ) => React.ReactNode;
-    /**
-     *
-     * This map describes the values to use as inputRange for extra interpolation:
-     * AnimatedValue: [startValue, endValue]
-     *
-     * progressAnimatedValue: [0, 1]
-     * dragAnimatedValue: [0, -]
-     *
-     * To support `rtl` flexbox layouts use `flexDirection` styling.
-     * */
-    renderRightActions?: (
-      progressAnimatedValue: Animated.AnimatedInterpolation,
-      dragAnimatedValue: Animated.AnimatedInterpolation
-    ) => React.ReactNode;
-    useNativeAnimations?: boolean;
-    containerStyle?: StyleProp<ViewStyle>;
-    childrenContainerStyle?: StyleProp<ViewStyle>;
-  }
-
-  export default class Swipeable extends React.Component<SwipeableProperties> {
-    close: () => void;
-    openLeft: () => void;
-    openRight: () => void;
-  }
-}
-
-declare module 'react-native-gesture-handler/DrawerLayout' {
-  import { Animated, StatusBarAnimation, StyleProp, ViewStyle } from 'react-native';
-
-  export type DrawerPosition = 'left' | 'right';
-
-  export type DrawerState = 'Idle' | 'Dragging' | 'Settling';
-
-  export type DrawerType = 'front' | 'back' | 'slide';
-
-  export type DrawerLockMode = 'unlocked' | 'locked-closed' | 'locked-open';
-
-  export type DrawerKeyboardDismissMode = 'none' | 'on-drag';
-
-  export interface DrawerLayoutProperties {
-    renderNavigationView: (
-      progressAnimatedValue: Animated.Value
-    ) => React.ReactNode;
-    drawerPosition?: DrawerPosition;
-    drawerWidth?: number;
-    drawerBackgroundColor?: string;
-    drawerLockMode?: DrawerLockMode;
-    keyboardDismissMode?: DrawerKeyboardDismissMode;
-    onDrawerClose?: () => void;
-    onDrawerOpen?: () => void;
-    onDrawerSlide?: (
-      position: number
-    ) => void;
-    onDrawerStateChanged?: (
-      newState: DrawerState,
-      drawerWillShow: boolean
-    ) => void;
-    useNativeAnimations?: boolean;
-
-    drawerType?: DrawerType;
-    edgeWidth?: number;
-    minSwipeDistance?: number;
-    hideStatusBar?: boolean;
-    statusBarAnimation?: StatusBarAnimation;
-    overlayColor?: string;
-    contentContainerStyle?: StyleProp<ViewStyle>;
-  }
-
-  interface DrawerMovementOptionType {
-    velocity?: number;
-  }
-
-  export default class DrawerLayout extends React.Component<DrawerLayoutProperties> {
-    openDrawer: (options?: DrawerMovementOptionType) => void;
-    closeDrawer: (options?: DrawerMovementOptionType) => void;
-  }
 }

@@ -51,6 +51,7 @@ export type PropType = {
   drawerContainerStyle?: any,
   contentContainerStyle?: any,
   onGestureRef?: Function,
+  enableTrackpadTwoFingerGesture?: boolean,
 };
 
 export type StateType = {
@@ -78,6 +79,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     minSwipeDistance: 3,
     overlayColor: 'rgba(0, 0, 0, 0.7)',
     drawerLockMode: 'unlocked',
+    enableTrackpadTwoFingerGesture: false,
   };
 
   static positions = {
@@ -519,6 +521,9 @@ export default class DrawerLayout extends Component<PropType, StateType> {
         failOffsetY={[-15, 15]}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._openingHandlerStateChange}
+        enableTrackpadTwoFingerGesture={
+          this.props.enableTrackpadTwoFingerGesture
+        }
         enabled={
           drawerLockMode !== 'locked-closed' && drawerLockMode !== 'locked-open'
         }>
