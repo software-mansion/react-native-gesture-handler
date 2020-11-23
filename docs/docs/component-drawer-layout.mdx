@@ -71,22 +71,21 @@ Enables two-finger gestures on supported devices, for example iPads with trackpa
 
 component or function. Children is a component which is rendered by default and is wrapped by drawer. However, it could be also a render function which takes an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened) is the same way like `renderNavigationView` prop.
 
-## Methods:
+## Methods
 
-On top of the standard list of methods DrawerLayout has an additional set of attributes to customize its behavior. Please refer to the list below:
 
-### `open`
+### `openDrawer(options)`
 
-open can take an optional `options` parameter, enabling further customization of the open animation.
+`openDrawer` can take an optional `options` parameter which is an object, enabling further customization of the open animation.
 
 `options` has two optional properties:
 
 `velocity`: number, the initial velocity of the object attached to the spring. Default 0 (object is at rest).
 `speed`: number, controls speed of the animation. Default 12.
 
-### `close`
+### `closeDrawer(options)`
 
-close can take an optional `options` parameter, enabling further customization of the close animation.
+`closeDrawer` can take an optional `options` parameter which is an object, enabling further customization of the close animation.
 
 `options` has two optional properties:
 
