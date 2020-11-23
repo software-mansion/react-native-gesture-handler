@@ -29,7 +29,7 @@ public class RNGestureHandlerButtonViewManager extends
 
     static TypedValue sResolveOutValue = new TypedValue();
     static ButtonViewGroup sResponder;
-    static OnClickListener sClickListener = new OnClickListener() {
+    static OnClickListener sDummyClickListener = new OnClickListener() {
       @Override
       public void onClick(View v) { }
     };
@@ -51,7 +51,7 @@ public class RNGestureHandlerButtonViewManager extends
       super(context);
 
       // we attach empty click listener to trigger tap sounds (see View#performClick())
-      setOnClickListener(sClickListener);
+      setOnClickListener(sDummyClickListener);
       setClickable(true);
       setFocusable(true);
 
@@ -127,7 +127,7 @@ public class RNGestureHandlerButtonViewManager extends
     @Override
     public boolean onTouchEvent(MotionEvent event) {
       long eventTime = event.getEventTime();
-      if(mLastEventTime != eventTime || mLastEventTime == 0){
+      if (mLastEventTime != eventTime || mLastEventTime == 0) {
         mLastEventTime = eventTime;
         return super.onTouchEvent(event);
       }
