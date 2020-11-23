@@ -124,7 +124,7 @@ export default class Example extends Component {
             flipSide={() => this.setState({ fromLeft: !this.state.fromLeft })}
             nextType={() =>
               this.setState({ type: (this.state.type + 1) % TYPES.length })}
-            openDrawer={() => this.drawer.openDrawer()}
+            openDrawer={() => this.drawer.openDrawer({speed: 14})}
           />
         </DrawerLayout>
       </View>
