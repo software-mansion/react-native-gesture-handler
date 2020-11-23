@@ -2,12 +2,12 @@ matrix:
   include:
     - language: objective-c
       os: osx
-      osx_image: xcode10.2
+      osx_image: xcode12.2
       xcode_workspace: './e2e/ios/ExampleE2E.xcworkspace'
       xcode_scheme: ExampleE2E
       podfile: './e2e/ios/Podfile'
-      xcode_sdk: iphonesimulator12.2
-      xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
+      xcode_sdk: iphonesimulator12.4
+      xcode_destination: platform=iOS Simulator,OS=12.4,name=iPhone X
       env: NODE_VERSION=10.19.0
 
       branches:
@@ -36,7 +36,7 @@ matrix:
         - pod install
         - cd ..
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
-        - detox build -c ios.sim.release > /dev/null
+        - detox build -c ios.sim.release | xcpretty
       script:
         - detox test -c ios.sim.release --no-color --headless --cleanup
 
@@ -75,12 +75,12 @@ matrix:
 
     - language: objective-c
       os: osx
-      osx_image: xcode10.2
+      osx_image: xcode12.2
       xcode_workspace: './Example/ios/GestureHandler.xcworkspace'
       xcode_scheme: GestureHandler
       podfile: './Example/ios/Podfile'
       xcode_sdk: iphonesimulator12.2
-      xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone X
+      xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
       env: NODE_VERSION=10.19.0
 
       branches:
@@ -107,4 +107,4 @@ matrix:
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
       script:
-        - xcodebuild -workspace ios/GestureHandler.xcworkspace -destination 'platform=iOS Simulator,name=iPhone X' -scheme GestureHandler -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES
+        - xcodebuild -workspace ios/GestureHandler.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme GestureHandler -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES
