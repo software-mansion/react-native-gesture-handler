@@ -36,6 +36,7 @@ export type PropType = {
   keyboardDismissMode?: 'none' | 'on-drag',
   onDrawerClose?: Function,
   onDrawerOpen?: Function,
+  onDrawerSlide?: Function,
   onDrawerStateChanged?: Function,
   renderNavigationView: (progressAnimatedValue: any) => any,
   useNativeAnimations: boolean,
@@ -51,9 +52,6 @@ export type PropType = {
   contentContainerStyle?: any,
   onGestureRef?: Function,
   enableTrackpadTwoFingerGesture?: boolean,
-
-  // Properties not yet supported
-  // onDrawerSlide?: Function
 };
 
 export type StateType = {
@@ -200,9 +198,22 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       }
     );
 
+    const gestureOptions = {
+      useNativeDriver: props.useNativeAnimations
+    };
+
+    if(this.props.onDrawerSlide) {
+      gestureOptions.listener = ev => {
+        const translationX = Math.floor(Math.abs(ev.nativeEvent.translationX));
+        const position = translationX / this.state.containerWidth;
+
+        this.props.onDrawerSlide(position);
+      };
+    }
+
     this._onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: dragXValue, x: touchXValue } }],
-      { useNativeDriver: props.useNativeAnimations }
+      gestureOptions
     );
   };
 
