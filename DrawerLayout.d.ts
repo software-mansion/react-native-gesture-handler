@@ -41,6 +41,7 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
 
   interface DrawerMovementOptionType {
     velocity?: number;
+    speed?: number;
   }
 
   export default class DrawerLayout extends React.Component<DrawerLayoutProperties> {
