@@ -1,5 +1,4 @@
 import React, { useImperativeHandle, useRef } from 'react';
-import { findNodeHandle } from 'react-native';
 
 import NativeViewGestureHandler from './NativeViewGestureHandler';
 
