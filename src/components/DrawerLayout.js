@@ -37,6 +37,7 @@ export type PropType = {
   keyboardDismissMode?: 'none' | 'on-drag',
   onDrawerClose?: Function,
   onDrawerOpen?: Function,
+  onDrawerSlide?: Function,
   onDrawerStateChanged?: Function,
   renderNavigationView: (progressAnimatedValue: any) => any,
   useNativeAnimations: boolean,
@@ -52,9 +53,6 @@ export type PropType = {
   contentContainerStyle?: any,
   onGestureRef?: Function,
   enableTrackpadTwoFingerGesture?: boolean,
-
-  // Properties not yet supported
-  // onDrawerSlide?: Function
 };
 
 export type StateType = {
@@ -70,6 +68,7 @@ export type EventType = {
 
 export type DrawerMovementOptionType = {
   velocity?: number,
+  speed?: number,
 };
 
 export default class DrawerLayout extends Component<PropType, StateType> {
@@ -201,9 +200,22 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       }
     );
 
+    const gestureOptions = {
+      useNativeDriver: props.useNativeAnimations,
+    };
+
+    if (this.props.onDrawerSlide) {
+      gestureOptions.listener = ev => {
+        const translationX = Math.floor(Math.abs(ev.nativeEvent.translationX));
+        const position = translationX / this.state.containerWidth;
+
+        this.props.onDrawerSlide(position);
+      };
+    }
+
     this._onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: dragXValue, x: touchXValue } }],
-      { useNativeDriver: props.useNativeAnimations }
+      gestureOptions
     );
   };
 
@@ -304,7 +316,12 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       });
   };
 
-  _animateDrawer = (fromValue: ?number, toValue: number, velocity: number) => {
+  _animateDrawer = (
+    fromValue: ?number,
+    toValue: number,
+    velocity: number,
+    speed: ?number
+  ) => {
     this.state.dragX.setValue(0);
     this.state.touchX.setValue(
       this.props.drawerPosition === 'left' ? 0 : this.state.containerWidth
@@ -337,6 +354,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
       bounciness: 0,
       toValue,
       useNativeDriver: this.props.useNativeAnimations,
+      speed: speed ?? undefined,
     }).start(({ finished }) => {
       if (finished) {
         this._emitStateChanged(IDLE, willShow);

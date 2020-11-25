@@ -125,7 +125,7 @@ export default class Example extends Component {
             nextType={() =>
               this.setState({ type: (this.state.type + 1) % TYPES.length })
             }
-            openDrawer={() => this.drawer.openDrawer()}
+            openDrawer={() => this.drawer.openDrawer({ speed: 14 })}
           />
         </DrawerLayout>
       </View>
