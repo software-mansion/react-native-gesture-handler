@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useImperativeHandle, useRef } from 'react';
 
 import NativeViewGestureHandler from './NativeViewGestureHandler';
 
@@ -42,9 +42,20 @@ export default function createNativeWrapper(Component, config = {}) {
       },
       { ...config } // watch out not to modify config
     );
+    const _ref = useRef();
+    const _gestureHandlerRef = useRef();
+    useImperativeHandle(ref, () => {
+      const node = _gestureHandlerRef.current;
+      // add handlerTag for relations config
+      if (_ref.current && node) {
+        _ref.current._handlerTag = node._handlerTag;
+        return _ref.current;
+      }
+      return null;
+    }, [_ref, _gestureHandlerRef]);
     return (
-      <NativeViewGestureHandler {...gestureHandlerProps}>
-        <Component {...props} ref={ref} />
+      <NativeViewGestureHandler {...gestureHandlerProps} ref={_gestureHandlerRef}>
+        <Component {...props} ref={_ref} />
       </NativeViewGestureHandler>
     );
   });
