@@ -36,5 +36,8 @@
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "0.45.2",
     "react-test-renderer": "16.9.0"
+  },
+  "resolutions": {
+    "**/graceful-fs": "^4.2.4"
   }
 }
