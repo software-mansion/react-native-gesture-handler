@@ -133,7 +133,8 @@ module.exports = {
         //   ],
         // },
         {
-          href: 'https://github.com/software-mansion/react-native-gesture-handler',
+          href:
+            'https://github.com/software-mansion/react-native-gesture-handler',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
