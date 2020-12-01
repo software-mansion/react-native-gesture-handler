@@ -26,4 +26,9 @@ interface GestureHandlerPropTypes {
   onEnded: (payload: unknown) => void
 }
 
-export default GestureHandlerPropTypes;
+const GestureHandlerPropObject: GestureHandlerPropTypes = {
+
+}
+
+
+export default GestureHandlerPropObject;

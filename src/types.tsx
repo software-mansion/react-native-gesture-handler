@@ -16,23 +16,12 @@ import {
   ViewProps,
 } from 'react-native';
 
-export const State: {
-  readonly UNDETERMINED: 0
-  readonly FAILED: 1
-  readonly BEGAN: 2
-  readonly CANCELLED: 3
-  readonly ACTIVE: 4
-  readonly END: 5
-}
-
-export type State = typeof State[keyof typeof State]
-
-/* STATE CHANGE EVENTS */
+import State from './State';
 
 export interface GestureHandlerGestureEventNativeEvent {
   handlerTag: number;
   numberOfPointers: number;
-  state: State;
+  state: typeof State;
 }
 
 export interface GestureHandlerStateChangeNativeEvent {
@@ -318,43 +307,7 @@ export class ForceTouchGestureHandler extends React.Component<
   ForceTouchGestureHandlerProperties
 > {}
 
-/* BUTTONS PROPERTIES */
-
-export interface RawButtonProperties
-  extends NativeViewGestureHandlerProperties {
-  exclusive?: boolean;
-  testID?: string;
-  accessibilityLabel?: string;
-}
-
-export interface BaseButtonProperties extends RawButtonProperties {
-  onPress?: (pointerInside: boolean) => void;
-  onActiveStateChange?: (active: boolean) => void;
-  style?: StyleProp<ViewStyle>;
-  rippleColor?: string;
-}
-
-export interface RectButtonProperties extends BaseButtonProperties {
-  underlayColor?: string;
-  activeOpacity?: number;
-}
-
-export interface BorderlessButtonProperties extends BaseButtonProperties {
-  borderless?: boolean;
-  activeOpacity?: number;
-}
-
 /* BUTTONS CLASSES */
-
-export class RawButton extends React.Component<RawButtonProperties> {}
-
-export class BaseButton extends React.Component<BaseButtonProperties> {}
-
-export class RectButton extends React.Component<RectButtonProperties> {}
-
-export class BorderlessButton extends React.Component<
-  BorderlessButtonProperties
-> {}
 
 export interface ContainedTouchableProperties {
   containerStyle?: StyleProp<ViewStyle>
@@ -375,39 +328,6 @@ export class TouchableOpacity extends React.Component<
 export class TouchableWithoutFeedback extends React.Component<
   TouchableWithoutFeedbackProperties | ContainedTouchableProperties
   > {}
-
-/* GESTURE HANDLER WRAPPED CLASSES */
-
-export class ScrollView extends React.Component<
-  NativeViewGestureHandlerProperties & ScrollViewProperties
-> {
-  scrollTo(y?: number | { x?: number; y?: number; animated?: boolean }, x?: number, animated?: boolean): void;
-  scrollToEnd(options?: { animated: boolean }): void;
-}
-
-export class Switch extends React.Component<
-  NativeViewGestureHandlerProperties & SwitchProperties
-> {}
-
-export class TextInput extends React.Component<
-  NativeViewGestureHandlerProperties & TextInputProperties
-> {}
-
-export class DrawerLayoutAndroid extends React.Component<
-  NativeViewGestureHandlerProperties & DrawerLayoutAndroidProperties
-> {}
-
-/* OTHER */
-
-export class FlatList<ItemT> extends React.Component<
-  NativeViewGestureHandlerProperties & FlatListProperties<ItemT>
-> {
-  scrollToEnd: (params?: { animated?: boolean }) => void;
-  scrollToIndex: (params: { animated?: boolean; index: number; viewOffset?: number; viewPosition?: number }) => void;
-  scrollToItem: (params: { animated?: boolean; item: ItemT; viewPosition?: number }) => void;
-  scrollToOffset: (params: { animated?: boolean; offset: number }) => void;
-}
-
 
 
 /* GESTURE HANDLERS PROPERTIES */

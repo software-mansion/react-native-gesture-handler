@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types';
-
 import createHandler from './createHandler';
 import GestureHandlerPropTypes from '../GestureHandlerPropTypes';
 

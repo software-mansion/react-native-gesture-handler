@@ -17,6 +17,39 @@ function memoizeWrap(Component, config) {
   return memoized;
 }
 
+/* GESTURE HANDLER WRAPPED CLASSES */
+
+export class ScrollView extends React.Component<
+  NativeViewGestureHandlerProperties & ScrollViewProperties
+> {
+  scrollTo(y?: number | { x?: number; y?: number; animated?: boolean }, x?: number, animated?: boolean): void;
+  scrollToEnd(options?: { animated: boolean }): void;
+}
+
+export class Switch extends React.Component<
+  NativeViewGestureHandlerProperties & SwitchProperties
+> {}
+
+export class TextInput extends React.Component<
+  NativeViewGestureHandlerProperties & TextInputProperties
+> {}
+
+export class DrawerLayoutAndroid extends React.Component<
+  NativeViewGestureHandlerProperties & DrawerLayoutAndroidProperties
+> {}
+
+/* OTHER */
+
+export class FlatList<ItemT> extends React.Component<
+  NativeViewGestureHandlerProperties & FlatListProperties<ItemT>
+> {
+  scrollToEnd: (params?: { animated?: boolean }) => void;
+  scrollToIndex: (params: { animated?: boolean; index: number; viewOffset?: number; viewPosition?: number }) => void;
+  scrollToItem: (params: { animated?: boolean; item: ItemT; viewPosition?: number }) => void;
+  scrollToOffset: (params: { animated?: boolean; offset: number }) => void;
+}
+
+
 module.exports = {
   /* RN's components */
   get ScrollView() {
