@@ -7,9 +7,9 @@ import {
 } from 'react-native';
 import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import State from '../State';
+import {State} from '../State';
 
-function findNodeHandle(node) {
+function findNodeHandle(node: any) {
   if (Platform.OS === 'web') return node;
   return findNodeHandleRN(node);
 }
@@ -46,7 +46,7 @@ const {
   setJSResponder: oldSetJSResponder = () => {},
   clearJSResponder: oldClearJSResponder = () => {},
 } = UIManager;
-UIManager.setJSResponder = (tag, blockNativeResponder) => {
+UIManager.setJSResponder = (tag: any, blockNativeResponder: any) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
   oldSetJSResponder(tag, blockNativeResponder);
 };
@@ -58,7 +58,7 @@ UIManager.clearJSResponder = () => {
 let handlerTag = 1;
 const handlerIDToTag = {};
 
-function isConfigParam(param, name) {
+function isConfigParam(param: any, name: string) {
   // param !== Object(param) returns false if `param` is a function
   // or an object and returns true if `param` is null
   return (
@@ -68,8 +68,8 @@ function isConfigParam(param, name) {
     name !== 'onGestureEvent'
   );
 }
-
-function filterConfig(props, validProps, defaults = {}) {
+z
+function filterConfig(props: { [x: string]: any; }, validProps: {}, defaults = {}) {
   const res = { ...defaults };
   Object.keys(validProps).forEach(key => {
     const value = props[key];
@@ -88,27 +88,27 @@ function filterConfig(props, validProps, defaults = {}) {
   return res;
 }
 
-function transformIntoHandlerTags(handlerIDs) {
+function transformIntoHandlerTags(handlerIDs: any[]) {
   if (!Array.isArray(handlerIDs)) {
     handlerIDs = [handlerIDs];
   }
 
   if (Platform.OS === 'web') {
-    return handlerIDs.map(({ current }) => current).filter(handle => handle);
+    return handlerIDs.map(({ current }) => current).filter((handle: any) => handle);
   }
   // converts handler string IDs into their numeric tags
   return handlerIDs
     .map(
-      handlerID =>
+      (      handlerID: any) =>
         handlerIDToTag[handlerID] ||
         (handlerID.current && handlerID.current._handlerTag) ||
         -1
     )
-    .filter(handlerTag => handlerTag > 0);
+    .filter((handlerTag: number) => handlerTag > 0);
 }
 
-function hasUnresolvedRefs(props) {
-  const extract = refs => {
+function hasUnresolvedRefs(props: Readonly<HandlerProps> & Readonly<{ children?: React.ReactNode; }>) {
+  const extract = (refs: { current: any; some: (arg0: (r: any) => boolean) => any; }) => {
     if (!Array.isArray(refs)) {
       return refs && refs.current === null;
     }
@@ -125,23 +125,49 @@ const stateToPropMappings = {
   [State.END]: 'onEnded',
 };
 
-export default function createHandler(
+type Props = {
+  handlerName: string;
+  propTypes: any,
+  config: any,
+  transformProps: any,
+  customNativeProps: any, 
+};
+
+type HandlerProps = {
+  onGestureHandlerEvent: (event: any) => void;
+  onGestureEvent: (event: any) => void;
+  onHandlerStateChange: (event: any) => void;
+  onGestureHandlerStateChange: (event: any) => void;
+  id: any;
+}
+
+type NativeEvent = {
+  nativeEvent: { handlerTag: number; state?: number;};
+}
+
+export default function createHandler({
   handlerName,
   propTypes = {},
   config = {},
   transformProps,
   customNativeProps = {}
-) {
-  class Handler extends React.Component {
+}: Props): JSX.Element {
+  class Handler extends React.Component<HandlerProps> {
     static displayName = handlerName;
 
     static propTypes = propTypes;
+    private _handlerTag: number;
+    private _config: {};
+    private _propsRef: React.RefObject<unknown>;
+    private _viewNode: any;
+    private _viewTag: any;
+    private _updateEnqueued: any;
 
-    constructor(props) {
+    constructor(props: HandlerProps | Readonly<HandlerProps>) {
       super(props);
       this._handlerTag = handlerTag++;
       this._config = {};
-      this._propsRef = React.createRef(props);
+      this._propsRef = React.createRef();
 
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
@@ -151,31 +177,28 @@ export default function createHandler(
       }
     }
 
-    _onGestureHandlerEvent = event => {
+    _onGestureHandlerEvent = (event: NativeEvent) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
-        this.props.onGestureEvent && this.props.onGestureEvent(event);
+        this.props.onGestureEvent?.(event);
       } else {
-        this.props.onGestureHandlerEvent &&
-          this.props.onGestureHandlerEvent(event);
+        this.props.onGestureHandlerEvent?.(event);
       }
     };
 
-    _onGestureHandlerStateChange = event => {
+    _onGestureHandlerStateChange = (event: NativeEvent) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
-        this.props.onHandlerStateChange &&
-          this.props.onHandlerStateChange(event);
+        this.props.onHandlerStateChange?.(event);
 
         const stateEventName = stateToPropMappings[event.nativeEvent.state];
         if (typeof this.props[stateEventName] === 'function') {
           this.props[stateEventName](event);
         }
       } else {
-        this.props.onGestureHandlerStateChange &&
-          this.props.onGestureHandlerStateChange(event);
+        this.props.onGestureHandlerStateChange?.(event);
       }
     };
 
-    _refHandler = node => {
+    _refHandler = (node: any) => {
       this._viewNode = node;
 
       const child = React.Children.only(this.props.children);
@@ -189,7 +212,7 @@ export default function createHandler(
       }
     };
 
-    _createGestureHandler = newConfig => {
+    _createGestureHandler = (newConfig: {}) => {
       this._config = newConfig;
 
       RNGestureHandlerModule.createGestureHandler(
@@ -199,7 +222,7 @@ export default function createHandler(
       );
     };
 
-    _attachGestureHandler = newViewTag => {
+    _attachGestureHandler = (newViewTag: any) => {
       this._viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
@@ -216,7 +239,7 @@ export default function createHandler(
       }
     };
 
-    _updateGestureHandler = newConfig => {
+    _updateGestureHandler = (newConfig: {}) => {
       this._config = newConfig;
 
       RNGestureHandlerModule.updateGestureHandler(this._handlerTag, newConfig);
@@ -279,7 +302,7 @@ export default function createHandler(
       }
     }
 
-    setNativeProps(updates) {
+    setNativeProps(updates: any) {
       const mergedProps = { ...this.props, ...updates };
       const newConfig = filterConfig(
         transformProps ? transformProps(mergedProps) : mergedProps,
@@ -342,7 +365,7 @@ export default function createHandler(
 
       this._propsRef.current = events;
 
-      const child = React.Children.only(this.props.children);
+      const child: any = React.Children.only(this.props.children);
       let grandChildren = child.props.children;
       if (
         Touchable.TOUCH_TARGET_DEBUG &&

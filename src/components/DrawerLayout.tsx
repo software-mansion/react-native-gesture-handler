@@ -17,43 +17,53 @@ import {
   Keyboard,
   StatusBar,
   I18nManager,
+  StatusBarAnimation,
+  StyleProp,
+  ViewStyle,
 } from 'react-native';
 
 import { PanGestureHandler, TapGestureHandler } from '../handlers/Gestures';
-import State from '../State';
+import {State} from '../State';
 
 const DRAG_TOSS = 0.05;
 
-const IDLE = 'Idle';
-const DRAGGING = 'Dragging';
-const SETTLING = 'Settling';
+export type DrawerPosition = 'left' | 'right';
 
-export type PropType = {
-  children: any,
-  drawerBackgroundColor?: string,
-  drawerPosition: 'left' | 'right',
-  drawerLockMode?: 'unlocked' | 'locked-closed' | 'locked-open',
-  drawerWidth: number,
-  keyboardDismissMode?: 'none' | 'on-drag',
-  onDrawerClose?: Function,
-  onDrawerOpen?: Function,
-  onDrawerSlide?: Function,
-  onDrawerStateChanged?: Function,
-  renderNavigationView: (progressAnimatedValue: any) => any,
-  useNativeAnimations: boolean,
+export type DrawerState = 'Idle' | 'Dragging' | 'Settling';
 
-  // brand new properties
-  drawerType: 'front' | 'back' | 'slide',
-  edgeWidth: number,
-  minSwipeDistance: number,
-  hideStatusBar?: boolean,
-  statusBarAnimation?: 'slide' | 'none' | 'fade',
-  overlayColor: string,
-  drawerContainerStyle?: any,
-  contentContainerStyle?: any,
-  onGestureRef?: Function,
-  enableTrackpadTwoFingerGesture?: boolean,
-};
+export type DrawerType = 'front' | 'back' | 'slide';
+
+export type DrawerLockMode = 'unlocked' | 'locked-closed' | 'locked-open';
+
+export type DrawerKeyboardDismissMode = 'none' | 'on-drag';
+
+export interface DrawerLayoutProperties {
+  renderNavigationView: (
+    progressAnimatedValue: Animated.Value
+  ) => React.ReactNode;
+  drawerPosition?: DrawerPosition;
+  drawerWidth?: number;
+  drawerBackgroundColor?: string;
+  drawerLockMode?: DrawerLockMode;
+  keyboardDismissMode?: DrawerKeyboardDismissMode;
+  onDrawerClose?: () => void;
+  onDrawerOpen?: () => void;
+  onDrawerStateChanged?: (
+    newState: DrawerState,
+    drawerWillShow: boolean
+  ) => void;
+  useNativeAnimations?: boolean;
+
+  drawerType?: DrawerType;
+  edgeWidth?: number;
+  minSwipeDistance?: number;
+  hideStatusBar?: boolean;
+  statusBarAnimation?: StatusBarAnimation;
+  overlayColor?: string;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  enableTrackpadTwoFingerGesture?: boolean;
+  onDrawerSlide?: (position: number) => void;
+}
 
 export type StateType = {
   dragX: any,
@@ -71,7 +81,12 @@ export type DrawerMovementOptionType = {
   speed?: number,
 };
 
-export default class DrawerLayout extends Component<PropType, StateType> {
+// export default class DrawerLayout extends React.Component<DrawerLayoutProperties> {
+//   openDrawer: (options?: DrawerMovementOptionType) => void;
+//   closeDrawer: (options?: DrawerMovementOptionType) => void;
+// }
+
+export default class DrawerLayout extends Component<DrawerLayoutProperties, StateType> {
   static defaultProps = {
     drawerWidth: 200,
     drawerPosition: 'left',
@@ -88,15 +103,15 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     Left: 'left',
     Right: 'right',
   };
-  _openValue: ?Animated.Interpolation;
-  _onGestureEvent: ?Animated.Event;
+  _openValue?: Animated.AnimatedInterpolation;
+  _onGestureEvent?: Animated.ValueListenerCallback;
   _accessibilityIsModalView = React.createRef();
   _pointerEventsView = React.createRef();
   _panGestureHandler = React.createRef();
   _drawerShown = false;
 
-  constructor(props: PropType, context: any) {
-    super(props, context);
+  constructor(props: DrawerLayoutProperties) {
+    super(props);
 
     const dragX = new Animated.Value(0);
     const touchX = new Animated.Value(0);
@@ -112,7 +127,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     this._updateAnimatedEvent(props, this.state);
   }
 
-  UNSAFE_componentWillUpdate(props: PropType, state: StateType) {
+  UNSAFE_componentWillUpdate(props: DrawerLayoutProperties, state: StateType) {
     if (
       this.props.drawerPosition !== props.drawerPosition ||
       this.props.drawerWidth !== props.drawerWidth ||
@@ -123,7 +138,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     }
   }
 
-  _updateAnimatedEvent = (props: PropType, state: StateType) => {
+  _updateAnimatedEvent = (props: DrawerLayoutProperties, state: StateType) => {
     // Event definition is based on
     const { drawerPosition, drawerWidth, drawerType } = props;
     const {
@@ -317,10 +332,10 @@ export default class DrawerLayout extends Component<PropType, StateType> {
   };
 
   _animateDrawer = (
-    fromValue: ?number,
+    fromValue: number | null,
     toValue: number,
     velocity: number,
-    speed: ?number
+    speed?: number
   ) => {
     this.state.dragX.setValue(0);
     this.state.touchX.setValue(

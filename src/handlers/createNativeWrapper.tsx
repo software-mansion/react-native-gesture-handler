@@ -2,6 +2,9 @@ import React, { useImperativeHandle, useRef } from 'react';
 
 import NativeViewGestureHandler from './NativeViewGestureHandler';
 
+import { 
+  NativeViewGestureHandlerProperties
+} from '../types';
 /*
  * This array should consist of:
  *   - All keys in propTypes from NativeGestureHandler
@@ -30,7 +33,11 @@ const NATIVE_WRAPPER_PROPS_FILTER = [
   'onGestureHandlerStateChange',
 ];
 
-export default function createNativeWrapper(Component, config = {}) {
+
+export default function createNativeWrapper<P = {}>(
+  Component: React.ComponentType<P>,
+  config: NativeViewGestureHandlerProperties = {}
+  ): React.ComponentType<P> {
   const ComponentWrapper = React.forwardRef((props, ref) => {
     // filter out props that should be passed to gesture handler wrapper
     const gestureHandlerProps = Object.keys(props).reduce(
@@ -60,9 +67,7 @@ export default function createNativeWrapper(Component, config = {}) {
     return (
       <NativeViewGestureHandler
         {...gestureHandlerProps}
-        ref={_gestureHandlerRef}>
-        <Component {...props} ref={_ref} />
-      </NativeViewGestureHandler>
+      />
     );
   });
 
