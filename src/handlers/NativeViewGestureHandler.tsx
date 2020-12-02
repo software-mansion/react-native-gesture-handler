@@ -1,3 +1,4 @@
+// @ts-nocheck
 import createHandler from './createHandler';
 import GestureHandlerPropTypes from '../GestureHandlerPropTypes';
 

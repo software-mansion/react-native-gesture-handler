@@ -1,3 +1,4 @@
+// @ts-nocheck
 import GestureHandler from './GestureHandler';
 import { PixelRatio } from 'react-native';
 

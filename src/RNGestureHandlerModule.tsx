@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NativeModules } from 'react-native';
 
 const { RNGestureHandlerModule } = NativeModules;
@@ -20,6 +21,6 @@ type RNGestureHandlerModuleProps = {
   ) => void;
   attachGestureHandler: (handlerTag: number, newView, propsRef) => void;
   updateGestureHandler: (handlerTag: number, newConfig) => void;
-}
+};
 
 export default RNGestureHandlerModule as RNGestureHandlerModuleProps;

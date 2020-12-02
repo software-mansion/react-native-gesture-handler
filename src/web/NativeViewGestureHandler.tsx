@@ -1,3 +1,4 @@
+// @ts-nocheck
 import DiscreteGestureHandler from './DiscreteGestureHandler';
 import * as NodeManager from './NodeManager';
 import PressGestureHandler from './PressGestureHandler';

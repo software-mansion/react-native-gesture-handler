@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { TouchableWithoutFeedbackProps } from 'react-native';
 import GenericTouchable from './GenericTouchable';

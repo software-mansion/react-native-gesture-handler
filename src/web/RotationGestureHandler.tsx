@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Hammer from '@egjs/hammerjs';
 
 import { DEG_RAD } from './constants';

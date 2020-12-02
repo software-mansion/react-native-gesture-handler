@@ -1,3 +1,4 @@
+// @ts-nocheck
 import GestureHandler from './GestureHandler';
 import { TEST_MAX_IF_NOT_NAN } from './utils';
 

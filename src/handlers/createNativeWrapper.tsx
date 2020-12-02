@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useImperativeHandle, useRef } from 'react';
 
 import NativeViewGestureHandler from './NativeViewGestureHandler';

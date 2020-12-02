@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { Component } from 'react';
 import { Animated, Platform } from 'react-native';
 import State from '../../State';

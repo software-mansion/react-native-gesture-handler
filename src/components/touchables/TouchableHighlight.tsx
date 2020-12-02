@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { Component } from 'react';
 import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
 import { StyleSheet, View, TouchableHighlightProps } from 'react-native';

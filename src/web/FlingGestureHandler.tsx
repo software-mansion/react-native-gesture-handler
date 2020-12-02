@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Hammer from '@egjs/hammerjs';
 
 import { Direction } from './constants';

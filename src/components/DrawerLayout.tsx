@@ -1,4 +1,4 @@
-// @flow
+// @ts-nocheck
 
 // This component is based on RN's DrawerLayoutAndroid API
 //

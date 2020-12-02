@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import hoistNonReactStatics from 'hoist-non-react-statics';
@@ -7,7 +8,6 @@ export default function gestureHandlerRootHOC<P = {}>(
   Component: React.ComponentType<P>,
   containerStyles?: StyleProp<ViewStyle>
 ): React.ComponentType<P> {
-  
   function Wrapper(props: any) {
     return (
       <GestureHandlerRootView style={[styles.container, containerStyles]}>

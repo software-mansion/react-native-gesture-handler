@@ -1,4 +1,4 @@
-// @flow
+// @ts-nocheck
 
 // Similarily to the DrawerLayout component this deserves to be put in a
 // separate repo. Although, keeping it here for the time being will allow us
