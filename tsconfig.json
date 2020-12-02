@@ -1,25 +1,24 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "react",
+    "jsx": "react-native",
     "lib": ["esnext"],
     "module": "esnext",
     "moduleResolution": "node",
-    "noImplicitUseStrict": false,
-    "noStrictGenericChecks": false,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
     "allowJs": true,
-    "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noStrictGenericChecks": false,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitUseStrict": false,
+
+    "outDir": "./dist"
   },
   "exclude": ["node_modules"],
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.js"]
 }
