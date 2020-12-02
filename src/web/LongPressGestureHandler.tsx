@@ -5,7 +5,7 @@ import PressGestureHandler from './PressGestureHandler';
 import { isnan, isValidNumber } from './utils';
 
 class LongPressGestureHandler extends PressGestureHandler {
-  get minDurationMs() {
+  get minDurationMs(): number {
     return isnan(this.config.minDurationMs) ? 251 : this.config.minDurationMs;
   }
 

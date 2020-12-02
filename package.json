@@ -9,7 +9,6 @@
     "release": "npm login && release-it"
   },
   "main": "index.js",
-  "types": "react-native-gesture-handler.d.ts",
   "files": [
     "android/build.gradle",
     "android/src/main/AndroidManifest.xml",

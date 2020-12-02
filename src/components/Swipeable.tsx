@@ -11,42 +11,71 @@ import {
   View,
   I18nManager,
   LayoutChangeEvent,
+  StyleProp,
+  ViewStyle,
 } from 'react-native';
 
 import { PanGestureHandler, TapGestureHandler } from '../handlers/Gestures';
 import State from '../State';
+import { PanGestureHandlerProperties } from '../types';
 
 const DRAG_TOSS = 0.05;
 
-export type PropType = {
-  children: any;
-  friction: number;
+type SwipeableExcludes = Exclude<
+  keyof PanGestureHandlerProperties,
+  'onGestureEvent' | 'onHandlerStateChange'
+>;
+
+interface SwipeableProperties
+  extends Pick<PanGestureHandlerProperties, SwipeableExcludes> {
+  enableTrackpadTwoFingerGesture?: boolean;
+  friction?: number;
   leftThreshold?: number;
   rightThreshold?: number;
   overshootLeft?: boolean;
   overshootRight?: boolean;
-  overshootFriction: number;
-  onSwipeableLeftOpen?: Function;
-  onSwipeableRightOpen?: Function;
-  onSwipeableOpen?: Function;
-  onSwipeableClose?: Function;
-  onSwipeableLeftWillOpen?: Function;
-  onSwipeableRightWillOpen?: Function;
-  onSwipeableWillOpen?: Function;
-  onSwipeableWillClose?: Function;
+  overshootFriction?: number;
+  onSwipeableLeftOpen?: () => void;
+  onSwipeableRightOpen?: () => void;
+  onSwipeableOpen?: () => void;
+  onSwipeableClose?: () => void;
+  onSwipeableLeftWillOpen?: () => void;
+  onSwipeableRightWillOpen?: () => void;
+  onSwipeableWillOpen?: () => void;
+  onSwipeableWillClose?: () => void;
+  /**
+   *
+   * This map describes the values to use as inputRange for extra interpolation:
+   * AnimatedValue: [startValue, endValue]
+   *
+   * progressAnimatedValue: [0, 1]
+   * dragAnimatedValue: [0, +]
+   *
+   * To support `rtl` flexbox layouts use `flexDirection` styling.
+   * */
   renderLeftActions?: (
-    progressAnimatedValue: any,
-    dragAnimatedValue: any
-  ) => any;
+    progressAnimatedValue: Animated.AnimatedInterpolation,
+    dragAnimatedValue: Animated.AnimatedInterpolation
+  ) => React.ReactNode;
+  /**
+   *
+   * This map describes the values to use as inputRange for extra interpolation:
+   * AnimatedValue: [startValue, endValue]
+   *
+   * progressAnimatedValue: [0, 1]
+   * dragAnimatedValue: [0, -]
+   *
+   * To support `rtl` flexbox layouts use `flexDirection` styling.
+   * */
   renderRightActions?: (
-    progressAnimatedValue: any,
-    dragAnimatedValue: any
-  ) => any;
-  useNativeAnimations: boolean;
-  animationOptions?: Object;
-  containerStyle?: Object;
-  childrenContainerStyle?: Object;
-};
+    progressAnimatedValue: Animated.AnimatedInterpolation,
+    dragAnimatedValue: Animated.AnimatedInterpolation
+  ) => React.ReactNode;
+  useNativeAnimations?: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
+  childrenContainerStyle?: StyleProp<ViewStyle>;
+}
+
 type StateType = {
   dragX: Animated.Value;
   rowTranslation: Animated.Value;
@@ -56,14 +85,17 @@ type StateType = {
   rowWidth: number | typeof undefined;
 };
 
-export default class Swipeable extends Component<PropType, StateType> {
+export default class Swipeable extends Component<
+  SwipeableProperties,
+  StateType
+> {
   static defaultProps = {
     friction: 1,
     overshootFriction: 1,
     useNativeAnimations: true,
   };
 
-  constructor(props: PropType) {
+  constructor(props: SwipeableProperties) {
     super(props);
     const dragX = new Animated.Value(0);
     this.state = {
@@ -78,11 +110,11 @@ export default class Swipeable extends Component<PropType, StateType> {
 
     this._onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: dragX } }],
-      { useNativeDriver: props.useNativeAnimations }
+      { useNativeDriver: props.useNativeAnimations! }
     );
   }
 
-  UNSAFE_componentWillUpdate(props: PropType, state: StateType) {
+  UNSAFE_componentWillUpdate(props: SwipeableProperties, state: StateType) {
     if (
       this.props.friction !== props.friction ||
       this.props.overshootLeft !== props.overshootLeft ||
@@ -103,7 +135,7 @@ export default class Swipeable extends Component<PropType, StateType> {
   _showRightAction?: Animated.AnimatedInterpolation | Animated.Value;
   _rightActionTranslate?: Animated.AnimatedInterpolation;
 
-  _updateAnimatedEvent = (props: PropType, state: StateType) => {
+  _updateAnimatedEvent = (props: SwipeableProperties, state: StateType) => {
     const { friction, overshootFriction } = props;
     const { dragX, rowTranslation, leftWidth = 0, rowWidth = 0 } = state;
     const { rightOffset = rowWidth } = state;
@@ -117,21 +149,21 @@ export default class Swipeable extends Component<PropType, StateType> {
     const transX = Animated.add(
       rowTranslation,
       dragX.interpolate({
-        inputRange: [0, friction],
+        inputRange: [0, friction!],
         outputRange: [0, 1],
       })
     ).interpolate({
       inputRange: [
-        -rightWidth - (overshootRight ? 1 : overshootFriction),
+        -rightWidth - (overshootRight ? 1 : overshootFriction!),
         -rightWidth,
         leftWidth,
-        leftWidth + (overshootLeft ? 1 : overshootFriction),
+        leftWidth + (overshootLeft ? 1 : overshootFriction!),
       ],
       outputRange: [
-        -rightWidth - (overshootRight || overshootFriction > 1 ? 1 : 0),
+        -rightWidth - (overshootRight || overshootFriction! > 1 ? 1 : 0),
         -rightWidth,
         leftWidth,
-        leftWidth + (overshootLeft || overshootFriction > 1 ? 1 : 0),
+        leftWidth + (overshootLeft || overshootFriction! > 1 ? 1 : 0),
       ],
     });
     this._transX = transX;
@@ -184,8 +216,8 @@ export default class Swipeable extends Component<PropType, StateType> {
       rightThreshold = rightWidth / 2,
     } = this.props;
 
-    const startOffsetX = this._currentOffset() + dragX / friction;
-    const translationX = (dragX + DRAG_TOSS * velocityX) / friction;
+    const startOffsetX = this._currentOffset() + dragX / friction!;
+    const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
 
     let toValue = 0;
     if (rowState === 0) {
@@ -206,7 +238,7 @@ export default class Swipeable extends Component<PropType, StateType> {
       }
     }
 
-    this._animateRow(startOffsetX, toValue, velocityX / friction);
+    this._animateRow(startOffsetX, toValue, velocityX / friction!);
   };
 
   _animateRow = (
@@ -231,6 +263,7 @@ export default class Swipeable extends Component<PropType, StateType> {
       bounciness: 0,
       toValue,
       useNativeDriver: this.props.useNativeAnimations,
+      // TODO check what is this prop
       ...this.props.animationOptions,
     }).start(({ finished }) => {
       if (finished) {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Animated, Platform } from 'react-native';
 import State from '../../State';
-import { BaseButton } from '../../components/GestureButtons';
+import { BaseButton } from '../GestureButtons';
 import PropTypes from 'prop-types';
 
 /**

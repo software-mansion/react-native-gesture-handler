@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableHighlightProps } from 'react-native';
 import PropTypes from 'prop-types';
+
+import { ContainedTouchableProperties } from '../../types';
 
 /**
  * TouchableHighlight follows RN's implementation
  */
-export default class TouchableHighlight extends Component {
+export default class TouchableHighlight extends Component<
+  TouchableHighlightProps | ContainedTouchableProperties
+> {
   static defaultProps = {
     ...GenericTouchable.defaultProps,
     activeOpacity: 0.85,
@@ -23,7 +27,7 @@ export default class TouchableHighlight extends Component {
     onHideUnderlay: PropTypes.func,
   };
 
-  constructor(props) {
+  constructor(props: TouchableHighlightProps | ContainedTouchableProperties) {
     super(props);
     this.state = {
       extraChildStyle: null,
@@ -44,7 +48,7 @@ export default class TouchableHighlight extends Component {
         backgroundColor: this.props.underlayColor,
       },
     });
-    this.props.onShowUnderlay && this.props.onShowUnderlay();
+    this.props.onShowUnderlay?.();
   };
 
   hasPressHandler = () =>
@@ -58,7 +62,7 @@ export default class TouchableHighlight extends Component {
       extraChildStyle: null,
       extraUnderlayStyle: null,
     });
-    this.props.onHideUnderlay && this.props.onHideUnderlay();
+    this.props.onHideUnderlay?.();
   };
 
   renderChildren() {

@@ -8,7 +8,7 @@ import PinchGestureHandler from './web/PinchGestureHandler';
 import RotationGestureHandler from './web/RotationGestureHandler';
 import TapGestureHandler from './web/TapGestureHandler';
 
-const Gestures = {
+export const Gestures = {
   PanGestureHandler,
   RotationGestureHandler,
   PinchGestureHandler,
@@ -21,13 +21,13 @@ const Gestures = {
 
 export default {
   Direction,
-  handleSetJSResponder(tag, blockNativeResponder) {
+  handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
     console.warn('handleSetJSResponder: ', tag, blockNativeResponder);
   },
   handleClearJSResponder() {
     console.warn('handleClearJSResponder: ');
   },
-  createGestureHandler(handlerName, handlerTag, config) {
+  createGestureHandler(handlerName: string, handlerTag: number, config) {
     if (!(handlerName in Gestures))
       throw new Error(
         `react-native-gesture-handler: ${handlerName} is not supported on web.`
@@ -36,16 +36,16 @@ export default {
     NodeManager.createGestureHandler(handlerTag, new GestureClass());
     this.updateGestureHandler(handlerTag, config);
   },
-  attachGestureHandler(handlerTag, newView, propsRef) {
+  attachGestureHandler(handlerTag: number, newView, propsRef) {
     NodeManager.getHandler(handlerTag).setView(newView, propsRef);
   },
-  updateGestureHandler(handlerTag, newConfig) {
+  updateGestureHandler(handlerTag: number, newConfig) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
   },
-  getGestureHandlerNode(handlerTag) {
+  getGestureHandlerNode(handlerTag: number) {
     return NodeManager.getHandler(handlerTag);
   },
-  dropGestureHandler(handlerTag) {
+  dropGestureHandler(handlerTag: number) {
     NodeManager.dropGestureHandler(handlerTag);
   },
 };

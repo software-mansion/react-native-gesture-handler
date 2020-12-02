@@ -5,9 +5,12 @@ import {
   Touchable,
   Platform,
 } from 'react-native';
+// @ts-ignore
 import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import {State} from '../State';
+import State from '../State';
+
+import { GestureHandlerProperties } from '../types';
 
 function findNodeHandle(node: any) {
   if (Platform.OS === 'web') return node;
@@ -68,8 +71,12 @@ function isConfigParam(param: any, name: string) {
     name !== 'onGestureEvent'
   );
 }
-z
-function filterConfig(props: { [x: string]: any; }, validProps: {}, defaults = {}) {
+
+function filterConfig(
+  props: { [x: string]: any },
+  validProps: Record<string, any>,
+  defaults: Record<string, any> = {}
+) {
   const res = { ...defaults };
   Object.keys(validProps).forEach(key => {
     const value = props[key];
@@ -94,21 +101,26 @@ function transformIntoHandlerTags(handlerIDs: any[]) {
   }
 
   if (Platform.OS === 'web') {
-    return handlerIDs.map(({ current }) => current).filter((handle: any) => handle);
+    return handlerIDs
+      .map(({ current }) => current)
+      .filter((handle: any) => handle);
   }
   // converts handler string IDs into their numeric tags
   return handlerIDs
     .map(
-      (      handlerID: any) =>
-        handlerIDToTag[handlerID] ||
-        (handlerID.current && handlerID.current._handlerTag) ||
-        -1
+      (handlerID: any) =>
+        handlerIDToTag[handlerID] || handlerID.current?._handlerTag || -1
     )
     .filter((handlerTag: number) => handlerTag > 0);
 }
 
-function hasUnresolvedRefs(props: Readonly<HandlerProps> & Readonly<{ children?: React.ReactNode; }>) {
-  const extract = (refs: { current: any; some: (arg0: (r: any) => boolean) => any; }) => {
+function hasUnresolvedRefs(
+  props: Readonly<HandlerProps> & Readonly<{ children?: React.ReactNode }>
+) {
+  const extract = (refs: {
+    current: any;
+    some: (arg0: (r: any) => boolean) => any;
+  }) => {
     if (!Array.isArray(refs)) {
       return refs && refs.current === null;
     }
@@ -127,10 +139,10 @@ const stateToPropMappings = {
 
 type Props = {
   handlerName: string;
-  propTypes: any,
-  config: any,
-  transformProps: any,
-  customNativeProps: any, 
+  propTypes: any;
+  config: any;
+  transformProps: any;
+  customNativeProps: any;
 };
 
 type HandlerProps = {
@@ -139,31 +151,24 @@ type HandlerProps = {
   onHandlerStateChange: (event: any) => void;
   onGestureHandlerStateChange: (event: any) => void;
   id: any;
-}
+};
 
 type NativeEvent = {
-  nativeEvent: { handlerTag: number; state?: number;};
-}
+  nativeEvent: { handlerTag: number; state?: number };
+};
 
-export default function createHandler({
+export default function createHandler<T extends GestureHandlerProperties>({
   handlerName,
   propTypes = {},
   config = {},
   transformProps,
-  customNativeProps = {}
-}: Props): JSX.Element {
-  class Handler extends React.Component<HandlerProps> {
+  customNativeProps = {},
+}: Props): React.Component<T> {
+  class Handler extends React.Component<T> {
     static displayName = handlerName;
-
     static propTypes = propTypes;
-    private _handlerTag: number;
-    private _config: {};
-    private _propsRef: React.RefObject<unknown>;
-    private _viewNode: any;
-    private _viewTag: any;
-    private _updateEnqueued: any;
 
-    constructor(props: HandlerProps | Readonly<HandlerProps>) {
+    constructor(props: T) {
       super(props);
       this._handlerTag = handlerTag++;
       this._config = {};
@@ -176,6 +181,59 @@ export default function createHandler({
         handlerIDToTag[props.id] = this._handlerTag;
       }
     }
+
+    componentDidMount() {
+      if (hasUnresolvedRefs(this.props)) {
+        // If there are unresolved refs (e.g. ".current" has not yet been set)
+        // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
+        // _update method that will try to update native handler props using
+        // setImmediate. This makes it so _update function gets called after all
+        // react components are mounted and we expect the missing ref object to
+        // be resolved by then.
+        this._updateEnqueued = setImmediate(() => {
+          this._updateEnqueued = null;
+          this._update();
+        });
+      }
+
+      this._createGestureHandler(
+        filterConfig(
+          transformProps ? transformProps(this.props) : this.props,
+          {
+            ...(this.constructor.propTypes || propTypes),
+            ...customNativeProps,
+          },
+          config
+        )
+      );
+
+      this._attachGestureHandler(findNodeHandle(this._viewNode));
+    }
+
+    componentDidUpdate() {
+      const viewTag = findNodeHandle(this._viewNode);
+      if (this._viewTag !== viewTag) {
+        this._attachGestureHandler(viewTag);
+      }
+      this._update();
+    }
+
+    componentWillUnmount() {
+      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
+      if (this._updateEnqueued) {
+        clearImmediate(this._updateEnqueued);
+      }
+      if (this.props.id) {
+        delete handlerIDToTag[this.props.id];
+      }
+    }
+
+    private _handlerTag: number;
+    private _config: {};
+    private _propsRef: React.RefObject<unknown>;
+    private _viewNode: any;
+    private _viewTag: any;
+    private _updateEnqueued: any;
 
     _onGestureHandlerEvent = (event: NativeEvent) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
@@ -244,52 +302,6 @@ export default function createHandler({
 
       RNGestureHandlerModule.updateGestureHandler(this._handlerTag, newConfig);
     };
-
-    componentWillUnmount() {
-      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
-      if (this._updateEnqueued) {
-        clearImmediate(this._updateEnqueued);
-      }
-      if (this.props.id) {
-        delete handlerIDToTag[this.props.id];
-      }
-    }
-
-    componentDidMount() {
-      if (hasUnresolvedRefs(this.props)) {
-        // If there are unresolved refs (e.g. ".current" has not yet been set)
-        // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
-        // _update method that will try to update native handler props using
-        // setImmediate. This makes it so _update function gets called after all
-        // react components are mounted and we expect the missing ref object to
-        // be resolved by then.
-        this._updateEnqueued = setImmediate(() => {
-          this._updateEnqueued = null;
-          this._update();
-        });
-      }
-
-      this._createGestureHandler(
-        filterConfig(
-          transformProps ? transformProps(this.props) : this.props,
-          {
-            ...(this.constructor.propTypes || propTypes),
-            ...customNativeProps,
-          },
-          config
-        )
-      );
-
-      this._attachGestureHandler(findNodeHandle(this._viewNode));
-    }
-
-    componentDidUpdate() {
-      const viewTag = findNodeHandle(this._viewNode);
-      if (this._viewTag !== viewTag) {
-        this._attachGestureHandler(viewTag);
-      }
-      this._update();
-    }
 
     _update() {
       const newConfig = filterConfig(

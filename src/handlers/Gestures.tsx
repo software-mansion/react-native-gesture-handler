@@ -5,7 +5,17 @@ import createHandler from './createHandler';
 import GestureHandlerPropTypes from '../GestureHandlerPropTypes';
 import PlatformConstants from '../PlatformConstants';
 
-export const TapGestureHandler = createHandler(
+import {
+  TapGestureHandlerProperties,
+  FlingGestureHandlerProperties,
+  ForceTouchGestureHandlerProperties,
+  LongPressGestureHandlerProperties,
+  PanGestureHandlerProperties,
+  PinchGestureHandlerProperties,
+  RotationGestureHandlerProperties,
+} from '../types';
+
+export const TapGestureHandler = createHandler<TapGestureHandlerProperties>(
   'TapGestureHandler',
   {
     ...GestureHandlerPropTypes,
@@ -20,7 +30,7 @@ export const TapGestureHandler = createHandler(
   {}
 );
 
-export const FlingGestureHandler = createHandler(
+export const FlingGestureHandler = createHandler<FlingGestureHandlerProperties>(
   'FlingGestureHandler',
   {
     ...GestureHandlerPropTypes,
@@ -41,24 +51,25 @@ class ForceTouchFallback extends React.Component {
   }
 }
 
-export const ForceTouchGestureHandler =
-  PlatformConstants && PlatformConstants.forceTouchAvailable
-    ? createHandler(
-        'ForceTouchGestureHandler',
-        {
-          ...GestureHandlerPropTypes,
-          minForce: PropTypes.number,
-          maxForce: PropTypes.number,
-          feedbackOnActivation: PropTypes.bool,
-        },
-        {}
-      )
-    : ForceTouchFallback;
+export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
+  ? createHandler<ForceTouchGestureHandlerProperties>(
+      'ForceTouchGestureHandler',
+      {
+        ...GestureHandlerPropTypes,
+        minForce: PropTypes.number,
+        maxForce: PropTypes.number,
+        feedbackOnActivation: PropTypes.bool,
+      },
+      {}
+    )
+  : ForceTouchFallback;
 
 ForceTouchGestureHandler.forceTouchAvailable =
-  (PlatformConstants && PlatformConstants.forceTouchAvailable) || false;
+  PlatformConstants?.forceTouchAvailable || false;
 
-export const LongPressGestureHandler = createHandler(
+export const LongPressGestureHandler = createHandler<
+  LongPressGestureHandlerProperties
+>(
   'LongPressGestureHandler',
   {
     ...GestureHandlerPropTypes,
@@ -225,7 +236,7 @@ function managePanProps(props) {
   return transformPanGestureHandlerProps(props);
 }
 
-export const PanGestureHandler = createHandler(
+export const PanGestureHandler = createHandler<PanGestureHandlerProperties>(
   'PanGestureHandler',
   {
     ...GestureHandlerPropTypes,
@@ -267,13 +278,11 @@ export const PanGestureHandler = createHandler(
     failOffsetXEnd: true,
   }
 );
-export const PinchGestureHandler = createHandler(
+export const PinchGestureHandler = createHandler<PinchGestureHandlerProperties>(
   'PinchGestureHandler',
   GestureHandlerPropTypes,
   {}
 );
-export const RotationGestureHandler = createHandler(
-  'RotationGestureHandler',
-  GestureHandlerPropTypes,
-  {}
-);
+export const RotationGestureHandler = createHandler<
+  RotationGestureHandlerProperties
+>('RotationGestureHandler', GestureHandlerPropTypes, {});

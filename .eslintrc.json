@@ -8,6 +8,7 @@
   },
   "env": { "browser": true, "node": true },
   "rules": {
-    "import/named": "off"
+    "import/named": "off",
+    "react/sort-comp": "off"
   }
 }

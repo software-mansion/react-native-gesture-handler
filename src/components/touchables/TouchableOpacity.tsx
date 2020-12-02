@@ -1,12 +1,22 @@
-import { Animated, Easing, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  View,
+  TouchableOpacityProps,
+} from 'react-native';
 import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import { ContainedTouchableProperties } from '../../types';
+
 /**
  * TouchableOpacity bases on timing animation which has been used in RN's core
  */
-export default class TouchableOpacity extends Component {
+export default class TouchableOpacity extends Component<
+  TouchableOpacityProps | ContainedTouchableProperties
+> {
   static defaultProps = {
     ...GenericTouchable.defaultProps,
     activeOpacity: 0.2,

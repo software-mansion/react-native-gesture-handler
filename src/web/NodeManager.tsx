@@ -1,12 +1,17 @@
-let gestures = {};
+import { Gestures } from '../RNGestureHandlerModule.web';
 
-export function getHandler(tag) {
+let gestures: Record<number, any> = {};
+
+export function getHandler(tag: number) {
   if (tag in gestures) return gestures[tag];
 
   throw new Error('No handler for tag ' + tag);
 }
 
-export function createGestureHandler(handlerTag, handler) {
+export function createGestureHandler(
+  handlerTag: number,
+  handler: typeof Gestures
+) {
   if (handlerTag in gestures) {
     throw new Error('Handler with tag ' + handlerTag + ' already exists');
   }
@@ -14,8 +19,9 @@ export function createGestureHandler(handlerTag, handler) {
   gestures[handlerTag].handlerTag = handlerTag;
 }
 
-export function dropGestureHandler(handlerTag) {
+export function dropGestureHandler(handlerTag: number) {
   getHandler(handlerTag).destroy();
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete gestures[handlerTag];
 }
 

@@ -192,8 +192,6 @@ interface FlingGestureHandlerEventExtra {
   absoluteY: number;
 }
 
-
-
 export interface TapGestureHandlerProperties extends GestureHandlerProperties {
   minPointers?: number;
   maxDurationMs?: number;
@@ -206,12 +204,15 @@ export interface TapGestureHandlerProperties extends GestureHandlerProperties {
   onHandlerStateChange?: (event: TapGestureHandlerStateChangeEvent) => void;
 }
 
-export interface ForceTouchGestureHandlerProperties extends GestureHandlerProperties {
-  minForce?: number,
-  maxForce?: number,
-  feedbackOnActivation?: boolean,
+export interface ForceTouchGestureHandlerProperties
+  extends GestureHandlerProperties {
+  minForce?: number;
+  maxForce?: number;
+  feedbackOnActivation?: boolean;
   onGestureEvent?: (event: ForceTouchGestureHandlerGestureEvent) => void;
-  onHandlerStateChange?: (event: ForceTouchGestureHandlerStateChangeEvent) => void;
+  onHandlerStateChange?: (
+    event: ForceTouchGestureHandlerStateChangeEvent
+  ) => void;
 }
 
 export interface LongPressGestureHandlerProperties
@@ -219,7 +220,9 @@ export interface LongPressGestureHandlerProperties
   minDurationMs?: number;
   maxDist?: number;
   onGestureEvent?: (event: LongPressGestureHandlerGestureEvent) => void;
-  onHandlerStateChange?: (event: LongPressGestureHandlerStateChangeEvent) => void;
+  onHandlerStateChange?: (
+    event: LongPressGestureHandlerStateChangeEvent
+  ) => void;
 }
 
 export interface PanGestureHandlerProperties extends GestureHandlerProperties {
@@ -310,25 +313,12 @@ export class ForceTouchGestureHandler extends React.Component<
 /* BUTTONS CLASSES */
 
 export interface ContainedTouchableProperties {
-  containerStyle?: StyleProp<ViewStyle>
+  containerStyle?: StyleProp<ViewStyle>;
 }
-
-export class TouchableHighlight extends React.Component<
-  TouchableHighlightProperties | ContainedTouchableProperties
-  > {}
-
-export class TouchableNativeFeedback extends React.Component<
-  TouchableNativeFeedbackProperties | ContainedTouchableProperties
-  > {}
-
-export class TouchableOpacity extends React.Component<
-  TouchableOpacityProperties | ContainedTouchableProperties
-  > {}
 
 export class TouchableWithoutFeedback extends React.Component<
   TouchableWithoutFeedbackProperties | ContainedTouchableProperties
-  > {}
-
+> {}
 
 /* GESTURE HANDLERS PROPERTIES */
 
@@ -367,11 +357,11 @@ export interface GestureHandlerProperties {
 }
 
 export interface NativeViewGestureHandlerProperties
-extends GestureHandlerProperties {
-shouldActivateOnStart?: boolean;
-disallowInterruption?: boolean;
-onGestureEvent?: (event: NativeViewGestureHandlerGestureEvent) => void;
-onHandlerStateChange?: (
-  event: NativeViewGestureHandlerStateChangeEvent
-) => void;
+  extends GestureHandlerProperties {
+  shouldActivateOnStart?: boolean;
+  disallowInterruption?: boolean;
+  onGestureEvent?: (event: NativeViewGestureHandlerGestureEvent) => void;
+  onHandlerStateChange?: (
+    event: NativeViewGestureHandlerStateChangeEvent
+  ) => void;
 }

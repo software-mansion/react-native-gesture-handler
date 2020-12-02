@@ -60,7 +60,7 @@ class FlingGestureHandler extends DraggingGestureHandler {
     };
   }
 
-  getTargetDirections(direction) {
+  getTargetDirections(direction: number) {
     const directions = [];
     if (direction & Direction.RIGHT) {
       directions.push(Hammer.DIRECTION_RIGHT);

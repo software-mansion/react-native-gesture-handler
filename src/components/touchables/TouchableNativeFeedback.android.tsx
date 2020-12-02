@@ -1,7 +1,9 @@
-import { Platform } from 'react-native';
+import { Platform, TouchableNativeFeedbackProps } from 'react-native';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import GenericTouchable from './GenericTouchable';
+
+import { ContainedTouchableProperties } from '../../types';
 
 /**
  * TouchableNativeFeedback behaves slightly different than RN's TouchableNativeFeedback.
@@ -9,7 +11,9 @@ import GenericTouchable from './GenericTouchable';
  * ripple animation via bridge. This solution leaves all animations' handling for native components so
  * it follows native behaviours.
  */
-export default class TouchableNativeFeedback extends Component {
+export default class TouchableNativeFeedback extends Component<
+  TouchableNativeFeedbackProps | ContainedTouchableProperties
+> {
   static SelectableBackground = rippleRadius => ({
     type: 'SelectableBackground',
     rippleRadius,

@@ -1,21 +1,18 @@
 import React from 'react';
-import { View, ViewPropTypes, requireNativeComponent } from 'react-native';
-
-const iface = {
-  name: 'GestureHandlerRootView',
-  propTypes: {
-    ...ViewPropTypes,
-  },
-};
+import { View, requireNativeComponent } from 'react-native';
 
 const GestureHandlerRootViewNative = requireNativeComponent(
-  'GestureHandlerRootView',
-  iface
+  'GestureHandlerRootView'
 );
 
 const GestureHandlerRootViewContext = React.createContext(false);
 
-export default function GestureHandlerRootView({ children, ...rest }) {
+export default function GestureHandlerRootView({
+  children,
+  ...rest
+}: {
+  children: any;
+}) {
   return (
     <GestureHandlerRootViewContext.Consumer>
       {available => {
@@ -27,7 +24,7 @@ export default function GestureHandlerRootView({ children, ...rest }) {
         }
 
         return (
-          <GestureHandlerRootViewContext.Provider value={true}>
+          <GestureHandlerRootViewContext.Provider value>
             <GestureHandlerRootViewNative {...rest}>
               {children}
             </GestureHandlerRootViewNative>

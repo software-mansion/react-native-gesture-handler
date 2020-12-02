@@ -11,8 +11,8 @@ class DiscreteGestureHandler extends GestureHandler {
   }
 
   shouldFailUnderCustomCriteria(
-    { x, y, deltaX, deltaY },
-    { maxDeltaX, maxDeltaY, maxDistSq, shouldCancelWhenOutside }
+    { x, y, deltaX, deltaY }: any,
+    { maxDeltaX, maxDeltaY, maxDistSq, shouldCancelWhenOutside }: any
   ) {
     if (shouldCancelWhenOutside) {
       if (!this.isPointInView({ x, y })) {
@@ -29,7 +29,7 @@ class DiscreteGestureHandler extends GestureHandler {
     );
   }
 
-  transformNativeEvent({ center: { x, y } }) {
+  transformNativeEvent({ center: { x, y } }: any) {
     const rect = this.view.getBoundingClientRect();
 
     return {
@@ -44,12 +44,12 @@ class DiscreteGestureHandler extends GestureHandler {
     {
       minPointers,
       maxPointers,
-      maxDist,
+      _maxDist,
       maxDeltaX,
       maxDeltaY,
       maxDistSq,
       shouldCancelWhenOutside,
-    },
+    }: any,
     recognizer,
     { maxPointers: pointerLength, center, deltaX, deltaY, ...props }
   ) {
