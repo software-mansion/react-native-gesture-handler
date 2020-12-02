@@ -6,6 +6,7 @@ export { default as NativeViewGestureHandler } from './src/handlers/NativeViewGe
 export { default as State } from './src/State';
 
 export * from './src/components/GestureButtons';
+// eslint-disable-next-line import/export
 export * from './src/components/GestureComponents';
 export * from './src/handlers/Gestures';
 

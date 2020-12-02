@@ -5,7 +5,13 @@
 // to move faster and fix possible issues quicker
 
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View, I18nManager } from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  View,
+  I18nManager,
+  LayoutChangeEvent,
+} from 'react-native';
 
 import { PanGestureHandler, TapGestureHandler } from '../handlers/Gestures';
 import State from '../State';
@@ -13,41 +19,41 @@ import State from '../State';
 const DRAG_TOSS = 0.05;
 
 export type PropType = {
-  children: any,
-  friction: number,
-  leftThreshold?: number,
-  rightThreshold?: number,
-  overshootLeft?: boolean,
-  overshootRight?: boolean,
-  overshootFriction: number,
-  onSwipeableLeftOpen?: Function,
-  onSwipeableRightOpen?: Function,
-  onSwipeableOpen?: Function,
-  onSwipeableClose?: Function,
-  onSwipeableLeftWillOpen?: Function,
-  onSwipeableRightWillOpen?: Function,
-  onSwipeableWillOpen?: Function,
-  onSwipeableWillClose?: Function,
+  children: any;
+  friction: number;
+  leftThreshold?: number;
+  rightThreshold?: number;
+  overshootLeft?: boolean;
+  overshootRight?: boolean;
+  overshootFriction: number;
+  onSwipeableLeftOpen?: Function;
+  onSwipeableRightOpen?: Function;
+  onSwipeableOpen?: Function;
+  onSwipeableClose?: Function;
+  onSwipeableLeftWillOpen?: Function;
+  onSwipeableRightWillOpen?: Function;
+  onSwipeableWillOpen?: Function;
+  onSwipeableWillClose?: Function;
   renderLeftActions?: (
     progressAnimatedValue: any,
     dragAnimatedValue: any
-  ) => any,
+  ) => any;
   renderRightActions?: (
     progressAnimatedValue: any,
     dragAnimatedValue: any
-  ) => any,
-  useNativeAnimations: boolean,
-  animationOptions?: Object,
-  containerStyle?: Object,
-  childrenContainerStyle?: Object,
+  ) => any;
+  useNativeAnimations: boolean;
+  animationOptions?: Object;
+  containerStyle?: Object;
+  childrenContainerStyle?: Object;
 };
 type StateType = {
-  dragX: Animated.Value,
-  rowTranslation: Animated.Value,
-  rowState: number,
-  leftWidth: number | typeof undefined,
-  rightOffset: number | typeof undefined,
-  rowWidth: number | typeof undefined,
+  dragX: Animated.Value;
+  rowTranslation: Animated.Value;
+  rowState: number;
+  leftWidth: number | typeof undefined;
+  rightOffset: number | typeof undefined;
+  rowWidth: number | typeof undefined;
 };
 
 export default class Swipeable extends Component<PropType, StateType> {
@@ -56,12 +62,6 @@ export default class Swipeable extends Component<PropType, StateType> {
     overshootFriction: 1,
     useNativeAnimations: true,
   };
-  _onGestureEvent: ?Animated.Event;
-  _transX: ?Animated.Interpolation;
-  _showLeftAction: ?Animated.Interpolation | ?Animated.Value;
-  _leftActionTranslate: ?Animated.Interpolation;
-  _showRightAction: ?Animated.Interpolation | ?Animated.Value;
-  _rightActionTranslate: ?Animated.Interpolation;
 
   constructor(props: PropType) {
     super(props);
@@ -96,8 +96,15 @@ export default class Swipeable extends Component<PropType, StateType> {
     }
   }
 
+  _onGestureEvent?: any;
+  _transX?: Animated.AnimatedInterpolation;
+  _showLeftAction?: Animated.AnimatedInterpolation | Animated.Value;
+  _leftActionTranslate?: Animated.AnimatedInterpolation;
+  _showRightAction?: Animated.AnimatedInterpolation | Animated.Value;
+  _rightActionTranslate?: Animated.AnimatedInterpolation;
+
   _updateAnimatedEvent = (props: PropType, state: StateType) => {
-    const { friction, overshootFriction, useNativeAnimations } = props;
+    const { friction, overshootFriction } = props;
     const { dragX, rowTranslation, leftWidth = 0, rowWidth = 0 } = state;
     const { rightOffset = rowWidth } = state;
     const rightWidth = Math.max(0, rowWidth - rightOffset);
@@ -154,19 +161,19 @@ export default class Swipeable extends Component<PropType, StateType> {
     });
   };
 
-  _onTapHandlerStateChange = ({ nativeEvent }) => {
+  _onTapHandlerStateChange = ({ nativeEvent }: any) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       this.close();
     }
   };
 
-  _onHandlerStateChange = ({ nativeEvent }) => {
+  _onHandlerStateChange = ({ nativeEvent }: any) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       this._handleRelease(nativeEvent);
     }
   };
 
-  _handleRelease = nativeEvent => {
+  _handleRelease = (nativeEvent: any) => {
     const { velocityX, translationX: dragX } = nativeEvent;
     const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
     const { rightOffset = rowWidth } = this.state;
@@ -202,7 +209,16 @@ export default class Swipeable extends Component<PropType, StateType> {
     this._animateRow(startOffsetX, toValue, velocityX / friction);
   };
 
-  _animateRow = (fromValue, toValue, velocityX) => {
+  _animateRow = (
+    fromValue: number,
+    toValue: number,
+    velocityX?:
+      | number
+      | {
+          x: number;
+          y: number;
+        }
+  ) => {
     const { dragX, rowTranslation } = this.state;
     dragX.setValue(0);
     rowTranslation.setValue(fromValue);
@@ -225,9 +241,9 @@ export default class Swipeable extends Component<PropType, StateType> {
         }
 
         if (toValue === 0) {
-          this.props.onSwipeableClose && this.props.onSwipeableClose();
+          this.props.onSwipeableClose?.();
         } else {
-          this.props.onSwipeableOpen && this.props.onSwipeableOpen();
+          this.props.onSwipeableOpen?.();
         }
       }
     });
@@ -238,13 +254,13 @@ export default class Swipeable extends Component<PropType, StateType> {
     }
 
     if (toValue === 0) {
-      this.props.onSwipeableWillClose && this.props.onSwipeableWillClose();
+      this.props.onSwipeableWillClose?.();
     } else {
-      this.props.onSwipeableWillOpen && this.props.onSwipeableWillOpen();
+      this.props.onSwipeableWillOpen?.();
     }
   };
 
-  _onRowLayout = ({ nativeEvent }) => {
+  _onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     this.setState({ rowWidth: nativeEvent.layout.width });
   };
 
@@ -284,7 +300,7 @@ export default class Swipeable extends Component<PropType, StateType> {
       <Animated.View
         style={[
           styles.leftActions,
-          { transform: [{ translateX: this._leftActionTranslate }] },
+          { transform: [{ translateX: this._leftActionTranslate! }] },
         ]}>
         {renderLeftActions(this._showLeftAction, this._transX)}
         <View
@@ -299,7 +315,7 @@ export default class Swipeable extends Component<PropType, StateType> {
       <Animated.View
         style={[
           styles.rightActions,
-          { transform: [{ translateX: this._rightActionTranslate }] },
+          { transform: [{ translateX: this._rightActionTranslate! }] },
         ]}>
         {renderRightActions(this._showRightAction, this._transX)}
         <View
@@ -328,7 +344,7 @@ export default class Swipeable extends Component<PropType, StateType> {
               pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
               style={[
                 {
-                  transform: [{ translateX: this._transX }],
+                  transform: [{ translateX: this._transX! }],
                 },
                 this.props.childrenContainerStyle,
               ]}>

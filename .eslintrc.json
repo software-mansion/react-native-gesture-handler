@@ -1,0 +1,13 @@
+{
+  "extends": "satya164",
+  "settings": {
+    "react": { "version": "16" },
+    "import/core-modules": [
+      "react-native-gesture-handler"
+    ]
+  },
+  "env": { "browser": true, "node": true },
+  "rules": {
+    "import/named": "off"
+  }
+}

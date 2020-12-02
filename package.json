@@ -3,6 +3,7 @@
   "version": "1.9.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
+    "lint": "eslint --ext '.js,.ts,.tsx' .",
     "test": "jest",
     "precommit": "lint-staged",
     "release": "npm login && release-it"
@@ -55,6 +56,8 @@
     "@types/react-native": "^0.63.37",
     "babel-jest": "16.0.0",
     "babel-preset-expo": "^7.1.0",
+    "eslint": "^7.14.0",
+    "eslint-config-satya164": "^3.1.8",
     "expo": "^35.0.1",
     "flow-bin": "^0.98.0",
     "husky": "^0.14.3",
