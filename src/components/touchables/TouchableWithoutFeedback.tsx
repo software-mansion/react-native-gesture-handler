@@ -2,10 +2,16 @@ import React from 'react';
 import { TouchableWithoutFeedbackProps } from 'react-native';
 import GenericTouchable, { GenericTouchableProps } from './GenericTouchable';
 
-const TouchableWithoutFeedback: React.Component<TouchableWithoutFeedbackProps &
-  GenericTouchableProps> = React.forwardRef((props, ref: React.Ref<TouchableWithoutFeedback>) => (
+// TODO: type it properly somehow
+// @ts-ignore
+const TouchableWithoutFeedback: React.Component<
+  TouchableWithoutFeedbackProps & GenericTouchableProps
+> & {
+  defaultProps: typeof GenericTouchable.defaultProps;
+} = React.forwardRef((props, ref: React.ForwardedRef<GenericTouchable>) => (
+  // @ts-ignore
   <GenericTouchable ref={ref} {...props} />
-);
+));
 
 TouchableWithoutFeedback.defaultProps = GenericTouchable.defaultProps;
 

@@ -5,14 +5,14 @@ import State from './State';
 export interface GestureHandlerGestureEventNativeEvent {
   handlerTag: number;
   numberOfPointers: number;
-  state: typeof State;
+  state: typeof State[keyof typeof State];
 }
 
 export interface GestureHandlerStateChangeNativeEvent {
   handlerTag: number;
   numberOfPointers: number;
-  state: typeof State;
-  oldState: typeof State;
+  state: typeof State[keyof typeof State];
+  oldState: typeof State[keyof typeof State];
 }
 
 export interface GestureHandlerStateChangeEvent {
