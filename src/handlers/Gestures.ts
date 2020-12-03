@@ -4,6 +4,7 @@ import React from 'react';
 
 import createHandler from './createHandler';
 import PlatformConstants from '../PlatformConstants';
+import State from '../State';
 
 export interface BaseGestureHandlerProperties {
   id?: string;
@@ -25,6 +26,18 @@ export interface BaseGestureHandlerProperties {
     | Record<'height' | 'top', number>
     | Record<'height' | 'bottom', number>;
 }
+export interface GestureEventEventPayload {
+  handlerTag: number;
+  numberOfPointers: number;
+  state: ValueOf<typeof State>;
+}
+
+export interface HandlerStateChangeEventPayload {
+  handlerTag: number;
+  numberOfPointers: number;
+  state: ValueOf<typeof State>;
+  oldState: ValueOf<typeof State>;
+}
 
 import {
   TapGestureHandlerProperties,
@@ -34,6 +47,7 @@ import {
   PanGestureHandlerProperties,
   PinchGestureHandlerProperties,
   RotationGestureHandlerProperties,
+  ValueOf,
 } from '../types';
 
 export const TapGestureHandler = createHandler<TapGestureHandlerProperties>(

@@ -19,6 +19,8 @@ import { BaseGestureHandlerProperties } from './handlers/Gestures';
 
 import State from './State';
 
+export type ValueOf<T> = T[keyof T];
+
 export interface GestureHandlerGestureEventNativeEvent {
   handlerTag: number;
   numberOfPointers: number;
