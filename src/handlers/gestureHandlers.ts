@@ -23,16 +23,21 @@ export interface HandlerStateChangeEventPayload {
 //TODO(TS) events in handlers
 
 export interface GestureEventEvent<ExtraEventPayloadT> {
-  nativeEvent: GestureEventEventPayload & ExtraEventPayloadT;
+  nativeEvent: Readonly<GestureEventEventPayload & ExtraEventPayloadT>;
 }
 export interface HandlerStateChangeEvent<ExtraEventPayloadT> {
-  nativeEvent: HandlerStateChangeEventPayload & ExtraEventPayloadT;
+  nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
 }
-export interface BaseGestureHandlerProperties<ExtraEventPayloadT> {
+
+// Events payloads are types instead of interfaces due to TS limitation.
+// See https://github.com/microsoft/TypeScript/issues/15300 for more info.
+export interface BaseGestureHandlerProperties<
+  ExtraEventPayloadT extends Record<string, unknown>
+> {
   id?: string;
   enabled?: boolean;
-  waitFor?: React.Ref<any> | React.Ref<any>[];
-  simultaneousHandlers?: React.Ref<any> | React.Ref<any>[];
+  waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
+  simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
   shouldCancelWhenOutside?: boolean;
   hitSlop?:
     | number
@@ -55,12 +60,12 @@ export interface BaseGestureHandlerProperties<ExtraEventPayloadT> {
   ) => void;
 }
 
-interface TapGestureHandlerEventExtraPayload {
+type TapGestureHandlerEventExtraPayload = {
   x: number;
   y: number;
   absoluteX: number;
   absoluteY: number;
-}
+};
 
 export interface TapGestureHandlerProperties
   extends BaseGestureHandlerProperties<TapGestureHandlerEventExtraPayload> {
@@ -88,12 +93,12 @@ export const TapGestureHandler = createHandler<TapGestureHandlerProperties>(
   {}
 );
 
-export interface FlingGestureHandlerEventExtraPayload {
+type FlingGestureHandlerEventExtraPayload = {
   x: number;
   y: number;
   absoluteX: number;
   absoluteY: number;
-}
+};
 
 export interface FlingGestureHandlerProperties
   extends BaseGestureHandlerProperties<FlingGestureHandlerEventExtraPayload> {
@@ -112,6 +117,7 @@ export const FlingGestureHandler = createHandler<FlingGestureHandlerProperties>(
 );
 
 class ForceTouchFallback extends React.Component {
+  static forceTouchAvailable = false;
   componentDidMount() {
     console.warn(
       'ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase'
@@ -122,13 +128,13 @@ class ForceTouchFallback extends React.Component {
   }
 }
 
-interface ForceTouchGestureHandlerEventExtraPayload {
+type ForceTouchGestureHandlerEventExtraPayload = {
   x: number;
   y: number;
   absoluteX: number;
   absoluteY: number;
   force: number;
-}
+};
 
 export interface ForceTouchGestureHandlerProperties
   extends BaseGestureHandlerProperties<
@@ -155,12 +161,12 @@ export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
 ForceTouchGestureHandler.forceTouchAvailable =
   PlatformConstants?.forceTouchAvailable || false;
 
-interface LongPressGestureHandlerEventExtraPayload {
+type LongPressGestureHandlerEventExtraPayload = {
   x: number;
   y: number;
   absoluteX: number;
   absoluteY: number;
-}
+};
 
 export interface LongPressGestureHandlerProperties
   extends BaseGestureHandlerProperties<
@@ -182,7 +188,7 @@ export const LongPressGestureHandler = createHandler<
   {}
 );
 
-function validatePanGestureHandlerProps(props) {
+function validatePanGestureHandlerProps(props: PanGestureHandlerProperties) {
   if (props.minDeltaX && props.activeOffsetX) {
     throw new Error(
       `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
@@ -240,7 +246,7 @@ function validatePanGestureHandlerProps(props) {
   }
 }
 
-function transformPanGestureHandlerProps(props) {
+function transformPanGestureHandlerProps(props: PanGestureHandlerProperties) {
   const res = { ...props };
   if (props.minDeltaX !== undefined) {
     delete res['minDeltaX'];
@@ -332,14 +338,14 @@ function transformPanGestureHandlerProps(props) {
   return res;
 }
 
-function managePanProps(props) {
+function managePanProps(props: PanGestureHandlerProperties) {
   if (__DEV__) {
     validatePanGestureHandlerProps(props);
   }
   return transformPanGestureHandlerProps(props);
 }
 
-interface PanGestureHandlerEventExtraPayload {
+type PanGestureHandlerEventExtraPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -348,7 +354,7 @@ interface PanGestureHandlerEventExtraPayload {
   translationY: number;
   velocityX: number;
   velocityY: number;
-}
+};
 
 export interface PanGestureHandlerProperties
   extends BaseGestureHandlerProperties<PanGestureHandlerEventExtraPayload> {
@@ -421,12 +427,12 @@ export const PanGestureHandler = createHandler<PanGestureHandlerProperties>(
   }
 );
 
-interface PinchGestureHandlerEventExtraPayload {
+type PinchGestureHandlerEventExtraPayload = {
   scale: number;
   focalX: number;
   focalY: number;
   velocity: number;
-}
+};
 
 export interface PinchGestureHandlerProperties
   extends BaseGestureHandlerProperties<PinchGestureHandlerEventExtraPayload> {}
@@ -437,12 +443,12 @@ export const PinchGestureHandler = createHandler<PinchGestureHandlerProperties>(
   {}
 );
 
-interface RotationGestureHandlerEventExtraPayload {
+type RotationGestureHandlerEventExtraPayload = {
   rotation: number;
   anchorX: number;
   anchorY: number;
   velocity: number;
-}
+};
 
 export interface RotationGestureHandlerProperties
   extends BaseGestureHandlerProperties<
