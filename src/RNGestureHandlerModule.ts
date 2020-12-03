@@ -1,26 +1,25 @@
-// @ts-nocheck
 import { NativeModules } from 'react-native';
 
 const { RNGestureHandlerModule } = NativeModules;
 
-enum Directions {
-  RIGHT = 1,
-  LEFT = 2,
-  UP = 4,
-  DOWN = 8,
-}
+type Directions = {
+  readonly RIGHT: 1;
+  readonly LEFT: 2;
+  readonly UP: 4;
+  readonly DOWN: 8;
+};
 
-type RNGestureHandlerModuleProps = {
+export type RNGestureHandlerModuleProps = {
   Direction: Directions;
   handleSetJSResponder: (tag: number, blockNativeResponder: boolean) => void;
   handleClearJSResponder: () => void;
-  createGestureHandler: (
+  createGestureHandler: <T>(
     handlerName: string,
     handlerTag: number,
-    config
+    config: T //TODO extends config
   ) => void;
-  attachGestureHandler: (handlerTag: number, newView, propsRef) => void;
-  updateGestureHandler: (handlerTag: number, newConfig) => void;
+  attachGestureHandler: (handlerTag: number, newView: number) => void;
+  updateGestureHandler: <T>(handlerTag: number, newConfig: T) => void;
 };
 
 export default RNGestureHandlerModule as RNGestureHandlerModuleProps;
