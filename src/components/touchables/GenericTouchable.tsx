@@ -1,9 +1,19 @@
-// @ts-nocheck
 import React, { Component } from 'react';
-import { Animated, Platform } from 'react-native';
+import {
+  Animated,
+  Platform,
+  StyleProp,
+  ViewStyle,
+  TouchableWithoutFeedbackProps,
+} from 'react-native';
+
 import State from '../../State';
 import { BaseButton } from '../GestureButtons';
-import PropTypes from 'prop-types';
+
+import {
+  NativeViewGestureHandlerGestureEvent,
+  NativeViewGestureHandlerStateChangeEvent,
+} from '../../types';
 
 /**
  * Each touchable is a states' machine which preforms transitions.
@@ -18,55 +28,41 @@ export const TOUCHABLE_STATE = {
   MOVED_OUTSIDE: 2,
 };
 
-const PublicPropTypes = {
+export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
   // Decided to drop not used fields from RN's implementation.
-  // e.g. onBlur and onFocus as well as deprecated props.
-  accessible: PropTypes.bool,
-  accessibilityLabel: PropTypes.node,
-  accessibilityHint: PropTypes.string,
-  hitSlop: PropTypes.shape({
-    top: PropTypes.number,
-    left: PropTypes.number,
-    bottom: PropTypes.number,
-    right: PropTypes.number,
-  }),
-  disabled: PropTypes.bool,
-  onPress: PropTypes.func,
-  onPressIn: PropTypes.func,
-  onPressOut: PropTypes.func,
-  onLayout: PropTypes.func,
-  onLongPress: PropTypes.func,
-  nativeID: PropTypes.string,
-  testID: PropTypes.string,
-  delayPressIn: PropTypes.number,
-  delayPressOut: PropTypes.number,
-  delayLongPress: PropTypes.number,
-  shouldActivateOnStart: PropTypes.bool,
-  disallowInterruption: PropTypes.bool,
-};
+  // e.g. onBlur and onFocus as well as deprecated props. - TODO: this comment may be unuseful in this moment
 
-const InternalPropTypes = {
-  extraButtonProps: PropTypes.object,
-  onStateChange: PropTypes.func,
-};
+  // TODO: in RN these events get native event parameter, which prolly could be used in our implementation too
+  onPress?: () => void;
+  onPressIn?: () => void;
+  onPressOut?: () => void;
+  onLongPress?: () => void;
+
+  nativeID: string;
+  shouldActivateOnStart: boolean;
+  disallowInterruption: boolean;
+
+  containerStyle?: StyleProp<ViewStyle>;
+}
+
+interface InternalProps {
+  extraButtonProps: object;
+  // TODO: change it to take type of TOUCHABLE_STATE
+  onStateChange?: (oldState: number, newState: number) => void;
+}
+
+// TODO: maybe can be better
+// TODO: all clearTimeout have ! added, maybe they shouldn't ?
+type Timeout = null | NodeJS.Timeout | undefined;
 
 /**
  * GenericTouchable is not intented to be used as it.
  * Should be treated as a source for the rest of touchables
  */
 
-export default class GenericTouchable extends Component {
-  static publicPropTypes = PublicPropTypes;
-  static internalPropTypes = InternalPropTypes;
-
-  // The prop type collections have to be outside of the class, as metro
-  // at this time does not compile `this.foo` correctly if HMR is enabled.
-  // https://github.com/software-mansion/react-native-gesture-handler/pull/406#issuecomment-453779977
-  static propTypes = {
-    ...InternalPropTypes,
-    ...PublicPropTypes,
-  };
-
+export default class GenericTouchable extends Component<
+  GenericTouchableProps & InternalProps
+> {
   static defaultProps = {
     delayLongPress: 600,
     extraButtonProps: {
@@ -75,9 +71,9 @@ export default class GenericTouchable extends Component {
   };
 
   // timeout handlers
-  pressInTimeout;
-  pressOutTimeout;
-  longPressTimeout;
+  pressInTimeout: Timeout;
+  pressOutTimeout: Timeout;
+  longPressTimeout: Timeout;
 
   // This flag is required since recognition of longPress implies not-invoking onPress
   longPressDetected = false;
@@ -121,7 +117,7 @@ export default class GenericTouchable extends Component {
 
   // handleGoToUndetermined transits to UNDETERMINED state with proper delay
   handleGoToUndetermined() {
-    clearTimeout(this.pressOutTimeout);
+    clearTimeout(this.pressOutTimeout!); // TODO: maybe it can be undefined
     if (this.props.delayPressOut) {
       this.pressOutTimeout = setTimeout(() => {
         if (this.STATE === TOUCHABLE_STATE.UNDETERMINED) {
@@ -145,41 +141,43 @@ export default class GenericTouchable extends Component {
   reset() {
     this.longPressDetected = false;
     this.pointerInside = true;
-    clearTimeout(this.pressInTimeout);
-    clearTimeout(this.pressOutTimeout);
-    clearTimeout(this.longPressTimeout);
+    clearTimeout(this.pressInTimeout as NodeJS.Timeout);
+    clearTimeout(this.pressOutTimeout!);
+    clearTimeout(this.longPressTimeout!);
     this.pressOutTimeout = null;
     this.longPressTimeout = null;
     this.pressInTimeout = null;
   }
 
   // All states' transitions are defined here.
-  moveToState(newState) {
+  moveToState(newState: number) {
     if (newState === this.STATE) {
       // Ignore dummy transitions
       return;
     }
     if (newState === TOUCHABLE_STATE.BEGAN) {
       // First touch and moving inside
-      this.props.onPressIn && this.props.onPressIn();
+      this.props.onPressIn?.();
     } else if (newState === TOUCHABLE_STATE.MOVED_OUTSIDE) {
       // Moving outside
-      this.props.onPressOut && this.props.onPressOut();
+      this.props.onPressOut?.();
     } else if (newState === TOUCHABLE_STATE.UNDETERMINED) {
       // Need to reset each time on transition to UNDETERMINED
       this.reset();
       if (this.STATE === TOUCHABLE_STATE.BEGAN) {
         // ... and if it happens inside button.
-        this.props.onPressOut && this.props.onPressOut();
+        this.props.onPressOut?.();
       }
     }
     // Finally call lister (used by subclasses)
-    this.props.onStateChange && this.props.onStateChange(this.STATE, newState);
+    this.props.onStateChange?.(this.STATE, newState);
     // ... and make transition.
     this.STATE = newState;
   }
 
-  onGestureEvent = ({ nativeEvent: { pointerInside } }) => {
+  onGestureEvent = ({
+    nativeEvent: { pointerInside },
+  }: NativeViewGestureHandlerGestureEvent) => {
     if (this.pointerInside !== pointerInside) {
       if (pointerInside) {
         this.onMoveIn();
@@ -190,7 +188,9 @@ export default class GenericTouchable extends Component {
     this.pointerInside = pointerInside;
   };
 
-  onHandlerStateChange = ({ nativeEvent }) => {
+  onHandlerStateChange = ({
+    nativeEvent,
+  }: NativeViewGestureHandlerStateChangeEvent) => {
     const { state } = nativeEvent;
     if (state === State.CANCELLED || state === State.FAILED) {
       // Need to handle case with external cancellation (e.g. by ScrollView)
@@ -212,14 +212,15 @@ export default class GenericTouchable extends Component {
       this.handleGoToUndetermined();
       if (shouldCallOnPress) {
         // Calls only inside component whether no long press was called previously
-        this.props.onPress && this.props.onPress();
+        this.props.onPress?.();
       }
     }
   };
 
   onLongPressDetected = () => {
     this.longPressDetected = true;
-    this.props.onLongPress();
+    // checked for in the caller of `onLongPressDetected`, but better to check twice
+    this.props.onLongPress?.();
   };
 
   componentWillUnmount() {
@@ -236,7 +237,7 @@ export default class GenericTouchable extends Component {
 
   onMoveOut() {
     // long press should no longer be detected
-    clearTimeout(this.longPressTimeout);
+    clearTimeout(this.longPressTimeout!);
     this.longPressTimeout = null;
     if (this.STATE === TOUCHABLE_STATE.BEGAN) {
       this.handleMoveOutside();
@@ -250,18 +251,20 @@ export default class GenericTouchable extends Component {
       accessibilityHint: this.props.accessibilityHint,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityRole: this.props.accessibilityRole,
-      accessibilityStates: this.props.accessibilityStates,
+      accessibilityState: this.props.accessibilityState, // TODO: check if changed to no 's' correctly
       accessibilityTraits: this.props.accessibilityTraits,
       nativeID: this.props.nativeID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
+      interpolate: undefined,
     };
 
     return (
       <BaseButton
         style={this.props.containerStyle}
         onHandlerStateChange={
-          this.props.disabled ? null : this.onHandlerStateChange
+          // TODO: not sure if it can be undefined instead of null
+          this.props.disabled ? undefined : this.onHandlerStateChange
         }
         onGestureEvent={this.onGestureEvent}
         hitSlop={this.props.hitSlop}
