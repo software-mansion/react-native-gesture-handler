@@ -8,8 +8,7 @@ const TouchableWithoutFeedback: React.Component<
   TouchableWithoutFeedbackProps & GenericTouchableProps
 > & {
   defaultProps: typeof GenericTouchable.defaultProps;
-} = React.forwardRef((props, ref: React.ForwardedRef<GenericTouchable>) => (
-  // @ts-ignore
+} = React.forwardRef<GenericTouchable, GenericTouchableProps>((props, ref) => (
   <GenericTouchable ref={ref} {...props} />
 ));
 
