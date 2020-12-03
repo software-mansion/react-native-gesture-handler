@@ -2,12 +2,12 @@ import { NativeModules } from 'react-native';
 
 const { RNGestureHandlerModule } = NativeModules;
 
-type Directions = {
-  readonly RIGHT: 1;
-  readonly LEFT: 2;
-  readonly UP: 4;
-  readonly DOWN: 8;
-};
+type Directions = Readonly<{
+  RIGHT: 1;
+  LEFT: 2;
+  UP: 4;
+  DOWN: 8;
+}>;
 
 export type RNGestureHandlerModuleProps = {
   Direction: Directions;
