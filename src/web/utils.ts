@@ -1,16 +1,18 @@
+// TODO(TS) remove if not necessary after rewrite
 export const isnan = (v: any) => Number.isNaN(v);
 
+// TODO(TS) remove if not necessary after rewrite
 export const isValidNumber = (v: any) =>
   typeof v === 'number' && !Number.isNaN(v);
 
-export const TEST_MIN_IF_NOT_NAN = (value: number, limit: any): boolean =>
+export const TEST_MIN_IF_NOT_NAN = (value: number, limit: number): boolean =>
   !isnan(limit) &&
   ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit));
 export const VEC_LEN_SQ = ({ x = 0, y = 0 } = {}) => x * x + y * y;
-export const TEST_MAX_IF_NOT_NAN = (value: number, max: any) =>
+export const TEST_MAX_IF_NOT_NAN = (value: number, max: number) =>
   !isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max));
 
-export function fireAfterInterval(method: () => any, interval: number) {
+export function fireAfterInterval(method: () => any, interval?: number) {
   if (!interval) {
     method();
     return null;
