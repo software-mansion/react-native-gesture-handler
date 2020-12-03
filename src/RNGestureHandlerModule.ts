@@ -20,6 +20,7 @@ export type RNGestureHandlerModuleProps = {
   ) => void;
   attachGestureHandler: (handlerTag: number, newView: number) => void;
   updateGestureHandler: <T>(handlerTag: number, newConfig: T) => void;
+  dropGestureHandler: (handlerTag: number) => void;
 };
 
 export default RNGestureHandlerModule as RNGestureHandlerModuleProps;
