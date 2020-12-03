@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 // Similarily to the DrawerLayout component this deserves to be put in a
 // separate repo. Although, keeping it here for the time being will allow us
 // to move faster and fix possible issues quicker
@@ -54,8 +52,8 @@ interface SwipeableProperties
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderLeftActions?: (
-    progressAnimatedValue: Animated.AnimatedInterpolation,
-    dragAnimatedValue: Animated.AnimatedInterpolation
+    progressAnimatedValue?: Animated.AnimatedInterpolation,
+    dragAnimatedValue?: Animated.AnimatedInterpolation
   ) => React.ReactNode;
   /**
    *
@@ -72,6 +70,7 @@ interface SwipeableProperties
     dragAnimatedValue: Animated.AnimatedInterpolation
   ) => React.ReactNode;
   useNativeAnimations?: boolean;
+  animationOptions?: object;
   containerStyle?: StyleProp<ViewStyle>;
   childrenContainerStyle?: StyleProp<ViewStyle>;
 }
@@ -262,8 +261,7 @@ export default class Swipeable extends Component<
       velocity: velocityX,
       bounciness: 0,
       toValue,
-      useNativeDriver: this.props.useNativeAnimations,
-      // TODO check what is this prop
+      useNativeDriver: this.props.useNativeAnimations!,
       ...this.props.animationOptions,
     }).start(({ finished }) => {
       if (finished) {

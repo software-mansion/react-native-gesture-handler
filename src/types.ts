@@ -1,20 +1,4 @@
 import * as React from 'react';
-import {
-  Animated,
-  FlatListProperties,
-  ScrollViewProperties,
-  SwitchProperties,
-  TextInputProperties,
-  DrawerLayoutAndroidProperties,
-  TouchableHighlightProperties,
-  TouchableOpacityProperties,
-  TouchableNativeFeedbackProperties,
-  TouchableWithoutFeedbackProperties,
-  Insets,
-  ViewStyle,
-  StyleProp,
-  ViewProps,
-} from 'react-native';
 
 import State from './State';
 
@@ -308,16 +292,6 @@ export class FlingGestureHandler extends React.Component<
 
 export class ForceTouchGestureHandler extends React.Component<
   ForceTouchGestureHandlerProperties
-> {}
-
-/* BUTTONS CLASSES */
-
-export interface ContainedTouchableProperties {
-  containerStyle?: StyleProp<ViewStyle>;
-}
-
-export class TouchableWithoutFeedback extends React.Component<
-  TouchableWithoutFeedbackProperties | ContainedTouchableProperties
 > {}
 
 /* GESTURE HANDLERS PROPERTIES */
