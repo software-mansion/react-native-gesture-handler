@@ -66,9 +66,10 @@ interface SwipeableProperties
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderRightActions?: (
-    progressAnimatedValue: Animated.AnimatedInterpolation,
-    dragAnimatedValue: Animated.AnimatedInterpolation
+    progressAnimatedValue?: Animated.AnimatedInterpolation,
+    dragAnimatedValue?: Animated.AnimatedInterpolation
   ) => React.ReactNode;
+  // TODO: above methods maybe should not take optional parameters
   useNativeAnimations?: boolean;
   animationOptions?: object;
   containerStyle?: StyleProp<ViewStyle>;
@@ -331,7 +332,7 @@ export default class Swipeable extends Component<
       <Animated.View
         style={[
           styles.leftActions,
-          { transform: [{ translateX: this._leftActionTranslate! }] },
+          { transform: [{ translateX: this._leftActionTranslate! }] }, // TODO: may not be correct to !
         ]}>
         {renderLeftActions(this._showLeftAction, this._transX)}
         <View

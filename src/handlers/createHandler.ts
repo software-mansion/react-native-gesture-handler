@@ -164,7 +164,7 @@ export default function createHandler<T extends GestureHandlerProperties>({
   config = {},
   transformProps,
   customNativeProps = {},
-}: Props): React.Component<T> {
+}: Props): React.ComponentType<T> {
   class Handler extends React.Component<T> {
     static displayName = handlerName;
     static propTypes = propTypes;
