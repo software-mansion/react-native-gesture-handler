@@ -3,8 +3,28 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import createHandler from './createHandler';
-import GestureHandlerPropTypes from '../GestureHandlerPropTypes';
 import PlatformConstants from '../PlatformConstants';
+
+export interface BaseGestureHandlerProperties {
+  id?: string;
+  enabled?: boolean;
+  waitFor?: React.Ref<any> | React.Ref<any>[];
+  simultaneousHandlers?: React.Ref<any> | React.Ref<any>[];
+  shouldCancelWhenOutside?: boolean;
+  hitSlop?:
+    | number
+    // TODO(TS) take into consideration types from GestureHandler#setHitSlop
+    | Partial<
+        Record<
+          'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
+          number
+        >
+      >
+    | Record<'width' | 'left', number>
+    | Record<'width' | 'right', number>
+    | Record<'height' | 'top', number>
+    | Record<'height' | 'bottom', number>;
+}
 
 import {
   TapGestureHandlerProperties,

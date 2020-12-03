@@ -15,6 +15,7 @@ import {
   StyleProp,
   ViewProps,
 } from 'react-native';
+import { BaseGestureHandlerProperties } from './handlers/Gestures';
 
 import State from './State';
 
@@ -192,7 +193,8 @@ interface FlingGestureHandlerEventExtra {
   absoluteY: number;
 }
 
-export interface TapGestureHandlerProperties extends GestureHandlerProperties {
+export interface TapGestureHandlerProperties
+  extends BaseGestureHandlerProperties {
   minPointers?: number;
   maxDurationMs?: number;
   maxDelayMs?: number;
@@ -205,7 +207,7 @@ export interface TapGestureHandlerProperties extends GestureHandlerProperties {
 }
 
 export interface ForceTouchGestureHandlerProperties
-  extends GestureHandlerProperties {
+  extends BaseGestureHandlerProperties {
   minForce?: number;
   maxForce?: number;
   feedbackOnActivation?: boolean;
@@ -216,7 +218,7 @@ export interface ForceTouchGestureHandlerProperties
 }
 
 export interface LongPressGestureHandlerProperties
-  extends GestureHandlerProperties {
+  extends BaseGestureHandlerProperties {
   minDurationMs?: number;
   maxDist?: number;
   onGestureEvent?: (event: LongPressGestureHandlerGestureEvent) => void;
@@ -225,7 +227,8 @@ export interface LongPressGestureHandlerProperties
   ) => void;
 }
 
-export interface PanGestureHandlerProperties extends GestureHandlerProperties {
+export interface PanGestureHandlerProperties
+  extends BaseGestureHandlerProperties {
   /** @deprecated  use activeOffsetX*/
   minDeltaX?: number;
   /** @deprecated  use activeOffsetY*/
@@ -255,13 +258,13 @@ export interface PanGestureHandlerProperties extends GestureHandlerProperties {
 }
 
 export interface PinchGestureHandlerProperties
-  extends GestureHandlerProperties {
+  extends BaseGestureHandlerProperties {
   onGestureEvent?: (event: PinchGestureHandlerGestureEvent) => void;
   onHandlerStateChange?: (event: PinchGestureHandlerStateChangeEvent) => void;
 }
 
 export interface RotationGestureHandlerProperties
-  extends GestureHandlerProperties {
+  extends BaseGestureHandlerProperties {
   onGestureEvent?: (event: RotationGestureHandlerGestureEvent) => void;
   onHandlerStateChange?: (
     event: RotationGestureHandlerStateChangeEvent
@@ -269,7 +272,7 @@ export interface RotationGestureHandlerProperties
 }
 
 export interface FlingGestureHandlerProperties
-  extends GestureHandlerProperties {
+  extends BaseGestureHandlerProperties {
   direction?: number;
   numberOfPointers?: number;
   onGestureEvent?: (event: FlingGestureHandlerGestureEvent) => void;
@@ -321,43 +324,8 @@ export class TouchableWithoutFeedback extends React.Component<
 > {}
 
 /* GESTURE HANDLERS PROPERTIES */
-
-export interface GestureHandlerProperties {
-  id?: string;
-  enabled?: boolean;
-  waitFor?: React.Ref<any> | React.Ref<any>[];
-  simultaneousHandlers?: React.Ref<any> | React.Ref<any>[];
-  shouldCancelWhenOutside?: boolean;
-  hitSlop?:
-    | number
-    | {
-        left?: number;
-        right?: number;
-        top?: number;
-        bottom?: number;
-        vertical?: number;
-        horizontal?: number;
-      }
-    | {
-        width: number;
-        left: number;
-      }
-    | {
-        width: number;
-        right: number;
-      }
-    | {
-        height: number;
-        top: number;
-      }
-    | {
-        height: number;
-        bottom: number;
-      };
-}
-
 export interface NativeViewGestureHandlerProperties
-  extends GestureHandlerProperties {
+  extends BaseGestureHandlerProperties {
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
   onGestureEvent?: (event: NativeViewGestureHandlerGestureEvent) => void;
