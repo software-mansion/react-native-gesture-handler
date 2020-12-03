@@ -5,7 +5,9 @@ import React from 'react';
 import createHandler from './createHandler';
 import PlatformConstants from '../PlatformConstants';
 import State from '../State';
+import { ValueOf } from '../types';
 
+//TODO(TS) events in handlers
 export interface BaseGestureHandlerProperties {
   id?: string;
   enabled?: boolean;
@@ -39,16 +41,16 @@ export interface HandlerStateChangeEventPayload {
   oldState: ValueOf<typeof State>;
 }
 
-import {
-  TapGestureHandlerProperties,
-  FlingGestureHandlerProperties,
-  ForceTouchGestureHandlerProperties,
-  LongPressGestureHandlerProperties,
-  PanGestureHandlerProperties,
-  PinchGestureHandlerProperties,
-  RotationGestureHandlerProperties,
-  ValueOf,
-} from '../types';
+export interface TapGestureHandlerProperties
+  extends BaseGestureHandlerProperties {
+  minPointers?: number;
+  maxDurationMs?: number;
+  maxDelayMs?: number;
+  numberOfTaps?: number;
+  maxDeltaX?: number;
+  maxDeltaY?: number;
+  maxDist?: number;
+}
 
 export const TapGestureHandler = createHandler<TapGestureHandlerProperties>(
   'TapGestureHandler',
@@ -64,6 +66,12 @@ export const TapGestureHandler = createHandler<TapGestureHandlerProperties>(
   },
   {}
 );
+
+export interface FlingGestureHandlerProperties
+  extends BaseGestureHandlerProperties {
+  direction?: number;
+  numberOfPointers?: number;
+}
 
 export const FlingGestureHandler = createHandler<FlingGestureHandlerProperties>(
   'FlingGestureHandler',
@@ -86,6 +94,13 @@ class ForceTouchFallback extends React.Component {
   }
 }
 
+export interface ForceTouchGestureHandlerProperties
+  extends BaseGestureHandlerProperties {
+  minForce?: number;
+  maxForce?: number;
+  feedbackOnActivation?: boolean;
+}
+
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
   ? createHandler<ForceTouchGestureHandlerProperties>(
       'ForceTouchGestureHandler',
@@ -101,6 +116,12 @@ export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
 
 ForceTouchGestureHandler.forceTouchAvailable =
   PlatformConstants?.forceTouchAvailable || false;
+
+export interface LongPressGestureHandlerProperties
+  extends BaseGestureHandlerProperties {
+  minDurationMs?: number;
+  maxDist?: number;
+}
 
 export const LongPressGestureHandler = createHandler<
   LongPressGestureHandlerProperties
@@ -271,6 +292,34 @@ function managePanProps(props) {
   return transformPanGestureHandlerProps(props);
 }
 
+export interface PanGestureHandlerProperties
+  extends BaseGestureHandlerProperties {
+  /** @deprecated  use activeOffsetX*/
+  minDeltaX?: number;
+  /** @deprecated  use activeOffsetY*/
+  minDeltaY?: number;
+  /** @deprecated  use failOffsetX*/
+  maxDeltaX?: number;
+  /** @deprecated  use failOffsetY*/
+  maxDeltaY?: number;
+  /** @deprecated  use activeOffsetX*/
+  minOffsetX?: number;
+  /** @deprecated  use failOffsetY*/
+  minOffsetY?: number;
+  activeOffsetY?: number | number[];
+  activeOffsetX?: number | number[];
+  failOffsetY?: number | number[];
+  failOffsetX?: number | number[];
+  minDist?: number;
+  minVelocity?: number;
+  minVelocityX?: number;
+  minVelocityY?: number;
+  minPointers?: number;
+  maxPointers?: number;
+  avgTouches?: boolean;
+  enableTrackpadTwoFingerGesture?: boolean;
+}
+
 export const PanGestureHandler = createHandler<PanGestureHandlerProperties>(
   'PanGestureHandler',
   {
@@ -313,11 +362,19 @@ export const PanGestureHandler = createHandler<PanGestureHandlerProperties>(
     failOffsetXEnd: true,
   }
 );
+
+export interface PinchGestureHandlerProperties
+  extends BaseGestureHandlerProperties {}
+
 export const PinchGestureHandler = createHandler<PinchGestureHandlerProperties>(
   'PinchGestureHandler',
   GestureHandlerPropTypes,
   {}
 );
+
+export interface RotationGestureHandlerProperties
+  extends BaseGestureHandlerProperties {}
+
 export const RotationGestureHandler = createHandler<
   RotationGestureHandlerProperties
 >('RotationGestureHandler', GestureHandlerPropTypes, {});
