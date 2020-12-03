@@ -28,7 +28,8 @@ export default {
   handleClearJSResponder() {
     console.warn('handleClearJSResponder: ');
   },
-  createGestureHandler(handlerName: string, handlerTag: number, config) {
+  createGestureHandler<T>(handlerName: string, handlerTag: number, config: T) {
+    //TODO(TS) extends config
     if (!(handlerName in Gestures))
       throw new Error(
         `react-native-gesture-handler: ${handlerName} is not supported on web.`
@@ -37,10 +38,14 @@ export default {
     NodeManager.createGestureHandler(handlerTag, new GestureClass());
     this.updateGestureHandler(handlerTag, config);
   },
-  attachGestureHandler(handlerTag: number, newView, propsRef) {
+  attachGestureHandler(
+    handlerTag: number,
+    newView: number,
+    propsRef: React.RefObject<unknown>
+  ) {
     NodeManager.getHandler(handlerTag).setView(newView, propsRef);
   },
-  updateGestureHandler(handlerTag: number, newConfig) {
+  updateGestureHandler<T>(handlerTag: number, newConfig: T) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
   },
   getGestureHandlerNode(handlerTag: number) {
