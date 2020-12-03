@@ -27,8 +27,8 @@ export interface GestureHandlerGestureEventNativeEvent {
 export interface GestureHandlerStateChangeNativeEvent {
   handlerTag: number;
   numberOfPointers: number;
-  state: State;
-  oldState: State;
+  state: typeof State;
+  oldState: typeof State;
 }
 
 export interface GestureHandlerStateChangeEvent {
