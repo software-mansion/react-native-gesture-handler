@@ -13,9 +13,12 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import { PanGestureHandler, TapGestureHandler } from '../handlers/Gestures';
+import {
+  PanGestureHandler,
+  TapGestureHandler,
+} from '../handlers/gestureHandlers';
 import State from '../State';
-import { PanGestureHandlerProperties } from '../types';
+import { PanGestureHandlerProperties } from '../handlers/gestureHandlers';
 
 const DRAG_TOSS = 0.05;
 

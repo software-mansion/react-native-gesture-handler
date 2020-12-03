@@ -1,7 +1,16 @@
 // @ts-nocheck
 import createHandler from './createHandler';
-import { BaseGestureHandlerProperties } from './Gestures';
+import { BaseGestureHandlerProperties } from './gestureHandlers';
 const props: BaseGestureHandlerProperties = {};
+
+export interface NativeViewGestureHandlerProperties
+  extends BaseGestureHandlerProperties<NativeViewGestureHandlerPayload> {
+  shouldActivateOnStart?: boolean;
+  disallowInterruption?: boolean;
+}
+export interface NativeViewGestureHandlerPayload {
+  pointerInside: boolean;
+}
 
 const NativeViewGestureHandler = createHandler('NativeViewGestureHandler', {
   ...props,

@@ -13,10 +13,13 @@ import GestureHandlerButton from './GestureHandlerButton';
 import State from '../State';
 
 import {
+  GestureEventEvent,
+  HandlerStateChangeEvent,
+} from '../handlers/gestureHandlers';
+import {
+  NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProperties,
-  NativeViewGestureHandlerStateChangeEvent,
-  NativeViewGestureHandlerGestureEvent,
-} from '../types';
+} from '../handlers/NativeViewGestureHandler';
 
 /* BUTTONS PROPERTIES */
 
@@ -62,7 +65,7 @@ export class BaseButton extends React.Component<BaseButtonProperties> {
 
   _handleEvent = ({
     nativeEvent,
-  }: NativeViewGestureHandlerStateChangeEvent) => {
+  }: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>) => {
     const { state, oldState, pointerInside } = nativeEvent;
     const active = pointerInside && state === State.ACTIVE;
 
@@ -86,14 +89,18 @@ export class BaseButton extends React.Component<BaseButtonProperties> {
   // then forward the event to listeners. However, here our handler
   // is virtually only forwarding events to listeners, so we reverse the order
   // to keep the proper order of the callbacks (from "raw" ones to "processed").
-  _onHandlerStateChange = (e: NativeViewGestureHandlerStateChangeEvent) => {
+  _onHandlerStateChange = (
+    e: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
+  ) => {
     this.props.onHandlerStateChange?.(e);
     this._handleEvent(e);
   };
 
-  _onGestureEvent = (e: NativeViewGestureHandlerGestureEvent) => {
+  _onGestureEvent = (e: GestureEventEvent<NativeViewGestureHandlerPayload>) => {
     this.props.onGestureEvent?.(e);
-    this._handleEvent(e as NativeViewGestureHandlerStateChangeEvent); // TODO: maybe it is not correct
+    this._handleEvent(
+      e as HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
+    ); // TODO: maybe it is not correct
   };
 
   render() {

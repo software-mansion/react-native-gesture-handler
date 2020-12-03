@@ -11,9 +11,10 @@ import State from '../../State';
 import { BaseButton } from '../GestureButtons';
 
 import {
-  NativeViewGestureHandlerGestureEvent,
-  NativeViewGestureHandlerStateChangeEvent,
-} from '../../types';
+  GestureEventEvent,
+  HandlerStateChangeEvent,
+} from '../../handlers/gestureHandlers';
+import { NativeViewGestureHandlerPayload } from '../../handlers/NativeViewGestureHandler';
 
 /**
  * Each touchable is a states' machine which preforms transitions.
@@ -177,7 +178,7 @@ export default class GenericTouchable extends Component<
 
   onGestureEvent = ({
     nativeEvent: { pointerInside },
-  }: NativeViewGestureHandlerGestureEvent) => {
+  }: GestureEventEvent<NativeViewGestureHandlerPayload>) => {
     if (this.pointerInside !== pointerInside) {
       if (pointerInside) {
         this.onMoveIn();
@@ -190,7 +191,7 @@ export default class GenericTouchable extends Component<
 
   onHandlerStateChange = ({
     nativeEvent,
-  }: NativeViewGestureHandlerStateChangeEvent) => {
+  }: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>) => {
     const { state } = nativeEvent;
     if (state === State.CANCELLED || state === State.FAILED) {
       // Need to handle case with external cancellation (e.g. by ScrollView)

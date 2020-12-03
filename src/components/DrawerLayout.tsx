@@ -23,7 +23,10 @@ import {
   LayoutChangeEvent,
 } from 'react-native';
 
-import { PanGestureHandler, TapGestureHandler } from '../handlers/Gestures';
+import {
+  PanGestureHandler,
+  TapGestureHandler,
+} from '../handlers/gestureHandlers';
 import State from '../State';
 
 import { PanGestureHandlerGestureEvent } from '../types';

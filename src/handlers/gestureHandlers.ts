@@ -5,10 +5,30 @@ import React from 'react';
 import createHandler from './createHandler';
 import PlatformConstants from '../PlatformConstants';
 import State from '../State';
-import { ValueOf } from '../types';
+import { ValueOf } from '../typeUtils';
+
+export interface GestureEventEventPayload {
+  handlerTag: number;
+  numberOfPointers: number;
+  state: ValueOf<typeof State>;
+}
+
+export interface HandlerStateChangeEventPayload {
+  handlerTag: number;
+  numberOfPointers: number;
+  state: ValueOf<typeof State>;
+  oldState: ValueOf<typeof State>;
+}
 
 //TODO(TS) events in handlers
-export interface BaseGestureHandlerProperties {
+
+export interface GestureEventEvent<ExtraEventPayloadT> {
+  nativeEvent: GestureEventEventPayload & ExtraEventPayloadT;
+}
+export interface HandlerStateChangeEvent<ExtraEventPayloadT> {
+  nativeEvent: HandlerStateChangeEventPayload & ExtraEventPayloadT;
+}
+export interface BaseGestureHandlerProperties<ExtraEventPayloadT> {
   id?: string;
   enabled?: boolean;
   waitFor?: React.Ref<any> | React.Ref<any>[];
@@ -27,22 +47,23 @@ export interface BaseGestureHandlerProperties {
     | Record<'width' | 'right', number>
     | Record<'height' | 'top', number>
     | Record<'height' | 'bottom', number>;
-}
-export interface GestureEventEventPayload {
-  handlerTag: number;
-  numberOfPointers: number;
-  state: ValueOf<typeof State>;
+
+  //TODO(TS) consider using NativeSyntheticEvent
+  onGestureEvent?: (event: GestureEventEvent<ExtraEventPayloadT>) => void;
+  onHandlerStateChange?: (
+    event: HandlerStateChangeEvent<ExtraEventPayloadT>
+  ) => void;
 }
 
-export interface HandlerStateChangeEventPayload {
-  handlerTag: number;
-  numberOfPointers: number;
-  state: ValueOf<typeof State>;
-  oldState: ValueOf<typeof State>;
+interface TapGestureHandlerEventExtraPayload {
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
 }
 
 export interface TapGestureHandlerProperties
-  extends BaseGestureHandlerProperties {
+  extends BaseGestureHandlerProperties<TapGestureHandlerEventExtraPayload> {
   minPointers?: number;
   maxDurationMs?: number;
   maxDelayMs?: number;
@@ -67,8 +88,15 @@ export const TapGestureHandler = createHandler<TapGestureHandlerProperties>(
   {}
 );
 
+export interface FlingGestureHandlerEventExtraPayload {
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+}
+
 export interface FlingGestureHandlerProperties
-  extends BaseGestureHandlerProperties {
+  extends BaseGestureHandlerProperties<FlingGestureHandlerEventExtraPayload> {
   direction?: number;
   numberOfPointers?: number;
 }
@@ -94,8 +122,18 @@ class ForceTouchFallback extends React.Component {
   }
 }
 
+interface ForceTouchGestureHandlerEventExtraPayload {
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+  force: number;
+}
+
 export interface ForceTouchGestureHandlerProperties
-  extends BaseGestureHandlerProperties {
+  extends BaseGestureHandlerProperties<
+    ForceTouchGestureHandlerEventExtraPayload
+  > {
   minForce?: number;
   maxForce?: number;
   feedbackOnActivation?: boolean;
@@ -117,8 +155,17 @@ export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
 ForceTouchGestureHandler.forceTouchAvailable =
   PlatformConstants?.forceTouchAvailable || false;
 
+interface LongPressGestureHandlerEventExtraPayload {
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+}
+
 export interface LongPressGestureHandlerProperties
-  extends BaseGestureHandlerProperties {
+  extends BaseGestureHandlerProperties<
+    LongPressGestureHandlerEventExtraPayload
+  > {
   minDurationMs?: number;
   maxDist?: number;
 }
@@ -292,8 +339,19 @@ function managePanProps(props) {
   return transformPanGestureHandlerProps(props);
 }
 
+interface PanGestureHandlerEventExtraPayload {
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+  translationX: number;
+  translationY: number;
+  velocityX: number;
+  velocityY: number;
+}
+
 export interface PanGestureHandlerProperties
-  extends BaseGestureHandlerProperties {
+  extends BaseGestureHandlerProperties<PanGestureHandlerEventExtraPayload> {
   /** @deprecated  use activeOffsetX*/
   minDeltaX?: number;
   /** @deprecated  use activeOffsetY*/
@@ -363,8 +421,15 @@ export const PanGestureHandler = createHandler<PanGestureHandlerProperties>(
   }
 );
 
+interface PinchGestureHandlerEventExtraPayload {
+  scale: number;
+  focalX: number;
+  focalY: number;
+  velocity: number;
+}
+
 export interface PinchGestureHandlerProperties
-  extends BaseGestureHandlerProperties {}
+  extends BaseGestureHandlerProperties<PinchGestureHandlerEventExtraPayload> {}
 
 export const PinchGestureHandler = createHandler<PinchGestureHandlerProperties>(
   'PinchGestureHandler',
@@ -372,8 +437,17 @@ export const PinchGestureHandler = createHandler<PinchGestureHandlerProperties>(
   {}
 );
 
+interface RotationGestureHandlerEventExtraPayload {
+  rotation: number;
+  anchorX: number;
+  anchorY: number;
+  velocity: number;
+}
+
 export interface RotationGestureHandlerProperties
-  extends BaseGestureHandlerProperties {}
+  extends BaseGestureHandlerProperties<
+    RotationGestureHandlerEventExtraPayload
+  > {}
 
 export const RotationGestureHandler = createHandler<
   RotationGestureHandlerProperties
