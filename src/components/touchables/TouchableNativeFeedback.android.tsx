@@ -1,10 +1,17 @@
-// @ts-nocheck
-import { Platform, TouchableNativeFeedbackProps } from 'react-native';
+import {
+  Platform,
+  TouchableNativeFeedbackProps,
+  ColorValue,
+} from 'react-native';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import GenericTouchable from './GenericTouchable';
+import GenericTouchable, { GenericTouchableProps } from './GenericTouchable';
 
-import { ContainedTouchableProperties } from '../../types';
+type ExtraPropsType = {
+  borderless?: boolean;
+  rippleColor?: ColorValue;
+  rippleRadius?: number;
+  foreground?: boolean;
+};
 
 /**
  * TouchableNativeFeedback behaves slightly different than RN's TouchableNativeFeedback.
@@ -13,17 +20,22 @@ import { ContainedTouchableProperties } from '../../types';
  * it follows native behaviours.
  */
 export default class TouchableNativeFeedback extends Component<
-  TouchableNativeFeedbackProps | ContainedTouchableProperties
+  TouchableNativeFeedbackProps & GenericTouchableProps
 > {
-  static SelectableBackground = rippleRadius => ({
+  // TODO: taken from RippleBackgroundPropType from RN, not sure if correct
+  static SelectableBackground = (rippleRadius: number) => ({
     type: 'SelectableBackground',
     rippleRadius,
   });
-  static SelectableBackgroundBorderless = rippleRadius => ({
+  static SelectableBackgroundBorderless = (rippleRadius: number) => ({
     type: 'SelectableBackgroundBorderless',
     rippleRadius,
   });
-  static Ripple = (color, borderless, rippleRadius) => ({
+  static Ripple = (
+    color: ColorValue,
+    borderless: boolean,
+    rippleRadius: number
+  ) => ({
     type: 'Ripple',
     color,
     borderless,
@@ -41,16 +53,9 @@ export default class TouchableNativeFeedback extends Component<
     },
   };
 
-  static propTypes = {
-    ...GenericTouchable.publicPropTypes,
-    useForeground: PropTypes.bool,
-    background: PropTypes.object,
-    style: PropTypes.any,
-  };
-
   getExtraButtonProps() {
-    const extraProps = {};
-    const { background } = this.props;
+    const extraProps: ExtraPropsType = {};
+    const { background }: any = this.props;
     if (background) {
       if (background.type === 'Ripple') {
         extraProps['borderless'] = background.borderless;

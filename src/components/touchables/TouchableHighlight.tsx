@@ -1,16 +1,30 @@
-// @ts-nocheck
 import React, { Component } from 'react';
-import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
-import { StyleSheet, View, TouchableHighlightProps } from 'react-native';
-import PropTypes from 'prop-types';
+import GenericTouchable, {
+  GenericTouchableProps,
+  TOUCHABLE_STATE,
+} from './GenericTouchable';
+import {
+  StyleSheet,
+  View,
+  TouchableHighlightProps,
+  ColorValue,
+} from 'react-native';
 
-import { ContainedTouchableProperties } from '../../types';
+interface State {
+  extraChildStyle: null | {
+    opacity?: number;
+  };
+  extraUnderlayStyle: null | {
+    backgroundColor?: ColorValue;
+  };
+}
 
 /**
  * TouchableHighlight follows RN's implementation
  */
 export default class TouchableHighlight extends Component<
-  TouchableHighlightProps | ContainedTouchableProperties
+  TouchableHighlightProps & GenericTouchableProps,
+  State
 > {
   static defaultProps = {
     ...GenericTouchable.defaultProps,
@@ -19,16 +33,7 @@ export default class TouchableHighlight extends Component<
     underlayColor: 'black',
   };
 
-  static propTypes = {
-    ...GenericTouchable.publicPropTypes,
-    activeOpacity: PropTypes.number,
-    underlayColor: PropTypes.string,
-    style: PropTypes.any,
-    onShowUnderlay: PropTypes.func,
-    onHideUnderlay: PropTypes.func,
-  };
-
-  constructor(props: TouchableHighlightProps | ContainedTouchableProperties) {
+  constructor(props: TouchableHighlightProps & GenericTouchableProps) {
     super(props);
     this.state = {
       extraChildStyle: null,
@@ -71,13 +76,15 @@ export default class TouchableHighlight extends Component<
       return <View />;
     }
 
-    const child = React.Children.only(this.props.children);
+    const child = React.Children.only(
+      this.props.children
+    ) as React.ReactElement; // TODO: not sure if OK but fixes error
     return React.cloneElement(child, {
       style: StyleSheet.compose(child.props.style, this.state.extraChildStyle),
     });
   }
 
-  onStateChange = (from, to) => {
+  onStateChange = (_: number, to: number) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
       this.showUnderlay();
     } else if (

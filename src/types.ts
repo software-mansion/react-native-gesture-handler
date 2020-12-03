@@ -1,37 +1,21 @@
 import * as React from 'react';
-import {
-  Animated,
-  FlatListProperties,
-  ScrollViewProperties,
-  SwitchProperties,
-  TextInputProperties,
-  DrawerLayoutAndroidProperties,
-  TouchableHighlightProperties,
-  TouchableOpacityProperties,
-  TouchableNativeFeedbackProperties,
-  TouchableWithoutFeedbackProperties,
-  Insets,
-  ViewStyle,
-  StyleProp,
-  ViewProps,
-} from 'react-native';
-import { BaseGestureHandlerProperties } from './handlers/Gestures';
 
 import State from './State';
+import { BaseGestureHandlerProperties } from './handlers/Gestures';
 
 export type ValueOf<T> = T[keyof T];
 
 export interface GestureHandlerGestureEventNativeEvent {
   handlerTag: number;
   numberOfPointers: number;
-  state: typeof State;
+  state: typeof State[keyof typeof State];
 }
 
 export interface GestureHandlerStateChangeNativeEvent {
   handlerTag: number;
   numberOfPointers: number;
-  state: typeof State;
-  oldState: typeof State;
+  state: typeof State[keyof typeof State];
+  oldState: typeof State[keyof typeof State];
 }
 
 export interface GestureHandlerStateChangeEvent {
@@ -285,16 +269,6 @@ interface FlingGestureHandlerEventExtra {
 
 export class NativeViewGestureHandler extends React.Component<
   NativeViewGestureHandlerProperties
-> {}
-
-/* BUTTONS CLASSES */
-
-export interface ContainedTouchableProperties {
-  containerStyle?: StyleProp<ViewStyle>;
-}
-
-export class TouchableWithoutFeedback extends React.Component<
-  TouchableWithoutFeedbackProperties | ContainedTouchableProperties
 > {}
 
 /* GESTURE HANDLERS PROPERTIES */

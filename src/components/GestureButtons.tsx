@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import {
   Animated,
@@ -16,6 +15,7 @@ import State from '../State';
 import {
   NativeViewGestureHandlerProperties,
   NativeViewGestureHandlerStateChangeEvent,
+  NativeViewGestureHandlerGestureEvent,
 } from '../types';
 
 /* BUTTONS PROPERTIES */
@@ -24,13 +24,14 @@ interface RawButtonProperties extends NativeViewGestureHandlerProperties {
   exclusive?: boolean;
   testID?: string;
   accessibilityLabel?: string;
+  // TODO: apply proper value
+  rippleColor?: any; // it was present in BaseButtonProperties before but is used here in code
 }
 
 interface BaseButtonProperties extends RawButtonProperties {
   onPress?: (pointerInside: boolean) => void;
   onActiveStateChange?: (active: boolean) => void;
   style?: StyleProp<ViewStyle>;
-  rippleColor?: string;
 }
 
 interface RectButtonProperties extends BaseButtonProperties {
@@ -43,7 +44,7 @@ interface BorderlessButtonProperties extends BaseButtonProperties {
   activeOpacity?: number;
 }
 
-export const RawButton: React.Component<RawButtonProperties> = createNativeWrapper(
+export const RawButton: React.ComponentType<RawButtonProperties> = createNativeWrapper(
   GestureHandlerButton,
   {
     shouldCancelWhenOutside: false,
@@ -90,9 +91,9 @@ export class BaseButton extends React.Component<BaseButtonProperties> {
     this._handleEvent(e);
   };
 
-  _onGestureEvent = (e: NativeViewGestureHandlerStateChangeEvent) => {
+  _onGestureEvent = (e: NativeViewGestureHandlerGestureEvent) => {
     this.props.onGestureEvent?.(e);
-    this._handleEvent(e);
+    this._handleEvent(e as NativeViewGestureHandlerStateChangeEvent); // TODO: maybe it is not correct
   };
 
   render() {

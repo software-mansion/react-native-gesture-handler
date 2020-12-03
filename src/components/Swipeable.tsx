@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 // Similarily to the DrawerLayout component this deserves to be put in a
 // separate repo. Although, keeping it here for the time being will allow us
 // to move faster and fix possible issues quicker
@@ -54,8 +52,8 @@ interface SwipeableProperties
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderLeftActions?: (
-    progressAnimatedValue: Animated.AnimatedInterpolation,
-    dragAnimatedValue: Animated.AnimatedInterpolation
+    progressAnimatedValue?: Animated.AnimatedInterpolation,
+    dragAnimatedValue?: Animated.AnimatedInterpolation
   ) => React.ReactNode;
   /**
    *
@@ -68,10 +66,12 @@ interface SwipeableProperties
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderRightActions?: (
-    progressAnimatedValue: Animated.AnimatedInterpolation,
-    dragAnimatedValue: Animated.AnimatedInterpolation
+    progressAnimatedValue?: Animated.AnimatedInterpolation,
+    dragAnimatedValue?: Animated.AnimatedInterpolation
   ) => React.ReactNode;
+  // TODO: above methods maybe should not take optional parameters
   useNativeAnimations?: boolean;
+  animationOptions?: object;
   containerStyle?: StyleProp<ViewStyle>;
   childrenContainerStyle?: StyleProp<ViewStyle>;
 }
@@ -262,8 +262,7 @@ export default class Swipeable extends Component<
       velocity: velocityX,
       bounciness: 0,
       toValue,
-      useNativeDriver: this.props.useNativeAnimations,
-      // TODO check what is this prop
+      useNativeDriver: this.props.useNativeAnimations!,
       ...this.props.animationOptions,
     }).start(({ finished }) => {
       if (finished) {
@@ -333,7 +332,7 @@ export default class Swipeable extends Component<
       <Animated.View
         style={[
           styles.leftActions,
-          { transform: [{ translateX: this._leftActionTranslate! }] },
+          { transform: [{ translateX: this._leftActionTranslate! }] }, // TODO: may not be correct to !
         ]}>
         {renderLeftActions(this._showLeftAction, this._transX)}
         <View

@@ -26,6 +26,8 @@ import {
 import { PanGestureHandler, TapGestureHandler } from '../handlers/Gestures';
 import State from '../State';
 
+import { PanGestureHandlerGestureEvent } from '../types';
+
 const DRAG_TOSS = 0.05;
 
 const IDLE: DrawerState = 'Idle';
@@ -137,7 +139,7 @@ export default class DrawerLayout extends Component<
   }
 
   _openValue?: Animated.AnimatedInterpolation;
-  _onGestureEvent?: Animated.ValueListenerCallback;
+  _onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
   _accessibilityIsModalView = React.createRef();
   _pointerEventsView = React.createRef();
   _panGestureHandler = React.createRef();
