@@ -3,17 +3,16 @@ import React from 'react';
 import {
   findNodeHandle as findNodeHandleRN,
   NativeModules,
-  Touchable,
   Platform,
 } from 'react-native';
-// @ts-ignore
+// @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import State from '../State';
 
-import { GestureHandlerProperties } from '../types';
+import { BaseGestureHandlerProperties } from './gestureHandlers';
 
-function findNodeHandle(node: any) {
+function findNodeHandle(node: any): null | number {
   if (Platform.OS === 'web') return node;
   return findNodeHandleRN(node);
 }
@@ -50,7 +49,7 @@ const {
   setJSResponder: oldSetJSResponder = () => {},
   clearJSResponder: oldClearJSResponder = () => {},
 } = UIManager;
-UIManager.setJSResponder = (tag: any, blockNativeResponder: any) => {
+UIManager.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
   oldSetJSResponder(tag, blockNativeResponder);
 };
@@ -60,14 +59,14 @@ UIManager.clearJSResponder = () => {
 };
 
 let handlerTag = 1;
-const handlerIDToTag = {};
+const handlerIDToTag: Record<string, number> = {};
 
-function isConfigParam(param: any, name: string) {
+function isConfigParam(param: unknown, name: string) {
   // param !== Object(param) returns false if `param` is a function
   // or an object and returns true if `param` is null
   return (
     param !== undefined &&
-    (param !== Object(param) || !('__isNative' in param)) &&
+    (param !== Object(param) || !('__isNative' in (param as object))) &&
     name !== 'onHandlerStateChange' &&
     name !== 'onGestureEvent'
   );
@@ -96,14 +95,14 @@ function filterConfig(
   return res;
 }
 
-function transformIntoHandlerTags(handlerIDs: any[]) {
+function transformIntoHandlerTags(handlerIDs: any) {
   if (!Array.isArray(handlerIDs)) {
     handlerIDs = [handlerIDs];
   }
 
   if (Platform.OS === 'web') {
     return handlerIDs
-      .map(({ current }) => current)
+      .map(({ current }: { current: any }) => current)
       .filter((handle: any) => handle);
   }
   // converts handler string IDs into their numeric tags
@@ -116,7 +115,7 @@ function transformIntoHandlerTags(handlerIDs: any[]) {
 }
 
 function hasUnresolvedRefs(
-  props: Readonly<HandlerProps> & Readonly<{ children?: React.ReactNode }>
+  props: Readonly<React.PropsWithChildren<HandlerProps>>
 ) {
   const extract = (refs: {
     current: any;
@@ -158,7 +157,9 @@ type NativeEvent = {
   nativeEvent: { handlerTag: number; state?: number };
 };
 
-export default function createHandler<T extends GestureHandlerProperties>({
+export default function createHandler<
+  T extends BaseGestureHandlerProperties<Record<string, unknown>>
+>({
   handlerName,
   propTypes = {},
   config = {},
@@ -168,6 +169,13 @@ export default function createHandler<T extends GestureHandlerProperties>({
   class Handler extends React.Component<T> {
     static displayName = handlerName;
     static propTypes = propTypes;
+
+    private _handlerTag: number;
+    private _config: {};
+    private _propsRef: React.RefObject<unknown>;
+    private _viewNode: any;
+    private _viewTag?: number;
+    private _updateEnqueued: any;
 
     constructor(props: T) {
       super(props);
@@ -214,7 +222,7 @@ export default function createHandler<T extends GestureHandlerProperties>({
     componentDidUpdate() {
       const viewTag = findNodeHandle(this._viewNode);
       if (this._viewTag !== viewTag) {
-        this._attachGestureHandler(viewTag);
+        this._attachGestureHandler(viewTag as number); // TODO(TS) - check interaction between _viewTag & findNodeHandle
       }
       this._update();
     }
@@ -228,13 +236,6 @@ export default function createHandler<T extends GestureHandlerProperties>({
         delete handlerIDToTag[this.props.id];
       }
     }
-
-    private _handlerTag: number;
-    private _config: {};
-    private _propsRef: React.RefObject<unknown>;
-    private _viewNode: any;
-    private _viewTag: any;
-    private _updateEnqueued: any;
 
     _onGestureHandlerEvent = (event: NativeEvent) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
@@ -281,7 +282,7 @@ export default function createHandler<T extends GestureHandlerProperties>({
       );
     };
 
-    _attachGestureHandler = (newViewTag: any) => {
+    _attachGestureHandler = (newViewTag: number) => {
       this._viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
