@@ -245,8 +245,6 @@ export default function createHandler<
       }
     }
 
-    _deleteHandler(handlerID: string | undefined) {}
-
     _onGestureHandlerEvent = (event: GestureEventEvent) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onGestureEvent?.(event);
