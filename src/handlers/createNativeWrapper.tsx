@@ -3,7 +3,8 @@ import React, { useImperativeHandle, useRef } from 'react';
 
 import NativeViewGestureHandler from './NativeViewGestureHandler';
 
-import { NativeViewGestureHandlerProperties } from '../types';
+import { NativeViewGestureHandlerProperties } from '../handlers/NativeViewGestureHandler';
+import { BaseGestureHandlerProperties } from './gestureHandlers';
 /*
  * This array should consist of:
  *   - All keys in propTypes from NativeGestureHandler
@@ -31,12 +32,12 @@ const NATIVE_WRAPPER_PROPS_FILTER = [
   'onGestureHandlerEvent',
   'onGestureHandlerStateChange',
 ];
-
+// TODO: make it extend correct thing
 export default function createNativeWrapper<P = {}>(
-  Component: React.ComponentType<P>,
+  Component: React.Component<P>,
   config: NativeViewGestureHandlerProperties = {}
-): React.ComponentType<P> {
-  const ComponentWrapper = React.forwardRef((props, ref) => {
+) {
+  const ComponentWrapper = React.forwardRef<React.ComponentType<P>, typeof config>((props, ref) => {
     // filter out props that should be passed to gesture handler wrapper
     const gestureHandlerProps = Object.keys(props).reduce(
       (res, key) => {
@@ -47,8 +48,8 @@ export default function createNativeWrapper<P = {}>(
       },
       { ...config } // watch out not to modify config
     );
-    const _ref = useRef();
-    const _gestureHandlerRef = useRef();
+    const _ref = useRef<P>();
+    const _gestureHandlerRef = useRef<P>();
     useImperativeHandle(
       ref,
       () => {
@@ -65,9 +66,6 @@ export default function createNativeWrapper<P = {}>(
     return <NativeViewGestureHandler {...gestureHandlerProps} />;
   });
 
-  ComponentWrapper.propTypes = {
-    ...Component.propTypes,
-  };
   ComponentWrapper.displayName = Component.displayName || 'ComponentWrapper';
 
   return ComponentWrapper;

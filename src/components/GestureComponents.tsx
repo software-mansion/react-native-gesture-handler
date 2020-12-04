@@ -16,7 +16,7 @@ import { NativeViewGestureHandlerProperties } from '../handlers/NativeViewGestur
 const MEMOIZED = new WeakMap();
 
 function memoizeWrap<T>(
-  Component: React.ComponentType<T>,
+  Component: React.Component<T>,
   config?: NativeViewGestureHandlerProperties
 ) {
   if (Component == null) {
@@ -49,13 +49,13 @@ type FlatListType<ItemT> = React.Component<
 // eslint-disable-next-line import/no-commonjs
 module.exports = {
   /* RN's components */
-  get ScrollView(): ScrollViewType {
+  get ScrollView(): ScrollViewType | null {
     return memoizeWrap(ReactNative.ScrollView, {
       disallowInterruption: true,
       shouldCancelWhenOutside: false,
     });
   },
-  get Switch(): SwitchType {
+  get Switch(): SwitchType | null {
     return memoizeWrap(ReactNative.Switch, {
       shouldCancelWhenOutside: false,
       shouldActivateOnStart: true,
@@ -72,16 +72,18 @@ module.exports = {
         disallowInterruption: true,
       }
     );
-    DrawerLayoutAndroid.positions = (ReactNative.DrawerLayoutAndroid as typeof ReactNative.DrawerLayoutAndroid).positions;
+    // we use literal object since TS gives error when using RN's `positions`
+    DrawerLayoutAndroid.positions = {Left: 'left', Right: 'right'};
     return DrawerLayoutAndroid;
   },
 
   // TODO: get this type somehow
-  get FlatList<ItemT>(): FlatListType<ItemT> {
+  // @ts-ignore
+  get FlatList<ItemT>(): FlatListType<ItemT> | null {
     let memoized = MEMOIZED.get(ReactNative.FlatList);
     if (!memoized) {
       const ScrollView = this.ScrollView;
-      memoized = React.forwardRef<FlatList, FlatListProps<ItemT>>(
+      memoized = React.forwardRef<FlatList<ItemT>, FlatListProps<ItemT>>(
         (props, ref) => (
           <ReactNative.FlatList
             ref={ref}
