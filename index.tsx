@@ -8,7 +8,7 @@ export { default as State } from './src/State';
 export * from './src/components/GestureButtons';
 // eslint-disable-next-line import/export
 export * from './src/components/GestureComponents';
-export * from './src/handlers/Gestures';
+export * from './src/handlers/gestureHandlers';
 
 export { default as Swipeable } from './src/components/Swipeable';
 export { default as DrawerLayout } from './src/components/DrawerLayout';

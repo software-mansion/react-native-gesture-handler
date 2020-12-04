@@ -6,16 +6,17 @@ import ReactNative, {
   TextInputProps,
   DrawerLayoutAndroidProps,
   FlatListProps,
+  FlatList,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 
-import { NativeViewGestureHandlerProperties } from '../types';
+import { NativeViewGestureHandlerProperties } from '../handlers/NativeViewGestureHandler';
 
 const MEMOIZED = new WeakMap();
 
-function memoizeWrap(
-  Component: React.ComponentType,
+function memoizeWrap<T>(
+  Component: React.ComponentType<T>,
   config?: NativeViewGestureHandlerProperties
 ) {
   if (Component == null) {
@@ -65,25 +66,32 @@ module.exports = {
     return memoizeWrap(ReactNative.TextInput);
   },
   get DrawerLayoutAndroid(): DrawerLayoutAndroidType {
-    const DrawerLayoutAndroid = memoizeWrap(ReactNative.DrawerLayoutAndroid, {
-      disallowInterruption: true,
-    });
-    DrawerLayoutAndroid.positions = ReactNative.DrawerLayoutAndroid.positions;
+    const DrawerLayoutAndroid = memoizeWrap<DrawerLayoutAndroidProps>(
+      ReactNative.DrawerLayoutAndroid,
+      {
+        disallowInterruption: true,
+      }
+    );
+    DrawerLayoutAndroid.positions = (ReactNative.DrawerLayoutAndroid as typeof ReactNative.DrawerLayoutAndroid).positions;
     return DrawerLayoutAndroid;
   },
 
   // TODO: get this type somehow
-  get FlatList(): FlatListType<ItemT> {
+  get FlatList<ItemT>(): FlatListType<ItemT> {
     let memoized = MEMOIZED.get(ReactNative.FlatList);
     if (!memoized) {
       const ScrollView = this.ScrollView;
-      memoized = React.forwardRef((props, ref) => (
-        <ReactNative.FlatList
-          ref={ref}
-          {...props}
-          renderScrollComponent={scrollProps => <ScrollView {...scrollProps} />}
-        />
-      ));
+      memoized = React.forwardRef<FlatList, FlatListProps<ItemT>>(
+        (props, ref) => (
+          <ReactNative.FlatList
+            ref={ref}
+            {...props}
+            renderScrollComponent={scrollProps => (
+              <ScrollView {...scrollProps} />
+            )}
+          />
+        )
+      );
       MEMOIZED.set(ReactNative.FlatList, memoized);
     }
     return memoized;
