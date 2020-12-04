@@ -39,9 +39,9 @@ export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
   onPressOut?: () => void;
   onLongPress?: () => void;
 
-  nativeID: string;
-  shouldActivateOnStart: boolean;
-  disallowInterruption: boolean;
+  nativeID?: string;
+  shouldActivateOnStart?: boolean;
+  disallowInterruption?: boolean;
 
   containerStyle?: StyleProp<ViewStyle>;
 }
