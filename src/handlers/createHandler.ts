@@ -165,6 +165,7 @@ type NativeEvent = {
   nativeEvent: { handlerTag: number; state?: number };
 };
 
+// TODO(TS) - make sure that BaseGestureHandlerProperties doesn't need other generic parameter to work with custom properties.
 export default function createHandler<
   T extends BaseGestureHandlerProperties<Record<string, unknown>>
 >({
@@ -180,7 +181,7 @@ export default function createHandler<
 
     private _handlerTag: number;
     private _config: {};
-    private _propsRef: React.RefObject<unknown>;
+    private _propsRef: React.MutableRefObject<unknown>;
     private _viewNode: any;
     private _viewTag?: number;
     private _updateEnqueued: ReturnType<typeof setImmediate> | null = null;
@@ -255,6 +256,7 @@ export default function createHandler<
       }
     };
 
+    // TODO(TS) - make sure this is right type for event
     _onGestureHandlerStateChange = (event: HandlerStateChangeEvent) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onHandlerStateChange?.(event);
