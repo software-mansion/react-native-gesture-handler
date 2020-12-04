@@ -22,10 +22,10 @@ export interface HandlerStateChangeEventPayload {
 
 //TODO(TS) events in handlers
 
-export interface GestureEventEvent<ExtraEventPayloadT> {
+export interface GestureEventEvent<ExtraEventPayloadT = {}> {
   nativeEvent: Readonly<GestureEventEventPayload & ExtraEventPayloadT>;
 }
-export interface HandlerStateChangeEvent<ExtraEventPayloadT> {
+export interface HandlerStateChangeEvent<ExtraEventPayloadT = {}> {
   nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
 }
 
