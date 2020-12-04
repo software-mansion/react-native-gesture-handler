@@ -8,6 +8,7 @@ import {
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
+import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web'
 import State from '../State';
 
 import {
@@ -136,12 +137,13 @@ function hasUnresolvedRefs(
 }
 
 const stateToPropMappings = {
+  [State.UNDETERMINED]: undefined,
   [State.BEGAN]: 'onBegan',
   [State.FAILED]: 'onFailed',
   [State.CANCELLED]: 'onCancelled',
   [State.ACTIVE]: 'onActivated',
   [State.END]: 'onEnded',
-};
+} as const;
 
 type Props = {
   handlerName: string;
@@ -258,9 +260,9 @@ export default function createHandler<
         this.props.onHandlerStateChange?.(event);
 
         const stateEventName = stateToPropMappings[event.nativeEvent.state];
-        if (typeof this.props[stateEventName] === 'function') {
+        if (stateEventName && typeof this.props[stateEventName] === 'function') {
           this.props[stateEventName](event);
-        }
+      }
       } else {
         this.props.onGestureHandlerStateChange?.(event);
       }
@@ -294,7 +296,9 @@ export default function createHandler<
       this._viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
-        RNGestureHandlerModule.attachGestureHandler(
+        // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
+        (RNGestureHandlerModule.attachGestureHandler as
+          typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
           this._handlerTag,
           newViewTag,
           this._propsRef
