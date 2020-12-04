@@ -10,7 +10,11 @@ import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import State from '../State';
 
-import { BaseGestureHandlerProperties } from './gestureHandlers';
+import {
+  BaseGestureHandlerProperties,
+  GestureEventEvent,
+  HandlerStateChangeEvent,
+} from './gestureHandlers';
 
 function findNodeHandle(node: any): null | number {
   if (Platform.OS === 'web') return node;
@@ -234,14 +238,16 @@ export default function createHandler<
       if (this._updateEnqueued) {
         clearImmediate(this._updateEnqueued);
       }
-
+      // We can't use this.props.id directly due to TS generic type narrowing bug, see https://github.com/microsoft/TypeScript/issues/13995 for more context
       const handlerID: string | undefined = this.props.id;
       if (handlerID) {
         delete handlerIDToTag[handlerID];
       }
     }
 
-    _onGestureHandlerEvent = (event: NativeEvent) => {
+    _deleteHandler(handlerID: string | undefined) {}
+
+    _onGestureHandlerEvent = (event: GestureEventEvent) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onGestureEvent?.(event);
       } else {
@@ -249,7 +255,7 @@ export default function createHandler<
       }
     };
 
-    _onGestureHandlerStateChange = (event: NativeEvent) => {
+    _onGestureHandlerStateChange = (event: HandlerStateChangeEvent) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onHandlerStateChange?.(event);
 
