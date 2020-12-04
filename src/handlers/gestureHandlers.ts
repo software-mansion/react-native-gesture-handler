@@ -247,7 +247,19 @@ function validatePanGestureHandlerProps(props: PanGestureHandlerProperties) {
 }
 
 function transformPanGestureHandlerProps(props: PanGestureHandlerProperties) {
-  const res = { ...props };
+  type InternalPanGHKeys =
+    | 'activeOffsetXStart'
+    | 'activeOffsetXEnd'
+    | 'failOffsetXStart'
+    | 'failOffsetXEnd'
+    | 'activeOffsetYStart'
+    | 'activeOffsetYEnd'
+    | 'failOffsetYStart'
+    | 'failOffsetYEnd';
+  type PanGestureHandlerInternalProperties = PanGestureHandlerProperties &
+    Partial<Record<InternalPanGHKeys, number>>;
+
+  const res: PanGestureHandlerInternalProperties = { ...props };
   if (props.minDeltaX !== undefined) {
     delete res['minDeltaX'];
     res.activeOffsetXStart = -props.minDeltaX;
