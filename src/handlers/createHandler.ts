@@ -115,12 +115,14 @@ function transformIntoHandlerTags(handlerIDs: any) {
 }
 
 function hasUnresolvedRefs(
-  props: Readonly<React.PropsWithChildren<HandlerProps>>
+  props: Readonly<
+    React.PropsWithChildren<
+      BaseGestureHandlerProperties<Record<string, unknown>>
+    >
+  >
 ) {
-  const extract = (refs: {
-    current: any;
-    some: (arg0: (r: any) => boolean) => any;
-  }) => {
+  // TODO(TS) - add type for extract arg
+  const extract = (refs: any | any[]) => {
     if (!Array.isArray(refs)) {
       return refs && refs.current === null;
     }
@@ -175,7 +177,7 @@ export default function createHandler<
     private _propsRef: React.RefObject<unknown>;
     private _viewNode: any;
     private _viewTag?: number;
-    private _updateEnqueued: any;
+    private _updateEnqueued: ReturnType<typeof setImmediate> | null = null;
 
     constructor(props: T) {
       super(props);
@@ -216,7 +218,7 @@ export default function createHandler<
         )
       );
 
-      this._attachGestureHandler(findNodeHandle(this._viewNode));
+      this._attachGestureHandler(findNodeHandle(this._viewNode) as number); // TODO(TS) - check if this can be null
     }
 
     componentDidUpdate() {
@@ -232,8 +234,10 @@ export default function createHandler<
       if (this._updateEnqueued) {
         clearImmediate(this._updateEnqueued);
       }
-      if (this.props.id) {
-        delete handlerIDToTag[this.props.id];
+
+      const handlerID: string | undefined = this.props.id;
+      if (handlerID) {
+        delete handlerIDToTag[handlerID];
       }
     }
 
