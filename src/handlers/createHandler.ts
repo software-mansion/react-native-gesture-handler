@@ -3,12 +3,14 @@ import React from 'react';
 import {
   findNodeHandle as findNodeHandleRN,
   NativeModules,
+  Touchable,
   Platform,
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web'
+// eslint-disable-next-line prettier/prettier
+import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web'; 
 import State from '../State';
 
 import {
@@ -145,24 +147,12 @@ const stateToPropMappings = {
   [State.END]: 'onEnded',
 } as const;
 
-type Props = {
+type CreateHandlerArgs = {
   handlerName: string;
   propTypes: any;
-  config: any;
+  config: object;
   transformProps: any;
-  customNativeProps: any;
-};
-
-type HandlerProps = {
-  onGestureHandlerEvent: (event: any) => void;
-  onGestureEvent: (event: any) => void;
-  onHandlerStateChange: (event: any) => void;
-  onGestureHandlerStateChange: (event: any) => void;
-  id: any;
-};
-
-type NativeEvent = {
-  nativeEvent: { handlerTag: number; state?: number };
+  customNativeProps: object;
 };
 
 // TODO(TS) - make sure that BaseGestureHandlerProperties doesn't need other generic parameter to work with custom properties.
@@ -174,7 +164,7 @@ export default function createHandler<
   config = {},
   transformProps,
   customNativeProps = {},
-}: Props): React.ComponentType<T> {
+}: CreateHandlerArgs): React.ComponentType<T> {
   class Handler extends React.Component<T> {
     static displayName = handlerName;
     static propTypes = propTypes;
@@ -262,9 +252,12 @@ export default function createHandler<
         this.props.onHandlerStateChange?.(event);
 
         const stateEventName = stateToPropMappings[event.nativeEvent.state];
-        if (stateEventName && typeof this.props[stateEventName] === 'function') {
+        if (
+          stateEventName &&
+          typeof this.props[stateEventName] === 'function'
+        ) {
           this.props[stateEventName](event);
-      }
+        }
       } else {
         this.props.onGestureHandlerStateChange?.(event);
       }
@@ -274,7 +267,8 @@ export default function createHandler<
       this._viewNode = node;
 
       const child = React.Children.only(this.props.children);
-      const { ref } = child;
+      // TODO(TS) fix ref type
+      const { ref }: any = child;
       if (ref !== null) {
         if (typeof ref === 'function') {
           ref(node);
@@ -299,8 +293,7 @@ export default function createHandler<
 
       if (Platform.OS === 'web') {
         // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
-        (RNGestureHandlerModule.attachGestureHandler as
-          typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
+        (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
           this._handlerTag,
           newViewTag,
           this._propsRef
@@ -396,6 +389,7 @@ export default function createHandler<
       const child: any = React.Children.only(this.props.children);
       let grandChildren = child.props.children;
       if (
+        // @ts-ignore this uses internal Touchable API
         Touchable.TOUCH_TARGET_DEBUG &&
         child.type &&
         (child.type === 'RNGestureHandlerButton' ||
@@ -404,6 +398,7 @@ export default function createHandler<
       ) {
         grandChildren = React.Children.toArray(grandChildren);
         grandChildren.push(
+          // @ts-ignore this uses internal Touchable API
           Touchable.renderDebugView({
             color: 'mediumspringgreen',
             hitSlop: child.props.hitSlop,
