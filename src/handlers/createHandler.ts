@@ -9,8 +9,7 @@ import {
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-// eslint-disable-next-line prettier/prettier
-import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web'; 
+import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import State from '../State';
 
 import {
@@ -85,7 +84,7 @@ function filterConfig(
   defaults: Record<string, any> = {}
 ) {
   const res = { ...defaults };
-  Object.keys(validProps).forEach(key => {
+  Object.keys(validProps).forEach((key) => {
     const value = props[key];
     if (isConfigParam(value, key)) {
       let value = props[key];
@@ -133,7 +132,7 @@ function hasUnresolvedRefs(
     if (!Array.isArray(refs)) {
       return refs && refs.current === null;
     }
-    return refs.some(r => r && r.current === null);
+    return refs.some((r) => r && r.current === null);
   };
   return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
 }
