@@ -251,11 +251,9 @@ export default function createHandler<
         this.props.onHandlerStateChange?.(event);
 
         const stateEventName = stateToPropMappings[event.nativeEvent.state];
-        if (
-          stateEventName &&
-          typeof this.props[stateEventName] === 'function'
-        ) {
-          this.props[stateEventName](event);
+        const eventHandler = stateEventName && this.props[stateEventName];
+        if (eventHandler && typeof eventHandler === 'function') {
+          eventHandler(event);
         }
       } else {
         this.props.onGestureHandlerStateChange?.(event);
