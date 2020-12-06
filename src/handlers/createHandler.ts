@@ -233,6 +233,7 @@ export default function createHandler<
       // We can't use this.props.id directly due to TS generic type narrowing bug, see https://github.com/microsoft/TypeScript/issues/13995 for more context
       const handlerID: string | undefined = this.props.id;
       if (handlerID) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete handlerIDToTag[handlerID];
       }
     }
