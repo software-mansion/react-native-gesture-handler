@@ -154,6 +154,11 @@ type CreateHandlerArgs = {
   customNativeProps: object;
 };
 
+type InternalEventHandlers = {
+  onGestureHandlerEvent?: (event: any) => void;
+  onGestureHandlerStateChange?: (event: any) => void;
+};
+
 // TODO(TS) - make sure that BaseGestureHandlerProperties doesn't need other generic parameter to work with custom properties.
 export default function createHandler<
   T extends BaseGestureHandlerProperties<Record<string, unknown>>
@@ -164,7 +169,7 @@ export default function createHandler<
   transformProps,
   customNativeProps = {},
 }: CreateHandlerArgs): React.ComponentType<T> {
-  class Handler extends React.Component<T> {
+  class Handler extends React.Component<T & InternalEventHandlers> {
     static displayName = handlerName;
     static propTypes = propTypes;
 
@@ -175,7 +180,7 @@ export default function createHandler<
     private _viewTag?: number;
     private _updateEnqueued: ReturnType<typeof setImmediate> | null = null;
 
-    constructor(props: T) {
+    constructor(props: T & InternalEventHandlers) {
       super(props);
       this._handlerTag = handlerTag++;
       this._config = {};
@@ -333,7 +338,15 @@ export default function createHandler<
 
     render() {
       let gestureEventHandler = this._onGestureHandlerEvent;
-      const { onGestureEvent, onGestureHandlerEvent } = this.props;
+      // Another instance of https://github.com/microsoft/TypeScript/issues/13995
+      type OnGestureEventHandlers = {
+        onGestureEvent?: BaseGestureHandlerProperties['onGestureEvent'];
+        onGestureHandlerEvent?: InternalEventHandlers['onGestureHandlerEvent'];
+      };
+      const {
+        onGestureEvent,
+        onGestureHandlerEvent,
+      }: OnGestureEventHandlers = this.props;
       if (onGestureEvent && typeof onGestureEvent !== 'function') {
         // If it's not a method it should be an native Animated.event
         // object. We set it directly as the handler for the view
@@ -343,7 +356,7 @@ export default function createHandler<
             'Nesting touch handlers with native animated driver is not supported yet'
           );
         }
-        gestureEventHandler = this.props.onGestureEvent;
+        gestureEventHandler = onGestureEvent;
       } else {
         if (
           onGestureHandlerEvent &&
@@ -356,7 +369,15 @@ export default function createHandler<
       }
 
       let gestureStateEventHandler = this._onGestureHandlerStateChange;
-      const { onHandlerStateChange, onGestureHandlerStateChange } = this.props;
+      // Another instance of https://github.com/microsoft/TypeScript/issues/13995
+      type OnGestureStateChangeHandlers = {
+        onHandlerStateChange?: BaseGestureHandlerProperties['onHandlerStateChange'];
+        onGestureHandlerStateChange?: InternalEventHandlers['onGestureHandlerStateChange'];
+      };
+      const {
+        onHandlerStateChange,
+        onGestureHandlerStateChange,
+      }: OnGestureStateChangeHandlers = this.props;
       if (onHandlerStateChange && typeof onHandlerStateChange !== 'function') {
         // If it's not a method it should be an native Animated.event
         // object. We set it directly as the handler for the view
@@ -366,7 +387,7 @@ export default function createHandler<
             'Nesting touch handlers with native animated driver is not supported yet'
           );
         }
-        gestureStateEventHandler = this.props.onHandlerStateChange;
+        gestureStateEventHandler = onHandlerStateChange;
       } else {
         if (
           onGestureHandlerStateChange &&
