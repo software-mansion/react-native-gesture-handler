@@ -16,9 +16,9 @@ import {
 import {
   PanGestureHandler,
   TapGestureHandler,
+  PanGestureHandlerProperties,
 } from '../handlers/gestureHandlers';
 import State from '../State';
-import { PanGestureHandlerProperties } from '../handlers/gestureHandlers';
 
 const DRAG_TOSS = 0.05;
 
