@@ -79,12 +79,12 @@ function isConfigParam(param: unknown, name: string) {
 }
 
 function filterConfig(
-  props: { [x: string]: any },
-  validProps: Record<string, any>,
-  defaults: Record<string, any> = {}
+  props: Record<string, unknown>,
+  validProps: string[],
+  defaults: Record<string, unknown> = {}
 ) {
   const res = { ...defaults };
-  Object.keys(validProps).forEach((key) => {
+  validProps.forEach((key) => {
     const value = props[key];
     if (isConfigParam(value, key)) {
       let value = props[key];
@@ -146,12 +146,12 @@ const stateToPropMappings = {
   [State.END]: 'onEnded',
 } as const;
 
-type CreateHandlerArgs = {
+type CreateHandlerArgs<HandlerPropsT extends BaseGestureHandlerProperties> = {
   handlerName: string;
-  propTypes: any;
-  config: object;
+  propTypes: Extract<string, keyof HandlerPropsT>[];
+  config: Record<string, unknown>;
   transformProps: any;
-  customNativeProps: object;
+  customNativeProps: string[];
 };
 
 type InternalEventHandlers = {
@@ -162,14 +162,13 @@ type InternalEventHandlers = {
 // TODO(TS) - make sure that BaseGestureHandlerProperties doesn't need other generic parameter to work with custom properties.
 export default function createHandler<T extends BaseGestureHandlerProperties>({
   handlerName,
-  propTypes = {},
+  propTypes = [],
   config = {},
   transformProps,
-  customNativeProps = {},
-}: CreateHandlerArgs): React.ComponentType<T> {
+  customNativeProps = [],
+}: CreateHandlerArgs<T>): React.ComponentType<T> {
   class Handler extends React.Component<T & InternalEventHandlers> {
     static displayName = handlerName;
-    static propTypes = propTypes;
 
     private _handlerTag: number;
     private _config: {};
@@ -209,10 +208,7 @@ export default function createHandler<T extends BaseGestureHandlerProperties>({
       this._createGestureHandler(
         filterConfig(
           transformProps ? transformProps(this.props) : this.props,
-          {
-            ...(this.constructor.propTypes || propTypes),
-            ...customNativeProps,
-          },
+          [...propTypes, ...customNativeProps],
           config
         )
       );
@@ -316,7 +312,7 @@ export default function createHandler<T extends BaseGestureHandlerProperties>({
     _update() {
       const newConfig = filterConfig(
         transformProps ? transformProps(this.props) : this.props,
-        { ...(this.constructor.propTypes || propTypes), ...customNativeProps },
+        [...propTypes, ...customNativeProps],
         config
       );
       if (!deepEqual(this._config, newConfig)) {
@@ -328,7 +324,7 @@ export default function createHandler<T extends BaseGestureHandlerProperties>({
       const mergedProps = { ...this.props, ...updates };
       const newConfig = filterConfig(
         transformProps ? transformProps(mergedProps) : mergedProps,
-        { ...(this.constructor.propTypes || propTypes), ...customNativeProps },
+        [...propTypes, ...customNativeProps],
         config
       );
       this._updateGestureHandler(newConfig);
