@@ -36,6 +36,7 @@ export interface BaseGestureHandlerProperties<
 > {
   id?: string;
   enabled?: boolean;
+  minPointers?: number;
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
   simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
   shouldCancelWhenOutside?: boolean;
