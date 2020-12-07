@@ -37,7 +37,10 @@ export default function createNativeWrapper<P = {}>(
   Component: React.Component<P>,
   config: NativeViewGestureHandlerProperties = {}
 ) {
-  const ComponentWrapper = React.forwardRef<React.ComponentType<P>, typeof config>((props, ref) => {
+  const ComponentWrapper = React.forwardRef<
+    React.ComponentType<P>,
+    typeof config
+  >((props, ref) => {
     // filter out props that should be passed to gesture handler wrapper
     const gestureHandlerProps = Object.keys(props).reduce(
       (res, key) => {
