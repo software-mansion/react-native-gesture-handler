@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import {
   findNodeHandle as findNodeHandleRN,
@@ -146,12 +145,12 @@ const stateToPropMappings = {
   [State.END]: 'onEnded',
 } as const;
 
-type CreateHandlerArgs<HandlerPropsT extends BaseGestureHandlerProperties> = {
+type CreateHandlerArgs<HandlerPropsT extends Record<string, unknown>> = {
   handlerName: string;
-  propTypes: Extract<string, keyof HandlerPropsT>[];
+  allowedProps: Extract<string, keyof HandlerPropsT>[];
   config: Record<string, unknown>;
-  transformProps: any;
-  customNativeProps: string[];
+  transformProps?: (props: HandlerPropsT) => HandlerPropsT;
+  customNativeProps?: string[];
 };
 
 type InternalEventHandlers = {
@@ -160,9 +159,12 @@ type InternalEventHandlers = {
 };
 
 // TODO(TS) - make sure that BaseGestureHandlerProperties doesn't need other generic parameter to work with custom properties.
-export default function createHandler<T extends BaseGestureHandlerProperties>({
+export default function createHandler<
+  T extends BaseGestureHandlerProperties<U>,
+  U extends Record<string, unknown>
+>({
   handlerName,
-  propTypes = [],
+  allowedProps = [],
   config = {},
   transformProps,
   customNativeProps = [],
@@ -208,7 +210,7 @@ export default function createHandler<T extends BaseGestureHandlerProperties>({
       this._createGestureHandler(
         filterConfig(
           transformProps ? transformProps(this.props) : this.props,
-          [...propTypes, ...customNativeProps],
+          [...allowedProps, ...customNativeProps],
           config
         )
       );
@@ -312,7 +314,7 @@ export default function createHandler<T extends BaseGestureHandlerProperties>({
     _update() {
       const newConfig = filterConfig(
         transformProps ? transformProps(this.props) : this.props,
-        [...propTypes, ...customNativeProps],
+        [...allowedProps, ...customNativeProps],
         config
       );
       if (!deepEqual(this._config, newConfig)) {
@@ -324,7 +326,7 @@ export default function createHandler<T extends BaseGestureHandlerProperties>({
       const mergedProps = { ...this.props, ...updates };
       const newConfig = filterConfig(
         transformProps ? transformProps(mergedProps) : mergedProps,
-        [...propTypes, ...customNativeProps],
+        [...allowedProps, ...customNativeProps],
         config
       );
       this._updateGestureHandler(newConfig);
