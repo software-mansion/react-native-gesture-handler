@@ -6,6 +6,11 @@ labels: 'bug'
 assignees: ''
 ---
 
+<!--
+NOTE: please submit only bug reports here, any new questions or feature requests should be submitted in Discussions:
+https://github.com/software-mansion/react-native-gesture-handler/discussions
+ -->
+
 ## Description
 
 <!--
