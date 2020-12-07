@@ -114,7 +114,7 @@ export const TapGestureHandler = createHandler<
     'maxDeltaY',
     'maxDist',
     'minPointers',
-  ] as Array<keyof TapGestureHandlerProperties>,
+  ] as (keyof TapGestureHandlerProperties)[],
   config: {},
 });
 
@@ -131,17 +131,18 @@ export interface FlingGestureHandlerProperties
   numberOfPointers?: number;
 }
 
-export const FlingGestureHandler = createHandler<FlingGestureHandlerProperties, FlingGestureHandlerEventExtraPayload>
-({
+export const FlingGestureHandler = createHandler<
+  FlingGestureHandlerProperties,
+  FlingGestureHandlerEventExtraPayload
+>({
   name: 'FlingGestureHandler',
   allowedProps: [
     ...baseProperties,
     'numberOfPointers',
     'direction',
-  ] as Array<keyof FlingGestureHandlerProperties>,
+  ] as (keyof FlingGestureHandlerProperties)[],
   config: {},
-  },
-);
+});
 
 class ForceTouchFallback extends React.Component {
   static forceTouchAvailable = false;
@@ -171,15 +172,17 @@ export interface ForceTouchGestureHandlerProperties
 }
 
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
-  ? createHandler<ForceTouchGestureHandlerProperties, ForceTouchGestureHandlerEventExtraPayload>(
-    {
+  ? createHandler<
+      ForceTouchGestureHandlerProperties,
+      ForceTouchGestureHandlerEventExtraPayload
+    >({
       name: 'ForceTouchGestureHandler',
       allowedProps: [
         ...baseProperties,
         'minForce',
         'maxForce',
         'feedbackOnActivation',
-      ] as Array<keyof ForceTouchGestureHandlerProperties>,
+      ] as (keyof ForceTouchGestureHandlerProperties)[],
       config: {},
     })
   : ForceTouchFallback;
@@ -201,17 +204,18 @@ export interface LongPressGestureHandlerProperties
   maxDist?: number;
 }
 
-export const LongPressGestureHandler = createHandler<LongPressGestureHandlerProperties, LongPressGestureHandlerEventExtraPayload>(
-  {
-    name: 'LongPressGestureHandler',
-    allowedProps: [
-      ...baseProperties,
-      'minDurationMs',
-      'maxDist',
-    ] as Array<keyof LongPressGestureHandlerProperties>,
-    config: {},
-  }
-);
+export const LongPressGestureHandler = createHandler<
+  LongPressGestureHandlerProperties,
+  LongPressGestureHandlerEventExtraPayload
+>({
+  name: 'LongPressGestureHandler',
+  allowedProps: [
+    ...baseProperties,
+    'minDurationMs',
+    'maxDist',
+  ] as (keyof LongPressGestureHandlerProperties)[],
+  config: {},
+});
 
 function validatePanGestureHandlerProps(props: PanGestureHandlerProperties) {
   if (props.minDeltaX && props.activeOffsetX) {
@@ -421,38 +425,39 @@ export interface PanGestureHandlerProperties
   enableTrackpadTwoFingerGesture?: boolean;
 }
 
-export const PanGestureHandler = createHandler<PanGestureHandlerProperties, PanGestureHandlerEventExtraPayload>(
-  {
-    name: 'PanGestureHandler',
-    allowedProps: [
-      ...baseProperties,
-      'activeOffsetY',
-      'activeOffsetX',
-      'failOffsetY',
-      'failOffsetX',
-      'minDist',
-      'minVelocity',
-      'minVelocityX',
-      'minVelocityY',
-      'minPointers',
-      'maxPointers',
-      'avgTouches',
-      'enableTrackpadTwoFingerGesture',
-    ] as Array<keyof PanGestureHandlerProperties>,
-    config: {},
-    transformProps: managePanProps,
-    customNativeProps: [
-      'activeOffsetYStart',
-      'activeOffsetYEnd',
-      'activeOffsetXStart',
-      'activeOffsetXEnd',
-      'failOffsetYStart',
-      'failOffsetYEnd',
-      'failOffsetXStart',
-      'failOffsetXEnd',
-    ]
-  }
-);
+export const PanGestureHandler = createHandler<
+  PanGestureHandlerProperties,
+  PanGestureHandlerEventExtraPayload
+>({
+  name: 'PanGestureHandler',
+  allowedProps: [
+    ...baseProperties,
+    'activeOffsetY',
+    'activeOffsetX',
+    'failOffsetY',
+    'failOffsetX',
+    'minDist',
+    'minVelocity',
+    'minVelocityX',
+    'minVelocityY',
+    'minPointers',
+    'maxPointers',
+    'avgTouches',
+    'enableTrackpadTwoFingerGesture',
+  ] as (keyof PanGestureHandlerProperties)[],
+  config: {},
+  transformProps: managePanProps,
+  customNativeProps: [
+    'activeOffsetYStart',
+    'activeOffsetYEnd',
+    'activeOffsetXStart',
+    'activeOffsetXEnd',
+    'failOffsetYStart',
+    'failOffsetYEnd',
+    'failOffsetXStart',
+    'failOffsetXEnd',
+  ],
+});
 
 type PinchGestureHandlerEventExtraPayload = {
   scale: number;
@@ -464,13 +469,14 @@ type PinchGestureHandlerEventExtraPayload = {
 export interface PinchGestureHandlerProperties
   extends BaseGestureHandlerProperties<PinchGestureHandlerEventExtraPayload> {}
 
-export const PinchGestureHandler = createHandler<PinchGestureHandlerProperties, PinchGestureHandlerEventExtraPayload>(
-  {
-    name: 'PinchGestureHandler',
-    allowedProps: baseProperties as Array<keyof PinchGestureHandlerProperties>,
-    config: {},
-  }
-);
+export const PinchGestureHandler = createHandler<
+  PinchGestureHandlerProperties,
+  PinchGestureHandlerEventExtraPayload
+>({
+  name: 'PinchGestureHandler',
+  allowedProps: baseProperties as (keyof PinchGestureHandlerProperties)[],
+  config: {},
+});
 
 type RotationGestureHandlerEventExtraPayload = {
   rotation: number;
@@ -482,10 +488,11 @@ type RotationGestureHandlerEventExtraPayload = {
 export interface RotationGestureHandlerProperties
   extends BaseGestureHandlerProperties<RotationGestureHandlerEventExtraPayload> {}
 
-export const RotationGestureHandler = createHandler<RotationGestureHandlerProperties, RotationGestureHandlerEventExtraPayload>(
-  {
-    name: 'RotationGestureHandler',
-    allowedProps: baseProperties as Array<keyof RotationGestureHandlerProperties>,
-    config: {},
-  }
-);
+export const RotationGestureHandler = createHandler<
+  RotationGestureHandlerProperties,
+  RotationGestureHandlerEventExtraPayload
+>({
+  name: 'RotationGestureHandler',
+  allowedProps: baseProperties as (keyof RotationGestureHandlerProperties)[],
+  config: {},
+});
