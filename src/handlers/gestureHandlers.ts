@@ -32,7 +32,7 @@ export interface HandlerStateChangeEvent<ExtraEventPayloadT = {}> {
 // Events payloads are types instead of interfaces due to TS limitation.
 // See https://github.com/microsoft/TypeScript/issues/15300 for more info.
 export interface BaseGestureHandlerProperties<
-  ExtraEventPayloadT extends Record<string, unknown>
+  ExtraEventPayloadT extends Record<string, unknown> = {}
 > {
   id?: string;
   enabled?: boolean;
@@ -52,11 +52,11 @@ export interface BaseGestureHandlerProperties<
     | Record<'width' | 'right', number>
     | Record<'height' | 'top', number>
     | Record<'height' | 'bottom', number>;
-  onBegan: (event: HandlerStateChangeEvent) => void;
-  onFailed: (event: HandlerStateChangeEvent) => void;
-  onCancelled: (event: HandlerStateChangeEvent) => void;
-  onActivated: (event: HandlerStateChangeEvent) => void;
-  onEnded: (event: HandlerStateChangeEvent) => void;
+  onBegan?: (event: HandlerStateChangeEvent) => void;
+  onFailed?: (event: HandlerStateChangeEvent) => void;
+  onCancelled?: (event: HandlerStateChangeEvent) => void;
+  onActivated?: (event: HandlerStateChangeEvent) => void;
+  onEnded?: (event: HandlerStateChangeEvent) => void;
 
   //TODO(TS) consider using NativeSyntheticEvent
   onGestureEvent?: (event: GestureEventEvent<ExtraEventPayloadT>) => void;
@@ -142,9 +142,7 @@ type ForceTouchGestureHandlerEventExtraPayload = {
 };
 
 export interface ForceTouchGestureHandlerProperties
-  extends BaseGestureHandlerProperties<
-    ForceTouchGestureHandlerEventExtraPayload
-  > {
+  extends BaseGestureHandlerProperties<ForceTouchGestureHandlerEventExtraPayload> {
   minForce?: number;
   maxForce?: number;
   feedbackOnActivation?: boolean;
@@ -174,16 +172,12 @@ type LongPressGestureHandlerEventExtraPayload = {
 };
 
 export interface LongPressGestureHandlerProperties
-  extends BaseGestureHandlerProperties<
-    LongPressGestureHandlerEventExtraPayload
-  > {
+  extends BaseGestureHandlerProperties<LongPressGestureHandlerEventExtraPayload> {
   minDurationMs?: number;
   maxDist?: number;
 }
 
-export const LongPressGestureHandler = createHandler<
-  LongPressGestureHandlerProperties
->(
+export const LongPressGestureHandler = createHandler<LongPressGestureHandlerProperties>(
   'LongPressGestureHandler',
   {
     ...GestureHandlerPropTypes,
@@ -468,10 +462,10 @@ type RotationGestureHandlerEventExtraPayload = {
 };
 
 export interface RotationGestureHandlerProperties
-  extends BaseGestureHandlerProperties<
-    RotationGestureHandlerEventExtraPayload
-  > {}
+  extends BaseGestureHandlerProperties<RotationGestureHandlerEventExtraPayload> {}
 
-export const RotationGestureHandler = createHandler<
-  RotationGestureHandlerProperties
->('RotationGestureHandler', GestureHandlerPropTypes, {});
+export const RotationGestureHandler = createHandler<RotationGestureHandlerProperties>(
+  'RotationGestureHandler',
+  GestureHandlerPropTypes,
+  {}
+);
