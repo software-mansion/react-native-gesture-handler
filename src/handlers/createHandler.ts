@@ -146,8 +146,8 @@ const stateToPropMappings = {
 } as const;
 
 type CreateHandlerArgs<HandlerPropsT extends Record<string, unknown>> = {
-  handlerName: string;
-  allowedProps: Extract<string, keyof HandlerPropsT>[];
+  name: string;
+  allowedProps: Extract<keyof HandlerPropsT, string>[];
   config: Record<string, unknown>;
   transformProps?: (props: HandlerPropsT) => HandlerPropsT;
   customNativeProps?: string[];
@@ -163,14 +163,14 @@ export default function createHandler<
   T extends BaseGestureHandlerProperties<U>,
   U extends Record<string, unknown>
 >({
-  handlerName,
+  name: name,
   allowedProps = [],
   config = {},
   transformProps,
   customNativeProps = [],
 }: CreateHandlerArgs<T>): React.ComponentType<T> {
   class Handler extends React.Component<T & InternalEventHandlers> {
-    static displayName = handlerName;
+    static displayName = name;
 
     private _handlerTag: number;
     private _config: {};
@@ -281,7 +281,7 @@ export default function createHandler<
       this._config = newConfig;
 
       RNGestureHandlerModule.createGestureHandler(
-        handlerName,
+        name,
         this._handlerTag,
         newConfig
       );
