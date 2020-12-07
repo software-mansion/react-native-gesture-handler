@@ -160,9 +160,7 @@ type InternalEventHandlers = {
 };
 
 // TODO(TS) - make sure that BaseGestureHandlerProperties doesn't need other generic parameter to work with custom properties.
-export default function createHandler<
-  T extends BaseGestureHandlerProperties<Record<string, unknown>>
->({
+export default function createHandler<T extends BaseGestureHandlerProperties>({
   handlerName,
   propTypes = {},
   config = {},
