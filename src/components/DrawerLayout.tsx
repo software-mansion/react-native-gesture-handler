@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 // This component is based on RN's DrawerLayoutAndroid API
 //
 // It perhaps deserves to be put in a separate repo, but since it relies
@@ -21,15 +19,18 @@ import {
   StyleProp,
   ViewStyle,
   LayoutChangeEvent,
+  NativeSyntheticEvent,
 } from 'react-native';
 
 import {
+  GestureEventEvent,
   PanGestureHandler,
+  PanGestureHandlerEventExtraPayload,
   TapGestureHandler,
+  HandlerStateChangeEvent,
+  TapGestureHandlerEventExtraPayload,
 } from '../handlers/gestureHandlers';
 import State from '../State';
-
-import { PanGestureHandlerGestureEvent } from '../types';
 
 const DRAG_TOSS = 0.05;
 
@@ -74,12 +75,13 @@ export interface DrawerLayoutProperties {
   drawerContainerStyle?: StyleProp<ViewStyle>;
   enableTrackpadTwoFingerGesture?: boolean;
   onDrawerSlide?: (position: number) => void;
+  onGestureRef?: (ref: typeof PanGestureHandler) => void;
 }
 
 export type StateType = {
-  dragX: any;
-  touchX: any;
-  drawerTranslation: any;
+  dragX: Animated.Value;
+  touchX: Animated.Value;
+  drawerTranslation: Animated.Value;
   containerWidth: number;
 };
 
@@ -142,11 +144,13 @@ export default class DrawerLayout extends Component<
   }
 
   _openValue?: Animated.AnimatedInterpolation;
-  _onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
-  _accessibilityIsModalView = React.createRef();
-  _pointerEventsView = React.createRef();
-  _panGestureHandler = React.createRef();
-  _drawerShown = false;
+  _onGestureEvent?: (
+    event: GestureEventEvent<PanGestureHandlerEventExtraPayload>
+  ) => void;
+  _accessibilityIsModalView = React.createRef<View>(); // TODO: make sure these refs are ok
+  _pointerEventsView = React.createRef<View>();
+  _panGestureHandler = React.createRef<typeof PanGestureHandler | null>();
+  _drawerShown: boolean = false;
 
   static positions = {
     Left: 'left',
@@ -174,11 +178,14 @@ export default class DrawerLayout extends Component<
       // touchX is calulcated by subtracing real touchX from the width of the
       // container (such that when touch happens at the right edge the value
       // is simply 0)
-      dragX = Animated.multiply(new Animated.Value(-1), dragXValue);
+      dragX = Animated.multiply(
+        new Animated.Value(-1),
+        dragXValue
+      ) as Animated.Value; // TODO(TS): (for all "as" in this file) make sure we can map this
       touchX = Animated.add(
         new Animated.Value(containerWidth),
         Animated.multiply(new Animated.Value(-1), touchXValue)
-      );
+      ) as Animated.Value; // TODO(TS): make sure we can map this;
       touchXValue.setValue(containerWidth);
     } else {
       touchXValue.setValue(0);
@@ -219,7 +226,10 @@ export default class DrawerLayout extends Component<
         inputRange: [drawerWidth! - 1, drawerWidth!, drawerWidth! + 1],
         outputRange: [0, 0, 1],
       });
-      translationX = Animated.add(dragX, dragOffsetFromOnStartPosition);
+      translationX = Animated.add(
+        dragX,
+        dragOffsetFromOnStartPosition
+      ) as Animated.Value; // TODO: as above
     }
 
     this._openValue = Animated.add(translationX, drawerTranslation).interpolate(
@@ -232,13 +242,16 @@ export default class DrawerLayout extends Component<
 
     const gestureOptions: {
       useNativeDriver: boolean;
-      listener?: (ev: any) => void;
+      // TODO: make sure it is correct
+      listener?: (
+        ev: NativeSyntheticEvent<PanGestureHandlerEventExtraPayload>
+      ) => void;
     } = {
       useNativeDriver: props.useNativeAnimations!,
     };
 
     if (this.props.onDrawerSlide) {
-      gestureOptions.listener = ev => {
+      gestureOptions.listener = (ev) => {
         const translationX = Math.floor(Math.abs(ev.nativeEvent.translationX));
         const position = translationX / this.state.containerWidth;
 
@@ -260,9 +273,11 @@ export default class DrawerLayout extends Component<
     this.props.onDrawerStateChanged?.(newState, drawerWillShow);
   };
 
-  _openingHandlerStateChange = ({ nativeEvent }: any) => {
+  _openingHandlerStateChange = ({
+    nativeEvent,
+  }: HandlerStateChangeEvent<PanGestureHandlerEventExtraPayload>) => {
     if (nativeEvent.oldState === State.ACTIVE) {
-      this._handleRelease(nativeEvent);
+      this._handleRelease({ nativeEvent });
     } else if (nativeEvent.state === State.ACTIVE) {
       this._emitStateChanged(DRAGGING, false);
       if (this.props.keyboardDismissMode === 'on-drag') {
@@ -274,7 +289,9 @@ export default class DrawerLayout extends Component<
     }
   };
 
-  _onTapHandlerStateChange = ({ nativeEvent }: any) => {
+  _onTapHandlerStateChange = ({
+    nativeEvent,
+  }: HandlerStateChangeEvent<TapGestureHandlerEventExtraPayload>) => {
     if (
       this._drawerShown &&
       nativeEvent.oldState === State.ACTIVE &&
@@ -284,7 +301,9 @@ export default class DrawerLayout extends Component<
     }
   };
 
-  _handleRelease = (nativeEvent: any) => {
+  _handleRelease = ({
+    nativeEvent,
+  }: HandlerStateChangeEvent<PanGestureHandlerEventExtraPayload>) => {
     const { drawerWidth, drawerPosition, drawerType } = this.props;
     const { containerWidth } = this.state;
     let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
@@ -306,7 +325,7 @@ export default class DrawerLayout extends Component<
     }
 
     const startOffsetX =
-      dragX + dragOffsetBasedOnStart + (this._drawerShown ? drawerWidth : 0);
+      dragX + dragOffsetBasedOnStart + (this._drawerShown ? drawerWidth! : 0);
     const projOffsetX = startOffsetX + DRAG_TOSS * velocityX;
 
     const shouldOpen = projOffsetX > drawerWidth! / 2;
@@ -339,6 +358,7 @@ export default class DrawerLayout extends Component<
     const hitSlop = fromLeft
       ? { left: 0, width: showing ? undefined : edgeWidth }
       : { right: 0, width: showing ? undefined : edgeWidth };
+    // @ts-ignore internal API, maybe could be fixed in handler types
     this._panGestureHandler.current?.setNativeProps({
       hitSlop,
       activeOffsetX: gestureOrientation * minSwipeDistance!,
@@ -346,7 +366,7 @@ export default class DrawerLayout extends Component<
   };
 
   _animateDrawer = (
-    fromValue: number | null,
+    fromValue: number | null | undefined,
     toValue: number,
     velocity: number,
     speed?: number
@@ -400,7 +420,7 @@ export default class DrawerLayout extends Component<
     this._animateDrawer(
       // TODO: decide if it should be null or undefined is the proper value
       undefined,
-      this.props.drawerWidth,
+      this.props.drawerWidth!,
       options.velocity ? options.velocity : 0
     );
 
@@ -527,8 +547,12 @@ export default class DrawerLayout extends Component<
     );
   };
 
-  _setPanGestureRef = (ref: any) => {
-    this._panGestureHandler.current = ref;
+  _setPanGestureRef = (ref: typeof PanGestureHandler) => {
+    // TODO(TS): make sure it is OK
+    // taken from https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065#issuecomment-596081842
+    (this._panGestureHandler as React.MutableRefObject<
+      typeof PanGestureHandler
+    >).current = ref;
     this.props.onGestureRef?.(ref);
   };
 
@@ -557,6 +581,7 @@ export default class DrawerLayout extends Component<
 
     return (
       <PanGestureHandler
+        // @ts-ignore could be fixed in handler types
         ref={this._setPanGestureRef}
         hitSlop={hitSlop}
         activeOffsetX={gestureOrientation * minSwipeDistance!}
