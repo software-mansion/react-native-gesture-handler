@@ -14,16 +14,18 @@ export type NativeViewGestureHandlerPayload = {
   pointerInside: boolean;
 };
 
+export const nativeViewProperties = [
+  ...baseProperties,
+  'shouldActivateOnStart',
+  'disallowInterruption',
+] as const;
+
 const NativeViewGestureHandler = createHandler<
   NativeViewGestureHandlerProperties,
   NativeViewGestureHandlerPayload
 >({
   name: 'NativeViewGestureHandler',
-  allowedProps: [
-    ...baseProperties,
-    'shouldActivateOnStart',
-    'disallowInterruption',
-  ] as const,
+  allowedProps: nativeViewProperties,
   config: {},
 });
 
