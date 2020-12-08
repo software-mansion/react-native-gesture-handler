@@ -48,7 +48,7 @@ class Fling extends Component {
         onHandlerStateChange={this._onVerticalFlingHandlerStateChange}>
         <FlingGestureHandler
           direction={Directions.RIGHT | Directions.LEFT}
-          onHandlerStateChange={ev =>
+          onHandlerStateChange={(ev) =>
             this._onHorizontalFlingHandlerStateChange(ev, -10)
           }>
           <View style={styles.horizontalPan}>

@@ -43,7 +43,7 @@ export default class GmailStyleSwipeableRow extends Component {
       </RectButton>
     );
   };
-  updateRef = ref => {
+  updateRef = (ref) => {
     this._swipeableRow = ref;
   };
   close = () => {

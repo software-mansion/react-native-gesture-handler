@@ -28,7 +28,7 @@ export class DraggableBox extends Component {
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
-  _onHandlerStateChange = event => {
+  _onHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this._lastOffset.x += event.nativeEvent.translationX;
       this._lastOffset.y += event.nativeEvent.translationY;

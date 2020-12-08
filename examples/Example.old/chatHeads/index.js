@@ -73,7 +73,7 @@ class Tracking extends Component {
 
     this._lastOffset = { x: START_X, y: START_Y };
   }
-  _onHandlerStateChange = event => {
+  _onHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       const { height, width } = this.state;
 

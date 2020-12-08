@@ -99,7 +99,7 @@ class MainScreen extends React.Component {
   };
   render() {
     const data = Object.keys(SCREENS)
-      .map(key => {
+      .map((key) => {
         const item = SCREENS[key];
         const isDisabled = item.screen.platforms
           ? !item.screen.platforms.includes(Platform.OS)
@@ -113,13 +113,13 @@ class MainScreen extends React.Component {
         style={styles.list}
         data={data}
         ItemSeparatorComponent={ItemSeparator}
-        renderItem={props => (
+        renderItem={(props) => (
           <MainScreenItem
             {...props}
             onPressItem={({ key }) => this.props.navigation.navigate(key)}
           />
         )}
-        renderScrollComponent={props => <ScrollView {...props} />}
+        renderScrollComponent={(props) => <ScrollView {...props} />}
       />
     );
   }
@@ -184,8 +184,8 @@ const styles = StyleSheet.create({
 });
 
 const createApp = Platform.select({
-  web: input => createBrowserApp(input, { history: 'hash' }),
-  default: input => createAppContainer(input),
+  web: (input) => createBrowserApp(input, { history: 'hash' }),
+  default: (input) => createAppContainer(input),
 });
 
 const defaultNavigator = createSwitchNavigator({

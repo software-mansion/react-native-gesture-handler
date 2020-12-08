@@ -52,21 +52,21 @@ export class PinchableBox extends React.Component {
     );
   }
 
-  _onRotateHandlerStateChange = event => {
+  _onRotateHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this._lastRotate += event.nativeEvent.rotation;
       this._rotate.setOffset(this._lastRotate);
       this._rotate.setValue(0);
     }
   };
-  _onPinchHandlerStateChange = event => {
+  _onPinchHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this._lastScale *= event.nativeEvent.scale;
       this._baseScale.setValue(this._lastScale);
       this._pinchScale.setValue(1);
     }
   };
-  _onTiltGestureStateChange = event => {
+  _onTiltGestureStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this._lastTilt += event.nativeEvent.translationY;
       this._tilt.setOffset(this._lastTilt);

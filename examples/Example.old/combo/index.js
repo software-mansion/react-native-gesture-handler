@@ -46,7 +46,7 @@ class TouchableHighlight extends Component {
       opacity: this.props.activeOpacity,
     };
   }
-  _onStateChange = event => {
+  _onStateChange = (event) => {
     const nextGestureHandlerState = event.nativeEvent.state;
     if (this.state.gestureHandlerState !== nextGestureHandlerState) {
       this.setState({ gestureHandlerState: nextGestureHandlerState }, () => {
@@ -90,7 +90,7 @@ class ControlledSwitch extends React.Component {
     super(props);
     this.state = { value: this.props.value || false };
   }
-  _onValueChange = value => {
+  _onValueChange = (value) => {
     this.setState({ value });
     this.props.onValueChange && this.props.onValueChange(value);
   };
@@ -121,7 +121,7 @@ class Combo extends Component {
     return (
       <View style={styles.container}>
         <ScrollViewComponent
-          ref={node => (this._scrollView = node)}
+          ref={(node) => (this._scrollView = node)}
           waitFor={['dragbox', 'image_pinch', 'image_rotation', 'image_tilt']}
           style={styles.scrollView}>
           <TouchableHighlight style={styles.button} onClick={this._onClick}>

@@ -42,7 +42,7 @@ class PanResponderExample extends Component {
   render() {
     return (
       <View
-        ref={circle => {
+        ref={(circle) => {
           this.circle = circle;
         }}
         style={styles.circle}

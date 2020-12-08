@@ -17,7 +17,7 @@ export default class Example extends Component {
     ],
     { useNativeDriver: USE_NATIVE_DRIVER }
   );
-  _onHandlerStateChange = event => {
+  _onHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.force.setValue(0);
     }

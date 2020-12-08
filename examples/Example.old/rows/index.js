@@ -37,7 +37,7 @@ export class Swipeable extends Component {
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
-  _onHandlerStateChange = event => {
+  _onHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       const dragToss = 0.05;
       const endOffsetX =
@@ -59,7 +59,7 @@ export class Swipeable extends Component {
       }).start();
     }
   };
-  _onLayout = event => {
+  _onLayout = (event) => {
     this._width = event.nativeEvent.layout.width;
   };
   _reset = () => {
@@ -109,7 +109,7 @@ export class Swipeable extends Component {
   }
 }
 
-export const InfoButton = props => (
+export const InfoButton = (props) => (
   <BorderlessButton
     {...props}
     style={styles.infoButton}

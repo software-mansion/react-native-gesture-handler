@@ -44,7 +44,7 @@ export default class AppleStyleSwipeableRow extends Component {
       </Animated.View>
     );
   };
-  renderRightActions = progress => (
+  renderRightActions = (progress) => (
     <View
       style={{
         width: 192,
@@ -55,7 +55,7 @@ export default class AppleStyleSwipeableRow extends Component {
       {this.renderRightAction('More', '#dd2c00', 64, progress)}
     </View>
   );
-  updateRef = ref => {
+  updateRef = (ref) => {
     this._swipeableRow = ref;
   };
   close = () => {

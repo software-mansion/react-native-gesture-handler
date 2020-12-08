@@ -12,17 +12,17 @@ import { LoremIpsum } from '../common';
 
 export class PressBox extends Component {
   doubleTapRef = React.createRef();
-  _onHandlerStateChange = event => {
+  _onHandlerStateChange = (event) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       alert("I'm being pressed for so long");
     }
   };
-  _onSingleTap = event => {
+  _onSingleTap = (event) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       alert("I'm touched");
     }
   };
-  _onDoubleTap = event => {
+  _onDoubleTap = (event) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       alert('D0able tap, good job!');
     }

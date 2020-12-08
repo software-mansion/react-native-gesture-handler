@@ -20,7 +20,7 @@ import {
 
 const BOX_SIZE = 80;
 
-const renderSampleBox = color => (
+const renderSampleBox = (color) => (
   <View
     style={{
       width: BOX_SIZE,
@@ -30,7 +30,7 @@ const renderSampleBox = color => (
   />
 );
 
-const toReactNativeTouchable = touchable => {
+const toReactNativeTouchable = (touchable) => {
   if (touchable === TouchableOpacity) return RNTouchableOpacity;
   if (touchable === TouchableWithoutFeedback) return RNTouchableWithoutFeedback;
   if (touchable === TouchableHighlight) return RNTouchableHighlight;
@@ -241,35 +241,35 @@ const TOUCHABLES = [
 
   {
     type: TouchableNativeFeedback,
-    background: A => A.SelectableBackground(),
+    background: (A) => A.SelectableBackground(),
     color: 'transparent',
     renderChild: renderSampleBox,
     text: 'TouchableNativeFeedback (SelectableBackground) tranparent',
   },
   {
     type: TouchableNativeFeedback,
-    background: A => A.SelectableBackgroundBorderless(),
+    background: (A) => A.SelectableBackgroundBorderless(),
     color: 'honeydew',
     renderChild: renderSampleBox,
     text: 'TouchableNativeFeedback (SelectableBackgroundBorderless)',
   },
   {
     type: TouchableNativeFeedback,
-    background: A => A.Ripple('floralwhite', true),
+    background: (A) => A.Ripple('floralwhite', true),
     color: 'greenyellow',
     renderChild: renderSampleBox,
     text: 'TouchableNativeFeedback (Ripple, borderless: true)',
   },
   {
     type: TouchableNativeFeedback,
-    background: A => A.Ripple('blue', true, 30),
+    background: (A) => A.Ripple('blue', true, 30),
     color: 'green',
     renderChild: renderSampleBox,
     text: 'TouchableNativeFeedback (Ripple, borderless: true, radius: 30)',
   },
   {
     type: TouchableNativeFeedback,
-    background: A => A.Ripple('darkslategrey', false),
+    background: (A) => A.Ripple('darkslategrey', false),
     color: 'dodgerblue',
     renderChild: renderSampleBox,
     text: 'TouchableNativeFeedback (Ripple, borderless: false)',
@@ -301,7 +301,7 @@ export class TouchableExample extends Component {
   };
 
   toggleScrollView = () =>
-    this.setState(prev => ({ useScrollView: !prev.useScrollView }));
+    this.setState((prev) => ({ useScrollView: !prev.useScrollView }));
 
   render() {
     const {
@@ -351,9 +351,9 @@ export class TouchablesIndex extends Component {
       <FlatList
         style={styles.list}
         data={TOUCHABLES}
-        keyExtractor={item => item.text}
+        keyExtractor={(item) => item.text}
         ItemSeparatorComponent={ItemSeparator}
-        renderItem={props => (
+        renderItem={(props) => (
           <Item
             {...props}
             onPressItem={() =>

@@ -49,7 +49,7 @@ const Page = ({
 export default class Example extends Component {
   state = { fromLeft: true, type: 0 };
 
-  renderParallaxDrawer = progressValue => {
+  renderParallaxDrawer = (progressValue) => {
     const parallax = progressValue.interpolate({
       inputRange: [0, 1],
       outputRange: [this.state.fromLeft ? -50 : 50, 0],
@@ -81,7 +81,7 @@ export default class Example extends Component {
     return (
       <View style={styles.container}>
         <DrawerLayout
-          ref={drawer => {
+          ref={(drawer) => {
             this.drawer = drawer;
           }}
           enableTrackpadTwoFingerGesture

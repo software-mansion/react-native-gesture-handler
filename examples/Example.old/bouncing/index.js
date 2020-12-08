@@ -27,7 +27,7 @@ class Snappable extends Component {
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
-  _onHandlerStateChange = event => {
+  _onHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       Animated.spring(this._dragX, {
         velocity: event.nativeEvent.velocityX,
@@ -74,7 +74,7 @@ class Twistable extends Component {
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
-  _onHandlerStateChange = event => {
+  _onHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       Animated.spring(this._gesture, {
         velocity: event.nativeEvent.velocity,
