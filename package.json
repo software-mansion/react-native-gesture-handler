@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "@expo/webpack-config": "^0.10.4",
+    "@types/hoist-non-react-statics": "^3.3.1",
     "@types/react": "^17.0.0",
     "@types/react-native": "^0.63.37",
     "babel-jest": "16.0.0",
