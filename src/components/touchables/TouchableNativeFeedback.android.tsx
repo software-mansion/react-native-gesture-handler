@@ -6,7 +6,7 @@ import {
 import React, { Component } from 'react';
 import GenericTouchable, { GenericTouchableProps } from './GenericTouchable';
 
-type ExtraPropsType = {
+export type TouchableNativeFeedbackExtraPropsType = {
   borderless?: boolean;
   rippleColor?: ColorValue;
   rippleRadius?: number;
@@ -54,7 +54,8 @@ export default class TouchableNativeFeedback extends Component<
   };
 
   getExtraButtonProps() {
-    const extraProps: ExtraPropsType = {};
+    const extraProps: TouchableNativeFeedbackExtraPropsType = {};
+    // TODO: the values of background are different in RN types, maybe they were changed?
     const { background }: any = this.props;
     if (background) {
       if (background.type === 'Ripple') {
