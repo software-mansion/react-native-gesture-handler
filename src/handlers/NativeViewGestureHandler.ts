@@ -1,22 +1,30 @@
-// @ts-nocheck
 import createHandler from './createHandler';
-import { BaseGestureHandlerProperties } from './gestureHandlers';
-const props: BaseGestureHandlerProperties = {};
+import {
+  BaseGestureHandlerProperties,
+  baseProperties,
+} from './gestureHandlers';
 
 export interface NativeViewGestureHandlerProperties
   extends BaseGestureHandlerProperties<NativeViewGestureHandlerPayload> {
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
 }
-export interface NativeViewGestureHandlerPayload {
-  pointerInside: boolean;
-}
+export type NativeViewGestureHandlerPayload = {
+  shouldActivateOnStart?: boolean;
+  disallowInterruption?: boolean;
+};
 
-const NativeViewGestureHandler = createHandler('NativeViewGestureHandler', {
-  ...props,
-
-  // If changed, add changes to NATIVE_WRAPPER_PROPS_FILTER as well
-  boolean,
+const NativeViewGestureHandler = createHandler<
+  NativeViewGestureHandlerProperties,
+  NativeViewGestureHandlerPayload
+>({
+  name: 'NativeViewGestureHandler',
+  allowedProps: [
+    ...baseProperties,
+    'shouldActivateOnStart',
+    'disallowInterruption',
+  ] as const,
+  config: {},
 });
 
 export default NativeViewGestureHandler;
