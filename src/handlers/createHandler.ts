@@ -145,13 +145,15 @@ const stateToPropMappings = {
   [State.END]: 'onEnded',
 } as const;
 
-type CreateHandlerArgs<HandlerPropsT extends Record<string, unknown>> = {
+type CreateHandlerArgs<
+  HandlerPropsT extends Record<string, unknown>
+> = Readonly<{
   name: string;
-  allowedProps: Extract<keyof HandlerPropsT, string>[];
-  config: Record<string, unknown>;
+  allowedProps: Readonly<Extract<keyof HandlerPropsT, string>[]>;
+  config: Readonly<Record<string, unknown>>;
   transformProps?: (props: HandlerPropsT) => HandlerPropsT;
-  customNativeProps?: string[];
-};
+  customNativeProps?: Readonly<string[]>;
+}>;
 
 type InternalEventHandlers = {
   onGestureHandlerEvent?: (event: any) => void;
@@ -163,7 +165,7 @@ export default function createHandler<
   T extends BaseGestureHandlerProperties<U>,
   U extends Record<string, unknown>
 >({
-  name: name,
+  name,
   allowedProps = [],
   config = {},
   transformProps,

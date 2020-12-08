@@ -80,7 +80,7 @@ const baseProperties = [
   'onEnded',
   'onGestureEvent',
   'onHandlerStateChange',
-];
+] as const;
 
 type TapGestureHandlerEventExtraPayload = {
   x: number;
@@ -114,7 +114,7 @@ export const TapGestureHandler = createHandler<
     'maxDeltaY',
     'maxDist',
     'minPointers',
-  ] as (keyof TapGestureHandlerProperties)[],
+  ] as const,
   config: {},
 });
 
@@ -136,11 +136,7 @@ export const FlingGestureHandler = createHandler<
   FlingGestureHandlerEventExtraPayload
 >({
   name: 'FlingGestureHandler',
-  allowedProps: [
-    ...baseProperties,
-    'numberOfPointers',
-    'direction',
-  ] as (keyof FlingGestureHandlerProperties)[],
+  allowedProps: [...baseProperties, 'numberOfPointers', 'direction'] as const,
   config: {},
 });
 
@@ -182,7 +178,7 @@ export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
         'minForce',
         'maxForce',
         'feedbackOnActivation',
-      ] as (keyof ForceTouchGestureHandlerProperties)[],
+      ] as const,
       config: {},
     })
   : ForceTouchFallback;
@@ -209,11 +205,7 @@ export const LongPressGestureHandler = createHandler<
   LongPressGestureHandlerEventExtraPayload
 >({
   name: 'LongPressGestureHandler',
-  allowedProps: [
-    ...baseProperties,
-    'minDurationMs',
-    'maxDist',
-  ] as (keyof LongPressGestureHandlerProperties)[],
+  allowedProps: [...baseProperties, 'minDurationMs', 'maxDist'] as const,
   config: {},
 });
 
@@ -444,7 +436,7 @@ export const PanGestureHandler = createHandler<
     'maxPointers',
     'avgTouches',
     'enableTrackpadTwoFingerGesture',
-  ] as (keyof PanGestureHandlerProperties)[],
+  ] as const,
   config: {},
   transformProps: managePanProps,
   customNativeProps: [
@@ -474,7 +466,7 @@ export const PinchGestureHandler = createHandler<
   PinchGestureHandlerEventExtraPayload
 >({
   name: 'PinchGestureHandler',
-  allowedProps: baseProperties as (keyof PinchGestureHandlerProperties)[],
+  allowedProps: baseProperties,
   config: {},
 });
 
@@ -493,6 +485,6 @@ export const RotationGestureHandler = createHandler<
   RotationGestureHandlerEventExtraPayload
 >({
   name: 'RotationGestureHandler',
-  allowedProps: baseProperties as (keyof RotationGestureHandlerProperties)[],
+  allowedProps: baseProperties,
   config: {},
 });
