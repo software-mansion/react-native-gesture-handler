@@ -16,6 +16,7 @@ import {
   GestureEventEvent,
   HandlerStateChangeEvent,
 } from './gestureHandlers';
+import { ValueOf } from '../typeUtils';
 
 function findNodeHandle(node: any): null | number {
   if (Platform.OS === 'web') return node;
@@ -119,12 +120,11 @@ function transformIntoHandlerTags(handlerIDs: any) {
     .filter((handlerTag: number) => handlerTag > 0);
 }
 
-function hasUnresolvedRefs(
-  props: Readonly<
-    React.PropsWithChildren<
-      BaseGestureHandlerProperties<Record<string, unknown>>
-    >
-  >
+type HandlerProperties<T extends Record<string, unknown>> = Readonly<
+  React.PropsWithChildren<BaseGestureHandlerProperties<T>>
+>;
+function hasUnresolvedRefs<T extends Record<string, unknown>>(
+  props: HandlerProperties<T>
 ) {
   // TODO(TS) - add type for extract arg
   const extract = (refs: any | any[]) => {
@@ -155,6 +155,7 @@ type CreateHandlerArgs<
   customNativeProps?: Readonly<string[]>;
 }>;
 
+// TODO(TS) fix event types
 type InternalEventHandlers = {
   onGestureHandlerEvent?: (event: any) => void;
   onGestureHandlerStateChange?: (event: any) => void;
@@ -196,7 +197,8 @@ export default function createHandler<
     }
 
     componentDidMount() {
-      if (hasUnresolvedRefs(this.props)) {
+      const props: HandlerProperties<U> = this.props;
+      if (hasUnresolvedRefs(props)) {
         // If there are unresolved refs (e.g. ".current" has not yet been set)
         // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
         // _update method that will try to update native handler props using
@@ -241,7 +243,7 @@ export default function createHandler<
       }
     }
 
-    _onGestureHandlerEvent = (event: GestureEventEvent) => {
+    _onGestureHandlerEvent = (event: GestureEventEvent<U>) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onGestureEvent?.(event);
       } else {
@@ -250,11 +252,12 @@ export default function createHandler<
     };
 
     // TODO(TS) - make sure this is right type for event
-    _onGestureHandlerStateChange = (event: HandlerStateChangeEvent) => {
+    _onGestureHandlerStateChange = (event: HandlerStateChangeEvent<U>) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onHandlerStateChange?.(event);
 
-        const stateEventName = stateToPropMappings[event.nativeEvent.state];
+        const state: ValueOf<typeof State> = event.nativeEvent.state;
+        const stateEventName = stateToPropMappings[state];
         const eventHandler = stateEventName && this.props[stateEventName];
         if (eventHandler && typeof eventHandler === 'function') {
           eventHandler(event);
@@ -338,7 +341,7 @@ export default function createHandler<
       let gestureEventHandler = this._onGestureHandlerEvent;
       // Another instance of https://github.com/microsoft/TypeScript/issues/13995
       type OnGestureEventHandlers = {
-        onGestureEvent?: BaseGestureHandlerProperties['onGestureEvent'];
+        onGestureEvent?: BaseGestureHandlerProperties<U>['onGestureEvent'];
         onGestureHandlerEvent?: InternalEventHandlers['onGestureHandlerEvent'];
       };
       const {
@@ -369,7 +372,7 @@ export default function createHandler<
       let gestureStateEventHandler = this._onGestureHandlerStateChange;
       // Another instance of https://github.com/microsoft/TypeScript/issues/13995
       type OnGestureStateChangeHandlers = {
-        onHandlerStateChange?: BaseGestureHandlerProperties['onHandlerStateChange'];
+        onHandlerStateChange?: BaseGestureHandlerProperties<U>['onHandlerStateChange'];
         onGestureHandlerStateChange?: InternalEventHandlers['onGestureHandlerStateChange'];
       };
       const {
