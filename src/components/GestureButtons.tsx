@@ -180,9 +180,7 @@ export class RectButton extends React.Component<RectButtonProperties> {
   }
 }
 
-export class BorderlessButton extends React.Component<
-  BorderlessButtonProperties
-> {
+export class BorderlessButton extends React.Component<BorderlessButtonProperties> {
   static defaultProps = {
     activeOpacity: 0.3,
     borderless: true,

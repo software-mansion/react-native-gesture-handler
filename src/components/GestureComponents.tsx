@@ -73,7 +73,7 @@ module.exports = {
       }
     );
     // we use literal object since TS gives error when using RN's `positions`
-    DrawerLayoutAndroid.positions = {Left: 'left', Right: 'right'};
+    DrawerLayoutAndroid.positions = { Left: 'left', Right: 'right' };
     return DrawerLayoutAndroid;
   },
 
@@ -88,7 +88,7 @@ module.exports = {
           <ReactNative.FlatList
             ref={ref}
             {...props}
-            renderScrollComponent={scrollProps => (
+            renderScrollComponent={(scrollProps) => (
               <ScrollView {...scrollProps} />
             )}
           />
