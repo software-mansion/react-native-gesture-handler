@@ -78,7 +78,7 @@ export interface DrawerLayoutProperties {
   onGestureRef?: (ref: typeof PanGestureHandler) => void;
 }
 
-export type StateType = {
+export type DrawerLayoutState = {
   dragX: Animated.Value;
   touchX: Animated.Value;
   drawerTranslation: Animated.Value;
@@ -101,7 +101,7 @@ export type DrawerMovementOptionType = {
 
 export default class DrawerLayout extends Component<
   DrawerLayoutProperties,
-  StateType
+  DrawerLayoutState
 > {
   static defaultProps = {
     drawerWidth: 200,
@@ -132,7 +132,10 @@ export default class DrawerLayout extends Component<
     this._updateAnimatedEvent(props, this.state);
   }
 
-  UNSAFE_componentWillUpdate(props: DrawerLayoutProperties, state: StateType) {
+  UNSAFE_componentWillUpdate(
+    props: DrawerLayoutProperties,
+    state: DrawerLayoutState
+  ) {
     if (
       this.props.drawerPosition !== props.drawerPosition ||
       this.props.drawerWidth !== props.drawerWidth ||
@@ -157,7 +160,10 @@ export default class DrawerLayout extends Component<
     Right: 'right',
   };
 
-  _updateAnimatedEvent = (props: DrawerLayoutProperties, state: StateType) => {
+  _updateAnimatedEvent = (
+    props: DrawerLayoutProperties,
+    state: DrawerLayoutState
+  ) => {
     // Event definition is based on
     const { drawerPosition, drawerWidth, drawerType } = props;
     const {
