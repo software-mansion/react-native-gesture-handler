@@ -15,6 +15,7 @@ import {
   HandlerStateChangeEvent,
 } from '../../handlers/gestureHandlers';
 import { NativeViewGestureHandlerPayload } from '../../handlers/NativeViewGestureHandler';
+import { TouchableNativeFeedbackExtraPropsType } from './TouchableNativeFeedback.android';
 
 /**
  * Each touchable is a states' machine which preforms transitions.
@@ -47,7 +48,7 @@ export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
 }
 
 interface InternalProps {
-  extraButtonProps: object;
+  extraButtonProps: TouchableNativeFeedbackExtraPropsType;
   // TODO: change it to take type of TOUCHABLE_STATE
   onStateChange?: (oldState: number, newState: number) => void;
 }
