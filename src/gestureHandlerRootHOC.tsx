@@ -1,14 +1,13 @@
-// @ts-nocheck
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import GestureHandlerRootView from './GestureHandlerRootView';
 
-export default function gestureHandlerRootHOC<P = {}>(
-  Component: React.ComponentType<P>,
+export default function gestureHandlerRootHOC(
+  Component: React.ComponentType<Record<string, unknown>>,
   containerStyles?: StyleProp<ViewStyle>
-): React.ComponentType<P> {
-  function Wrapper(props: any) {
+): React.ComponentType<Record<string, unknown>> {
+  function Wrapper(props: Record<string, unknown>) {
     return (
       <GestureHandlerRootView style={[styles.container, containerStyles]}>
         <Component {...props} />
@@ -16,8 +15,9 @@ export default function gestureHandlerRootHOC<P = {}>(
     );
   }
 
-  Wrapper.displayName = `gestureHandlerRootHOC(${Component.displayName ||
-    Component.name})`;
+  Wrapper.displayName = `gestureHandlerRootHOC(${
+    Component.displayName || Component.name
+  })`;
 
   hoistNonReactStatics(Wrapper, Component);
 
