@@ -9,9 +9,9 @@ export interface NativeViewGestureHandlerProperties
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
 }
+
 export type NativeViewGestureHandlerPayload = {
-  shouldActivateOnStart?: boolean;
-  disallowInterruption?: boolean;
+  pointerInside: boolean;
 };
 
 const NativeViewGestureHandler = createHandler<
