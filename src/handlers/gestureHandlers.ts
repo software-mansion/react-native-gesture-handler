@@ -65,7 +65,7 @@ export type BaseGestureHandlerProperties<
   ) => void;
 };
 
-const baseProperties = [
+export const baseProperties = [
   'id',
   'enabled',
   'minPointers',
@@ -82,7 +82,7 @@ const baseProperties = [
   'onHandlerStateChange',
 ] as const;
 
-type TapGestureHandlerEventExtraPayload = {
+export type TapGestureHandlerEventExtraPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -118,7 +118,7 @@ export const TapGestureHandler = createHandler<
   config: {},
 });
 
-type FlingGestureHandlerEventExtraPayload = {
+export type FlingGestureHandlerEventExtraPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -152,7 +152,7 @@ class ForceTouchFallback extends React.Component {
   }
 }
 
-type ForceTouchGestureHandlerEventExtraPayload = {
+export type ForceTouchGestureHandlerEventExtraPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -187,7 +187,7 @@ export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
 ForceTouchGestureHandler.forceTouchAvailable =
   PlatformConstants?.forceTouchAvailable || false;
 
-type LongPressGestureHandlerEventExtraPayload = {
+export type LongPressGestureHandlerEventExtraPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -378,7 +378,7 @@ function managePanProps(props: PanGestureHandlerProperties) {
   return transformPanGestureHandlerProps(props);
 }
 
-type PanGestureHandlerEventExtraPayload = {
+export type PanGestureHandlerEventExtraPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -451,7 +451,7 @@ export const PanGestureHandler = createHandler<
   ],
 });
 
-type PinchGestureHandlerEventExtraPayload = {
+export type PinchGestureHandlerEventExtraPayload = {
   scale: number;
   focalX: number;
   focalY: number;
@@ -470,7 +470,7 @@ export const PinchGestureHandler = createHandler<
   config: {},
 });
 
-type RotationGestureHandlerEventExtraPayload = {
+export type RotationGestureHandlerEventExtraPayload = {
   rotation: number;
   anchorX: number;
   anchorY: number;
