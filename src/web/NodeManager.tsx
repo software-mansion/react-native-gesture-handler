@@ -1,3 +1,4 @@
+import { ValueOf } from '../typeUtils';
 import { Gestures } from '../RNGestureHandlerModule.web';
 
 let gestures: Record<number, any> = {};
@@ -10,7 +11,7 @@ export function getHandler(tag: number) {
 
 export function createGestureHandler(
   handlerTag: number,
-  handler: typeof Gestures
+  handler: InstanceType<ValueOf<typeof Gestures>>
 ) {
   if (handlerTag in gestures) {
     throw new Error('Handler with tag ' + handlerTag + ' already exists');

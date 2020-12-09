@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Direction } from './web/constants';
 import FlingGestureHandler from './web/FlingGestureHandler';
 import LongPressGestureHandler from './web/LongPressGestureHandler';
@@ -28,7 +27,11 @@ export default {
   handleClearJSResponder() {
     console.warn('handleClearJSResponder: ');
   },
-  createGestureHandler<T>(handlerName: string, handlerTag: number, config: T) {
+  createGestureHandler<T>(
+    handlerName: keyof typeof Gestures,
+    handlerTag: number,
+    config: T
+  ) {
     //TODO(TS) extends config
     if (!(handlerName in Gestures))
       throw new Error(
