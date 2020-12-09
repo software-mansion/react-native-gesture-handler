@@ -1,13 +1,24 @@
+/* eslint-disable react/no-unescaped-entities */
 import React, {Component} from 'react';
-import {Animated, StyleSheet, Text, View} from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  View,
+  LayoutChangeEvent,
+  Alert,
+} from 'react-native';
 
 import {
   PanGestureHandler,
   ScrollView,
   State,
   RectButton,
-  BorderlessButton,
   LongPressGestureHandler,
+  PanGestureHandlerGestureEvent,
+  PanGestureHandlerStateChangeEvent,
+  BorderlessButton,
+  BorderlessButtonProperties,
 } from 'react-native-gesture-handler';
 
 import {USE_NATIVE_DRIVER} from '../config';
@@ -15,8 +26,18 @@ import {LoremIpsum} from '../common';
 
 const RATIO = 3;
 
-export class Swipeable extends Component {
-  constructor(props) {
+type PropsType = {
+  enableTrackpadTwoFingerGesture: boolean;
+};
+
+export class Swipeable extends Component<PropsType> {
+  _width: number;
+  _dragX: Animated.Value;
+  _transX: any;
+  _showLeftAction: any;
+  _showRightAction: any;
+  _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  constructor(props: PropsType) {
     super(props);
     this._width = 0;
     this._dragX = new Animated.Value(0);
@@ -34,10 +55,10 @@ export class Swipeable extends Component {
     });
     this._onGestureEvent = Animated.event(
       [{nativeEvent: {translationX: this._dragX}}],
-      {useNativeDriver: USE_NATIVE_DRIVER},
+      {useNativeDriver: USE_NATIVE_DRIVER}
     );
   }
-  _onHandlerStateChange = (event) => {
+  _onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       const dragToss = 0.05;
       const endOffsetX =
@@ -59,7 +80,7 @@ export class Swipeable extends Component {
       }).start();
     }
   };
-  _onLayout = (event) => {
+  _onLayout = (event: LayoutChangeEvent) => {
     this._width = event.nativeEvent.layout.width;
   };
   _reset = () => {
@@ -109,11 +130,13 @@ export class Swipeable extends Component {
   }
 }
 
-export const InfoButton = (props) => (
+export const InfoButton = (
+  props: BorderlessButtonProperties & {name: string}
+) => (
   <BorderlessButton
     {...props}
     style={styles.infoButton}
-    onPress={() => alert(`${props.name} info button clicked`)}>
+    onPress={() => Alert.alert(`${props.name} info button clicked`)}>
     <View style={styles.infoButtonBorders}>
       <Text style={styles.infoButtonText}>i</Text>
     </View>
@@ -124,6 +147,7 @@ export default class Example extends Component {
   render() {
     return (
       <View style={styles.container}>
+        {/* @ts-ignore fix this */}
         <ScrollView
           waitFor={['dragbox', 'image_pinch', 'image_rotation', 'image_tilt']}
           style={styles.scrollView}>
@@ -131,7 +155,7 @@ export default class Example extends Component {
           <Swipeable enableTrackpadTwoFingerGesture>
             <RectButton
               style={styles.rectButton}
-              onPress={() => alert('First row clicked')}>
+              onPress={() => Alert.alert('First row clicked')}>
               <Text style={styles.buttonText}>
                 Swipe this row & observe highlight delay
               </Text>
@@ -146,7 +170,7 @@ export default class Example extends Component {
           <View style={styles.buttonDelimiter} />
           <RectButton
             style={styles.rectButton}
-            onPress={() => alert('Second row clicked')}>
+            onPress={() => Alert.alert('Second row clicked')}>
             <Text style={styles.buttonText}>
               Second info icon will block scrolling
             </Text>
@@ -159,7 +183,7 @@ export default class Example extends Component {
           <RectButton
             rippleColor="red"
             style={styles.rectButton}
-            onPress={() => alert('Third row clicked')}>
+            onPress={() => Alert.alert('Third row clicked')}>
             <Text style={styles.buttonText}>
               This one will cancel when you drag outside
             </Text>
@@ -174,7 +198,7 @@ export default class Example extends Component {
             <RectButton
               enabled={false}
               style={styles.rectButton}
-              onPress={() => alert('Fourth row clicked')}>
+              onPress={() => Alert.alert('Fourth row clicked')}>
               <Text style={styles.buttonText}>
                 This row is "disabled" but you can swipe it
               </Text>
@@ -183,12 +207,12 @@ export default class Example extends Component {
           </Swipeable>
           <LongPressGestureHandler
             onHandlerStateChange={({nativeEvent}) =>
-              nativeEvent.state === State.ACTIVE && alert('Long')
+              nativeEvent.state === State.ACTIVE && Alert.alert('Long')
             }>
             <RectButton
               rippleColor="red"
               style={styles.rectButton}
-              onPress={() => alert('Fifth row clicked')}>
+              onPress={() => Alert.alert('Fifth row clicked')}>
               <Text style={styles.buttonText}>
                 Clickable row with long press handler
               </Text>
@@ -256,4 +280,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     backgroundColor: 'transparent',
   },
+  scrollView: {},
 });

@@ -3,7 +3,9 @@
   "settings": {
     "react": { "version": "16" },
     "import/core-modules": [
-      "react-native-gesture-handler"
+      "react-native-gesture-handler",
+      "react-native-gesture-handler/Swipeable",
+      "react-native-gesture-handler/DrawerLayout"
     ]
   },
   "env": { "browser": true, "node": true },

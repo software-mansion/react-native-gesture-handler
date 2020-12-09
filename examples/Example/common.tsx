@@ -7,7 +7,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export class LoremIpsum extends React.Component {
+type Props = {
+  words: number;
+  style: any;
+}
+
+export class LoremIpsum extends React.Component<Props> {
   static defaultProps = {
     words: 1000,
     style: styles.lipsum,
