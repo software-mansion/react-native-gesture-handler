@@ -1,0 +1,30 @@
+
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "react-native-gesture-handler": ["./react-native-gesture-handler.d.ts"],
+      "react-native-gesture-handler/Swipeable": ["./Swipeable.d.ts"],
+      "react-native-gesture-handler/DrawerLayout": ["./DrawerLayout.d.ts"],
+    },
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "esnext",
+    "allowJs": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noStrictGenericChecks": false,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitUseStrict": false,
+
+    "outDir": "./dist"
+  },
+  "exclude": ["node_modules"],
+  "include": ["**/*.ts", "**/*.tsx"]
+}
