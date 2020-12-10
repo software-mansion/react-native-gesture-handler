@@ -11,6 +11,7 @@ import {
   Text,
   StyleSheet,
   FlatList,
+  BackgroundPropType,
 } from 'react-native';
 import {
   RectButton,
@@ -41,10 +42,17 @@ const toReactNativeTouchable = (touchable: typeof React.Component) => {
   return RNTouchableOpacity;
 };
 
-// TODO: make it not hacky
-type TouchablesType = typeof TOUCHABLES[0];
+type TouchablesType = {
+  type: React.ComponentType<any>;
+  props?: Record<string, any>;
+  color?: string;
+  renderChild: (() => null) | ((color: string) => JSX.Element);
+  text: string;
+  // TODO(TS): change types so we can use GHTouchableNativeFeedback as a type
+  background?: (A: typeof RNTouchableNativeFeedback) => BackgroundPropType;
+};
 
-const TOUCHABLES = [
+const TOUCHABLES: TouchablesType[] = [
   {
     type: TouchableWithoutFeedback,
     props: {},
@@ -248,36 +256,40 @@ const TOUCHABLES = [
 
   {
     type: TouchableNativeFeedback,
-    background: (A: any) => A.SelectableBackground(),
+    background: (A) => A.SelectableBackground(),
     color: 'transparent',
     renderChild: renderSampleBox,
     text: 'TouchableNativeFeedback (SelectableBackground) tranparent',
   },
   {
     type: TouchableNativeFeedback,
-    // TODO: remove all those any
-    background: (A: any) => A.SelectableBackgroundBorderless(),
+    background: (A) => A.SelectableBackgroundBorderless(),
     color: 'honeydew',
     renderChild: renderSampleBox,
     text: 'TouchableNativeFeedback (SelectableBackgroundBorderless)',
   },
   {
     type: TouchableNativeFeedback,
-    background: (A: any) => A.Ripple('floralwhite', true),
+    background: (A) => A.Ripple('floralwhite', true),
     color: 'greenyellow',
     renderChild: renderSampleBox,
     text: 'TouchableNativeFeedback (Ripple, borderless: true)',
   },
   {
     type: TouchableNativeFeedback,
-    background: (A: any) => A.Ripple('blue', true, 30),
+    // the arguments passed to A.Ripple look like they are taken from PressableAndroidRippleConfig, where the radius is present
+    // but the TouchableNativeFeedback exported from RNGH is the same as from RN and none it does not have this interface included
+    // in the static Ripple method. But it somehow works.
+    // I looks like a mistake. I submitted a PR with the change: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50063
+    // @ts-ignore
+    background: (A) => A.Ripple('blue', true, 30),
     color: 'green',
     renderChild: renderSampleBox,
     text: 'TouchableNativeFeedback (Ripple, borderless: true, radius: 30)',
   },
   {
     type: TouchableNativeFeedback,
-    background: (A: any) => A.Ripple('darkslategrey', false),
+    background: (A) => A.Ripple('darkslategrey', false),
     color: 'dodgerblue',
     renderChild: renderSampleBox,
     text: 'TouchableNativeFeedback (Ripple, borderless: false)',
