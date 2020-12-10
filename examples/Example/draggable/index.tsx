@@ -12,7 +12,6 @@ import {USE_NATIVE_DRIVER} from '../config';
 import {LoremIpsum} from '../common';
 
 type DraggableBoxProps = {
-  // TODO: ignored prop assigned in combo
   minDist?: number;
   boxStyle?: any;
 };
@@ -54,7 +53,8 @@ export class DraggableBox extends Component<DraggableBoxProps> {
       <PanGestureHandler
         {...this.props}
         onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}>
+        onHandlerStateChange={this._onHandlerStateChange}
+        minDist={this.props.minDist}>
         <Animated.View
           style={[
             styles.box,

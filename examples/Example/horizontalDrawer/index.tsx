@@ -99,9 +99,8 @@ export default class Example extends Component {
           keyboardDismissMode="on-drag"
           drawerPosition={
             this.state.fromLeft
-              // TODO: provide API
-              ? DrawerLayout.positions.Left
-              : DrawerLayout.positions.Right
+              ? 'left'
+              : 'right'
           }
           drawerType={drawerType}
           drawerBackgroundColor="#ddd"

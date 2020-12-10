@@ -37,8 +37,9 @@ export default class Example extends Component {
         <View>
           <DrawerLayoutAndroid
             drawerWidth={200}
-            // TODO: type it correctly
-            drawerPosition={DrawerLayoutAndroid.positions.Left}
+            // This is changed from DrawerLayout.positions.Left and DrawerLayout.positions.Right
+            // because RN uses literal `left` and `right` strings
+            drawerPosition="left"
             renderNavigationView={() => navigationView}>
             <Page backgroundColor="gray" text="First 🙈" />
           </DrawerLayoutAndroid>
@@ -48,7 +49,7 @@ export default class Example extends Component {
         <View>
           <DrawerLayoutAndroid
             drawerWidth={200}
-            drawerPosition={DrawerLayoutAndroid.positions.Right}
+            drawerPosition="right"
             renderNavigationView={() => navigationView}>
             <Page backgroundColor="blue" text="Fourth 😎" />
           </DrawerLayoutAndroid>

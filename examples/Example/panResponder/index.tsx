@@ -7,7 +7,7 @@ import {
   GestureResponderEvent,
   PanResponderGestureState,
   Alert,
-  PanResponderInstance,
+  GestureResponderHandlers,
 } from 'react-native';
 
 import {ScrollView} from 'react-native-gesture-handler';
@@ -25,8 +25,7 @@ type StyleType = {
 
 // A clone of: https://github.com/facebook/react-native/blob/master/RNTester/js/PanResponderExample.js
 class PanResponderExample extends Component {
-  // @ts-ignore TODO: fix this
-  _panResponder: PanResponderInstance = {};
+  _panResponder: {panHandlers?: GestureResponderHandlers} = {};
   _previousLeft = 0;
   _previousTop = 0;
   _circleStyles: {style?: StyleType} = {};
