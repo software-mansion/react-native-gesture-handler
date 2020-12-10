@@ -41,14 +41,13 @@ export default class GmailStyleSwipeableRow extends Component {
     );
   };
 
-  private _swipeableRow: any;
+  private _swipeableRow?: Swipeable;
 
-  // @ts-ignore TODO: use correct types
-  updateRef = (ref) => {
+  updateRef = (ref: Swipeable) => {
     this._swipeableRow = ref;
   };
   close = () => {
-    this._swipeableRow.close();
+    this._swipeableRow!.close();
   };
   render() {
     const {children} = this.props;

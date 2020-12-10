@@ -48,7 +48,6 @@ type TouchablesType = {
   color?: string;
   renderChild: (() => null) | ((color: string) => JSX.Element);
   text: string;
-  // TODO(TS): change types so we can use GHTouchableNativeFeedback as a type
   background?: (A: typeof RNTouchableNativeFeedback) => BackgroundPropType;
 };
 
@@ -281,7 +280,7 @@ const TOUCHABLES: TouchablesType[] = [
     // but the TouchableNativeFeedback exported from RNGH is the same as from RN and none it does not have this interface included
     // in the static Ripple method. But it somehow works.
     // I looks like a mistake. I submitted a PR with the change: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50063
-    // @ts-ignore
+    // @ts-ignore it is no-op because of the types
     background: (A) => A.Ripple('blue', true, 30),
     color: 'green',
     renderChild: renderSampleBox,

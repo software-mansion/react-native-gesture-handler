@@ -77,14 +77,13 @@ export default class AppleStyleSwipeableRow extends Component {
     </View>
   );
 
-  private _swipeableRow: any;
+  private _swipeableRow?: Swipeable;
 
-  // @ts-ignore TODO: use correct types
-  updateRef = (ref: any) => {
+  updateRef = (ref: Swipeable) => {
     this._swipeableRow = ref;
   };
   close = () => {
-    this._swipeableRow.close();
+    this._swipeableRow!.close();
   };
   render() {
     const {children} = this.props;
