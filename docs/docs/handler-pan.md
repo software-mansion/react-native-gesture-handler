@@ -16,7 +16,7 @@ The handler is implemented using [UIPanGestureRecognizer](https://developer.appl
 
 Component `PanGestureHandler` exposes a number of properties that allows for customizing the criteria under which the handler will [activate](state.md#active) or [fail](state.md#fail) recognizing.
 
-When more than one of such a property is set pan handler expects all the criteria to be met for recognizing and at most one of the criteria to be overstepped to fail recognition.
+When more than one of such a property is set, `PanGestureHandler` expects all the criteria to be met for recognizing and at most one of the criteria to be overstepped to fail recognition.
 For example when both [`minDeltaX`](#mindeltax) and [`minDeltaY`](#mindeltay) are set to 20 we expect the finger to travel by 20 points in both X and Y axis before the handler activates.
 Another example would be to have both [`maxDeltaX`](#maxdeltaX) and [`maxDeltaY`](#maxdeltay) set to 20 and [`minDist`](#mindist) set to 23.
 In such a case when we move finger along X axis by 20 points and 0 points along Y axis the handler will fail even though we are still within the limit with the translation along Y axis.
