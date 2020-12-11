@@ -141,23 +141,21 @@ class ControlledSwitch extends React.Component<
 }
 
 type ComboPropsType = {
-  ScrollViewComponent: any;
+  ScrollViewComponent: typeof GHScroll | typeof RNScroll;
 };
 
 class Combo extends Component<ComboPropsType> {
   _onClick = () => {
     Alert.alert("I'm so touched");
-    this._scrollView.scrollTo({y: 200, animated: true});
+    this._scrollView?.scrollTo({y: 200, animated: true});
   };
-  private _scrollView: any;
+  private _scrollView: RNScroll | GHScroll | null = null;
   render() {
     const {ScrollViewComponent} = this.props;
     return (
       <View style={styles.container}>
         <ScrollViewComponent
-          ref={(node: RNScroll) => (this._scrollView = node)}
-          // @ts-ignore fix this
-          waitFor={['dragbox', 'image_pinch', 'image_rotation', 'image_tilt']}
+          ref={(node) => (this._scrollView = node)}
           style={styles.scrollView}>
           <TouchableHighlight style={styles.button} onClick={this._onClick}>
             <View style={styles.buttonInner}>

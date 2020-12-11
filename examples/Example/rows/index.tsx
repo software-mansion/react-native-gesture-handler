@@ -147,10 +147,7 @@ export default class Example extends Component {
   render() {
     return (
       <View style={styles.container}>
-        {/* @ts-ignore fix this */}
-        <ScrollView
-          waitFor={['dragbox', 'image_pinch', 'image_rotation', 'image_tilt']}
-          style={styles.scrollView}>
+        <ScrollView style={styles.scrollView}>
           <LoremIpsum words={40} />
           <Swipeable enableTrackpadTwoFingerGesture>
             <RectButton

@@ -130,10 +130,7 @@ export default class Example extends Component {
   };
   render() {
     return (
-      // @ts-ignore TODO: fix this
-      <ScrollView
-        waitFor={['dragbox', 'image_pinch', 'image_rotation', 'image_tilt']}
-        style={styles.scrollView}>
+      <ScrollView style={styles.scrollView}>
         <LoremIpsum words={40} />
         <PanResponderExample />
         <DraggableBox />
