@@ -69,7 +69,6 @@ matrix:
         - cd examples/Example
         - yarn
         - yarn run jetify
-        - yes | sudo sdkmanager --licenses
 
       script:
         - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
@@ -108,4 +107,4 @@ matrix:
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
       script:
-        - xcodebuild -workspace ios/Example.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme Example -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES
+        - xcodebuild -workspace ios/Example.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme Example -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES | xcpretty
