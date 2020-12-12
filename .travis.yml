@@ -57,8 +57,8 @@ matrix:
         components:
           - tools
           - platform-tools
-          - build-tools-28.0.3
-          - android-28
+          - build-tools-29.0.2
+          - android-29
       install:
         - nvm install $NODE_VERSION
         - nvm use $NODE_VERSION
@@ -69,6 +69,7 @@ matrix:
         - cd examples/Example
         - yarn
         - yarn run jetify
+        - yes | sudo sdkmanager --licenses
 
       script:
         - cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
@@ -76,8 +77,8 @@ matrix:
     - language: objective-c
       os: osx
       osx_image: xcode12.2
-      xcode_workspace: './Example/ios/GestureHandler.xcworkspace'
-      xcode_scheme: GestureHandler
+      xcode_workspace: './Example/ios/Example.xcworkspace'
+      xcode_scheme: Example
       podfile: './Example/ios/Podfile'
       xcode_sdk: iphonesimulator12.2
       xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
@@ -107,4 +108,4 @@ matrix:
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
       script:
-        - xcodebuild -workspace ios/GestureHandler.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme GestureHandler -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES
+        - xcodebuild -workspace ios/Example.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme Example -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES
