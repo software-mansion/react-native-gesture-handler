@@ -2,11 +2,9 @@
   "extends": "satya164",
   "settings": {
     "react": { "version": "16" },
-    "import/core-modules": [
-      "react-native-gesture-handler",
-      "react-native-gesture-handler/Swipeable",
-      "react-native-gesture-handler/DrawerLayout"
-    ]
+    "import/resolver": {
+      "babel-module": {}
+    }
   },
   "env": { "browser": true, "node": true },
   "rules": {
