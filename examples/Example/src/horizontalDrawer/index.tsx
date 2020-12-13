@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   Platform,
   StyleSheet,
@@ -8,9 +8,11 @@ import {
   TextInput,
 } from 'react-native';
 
-import { RectButton } from 'react-native-gesture-handler';
+import {RectButton} from 'react-native-gesture-handler';
 
-import DrawerLayout, {DrawerType} from 'react-native-gesture-handler/DrawerLayout';
+import DrawerLayout, {
+  DrawerType,
+} from 'react-native-gesture-handler/DrawerLayout';
 
 const TYPES: DrawerType[] = ['front', 'back', 'back', 'slide'];
 const PARALLAX = [false, false, true, false];
@@ -22,7 +24,7 @@ type PageType = {
   flipSide: () => void;
   nextType: () => void;
   openDrawer: () => void;
-}
+};
 
 const Page = ({
   fromLeft,
@@ -36,13 +38,13 @@ const Page = ({
     <Text style={styles.pageText}>Hi 👋</Text>
     <RectButton style={styles.rectButton} onPress={flipSide}>
       <Text style={styles.rectButtonText}>
-        Drawer to the {fromLeft ? 'left' : 'right'}! -> Flip
+        Drawer to the {fromLeft ? 'left' : 'right'}! {'->'} Flip
       </Text>
     </RectButton>
     <RectButton style={styles.rectButton} onPress={nextType}>
       <Text style={styles.rectButtonText}>
-        Type '{type}
-        {parallaxOn && ' with parallax'}'! -> Next
+        {`Type '${type}
+        ${parallaxOn && ' with parallax'}'! -> Next`}
       </Text>
     </RectButton>
     <RectButton style={styles.rectButton} onPress={openDrawer}>
@@ -56,7 +58,7 @@ const Page = ({
 );
 
 export default class Example extends Component {
-  state = { fromLeft: true, type: 0 };
+  state = {fromLeft: true, type: 0};
 
   private renderParallaxDrawer = (progressValue: Animated.Value) => {
     const parallax = progressValue.interpolate({
@@ -64,7 +66,7 @@ export default class Example extends Component {
       outputRange: [this.state.fromLeft ? -50 : 50, 0],
     });
     const animatedStyles = {
-      transform: [{ translateX: parallax }],
+      transform: [{translateX: parallax}],
     };
     return (
       <Animated.View style={[styles.drawerContainer, animatedStyles]}>
@@ -97,11 +99,7 @@ export default class Example extends Component {
           enableTrackpadTwoFingerGesture
           drawerWidth={200}
           keyboardDismissMode="on-drag"
-          drawerPosition={
-            this.state.fromLeft
-              ? 'left'
-              : 'right'
-          }
+          drawerPosition={this.state.fromLeft ? 'left' : 'right'}
           drawerType={drawerType}
           drawerBackgroundColor="#ddd"
           overlayColor={drawerType === 'front' ? 'black' : '#00000000'}
@@ -118,7 +116,7 @@ export default class Example extends Component {
                   ios: {
                     shadowColor: '#000',
                     shadowOpacity: 0.5,
-                    shadowOffset: { width: 0, height: 2 },
+                    shadowOffset: {width: 0, height: 2},
                     shadowRadius: 60,
                   },
                   android: {
@@ -131,11 +129,11 @@ export default class Example extends Component {
             type={drawerType}
             fromLeft={this.state.fromLeft}
             parallaxOn={parallax}
-            flipSide={() => this.setState({ fromLeft: !this.state.fromLeft })}
+            flipSide={() => this.setState({fromLeft: !this.state.fromLeft})}
             nextType={() =>
-              this.setState({ type: (this.state.type + 1) % TYPES.length })
+              this.setState({type: (this.state.type + 1) % TYPES.length})
             }
-            openDrawer={() => this.drawer!.openDrawer({ speed: 14 })}
+            openDrawer={() => this.drawer!.openDrawer({speed: 14})}
           />
         </DrawerLayout>
       </View>
