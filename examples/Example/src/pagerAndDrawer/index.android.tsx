@@ -28,7 +28,7 @@ export default class Example extends Component {
     const navigationView = (
       <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <Text style={{ margin: 10, fontSize: 15, textAlign: 'left' }}>
-          I'm in the Drawer!
+          I&apos;m in the Drawer!
         </Text>
       </View>
     );
