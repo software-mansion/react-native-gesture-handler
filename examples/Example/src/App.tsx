@@ -100,7 +100,7 @@ export default function App() {
           options={{title: '✌️ Gesture Handler Demo'}}
           component={MainScreen}
         />
-        {(Object.keys(SCREENS) as (keyof typeof SCREENS)[]).map((name) => (
+        {(Object.keys(SCREENS) as (keyof typeof SCREENS)[]).map(name => (
           <Stack.Screen
             key={name}
             name={name}
@@ -115,7 +115,7 @@ export default function App() {
 }
 
 function MainScreen({navigation}: StackScreenProps<ParamListBase>) {
-  const data = (Object.keys(SCREENS) as (keyof typeof SCREENS)[]).map((key) => {
+  const data = (Object.keys(SCREENS) as (keyof typeof SCREENS)[]).map(key => {
     const item = SCREENS[key];
     return {key, title: item.title || key};
   });
@@ -125,13 +125,13 @@ function MainScreen({navigation}: StackScreenProps<ParamListBase>) {
       style={styles.list}
       data={data}
       ItemSeparatorComponent={ItemSeparator}
-      renderItem={(props) => (
+      renderItem={props => (
         <MainScreenItem
           {...props}
           onPressItem={({key}: {key: string}) => navigation.navigate(key)}
         />
       )}
-      renderScrollComponent={(props) => <ScrollView {...props} />}
+      renderScrollComponent={props => <ScrollView {...props} />}
     />
   );
 }
