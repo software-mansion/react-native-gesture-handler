@@ -1,6 +1,6 @@
 import ViewPagerAndroid from '@react-native-community/viewpager';
-import React, {Component} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import {
   createNativeWrapper,
   DrawerLayoutAndroid,
@@ -17,7 +17,7 @@ const Page = ({
   backgroundColor: string;
   text: string;
 }) => (
-  <View style={[styles.page, {backgroundColor}]}>
+  <View style={[styles.page, { backgroundColor }]}>
     <Text style={styles.pageText}>{text}</Text>
   </View>
 );
@@ -26,8 +26,8 @@ export default class Example extends Component {
   static platforms = ['android'];
   render() {
     const navigationView = (
-      <View style={{flex: 1, backgroundColor: '#fff'}}>
-        <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
+        <Text style={{ margin: 10, fontSize: 15, textAlign: 'left' }}>
           I'm in the Drawer!
         </Text>
       </View>

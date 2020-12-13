@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Animated, Dimensions, StyleSheet} from 'react-native';
+import React, { Component } from 'react';
+import { Animated, Dimensions, StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
   TapGestureHandler,
@@ -9,8 +9,8 @@ import {
   TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import {USE_NATIVE_DRIVER} from '../config';
-import {LoremIpsum} from '../common';
+import { USE_NATIVE_DRIVER } from '../config';
+import { LoremIpsum } from '../common';
 
 const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;
@@ -39,7 +39,7 @@ export class TapOrPan extends Component<Props> {
           },
         },
       ],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
 
@@ -53,7 +53,7 @@ export class TapOrPan extends Component<Props> {
   };
 
   render() {
-    const {tapRef, panRef} = this.props;
+    const { tapRef, panRef } = this.props;
     return (
       <TapGestureHandler
         ref={tapRef}

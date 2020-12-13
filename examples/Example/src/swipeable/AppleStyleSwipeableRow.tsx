@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Animated,
   StyleSheet,
@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 
-import {RectButton} from 'react-native-gesture-handler';
+import { RectButton } from 'react-native-gesture-handler';
 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
@@ -27,7 +27,7 @@ export default class AppleStyleSwipeableRow extends Component {
           style={[
             styles.actionText,
             {
-              transform: [{translateX: trans}],
+              transform: [{ translateX: trans }],
             },
           ]}>
           Archive
@@ -52,9 +52,9 @@ export default class AppleStyleSwipeableRow extends Component {
     };
 
     return (
-      <Animated.View style={{flex: 1, transform: [{translateX: trans}]}}>
+      <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
         <RectButton
-          style={[styles.rightAction, {backgroundColor: color}]}
+          style={[styles.rightAction, { backgroundColor: color }]}
           onPress={pressHandler}>
           <Text style={styles.actionText}>{text}</Text>
         </RectButton>
@@ -86,7 +86,7 @@ export default class AppleStyleSwipeableRow extends Component {
     this._swipeableRow!.close();
   };
   render() {
-    const {children} = this.props;
+    const { children } = this.props;
     return (
       <Swipeable
         ref={this.updateRef}

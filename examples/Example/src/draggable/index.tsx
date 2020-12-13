@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Animated, StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
+import React, { Component } from 'react';
+import { Animated, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -8,8 +8,8 @@ import {
   PanGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 
-import {USE_NATIVE_DRIVER} from '../config';
-import {LoremIpsum} from '../common';
+import { USE_NATIVE_DRIVER } from '../config';
+import { LoremIpsum } from '../common';
 
 type DraggableBoxProps = {
   minDist?: number;
@@ -19,13 +19,13 @@ type DraggableBoxProps = {
 export class DraggableBox extends Component<DraggableBoxProps> {
   private _translateX: Animated.Value;
   private _translateY: Animated.Value;
-  private _lastOffset: {x: number; y: number};
+  private _lastOffset: { x: number; y: number };
   private _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: DraggableBoxProps) {
     super(props);
     this._translateX = new Animated.Value(0);
     this._translateY = new Animated.Value(0);
-    this._lastOffset = {x: 0, y: 0};
+    this._lastOffset = { x: 0, y: 0 };
     this._onGestureEvent = Animated.event(
       [
         {
@@ -35,7 +35,7 @@ export class DraggableBox extends Component<DraggableBoxProps> {
           },
         },
       ],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
   _onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
@@ -60,8 +60,8 @@ export class DraggableBox extends Component<DraggableBoxProps> {
             styles.box,
             {
               transform: [
-                {translateX: this._translateX},
-                {translateY: this._translateY},
+                { translateX: this._translateX },
+                { translateY: this._translateY },
               ],
             },
             this.props.boxStyle,

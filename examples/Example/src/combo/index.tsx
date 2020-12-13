@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   ScrollView as RNScroll,
@@ -21,12 +21,12 @@ import {
 } from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider';
 
-import {Swipeable, InfoButton} from '../rows';
-import {DraggableBox} from '../draggable';
-import {PinchableBox} from '../scaleAndRotate';
-import {PressBox} from '../multitap';
+import { Swipeable, InfoButton } from '../rows';
+import { DraggableBox } from '../draggable';
+import { PinchableBox } from '../scaleAndRotate';
+import { PressBox } from '../multitap';
 
-import {LoremIpsum} from '../common';
+import { LoremIpsum } from '../common';
 
 const CHILD_REF = 'CHILD_REF';
 
@@ -52,10 +52,10 @@ class TouchableHighlight extends Component<
     activeOpacity: 0.85,
     underlayColor: 'black',
   };
-  _pressedStyle: {opacity?: number};
+  _pressedStyle: { opacity?: number };
   constructor(props: TouchableHighlightPropsType) {
     super(props);
-    this.state = {gestureHandlerState: State.UNDETERMINED};
+    this.state = { gestureHandlerState: State.UNDETERMINED };
     this._pressedStyle = {
       opacity: this.props.activeOpacity,
     };
@@ -63,13 +63,13 @@ class TouchableHighlight extends Component<
   _onStateChange = (event: TapGestureHandlerStateChangeEvent) => {
     const nextGestureHandlerState = event.nativeEvent.state;
     if (this.state.gestureHandlerState !== nextGestureHandlerState) {
-      this.setState({gestureHandlerState: nextGestureHandlerState}, () => {
+      this.setState({ gestureHandlerState: nextGestureHandlerState }, () => {
         const pressed = nextGestureHandlerState === State.BEGAN;
         // @ts-ignore old API
         // eslint-disable-next-line react/no-string-refs
         this.refs[CHILD_REF].setNativeProps({
           style: pressed
-            ? {opacity: this.props.activeOpacity}
+            ? { opacity: this.props.activeOpacity }
             : INACTIVE_CHILD_STYLE,
         });
       });
@@ -81,7 +81,7 @@ class TouchableHighlight extends Component<
   render() {
     const pressed = this.state.gestureHandlerState === State.BEGAN;
     const style = pressed
-      ? {backgroundColor: this.props.underlayColor as string}
+      ? { backgroundColor: this.props.underlayColor as string }
       : INACTIVE_UNDERLAY_STYLE;
     return (
       <TapGestureHandler onHandlerStateChange={this._onStateChange}>
@@ -96,10 +96,10 @@ class TouchableHighlight extends Component<
   }
 }
 
-var INACTIVE_CHILD_STYLE = StyleSheet.create({x: {opacity: 1.0}}).x;
+var INACTIVE_CHILD_STYLE = StyleSheet.create({ x: { opacity: 1.0 } }).x;
 const INACTIVE_UNDERLAY_STYLE = StyleSheet.create({
   // eslint-disable-next-line react-native/no-unused-styles
-  x: {backgroundColor: 'transparent'},
+  x: { backgroundColor: 'transparent' },
 }).x;
 
 type ControlledSwitchProps = {
@@ -117,10 +117,10 @@ class ControlledSwitch extends React.Component<
 > {
   constructor(props: ControlledSwitchProps) {
     super(props);
-    this.state = {value: this.props.value || false};
+    this.state = { value: this.props.value || false };
   }
   _onValueChange = (value: boolean) => {
-    this.setState({value});
+    this.setState({ value });
     this.props.onValueChange?.(value);
   };
   render() {
@@ -147,11 +147,11 @@ type ComboPropsType = {
 class Combo extends Component<ComboPropsType> {
   _onClick = () => {
     Alert.alert("I'm so touched");
-    this._scrollView?.scrollTo({y: 200, animated: true});
+    this._scrollView?.scrollTo({ y: 200, animated: true });
   };
   private _scrollView: RNScroll | GHScroll | null = null;
   render() {
-    const {ScrollViewComponent} = this.props;
+    const { ScrollViewComponent } = this.props;
     return (
       <View style={styles.container}>
         <ScrollViewComponent

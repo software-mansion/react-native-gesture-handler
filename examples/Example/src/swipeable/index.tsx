@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {StyleSheet, Text, View, I18nManager, Alert} from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, I18nManager, Alert } from 'react-native';
 
-import {FlatList, RectButton} from 'react-native-gesture-handler';
+import { FlatList, RectButton } from 'react-native-gesture-handler';
 
 import AppleStyleSwipeableRow from './AppleStyleSwipeableRow';
 import GmailStyleSwipeableRow from './GmailStyleSwipeableRow';
@@ -15,7 +15,7 @@ type DataRow = {
   message: string;
 };
 
-const Row = ({item}: {item: DataRow}) => (
+const Row = ({ item }: { item: DataRow }) => (
   <RectButton style={styles.rectButton} onPress={() => Alert.alert(item.from)}>
     <Text style={styles.fromText}>{item.from}</Text>
     <Text numberOfLines={2} style={styles.messageText}>
@@ -25,7 +25,7 @@ const Row = ({item}: {item: DataRow}) => (
   </RectButton>
 );
 
-const SwipeableRow = ({item, index}: {item: DataRow; index: number}) => {
+const SwipeableRow = ({ item, index }: { item: DataRow; index: number }) => {
   if (index % 2 === 0) {
     return (
       <AppleStyleSwipeableRow>
@@ -47,7 +47,7 @@ export default class Example extends Component {
       <FlatList
         data={DATA}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        renderItem={({item, index}) => (
+        renderItem={({ item, index }) => (
           <SwipeableRow item={item} index={index} />
         )}
         keyExtractor={(item, index) => `message ${index}`}

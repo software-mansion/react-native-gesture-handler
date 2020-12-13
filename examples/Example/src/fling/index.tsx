@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Animated, Dimensions, StyleSheet, Text, View} from 'react-native';
+import React, { Component } from 'react';
+import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import {
   FlingGestureHandler,
   Directions,
@@ -7,7 +7,7 @@ import {
   FlingGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import {USE_NATIVE_DRIVER} from '../config';
+import { USE_NATIVE_DRIVER } from '../config';
 
 const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;
@@ -27,7 +27,7 @@ class Fling extends Component {
   }
 
   _onHorizontalFlingHandlerStateChange = (
-    {nativeEvent}: FlingGestureHandlerStateChangeEvent,
+    { nativeEvent }: FlingGestureHandlerStateChangeEvent,
     offset: number
   ) => {
     if (nativeEvent.oldState === State.ACTIVE) {

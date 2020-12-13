@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import {NavigationProp, ParamListBase} from '@react-navigation/native';
-import {StackScreenProps} from '@react-navigation/stack';
+import React, { Component } from 'react';
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
 
 import {
   TouchableHighlight as RNTouchableHighlight,
@@ -304,11 +304,11 @@ const ItemSeparator = () => <View style={styles.separator} />;
 
 type ItemType = {
   onPressItem: () => void;
-  item: {text: string};
+  item: { text: string };
 };
 
 function Item(props: ItemType) {
-  const {text} = props.item;
+  const { text } = props.item;
   return (
     <RectButton style={styles.button} onPress={() => props.onPressItem()}>
       <Text style={styles.buttonText}>{screens[text].text || text}</Text>
@@ -331,7 +331,7 @@ export class TouchableExample extends Component<
   };
 
   toggleScrollView = () =>
-    this.setState((prev) => ({useScrollView: !prev.useScrollView}));
+    this.setState((prev) => ({ useScrollView: !prev.useScrollView }));
 
   render() {
     const {
@@ -347,7 +347,7 @@ export class TouchableExample extends Component<
 
     return (
       // @ts-ignore
-      <Component style={{width: '100%', height: '100%', padding: 10}}>
+      <Component style={{ width: '100%', height: '100%', padding: 10 }}>
         <TouchableOpacity onPress={this.toggleScrollView}>
           <Text>
             Use {this.state.useScrollView ? 'View' : 'ScrollView'} as a wrapper
@@ -380,7 +380,7 @@ type TouchablesIndexPropsType = {
   navigation: NavigationProp<ParamListBase>;
 };
 
-export function TouchablesIndex({navigation}: TouchablesIndexPropsType) {
+export function TouchablesIndex({ navigation }: TouchablesIndexPropsType) {
   return (
     <FlatList
       style={styles.list}

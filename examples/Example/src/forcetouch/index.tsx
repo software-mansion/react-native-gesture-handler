@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Animated, StyleSheet, View, Text} from 'react-native';
+import React, { Component } from 'react';
+import { Animated, StyleSheet, View, Text } from 'react-native';
 
 import {
   State,
@@ -7,7 +7,7 @@ import {
   ForceTouchGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import {USE_NATIVE_DRIVER} from '../config';
+import { USE_NATIVE_DRIVER } from '../config';
 
 export default class Example extends Component {
   private force = new Animated.Value(0);
@@ -19,7 +19,7 @@ export default class Example extends Component {
         },
       },
     ],
-    {useNativeDriver: USE_NATIVE_DRIVER}
+    { useNativeDriver: USE_NATIVE_DRIVER }
   );
   private _onHandlerStateChange = (
     event: ForceTouchGestureHandlerStateChangeEvent
@@ -31,7 +31,7 @@ export default class Example extends Component {
   render() {
     return (
       <View style={styles.view}>
-        <Text style={{textAlign: 'center', width: '80%'}}>
+        <Text style={{ textAlign: 'center', width: '80%' }}>
           {' '}
           Force touch works only on some Apple devices (iPhones 6s+ excluding
           XR) and should be used only as a supportive one{' '}
@@ -43,7 +43,7 @@ export default class Example extends Component {
           <Animated.View
             style={[
               styles.box,
-              {transform: [{scale: Animated.add(1, this.force)}]},
+              { transform: [{ scale: Animated.add(1, this.force) }] },
             ]}
           />
         </ForceTouchGestureHandler>

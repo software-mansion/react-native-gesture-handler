@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Animated, LayoutChangeEvent, StyleSheet, View} from 'react-native';
+import React, { Component } from 'react';
+import { Animated, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -32,11 +32,11 @@ class Tracking extends Component<{}, StateType> {
   _follow1y: Animated.Value;
   _follow2y: Animated.Value;
   _onGestureEvent: (...args: any[]) => void;
-  _lastOffset: {x: number; y: number};
+  _lastOffset: { x: number; y: number };
   constructor(props: {}) {
     super(props);
 
-    this.state = {width: 0, height: 0};
+    this.state = { width: 0, height: 0 };
 
     const tension = 0.8;
     const friction = 3;
@@ -90,17 +90,17 @@ class Tracking extends Component<{}, StateType> {
     this._onGestureEvent = Animated.event(
       [
         {
-          nativeEvent: {translationX: this._dragX, translationY: this._dragY},
+          nativeEvent: { translationX: this._dragX, translationY: this._dragY },
         },
       ],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
-    this._lastOffset = {x: START_X, y: START_Y};
+    this._lastOffset = { x: START_X, y: START_Y };
   }
   _onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      const {height, width} = this.state;
+      const { height, width } = this.state;
 
       const posX = this._lastOffset.x + event.nativeEvent.translationX;
       const posY = this._lastOffset.y + event.nativeEvent.translationY;
@@ -110,7 +110,7 @@ class Tracking extends Component<{}, StateType> {
       const distFromLeft = posX;
       const distFromRight = width - posX - BOX_SIZE;
 
-      this._lastOffset = {x: posX, y: posY};
+      this._lastOffset = { x: posX, y: posY };
 
       this._dragX.flattenOffset();
       this._dragY.flattenOffset();
@@ -139,23 +139,23 @@ class Tracking extends Component<{}, StateType> {
       this._dragY.extractOffset();
     }
   };
-  _onLayout = ({nativeEvent}: LayoutChangeEvent) => {
-    const {width, height} = nativeEvent.layout;
-    this.setState({width, height});
+  _onLayout = ({ nativeEvent }: LayoutChangeEvent) => {
+    const { width, height } = nativeEvent.layout;
+    this.setState({ width, height });
   };
   render() {
     return (
       <View
-        style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0}}
+        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
         onLayout={this._onLayout}>
         <Animated.Image
           style={[
             styles.box,
-            {marginLeft: 10, marginTop: 10},
+            { marginLeft: 10, marginTop: 10 },
             {
               transform: [
-                {translateX: this._follow2x},
-                {translateY: this._follow2y},
+                { translateX: this._follow2x },
+                { translateY: this._follow2y },
               ],
             },
           ]}
@@ -166,11 +166,11 @@ class Tracking extends Component<{}, StateType> {
         <Animated.Image
           style={[
             styles.box,
-            {marginLeft: 5, marginTop: 5},
+            { marginLeft: 5, marginTop: 5 },
             {
               transform: [
-                {translateX: this._follow1x},
-                {translateY: this._follow1y},
+                { translateX: this._follow1x },
+                { translateY: this._follow1y },
               ],
             },
           ]}
@@ -187,8 +187,8 @@ class Tracking extends Component<{}, StateType> {
               styles.box,
               {
                 transform: [
-                  {translateX: this._transX},
-                  {translateY: this._transY},
+                  { translateX: this._transX },
+                  { translateY: this._transY },
                 ],
               },
             ]}

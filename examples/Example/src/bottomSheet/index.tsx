@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Animated, StyleSheet, View, Dimensions} from 'react-native';
+import React, { Component } from 'react';
+import { Animated, StyleSheet, View, Dimensions } from 'react-native';
 import {
   PanGestureHandler,
   NativeViewGestureHandler,
@@ -8,8 +8,8 @@ import {
   PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import {LoremIpsum} from '../common';
-import {USE_NATIVE_DRIVER} from '../config';
+import { LoremIpsum } from '../common';
+import { USE_NATIVE_DRIVER } from '../config';
 
 type StateType = {
   lastSnap: number;
@@ -43,17 +43,17 @@ export class BottomSheet extends Component<{}, StateType> {
     this._lastScrollYValue = 0;
     this._lastScrollY = new Animated.Value(0);
     this._onRegisterLastScroll = Animated.event(
-      [{nativeEvent: {contentOffset: {y: this._lastScrollY}}}],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      [{ nativeEvent: { contentOffset: { y: this._lastScrollY } } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
-    this._lastScrollY.addListener(({value}) => {
+    this._lastScrollY.addListener(({ value }) => {
       this._lastScrollYValue = value;
     });
 
     this._dragY = new Animated.Value(0);
     this._onGestureEvent = Animated.event(
-      [{nativeEvent: {translationY: this._dragY}}],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      [{ nativeEvent: { translationY: this._dragY } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
     this._reverseLastScrollY = Animated.multiply(
@@ -77,13 +77,13 @@ export class BottomSheet extends Component<{}, StateType> {
     if (nativeEvent.oldState === State.BEGAN) {
       this._lastScrollY.setValue(0);
     }
-    this._onHandlerStateChange({nativeEvent});
+    this._onHandlerStateChange({ nativeEvent });
   };
   _onHandlerStateChange = ({
     nativeEvent,
   }: PanGestureHandlerStateChangeEvent) => {
     if (nativeEvent.oldState === State.ACTIVE) {
-      let {velocityY, translationY} = nativeEvent;
+      let { velocityY, translationY } = nativeEvent;
       translationY -= this._lastScrollYValue;
       const dragToss = 0.05;
       const endOffsetY =
@@ -96,7 +96,7 @@ export class BottomSheet extends Component<{}, StateType> {
           destSnapPoint = snapPoint;
         }
       }
-      this.setState({lastSnap: destSnapPoint});
+      this.setState({ lastSnap: destSnapPoint });
       this._translateYOffset.extractOffset();
       this._translateYOffset.setValue(translationY);
       this._translateYOffset.flattenOffset();
@@ -121,7 +121,7 @@ export class BottomSheet extends Component<{}, StateType> {
             style={[
               StyleSheet.absoluteFillObject,
               {
-                transform: [{translateY: this._translateY}],
+                transform: [{ translateY: this._translateY }],
               },
             ]}>
             <PanGestureHandler
@@ -148,7 +148,7 @@ export class BottomSheet extends Component<{}, StateType> {
                   <Animated.ScrollView
                     style={[
                       styles.scrollView,
-                      {marginBottom: SNAP_POINTS_FROM_TOP[0]},
+                      { marginBottom: SNAP_POINTS_FROM_TOP[0] },
                     ]}
                     bounces={false}
                     onScrollBeginDrag={this._onRegisterLastScroll}

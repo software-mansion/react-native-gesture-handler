@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Animated, StyleSheet, View} from 'react-native';
+import React, { Component } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -11,7 +11,7 @@ import {
   RotationGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import {USE_NATIVE_DRIVER} from '../config';
+import { USE_NATIVE_DRIVER } from '../config';
 
 class Snappable extends Component {
   private _onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
@@ -26,8 +26,8 @@ class Snappable extends Component {
       outputRange: [-30, -10, 0, 10, 30],
     });
     this._onGestureEvent = Animated.event(
-      [{nativeEvent: {translationX: this._dragX}}],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      [{ nativeEvent: { translationX: this._dragX } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
 
@@ -44,14 +44,14 @@ class Snappable extends Component {
   };
 
   render() {
-    const {children} = this.props;
+    const { children } = this.props;
     return (
       <PanGestureHandler
         {...this.props}
         maxPointers={1}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}>
-        <Animated.View style={{transform: [{translateX: this._transX}]}}>
+        <Animated.View style={{ transform: [{ translateX: this._transX }] }}>
           {children}
         </Animated.View>
       </PanGestureHandler>
@@ -79,8 +79,8 @@ class Twistable extends Component {
       });
 
     this._onGestureEvent = Animated.event(
-      [{nativeEvent: {rotation: this._gesture}}],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      [{ nativeEvent: { rotation: this._gesture } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
   _onHandlerStateChange = (event: RotationGestureHandlerStateChangeEvent) => {
@@ -95,13 +95,13 @@ class Twistable extends Component {
     }
   };
   render() {
-    const {children} = this.props;
+    const { children } = this.props;
     return (
       <RotationGestureHandler
         {...this.props}
         onGestureEvent={this._onGestureEvent}
         onHandlerStateChange={this._onHandlerStateChange}>
-        <Animated.View style={{transform: [{rotate: this._rot}]}}>
+        <Animated.View style={{ transform: [{ rotate: this._rot }] }}>
           {children}
         </Animated.View>
       </RotationGestureHandler>

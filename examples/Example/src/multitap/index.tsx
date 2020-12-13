@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {StyleSheet, View, Alert} from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, View, Alert } from 'react-native';
 
 import {
   LongPressGestureHandler,
@@ -10,7 +10,7 @@ import {
   TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import {LoremIpsum} from '../common';
+import { LoremIpsum } from '../common';
 
 export class PressBox extends Component {
   private doubleTapRef = React.createRef<TapGestureHandler>();

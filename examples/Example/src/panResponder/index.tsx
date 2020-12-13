@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,10 +10,10 @@ import {
   GestureResponderHandlers,
 } from 'react-native';
 
-import {ScrollView} from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 
-import {DraggableBox} from '../draggable';
-import {LoremIpsum} from '../common';
+import { DraggableBox } from '../draggable';
+import { LoremIpsum } from '../common';
 
 var CIRCLE_SIZE = 80;
 
@@ -25,11 +25,11 @@ type StyleType = {
 
 // A clone of: https://github.com/facebook/react-native/blob/master/RNTester/js/PanResponderExample.js
 class PanResponderExample extends Component {
-  private _panResponder: {panHandlers?: GestureResponderHandlers} = {};
+  private _panResponder: { panHandlers?: GestureResponderHandlers } = {};
   private _previousLeft = 0;
   private _previousTop = 0;
-  private _circleStyles: {style: StyleType} = {
-    style: {left: 0, top: 0, backgroundColor: '#000'},
+  private _circleStyles: { style: StyleType } = {
+    style: { left: 0, top: 0, backgroundColor: '#000' },
   };
   private circle: any;
 

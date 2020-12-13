@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Animated,
   StyleSheet,
@@ -21,8 +21,8 @@ import {
   BorderlessButtonProperties,
 } from 'react-native-gesture-handler';
 
-import {USE_NATIVE_DRIVER} from '../config';
-import {LoremIpsum} from '../common';
+import { USE_NATIVE_DRIVER } from '../config';
+import { LoremIpsum } from '../common';
 
 const RATIO = 3;
 
@@ -54,8 +54,8 @@ export class Swipeable extends Component<PropsType> {
       outputRange: [1, 0, 0],
     });
     this._onGestureEvent = Animated.event(
-      [{nativeEvent: {translationX: this._dragX}}],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      [{ nativeEvent: { translationX: this._dragX } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
   _onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
@@ -92,11 +92,11 @@ export class Swipeable extends Component<PropsType> {
     }).start();
   };
   render() {
-    const {children} = this.props;
+    const { children } = this.props;
     return (
       <View>
         <Animated.View
-          style={[styles.rowAction, {opacity: this._showLeftAction}]}>
+          style={[styles.rowAction, { opacity: this._showLeftAction }]}>
           <RectButton
             style={[styles.rowAction, styles.leftAction]}
             onPress={this._reset}>
@@ -104,7 +104,7 @@ export class Swipeable extends Component<PropsType> {
           </RectButton>
         </Animated.View>
         <Animated.View
-          style={[styles.rowAction, {opacity: this._showRightAction}]}>
+          style={[styles.rowAction, { opacity: this._showRightAction }]}>
           <RectButton
             style={[styles.rowAction, styles.rightAction]}
             onPress={this._reset}>
@@ -119,7 +119,7 @@ export class Swipeable extends Component<PropsType> {
           <Animated.View
             style={{
               backgroundColor: 'white',
-              transform: [{translateX: this._transX}],
+              transform: [{ translateX: this._transX }],
             }}
             onLayout={this._onLayout}>
             {children}
@@ -131,7 +131,7 @@ export class Swipeable extends Component<PropsType> {
 }
 
 export const InfoButton = (
-  props: BorderlessButtonProperties & {name: string}
+  props: BorderlessButtonProperties & { name: string }
 ) => (
   <BorderlessButton
     {...props}
@@ -203,7 +203,7 @@ export default class Example extends Component {
             </RectButton>
           </Swipeable>
           <LongPressGestureHandler
-            onHandlerStateChange={({nativeEvent}) =>
+            onHandlerStateChange={({ nativeEvent }) =>
               nativeEvent.state === State.ACTIVE && Alert.alert('Long')
             }>
             <RectButton

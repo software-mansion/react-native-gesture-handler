@@ -1,5 +1,5 @@
 import React from 'react';
-import {Animated, StyleSheet} from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -14,7 +14,7 @@ import {
   RotationGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import {USE_NATIVE_DRIVER} from '../config';
+import { USE_NATIVE_DRIVER } from '../config';
 
 export class PinchableBox extends React.Component {
   private panRef = React.createRef<PanGestureHandler>();
@@ -46,8 +46,8 @@ export class PinchableBox extends React.Component {
     this._scale = Animated.multiply(this._baseScale, this._pinchScale);
     this._lastScale = 1;
     this._onPinchGestureEvent = Animated.event(
-      [{nativeEvent: {scale: this._pinchScale}}],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      [{ nativeEvent: { scale: this._pinchScale } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
     /* Rotation */
@@ -58,8 +58,8 @@ export class PinchableBox extends React.Component {
     });
     this._lastRotate = 0;
     this._onRotateGestureEvent = Animated.event(
-      [{nativeEvent: {rotation: this._rotate}}],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      [{ nativeEvent: { rotation: this._rotate } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
     /* Tilt */
@@ -70,8 +70,8 @@ export class PinchableBox extends React.Component {
     });
     this._lastTilt = 0;
     this._onTiltGestureEvent = Animated.event(
-      [{nativeEvent: {translationY: this._tilt}}],
-      {useNativeDriver: USE_NATIVE_DRIVER}
+      [{ nativeEvent: { translationY: this._tilt } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
 
@@ -126,10 +126,10 @@ export class PinchableBox extends React.Component {
                       styles.pinchableImage,
                       {
                         transform: [
-                          {perspective: 200},
-                          {scale: this._scale},
-                          {rotate: this._rotateStr},
-                          {rotateX: this._tiltStr},
+                          { perspective: 200 },
+                          { scale: this._scale },
+                          { rotate: this._rotateStr },
+                          { rotateX: this._tiltStr },
                         ],
                       },
                     ]}

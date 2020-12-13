@@ -1,8 +1,11 @@
 import React from 'react';
-import {Text, View, FlatList, StyleSheet, ScrollView} from 'react-native';
-import {createStackNavigator, StackScreenProps} from '@react-navigation/stack';
-import {NavigationContainer, ParamListBase} from '@react-navigation/native';
-import {RectButton} from 'react-native-gesture-handler';
+import { Text, View, FlatList, StyleSheet, ScrollView } from 'react-native';
+import {
+  createStackNavigator,
+  StackScreenProps,
+} from '@react-navigation/stack';
+import { NavigationContainer, ParamListBase } from '@react-navigation/native';
+import { RectButton } from 'react-native-gesture-handler';
 
 import Rows from './rows';
 import Bouncing from './bouncing';
@@ -19,20 +22,20 @@ import PanResponder from './panResponder';
 import DoubleDraggable from './doubleDraggable';
 import ForceTouch from './forcetouch';
 import BottomSheet from './bottomSheet';
-import {TouchablesIndex, TouchableExample} from './touchables';
-import {ComboWithGHScroll, ComboWithRNScroll} from './combo';
+import { TouchablesIndex, TouchableExample } from './touchables';
+import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import ChatHeads from './chatHeads';
 
 type ScreensType = Record<
   string,
-  {component: React.ComponentType<any>; title?: string}
+  { component: React.ComponentType<any>; title?: string }
 >;
 
 const SCREENS: ScreensType = {
-  Rows: {component: Rows, title: 'Table rows & buttons'},
-  Multitap: {component: Multitap},
-  Draggable: {component: Draggable},
-  ScaleAndRotate: {component: ScaleAndRotate, title: 'Scale, rotate & tilt'},
+  Rows: { component: Rows, title: 'Table rows & buttons' },
+  Multitap: { component: Multitap },
+  Draggable: { component: Draggable },
+  ScaleAndRotate: { component: ScaleAndRotate, title: 'Scale, rotate & tilt' },
   ScaleAndRotateSimultaneously: {
     component: doubleScalePinchAndRotate,
     title: 'Scale, rotate & tilt & more',
@@ -57,13 +60,13 @@ const SCREENS: ScreensType = {
     component: Fling,
     title: 'Flinghandler',
   },
-  PanResponder: {component: PanResponder},
-  Bouncing: {component: Bouncing, title: 'Twist & bounce back animation'},
+  PanResponder: { component: PanResponder },
+  Bouncing: { component: Bouncing, title: 'Twist & bounce back animation' },
   ChatHeads: {
     component: ChatHeads,
     title: 'Chat Heads (no native animated support yet)',
   },
-  Combo: {component: ComboWithGHScroll},
+  Combo: { component: ComboWithGHScroll },
   BottomSheet: {
     title: 'BottomSheet gestures interactions',
     component: BottomSheet,
@@ -100,7 +103,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen
           name="Home"
-          options={{title: '✌️ Gesture Handler Demo'}}
+          options={{ title: '✌️ Gesture Handler Demo' }}
           component={MainScreen}
         />
         {Object.keys(SCREENS).map((name) => (
@@ -108,7 +111,7 @@ export default function App() {
             key={name}
             name={name}
             getComponent={() => SCREENS[name].component}
-            options={{title: SCREENS[name].title || name}}
+            options={{ title: SCREENS[name].title || name }}
           />
         ))}
         <Stack.Screen name="TouchableExample" component={TouchableExample} />
@@ -117,10 +120,10 @@ export default function App() {
   );
 }
 
-function MainScreen({navigation}: StackScreenProps<ParamListBase>) {
+function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   const data = Object.keys(SCREENS).map((key) => {
     const item = SCREENS[key];
-    return {key, title: item.title || key};
+    return { key, title: item.title || key };
   });
 
   return (
@@ -131,7 +134,7 @@ function MainScreen({navigation}: StackScreenProps<ParamListBase>) {
       renderItem={(props) => (
         <MainScreenItem
           {...props}
-          onPressItem={({key}: {key: string}) => navigation.navigate(key)}
+          onPressItem={({ key }: { key: string }) => navigation.navigate(key)}
         />
       )}
       renderScrollComponent={(props) => <ScrollView {...props} />}
@@ -144,12 +147,12 @@ function ItemSeparator() {
 }
 
 type MainScreenItemType = {
-  item: {key: string; title: string};
-  onPressItem: (item: {key: string}) => void;
+  item: { key: string; title: string };
+  onPressItem: (item: { key: string }) => void;
 };
 
 function MainScreenItem(props: MainScreenItemType) {
-  const {title} = props.item;
+  const { title } = props.item;
   return (
     <RectButton
       style={[styles.button]}

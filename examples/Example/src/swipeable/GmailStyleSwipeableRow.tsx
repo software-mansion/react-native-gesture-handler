@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {Animated, StyleSheet, I18nManager, View} from 'react-native';
+import React, { Component } from 'react';
+import { Animated, StyleSheet, I18nManager, View } from 'react-native';
 
-import {RectButton} from 'react-native-gesture-handler';
+import { RectButton } from 'react-native-gesture-handler';
 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
@@ -20,7 +20,7 @@ export default class GmailStyleSwipeableRow extends Component {
     return (
       <RectButton style={styles.leftAction} onPress={this.close}>
         {/* Change it to some icons */}
-        <AnimatedView style={[styles.actionIcon, {transform: [{scale}]}]} />
+        <AnimatedView style={[styles.actionIcon, { transform: [{ scale }] }]} />
       </RectButton>
     );
   };
@@ -36,7 +36,7 @@ export default class GmailStyleSwipeableRow extends Component {
     return (
       <RectButton style={styles.rightAction} onPress={this.close}>
         {/* Change it to some icons */}
-        <AnimatedView style={[styles.actionIcon, {transform: [{scale}]}]} />
+        <AnimatedView style={[styles.actionIcon, { transform: [{ scale }] }]} />
       </RectButton>
     );
   };
@@ -50,7 +50,7 @@ export default class GmailStyleSwipeableRow extends Component {
     this._swipeableRow!.close();
   };
   render() {
-    const {children} = this.props;
+    const { children } = this.props;
     return (
       <Swipeable
         ref={this.updateRef}
