@@ -28,7 +28,9 @@ class PanResponderExample extends Component {
   private _panResponder: {panHandlers?: GestureResponderHandlers} = {};
   private _previousLeft = 0;
   private _previousTop = 0;
-  private _circleStyles: {style?: StyleType} = {};
+  private _circleStyles: {style: StyleType} = {
+    style: {left: 0, top: 0, backgroundColor: '#000'},
+  };
   private circle: any;
 
   UNSAFE_componentWillMount() {
@@ -68,12 +70,12 @@ class PanResponderExample extends Component {
   }
 
   _highlight = () => {
-    this._circleStyles.style!.backgroundColor = 'blue';
+    this._circleStyles.style.backgroundColor = 'blue';
     this._updateNativeStyles();
   };
 
   _unHighlight = () => {
-    this._circleStyles.style!.backgroundColor = 'green';
+    this._circleStyles.style.backgroundColor = 'green';
     this._updateNativeStyles();
   };
 
@@ -108,9 +110,9 @@ class PanResponderExample extends Component {
     _e: GestureResponderEvent,
     gestureState: PanResponderGestureState
   ) => {
-    this._circleStyles.style!.left =
+    this._circleStyles.style.left =
       this._previousLeft + gestureState.dx * (I18nManager.isRTL ? -1 : 1);
-    this._circleStyles.style!.top = this._previousTop + gestureState.dy;
+    this._circleStyles.style.top = this._previousTop + gestureState.dy;
     this._updateNativeStyles();
   };
 
