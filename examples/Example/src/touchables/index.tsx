@@ -311,7 +311,7 @@ function Item(props: ItemType) {
   const { text } = props.item;
   return (
     <RectButton style={styles.button} onPress={() => props.onPressItem()}>
-      <Text style={styles.buttonText}>{screens[text].text || text}</Text>
+      <Text>{screens[text].text || text}</Text>
     </RectButton>
   );
 }
@@ -417,5 +417,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
-  buttonText: {},
 });

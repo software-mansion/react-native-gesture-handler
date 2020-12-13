@@ -146,10 +146,7 @@ export class BottomSheet extends Component<{}, StateType> {
                   waitFor={this.masterdrawer}
                   simultaneousHandlers={this.drawer}>
                   <Animated.ScrollView
-                    style={[
-                      styles.scrollView,
-                      { marginBottom: SNAP_POINTS_FROM_TOP[0] },
-                    ]}
+                    style={{ marginBottom: SNAP_POINTS_FROM_TOP[0] }}
                     bounces={false}
                     onScrollBeginDrag={this._onRegisterLastScroll}
                     scrollEventThrottle={1}>
@@ -185,5 +182,4 @@ const styles = StyleSheet.create({
     height: HEADER_HEIGHT,
     backgroundColor: 'red',
   },
-  scrollView: {},
 });

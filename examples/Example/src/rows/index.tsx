@@ -147,7 +147,7 @@ export default class Example extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.scrollView}>
+        <ScrollView>
           <LoremIpsum words={40} />
           <Swipeable enableTrackpadTwoFingerGesture>
             <RectButton
@@ -277,5 +277,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     backgroundColor: 'transparent',
   },
-  scrollView: {},
 });
