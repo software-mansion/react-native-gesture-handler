@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 
 const styles = StyleSheet.create({
   lipsum: {
@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
 
 type Props = {
   words: number;
-  style: any;
+  style: StyleProp<ViewStyle>;
 };
 
 export class LoremIpsum extends React.Component<Props> {
