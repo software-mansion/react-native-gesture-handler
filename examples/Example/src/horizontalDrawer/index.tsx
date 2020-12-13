@@ -58,7 +58,7 @@ const Page = ({
 export default class Example extends Component {
   state = { fromLeft: true, type: 0 };
 
-  renderParallaxDrawer = (progressValue: Animated.Value) => {
+  private renderParallaxDrawer = (progressValue: Animated.Value) => {
     const parallax = progressValue.interpolate({
       inputRange: [0, 1],
       outputRange: [this.state.fromLeft ? -50 : 50, 0],
@@ -76,14 +76,14 @@ export default class Example extends Component {
     );
   };
 
-  renderDrawer = () => {
+  private renderDrawer = () => {
     return (
       <View style={styles.drawerContainer}>
         <Text style={styles.drawerText}>I am in the drawer!</Text>
       </View>
     );
   };
-  drawer?: DrawerLayout | null;
+  private drawer?: DrawerLayout | null;
 
   render() {
     const drawerType: DrawerType = TYPES[this.state.type];

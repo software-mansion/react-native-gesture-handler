@@ -31,12 +31,12 @@ type PropsType = {
 };
 
 export class Swipeable extends Component<PropsType> {
-  _width: number;
-  _dragX: Animated.Value;
-  _transX: any;
-  _showLeftAction: any;
-  _showRightAction: any;
-  _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  private _width: number;
+  private _dragX: Animated.Value;
+  private _transX: any;
+  private _showLeftAction: any;
+  private _showRightAction: any;
+  private _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: PropsType) {
     super(props);
     this._width = 0;

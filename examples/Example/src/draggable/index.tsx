@@ -17,10 +17,10 @@ type DraggableBoxProps = {
 };
 
 export class DraggableBox extends Component<DraggableBoxProps> {
-  _translateX: Animated.Value;
-  _translateY: Animated.Value;
-  _lastOffset: {x: number; y: number};
-  _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  private _translateX: Animated.Value;
+  private _translateY: Animated.Value;
+  private _lastOffset: {x: number; y: number};
+  private _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: DraggableBoxProps) {
     super(props);
     this._translateX = new Animated.Value(0);

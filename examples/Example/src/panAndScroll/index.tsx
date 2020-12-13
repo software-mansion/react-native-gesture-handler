@@ -21,9 +21,9 @@ type Props = {
 };
 
 export class TapOrPan extends Component<Props> {
-  _touchX: Animated.Value;
-  _translateX: Animated.AnimatedAddition;
-  _onPanGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  private _touchX: Animated.Value;
+  private _translateX: Animated.AnimatedAddition;
+  private _onPanGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: Props) {
     super(props);
     this._touchX = new Animated.Value(windowWidth / 2 - circleRadius);
@@ -43,7 +43,7 @@ export class TapOrPan extends Component<Props> {
     );
   }
 
-  _onTapHandlerStateChange = ({
+  private _onTapHandlerStateChange = ({
     nativeEvent,
   }: TapGestureHandlerStateChangeEvent) => {
     if (nativeEvent.oldState === State.ACTIVE) {

@@ -13,9 +13,9 @@ const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;
 
 class Fling extends Component {
-  _touchX: Animated.Value;
-  _translateX: Animated.AnimatedAddition;
-  _translateY: Animated.Value;
+  private _touchX: Animated.Value;
+  private _translateX: Animated.AnimatedAddition;
+  private _translateY: Animated.Value;
   constructor(props: {}) {
     super(props);
     this._touchX = new Animated.Value(windowWidth / 2 - circleRadius);

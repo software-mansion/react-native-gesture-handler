@@ -25,11 +25,11 @@ type StyleType = {
 
 // A clone of: https://github.com/facebook/react-native/blob/master/RNTester/js/PanResponderExample.js
 class PanResponderExample extends Component {
-  _panResponder: {panHandlers?: GestureResponderHandlers} = {};
-  _previousLeft = 0;
-  _previousTop = 0;
-  _circleStyles: {style?: StyleType} = {};
-  circle: any;
+  private _panResponder: {panHandlers?: GestureResponderHandlers} = {};
+  private _previousLeft = 0;
+  private _previousTop = 0;
+  private _circleStyles: {style?: StyleType} = {};
+  private circle: any;
 
   UNSAFE_componentWillMount() {
     this._panResponder = PanResponder.create({

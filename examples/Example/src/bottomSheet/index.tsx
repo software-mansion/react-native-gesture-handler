@@ -18,21 +18,20 @@ type StateType = {
 const HEADER_HEIGHT = 50;
 const windowHeight = Dimensions.get('window').height;
 const SNAP_POINTS_FROM_TOP = [50, windowHeight * 0.4, windowHeight * 0.8];
-
 export class BottomSheet extends Component<{}, StateType> {
-  masterdrawer = React.createRef<TapGestureHandler>();
-  drawer = React.createRef<PanGestureHandler>();
-  drawerheader = React.createRef<PanGestureHandler>();
-  scroll = React.createRef<NativeViewGestureHandler>();
-  _lastScrollYValue: number;
-  _lastScrollY: Animated.Value;
-  _onRegisterLastScroll: (...args: any[]) => void;
-  _dragY: Animated.Value;
-  _onGestureEvent: (...args: any[]) => void;
-  _reverseLastScrollY: Animated.AnimatedMultiplication;
-  _translateYOffset: Animated.Value;
-  _translateY: Animated.AnimatedInterpolation;
-  constructor(props: any) {
+  private masterdrawer = React.createRef<TapGestureHandler>();
+  private drawer = React.createRef<PanGestureHandler>();
+  private drawerheader = React.createRef<PanGestureHandler>();
+  private scroll = React.createRef<NativeViewGestureHandler>();
+  private _lastScrollYValue: number;
+  private _lastScrollY: Animated.Value;
+  private _onRegisterLastScroll: (...args: any[]) => void;
+  private _dragY: Animated.Value;
+  private _onGestureEvent: (...args: any[]) => void;
+  private _reverseLastScrollY: Animated.AnimatedMultiplication;
+  private _translateYOffset: Animated.Value;
+  private _translateY: Animated.AnimatedInterpolation;
+  constructor(props: {}) {
     super(props);
     const START = SNAP_POINTS_FROM_TOP[0];
     const END = SNAP_POINTS_FROM_TOP[SNAP_POINTS_FROM_TOP.length - 1];

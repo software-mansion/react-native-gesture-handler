@@ -17,22 +17,26 @@ import {
 import {USE_NATIVE_DRIVER} from '../config';
 
 export class PinchableBox extends React.Component {
-  panRef = React.createRef<PanGestureHandler>();
-  rotationRef = React.createRef<RotationGestureHandler>();
-  pinchRef = React.createRef<PinchGestureHandler>();
-  _baseScale: Animated.Value;
-  _pinchScale: Animated.Value;
-  _scale: Animated.AnimatedMultiplication;
-  _lastScale: number;
-  _onPinchGestureEvent: (event: PinchGestureHandlerGestureEvent) => void;
-  _rotate: Animated.Value;
-  _rotateStr: any;
-  _lastRotate: number;
-  _onRotateGestureEvent: (event: RotationGestureHandlerGestureEvent) => void;
-  _tilt: Animated.Value;
-  _tiltStr: Animated.AnimatedMultiplication;
-  _lastTilt: number;
-  _onTiltGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  private panRef = React.createRef<PanGestureHandler>();
+  private rotationRef = React.createRef<RotationGestureHandler>();
+  private pinchRef = React.createRef<PinchGestureHandler>();
+  private _baseScale: Animated.Value;
+  private _pinchScale: Animated.Value;
+  private _scale: Animated.AnimatedMultiplication;
+  private _lastScale: number;
+  private _onPinchGestureEvent: (
+    event: PinchGestureHandlerGestureEvent
+  ) => void;
+  private _rotate: Animated.Value;
+  private _rotateStr: any;
+  private _lastRotate: number;
+  private _onRotateGestureEvent: (
+    event: RotationGestureHandlerGestureEvent
+  ) => void;
+  private _tilt: Animated.Value;
+  private _tiltStr: Animated.AnimatedMultiplication;
+  private _lastTilt: number;
+  private _onTiltGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: {}) {
     super(props);
 

@@ -13,18 +13,20 @@ import {
 import {LoremIpsum} from '../common';
 
 export class PressBox extends Component {
-  doubleTapRef = React.createRef<TapGestureHandler>();
-  _onHandlerStateChange = (event: LongPressGestureHandlerStateChangeEvent) => {
+  private doubleTapRef = React.createRef<TapGestureHandler>();
+  private _onHandlerStateChange = (
+    event: LongPressGestureHandlerStateChangeEvent
+  ) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm being pressed for so long");
     }
   };
-  _onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
+  private _onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm touched");
     }
   };
-  _onDoubleTap = (event: TapGestureHandlerStateChangeEvent) => {
+  private _onDoubleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert('Double tap, good job!');
     }
