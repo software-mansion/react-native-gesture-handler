@@ -57,7 +57,10 @@ const Page = ({
   </View>
 );
 
-export default class Example extends Component {
+export default class Example extends Component<
+  {},
+  { fromLeft: boolean; type: number }
+> {
   state = { fromLeft: true, type: 0 };
 
   private renderParallaxDrawer = (progressValue: Animated.Value) => {
@@ -129,9 +132,15 @@ export default class Example extends Component {
             type={drawerType}
             fromLeft={this.state.fromLeft}
             parallaxOn={parallax}
-            flipSide={() => this.setState({ fromLeft: !this.state.fromLeft })}
+            flipSide={() =>
+              this.setState((prevState) => ({
+                fromLeft: !prevState.fromLeft,
+              }))
+            }
             nextType={() =>
-              this.setState({ type: (this.state.type + 1) % TYPES.length })
+              this.setState((prevState) => ({
+                type: (prevState.type + 1) % TYPES.length,
+              }))
             }
             openDrawer={() => this.drawer!.openDrawer({ speed: 14 })}
           />
