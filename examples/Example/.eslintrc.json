@@ -1,1 +1,14 @@
-.eslintrc.json
+{
+  "extends": "satya164",
+  "settings": {
+    "react": { "version": "16" },
+    "import/resolver": {
+      "babel-module": {}
+    }
+  },
+  "env": { "browser": true, "node": true },
+  "rules": {
+    "import/named": "off",
+    "react/sort-comp": "off"
+  }
+}
