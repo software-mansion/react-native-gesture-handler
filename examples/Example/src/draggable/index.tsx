@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Animated, StyleSheet, View} from 'react-native';
+import {Animated, StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
 
 import {
   PanGestureHandler,
@@ -13,7 +13,7 @@ import {LoremIpsum} from '../common';
 
 type DraggableBoxProps = {
   minDist?: number;
-  boxStyle?: any;
+  boxStyle?: StyleProp<ViewStyle>;
 };
 
 export class DraggableBox extends Component<DraggableBoxProps> {
