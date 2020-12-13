@@ -7,13 +7,13 @@ module.exports = {
       {
         alias: {
           'react-native-gesture-handler': '../../',
-          react: './node_modules/react',
+          'react': './node_modules/react',
           'react-native': './node_modules/react-native',
           '@babel': './node_modules/@babel',
           '@egjs/hammerjs': './node_modules/@egjs/hammerjs',
-          fbjs: './node_modules/fbjs',
+          'fbjs': './node_modules/fbjs',
           'hoist-non-react-statics': './node_modules/hoist-non-react-statics',
-          invariant: './node_modules/invariant',
+          'invariant': './node_modules/invariant',
           'prop-types': './node_modules/prop-types',
         },
       },
