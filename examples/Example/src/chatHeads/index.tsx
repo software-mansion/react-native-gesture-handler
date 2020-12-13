@@ -33,7 +33,7 @@ class Tracking extends Component<{}, StateType> {
   _follow2y: Animated.Value;
   _onGestureEvent: (...args: any[]) => void;
   _lastOffset: {x: number; y: number};
-  constructor(props: any) {
+  constructor(props: {}) {
     super(props);
 
     this.state = {width: 0, height: 0};

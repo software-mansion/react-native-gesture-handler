@@ -24,7 +24,7 @@ export class TapOrPan extends Component<Props> {
   _touchX: Animated.Value;
   _translateX: Animated.AnimatedAddition;
   _onPanGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
-  constructor(props: any) {
+  constructor(props: Props) {
     super(props);
     this._touchX = new Animated.Value(windowWidth / 2 - circleRadius);
     this._translateX = Animated.add(

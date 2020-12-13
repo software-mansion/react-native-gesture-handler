@@ -18,7 +18,7 @@ class Snappable extends Component {
   private _transX: Animated.AnimatedInterpolation;
   private _dragX: Animated.Value;
 
-  constructor(props: any) {
+  constructor(props: {}) {
     super(props);
     this._dragX = new Animated.Value(0);
     this._transX = this._dragX.interpolate({
@@ -64,7 +64,7 @@ class Twistable extends Component {
   private _onGestureEvent?: (event: RotationGestureHandlerGestureEvent) => void;
   private _rot: Animated.AnimatedInterpolation;
 
-  constructor(props: any) {
+  constructor(props: {}) {
     super(props);
     this._gesture = new Animated.Value(0);
 
