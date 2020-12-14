@@ -338,10 +338,11 @@ export class TouchableExample extends Component<
       color,
     } = screens[this.props.route.params!.item as string];
     const RNTouchable = toReactNativeTouchable(GHTouchable);
-    const Component = this.state.useScrollView ? ScrollView : View;
+    const Component: React.ComponentType<any> = this.state.useScrollView
+      ? ScrollView
+      : View;
 
     return (
-      // @ts-ignore
       <Component style={{ width: '100%', height: '100%', padding: 10 }}>
         <TouchableOpacity onPress={this.toggleScrollView}>
           <Text>
