@@ -1,11 +1,10 @@
-
 {
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "react-native-gesture-handler": ["./react-native-gesture-handler.d.ts"],
       "react-native-gesture-handler/Swipeable": ["./Swipeable.d.ts"],
-      "react-native-gesture-handler/DrawerLayout": ["./DrawerLayout.d.ts"],
+      "react-native-gesture-handler/DrawerLayout": ["./DrawerLayout.d.ts"]
     },
     "esModuleInterop": true,
     "jsx": "react-native",
@@ -25,6 +24,6 @@
 
     "outDir": "./dist"
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "dist"],
   "include": ["**/*.ts", "**/*.tsx"]
 }
