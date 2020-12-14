@@ -9,7 +9,7 @@ const AnimatedView = Animated.createAnimatedComponent(View);
 
 export default class GmailStyleSwipeableRow extends Component {
   renderLeftActions = (
-    progress: Animated.AnimatedInterpolation,
+    _progress: Animated.AnimatedInterpolation,
     dragX: Animated.AnimatedInterpolation
   ) => {
     const scale = dragX.interpolate({
@@ -25,7 +25,7 @@ export default class GmailStyleSwipeableRow extends Component {
     );
   };
   renderRightActions = (
-    progress: Animated.AnimatedInterpolation,
+    _progress: Animated.AnimatedInterpolation,
     dragX: Animated.AnimatedInterpolation
   ) => {
     const scale = dragX.interpolate({
