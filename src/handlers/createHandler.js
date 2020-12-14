@@ -71,7 +71,7 @@ function isConfigParam(param, name) {
 
 function filterConfig(props, validProps, defaults = {}) {
   const res = { ...defaults };
-  Object.keys(validProps).forEach(key => {
+  Object.keys(validProps).forEach((key) => {
     const value = props[key];
     if (isConfigParam(value, key)) {
       let value = props[key];
@@ -94,25 +94,25 @@ function transformIntoHandlerTags(handlerIDs) {
   }
 
   if (Platform.OS === 'web') {
-    return handlerIDs.map(({ current }) => current).filter(handle => handle);
+    return handlerIDs.map(({ current }) => current).filter((handle) => handle);
   }
   // converts handler string IDs into their numeric tags
   return handlerIDs
     .map(
-      handlerID =>
+      (handlerID) =>
         handlerIDToTag[handlerID] ||
         (handlerID.current && handlerID.current._handlerTag) ||
         -1
     )
-    .filter(handlerTag => handlerTag > 0);
+    .filter((handlerTag) => handlerTag > 0);
 }
 
 function hasUnresolvedRefs(props) {
-  const extract = refs => {
+  const extract = (refs) => {
     if (!Array.isArray(refs)) {
       return refs && refs.current === null;
     }
-    return refs.some(r => r && r.current === null);
+    return refs.some((r) => r && r.current === null);
   };
   return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
 }
@@ -151,7 +151,7 @@ export default function createHandler(
       }
     }
 
-    _onGestureHandlerEvent = event => {
+    _onGestureHandlerEvent = (event) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onGestureEvent && this.props.onGestureEvent(event);
       } else {
@@ -160,7 +160,7 @@ export default function createHandler(
       }
     };
 
-    _onGestureHandlerStateChange = event => {
+    _onGestureHandlerStateChange = (event) => {
       if (event.nativeEvent.handlerTag === this._handlerTag) {
         this.props.onHandlerStateChange &&
           this.props.onHandlerStateChange(event);
@@ -175,7 +175,7 @@ export default function createHandler(
       }
     };
 
-    _refHandler = node => {
+    _refHandler = (node) => {
       this._viewNode = node;
 
       const child = React.Children.only(this.props.children);
@@ -189,7 +189,7 @@ export default function createHandler(
       }
     };
 
-    _createGestureHandler = newConfig => {
+    _createGestureHandler = (newConfig) => {
       this._config = newConfig;
 
       RNGestureHandlerModule.createGestureHandler(
@@ -199,7 +199,7 @@ export default function createHandler(
       );
     };
 
-    _attachGestureHandler = newViewTag => {
+    _attachGestureHandler = (newViewTag) => {
       this._viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
@@ -216,7 +216,7 @@ export default function createHandler(
       }
     };
 
-    _updateGestureHandler = newConfig => {
+    _updateGestureHandler = (newConfig) => {
       this._config = newConfig;
 
       RNGestureHandlerModule.updateGestureHandler(this._handlerTag, newConfig);

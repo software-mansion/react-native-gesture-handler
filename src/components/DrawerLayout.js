@@ -205,7 +205,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     };
 
     if (this.props.onDrawerSlide) {
-      gestureOptions.listener = ev => {
+      gestureOptions.listener = (ev) => {
         const translationX = Math.floor(Math.abs(ev.nativeEvent.translationX));
         const position = translationX / this.state.containerWidth;
 
@@ -252,7 +252,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     }
   };
 
-  _handleRelease = nativeEvent => {
+  _handleRelease = (nativeEvent) => {
     const { drawerWidth, drawerPosition, drawerType } = this.props;
     const { containerWidth } = this.state;
     let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
@@ -493,7 +493,7 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     );
   };
 
-  _setPanGestureRef = ref => {
+  _setPanGestureRef = (ref) => {
     this._panGestureHandler.current = ref;
     this.props.onGestureRef && this.props.onGestureRef(ref);
   };

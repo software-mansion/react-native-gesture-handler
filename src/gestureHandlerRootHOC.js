@@ -15,8 +15,9 @@ export default function gestureHandlerRootHOC(
     );
   }
 
-  Wrapper.displayName = `gestureHandlerRootHOC(${Component.displayName ||
-    Component.name})`;
+  Wrapper.displayName = `gestureHandlerRootHOC(${
+    Component.displayName || Component.name
+  })`;
 
   hoistNonReactStatics(Wrapper, Component);
 

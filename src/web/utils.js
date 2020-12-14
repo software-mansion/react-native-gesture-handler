@@ -1,6 +1,6 @@
-export const isnan = v => Number.isNaN(v);
+export const isnan = (v) => Number.isNaN(v);
 
-export const isValidNumber = v => typeof v === 'number' && !Number.isNaN(v);
+export const isValidNumber = (v) => typeof v === 'number' && !Number.isNaN(v);
 
 export const TEST_MIN_IF_NOT_NAN = (value, limit) =>
   !isnan(limit) &&
