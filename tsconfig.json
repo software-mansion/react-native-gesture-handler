@@ -16,13 +16,14 @@
     "strict": true,
     "target": "esnext",
     "allowJs": true,
-    "declaration": true,
-    "declarationMap": true,
+    // Commented out until we migrate to TS entirely
+    // "declaration": true,
+    // "declarationMap": true,
     "noStrictGenericChecks": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitUseStrict": false,
 
     "outDir": "./dist"
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"]
 }
