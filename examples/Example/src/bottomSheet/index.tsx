@@ -1,11 +1,19 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View, Dimensions } from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  View,
+  Dimensions,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+} from 'react-native';
 import {
   PanGestureHandler,
   NativeViewGestureHandler,
   State,
   TapGestureHandler,
   PanGestureHandlerStateChangeEvent,
+  PanGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../common';
@@ -25,9 +33,11 @@ export class BottomSheet extends Component<{}, StateType> {
   private scroll = React.createRef<NativeViewGestureHandler>();
   private _lastScrollYValue: number;
   private _lastScrollY: Animated.Value;
-  private _onRegisterLastScroll: (...args: any[]) => void;
+  private _onRegisterLastScroll: (
+    event: NativeSyntheticEvent<NativeScrollEvent>
+  ) => void;
   private _dragY: Animated.Value;
-  private _onGestureEvent: (...args: any[]) => void;
+  private _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   private _reverseLastScrollY: Animated.AnimatedMultiplication;
   private _translateYOffset: Animated.Value;
   private _translateY: Animated.AnimatedInterpolation;

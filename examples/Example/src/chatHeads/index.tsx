@@ -5,6 +5,7 @@ import {
   PanGestureHandler,
   State,
   PanGestureHandlerStateChangeEvent,
+  PanGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 
 const USE_NATIVE_DRIVER = false;
@@ -31,7 +32,7 @@ class Tracking extends Component<{}, StateType> {
   _transY: Animated.Value;
   _follow1y: Animated.Value;
   _follow2y: Animated.Value;
-  _onGestureEvent: (...args: any[]) => void;
+  _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   _lastOffset: { x: number; y: number };
   constructor(props: {}) {
     super(props);

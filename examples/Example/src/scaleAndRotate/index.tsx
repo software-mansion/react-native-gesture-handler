@@ -28,7 +28,7 @@ export class PinchableBox extends React.Component {
     event: PinchGestureHandlerGestureEvent
   ) => void;
   private _rotate: Animated.Value;
-  private _rotateStr: any;
+  private _rotateStr: Animated.AnimatedInterpolation;
   private _lastRotate: number;
   private _onRotateGestureEvent: (
     event: RotationGestureHandlerGestureEvent
