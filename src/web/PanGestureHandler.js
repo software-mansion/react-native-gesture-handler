@@ -196,8 +196,8 @@ class PanGestureHandler extends DraggingGestureHandler {
 }
 
 function validateConfig(config = {}) {
-  const isNum = v => isnan(v) || typeof v === 'number';
-  const isBool = v => typeof v === 'boolean';
+  const isNum = (v) => isnan(v) || typeof v === 'number';
+  const isBool = (v) => typeof v === 'boolean';
 
   const valid = {
     enabled: isBool,

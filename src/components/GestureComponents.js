@@ -49,7 +49,9 @@ module.exports = {
         <ReactNative.FlatList
           ref={ref}
           {...props}
-          renderScrollComponent={scrollProps => <ScrollView {...scrollProps} />}
+          renderScrollComponent={(scrollProps) => (
+            <ScrollView {...scrollProps} />
+          )}
         />
       ));
     }
