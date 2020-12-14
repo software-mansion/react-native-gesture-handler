@@ -10,11 +10,11 @@ import GenericTouchable from './GenericTouchable';
  * it follows native behaviours.
  */
 export default class TouchableNativeFeedback extends Component {
-  static SelectableBackground = rippleRadius => ({
+  static SelectableBackground = (rippleRadius) => ({
     type: 'SelectableBackground',
     rippleRadius,
   });
-  static SelectableBackgroundBorderless = rippleRadius => ({
+  static SelectableBackgroundBorderless = (rippleRadius) => ({
     type: 'SelectableBackgroundBorderless',
     rippleRadius,
   });

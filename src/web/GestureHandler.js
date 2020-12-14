@@ -146,7 +146,7 @@ class GestureHandler {
     return {};
   }
 
-  sendEvent = nativeEvent => {
+  sendEvent = (nativeEvent) => {
     const {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
@@ -231,7 +231,7 @@ class GestureHandler {
     const gesture = new NativeGestureClass(this.getHammerConfig());
     this.hammer.add(gesture);
 
-    this.hammer.on('hammer.input', ev => {
+    this.hammer.on('hammer.input', (ev) => {
       if (!this.config.enabled) {
         this.hasGestureFailed = false;
         this.isGestureRunning = false;
@@ -260,12 +260,12 @@ class GestureHandler {
 
   setupEvents() {
     if (!this.isDiscrete) {
-      this.hammer.on(`${this.name}start`, event => this.onStart(event));
-      this.hammer.on(`${this.name}end ${this.name}cancel`, event =>
+      this.hammer.on(`${this.name}start`, (event) => this.onStart(event));
+      this.hammer.on(`${this.name}end ${this.name}cancel`, (event) =>
         this.onGestureEnded(event)
       );
     }
-    this.hammer.on(this.name, ev => this.onGestureActivated(ev));
+    this.hammer.on(this.name, (ev) => this.onGestureActivated(ev));
   }
 
   onStart({ deltaX, deltaY, rotation }) {
@@ -444,7 +444,7 @@ function ensureConfig(config) {
   if ('waitFor' in config) {
     props.waitFor = asArray(config.waitFor)
       .map(({ _handlerTag }) => NodeManager.getHandler(_handlerTag))
-      .filter(v => v);
+      .filter((v) => v);
   } else {
     props.waitFor = null;
   }
@@ -466,7 +466,7 @@ function ensureConfig(config) {
     'activeOffsetXEnd',
     'activeOffsetYStart',
     'activeOffsetYEnd',
-  ].forEach(prop => {
+  ].forEach((prop) => {
     if (typeof props[prop] === 'undefined') {
       props[prop] = Number.NaN;
     }

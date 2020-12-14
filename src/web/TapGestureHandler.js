@@ -28,7 +28,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
     }
   }
 
-  onSuccessfulTap = ev => {
+  onSuccessfulTap = (ev) => {
     if (this._getPendingGestures().length) {
       this._shouldFireEndEvent = ev;
       return;

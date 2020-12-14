@@ -28,6 +28,6 @@ export const FlatList = React.forwardRef((props, ref) => (
   <RNFlatList
     ref={ref}
     {...props}
-    renderScrollComponent={scrollProps => <ScrollView {...scrollProps} />}
+    renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
   />
 ));

@@ -7,7 +7,7 @@ const State = {
   END: 5,
 };
 
-State.print = state => {
+State.print = (state) => {
   const keys = Object.keys(State);
   for (let i = 0; i < keys.length; i++) {
     if (state === State[keys[i]]) {

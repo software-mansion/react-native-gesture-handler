@@ -18,7 +18,7 @@ const GestureHandlerRootViewContext = React.createContext(false);
 export default function GestureHandlerRootView({ children, ...rest }) {
   return (
     <GestureHandlerRootViewContext.Consumer>
-      {available => {
+      {(available) => {
         if (available) {
           // If we already have a parent wrapped in the gesture handler root view,
           // We don't need to wrap it again in root view

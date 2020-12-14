@@ -49,12 +49,12 @@ export class BaseButton extends React.Component {
   // then forward the event to listeners. However, here our handler
   // is virtually only forwarding events to listeners, so we reverse the order
   // to keep the proper order of the callbacks (from "raw" ones to "processed").
-  _onHandlerStateChange = e => {
+  _onHandlerStateChange = (e) => {
     this.props.onHandlerStateChange && this.props.onHandlerStateChange(e);
     this._handleEvent(e);
   };
 
-  _onGestureEvent = e => {
+  _onGestureEvent = (e) => {
     this.props.onGestureEvent && this.props.onGestureEvent(e);
     this._handleEvent(e);
   };
@@ -98,7 +98,7 @@ export class RectButton extends React.Component {
     this._opacity = new Animated.Value(0);
   }
 
-  _onActiveStateChange = active => {
+  _onActiveStateChange = (active) => {
     if (Platform.OS !== 'android') {
       this._opacity.setValue(active ? this.props.activeOpacity : 0);
     }
@@ -152,7 +152,7 @@ export class BorderlessButton extends React.Component {
     this._opacity = new Animated.Value(1);
   }
 
-  _onActiveStateChange = active => {
+  _onActiveStateChange = (active) => {
     if (Platform.OS !== 'android') {
       this._opacity.setValue(active ? this.props.activeOpacity : 1);
     }

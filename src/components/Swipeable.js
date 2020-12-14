@@ -166,7 +166,7 @@ export default class Swipeable extends Component<PropType, StateType> {
     }
   };
 
-  _handleRelease = nativeEvent => {
+  _handleRelease = (nativeEvent) => {
     const { velocityX, translationX: dragX } = nativeEvent;
     const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
     const { rightOffset = rowWidth } = this.state;
