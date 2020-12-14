@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import React, { Component } from 'react';
 import {
   Animated,
@@ -197,7 +196,7 @@ export default class Example extends Component {
               style={styles.rectButton}
               onPress={() => Alert.alert('Fourth row clicked')}>
               <Text style={styles.buttonText}>
-                This row is "disabled" but you can swipe it
+                This row is &quot;disabled&quot; but you can swipe it
               </Text>
               <InfoButton name="fourth" />
             </RectButton>
