@@ -13,7 +13,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "RN Gesture Handler example";
+    return "Example";
   }
 
   @Override
