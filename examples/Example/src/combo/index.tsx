@@ -155,7 +155,7 @@ class Combo extends Component<ComboPropsType> {
     return (
       <View style={styles.container}>
         <ScrollViewComponent
-          ref={(node) => (this._scrollView = node)}
+          ref={(node: RNScroll | GHScroll) => (this._scrollView = node)}
           style={styles.scrollView}>
           <TouchableHighlight style={styles.button} onClick={this._onClick}>
             <View style={styles.buttonInner}>
