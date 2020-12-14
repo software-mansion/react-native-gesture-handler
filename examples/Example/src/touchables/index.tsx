@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 
 import {
@@ -311,7 +310,16 @@ function Item(props: ItemType) {
   );
 }
 
-type TouchableExamplePropsType = StackScreenProps<any, string>;
+type TouchableParamList = {
+  TouchableExample: {
+    item: string;
+  };
+};
+
+type TouchableExamplePropsType = StackScreenProps<
+  TouchableParamList,
+  'TouchableExample'
+>;
 
 type TouchableExampleStateType = {
   useScrollView: boolean;
@@ -336,7 +344,7 @@ export class TouchableExample extends Component<
       renderChild,
       text,
       color,
-    } = screens[this.props.route.params!.item as string];
+    } = screens[this.props.route.params.item];
     const RNTouchable = toReactNativeTouchable(GHTouchable);
     const Component: React.ComponentType<any> = this.state.useScrollView
       ? ScrollView
@@ -373,11 +381,7 @@ export class TouchableExample extends Component<
   }
 }
 
-type TouchablesIndexPropsType = {
-  navigation: NavigationProp<ParamListBase>;
-};
-
-export function TouchablesIndex({ navigation }: TouchablesIndexPropsType) {
+export function TouchablesIndex({ navigation }: TouchableExamplePropsType) {
   return (
     <FlatList
       style={styles.list}
