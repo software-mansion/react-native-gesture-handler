@@ -276,11 +276,6 @@ const TOUCHABLES: TouchablesType[] = [
   },
   {
     type: TouchableNativeFeedback,
-    // the arguments passed to A.Ripple look like they are taken from PressableAndroidRippleConfig, where the radius is present
-    // but the TouchableNativeFeedback exported from RNGH is the same as from RN and none it does not have this interface included
-    // in the static Ripple method. But it somehow works.
-    // I looks like a mistake. I submitted a PR with the change: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50063
-    // @ts-ignore it is no-op because of the types
     background: (A) => A.Ripple('blue', true, 30),
     color: 'green',
     renderChild: renderSampleBox,
