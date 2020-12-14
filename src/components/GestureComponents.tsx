@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import ReactNative, {
   ScrollViewProps,
@@ -15,16 +14,16 @@ import { NativeViewGestureHandlerProperties } from '../handlers/NativeViewGestur
 
 const MEMOIZED = new WeakMap();
 
-function memoizeWrap<T>(
-  Component: React.Component<T>,
-  config?: NativeViewGestureHandlerProperties
+function memoizeWrap<P extends NativeViewGestureHandlerProperties>(
+  Component: React.ComponentType<P>,
+  config?: Record<string, unknown>
 ) {
   if (Component == null) {
     return null;
   }
   let memoized = MEMOIZED.get(Component);
   if (!memoized) {
-    memoized = createNativeWrapper(Component, config);
+    memoized = createNativeWrapper<P>(Component, config);
     MEMOIZED.set(Component, memoized);
   }
   return memoized;
@@ -50,20 +49,20 @@ type FlatListType<ItemT> = React.Component<
 module.exports = {
   /* RN's components */
   get ScrollView(): ScrollViewType | null {
-    return memoizeWrap(ReactNative.ScrollView, {
+    return memoizeWrap<ScrollViewProps>(ReactNative.ScrollView, {
       disallowInterruption: true,
       shouldCancelWhenOutside: false,
     });
   },
   get Switch(): SwitchType | null {
-    return memoizeWrap(ReactNative.Switch, {
+    return memoizeWrap<SwitchProps>(ReactNative.Switch, {
       shouldCancelWhenOutside: false,
       shouldActivateOnStart: true,
       disallowInterruption: true,
     });
   },
   get TextInput(): TextInputType {
-    return memoizeWrap(ReactNative.TextInput);
+    return memoizeWrap<TextInputProps>(ReactNative.TextInput);
   },
   get DrawerLayoutAndroid(): DrawerLayoutAndroidType {
     const DrawerLayoutAndroid = memoizeWrap<DrawerLayoutAndroidProps>(
