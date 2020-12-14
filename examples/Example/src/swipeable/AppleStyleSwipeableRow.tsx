@@ -14,7 +14,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 export default class AppleStyleSwipeableRow extends Component {
   renderLeftActions = (
-    progress: Animated.AnimatedInterpolation,
+    _progress: Animated.AnimatedInterpolation,
     dragX: Animated.AnimatedInterpolation
   ) => {
     const trans = dragX.interpolate({
@@ -64,7 +64,7 @@ export default class AppleStyleSwipeableRow extends Component {
 
   renderRightActions = (
     progress: Animated.AnimatedInterpolation,
-    _: Animated.AnimatedInterpolation
+    _dragAnimatedValue: Animated.AnimatedInterpolation
   ) => (
     <View
       style={{
