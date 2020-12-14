@@ -34,7 +34,7 @@ const renderSampleBox = (color: string) => (
   />
 );
 
-const toReactNativeTouchable = (touchable: typeof React.Component) => {
+const toReactNativeTouchable = (touchable: React.ComponentType<any>) => {
   if (touchable === TouchableOpacity) return RNTouchableOpacity;
   if (touchable === TouchableWithoutFeedback) return RNTouchableWithoutFeedback;
   if (touchable === TouchableHighlight) return RNTouchableHighlight;
@@ -290,7 +290,7 @@ const TOUCHABLES: TouchablesType[] = [
   },
 ];
 
-const screens: Record<string, any> = TOUCHABLES.reduce(
+const screens: Record<string, TouchablesType> = TOUCHABLES.reduce(
   (map: Record<string, TouchablesType>, obj) => ((map[obj.text] = obj), map),
   {}
 );
@@ -358,12 +358,13 @@ export class TouchableExample extends Component<
           <RNTouchable
             {...props}
             background={background?.(RNTouchableNativeFeedback)}>
-            {renderChild(color)}
+            {renderChild(color!)}
           </RNTouchable>
           <GHTouchable
             {...props}
+            // @ts-ignore GH component does not export statics from RN component, but can use it
             background={background?.(TouchableNativeFeedback)}>
-            {renderChild(color)}
+            {renderChild(color!)}
           </GHTouchable>
         </View>
       </Component>
