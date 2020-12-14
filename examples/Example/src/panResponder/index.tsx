@@ -17,21 +17,21 @@ import { LoremIpsum } from '../common';
 
 var CIRCLE_SIZE = 80;
 
-type StyleType = {
-  left: number;
-  top: number;
-  backgroundColor: string;
+type CircleStyles = {
+  backgroundColor?: string;
+  left?: number;
+  top?: number;
 };
 
-// A clone of: https://github.com/facebook/react-native/blob/master/RNTester/js/PanResponderExample.js
+// A clone of: https://github.com/facebook/react-native/blob/master/packages/rn-tester/js/examples/PanResponder/PanResponderExample.js
 class PanResponderExample extends Component {
   private _panResponder: { panHandlers?: GestureResponderHandlers } = {};
   private _previousLeft = 0;
   private _previousTop = 0;
-  private _circleStyles: { style: StyleType } = {
+  private _circleStyles: { style: CircleStyles } = {
     style: { left: 0, top: 0, backgroundColor: '#000' },
   };
-  private circle: any;
+  private circle: React.ElementRef<typeof View> | null = null;
 
   UNSAFE_componentWillMount() {
     this._panResponder = PanResponder.create({
