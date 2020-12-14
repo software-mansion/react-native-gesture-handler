@@ -70,7 +70,7 @@ class TouchableHighlight extends Component<
         this.refs[CHILD_REF].setNativeProps({
           style: pressed
             ? { opacity: this.props.activeOpacity }
-            : INACTIVE_CHILD_STYLE,
+            : { opacity: 1.0 },
         });
       });
       if (event.nativeEvent.state === State.ACTIVE && this.props.onClick) {
@@ -82,7 +82,7 @@ class TouchableHighlight extends Component<
     const pressed = this.state.gestureHandlerState === State.BEGAN;
     const style = pressed
       ? { backgroundColor: this.props.underlayColor as string }
-      : INACTIVE_UNDERLAY_STYLE;
+      : { backgroundColor: 'transparent' };
     return (
       <TapGestureHandler onHandlerStateChange={this._onStateChange}>
         <View style={[this.props.style, style]}>
@@ -95,12 +95,6 @@ class TouchableHighlight extends Component<
     );
   }
 }
-
-var INACTIVE_CHILD_STYLE = StyleSheet.create({ x: { opacity: 1.0 } }).x;
-const INACTIVE_UNDERLAY_STYLE = StyleSheet.create({
-  // eslint-disable-next-line react-native/no-unused-styles
-  x: { backgroundColor: 'transparent' },
-}).x;
 
 type ControlledSwitchProps = {
   value?: boolean;
@@ -154,6 +148,7 @@ class Combo extends Component<ComboPropsType> {
     const { ScrollViewComponent } = this.props;
     return (
       <View style={styles.container}>
+        {/* @ts-ignore I cannot find a way to type it properly */}
         <ScrollViewComponent
           ref={(node: RNScroll | GHScroll) => (this._scrollView = node)}
           style={styles.scrollView}>
