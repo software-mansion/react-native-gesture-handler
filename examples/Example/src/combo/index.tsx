@@ -7,7 +7,6 @@ import {
   View,
   Alert,
   TouchableHighlightProps,
-  ScrollViewProps,
 } from 'react-native';
 
 import {
