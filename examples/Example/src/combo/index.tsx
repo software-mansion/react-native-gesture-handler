@@ -7,6 +7,7 @@ import {
   View,
   Alert,
   TouchableHighlightProps,
+  ScrollViewProps,
 } from 'react-native';
 
 import {
@@ -135,7 +136,7 @@ class ControlledSwitch extends React.Component<
 }
 
 type ComboPropsType = {
-  ScrollViewComponent: typeof GHScroll | typeof RNScroll;
+  ScrollViewComponent: React.ComponentType<any>;
 };
 
 class Combo extends Component<ComboPropsType> {
@@ -148,7 +149,6 @@ class Combo extends Component<ComboPropsType> {
     const { ScrollViewComponent } = this.props;
     return (
       <View style={styles.container}>
-        {/* @ts-ignore I cannot find a way to type it properly */}
         <ScrollViewComponent
           ref={(node: RNScroll | GHScroll) => (this._scrollView = node)}
           style={styles.scrollView}>
