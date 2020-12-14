@@ -6,7 +6,9 @@
     "test": "jest",
     "precommit": "lint-staged",
     "release": "npm login && release-it",
-    "start": "react-native start"
+    "start": "react-native start",
+    "ts-check": "yarn tsc",
+    "lint-check": "yarn prettier --check src/ examples/Example/src"
   },
   "main": "index.js",
   "types": "react-native-gesture-handler.d.ts",

@@ -109,3 +109,14 @@ matrix:
 
       script:
         - xcodebuild -workspace ios/Example.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme Example -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES | xcpretty
+
+    - language: node_js
+      node_js:
+        - 12
+      cache:
+        directories:
+          - node_modules
+      script:
+        - yarn
+        - yarn tsc --noEmit
+        - yarn lint-check
