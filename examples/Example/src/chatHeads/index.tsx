@@ -23,7 +23,7 @@ type StateType = {
   height: number;
 };
 
-class Tracking extends Component<{}, StateType> {
+class Tracking extends Component<Record<string, unknown>, StateType> {
   dragX: Animated.Value;
   transX: Animated.Value;
   follow1x: Animated.Value;
@@ -34,7 +34,7 @@ class Tracking extends Component<{}, StateType> {
   follow2y: Animated.Value;
   onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   lastOffset: { x: number; y: number };
-  constructor(props: {}) {
+  constructor(props: Record<string, unknown>) {
     super(props);
 
     this.state = { width: 0, height: 0 };

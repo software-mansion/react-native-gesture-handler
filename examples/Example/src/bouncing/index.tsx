@@ -13,12 +13,12 @@ import {
 
 import { USE_NATIVE_DRIVER } from '../config';
 
-class Snappable extends Component {
+class Snappable extends Component<Record<string, unknown>> {
   private onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
   private transX: Animated.AnimatedInterpolation;
   private dragX: Animated.Value;
 
-  constructor(props: {}) {
+  constructor(props: Record<string, unknown>) {
     super(props);
     this.dragX = new Animated.Value(0);
     this.transX = this.dragX.interpolate({
@@ -64,7 +64,7 @@ class Twistable extends Component {
   private onGestureEvent?: (event: RotationGestureHandlerGestureEvent) => void;
   private rot: Animated.AnimatedInterpolation;
 
-  constructor(props: {}) {
+  constructor(props: Record<string, unknown>) {
     super(props);
     this.gesture = new Animated.Value(0);
 

@@ -58,7 +58,7 @@ const Page = ({
 );
 
 export default class Example extends Component<
-  {},
+  Record<string, unknown>,
   { fromLeft: boolean; type: number }
 > {
   state = { fromLeft: true, type: 0 };

@@ -16,7 +16,7 @@ class Fling extends Component {
   private touchX: Animated.Value;
   private translateX: Animated.AnimatedAddition;
   private translateY: Animated.Value;
-  constructor(props: {}) {
+  constructor(props: Record<string, unknown>) {
     super(props);
     this.touchX = new Animated.Value(windowWidth / 2 - circleRadius);
     this.translateX = Animated.add(

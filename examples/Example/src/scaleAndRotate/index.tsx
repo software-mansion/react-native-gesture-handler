@@ -35,7 +35,7 @@ export class PinchableBox extends React.Component {
   private tiltStr: Animated.AnimatedMultiplication;
   private lastTilt: number;
   private onTiltGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
-  constructor(props: {}) {
+  constructor(props: Record<string, unknown>) {
     super(props);
 
     /* Pinching */

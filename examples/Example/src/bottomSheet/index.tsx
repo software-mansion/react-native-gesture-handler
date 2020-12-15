@@ -26,7 +26,7 @@ type StateType = {
 const HEADER_HEIGHT = 50;
 const windowHeight = Dimensions.get('window').height;
 const SNAP_POINTS_FROM_TOP = [50, windowHeight * 0.4, windowHeight * 0.8];
-export class BottomSheet extends Component<{}, StateType> {
+export class BottomSheet extends Component<Record<string, unknown>, StateType> {
   private masterdrawer = React.createRef<TapGestureHandler>();
   private drawer = React.createRef<PanGestureHandler>();
   private drawerheader = React.createRef<PanGestureHandler>();
@@ -41,7 +41,7 @@ export class BottomSheet extends Component<{}, StateType> {
   private reverseLastScrollY: Animated.AnimatedMultiplication;
   private translateYOffset: Animated.Value;
   private translateY: Animated.AnimatedInterpolation;
-  constructor(props: {}) {
+  constructor(props: Record<string, unknown>) {
     super(props);
     const START = SNAP_POINTS_FROM_TOP[0];
     const END = SNAP_POINTS_FROM_TOP[SNAP_POINTS_FROM_TOP.length - 1];

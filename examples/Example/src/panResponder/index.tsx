@@ -15,7 +15,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { DraggableBox } from '../draggable';
 import { LoremIpsum } from '../common';
 
-var CIRCLE_SIZE = 80;
+const CIRCLE_SIZE = 80;
 
 type CircleStyles = {
   backgroundColor?: string;
@@ -107,7 +107,7 @@ class PanResponderExample extends Component {
   };
 
   handlePanResponderMove = (
-    e: GestureResponderEvent,
+    _e: GestureResponderEvent,
     gestureState: PanResponderGestureState
   ) => {
     this.circleStyles.style.left =
