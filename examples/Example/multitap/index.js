@@ -24,7 +24,7 @@ export class PressBox extends Component {
   };
   _onDoubleTap = event => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      alert('D0able tap, good job!');
+      alert('Double tap, good job!');
     }
   };
   render() {
