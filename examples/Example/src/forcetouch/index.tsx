@@ -11,7 +11,7 @@ import { USE_NATIVE_DRIVER } from '../config';
 
 export default class Example extends Component {
   private force = new Animated.Value(0);
-  private _onGestureEvent = Animated.event(
+  private onGestureEvent = Animated.event(
     [
       {
         nativeEvent: {
@@ -21,7 +21,7 @@ export default class Example extends Component {
     ],
     { useNativeDriver: USE_NATIVE_DRIVER }
   );
-  private _onHandlerStateChange = (
+  private onHandlerStateChange = (
     event: ForceTouchGestureHandlerStateChangeEvent
   ) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
@@ -38,8 +38,8 @@ export default class Example extends Component {
         </Text>
         <ForceTouchGestureHandler
           feedbackOnActivation
-          onGestureEvent={this._onGestureEvent}
-          onHandlerStateChange={this._onHandlerStateChange}>
+          onGestureEvent={this.onGestureEvent}
+          onHandlerStateChange={this.onHandlerStateChange}>
           <Animated.View
             style={[
               styles.box,

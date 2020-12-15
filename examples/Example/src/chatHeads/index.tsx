@@ -24,16 +24,16 @@ type StateType = {
 };
 
 class Tracking extends Component<{}, StateType> {
-  _dragX: Animated.Value;
-  _transX: Animated.Value;
-  _follow1x: Animated.Value;
-  _follow2x: Animated.Value;
-  _dragY: Animated.Value;
-  _transY: Animated.Value;
-  _follow1y: Animated.Value;
-  _follow2y: Animated.Value;
-  _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
-  _lastOffset: { x: number; y: number };
+  dragX: Animated.Value;
+  transX: Animated.Value;
+  follow1x: Animated.Value;
+  follow2x: Animated.Value;
+  dragY: Animated.Value;
+  transY: Animated.Value;
+  follow1y: Animated.Value;
+  follow2y: Animated.Value;
+  onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  lastOffset: { x: number; y: number };
   constructor(props: {}) {
     super(props);
 
@@ -42,79 +42,79 @@ class Tracking extends Component<{}, StateType> {
     const tension = 0.8;
     const friction = 3;
 
-    this._dragX = new Animated.Value(START_X);
-    this._transX = new Animated.Value(START_X);
-    this._follow1x = new Animated.Value(START_X);
-    this._follow2x = new Animated.Value(START_X);
-    Animated.spring(this._transX, {
+    this.dragX = new Animated.Value(START_X);
+    this.transX = new Animated.Value(START_X);
+    this.follow1x = new Animated.Value(START_X);
+    this.follow2x = new Animated.Value(START_X);
+    Animated.spring(this.transX, {
       useNativeDriver: USE_NATIVE_DRIVER,
-      toValue: this._dragX,
+      toValue: this.dragX,
       tension,
       friction,
     }).start();
-    Animated.spring(this._follow1x, {
+    Animated.spring(this.follow1x, {
       useNativeDriver: USE_NATIVE_DRIVER,
-      toValue: this._transX,
+      toValue: this.transX,
       tension,
       friction,
     }).start();
-    Animated.spring(this._follow2x, {
+    Animated.spring(this.follow2x, {
       useNativeDriver: USE_NATIVE_DRIVER,
-      toValue: this._follow1x,
-      tension,
-      friction,
-    }).start();
-
-    this._dragY = new Animated.Value(START_Y);
-    this._transY = new Animated.Value(START_Y);
-    this._follow1y = new Animated.Value(START_Y);
-    this._follow2y = new Animated.Value(START_Y);
-    Animated.spring(this._transY, {
-      useNativeDriver: USE_NATIVE_DRIVER,
-      toValue: this._dragY,
-      tension,
-      friction,
-    }).start();
-    Animated.spring(this._follow1y, {
-      useNativeDriver: USE_NATIVE_DRIVER,
-      toValue: this._transY,
-      tension,
-      friction,
-    }).start();
-    Animated.spring(this._follow2y, {
-      useNativeDriver: USE_NATIVE_DRIVER,
-      toValue: this._follow1y,
+      toValue: this.follow1x,
       tension,
       friction,
     }).start();
 
-    this._onGestureEvent = Animated.event(
+    this.dragY = new Animated.Value(START_Y);
+    this.transY = new Animated.Value(START_Y);
+    this.follow1y = new Animated.Value(START_Y);
+    this.follow2y = new Animated.Value(START_Y);
+    Animated.spring(this.transY, {
+      useNativeDriver: USE_NATIVE_DRIVER,
+      toValue: this.dragY,
+      tension,
+      friction,
+    }).start();
+    Animated.spring(this.follow1y, {
+      useNativeDriver: USE_NATIVE_DRIVER,
+      toValue: this.transY,
+      tension,
+      friction,
+    }).start();
+    Animated.spring(this.follow2y, {
+      useNativeDriver: USE_NATIVE_DRIVER,
+      toValue: this.follow1y,
+      tension,
+      friction,
+    }).start();
+
+    this.onGestureEvent = Animated.event(
       [
         {
-          nativeEvent: { translationX: this._dragX, translationY: this._dragY },
+          nativeEvent: { translationX: this.dragX, translationY: this.dragY },
         },
       ],
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
-    this._lastOffset = { x: START_X, y: START_Y };
+    this.lastOffset = { x: START_X, y: START_Y };
   }
-  _onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+  onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       const { height, width } = this.state;
 
-      const posX = this._lastOffset.x + event.nativeEvent.translationX;
-      const posY = this._lastOffset.y + event.nativeEvent.translationY;
+      const posX = this.lastOffset.x + event.nativeEvent.translationX;
+      const posY = this.lastOffset.y + event.nativeEvent.translationY;
 
       const distFromTop = posY;
       const distFromBottom = height - posY - BOX_SIZE;
       const distFromLeft = posX;
       const distFromRight = width - posX - BOX_SIZE;
 
-      this._lastOffset = { x: posX, y: posY };
+      this.lastOffset = { x: posX, y: posY };
 
-      this._dragX.flattenOffset();
-      this._dragY.flattenOffset();
+      this.dragX.flattenOffset();
+      this.dragY.flattenOffset();
 
       const minDist = Math.min(
         distFromTop,
@@ -123,24 +123,24 @@ class Tracking extends Component<{}, StateType> {
         distFromRight
       );
       if (distFromTop === minDist) {
-        this._dragY.setValue(-BOX_SIZE / 4);
-        this._lastOffset.y = -BOX_SIZE / 4;
+        this.dragY.setValue(-BOX_SIZE / 4);
+        this.lastOffset.y = -BOX_SIZE / 4;
       } else if (distFromBottom === minDist) {
-        this._dragY.setValue(height - BOX_SIZE / 2);
-        this._lastOffset.y = height - BOX_SIZE / 2;
+        this.dragY.setValue(height - BOX_SIZE / 2);
+        this.lastOffset.y = height - BOX_SIZE / 2;
       } else if (distFromLeft === minDist) {
-        this._dragX.setValue(-BOX_SIZE / 2);
-        this._lastOffset.x = -BOX_SIZE / 2;
+        this.dragX.setValue(-BOX_SIZE / 2);
+        this.lastOffset.x = -BOX_SIZE / 2;
       } else if (distFromRight === minDist) {
-        this._dragX.setValue(width - BOX_SIZE / 2);
-        this._lastOffset.x = width - BOX_SIZE / 2;
+        this.dragX.setValue(width - BOX_SIZE / 2);
+        this.lastOffset.x = width - BOX_SIZE / 2;
       }
 
-      this._dragX.extractOffset();
-      this._dragY.extractOffset();
+      this.dragX.extractOffset();
+      this.dragY.extractOffset();
     }
   };
-  _onLayout = ({ nativeEvent }: LayoutChangeEvent) => {
+  onLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     const { width, height } = nativeEvent.layout;
     this.setState({ width, height });
   };
@@ -148,15 +148,15 @@ class Tracking extends Component<{}, StateType> {
     return (
       <View
         style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-        onLayout={this._onLayout}>
+        onLayout={this.onLayout}>
         <Animated.Image
           style={[
             styles.box,
             { marginLeft: 10, marginTop: 10 },
             {
               transform: [
-                { translateX: this._follow2x },
-                { translateY: this._follow2y },
+                { translateX: this.follow2x },
+                { translateY: this.follow2y },
               ],
             },
           ]}
@@ -170,8 +170,8 @@ class Tracking extends Component<{}, StateType> {
             { marginLeft: 5, marginTop: 5 },
             {
               transform: [
-                { translateX: this._follow1x },
-                { translateY: this._follow1y },
+                { translateX: this.follow1x },
+                { translateY: this.follow1y },
               ],
             },
           ]}
@@ -181,15 +181,15 @@ class Tracking extends Component<{}, StateType> {
         />
 
         <PanGestureHandler
-          onGestureEvent={this._onGestureEvent}
-          onHandlerStateChange={this._onHandlerStateChange}>
+          onGestureEvent={this.onGestureEvent}
+          onHandlerStateChange={this.onHandlerStateChange}>
           <Animated.Image
             style={[
               styles.box,
               {
                 transform: [
-                  { translateX: this._transX },
-                  { translateY: this._transY },
+                  { translateX: this.transX },
+                  { translateY: this.transY },
                 ],
               },
             ]}

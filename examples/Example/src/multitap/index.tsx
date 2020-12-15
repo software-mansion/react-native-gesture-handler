@@ -14,19 +14,19 @@ import { LoremIpsum } from '../common';
 
 export class PressBox extends Component {
   private doubleTapRef = React.createRef<TapGestureHandler>();
-  private _onHandlerStateChange = (
+  private onHandlerStateChange = (
     event: LongPressGestureHandlerStateChangeEvent
   ) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm being pressed for so long");
     }
   };
-  private _onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
+  private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm touched");
     }
   };
-  private _onDoubleTap = (event: TapGestureHandlerStateChangeEvent) => {
+  private onDoubleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert('Double tap, good job!');
     }
@@ -34,14 +34,14 @@ export class PressBox extends Component {
   render() {
     return (
       <LongPressGestureHandler
-        onHandlerStateChange={this._onHandlerStateChange}
+        onHandlerStateChange={this.onHandlerStateChange}
         minDurationMs={800}>
         <TapGestureHandler
-          onHandlerStateChange={this._onSingleTap}
+          onHandlerStateChange={this.onSingleTap}
           waitFor={this.doubleTapRef}>
           <TapGestureHandler
             ref={this.doubleTapRef}
-            onHandlerStateChange={this._onDoubleTap}
+            onHandlerStateChange={this.onDoubleTap}
             numberOfTaps={2}>
             <View style={styles.box} />
           </TapGestureHandler>

@@ -20,90 +20,88 @@ export class PinchableBox extends React.Component {
   private panRef = React.createRef<PanGestureHandler>();
   private rotationRef = React.createRef<RotationGestureHandler>();
   private pinchRef = React.createRef<PinchGestureHandler>();
-  private _baseScale: Animated.Value;
-  private _pinchScale: Animated.Value;
-  private _scale: Animated.AnimatedMultiplication;
-  private _lastScale: number;
-  private _onPinchGestureEvent: (
-    event: PinchGestureHandlerGestureEvent
-  ) => void;
-  private _rotate: Animated.Value;
-  private _rotateStr: Animated.AnimatedInterpolation;
-  private _lastRotate: number;
-  private _onRotateGestureEvent: (
+  private baseScale: Animated.Value;
+  private pinchScale: Animated.Value;
+  private scale: Animated.AnimatedMultiplication;
+  private lastScale: number;
+  private onPinchGestureEvent: (event: PinchGestureHandlerGestureEvent) => void;
+  private rotate: Animated.Value;
+  private rotateStr: Animated.AnimatedInterpolation;
+  private lastRotate: number;
+  private onRotateGestureEvent: (
     event: RotationGestureHandlerGestureEvent
   ) => void;
-  private _tilt: Animated.Value;
-  private _tiltStr: Animated.AnimatedMultiplication;
-  private _lastTilt: number;
-  private _onTiltGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  private tilt: Animated.Value;
+  private tiltStr: Animated.AnimatedMultiplication;
+  private lastTilt: number;
+  private onTiltGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: {}) {
     super(props);
 
     /* Pinching */
-    this._baseScale = new Animated.Value(1);
-    this._pinchScale = new Animated.Value(1);
-    this._scale = Animated.multiply(this._baseScale, this._pinchScale);
-    this._lastScale = 1;
-    this._onPinchGestureEvent = Animated.event(
-      [{ nativeEvent: { scale: this._pinchScale } }],
+    this.baseScale = new Animated.Value(1);
+    this.pinchScale = new Animated.Value(1);
+    this.scale = Animated.multiply(this.baseScale, this.pinchScale);
+    this.lastScale = 1;
+    this.onPinchGestureEvent = Animated.event(
+      [{ nativeEvent: { scale: this.pinchScale } }],
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
     /* Rotation */
-    this._rotate = new Animated.Value(0);
-    this._rotateStr = this._rotate.interpolate({
+    this.rotate = new Animated.Value(0);
+    this.rotateStr = this.rotate.interpolate({
       inputRange: [-100, 100],
       outputRange: ['-100rad', '100rad'],
     });
-    this._lastRotate = 0;
-    this._onRotateGestureEvent = Animated.event(
-      [{ nativeEvent: { rotation: this._rotate } }],
+    this.lastRotate = 0;
+    this.onRotateGestureEvent = Animated.event(
+      [{ nativeEvent: { rotation: this.rotate } }],
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
     /* Tilt */
-    this._tilt = new Animated.Value(0);
-    this._tiltStr = this._tilt.interpolate({
+    this.tilt = new Animated.Value(0);
+    this.tiltStr = this.tilt.interpolate({
       inputRange: [-501, -500, 0, 1],
       outputRange: ['1rad', '1rad', '0rad', '0rad'],
     });
-    this._lastTilt = 0;
-    this._onTiltGestureEvent = Animated.event(
-      [{ nativeEvent: { translationY: this._tilt } }],
+    this.lastTilt = 0;
+    this.onTiltGestureEvent = Animated.event(
+      [{ nativeEvent: { translationY: this.tilt } }],
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
 
-  _onRotateHandlerStateChange = (
+  onRotateHandlerStateChange = (
     event: RotationGestureHandlerStateChangeEvent
   ) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastRotate += event.nativeEvent.rotation;
-      this._rotate.setOffset(this._lastRotate);
-      this._rotate.setValue(0);
+      this.lastRotate += event.nativeEvent.rotation;
+      this.rotate.setOffset(this.lastRotate);
+      this.rotate.setValue(0);
     }
   };
-  _onPinchHandlerStateChange = (event: PinchGestureHandlerStateChangeEvent) => {
+  onPinchHandlerStateChange = (event: PinchGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastScale *= event.nativeEvent.scale;
-      this._baseScale.setValue(this._lastScale);
-      this._pinchScale.setValue(1);
+      this.lastScale *= event.nativeEvent.scale;
+      this.baseScale.setValue(this.lastScale);
+      this.pinchScale.setValue(1);
     }
   };
-  _onTiltGestureStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+  onTiltGestureStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastTilt += event.nativeEvent.translationY;
-      this._tilt.setOffset(this._lastTilt);
-      this._tilt.setValue(0);
+      this.lastTilt += event.nativeEvent.translationY;
+      this.tilt.setOffset(this.lastTilt);
+      this.tilt.setValue(0);
     }
   };
   render() {
     return (
       <PanGestureHandler
         ref={this.panRef}
-        onGestureEvent={this._onTiltGestureEvent}
-        onHandlerStateChange={this._onTiltGestureStateChange}
+        onGestureEvent={this.onTiltGestureEvent}
+        onHandlerStateChange={this.onTiltGestureStateChange}
         minDist={10}
         minPointers={2}
         maxPointers={2}
@@ -112,14 +110,14 @@ export class PinchableBox extends React.Component {
           <RotationGestureHandler
             ref={this.rotationRef}
             simultaneousHandlers={this.pinchRef}
-            onGestureEvent={this._onRotateGestureEvent}
-            onHandlerStateChange={this._onRotateHandlerStateChange}>
+            onGestureEvent={this.onRotateGestureEvent}
+            onHandlerStateChange={this.onRotateHandlerStateChange}>
             <Animated.View style={styles.wrapper}>
               <PinchGestureHandler
                 ref={this.pinchRef}
                 simultaneousHandlers={this.rotationRef}
-                onGestureEvent={this._onPinchGestureEvent}
-                onHandlerStateChange={this._onPinchHandlerStateChange}>
+                onGestureEvent={this.onPinchGestureEvent}
+                onHandlerStateChange={this.onPinchHandlerStateChange}>
                 <Animated.View style={styles.container} collapsable={false}>
                   <Animated.Image
                     style={[
@@ -127,9 +125,9 @@ export class PinchableBox extends React.Component {
                       {
                         transform: [
                           { perspective: 200 },
-                          { scale: this._scale },
-                          { rotate: this._rotateStr },
-                          { rotateX: this._tiltStr },
+                          { scale: this.scale },
+                          { rotate: this.rotateStr },
+                          { rotateX: this.tiltStr },
                         ],
                       },
                     ]}

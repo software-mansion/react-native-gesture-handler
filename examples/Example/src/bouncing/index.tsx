@@ -14,26 +14,26 @@ import {
 import { USE_NATIVE_DRIVER } from '../config';
 
 class Snappable extends Component {
-  private _onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
-  private _transX: Animated.AnimatedInterpolation;
-  private _dragX: Animated.Value;
+  private onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
+  private transX: Animated.AnimatedInterpolation;
+  private dragX: Animated.Value;
 
   constructor(props: {}) {
     super(props);
-    this._dragX = new Animated.Value(0);
-    this._transX = this._dragX.interpolate({
+    this.dragX = new Animated.Value(0);
+    this.transX = this.dragX.interpolate({
       inputRange: [-100, -50, 0, 50, 100],
       outputRange: [-30, -10, 0, 10, 30],
     });
-    this._onGestureEvent = Animated.event(
-      [{ nativeEvent: { translationX: this._dragX } }],
+    this.onGestureEvent = Animated.event(
+      [{ nativeEvent: { translationX: this.dragX } }],
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
 
-  _onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+  onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      Animated.spring(this._dragX, {
+      Animated.spring(this.dragX, {
         velocity: event.nativeEvent.velocityX,
         tension: 10,
         friction: 2,
@@ -49,9 +49,9 @@ class Snappable extends Component {
       <PanGestureHandler
         {...this.props}
         maxPointers={1}
-        onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}>
-        <Animated.View style={{ transform: [{ translateX: this._transX }] }}>
+        onGestureEvent={this.onGestureEvent}
+        onHandlerStateChange={this.onHandlerStateChange}>
+        <Animated.View style={{ transform: [{ translateX: this.transX }] }}>
           {children}
         </Animated.View>
       </PanGestureHandler>
@@ -60,15 +60,15 @@ class Snappable extends Component {
 }
 
 class Twistable extends Component {
-  private _gesture: Animated.Value;
-  private _onGestureEvent?: (event: RotationGestureHandlerGestureEvent) => void;
-  private _rot: Animated.AnimatedInterpolation;
+  private gesture: Animated.Value;
+  private onGestureEvent?: (event: RotationGestureHandlerGestureEvent) => void;
+  private rot: Animated.AnimatedInterpolation;
 
   constructor(props: {}) {
     super(props);
-    this._gesture = new Animated.Value(0);
+    this.gesture = new Animated.Value(0);
 
-    this._rot = this._gesture
+    this.rot = this.gesture
       .interpolate({
         inputRange: [-1.2, -1, -0.5, 0, 0.5, 1, 1.2],
         outputRange: [-0.52, -0.5, -0.3, 0, 0.3, 0.5, 0.52],
@@ -78,14 +78,14 @@ class Twistable extends Component {
         outputRange: ['-100rad', '100rad'],
       });
 
-    this._onGestureEvent = Animated.event(
-      [{ nativeEvent: { rotation: this._gesture } }],
+    this.onGestureEvent = Animated.event(
+      [{ nativeEvent: { rotation: this.gesture } }],
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
-  _onHandlerStateChange = (event: RotationGestureHandlerStateChangeEvent) => {
+  onHandlerStateChange = (event: RotationGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      Animated.spring(this._gesture, {
+      Animated.spring(this.gesture, {
         velocity: event.nativeEvent.velocity,
         tension: 10,
         friction: 0.2,
@@ -99,9 +99,9 @@ class Twistable extends Component {
     return (
       <RotationGestureHandler
         {...this.props}
-        onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}>
-        <Animated.View style={{ transform: [{ rotate: this._rot }] }}>
+        onGestureEvent={this.onGestureEvent}
+        onHandlerStateChange={this.onHandlerStateChange}>
+        <Animated.View style={{ transform: [{ rotate: this.rot }] }}>
           {children}
         </Animated.View>
       </RotationGestureHandler>

@@ -21,21 +21,21 @@ type Props = {
 };
 
 export class TapOrPan extends Component<Props> {
-  private _touchX: Animated.Value;
-  private _translateX: Animated.AnimatedAddition;
-  private _onPanGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  private touchX: Animated.Value;
+  private translateX: Animated.AnimatedAddition;
+  private onPanGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: Props) {
     super(props);
-    this._touchX = new Animated.Value(windowWidth / 2 - circleRadius);
-    this._translateX = Animated.add(
-      this._touchX,
+    this.touchX = new Animated.Value(windowWidth / 2 - circleRadius);
+    this.translateX = Animated.add(
+      this.touchX,
       new Animated.Value(-circleRadius)
     );
-    this._onPanGestureEvent = Animated.event(
+    this.onPanGestureEvent = Animated.event(
       [
         {
           nativeEvent: {
-            x: this._touchX,
+            x: this.touchX,
           },
         },
       ],
@@ -43,12 +43,12 @@ export class TapOrPan extends Component<Props> {
     );
   }
 
-  private _onTapHandlerStateChange = ({
+  private onTapHandlerStateChange = ({
     nativeEvent,
   }: TapGestureHandlerStateChangeEvent) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       // Once tap happened we set the position of the circle under the tapped spot
-      this._touchX.setValue(nativeEvent.x);
+      this.touchX.setValue(nativeEvent.x);
     }
   };
 
@@ -58,13 +58,13 @@ export class TapOrPan extends Component<Props> {
       <TapGestureHandler
         ref={tapRef}
         waitFor={panRef}
-        onHandlerStateChange={this._onTapHandlerStateChange}
+        onHandlerStateChange={this.onTapHandlerStateChange}
         shouldCancelWhenOutside>
         <Animated.View style={styles.wrapper}>
           <PanGestureHandler
             ref={panRef}
             activeOffsetX={[-20, 20]}
-            onGestureEvent={this._onPanGestureEvent}
+            onGestureEvent={this.onPanGestureEvent}
             shouldCancelWhenOutside>
             <Animated.View style={styles.horizontalPan}>
               <Animated.View
@@ -73,7 +73,7 @@ export class TapOrPan extends Component<Props> {
                   {
                     transform: [
                       {
-                        translateX: this._translateX,
+                        translateX: this.translateX,
                       },
                     ],
                   },

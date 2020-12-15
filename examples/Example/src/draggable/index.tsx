@@ -17,51 +17,51 @@ type DraggableBoxProps = {
 };
 
 export class DraggableBox extends Component<DraggableBoxProps> {
-  private _translateX: Animated.Value;
-  private _translateY: Animated.Value;
-  private _lastOffset: { x: number; y: number };
-  private _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  private translateX: Animated.Value;
+  private translateY: Animated.Value;
+  private lastOffset: { x: number; y: number };
+  private onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: DraggableBoxProps) {
     super(props);
-    this._translateX = new Animated.Value(0);
-    this._translateY = new Animated.Value(0);
-    this._lastOffset = { x: 0, y: 0 };
-    this._onGestureEvent = Animated.event(
+    this.translateX = new Animated.Value(0);
+    this.translateY = new Animated.Value(0);
+    this.lastOffset = { x: 0, y: 0 };
+    this.onGestureEvent = Animated.event(
       [
         {
           nativeEvent: {
-            translationX: this._translateX,
-            translationY: this._translateY,
+            translationX: this.translateX,
+            translationY: this.translateY,
           },
         },
       ],
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
-  _onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+  onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      this._lastOffset.x += event.nativeEvent.translationX;
-      this._lastOffset.y += event.nativeEvent.translationY;
-      this._translateX.setOffset(this._lastOffset.x);
-      this._translateX.setValue(0);
-      this._translateY.setOffset(this._lastOffset.y);
-      this._translateY.setValue(0);
+      this.lastOffset.x += event.nativeEvent.translationX;
+      this.lastOffset.y += event.nativeEvent.translationY;
+      this.translateX.setOffset(this.lastOffset.x);
+      this.translateX.setValue(0);
+      this.translateY.setOffset(this.lastOffset.y);
+      this.translateY.setValue(0);
     }
   };
   render() {
     return (
       <PanGestureHandler
         {...this.props}
-        onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}
+        onGestureEvent={this.onGestureEvent}
+        onHandlerStateChange={this.onHandlerStateChange}
         minDist={this.props.minDist}>
         <Animated.View
           style={[
             styles.box,
             {
               transform: [
-                { translateX: this._translateX },
-                { translateY: this._translateY },
+                { translateX: this.translateX },
+                { translateY: this.translateY },
               ],
             },
             this.props.boxStyle,

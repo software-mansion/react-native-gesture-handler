@@ -13,39 +13,39 @@ const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;
 
 class Fling extends Component {
-  private _touchX: Animated.Value;
-  private _translateX: Animated.AnimatedAddition;
-  private _translateY: Animated.Value;
+  private touchX: Animated.Value;
+  private translateX: Animated.AnimatedAddition;
+  private translateY: Animated.Value;
   constructor(props: {}) {
     super(props);
-    this._touchX = new Animated.Value(windowWidth / 2 - circleRadius);
-    this._translateX = Animated.add(
-      this._touchX,
+    this.touchX = new Animated.Value(windowWidth / 2 - circleRadius);
+    this.translateX = Animated.add(
+      this.touchX,
       new Animated.Value(-circleRadius)
     );
-    this._translateY = new Animated.Value(0);
+    this.translateY = new Animated.Value(0);
   }
 
-  _onHorizontalFlingHandlerStateChange = (
+  onHorizontalFlingHandlerStateChange = (
     { nativeEvent }: FlingGestureHandlerStateChangeEvent,
     offset: number
   ) => {
     if (nativeEvent.oldState === State.ACTIVE) {
-      Animated.spring(this._touchX, {
+      Animated.spring(this.touchX, {
         // @ts-ignore private property
-        toValue: this._touchX._value + offset,
+        toValue: this.touchX._value + offset,
         useNativeDriver: USE_NATIVE_DRIVER,
       }).start();
     }
   };
 
-  _onVerticalFlingHandlerStateChange = ({
+  onVerticalFlingHandlerStateChange = ({
     nativeEvent,
   }: FlingGestureHandlerStateChangeEvent) => {
     if (nativeEvent.oldState === State.ACTIVE) {
-      Animated.spring(this._translateY, {
+      Animated.spring(this.translateY, {
         // @ts-ignore private property
-        toValue: this._translateY._value + 10,
+        toValue: this.translateY._value + 10,
         useNativeDriver: USE_NATIVE_DRIVER,
       }).start();
     }
@@ -56,11 +56,11 @@ class Fling extends Component {
       <FlingGestureHandler
         direction={Directions.UP}
         numberOfPointers={2}
-        onHandlerStateChange={this._onVerticalFlingHandlerStateChange}>
+        onHandlerStateChange={this.onVerticalFlingHandlerStateChange}>
         <FlingGestureHandler
           direction={Directions.RIGHT | Directions.LEFT}
           onHandlerStateChange={(ev) =>
-            this._onHorizontalFlingHandlerStateChange(ev, -10)
+            this.onHorizontalFlingHandlerStateChange(ev, -10)
           }>
           <View style={styles.horizontalPan}>
             <Animated.View
@@ -69,10 +69,10 @@ class Fling extends Component {
                 {
                   transform: [
                     {
-                      translateX: this._translateX,
+                      translateX: this.translateX,
                     },
                     {
-                      translateY: this._translateY,
+                      translateY: this.translateY,
                     },
                   ],
                 },

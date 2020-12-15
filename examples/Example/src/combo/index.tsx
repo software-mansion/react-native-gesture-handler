@@ -52,15 +52,15 @@ class TouchableHighlight extends Component<
     activeOpacity: 0.85,
     underlayColor: 'black',
   };
-  _pressedStyle: { opacity?: number };
+  pressedStyle: { opacity?: number };
   constructor(props: TouchableHighlightPropsType) {
     super(props);
     this.state = { gestureHandlerState: State.UNDETERMINED };
-    this._pressedStyle = {
+    this.pressedStyle = {
       opacity: this.props.activeOpacity,
     };
   }
-  _onStateChange = (event: TapGestureHandlerStateChangeEvent) => {
+  onStateChange = (event: TapGestureHandlerStateChangeEvent) => {
     const nextGestureHandlerState = event.nativeEvent.state;
     if (this.state.gestureHandlerState !== nextGestureHandlerState) {
       this.setState({ gestureHandlerState: nextGestureHandlerState }, () => {
@@ -84,7 +84,7 @@ class TouchableHighlight extends Component<
       ? { backgroundColor: this.props.underlayColor as string }
       : { backgroundColor: 'transparent' };
     return (
-      <TapGestureHandler onHandlerStateChange={this._onStateChange}>
+      <TapGestureHandler onHandlerStateChange={this.onStateChange}>
         <View style={[this.props.style, style]}>
           {/* @ts-ignore not typed properly? */}
           {React.cloneElement(React.Children.only(this.props.children), {
@@ -113,7 +113,7 @@ class ControlledSwitch extends React.Component<
     super(props);
     this.state = { value: this.props.value || false };
   }
-  _onValueChange = (value: boolean) => {
+  onValueChange = (value: boolean) => {
     this.setState({ value });
     this.props.onValueChange?.(value);
   };
@@ -127,7 +127,7 @@ class ControlledSwitch extends React.Component<
         <Switch
           {...this.props}
           value={this.state.value}
-          onValueChange={this._onValueChange}
+          onValueChange={this.onValueChange}
         />
       </NativeViewGestureHandler>
     );
@@ -139,19 +139,19 @@ type ComboPropsType = {
 };
 
 class Combo extends Component<ComboPropsType> {
-  _onClick = () => {
+  onClick = () => {
     Alert.alert("I'm so touched");
-    this._scrollView?.scrollTo({ y: 200, animated: true });
+    this.scrollView?.scrollTo({ y: 200, animated: true });
   };
-  private _scrollView: RNScroll | GHScroll | null = null;
+  private scrollView: RNScroll | GHScroll | null = null;
   render() {
     const { ScrollViewComponent } = this.props;
     return (
       <View style={styles.container}>
         <ScrollViewComponent
-          ref={(node: RNScroll | GHScroll) => (this._scrollView = node)}
+          ref={(node: RNScroll | GHScroll) => (this.scrollView = node)}
           style={styles.scrollView}>
-          <TouchableHighlight style={styles.button} onClick={this._onClick}>
+          <TouchableHighlight style={styles.button} onClick={this.onClick}>
             <View style={styles.buttonInner}>
               <Text>Hello</Text>
             </View>

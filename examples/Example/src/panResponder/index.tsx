@@ -25,36 +25,36 @@ type CircleStyles = {
 
 // A clone of: https://github.com/facebook/react-native/blob/master/packages/rn-tester/js/examples/PanResponder/PanResponderExample.js
 class PanResponderExample extends Component {
-  private _panResponder: { panHandlers?: GestureResponderHandlers } = {};
-  private _previousLeft = 0;
-  private _previousTop = 0;
-  private _circleStyles: { style: CircleStyles } = {
+  private panResponder: { panHandlers?: GestureResponderHandlers } = {};
+  private previousLeft = 0;
+  private previousTop = 0;
+  private circleStyles: { style: CircleStyles } = {
     style: { left: 0, top: 0, backgroundColor: '#000' },
   };
   private circle: React.ElementRef<typeof View> | null = null;
 
   UNSAFE_componentWillMount() {
-    this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
-      onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
-      onPanResponderGrant: this._handlePanResponderGrant,
-      onPanResponderMove: this._handlePanResponderMove,
-      onPanResponderRelease: this._handlePanResponderEnd,
-      onPanResponderTerminate: this._handlePanResponderEnd,
+    this.panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: this.handleStartShouldSetPanResponder,
+      onMoveShouldSetPanResponder: this.handleMoveShouldSetPanResponder,
+      onPanResponderGrant: this.handlePanResponderGrant,
+      onPanResponderMove: this.handlePanResponderMove,
+      onPanResponderRelease: this.handlePanResponderEnd,
+      onPanResponderTerminate: this.handlePanResponderEnd,
     });
-    this._previousLeft = 20;
-    this._previousTop = 84;
-    this._circleStyles = {
+    this.previousLeft = 20;
+    this.previousTop = 84;
+    this.circleStyles = {
       style: {
-        left: this._previousLeft,
-        top: this._previousTop,
+        left: this.previousLeft,
+        top: this.previousTop,
         backgroundColor: 'green',
       },
     };
   }
 
   componentDidMount() {
-    this._updateNativeStyles();
+    this.updateNativeStyles();
   }
 
   render() {
@@ -64,26 +64,26 @@ class PanResponderExample extends Component {
           this.circle = circle;
         }}
         style={styles.circle}
-        {...this._panResponder.panHandlers}
+        {...this.panResponder.panHandlers}
       />
     );
   }
 
-  _highlight = () => {
-    this._circleStyles.style.backgroundColor = 'blue';
-    this._updateNativeStyles();
+  highlight = () => {
+    this.circleStyles.style.backgroundColor = 'blue';
+    this.updateNativeStyles();
   };
 
-  _unHighlight = () => {
-    this._circleStyles.style.backgroundColor = 'green';
-    this._updateNativeStyles();
+  unHighlight = () => {
+    this.circleStyles.style.backgroundColor = 'green';
+    this.updateNativeStyles();
   };
 
-  _updateNativeStyles = () => {
-    this.circle?.setNativeProps(this._circleStyles);
+  updateNativeStyles = () => {
+    this.circle?.setNativeProps(this.circleStyles);
   };
 
-  _handleStartShouldSetPanResponder = (
+  handleStartShouldSetPanResponder = (
     _e: GestureResponderEvent,
     _gestureState: PanResponderGestureState
   ) => {
@@ -91,7 +91,7 @@ class PanResponderExample extends Component {
     return true;
   };
 
-  _handleMoveShouldSetPanResponder = (
+  handleMoveShouldSetPanResponder = (
     _e: GestureResponderEvent,
     _gestureState: PanResponderGestureState
   ) => {
@@ -99,35 +99,35 @@ class PanResponderExample extends Component {
     return true;
   };
 
-  _handlePanResponderGrant = (
+  handlePanResponderGrant = (
     _e: GestureResponderEvent,
     _gestureState: PanResponderGestureState
   ) => {
-    this._highlight();
+    this.highlight();
   };
 
-  _handlePanResponderMove = (
-    _e: GestureResponderEvent,
+  handlePanResponderMove = (
+    e: GestureResponderEvent,
     gestureState: PanResponderGestureState
   ) => {
-    this._circleStyles.style.left =
-      this._previousLeft + gestureState.dx * (I18nManager.isRTL ? -1 : 1);
-    this._circleStyles.style.top = this._previousTop + gestureState.dy;
-    this._updateNativeStyles();
+    this.circleStyles.style.left =
+      this.previousLeft + gestureState.dx * (I18nManager.isRTL ? -1 : 1);
+    this.circleStyles.style.top = this.previousTop + gestureState.dy;
+    this.updateNativeStyles();
   };
 
-  _handlePanResponderEnd = (
-    _e: GestureResponderEvent,
+  handlePanResponderEnd = (
+    e: GestureResponderEvent,
     gestureState: PanResponderGestureState
   ) => {
-    this._unHighlight();
-    this._previousLeft += gestureState.dx * (I18nManager.isRTL ? -1 : 1);
-    this._previousTop += gestureState.dy;
+    this.unHighlight();
+    this.previousLeft += gestureState.dx * (I18nManager.isRTL ? -1 : 1);
+    this.previousTop += gestureState.dy;
   };
 }
 
 export default class Example extends Component {
-  _onClick = () => {
+  onClick = () => {
     Alert.alert("I'm so touched");
   };
   render() {

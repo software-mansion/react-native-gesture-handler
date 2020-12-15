@@ -30,47 +30,47 @@ type PropsType = {
 };
 
 export class Swipeable extends Component<PropsType> {
-  private _width: number;
-  private _dragX: Animated.Value;
-  private _transX: Animated.AnimatedInterpolation;
-  private _showLeftAction: Animated.AnimatedInterpolation;
-  private _showRightAction: Animated.AnimatedInterpolation;
-  private _onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  private width: number;
+  private dragX: Animated.Value;
+  private transX: Animated.AnimatedInterpolation;
+  private showLeftAction: Animated.AnimatedInterpolation;
+  private showRightAction: Animated.AnimatedInterpolation;
+  private onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: PropsType) {
     super(props);
-    this._width = 0;
-    this._dragX = new Animated.Value(0);
-    this._transX = this._dragX.interpolate({
+    this.width = 0;
+    this.dragX = new Animated.Value(0);
+    this.transX = this.dragX.interpolate({
       inputRange: [0, RATIO],
       outputRange: [0, 1],
     });
-    this._showLeftAction = this._dragX.interpolate({
+    this.showLeftAction = this.dragX.interpolate({
       inputRange: [-1, 0, 1],
       outputRange: [0, 0, 1],
     });
-    this._showRightAction = this._dragX.interpolate({
+    this.showRightAction = this.dragX.interpolate({
       inputRange: [-1, 0, 1],
       outputRange: [1, 0, 0],
     });
-    this._onGestureEvent = Animated.event(
-      [{ nativeEvent: { translationX: this._dragX } }],
+    this.onGestureEvent = Animated.event(
+      [{ nativeEvent: { translationX: this.dragX } }],
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
-  _onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+  onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       const dragToss = 0.05;
       const endOffsetX =
         event.nativeEvent.translationX + dragToss * event.nativeEvent.velocityX;
 
       let toValue = 0;
-      if (endOffsetX > this._width / 2) {
-        toValue = this._width * RATIO;
-      } else if (endOffsetX < -this._width / 2) {
-        toValue = -this._width * RATIO;
+      if (endOffsetX > this.width / 2) {
+        toValue = this.width * RATIO;
+      } else if (endOffsetX < -this.width / 2) {
+        toValue = -this.width * RATIO;
       }
 
-      Animated.spring(this._dragX, {
+      Animated.spring(this.dragX, {
         velocity: event.nativeEvent.velocityX,
         tension: 15,
         friction: 5,
@@ -79,11 +79,11 @@ export class Swipeable extends Component<PropsType> {
       }).start();
     }
   };
-  _onLayout = (event: LayoutChangeEvent) => {
-    this._width = event.nativeEvent.layout.width;
+  onLayout = (event: LayoutChangeEvent) => {
+    this.width = event.nativeEvent.layout.width;
   };
-  _reset = () => {
-    Animated.spring(this._dragX, {
+  reset = () => {
+    Animated.spring(this.dragX, {
       toValue: 0,
       useNativeDriver: USE_NATIVE_DRIVER,
       tension: 15,
@@ -95,32 +95,32 @@ export class Swipeable extends Component<PropsType> {
     return (
       <View>
         <Animated.View
-          style={[styles.rowAction, { opacity: this._showLeftAction }]}>
+          style={[styles.rowAction, { opacity: this.showLeftAction }]}>
           <RectButton
             style={[styles.rowAction, styles.leftAction]}
-            onPress={this._reset}>
+            onPress={this.reset}>
             <Text style={styles.actionButtonText}>Green</Text>
           </RectButton>
         </Animated.View>
         <Animated.View
-          style={[styles.rowAction, { opacity: this._showRightAction }]}>
+          style={[styles.rowAction, { opacity: this.showRightAction }]}>
           <RectButton
             style={[styles.rowAction, styles.rightAction]}
-            onPress={this._reset}>
+            onPress={this.reset}>
             <Text style={styles.actionButtonText}>Red</Text>
           </RectButton>
         </Animated.View>
         <PanGestureHandler
           {...this.props}
           activeOffsetX={[-10, 10]}
-          onGestureEvent={this._onGestureEvent}
-          onHandlerStateChange={this._onHandlerStateChange}>
+          onGestureEvent={this.onGestureEvent}
+          onHandlerStateChange={this.onHandlerStateChange}>
           <Animated.View
             style={{
               backgroundColor: 'white',
-              transform: [{ translateX: this._transX }],
+              transform: [{ translateX: this.transX }],
             }}
-            onLayout={this._onLayout}>
+            onLayout={this.onLayout}>
             {children}
           </Animated.View>
         </PanGestureHandler>
