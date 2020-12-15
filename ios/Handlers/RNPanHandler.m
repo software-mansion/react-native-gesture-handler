@@ -205,15 +205,15 @@
   APPLY_FLOAT_PROP(activeOffsetYEnd);
   APPLY_FLOAT_PROP(failOffsetYStart);
   APPLY_FLOAT_PROP(failOffsetYEnd);
-  
+
+#if !TARGET_OS_TV
   if (@available(iOS 13.4, *)) {
     bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:config[@"enableTrackpadTwoFingerGesture"]];
     if(enableTrackpadTwoFingerGesture){
       recognizer.allowedScrollTypesMask = UIScrollTypeMaskAll;
     }
   }
-  
-#if !TARGET_OS_TV
+
   APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
   APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
 #endif
