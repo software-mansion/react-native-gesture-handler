@@ -43,8 +43,7 @@ const Page = ({
     </RectButton>
     <RectButton style={styles.rectButton} onPress={nextType}>
       <Text style={styles.rectButtonText}>
-        {`Type '${type}
-        ${parallaxOn && ' with parallax'}'! -> Next`}
+        Type {type} {parallaxOn && 'with parallax!'} -&gt; Next
       </Text>
     </RectButton>
     <RectButton style={styles.rectButton} onPress={openDrawer}>
