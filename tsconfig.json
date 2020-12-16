@@ -22,7 +22,8 @@
     "noStrictGenericChecks": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitUseStrict": false,
-
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
     "outDir": "./dist"
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"]
