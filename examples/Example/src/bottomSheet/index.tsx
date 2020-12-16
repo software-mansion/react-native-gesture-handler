@@ -81,7 +81,7 @@ export class BottomSheet extends Component<Record<string, unknown>, StateType> {
       extrapolate: 'clamp',
     });
   }
-  onHeaderHandlerStateChange = ({
+  private onHeaderHandlerStateChange = ({
     nativeEvent,
   }: PanGestureHandlerStateChangeEvent) => {
     if (nativeEvent.oldState === State.BEGAN) {
@@ -89,7 +89,7 @@ export class BottomSheet extends Component<Record<string, unknown>, StateType> {
     }
     this.onHandlerStateChange({ nativeEvent });
   };
-  onHandlerStateChange = ({
+  private onHandlerStateChange = ({
     nativeEvent,
   }: PanGestureHandlerStateChangeEvent) => {
     if (nativeEvent.oldState === State.ACTIVE) {

@@ -57,7 +57,7 @@ export class Swipeable extends Component<PropsType> {
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
-  onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+  private onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       const dragToss = 0.05;
       const endOffsetX =
@@ -79,10 +79,10 @@ export class Swipeable extends Component<PropsType> {
       }).start();
     }
   };
-  onLayout = (event: LayoutChangeEvent) => {
+  private onLayout = (event: LayoutChangeEvent) => {
     this.width = event.nativeEvent.layout.width;
   };
-  reset = () => {
+  private reset = () => {
     Animated.spring(this.dragX, {
       toValue: 0,
       useNativeDriver: USE_NATIVE_DRIVER,

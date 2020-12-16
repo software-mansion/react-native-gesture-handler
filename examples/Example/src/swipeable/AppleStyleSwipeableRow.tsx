@@ -13,8 +13,8 @@ import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 export default class AppleStyleSwipeableRow extends Component {
-  renderLeftActions = (
-    progress: Animated.AnimatedInterpolation,
+  private renderLeftActions = (
+    _progress: Animated.AnimatedInterpolation,
     dragX: Animated.AnimatedInterpolation
   ) => {
     const trans = dragX.interpolate({
@@ -36,7 +36,7 @@ export default class AppleStyleSwipeableRow extends Component {
     );
   };
 
-  renderRightAction = (
+  private renderRightAction = (
     text: string,
     color: string,
     x: number,
@@ -62,7 +62,7 @@ export default class AppleStyleSwipeableRow extends Component {
     );
   };
 
-  renderRightActions = (
+  private renderRightActions = (
     progress: Animated.AnimatedInterpolation,
     _dragAnimatedValue: Animated.AnimatedInterpolation
   ) => (
@@ -79,11 +79,11 @@ export default class AppleStyleSwipeableRow extends Component {
 
   private swipeableRow?: Swipeable;
 
-  updateRef = (ref: Swipeable) => {
+  private updateRef = (ref: Swipeable) => {
     this.swipeableRow = ref;
   };
-  close = () => {
-    this.swipeableRow!.close();
+  private close = () => {
+    this.swipeableRow?.close();
   };
   render() {
     const { children } = this.props;

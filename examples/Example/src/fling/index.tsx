@@ -26,26 +26,25 @@ class Fling extends Component {
     this.translateY = new Animated.Value(0);
   }
 
-  onHorizontalFlingHandlerStateChange = (
+  private onHorizontalFlingHandlerStateChange = (
     { nativeEvent }: FlingGestureHandlerStateChangeEvent,
     offset: number
   ) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       Animated.spring(this.touchX, {
         // @ts-ignore private property
-        toValue: this.touchX._value + offset,
+        toValue: Animated.add(this.touchX, offset),
         useNativeDriver: USE_NATIVE_DRIVER,
       }).start();
     }
   };
 
-  onVerticalFlingHandlerStateChange = ({
+  private onVerticalFlingHandlerStateChange = ({
     nativeEvent,
   }: FlingGestureHandlerStateChangeEvent) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       Animated.spring(this.translateY, {
-        // @ts-ignore private property
-        toValue: this.translateY._value + 10,
+        toValue: Animated.add(this.translateY, 10) as Animated.Value,
         useNativeDriver: USE_NATIVE_DRIVER,
       }).start();
     }

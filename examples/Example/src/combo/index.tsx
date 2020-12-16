@@ -52,21 +52,21 @@ class TouchableHighlight extends Component<
     activeOpacity: 0.85,
     underlayColor: 'black',
   };
-  pressedStyle: { opacity?: number };
+  // private pressedStyle: { opacity?: number };
   constructor(props: TouchableHighlightPropsType) {
     super(props);
     this.state = { gestureHandlerState: State.UNDETERMINED };
-    this.pressedStyle = {
-      opacity: this.props.activeOpacity,
-    };
+    // this.pressedStyle = {
+    //   opacity: this.props.activeOpacity,
+    // };
   }
-  onStateChange = (event: TapGestureHandlerStateChangeEvent) => {
+  private onStateChange = (event: TapGestureHandlerStateChangeEvent) => {
     const nextGestureHandlerState = event.nativeEvent.state;
     if (this.state.gestureHandlerState !== nextGestureHandlerState) {
       this.setState({ gestureHandlerState: nextGestureHandlerState }, () => {
         const pressed = nextGestureHandlerState === State.BEGAN;
         // @ts-ignore old API
-        // eslint-disable-next-line react/no-string-refs
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, react/no-string-refs
         this.refs[CHILD_REF].setNativeProps({
           style: pressed
             ? { opacity: this.props.activeOpacity }
@@ -113,7 +113,7 @@ class ControlledSwitch extends React.Component<
     super(props);
     this.state = { value: this.props.value || false };
   }
-  onValueChange = (value: boolean) => {
+  private onValueChange = (value: boolean) => {
     this.setState({ value });
     this.props.onValueChange?.(value);
   };
@@ -135,11 +135,12 @@ class ControlledSwitch extends React.Component<
 }
 
 type ComboPropsType = {
+  // TODO(TS) what this type can be?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ScrollViewComponent: React.ComponentType<any>;
 };
-
 class Combo extends Component<ComboPropsType> {
-  onClick = () => {
+  private onClick = () => {
     Alert.alert("I'm so touched");
     this.scrollView?.scrollTo({ y: 200, animated: true });
   };

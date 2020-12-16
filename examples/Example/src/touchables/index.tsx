@@ -23,7 +23,7 @@ import {
 
 const BOX_SIZE = 80;
 
-const renderSampleBox = (color: string) => (
+const renderSampleBox = (color?: string) => (
   <View
     style={{
       width: BOX_SIZE,
@@ -33,7 +33,7 @@ const renderSampleBox = (color: string) => (
   />
 );
 
-const toReactNativeTouchable = (touchable: React.ComponentType<any>) => {
+const toReactNativeTouchable = (touchable: React.ComponentType<unknown>) => {
   if (touchable === TouchableOpacity) return RNTouchableOpacity;
   if (touchable === TouchableWithoutFeedback) return RNTouchableWithoutFeedback;
   if (touchable === TouchableHighlight) return RNTouchableHighlight;
@@ -42,10 +42,11 @@ const toReactNativeTouchable = (touchable: React.ComponentType<any>) => {
 };
 
 type TouchablesType = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type: React.ComponentType<any>;
-  props?: Record<string, any>;
+  props?: Record<string, unknown>;
   color?: string;
-  renderChild: (() => null) | ((color: string) => JSX.Element);
+  renderChild: (() => null) | ((color?: string) => JSX.Element);
   text: string;
   background?: (A: typeof RNTouchableNativeFeedback) => BackgroundPropType;
 };
@@ -333,7 +334,7 @@ export class TouchableExample extends Component<
     useScrollView: true,
   };
 
-  toggleScrollView = () =>
+  private toggleScrollView = () =>
     this.setState((prev) => ({ useScrollView: !prev.useScrollView }));
 
   render() {
@@ -346,6 +347,7 @@ export class TouchableExample extends Component<
       color,
     } = screens[this.props.route.params.item];
     const RNTouchable = toReactNativeTouchable(GHTouchable);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Component: React.ComponentType<any> = this.state.useScrollView
       ? ScrollView
       : View;
@@ -367,13 +369,13 @@ export class TouchableExample extends Component<
           <RNTouchable
             {...props}
             background={background?.(RNTouchableNativeFeedback)}>
-            {renderChild(color!)}
+            {renderChild(color)}
           </RNTouchable>
           <GHTouchable
             {...props}
             // @ts-ignore GH component does not export statics from RN component, but can use it
             background={background?.(TouchableNativeFeedback)}>
-            {renderChild(color!)}
+            {renderChild(color)}
           </GHTouchable>
         </View>
       </Component>

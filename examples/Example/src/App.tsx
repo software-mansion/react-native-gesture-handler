@@ -28,6 +28,7 @@ import ChatHeads from './chatHeads';
 
 type ScreensType = Record<
   string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { component: React.ComponentType<any>; title?: string }
 >;
 

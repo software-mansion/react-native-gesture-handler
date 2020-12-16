@@ -141,7 +141,7 @@ export default class Example extends Component<
                 type: (prevState.type + 1) % TYPES.length,
               }))
             }
-            openDrawer={() => this.drawer!.openDrawer({ speed: 14 })}
+            openDrawer={() => this.drawer?.openDrawer({ speed: 14 })}
           />
         </DrawerLayout>
       </View>

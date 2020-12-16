@@ -10,11 +10,6 @@ import {
 
 const USE_NATIVE_DRIVER = false;
 
-// setInterval(() => {
-//   let iters = 1e8, sum = 0;
-//   while (iters-- > 0) sum += iters;
-// }, 300);
-
 const START_X = 0;
 const START_Y = 0;
 
@@ -24,16 +19,16 @@ type StateType = {
 };
 
 class Tracking extends Component<Record<string, unknown>, StateType> {
-  dragX: Animated.Value;
-  transX: Animated.Value;
-  follow1x: Animated.Value;
-  follow2x: Animated.Value;
-  dragY: Animated.Value;
-  transY: Animated.Value;
-  follow1y: Animated.Value;
-  follow2y: Animated.Value;
-  onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
-  lastOffset: { x: number; y: number };
+  private dragX: Animated.Value;
+  private transX: Animated.Value;
+  private follow1x: Animated.Value;
+  private follow2x: Animated.Value;
+  private dragY: Animated.Value;
+  private transY: Animated.Value;
+  private follow1y: Animated.Value;
+  private follow2y: Animated.Value;
+  private onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
+  private lastOffset: { x: number; y: number };
   constructor(props: Record<string, unknown>) {
     super(props);
 
@@ -99,7 +94,7 @@ class Tracking extends Component<Record<string, unknown>, StateType> {
 
     this.lastOffset = { x: START_X, y: START_Y };
   }
-  onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+  private onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       const { height, width } = this.state;
 
@@ -140,7 +135,7 @@ class Tracking extends Component<Record<string, unknown>, StateType> {
       this.dragY.extractOffset();
     }
   };
-  onLayout = ({ nativeEvent }: LayoutChangeEvent) => {
+  private onLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     const { width, height } = nativeEvent.layout;
     this.setState({ width, height });
   };

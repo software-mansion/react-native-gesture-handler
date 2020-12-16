@@ -50,7 +50,7 @@ export default class Example extends Component {
         renderItem={({ item, index }) => (
           <SwipeableRow item={item} index={index} />
         )}
-        keyExtractor={(item, index) => `message ${index}`}
+        keyExtractor={(_item, index) => `message ${index}`}
       />
     );
   }

@@ -69,21 +69,21 @@ class PanResponderExample extends Component {
     );
   }
 
-  highlight = () => {
+  private highlight = () => {
     this.circleStyles.style.backgroundColor = 'blue';
     this.updateNativeStyles();
   };
 
-  unHighlight = () => {
+  private unHighlight = () => {
     this.circleStyles.style.backgroundColor = 'green';
     this.updateNativeStyles();
   };
 
-  updateNativeStyles = () => {
+  private updateNativeStyles = () => {
     this.circle?.setNativeProps(this.circleStyles);
   };
 
-  handleStartShouldSetPanResponder = (
+  private handleStartShouldSetPanResponder = (
     _e: GestureResponderEvent,
     _gestureState: PanResponderGestureState
   ) => {
@@ -91,7 +91,7 @@ class PanResponderExample extends Component {
     return true;
   };
 
-  handleMoveShouldSetPanResponder = (
+  private handleMoveShouldSetPanResponder = (
     _e: GestureResponderEvent,
     _gestureState: PanResponderGestureState
   ) => {
@@ -99,14 +99,14 @@ class PanResponderExample extends Component {
     return true;
   };
 
-  handlePanResponderGrant = (
+  private handlePanResponderGrant = (
     _e: GestureResponderEvent,
     _gestureState: PanResponderGestureState
   ) => {
     this.highlight();
   };
 
-  handlePanResponderMove = (
+  private handlePanResponderMove = (
     _e: GestureResponderEvent,
     gestureState: PanResponderGestureState
   ) => {
@@ -116,8 +116,8 @@ class PanResponderExample extends Component {
     this.updateNativeStyles();
   };
 
-  handlePanResponderEnd = (
-    e: GestureResponderEvent,
+  private handlePanResponderEnd = (
+    _e: GestureResponderEvent,
     gestureState: PanResponderGestureState
   ) => {
     this.unHighlight();

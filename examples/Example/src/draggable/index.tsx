@@ -38,7 +38,7 @@ export class DraggableBox extends Component<DraggableBoxProps> {
       { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
-  onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+  private onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastOffset.x += event.nativeEvent.translationX;
       this.lastOffset.y += event.nativeEvent.translationY;

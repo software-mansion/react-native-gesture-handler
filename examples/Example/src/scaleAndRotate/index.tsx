@@ -73,7 +73,7 @@ export class PinchableBox extends React.Component {
     );
   }
 
-  onRotateHandlerStateChange = (
+  private onRotateHandlerStateChange = (
     event: RotationGestureHandlerStateChangeEvent
   ) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
@@ -82,14 +82,18 @@ export class PinchableBox extends React.Component {
       this.rotate.setValue(0);
     }
   };
-  onPinchHandlerStateChange = (event: PinchGestureHandlerStateChangeEvent) => {
+  private onPinchHandlerStateChange = (
+    event: PinchGestureHandlerStateChangeEvent
+  ) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastScale *= event.nativeEvent.scale;
       this.baseScale.setValue(this.lastScale);
       this.pinchScale.setValue(1);
     }
   };
-  onTiltGestureStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+  private onTiltGestureStateChange = (
+    event: PanGestureHandlerStateChangeEvent
+  ) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastTilt += event.nativeEvent.translationY;
       this.tilt.setOffset(this.lastTilt);
@@ -131,6 +135,7 @@ export class PinchableBox extends React.Component {
                         ],
                       },
                     ]}
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     source={require('./swmansion.png')}
                   />
                 </Animated.View>

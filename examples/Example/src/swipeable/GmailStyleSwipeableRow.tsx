@@ -8,8 +8,8 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 const AnimatedView = Animated.createAnimatedComponent(View);
 
 export default class GmailStyleSwipeableRow extends Component {
-  renderLeftActions = (
-    progress: Animated.AnimatedInterpolation,
+  private renderLeftActions = (
+    _progress: Animated.AnimatedInterpolation,
     dragX: Animated.AnimatedInterpolation
   ) => {
     const scale = dragX.interpolate({
@@ -24,8 +24,8 @@ export default class GmailStyleSwipeableRow extends Component {
       </RectButton>
     );
   };
-  renderRightActions = (
-    progress: Animated.AnimatedInterpolation,
+  private renderRightActions = (
+    _progress: Animated.AnimatedInterpolation,
     dragX: Animated.AnimatedInterpolation
   ) => {
     const scale = dragX.interpolate({
@@ -43,11 +43,11 @@ export default class GmailStyleSwipeableRow extends Component {
 
   private swipeableRow?: Swipeable;
 
-  updateRef = (ref: Swipeable) => {
+  private updateRef = (ref: Swipeable) => {
     this.swipeableRow = ref;
   };
-  close = () => {
-    this.swipeableRow!.close();
+  private close = () => {
+    this.swipeableRow?.close();
   };
   render() {
     const { children } = this.props;
