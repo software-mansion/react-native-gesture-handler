@@ -2,10 +2,9 @@
 /* eslint-disable */
 // @ts-nocheck TODO(TS) provide types
 import React from 'react';
-import {
+import ReactNative, {
   findNodeHandle as findNodeHandleRN,
   NativeModules,
-  Touchable,
   Platform,
 } from 'react-native';
 import deepEqual from 'fbjs/lib/areEqual';
@@ -348,7 +347,7 @@ export default function createHandler(
       const child = React.Children.only(this.props.children);
       let grandChildren = child.props.children;
       if (
-        Touchable.TOUCH_TARGET_DEBUG &&
+        ReactNative.Touchable.TOUCH_TARGET_DEBUG &&
         child.type &&
         (child.type === 'RNGestureHandlerButton' ||
           child.type.name === 'View' ||
@@ -356,7 +355,7 @@ export default function createHandler(
       ) {
         grandChildren = React.Children.toArray(grandChildren);
         grandChildren.push(
-          Touchable.renderDebugView({
+          ReactNative.Touchable.renderDebugView({
             color: 'mediumspringgreen',
             hitSlop: child.props.hitSlop,
           })
