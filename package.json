@@ -7,7 +7,7 @@
     "precommit": "lint-staged",
     "release": "npm login && release-it",
     "ts-check": "yarn tsc",
-    "lint-check": "yarn prettier --check src/ examples/Example/src"
+    "lint-check": "yarn eslint src/ examples/Example/src && yarn prettier --check src/ examples/Example/src"
   },
   "main": "index.js",
   "types": "react-native-gesture-handler.d.ts",
@@ -20,9 +20,6 @@
     "ios/",
     "src/",
     "index.js",
-    "react-native-gesture-handler.d.ts",
-    "DrawerLayout.d.ts",
-    "Swipeable.d.ts",
     "README.md",
     "jestSetup.js",
     "RNGestureHandler.podspec"
