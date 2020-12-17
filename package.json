@@ -27,7 +27,11 @@
     "src/",
     "dist/",
     "!dist/examples",
-    "index.js",
+    "index.ts",
+    "Swipeable.js",
+    "Swipeable.d.ts",
+    "DrawerLayout.js",
+    "DrawerLayout.d.ts",
     "README.md",
     "jestSetup.js",
     "RNGestureHandler.podspec"
