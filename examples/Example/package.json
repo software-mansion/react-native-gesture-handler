@@ -20,7 +20,6 @@
     "invariant": "^2.2.4",
     "react": "16.13.1",
     "react-native": "0.63.3",
-    "react-native-reanimated": "^1.13.2",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.15.0"
   },
