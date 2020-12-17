@@ -53,3 +53,7 @@ jsconfig.json
 .project
 .settings/
 .vscode
+
+# TS
+
+dist/

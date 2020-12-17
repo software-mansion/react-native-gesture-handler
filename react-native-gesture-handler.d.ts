@@ -4,7 +4,6 @@
 declare module 'react-native-gesture-handler' {
   import * as React from 'react';
   import {
-    Animated,
     FlatListProperties,
     ScrollViewProperties,
     SwitchProperties,
@@ -14,7 +13,6 @@ declare module 'react-native-gesture-handler' {
     TouchableOpacityProperties,
     TouchableNativeFeedbackProperties,
     TouchableWithoutFeedbackProperties,
-    Insets,
     ViewStyle,
     StyleProp,
     ViewProps,
@@ -23,24 +21,24 @@ declare module 'react-native-gesture-handler' {
   /* GESTURE HANDLER STATE */
 
   export const Directions: {
-    readonly RIGHT: 1
-    readonly LEFT: 2
-    readonly UP: 4
-    readonly DOWN: 8
-  }
+    readonly RIGHT: 1;
+    readonly LEFT: 2;
+    readonly UP: 4;
+    readonly DOWN: 8;
+  };
 
-  export type Directions = typeof Directions[keyof typeof Directions]
+  export type Directions = typeof Directions[keyof typeof Directions];
 
   export const State: {
-    readonly UNDETERMINED: 0
-    readonly FAILED: 1
-    readonly BEGAN: 2
-    readonly CANCELLED: 3
-    readonly ACTIVE: 4
-    readonly END: 5
-  }
+    readonly UNDETERMINED: 0;
+    readonly FAILED: 1;
+    readonly BEGAN: 2;
+    readonly CANCELLED: 3;
+    readonly ACTIVE: 4;
+    readonly END: 5;
+  };
 
-  export type State = typeof State[keyof typeof State]
+  export type State = typeof State[keyof typeof State];
 
   /* STATE CHANGE EVENTS */
 
@@ -264,7 +262,8 @@ declare module 'react-native-gesture-handler' {
     ) => void;
   }
 
-  export interface TapGestureHandlerProperties extends GestureHandlerProperties {
+  export interface TapGestureHandlerProperties
+    extends GestureHandlerProperties {
     minPointers?: number;
     maxDurationMs?: number;
     maxDelayMs?: number;
@@ -276,12 +275,15 @@ declare module 'react-native-gesture-handler' {
     onHandlerStateChange?: (event: TapGestureHandlerStateChangeEvent) => void;
   }
 
-  export interface ForceTouchGestureHandlerProperties extends GestureHandlerProperties {
-    minForce?: number,
-    maxForce?: number,
-    feedbackOnActivation?: boolean,
+  export interface ForceTouchGestureHandlerProperties
+    extends GestureHandlerProperties {
+    minForce?: number;
+    maxForce?: number;
+    feedbackOnActivation?: boolean;
     onGestureEvent?: (event: ForceTouchGestureHandlerGestureEvent) => void;
-    onHandlerStateChange?: (event: ForceTouchGestureHandlerStateChangeEvent) => void;
+    onHandlerStateChange?: (
+      event: ForceTouchGestureHandlerStateChangeEvent
+    ) => void;
   }
 
   export interface LongPressGestureHandlerProperties
@@ -289,10 +291,13 @@ declare module 'react-native-gesture-handler' {
     minDurationMs?: number;
     maxDist?: number;
     onGestureEvent?: (event: LongPressGestureHandlerGestureEvent) => void;
-    onHandlerStateChange?: (event: LongPressGestureHandlerStateChangeEvent) => void;
+    onHandlerStateChange?: (
+      event: LongPressGestureHandlerStateChangeEvent
+    ) => void;
   }
 
-  export interface PanGestureHandlerProperties extends GestureHandlerProperties {
+  export interface PanGestureHandlerProperties
+    extends GestureHandlerProperties {
     /** @deprecated  use activeOffsetX*/
     minDeltaX?: number;
     /** @deprecated  use activeOffsetY*/
@@ -345,37 +350,21 @@ declare module 'react-native-gesture-handler' {
 
   /* GESTURE HANDLERS CLASSES */
 
-  export class NativeViewGestureHandler extends React.Component<
-    NativeViewGestureHandlerProperties
-  > {}
+  export class NativeViewGestureHandler extends React.Component<NativeViewGestureHandlerProperties> {}
 
-  export class TapGestureHandler extends React.Component<
-    TapGestureHandlerProperties
-  > {}
+  export class TapGestureHandler extends React.Component<TapGestureHandlerProperties> {}
 
-  export class LongPressGestureHandler extends React.Component<
-    LongPressGestureHandlerProperties
-  > {}
+  export class LongPressGestureHandler extends React.Component<LongPressGestureHandlerProperties> {}
 
-  export class PanGestureHandler extends React.Component<
-    PanGestureHandlerProperties
-  > {}
+  export class PanGestureHandler extends React.Component<PanGestureHandlerProperties> {}
 
-  export class PinchGestureHandler extends React.Component<
-    PinchGestureHandlerProperties
-  > {}
+  export class PinchGestureHandler extends React.Component<PinchGestureHandlerProperties> {}
 
-  export class RotationGestureHandler extends React.Component<
-    RotationGestureHandlerProperties
-  > {}
+  export class RotationGestureHandler extends React.Component<RotationGestureHandlerProperties> {}
 
-  export class FlingGestureHandler extends React.Component<
-    FlingGestureHandlerProperties
-  > {}
+  export class FlingGestureHandler extends React.Component<FlingGestureHandlerProperties> {}
 
-  export class ForceTouchGestureHandler extends React.Component<
-    ForceTouchGestureHandlerProperties
-  > {}
+  export class ForceTouchGestureHandler extends React.Component<ForceTouchGestureHandlerProperties> {}
 
   /* BUTTONS PROPERTIES */
 
@@ -411,36 +400,38 @@ declare module 'react-native-gesture-handler' {
 
   export class RectButton extends React.Component<RectButtonProperties> {}
 
-  export class BorderlessButton extends React.Component<
-    BorderlessButtonProperties
-  > {}
+  export class BorderlessButton extends React.Component<BorderlessButtonProperties> {}
 
   export interface ContainedTouchableProperties {
-    containerStyle?: StyleProp<ViewStyle>
+    containerStyle?: StyleProp<ViewStyle>;
   }
 
   export class TouchableHighlight extends React.Component<
     TouchableHighlightProperties | ContainedTouchableProperties
-    > {}
+  > {}
 
   export class TouchableNativeFeedback extends React.Component<
     TouchableNativeFeedbackProperties | ContainedTouchableProperties
-    > {}
+  > {}
 
   export class TouchableOpacity extends React.Component<
     TouchableOpacityProperties | ContainedTouchableProperties
-    > {}
+  > {}
 
   export class TouchableWithoutFeedback extends React.Component<
     TouchableWithoutFeedbackProperties | ContainedTouchableProperties
-    > {}
+  > {}
 
   /* GESTURE HANDLER WRAPPED CLASSES */
 
   export class ScrollView extends React.Component<
     NativeViewGestureHandlerProperties & ScrollViewProperties
   > {
-    scrollTo(y?: number | { x?: number; y?: number; animated?: boolean }, x?: number, animated?: boolean): void;
+    scrollTo(
+      y?: number | { x?: number; y?: number; animated?: boolean },
+      x?: number,
+      animated?: boolean
+    ): void;
     scrollToEnd(options?: { animated: boolean }): void;
   }
 
@@ -462,8 +453,17 @@ declare module 'react-native-gesture-handler' {
     NativeViewGestureHandlerProperties & FlatListProperties<ItemT>
   > {
     scrollToEnd: (params?: { animated?: boolean }) => void;
-    scrollToIndex: (params: { animated?: boolean; index: number; viewOffset?: number; viewPosition?: number }) => void;
-    scrollToItem: (params: { animated?: boolean; item: ItemT; viewPosition?: number }) => void;
+    scrollToIndex: (params: {
+      animated?: boolean;
+      index: number;
+      viewOffset?: number;
+      viewPosition?: number;
+    }) => void;
+    scrollToItem: (params: {
+      animated?: boolean;
+      item: ItemT;
+      viewPosition?: number;
+    }) => void;
     scrollToOffset: (params: { animated?: boolean; offset: number }) => void;
   }
 
