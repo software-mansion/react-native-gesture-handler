@@ -26,5 +26,12 @@
     "noUnusedLocals": true,
     "outDir": "./dist"
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts", "examples/Example/index.js"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.d.ts",
+    "examples/Example/index.js",
+    "DrawerLayout.js",
+    "Swipeable.js"
+  ]
 }
