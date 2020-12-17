@@ -3,13 +3,15 @@
   "version": "1.9.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
+    "prepare": "yarn build",
     "test": "jest",
+    "build": "yarn tsc",
     "precommit": "lint-staged",
     "release": "npm login && release-it",
-    "ts-check": "yarn tsc",
+    "ts-check": "yarn tsc --check",
     "lint-check": "yarn eslint src/ examples/Example/src && yarn prettier --check src/ examples/Example/src"
   },
-  "main": "index.js",
+  "main": "dist/index.js",
   "types": "react-native-gesture-handler.d.ts",
   "files": [
     "android/build.gradle",
@@ -19,6 +21,8 @@
     "android/lib/src/main/java/",
     "ios/",
     "src/",
+    "dist/",
+    "!dist/examples",
     "index.js",
     "README.md",
     "jestSetup.js",
