@@ -1,6 +1,11 @@
 declare module 'react-native-gesture-handler/DrawerLayout' {
-  import * as React from 'react'
-  import { Animated, StatusBarAnimation, StyleProp, ViewStyle } from 'react-native';
+  import * as React from 'react';
+  import {
+    Animated,
+    StatusBarAnimation,
+    StyleProp,
+    ViewStyle,
+  } from 'react-native';
 
   export type DrawerPosition = 'left' | 'right';
 
