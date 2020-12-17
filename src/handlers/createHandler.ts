@@ -134,7 +134,7 @@ export default function createHandler(
   config = {},
   transformProps,
   customNativeProps = {}
-) {
+): React.Component<any> {
   class Handler extends React.Component {
     static displayName = handlerName;
 
