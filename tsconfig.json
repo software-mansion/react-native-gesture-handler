@@ -26,5 +26,5 @@
     "noUnusedLocals": true,
     "outDir": "./dist"
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts", "examples/Example/index.js"]
 }
