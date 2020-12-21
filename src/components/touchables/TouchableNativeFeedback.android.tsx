@@ -8,8 +8,8 @@ import GenericTouchable, { GenericTouchableProps } from './GenericTouchable';
 
 export type TouchableNativeFeedbackExtraPropsType = {
   borderless?: boolean;
-  rippleColor?: ColorValue;
-  rippleRadius?: number;
+  rippleColor?: number | null;
+  rippleRadius?: number | null;
   foreground?: boolean;
 };
 
@@ -22,21 +22,24 @@ export type TouchableNativeFeedbackExtraPropsType = {
 export default class TouchableNativeFeedback extends Component<
   TouchableNativeFeedbackProps & GenericTouchableProps
 > {
-  // TODO: taken from RippleBackgroundPropType from RN, not sure if correct
-  static SelectableBackground = (rippleRadius: number) => ({
-    type: 'SelectableBackground',
+  // could be taken as RNTouchableNativeFeedback.SelectableBackground etc. but the API may change
+  static SelectableBackground = (rippleRadius?: number) => ({
+    type: 'ThemeAttrAndroid',
+    // I added `attribute` prop to clone the implementation of RN and be able to use only 2 types
+    attribute: 'selectableItemBackground',
     rippleRadius,
   });
-  static SelectableBackgroundBorderless = (rippleRadius: number) => ({
-    type: 'SelectableBackgroundBorderless',
+  static SelectableBackgroundBorderless = (rippleRadius?: number) => ({
+    type: 'ThemeAttrAndroid',
+    attribute: 'selectableItemBackgroundBorderless',
     rippleRadius,
   });
   static Ripple = (
     color: ColorValue,
     borderless: boolean,
-    rippleRadius: number
+    rippleRadius?: number
   ) => ({
-    type: 'Ripple',
+    type: 'RippleAndroid',
     color,
     borderless,
     rippleRadius,
@@ -55,17 +58,19 @@ export default class TouchableNativeFeedback extends Component<
 
   getExtraButtonProps() {
     const extraProps: TouchableNativeFeedbackExtraPropsType = {};
-    // TODO: the values of background are different in RN types, maybe they were changed?
-    const { background }: any = this.props;
+    const { background } = this.props;
     if (background) {
-      if (background.type === 'Ripple') {
+      // I changed type values to match those used in RN
+      // TODO(TS): check if it works the same as previous implementation
+      if (background.type === 'RippleAndroid') {
         extraProps['borderless'] = background.borderless;
         extraProps['rippleColor'] = background.color;
-        extraProps['rippleRadius'] = background.rippleRadius;
-      } else if (background.type === 'SelectableBackgroundBorderless') {
-        extraProps['borderless'] = true;
-        extraProps['rippleRadius'] = background.rippleRadius;
+      } else if (background.type === 'ThemeAttrAndroid') {
+        extraProps['borderless'] =
+          background.attribute === 'selectableItemBackgroundBorderless';
       }
+      // I moved it from above since it should be available in all options
+      extraProps['rippleRadius'] = background.rippleRadius;
     }
     extraProps['foreground'] = this.props.useForeground;
     return extraProps;

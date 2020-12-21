@@ -15,7 +15,7 @@ export default function GestureHandlerRootView({
 }) {
   return (
     <GestureHandlerRootViewContext.Consumer>
-      {available => {
+      {(available) => {
         if (available) {
           // If we already have a parent wrapped in the gesture handler root view,
           // We don't need to wrap it again in root view

@@ -17,6 +17,10 @@ import {
   PanGestureHandler,
   TapGestureHandler,
   PanGestureHandlerProperties,
+  GestureEventEvent,
+  PanGestureHandlerEventExtraPayload,
+  HandlerStateChangeEvent,
+  TapGestureHandlerEventExtraPayload,
 } from '../handlers/gestureHandlers';
 import State from '../State';
 
@@ -131,7 +135,9 @@ export default class Swipeable extends Component<
     }
   }
 
-  _onGestureEvent?: any;
+  _onGestureEvent?: (
+    event: GestureEventEvent<PanGestureHandlerEventExtraPayload>
+  ) => void;
   _transX?: Animated.AnimatedInterpolation;
   _showLeftAction?: Animated.AnimatedInterpolation | Animated.Value;
   _leftActionTranslate?: Animated.AnimatedInterpolation;
@@ -196,20 +202,26 @@ export default class Swipeable extends Component<
     });
   };
 
-  _onTapHandlerStateChange = ({ nativeEvent }: any) => {
+  _onTapHandlerStateChange = ({
+    nativeEvent,
+  }: HandlerStateChangeEvent<TapGestureHandlerEventExtraPayload>) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       this.close();
     }
   };
 
-  _onHandlerStateChange = ({ nativeEvent }: any) => {
-    if (nativeEvent.oldState === State.ACTIVE) {
-      this._handleRelease(nativeEvent);
+  _onHandlerStateChange = (
+    ev: HandlerStateChangeEvent<PanGestureHandlerEventExtraPayload>
+  ) => {
+    if (ev.nativeEvent.oldState === State.ACTIVE) {
+      this._handleRelease(ev);
     }
   };
 
-  _handleRelease = (nativeEvent: any) => {
-    const { velocityX, translationX: dragX } = nativeEvent;
+  _handleRelease = (
+    ev: HandlerStateChangeEvent<PanGestureHandlerEventExtraPayload>
+  ) => {
+    const { velocityX, translationX: dragX } = ev.nativeEvent;
     const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
     const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
