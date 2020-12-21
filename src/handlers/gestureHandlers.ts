@@ -183,8 +183,12 @@ export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
     })
   : ForceTouchFallback;
 
-// @ts-ignore
-ForceTouchGestureHandler.forceTouchAvailable =
+type ExtendedForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
+  forceTouchAvailable: boolean;
+};
+
+// TODO(TS): decide if not hacky
+(ForceTouchGestureHandler as ExtendedForceTouchGestureHandler).forceTouchAvailable =
   PlatformConstants?.forceTouchAvailable || false;
 
 export type LongPressGestureHandlerEventExtraPayload = {
