@@ -175,24 +175,24 @@ export default function createHandler<
   class Handler extends React.Component<T & InternalEventHandlers> {
     static displayName = name;
 
-    private _handlerTag: number;
-    private _config: {};
-    private _propsRef: React.MutableRefObject<unknown>;
-    private _viewNode: any;
-    private _viewTag?: number;
-    private _updateEnqueued: ReturnType<typeof setImmediate> | null = null;
+    private handlerTag: number;
+    private config: {};
+    private propsRef: React.MutableRefObject<unknown>;
+    private viewNode: any;
+    private viewTag?: number;
+    private updateEnqueued: ReturnType<typeof setImmediate> | null = null;
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
-      this._handlerTag = handlerTag++;
-      this._config = {};
-      this._propsRef = React.createRef();
+      this.handlerTag = handlerTag++;
+      this.config = {};
+      this.propsRef = React.createRef();
 
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);
         }
-        handlerIDToTag[props.id] = this._handlerTag;
+        handlerIDToTag[props.id] = this.handlerTag;
       }
     }
 
@@ -205,8 +205,8 @@ export default function createHandler<
         // setImmediate. This makes it so _update function gets called after all
         // react components are mounted and we expect the missing ref object to
         // be resolved by then.
-        this._updateEnqueued = setImmediate(() => {
-          this._updateEnqueued = null;
+        this.updateEnqueued = setImmediate(() => {
+          this.updateEnqueued = null;
           this._update();
         });
       }
@@ -219,21 +219,21 @@ export default function createHandler<
         )
       );
 
-      this._attachGestureHandler(findNodeHandle(this._viewNode) as number); // TODO(TS) - check if this can be null
+      this._attachGestureHandler(findNodeHandle(this.viewNode) as number); // TODO(TS) - check if this can be null
     }
 
     componentDidUpdate() {
-      const viewTag = findNodeHandle(this._viewNode);
-      if (this._viewTag !== viewTag) {
+      const viewTag = findNodeHandle(this.viewNode);
+      if (this.viewTag !== viewTag) {
         this._attachGestureHandler(viewTag as number); // TODO(TS) - check interaction between _viewTag & findNodeHandle
       }
       this._update();
     }
 
     componentWillUnmount() {
-      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
-      if (this._updateEnqueued) {
-        clearImmediate(this._updateEnqueued);
+      RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
+      if (this.updateEnqueued) {
+        clearImmediate(this.updateEnqueued);
       }
       // We can't use this.props.id directly due to TS generic type narrowing bug, see https://github.com/microsoft/TypeScript/issues/13995 for more context
       const handlerID: string | undefined = this.props.id;
@@ -244,7 +244,7 @@ export default function createHandler<
     }
 
     _onGestureHandlerEvent = (event: GestureEventEvent<U>) => {
-      if (event.nativeEvent.handlerTag === this._handlerTag) {
+      if (event.nativeEvent.handlerTag === this.handlerTag) {
         this.props.onGestureEvent?.(event);
       } else {
         this.props.onGestureHandlerEvent?.(event);
@@ -253,7 +253,7 @@ export default function createHandler<
 
     // TODO(TS) - make sure this is right type for event
     _onGestureHandlerStateChange = (event: HandlerStateChangeEvent<U>) => {
-      if (event.nativeEvent.handlerTag === this._handlerTag) {
+      if (event.nativeEvent.handlerTag === this.handlerTag) {
         this.props.onHandlerStateChange?.(event);
 
         const state: ValueOf<typeof State> = event.nativeEvent.state;
@@ -268,7 +268,7 @@ export default function createHandler<
     };
 
     _refHandler = (node: any) => {
-      this._viewNode = node;
+      this.viewNode = node;
 
       const child = React.Children.only(this.props.children);
       // TODO(TS) fix ref type
@@ -283,37 +283,37 @@ export default function createHandler<
     };
 
     _createGestureHandler = (newConfig: {}) => {
-      this._config = newConfig;
+      this.config = newConfig;
 
       RNGestureHandlerModule.createGestureHandler(
         name,
-        this._handlerTag,
+        this.handlerTag,
         newConfig
       );
     };
 
     _attachGestureHandler = (newViewTag: number) => {
-      this._viewTag = newViewTag;
+      this.viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
         // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
         (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
-          this._handlerTag,
+          this.handlerTag,
           newViewTag,
-          this._propsRef
+          this.propsRef
         );
       } else {
         RNGestureHandlerModule.attachGestureHandler(
-          this._handlerTag,
+          this.handlerTag,
           newViewTag
         );
       }
     };
 
     _updateGestureHandler = (newConfig: {}) => {
-      this._config = newConfig;
+      this.config = newConfig;
 
-      RNGestureHandlerModule.updateGestureHandler(this._handlerTag, newConfig);
+      RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
     };
 
     _update() {
@@ -322,7 +322,7 @@ export default function createHandler<
         [...allowedProps, ...customNativeProps],
         config
       );
-      if (!deepEqual(this._config, newConfig)) {
+      if (!deepEqual(this.config, newConfig)) {
         this._updateGestureHandler(newConfig);
       }
     }
@@ -404,7 +404,7 @@ export default function createHandler<
         onGestureHandlerStateChange: gestureStateEventHandler,
       };
 
-      this._propsRef.current = events;
+      this.propsRef.current = events;
 
       const child: any = React.Children.only(this.props.children);
       let grandChildren = child.props.children;

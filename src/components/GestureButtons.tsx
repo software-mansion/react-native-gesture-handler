@@ -58,10 +58,10 @@ export const RawButton: React.ComponentType<RawButtonProperties> = createNativeW
 export class BaseButton extends React.Component<BaseButtonProperties> {
   constructor(props: BaseButtonProperties) {
     super(props);
-    this._lastActive = false;
+    this.lastActive = false;
   }
 
-  private _lastActive: boolean;
+  private lastActive: boolean;
 
   _handleEvent = ({
     nativeEvent,
@@ -69,20 +69,20 @@ export class BaseButton extends React.Component<BaseButtonProperties> {
     const { state, oldState, pointerInside } = nativeEvent;
     const active = pointerInside && state === State.ACTIVE;
 
-    if (active !== this._lastActive && this.props.onActiveStateChange) {
+    if (active !== this.lastActive && this.props.onActiveStateChange) {
       this.props.onActiveStateChange(active);
     }
 
     if (
       oldState === State.ACTIVE &&
       state !== State.CANCELLED &&
-      this._lastActive &&
+      this.lastActive &&
       this.props.onPress
     ) {
       this.props.onPress(active);
     }
 
-    this._lastActive = active;
+    this.lastActive = active;
   };
 
   // Normally, the parent would execute it's handler first,
@@ -137,14 +137,14 @@ export class RectButton extends React.Component<RectButtonProperties> {
 
   constructor(props: RectButtonProperties) {
     super(props);
-    this._opacity = new Animated.Value(0);
+    this.opacity = new Animated.Value(0);
   }
 
-  private _opacity: Animated.Value;
+  private opacity: Animated.Value;
 
   _onActiveStateChange = (active: boolean) => {
     if (Platform.OS !== 'android') {
-      this._opacity.setValue(active ? this.props.activeOpacity! : 0);
+      this.opacity.setValue(active ? this.props.activeOpacity! : 0);
     }
 
     this.props.onActiveStateChange?.(active);
@@ -164,7 +164,7 @@ export class RectButton extends React.Component<RectButtonProperties> {
           style={[
             btnStyles.underlay,
             {
-              opacity: this._opacity,
+              opacity: this.opacity,
               backgroundColor: this.props.underlayColor,
               borderRadius: resolvedStyle.borderRadius,
               borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
@@ -188,14 +188,14 @@ export class BorderlessButton extends React.Component<BorderlessButtonProperties
 
   constructor(props: BorderlessButtonProperties) {
     super(props);
-    this._opacity = new Animated.Value(1);
+    this.opacity = new Animated.Value(1);
   }
 
-  private _opacity: Animated.Value;
+  private opacity: Animated.Value;
 
   _onActiveStateChange = (active: boolean) => {
     if (Platform.OS !== 'android') {
-      this._opacity.setValue(active ? this.props.activeOpacity! : 1);
+      this.opacity.setValue(active ? this.props.activeOpacity! : 1);
     }
 
     this.props.onActiveStateChange?.(active);
@@ -208,7 +208,7 @@ export class BorderlessButton extends React.Component<BorderlessButtonProperties
       <AnimatedBaseButton
         {...rest}
         onActiveStateChange={this._onActiveStateChange}
-        style={[style, Platform.OS === 'ios' && { opacity: this._opacity }]}>
+        style={[style, Platform.OS === 'ios' && { opacity: this.opacity }]}>
         {children}
       </AnimatedBaseButton>
     );

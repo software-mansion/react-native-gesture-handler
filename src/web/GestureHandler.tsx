@@ -21,7 +21,7 @@ class GestureHandler {
   previousState = State.UNDETERMINED;
   lastSentState = null;
 
-  private _gestureInstance: any;
+  private gestureInstance: any;
   name: any;
   _hasCustomActivationCriteria: boolean;
   handlerTag: any;
@@ -33,7 +33,7 @@ class GestureHandler {
   _stillWaiting: any;
 
   get id() {
-    return `${this.name}${this._gestureInstance}`;
+    return `${this.name}${this.gestureInstance}`;
   }
 }
 
