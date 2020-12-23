@@ -59,8 +59,8 @@ interface SwipeableProperties
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderLeftActions?: (
-    progressAnimatedValue?: Animated.AnimatedInterpolation,
-    dragAnimatedValue?: Animated.AnimatedInterpolation
+    progressAnimatedValue: Animated.AnimatedInterpolation,
+    dragAnimatedValue: Animated.AnimatedInterpolation
   ) => React.ReactNode;
   /**
    *
@@ -73,10 +73,9 @@ interface SwipeableProperties
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderRightActions?: (
-    progressAnimatedValue?: Animated.AnimatedInterpolation,
-    dragAnimatedValue?: Animated.AnimatedInterpolation
+    progressAnimatedValue: Animated.AnimatedInterpolation,
+    dragAnimatedValue: Animated.AnimatedInterpolation
   ) => React.ReactNode;
-  // TODO: above methods maybe should not take optional parameters
   useNativeAnimations?: boolean;
   animationOptions?: object;
   containerStyle?: StyleProp<ViewStyle>;
@@ -138,11 +137,11 @@ export default class Swipeable extends Component<
   private onGestureEvent?: (
     event: GestureEventEvent<PanGestureHandlerEventExtraPayload>
   ) => void;
-  _transX?: Animated.AnimatedInterpolation;
-  _showLeftAction?: Animated.AnimatedInterpolation | Animated.Value;
-  _leftActionTranslate?: Animated.AnimatedInterpolation;
-  _showRightAction?: Animated.AnimatedInterpolation | Animated.Value;
-  _rightActionTranslate?: Animated.AnimatedInterpolation;
+  private transX?: Animated.AnimatedInterpolation;
+  private showLeftAction?: Animated.AnimatedInterpolation | Animated.Value;
+  private leftActionTranslate?: Animated.AnimatedInterpolation;
+  private showRightAction?: Animated.AnimatedInterpolation | Animated.Value;
+  private rightActionTranslate?: Animated.AnimatedInterpolation;
 
   private updateAnimatedEvent = (
     props: SwipeableProperties,
@@ -178,27 +177,27 @@ export default class Swipeable extends Component<
         leftWidth + (overshootLeft || overshootFriction! > 1 ? 1 : 0),
       ],
     });
-    this._transX = transX;
-    this._showLeftAction =
+    this.transX = transX;
+    this.showLeftAction =
       leftWidth > 0
         ? transX.interpolate({
             inputRange: [-1, 0, leftWidth],
             outputRange: [0, 0, 1],
           })
         : new Animated.Value(0);
-    this._leftActionTranslate = this._showLeftAction.interpolate({
+    this.leftActionTranslate = this.showLeftAction.interpolate({
       inputRange: [0, Number.MIN_VALUE],
       outputRange: [-10000, 0],
       extrapolate: 'clamp',
     });
-    this._showRightAction =
+    this.showRightAction =
       rightWidth > 0
         ? transX.interpolate({
             inputRange: [-rightWidth, 0, 1],
             outputRange: [1, 0, 0],
           })
         : new Animated.Value(0);
-    this._rightActionTranslate = this._showRightAction.interpolate({
+    this.rightActionTranslate = this.showRightAction.interpolate({
       inputRange: [0, Number.MIN_VALUE],
       outputRange: [-10000, 0],
       extrapolate: 'clamp',
@@ -350,9 +349,10 @@ export default class Swipeable extends Component<
       <Animated.View
         style={[
           styles.leftActions,
-          { transform: [{ translateX: this._leftActionTranslate! }] }, // TODO: may not be correct to !
+          // all those and below parameters can have ! since they are all asigned in constructor in `updateAnimatedEvent` but TS cannot spot it for some reason
+          { transform: [{ translateX: this.leftActionTranslate! }] },
         ]}>
-        {renderLeftActions(this._showLeftAction, this._transX)}
+        {renderLeftActions(this.showLeftAction!, this.transX!)}
         <View
           onLayout={({ nativeEvent }) =>
             this.setState({ leftWidth: nativeEvent.layout.x })
@@ -365,9 +365,9 @@ export default class Swipeable extends Component<
       <Animated.View
         style={[
           styles.rightActions,
-          { transform: [{ translateX: this._rightActionTranslate! }] },
+          { transform: [{ translateX: this.rightActionTranslate! }] },
         ]}>
-        {renderRightActions(this._showRightAction, this._transX)}
+        {renderRightActions(this.showRightAction!, this.transX!)}
         <View
           onLayout={({ nativeEvent }) =>
             this.setState({ rightOffset: nativeEvent.layout.x })
@@ -394,7 +394,7 @@ export default class Swipeable extends Component<
               pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
               style={[
                 {
-                  transform: [{ translateX: this._transX! }],
+                  transform: [{ translateX: this.transX! }],
                 },
                 this.props.childrenContainerStyle,
               ]}>
