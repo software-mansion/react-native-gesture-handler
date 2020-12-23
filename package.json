@@ -9,7 +9,7 @@
     "precommit": "lint-staged",
     "release": "npm login && release-it",
     "ts-check": "yarn tsc --check",
-    "lint-check": "yarn eslint src/ examples/Example/src && yarn prettier --check src/ examples/Example/src"
+    "lint-check": "yarn eslint src/ && yarn prettier --check src/"
   },
   "exports": {
     ".": "./dist/index.js",
