@@ -24,11 +24,13 @@ import { TouchableNativeFeedbackExtraPropsType } from './TouchableNativeFeedback
  * travel outside it transits to special MOVED_OUTSIDE state. Gesture recognition
  * finishes in UNDETERMINED state.
  */
-export const TOUCHABLE_STATE = {
+export const TOUCHABLE_STATE: Record<string, TouchableStateValuesType> = {
   UNDETERMINED: 0,
   BEGAN: 1,
   MOVED_OUTSIDE: 2,
 };
+
+type TouchableStateValuesType = 0 | 1 | 2;
 
 export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
   // Decided to drop not used fields from RN's implementation.
@@ -49,8 +51,10 @@ export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
 
 interface InternalProps {
   extraButtonProps: TouchableNativeFeedbackExtraPropsType;
-  // TODO: change it to take type of TOUCHABLE_STATE
-  onStateChange?: (oldState: number, newState: number) => void;
+  onStateChange?: (
+    oldState: TouchableStateValuesType,
+    newState: TouchableStateValuesType
+  ) => void;
 }
 
 // TODO: maybe can be better
@@ -58,7 +62,7 @@ interface InternalProps {
 type Timeout = null | NodeJS.Timeout | undefined;
 
 /**
- * GenericTouchable is not intented to be used as it.
+ * GenericTouchable is not intented to be used as it is.
  * Should be treated as a source for the rest of touchables
  */
 
@@ -152,7 +156,7 @@ export default class GenericTouchable extends Component<
   }
 
   // All states' transitions are defined here.
-  moveToState(newState: number) {
+  moveToState(newState: TouchableStateValuesType) {
     if (newState === this.STATE) {
       // Ignore dummy transitions
       return;
@@ -251,10 +255,10 @@ export default class GenericTouchable extends Component<
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityHint: this.props.accessibilityHint,
-      accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityRole: this.props.accessibilityRole,
-      accessibilityState: this.props.accessibilityState, // TODO: check if changed to no 's' correctly
-      accessibilityTraits: this.props.accessibilityTraits,
+      // TODO: check if changed to no 's' correctly, also removed 2 props that are no longer available: `accessibilityComponentType` and `accessibilityTraits`,
+      // would be good to check if it is ok for sure, see: https://github.com/facebook/react-native/issues/24016
+      accessibilityState: this.props.accessibilityState,
       nativeID: this.props.nativeID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
