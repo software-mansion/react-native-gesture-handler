@@ -113,9 +113,9 @@ export default class Swipeable extends Component<
       rightOffset: undefined,
       rowWidth: undefined,
     };
-    this._updateAnimatedEvent(props, this.state);
+    this.updateAnimatedEvent(props, this.state);
 
-    this._onGestureEvent = Animated.event(
+    this.onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: dragX } }],
       { useNativeDriver: props.useNativeAnimations! }
     );
@@ -131,11 +131,11 @@ export default class Swipeable extends Component<
       this.state.rightOffset !== state.rightOffset ||
       this.state.rowWidth !== state.rowWidth
     ) {
-      this._updateAnimatedEvent(props, state);
+      this.updateAnimatedEvent(props, state);
     }
   }
 
-  _onGestureEvent?: (
+  private onGestureEvent?: (
     event: GestureEventEvent<PanGestureHandlerEventExtraPayload>
   ) => void;
   _transX?: Animated.AnimatedInterpolation;
@@ -144,7 +144,10 @@ export default class Swipeable extends Component<
   _showRightAction?: Animated.AnimatedInterpolation | Animated.Value;
   _rightActionTranslate?: Animated.AnimatedInterpolation;
 
-  _updateAnimatedEvent = (props: SwipeableProperties, state: StateType) => {
+  private updateAnimatedEvent = (
+    props: SwipeableProperties,
+    state: StateType
+  ) => {
     const { friction, overshootFriction } = props;
     const { dragX, rowTranslation, leftWidth = 0, rowWidth = 0 } = state;
     const { rightOffset = rowWidth } = state;
@@ -202,7 +205,7 @@ export default class Swipeable extends Component<
     });
   };
 
-  _onTapHandlerStateChange = ({
+  private onTapHandlerStateChange = ({
     nativeEvent,
   }: HandlerStateChangeEvent<TapGestureHandlerEventExtraPayload>) => {
     if (nativeEvent.oldState === State.ACTIVE) {
@@ -210,15 +213,15 @@ export default class Swipeable extends Component<
     }
   };
 
-  _onHandlerStateChange = (
+  private onHandlerStateChange = (
     ev: HandlerStateChangeEvent<PanGestureHandlerEventExtraPayload>
   ) => {
     if (ev.nativeEvent.oldState === State.ACTIVE) {
-      this._handleRelease(ev);
+      this.handleRelease(ev);
     }
   };
 
-  _handleRelease = (
+  private handleRelease = (
     ev: HandlerStateChangeEvent<PanGestureHandlerEventExtraPayload>
   ) => {
     const { velocityX, translationX: dragX } = ev.nativeEvent;
@@ -231,7 +234,7 @@ export default class Swipeable extends Component<
       rightThreshold = rightWidth / 2,
     } = this.props;
 
-    const startOffsetX = this._currentOffset() + dragX / friction!;
+    const startOffsetX = this.currentOffset() + dragX / friction!;
     const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
 
     let toValue = 0;
@@ -253,10 +256,10 @@ export default class Swipeable extends Component<
       }
     }
 
-    this._animateRow(startOffsetX, toValue, velocityX / friction!);
+    this.animateRow(startOffsetX, toValue, velocityX / friction!);
   };
 
-  _animateRow = (
+  private animateRow = (
     fromValue: number,
     toValue: number,
     velocityX?:
@@ -307,11 +310,11 @@ export default class Swipeable extends Component<
     }
   };
 
-  _onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
+  private onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     this.setState({ rowWidth: nativeEvent.layout.width });
   };
 
-  _currentOffset = () => {
+  private currentOffset = () => {
     const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
     const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
@@ -324,19 +327,19 @@ export default class Swipeable extends Component<
   };
 
   close = () => {
-    this._animateRow(this._currentOffset(), 0);
+    this.animateRow(this.currentOffset(), 0);
   };
 
   openLeft = () => {
     const { leftWidth = 0 } = this.state;
-    this._animateRow(this._currentOffset(), leftWidth);
+    this.animateRow(this.currentOffset(), leftWidth);
   };
 
   openRight = () => {
     const { rowWidth = 0 } = this.state;
     const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
-    this._animateRow(this._currentOffset(), -rightWidth);
+    this.animateRow(this.currentOffset(), -rightWidth);
   };
 
   render() {
@@ -377,16 +380,16 @@ export default class Swipeable extends Component<
       <PanGestureHandler
         activeOffsetX={[-10, 10]}
         {...this.props}
-        onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}>
+        onGestureEvent={this.onGestureEvent}
+        onHandlerStateChange={this.onHandlerStateChange}>
         <Animated.View
-          onLayout={this._onRowLayout}
+          onLayout={this.onRowLayout}
           style={[styles.container, this.props.containerStyle]}>
           {left}
           {right}
           <TapGestureHandler
             enabled={rowState !== 0}
-            onHandlerStateChange={this._onTapHandlerStateChange}>
+            onHandlerStateChange={this.onTapHandlerStateChange}>
             <Animated.View
               pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
               style={[

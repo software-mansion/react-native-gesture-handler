@@ -209,11 +209,11 @@ export default function createHandler<
         // be resolved by then.
         this.updateEnqueued = setImmediate(() => {
           this.updateEnqueued = null;
-          this._update();
+          this.update();
         });
       }
 
-      this._createGestureHandler(
+      this.createGestureHandler(
         filterConfig(
           transformProps ? transformProps(this.props) : this.props,
           [...allowedProps, ...customNativeProps],
@@ -221,15 +221,15 @@ export default function createHandler<
         )
       );
 
-      this._attachGestureHandler(findNodeHandle(this.viewNode) as number); // TODO(TS) - check if this can be null
+      this.attachGestureHandler(findNodeHandle(this.viewNode) as number); // TODO(TS) - check if this can be null
     }
 
     componentDidUpdate() {
       const viewTag = findNodeHandle(this.viewNode);
       if (this.viewTag !== viewTag) {
-        this._attachGestureHandler(viewTag as number); // TODO(TS) - check interaction between _viewTag & findNodeHandle
+        this.attachGestureHandler(viewTag as number); // TODO(TS) - check interaction between _viewTag & findNodeHandle
       }
-      this._update();
+      this.update();
     }
 
     componentWillUnmount() {
@@ -245,7 +245,7 @@ export default function createHandler<
       }
     }
 
-    _onGestureHandlerEvent = (event: GestureEventEvent<U>) => {
+    private onGestureHandlerEvent = (event: GestureEventEvent<U>) => {
       if (event.nativeEvent.handlerTag === this.handlerTag) {
         this.props.onGestureEvent?.(event);
       } else {
@@ -254,7 +254,9 @@ export default function createHandler<
     };
 
     // TODO(TS) - make sure this is right type for event
-    _onGestureHandlerStateChange = (event: HandlerStateChangeEvent<U>) => {
+    private onGestureHandlerStateChange = (
+      event: HandlerStateChangeEvent<U>
+    ) => {
       if (event.nativeEvent.handlerTag === this.handlerTag) {
         this.props.onHandlerStateChange?.(event);
 
@@ -269,7 +271,7 @@ export default function createHandler<
       }
     };
 
-    _refHandler = (node: any) => {
+    private refHandler = (node: any) => {
       this.viewNode = node;
 
       const child = React.Children.only(this.props.children);
@@ -284,7 +286,7 @@ export default function createHandler<
       }
     };
 
-    _createGestureHandler = (newConfig: {}) => {
+    private createGestureHandler = (newConfig: {}) => {
       this.config = newConfig;
 
       RNGestureHandlerModule.createGestureHandler(
@@ -294,7 +296,7 @@ export default function createHandler<
       );
     };
 
-    _attachGestureHandler = (newViewTag: number) => {
+    private attachGestureHandler = (newViewTag: number) => {
       this.viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
@@ -312,20 +314,20 @@ export default function createHandler<
       }
     };
 
-    _updateGestureHandler = (newConfig: {}) => {
+    private updateGestureHandler = (newConfig: {}) => {
       this.config = newConfig;
 
       RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
     };
 
-    _update() {
+    private update() {
       const newConfig = filterConfig(
         transformProps ? transformProps(this.props) : this.props,
         [...allowedProps, ...customNativeProps],
         config
       );
       if (!deepEqual(this.config, newConfig)) {
-        this._updateGestureHandler(newConfig);
+        this.updateGestureHandler(newConfig);
       }
     }
 
@@ -336,11 +338,11 @@ export default function createHandler<
         [...allowedProps, ...customNativeProps],
         config
       );
-      this._updateGestureHandler(newConfig);
+      this.updateGestureHandler(newConfig);
     }
 
     render() {
-      let gestureEventHandler = this._onGestureHandlerEvent;
+      let gestureEventHandler = this.onGestureHandlerEvent;
       // Another instance of https://github.com/microsoft/TypeScript/issues/13995
       type OnGestureEventHandlers = {
         onGestureEvent?: BaseGestureHandlerProperties<U>['onGestureEvent'];
@@ -371,7 +373,7 @@ export default function createHandler<
         }
       }
 
-      let gestureStateEventHandler = this._onGestureHandlerStateChange;
+      let gestureStateEventHandler = this.onGestureHandlerStateChange;
       // Another instance of https://github.com/microsoft/TypeScript/issues/13995
       type OnGestureStateChangeHandlers = {
         onHandlerStateChange?: BaseGestureHandlerProperties<U>['onHandlerStateChange'];
@@ -431,7 +433,7 @@ export default function createHandler<
       return React.cloneElement(
         child,
         {
-          ref: this._refHandler,
+          ref: this.refHandler,
           collapsable: false,
           ...events,
         },

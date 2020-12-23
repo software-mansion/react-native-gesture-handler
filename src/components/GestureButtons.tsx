@@ -63,7 +63,7 @@ export class BaseButton extends React.Component<BaseButtonProperties> {
 
   private lastActive: boolean;
 
-  _handleEvent = ({
+  private handleEvent = ({
     nativeEvent,
   }: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>) => {
     const { state, oldState, pointerInside } = nativeEvent;
@@ -89,16 +89,18 @@ export class BaseButton extends React.Component<BaseButtonProperties> {
   // then forward the event to listeners. However, here our handler
   // is virtually only forwarding events to listeners, so we reverse the order
   // to keep the proper order of the callbacks (from "raw" ones to "processed").
-  _onHandlerStateChange = (
+  private onHandlerStateChange = (
     e: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
   ) => {
     this.props.onHandlerStateChange?.(e);
-    this._handleEvent(e);
+    this.handleEvent(e);
   };
 
-  _onGestureEvent = (e: GestureEventEvent<NativeViewGestureHandlerPayload>) => {
+  private onGestureEvent = (
+    e: GestureEventEvent<NativeViewGestureHandlerPayload>
+  ) => {
     this.props.onGestureEvent?.(e);
-    this._handleEvent(
+    this.handleEvent(
       e as HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
     ); // TODO: maybe it is not correct
   };
@@ -110,8 +112,8 @@ export class BaseButton extends React.Component<BaseButtonProperties> {
       <RawButton
         rippleColor={processColor(rippleColor)}
         {...rest}
-        onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}
+        onGestureEvent={this.onGestureEvent}
+        onHandlerStateChange={this.onHandlerStateChange}
       />
     );
   }
@@ -142,7 +144,7 @@ export class RectButton extends React.Component<RectButtonProperties> {
 
   private opacity: Animated.Value;
 
-  _onActiveStateChange = (active: boolean) => {
+  private onActiveStateChange = (active: boolean) => {
     if (Platform.OS !== 'android') {
       this.opacity.setValue(active ? this.props.activeOpacity! : 0);
     }
@@ -159,7 +161,7 @@ export class RectButton extends React.Component<RectButtonProperties> {
       <BaseButton
         {...rest}
         style={resolvedStyle}
-        onActiveStateChange={this._onActiveStateChange}>
+        onActiveStateChange={this.onActiveStateChange}>
         <Animated.View
           style={[
             btnStyles.underlay,
@@ -193,7 +195,7 @@ export class BorderlessButton extends React.Component<BorderlessButtonProperties
 
   private opacity: Animated.Value;
 
-  _onActiveStateChange = (active: boolean) => {
+  private onActiveStateChange = (active: boolean) => {
     if (Platform.OS !== 'android') {
       this.opacity.setValue(active ? this.props.activeOpacity! : 1);
     }
@@ -207,7 +209,7 @@ export class BorderlessButton extends React.Component<BorderlessButtonProperties
     return (
       <AnimatedBaseButton
         {...rest}
-        onActiveStateChange={this._onActiveStateChange}
+        onActiveStateChange={this.onActiveStateChange}
         style={[style, Platform.OS === 'ios' && { opacity: this.opacity }]}>
         {children}
       </AnimatedBaseButton>
