@@ -1,4 +1,5 @@
 {
+  "root": true,
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
@@ -16,6 +17,7 @@
   },
   "env": { "browser": true, "node": true, "jest/globals": true },
   "plugins": ["jest"],
+  "ignorePatterns": ["dist/**/*"],
   "rules": {
     "no-use-before-define": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
