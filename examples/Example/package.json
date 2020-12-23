@@ -7,7 +7,9 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "ts-check": "yarn tsc --check",
+    "lint-check": "yarn eslint src/ && yarn prettier --check src/"
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.10",
@@ -35,7 +37,7 @@
     "babel-jest": "^25.1.0",
     "babel-plugin-module-resolver": "^4.0.0",
     "babel-preset-expo": "^8.3.0",
-    "eslint": "^7.15.0",
+    "eslint": "^7.16.0",
     "glob-to-regexp": "^0.4.1",
     "jest": "^25.1.0",
     "metro-config": "^0.64.0",
