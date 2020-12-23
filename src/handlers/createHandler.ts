@@ -18,7 +18,9 @@ import {
 } from './gestureHandlers';
 import { ValueOf } from '../typeUtils';
 
-function findNodeHandle(node: any): null | number {
+function findNodeHandle(
+  node: null | number | React.Component<any, any> | React.ComponentClass<any>
+): null | number | React.Component<any, any> | React.ComponentClass<any> {
   if (Platform.OS === 'web') return node;
   return findNodeHandleRN(node);
 }

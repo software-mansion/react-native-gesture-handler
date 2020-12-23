@@ -58,7 +58,7 @@ export default class TouchableOpacity extends Component<
         style={[
           style,
           {
-            opacity: (this.opacity as unknown) as any, // TODO: fix this
+            opacity: (this.opacity as unknown) as number, // TODO: fix this
           },
         ]}
         onStateChange={this.onStateChange}>

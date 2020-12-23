@@ -11,7 +11,7 @@ export default function GestureHandlerRootView({
   children,
   ...rest
 }: {
-  children: any;
+  children: React.ReactNode;
 }) {
   return (
     <GestureHandlerRootViewContext.Consumer>
