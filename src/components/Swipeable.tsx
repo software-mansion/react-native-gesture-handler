@@ -59,12 +59,12 @@ export default class Swipeable extends Component<PropType, StateType> {
     overshootFriction: 1,
     useNativeAnimations: true,
   };
-  _onGestureEvent: ?Animated.Event;
-  _transX: ?Animated.Interpolation;
-  _showLeftAction: ?(Animated.Interpolation | ?Animated.Value);
-  _leftActionTranslate: ?Animated.Interpolation;
-  _showRightAction: ?(Animated.Interpolation | ?Animated.Value);
-  _rightActionTranslate: ?Animated.Interpolation;
+  // _onGestureEvent: ?Animated.Event;
+  // _transX: ?Animated.Interpolation;
+  // _showLeftAction: ?(Animated.Interpolation | ?Animated.Value);
+  // _leftActionTranslate: ?Animated.Interpolation;
+  // _showRightAction: ?(Animated.Interpolation | ?Animated.Value);
+  // _rightActionTranslate: ?Animated.Interpolation;
 
   constructor(props: PropType) {
     super(props);

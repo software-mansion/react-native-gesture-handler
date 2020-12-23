@@ -91,8 +91,8 @@ export default class DrawerLayout extends Component<PropType, StateType> {
     Left: 'left',
     Right: 'right',
   };
-  _openValue: ?Animated.Interpolation;
-  _onGestureEvent: ?Animated.Event;
+  // _openValue: ?Animated.Interpolation;
+  // _onGestureEvent: ?Animated.Event;
   _accessibilityIsModalView = React.createRef();
   _pointerEventsView = React.createRef();
   _panGestureHandler = React.createRef();
@@ -320,10 +320,10 @@ export default class DrawerLayout extends Component<PropType, StateType> {
   };
 
   _animateDrawer = (
-    fromValue: ?number,
+    fromValue: any,
     toValue: number,
     velocity: number,
-    speed: ?number
+    speed: any
   ) => {
     this.state.dragX.setValue(0);
     this.state.touchX.setValue(
