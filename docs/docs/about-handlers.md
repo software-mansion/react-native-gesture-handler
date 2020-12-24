@@ -11,7 +11,7 @@ Each handler type is capable of recognizing one type of gesture (pan, pinch, etc
 
 Handlers analyse touch stream synchronously in the UI thread. This allows for the interactions to be uninterrupted even when Javascript thread is blocked.
 
-Each handler works as an isolated state machine. It takes touch stream as an input and based on in it can flip between [states](state.md).
+Each handler works as an isolated state machine. It takes touch stream as an input and based on it, it can flip between [states](state.md).
 When a gesture starts, based on the position where the finger was placed, a set of handlers that may be interested in recognizing the gesture is selected.
 All the touch events (touch down, move, up, or when other fingers are placed or lifted) are delivered to all of the handlers selected initially.
 When one gesture becomes [active](state.md#active), it cancels all the other gestures (read more about how to influence this process in ["Cross handler interactions"](interactions.md) section).
