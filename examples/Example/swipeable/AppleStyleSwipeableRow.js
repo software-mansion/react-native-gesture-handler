@@ -10,6 +10,7 @@ export default class AppleStyleSwipeableRow extends Component {
     const trans = dragX.interpolate({
       inputRange: [0, 50, 100, 101],
       outputRange: [-20, 0, 0, 1],
+      extrapolate: 'clamp'
     });
     return (
       <RectButton style={styles.leftAction} onPress={this.close}>
