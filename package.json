@@ -8,7 +8,7 @@
     "build": "yarn tsc",
     "precommit": "lint-staged",
     "release": "npm login && release-it",
-    "ts-check": "yarn tsc --check",
+    "ts-check": "yarn tsc --noEmit",
     "lint-check": "yarn eslint src/ && yarn prettier --check src/"
   },
   "exports": {
