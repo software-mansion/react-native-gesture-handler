@@ -55,5 +55,4 @@ jsconfig.json
 .vscode
 
 # TS
-
 dist/

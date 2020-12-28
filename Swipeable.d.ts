@@ -1,17 +1,23 @@
+/* eslint-disable eslint-comments/no-unlimited-disable */
+/* eslint-disable */
 declare module 'react-native-gesture-handler/Swipeable' {
-  import * as React from 'react'
+  import * as React from 'react';
   import { Animated, StyleProp, ViewStyle } from 'react-native';
-  import { PanGestureHandlerProperties } from 'react-native-gesture-handler'
-  type SwipeableExcludes = Exclude<keyof PanGestureHandlerProperties, 'onGestureEvent' | 'onHandlerStateChange'>
+  import { PanGestureHandlerProperties } from 'react-native-gesture-handler';
+  type SwipeableExcludes = Exclude<
+    keyof PanGestureHandlerProperties,
+    'onGestureEvent' | 'onHandlerStateChange'
+  >;
 
-  interface SwipeableProperties extends Pick<PanGestureHandlerProperties, SwipeableExcludes> {
+  interface SwipeableProperties
+    extends Pick<PanGestureHandlerProperties, SwipeableExcludes> {
     enableTrackpadTwoFingerGesture?: boolean;
     friction?: number;
     leftThreshold?: number;
     rightThreshold?: number;
     overshootLeft?: boolean;
     overshootRight?: boolean;
-    overshootFriction?: number,
+    overshootFriction?: number;
     onSwipeableLeftOpen?: () => void;
     onSwipeableRightOpen?: () => void;
     onSwipeableOpen?: () => void;

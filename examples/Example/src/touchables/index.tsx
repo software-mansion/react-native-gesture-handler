@@ -1,3 +1,4 @@
+// @ts-nocheck TODO(TS) provide types
 import React, { Component } from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
 

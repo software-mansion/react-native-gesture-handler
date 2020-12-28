@@ -1,10 +1,10 @@
 module.exports = {
-  presets: ['babel-preset-expo'],
   plugins: [
     '@babel/plugin-transform-modules-commonjs',
     [
       'module-resolver',
       {
+        extensions: ['.js', '.ts', '.tsx'],
         alias: {
           'react-native-gesture-handler': '../../',
           'react': './node_modules/react',

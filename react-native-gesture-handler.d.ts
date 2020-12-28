@@ -1,6 +1,7 @@
 // Project: https://github.com/software-mansion/react-native-gesture-handler
 // TypeScript Version: 2.6.2
-
+/* eslint-disable eslint-comments/no-unlimited-disable */
+/* eslint-disable */
 declare module 'react-native-gesture-handler' {
   import * as React from 'react';
   import {

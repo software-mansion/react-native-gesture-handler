@@ -1,4 +1,5 @@
 {
+  "root": true,
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
@@ -8,8 +9,7 @@
     "react": { "version": "16" },
     "import/resolver": {
       "babel-module": {}
-    },
-    "import/core-modules": ["react-native-gesture-handler/Swipeable"]
+    }
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {

@@ -118,8 +118,9 @@ matrix:
           - node_modules
       script:
         - yarn
+        - yarn tsc --noEmit
+        - yarn lint-check
         - cd examples/Example
         - yarn
-        - cd ../..
         - yarn tsc --noEmit
         - yarn lint-check

@@ -1,0 +1,5 @@
+{
+  "main": "../dist/src/components/DrawerLayout",
+  "react-native": "../dist/src/components/DrawerLayout",
+  "types": "../DrawerLayout.d.ts"
+}
