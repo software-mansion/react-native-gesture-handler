@@ -1,3 +1,4 @@
+// @ts-nocheck TODO(TS) provide types
 import React from 'react';
 import { View } from 'react-native';
 

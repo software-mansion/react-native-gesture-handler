@@ -1,0 +1,47 @@
+{
+  "root": true,
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "satya164"
+  ],
+  "settings": {
+    "react": { "version": "16" },
+    "import/resolver": {
+      "babel-module": {}
+    }
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "env": { "browser": true, "node": true, "jest/globals": true },
+  "plugins": ["jest"],
+  "ignorePatterns": ["dist/**/*"],
+  "rules": {
+    "no-use-before-define": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "import/named": "off",
+    "react/sort-comp": "off",
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "all"
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_" }
+    ],
+    "@typescript-eslint/no-use-before-define": "error",
+    "@typescript-eslint/ban-ts-comment": [
+      "error",
+      {
+        // ↓ TODO ts-nocheck should be removed after transition to TS ↓
+        "ts-nocheck": "allow-with-description",
+        "ts-ignore": "allow-with-description",
+        "ts-expect-error": "allow-with-description"
+      }
+    ]
+  }
+}

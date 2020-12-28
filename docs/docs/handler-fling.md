@@ -5,7 +5,7 @@ sidebar_label: FlingGestureHandler
 ---
 
 A discrete gesture handler that activates when the movement is sufficiently long and fast.
-Handler gets [ACTIVE](state#active) when movement is sufficiently long and it did not take too much time.
+Handler gets [ACTIVE](state#active) when movement is sufficiently long and it does not take too much time.
 When handler gets activated it will turn into [END](state#end) state when finger is released.
 The handler will fail to recognize if the finger is lifted before being activated.
 The handler is implemented using [UISwipeGestureRecognizer](https://developer.apple.com/documentation/uikit/uiswipegesturerecognizer) on iOS and from scratch on Android.
@@ -30,7 +30,7 @@ direction={Directions.DOWN}
 
 ### `numberOfPointers`
 
-Determinate exact number of point required to handle the fling gesture.
+Determine exact number of points required to handle the fling gesture.
 
 ## Event data
 

@@ -1,3 +1,6 @@
+/* eslint-disable eslint-comments/no-unlimited-disable */
+/* eslint-disable */
+// @ts-nocheck TODO(TS) provide types
 import { Direction } from './web/constants';
 import FlingGestureHandler from './web/FlingGestureHandler';
 import LongPressGestureHandler from './web/LongPressGestureHandler';

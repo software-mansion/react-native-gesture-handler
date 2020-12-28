@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    // TODO(TS) Remove after we migrate to TS entirely
+    "paths": {
+      "react-native-gesture-handler": [
+        "../../react-native-gesture-handler.d.ts"
+      ],
+      "react-native-gesture-handler/Swipeable": ["../../Swipeable.d.ts"],
+      "react-native-gesture-handler/DrawerLayout": ["../../DrawerLayout.d.ts"]
+    },
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "esnext",
+    "allowJs": true,
+    "noStrictGenericChecks": false,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitUseStrict": false,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "index.js"]
+}

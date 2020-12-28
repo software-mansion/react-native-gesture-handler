@@ -70,6 +70,7 @@ export default class TouchableNativeFeedback extends Component<
           background.attribute === 'selectableItemBackgroundBorderless';
       }
       // I moved it from above since it should be available in all options
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       extraProps['rippleRadius'] = background.rippleRadius;
     }
     extraProps['foreground'] = this.props.useForeground;

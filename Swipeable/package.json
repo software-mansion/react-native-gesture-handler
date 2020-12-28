@@ -1,0 +1,5 @@
+{
+  "main": "../dist/src/components/Swipeable",
+  "react-native": "../dist/src/components/Swipeable",
+  "types": "../Swipeable.d.ts"
+}
