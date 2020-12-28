@@ -11,12 +11,6 @@
     "ts-check": "yarn tsc --noEmit",
     "lint-check": "yarn eslint src/ && yarn prettier --check src/"
   },
-  "exports": {
-    ".": "./dist/index.js",
-    "./": "./dist/",
-    "./package.json": "./package.json",
-    "./RNGestureHandler.podspec": "./RNGestureHandler.podspec"
-  },
   "main": "dist/index.js",
   "types": "react-native-gesture-handler.d.ts",
   "files": [
@@ -30,7 +24,9 @@
     "dist/",
     "!dist/examples",
     "index.ts",
+    "Swipeable/",
     "Swipeable.d.ts",
+    "DrawerLayout/",
     "DrawerLayout.d.ts",
     "README.md",
     "jestSetup.js",
