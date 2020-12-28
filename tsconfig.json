@@ -4,7 +4,7 @@
     // TODO(TS) Remove after we migrate to TS entirely
     "paths": {
       "react-native-gesture-handler": ["./react-native-gesture-handler.d.ts"],
-      "react-native-gesture-handler/Swipeable": ["Swipeable.ts"],
+      "react-native-gesture-handler/Swipeable": ["./Swipeable.ts"],
       "react-native-gesture-handler/DrawerLayout": ["./DrawerLayout.ts"]
     },
     "esModuleInterop": true,
