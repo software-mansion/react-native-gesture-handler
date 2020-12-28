@@ -6,7 +6,7 @@ sidebar_label: Cross handler interactions
 
 Gesture handlers can "communicate" with each other to support complex gestures and control how they *[activate](state.md#active)* in certain scenarios.
 
-There are two means of momentary gesture control described in the sections below.
+There are two means of achieving that described in the sections below.
 In each case, it is necessary to provide a reference of one handler as a property to the other.
 Gesture handler relies on ref objects created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) and introduced in [React 16.3](https://reactjs.org/blog/2018/03/29/react-v-16-3.html#createref-api).
 
@@ -23,7 +23,7 @@ Handlers connected in this way will be allowed to remain in the [`ACTIVE`](state
 
 ### Use cases
 
-Simultaneous recognition needs to be used when implementing a photo preview component that supports zooming (scaling) the photo, rotating it and panning it while zoomed in.
+Simultaneous recognition needs to be used when implementing a photo preview component that supports zooming (scaling) the photo, rotating and panning it while zoomed in.
 In this case we would use a [`PinchGestureHandler`](handler-pinch.md), [`RotationGestureHandler`](handler-rotation.md) and [`PanGestureHandler`](handler-pan.md) that would have to simultaneously recognize gestures.
 
 ### Example
