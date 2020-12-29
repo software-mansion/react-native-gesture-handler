@@ -1,6 +1,3 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import React, { Component } from 'react';
 import GenericTouchable, {
   GenericTouchableProps,

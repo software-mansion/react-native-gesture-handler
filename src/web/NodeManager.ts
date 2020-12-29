@@ -1,7 +1,3 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
-
 import { ValueOf } from '../typeUtils';
 import { Gestures } from '../RNGestureHandlerModule.web';
 
