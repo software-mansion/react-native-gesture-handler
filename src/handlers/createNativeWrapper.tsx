@@ -56,7 +56,14 @@ export default function createNativeWrapper<
         },
         [_ref, _gestureHandlerRef]
       );
-      return <NativeViewGestureHandler {...gestureHandlerProps} />;
+      return (
+        <NativeViewGestureHandler
+          {...gestureHandlerProps}
+          // @ts-ignore TODO(TS)
+          ref={_gestureHandlerRef}>
+          <Component {...props} ref={_ref} />
+        </NativeViewGestureHandler>
+      );
     }
   );
 
