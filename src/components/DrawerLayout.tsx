@@ -368,7 +368,7 @@ export default class DrawerLayout extends Component<
       ? { left: 0, width: showing ? undefined : edgeWidth }
       : { right: 0, width: showing ? undefined : edgeWidth };
     // @ts-ignore internal API, maybe could be fixed in handler types
-    this._panGestureHandler.current?.setNativeProps({
+    this.panGestureHandler.current?.setNativeProps({
       hitSlop,
       activeOffsetX: gestureOrientation * minSwipeDistance!,
     });
