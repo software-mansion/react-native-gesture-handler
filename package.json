@@ -13,6 +13,7 @@
     "lint-check": "yarn eslint src/ && yarn prettier --check src/"
   },
   "main": "dist/index.js",
+  "react-native": "index",
   "types": "dist/index.d.ts",
   "files": [
     "android/build.gradle",
