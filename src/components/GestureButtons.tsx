@@ -31,18 +31,18 @@ interface RawButtonProperties extends NativeViewGestureHandlerProperties {
   rippleColor?: any; // it was present in BaseButtonProperties before but is used here in code
 }
 
-interface BaseButtonProperties extends RawButtonProperties {
+export interface BaseButtonProperties extends RawButtonProperties {
   onPress?: (pointerInside: boolean) => void;
   onActiveStateChange?: (active: boolean) => void;
   style?: StyleProp<ViewStyle>;
 }
 
-interface RectButtonProperties extends BaseButtonProperties {
+export interface RectButtonProperties extends BaseButtonProperties {
   underlayColor?: string;
   activeOpacity?: number;
 }
 
-interface BorderlessButtonProperties extends BaseButtonProperties {
+export interface BorderlessButtonProperties extends BaseButtonProperties {
   borderless?: boolean;
   activeOpacity?: number;
 }
