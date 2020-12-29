@@ -12,36 +12,6 @@ import { isValidNumber, isnan, TEST_MIN_IF_NOT_NAN, VEC_LEN_SQ } from './utils';
 import State from '../State';
 
 import { GestureHandlerProperties } from '../types';
-
-export interface PanGestureHandlerProperties extends GestureHandlerProperties {
-  /** @deprecated  use activeOffsetX*/
-  minDeltaX?: number;
-  /** @deprecated  use activeOffsetY*/
-  minDeltaY?: number;
-  /** @deprecated  use failOffsetX*/
-  maxDeltaX?: number;
-  /** @deprecated  use failOffsetY*/
-  maxDeltaY?: number;
-  /** @deprecated  use activeOffsetX*/
-  minOffsetX?: number;
-  /** @deprecated  use failOffsetY*/
-  minOffsetY?: number;
-  activeOffsetY?: number | number[];
-  activeOffsetX?: number | number[];
-  failOffsetY?: number | number[];
-  failOffsetX?: number | number[];
-  minDist?: number;
-  minVelocity?: number;
-  minVelocityX?: number;
-  minVelocityY?: number;
-  minPointers?: number;
-  maxPointers?: number;
-  avgTouches?: boolean;
-  enableTrackpadTwoFingerGesture?: boolean;
-  onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
-  onHandlerStateChange?: (event: PanGestureHandlerStateChangeEvent) => void;
-}
-
 class PanGestureHandler extends DraggingGestureHandler {
   get name() {
     return 'pan';
