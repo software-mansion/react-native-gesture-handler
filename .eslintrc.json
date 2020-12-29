@@ -9,8 +9,7 @@
     "import/resolver": {
       "babel-module": {}
     },
-    // TODO add drawerLayout
-    "import/core-modules": ["react-native-gesture-handler/Swipeable"]
+    "import/core-modules": ["react-native-gesture-handler", "react-native-gesture-handler/DrawerLayout", "react-native-gesture-handler/Swipeable"]
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
