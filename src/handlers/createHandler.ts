@@ -2,6 +2,7 @@ import React from 'react';
 import {
   findNodeHandle as findNodeHandleRN,
   NativeModules,
+  // @ts-ignore determine how to use Touchable
   Touchable,
   Platform,
 } from 'react-native';
