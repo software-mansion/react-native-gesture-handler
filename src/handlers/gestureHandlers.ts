@@ -20,17 +20,19 @@ export interface HandlerStateChangeEventPayload {
 
 //TODO(TS) events in handlers
 
-export interface GestureEvent<ExtraEventPayloadT = {}> {
+export interface GestureEvent<ExtraEventPayloadT = Record<string, unknown>> {
   nativeEvent: Readonly<GestureEventPayload & ExtraEventPayloadT>;
 }
-export interface HandlerStateChangeEvent<ExtraEventPayloadT = {}> {
+export interface HandlerStateChangeEvent<
+  ExtraEventPayloadT = Record<string, unknown>
+> {
   nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
 }
 
 // Events payloads are types instead of interfaces due to TS limitation.
 // See https://github.com/microsoft/TypeScript/issues/15300 for more info.
 export type BaseGestureHandlerProperties<
-  ExtraEventPayloadT extends Record<string, unknown> = {}
+  ExtraEventPayloadT extends Record<string, unknown> = Record<string, unknown>
 > = {
   id?: string;
   enabled?: boolean;

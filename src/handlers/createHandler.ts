@@ -73,7 +73,8 @@ function isConfigParam(param: unknown, name: string) {
   // or an object and returns true if `param` is null
   return (
     param !== undefined &&
-    (param !== Object(param) || !('__isNative' in (param as object))) &&
+    (param !== Object(param) ||
+      !('__isNative' in (param as Record<string, unknown>))) &&
     name !== 'onHandlerStateChange' &&
     name !== 'onGestureEvent'
   );
@@ -177,7 +178,7 @@ export default function createHandler<
     static displayName = name;
 
     private handlerTag: number;
-    private config: {};
+    private config: Record<string, unknown>;
     private propsRef: React.MutableRefObject<unknown>;
     private viewNode: any;
     private viewTag?: number;
@@ -313,7 +314,7 @@ export default function createHandler<
       }
     };
 
-    private updateGestureHandler = (newConfig: {}) => {
+    private updateGestureHandler = (newConfig: Record<string, unknown>) => {
       this.config = newConfig;
 
       RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
