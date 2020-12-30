@@ -11,6 +11,7 @@ export * from './src/components/GestureButtons';
 // eslint-disable-next-line import/export
 export * from './src/components/GestureComponents';
 export * from './src/handlers/gestureHandlers';
+export * from './src/handlers/gestureHandlerTypesCompat';
 
 export { default as Swipeable } from './src/components/Swipeable';
 export { default as DrawerLayout } from './src/components/DrawerLayout';
