@@ -1,4 +1,3 @@
-import React from 'react';
-import { View, ViewProps } from 'react-native';
+import { View } from 'react-native';
 
-export default View as React.ComponentType<ViewProps>;
+export default View;
