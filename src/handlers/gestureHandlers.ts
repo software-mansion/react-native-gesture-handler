@@ -84,7 +84,7 @@ export const baseProperties = [
   'onHandlerStateChange',
 ] as const;
 
-export type TapGestureHandlerEventExtraPayload = {
+export type TapGestureHandlerEventPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -92,7 +92,7 @@ export type TapGestureHandlerEventExtraPayload = {
 };
 
 export interface TapGestureHandlerProperties
-  extends BaseGestureHandlerProperties<TapGestureHandlerEventExtraPayload> {
+  extends BaseGestureHandlerProperties<TapGestureHandlerEventPayload> {
   minPointers?: number;
   maxDurationMs?: number;
   maxDelayMs?: number;
@@ -104,7 +104,7 @@ export interface TapGestureHandlerProperties
 
 export const TapGestureHandler = createHandler<
   TapGestureHandlerProperties,
-  TapGestureHandlerEventExtraPayload
+  TapGestureHandlerEventPayload
 >({
   name: 'TapGestureHandler',
   allowedProps: [
@@ -120,7 +120,7 @@ export const TapGestureHandler = createHandler<
   config: {},
 });
 
-export type FlingGestureHandlerEventExtraPayload = {
+export type FlingGestureHandlerEventPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -128,14 +128,14 @@ export type FlingGestureHandlerEventExtraPayload = {
 };
 
 export interface FlingGestureHandlerProperties
-  extends BaseGestureHandlerProperties<FlingGestureHandlerEventExtraPayload> {
+  extends BaseGestureHandlerProperties<FlingGestureHandlerEventPayload> {
   direction?: number;
   numberOfPointers?: number;
 }
 
 export const FlingGestureHandler = createHandler<
   FlingGestureHandlerProperties,
-  FlingGestureHandlerEventExtraPayload
+  FlingGestureHandlerEventPayload
 >({
   name: 'FlingGestureHandler',
   allowedProps: [...baseProperties, 'numberOfPointers', 'direction'] as const,
@@ -154,7 +154,7 @@ class ForceTouchFallback extends React.Component {
   }
 }
 
-export type ForceTouchGestureHandlerEventExtraPayload = {
+export type ForceTouchGestureHandlerEventPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -163,7 +163,7 @@ export type ForceTouchGestureHandlerEventExtraPayload = {
 };
 
 export interface ForceTouchGestureHandlerProperties
-  extends BaseGestureHandlerProperties<ForceTouchGestureHandlerEventExtraPayload> {
+  extends BaseGestureHandlerProperties<ForceTouchGestureHandlerEventPayload> {
   minForce?: number;
   maxForce?: number;
   feedbackOnActivation?: boolean;
@@ -172,7 +172,7 @@ export interface ForceTouchGestureHandlerProperties
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
   ? createHandler<
       ForceTouchGestureHandlerProperties,
-      ForceTouchGestureHandlerEventExtraPayload
+      ForceTouchGestureHandlerEventPayload
     >({
       name: 'ForceTouchGestureHandler',
       allowedProps: [
@@ -193,7 +193,7 @@ type ExtendedForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
 (ForceTouchGestureHandler as ExtendedForceTouchGestureHandler).forceTouchAvailable =
   PlatformConstants?.forceTouchAvailable || false;
 
-export type LongPressGestureHandlerEventExtraPayload = {
+export type LongPressGestureHandlerEventPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -201,14 +201,14 @@ export type LongPressGestureHandlerEventExtraPayload = {
 };
 
 export interface LongPressGestureHandlerProperties
-  extends BaseGestureHandlerProperties<LongPressGestureHandlerEventExtraPayload> {
+  extends BaseGestureHandlerProperties<LongPressGestureHandlerEventPayload> {
   minDurationMs?: number;
   maxDist?: number;
 }
 
 export const LongPressGestureHandler = createHandler<
   LongPressGestureHandlerProperties,
-  LongPressGestureHandlerEventExtraPayload
+  LongPressGestureHandlerEventPayload
 >({
   name: 'LongPressGestureHandler',
   allowedProps: [...baseProperties, 'minDurationMs', 'maxDist'] as const,
@@ -384,7 +384,7 @@ function managePanProps(props: PanGestureHandlerProperties) {
   return transformPanGestureHandlerProps(props);
 }
 
-export type PanGestureHandlerEventExtraPayload = {
+export type PanGestureHandlerEventPayload = {
   x: number;
   y: number;
   absoluteX: number;
@@ -396,7 +396,7 @@ export type PanGestureHandlerEventExtraPayload = {
 };
 
 export interface PanGestureHandlerProperties
-  extends BaseGestureHandlerProperties<PanGestureHandlerEventExtraPayload> {
+  extends BaseGestureHandlerProperties<PanGestureHandlerEventPayload> {
   /** @deprecated  use activeOffsetX*/
   minDeltaX?: number;
   /** @deprecated  use activeOffsetY*/
@@ -425,7 +425,7 @@ export interface PanGestureHandlerProperties
 
 export const PanGestureHandler = createHandler<
   PanGestureHandlerProperties,
-  PanGestureHandlerEventExtraPayload
+  PanGestureHandlerEventPayload
 >({
   name: 'PanGestureHandler',
   allowedProps: [
@@ -457,7 +457,7 @@ export const PanGestureHandler = createHandler<
   ],
 });
 
-export type PinchGestureHandlerEventExtraPayload = {
+export type PinchGestureHandlerEventPayload = {
   scale: number;
   focalX: number;
   focalY: number;
@@ -465,18 +465,18 @@ export type PinchGestureHandlerEventExtraPayload = {
 };
 
 export interface PinchGestureHandlerProperties
-  extends BaseGestureHandlerProperties<PinchGestureHandlerEventExtraPayload> {}
+  extends BaseGestureHandlerProperties<PinchGestureHandlerEventPayload> {}
 
 export const PinchGestureHandler = createHandler<
   PinchGestureHandlerProperties,
-  PinchGestureHandlerEventExtraPayload
+  PinchGestureHandlerEventPayload
 >({
   name: 'PinchGestureHandler',
   allowedProps: baseProperties,
   config: {},
 });
 
-export type RotationGestureHandlerEventExtraPayload = {
+export type RotationGestureHandlerEventPayload = {
   rotation: number;
   anchorX: number;
   anchorY: number;
@@ -484,11 +484,11 @@ export type RotationGestureHandlerEventExtraPayload = {
 };
 
 export interface RotationGestureHandlerProperties
-  extends BaseGestureHandlerProperties<RotationGestureHandlerEventExtraPayload> {}
+  extends BaseGestureHandlerProperties<RotationGestureHandlerEventPayload> {}
 
 export const RotationGestureHandler = createHandler<
   RotationGestureHandlerProperties,
-  RotationGestureHandlerEventExtraPayload
+  RotationGestureHandlerEventPayload
 >({
   name: 'RotationGestureHandler',
   allowedProps: baseProperties,

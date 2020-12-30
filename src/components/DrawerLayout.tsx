@@ -25,10 +25,10 @@ import {
 import {
   GestureEvent,
   PanGestureHandler,
-  PanGestureHandlerEventExtraPayload,
+  PanGestureHandlerEventPayload,
   TapGestureHandler,
   HandlerStateChangeEvent,
-  TapGestureHandlerEventExtraPayload,
+  TapGestureHandlerEventPayload,
 } from '../handlers/gestureHandlers';
 import State from '../State';
 
@@ -148,7 +148,7 @@ export default class DrawerLayout extends Component<
 
   private openValue?: Animated.AnimatedInterpolation;
   private onGestureEvent?: (
-    event: GestureEvent<PanGestureHandlerEventExtraPayload>
+    event: GestureEvent<PanGestureHandlerEventPayload>
   ) => void;
   private accessibilityIsModalView = React.createRef<View>();
   private pointerEventsView = React.createRef<View>();
@@ -250,7 +250,7 @@ export default class DrawerLayout extends Component<
       useNativeDriver: boolean;
       // TODO: make sure it is correct
       listener?: (
-        ev: NativeSyntheticEvent<PanGestureHandlerEventExtraPayload>
+        ev: NativeSyntheticEvent<PanGestureHandlerEventPayload>
       ) => void;
     } = {
       useNativeDriver: props.useNativeAnimations!,
@@ -284,7 +284,7 @@ export default class DrawerLayout extends Component<
 
   private openingHandlerStateChange = ({
     nativeEvent,
-  }: HandlerStateChangeEvent<PanGestureHandlerEventExtraPayload>) => {
+  }: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       this.handleRelease({ nativeEvent });
     } else if (nativeEvent.state === State.ACTIVE) {
@@ -300,7 +300,7 @@ export default class DrawerLayout extends Component<
 
   private onTapHandlerStateChange = ({
     nativeEvent,
-  }: HandlerStateChangeEvent<TapGestureHandlerEventExtraPayload>) => {
+  }: HandlerStateChangeEvent<TapGestureHandlerEventPayload>) => {
     if (
       this.drawerShown &&
       nativeEvent.oldState === State.ACTIVE &&
@@ -312,7 +312,7 @@ export default class DrawerLayout extends Component<
 
   private handleRelease = ({
     nativeEvent,
-  }: HandlerStateChangeEvent<PanGestureHandlerEventExtraPayload>) => {
+  }: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
     const { drawerWidth, drawerPosition, drawerType } = this.props;
     const { containerWidth } = this.state;
     let { translationX: dragX, velocityX, x: touchX } = nativeEvent;

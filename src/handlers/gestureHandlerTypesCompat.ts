@@ -1,17 +1,17 @@
 import React from 'react';
 import {
   BaseGestureHandlerProperties,
-  FlingGestureHandlerEventExtraPayload,
-  ForceTouchGestureHandlerEventExtraPayload,
+  FlingGestureHandlerEventPayload,
+  ForceTouchGestureHandlerEventPayload,
   GestureEvent,
   GestureEventPayload,
   HandlerStateChangeEvent,
   HandlerStateChangeEventPayload,
-  LongPressGestureHandlerEventExtraPayload,
-  PanGestureHandlerEventExtraPayload,
-  PinchGestureHandlerEventExtraPayload,
-  RotationGestureHandlerEventExtraPayload,
-  TapGestureHandlerEventExtraPayload,
+  LongPressGestureHandlerEventPayload,
+  PanGestureHandlerEventPayload,
+  PinchGestureHandlerEventPayload,
+  RotationGestureHandlerEventPayload,
+  TapGestureHandlerEventPayload,
   ForceTouchGestureHandlerProperties as ForceTouchGHProperties,
   TapGestureHandlerProperties as TapGHProperties,
   LongPressGestureHandlerProperties as LongPressGHProperties,
@@ -33,26 +33,26 @@ export type GestureHandlerStateChangeEvent = HandlerStateChangeEvent;
 export type NativeViewGestureHandlerGestureEvent = GestureEvent<NativeViewGestureHandlerPayload>;
 export type NativeViewGestureHandlerStateChangeEvent = HandlerStateChangeEvent<NativeViewGestureHandlerPayload>;
 
-export type TapGestureHandlerGestureEvent = GestureEvent<TapGestureHandlerEventExtraPayload>;
-export type TapGestureHandlerStateChangeEvent = HandlerStateChangeEvent<TapGestureHandlerEventExtraPayload>;
+export type TapGestureHandlerGestureEvent = GestureEvent<TapGestureHandlerEventPayload>;
+export type TapGestureHandlerStateChangeEvent = HandlerStateChangeEvent<TapGestureHandlerEventPayload>;
 
-export type ForceTouchGestureHandlerGestureEvent = GestureEvent<ForceTouchGestureHandlerEventExtraPayload>;
-export type ForceTouchGestureHandlerStateChangeEvent = HandlerStateChangeEvent<ForceTouchGestureHandlerEventExtraPayload>;
+export type ForceTouchGestureHandlerGestureEvent = GestureEvent<ForceTouchGestureHandlerEventPayload>;
+export type ForceTouchGestureHandlerStateChangeEvent = HandlerStateChangeEvent<ForceTouchGestureHandlerEventPayload>;
 
-export type LongPressGestureHandlerGestureEvent = GestureEvent<LongPressGestureHandlerEventExtraPayload>;
-export type LongPressGestureHandlerStateChangeEvent = HandlerStateChangeEvent<LongPressGestureHandlerEventExtraPayload>;
+export type LongPressGestureHandlerGestureEvent = GestureEvent<LongPressGestureHandlerEventPayload>;
+export type LongPressGestureHandlerStateChangeEvent = HandlerStateChangeEvent<LongPressGestureHandlerEventPayload>;
 
-export type PanGestureHandlerGestureEvent = GestureEvent<PanGestureHandlerEventExtraPayload>;
-export type PanGestureHandlerStateChangeEvent = HandlerStateChangeEvent<PanGestureHandlerEventExtraPayload>;
+export type PanGestureHandlerGestureEvent = GestureEvent<PanGestureHandlerEventPayload>;
+export type PanGestureHandlerStateChangeEvent = HandlerStateChangeEvent<PanGestureHandlerEventPayload>;
 
-export type PinchGestureHandlerGestureEvent = GestureEvent<PinchGestureHandlerEventExtraPayload>;
-export type PinchGestureHandlerStateChangeEvent = HandlerStateChangeEvent<PinchGestureHandlerEventExtraPayload>;
+export type PinchGestureHandlerGestureEvent = GestureEvent<PinchGestureHandlerEventPayload>;
+export type PinchGestureHandlerStateChangeEvent = HandlerStateChangeEvent<PinchGestureHandlerEventPayload>;
 
-export type RotationGestureHandlerGestureEvent = GestureEvent<RotationGestureHandlerEventExtraPayload>;
-export type RotationGestureHandlerStateChangeEvent = HandlerStateChangeEvent<RotationGestureHandlerEventExtraPayload>;
+export type RotationGestureHandlerGestureEvent = GestureEvent<RotationGestureHandlerEventPayload>;
+export type RotationGestureHandlerStateChangeEvent = HandlerStateChangeEvent<RotationGestureHandlerEventPayload>;
 
-export type FlingGestureHandlerGestureEvent = GestureEvent<FlingGestureHandlerEventExtraPayload>;
-export type FlingGestureHandlerStateChangeEvent = HandlerStateChangeEvent<FlingGestureHandlerEventExtraPayload>;
+export type FlingGestureHandlerGestureEvent = GestureEvent<FlingGestureHandlerEventPayload>;
+export type FlingGestureHandlerStateChangeEvent = HandlerStateChangeEvent<FlingGestureHandlerEventPayload>;
 
 type StateEventNames =
   | 'onBegan'
