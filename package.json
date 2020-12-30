@@ -3,7 +3,7 @@
   "version": "1.9.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
-    "lint": "eslint --ext '.js,.ts,.tsx' src/ Swipeable.ts DrawerLayout.ts",
+    "lint": "eslint --ext '.js,.ts,.tsx' src/",
     "prepare": "rm -r dist/ ; yarn build",
     "test": "jest",
     "build": "yarn tsc",
@@ -12,8 +12,8 @@
     "ts-check": "yarn tsc --noEmit",
     "lint-check": "yarn eslint src/ && yarn prettier --check src/"
   },
-  "main": "dist/index.js",
   "react-native": "index",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "android/build.gradle",
