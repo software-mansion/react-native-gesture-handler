@@ -15,7 +15,7 @@ abstract class GestureHandler {
   private view = null;
   private config = {};
   private hammer = null;
-  private pendingGestures = {};
+  private pendingGestures: Record<string, this> = {};
   private oldState = State.UNDETERMINED;
   private previousState = State.UNDETERMINED;
   private lastSentState = null;
@@ -43,13 +43,13 @@ abstract class GestureHandler {
     return this.config;
   }
 
-  onWaitingEnded(gesture) {}
+  onWaitingEnded(_gesture: this) {}
 
-  removePendingGesture(id) {
+  removePendingGesture(id: string) {
     delete this.pendingGestures[id];
   }
 
-  addPendingGesture(gesture) {
+  addPendingGesture(gesture: this) {
     this.pendingGestures[gesture.id] = gesture;
   }
 
