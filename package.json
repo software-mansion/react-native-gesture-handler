@@ -23,7 +23,6 @@
     "android/lib/src/main/java/",
     "ios/",
     "dist/",
-    "index.tsx",
     "src/",
     "index.ts",
     "Swipeable/",
