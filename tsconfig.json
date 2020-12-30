@@ -1,13 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {
-      "react-native-gesture-handler": [
-        "./index.ts"
-      ],
-      "react-native-gesture-handler/Swipeable": ["./src/components/Swipeable.tsx"],
-      "react-native-gesture-handler/DrawerLayout": ["./src/components/DrawerLayout.tsx"]
-    },
     "esModuleInterop": true,
     "jsx": "react-native",
     "lib": ["esnext"],
@@ -28,5 +21,5 @@
 
     "outDir": "./dist"
   },
-  "include": ["*.ts", "src/**/*.ts", "src/**/*.tsx", "examples/Example/src/**/*.ts", "examples/Example/src/**/*.tsx", "examples/Example/index.js"]
+  "include": ["*.ts", "src/**/*.ts", "src/**/*.tsx"]
 }

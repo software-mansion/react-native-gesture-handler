@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "react-native-gesture-handler": ["../../index.ts"],
+      "react-native-gesture-handler/Swipeable": [
+        "../../src/components/Swipeable.tsx"
+      ],
+      "react-native-gesture-handler/DrawerLayout": [
+        "../../src/components/DrawerLayout.tsx"
+      ]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "index.js"]
+}

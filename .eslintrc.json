@@ -8,8 +8,7 @@
     "react": { "version": "16" },
     "import/resolver": {
       "babel-module": {}
-    },
-    "import/core-modules": ["react-native-gesture-handler", "react-native-gesture-handler/DrawerLayout", "react-native-gesture-handler/Swipeable"]
+    }
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
