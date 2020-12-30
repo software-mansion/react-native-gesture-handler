@@ -7,12 +7,11 @@ const GestureHandlerRootViewNative = requireNativeComponent(
 
 const GestureHandlerRootViewContext = React.createContext(false);
 
-export default function GestureHandlerRootView({
-  children,
-  ...rest
-}: {
+type Props = Record<string, unknown> & {
   children: React.ReactNode;
-}) {
+};
+
+export default function GestureHandlerRootView({ children, ...rest }: Props) {
   return (
     <GestureHandlerRootViewContext.Consumer>
       {(available) => {
