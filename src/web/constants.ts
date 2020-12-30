@@ -1,6 +1,6 @@
 import Hammer from '@egjs/hammerjs';
 
-import State from '../State';
+import { State } from '../State';
 
 export const CONTENT_TOUCHES_DELAY = 240;
 export const CONTENT_TOUCHES_QUICK_TAP_END_DELAY = 50;

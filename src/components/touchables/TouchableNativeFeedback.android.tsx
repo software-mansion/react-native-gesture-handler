@@ -61,7 +61,7 @@ export default class TouchableNativeFeedback extends Component<
     const { background } = this.props;
     if (background) {
       // I changed type values to match those used in RN
-      // TODO(TS): check if it works the same as previous implementation
+      // TODO(TS): check if it works the same as previous implementation - looks like it works the same as RN component, so it should be ok
       if (background.type === 'RippleAndroid') {
         extraProps['borderless'] = background.borderless;
         extraProps['rippleColor'] = background.color;
@@ -70,7 +70,6 @@ export default class TouchableNativeFeedback extends Component<
           background.attribute === 'selectableItemBackgroundBorderless';
       }
       // I moved it from above since it should be available in all options
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       extraProps['rippleRadius'] = background.rippleRadius;
     }
     extraProps['foreground'] = this.props.useForeground;

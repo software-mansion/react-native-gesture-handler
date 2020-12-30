@@ -30,7 +30,7 @@ import {
   HandlerStateChangeEvent,
   TapGestureHandlerEventPayload,
 } from '../handlers/gestureHandlers';
-import State from '../State';
+import { State } from '../State';
 
 const DRAG_TOSS = 0.05;
 
@@ -86,7 +86,7 @@ export type DrawerLayoutState = {
 };
 
 export type EventType = {
-  stopPropagation: Function;
+  stopPropagation: () => void; // TODO(TS): unused type;
 };
 
 export type DrawerMovementOptionType = {
@@ -155,7 +155,7 @@ export default class DrawerLayout extends Component<
   private panGestureHandler = React.createRef<
     typeof PanGestureHandler | null
   >();
-  private drawerShown: boolean = false;
+  private drawerShown = false;
 
   static positions = {
     Left: 'left',

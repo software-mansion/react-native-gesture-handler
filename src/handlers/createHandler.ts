@@ -8,7 +8,7 @@ import RN, {
 import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
-import State from '../State';
+import { State } from '../State';
 
 import {
   BaseGestureHandlerProperties,

@@ -1,6 +1,6 @@
 // TODO use State from RNModule
 
-const State = {
+export const State = {
   UNDETERMINED: 0,
   FAILED: 1,
   BEGAN: 2,
@@ -9,4 +9,6 @@ const State = {
   END: 5,
 } as const;
 
-export default State;
+// It is needed for backwards compability, since it can be used as a type and a value
+// eslint-disable-next-line no-redeclare
+export type State = typeof State[keyof typeof State];

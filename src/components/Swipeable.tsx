@@ -22,7 +22,7 @@ import {
   HandlerStateChangeEvent,
   TapGestureHandlerEventPayload,
 } from '../handlers/gestureHandlers';
-import State from '../State';
+import { State } from '../State';
 
 const DRAG_TOSS = 0.05;
 
@@ -77,7 +77,7 @@ interface SwipeableProperties
     dragAnimatedValue: Animated.AnimatedInterpolation
   ) => React.ReactNode;
   useNativeAnimations?: boolean;
-  animationOptions?: object;
+  animationOptions?: Record<string, unknown>;
   containerStyle?: StyleProp<ViewStyle>;
   childrenContainerStyle?: StyleProp<ViewStyle>;
 }

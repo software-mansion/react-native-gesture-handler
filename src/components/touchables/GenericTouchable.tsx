@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedbackProps,
 } from 'react-native';
 
-import State from '../../State';
+import { State } from '../../State';
 import { BaseButton } from '../GestureButtons';
 
 import {

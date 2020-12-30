@@ -6,7 +6,7 @@ import React from 'react';
 
 import createHandler from './createHandler';
 import PlatformConstants from '../PlatformConstants';
-import State from '../State';
+import { State } from '../State';
 import { ValueOf } from '../typeUtils';
 
 export interface GestureEventPayload {

@@ -10,7 +10,7 @@ import {
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';
-import State from '../State';
+import { State } from '../State';
 
 import {
   GestureEvent,
