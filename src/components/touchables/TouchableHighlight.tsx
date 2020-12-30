@@ -8,6 +8,7 @@ import {
   View,
   TouchableHighlightProps,
   ColorValue,
+  ViewProps,
 } from 'react-native';
 
 interface State {
@@ -78,7 +79,7 @@ export default class TouchableHighlight extends Component<
 
     const child = React.Children.only(
       this.props.children
-    ) as React.ReactElement; // TODO: not sure if OK but fixes error
+    ) as React.ReactElement<ViewProps>; // TODO: not sure if OK but fixes error
     return React.cloneElement(child, {
       style: StyleSheet.compose(child.props.style, this.state.extraChildStyle),
     });

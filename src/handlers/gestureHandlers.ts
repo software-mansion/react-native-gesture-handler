@@ -1,3 +1,7 @@
+// Previous types exported gesture handlers as classes which creates an interface and variable, both named the same as class.
+// Without those types, we'd introduce breaking change, forcing users to prefix every handler type specification with typeof
+// e.g. React.createRef<TapGestureHandler> -> React.createRef<typeof TapGestureHandler>.
+// See https://www.typescriptlang.org/docs/handbook/classes.html#constructor-functions for reference.
 import React from 'react';
 
 import createHandler from './createHandler';
@@ -102,6 +106,9 @@ export interface TapGestureHandlerProperties
   maxDist?: number;
 }
 
+export type TapGestureHandler = typeof TapGestureHandler;
+// For the reason why, see the comment at the top of this file
+// eslint-disable-next-line no-redeclare
 export const TapGestureHandler = createHandler<
   TapGestureHandlerProperties,
   TapGestureHandlerEventPayload
@@ -133,6 +140,9 @@ export interface FlingGestureHandlerProperties
   numberOfPointers?: number;
 }
 
+export type FlingGestureHandler = typeof FlingGestureHandler;
+// For the reason why, see the comment at the top of this file
+// eslint-disable-next-line no-redeclare
 export const FlingGestureHandler = createHandler<
   FlingGestureHandlerProperties,
   FlingGestureHandlerEventPayload
@@ -169,6 +179,9 @@ export interface ForceTouchGestureHandlerProperties
   feedbackOnActivation?: boolean;
 }
 
+export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler;
+// For the reason why, see the comment at the top of this file
+// eslint-disable-next-line no-redeclare
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
   ? createHandler<
       ForceTouchGestureHandlerProperties,
@@ -206,6 +219,9 @@ export interface LongPressGestureHandlerProperties
   maxDist?: number;
 }
 
+export type LongPressGestureHandler = typeof LongPressGestureHandler;
+// For the reason why, see the comment at the top of this file
+// eslint-disable-next-line no-redeclare
 export const LongPressGestureHandler = createHandler<
   LongPressGestureHandlerProperties,
   LongPressGestureHandlerEventPayload
@@ -423,6 +439,9 @@ export interface PanGestureHandlerProperties
   enableTrackpadTwoFingerGesture?: boolean;
 }
 
+export type PanGestureHandler = typeof PanGestureHandler;
+// For the reason why, see the comment at the top of this file
+// eslint-disable-next-line no-redeclare
 export const PanGestureHandler = createHandler<
   PanGestureHandlerProperties,
   PanGestureHandlerEventPayload
@@ -467,6 +486,9 @@ export type PinchGestureHandlerEventPayload = {
 export interface PinchGestureHandlerProperties
   extends BaseGestureHandlerProperties<PinchGestureHandlerEventPayload> {}
 
+export type PinchGestureHandler = typeof PinchGestureHandler;
+// For the reason why, see the comment at the top of this file
+// eslint-disable-next-line no-redeclare
 export const PinchGestureHandler = createHandler<
   PinchGestureHandlerProperties,
   PinchGestureHandlerEventPayload
@@ -486,6 +508,9 @@ export type RotationGestureHandlerEventPayload = {
 export interface RotationGestureHandlerProperties
   extends BaseGestureHandlerProperties<RotationGestureHandlerEventPayload> {}
 
+export type RotationGestureHandler = typeof RotationGestureHandler;
+// For the reason why, see the comment at the top of this file
+// eslint-disable-next-line no-redeclare
 export const RotationGestureHandler = createHandler<
   RotationGestureHandlerProperties,
   RotationGestureHandlerEventPayload
