@@ -41,7 +41,6 @@
         "ts-ignore": "allow-with-description",
         "ts-expect-error": "allow-with-description"
       }
-    ],
-    "typescript-eslint/no-non-null-assertion": "off"
+    ]
   }
 }
