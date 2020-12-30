@@ -18,7 +18,6 @@
     "noImplicitUseStrict": false,
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-
     "outDir": "./dist"
   },
   "include": ["*.ts", "src/**/*.ts", "src/**/*.tsx"]
