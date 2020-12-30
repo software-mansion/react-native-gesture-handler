@@ -1,6 +1,7 @@
 import React, { useImperativeHandle, useRef } from 'react';
 
-import NativeViewGestureHandler, {
+import {
+  NativeViewGestureHandler,
   NativeViewGestureHandlerProperties,
   nativeViewProperties,
 } from './NativeViewGestureHandler';
