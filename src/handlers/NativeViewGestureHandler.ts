@@ -23,7 +23,7 @@ export const nativeViewProperties = [
 export type NativeViewGestureHandler = typeof NativeViewGestureHandler;
 // For the reason why, see the comment at the top of gestureHandlers.ts
 // eslint-disable-next-line no-redeclare
-const NativeViewGestureHandler = createHandler<
+export const NativeViewGestureHandler = createHandler<
   NativeViewGestureHandlerProperties,
   NativeViewGestureHandlerPayload
 >({
@@ -31,5 +31,3 @@ const NativeViewGestureHandler = createHandler<
   allowedProps: nativeViewProperties,
   config: {},
 });
-
-export default NativeViewGestureHandler;
