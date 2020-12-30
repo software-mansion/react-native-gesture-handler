@@ -12,7 +12,7 @@ import State from '../State';
 
 import {
   BaseGestureHandlerProperties,
-  GestureEventEvent,
+  GestureEvent,
   HandlerStateChangeEvent,
 } from './gestureHandlers';
 import { ValueOf } from '../typeUtils';
@@ -244,7 +244,7 @@ export default function createHandler<
       }
     }
 
-    private onGestureHandlerEvent = (event: GestureEventEvent<U>) => {
+    private onGestureHandlerEvent = (event: GestureEvent<U>) => {
       if (event.nativeEvent.handlerTag === this.handlerTag) {
         this.props.onGestureEvent?.(event);
       } else {

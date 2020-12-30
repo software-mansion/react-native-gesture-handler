@@ -23,7 +23,7 @@ import {
 } from 'react-native';
 
 import {
-  GestureEventEvent,
+  GestureEvent,
   PanGestureHandler,
   PanGestureHandlerEventExtraPayload,
   TapGestureHandler,
@@ -148,7 +148,7 @@ export default class DrawerLayout extends Component<
 
   private openValue?: Animated.AnimatedInterpolation;
   private onGestureEvent?: (
-    event: GestureEventEvent<PanGestureHandlerEventExtraPayload>
+    event: GestureEvent<PanGestureHandlerEventExtraPayload>
   ) => void;
   private accessibilityIsModalView = React.createRef<View>();
   private pointerEventsView = React.createRef<View>();

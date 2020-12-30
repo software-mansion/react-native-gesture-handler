@@ -5,7 +5,7 @@ import PlatformConstants from '../PlatformConstants';
 import State from '../State';
 import { ValueOf } from '../typeUtils';
 
-export interface GestureEventEventPayload {
+export interface GestureEventPayload {
   handlerTag: number;
   numberOfPointers: number;
   state: ValueOf<typeof State>;
@@ -20,8 +20,8 @@ export interface HandlerStateChangeEventPayload {
 
 //TODO(TS) events in handlers
 
-export interface GestureEventEvent<ExtraEventPayloadT = {}> {
-  nativeEvent: Readonly<GestureEventEventPayload & ExtraEventPayloadT>;
+export interface GestureEvent<ExtraEventPayloadT = {}> {
+  nativeEvent: Readonly<GestureEventPayload & ExtraEventPayloadT>;
 }
 export interface HandlerStateChangeEvent<ExtraEventPayloadT = {}> {
   nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
@@ -59,7 +59,7 @@ export type BaseGestureHandlerProperties<
   onEnded?: (event: HandlerStateChangeEvent) => void;
 
   //TODO(TS) consider using NativeSyntheticEvent
-  onGestureEvent?: (event: GestureEventEvent<ExtraEventPayloadT>) => void;
+  onGestureEvent?: (event: GestureEvent<ExtraEventPayloadT>) => void;
   onHandlerStateChange?: (
     event: HandlerStateChangeEvent<ExtraEventPayloadT>
   ) => void;

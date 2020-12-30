@@ -11,7 +11,7 @@ import State from '../../State';
 import { BaseButton } from '../GestureButtons';
 
 import {
-  GestureEventEvent,
+  GestureEvent,
   HandlerStateChangeEvent,
 } from '../../handlers/gestureHandlers';
 import { NativeViewGestureHandlerPayload } from '../../handlers/NativeViewGestureHandler';
@@ -183,7 +183,7 @@ export default class GenericTouchable extends Component<
 
   onGestureEvent = ({
     nativeEvent: { pointerInside },
-  }: GestureEventEvent<NativeViewGestureHandlerPayload>) => {
+  }: GestureEvent<NativeViewGestureHandlerPayload>) => {
     if (this.pointerInside !== pointerInside) {
       if (pointerInside) {
         this.onMoveIn();

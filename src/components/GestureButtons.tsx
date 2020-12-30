@@ -13,7 +13,7 @@ import GestureHandlerButton from './GestureHandlerButton';
 import State from '../State';
 
 import {
-  GestureEventEvent,
+  GestureEvent,
   HandlerStateChangeEvent,
 } from '../handlers/gestureHandlers';
 import {
@@ -97,7 +97,7 @@ export class BaseButton extends React.Component<BaseButtonProperties> {
   };
 
   private onGestureEvent = (
-    e: GestureEventEvent<NativeViewGestureHandlerPayload>
+    e: GestureEvent<NativeViewGestureHandlerPayload>
   ) => {
     this.props.onGestureEvent?.(e);
     this.handleEvent(

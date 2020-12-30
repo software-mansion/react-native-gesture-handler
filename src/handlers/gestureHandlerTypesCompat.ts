@@ -3,8 +3,8 @@ import {
   BaseGestureHandlerProperties,
   FlingGestureHandlerEventExtraPayload,
   ForceTouchGestureHandlerEventExtraPayload,
-  GestureEventEvent,
-  GestureEventEventPayload,
+  GestureEvent,
+  GestureEventPayload,
   HandlerStateChangeEvent,
   HandlerStateChangeEventPayload,
   LongPressGestureHandlerEventExtraPayload,
@@ -25,33 +25,33 @@ import {
   NativeViewGestureHandlerProperties as NativeViewGHProperties,
 } from './NativeViewGestureHandler';
 
-export type GestureHandlerGestureEventNativeEvent = GestureEventEventPayload;
+export type GestureHandlerGestureEventNativeEvent = GestureEventPayload;
 export type GestureHandlerStateChangeNativeEvent = HandlerStateChangeEventPayload;
-export type GestureHandlerGestureEvent = GestureEventEvent;
+export type GestureHandlerGestureEvent = GestureEvent;
 export type GestureHandlerStateChangeEvent = HandlerStateChangeEvent;
 
-export type NativeViewGestureHandlerGestureEvent = GestureEventEvent<NativeViewGestureHandlerPayload>;
+export type NativeViewGestureHandlerGestureEvent = GestureEvent<NativeViewGestureHandlerPayload>;
 export type NativeViewGestureHandlerStateChangeEvent = HandlerStateChangeEvent<NativeViewGestureHandlerPayload>;
 
-export type TapGestureHandlerGestureEvent = GestureEventEvent<TapGestureHandlerEventExtraPayload>;
+export type TapGestureHandlerGestureEvent = GestureEvent<TapGestureHandlerEventExtraPayload>;
 export type TapGestureHandlerStateChangeEvent = HandlerStateChangeEvent<TapGestureHandlerEventExtraPayload>;
 
-export type ForceTouchGestureHandlerGestureEvent = GestureEventEvent<ForceTouchGestureHandlerEventExtraPayload>;
+export type ForceTouchGestureHandlerGestureEvent = GestureEvent<ForceTouchGestureHandlerEventExtraPayload>;
 export type ForceTouchGestureHandlerStateChangeEvent = HandlerStateChangeEvent<ForceTouchGestureHandlerEventExtraPayload>;
 
-export type LongPressGestureHandlerGestureEvent = GestureEventEvent<LongPressGestureHandlerEventExtraPayload>;
+export type LongPressGestureHandlerGestureEvent = GestureEvent<LongPressGestureHandlerEventExtraPayload>;
 export type LongPressGestureHandlerStateChangeEvent = HandlerStateChangeEvent<LongPressGestureHandlerEventExtraPayload>;
 
-export type PanGestureHandlerGestureEvent = GestureEventEvent<PanGestureHandlerEventExtraPayload>;
+export type PanGestureHandlerGestureEvent = GestureEvent<PanGestureHandlerEventExtraPayload>;
 export type PanGestureHandlerStateChangeEvent = HandlerStateChangeEvent<PanGestureHandlerEventExtraPayload>;
 
-export type PinchGestureHandlerGestureEvent = GestureEventEvent<PinchGestureHandlerEventExtraPayload>;
+export type PinchGestureHandlerGestureEvent = GestureEvent<PinchGestureHandlerEventExtraPayload>;
 export type PinchGestureHandlerStateChangeEvent = HandlerStateChangeEvent<PinchGestureHandlerEventExtraPayload>;
 
-export type RotationGestureHandlerGestureEvent = GestureEventEvent<RotationGestureHandlerEventExtraPayload>;
+export type RotationGestureHandlerGestureEvent = GestureEvent<RotationGestureHandlerEventExtraPayload>;
 export type RotationGestureHandlerStateChangeEvent = HandlerStateChangeEvent<RotationGestureHandlerEventExtraPayload>;
 
-export type FlingGestureHandlerGestureEvent = GestureEventEvent<FlingGestureHandlerEventExtraPayload>;
+export type FlingGestureHandlerGestureEvent = GestureEvent<FlingGestureHandlerEventExtraPayload>;
 export type FlingGestureHandlerStateChangeEvent = HandlerStateChangeEvent<FlingGestureHandlerEventExtraPayload>;
 
 type StateEventNames =

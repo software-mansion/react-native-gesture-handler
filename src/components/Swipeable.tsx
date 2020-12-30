@@ -17,7 +17,7 @@ import {
   PanGestureHandler,
   TapGestureHandler,
   PanGestureHandlerProperties,
-  GestureEventEvent,
+  GestureEvent,
   PanGestureHandlerEventExtraPayload,
   HandlerStateChangeEvent,
   TapGestureHandlerEventExtraPayload,
@@ -135,7 +135,7 @@ export default class Swipeable extends Component<
   }
 
   private onGestureEvent?: (
-    event: GestureEventEvent<PanGestureHandlerEventExtraPayload>
+    event: GestureEvent<PanGestureHandlerEventExtraPayload>
   ) => void;
   private transX?: Animated.AnimatedInterpolation;
   private showLeftAction?: Animated.AnimatedInterpolation | Animated.Value;
