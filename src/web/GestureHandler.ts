@@ -1,6 +1,5 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import Hammer from '@egjs/hammerjs';
 import { findNodeHandle } from 'react-native';
 
@@ -8,21 +7,24 @@ import State from '../State';
 import { EventMap } from './constants';
 import * as NodeManager from './NodeManager';
 
-let _gestureInstances = 0;
+let gestureInstances = 0;
 
-class GestureHandler {
-  isGestureRunning = false;
-  hasGestureFailed = false;
-  view = null;
-  config = {};
-  hammer = null;
-  pendingGestures = {};
-  oldState = State.UNDETERMINED;
-  previousState = State.UNDETERMINED;
-  lastSentState = null;
+abstract class GestureHandler {
+  private isGestureRunning = false;
+  private hasGestureFailed = false;
+  private view = null;
+  private config = {};
+  private hammer = null;
+  private pendingGestures = {};
+  private oldState = State.UNDETERMINED;
+  private previousState = State.UNDETERMINED;
+  private lastSentState = null;
+  private gestureInstance: number;
+
+  abstract get name(): string;
 
   get id() {
-    return `${this.name}${this._gestureInstance}`;
+    return `${this.name}${this.gestureInstance}`;
   }
 
   get isDiscrete() {
@@ -34,7 +36,7 @@ class GestureHandler {
   }
 
   constructor() {
-    this._gestureInstance = _gestureInstances++;
+    this.gestureInstance = gestureInstances++;
   }
 
   getConfig() {
