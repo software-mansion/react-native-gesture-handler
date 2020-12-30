@@ -20,6 +20,9 @@ export const nativeViewProperties = [
   'disallowInterruption',
 ] as const;
 
+export type NativeViewGestureHandler = typeof NativeViewGestureHandler;
+// For the reason why, see the comment at the top of gestureHandlers.ts
+// eslint-disable-next-line no-redeclare
 const NativeViewGestureHandler = createHandler<
   NativeViewGestureHandlerProperties,
   NativeViewGestureHandlerPayload
