@@ -13,13 +13,16 @@ export type RNGestureHandlerModuleProps = {
   Direction: Directions;
   handleSetJSResponder: (tag: number, blockNativeResponder: boolean) => void;
   handleClearJSResponder: () => void;
-  createGestureHandler: <T>(
+  createGestureHandler: (
     handlerName: string,
     handlerTag: number,
-    config: T //TODO extends config
+    config: Readonly<Record<string, unknown>>
   ) => void;
   attachGestureHandler: (handlerTag: number, newView: number) => void;
-  updateGestureHandler: <T>(handlerTag: number, newConfig: T) => void;
+  updateGestureHandler: (
+    handlerTag: number,
+    newConfig: Readonly<Record<string, unknown>>
+  ) => void;
   dropGestureHandler: (handlerTag: number) => void;
 };
 

@@ -286,7 +286,9 @@ export default function createHandler<
       }
     };
 
-    private createGestureHandler = (newConfig: {}) => {
+    private createGestureHandler = (
+      newConfig: Readonly<Record<string, unknown>>
+    ) => {
       this.config = newConfig;
 
       RNGestureHandlerModule.createGestureHandler(
@@ -314,7 +316,9 @@ export default function createHandler<
       }
     };
 
-    private updateGestureHandler = (newConfig: Record<string, unknown>) => {
+    private updateGestureHandler = (
+      newConfig: Readonly<Record<string, unknown>>
+    ) => {
       this.config = newConfig;
 
       RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
