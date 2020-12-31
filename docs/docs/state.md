@@ -7,7 +7,7 @@ sidebar_label: Handler State
 As described in ["About Gesture Handlers"](about-handlers.md), gesture handlers can be treated as ["state machines"](https://en.wikipedia.org/wiki/Finite-state_machine).
 At any given time, each handler instance has an assigned state that can change when new touch events occur or can be forced to change by the touch system in certain circumstances.
 
-A gesture handler can have six possible states:
+A gesture handler can be in one of the six possible states:
  - [UNDETERMINED](#undetermined)
  - [FAILED](#failed)
  - [BEGAN](#began)
