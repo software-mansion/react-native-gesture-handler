@@ -65,7 +65,7 @@ The section below describes all possible handler states:
 This is the initial state of each handler. It can be found before gestures have occurred and after they've completed. 
 
 ### FAILED
-A handler has received some touches but for some reason won't recognize them. Its state will **not** become `ACTIVE` but instead become `FAILED`. Afterwards, it is reset to `UNDETERMINED`. An example of this is if a finger travels more distance than a defined `maxDist` property allows.
+A handler received some touches but for some reason didn't recognize them. For example, if a finger travels more distance than a defined `maxDist` property allows, then the handler won't become active but will fail instead. Afterwards, it's state will be reset to `UNDETERMINED`. 
 
 ### BEGAN
 Handler has started receiving touch stream but hasn't yet received enough data to either [fail](#failed) or [activate](#active).
