@@ -53,7 +53,7 @@ Another possible flow is when a handler receives touches that cause a recognitio
 
 [`UNDETERMINED`](#undetermined) -> [`BEGAN`](#began) ------> [`FAILED`](#failed) -> [`UNDETERMINED`](#undetermined)
 
-Another possible flow is when a handler *does* properly recognize the gesture but then is interrupted by the touch system causing it to cancel. In that case the flow looks as follows:
+At last, when a handler does properly recognize the gesture but then is interrupted by the touch system. In that case, the gesture recognition is canceled and the flow looks as follows:
 
 [`UNDETERMINED`](#undetermined) -> [`BEGAN`](#began) ------> [`ACTIVE`](#active) ------> [`CANCELLED`](#cancelled) -> [`UNDETERMINED`](#undetermined)
 
