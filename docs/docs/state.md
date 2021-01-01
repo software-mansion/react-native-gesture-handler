@@ -62,7 +62,7 @@ At last, when a handler does properly recognize the gesture but then is interrup
 The section below describes all possible handler states:
 
 ### UNDETERMINED
-This is the initial state of each handler. It can be found before gestures have occurred and after they've completed. 
+This is the initial state of each handler and it goes into this state after it's done recognizing a gesture. 
 
 ### FAILED
 A handler received some touches but for some reason didn't recognize them. For example, if a finger travels more distance than a defined `maxDist` property allows, then the handler won't become active but will fail instead. Afterwards, it's state will be reset to `UNDETERMINED`. 
