@@ -9,7 +9,7 @@ import {
 } from './constants';
 import DraggingGestureHandler from './DraggingGestureHandler';
 import { isValidNumber, isnan, TEST_MIN_IF_NOT_NAN, VEC_LEN_SQ } from './utils';
-import State from '../State';
+import { State } from '../State';
 
 import { GestureHandlerProperties } from '../types';
 class PanGestureHandler extends DraggingGestureHandler {

@@ -3,7 +3,7 @@
 import Hammer from '@egjs/hammerjs';
 import { findNodeHandle } from 'react-native';
 
-import State from '../State';
+import { State } from '../State';
 import { EventMap } from './constants';
 import * as NodeManager from './NodeManager';
 

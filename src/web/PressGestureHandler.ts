@@ -3,7 +3,7 @@
 // @ts-nocheck TODO(TS) provide types
 import Hammer from '@egjs/hammerjs';
 
-import State from '../State';
+import { State } from '../State';
 import {
   CONTENT_TOUCHES_DELAY,
   CONTENT_TOUCHES_QUICK_TAP_END_DELAY,
