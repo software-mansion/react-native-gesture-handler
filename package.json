@@ -60,6 +60,7 @@
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-typescript": "^7.12.7",
+    "@babel/runtime": "^7.12.5",
     "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^26.0.19",
     "@types/react": "^17.0.0",

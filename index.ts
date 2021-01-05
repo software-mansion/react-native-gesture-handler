@@ -1,5 +1,3 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
 export { default as createNativeWrapper } from './src/handlers/createNativeWrapper';
 export { default as Directions } from './src/Directions';
 export { default as gestureHandlerRootHOC } from './src/gestureHandlerRootHOC';
