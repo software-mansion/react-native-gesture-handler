@@ -1,8 +1,9 @@
 import React from 'react';
-import RN, {
+import {
   findNodeHandle as findNodeHandleRN,
   NativeModules,
   Platform,
+  Touchable,
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
@@ -418,7 +419,7 @@ export default function createHandler<
       let grandChildren = child.props.children;
       if (
         // @ts-ignore this uses internal Touchable API
-        RN.Touchable.TOUCH_TARGET_DEBUG &&
+        Touchable.TOUCH_TARGET_DEBUG &&
         child.type &&
         (child.type === 'RNGestureHandlerButton' ||
           child.type.name === 'View' ||
@@ -427,7 +428,7 @@ export default function createHandler<
         grandChildren = React.Children.toArray(grandChildren);
         grandChildren.push(
           // @ts-ignore this uses internal Touchable API
-          RN.Touchable.renderDebugView({
+          Touchable.renderDebugView({
             color: 'mediumspringgreen',
             hitSlop: child.props.hitSlop,
           })

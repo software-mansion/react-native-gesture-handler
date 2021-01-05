@@ -45,7 +45,8 @@ buck-out/
 !debug.keystore
 
 # Expo
-/.expo
+.expo/
+web-build/
 
 # vscode
 jsconfig.json
