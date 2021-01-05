@@ -1,12 +1,16 @@
 import { View, ScrollView } from 'react-native';
 
+const NOOP = () => {
+  // do nothing
+};
+
 export default {
   ScrollView,
   PanGestureHandler: View,
-  attachGestureHandler: () => {},
-  createGestureHandler: () => {},
-  dropGestureHandler: () => {},
-  updateGestureHandler: () => {},
+  attachGestureHandler: NOOP,
+  createGestureHandler: NOOP,
+  dropGestureHandler: NOOP,
+  updateGestureHandler: NOOP,
   Direction: {
     RIGHT: 1,
     LEFT: 2,
