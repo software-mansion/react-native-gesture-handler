@@ -475,7 +475,7 @@ function ensureConfig(config) {
   return props;
 }
 
-function asArray(value) {
+function asArray<T extends unknown>(value: T): T[] {
   return value == null ? [] : Array.isArray(value) ? value : [value];
 }
 
