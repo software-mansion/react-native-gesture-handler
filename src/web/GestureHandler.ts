@@ -152,7 +152,7 @@ abstract class GestureHandler {
     };
   }
 
-  transformNativeEvent(event) {
+  transformNativeEvent(_event: HammerInputExt) {
     return {};
   }
 
