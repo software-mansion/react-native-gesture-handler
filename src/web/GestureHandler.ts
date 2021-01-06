@@ -111,7 +111,7 @@ abstract class GestureHandler {
     this.hammer = null;
   };
 
-  isPointInView = ({ x, y }) => {
+  isPointInView = ({ x, y }: { x: number; y: number }) => {
     const rect = this.view.getBoundingClientRect();
     const pointerInside =
       x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
