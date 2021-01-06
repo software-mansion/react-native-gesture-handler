@@ -33,7 +33,7 @@ class FlingGestureHandler extends DraggingGestureHandler {
     });
   }
 
-  onRawEvent(ev) {
+  onRawEvent(ev: HammerInput) {
     super.onRawEvent(ev);
     if (this.hasGestureFailed) {
       return;

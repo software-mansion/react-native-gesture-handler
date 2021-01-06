@@ -205,7 +205,7 @@ abstract class GestureHandler {
     this.onGestureEnded(event);
   }
 
-  onRawEvent({ isFirst }) {
+  onRawEvent({ isFirst }: HammerInput) {
     if (isFirst) {
       this.hasGestureFailed = false;
     }

@@ -105,7 +105,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
     this.initialEvent = null;
   }
 
-  onRawEvent(ev) {
+  onRawEvent(ev: HammerInput) {
     super.onRawEvent(ev);
     if (this.isGestureRunning) {
       if (ev.isFinal) {

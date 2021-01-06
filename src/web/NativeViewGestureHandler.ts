@@ -7,7 +7,7 @@ import PressGestureHandler from './PressGestureHandler';
 import { TEST_MIN_IF_NOT_NAN, VEC_LEN_SQ } from './utils';
 
 class NativeViewGestureHandler extends PressGestureHandler {
-  onRawEvent(ev) {
+  onRawEvent(ev: HammerInput) {
     super.onRawEvent(ev);
     if (!ev.isFinal) {
       // if (this.ref instanceof ScrollView) {
