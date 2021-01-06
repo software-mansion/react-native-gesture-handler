@@ -418,7 +418,6 @@ export default function createHandler<
       const child: any = React.Children.only(this.props.children);
       let grandChildren = child.props.children;
       if (
-        // @ts-ignore this uses internal Touchable API
         Touchable.TOUCH_TARGET_DEBUG &&
         child.type &&
         (child.type === 'RNGestureHandlerButton' ||
@@ -427,7 +426,6 @@ export default function createHandler<
       ) {
         grandChildren = React.Children.toArray(grandChildren);
         grandChildren.push(
-          // @ts-ignore this uses internal Touchable API
           Touchable.renderDebugView({
             color: 'mediumspringgreen',
             hitSlop: child.props.hitSlop,
