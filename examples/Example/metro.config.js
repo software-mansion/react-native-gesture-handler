@@ -24,7 +24,8 @@ function getBlacklist() {
 
 module.exports = {
   resolver: {
-    blacklistRE: getBlacklist(),
+    blocklist: getBlacklist(),
+    resolverMainFields: ['browser', 'react-native', 'main'],
   },
   watchFolders: [path.resolve(__dirname, '../..')],
   transformer: {

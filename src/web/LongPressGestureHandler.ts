@@ -3,7 +3,7 @@
 // @ts-nocheck TODO(TS) provide types
 import Hammer from '@egjs/hammerjs';
 
-import State from '../State';
+import { State } from '../State';
 import PressGestureHandler from './PressGestureHandler';
 import { isnan, isValidNumber } from './utils';
 
