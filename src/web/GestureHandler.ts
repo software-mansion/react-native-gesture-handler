@@ -57,10 +57,6 @@ abstract class GestureHandler {
     return { success: true };
   }
 
-  parseNativeEvent(nativeEvent) {
-    return nativeEvent;
-  }
-
   get NativeGestureClass() {
     throw new Error('Must override GestureHandler.NativeGestureClass');
   }
