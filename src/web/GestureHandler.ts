@@ -155,14 +155,10 @@ abstract class GestureHandler {
 
     const event = this.transformEventData(nativeEvent);
 
-    invokeNullableMethod('onGestureEvent', onGestureHandlerEvent, event);
+    invokeNullableMethod(onGestureHandlerEvent, event);
     if (this.lastSentState !== event.nativeEvent.state) {
       this.lastSentState = event.nativeEvent.state;
-      invokeNullableMethod(
-        'onHandlerStateChange',
-        onGestureHandlerStateChange,
-        event
-      );
+      invokeNullableMethod(onGestureHandlerStateChange, event);
     }
   };
 
@@ -390,7 +386,7 @@ abstract class GestureHandler {
 }
 
 // Used for sending data to a callback or AnimatedEvent
-function invokeNullableMethod(name, method, event) {
+function invokeNullableMethod(method, event) {
   if (method) {
     if (typeof method === 'function') {
       method(event);
@@ -401,7 +397,7 @@ function invokeNullableMethod(name, method, event) {
         typeof method.__getHandler === 'function'
       ) {
         const handler = method.__getHandler();
-        invokeNullableMethod(name, handler, event);
+        invokeNullableMethod(handler, event);
       } else {
         if ('__nodeConfig' in method) {
           const { argMapping } = method.__nodeConfig;
