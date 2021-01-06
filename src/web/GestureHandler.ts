@@ -16,6 +16,26 @@ type HammerInputExt = HammerInput & {
   overallVelocityY: number;
 };
 
+export type Config = Record<
+  | 'minPointers'
+  | 'maxPointers'
+  | 'minDist'
+  | 'maxDist'
+  | 'maxDistSq'
+  | 'minVelocitySq'
+  | 'minDistSq'
+  | 'minVelocity'
+  | 'failOffsetXStart'
+  | 'failOffsetYStart'
+  | 'failOffsetXEnd'
+  | 'failOffsetYEnd'
+  | 'activeOffsetXStart'
+  | 'activeOffsetXEnd'
+  | 'activeOffsetYStart'
+  | 'activeOffsetYEnd',
+  number | boolean | null
+>;
+
 let gestureInstances = 0;
 
 abstract class GestureHandler {
@@ -70,7 +90,7 @@ abstract class GestureHandler {
     throw new Error('Must override GestureHandler.NativeGestureClass');
   }
 
-  updateHasCustomActivationCriteria(config) {
+  updateHasCustomActivationCriteria(_config: Config) {
     return true;
   }
 

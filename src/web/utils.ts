@@ -1,8 +1,8 @@
 // TODO(TS) remove if not necessary after rewrite
-export const isnan = (v: any) => Number.isNaN(v);
+export const isnan = (v: unknown) => Number.isNaN(v);
 
 // TODO(TS) remove if not necessary after rewrite
-export const isValidNumber = (v: any) =>
+export const isValidNumber = (v: unknown) =>
   typeof v === 'number' && !Number.isNaN(v);
 
 export const TEST_MIN_IF_NOT_NAN = (value: number, limit: number): boolean =>

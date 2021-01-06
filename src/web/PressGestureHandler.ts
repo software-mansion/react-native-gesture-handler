@@ -9,6 +9,7 @@ import {
   CONTENT_TOUCHES_QUICK_TAP_END_DELAY,
 } from './constants';
 import DiscreteGestureHandler from './DiscreteGestureHandler';
+import { Config } from './GestureHandler';
 import { fireAfterInterval, isValidNumber, isnan } from './utils';
 
 class PressGestureHandler extends DiscreteGestureHandler {
@@ -36,7 +37,10 @@ class PressGestureHandler extends DiscreteGestureHandler {
     this.cancelEvent(inputData);
   }
 
-  updateHasCustomActivationCriteria({ shouldCancelWhenOutside, maxDistSq }) {
+  updateHasCustomActivationCriteria({
+    shouldCancelWhenOutside,
+    maxDistSq,
+  }: Config) {
     return shouldCancelWhenOutside || !isValidNumber(maxDistSq);
   }
 

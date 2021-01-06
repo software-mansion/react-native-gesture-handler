@@ -12,6 +12,7 @@ import { isValidNumber, isnan, TEST_MIN_IF_NOT_NAN, VEC_LEN_SQ } from './utils';
 import { State } from '../State';
 
 import { GestureHandlerProperties } from '../types';
+import { Config } from './GestureHandler';
 class PanGestureHandler extends DraggingGestureHandler {
   get name() {
     return 'pan';
@@ -156,7 +157,7 @@ class PanGestureHandler extends DraggingGestureHandler {
     return false;
   }
 
-  updateHasCustomActivationCriteria(criteria) {
+  updateHasCustomActivationCriteria(criteria: Config) {
     return (
       isValidNumber(criteria.minDistSq) ||
       isValidNumber(criteria.minVelocityX) ||

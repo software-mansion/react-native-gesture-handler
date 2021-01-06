@@ -6,6 +6,7 @@ import Hammer from '@egjs/hammerjs';
 import { State } from '../State';
 import PressGestureHandler from './PressGestureHandler';
 import { isnan, isValidNumber } from './utils';
+import { Config } from './GestureHandler';
 
 class LongPressGestureHandler extends PressGestureHandler {
   get minDurationMs(): number {
@@ -16,7 +17,7 @@ class LongPressGestureHandler extends PressGestureHandler {
     return isnan(this.config.maxDist) ? 9 : this.config.maxDist;
   }
 
-  updateHasCustomActivationCriteria({ maxDistSq }) {
+  updateHasCustomActivationCriteria({ maxDistSq }: Config) {
     return !isValidNumber(maxDistSq);
   }
 
