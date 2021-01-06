@@ -138,7 +138,9 @@ abstract class GestureHandler {
     return pointerInside;
   };
 
-  getState(type) {
+  // TODO(TS) change it to `type: keyof typeof EventMap`
+  // after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50433 is merged.
+  getState(type: number) {
     return EventMap[type];
   }
 
