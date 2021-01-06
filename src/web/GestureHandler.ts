@@ -7,6 +7,15 @@ import { State } from '../State';
 import { EventMap } from './constants';
 import * as NodeManager from './NodeManager';
 
+// TODO(TS) Replace with HammerInput if https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50438/files is merged
+type HammerInputExt = HammerInput & {
+  maxPointers: number;
+  timeStamp: number;
+  overallVelocity: number;
+  overallVelocityX: number;
+  overallVelocityY: number;
+};
+
 let gestureInstances = 0;
 
 abstract class GestureHandler {
@@ -113,7 +122,7 @@ abstract class GestureHandler {
     return EventMap[type];
   }
 
-  transformEventData(event) {
+  transformEventData(event: HammerInputExt) {
     const { eventType, maxPointers: numberOfPointers } = event;
     // const direction = DirectionMap[ev.direction];
     const changedTouch = event.changedPointers[0];
