@@ -40,17 +40,17 @@ export type Config = Record<
 let gestureInstances = 0;
 
 abstract class GestureHandler {
-  private isGestureRunning = false;
-  private hasGestureFailed = false;
-  private view = null;
+  protected hasCustomActivationCriteria: boolean;
+  protected isGestureRunning = false;
+  protected hasGestureFailed = false;
+  protected view = null;
+  protected hammer: HammerManager | null = null;
   private config = {};
-  private hammer = null;
   private pendingGestures: Record<string, this> = {};
   private oldState = State.UNDETERMINED;
   private previousState = State.UNDETERMINED;
   private lastSentState = null;
   private gestureInstance: number;
-  protected hasCustomActivationCriteria: boolean;
 
   abstract get name(): string;
 
