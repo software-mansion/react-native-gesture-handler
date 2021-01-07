@@ -24,13 +24,13 @@ import { TouchableNativeFeedbackExtraPropsType } from './TouchableNativeFeedback
  * travel outside it transits to special MOVED_OUTSIDE state. Gesture recognition
  * finishes in UNDETERMINED state.
  */
-export const TOUCHABLE_STATE: Record<string, TouchableStateValuesType> = {
+export const TOUCHABLE_STATE = {
   UNDETERMINED: 0,
   BEGAN: 1,
   MOVED_OUTSIDE: 2,
-};
+} as const;
 
-type TouchableStateValuesType = 0 | 1 | 2;
+type TouchableStateType = typeof TOUCHABLE_STATE[keyof typeof TOUCHABLE_STATE];
 
 export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
   // Decided to drop not used fields from RN's implementation.
@@ -52,8 +52,8 @@ export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
 interface InternalProps {
   extraButtonProps: TouchableNativeFeedbackExtraPropsType;
   onStateChange?: (
-    oldState: TouchableStateValuesType,
-    newState: TouchableStateValuesType
+    oldState: TouchableStateType,
+    newState: TouchableStateType
   ) => void;
 }
 
@@ -87,7 +87,7 @@ export default class GenericTouchable extends Component<
   pointerInside = true;
 
   // State of touchable
-  STATE = TOUCHABLE_STATE.UNDETERMINED;
+  STATE: TouchableStateType = TOUCHABLE_STATE.UNDETERMINED;
 
   // handlePressIn in called on first touch on traveling inside component.
   // Handles state transition with delay.
@@ -147,7 +147,7 @@ export default class GenericTouchable extends Component<
   reset() {
     this.longPressDetected = false;
     this.pointerInside = true;
-    clearTimeout(this.pressInTimeout as NodeJS.Timeout);
+    clearTimeout(this.pressInTimeout!);
     clearTimeout(this.pressOutTimeout!);
     clearTimeout(this.longPressTimeout!);
     this.pressOutTimeout = null;
@@ -156,7 +156,7 @@ export default class GenericTouchable extends Component<
   }
 
   // All states' transitions are defined here.
-  moveToState(newState: TouchableStateValuesType) {
+  moveToState(newState: TouchableStateType) {
     if (newState === this.STATE) {
       // Ignore dummy transitions
       return;

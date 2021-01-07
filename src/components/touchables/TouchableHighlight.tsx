@@ -85,7 +85,7 @@ export default class TouchableHighlight extends Component<
     });
   }
 
-  onStateChange = (_: number, to: number) => {
+  onStateChange = (_from: number, to: number) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
       this.showUnderlay();
     } else if (
