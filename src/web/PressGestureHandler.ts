@@ -54,7 +54,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
   }
 
   getConfig() {
-    if (!this._hasCustomActivationCriteria) {
+    if (!this.hasCustomActivationCriteria) {
       // Default config
       // If no params have been defined then this config should emulate the native gesture as closely as possible.
       return {

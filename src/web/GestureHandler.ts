@@ -50,6 +50,7 @@ abstract class GestureHandler {
   private previousState = State.UNDETERMINED;
   private lastSentState = null;
   private gestureInstance: number;
+  protected hasCustomActivationCriteria: boolean;
 
   abstract get name(): string;
 
@@ -67,6 +68,7 @@ abstract class GestureHandler {
 
   constructor() {
     this.gestureInstance = gestureInstances++;
+    this.hasCustomActivationCriteria = false;
   }
 
   getConfig() {
@@ -107,7 +109,7 @@ abstract class GestureHandler {
     this.clearSelfAsPending();
 
     this.config = ensureConfig({ enabled, ...props });
-    this._hasCustomActivationCriteria = this.updateHasCustomActivationCriteria(
+    this.hasCustomActivationCriteria = this.updateHasCustomActivationCriteria(
       this.config
     );
     if (Array.isArray(this.config.waitFor)) {
@@ -386,7 +388,7 @@ abstract class GestureHandler {
       }
 
       // Use default behaviour
-      if (!this._hasCustomActivationCriteria) {
+      if (!this.hasCustomActivationCriteria) {
         return true;
       }
 

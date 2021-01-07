@@ -93,7 +93,7 @@ class PanGestureHandler extends DraggingGestureHandler {
   }
 
   getConfig() {
-    if (!this._hasCustomActivationCriteria) {
+    if (!this.hasCustomActivationCriteria) {
       // Default config
       // If no params have been defined then this config should emulate the native gesture as closely as possible.
       return {
@@ -176,7 +176,7 @@ class PanGestureHandler extends DraggingGestureHandler {
 
     const velocity = { x: inputData.velocityX, y: inputData.velocityY };
     if (
-      this._hasCustomActivationCriteria &&
+      this.hasCustomActivationCriteria &&
       this.shouldActivateUnderCustomCriteria(
         { deltaX: inputData.deltaX, deltaY: inputData.deltaY, velocity },
         props
