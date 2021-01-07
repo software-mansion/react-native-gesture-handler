@@ -1,3 +1,4 @@
+// @ts-nocheck TODO(TS) fix types
 import React from 'react';
 import {
   ScrollView as RNScrollView,

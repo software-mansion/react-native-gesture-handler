@@ -1,5 +1,6 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
+// @ts-nocheck TODO(TS)
 import Hammer from '@egjs/hammerjs';
 import { findNodeHandle } from 'react-native';
 

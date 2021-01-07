@@ -1,3 +1,5 @@
+// @ts-nocheck TODO(TS)
+
 import { Direction } from './web/constants';
 import FlingGestureHandler from './web/FlingGestureHandler';
 import LongPressGestureHandler from './web/LongPressGestureHandler';
