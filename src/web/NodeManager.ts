@@ -1,12 +1,12 @@
 import { ValueOf } from '../typeUtils';
 import { Gestures } from '../RNGestureHandlerModule.web';
 
-const gestures: Record<number, any> = {};
+const gestures: Record<number, InstanceType<ValueOf<typeof Gestures>>> = {};
 
 export function getHandler(tag: number) {
   if (tag in gestures) return gestures[tag];
 
-  throw new Error('No handler for tag ' + tag);
+  throw new Error(`No handler for tag ${tag}`);
 }
 
 export function createGestureHandler(
@@ -14,9 +14,10 @@ export function createGestureHandler(
   handler: InstanceType<ValueOf<typeof Gestures>>
 ) {
   if (handlerTag in gestures) {
-    throw new Error('Handler with tag ' + handlerTag + ' already exists');
+    throw new Error(`Handler with tag ${handlerTag} already exists`);
   }
   gestures[handlerTag] = handler;
+  // @ts-ignore no types for web handlers yet
   gestures[handlerTag].handlerTag = handlerTag;
 }
 

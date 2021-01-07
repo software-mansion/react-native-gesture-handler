@@ -262,7 +262,6 @@ export default class GenericTouchable extends Component<
       nativeID: this.props.nativeID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
-      interpolate: undefined,
     };
 
     return (

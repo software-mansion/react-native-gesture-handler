@@ -39,7 +39,7 @@ export default class TouchableOpacity extends Component<
     }).start();
   };
 
-  onStateChange = (_: number, to: number) => {
+  onStateChange = (_from: number, to: number) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
       this.setOpacityTo(this.props.activeOpacity!, 0);
     } else if (

@@ -12,7 +12,7 @@ export const VEC_LEN_SQ = ({ x = 0, y = 0 } = {}) => x * x + y * y;
 export const TEST_MAX_IF_NOT_NAN = (value: number, max: number) =>
   !isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max));
 
-export function fireAfterInterval(method: () => any, interval?: number) {
+export function fireAfterInterval(method: () => void, interval?: number) {
   if (!interval) {
     method();
     return null;

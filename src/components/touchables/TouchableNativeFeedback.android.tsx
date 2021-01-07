@@ -22,6 +22,15 @@ export type TouchableNativeFeedbackExtraPropsType = {
 export default class TouchableNativeFeedback extends Component<
   TouchableNativeFeedbackProps & GenericTouchableProps
 > {
+  static defaultProps = {
+    ...GenericTouchable.defaultProps,
+    useForeground: true,
+    extraButtonProps: {
+      // Disable hiding ripple on Android
+      rippleColor: null,
+    },
+  };
+
   // could be taken as RNTouchableNativeFeedback.SelectableBackground etc. but the API may change
   static SelectableBackground = (rippleRadius?: number) => ({
     type: 'ThemeAttrAndroid',
@@ -46,15 +55,6 @@ export default class TouchableNativeFeedback extends Component<
   });
 
   static canUseNativeForeground = () => Platform.Version >= 23;
-
-  static defaultProps = {
-    ...GenericTouchable.defaultProps,
-    useForeground: true,
-    extraButtonProps: {
-      // Disable hiding ripple on Android
-      rippleColor: null,
-    },
-  };
 
   getExtraButtonProps() {
     const extraProps: TouchableNativeFeedbackExtraPropsType = {};

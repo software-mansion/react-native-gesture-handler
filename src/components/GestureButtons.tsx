@@ -21,13 +21,9 @@ import {
   NativeViewGestureHandlerProperties,
 } from '../handlers/NativeViewGestureHandler';
 
-/* BUTTONS PROPERTIES */
-
 interface RawButtonProperties extends NativeViewGestureHandlerProperties {
   exclusive?: boolean;
-  testID?: string;
-  accessibilityLabel?: string;
-  // TODO: apply proper value
+  // TODO: we should transform props in `createNativeWrapper`
   rippleColor?: any; // it was present in BaseButtonProperties before but is used here in code
 }
 
@@ -35,6 +31,7 @@ export interface BaseButtonProperties extends RawButtonProperties {
   onPress?: (pointerInside: boolean) => void;
   onActiveStateChange?: (active: boolean) => void;
   style?: StyleProp<ViewStyle>;
+  testID?: string;
 }
 
 export interface RectButtonProperties extends BaseButtonProperties {
@@ -56,12 +53,12 @@ export const RawButton: React.ComponentType<RawButtonProperties> = createNativeW
 );
 
 export class BaseButton extends React.Component<BaseButtonProperties> {
+  private lastActive: boolean;
+
   constructor(props: BaseButtonProperties) {
     super(props);
     this.lastActive = false;
   }
-
-  private lastActive: boolean;
 
   private handleEvent = ({
     nativeEvent,
@@ -137,12 +134,12 @@ export class RectButton extends React.Component<RectButtonProperties> {
     underlayColor: 'black',
   };
 
+  private opacity: Animated.Value;
+
   constructor(props: RectButtonProperties) {
     super(props);
     this.opacity = new Animated.Value(0);
   }
-
-  private opacity: Animated.Value;
 
   private onActiveStateChange = (active: boolean) => {
     if (Platform.OS !== 'android') {
@@ -188,12 +185,12 @@ export class BorderlessButton extends React.Component<BorderlessButtonProperties
     borderless: true,
   };
 
+  private opacity: Animated.Value;
+
   constructor(props: BorderlessButtonProperties) {
     super(props);
     this.opacity = new Animated.Value(1);
   }
-
-  private opacity: Animated.Value;
 
   private onActiveStateChange = (active: boolean) => {
     if (Platform.OS !== 'android') {
