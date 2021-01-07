@@ -14,7 +14,7 @@ export const EventMap = {
   [Hammer.INPUT_MOVE]: State.ACTIVE,
   [Hammer.INPUT_END]: State.END,
   [Hammer.INPUT_CANCEL]: State.FAILED,
-};
+} as const;
 
 export const Direction = {
   RIGHT: 1,

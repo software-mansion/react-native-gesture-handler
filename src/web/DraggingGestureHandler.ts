@@ -15,7 +15,7 @@ class DraggingGestureHandler extends GestureHandler {
     velocityX,
     velocityY,
     center: { x, y },
-  }) {
+  }: HammerInput) {
     const rect = this.view.getBoundingClientRect();
     const ratio = PixelRatio.get();
     return {

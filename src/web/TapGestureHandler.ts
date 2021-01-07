@@ -44,7 +44,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
     this.onGestureEnded(ev);
   };
 
-  onRawEvent(ev) {
+  onRawEvent(ev: HammerInput) {
     super.onRawEvent(ev);
 
     // Attempt to create a touch-down event by checking if a valid tap hasn't started yet, then validating the input.

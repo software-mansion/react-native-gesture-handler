@@ -125,7 +125,7 @@ abstract class GestureHandler {
     this.clearSelfAsPending();
 
     if (this.hammer) {
-      this.hammer.stop();
+      this.hammer.stop(false);
       this.hammer.destroy();
     }
     this.hammer = null;
@@ -178,7 +178,7 @@ abstract class GestureHandler {
     return {};
   }
 
-  sendEvent = (nativeEvent) => {
+  sendEvent = (nativeEvent: HammerInputExt) => {
     const {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
@@ -222,7 +222,7 @@ abstract class GestureHandler {
     }
   }
 
-  cancelEvent(event) {
+  cancelEvent(event: HammerInputExt) {
     this.notifyPendingGestures();
     this.sendEvent({
       ...event,
