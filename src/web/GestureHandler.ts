@@ -45,10 +45,11 @@ type NativeEvent = ReturnType<GestureHandler['transformEventData']>;
 let gestureInstances = 0;
 
 abstract class GestureHandler {
+  public handlerTag: any;
+  public isGestureRunning = false;
+  public view: number | null = null;
   protected hasCustomActivationCriteria: boolean;
-  protected isGestureRunning = false;
   protected hasGestureFailed = false;
-  protected view: number | null = null;
   protected hammer: HammerManager | null = null;
   protected initialRotation: number | null = null;
   protected __initialX: any;
@@ -61,7 +62,6 @@ abstract class GestureHandler {
   private gestureInstance: number;
   private _stillWaiting: any;
   private propsRef: any;
-  private handlerTag: any;
   private ref: any;
 
   abstract get name(): string;

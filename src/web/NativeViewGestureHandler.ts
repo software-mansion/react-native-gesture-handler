@@ -1,17 +1,18 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import DiscreteGestureHandler from './DiscreteGestureHandler';
+import { HammerInputExt } from './GestureHandler';
 import * as NodeManager from './NodeManager';
 import PressGestureHandler from './PressGestureHandler';
 import { TEST_MIN_IF_NOT_NAN, VEC_LEN_SQ } from './utils';
 
 class NativeViewGestureHandler extends PressGestureHandler {
-  onRawEvent(ev: HammerInput) {
+  onRawEvent(ev: HammerInputExt) {
     super.onRawEvent(ev);
     if (!ev.isFinal) {
       // if (this.ref instanceof ScrollView) {
       if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ({ x: ev.deltaX, y: ev.deltaY }), 10)) {
+        // @ts-ignore FIXME(TS) config type
         if (this.config.disallowInterruption) {
           const gestures = Object.values(NodeManager.getNodes()).filter(
             (gesture) => {
@@ -25,6 +26,7 @@ class NativeViewGestureHandler extends PressGestureHandler {
                 gesture instanceof DiscreteGestureHandler &&
                 // Ensure a view exists and is a child of the current view
                 view &&
+                // @ts-ignore FIXME(TS) view type
                 this.view.contains(view)
               );
             }
