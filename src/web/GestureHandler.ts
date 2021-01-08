@@ -9,7 +9,7 @@ import { EventMap } from './constants';
 import * as NodeManager from './NodeManager';
 
 // TODO(TS) Replace with HammerInput if https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50438/files is merged
-type HammerInputExt = HammerInput & {
+type HammerInputExt = Omit<HammerInput, 'destroy' | 'handler' | 'init'> & {
   maxPointers: number;
   timeStamp: number;
   overallVelocity: number;
@@ -196,7 +196,7 @@ abstract class GestureHandler {
     }
   };
 
-  cancelPendingGestures(event) {
+  cancelPendingGestures(event: HammerInputExt) {
     for (const gesture of Object.values(this.pendingGestures)) {
       if (gesture && gesture.isGestureRunning) {
         gesture.hasGestureFailed = true;
@@ -213,12 +213,16 @@ abstract class GestureHandler {
     }
   }
 
-  onGestureEnded(event) {
+  // FIXME event is undefined in runtime when firstly invoked (see Draggable example), check other functions taking event as input
+  onGestureEnded(event: HammerInputExt) {
+    if (!event) {
+      console.log('onGestureEnded', event);
+    }
     this.isGestureRunning = false;
     this.cancelPendingGestures(event);
   }
 
-  forceInvalidate(event) {
+  forceInvalidate(event: HammerInputExt) {
     if (this.isGestureRunning) {
       this.hasGestureFailed = true;
       this.cancelEvent(event);
@@ -235,7 +239,7 @@ abstract class GestureHandler {
     this.onGestureEnded(event);
   }
 
-  onRawEvent({ isFirst }: HammerInput) {
+  onRawEvent({ isFirst }: HammerInputExt) {
     if (isFirst) {
       this.hasGestureFailed = false;
     }
@@ -311,7 +315,7 @@ abstract class GestureHandler {
     this.initialRotation = rotation;
   }
 
-  onGestureActivated(ev) {
+  onGestureActivated(ev: HammerInputExt) {
     this.sendEvent(ev);
   }
 
