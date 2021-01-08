@@ -483,7 +483,7 @@ function ensureConfig(config: Config) {
     props.waitFor = null;
   }
 
-  [
+  const configProps = [
     'minPointers',
     'maxPointers',
     'minDist',
@@ -500,7 +500,8 @@ function ensureConfig(config: Config) {
     'activeOffsetXEnd',
     'activeOffsetYStart',
     'activeOffsetYEnd',
-  ].forEach((prop) => {
+  ] as const;
+  configProps.forEach((prop: typeof configProps[number]) => {
     if (typeof props[prop] === 'undefined') {
       props[prop] = Number.NaN;
     }
