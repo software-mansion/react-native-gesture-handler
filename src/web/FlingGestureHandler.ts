@@ -84,6 +84,7 @@ class FlingGestureHandler extends DraggingGestureHandler {
   }
 
   getDirection() {
+    // @ts-ignore FIXME(TS)
     const { direction } = this.getConfig();
 
     let directions = [];
