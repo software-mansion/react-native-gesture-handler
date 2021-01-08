@@ -1,6 +1,5 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
-// @ts-nocheck TODO(TS)
 import Hammer from '@egjs/hammerjs';
 import { findNodeHandle } from 'react-native';
 
@@ -17,25 +16,28 @@ type HammerInputExt = Omit<HammerInput, 'destroy' | 'handler' | 'init'> & {
   overallVelocityY: number;
 };
 
-export type Config = Record<
-  | 'minPointers'
-  | 'maxPointers'
-  | 'minDist'
-  | 'maxDist'
-  | 'maxDistSq'
-  | 'minVelocitySq'
-  | 'minDistSq'
-  | 'minVelocity'
-  | 'failOffsetXStart'
-  | 'failOffsetYStart'
-  | 'failOffsetXEnd'
-  | 'failOffsetYEnd'
-  | 'activeOffsetXStart'
-  | 'activeOffsetXEnd'
-  | 'activeOffsetYStart'
-  | 'activeOffsetYEnd',
-  number | boolean | null
->;
+export type Config = Partial<{
+  enabled: boolean;
+  minPointers: number;
+  maxPointers: number;
+  minDist: number;
+  minDistSq: number;
+  minVelocity: number;
+  minVelocitySq: number;
+  maxDist: number;
+  maxDistSq: number;
+  failOffsetXStart: number;
+  failOffsetYStart: number;
+  failOffsetXEnd: number;
+  failOffsetYEnd: number;
+  activeOffsetXStart: number;
+  activeOffsetXEnd: number;
+  activeOffsetYStart: number;
+  activeOffsetYEnd: number;
+  waitFor: any[] | null;
+}>;
+
+type NativeEvent = ReturnType<GestureHandler['transformEventData']>;
 
 let gestureInstances = 0;
 
@@ -43,14 +45,21 @@ abstract class GestureHandler {
   protected hasCustomActivationCriteria: boolean;
   protected isGestureRunning = false;
   protected hasGestureFailed = false;
-  protected view = null;
+  protected view: number | null = null;
   protected hammer: HammerManager | null = null;
-  private config = {};
+  protected initialRotation: number | null = null;
+  protected __initialX: any;
+  protected __initialY: any;
+  private config: Config = {};
   private pendingGestures: Record<string, this> = {};
-  private oldState = State.UNDETERMINED;
-  private previousState = State.UNDETERMINED;
-  private lastSentState = null;
+  private oldState: State = State.UNDETERMINED;
+  private previousState: State = State.UNDETERMINED;
+  private lastSentState: State | null = null;
   private gestureInstance: number;
+  private _stillWaiting: any;
+  private propsRef: any;
+  private handlerTag: any;
+  private ref: any;
 
   abstract get name(): string;
 
@@ -85,7 +94,7 @@ abstract class GestureHandler {
     this.pendingGestures[gesture.id] = gesture;
   }
 
-  isGestureEnabledForEvent() {
+  isGestureEnabledForEvent(_config: any, _recognizer: any, _event: any) {
     return { success: true };
   }
 
@@ -135,7 +144,8 @@ abstract class GestureHandler {
   };
 
   isPointInView = ({ x, y }: { x: number; y: number }) => {
-    const rect = this.view.getBoundingClientRect();
+    // @ts-ignore FIXME(TS)
+    const rect = this.view!.getBoundingClientRect();
     const pointerInside =
       x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
     return pointerInside;
@@ -144,6 +154,9 @@ abstract class GestureHandler {
   // TODO(TS) change it to `type: keyof typeof EventMap`
   // after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50433 is merged.
   getState(type: number) {
+    if (type == 0) {
+      return 0;
+    }
     return EventMap[type];
   }
 
@@ -191,7 +204,7 @@ abstract class GestureHandler {
 
     invokeNullableMethod(onGestureHandlerEvent, event);
     if (this.lastSentState !== event.nativeEvent.state) {
-      this.lastSentState = event.nativeEvent.state;
+      this.lastSentState = event.nativeEvent.state as State;
       invokeNullableMethod(onGestureHandlerStateChange, event);
     }
   };
@@ -215,9 +228,6 @@ abstract class GestureHandler {
 
   // FIXME event is undefined in runtime when firstly invoked (see Draggable example), check other functions taking event as input
   onGestureEnded(event: HammerInputExt) {
-    if (!event) {
-      console.log('onGestureEnded', event);
-    }
     this.isGestureRunning = false;
     this.cancelPendingGestures(event);
   }
@@ -245,7 +255,7 @@ abstract class GestureHandler {
     }
   }
 
-  setView(ref, propsRef) {
+  setView(ref: Parameters<typeof findNodeHandle>['0'], propsRef: any) {
     if (ref == null) {
       this.destroy();
       this.view = null;
@@ -256,13 +266,14 @@ abstract class GestureHandler {
     this.ref = ref;
 
     this.view = findNodeHandle(ref);
-    this.hammer = new Hammer.Manager(this.view);
+    this.hammer = new Hammer.Manager(this.view as any);
 
     this.oldState = State.UNDETERMINED;
     this.previousState = State.UNDETERMINED;
     this.lastSentState = null;
 
     const { NativeGestureClass } = this;
+    // @ts-ignore TODO(TS)
     const gesture = new NativeGestureClass(this.getHammerConfig());
     this.hammer.add(gesture);
 
@@ -273,7 +284,7 @@ abstract class GestureHandler {
         return;
       }
 
-      this.onRawEvent(ev);
+      this.onRawEvent((ev as unknown) as HammerInputExt);
 
       // TODO: Bacon: Check against something other than null
       // The isFirst value is not called when the first rotation is calculated.
@@ -308,7 +319,7 @@ abstract class GestureHandler {
     ); // TODO(TS) remove cast after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50438 is merged
   }
 
-  onStart({ deltaX, deltaY, rotation }) {
+  onStart({ deltaX, deltaY, rotation }: HammerInputExt) {
     // Reset the state for the next gesture
     this.oldState = State.UNDETERMINED;
     this.previousState = State.UNDETERMINED;
@@ -349,10 +360,10 @@ abstract class GestureHandler {
   }
 
   sync = () => {
-    const gesture = this.hammer.get(this.name);
+    const gesture = this.hammer!.get(this.name);
     if (!gesture) return;
 
-    const enable = (recognizer, inputData) => {
+    const enable = (recognizer: any, inputData: any) => {
       if (!this.config.enabled) {
         this.isGestureRunning = false;
         this.hasGestureFailed = false;
@@ -405,6 +416,7 @@ abstract class GestureHandler {
         this.initialRotation == null
           ? 0
           : inputData.rotation - this.initialRotation;
+      // @ts-ignore FIXME(TS)
       const { success, failed } = this.isGestureEnabledForEvent(
         this.getConfig(),
         recognizer,
@@ -422,10 +434,11 @@ abstract class GestureHandler {
     };
 
     const params = this.getHammerConfig();
+    // @ts-ignore FIXME(TS)
     gesture.set({ ...params, enable });
   };
 
-  simulateCancelEvent(inputData) {}
+  simulateCancelEvent(_inputData: any) {}
 }
 
 // TODO(TS) investigate this method
