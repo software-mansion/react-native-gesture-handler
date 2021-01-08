@@ -469,7 +469,7 @@ function invokeNullableMethod(
 }
 
 // Validate the props
-function ensureConfig(config: Config) {
+function ensureConfig(config: Config): Required<Config> {
   const props = { ...config };
 
   // TODO(TS) We use ! to assert that if property is present then value is not empty (null, undefined)
@@ -518,7 +518,7 @@ function ensureConfig(config: Config) {
       props[prop] = Number.NaN;
     }
   });
-  return props;
+  return props as Required<Config>; // TODO(TS) how to convince TS that props are filled?
 }
 
 function asArray<T>(value: T | T[]) {
