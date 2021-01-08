@@ -71,7 +71,7 @@ abstract class GestureHandler {
     return false;
   }
 
-  get shouldEnableGestureOnSetup() {
+  get shouldEnableGestureOnSetup(): boolean {
     throw new Error('Must override GestureHandler.shouldEnableGestureOnSetup');
   }
 
@@ -94,7 +94,11 @@ abstract class GestureHandler {
     this.pendingGestures[gesture.id] = gesture;
   }
 
-  isGestureEnabledForEvent(_config: any, _recognizer: any, _event: any) {
+  isGestureEnabledForEvent(
+    _config: any,
+    _recognizer: any,
+    _event: any
+  ): { failed?: boolean; success?: boolean } {
     return { success: true };
   }
 
