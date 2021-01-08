@@ -10,7 +10,7 @@ import {
   HammerInputNames,
 } from './constants';
 import DiscreteGestureHandler from './DiscreteGestureHandler';
-import { Config } from './GestureHandler';
+import { Config, HammerInputExt } from './GestureHandler';
 import { fireAfterInterval, isValidNumber, isnan } from './utils';
 
 class PressGestureHandler extends DiscreteGestureHandler {
@@ -19,6 +19,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
   }
 
   get minDurationMs() {
+    // @ts-ignore FIXME(TS)
     return isnan(this.config.minDurationMs) ? 5 : this.config.minDurationMs;
   }
 
@@ -110,7 +111,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
     this.initialEvent = null;
   }
 
-  onRawEvent(ev: HammerInput) {
+  onRawEvent(ev: HammerInputExt) {
     super.onRawEvent(ev);
     if (this.isGestureRunning) {
       if (ev.isFinal) {
