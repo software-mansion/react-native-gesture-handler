@@ -1,19 +1,21 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import Hammer from '@egjs/hammerjs';
 
 import { State } from '../State';
 import PressGestureHandler from './PressGestureHandler';
 import { isnan, isValidNumber } from './utils';
 import { Config } from './GestureHandler';
+import { HammerInputNames } from './constants';
 
 class LongPressGestureHandler extends PressGestureHandler {
   get minDurationMs(): number {
+    // @ts-ignore FIXNE(TS)
     return isnan(this.config.minDurationMs) ? 251 : this.config.minDurationMs;
   }
 
   get maxDist() {
+    // @ts-ignore FIXNE(TS)
     return isnan(this.config.maxDist) ? 9 : this.config.maxDist;
   }
 
@@ -41,7 +43,7 @@ class LongPressGestureHandler extends PressGestureHandler {
     };
   }
 
-  getState(type) {
+  getState(type: keyof typeof HammerInputNames) {
     return {
       [Hammer.INPUT_START]: State.ACTIVE,
       [Hammer.INPUT_MOVE]: State.ACTIVE,

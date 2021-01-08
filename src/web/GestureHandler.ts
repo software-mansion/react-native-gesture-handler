@@ -53,7 +53,7 @@ abstract class GestureHandler {
   protected initialRotation: number | null = null;
   protected __initialX: any;
   protected __initialY: any;
-  private config: Config = {};
+  protected config: Config = {};
   private pendingGestures: Record<string, this> = {};
   private oldState: State = State.UNDETERMINED;
   private previousState: State = State.UNDETERMINED;
@@ -160,7 +160,7 @@ abstract class GestureHandler {
 
   // TODO(TS) change it to `type: keyof typeof EventMap`
   // after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50433 is merged.
-  getState(type: number) {
+  getState(type: number): State {
     if (type == 0) {
       return 0;
     }

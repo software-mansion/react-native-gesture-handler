@@ -7,6 +7,7 @@ import { State } from '../State';
 import {
   CONTENT_TOUCHES_DELAY,
   CONTENT_TOUCHES_QUICK_TAP_END_DELAY,
+  HammerInputNames,
 } from './constants';
 import DiscreteGestureHandler from './DiscreteGestureHandler';
 import { Config } from './GestureHandler';
@@ -44,7 +45,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
     return shouldCancelWhenOutside || !isValidNumber(maxDistSq);
   }
 
-  getState(type) {
+  getState(type: keyof typeof HammerInputNames): State {
     return {
       [Hammer.INPUT_START]: State.BEGAN,
       [Hammer.INPUT_MOVE]: State.ACTIVE,
