@@ -54,8 +54,12 @@ if (UIManager.getConstants) {
 
 // Wrap JS responder calls and notify gesture handler manager
 const {
-  setJSResponder: oldSetJSResponder = () => {},
-  clearJSResponder: oldClearJSResponder = () => {},
+  setJSResponder: oldSetJSResponder = () => {
+    //no operation
+  },
+  clearJSResponder: oldClearJSResponder = () => {
+    //no operation
+  },
 } = UIManager;
 UIManager.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
