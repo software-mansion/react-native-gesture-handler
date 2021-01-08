@@ -294,13 +294,18 @@ abstract class GestureHandler {
   }
 
   setupEvents() {
+    // TODO(TS) Hammer types aren't exactly that what we get in runtime
     if (!this.isDiscrete) {
-      this.hammer!.on(`${this.name}start`, (event) => this.onStart(event));
+      this.hammer!.on(`${this.name}start`, (event) =>
+        this.onStart((event as unknown) as HammerInputExt)
+      );
       this.hammer!.on(`${this.name}end ${this.name}cancel`, (event) => {
-        this.onGestureEnded(event);
+        this.onGestureEnded((event as unknown) as HammerInputExt);
       });
     }
-    this.hammer!.on(this.name, (ev) => this.onGestureActivated(ev));
+    this.hammer!.on(this.name, (ev) =>
+      this.onGestureActivated((ev as unknown) as HammerInputExt)
+    ); // TODO(TS) remove cast after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50438 is merged
   }
 
   onStart({ deltaX, deltaY, rotation }) {
