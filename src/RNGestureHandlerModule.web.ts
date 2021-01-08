@@ -50,7 +50,7 @@ export default {
   ) {
     NodeManager.getHandler(handlerTag).setView(newView, propsRef);
   },
-  updateGestureHandler<T>(handlerTag: number, newConfig: T) {
+  updateGestureHandler(handlerTag: number, newConfig: any) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
   },
   getGestureHandlerNode(handlerTag: number) {
