@@ -457,24 +457,27 @@ function invokeNullableMethod(method, event) {
 }
 
 // Validate the props
-function ensureConfig(config) {
+function ensureConfig(config: Config) {
   const props = { ...config };
 
+  // TODO(TS) We use ! to assert that if property is present then value is not empty (null, undefined)
   if ('minDist' in config) {
     props.minDist = config.minDist;
-    props.minDistSq = props.minDist * props.minDist;
+    props.minDistSq = props.minDist! * props.minDist!;
   }
   if ('minVelocity' in config) {
     props.minVelocity = config.minVelocity;
-    props.minVelocitySq = props.minVelocity * props.minVelocity;
+    props.minVelocitySq = props.minVelocity! * props.minVelocity!;
   }
   if ('maxDist' in config) {
     props.maxDist = config.maxDist;
-    props.maxDistSq = config.maxDist * config.maxDist;
+    props.maxDistSq = config.maxDist! * config.maxDist!;
   }
   if ('waitFor' in config) {
     props.waitFor = asArray(config.waitFor)
-      .map(({ _handlerTag }) => NodeManager.getHandler(_handlerTag))
+      .map(({ _handlerTag }: { _handlerTag: number }) =>
+        NodeManager.getHandler(_handlerTag)
+      )
       .filter((v) => v);
   } else {
     props.waitFor = null;
@@ -505,7 +508,8 @@ function ensureConfig(config) {
   return props;
 }
 
-function asArray<T extends unknown>(value: T): T[] {
+function asArray<T>(value: T | T[]) {
+  // TODO(TS) use config.waitFor type
   return value == null ? [] : Array.isArray(value) ? value : [value];
 }
 
