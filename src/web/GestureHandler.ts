@@ -105,7 +105,7 @@ abstract class GestureHandler {
     return { success: true };
   }
 
-  get NativeGestureClass() {
+  get NativeGestureClass(): RecognizerStatic {
     throw new Error('Must override GestureHandler.NativeGestureClass');
   }
 
