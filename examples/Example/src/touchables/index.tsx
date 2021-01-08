@@ -140,7 +140,8 @@ const TOUCHABLES: TouchablesType[] = [
     },
     color: 'forestgreen',
     renderChild: renderSampleBox,
-    text: 'TouchableHighlight with callbacks (without longPress), currently GH component differs in the events sent from the RN one',
+    text:
+      'TouchableHighlight with callbacks (without longPress), currently GH component differs in the events sent from the RN one',
   },
   {
     type: TouchableOpacity,
