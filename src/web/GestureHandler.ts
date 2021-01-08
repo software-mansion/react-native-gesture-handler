@@ -419,8 +419,15 @@ abstract class GestureHandler {
   simulateCancelEvent(inputData) {}
 }
 
+// TODO(TS) investigate this method
 // Used for sending data to a callback or AnimatedEvent
-function invokeNullableMethod(method, event) {
+function invokeNullableMethod(
+  method:
+    | ((event: NativeEvent) => void)
+    | { __getHandler: () => (event: NativeEvent) => void }
+    | { __nodeConfig: { argMapping: any } },
+  event: NativeEvent
+) {
   if (method) {
     if (typeof method === 'function') {
       method(event);
@@ -439,6 +446,7 @@ function invokeNullableMethod(method, event) {
             for (const index in argMapping) {
               const [key, value] = argMapping[index];
               if (key in event.nativeEvent) {
+                // @ts-ignore fix method type
                 const nativeValue = event.nativeEvent[key];
                 if (value && value.setValue) {
                   // Reanimated API
