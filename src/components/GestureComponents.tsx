@@ -1,31 +1,30 @@
-// @ts-nocheck TODO(TS) fix types
 import React from 'react';
 import {
   ScrollView as RNScrollView,
-  ScrollViewProps,
+  ScrollViewProps as RNScrollViewProps,
   Switch as RNSwitch,
-  SwitchProps,
+  SwitchProps as RNSwitchProps,
   TextInput as RNTextInput,
-  TextInputProps,
+  TextInputProps as RNTextInputProps,
   DrawerLayoutAndroid as RNDrawerLayoutAndroid,
-  DrawerLayoutAndroidProps,
+  DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
   FlatList as RNFlatList,
-  FlatListProps,
+  FlatListProps as RNFlatListProps,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 
 import { NativeViewGestureHandlerProperties } from '../handlers/NativeViewGestureHandler';
 
-const MEMOIZED = new WeakMap();
+const MEMOIZED = new WeakMap<
+  React.ComponentType<any>,
+  React.ForwardRefExoticComponent<any>
+>();
 
-function memoizeWrap<P extends NativeViewGestureHandlerProperties>(
+function memoizeWrap<P>(
   Component: React.ComponentType<P>,
-  config?: Record<string, unknown>
-): React.ComponentType<P> | null {
-  if (Component == null) {
-    return null;
-  }
+  config?: Readonly<NativeViewGestureHandlerProperties>
+): React.ComponentType<P & React.RefAttributes<any>> {
   let memoized = MEMOIZED.get(Component);
   if (!memoized) {
     memoized = createNativeWrapper<P>(Component, config);
@@ -34,58 +33,43 @@ function memoizeWrap<P extends NativeViewGestureHandlerProperties>(
   return memoized;
 }
 
-type ScrollViewType = React.Component<
-  NativeViewGestureHandlerProperties & ScrollViewProps
->;
-type SwitchType = React.Component<
-  NativeViewGestureHandlerProperties & SwitchProps
->;
-type TextInputType = React.Component<
-  NativeViewGestureHandlerProperties & TextInputProps
->;
-type DrawerLayoutAndroidType = React.Component<
-  NativeViewGestureHandlerProperties & DrawerLayoutAndroidProps
->;
-type FlatListType<ItemT> = React.Component<
-  NativeViewGestureHandlerProperties & FlatListProps<ItemT>
->;
-
 const GestureComponentWrappers = {
   /* RN's components */
-  get ScrollView(): ScrollViewType | null {
-    return memoizeWrap<ScrollViewProps>(RNScrollView, {
+  get ScrollView() {
+    return memoizeWrap<RNScrollViewProps>(RNScrollView, {
       disallowInterruption: true,
       shouldCancelWhenOutside: false,
     });
   },
-  get Switch(): SwitchType | null {
-    return memoizeWrap<SwitchProps>(RNSwitch, {
+  get Switch() {
+    return memoizeWrap<RNSwitchProps>(RNSwitch, {
       shouldCancelWhenOutside: false,
       shouldActivateOnStart: true,
       disallowInterruption: true,
     });
   },
-  get TextInput(): TextInputType {
-    return memoizeWrap<TextInputProps>(RNTextInput);
+  get TextInput() {
+    return memoizeWrap<RNTextInputProps>(RNTextInput);
   },
-  get DrawerLayoutAndroid(): DrawerLayoutAndroidType {
-    const DrawerLayoutAndroid = memoizeWrap<DrawerLayoutAndroidProps>(
+  get DrawerLayoutAndroid() {
+    const DrawerLayoutAndroid = memoizeWrap<RNDrawerLayoutAndroidProps>(
       RNDrawerLayoutAndroid,
       {
         disallowInterruption: true,
       }
     );
     // we use literal object since TS gives error when using RN's `positions`
+    // @ts-ignore FIXME(TS) maybe this should be removed?
     DrawerLayoutAndroid.positions = { Left: 'left', Right: 'right' };
     return DrawerLayoutAndroid;
   },
 
   // @ts-ignore get this type somehow
-  get FlatList(): FlatListType<ItemT> | null {
+  get FlatList<ItemT>() {
     let memoized = MEMOIZED.get(RNFlatList);
     if (!memoized) {
       const ScrollView = this.ScrollView;
-      memoized = React.forwardRef<RNFlatList<ItemT>, FlatListProps<ItemT>>(
+      memoized = React.forwardRef<RNFlatList<ItemT>, RNFlatListProps<ItemT>>(
         (props, ref) => (
           <RNFlatList
             ref={ref}
@@ -103,7 +87,24 @@ const GestureComponentWrappers = {
 };
 
 export const ScrollView = GestureComponentWrappers.ScrollView;
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility with https://github.com/software-mansion/react-native-gesture-handler/blob/db78d3ca7d48e8ba57482d3fe9b0a15aa79d9932/react-native-gesture-handler.d.ts#L440-L457
+export type ScrollView = typeof ScrollView & {
+  scrollTo(
+    y?: number | { x?: number; y?: number; animated?: boolean },
+    x?: number,
+    animated?: boolean
+  ): void;
+  scrollToEnd(options?: { animated: boolean }): void;
+};
 export const Switch = GestureComponentWrappers.Switch;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type Switch = typeof Switch;
 export const TextInput = GestureComponentWrappers.TextInput;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type TextInput = typeof TextInput;
 export const DrawerLayoutAndroid = GestureComponentWrappers.DrawerLayoutAndroid;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid;
 export const FlatList = GestureComponentWrappers.FlatList;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type FlatList = typeof FlatList;
