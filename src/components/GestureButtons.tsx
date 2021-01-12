@@ -48,8 +48,7 @@ export interface BorderlessButtonProperties extends BaseButtonProperties {
 export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
-  }
-);
+});
 
 export class BaseButton extends React.Component<BaseButtonProperties> {
   private lastActive: boolean;

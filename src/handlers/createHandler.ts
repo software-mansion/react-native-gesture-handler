@@ -178,7 +178,7 @@ export default function createHandler<
   config = {},
   transformProps,
   customNativeProps = [],
-}: CreateHandlerArgs<T>): React.ComponentType<T> {
+}: CreateHandlerArgs<T>): React.ComponentType<T & React.RefAttributes<any>> {
   class Handler extends React.Component<T & InternalEventHandlers> {
     static displayName = name;
 

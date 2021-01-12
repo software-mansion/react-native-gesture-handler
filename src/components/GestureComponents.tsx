@@ -24,7 +24,9 @@ const MEMOIZED = new WeakMap<
 function memoizeWrap<P>(
   Component: React.ComponentType<P>,
   config?: Readonly<NativeViewGestureHandlerProperties>
-): React.ComponentType<P & React.RefAttributes<any>> {
+): React.ComponentType<
+  P & NativeViewGestureHandlerProperties & React.RefAttributes<any>
+> {
   let memoized = MEMOIZED.get(Component);
   if (!memoized) {
     memoized = createNativeWrapper<P>(Component, config);
