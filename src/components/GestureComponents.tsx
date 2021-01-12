@@ -66,12 +66,11 @@ const GestureComponentWrappers = {
     return DrawerLayoutAndroid;
   },
 
-  // @ts-ignore get this type somehow
   get FlatList<ItemT>() {
     let memoized = MEMOIZED.get(RNFlatList);
     if (!memoized) {
       const ScrollView = this.ScrollView;
-      memoized = React.forwardRef<RNFlatList<ItemT>, RNFlatListProps<ItemT>>(
+      memoized = React.forwardRef<RNFlatList<any>, RNFlatListProps<any>>(
         (props, ref) => (
           <RNFlatList
             ref={ref}
@@ -84,7 +83,28 @@ const GestureComponentWrappers = {
       );
       MEMOIZED.set(RNFlatList, memoized);
     }
-    return memoized;
+    return (memoized as unknown) as FlatList<ItemT>;
+  },
+};
+
+// eslint-disable-next-line import/no-commonjs -- we have to use getters in order to run code memoizing components
+module.exports = {
+  get ScrollView() {
+    return GestureComponentWrappers.ScrollView;
+  },
+
+  get Switch() {
+    return GestureComponentWrappers.Switch;
+  },
+  get TextInput() {
+    return GestureComponentWrappers.TextInput;
+  },
+  get DrawerLayoutAndroid() {
+    return GestureComponentWrappers.DrawerLayoutAndroid;
+  },
+
+  get FlatList<ItemT>() {
+    return (GestureComponentWrappers.FlatList as unknown) as FlatList<ItemT>;
   },
 };
 
@@ -109,4 +129,22 @@ export const DrawerLayoutAndroid = GestureComponentWrappers.DrawerLayoutAndroid;
 export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid;
 export const FlatList = GestureComponentWrappers.FlatList;
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type FlatList = typeof FlatList;
+export type FlatList<ItemT> = React.ComponentClass<
+  RNFlatList<ItemT> &
+    NativeViewGestureHandlerProperties &
+    React.RefAttributes<any>
+> & {
+  scrollToEnd: (params?: { animated?: boolean }) => void;
+  scrollToIndex: (params: {
+    animated?: boolean;
+    index: number;
+    viewOffset?: number;
+    viewPosition?: number;
+  }) => void;
+  scrollToItem: (params: {
+    animated?: boolean;
+    item: ItemT;
+    viewPosition?: number;
+  }) => void;
+  scrollToOffset: (params: { animated?: boolean; offset: number }) => void;
+};
