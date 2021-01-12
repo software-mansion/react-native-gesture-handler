@@ -21,7 +21,8 @@ import {
   NativeViewGestureHandlerProperties,
 } from '../handlers/NativeViewGestureHandler';
 
-interface RawButtonProperties extends NativeViewGestureHandlerProperties {
+export interface RawButtonProperties
+  extends NativeViewGestureHandlerProperties {
   exclusive?: boolean;
   // TODO: we should transform props in `createNativeWrapper`
   rippleColor?: any; // it was present in BaseButtonProperties before but is used here in code
@@ -44,11 +45,9 @@ export interface BorderlessButtonProperties extends BaseButtonProperties {
   activeOpacity?: number;
 }
 
-export const RawButton: React.ComponentType<RawButtonProperties> = createNativeWrapper(
-  GestureHandlerButton,
-  {
-    shouldCancelWhenOutside: false,
-    shouldActivateOnStart: false,
+export const RawButton = createNativeWrapper(GestureHandlerButton, {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: false,
   }
 );
 
