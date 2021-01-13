@@ -10,6 +10,7 @@ import {
   DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
+  FlatListProps,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
@@ -66,6 +67,7 @@ const GestureComponentWrappers = {
     return DrawerLayoutAndroid;
   },
 
+  // @ts-ignore xddddd
   get FlatList<ItemT>() {
     let memoized = MEMOIZED.get(RNFlatList);
     if (!memoized) {
@@ -103,6 +105,7 @@ module.exports = {
     return GestureComponentWrappers.DrawerLayoutAndroid;
   },
 
+  // @ts-ignore xddddd
   get FlatList<ItemT>() {
     return (GestureComponentWrappers.FlatList as unknown) as FlatList<ItemT>;
   },
@@ -129,8 +132,8 @@ export const DrawerLayoutAndroid = GestureComponentWrappers.DrawerLayoutAndroid;
 export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid;
 export const FlatList = GestureComponentWrappers.FlatList;
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type FlatList<ItemT> = React.ComponentClass<
-  RNFlatList<ItemT> &
+export type FlatList<ItemT extends any> = React.ComponentType<
+  FlatListProps<ItemT> &
     NativeViewGestureHandlerProperties &
     React.RefAttributes<any>
 > & {
