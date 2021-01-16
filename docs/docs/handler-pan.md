@@ -22,41 +22,41 @@ For example when both [`minDeltaX`](#mindeltax) and [`minDeltaY`](#mindeltay) ar
 Another example would be setting both [`maxDeltaX`](#maxdeltaX) and [`maxDeltaY`](#maxdeltay) to 20 and [`minDist`](#mindist) to 23.
 In such a case, if we move a finger along the X-axis by 20 points and along the Y-axis by 0 points, the handler will fail even though the finger is still within the bounds of translation along Y-axis.
 
-## Multi touch pan handling
+## Multi-touch pan handling
 
-If your app relies on multi touch pan handling this section provides some information how the default behavior differs between the platform and how (if necessary) it can be unified.
+If your app relies on multi-touch pan handling, this section provides some information about how the default behavior differs between platforms and how (if necessary) it can be unified.
 
-The difference in multi touch pan handling lies in the way how translation properties during the event are being calculated.
-On iOS the default behavior when more than one finger is placed on the screen is to treat this situation as if only one pointer was placed in the center of mass (average position of all the pointers).
-This applies also to many platform native components that handle touch even if not primarily interested in multi touch interactions like for example UIScrollView component.
+Platform behavior differences of multi-touch pan handling lie in the way translation properties are calculated during an event.
+For instance, the default behavior on iOS when more than one finger is placed on the screen is to treat this situation as if only one pointer was placed in the center of mass (average position of all the pointers).
+This also applies to many platform native components that handle touch even if not primarily interested in multi-touch interactions, like the UIScrollView component.
 
 The default behavior for native components like scroll view, pager views or drawers is different and hence gesture handler defaults to that when it comes to pan handling.
 The difference is that instead of treating the center of mass of all the fingers placed as a leading pointer it takes the latest placed finger as such.
-This behavior can be changed on Android using [`avgTouches`](#avgtouches-android-only) flag.
+This behavior can be changed on Android using the [`avgTouches`](#avgtouches-android-only) flag.
 
-Note that on both Android and iOS when the additional finger is placed on the screen that translation prop is not affected even though the position of the pointer being tracked might have changed.
+Note that on both Android and iOS when an additional finger is placed on the screen, translation prop is not affected even though the position of the pointer being tracked might have changed.
 Therefore it is safe to rely on translation most of the time as it only reflects the movement that happens regardless of how many fingers are placed on the screen and if that number changes over time.
-If you wish to track the "center of mass" virtual pointer and account for its changes when the number of finger changes you can use relative or absolute position provided in the event ([`x`](#x) and [`y`](#y) or [`absoluteX`](#absolutex) and [`absoluteY`](#absolutey)).
+If you wish to track the "center of mass" virtual pointer and account for its changes when the number of fingers changes you can use relative or absolute position provided in the event ([`x`](#x) and [`y`](#y) or [`absoluteX`](#absolutex) and [`absoluteY`](#absolutey)).
 
 ## Properties
 
-See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `PanGestureHandler` component:
+See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to the `PanGestureHandler` component:
 
 ### `minDist`
 
-Minimum distance the finger (or multiple finger) need to travel before the handler [activates](state.md#active). Expressed in points.
+Minimum distance the finger (or multiple fingers) need to travel before the handler [activates](state.md#active). Expressed in points.
 
 ### `minPointers`
 
-A number of fingers that is required to be placed before handler can [activate](state.md#active). Should be a higher or equal to 0 integer.
+A number of fingers that is required to be placed before handler can [activate](state.md#active). Should be an integer greater than or equal to 0.
 
 ### `maxPointers`
 
-When the given number of fingers is placed on the screen and handler hasn't yet [activated](state.md#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
+When the given number of fingers is placed on the screen and handler hasn't yet [activated](state.md#active) it will fail recognizing the gesture. Should be an integer greater than or equal to 0.
 
 ### `activeOffsetX`
 
-Range along X axis (in points) where fingers travels without activation of handler. Moving outside of this range implies activation of handler. Range can be given as an array or a single number.
+Range along X-axis (in points) where fingers travels without activation of handler. Moving outside of this range implies activation of handler. Range can be given as an array or a single number.
 If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
@@ -74,7 +74,7 @@ If only one number `p` is given a range of `(-inf, p)` will be used if `p` is hi
 
 ### `failOffsetX`
 
-When the finger moves outside this range (in points) along X axis and handler hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
+When the finger moves outside this range (in points) along X-axis and handler hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
 If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
@@ -82,7 +82,7 @@ If only one number `p` is given a range of `(-inf, p)` will be used if `p` is hi
 
 > This method is deprecated but supported for backward compatibility. Instead of using `maxDeltaX={N}` you can do `failOffsetX={[-N, N]}`.
 
-When the finger travels the given distance expressed in points along X axis and handler hasn't yet [activated](state.md#active) it will fail recognizing the gesture.
+When the finger travels the given distance expressed in points along X-axis and handler hasn't yet [activated](state.md#active) it will fail recognizing the gesture.
 
 ### `maxDeltaY`
 
@@ -126,7 +126,7 @@ See [set of event attributes from base handler class](handler-common.md#event-da
 
 ### `translationX`
 
-Translation of the pan gesture along X axis accumulated over the time of the gesture. The value is expressed in the point units.
+Translation of the pan gesture along X-axis accumulated over the time of the gesture. The value is expressed in the point units.
 
 ### `translationY`
 
@@ -134,7 +134,7 @@ Translation of the pan gesture along Y axis accumulated over the time of the ges
 
 ### `velocityX`
 
-Velocity of the pan gesture along the X axis in the current moment. The value is expressed in point units per second.
+Velocity of the pan gesture along the X-axis in the current moment. The value is expressed in point units per second.
 
 ### `velocityY`
 
