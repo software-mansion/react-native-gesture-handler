@@ -141,14 +141,17 @@ import PushedScreen from './PushedScreen';
 
 // register all screens of the app (including internal ones)
 export function registerScreens() {
-  Navigation.registerComponent('example.FirstTabScreen', () =>
-    gestureHandlerRootHOC(FirstTabScreen)
+  Navigation.registerComponent('example.FirstTabScreen', 
+    () => gestureHandlerRootHOC(FirstTabScreen),
+    () => FirstTabScreen
   );
-  Navigation.registerComponent('example.SecondTabScreen', () =>
-    gestureHandlerRootHOC(SecondTabScreen)
+  Navigation.registerComponent('example.SecondTabScreen', 
+    () => gestureHandlerRootHOC(SecondTabScreen),
+    () => SecondTabScreen
   );
-  Navigation.registerComponent('example.PushedScreen', () =>
-    gestureHandlerRootHOC(PushedScreen)
+  Navigation.registerComponent('example.PushedScreen', 
+    () => gestureHandlerRootHOC(PushedScreen),
+    () => PushedScreen
   );
 }
 ```
