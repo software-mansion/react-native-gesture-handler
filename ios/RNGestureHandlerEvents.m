@@ -57,7 +57,7 @@
                            @"absoluteY": @(absolutePosition.y),
                            @"force": @(force),
                            @"numberOfPointers": @(numberOfTouches)}];
-  
+
 }
 
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale

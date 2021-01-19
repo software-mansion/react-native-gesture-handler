@@ -21,6 +21,7 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 #define APPLY_FLOAT_PROP(prop) do { APPLY_PROP(recognizer, config, CGFloat, prop, @#prop); } while(0)
 #define APPLY_INT_PROP(prop) do { APPLY_PROP(recognizer, config, NSInteger, prop, @#prop); } while(0)
 #define APPLY_NAMED_INT_PROP(prop, propName) do { APPLY_PROP(recognizer, config, NSInteger, prop, propName); } while(0)
+#define APPLY_UIEDGEINSETS_PROP(prop) do { APPLY_PROP(recognizer, config, UIEdgeInsets, prop, @#prop); } while(0)
 
 @protocol RNGestureHandlerEventEmitter
 

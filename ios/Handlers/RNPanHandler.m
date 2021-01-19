@@ -24,6 +24,7 @@
 @property (nonatomic) CGFloat activeOffsetYEnd;
 @property (nonatomic) CGFloat failOffsetYStart;
 @property (nonatomic) CGFloat failOffsetYEnd;
+@property (nonatomic) UIEdgeInsets minDistFromEdge;
 
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
@@ -53,6 +54,7 @@
     _activeOffsetYEnd = NAN;
     _failOffsetYStart = NAN;
     _failOffsetYEnd = NAN;
+    _minDistFromEdge = UIEdgeInsetsZero;
     _hasCustomActivationCriteria = NO;
 #if !TARGET_OS_TV
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
@@ -118,17 +120,32 @@
   [super reset];
 }
 
+- (BOOL)isWithinBounds
+{
+  CGPoint location = [self locationInView:self.view];
+  CGSize viewSize = self.view.bounds.size;
+
+  BOOL isOutOfBoundsX = location.x < _minDistFromEdge.left || location.x > (viewSize.width - _minDistFromEdge.right);
+  BOOL isOutOfBoundsY = location.y < _minDistFromEdge.top || location.y > (viewSize.height - _minDistFromEdge.bottom);
+  return !isOutOfBoundsX && !isOutOfBoundsY;
+}
+
 - (void)updateHasCustomActivationCriteria
 {
   _hasCustomActivationCriteria = !isnan(_minDistSq)
   || !isnan(_minVelocityX) || !isnan(_minVelocityY) || !isnan(_minVelocitySq)
   || !isnan(_activeOffsetXStart) || !isnan(_activeOffsetXEnd)
-  ||  !isnan(_activeOffsetYStart) || !isnan(_activeOffsetYEnd);
+  ||  !isnan(_activeOffsetYStart) || !isnan(_activeOffsetYEnd)
+  || _minDistFromEdge.left > 0 || _minDistFromEdge.top > 0
+  || _minDistFromEdge.right > 0 || _minDistFromEdge.bottom > 0;
 }
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
   CGPoint trans = [self translationInView:self.view];
+  if (![self isWithinBounds]) {
+    return YES;
+  }
   if (!isnan(_failOffsetXStart) && trans.x < _failOffsetXStart) {
     return YES;
   }
@@ -147,6 +164,11 @@
 - (BOOL)shouldActivateUnderCustomCriteria
 {
   CGPoint trans = [self translationInView:self.view];
+
+  if (![self isWithinBounds]) {
+    return NO;
+  }
+
   if (!isnan(_activeOffsetXStart) && trans.x < _activeOffsetXStart) {
     return YES;
   }
@@ -159,11 +181,11 @@
   if (!isnan(_activeOffsetYEnd) && trans.y > _activeOffsetYEnd) {
     return YES;
   }
-  
+
   if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ(trans), _minDistSq)) {
     return YES;
   }
-  
+
   CGPoint velocity = [self velocityInView:self.view];
   if (TEST_MIN_IF_NOT_NAN(velocity.x, _minVelocityX)) {
     return YES;
@@ -174,7 +196,7 @@
   if (TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ(velocity), _minVelocitySq)) {
     return YES;
   }
-  
+
   return NO;
 }
 
@@ -194,7 +216,7 @@
 {
   [super configure:config];
   RNBetterPanGestureRecognizer *recognizer = (RNBetterPanGestureRecognizer *)_recognizer;
-  
+
   APPLY_FLOAT_PROP(minVelocityX);
   APPLY_FLOAT_PROP(minVelocityY);
   APPLY_FLOAT_PROP(activeOffsetXStart);
@@ -205,8 +227,8 @@
   APPLY_FLOAT_PROP(activeOffsetYEnd);
   APPLY_FLOAT_PROP(failOffsetYStart);
   APPLY_FLOAT_PROP(failOffsetYEnd);
+  APPLY_UIEDGEINSETS_PROP(minDistFromEdge);
 
-#if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
   if (@available(iOS 13.4, *)) {
     bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:config[@"enableTrackpadTwoFingerGesture"]];
     if(enableTrackpadTwoFingerGesture){
@@ -214,16 +236,17 @@
     }
   }
 
+#if !TARGET_OS_TV
   APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
   APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
 #endif
-    
+
   id prop = config[@"minDist"];
   if (prop != nil) {
     CGFloat dist = [RCTConvert CGFloat:prop];
     recognizer.minDistSq = dist * dist;
   }
-  
+
   prop = config[@"minVelocity"];
   if (prop != nil) {
     CGFloat velocity = [RCTConvert CGFloat:prop];
