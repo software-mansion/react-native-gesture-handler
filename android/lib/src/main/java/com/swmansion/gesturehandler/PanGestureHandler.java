@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
@@ -12,6 +13,8 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
   private static int DEFAULT_MIN_POINTERS = 1;
   private static int DEFAULT_MAX_POINTERS = 10;
+
+  private static Rect DEFAULT_MIN_DIST_FROM_EDGE = new Rect(0, 0, 0, 0);
 
   private float mMinDistSq = MAX_VALUE_IGNORE;
 
@@ -32,6 +35,8 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mMinVelocitySq = MIN_VALUE_IGNORE;
   private int mMinPointers = DEFAULT_MIN_POINTERS;
   private int mMaxPointers = DEFAULT_MAX_POINTERS;
+
+  private Rect mMinDistFromEdge = DEFAULT_MIN_DIST_FROM_EDGE;
 
   private float mStartX, mStartY;
   private float mOffsetX, mOffsetY;
@@ -137,7 +142,29 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     return this;
   }
 
+  public PanGestureHandler setMinDistFromEdge(Rect minDistFromEdge) {
+      mMinDistFromEdge = minDistFromEdge;
+      return this;
+  }
+
+  /**
+   * @return Returns true if the user began the gesture outside of the specified activation criteria's bounds (`minDistFromEdge` rect)
+   */
+  private boolean isTouchOutOfBounds() {
+      float viewHeight = getView().getHeight();
+      float viewWidth = getView().getWidth();
+
+      boolean isOutOfBoundsX = mStartX < mMinDistFromEdge.left || mStartX > (viewWidth - mMinDistFromEdge.right);
+      boolean isOutOfBoundsY = mStartY < mMinDistFromEdge.top || mStartY > (viewHeight - mMinDistFromEdge.bottom);
+
+      return isOutOfBoundsX || isOutOfBoundsY;
+  }
+
   private boolean shouldActivate() {
+    if (isTouchOutOfBounds()) {
+      return false;
+    }
+
     float dx = mLastX - mStartX + mOffsetX;
     if (mActiveOffsetXStart != MIN_VALUE_IGNORE && dx < mActiveOffsetXStart) {
       return true;
@@ -182,8 +209,11 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   }
 
   private boolean shouldFail() {
-    float dx = mLastX - mStartX + mOffsetX;
+    if (isTouchOutOfBounds()) {
+      return true;
+    }
 
+    float dx = mLastX - mStartX + mOffsetX;
     if (mFailOffsetXStart != MAX_VALUE_IGNORE && dx < mFailOffsetXStart) {
       return true;
     }
