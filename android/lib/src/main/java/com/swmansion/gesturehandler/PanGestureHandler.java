@@ -153,9 +153,14 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private boolean isTouchOutOfBounds() {
       float viewHeight = getView().getHeight();
       float viewWidth = getView().getWidth();
+      float density = getDensity();
 
-      boolean isOutOfBoundsX = mStartX < mMinDistFromEdge.left || mStartX > (viewWidth - mMinDistFromEdge.right);
-      boolean isOutOfBoundsY = mStartY < mMinDistFromEdge.top || mStartY > (viewHeight - mMinDistFromEdge.bottom);
+      float distLeft = mMinDistFromEdge.left * density;
+      float distTop = mMinDistFromEdge.top * density;
+      float distRight = mMinDistFromEdge.right * density;
+      float distBottom = mMinDistFromEdge.bottom * density;
+      boolean isOutOfBoundsX = mStartX < distLeft || mStartX > (viewWidth - distRight);
+      boolean isOutOfBoundsY = mStartY < distTop || mStartY > (viewHeight - distBottom);
 
       return isOutOfBoundsX || isOutOfBoundsY;
   }

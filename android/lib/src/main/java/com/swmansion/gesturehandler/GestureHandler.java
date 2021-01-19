@@ -50,6 +50,7 @@ public class GestureHandler<T extends GestureHandler> {
 
   private int mTag;
   private View mView;
+  private float mDensity = 1f;
   private int mState = STATE_UNDETERMINED;
   private float mX, mY;
   private boolean mWithinBounds;
@@ -167,6 +168,10 @@ public class GestureHandler<T extends GestureHandler> {
     return mView;
   }
 
+  public float getDensity() {
+    return mDensity;
+  }
+
   public float getX() {
     return mX;
   }
@@ -196,6 +201,7 @@ public class GestureHandler<T extends GestureHandler> {
     mState = STATE_UNDETERMINED;
 
     mView = view;
+    mDensity = view.getResources().getDisplayMetrics().density;
     mOrchestrator = orchestrator;
   }
 
@@ -484,6 +490,7 @@ public class GestureHandler<T extends GestureHandler> {
 
   public final void reset() {
     mView = null;
+    mDensity = 1f;
     mOrchestrator = null;
     Arrays.fill(mTrackedPointerIDs, -1);
     mTrackedPointersCount = 0;
