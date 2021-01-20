@@ -215,6 +215,15 @@ function transformPanGestureHandlerProps(props) {
     }
   }
 
+  if (props.minDistFromEdge != null) {
+    res.minDistFromEdge = {
+      left: props.minDistFromEdge.left ?? 0,
+      top: props.minDistFromEdge.top ?? 0,
+      right: props.minDistFromEdge.right ?? 0,
+      bottom: props.minDistFromEdge.bottom ?? 0,
+    }
+  }
+
   return res;
 }
 
