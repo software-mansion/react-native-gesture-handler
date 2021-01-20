@@ -6,8 +6,8 @@ sidebar_label: PanGestureHandler
 
 A continuous gesture handler that can recognize a panning (dragging) gesture and track its movement.
 
-The handler [activates](state.md#active) when a finger is placed on the screen and moved some initial distance. 
-Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](#minPointers) required for activation (allowing for multifinger swipes) may be specified. 
+The handler [activates](state.md#active) when a finger is placed on the screen and moved some initial distance.
+Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](#minPointers) required for activation (allowing for multifinger swipes) may be specified.
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
 
@@ -113,6 +113,11 @@ Minimum distance along X (in points) axis the finger (or multiple finger) need t
 > This method is deprecated but supported for backward compatibility. Instead of using `minDeltaY={N}` you can do `activeOffsetY={[-N, N]}`.
 
 Minimum distance along Y (in points) axis the finger (or multiple finger) need to travel (top or bottom) before the handler [activates](state.md#active). Unlike [`minOffsetY`](#minoffsety) this parameter accepts only non-lower or equal to 0 numbers that represents the distance in point units. If you want for the handler to [activate](state.md#active) for the movement in one particular direction use [`minOffsetY`](#minoffsety) instead.
+
+### `minDistFromEdge`
+
+Minimum distance, specified in insets (`left`, `top`, `right`, `bottom`), which the gesture will be recognized. Anything _within_ the view's edges, and the specified `minDistFromEdge` will not be considered a gesture. This can be compared to how `margin` for a view works.
+For example, a `minDistFromEdge` of `{ left: 20 }` only activates the handler if the user didn't start the gesture anywhere between the left edge of the view and `20` pixels.
 
 ### `avgTouches` (Android only)
 
