@@ -11,7 +11,7 @@ The fingers involved in these gestures must not move significantly from their in
 The required number of taps and allowed distance from initial position may be configured.
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
-In order for a handler to [activate](state.md#active), specified gesture requirements such as [minPointers], [numberOfTaps], [maxDist], [maxDurationMs], and [maxDelayMs] (explained below) must be met. Immediately after the handler [activates](state.md#active), it will [end](state.md#end).
+In order for a handler to [activate](state.md#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDurationMs, and maxDelayMs (explained below) must be met. Immediately after the handler [activates](state.md#active), it will [END](state.md#end).
 
 ## Properties
 

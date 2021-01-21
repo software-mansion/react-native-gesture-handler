@@ -22,7 +22,7 @@ For example when both [`minDeltaX`](#mindeltax) and [`minDeltaY`](#mindeltay) ar
 Another example would be setting both [`maxDeltaX`](#maxdeltaX) and [`maxDeltaY`](#maxdeltay) to 20 and [`minDist`](#mindist) to 23.
 In such a case, if we move a finger along the X axis by 20 points and along the Y axis by 0 points, the handler will fail even though the finger is still within the bounds of translation along Y axis.
 
-## Multi touch pan handling
+## Multi-touch pan handling
 
 If your app relies on multi touch pan handling this section provides some information how the default behavior differs between the platform and how (if necessary) it can be unified.
 
