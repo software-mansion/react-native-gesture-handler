@@ -20,7 +20,7 @@ The `PanGestureHandler` component exposes a number of properties that can be use
 When more than one of such a property is set, `PanGestureHandler` expects all criteria to be met for successful recognition and at most one of the criteria to be overstepped to fail recognition.
 For example when both [`minDeltaX`](#mindeltax) and [`minDeltaY`](#mindeltay) are set to 20 we expect the finger to travel by 20 points in both the X and Y axis before the handler activates.
 Another example would be setting both [`maxDeltaX`](#maxdeltaX) and [`maxDeltaY`](#maxdeltay) to 20 and [`minDist`](#mindist) to 23.
-In such a case, if we move a finger along the X-axis by 20 points and along the Y-axis by 0 points, the handler will fail even though the finger is still within the bounds of translation along Y-axis.
+In such a case, if we move a finger along the X axis by 20 points and along the Y axis by 0 points, the handler will fail even though the finger is still within the bounds of translation along Y axis.
 
 ## Multi touch pan handling
 
