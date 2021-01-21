@@ -4,34 +4,34 @@ title: TapGestureHandler
 sidebar_label: TapGestureHandler
 ---
 
-A discrete gesture handler that recognizes tap (or many taps).
+A discrete gesture handler that recognizes one or many taps.
 
-Tap gestures detect one or more fingers touching the screen briefly.
-The fingers involved in these gestures must not move significantly from the initial touch points, and you can configure the number of times the fingers must touch the screen and allowable distance.
+Tap gestures detect one or more fingers briefly touching the screen.
+The fingers involved in these gestures must not move significantly from their initial touch positions. 
+The required number of taps and allowed distance from initial position may be configured.
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
-For the handler to be [activated](state.md#active) the specified number of fingers must tap the view a specified number of times in proper time and with short enough delay. When handler gets activated it will turn into [END](state.md#end) state immediately.
-The handler will fail to recognize if the finger is moved further than the [allowable distance](#maxdist).
+In order for a handler to [activate](state.md#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDurationMs, and maxDelayMs (explained below) must be met. Immediately after the handler [activates](state.md#active), it will [END](state.md#end).
 
 ## Properties
 
-See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `TapGestureHandler` component:
+See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to the `TapGestureHandler` component:
 
 ### `minPointers`
 
-A number of fingers that is required to be placed before handler can [activate](state.md#active). Should be a positive integer.
+Minimum number of fingers required to be placed before the handler [activates](state.md#active). Should be a positive integer. Default is 1. 
 
 ### `maxDurationMs`
 
-Time expressed in milliseconds which defines how fast finger has to be released after touch.
+Time expressed in milliseconds which defines how fast a finger has to be released after touch.
 
 ### `maxDelayMs`
 
-Time expressed in milliseconds which could pass before next tap if many taps are required
+Time expressed in milliseconds which could pass before next tap if many taps are required. Default is 300ms. 
 
 ### `numberOfTaps`
 
-A number of tap event required to [activate](state.md#active) handler
+Number of tap gestures required to [activate](state.md#active) the handler. Default is 1. 
 
 ### `maxDeltaX`
 
