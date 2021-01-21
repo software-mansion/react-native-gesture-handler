@@ -116,8 +116,13 @@ Minimum distance along Y (in points) axis the finger (or multiple finger) need t
 
 ### `minDistFromEdge`
 
-Minimum distance, specified in insets (`left`, `top`, `right`, `bottom`), which the gesture will be recognized. Anything _within_ the view's edges, and the specified `minDistFromEdge` will not be considered a gesture. This can be compared to how `margin` for a view works.
+Minimum distance, specified in insets (`left`, `top`, `right`, `bottom`), which the starting point of the gesture is allowed to be away from the view's edges. Anything **between** the view's edges and the specified `minDistFromEdge` will **not** be considered a gesture. This can be compared to how `margin` for a view works.
 For example, a `minDistFromEdge` of `{ left: 20 }` only activates the handler if the user didn't start the gesture anywhere between the left edge of the view and `20` pixels.
+
+### `maxDistFromEdge`
+
+Maximum distance, specified in insets (`left`, `top`, `right`, `bottom`), which the starting point of the gesture is allowed to be away from the view's edges. Anything **between** the view's edges and the specified `maxDistFromEdge` will be considered a gesture. This can be described as the inverted `minDistFromEdge` prop.
+For example, a `maxDistFromEdge` of `{ left: 20 }` only activates the handler if the user started the gesture anywhere between the left edge of the view and `20` pixels.
 
 ### `avgTouches` (Android only)
 
