@@ -78,6 +78,7 @@ Library exports a `State` object that provides a number of constants used to exp
 - `minPointers`
 - `maxPointers`
 - `minDistFromEdge`
+- `maxDistFromEdge`
 - `avgTouches` (**Android only**)
 
 #### `PinchGestureHandler`
