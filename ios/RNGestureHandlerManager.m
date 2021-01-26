@@ -135,22 +135,24 @@
 - (void)registerRootViewIfNeeded:(UIView*)childView
 {
     UIView *parent = childView;
-    while (parent != nil && ![parent isKindOfClass:[RCTRootView class]]) parent = parent.superview;
-    
-    RCTRootView *rootView = (RCTRootView *)parent;
-    UIView *rootContentView = rootView.contentView;
-    if (rootContentView != nil && ![_rootViews containsObject:rootContentView]) {
-        RCTLifecycleLog(@"[GESTURE HANDLER] Initialize gesture handler for root view %@", rootContentView);
-        [_rootViews addObject:rootContentView];
+    while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) parent = parent.superview;
+
+    UIView *rootView = [[parent performSelector:@selector(touchHandler)] view];
+    if ([rootView isKindOfClass:[RCTRootView class]]) {
+        rootView = ((RCTRootView *)rootView).contentView;
+    }
+    if (rootView != nil && ![_rootViews containsObject:rootView]) {
+        RCTLifecycleLog(@"[GESTURE HANDLER] Initialize gesture handler for root view %@", rootView);
+        [_rootViews addObject:rootView];
         RNRootViewGestureRecognizer *recognizer = [RNRootViewGestureRecognizer new];
         recognizer.delegate = self;
-        rootContentView.userInteractionEnabled = YES;
-        [rootContentView addGestureRecognizer:recognizer];
+        rootView.userInteractionEnabled = YES;
+        [rootView addGestureRecognizer:recognizer];
     }
 }
 
 - (void)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
-    didActivateInRootView:(UIView *)rootContentView
+    didActivateInRootView:(UIView *)rootView
 {
     // Cancel touches in RN's root view in order to cancel all in-js recognizers
 
@@ -165,10 +167,8 @@
     // Once the upstream fix lands the line below along with this comment can be removed
     if ([gestureRecognizer.view isKindOfClass:[UIScrollView class]]) return;
 
-    UIView *parent = rootContentView.superview;
-    if ([parent isKindOfClass:[RCTRootView class]]) {
-        [((RCTRootContentView*)rootContentView).touchHandler cancel];
-    }
+    RCTTouchHandler *touchHandler = [rootView performSelector:@selector(touchHandler)];
+    [touchHandler cancel];
 }
 
 - (void)dealloc
