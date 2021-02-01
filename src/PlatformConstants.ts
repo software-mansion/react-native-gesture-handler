@@ -4,6 +4,4 @@ type PlatformConstantsType = {
   forceTouchAvailable: boolean;
 };
 
-export default NativeModules.PlatformConstants as
-  | PlatformConstantsType
-  | undefined;
+export default NativeModules.PlatformConstants as PlatformConstantsType;
