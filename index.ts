@@ -4,7 +4,6 @@ export { default as gestureHandlerRootHOC } from './src/gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './src/GestureHandlerRootView';
 
 export * from './src/components/GestureButtons';
-// eslint-disable-next-line import/export
 export * from './src/components/GestureComponents';
 export * from './src/handlers/gestureHandlers';
 export * from './src/handlers/gestureHandlerTypesCompat';
