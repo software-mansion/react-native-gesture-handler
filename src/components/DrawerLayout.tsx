@@ -75,7 +75,7 @@ export interface DrawerLayoutProperties {
   drawerContainerStyle?: StyleProp<ViewStyle>;
   enableTrackpadTwoFingerGesture?: boolean;
   onDrawerSlide?: (position: number) => void;
-  onGestureRef?: (ref: typeof PanGestureHandler) => void;
+  onGestureRef?: (ref: PanGestureHandler) => void;
 }
 
 export type DrawerLayoutState = {
@@ -146,9 +146,7 @@ export default class DrawerLayout extends Component<
   ) => void;
   private accessibilityIsModalView = React.createRef<View>();
   private pointerEventsView = React.createRef<View>();
-  private panGestureHandler = React.createRef<
-    typeof PanGestureHandler | null
-  >();
+  private panGestureHandler = React.createRef<PanGestureHandler | null>();
   private drawerShown = false;
 
   static positions = {
@@ -550,12 +548,11 @@ export default class DrawerLayout extends Component<
     );
   };
 
-  private setPanGestureRef = (ref: typeof PanGestureHandler) => {
+  private setPanGestureRef = (ref: PanGestureHandler) => {
     // TODO(TS): make sure it is OK
     // taken from https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065#issuecomment-596081842
-    (this.panGestureHandler as React.MutableRefObject<
-      typeof PanGestureHandler
-    >).current = ref;
+    (this
+      .panGestureHandler as React.MutableRefObject<PanGestureHandler>).current = ref;
     this.props.onGestureRef?.(ref);
   };
 
