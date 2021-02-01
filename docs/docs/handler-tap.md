@@ -27,7 +27,11 @@ Maximum time, expressed in milliseconds, that defines how fast a finger must be 
 
 ### `maxDelayMs`
 
+<<<<<<< HEAD
 Maximum time, expressed in milliseconds, that can pass before the next tap—if many taps are required. The default value is 500.
+=======
+Maximum time, expressed in milliseconds, that can pass before the next tap — if many taps are required. The default value is 500. 
+>>>>>>> 91238163fc1c069143c361136ca4c7556c0597de
 
 ### `numberOfTaps`
 
