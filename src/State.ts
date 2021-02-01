@@ -9,6 +9,5 @@ export const State = {
   END: 5,
 } as const;
 
-// It is needed for backwards compability, since it can be used as a type and a value
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; it can be used as a type and as a value
 export type State = typeof State[keyof typeof State];

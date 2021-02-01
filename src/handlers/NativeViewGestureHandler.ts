@@ -21,8 +21,7 @@ export const nativeViewProperties = [
 ] as const;
 
 export type NativeViewGestureHandler = typeof NativeViewGestureHandler;
-// For the reason why, see the comment at the top of gestureHandlers.ts
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlers.ts file
 export const NativeViewGestureHandler = createHandler<
   NativeViewGestureHandlerProperties,
   NativeViewGestureHandlerPayload

@@ -107,8 +107,7 @@ export interface TapGestureHandlerProperties
 }
 
 export type TapGestureHandler = typeof TapGestureHandler;
-// For the reason why, see the comment at the top of this file
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const TapGestureHandler = createHandler<
   TapGestureHandlerProperties,
   TapGestureHandlerEventPayload
@@ -141,8 +140,7 @@ export interface FlingGestureHandlerProperties
 }
 
 export type FlingGestureHandler = typeof FlingGestureHandler;
-// For the reason why, see the comment at the top of this file
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const FlingGestureHandler = createHandler<
   FlingGestureHandlerProperties,
   FlingGestureHandlerEventPayload
@@ -180,8 +178,7 @@ export interface ForceTouchGestureHandlerProperties
 }
 
 export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler;
-// For the reason why, see the comment at the top of this file
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
   ? createHandler<
       ForceTouchGestureHandlerProperties,
@@ -220,8 +217,7 @@ export interface LongPressGestureHandlerProperties
 }
 
 export type LongPressGestureHandler = typeof LongPressGestureHandler;
-// For the reason why, see the comment at the top of this file
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const LongPressGestureHandler = createHandler<
   LongPressGestureHandlerProperties,
   LongPressGestureHandlerEventPayload
@@ -440,8 +436,7 @@ export interface PanGestureHandlerProperties
 }
 
 export type PanGestureHandler = typeof PanGestureHandler;
-// For the reason why, see the comment at the top of this file
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const PanGestureHandler = createHandler<
   PanGestureHandlerProperties,
   PanGestureHandlerEventPayload
@@ -487,8 +482,7 @@ export interface PinchGestureHandlerProperties
   extends BaseGestureHandlerProperties<PinchGestureHandlerEventPayload> {}
 
 export type PinchGestureHandler = typeof PinchGestureHandler;
-// For the reason why, see the comment at the top of this file
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const PinchGestureHandler = createHandler<
   PinchGestureHandlerProperties,
   PinchGestureHandlerEventPayload
@@ -509,8 +503,7 @@ export interface RotationGestureHandlerProperties
   extends BaseGestureHandlerProperties<RotationGestureHandlerEventPayload> {}
 
 export type RotationGestureHandler = typeof RotationGestureHandler;
-// For the reason why, see the comment at the top of this file
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const RotationGestureHandler = createHandler<
   RotationGestureHandlerProperties,
   RotationGestureHandlerEventPayload
