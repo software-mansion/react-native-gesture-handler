@@ -93,12 +93,6 @@ export type DrawerMovementOptionType = {
   velocity?: number;
   speed?: number;
 };
-
-// export default class DrawerLayout extends React.Component<DrawerLayoutProperties> {
-//   openDrawer: (options?: DrawerMovementOptionType) => void;
-//   closeDrawer: (options?: DrawerMovementOptionType) => void;
-// }
-
 export default class DrawerLayout extends Component<
   DrawerLayoutProperties,
   DrawerLayoutState
