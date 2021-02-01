@@ -158,9 +158,8 @@ abstract class GestureHandler {
     return pointerInside;
   };
 
-  // TODO(TS) change it to `type: keyof typeof EventMap`
-  // after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50433 is merged.
-  getState(type: number): State {
+  getState(type: keyof typeof EventMap): State {
+    // @ts-ignore TODO(TS) check if this is needed
     if (type == 0) {
       return 0;
     }
@@ -176,7 +175,8 @@ abstract class GestureHandler {
       y: changedTouch.clientY,
     });
 
-    const state = this.getState(eventType);
+    // TODO(TS) Remove cast after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50966 is merged.
+    const state = this.getState(eventType as 1 | 2 | 4 | 8);
     if (state !== this.previousState) {
       this.oldState = this.previousState;
       this.previousState = state;
@@ -284,7 +284,7 @@ abstract class GestureHandler {
     const gesture = new NativeGestureClass(this.getHammerConfig());
     this.hammer.add(gesture);
 
-    this.hammer.on('hammer.input', (ev) => {
+    this.hammer.on('hammer.input', (ev: HammerInput) => {
       if (!this.config.enabled) {
         this.hasGestureFailed = false;
         this.isGestureRunning = false;
@@ -314,14 +314,17 @@ abstract class GestureHandler {
   setupEvents() {
     // TODO(TS) Hammer types aren't exactly that what we get in runtime
     if (!this.isDiscrete) {
-      this.hammer!.on(`${this.name}start`, (event) =>
+      this.hammer!.on(`${this.name}start`, (event: HammerInput) =>
         this.onStart((event as unknown) as HammerInputExt)
       );
-      this.hammer!.on(`${this.name}end ${this.name}cancel`, (event) => {
-        this.onGestureEnded((event as unknown) as HammerInputExt);
-      });
+      this.hammer!.on(
+        `${this.name}end ${this.name}cancel`,
+        (event: HammerInput) => {
+          this.onGestureEnded((event as unknown) as HammerInputExt);
+        }
+      );
     }
-    this.hammer!.on(this.name, (ev) =>
+    this.hammer!.on(this.name, (ev: HammerInput) =>
       this.onGestureActivated((ev as unknown) as HammerInputExt)
     ); // TODO(TS) remove cast after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50438 is merged
   }
