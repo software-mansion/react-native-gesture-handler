@@ -32,6 +32,7 @@ export type ScrollView = typeof ScrollView & {
   ): void;
   scrollToEnd(options?: { animated: boolean }): void;
 };
+
 export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: true,
@@ -39,9 +40,11 @@ export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
 });
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Switch = typeof Switch;
+
 export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput;
+
 export const DrawerLayoutAndroid = createNativeWrapper<
   PropsWithChildren<RNDrawerLayoutAndroidProps>
 >(RNDrawerLayoutAndroid, { disallowInterruption: true });
