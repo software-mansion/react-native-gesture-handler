@@ -46,9 +46,9 @@ abstract class GestureHandler {
   protected __initialX: any;
   protected __initialY: any;
   protected config: Config = {};
+  protected previousState: State = State.UNDETERMINED;
   private pendingGestures: Record<string, this> = {};
   private oldState: State = State.UNDETERMINED;
-  private previousState: State = State.UNDETERMINED;
   private lastSentState: State | null = null;
   private gestureInstance: number;
   private _stillWaiting: any;

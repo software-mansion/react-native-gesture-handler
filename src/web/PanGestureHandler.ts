@@ -1,9 +1,7 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import Hammer from '@egjs/hammerjs';
 
 import {
+  EventMap,
   MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD,
   MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD,
 } from './constants';
@@ -11,7 +9,7 @@ import DraggingGestureHandler from './DraggingGestureHandler';
 import { isValidNumber, isnan, TEST_MIN_IF_NOT_NAN, VEC_LEN_SQ } from './utils';
 import { State } from '../State';
 
-import { Config } from './GestureHandler';
+import { Config, HammerInputExt } from './GestureHandler';
 class PanGestureHandler extends DraggingGestureHandler {
   get name() {
     return 'pan';
@@ -28,7 +26,7 @@ class PanGestureHandler extends DraggingGestureHandler {
     };
   }
 
-  getState(type) {
+  getState(type: keyof typeof EventMap) {
     const nextState = super.getState(type);
     // Ensure that the first state sent is `BEGAN` and not `ACTIVE`
     if (
@@ -49,7 +47,7 @@ class PanGestureHandler extends DraggingGestureHandler {
       activeOffsetYEnd,
       minDist,
     } = config;
-    let directions = [];
+    let directions: number[] = [];
     let horizontalDirections = [];
 
     if (!isnan(minDist)) {
@@ -103,7 +101,10 @@ class PanGestureHandler extends DraggingGestureHandler {
     return this.config;
   }
 
-  shouldFailUnderCustomCriteria({ deltaX, deltaY }, criteria) {
+  shouldFailUnderCustomCriteria(
+    { deltaX, deltaY }: HammerInputExt,
+    criteria: any
+  ) {
     return (
       (!isnan(criteria.failOffsetXStart) &&
         deltaX < criteria.failOffsetXStart) ||
@@ -114,7 +115,10 @@ class PanGestureHandler extends DraggingGestureHandler {
     );
   }
 
-  shouldActivateUnderCustomCriteria({ deltaX, deltaY, velocity }, criteria) {
+  shouldActivateUnderCustomCriteria(
+    { deltaX, deltaY, velocity }: any,
+    criteria: any
+  ) {
     return (
       (!isnan(criteria.activeOffsetXStart) &&
         deltaX < criteria.activeOffsetXStart) ||
@@ -134,7 +138,15 @@ class PanGestureHandler extends DraggingGestureHandler {
     );
   }
 
-  shouldMultiFingerPanFail({ pointerLength, scale, deltaRotation }) {
+  shouldMultiFingerPanFail({
+    pointerLength,
+    scale,
+    deltaRotation,
+  }: {
+    deltaRotation: number;
+    pointerLength: number;
+    scale: number;
+  }) {
     if (pointerLength <= 1) {
       return false;
     }
@@ -156,7 +168,9 @@ class PanGestureHandler extends DraggingGestureHandler {
     return false;
   }
 
-  updateHasCustomActivationCriteria(criteria: Config) {
+  updateHasCustomActivationCriteria(
+    criteria: Config & { minVelocityX?: number; minVelocityY?: number }
+  ) {
     return (
       isValidNumber(criteria.minDistSq) ||
       isValidNumber(criteria.minVelocityX) ||
@@ -169,7 +183,11 @@ class PanGestureHandler extends DraggingGestureHandler {
     );
   }
 
-  isGestureEnabledForEvent(props, recognizer, inputData) {
+  isGestureEnabledForEvent(
+    props: any,
+    _recognizer: any,
+    inputData: HammerInputExt & { deltaRotation: number }
+  ) {
     if (this.shouldFailUnderCustomCriteria(inputData, props)) {
       return { failed: true };
     }
