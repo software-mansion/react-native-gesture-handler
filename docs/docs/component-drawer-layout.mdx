@@ -64,15 +64,19 @@ color (default to `"black"`) of a semi-transparent overlay to be displayed on to
 function. This attribute is present in the standard implementation already and is one of the required params. Gesture handler version of DrawerLayout make it possible for the function passed as `renderNavigationView` to take an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened). This can be used by the drawer component to animated its children while the drawer is opening or closing.
 
 ### `onDrawerClose`
+
 function. This function is called when the drawer is closed.
 
 ### `onDrawerOpen`
+
 function. This function is called when the drawer is opened.
 
 ### `onDrawerSlide`
+
 function. This function is called as a drawer sliding open from touch events. The progress of the drawer opening/closing is passed back as 0 when closed and 1 when opened.
 
 ### `onDrawerStateChanged`
+
 function. This function is called when the status of the drawer changes. Possible values that can be passed back are: 'Idle', 'Dragging', and 'Settling'.
 
 ### `enableTrackpadTwoFingerGesture` (iOS only)
@@ -84,7 +88,6 @@ Enables two-finger gestures on supported devices, for example iPads with trackpa
 component or function. Children is a component which is rendered by default and is wrapped by drawer. However, it could be also a render function which takes an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened) is the same way like `renderNavigationView` prop.
 
 ## Methods
-
 
 ### `openDrawer(options)`
 
@@ -106,14 +109,14 @@ component or function. Children is a component which is rendered by default and 
 
 ## Example:
 
-See the [drawer example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/horizontalDrawer/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [drawer example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/horizontalDrawer/index.tsx) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 class Drawerable extends Component {
-  handleDrawerSlide = status => {
+  handleDrawerSlide = (status) => {
     // outputs a value between 0 and 1
     console.log(status);
-  }
+  };
 
   renderDrawer = () => {
     return (

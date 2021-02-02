@@ -67,7 +67,7 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 
 ## Example
 
-See the [multitap example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/multitap/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [multitap example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/multitap/index.tsx) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 export class PressBox extends Component {
