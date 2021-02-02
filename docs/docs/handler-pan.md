@@ -4,22 +4,23 @@ title: PanGestureHandler
 sidebar_label: PanGestureHandler
 ---
 
-A continuous gesture handler that recognizes panning (dragging) gesture and allows for tracking their movement.
+A continuous gesture handler that can recognize a panning (dragging) gesture and track its movement.
 
-The handler [activates](state.md#active) when finger is placed on the screen and moved by some initial distance. The distance can be configured and allow for detecting only vertical or horizontal pan. Also the number of fingers required for the handler to [activates](state.md#active) can be [configured](#minPointers), which allows for detecting multifinger swipes.
+The handler [activates](state.md#active) when a finger is placed on the screen and moved some initial distance. 
+Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](#minPointers) required for activation (allowing for multifinger swipes) may be specified. 
 
-Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the translation from the start of the gesture as well as tracks the velocity.
+Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
 
 The handler is implemented using [UIPanGestureRecognizer](https://developer.apple.com/documentation/uikit/uipangesturerecognizer) on iOS and [PanGestureHandler](https://github.com/software-mansion/react-native-gesture-handler/blob/master/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java) on Android.
 
 ## Custom activation criteria
 
-Component `PanGestureHandler` exposes a number of properties that allows for customizing the criteria under which the handler will [activate](state.md#active) or [fail](state.md#fail) recognizing.
+The `PanGestureHandler` component exposes a number of properties that can be used to customize the criteria under which a handler will [activate](state.md#active) or [fail](state.md#fail) when recognizing a gesture.
 
-When more than one of such a property is set, `PanGestureHandler` expects all the criteria to be met for recognizing and at most one of the criteria to be overstepped to fail recognition.
-For example when both [`minDeltaX`](#mindeltax) and [`minDeltaY`](#mindeltay) are set to 20 we expect the finger to travel by 20 points in both X and Y axis before the handler activates.
-Another example would be to have both [`maxDeltaX`](#maxdeltaX) and [`maxDeltaY`](#maxdeltay) set to 20 and [`minDist`](#mindist) set to 23.
-In such a case when we move finger along X axis by 20 points and 0 points along Y axis the handler will fail even though we are still within the limit with the translation along Y axis.
+When more than one of such a property is set, `PanGestureHandler` expects all criteria to be met for successful recognition and at most one of the criteria to be overstepped to fail recognition.
+For example when both [`minDeltaX`](#mindeltax) and [`minDeltaY`](#mindeltay) are set to 20 we expect the finger to travel by 20 points in both the X and Y axis before the handler activates.
+Another example would be setting both [`maxDeltaX`](#maxdeltaX) and [`maxDeltaY`](#maxdeltay) to 20 and [`minDist`](#mindist) to 23.
+In such a case, if we move a finger along the X-axis by 20 points and along the Y-axis by 0 points, the handler will fail even though the finger is still within the bounds of translation along Y-axis.
 
 ## Multi touch pan handling
 
