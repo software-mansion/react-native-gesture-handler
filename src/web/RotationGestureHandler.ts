@@ -1,9 +1,7 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import Hammer from '@egjs/hammerjs';
 
 import { DEG_RAD } from './constants';
+import { HammerInputExt } from './GestureHandler';
 import IndiscreteGestureHandler from './IndiscreteGestureHandler';
 
 class RotationGestureHandler extends IndiscreteGestureHandler {
@@ -15,9 +13,9 @@ class RotationGestureHandler extends IndiscreteGestureHandler {
     return Hammer.Rotate;
   }
 
-  transformNativeEvent({ rotation, velocity, center }) {
+  transformNativeEvent({ rotation, velocity, center }: HammerInputExt) {
     return {
-      rotation: (rotation - this.initialRotation) * DEG_RAD,
+      rotation: (rotation - (this.initialRotation ?? 0)) * DEG_RAD,
       anchorX: center.x,
       anchorY: center.y,
       velocity,

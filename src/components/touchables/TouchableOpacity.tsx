@@ -1,24 +1,25 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
-import { Animated, Easing, StyleSheet, View } from 'react-native';
-import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  View,
+  TouchableOpacityProps,
+} from 'react-native';
+import GenericTouchable, {
+  TOUCHABLE_STATE,
+  GenericTouchableProps,
+} from './GenericTouchable';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 /**
  * TouchableOpacity bases on timing animation which has been used in RN's core
  */
-export default class TouchableOpacity extends Component {
+export default class TouchableOpacity extends Component<
+  TouchableOpacityProps & GenericTouchableProps
+> {
   static defaultProps = {
     ...GenericTouchable.defaultProps,
     activeOpacity: 0.2,
-  };
-
-  static propTypes = {
-    ...GenericTouchable.publicPropTypes,
-    style: PropTypes.any,
-    activeOpacity: PropTypes.number,
   };
 
   // opacity is 1 one by default but could be overwritten
@@ -29,7 +30,7 @@ export default class TouchableOpacity extends Component {
 
   opacity = new Animated.Value(this.getChildStyleOpacityWithDefault());
 
-  setOpacityTo = (value, duration) => {
+  setOpacityTo = (value: number, duration: number) => {
     Animated.timing(this.opacity, {
       toValue: value,
       duration: duration,
@@ -38,9 +39,9 @@ export default class TouchableOpacity extends Component {
     }).start();
   };
 
-  onStateChange = (from, to) => {
+  onStateChange = (_from: number, to: number) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
-      this.setOpacityTo(this.props.activeOpacity, 0);
+      this.setOpacityTo(this.props.activeOpacity!, 0);
     } else if (
       to === TOUCHABLE_STATE.UNDETERMINED ||
       to === TOUCHABLE_STATE.MOVED_OUTSIDE
@@ -57,7 +58,7 @@ export default class TouchableOpacity extends Component {
         style={[
           style,
           {
-            opacity: this.opacity,
+            opacity: (this.opacity as unknown) as number, // TODO: fix this
           },
         ]}
         onStateChange={this.onStateChange}>

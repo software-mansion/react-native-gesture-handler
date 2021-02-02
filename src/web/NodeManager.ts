@@ -1,24 +1,29 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
-let gestures = {};
+import { ValueOf } from '../typeUtils';
+import { Gestures } from '../RNGestureHandlerModule.web';
 
-export function getHandler(tag) {
+const gestures: Record<number, InstanceType<ValueOf<typeof Gestures>>> = {};
+
+export function getHandler(tag: number) {
   if (tag in gestures) return gestures[tag];
 
-  throw new Error('No handler for tag ' + tag);
+  throw new Error(`No handler for tag ${tag}`);
 }
 
-export function createGestureHandler(handlerTag, handler) {
+export function createGestureHandler(
+  handlerTag: number,
+  handler: InstanceType<ValueOf<typeof Gestures>>
+) {
   if (handlerTag in gestures) {
-    throw new Error('Handler with tag ' + handlerTag + ' already exists');
+    throw new Error(`Handler with tag ${handlerTag} already exists`);
   }
   gestures[handlerTag] = handler;
+  // @ts-ignore no types for web handlers yet
   gestures[handlerTag].handlerTag = handlerTag;
 }
 
-export function dropGestureHandler(handlerTag) {
+export function dropGestureHandler(handlerTag: number) {
   getHandler(handlerTag).destroy();
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete gestures[handlerTag];
 }
 

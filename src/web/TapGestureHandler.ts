@@ -1,12 +1,13 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import Hammer from '@egjs/hammerjs';
 
 import DiscreteGestureHandler from './DiscreteGestureHandler';
+import { HammerInputExt } from './GestureHandler';
 import { isnan } from './utils';
 
 class TapGestureHandler extends DiscreteGestureHandler {
+  private _shouldFireEndEvent: HammerInputExt | null = null;
+  private _timer: any;
+  private _multiTapTimer: any; // TODO unused?
   get name() {
     return 'tap';
   }
@@ -16,22 +17,23 @@ class TapGestureHandler extends DiscreteGestureHandler {
   }
 
   get maxDelayMs() {
+    // @ts-ignore TODO(TS) trace down config
     return isnan(this.config.maxDelayMs) ? 300 : this.config.maxDelayMs;
   }
 
-  simulateCancelEvent(inputData) {
+  simulateCancelEvent(inputData: HammerInputExt) {
     if (this.isGestureRunning) {
       this.cancelEvent(inputData);
     }
   }
 
-  onGestureActivated(ev) {
+  onGestureActivated(ev: HammerInputExt) {
     if (this.isGestureRunning) {
       this.onSuccessfulTap(ev);
     }
   }
 
-  onSuccessfulTap = (ev) => {
+  onSuccessfulTap = (ev: HammerInputExt) => {
     if (this._getPendingGestures().length) {
       this._shouldFireEndEvent = ev;
       return;
@@ -44,7 +46,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
     this.onGestureEnded(ev);
   };
 
-  onRawEvent(ev) {
+  onRawEvent(ev: HammerInput) {
     super.onRawEvent(ev);
 
     // Attempt to create a touch-down event by checking if a valid tap hasn't started yet, then validating the input.
@@ -55,7 +57,8 @@ class TapGestureHandler extends DiscreteGestureHandler {
       !ev.isFinal
     ) {
       // Tap Gesture start event
-      const gesture = this.hammer.get(this.name);
+      const gesture = this.hammer!.get(this.name);
+      // @ts-ignore TODO(TS) trace down config
       if (gesture.options.enable(gesture, ev)) {
         clearTimeout(this._multiTapTimer);
 
@@ -98,7 +101,8 @@ class TapGestureHandler extends DiscreteGestureHandler {
       }, this.maxDelayMs);
     } else if (!this.hasGestureFailed && !this.isGestureRunning) {
       // Tap Gesture start event
-      const gesture = this.hammer.get(this.name);
+      const gesture = this.hammer!.get(this.name);
+      // @ts-ignore TODO(TS) trace down config
       if (gesture.options.enable(gesture, ev)) {
         clearTimeout(this._multiTapTimer);
 
@@ -112,12 +116,15 @@ class TapGestureHandler extends DiscreteGestureHandler {
     return {
       ...super.getHammerConfig(),
       event: this.name,
+      // @ts-ignore TODO(TS) trace down config
       taps: isnan(this.config.numberOfTaps) ? 1 : this.config.numberOfTaps,
       interval: this.maxDelayMs,
       time:
+        // @ts-ignore TODO(TS) trace down config
         isnan(this.config.maxDurationMs) || this.config.maxDurationMs == null
           ? 250
-          : this.config.maxDurationMs,
+          : // @ts-ignore TODO(TS) trace down config
+            this.config.maxDurationMs,
     };
   }
 
@@ -128,6 +135,7 @@ class TapGestureHandler extends DiscreteGestureHandler {
     numberOfTaps = 1,
     minDurationMs = 525,
     maxDelayMs = Number.NaN,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO possibly forgotten to use in updateGestureConfig?
     maxDurationMs = Number.NaN,
     maxDist = 2,
     minPointers = 1,
@@ -148,12 +156,13 @@ class TapGestureHandler extends DiscreteGestureHandler {
     });
   }
 
-  onGestureEnded(...props) {
+  onGestureEnded(...props: any) {
     clearTimeout(this._timer);
+    // @ts-ignore TODO(TS) check how onGestureEnded works
     super.onGestureEnded(...props);
   }
 
-  onWaitingEnded(gesture) {
+  onWaitingEnded(_gesture: any) {
     if (this._shouldFireEndEvent) {
       this.onSuccessfulTap(this._shouldFireEndEvent);
       this._shouldFireEndEvent = null;

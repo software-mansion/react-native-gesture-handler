@@ -17,7 +17,7 @@ import {
   PanGestureHandlerGestureEvent,
   PanGestureHandlerStateChangeEvent,
   BorderlessButton,
-  BorderlessButtonProperties,
+  BorderlessButtonProps,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../config';
@@ -129,9 +129,7 @@ export class Swipeable extends Component<PropsType> {
   }
 }
 
-export const InfoButton = (
-  props: BorderlessButtonProperties & { name: string }
-) => (
+export const InfoButton = (props: BorderlessButtonProps & { name: string }) => (
   <BorderlessButton
     {...props}
     style={styles.infoButton}

@@ -37,7 +37,7 @@ Position expressed in points along Y axis of center anchor point of gesture
 
 ## Example
 
-See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/scaleAndRotate/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/scaleAndRotate/index.tsx) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 class RotableBox extends React.Component {
@@ -51,7 +51,7 @@ class RotableBox extends React.Component {
     [{ nativeEvent: { rotation: this._rotate } }],
     { useNativeDriver: USE_NATIVE_DRIVER }
   );
-  _onRotateHandlerStateChange = event => {
+  _onRotateHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this._lastRotate += event.nativeEvent.rotation;
       this._rotate.setOffset(this._lastRotate);

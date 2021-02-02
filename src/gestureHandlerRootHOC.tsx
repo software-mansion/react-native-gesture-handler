@@ -1,16 +1,13 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import GestureHandlerRootView from './GestureHandlerRootView';
 
 export default function gestureHandlerRootHOC(
-  Component,
-  containerStyles = undefined
-) {
-  function Wrapper(props) {
+  Component: React.ComponentType<Record<string, unknown>>,
+  containerStyles?: StyleProp<ViewStyle>
+): React.ComponentType<Record<string, unknown>> {
+  function Wrapper(props: Record<string, unknown>) {
     return (
       <GestureHandlerRootView style={[styles.container, containerStyles]}>
         <Component {...props} />

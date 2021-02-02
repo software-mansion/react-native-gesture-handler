@@ -1,49 +1,87 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
-// @flow
-
 // Similarily to the DrawerLayout component this deserves to be put in a
 // separate repo. Although, keeping it here for the time being will allow us
 // to move faster and fix possible issues quicker
 
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View, I18nManager } from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  View,
+  I18nManager,
+  LayoutChangeEvent,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
-import { PanGestureHandler, TapGestureHandler } from '../handlers/Gestures';
-import State from '../State';
+import {
+  PanGestureHandler,
+  TapGestureHandler,
+  PanGestureHandlerProps,
+  GestureEvent,
+  PanGestureHandlerEventPayload,
+  HandlerStateChangeEvent,
+  TapGestureHandlerEventPayload,
+} from '../handlers/gestureHandlers';
+import { State } from '../State';
 
 const DRAG_TOSS = 0.05;
 
-export type PropType = {
-  children: any;
-  friction: number;
+type SwipeableExcludes = Exclude<
+  keyof PanGestureHandlerProps,
+  'onGestureEvent' | 'onHandlerStateChange'
+>;
+
+interface SwipeableProps
+  extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
+  enableTrackpadTwoFingerGesture?: boolean;
+  friction?: number;
   leftThreshold?: number;
   rightThreshold?: number;
   overshootLeft?: boolean;
   overshootRight?: boolean;
-  overshootFriction: number;
-  onSwipeableLeftOpen?: Function;
-  onSwipeableRightOpen?: Function;
-  onSwipeableOpen?: Function;
-  onSwipeableClose?: Function;
-  onSwipeableLeftWillOpen?: Function;
-  onSwipeableRightWillOpen?: Function;
-  onSwipeableWillOpen?: Function;
-  onSwipeableWillClose?: Function;
+  overshootFriction?: number;
+  onSwipeableLeftOpen?: () => void;
+  onSwipeableRightOpen?: () => void;
+  onSwipeableOpen?: () => void;
+  onSwipeableClose?: () => void;
+  onSwipeableLeftWillOpen?: () => void;
+  onSwipeableRightWillOpen?: () => void;
+  onSwipeableWillOpen?: () => void;
+  onSwipeableWillClose?: () => void;
+  /**
+   *
+   * This map describes the values to use as inputRange for extra interpolation:
+   * AnimatedValue: [startValue, endValue]
+   *
+   * progressAnimatedValue: [0, 1]
+   * dragAnimatedValue: [0, +]
+   *
+   * To support `rtl` flexbox layouts use `flexDirection` styling.
+   * */
   renderLeftActions?: (
-    progressAnimatedValue: any,
-    dragAnimatedValue: any
-  ) => any;
+    progressAnimatedValue: Animated.AnimatedInterpolation,
+    dragAnimatedValue: Animated.AnimatedInterpolation
+  ) => React.ReactNode;
+  /**
+   *
+   * This map describes the values to use as inputRange for extra interpolation:
+   * AnimatedValue: [startValue, endValue]
+   *
+   * progressAnimatedValue: [0, 1]
+   * dragAnimatedValue: [0, -]
+   *
+   * To support `rtl` flexbox layouts use `flexDirection` styling.
+   * */
   renderRightActions?: (
-    progressAnimatedValue: any,
-    dragAnimatedValue: any
-  ) => any;
-  useNativeAnimations: boolean;
-  animationOptions?: Object;
-  containerStyle?: Object;
-  childrenContainerStyle?: Object;
-};
+    progressAnimatedValue: Animated.AnimatedInterpolation,
+    dragAnimatedValue: Animated.AnimatedInterpolation
+  ) => React.ReactNode;
+  useNativeAnimations?: boolean;
+  animationOptions?: Record<string, unknown>;
+  containerStyle?: StyleProp<ViewStyle>;
+  childrenContainerStyle?: StyleProp<ViewStyle>;
+}
+
 type StateType = {
   dragX: Animated.Value;
   rowTranslation: Animated.Value;
@@ -53,20 +91,14 @@ type StateType = {
   rowWidth: number | typeof undefined;
 };
 
-export default class Swipeable extends Component<PropType, StateType> {
+export default class Swipeable extends Component<SwipeableProps, StateType> {
   static defaultProps = {
     friction: 1,
     overshootFriction: 1,
     useNativeAnimations: true,
   };
-  // _onGestureEvent: ?Animated.Event;
-  // _transX: ?Animated.Interpolation;
-  // _showLeftAction: ?(Animated.Interpolation | ?Animated.Value);
-  // _leftActionTranslate: ?Animated.Interpolation;
-  // _showRightAction: ?(Animated.Interpolation | ?Animated.Value);
-  // _rightActionTranslate: ?Animated.Interpolation;
 
-  constructor(props: PropType) {
+  constructor(props: SwipeableProps) {
     super(props);
     const dragX = new Animated.Value(0);
     this.state = {
@@ -77,15 +109,15 @@ export default class Swipeable extends Component<PropType, StateType> {
       rightOffset: undefined,
       rowWidth: undefined,
     };
-    this._updateAnimatedEvent(props, this.state);
+    this.updateAnimatedEvent(props, this.state);
 
-    this._onGestureEvent = Animated.event(
+    this.onGestureEvent = Animated.event(
       [{ nativeEvent: { translationX: dragX } }],
-      { useNativeDriver: props.useNativeAnimations }
+      { useNativeDriver: props.useNativeAnimations! }
     );
   }
 
-  UNSAFE_componentWillUpdate(props: PropType, state: StateType) {
+  UNSAFE_componentWillUpdate(props: SwipeableProps, state: StateType) {
     if (
       this.props.friction !== props.friction ||
       this.props.overshootLeft !== props.overshootLeft ||
@@ -95,12 +127,21 @@ export default class Swipeable extends Component<PropType, StateType> {
       this.state.rightOffset !== state.rightOffset ||
       this.state.rowWidth !== state.rowWidth
     ) {
-      this._updateAnimatedEvent(props, state);
+      this.updateAnimatedEvent(props, state);
     }
   }
 
-  _updateAnimatedEvent = (props: PropType, state: StateType) => {
-    const { friction, overshootFriction, useNativeAnimations } = props;
+  private onGestureEvent?: (
+    event: GestureEvent<PanGestureHandlerEventPayload>
+  ) => void;
+  private transX?: Animated.AnimatedInterpolation;
+  private showLeftAction?: Animated.AnimatedInterpolation | Animated.Value;
+  private leftActionTranslate?: Animated.AnimatedInterpolation;
+  private showRightAction?: Animated.AnimatedInterpolation | Animated.Value;
+  private rightActionTranslate?: Animated.AnimatedInterpolation;
+
+  private updateAnimatedEvent = (props: SwipeableProps, state: StateType) => {
+    const { friction, overshootFriction } = props;
     const { dragX, rowTranslation, leftWidth = 0, rowWidth = 0 } = state;
     const { rightOffset = rowWidth } = state;
     const rightWidth = Math.max(0, rowWidth - rightOffset);
@@ -113,64 +154,70 @@ export default class Swipeable extends Component<PropType, StateType> {
     const transX = Animated.add(
       rowTranslation,
       dragX.interpolate({
-        inputRange: [0, friction],
+        inputRange: [0, friction!],
         outputRange: [0, 1],
       })
     ).interpolate({
       inputRange: [
-        -rightWidth - (overshootRight ? 1 : overshootFriction),
+        -rightWidth - (overshootRight ? 1 : overshootFriction!),
         -rightWidth,
         leftWidth,
-        leftWidth + (overshootLeft ? 1 : overshootFriction),
+        leftWidth + (overshootLeft ? 1 : overshootFriction!),
       ],
       outputRange: [
-        -rightWidth - (overshootRight || overshootFriction > 1 ? 1 : 0),
+        -rightWidth - (overshootRight || overshootFriction! > 1 ? 1 : 0),
         -rightWidth,
         leftWidth,
-        leftWidth + (overshootLeft || overshootFriction > 1 ? 1 : 0),
+        leftWidth + (overshootLeft || overshootFriction! > 1 ? 1 : 0),
       ],
     });
-    this._transX = transX;
-    this._showLeftAction =
+    this.transX = transX;
+    this.showLeftAction =
       leftWidth > 0
         ? transX.interpolate({
             inputRange: [-1, 0, leftWidth],
             outputRange: [0, 0, 1],
           })
         : new Animated.Value(0);
-    this._leftActionTranslate = this._showLeftAction.interpolate({
+    this.leftActionTranslate = this.showLeftAction.interpolate({
       inputRange: [0, Number.MIN_VALUE],
       outputRange: [-10000, 0],
       extrapolate: 'clamp',
     });
-    this._showRightAction =
+    this.showRightAction =
       rightWidth > 0
         ? transX.interpolate({
             inputRange: [-rightWidth, 0, 1],
             outputRange: [1, 0, 0],
           })
         : new Animated.Value(0);
-    this._rightActionTranslate = this._showRightAction.interpolate({
+    this.rightActionTranslate = this.showRightAction.interpolate({
       inputRange: [0, Number.MIN_VALUE],
       outputRange: [-10000, 0],
       extrapolate: 'clamp',
     });
   };
 
-  _onTapHandlerStateChange = ({ nativeEvent }) => {
+  private onTapHandlerStateChange = ({
+    nativeEvent,
+  }: HandlerStateChangeEvent<TapGestureHandlerEventPayload>) => {
     if (nativeEvent.oldState === State.ACTIVE) {
       this.close();
     }
   };
 
-  _onHandlerStateChange = ({ nativeEvent }) => {
-    if (nativeEvent.oldState === State.ACTIVE) {
-      this._handleRelease(nativeEvent);
+  private onHandlerStateChange = (
+    ev: HandlerStateChangeEvent<PanGestureHandlerEventPayload>
+  ) => {
+    if (ev.nativeEvent.oldState === State.ACTIVE) {
+      this.handleRelease(ev);
     }
   };
 
-  _handleRelease = (nativeEvent) => {
-    const { velocityX, translationX: dragX } = nativeEvent;
+  private handleRelease = (
+    ev: HandlerStateChangeEvent<PanGestureHandlerEventPayload>
+  ) => {
+    const { velocityX, translationX: dragX } = ev.nativeEvent;
     const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
     const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
@@ -180,8 +227,8 @@ export default class Swipeable extends Component<PropType, StateType> {
       rightThreshold = rightWidth / 2,
     } = this.props;
 
-    const startOffsetX = this._currentOffset() + dragX / friction;
-    const translationX = (dragX + DRAG_TOSS * velocityX) / friction;
+    const startOffsetX = this.currentOffset() + dragX / friction!;
+    const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
 
     let toValue = 0;
     if (rowState === 0) {
@@ -202,10 +249,19 @@ export default class Swipeable extends Component<PropType, StateType> {
       }
     }
 
-    this._animateRow(startOffsetX, toValue, velocityX / friction);
+    this.animateRow(startOffsetX, toValue, velocityX / friction!);
   };
 
-  _animateRow = (fromValue, toValue, velocityX) => {
+  private animateRow = (
+    fromValue: number,
+    toValue: number,
+    velocityX?:
+      | number
+      | {
+          x: number;
+          y: number;
+        }
+  ) => {
     const { dragX, rowTranslation } = this.state;
     dragX.setValue(0);
     rowTranslation.setValue(fromValue);
@@ -217,7 +273,7 @@ export default class Swipeable extends Component<PropType, StateType> {
       velocity: velocityX,
       bounciness: 0,
       toValue,
-      useNativeDriver: this.props.useNativeAnimations,
+      useNativeDriver: this.props.useNativeAnimations!,
       ...this.props.animationOptions,
     }).start(({ finished }) => {
       if (finished) {
@@ -228,9 +284,9 @@ export default class Swipeable extends Component<PropType, StateType> {
         }
 
         if (toValue === 0) {
-          this.props.onSwipeableClose && this.props.onSwipeableClose();
+          this.props.onSwipeableClose?.();
         } else {
-          this.props.onSwipeableOpen && this.props.onSwipeableOpen();
+          this.props.onSwipeableOpen?.();
         }
       }
     });
@@ -241,17 +297,17 @@ export default class Swipeable extends Component<PropType, StateType> {
     }
 
     if (toValue === 0) {
-      this.props.onSwipeableWillClose && this.props.onSwipeableWillClose();
+      this.props.onSwipeableWillClose?.();
     } else {
-      this.props.onSwipeableWillOpen && this.props.onSwipeableWillOpen();
+      this.props.onSwipeableWillOpen?.();
     }
   };
 
-  _onRowLayout = ({ nativeEvent }) => {
+  private onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     this.setState({ rowWidth: nativeEvent.layout.width });
   };
 
-  _currentOffset = () => {
+  private currentOffset = () => {
     const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
     const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
@@ -264,19 +320,19 @@ export default class Swipeable extends Component<PropType, StateType> {
   };
 
   close = () => {
-    this._animateRow(this._currentOffset(), 0);
+    this.animateRow(this.currentOffset(), 0);
   };
 
   openLeft = () => {
     const { leftWidth = 0 } = this.state;
-    this._animateRow(this._currentOffset(), leftWidth);
+    this.animateRow(this.currentOffset(), leftWidth);
   };
 
   openRight = () => {
     const { rowWidth = 0 } = this.state;
     const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
-    this._animateRow(this._currentOffset(), -rightWidth);
+    this.animateRow(this.currentOffset(), -rightWidth);
   };
 
   render() {
@@ -287,9 +343,10 @@ export default class Swipeable extends Component<PropType, StateType> {
       <Animated.View
         style={[
           styles.leftActions,
-          { transform: [{ translateX: this._leftActionTranslate }] },
+          // all those and below parameters can have ! since they are all asigned in constructor in `updateAnimatedEvent` but TS cannot spot it for some reason
+          { transform: [{ translateX: this.leftActionTranslate! }] },
         ]}>
-        {renderLeftActions(this._showLeftAction, this._transX)}
+        {renderLeftActions(this.showLeftAction!, this.transX!)}
         <View
           onLayout={({ nativeEvent }) =>
             this.setState({ leftWidth: nativeEvent.layout.x })
@@ -302,9 +359,9 @@ export default class Swipeable extends Component<PropType, StateType> {
       <Animated.View
         style={[
           styles.rightActions,
-          { transform: [{ translateX: this._rightActionTranslate }] },
+          { transform: [{ translateX: this.rightActionTranslate! }] },
         ]}>
-        {renderRightActions(this._showRightAction, this._transX)}
+        {renderRightActions(this.showRightAction!, this.transX!)}
         <View
           onLayout={({ nativeEvent }) =>
             this.setState({ rightOffset: nativeEvent.layout.x })
@@ -317,21 +374,21 @@ export default class Swipeable extends Component<PropType, StateType> {
       <PanGestureHandler
         activeOffsetX={[-10, 10]}
         {...this.props}
-        onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}>
+        onGestureEvent={this.onGestureEvent}
+        onHandlerStateChange={this.onHandlerStateChange}>
         <Animated.View
-          onLayout={this._onRowLayout}
+          onLayout={this.onRowLayout}
           style={[styles.container, this.props.containerStyle]}>
           {left}
           {right}
           <TapGestureHandler
             enabled={rowState !== 0}
-            onHandlerStateChange={this._onTapHandlerStateChange}>
+            onHandlerStateChange={this.onTapHandlerStateChange}>
             <Animated.View
               pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
               style={[
                 {
-                  transform: [{ translateX: this._transX }],
+                  transform: [{ translateX: this.transX! }],
                 },
                 this.props.childrenContainerStyle,
               ]}>

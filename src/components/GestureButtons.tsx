@@ -1,65 +1,102 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
-import PropTypes from 'prop-types';
 import React from 'react';
-import { Animated, Platform, processColor, StyleSheet } from 'react-native';
+import {
+  Animated,
+  Platform,
+  processColor,
+  StyleSheet,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';
-import State from '../State';
+import { State } from '../State';
+
+import {
+  GestureEvent,
+  HandlerStateChangeEvent,
+} from '../handlers/gestureHandlers';
+import {
+  NativeViewGestureHandlerPayload,
+  NativeViewGestureHandlerProps,
+} from '../handlers/NativeViewGestureHandler';
+
+export interface RawButtonProps extends NativeViewGestureHandlerProps {
+  exclusive?: boolean;
+  // TODO: we should transform props in `createNativeWrapper`
+  rippleColor?: any; // it was present in BaseButtonProps before but is used here in code
+}
+
+export interface BaseButtonProps extends RawButtonProps {
+  onPress?: (pointerInside: boolean) => void;
+  onActiveStateChange?: (active: boolean) => void;
+  style?: StyleProp<ViewStyle>;
+  testID?: string;
+}
+
+export interface RectButtonProps extends BaseButtonProps {
+  underlayColor?: string;
+  activeOpacity?: number;
+}
+
+export interface BorderlessButtonProps extends BaseButtonProps {
+  borderless?: boolean;
+  activeOpacity?: number;
+}
 
 export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
 
-/* Buttons */
+export class BaseButton extends React.Component<BaseButtonProps> {
+  private lastActive: boolean;
 
-export class BaseButton extends React.Component {
-  static propTypes = {
-    ...RawButton.propTypes,
-    onPress: PropTypes.func,
-    onActiveStateChange: PropTypes.func,
-  };
-
-  constructor(props) {
+  constructor(props: BaseButtonProps) {
     super(props);
-    this._lastActive = false;
+    this.lastActive = false;
   }
 
-  _handleEvent = ({ nativeEvent }) => {
+  private handleEvent = ({
+    nativeEvent,
+  }: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>) => {
     const { state, oldState, pointerInside } = nativeEvent;
     const active = pointerInside && state === State.ACTIVE;
 
-    if (active !== this._lastActive && this.props.onActiveStateChange) {
+    if (active !== this.lastActive && this.props.onActiveStateChange) {
       this.props.onActiveStateChange(active);
     }
 
     if (
       oldState === State.ACTIVE &&
       state !== State.CANCELLED &&
-      this._lastActive &&
+      this.lastActive &&
       this.props.onPress
     ) {
       this.props.onPress(active);
     }
 
-    this._lastActive = active;
+    this.lastActive = active;
   };
 
   // Normally, the parent would execute it's handler first,
   // then forward the event to listeners. However, here our handler
   // is virtually only forwarding events to listeners, so we reverse the order
   // to keep the proper order of the callbacks (from "raw" ones to "processed").
-  _onHandlerStateChange = (e) => {
-    this.props.onHandlerStateChange && this.props.onHandlerStateChange(e);
-    this._handleEvent(e);
+  private onHandlerStateChange = (
+    e: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
+  ) => {
+    this.props.onHandlerStateChange?.(e);
+    this.handleEvent(e);
   };
 
-  _onGestureEvent = (e) => {
-    this.props.onGestureEvent && this.props.onGestureEvent(e);
-    this._handleEvent(e);
+  private onGestureEvent = (
+    e: GestureEvent<NativeViewGestureHandlerPayload>
+  ) => {
+    this.props.onGestureEvent?.(e);
+    this.handleEvent(
+      e as HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
+    ); // TODO: maybe it is not correct
   };
 
   render() {
@@ -69,8 +106,8 @@ export class BaseButton extends React.Component {
       <RawButton
         rippleColor={processColor(rippleColor)}
         {...rest}
-        onGestureEvent={this._onGestureEvent}
-        onHandlerStateChange={this._onHandlerStateChange}
+        onGestureEvent={this.onGestureEvent}
+        onHandlerStateChange={this.onHandlerStateChange}
       />
     );
   }
@@ -88,25 +125,25 @@ const btnStyles = StyleSheet.create({
   },
 });
 
-export class RectButton extends React.Component {
-  static propTypes = BaseButton.propTypes;
-
+export class RectButton extends React.Component<RectButtonProps> {
   static defaultProps = {
     activeOpacity: 0.105,
     underlayColor: 'black',
   };
 
-  constructor(props) {
+  private opacity: Animated.Value;
+
+  constructor(props: RectButtonProps) {
     super(props);
-    this._opacity = new Animated.Value(0);
+    this.opacity = new Animated.Value(0);
   }
 
-  _onActiveStateChange = (active) => {
+  private onActiveStateChange = (active: boolean) => {
     if (Platform.OS !== 'android') {
-      this._opacity.setValue(active ? this.props.activeOpacity : 0);
+      this.opacity.setValue(active ? this.props.activeOpacity! : 0);
     }
 
-    this.props.onActiveStateChange && this.props.onActiveStateChange(active);
+    this.props.onActiveStateChange?.(active);
   };
 
   render() {
@@ -118,12 +155,12 @@ export class RectButton extends React.Component {
       <BaseButton
         {...rest}
         style={resolvedStyle}
-        onActiveStateChange={this._onActiveStateChange}>
+        onActiveStateChange={this.onActiveStateChange}>
         <Animated.View
           style={[
             btnStyles.underlay,
             {
-              opacity: this._opacity,
+              opacity: this.opacity,
               backgroundColor: this.props.underlayColor,
               borderRadius: resolvedStyle.borderRadius,
               borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
@@ -139,28 +176,25 @@ export class RectButton extends React.Component {
   }
 }
 
-export class BorderlessButton extends React.Component {
-  static propTypes = {
-    ...BaseButton.propTypes,
-    borderless: PropTypes.bool,
-  };
-
+export class BorderlessButton extends React.Component<BorderlessButtonProps> {
   static defaultProps = {
     activeOpacity: 0.3,
     borderless: true,
   };
 
-  constructor(props) {
+  private opacity: Animated.Value;
+
+  constructor(props: BorderlessButtonProps) {
     super(props);
-    this._opacity = new Animated.Value(1);
+    this.opacity = new Animated.Value(1);
   }
 
-  _onActiveStateChange = (active) => {
+  private onActiveStateChange = (active: boolean) => {
     if (Platform.OS !== 'android') {
-      this._opacity.setValue(active ? this.props.activeOpacity : 1);
+      this.opacity.setValue(active ? this.props.activeOpacity! : 1);
     }
 
-    this.props.onActiveStateChange && this.props.onActiveStateChange(active);
+    this.props.onActiveStateChange?.(active);
   };
 
   render() {
@@ -169,8 +203,8 @@ export class BorderlessButton extends React.Component {
     return (
       <AnimatedBaseButton
         {...rest}
-        onActiveStateChange={this._onActiveStateChange}
-        style={[style, Platform.OS === 'ios' && { opacity: this._opacity }]}>
+        onActiveStateChange={this.onActiveStateChange}
+        style={[style, Platform.OS === 'ios' && { opacity: this.opacity }]}>
         {children}
       </AnimatedBaseButton>
     );

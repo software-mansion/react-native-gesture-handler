@@ -1,12 +1,12 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import Hammer from '@egjs/hammerjs';
 
 import { Direction } from './constants';
 import { GesturePropError } from './Errors';
 import DraggingGestureHandler from './DraggingGestureHandler';
 import { isnan } from './utils';
+import { HammerInputExt } from './GestureHandler';
 
 class FlingGestureHandler extends DraggingGestureHandler {
   get name() {
@@ -17,7 +17,7 @@ class FlingGestureHandler extends DraggingGestureHandler {
     return Hammer.Swipe;
   }
 
-  onGestureActivated(event) {
+  onGestureActivated(event: HammerInputExt) {
     this.sendEvent({
       ...event,
       eventType: Hammer.INPUT_MOVE,
@@ -33,7 +33,7 @@ class FlingGestureHandler extends DraggingGestureHandler {
     });
   }
 
-  onRawEvent(ev) {
+  onRawEvent(ev: HammerInputExt) {
     super.onRawEvent(ev);
     if (this.hasGestureFailed) {
       return;
@@ -48,7 +48,8 @@ class FlingGestureHandler extends DraggingGestureHandler {
       });
     } else if (!this.hasGestureFailed && !this.isGestureRunning) {
       // Tap Gesture start event
-      const gesture = this.hammer.get(this.name);
+      const gesture = this.hammer!.get(this.name);
+      // @ts-ignore FIXME(TS)
       if (gesture.options.enable(gesture, ev)) {
         this.onStart(ev);
         this.sendEvent(ev);
@@ -58,12 +59,13 @@ class FlingGestureHandler extends DraggingGestureHandler {
 
   getHammerConfig() {
     return {
+      // @ts-ignore FIXME(TS)
       pointers: this.config.numberOfPointers,
       direction: this.getDirection(),
     };
   }
 
-  getTargetDirections(direction) {
+  getTargetDirections(direction: number) {
     const directions = [];
     if (direction & Direction.RIGHT) {
       directions.push(Hammer.DIRECTION_RIGHT);
@@ -82,6 +84,7 @@ class FlingGestureHandler extends DraggingGestureHandler {
   }
 
   getDirection() {
+    // @ts-ignore FIXME(TS)
     const { direction } = this.getConfig();
 
     let directions = [];
@@ -105,18 +108,9 @@ class FlingGestureHandler extends DraggingGestureHandler {
   }
 
   isGestureEnabledForEvent(
-    {
-      minPointers,
-      maxPointers,
-      numberOfPointers,
-      maxDist,
-      maxDeltaX,
-      maxDeltaY,
-      maxDistSq,
-      shouldCancelWhenOutside,
-    },
-    recognizer,
-    { maxPointers: pointerLength, deltaX: dx, deltaY: dy, ...props }
+    { numberOfPointers }: any,
+    _recognizer: any,
+    { maxPointers: pointerLength }: any
   ) {
     const validPointerCount = pointerLength === numberOfPointers;
     if (!validPointerCount && this.isGestureRunning) {
@@ -125,7 +119,7 @@ class FlingGestureHandler extends DraggingGestureHandler {
     return { success: validPointerCount };
   }
 
-  updateGestureConfig({ numberOfPointers = 1, direction, ...props }) {
+  updateGestureConfig({ numberOfPointers = 1, direction, ...props }: any) {
     if (isnan(direction) || typeof direction !== 'number') {
       throw new GesturePropError('direction', direction, 'number');
     }

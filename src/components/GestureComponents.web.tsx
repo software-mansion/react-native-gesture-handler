@@ -1,6 +1,3 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import React from 'react';
 import {
   DrawerLayoutAndroid as RNDrawerLayoutAndroid,
@@ -8,6 +5,7 @@ import {
   Switch as RNSwitch,
   TextInput as RNTextInput,
   ScrollView as RNScrollView,
+  FlatListProps,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
@@ -25,12 +23,15 @@ export const TextInput = createNativeWrapper(RNTextInput);
 export const DrawerLayoutAndroid = createNativeWrapper(RNDrawerLayoutAndroid, {
   disallowInterruption: true,
 });
+// @ts-ignore -- TODO(TS) to investigate if it's needed
 DrawerLayoutAndroid.positions = RNDrawerLayoutAndroid.positions;
 
-export const FlatList = React.forwardRef((props, ref) => (
-  <RNFlatList
-    ref={ref}
-    {...props}
-    renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
-  />
-));
+export const FlatList = React.forwardRef(
+  <ItemT extends any>(props: FlatListProps<ItemT>, ref: any) => (
+    <RNFlatList
+      ref={ref}
+      {...props}
+      renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
+    />
+  )
+);

@@ -1,6 +1,6 @@
 import Hammer from '@egjs/hammerjs';
 
-import State from '../State';
+import { State } from '../State';
 
 export const CONTENT_TOUCHES_DELAY = 240;
 export const CONTENT_TOUCHES_QUICK_TAP_END_DELAY = 50;
@@ -14,7 +14,7 @@ export const EventMap = {
   [Hammer.INPUT_MOVE]: State.ACTIVE,
   [Hammer.INPUT_END]: State.END,
   [Hammer.INPUT_CANCEL]: State.FAILED,
-};
+} as const;
 
 export const Direction = {
   RIGHT: 1,

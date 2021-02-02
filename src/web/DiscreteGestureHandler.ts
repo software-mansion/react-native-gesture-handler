@@ -1,10 +1,9 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import GestureHandler from './GestureHandler';
 import { TEST_MAX_IF_NOT_NAN } from './utils';
 
-class DiscreteGestureHandler extends GestureHandler {
+abstract class DiscreteGestureHandler extends GestureHandler {
   get isDiscrete() {
     return true;
   }
@@ -14,8 +13,8 @@ class DiscreteGestureHandler extends GestureHandler {
   }
 
   shouldFailUnderCustomCriteria(
-    { x, y, deltaX, deltaY },
-    { maxDeltaX, maxDeltaY, maxDistSq, shouldCancelWhenOutside }
+    { x, y, deltaX, deltaY }: any,
+    { maxDeltaX, maxDeltaY, maxDistSq, shouldCancelWhenOutside }: any
   ) {
     if (shouldCancelWhenOutside) {
       if (!this.isPointInView({ x, y })) {
@@ -32,8 +31,9 @@ class DiscreteGestureHandler extends GestureHandler {
     );
   }
 
-  transformNativeEvent({ center: { x, y } }) {
-    const rect = this.view.getBoundingClientRect();
+  transformNativeEvent({ center: { x, y } }: any) {
+    // @ts-ignore FIXME(TS)
+    const rect = this.view!.getBoundingClientRect();
 
     return {
       absoluteX: x,
@@ -47,14 +47,13 @@ class DiscreteGestureHandler extends GestureHandler {
     {
       minPointers,
       maxPointers,
-      maxDist,
       maxDeltaX,
       maxDeltaY,
       maxDistSq,
       shouldCancelWhenOutside,
-    },
-    recognizer,
-    { maxPointers: pointerLength, center, deltaX, deltaY, ...props }
+    }: any,
+    _recognizer: any,
+    { maxPointers: pointerLength, center, deltaX, deltaY }: any
   ) {
     const validPointerCount =
       pointerLength >= minPointers && pointerLength <= maxPointers;

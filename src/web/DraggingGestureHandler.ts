@@ -1,10 +1,9 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
-import GestureHandler from './GestureHandler';
+import GestureHandler, { HammerInputExt } from './GestureHandler';
 import { PixelRatio } from 'react-native';
 
-class DraggingGestureHandler extends GestureHandler {
+abstract class DraggingGestureHandler extends GestureHandler {
   get shouldEnableGestureOnSetup() {
     return true;
   }
@@ -15,8 +14,9 @@ class DraggingGestureHandler extends GestureHandler {
     velocityX,
     velocityY,
     center: { x, y },
-  }) {
-    const rect = this.view.getBoundingClientRect();
+  }: HammerInputExt) {
+    // @ts-ignore FIXME(TS)
+    const rect = this.view!.getBoundingClientRect();
     const ratio = PixelRatio.get();
     return {
       translationX: deltaX - (this.__initialX || 0),

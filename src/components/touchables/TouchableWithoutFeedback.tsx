@@ -1,13 +1,11 @@
-// @ts-nocheck TODO(TS) provide types
 import React from 'react';
-import GenericTouchable from './GenericTouchable';
+import GenericTouchable, { GenericTouchableProps } from './GenericTouchable';
 
-const TouchableWithoutFeedback = React.forwardRef((props, ref) => (
-  <GenericTouchable ref={ref} {...props} />
-));
+const TouchableWithoutFeedback = React.forwardRef<
+  GenericTouchable,
+  GenericTouchableProps
+>((props, ref) => <GenericTouchable ref={ref} {...props} />);
 
 TouchableWithoutFeedback.defaultProps = GenericTouchable.defaultProps;
-
-TouchableWithoutFeedback.propTypes = GenericTouchable.publicPropTypes;
 
 export default TouchableWithoutFeedback;

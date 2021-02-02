@@ -8,7 +8,7 @@ This page covers the common set of properties all gesture handler components exp
 
 ### Units
 
-All of the handler components properties and event attributes that represents onscreen dimensions are expressed in screen density independent units we refer to as "points".
+All handler component properties and event attributes that represent onscreen dimensions are expressed in screen density independent units we refer to as "points".
 These are the units commonly used in React Native ecosystem (e.g. in the [layout system](http://facebook.github.io/react-native/docs/flexbox.html)).
 They do not map directly to physical pixels but instead to [iOS's points](https://developer.apple.com/library/content/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/GraphicsDrawingOverview/GraphicsDrawingOverview.html#//apple_ref/doc/uid/TP40010156-CH14-SW7) and to [dp](https://developer.android.com/guide/topics/resources/more-resources#Dimension) units on Android.
 
@@ -18,26 +18,26 @@ This section describes properties that can be used with all gesture handler comp
 
 ### `enabled`
 
-Takes a boolean value.
-Indicates if the given handler should be analyzing stream of touch events or not.
-When set to `false` we can be sure that the handler will never [activate](state.md#active).
-If the value gets updated while the handler already started recognizing gesture it will immediately [fail](state.md#failed) or [cancel](state.md#cancelled) recognizing depending on its current state.
+Accepts a boolean value. 
+Indicates whether the given handler should be analyzing stream of touch events or not.
+When set to `false` we can be sure that the handler's state will **never** become [`ACTIVE`](state.md#active).
+If the value gets updated while the handler already started recognizing a gesture, then the handler's state it will immediately change to [`FAILED`](state.md#failed) or [`CANCELLED`](state.md#cancelled) (depending on its current state).
 Default value is `true`.
 
 ### `shouldCancelWhenOutside`
 
-Takes a boolean value.
+Accepts a boolean value.
 When `true` the handler will [cancel](state.md#cancelled) or [fail](state.md#failed) recognition (depending on its current state) whenever the finger leaves the area of the connected view.
 Default value of this property is different depending on the handler type.
-Most of the handlers defaults to `false` but in case of the [`LongPressGestureHandler`](handler-longpress.md) and [`TapGestureHandler`](handler-tap.md) it defaults to `true`.
+Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGestureHandler`](handler-longpress.md) and [`TapGestureHandler`](handler-tap.md) which default to `true`.
 
 ### `simultaneousHandlers`
 
-Accepts a react ref object or an array of refs to other handler components (refs should be created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html)). When set the handler will be allowed to [activate](state.md#active) even if one or more of the handlers provided by their refs are [active](state.md#active). It will also prevent the provided handlers from [cancelling](state.md#cancelled) current handler when they [activate](state.md#active). Read more in the [cross handler interaction](interactions.md#simultaneous-recognition) section.
+Accepts a react ref object or an array of refs to other handler components (refs should be created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html)). When set, the handler will be allowed to [activate](state.md#active) even if one or more of the handlers provided by their refs are in an [`ACTIVE`](state.md#active) state. It will also prevent the provided handlers from [cancelling](state.md#cancelled) the current handler when they [activate](state.md#active). Read more in the [cross handler interaction](interactions.md#simultaneous-recognition) section.
 
 ### `waitFor`
 
-Accepts a react ref object or an array of refs to other handler components (refs should be created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html)). When set the handler will not [activate](state.md#active) as long as the handlers provided by their refs are in [began](state.md#began) state. Read more in the [cross handler interaction](interactions.md#awaiting-other-handlers) section.
+Accepts a react ref object or an array of refs to other handler components (refs should be created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html)). When set the handler will not [activate](state.md#active) as long as the handlers provided by their refs are in the [`BEGAN`](state.md#began) state. Read more in the [cross handler interaction](interactions.md#awaiting-other-handlers) section.
 
 ### `hitSlop`
 

@@ -9,9 +9,9 @@ We use this term to describe elements of the native touch system that the librar
 
 Each handler type is capable of recognizing one type of gesture (pan, pinch, etc.) and provides gesture-specific information via events (translation, scale, etc.).
 
-Handlers analyse touch stream synchronously in the UI thread. This allows for the interactions to be uninterrupted even when Javascript thread is blocked.
+Handlers analyze touch stream synchronously in the UI thread. This allows for uninterrupted interactions even when the Javascript thread is blocked.
 
-Each handler works as an isolated state machine. It takes touch stream as an input and based on in it can flip between [states](state.md).
+Each handler works as an isolated state machine. It takes touch stream as an input and based on it, it can flip between [states](state.md).
 When a gesture starts, based on the position where the finger was placed, a set of handlers that may be interested in recognizing the gesture is selected.
 All the touch events (touch down, move, up, or when other fingers are placed or lifted) are delivered to all of the handlers selected initially.
 When one gesture becomes [active](state.md#active), it cancels all the other gestures (read more about how to influence this process in ["Cross handler interactions"](interactions.md) section).
@@ -33,19 +33,19 @@ Currently, the library provides the following list of gestures. Their parameters
 
 ### Discrete vs continuous
 
-We distinguish two types of gestures: discrete and continuous.
+We distinguish between two types of gestures: discrete and continuous.
 
 Continuous gesture handlers can be [active](state.md#active) for a long period of time and will generate a stream of [gesture events](handler-common.md#ongestureevent) until the gesture is [over](state.md#ended).
-An example of continuous handler is [`PanGestureHandler`](handler-pan.md) that once [activated](state.md#active), will start providing updates about [translation](handler-pan.md#translationx) and other properties.
+An example of a continuous handler is [`PanGestureHandler`](handler-pan.md) that once [activated](state.md#active), will start providing updates about [translation](handler-pan.md#translationx) and other properties.
 
 On the other hand, discrete gesture handlers once [activated](state.md#active) will not stay in the active state but will [end](state.md#ended) immediately.
 [`LongPressGestureHandler`](handler-longpress.md) is a discrete handler, as it only detects if the finger is placed for a sufficiently long period of time, it does not track finger movements (as that's the responsibility of [`PanGestureHandler`](handler-pan.md)).
 
-Keep in mind that `onGestureEvent` is only generated in the continous gesture handlers and you shouldn't use it in the `TapGestureHandler` and others discrete handlers.
+Keep in mind that `onGestureEvent` is only generated in continuous gesture handlers and shouldn't be used in the `TapGestureHandler` and other discrete handlers.
 
 ### Nesting handlers
 
-Handlers component can be nested. In any case it is recommended that the innermost handler renders a native view component. There are some limitations that apply when [using `useNativeDriver` flag](#events-with-usenativedriver). An example of nested handlers:
+Handler components can be nested. In any case it is recommended that the innermost handler renders a native view component. There are some limitations that apply when [using `useNativeDriver` flag](#events-with-usenativedriver). An example of nested handlers:
 
 ```js
 class Multitap extends Component {
@@ -81,12 +81,12 @@ Here is a list of exposed components:
 - `TextInput`
 - `DrawerLayoutAndroid` (**Android only**)
 
-If you want to use other handlers or [buttons](component-buttons.mdx) nested in a `ScrollView` or you want to use [`waitFor`](handler-common.md#waitfor) property to define interaction between a handler and `ScrollView`
+If you want to use other handlers or [buttons](component-buttons.mdx) nested in a `ScrollView`, use the [`waitFor`](handler-common.md#waitfor) property to define interaction between a handler and `ScrollView`
 
 ### Events with `useNativeDriver`
 
-Because handler components does not instantiate native views but instead hook up under their child views when using `Animated.event` it is not supported currently for two gestures to be directly nested.
-To workaround this limitation we recommend that a `<Animated.View>` component is placed in between the handlers.
+Because handlers do not instantiate native views but instead hook up to their child views, directly nesting two gesture handlers using `Animated.event` is not currently supported.
+To workaround this limitation we recommend placing an `<Animated.View>` component in between the handlers.
 
 Instead of doing:
 
@@ -100,7 +100,7 @@ const PanAndRotate = () => (
 );
 ```
 
-You need to place an `<Animated.View>` in between the handlers:
+Place an `<Animated.View>` in between the handlers:
 
 ```js
 const PanAndRotate = () => (
@@ -114,7 +114,7 @@ const PanAndRotate = () => (
 );
 ```
 
-Another consequence of the fact that events are hooked into the children node is that when using `useNativeDriver` flag with `Animated.event` the children node needs to be a view wrapped by `Animated.API` e.g. `<Animated.View>` instead of a `<View>`:
+Another consequence of handlers depending on their native child components is that when using a `useNativeDriver` flag with an `Animated.event`, the child component must be wrapped by an `Animated.API` e.g. `<Animated.View>` instead of just a `<View>`:
 
 ```js
 class Draggable extends Component {

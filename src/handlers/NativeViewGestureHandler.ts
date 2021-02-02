@@ -1,15 +1,29 @@
-// @ts-nocheck TODO(TS) provide types
-import PropTypes from 'prop-types';
-
 import createHandler from './createHandler';
-import GestureHandlerPropTypes from '../GestureHandlerPropTypes';
+import { BaseGestureHandlerProps, baseProps } from './gestureHandlers';
 
-const NativeViewGestureHandler = createHandler('NativeViewGestureHandler', {
-  ...GestureHandlerPropTypes,
+export interface NativeViewGestureHandlerProps
+  extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload> {
+  shouldActivateOnStart?: boolean;
+  disallowInterruption?: boolean;
+}
 
-  // If changed, add changes to NATIVE_WRAPPER_PROPS_FILTER as well
-  shouldActivateOnStart: PropTypes.bool,
-  disallowInterruption: PropTypes.bool,
+export type NativeViewGestureHandlerPayload = {
+  pointerInside: boolean;
+};
+
+export const nativeViewProps = [
+  ...baseProps,
+  'shouldActivateOnStart',
+  'disallowInterruption',
+] as const;
+
+export type NativeViewGestureHandler = typeof NativeViewGestureHandler;
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlers.ts file
+export const NativeViewGestureHandler = createHandler<
+  NativeViewGestureHandlerProps,
+  NativeViewGestureHandlerPayload
+>({
+  name: 'NativeViewGestureHandler',
+  allowedProps: nativeViewProps,
+  config: {},
 });
-
-export default NativeViewGestureHandler;

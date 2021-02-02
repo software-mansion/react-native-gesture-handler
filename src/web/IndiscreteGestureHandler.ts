@@ -1,10 +1,9 @@
-// @ts-nocheck TODO(TS) provide types
 import GestureHandler from './GestureHandler';
 
 /**
  * The base class for **Rotation** and **Pinch** gesture handlers.
  */
-class IndiscreteGestureHandler extends GestureHandler {
+abstract class IndiscreteGestureHandler extends GestureHandler {
   get shouldEnableGestureOnSetup() {
     return false;
   }
@@ -18,9 +17,9 @@ class IndiscreteGestureHandler extends GestureHandler {
   }
 
   isGestureEnabledForEvent(
-    { minPointers, maxPointers },
-    recognizer,
-    { maxPointers: pointerLength }
+    { minPointers, maxPointers }: any,
+    _recognizer: any,
+    { maxPointers: pointerLength }: any
   ) {
     if (pointerLength > maxPointers) {
       return { failed: true };

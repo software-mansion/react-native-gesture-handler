@@ -1,7 +1,5 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import Hammer from '@egjs/hammerjs';
+import { HammerInputExt } from './GestureHandler';
 
 import IndiscreteGestureHandler from './IndiscreteGestureHandler';
 
@@ -14,7 +12,7 @@ class PinchGestureHandler extends IndiscreteGestureHandler {
     return Hammer.Pinch;
   }
 
-  transformNativeEvent({ scale, velocity, center }) {
+  transformNativeEvent({ scale, velocity, center }: HammerInputExt) {
     return {
       focalX: center.x,
       focalY: center.y,

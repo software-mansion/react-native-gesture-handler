@@ -1,15 +1,32 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import React, { Component } from 'react';
-import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
-import { StyleSheet, View } from 'react-native';
-import PropTypes from 'prop-types';
+import GenericTouchable, {
+  GenericTouchableProps,
+  TOUCHABLE_STATE,
+} from './GenericTouchable';
+import {
+  StyleSheet,
+  View,
+  TouchableHighlightProps,
+  ColorValue,
+  ViewProps,
+} from 'react-native';
+
+interface State {
+  extraChildStyle: null | {
+    opacity?: number;
+  };
+  extraUnderlayStyle: null | {
+    backgroundColor?: ColorValue;
+  };
+}
 
 /**
  * TouchableHighlight follows RN's implementation
  */
-export default class TouchableHighlight extends Component {
+export default class TouchableHighlight extends Component<
+  TouchableHighlightProps & GenericTouchableProps,
+  State
+> {
   static defaultProps = {
     ...GenericTouchable.defaultProps,
     activeOpacity: 0.85,
@@ -17,16 +34,7 @@ export default class TouchableHighlight extends Component {
     underlayColor: 'black',
   };
 
-  static propTypes = {
-    ...GenericTouchable.publicPropTypes,
-    activeOpacity: PropTypes.number,
-    underlayColor: PropTypes.string,
-    style: PropTypes.any,
-    onShowUnderlay: PropTypes.func,
-    onHideUnderlay: PropTypes.func,
-  };
-
-  constructor(props) {
+  constructor(props: TouchableHighlightProps & GenericTouchableProps) {
     super(props);
     this.state = {
       extraChildStyle: null,
@@ -47,7 +55,7 @@ export default class TouchableHighlight extends Component {
         backgroundColor: this.props.underlayColor,
       },
     });
-    this.props.onShowUnderlay && this.props.onShowUnderlay();
+    this.props.onShowUnderlay?.();
   };
 
   hasPressHandler = () =>
@@ -61,7 +69,7 @@ export default class TouchableHighlight extends Component {
       extraChildStyle: null,
       extraUnderlayStyle: null,
     });
-    this.props.onHideUnderlay && this.props.onHideUnderlay();
+    this.props.onHideUnderlay?.();
   };
 
   renderChildren() {
@@ -69,13 +77,15 @@ export default class TouchableHighlight extends Component {
       return <View />;
     }
 
-    const child = React.Children.only(this.props.children);
+    const child = React.Children.only(
+      this.props.children
+    ) as React.ReactElement<ViewProps>; // TODO: not sure if OK but fixes error
     return React.cloneElement(child, {
       style: StyleSheet.compose(child.props.style, this.state.extraChildStyle),
     });
   }
 
-  onStateChange = (from, to) => {
+  onStateChange = (_from: number, to: number) => {
     if (to === TOUCHABLE_STATE.BEGAN) {
       this.showUnderlay();
     } else if (

@@ -1,17 +1,26 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import React from 'react';
-import ReactNative, {
+import {
   findNodeHandle as findNodeHandleRN,
   NativeModules,
   Platform,
+  Touchable,
 } from 'react-native';
+// @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import State from '../State';
+import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
+import { State } from '../State';
 
-function findNodeHandle(node) {
+import {
+  BaseGestureHandlerProps,
+  GestureEvent,
+  HandlerStateChangeEvent,
+} from './gestureHandlers';
+import { ValueOf } from '../typeUtils';
+
+function findNodeHandle(
+  node: null | number | React.Component<any, any> | React.ComponentClass<any>
+): null | number | React.Component<any, any> | React.ComponentClass<any> {
   if (Platform.OS === 'web') return node;
   return findNodeHandleRN(node);
 }
@@ -45,10 +54,14 @@ if (UIManager.getConstants) {
 
 // Wrap JS responder calls and notify gesture handler manager
 const {
-  setJSResponder: oldSetJSResponder = () => {},
-  clearJSResponder: oldClearJSResponder = () => {},
+  setJSResponder: oldSetJSResponder = () => {
+    //no operation
+  },
+  clearJSResponder: oldClearJSResponder = () => {
+    //no operation
+  },
 } = UIManager;
-UIManager.setJSResponder = (tag, blockNativeResponder) => {
+UIManager.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
   oldSetJSResponder(tag, blockNativeResponder);
 };
@@ -58,22 +71,27 @@ UIManager.clearJSResponder = () => {
 };
 
 let handlerTag = 1;
-const handlerIDToTag = {};
+const handlerIDToTag: Record<string, number> = {};
 
-function isConfigParam(param, name) {
+function isConfigParam(param: unknown, name: string) {
   // param !== Object(param) returns false if `param` is a function
   // or an object and returns true if `param` is null
   return (
     param !== undefined &&
-    (param !== Object(param) || !('__isNative' in param)) &&
+    (param !== Object(param) ||
+      !('__isNative' in (param as Record<string, unknown>))) &&
     name !== 'onHandlerStateChange' &&
     name !== 'onGestureEvent'
   );
 }
 
-function filterConfig(props, validProps, defaults = {}) {
+function filterConfig(
+  props: Record<string, unknown>,
+  validProps: string[],
+  defaults: Record<string, unknown> = {}
+) {
   const res = { ...defaults };
-  Object.keys(validProps).forEach((key) => {
+  validProps.forEach((key) => {
     const value = props[key];
     if (isConfigParam(value, key)) {
       let value = props[key];
@@ -90,27 +108,33 @@ function filterConfig(props, validProps, defaults = {}) {
   return res;
 }
 
-function transformIntoHandlerTags(handlerIDs) {
+function transformIntoHandlerTags(handlerIDs: any) {
   if (!Array.isArray(handlerIDs)) {
     handlerIDs = [handlerIDs];
   }
 
   if (Platform.OS === 'web') {
-    return handlerIDs.map(({ current }) => current).filter((handle) => handle);
+    return handlerIDs
+      .map(({ current }: { current: any }) => current)
+      .filter((handle: any) => handle);
   }
   // converts handler string IDs into their numeric tags
   return handlerIDs
     .map(
-      (handlerID) =>
-        handlerIDToTag[handlerID] ||
-        (handlerID.current && handlerID.current._handlerTag) ||
-        -1
+      (handlerID: any) =>
+        handlerIDToTag[handlerID] || handlerID.current?._handlerTag || -1
     )
-    .filter((handlerTag) => handlerTag > 0);
+    .filter((handlerTag: number) => handlerTag > 0);
 }
 
-function hasUnresolvedRefs(props) {
-  const extract = (refs) => {
+type HandlerProps<T extends Record<string, unknown>> = Readonly<
+  React.PropsWithChildren<BaseGestureHandlerProps<T>>
+>;
+function hasUnresolvedRefs<T extends Record<string, unknown>>(
+  props: HandlerProps<T>
+) {
+  // TODO(TS) - add type for extract arg
+  const extract = (refs: any | any[]) => {
     if (!Array.isArray(refs)) {
       return refs && refs.current === null;
     }
@@ -120,68 +144,144 @@ function hasUnresolvedRefs(props) {
 }
 
 const stateToPropMappings = {
+  [State.UNDETERMINED]: undefined,
   [State.BEGAN]: 'onBegan',
   [State.FAILED]: 'onFailed',
   [State.CANCELLED]: 'onCancelled',
   [State.ACTIVE]: 'onActivated',
   [State.END]: 'onEnded',
+} as const;
+
+type CreateHandlerArgs<
+  HandlerPropsT extends Record<string, unknown>
+> = Readonly<{
+  name: string;
+  allowedProps: Readonly<Extract<keyof HandlerPropsT, string>[]>;
+  config: Readonly<Record<string, unknown>>;
+  transformProps?: (props: HandlerPropsT) => HandlerPropsT;
+  customNativeProps?: Readonly<string[]>;
+}>;
+
+// TODO(TS) fix event types
+type InternalEventHandlers = {
+  onGestureHandlerEvent?: (event: any) => void;
+  onGestureHandlerStateChange?: (event: any) => void;
 };
 
-export default function createHandler(
-  handlerName,
-  propTypes = {},
+// TODO(TS) - make sure that BaseGestureHandlerProps doesn't need other generic parameter to work with custom properties.
+export default function createHandler<
+  T extends BaseGestureHandlerProps<U>,
+  U extends Record<string, unknown>
+>({
+  name,
+  allowedProps = [],
   config = {},
   transformProps,
-  customNativeProps = {}
-): React.Component<any> {
-  class Handler extends React.Component {
-    static displayName = handlerName;
+  customNativeProps = [],
+}: CreateHandlerArgs<T>): React.ComponentType<T & React.RefAttributes<any>> {
+  class Handler extends React.Component<T & InternalEventHandlers> {
+    static displayName = name;
 
-    static propTypes = propTypes;
+    private handlerTag: number;
+    private config: Record<string, unknown>;
+    private propsRef: React.MutableRefObject<unknown>;
+    private viewNode: any;
+    private viewTag?: number;
+    private updateEnqueued: ReturnType<typeof setImmediate> | null = null;
 
-    constructor(props) {
+    constructor(props: T & InternalEventHandlers) {
       super(props);
-      this._handlerTag = handlerTag++;
-      this._config = {};
-      this._propsRef = React.createRef(props);
+      this.handlerTag = handlerTag++;
+      this.config = {};
+      this.propsRef = React.createRef();
 
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);
         }
-        handlerIDToTag[props.id] = this._handlerTag;
+        handlerIDToTag[props.id] = this.handlerTag;
       }
     }
 
-    _onGestureHandlerEvent = (event) => {
-      if (event.nativeEvent.handlerTag === this._handlerTag) {
-        this.props.onGestureEvent && this.props.onGestureEvent(event);
+    componentDidMount() {
+      const props: HandlerProps<U> = this.props;
+      if (hasUnresolvedRefs(props)) {
+        // If there are unresolved refs (e.g. ".current" has not yet been set)
+        // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
+        // _update method that will try to update native handler props using
+        // setImmediate. This makes it so _update function gets called after all
+        // react components are mounted and we expect the missing ref object to
+        // be resolved by then.
+        this.updateEnqueued = setImmediate(() => {
+          this.updateEnqueued = null;
+          this.update();
+        });
+      }
+
+      this.createGestureHandler(
+        filterConfig(
+          transformProps ? transformProps(this.props) : this.props,
+          [...allowedProps, ...customNativeProps],
+          config
+        )
+      );
+
+      this.attachGestureHandler(findNodeHandle(this.viewNode) as number); // TODO(TS) - check if this can be null
+    }
+
+    componentDidUpdate() {
+      const viewTag = findNodeHandle(this.viewNode);
+      if (this.viewTag !== viewTag) {
+        this.attachGestureHandler(viewTag as number); // TODO(TS) - check interaction between _viewTag & findNodeHandle
+      }
+      this.update();
+    }
+
+    componentWillUnmount() {
+      RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
+      if (this.updateEnqueued) {
+        clearImmediate(this.updateEnqueued);
+      }
+      // We can't use this.props.id directly due to TS generic type narrowing bug, see https://github.com/microsoft/TypeScript/issues/13995 for more context
+      const handlerID: string | undefined = this.props.id;
+      if (handlerID) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete handlerIDToTag[handlerID];
+      }
+    }
+
+    private onGestureHandlerEvent = (event: GestureEvent<U>) => {
+      if (event.nativeEvent.handlerTag === this.handlerTag) {
+        this.props.onGestureEvent?.(event);
       } else {
-        this.props.onGestureHandlerEvent &&
-          this.props.onGestureHandlerEvent(event);
+        this.props.onGestureHandlerEvent?.(event);
       }
     };
 
-    _onGestureHandlerStateChange = (event) => {
-      if (event.nativeEvent.handlerTag === this._handlerTag) {
-        this.props.onHandlerStateChange &&
-          this.props.onHandlerStateChange(event);
+    // TODO(TS) - make sure this is right type for event
+    private onGestureHandlerStateChange = (
+      event: HandlerStateChangeEvent<U>
+    ) => {
+      if (event.nativeEvent.handlerTag === this.handlerTag) {
+        this.props.onHandlerStateChange?.(event);
 
-        const stateEventName = stateToPropMappings[event.nativeEvent.state];
-        if (typeof this.props[stateEventName] === 'function') {
-          this.props[stateEventName](event);
+        const state: ValueOf<typeof State> = event.nativeEvent.state;
+        const stateEventName = stateToPropMappings[state];
+        const eventHandler = stateEventName && this.props[stateEventName];
+        if (eventHandler && typeof eventHandler === 'function') {
+          eventHandler(event);
         }
       } else {
-        this.props.onGestureHandlerStateChange &&
-          this.props.onGestureHandlerStateChange(event);
+        this.props.onGestureHandlerStateChange?.(event);
       }
     };
 
-    _refHandler = (node) => {
-      this._viewNode = node;
+    private refHandler = (node: any) => {
+      this.viewNode = node;
 
       const child = React.Children.only(this.props.children);
-      const { ref } = child;
+      // TODO(TS) fix ref type
+      const { ref }: any = child;
       if (ref !== null) {
         if (typeof ref === 'function') {
           ref(node);
@@ -191,109 +291,76 @@ export default function createHandler(
       }
     };
 
-    _createGestureHandler = (newConfig) => {
-      this._config = newConfig;
+    private createGestureHandler = (
+      newConfig: Readonly<Record<string, unknown>>
+    ) => {
+      this.config = newConfig;
 
       RNGestureHandlerModule.createGestureHandler(
-        handlerName,
-        this._handlerTag,
+        name,
+        this.handlerTag,
         newConfig
       );
     };
 
-    _attachGestureHandler = (newViewTag) => {
-      this._viewTag = newViewTag;
+    private attachGestureHandler = (newViewTag: number) => {
+      this.viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
-        RNGestureHandlerModule.attachGestureHandler(
-          this._handlerTag,
+        // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
+        (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
+          this.handlerTag,
           newViewTag,
-          this._propsRef
+          this.propsRef
         );
       } else {
         RNGestureHandlerModule.attachGestureHandler(
-          this._handlerTag,
+          this.handlerTag,
           newViewTag
         );
       }
     };
 
-    _updateGestureHandler = (newConfig) => {
-      this._config = newConfig;
+    private updateGestureHandler = (
+      newConfig: Readonly<Record<string, unknown>>
+    ) => {
+      this.config = newConfig;
 
-      RNGestureHandlerModule.updateGestureHandler(this._handlerTag, newConfig);
+      RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
     };
 
-    componentWillUnmount() {
-      RNGestureHandlerModule.dropGestureHandler(this._handlerTag);
-      if (this._updateEnqueued) {
-        clearImmediate(this._updateEnqueued);
-      }
-      if (this.props.id) {
-        delete handlerIDToTag[this.props.id];
-      }
-    }
-
-    componentDidMount() {
-      if (hasUnresolvedRefs(this.props)) {
-        // If there are unresolved refs (e.g. ".current" has not yet been set)
-        // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
-        // _update method that will try to update native handler props using
-        // setImmediate. This makes it so _update function gets called after all
-        // react components are mounted and we expect the missing ref object to
-        // be resolved by then.
-        this._updateEnqueued = setImmediate(() => {
-          this._updateEnqueued = null;
-          this._update();
-        });
-      }
-
-      this._createGestureHandler(
-        filterConfig(
-          transformProps ? transformProps(this.props) : this.props,
-          {
-            ...(this.constructor.propTypes || propTypes),
-            ...customNativeProps,
-          },
-          config
-        )
-      );
-
-      this._attachGestureHandler(findNodeHandle(this._viewNode));
-    }
-
-    componentDidUpdate() {
-      const viewTag = findNodeHandle(this._viewNode);
-      if (this._viewTag !== viewTag) {
-        this._attachGestureHandler(viewTag);
-      }
-      this._update();
-    }
-
-    _update() {
+    private update() {
       const newConfig = filterConfig(
         transformProps ? transformProps(this.props) : this.props,
-        { ...(this.constructor.propTypes || propTypes), ...customNativeProps },
+        [...allowedProps, ...customNativeProps],
         config
       );
-      if (!deepEqual(this._config, newConfig)) {
-        this._updateGestureHandler(newConfig);
+      if (!deepEqual(this.config, newConfig)) {
+        this.updateGestureHandler(newConfig);
       }
     }
 
-    setNativeProps(updates) {
+    setNativeProps(updates: any) {
       const mergedProps = { ...this.props, ...updates };
       const newConfig = filterConfig(
         transformProps ? transformProps(mergedProps) : mergedProps,
-        { ...(this.constructor.propTypes || propTypes), ...customNativeProps },
+        [...allowedProps, ...customNativeProps],
         config
       );
-      this._updateGestureHandler(newConfig);
+      this.updateGestureHandler(newConfig);
     }
 
     render() {
-      let gestureEventHandler = this._onGestureHandlerEvent;
-      const { onGestureEvent, onGestureHandlerEvent } = this.props;
+      let gestureEventHandler = this.onGestureHandlerEvent;
+      // Another instance of https://github.com/microsoft/TypeScript/issues/13995
+      type OnGestureEventHandlers = {
+        onGestureEvent?: BaseGestureHandlerProps<U>['onGestureEvent'];
+        onGestureHandlerEvent?: InternalEventHandlers['onGestureHandlerEvent'];
+      };
+      const {
+        onGestureEvent,
+        onGestureHandlerEvent,
+      }: OnGestureEventHandlers = this.props;
       if (onGestureEvent && typeof onGestureEvent !== 'function') {
         // If it's not a method it should be an native Animated.event
         // object. We set it directly as the handler for the view
@@ -303,7 +370,7 @@ export default function createHandler(
             'Nesting touch handlers with native animated driver is not supported yet'
           );
         }
-        gestureEventHandler = this.props.onGestureEvent;
+        gestureEventHandler = onGestureEvent;
       } else {
         if (
           onGestureHandlerEvent &&
@@ -315,8 +382,16 @@ export default function createHandler(
         }
       }
 
-      let gestureStateEventHandler = this._onGestureHandlerStateChange;
-      const { onHandlerStateChange, onGestureHandlerStateChange } = this.props;
+      let gestureStateEventHandler = this.onGestureHandlerStateChange;
+      // Another instance of https://github.com/microsoft/TypeScript/issues/13995
+      type OnGestureStateChangeHandlers = {
+        onHandlerStateChange?: BaseGestureHandlerProps<U>['onHandlerStateChange'];
+        onGestureHandlerStateChange?: InternalEventHandlers['onGestureHandlerStateChange'];
+      };
+      const {
+        onHandlerStateChange,
+        onGestureHandlerStateChange,
+      }: OnGestureStateChangeHandlers = this.props;
       if (onHandlerStateChange && typeof onHandlerStateChange !== 'function') {
         // If it's not a method it should be an native Animated.event
         // object. We set it directly as the handler for the view
@@ -326,7 +401,7 @@ export default function createHandler(
             'Nesting touch handlers with native animated driver is not supported yet'
           );
         }
-        gestureStateEventHandler = this.props.onHandlerStateChange;
+        gestureStateEventHandler = onHandlerStateChange;
       } else {
         if (
           onGestureHandlerStateChange &&
@@ -342,12 +417,12 @@ export default function createHandler(
         onGestureHandlerStateChange: gestureStateEventHandler,
       };
 
-      this._propsRef.current = events;
+      this.propsRef.current = events;
 
-      const child = React.Children.only(this.props.children);
+      const child: any = React.Children.only(this.props.children);
       let grandChildren = child.props.children;
       if (
-        ReactNative.Touchable.TOUCH_TARGET_DEBUG &&
+        Touchable.TOUCH_TARGET_DEBUG &&
         child.type &&
         (child.type === 'RNGestureHandlerButton' ||
           child.type.name === 'View' ||
@@ -355,7 +430,7 @@ export default function createHandler(
       ) {
         grandChildren = React.Children.toArray(grandChildren);
         grandChildren.push(
-          ReactNative.Touchable.renderDebugView({
+          Touchable.renderDebugView({
             color: 'mediumspringgreen',
             hitSlop: child.props.hitSlop,
           })
@@ -365,7 +440,7 @@ export default function createHandler(
       return React.cloneElement(
         child,
         {
-          ref: this._refHandler,
+          ref: this.refHandler,
           collapsable: false,
           ...events,
         },

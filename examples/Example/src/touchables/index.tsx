@@ -1,4 +1,3 @@
-// @ts-nocheck TODO(TS) provide types
 import React, { Component } from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
 
@@ -43,13 +42,12 @@ const toReactNativeTouchable = (touchable: React.ComponentType<unknown>) => {
 };
 
 type TouchablesType = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type: React.ComponentType<any>;
   props?: Record<string, unknown>;
   color?: string;
   renderChild: (() => null) | ((color?: string) => JSX.Element);
   text: string;
-  background?: (A: typeof RNTouchableNativeFeedback) => BackgroundPropType;
+  background?: (A: typeof TouchableNativeFeedback) => BackgroundPropType;
 };
 
 const TOUCHABLES: TouchablesType[] = [
@@ -142,7 +140,8 @@ const TOUCHABLES: TouchablesType[] = [
     },
     color: 'forestgreen',
     renderChild: renderSampleBox,
-    text: 'TouchableHighlight with callbacks (without longPress)',
+    text:
+      'TouchableHighlight with callbacks (without longPress), currently GH component differs in the events sent from the RN one',
   },
   {
     type: TouchableOpacity,
@@ -348,7 +347,6 @@ export class TouchableExample extends Component<
       color,
     } = screens[this.props.route.params.item];
     const RNTouchable = toReactNativeTouchable(GHTouchable);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const Component: React.ComponentType<any> = this.state.useScrollView
       ? ScrollView
       : View;
@@ -374,7 +372,6 @@ export class TouchableExample extends Component<
           </RNTouchable>
           <GHTouchable
             {...props}
-            // @ts-ignore GH component does not export statics from RN component, but can use it
             background={background?.(TouchableNativeFeedback)}>
             {renderChild(color)}
           </GHTouchable>

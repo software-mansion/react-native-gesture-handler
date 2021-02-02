@@ -1,22 +1,24 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-// @ts-nocheck TODO(TS) provide types
 import Hammer from '@egjs/hammerjs';
 
-import State from '../State';
+import { State } from '../State';
 import {
   CONTENT_TOUCHES_DELAY,
   CONTENT_TOUCHES_QUICK_TAP_END_DELAY,
+  HammerInputNames,
 } from './constants';
 import DiscreteGestureHandler from './DiscreteGestureHandler';
+import { Config, HammerInputExt } from './GestureHandler';
 import { fireAfterInterval, isValidNumber, isnan } from './utils';
 
 class PressGestureHandler extends DiscreteGestureHandler {
+  private visualFeedbackTimer: any;
+  private initialEvent: HammerInputExt | null = null;
   get name() {
     return 'press';
   }
 
   get minDurationMs() {
+    // @ts-ignore FIXME(TS)
     return isnan(this.config.minDurationMs) ? 5 : this.config.minDurationMs;
   }
 
@@ -30,17 +32,20 @@ class PressGestureHandler extends DiscreteGestureHandler {
 
   shouldDelayTouches = true;
 
-  simulateCancelEvent(inputData) {
+  simulateCancelEvent(inputData: HammerInputExt) {
     // Long press never starts so we can't rely on the running event boolean.
     this.hasGestureFailed = true;
     this.cancelEvent(inputData);
   }
 
-  updateHasCustomActivationCriteria({ shouldCancelWhenOutside, maxDistSq }) {
+  updateHasCustomActivationCriteria({
+    shouldCancelWhenOutside,
+    maxDistSq,
+  }: Config & { shouldCancelWhenOutside: boolean }) {
     return shouldCancelWhenOutside || !isValidNumber(maxDistSq);
   }
 
-  getState(type) {
+  getState(type: keyof typeof HammerInputNames): State {
     return {
       [Hammer.INPUT_START]: State.BEGAN,
       [Hammer.INPUT_MOVE]: State.ACTIVE,
@@ -50,7 +55,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
   }
 
   getConfig() {
-    if (!this._hasCustomActivationCriteria) {
+    if (!this.hasCustomActivationCriteria) {
       // Default config
       // If no params have been defined then this config should emulate the native gesture as closely as possible.
       return {
@@ -69,26 +74,26 @@ class PressGestureHandler extends DiscreteGestureHandler {
     };
   }
 
-  onGestureActivated(ev) {
+  onGestureActivated(ev: HammerInputExt) {
     this.onGestureStart(ev);
   }
 
-  shouldDelayTouchForEvent({ pointerType }) {
+  shouldDelayTouchForEvent({ pointerType }: HammerInputExt) {
     // Don't disable event for mouse input
     return this.shouldDelayTouches && pointerType === 'touch';
   }
 
-  onGestureStart(ev) {
+  onGestureStart(ev: HammerInputExt) {
     this.isGestureRunning = true;
     clearTimeout(this.visualFeedbackTimer);
     this.initialEvent = ev;
     this.visualFeedbackTimer = fireAfterInterval(() => {
-      this.sendGestureStartedEvent(this.initialEvent);
+      this.sendGestureStartedEvent(this.initialEvent as HammerInputExt);
       this.initialEvent = null;
     }, this.shouldDelayTouchForEvent(ev) && CONTENT_TOUCHES_DELAY);
   }
 
-  sendGestureStartedEvent(ev) {
+  sendGestureStartedEvent(ev: HammerInputExt) {
     clearTimeout(this.visualFeedbackTimer);
     this.visualFeedbackTimer = null;
     this.sendEvent({
@@ -98,14 +103,14 @@ class PressGestureHandler extends DiscreteGestureHandler {
     });
   }
 
-  forceInvalidate(event) {
+  forceInvalidate(event: HammerInputExt) {
     super.forceInvalidate(event);
     clearTimeout(this.visualFeedbackTimer);
     this.visualFeedbackTimer = null;
     this.initialEvent = null;
   }
 
-  onRawEvent(ev) {
+  onRawEvent(ev: HammerInputExt) {
     super.onRawEvent(ev);
     if (this.isGestureRunning) {
       if (ev.isFinal) {
@@ -115,7 +120,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
           // We haven't activated the tap right away to emulate iOS `delaysContentTouches`
           // Now we must send the initial activation event and wait a set amount of time before firing the end event.
           timeout = CONTENT_TOUCHES_QUICK_TAP_END_DELAY;
-          this.sendGestureStartedEvent(this.initialEvent);
+          this.sendGestureStartedEvent(this.initialEvent as HammerInputExt);
           this.initialEvent = null;
         }
         fireAfterInterval(() => {
@@ -124,6 +129,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
             eventType: Hammer.INPUT_END,
             isFinal: true,
           });
+          // @ts-ignore -- this should explicitly support undefined
           this.onGestureEnded();
         }, timeout);
       } else {

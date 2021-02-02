@@ -1,9 +1,7 @@
-// @ts-nocheck TODO(TS) provide types
-import { requireNativeComponent } from 'react-native';
-
-const RNGestureHandlerButton = requireNativeComponent(
-  'RNGestureHandlerButton',
-  null
+import { HostComponent, requireNativeComponent } from 'react-native';
+import { RawButtonProps } from './GestureButtons';
+const RNGestureHandlerButton: HostComponent<RawButtonProps> = requireNativeComponent(
+  'RNGestureHandlerButton'
 );
 
 export default RNGestureHandlerButton;
