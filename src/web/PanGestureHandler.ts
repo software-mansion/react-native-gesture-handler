@@ -199,47 +199,4 @@ class PanGestureHandler extends DraggingGestureHandler {
   }
 }
 
-function validateConfig(config = {}) {
-  const isNum = (v) => isnan(v) || typeof v === 'number';
-  const isBool = (v) => typeof v === 'boolean';
-
-  const valid = {
-    enabled: isBool,
-    minDistSq: isNum,
-    minVelocityX: isNum,
-    minVelocityY: isNum,
-    // TODO: Bacon: remove `minVelocity`
-    minVelocity: isNum,
-    minVelocitySq: isNum,
-    activeOffsetXStart: isNum,
-    activeOffsetXEnd: isNum,
-    failOffsetXStart: isNum,
-    failOffsetXEnd: isNum,
-    activeOffsetYStart: isNum,
-    activeOffsetYEnd: isNum,
-    failOffsetYStart: isNum,
-    failOffsetYEnd: isNum,
-    hasCustomActivationCriteria: isBool,
-    minPointers: isNum,
-    maxPointers: isNum,
-  };
-  const keys = Object.keys(valid);
-
-  let invalidKeys = [];
-  for (const key of Object.keys(config)) {
-    if (keys.includes(key)) {
-      if (valid[key](config[key])) {
-        console.warn('Invalid type: ' + key + ': ' + config[key]);
-      }
-    } else {
-      invalidKeys.push(key);
-    }
-  }
-
-  if (invalidKeys.length) {
-    throw new Error('Invalid config props found: ' + invalidKeys.join(', '));
-  }
-  return config;
-}
-
 export default PanGestureHandler;
