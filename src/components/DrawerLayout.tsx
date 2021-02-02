@@ -48,7 +48,7 @@ export type DrawerLockMode = 'unlocked' | 'locked-closed' | 'locked-open';
 
 export type DrawerKeyboardDismissMode = 'none' | 'on-drag';
 
-export interface DrawerLayoutProperties {
+export interface DrawerLayoutProps {
   renderNavigationView: (
     progressAnimatedValue: Animated.Value
   ) => React.ReactNode;
@@ -94,7 +94,7 @@ export type DrawerMovementOptionType = {
   speed?: number;
 };
 export default class DrawerLayout extends Component<
-  DrawerLayoutProperties,
+  DrawerLayoutProps,
   DrawerLayoutState
 > {
   static defaultProps = {
@@ -109,7 +109,7 @@ export default class DrawerLayout extends Component<
     enableTrackpadTwoFingerGesture: false,
   };
 
-  constructor(props: DrawerLayoutProperties) {
+  constructor(props: DrawerLayoutProps) {
     super(props);
 
     const dragX = new Animated.Value(0);
@@ -127,7 +127,7 @@ export default class DrawerLayout extends Component<
   }
 
   UNSAFE_componentWillUpdate(
-    props: DrawerLayoutProperties,
+    props: DrawerLayoutProps,
     state: DrawerLayoutState
   ) {
     if (
@@ -155,7 +155,7 @@ export default class DrawerLayout extends Component<
   };
 
   private updateAnimatedEvent = (
-    props: DrawerLayoutProperties,
+    props: DrawerLayoutProps,
     state: DrawerLayoutState
   ) => {
     // Event definition is based on

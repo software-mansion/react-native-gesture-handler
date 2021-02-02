@@ -1,6 +1,6 @@
 import { HostComponent, requireNativeComponent } from 'react-native';
-import { RawButtonProperties } from './GestureButtons';
-const RNGestureHandlerButton: HostComponent<RawButtonProperties> = requireNativeComponent(
+import { RawButtonProps } from './GestureButtons';
+const RNGestureHandlerButton: HostComponent<RawButtonProps> = requireNativeComponent(
   'RNGestureHandlerButton'
 );
 

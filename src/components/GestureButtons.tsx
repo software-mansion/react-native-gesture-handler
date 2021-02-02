@@ -18,29 +18,28 @@ import {
 } from '../handlers/gestureHandlers';
 import {
   NativeViewGestureHandlerPayload,
-  NativeViewGestureHandlerProperties,
+  NativeViewGestureHandlerProps,
 } from '../handlers/NativeViewGestureHandler';
 
-export interface RawButtonProperties
-  extends NativeViewGestureHandlerProperties {
+export interface RawButtonProps extends NativeViewGestureHandlerProps {
   exclusive?: boolean;
   // TODO: we should transform props in `createNativeWrapper`
-  rippleColor?: any; // it was present in BaseButtonProperties before but is used here in code
+  rippleColor?: any; // it was present in BaseButtonProps before but is used here in code
 }
 
-export interface BaseButtonProperties extends RawButtonProperties {
+export interface BaseButtonProps extends RawButtonProps {
   onPress?: (pointerInside: boolean) => void;
   onActiveStateChange?: (active: boolean) => void;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }
 
-export interface RectButtonProperties extends BaseButtonProperties {
+export interface RectButtonProps extends BaseButtonProps {
   underlayColor?: string;
   activeOpacity?: number;
 }
 
-export interface BorderlessButtonProperties extends BaseButtonProperties {
+export interface BorderlessButtonProps extends BaseButtonProps {
   borderless?: boolean;
   activeOpacity?: number;
 }
@@ -50,10 +49,10 @@ export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldActivateOnStart: false,
 });
 
-export class BaseButton extends React.Component<BaseButtonProperties> {
+export class BaseButton extends React.Component<BaseButtonProps> {
   private lastActive: boolean;
 
-  constructor(props: BaseButtonProperties) {
+  constructor(props: BaseButtonProps) {
     super(props);
     this.lastActive = false;
   }
@@ -126,7 +125,7 @@ const btnStyles = StyleSheet.create({
   },
 });
 
-export class RectButton extends React.Component<RectButtonProperties> {
+export class RectButton extends React.Component<RectButtonProps> {
   static defaultProps = {
     activeOpacity: 0.105,
     underlayColor: 'black',
@@ -134,7 +133,7 @@ export class RectButton extends React.Component<RectButtonProperties> {
 
   private opacity: Animated.Value;
 
-  constructor(props: RectButtonProperties) {
+  constructor(props: RectButtonProps) {
     super(props);
     this.opacity = new Animated.Value(0);
   }
@@ -177,7 +176,7 @@ export class RectButton extends React.Component<RectButtonProperties> {
   }
 }
 
-export class BorderlessButton extends React.Component<BorderlessButtonProperties> {
+export class BorderlessButton extends React.Component<BorderlessButtonProps> {
   static defaultProps = {
     activeOpacity: 0.3,
     borderless: true,
@@ -185,7 +184,7 @@ export class BorderlessButton extends React.Component<BorderlessButtonProperties
 
   private opacity: Animated.Value;
 
-  constructor(props: BorderlessButtonProperties) {
+  constructor(props: BorderlessButtonProps) {
     super(props);
     this.opacity = new Animated.Value(1);
   }

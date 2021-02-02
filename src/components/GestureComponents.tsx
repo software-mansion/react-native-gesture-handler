@@ -14,7 +14,7 @@ import {
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 
-import { NativeViewGestureHandlerProperties } from '../handlers/NativeViewGestureHandler';
+import { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
 
 export const ScrollView = createNativeWrapper<
   PropsWithChildren<RNScrollViewProps>
@@ -66,7 +66,7 @@ export const FlatList = React.forwardRef<RNFlatList<any>, RNFlatListProps<any>>(
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type FlatList<ItemT> = React.ComponentType<
   RNFlatListProps<ItemT> &
-    NativeViewGestureHandlerProperties &
+    NativeViewGestureHandlerProps &
     React.RefAttributes<any>
 > & {
   scrollToEnd: (params?: { animated?: boolean }) => void;

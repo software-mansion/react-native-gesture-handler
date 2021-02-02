@@ -16,7 +16,7 @@ import {
 import {
   PanGestureHandler,
   TapGestureHandler,
-  PanGestureHandlerProperties,
+  PanGestureHandlerProps,
   GestureEvent,
   PanGestureHandlerEventPayload,
   HandlerStateChangeEvent,
@@ -27,12 +27,12 @@ import { State } from '../State';
 const DRAG_TOSS = 0.05;
 
 type SwipeableExcludes = Exclude<
-  keyof PanGestureHandlerProperties,
+  keyof PanGestureHandlerProps,
   'onGestureEvent' | 'onHandlerStateChange'
 >;
 
-interface SwipeableProperties
-  extends Pick<PanGestureHandlerProperties, SwipeableExcludes> {
+interface SwipeableProps
+  extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
   enableTrackpadTwoFingerGesture?: boolean;
   friction?: number;
   leftThreshold?: number;
@@ -91,17 +91,14 @@ type StateType = {
   rowWidth: number | typeof undefined;
 };
 
-export default class Swipeable extends Component<
-  SwipeableProperties,
-  StateType
-> {
+export default class Swipeable extends Component<SwipeableProps, StateType> {
   static defaultProps = {
     friction: 1,
     overshootFriction: 1,
     useNativeAnimations: true,
   };
 
-  constructor(props: SwipeableProperties) {
+  constructor(props: SwipeableProps) {
     super(props);
     const dragX = new Animated.Value(0);
     this.state = {
@@ -120,7 +117,7 @@ export default class Swipeable extends Component<
     );
   }
 
-  UNSAFE_componentWillUpdate(props: SwipeableProperties, state: StateType) {
+  UNSAFE_componentWillUpdate(props: SwipeableProps, state: StateType) {
     if (
       this.props.friction !== props.friction ||
       this.props.overshootLeft !== props.overshootLeft ||
@@ -143,10 +140,7 @@ export default class Swipeable extends Component<
   private showRightAction?: Animated.AnimatedInterpolation | Animated.Value;
   private rightActionTranslate?: Animated.AnimatedInterpolation;
 
-  private updateAnimatedEvent = (
-    props: SwipeableProperties,
-    state: StateType
-  ) => {
+  private updateAnimatedEvent = (props: SwipeableProps, state: StateType) => {
     const { friction, overshootFriction } = props;
     const { dragX, rowTranslation, leftWidth = 0, rowWidth = 0 } = state;
     const { rightOffset = rowWidth } = state;

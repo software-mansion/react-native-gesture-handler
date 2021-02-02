@@ -2,8 +2,8 @@ import React, { useImperativeHandle, useRef } from 'react';
 
 import {
   NativeViewGestureHandler,
-  NativeViewGestureHandlerProperties,
-  nativeViewProperties,
+  NativeViewGestureHandlerProps,
+  nativeViewProps,
 } from './NativeViewGestureHandler';
 
 /*
@@ -14,18 +14,18 @@ import {
  *   - 'onGestureHandlerStateChange'
  */
 const NATIVE_WRAPPER_PROPS_FILTER = [
-  ...nativeViewProperties,
+  ...nativeViewProps,
   'onGestureHandlerEvent',
   'onGestureHandlerStateChange',
 ] as const;
 
 export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
-  config: Readonly<NativeViewGestureHandlerProperties> = {}
+  config: Readonly<NativeViewGestureHandlerProps> = {}
 ) {
   const ComponentWrapper = React.forwardRef<
     React.ComponentType<any>,
-    P & NativeViewGestureHandlerProperties
+    P & NativeViewGestureHandlerProps
   >((props, ref) => {
     // filter out props that should be passed to gesture handler wrapper
     const gestureHandlerProps = Object.keys(props).reduce(

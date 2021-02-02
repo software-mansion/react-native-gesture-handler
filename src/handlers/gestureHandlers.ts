@@ -35,7 +35,7 @@ export interface HandlerStateChangeEvent<
 
 // Events payloads are types instead of interfaces due to TS limitation.
 // See https://github.com/microsoft/TypeScript/issues/15300 for more info.
-export type BaseGestureHandlerProperties<
+export type BaseGestureHandlerProps<
   ExtraEventPayloadT extends Record<string, unknown> = Record<string, unknown>
 > = {
   id?: string;
@@ -71,7 +71,7 @@ export type BaseGestureHandlerProperties<
   ) => void;
 };
 
-export const baseProperties = [
+export const baseProps = [
   'id',
   'enabled',
   'minPointers',
@@ -95,8 +95,8 @@ export type TapGestureHandlerEventPayload = {
   absoluteY: number;
 };
 
-export interface TapGestureHandlerProperties
-  extends BaseGestureHandlerProperties<TapGestureHandlerEventPayload> {
+export interface TapGestureHandlerProps
+  extends BaseGestureHandlerProps<TapGestureHandlerEventPayload> {
   minPointers?: number;
   maxDurationMs?: number;
   maxDelayMs?: number;
@@ -109,12 +109,12 @@ export interface TapGestureHandlerProperties
 export type TapGestureHandler = typeof TapGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const TapGestureHandler = createHandler<
-  TapGestureHandlerProperties,
+  TapGestureHandlerProps,
   TapGestureHandlerEventPayload
 >({
   name: 'TapGestureHandler',
   allowedProps: [
-    ...baseProperties,
+    ...baseProps,
     'maxDurationMs',
     'maxDelayMs',
     'numberOfTaps',
@@ -133,8 +133,8 @@ export type FlingGestureHandlerEventPayload = {
   absoluteY: number;
 };
 
-export interface FlingGestureHandlerProperties
-  extends BaseGestureHandlerProperties<FlingGestureHandlerEventPayload> {
+export interface FlingGestureHandlerProps
+  extends BaseGestureHandlerProps<FlingGestureHandlerEventPayload> {
   direction?: number;
   numberOfPointers?: number;
 }
@@ -142,11 +142,11 @@ export interface FlingGestureHandlerProperties
 export type FlingGestureHandler = typeof FlingGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const FlingGestureHandler = createHandler<
-  FlingGestureHandlerProperties,
+  FlingGestureHandlerProps,
   FlingGestureHandlerEventPayload
 >({
   name: 'FlingGestureHandler',
-  allowedProps: [...baseProperties, 'numberOfPointers', 'direction'] as const,
+  allowedProps: [...baseProps, 'numberOfPointers', 'direction'] as const,
   config: {},
 });
 
@@ -170,8 +170,8 @@ export type ForceTouchGestureHandlerEventPayload = {
   force: number;
 };
 
-export interface ForceTouchGestureHandlerProperties
-  extends BaseGestureHandlerProperties<ForceTouchGestureHandlerEventPayload> {
+export interface ForceTouchGestureHandlerProps
+  extends BaseGestureHandlerProps<ForceTouchGestureHandlerEventPayload> {
   minForce?: number;
   maxForce?: number;
   feedbackOnActivation?: boolean;
@@ -181,12 +181,12 @@ export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
   ? createHandler<
-      ForceTouchGestureHandlerProperties,
+      ForceTouchGestureHandlerProps,
       ForceTouchGestureHandlerEventPayload
     >({
       name: 'ForceTouchGestureHandler',
       allowedProps: [
-        ...baseProperties,
+        ...baseProps,
         'minForce',
         'maxForce',
         'feedbackOnActivation',
@@ -210,8 +210,8 @@ export type LongPressGestureHandlerEventPayload = {
   absoluteY: number;
 };
 
-export interface LongPressGestureHandlerProperties
-  extends BaseGestureHandlerProperties<LongPressGestureHandlerEventPayload> {
+export interface LongPressGestureHandlerProps
+  extends BaseGestureHandlerProps<LongPressGestureHandlerEventPayload> {
   minDurationMs?: number;
   maxDist?: number;
 }
@@ -219,15 +219,15 @@ export interface LongPressGestureHandlerProperties
 export type LongPressGestureHandler = typeof LongPressGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const LongPressGestureHandler = createHandler<
-  LongPressGestureHandlerProperties,
+  LongPressGestureHandlerProps,
   LongPressGestureHandlerEventPayload
 >({
   name: 'LongPressGestureHandler',
-  allowedProps: [...baseProperties, 'minDurationMs', 'maxDist'] as const,
+  allowedProps: [...baseProps, 'minDurationMs', 'maxDist'] as const,
   config: {},
 });
 
-function validatePanGestureHandlerProps(props: PanGestureHandlerProperties) {
+function validatePanGestureHandlerProps(props: PanGestureHandlerProps) {
   if (props.minDeltaX && props.activeOffsetX) {
     throw new Error(
       `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
@@ -285,7 +285,7 @@ function validatePanGestureHandlerProps(props: PanGestureHandlerProperties) {
   }
 }
 
-function transformPanGestureHandlerProps(props: PanGestureHandlerProperties) {
+function transformPanGestureHandlerProps(props: PanGestureHandlerProps) {
   type InternalPanGHKeys =
     | 'activeOffsetXStart'
     | 'activeOffsetXEnd'
@@ -295,10 +295,10 @@ function transformPanGestureHandlerProps(props: PanGestureHandlerProperties) {
     | 'activeOffsetYEnd'
     | 'failOffsetYStart'
     | 'failOffsetYEnd';
-  type PanGestureHandlerInternalProperties = PanGestureHandlerProperties &
+  type PanGestureHandlerInternalProps = PanGestureHandlerProps &
     Partial<Record<InternalPanGHKeys, number>>;
 
-  const res: PanGestureHandlerInternalProperties = { ...props };
+  const res: PanGestureHandlerInternalProps = { ...props };
   if (props.minDeltaX !== undefined) {
     delete res.minDeltaX;
     res.activeOffsetXStart = -props.minDeltaX;
@@ -389,7 +389,7 @@ function transformPanGestureHandlerProps(props: PanGestureHandlerProperties) {
   return res;
 }
 
-function managePanProps(props: PanGestureHandlerProperties) {
+function managePanProps(props: PanGestureHandlerProps) {
   if (__DEV__) {
     validatePanGestureHandlerProps(props);
   }
@@ -407,8 +407,8 @@ export type PanGestureHandlerEventPayload = {
   velocityY: number;
 };
 
-export interface PanGestureHandlerProperties
-  extends BaseGestureHandlerProperties<PanGestureHandlerEventPayload> {
+export interface PanGestureHandlerProps
+  extends BaseGestureHandlerProps<PanGestureHandlerEventPayload> {
   /** @deprecated  use activeOffsetX*/
   minDeltaX?: number;
   /** @deprecated  use activeOffsetY*/
@@ -438,12 +438,12 @@ export interface PanGestureHandlerProperties
 export type PanGestureHandler = typeof PanGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const PanGestureHandler = createHandler<
-  PanGestureHandlerProperties,
+  PanGestureHandlerProps,
   PanGestureHandlerEventPayload
 >({
   name: 'PanGestureHandler',
   allowedProps: [
-    ...baseProperties,
+    ...baseProps,
     'activeOffsetY',
     'activeOffsetX',
     'failOffsetY',
@@ -478,17 +478,17 @@ export type PinchGestureHandlerEventPayload = {
   velocity: number;
 };
 
-export interface PinchGestureHandlerProperties
-  extends BaseGestureHandlerProperties<PinchGestureHandlerEventPayload> {}
+export interface PinchGestureHandlerProps
+  extends BaseGestureHandlerProps<PinchGestureHandlerEventPayload> {}
 
 export type PinchGestureHandler = typeof PinchGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const PinchGestureHandler = createHandler<
-  PinchGestureHandlerProperties,
+  PinchGestureHandlerProps,
   PinchGestureHandlerEventPayload
 >({
   name: 'PinchGestureHandler',
-  allowedProps: baseProperties,
+  allowedProps: baseProps,
   config: {},
 });
 
@@ -499,16 +499,16 @@ export type RotationGestureHandlerEventPayload = {
   velocity: number;
 };
 
-export interface RotationGestureHandlerProperties
-  extends BaseGestureHandlerProperties<RotationGestureHandlerEventPayload> {}
+export interface RotationGestureHandlerProps
+  extends BaseGestureHandlerProps<RotationGestureHandlerEventPayload> {}
 
 export type RotationGestureHandler = typeof RotationGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const RotationGestureHandler = createHandler<
-  RotationGestureHandlerProperties,
+  RotationGestureHandlerProps,
   RotationGestureHandlerEventPayload
 >({
   name: 'RotationGestureHandler',
-  allowedProps: baseProperties,
+  allowedProps: baseProps,
   config: {},
 });

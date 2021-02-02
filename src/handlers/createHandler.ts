@@ -12,7 +12,7 @@ import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
 
 import {
-  BaseGestureHandlerProperties,
+  BaseGestureHandlerProps,
   GestureEvent,
   HandlerStateChangeEvent,
 } from './gestureHandlers';
@@ -127,11 +127,11 @@ function transformIntoHandlerTags(handlerIDs: any) {
     .filter((handlerTag: number) => handlerTag > 0);
 }
 
-type HandlerProperties<T extends Record<string, unknown>> = Readonly<
-  React.PropsWithChildren<BaseGestureHandlerProperties<T>>
+type HandlerProps<T extends Record<string, unknown>> = Readonly<
+  React.PropsWithChildren<BaseGestureHandlerProps<T>>
 >;
 function hasUnresolvedRefs<T extends Record<string, unknown>>(
-  props: HandlerProperties<T>
+  props: HandlerProps<T>
 ) {
   // TODO(TS) - add type for extract arg
   const extract = (refs: any | any[]) => {
@@ -168,9 +168,9 @@ type InternalEventHandlers = {
   onGestureHandlerStateChange?: (event: any) => void;
 };
 
-// TODO(TS) - make sure that BaseGestureHandlerProperties doesn't need other generic parameter to work with custom properties.
+// TODO(TS) - make sure that BaseGestureHandlerProps doesn't need other generic parameter to work with custom properties.
 export default function createHandler<
-  T extends BaseGestureHandlerProperties<U>,
+  T extends BaseGestureHandlerProps<U>,
   U extends Record<string, unknown>
 >({
   name,
@@ -204,7 +204,7 @@ export default function createHandler<
     }
 
     componentDidMount() {
-      const props: HandlerProperties<U> = this.props;
+      const props: HandlerProps<U> = this.props;
       if (hasUnresolvedRefs(props)) {
         // If there are unresolved refs (e.g. ".current" has not yet been set)
         // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
@@ -354,7 +354,7 @@ export default function createHandler<
       let gestureEventHandler = this.onGestureHandlerEvent;
       // Another instance of https://github.com/microsoft/TypeScript/issues/13995
       type OnGestureEventHandlers = {
-        onGestureEvent?: BaseGestureHandlerProperties<U>['onGestureEvent'];
+        onGestureEvent?: BaseGestureHandlerProps<U>['onGestureEvent'];
         onGestureHandlerEvent?: InternalEventHandlers['onGestureHandlerEvent'];
       };
       const {
@@ -385,7 +385,7 @@ export default function createHandler<
       let gestureStateEventHandler = this.onGestureHandlerStateChange;
       // Another instance of https://github.com/microsoft/TypeScript/issues/13995
       type OnGestureStateChangeHandlers = {
-        onHandlerStateChange?: BaseGestureHandlerProperties<U>['onHandlerStateChange'];
+        onHandlerStateChange?: BaseGestureHandlerProps<U>['onHandlerStateChange'];
         onGestureHandlerStateChange?: InternalEventHandlers['onGestureHandlerStateChange'];
       };
       const {
