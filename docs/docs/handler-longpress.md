@@ -36,7 +36,7 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 
 ### `absoluteX`
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. It is recommended to use this instead of [`x`](#x) in cases when the view attached to the handler can be transformed as an effect of the gesture.
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the handler can be transformed as an effect of the gesture.
 
 ### `absoluteY`
 
