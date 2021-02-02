@@ -8,16 +8,7 @@ import { EventMap } from './constants';
 import * as NodeManager from './NodeManager';
 
 // TODO(TS) Replace with HammerInput if https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50438/files is merged
-export type HammerInputExt = Omit<
-  HammerInput,
-  'destroy' | 'handler' | 'init'
-> & {
-  maxPointers: number;
-  timeStamp: number;
-  overallVelocity: number;
-  overallVelocityX: number;
-  overallVelocityY: number;
-};
+export type HammerInputExt = Omit<HammerInput, 'destroy' | 'handler' | 'init'>;
 
 export type Config = Partial<{
   enabled: boolean;
