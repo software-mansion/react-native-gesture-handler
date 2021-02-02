@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { View, requireNativeComponent } from 'react-native';
 
 const GestureHandlerRootViewNative = requireNativeComponent(
@@ -7,9 +7,7 @@ const GestureHandlerRootViewNative = requireNativeComponent(
 
 const GestureHandlerRootViewContext = React.createContext(false);
 
-type Props = Record<string, unknown> & {
-  children: React.ReactNode;
-};
+type Props = PropsWithChildren<Record<string, unknown>>;
 
 export default function GestureHandlerRootView({ children, ...rest }: Props) {
   return (
