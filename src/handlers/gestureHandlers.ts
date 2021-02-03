@@ -177,7 +177,9 @@ export interface ForceTouchGestureHandlerProps
   feedbackOnActivation?: boolean;
 }
 
-export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler;
+export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
+  forceTouchAvailable: boolean;
+};
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
   ? createHandler<
@@ -195,12 +197,7 @@ export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
     })
   : ForceTouchFallback;
 
-type ExtendedForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
-  forceTouchAvailable: boolean;
-};
-
-// TODO(TS): decide if not hacky
-(ForceTouchGestureHandler as ExtendedForceTouchGestureHandler).forceTouchAvailable =
+(ForceTouchGestureHandler as ForceTouchGestureHandler).forceTouchAvailable =
   PlatformConstants?.forceTouchAvailable || false;
 
 export type LongPressGestureHandlerEventPayload = {
