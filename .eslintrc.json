@@ -46,8 +46,6 @@
     "@typescript-eslint/ban-ts-comment": [
       "error",
       {
-        // ↓ TODO ts-nocheck should be removed after transition to TS ↓
-        "ts-nocheck": "allow-with-description",
         "ts-ignore": "allow-with-description",
         "ts-expect-error": "allow-with-description"
       }
