@@ -86,9 +86,9 @@ type StateType = {
   dragX: Animated.Value;
   rowTranslation: Animated.Value;
   rowState: number;
-  leftWidth: number | typeof undefined;
-  rightOffset: number | typeof undefined;
-  rowWidth: number | typeof undefined;
+  leftWidth?: number;
+  rightOffset?: number;
+  rowWidth?: number;
 };
 
 export default class Swipeable extends Component<SwipeableProps, StateType> {
