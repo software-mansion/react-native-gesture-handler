@@ -297,12 +297,12 @@ const screens: Record<string, Touchables> = TOUCHABLES.reduce(
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
-type Item = {
+type ItemProps = {
   onPressItem: () => void;
   item: { text: string };
 };
 
-function Item(props: Item) {
+function Item(props: ItemProps) {
   const { text } = props.item;
   return (
     <RectButton style={styles.button} onPress={() => props.onPressItem()}>

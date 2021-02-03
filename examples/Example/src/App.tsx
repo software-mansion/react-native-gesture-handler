@@ -147,12 +147,12 @@ function ItemSeparator() {
   return <View style={styles.separator} />;
 }
 
-type MainScreenItem = {
+type MainScreenItemProps = {
   item: { key: string; title: string };
   onPressItem: (item: { key: string }) => void;
 };
 
-function MainScreenItem(props: MainScreenItem) {
+function MainScreenItem(props: MainScreenItemProps) {
   const { title } = props.item;
   return (
     <RectButton
