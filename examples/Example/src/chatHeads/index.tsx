@@ -13,12 +13,12 @@ const USE_NATIVE_DRIVER = false;
 const START_X = 0;
 const START_Y = 0;
 
-type State = {
+type TrackingState = {
   width: number;
   height: number;
 };
 
-class Tracking extends Component<Record<string, unknown>, State> {
+class Tracking extends Component<Record<string, unknown>, TrackingState> {
   private dragX: Animated.Value;
   private transX: Animated.Value;
   private follow1x: Animated.Value;
