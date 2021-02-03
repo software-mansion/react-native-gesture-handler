@@ -6,7 +6,7 @@ import {
   Text,
   View,
   Alert,
-  TouchableHighlightProps,
+  TouchableHighlightProps as RNTouchableHighlightProps,
 } from 'react-native';
 
 import {
@@ -36,24 +36,24 @@ const WrappedSlider = createNativeWrapper(Slider, {
   disallowInterruption: true,
 });
 
-type TouchableHighlightPropsType = TouchableHighlightProps & {
+type TouchableHighlightProps = RNTouchableHighlightProps & {
   onClick: () => void;
 };
 
-type TouchableHighlightStateType = {
+type TouchableHighlightState = {
   gestureHandlerState: State;
 };
 
 class TouchableHighlight extends Component<
-  TouchableHighlightPropsType,
-  TouchableHighlightStateType
+  TouchableHighlightProps,
+  TouchableHighlightState
 > {
   static defaultProps = {
     activeOpacity: 0.85,
     underlayColor: 'black',
   };
   // private pressedStyle: { opacity?: number };
-  constructor(props: TouchableHighlightPropsType) {
+  constructor(props: TouchableHighlightProps) {
     super(props);
     this.state = { gestureHandlerState: State.UNDETERMINED };
     // this.pressedStyle = {
@@ -134,12 +134,12 @@ class ControlledSwitch extends React.Component<
   }
 }
 
-type ComboPropsType = {
+type ComboProps = {
   // TODO(TS) what this type can be?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ScrollViewComponent: React.ComponentType<any>;
 };
-class Combo extends Component<ComboPropsType> {
+class Combo extends Component<ComboProps> {
   private onClick = () => {
     Alert.alert("I'm so touched");
     this.scrollView?.scrollTo({ y: 200, animated: true });

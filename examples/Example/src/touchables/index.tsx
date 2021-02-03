@@ -41,7 +41,7 @@ const toReactNativeTouchable = (touchable: React.ComponentType<unknown>) => {
   return RNTouchableOpacity;
 };
 
-type TouchablesType = {
+type Touchables = {
   type: React.ComponentType<any>;
   props?: Record<string, unknown>;
   color?: string;
@@ -50,7 +50,7 @@ type TouchablesType = {
   background?: (A: typeof TouchableNativeFeedback) => BackgroundPropType;
 };
 
-const TOUCHABLES: TouchablesType[] = [
+const TOUCHABLES: Touchables[] = [
   {
     type: TouchableWithoutFeedback,
     props: {},
@@ -290,19 +290,19 @@ const TOUCHABLES: TouchablesType[] = [
   },
 ];
 
-const screens: Record<string, TouchablesType> = TOUCHABLES.reduce(
-  (map: Record<string, TouchablesType>, obj) => ((map[obj.text] = obj), map),
+const screens: Record<string, Touchables> = TOUCHABLES.reduce(
+  (map: Record<string, Touchables>, obj) => ((map[obj.text] = obj), map),
   {}
 );
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
-type ItemType = {
+type Item = {
   onPressItem: () => void;
   item: { text: string };
 };
 
-function Item(props: ItemType) {
+function Item(props: Item) {
   const { text } = props.item;
   return (
     <RectButton style={styles.button} onPress={() => props.onPressItem()}>
@@ -317,18 +317,18 @@ type TouchableParamList = {
   };
 };
 
-type TouchableExamplePropsType = StackScreenProps<
+type TouchableExampleProps = StackScreenProps<
   TouchableParamList,
   'TouchableExample'
 >;
 
-type TouchableExampleStateType = {
+type TouchableExampleState = {
   useScrollView: boolean;
 };
 
 export class TouchableExample extends Component<
-  TouchableExamplePropsType,
-  TouchableExampleStateType
+  TouchableExampleProps,
+  TouchableExampleState
 > {
   state = {
     useScrollView: true,
@@ -381,7 +381,7 @@ export class TouchableExample extends Component<
   }
 }
 
-export function TouchablesIndex({ navigation }: TouchableExamplePropsType) {
+export function TouchablesIndex({ navigation }: TouchableExampleProps) {
   return (
     <FlatList
       style={styles.list}

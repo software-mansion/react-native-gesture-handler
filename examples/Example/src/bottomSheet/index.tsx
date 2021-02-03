@@ -19,14 +19,15 @@ import {
 import { LoremIpsum } from '../common';
 import { USE_NATIVE_DRIVER } from '../config';
 
-type StateType = {
+type State = {
   lastSnap: number;
 };
 
 const HEADER_HEIGHT = 50;
 const windowHeight = Dimensions.get('window').height;
 const SNAP_POINTS_FROM_TOP = [50, windowHeight * 0.4, windowHeight * 0.8];
-export class BottomSheet extends Component<Record<string, unknown>, StateType> {
+
+export class BottomSheet extends Component<Record<string, unknown>, State> {
   private masterdrawer = React.createRef<TapGestureHandler>();
   private drawer = React.createRef<PanGestureHandler>();
   private drawerheader = React.createRef<PanGestureHandler>();

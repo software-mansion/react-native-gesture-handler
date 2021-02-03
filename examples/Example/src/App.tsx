@@ -26,13 +26,13 @@ import { TouchablesIndex, TouchableExample } from './touchables';
 import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
 import ChatHeads from './chatHeads';
 
-type ScreensType = Record<
+type Screens = Record<
   string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { component: React.ComponentType<any>; title?: string }
 >;
 
-const SCREENS: ScreensType = {
+const SCREENS: Screens = {
   Rows: { component: Rows, title: 'Table rows & buttons' },
   Multitap: { component: Multitap },
   Draggable: { component: Draggable },
@@ -147,12 +147,12 @@ function ItemSeparator() {
   return <View style={styles.separator} />;
 }
 
-type MainScreenItemType = {
+type MainScreenItem = {
   item: { key: string; title: string };
   onPressItem: (item: { key: string }) => void;
 };
 
-function MainScreenItem(props: MainScreenItemType) {
+function MainScreenItem(props: MainScreenItem) {
   const { title } = props.item;
   return (
     <RectButton

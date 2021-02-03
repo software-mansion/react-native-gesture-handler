@@ -17,7 +17,7 @@ import DrawerLayout, {
 const TYPES: DrawerType[] = ['front', 'back', 'back', 'slide'];
 const PARALLAX = [false, false, true, false];
 
-type PageType = {
+type Page = {
   fromLeft: boolean;
   type: DrawerType;
   parallaxOn: boolean;
@@ -33,7 +33,7 @@ const Page = ({
   flipSide,
   nextType,
   openDrawer,
-}: PageType) => (
+}: Page) => (
   <View style={styles.page}>
     <Text style={styles.pageText}>Hi 👋</Text>
     <RectButton style={styles.rectButton} onPress={flipSide}>

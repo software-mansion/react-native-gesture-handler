@@ -25,18 +25,18 @@ import { LoremIpsum } from '../common';
 
 const RATIO = 3;
 
-type PropsType = {
+type Props = {
   enableTrackpadTwoFingerGesture: boolean;
 };
 
-export class Swipeable extends Component<PropsType> {
+export class Swipeable extends Component<Props> {
   private width: number;
   private dragX: Animated.Value;
   private transX: Animated.AnimatedInterpolation;
   private showLeftAction: Animated.AnimatedInterpolation;
   private showRightAction: Animated.AnimatedInterpolation;
   private onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
-  constructor(props: PropsType) {
+  constructor(props: Props) {
     super(props);
     this.width = 0;
     this.dragX = new Animated.Value(0);
