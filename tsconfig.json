@@ -10,7 +10,6 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
-    "allowJs": true,
     "declaration": true,
     "declarationMap": true,
     "noStrictGenericChecks": false,
