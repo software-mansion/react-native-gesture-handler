@@ -15,7 +15,7 @@ import {
   HandlerStateChangeEvent,
 } from '../../handlers/gestureHandlers';
 import { NativeViewGestureHandlerPayload } from '../../handlers/NativeViewGestureHandler';
-import { TouchableNativeFeedbackExtraPropsType } from './TouchableNativeFeedback.android';
+import { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedback.android';
 
 /**
  * Each touchable is a states' machine which preforms transitions.
@@ -30,7 +30,7 @@ export const TOUCHABLE_STATE = {
   MOVED_OUTSIDE: 2,
 } as const;
 
-type TouchableStateType = typeof TOUCHABLE_STATE[keyof typeof TOUCHABLE_STATE];
+type TouchableState = typeof TOUCHABLE_STATE[keyof typeof TOUCHABLE_STATE];
 
 export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
   // Decided to drop not used fields from RN's implementation.
@@ -50,11 +50,8 @@ export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
 }
 
 interface InternalProps {
-  extraButtonProps: TouchableNativeFeedbackExtraPropsType;
-  onStateChange?: (
-    oldState: TouchableStateType,
-    newState: TouchableStateType
-  ) => void;
+  extraButtonProps: TouchableNativeFeedbackExtraProps;
+  onStateChange?: (oldState: TouchableState, newState: TouchableState) => void;
 }
 
 // TODO: maybe can be better
@@ -87,7 +84,7 @@ export default class GenericTouchable extends Component<
   pointerInside = true;
 
   // State of touchable
-  STATE: TouchableStateType = TOUCHABLE_STATE.UNDETERMINED;
+  STATE: TouchableState = TOUCHABLE_STATE.UNDETERMINED;
 
   // handlePressIn in called on first touch on traveling inside component.
   // Handles state transition with delay.
@@ -156,7 +153,7 @@ export default class GenericTouchable extends Component<
   }
 
   // All states' transitions are defined here.
-  moveToState(newState: TouchableStateType) {
+  moveToState(newState: TouchableState) {
     if (newState === this.STATE) {
       // Ignore dummy transitions
       return;

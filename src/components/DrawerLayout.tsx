@@ -89,7 +89,7 @@ export type EventType = {
   stopPropagation: () => void; // TODO(TS): unused type;
 };
 
-export type DrawerMovementOptionType = {
+export type DrawerMovementOption = {
   velocity?: number;
   speed?: number;
 };
@@ -417,7 +417,7 @@ export default class DrawerLayout extends Component<
     });
   };
 
-  openDrawer = (options: DrawerMovementOptionType = {}) => {
+  openDrawer = (options: DrawerMovementOption = {}) => {
     this.animateDrawer(
       // TODO: decide if it should be null or undefined is the proper value
       undefined,
@@ -429,7 +429,7 @@ export default class DrawerLayout extends Component<
     this.forceUpdate();
   };
 
-  closeDrawer = (options: DrawerMovementOptionType = {}) => {
+  closeDrawer = (options: DrawerMovementOption = {}) => {
     // TODO: decide if it should be null or undefined is the proper value
     this.animateDrawer(undefined, 0, options.velocity ? options.velocity : 0);
 

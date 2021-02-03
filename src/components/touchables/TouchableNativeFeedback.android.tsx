@@ -6,7 +6,7 @@ import {
 import React, { Component } from 'react';
 import GenericTouchable, { GenericTouchableProps } from './GenericTouchable';
 
-export type TouchableNativeFeedbackExtraPropsType = {
+export type TouchableNativeFeedbackExtraProps = {
   borderless?: boolean;
   rippleColor?: number | null;
   rippleRadius?: number | null;
@@ -57,7 +57,7 @@ export default class TouchableNativeFeedback extends Component<
   static canUseNativeForeground = () => Platform.Version >= 23;
 
   getExtraButtonProps() {
-    const extraProps: TouchableNativeFeedbackExtraPropsType = {};
+    const extraProps: TouchableNativeFeedbackExtraProps = {};
     const { background } = this.props;
     if (background) {
       // I changed type values to match those used in RN
