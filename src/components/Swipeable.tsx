@@ -82,7 +82,7 @@ interface SwipeableProps
   childrenContainerStyle?: StyleProp<ViewStyle>;
 }
 
-type StateType = {
+type State = {
   dragX: Animated.Value;
   rowTranslation: Animated.Value;
   rowState: number;
@@ -91,7 +91,7 @@ type StateType = {
   rowWidth?: number;
 };
 
-export default class Swipeable extends Component<SwipeableProps, StateType> {
+export default class Swipeable extends Component<SwipeableProps, State> {
   static defaultProps = {
     friction: 1,
     overshootFriction: 1,
@@ -117,7 +117,7 @@ export default class Swipeable extends Component<SwipeableProps, StateType> {
     );
   }
 
-  UNSAFE_componentWillUpdate(props: SwipeableProps, state: StateType) {
+  UNSAFE_componentWillUpdate(props: SwipeableProps, state: State) {
     if (
       this.props.friction !== props.friction ||
       this.props.overshootLeft !== props.overshootLeft ||
@@ -140,7 +140,7 @@ export default class Swipeable extends Component<SwipeableProps, StateType> {
   private showRightAction?: Animated.AnimatedInterpolation | Animated.Value;
   private rightActionTranslate?: Animated.AnimatedInterpolation;
 
-  private updateAnimatedEvent = (props: SwipeableProps, state: StateType) => {
+  private updateAnimatedEvent = (props: SwipeableProps, state: State) => {
     const { friction, overshootFriction } = props;
     const { dragX, rowTranslation, leftWidth = 0, rowWidth = 0 } = state;
     const { rightOffset = rowWidth } = state;

@@ -85,10 +85,6 @@ export type DrawerLayoutState = {
   containerWidth: number;
 };
 
-export type EventType = {
-  stopPropagation: () => void; // TODO(TS): unused type;
-};
-
 export type DrawerMovementOption = {
   velocity?: number;
   speed?: number;
