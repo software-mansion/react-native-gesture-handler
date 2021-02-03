@@ -3,14 +3,13 @@
   "version": "1.9.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
-    "lint": "eslint --ext '.js,.ts,.tsx' src/",
     "prepare": "rm -r dist/ ; yarn build",
     "test": "jest",
     "build": "yarn tsc",
     "precommit": "lint-staged",
     "release": "npm login && release-it",
     "ts-check": "yarn tsc --noEmit",
-    "lint-check": "yarn eslint src/ && yarn prettier --check src/"
+    "lint-check": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check src/"
   },
   "react-native": "index",
   "main": "dist/index.js",
