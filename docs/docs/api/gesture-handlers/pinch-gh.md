@@ -1,7 +1,7 @@
 ---
-id: handler-pinch
+id: pinch-gh
 title: PinchGestureHandler
-sidebar_label: PinchGestureHandler
+sidebar_label: Pinch
 ---
 
 A continuous gesture handler that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
@@ -17,11 +17,11 @@ The handler is implemented using [UIPinchGestureRecognizer](https://developer.ap
 
 ## Properties
 
-Properties provided to `PinchGestureHandler` do not extend [common set of properties from base handler class](handler-common.md#properties).
+Properties provided to `PinchGestureHandler` do not extend [common set of properties from base handler class](common-gh#properties).
 
 ## Event data
 
-See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `PinchGestureHandler`:
+See [set of event attributes from base handler class](common-gh#event-data). Below is a list of gesture event attributes specific to `PinchGestureHandler`:
 
 ### `scale`
 

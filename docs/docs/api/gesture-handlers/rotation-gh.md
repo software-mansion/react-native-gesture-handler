@@ -1,7 +1,7 @@
 ---
-id: handler-rotation
+id: rotation-gh
 title: RotationGestureHandler
-sidebar_label: RotationGestureHandler
+sidebar_label: Rotation
 ---
 
 A continuous gesture handler that recognizes rotation gesture and allows for tracking its movement.
@@ -13,11 +13,11 @@ The handler is implemented using [UIRotationGestureRecognizer](https://developer
 
 ## Properties
 
-Properties provided to `RotationGestureHandler` do not extend [common set of properties from base handler class](handler-common.md#properties).
+Properties provided to `RotationGestureHandler` do not extend [common set of properties from base handler class](common-gh#properties).
 
 ## Event data
 
-See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
+See [set of event attributes from base handler class](common-gh#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
 
 ### `rotation`
 

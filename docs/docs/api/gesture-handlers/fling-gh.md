@@ -1,7 +1,7 @@
 ---
-id: handler-fling
+id: fling-gh
 title: FlingGestureHandler
-sidebar_label: FlingGestureHandler
+sidebar_label: Fling
 ---
 
 A discrete gesture handler that activates when the movement is sufficiently long and fast.
@@ -12,7 +12,7 @@ The handler is implemented using [UISwipeGestureRecognizer](https://developer.ap
 
 ## Properties
 
-See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `FlingGestureHandler` component:
+See [set of properties inherited from base handler class](common-gh#properties). Below is a list of properties specific to `FlingGestureHandler` component:
 
 ### `direction`
 
@@ -34,7 +34,7 @@ Determine exact number of points required to handle the fling gesture.
 
 ## Event data
 
-See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `FlingGestureHandler`:
+See [set of event attributes from base handler class](common-gh#event-data). Below is a list of gesture event attributes specific to `FlingGestureHandler`:
 
 ### `x`
 
