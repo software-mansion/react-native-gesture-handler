@@ -1,7 +1,7 @@
 ---
-id: handler-common
+id: common-gh
 title: Common handler properties
-sidebar_label: BaseGestureHandler
+sidebar_label: Common handler properties
 ---
 
 This page covers the common set of properties all gesture handler components expose.
@@ -18,7 +18,7 @@ This section describes properties that can be used with all gesture handler comp
 
 ### `enabled`
 
-Accepts a boolean value. 
+Accepts a boolean value.
 Indicates whether the given handler should be analyzing stream of touch events or not.
 When set to `false` we can be sure that the handler's state will **never** become [`ACTIVE`](state.md#active).
 If the value gets updated while the handler already started recognizing a gesture, then the handler's state it will immediately change to [`FAILED`](state.md#failed) or [`CANCELLED`](state.md#cancelled) (depending on its current state).
@@ -29,7 +29,7 @@ Default value is `true`.
 Accepts a boolean value.
 When `true` the handler will [cancel](state.md#cancelled) or [fail](state.md#failed) recognition (depending on its current state) whenever the finger leaves the area of the connected view.
 Default value of this property is different depending on the handler type.
-Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGestureHandler`](handler-longpress.md) and [`TapGestureHandler`](handler-tap.md) which default to `true`.
+Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGestureHandler`](longpress-gh) and [`TapGestureHandler`](tap-gh) which default to `true`.
 
 ### `simultaneousHandlers`
 
@@ -55,7 +55,7 @@ Specifying `width` or `height` is useful if we only want the gesture to activate
 
 ### `onGestureEvent`
 
-Takes a callback that is going to be triggered for each subsequent touch event while the handler is in an [ACTIVE](state.md#active) state. Event payload depends on the particular handler type. Common set of event data attributes is documented [below](#event-data) and handler specific attributes are documented on the corresponding handler pages. E.g. event payload for [`PinchGestureHandler`](handler-rotation.md#event-data) contains `scale` attribute that represents how the distance between fingers changed since when the gesture started.
+Takes a callback that is going to be triggered for each subsequent touch event while the handler is in an [ACTIVE](state.md#active) state. Event payload depends on the particular handler type. Common set of event data attributes is documented [below](#event-data) and handler specific attributes are documented on the corresponding handler pages. E.g. event payload for [`PinchGestureHandler`](rotation-gh#event-data) contains `scale` attribute that represents how the distance between fingers changed since when the gesture started.
 
 Instead of a callback [`Animated.event`](https://facebook.github.io/react-native/docs/animated.html#event) object can be used. Also Animated events with `useNativeDriver` flag enabled **are fully supported**.
 

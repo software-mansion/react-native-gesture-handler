@@ -1,5 +1,5 @@
 ---
-id: component-swipeable
+id: swipeable
 title: Swipeable
 sidebar_label: Swipeable
 ---

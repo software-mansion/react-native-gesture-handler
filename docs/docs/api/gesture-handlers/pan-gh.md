@@ -1,7 +1,7 @@
 ---
-id: handler-pan
+id: pan-gh
 title: PanGestureHandler
-sidebar_label: PanGestureHandler
+sidebar_label: Pan
 ---
 
 A continuous gesture handler that can recognize a panning (dragging) gesture and track its movement.
@@ -40,7 +40,7 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 
 ## Properties
 
-See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `PanGestureHandler` component:
+See [set of properties inherited from base handler class](common-gh#properties). Below is a list of properties specific to `PanGestureHandler` component:
 
 ### `minDist`
 
@@ -122,7 +122,7 @@ Enables two-finger gestures on supported devices, for example iPads with trackpa
 
 ## Event data
 
-See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `PanGestureHandler`:
+See [set of event attributes from base handler class](common-gh#event-data). Below is a list of gesture event attributes specific to `PanGestureHandler`:
 
 ### `translationX`
 
