@@ -5,8 +5,8 @@ sidebar_label: Fling
 ---
 
 A discrete gesture handler that activates when the movement is sufficiently long and fast.
-Handler gets [ACTIVE](state#active) when movement is sufficiently long and it does not take too much time.
-When handler gets activated it will turn into [END](state#end) state when finger is released.
+Handler gets [ACTIVE](../../state#active) when movement is sufficiently long and it does not take too much time.
+When handler gets activated it will turn into [END](../../state#end) state when finger is released.
 The handler will fail to recognize if the finger is lifted before being activated.
 The handler is implemented using [UISwipeGestureRecognizer](https://developer.apple.com/documentation/uikit/uiswipegesturerecognizer) on iOS and from scratch on Android.
 
@@ -54,7 +54,7 @@ Y coordinate of the current position of the pointer (finger or a leading pointer
 
 ## Example
 
-See the [fling example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/fling/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [fling example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/fling/index.js) from [GestureHandler Example App](../../example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 const LongPressButton = () => (
