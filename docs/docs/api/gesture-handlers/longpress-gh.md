@@ -1,7 +1,7 @@
 ---
-id: handler-longpress
+id: longpress-gh
 title: LongPressGestureHandler
-sidebar_label: LongPressGestureHandler
+sidebar_label: Long press
 ---
 
 A discrete gesture handler that activates when the corresponding view is pressed for a sufficiently long time.
@@ -12,7 +12,7 @@ The handler is implemented using [UILongPressGestureRecognizer](https://develope
 
 ## Properties
 
-See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to the `LongPressGestureHandler` component:
+See [set of properties inherited from base handler class](common-gh#properties). Below is a list of properties specific to the `LongPressGestureHandler` component:
 
 ### `minDurationMs`
 
@@ -24,7 +24,7 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 
 ## Event data
 
-See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to the `LongPressGestureHandler` component:
+See [set of event attributes from base handler class](common-gh#event-data). Below is a list of gesture event attributes specific to the `LongPressGestureHandler` component:
 
 ### `x`
 

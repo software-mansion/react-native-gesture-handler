@@ -1,7 +1,7 @@
 ---
-id: handler-force
+id: force-gh
 title: ForceTouchGestureHandler (iOS only)
-sidebar_label: ForceTouchGestureHandler
+sidebar_label: Force touch
 ---
 
 A continuous gesture handler that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.
@@ -15,7 +15,7 @@ Since this behaviour is only provided on some iOS devices, this handler should n
 
 # Properties
 
-See [set of properties inherited from base handler class](handler-common.md#properties). Below is a list of properties specific to `ForceTouchGestureHandler` component:
+See [set of properties inherited from base handler class](common-gh#properties). Below is a list of properties specific to `ForceTouchGestureHandler` component:
 
 ### `minForce`
 
@@ -31,7 +31,7 @@ Boolean value defining if haptic feedback has to be performed on activation.
 
 ## Event data
 
-See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `ForceTouchGestureHandler`:
+See [set of event attributes from base handler class](common-gh#event-data). Below is a list of gesture event attributes specific to `ForceTouchGestureHandler`:
 
 ### `force`
 
