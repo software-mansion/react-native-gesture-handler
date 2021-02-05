@@ -1,4 +1,10 @@
 import {
+  BaseButtonProps,
+  BorderlessButtonProps,
+  RawButtonProps,
+  RectButtonProps,
+} from '../components/GestureButtons';
+import {
   FlingGestureHandlerEventPayload,
   ForceTouchGestureHandlerEventPayload,
   GestureEvent,
@@ -13,11 +19,12 @@ import {
 } from './gestureHandlers';
 import { NativeViewGestureHandlerPayload } from './NativeViewGestureHandler';
 
+// events
 export type GestureHandlerGestureEventNativeEvent = GestureEventPayload;
 export type GestureHandlerStateChangeNativeEvent = HandlerStateChangeEventPayload;
 export type GestureHandlerGestureEvent = GestureEvent;
 export type GestureHandlerStateChangeEvent = HandlerStateChangeEvent;
-
+// gesture handlers events
 export type NativeViewGestureHandlerGestureEvent = GestureEvent<NativeViewGestureHandlerPayload>;
 export type NativeViewGestureHandlerStateChangeEvent = HandlerStateChangeEvent<NativeViewGestureHandlerPayload>;
 
@@ -41,3 +48,9 @@ export type RotationGestureHandlerStateChangeEvent = HandlerStateChangeEvent<Rot
 
 export type FlingGestureHandlerGestureEvent = GestureEvent<FlingGestureHandlerEventPayload>;
 export type FlingGestureHandlerStateChangeEvent = HandlerStateChangeEvent<FlingGestureHandlerEventPayload>;
+
+// button props
+export type RawButtonProperties = RawButtonProps;
+export type BaseButtonProperties = BaseButtonProps;
+export type RectButtonProperties = RectButtonProps;
+export type BorderlessButtonProperties = BorderlessButtonProps;
