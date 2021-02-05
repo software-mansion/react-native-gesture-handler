@@ -17,6 +17,14 @@ export {
   PinchGestureHandlerEventPayload,
   RotationGestureHandlerEventPayload,
   FlingGestureHandlerEventPayload,
+  // gesture handlers props types
+  TapGestureHandlerProps,
+  ForceTouchGestureHandlerProps,
+  LongPressGestureHandlerProps,
+  PanGestureHandlerProps,
+  PinchGestureHandlerProps,
+  RotationGestureHandlerProps,
+  FlingGestureHandlerProps,
   // gesture handlers
   TapGestureHandler,
   ForceTouchGestureHandler,
@@ -34,6 +42,12 @@ export {
 } from './src/handlers/NativeViewGestureHandler';
 
 export {
+  // buttons props
+  RawButtonProps,
+  BaseButtonProps,
+  RectButtonProps,
+  BorderlessButtonProps,
+  // buttons
   RawButton,
   BaseButton,
   RectButton,
@@ -78,4 +92,12 @@ export {
 } from './src/handlers/gestureHandlerTypesCompat';
 
 export { default as Swipeable } from './src/components/Swipeable';
-export { default as DrawerLayout } from './src/components/DrawerLayout';
+export {
+  default as DrawerLayout,
+  DrawerLayoutProps,
+  DrawerPosition,
+  DrawerState,
+  DrawerType,
+  DrawerLockMode,
+  DrawerKeyboardDismissMode,
+} from './src/components/DrawerLayout';
