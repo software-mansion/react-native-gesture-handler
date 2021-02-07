@@ -1,7 +1,7 @@
 ---
 id: handler-rotation
 title: RotationGestureHandler
-sidebar_label: RotationGestureHandler
+sidebar_label: Rotation
 ---
 
 A continuous gesture handler that can recognize a rotation gesture and track its movement.
@@ -14,11 +14,11 @@ The handler is implemented using [UIRotationGestureRecognizer](https://developer
 
 ## Properties
 
-Properties provided to `RotationGestureHandler` do not extend [common set of properties from base handler class](handler-common.md#properties).
+Properties provided to `RotationGestureHandler` do not extend [common set of properties from base handler class](common-gh#properties).
 
 ## Event data
 
-See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
+See [set of event attributes from base handler class](common-gh#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
 
 ### `rotation`
 
@@ -38,7 +38,7 @@ Y coordinate, expressed in points, of the gesture's central focal point (anchor)
 
 ## Example
 
-See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/scaleAndRotate/index.js) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/scaleAndRotate/index.js) from [GestureHandler Example App](../../example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 class RotableBox extends React.Component {
@@ -52,7 +52,7 @@ class RotableBox extends React.Component {
     [{ nativeEvent: { rotation: this._rotate } }],
     { useNativeDriver: USE_NATIVE_DRIVER }
   );
-  _onRotateHandlerStateChange = event => {
+  _onRotateHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this._lastRotate += event.nativeEvent.rotation;
       this._rotate.setOffset(this._lastRotate);
