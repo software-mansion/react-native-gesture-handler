@@ -1,5 +1,5 @@
 ---
-id: handler-rotation
+id: rotation-gh
 title: RotationGestureHandler
 sidebar_label: Rotation
 ---
