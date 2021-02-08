@@ -11,7 +11,7 @@
     "strict": true,
     "target": "esnext",
     "declaration": true,
-    "declarationMap": true,
+    "declarationMap": false,
     "noStrictGenericChecks": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitUseStrict": false,
