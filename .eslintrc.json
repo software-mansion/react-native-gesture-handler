@@ -1,0 +1,54 @@
+{
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "satya164"
+  ],
+  "settings": {
+    "react": { "version": "16" },
+    "import/resolver": {
+      "babel-module": {}
+    }
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "env": { "browser": true, "node": true, "jest/globals": true },
+  "plugins": ["jest"],
+  "ignorePatterns": ["dist/**/*"],
+  "rules": {
+    // temporary, remove after we type internals better
+    "@typescript-eslint/restrict-template-expressions": "warn",
+    "@typescript-eslint/no-unsafe-member-access": "warn",
+    "@typescript-eslint/no-unsafe-call": "warn",
+    "@typescript-eslint/no-unsafe-assignment": "warn",
+    "@typescript-eslint/no-unsafe-return": "warn",
+
+    // common
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "import/named": "off",
+    "react/sort-comp": "off",
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "all"
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_" }
+    ],
+    "no-redeclare": "off",
+    "@typescript-eslint/no-redeclare": "error",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": "error",
+    "@typescript-eslint/ban-ts-comment": [
+      "error",
+      {
+        "ts-ignore": "allow-with-description",
+        "ts-expect-error": "allow-with-description"
+      }
+    ]
+  }
+}

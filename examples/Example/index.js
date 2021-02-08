@@ -1,5 +1,4 @@
 import { AppRegistry } from 'react-native';
+import App from './src/App';
 
-import ExampleApp from './App';
-
-AppRegistry.registerComponent('Example', () => ExampleApp);
+AppRegistry.registerComponent('Example', () => App);

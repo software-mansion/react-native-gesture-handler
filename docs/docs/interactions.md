@@ -4,7 +4,7 @@ title: Cross handler interactions
 sidebar_label: Cross handler interactions
 ---
 
-Gesture handlers can "communicate" with each other to support complex gestures and control how they *[activate](state.md#active)* in certain scenarios.
+Gesture handlers can "communicate" with each other to support complex gestures and control how they _[activate](state.md#active)_ in certain scenarios.
 
 There are two means of achieving that described in the sections below.
 In each case, it is necessary to provide a reference of one handler as a property to the other.
@@ -28,7 +28,7 @@ In this case we would use a [`PinchGestureHandler`](api/gesture-handlers/pinch-g
 
 ### Example
 
-See the ["Scale, rotate & tilt" example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/scaleAndRotate/index.js) from the [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the ["Scale, rotate & tilt" example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/scaleAndRotate/index.tsx) from the [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 class PinchableBox extends React.Component {
@@ -76,7 +76,7 @@ Otherwise if we try to perform a double tap the single tap handler will fire jus
 
 ### Example
 
-See the ["Multitap" example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/multitap/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the ["Multitap" example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/multitap/index.tsx) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 const doubleTap = React.createRef();

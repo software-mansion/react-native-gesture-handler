@@ -20,7 +20,6 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
-xcshareddata
 
 # Android/IntelliJ
 #
@@ -29,6 +28,10 @@ build/
 .gradle
 local.properties
 *.iml
+
+# Visual Studio Code
+#
+.vscode/
 
 # node.js
 #
@@ -58,7 +61,3 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
-
-# Expo
-/.expo
-/web-build

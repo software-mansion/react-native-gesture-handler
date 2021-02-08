@@ -1,44 +1,45 @@
 matrix:
   include:
-    - language: objective-c
-      os: osx
-      osx_image: xcode12.2
-      xcode_workspace: './e2e/ios/ExampleE2E.xcworkspace'
-      xcode_scheme: ExampleE2E
-      podfile: './e2e/ios/Podfile'
-      xcode_sdk: iphonesimulator12.4
-      xcode_destination: platform=iOS Simulator,OS=12.4,name=iPhone X
-      env: NODE_VERSION=10.19.0
+    # Fix this config
+    # - language: objective-c
+    #   os: osx
+    #   osx_image: xcode12.2
+    #   xcode_workspace: './e2e/ios/ExampleE2E.xcworkspace'
+    #   xcode_scheme: ExampleE2E
+    #   podfile: './e2e/ios/Podfile'
+    #   xcode_sdk: iphonesimulator12.4
+    #   xcode_destination: platform=iOS Simulator,OS=12.4,name=iPhone X
+    #   env: NODE_VERSION=10.19.0
 
-      branches:
-        only:
-          - master
+    #   branches:
+    #     only:
+    #       - master
 
-      cache: yarn
+    #   cache: yarn
 
-      install:
-        - nvm --version
-        - echo $NODE_VERSION
-        - sudo launchctl limit maxfiles 2048 unlimited
-        - sudo ulimit -n 10000
-        - brew tap wix/brew
-        - brew install applesimutils
-        - nvm install $NODE_VERSION
-        - nvm use $NODE_VERSION
-        - nvm alias default $NODE_VERSION
-        - brew install yarn --ignore-dependencies
-        - npm install -g react-native-cli
-        - npm install -g detox-cli
-        - yarn
-        - cd ci/e2e
-        - yarn
-        - cd ios
-        - pod install
-        - cd ..
-        - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
-        - detox build -c ios.sim.release | xcpretty
-      script:
-        - detox test -c ios.sim.release --no-color --headless --cleanup
+    #   install:
+    #     - nvm --version
+    #     - echo $NODE_VERSION
+    #     - sudo launchctl limit maxfiles 2048 unlimited
+    #     - sudo ulimit -n 10000
+    #     - brew tap wix/brew
+    #     - brew install applesimutils
+    #     - nvm install $NODE_VERSION
+    #     - nvm use $NODE_VERSION
+    #     - nvm alias default $NODE_VERSION
+    #     - brew install yarn --ignore-dependencies
+    #     - npm install -g react-native-cli
+    #     - npm install -g detox-cli
+    #     - yarn
+    #     - cd ci/e2e
+    #     - yarn
+    #     - cd ios
+    #     - pod install
+    #     - cd ..
+    #     - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
+    #     - detox build -c ios.sim.release | xcpretty
+    #   script:
+    #     - detox test -c ios.sim.release --no-color --headless --cleanup
 
     - language: android
       dist: trusty
@@ -57,8 +58,9 @@ matrix:
         components:
           - tools
           - platform-tools
+          - build-tools-29.0.2
           - build-tools-28.0.3
-          - android-28
+          - android-29
       install:
         - nvm install $NODE_VERSION
         - nvm use $NODE_VERSION
@@ -76,8 +78,8 @@ matrix:
     - language: objective-c
       os: osx
       osx_image: xcode12.2
-      xcode_workspace: './Example/ios/GestureHandler.xcworkspace'
-      xcode_scheme: GestureHandler
+      xcode_workspace: './Example/ios/Example.xcworkspace'
+      xcode_scheme: Example
       podfile: './Example/ios/Podfile'
       xcode_sdk: iphonesimulator12.2
       xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
@@ -107,4 +109,19 @@ matrix:
         - export PRODUCT_BUNDLE_IDENTIFIER="com.swmansion.rn_gesture_handler_example"
 
       script:
-        - xcodebuild -workspace ios/GestureHandler.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme GestureHandler -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES
+        - xcodebuild -workspace ios/Example.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme Example -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES | xcpretty
+
+    - language: node_js
+      node_js:
+        - 12
+      cache:
+        directories:
+          - node_modules
+      script:
+        - yarn
+        - yarn tsc --noEmit
+        - yarn lint-check
+        - cd examples/Example
+        - yarn
+        - yarn tsc --noEmit
+        - yarn lint-check

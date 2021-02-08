@@ -6,8 +6,13 @@ sidebar_label: Pan
 
 A continuous gesture handler that can recognize a panning (dragging) gesture and track its movement.
 
+<<<<<<< HEAD:docs/docs/handler-pan.md
+The handler [activates](state.md#active) when a finger is placed on the screen and moved some initial distance.
+=======
 The handler [activates](../../state.md#active) when a finger is placed on the screen and moved some initial distance.
-Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](#minPointers) required for activation (allowing for multifinger swipes) may be specified.
+
+> > > > > > > origin/master:docs/docs/api/gesture-handlers/pan-gh.md
+> > > > > > > Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](#minPointers) required for activation (allowing for multifinger swipes) may be specified.
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
 
@@ -158,7 +163,7 @@ Y coordinate of the current position of the pointer (finger or a leading pointer
 
 ## Example
 
-See the [draggable example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/draggable/index.js) from [GestureHandler Example App](../../example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [draggable example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/draggable/index.tsx) from [GestureHandler Example App](../../example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 const circleRadius = 30;

@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "esnext",
+    "declaration": true,
+    "declarationMap": true,
+    "noStrictGenericChecks": false,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitUseStrict": false,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "outDir": "./dist"
+  },
+  "include": ["index.ts", "src/**/*.ts", "src/**/*.tsx"]
+}
