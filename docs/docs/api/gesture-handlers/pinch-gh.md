@@ -1,11 +1,11 @@
 ---
-id: handler-pinch
+id: pinch-gh
 title: PinchGestureHandler
-sidebar_label: PinchGestureHandler
+sidebar_label: Pinch
 ---
 
 A continuous gesture handler that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
-The handler [activates](state.md#active) when fingers are placed on the screen and change their position.
+The handler [activates](../../state.md#active) when fingers are placed on the screen and change their position.
 Gesture callback can be used for continuous tracking of the pinch gesture. It provides information about velocity, anchor (focal) point of gesture and scale.
 
 The distance between the fingers is reported as a scale factor. At the beginning of the gesture, the scale factor is 1.0. As the distance between the two fingers increases, the scale factor increases proportionally.
@@ -17,11 +17,11 @@ The handler is implemented using [UIPinchGestureRecognizer](https://developer.ap
 
 ## Properties
 
-Properties provided to `PinchGestureHandler` do not extend [common set of properties from base handler class](handler-common.md#properties).
+Properties provided to `PinchGestureHandler` do not extend [common set of properties from base handler class](common-gh#properties).
 
 ## Event data
 
-See [set of event attributes from base handler class](handler-common.md#event-data). Below is a list of gesture event attributes specific to `PinchGestureHandler`:
+See [set of event attributes from base handler class](common-gh#event-data). Below is a list of gesture event attributes specific to `PinchGestureHandler`:
 
 ### `scale`
 
@@ -41,7 +41,7 @@ Position expressed in points along Y axis of center anchor point of gesture
 
 ## Example
 
-See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/scaleAndRotate/index.tsx) from [GestureHandler Example App](example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/scaleAndRotate/index.tsx) from [GestureHandler Example App](../../example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 export class PinchableBox extends React.Component {
