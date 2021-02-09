@@ -1,16 +1,19 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "1.8.0",
+  "version": "1.10.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "prepare": "rm -r dist/ ; yarn build",
     "test": "jest",
+    "build": "yarn tsc",
     "precommit": "lint-staged",
-    "web": "expo start:web",
-    "release": "npm login && release-it"
+    "release": "npm login && release-it",
+    "ts-check": "yarn tsc --noEmit",
+    "lint-check": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check src/"
   },
-  "main": "index.js",
-  "types": "react-native-gesture-handler.d.ts",
+  "react-native": "index",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "android/build.gradle",
     "android/src/main/AndroidManifest.xml",
@@ -18,39 +21,14 @@
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "ios/",
-    "web/",
-    "__mocks__/",
-    "touchables/**/*.js",
-    "createHandler.js",
-    "Directions.js",
-    "DrawerLayout.js",
-    "GestureHandler.js",
-    "Gestures.js",
-    "GestureButtons.js",
-    "GestureComponents.js",
-    "GestureComponents.web.js",
-    "createNativeWrapper.js",
-    "GestureHandlerPropTypes.js",
-    "NativeViewGestureHandler.js",
-    "GestureHandlerButton.js",
-    "GestureHandlerRootView.js",
-    "GestureHandlerRootView.android.js",
-    "GestureHandlerRootView.android.expo.js",
-    "GestureHandlerButton.web.js",
-    "gestureHandlerRootHOC.android.js",
-    "gestureHandlerRootHOC.ios.js",
-    "gestureHandlerRootHOC.js",
-    "index.js",
-    "PlatformConstants.js",
-    "PlatformConstants.web.js",
-    "react-native-gesture-handler.d.ts",
+    "src/",
+    "dist/",
+    "index.ts",
+    "Swipeable/",
+    "DrawerLayout/",
     "README.md",
-    "RNGestureHandlerModule.js",
-    "RNGestureHandlerModule.web.js",
     "jestSetup.js",
-    "RNGestureHandler.podspec",
-    "State.js",
-    "Swipeable.js"
+    "RNGestureHandler.podspec"
   ],
   "repository": {
     "type": "git",
@@ -68,6 +46,8 @@
   "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
   "dependencies": {
     "@egjs/hammerjs": "^2.0.17",
+    "@types/hammerjs": "^2.0.38",
+    "fbjs": "^3.0.0",
     "hoist-non-react-statics": "^3.3.0",
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2"
@@ -76,24 +56,38 @@
     "preset": "jest-react-native"
   },
   "devDependencies": {
-    "@expo/webpack-config": "^0.10.4",
-    "@types/react": "^16.8.6",
-    "@types/react-native": "^0.60.0",
-    "babel-jest": "16.0.0",
-    "babel-preset-expo": "^7.1.0",
+    "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-typescript": "^7.12.7",
+    "@babel/runtime": "^7.12.5",
+    "@types/hoist-non-react-statics": "^3.3.1",
+    "@types/jest": "^26.0.19",
+    "@types/react": "^17.0.0",
+    "@types/react-native": "^0.63.44",
+    "@types/react-test-renderer": "^17.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
+    "@typescript-eslint/parser": "^4.10.0",
+    "babel-jest": "^26.6.3",
+    "eslint": "^7.15.0",
+    "eslint-config-satya164": "^3.1.8",
+    "eslint-import-resolver-babel-module": "^5.2.0",
+    "eslint-plugin-import": "^2.22.1",
     "expo": "^35.0.1",
     "flow-bin": "^0.98.0",
     "husky": "^0.14.3",
     "jest": "^24.7.1",
     "jest-react-native": "16.0.0",
     "lint-staged": "^10.2.11",
-    "prettier": "^1.13.7",
+    "metro-react-native-babel-preset": "^0.64.0",
+    "prettier": "^2.2.1",
     "react": "^16.8.6",
     "react-dom": "^16.12.0",
-    "react-native": "^0.60.0",
+    "react-native": "^0.63.4",
     "react-native-web": "^0.11.7",
     "react-test-renderer": "16.8.6",
-    "release-it": "^13.6.5"
+    "release-it": "^13.6.5",
+    "typescript": "^4.1.2"
   },
   "lint-staged": {
     "*.js": [
@@ -103,7 +97,7 @@
   "release-it": {
     "hooks": {
       "before:git:bump": [
-        "# check if version corresponds to changes in native files  \n git diff --name-only ${latestVersion} HEAD | egrep \"(android/.*)|(ios/.*)\" -q && egrep '\\.0$' -q <<< ${version}"
+        "# check if version corresponds to changes in native files  \n if git diff --name-only ${latestVersion} HEAD | egrep \"(android/.*)|(ios/.*)\" -q; then egrep '\\.0$' -q <<< ${version}; else test $? -eq 1; fi"
       ]
     }
   }

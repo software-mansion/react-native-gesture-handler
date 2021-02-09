@@ -65,7 +65,7 @@ react-native link react-native-gesture-handler
 
 Follow the steps below:
 
-If you use one of the _native navigation libraries_ (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you should follow [this separate guide](#with-wix-react-native-navigation-https-githubcom-wix-react-native-navigation) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that use a standard Android project layout.
+If you use one of the _native navigation libraries_ (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you should follow [this separate guide](#with-wixreact-native-navigation) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that use a standard Android project layout.
 
 ##### Updating `MainActivity.java`
 
@@ -141,14 +141,17 @@ import PushedScreen from './PushedScreen';
 
 // register all screens of the app (including internal ones)
 export function registerScreens() {
-  Navigation.registerComponent('example.FirstTabScreen', () =>
-    gestureHandlerRootHOC(FirstTabScreen)
+  Navigation.registerComponent('example.FirstTabScreen', 
+    () => gestureHandlerRootHOC(FirstTabScreen),
+    () => FirstTabScreen
   );
-  Navigation.registerComponent('example.SecondTabScreen', () =>
-    gestureHandlerRootHOC(SecondTabScreen)
+  Navigation.registerComponent('example.SecondTabScreen', 
+    () => gestureHandlerRootHOC(SecondTabScreen),
+    () => SecondTabScreen
   );
-  Navigation.registerComponent('example.PushedScreen', () =>
-    gestureHandlerRootHOC(PushedScreen)
+  Navigation.registerComponent('example.PushedScreen', 
+    () => gestureHandlerRootHOC(PushedScreen),
+    () => PushedScreen
   );
 }
 ```

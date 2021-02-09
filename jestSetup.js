@@ -1,1 +1,1 @@
-jest.mock('./RNGestureHandlerModule');
+jest.mock('./src/RNGestureHandlerModule');
