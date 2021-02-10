@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import GestureHandlerRootView from './GestureHandlerRootView';
