@@ -2,7 +2,8 @@
 // separate repo. Although, keeping it here for the time being will allow us
 // to move faster and fix possible issues quicker
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import {
   Animated,
   StyleSheet,

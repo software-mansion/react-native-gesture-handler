@@ -3,7 +3,8 @@ import {
   TouchableNativeFeedbackProps,
   ColorValue,
 } from 'react-native';
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import GenericTouchable, { GenericTouchableProps } from './GenericTouchable';
 
 export type TouchableNativeFeedbackExtraProps = {

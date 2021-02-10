@@ -2,7 +2,7 @@
 // Without those types, we'd introduce breaking change, forcing users to prefix every handler type specification with typeof
 // e.g. React.createRef<TapGestureHandler> -> React.createRef<typeof TapGestureHandler>.
 // See https://www.typescriptlang.org/docs/handbook/classes.html#constructor-functions for reference.
-import React from 'react';
+import * as React from 'react';
 
 import createHandler from './createHandler';
 import PlatformConstants from '../PlatformConstants';

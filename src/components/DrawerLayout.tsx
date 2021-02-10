@@ -6,7 +6,8 @@
 // to move faster and fix issues that may arise in gesture handler library
 // that could be found when using the drawer component
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import invariant from 'invariant';
 import {
   Animated,
