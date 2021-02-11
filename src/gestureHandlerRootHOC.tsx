@@ -3,7 +3,9 @@ import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import GestureHandlerRootView from './GestureHandlerRootView';
 
-export default function gestureHandlerRootHOC<P extends Record<string, unknown>>(
+export default function gestureHandlerRootHOC<
+  P extends Record<string, unknown>
+>(
   Component: React.ComponentType<P>,
   containerStyles?: StyleProp<ViewStyle>
 ): React.ComponentType<P> {
