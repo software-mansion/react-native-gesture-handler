@@ -15,7 +15,7 @@ class NativeViewGestureHandler extends PressGestureHandler {
         // @ts-ignore FIXME(TS) config type
         if (this.config.disallowInterruption) {
           const gestures = Object.values(NodeManager.getNodes()).filter(
-            (gesture) => {
+            gesture => {
               const { handlerTag, view, isGestureRunning } = gesture;
               return (
                 // Check if this gesture isn't self
