@@ -194,7 +194,6 @@ export default function createHandler<
       this.handlerTag = handlerTag++;
       this.config = {};
       this.propsRef = React.createRef();
-      
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);
