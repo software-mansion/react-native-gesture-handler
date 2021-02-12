@@ -506,10 +506,10 @@ function ensureConfig(config: Config): Required<Config> {
   }
   if ('waitFor' in config) {
     props.waitFor = asArray(config.waitFor)
-      .map(({ _handlerTag }: { _handlerTag: number }) =>
-        NodeManager.getHandler(_handlerTag)
+      .map(({ handlerTag }: { handlerTag: number }) =>
+        NodeManager.getHandler(handlerTag)
       )
-      .filter((v) => v);
+      .filter(v => v);
   } else {
     props.waitFor = null;
   }

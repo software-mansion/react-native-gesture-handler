@@ -122,7 +122,7 @@ function transformIntoHandlerTags(handlerIDs: any) {
   return handlerIDs
     .map(
       (handlerID: any) =>
-        handlerIDToTag[handlerID] || handlerID.current?._handlerTag || -1
+        handlerIDToTag[handlerID] || handlerID.current?.handlerTag || -1
     )
     .filter((handlerTag: number) => handlerTag > 0);
 }
@@ -194,7 +194,6 @@ export default function createHandler<
       this.handlerTag = handlerTag++;
       this.config = {};
       this.propsRef = React.createRef();
-
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);

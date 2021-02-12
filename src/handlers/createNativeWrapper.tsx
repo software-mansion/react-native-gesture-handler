@@ -51,7 +51,7 @@ export default function createNativeWrapper<P>(
         // add handlerTag for relations config
         if (_ref.current && node) {
           // @ts-ignore FIXME(TS) think about createHandler return type
-          _ref.current._handlerTag = node._handlerTag;
+          _ref.current.handlerTag = node.handlerTag;
           return _ref.current;
         }
         return null;
