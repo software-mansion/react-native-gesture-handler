@@ -89,6 +89,20 @@ export {
   RotationGestureHandlerStateChangeEvent,
   FlingGestureHandlerGestureEvent,
   FlingGestureHandlerStateChangeEvent,
+  // handlers props
+  NativeViewGestureHandlerProperties,
+  TapGestureHandlerProperties,
+  LongPressGestureHandlerProperties,
+  PanGestureHandlerProperties,
+  PinchGestureHandlerProperties,
+  RotationGestureHandlerProperties,
+  FlingGestureHandlerProperties,
+  ForceTouchGestureHandlerProperties,
+  // buttons
+  RawButtonProperties,
+  BaseButtonProperties,
+  RectButtonProperties,
+  BorderlessButtonProperties,
 } from './src/handlers/gestureHandlerTypesCompat';
 
 export { default as Swipeable } from './src/components/Swipeable';
