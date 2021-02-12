@@ -3,11 +3,13 @@ import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import GestureHandlerRootView from './GestureHandlerRootView';
 
-export default function gestureHandlerRootHOC(
-  Component: React.ComponentType<Record<string, unknown>>,
+export default function gestureHandlerRootHOC<
+  P extends Record<string, unknown>
+>(
+  Component: React.ComponentType<P>,
   containerStyles?: StyleProp<ViewStyle>
-): React.ComponentType<Record<string, unknown>> {
-  function Wrapper(props: Record<string, unknown>) {
+): React.ComponentType<P> {
+  function Wrapper(props: P) {
     return (
       <GestureHandlerRootView style={[styles.container, containerStyles]}>
         <Component {...props} />
