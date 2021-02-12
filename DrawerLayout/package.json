@@ -1,6 +1,6 @@
 {
-  "main": "../dist/src/components/DrawerLayout",
-  "react-native": "../src/components/DrawerLayout",
-  "browser": "../src/components/DrawerLayout",
-  "types": "../dist/src/components/DrawerLayout.d.ts"
+  "main": "../lib/module/components/DrawerLayout",
+  "react-native": "../lib/module/components/DrawerLayout",
+  "browser": "../lib/commonjs/components/DrawerLayout",
+  "types": "../lib/typescript/components/DrawerLayout.d.ts"
 }
