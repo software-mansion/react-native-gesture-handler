@@ -509,7 +509,7 @@ function ensureConfig(config: Config): Required<Config> {
       .map(({ handlerTag }: { handlerTag: number }) =>
         NodeManager.getHandler(handlerTag)
       )
-      .filter(v => v);
+      .filter((v) => v);
   } else {
     props.waitFor = null;
   }
