@@ -5,7 +5,7 @@ console.log(versions);
 const allDocHomesPaths = [
   '/docs/next/',
   '/docs/',
-  ...versions.slice(1).map(version => `/docs/${version}/`),
+  ...versions.slice(1).map((version) => `/docs/${version}/`),
 ];
 
 const baseUrl = process.env.BASE_URL || '/';

@@ -1,7 +1,8 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 type PlatformConstants = {
   forceTouchAvailable: boolean;
 };
 
-export default NativeModules.PlatformConstants as PlatformConstants;
+export default (NativeModules?.PlatformConstants ??
+  Platform.constants) as PlatformConstants;

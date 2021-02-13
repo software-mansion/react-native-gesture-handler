@@ -32,7 +32,7 @@
     "@babel/runtime": "^7.12.5",
     "@expo/webpack-config": "^0.12.52",
     "@types/jest": "^25.2.3",
-    "@types/react-native": "^0.63.44",
+    "@types/react-native": "^0.63.49",
     "@types/react-test-renderer": "^16.9.2",
     "@typescript-eslint/parser": "^4.9.1",
     "babel-jest": "^25.1.0",
