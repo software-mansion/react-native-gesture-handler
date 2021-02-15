@@ -1,12 +1,42 @@
-import { View, ScrollView } from 'react-native';
+import {
+  TouchableHighlight,
+  TouchableNativeFeedback,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  ScrollView,
+  FlatList,
+  Switch,
+  TextInput,
+  DrawerLayoutAndroid,
+  View,
+} from 'react-native';
 
 const NOOP = () => {
   // do nothing
 };
 
 export default {
+  TouchableHighlight,
+  TouchableNativeFeedback,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
   ScrollView,
+  FlatList,
+  Switch,
+  TextInput,
+  DrawerLayoutAndroid,
+  NativeViewGestureHandler: View,
+  TapGestureHandler: View,
+  ForceTouchGestureHandler: View,
+  LongPressGestureHandler: View,
   PanGestureHandler: View,
+  PinchGestureHandler: View,
+  RotationGestureHandler: View,
+  FlingGestureHandler: View,
+  RawButton: TouchableNativeFeedback,
+  BaseButton: TouchableNativeFeedback,
+  RectButton: TouchableNativeFeedback,
+  BorderlessButton: TouchableNativeFeedback,
   attachGestureHandler: NOOP,
   createGestureHandler: NOOP,
   dropGestureHandler: NOOP,
