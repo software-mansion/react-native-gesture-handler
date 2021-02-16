@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "react-native-gesture-handler": ["../../index.ts"],
+      "react-native-gesture-handler": ["../../src/index.ts"],
       "react-native-gesture-handler/Swipeable": [
         "../../src/components/Swipeable.tsx"
       ],
