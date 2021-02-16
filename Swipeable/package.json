@@ -1,6 +1,6 @@
 {
-  "main": "../lib/module/components/Swipeable",
-  "react-native": "../lib/module/components/Swipeable",
-  "browser": "../lib/commonjs/components/Swipeable",
+  "main": "../lib/commonjs/components/Swipeable",
+  "module": "../lib/module/components/Swipeable",
+  "react-native": "../src/components/Swipeable",
   "types": "../lib/typescript/components/Swipeable.d.ts"
 }
