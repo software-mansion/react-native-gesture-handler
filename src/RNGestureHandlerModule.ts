@@ -1,12 +1,14 @@
 import { NativeModules } from 'react-native';
-
 const { RNGestureHandlerModule } = NativeModules;
 
 if (RNGestureHandlerModule === undefined) {
   console.error(
     `react-native-gesture-handler module was not found. Make sure you're running your app on the native platform.
-    
+
     You can submit a bug report here: https://github.com/software-mansion/react-native-gesture-handler/issues`
+      .split('\n')
+      .map((line) => line.trim())
+      .join('\n')
   );
 }
 
