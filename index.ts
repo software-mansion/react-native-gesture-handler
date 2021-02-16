@@ -1,4 +1,4 @@
-export { default as Directions } from './src/Directions';
+export { Directions } from './src/Directions';
 export { State } from './src/State';
 export { default as gestureHandlerRootHOC } from './src/gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './src/GestureHandlerRootView';
