@@ -12,9 +12,9 @@
     "lint-check": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check src/"
   },
   "react-native": "src/index.ts",
-  "main": "lib/commonjs/src/index.js",
-  "module": "lib/module/src/index.js",
-  "types": "lib/typescript/src/index.d.ts",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/index.d.ts",
   "files": [
     "src",
     "lib",
