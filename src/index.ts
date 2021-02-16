@@ -1,7 +1,7 @@
-export { default as Directions } from './src/Directions';
-export { State } from './src/State';
-export { default as gestureHandlerRootHOC } from './src/gestureHandlerRootHOC';
-export { default as GestureHandlerRootView } from './src/GestureHandlerRootView';
+export { default as Directions } from './Directions';
+export { State } from './State';
+export { default as gestureHandlerRootHOC } from './gestureHandlerRootHOC';
+export { default as GestureHandlerRootView } from './GestureHandlerRootView';
 
 export {
   // event types
@@ -33,13 +33,13 @@ export {
   PinchGestureHandler,
   RotationGestureHandler,
   FlingGestureHandler,
-} from './src/handlers/gestureHandlers';
-export { default as createNativeWrapper } from './src/handlers/createNativeWrapper';
+} from './handlers/gestureHandlers';
+export { default as createNativeWrapper } from './handlers/createNativeWrapper';
 export {
   NativeViewGestureHandler,
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,
-} from './src/handlers/NativeViewGestureHandler';
+} from './handlers/NativeViewGestureHandler';
 
 export {
   // buttons props
@@ -52,20 +52,20 @@ export {
   BaseButton,
   RectButton,
   BorderlessButton,
-} from './src/components/GestureButtons';
+} from './components/GestureButtons';
 export {
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
-} from './src/components/touchables';
+} from './components/touchables';
 export {
   ScrollView,
   Switch,
   TextInput,
   DrawerLayoutAndroid,
   FlatList,
-} from './src/components/GestureComponents';
+} from './components/GestureComponents';
 export {
   //events
   GestureHandlerGestureEvent,
@@ -103,9 +103,9 @@ export {
   BaseButtonProperties,
   RectButtonProperties,
   BorderlessButtonProperties,
-} from './src/handlers/gestureHandlerTypesCompat';
+} from './handlers/gestureHandlerTypesCompat';
 
-export { default as Swipeable } from './src/components/Swipeable';
+export { default as Swipeable } from './components/Swipeable';
 export {
   default as DrawerLayout,
   DrawerLayoutProps,
@@ -114,4 +114,4 @@ export {
   DrawerType,
   DrawerLockMode,
   DrawerKeyboardDismissMode,
-} from './src/components/DrawerLayout';
+} from './components/DrawerLayout';
