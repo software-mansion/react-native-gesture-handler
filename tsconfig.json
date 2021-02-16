@@ -16,8 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitUseStrict": false,
     "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "outDir": "./dist"
+    "noUnusedLocals": true
   },
-  "include": ["index.ts", "src/**/*.ts", "src/**/*.tsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

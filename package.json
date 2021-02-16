@@ -3,7 +3,7 @@
   "version": "1.10.1",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
-    "prepare": "rm -r dist/ ; yarn build",
+    "prepare": "bob build",
     "test": "jest",
     "build": "yarn tsc",
     "precommit": "lint-staged",
@@ -11,19 +11,22 @@
     "ts-check": "yarn tsc --noEmit",
     "lint-check": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check src/"
   },
-  "react-native": "index",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "react-native": "src/index.ts",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/index.d.ts",
   "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
     "android/build.gradle",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "ios/",
-    "src/",
-    "dist/",
-    "index.ts",
     "Swipeable/",
     "DrawerLayout/",
     "README.md",
@@ -52,7 +55,10 @@
     "prop-types": "^15.7.2"
   },
   "jest": {
-    "preset": "jest-react-native"
+    "preset": "jest-react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/lib/"
+    ]
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
@@ -84,6 +90,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.12.0",
     "react-native": "^0.63.4",
+    "react-native-builder-bob": "^0.17.1",
     "react-native-web": "^0.11.7",
     "react-test-renderer": "16.8.6",
     "release-it": "^13.6.5",
@@ -100,5 +107,18 @@
         "# check if version corresponds to changes in native files  \n if git diff --name-only ${latestVersion} HEAD | egrep \"(android/.*)|(ios/.*)\" -q; then egrep '\\.0$' -q <<< ${version}; else test $? -eq 1; fi"
       ]
     }
-  }
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ]
 }

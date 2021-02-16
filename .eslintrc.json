@@ -12,11 +12,11 @@
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": ["./tsconfig.json", "./examples/Example/tsconfig.json"]
   },
   "env": { "browser": true, "node": true, "jest/globals": true },
   "plugins": ["jest"],
-  "ignorePatterns": ["dist/**/*"],
+  "ignorePatterns": ["lib/**/*"],
   "rules": {
     // temporary, remove after we type internals better
     "@typescript-eslint/restrict-template-expressions": "warn",
