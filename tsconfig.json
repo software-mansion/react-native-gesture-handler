@@ -18,5 +18,5 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"]
 }
