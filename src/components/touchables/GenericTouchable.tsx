@@ -57,7 +57,7 @@ interface InternalProps {
 
 // TODO: maybe can be better
 // TODO: all clearTimeout have ! added, maybe they shouldn't ?
-type Timeout = null | NodeJS.Timeout | undefined;
+type Timeout = ReturnType<typeof setTimeout> | null | undefined;
 
 /**
  * GenericTouchable is not intented to be used as it is.
