@@ -485,7 +485,10 @@ export const PinchGestureHandler = createHandler<
   PinchGestureHandlerEventPayload
 >({
   name: 'PinchGestureHandler',
-  allowedProps: baseProps,
+  allowedProps: [
+    ...baseProps,
+    'twoPointersRequired',
+  ] as const,
   config: {},
 });
 
