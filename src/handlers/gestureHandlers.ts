@@ -476,7 +476,9 @@ export type PinchGestureHandlerEventPayload = {
 };
 
 export interface PinchGestureHandlerProps
-  extends BaseGestureHandlerProps<PinchGestureHandlerEventPayload> {}
+  extends BaseGestureHandlerProps<PinchGestureHandlerEventPayload> {
+  twoPointersRequired?: boolean;
+}
 
 export type PinchGestureHandler = typeof PinchGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
