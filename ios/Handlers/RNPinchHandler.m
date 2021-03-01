@@ -38,7 +38,7 @@
     // UIPinchGestureRecognizer ends pinching gesture when the user lifts BOTH fingers
     // from the view. If twoPointersRequired prop is true, we end the gesture when the
     // user lifts one finger from the view.
-    if (_twoPointersRequired) {
+    if (_twoPointersRequired && self.state == UIGestureRecognizerStateChanged) {
         self.state = UIGestureRecognizerStateEnded;
         [self reset];
     }
