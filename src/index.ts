@@ -1,9 +1,8 @@
-export { default as Directions } from './src/Directions';
-export { State } from './src/State';
-export { default as gestureHandlerRootHOC } from './src/gestureHandlerRootHOC';
-export { default as GestureHandlerRootView } from './src/GestureHandlerRootView';
-
-export {
+export { Directions } from './Directions';
+export { State } from './State';
+export { default as gestureHandlerRootHOC } from './gestureHandlerRootHOC';
+export { default as GestureHandlerRootView } from './GestureHandlerRootView';
+export type {
   // event types
   GestureEvent,
   HandlerStateChangeEvent,
@@ -25,7 +24,8 @@ export {
   PinchGestureHandlerProps,
   RotationGestureHandlerProps,
   FlingGestureHandlerProps,
-  // gesture handlers
+} from './handlers/gestureHandlers';
+export {
   TapGestureHandler,
   ForceTouchGestureHandler,
   LongPressGestureHandler,
@@ -33,40 +33,39 @@ export {
   PinchGestureHandler,
   RotationGestureHandler,
   FlingGestureHandler,
-} from './src/handlers/gestureHandlers';
-export { default as createNativeWrapper } from './src/handlers/createNativeWrapper';
-export {
-  NativeViewGestureHandler,
+} from './handlers/gestureHandlers';
+export { default as createNativeWrapper } from './handlers/createNativeWrapper';
+export type {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,
-} from './src/handlers/NativeViewGestureHandler';
-
-export {
-  // buttons props
+} from './handlers/NativeViewGestureHandler';
+export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
+export type {
   RawButtonProps,
   BaseButtonProps,
   RectButtonProps,
   BorderlessButtonProps,
-  // buttons
+} from './components/GestureButtons';
+export {
   RawButton,
   BaseButton,
   RectButton,
   BorderlessButton,
-} from './src/components/GestureButtons';
+} from './components/GestureButtons';
 export {
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
-} from './src/components/touchables';
+} from './components/touchables';
 export {
   ScrollView,
   Switch,
   TextInput,
   DrawerLayoutAndroid,
   FlatList,
-} from './src/components/GestureComponents';
-export {
+} from './components/GestureComponents';
+export type {
   //events
   GestureHandlerGestureEvent,
   GestureHandlerStateChangeEvent,
@@ -98,20 +97,20 @@ export {
   RotationGestureHandlerProperties,
   FlingGestureHandlerProperties,
   ForceTouchGestureHandlerProperties,
-  // buttons
+  // buttons props
   RawButtonProperties,
   BaseButtonProperties,
   RectButtonProperties,
   BorderlessButtonProperties,
-} from './src/handlers/gestureHandlerTypesCompat';
+} from './handlers/gestureHandlerTypesCompat';
 
-export { default as Swipeable } from './src/components/Swipeable';
-export {
-  default as DrawerLayout,
+export { default as Swipeable } from './components/Swipeable';
+export type {
   DrawerLayoutProps,
   DrawerPosition,
   DrawerState,
   DrawerType,
   DrawerLockMode,
   DrawerKeyboardDismissMode,
-} from './src/components/DrawerLayout';
+} from './components/DrawerLayout';
+export { default as DrawerLayout } from './components/DrawerLayout';
