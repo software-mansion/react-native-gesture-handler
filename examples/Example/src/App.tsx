@@ -135,7 +135,7 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
       renderItem={(props) => (
         <MainScreenItem
           {...props}
-          onPressItem={({ key }: { key: string }) => navigation.navigate(key)}
+          onPressItem={({ key }) => navigation.navigate(key)}
         />
       )}
       renderScrollComponent={(props) => <ScrollView {...props} />}
