@@ -37,6 +37,13 @@ module.exports = {
     ],
   ],
   themeConfig: {
+    algolia: {
+      apiKey: 'd738e28e9c67a26dd7933b011fe2b9e4',
+      indexName: 'react-native-gesture-handler',
+
+      contextualSearch: true,
+      searchParameters: {},
+    },
     colorMode: { disableSwitch: true },
     prism: {
       theme: {
