@@ -142,7 +142,7 @@
     }
   
     for (UIGestureRecognizer *recognizer in touchHandlerView.gestureRecognizers) {
-      if ([[recognizer view] isKindOfClass:[RNRootViewGestureRecognizer class]]) {
+      if ([recognizer isKindOfClass:[RNRootViewGestureRecognizer class]]) {
         return;
       }
     }
