@@ -1,6 +1,5 @@
-rootProject.name = 'RNGH Example'
+rootProject.name = 'Example'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
-
 include ':app'
 include ':react-native-gesture-handler'
 project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../../../android')

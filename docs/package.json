@@ -15,13 +15,13 @@
     "@docusaurus/core": "2.0.0-alpha.63",
     "@docusaurus/preset-classic": "2.0.0-alpha.63",
     "@mdx-js/react": "^1.5.8",
+    "classnames": "^2.2.6",
     "clsx": "^1.1.1",
+    "gh-pages": "^2.2.0",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-github-btn": "^1.2.0",
-    "webfontloader": "^1.6.28",
-    "classnames": "^2.2.6",
-    "gh-pages": "^2.2.0"
+    "webfontloader": "^1.6.28"
   },
   "browserslist": {
     "production": [

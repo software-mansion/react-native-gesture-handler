@@ -4,7 +4,7 @@ title: Cross handler interactions
 sidebar_label: Cross handler interactions
 ---
 
-Gesture handlers can "communicate" with each other to support complex gestures and control how they *[activate](state.md#active)* in certain scenarios.
+Gesture handlers can "communicate" with each other to support complex gestures and control how they _[activate](state.md#active)_ in certain scenarios.
 
 There are two means of achieving that described in the sections below.
 In each case, it is necessary to provide a reference of one handler as a property to the other.
@@ -15,7 +15,7 @@ Gesture handler relies on ref objects created using [`React.createRef()`](https:
 By default, only one gesture handler is allowed to be in the [`ACTIVE`](state.md#active) state.
 So when a gesture handler recognizes a gesture it [cancels](state.md#cancelled) all other handlers in the [`BEGAN`](state.md#began) state and prevents any new handlers from receiving a stream of touch events as long as it remains [`ACTIVE`](state.md#active).
 
-This behavior can be altered using the [`simultaneousHandlers`](handler-common.md#simultaneousHandlers) property (available for all types of handlers).
+This behavior can be altered using the [`simultaneousHandlers`](api/gesture-handlers/common-gh#simultaneousHandlers) property (available for all types of handlers).
 This property accepts a ref or an array of refs to other handlers.
 Handlers connected in this way will be allowed to remain in the [`ACTIVE`](state.md#active) state at the same time.
 
@@ -24,11 +24,11 @@ Handlers connected in this way will be allowed to remain in the [`ACTIVE`](state
 ### Use cases
 
 Simultaneous recognition needs to be used when implementing a photo preview component that supports zooming (scaling) the photo, rotating and panning it while zoomed in.
-In this case we would use a [`PinchGestureHandler`](handler-pinch.md), [`RotationGestureHandler`](handler-rotation.md) and [`PanGestureHandler`](handler-pan.md) that would have to simultaneously recognize gestures.
+In this case we would use a [`PinchGestureHandler`](api/gesture-handlers/pinch-gh), [`RotationGestureHandler`](api/gesture-handlers/rotation-gh) and [`PanGestureHandler`](api/gesture-handlers/pan-gh) that would have to simultaneously recognize gestures.
 
 ### Example
 
-See the ["Scale, rotate & tilt" example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/scaleAndRotate/index.js) from the [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the ["Scale, rotate & tilt" example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/src/scaleAndRotate/index.tsx) from the [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 class PinchableBox extends React.Component {
@@ -76,7 +76,7 @@ Otherwise if we try to perform a double tap the single tap handler will fire jus
 
 ### Example
 
-See the ["Multitap" example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/multitap/index.js) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the ["Multitap" example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/src/multitap/index.tsx) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 const doubleTap = React.createRef();

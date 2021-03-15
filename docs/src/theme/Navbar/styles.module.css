@@ -24,3 +24,7 @@
 .navbarHidden {
   top: calc(var(--ifm-navbar-height) * -1) !important;
 }
+
+.searchBarMargin {
+  margin: 0 16px 0 0;
+}

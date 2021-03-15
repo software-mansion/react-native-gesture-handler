@@ -21,19 +21,19 @@ class MainScreen extends React.Component {
     title: '✌️ Gesture Handler Demo',
   };
   render() {
-    const data = Object.keys(SCREENS).map(key => ({ key }));
+    const data = Object.keys(SCREENS).map((key) => ({ key }));
     return (
       <FlatList
         style={styles.list}
         data={data}
         ItemSeparatorComponent={ItemSeparator}
-        renderItem={props => (
+        renderItem={(props) => (
           <MainScreenItem
             {...props}
             onPressItem={({ key }) => this.props.navigation.navigate(key)}
           />
         )}
-        renderScrollComponent={props => <ScrollView {...props} />}
+        renderScrollComponent={(props) => <ScrollView {...props} />}
       />
     );
   }

@@ -26,10 +26,10 @@ const DefaultNavItemPosition = 'right'; // If split links by left/right
 
 function splitNavItemsByPosition(items) {
   const leftItems = items.filter(
-    item => (item.position ?? DefaultNavItemPosition) === 'left'
+    (item) => (item.position ?? DefaultNavItemPosition) === 'left'
   );
   const rightItems = items.filter(
-    item => (item.position ?? DefaultNavItemPosition) === 'right'
+    (item) => (item.position ?? DefaultNavItemPosition) === 'right'
   );
   return {
     leftItems,
@@ -60,7 +60,7 @@ function Navbar() {
     setSidebarShown(false);
   }, [setSidebarShown]);
   const onToggleChange = useCallback(
-    e => (e.target.checked ? setDarkTheme() : setLightTheme()),
+    (e) => (e.target.checked ? setDarkTheme() : setLightTheme()),
     [setLightTheme, setDarkTheme]
   );
   const windowSize = useWindowSize();
@@ -128,6 +128,12 @@ function Navbar() {
         </div>
 
         <div className="navbar__items navbar__items--right">
+          <div className={styles.searchBarMargin}>
+            <SearchBar
+              handleSearchBarToggle={setIsSearchBarExpanded}
+              isSearchBarExpanded={isSearchBarExpanded}
+            />
+          </div>
           {/* modified */}
           {leftItems.map((item, i) => (
             <NavbarItem {...item} key={i} />
@@ -153,10 +159,6 @@ function Navbar() {
               onChange={onToggleChange}
             />
           )}
-          <SearchBar
-            handleSearchBarToggle={setIsSearchBarExpanded}
-            isSearchBarExpanded={isSearchBarExpanded}
-          />
         </div>
       </div>
       <div
