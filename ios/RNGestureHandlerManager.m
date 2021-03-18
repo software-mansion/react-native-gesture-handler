@@ -128,7 +128,7 @@
 
 #pragma mark Root Views Management
 
-- (void)registerViewWithGestureRecognizerAttachedIfNeeded:(UIView*)childView
+- (void)registerViewWithGestureRecognizerAttachedIfNeeded:(UIView *)childView
 {
     UIView *parent = childView;
     while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) parent = parent.superview;
