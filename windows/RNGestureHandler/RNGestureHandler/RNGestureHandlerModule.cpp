@@ -20,94 +20,54 @@ void RNGestureHandlerModule::GetConstantProvider(ReactConstantProvider& provider
 {
     JSValueArray directions
     {
-        (int)RNGestureHandlerDirection::Right,
-        (int)RNGestureHandlerDirection::Left,
-        (int)RNGestureHandlerDirection::Up,
-        (int)RNGestureHandlerDirection::Down
+        static_cast<int>(RNGestureHandlerDirection::Right),
+        static_cast<int>(RNGestureHandlerDirection::Left),
+        static_cast<int>(RNGestureHandlerDirection::Up),
+        static_cast<int>(RNGestureHandlerDirection::Down)
     };
     provider.Add(L"Directions", directions);
 }
 
-static RNGestureHandlerKind getHandlerKind(std::string handlerName) noexcept
+static RNGestureHandler* getHandlerFromName(std::string handlerName) noexcept
 {
     if (handlerName == "FlingGestureHandler")
     {
-        return RNGestureHandlerKind::FlingGesture;
+        return new RNFlingGestureHandler();
     }
     else if (handlerName == "ForceTouchGestureHandler")
     {
-        return RNGestureHandlerKind::ForceTouchGesture;
+        return new RNForceTouchGestureHandler();
     }
     else if (handlerName == "LongPressGestureHandler")
     {
-        return RNGestureHandlerKind::LongPressGesture;
+        return new RNLongPressGestureHandler();
     }
     else if (handlerName == "PanGestureHandler")
     {
-        return RNGestureHandlerKind::PanGesture;
+        return new RNPanGestureHandler();
     }
     else if (handlerName == "PinchGestureHandler")
     {
-        return RNGestureHandlerKind::PinchGesture;
+        return new RNPinchGestureHandler();
     }
     else if (handlerName == "RotationGestureHandler")
     {
-        return RNGestureHandlerKind::RotationGesture;
+        return new RNRotationGestureHandler();
     }
     else if (handlerName == "TapGestureHandler")
     {
-        return RNGestureHandlerKind::TapGesture;
+        return new RNTapGestureHandler();
     }
     else
     {
-        return RNGestureHandlerKind::Unknown;
+        return nullptr;
     }
 }
 
 void RNGestureHandlerModule::CreateGestureHandler(std::string handlerName, int handlerTag,
     JSValueObject config) noexcept
 {
-    RNGestureHandlerKind handlerKind = getHandlerKind(handlerName);
-    RNGestureHandler* handler = nullptr;
-    switch (handlerKind)
-    {
-    case RNGestureHandlerKind::FlingGesture:
-    {
-        handler = new RNFlingGestureHandler();
-        break;
-    }
-    case RNGestureHandlerKind::ForceTouchGesture:
-    {
-        handler = new RNForceTouchGestureHandler();
-        break;
-    }
-    case RNGestureHandlerKind::LongPressGesture:
-    {
-        handler = new RNLongPressGestureHandler();
-        break;
-    }
-    case RNGestureHandlerKind::PanGesture:
-    {
-        handler = new RNPanGestureHandler();
-        break;
-    }
-    case RNGestureHandlerKind::PinchGesture:
-    {
-        handler = new RNPinchGestureHandler();
-        break;
-    }
-    case RNGestureHandlerKind::RotationGesture:
-    {
-        handler = new RNRotationGestureHandler();
-        break;
-    }
-    case RNGestureHandlerKind::TapGesture:
-    {
-        handler = new RNTapGestureHandler();
-        break;
-    }
-    }
-
+    RNGestureHandler* handler = getHandlerFromName(handlerName);
     if (!handler)
     {
         return;
