@@ -16,6 +16,8 @@ Check [getting started](https://docs.swmansion.com/react-native-gesture-handler/
 
 Check out our dedicated documentation page for info about this library, API reference and more: [https://docs.swmansion.com/react-native-gesture-handler/docs/](https://docs.swmansion.com/react-native-gesture-handler/docs/)
 
+For Windows-specific documentation, check out the [Windows README](windows/RNGestureHandler/README.md).
+
 ## Examples
 
 If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `Example/` folder and run:
@@ -28,9 +30,9 @@ If you are running on ios, run `pod install` in the ios folder
 
 Run `yarn start` to start the metro bundler
 
-Run `react-native run-android` or `react-native run-ios` (depending on which platform you want to run the example app on).
+Run `react-native run-android`, `react-native run-ios` or `react-native run-windows` (depending on which platform you want to run the example app on).
 
-You will need to have an Android or iOS device or emulator connected as well as `react-native-cli` package installed globally.
+You will need to have an Android / iOS / Windows device or emulator connected as well as `react-native-cli` package installed globally.
 
 ## React native Support
 
