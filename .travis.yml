@@ -45,7 +45,7 @@ matrix:
       dist: trusty
       sudo: required
       jdk: oraclejdk8
-      env: NODE_VERSION=10.19.0
+      env: NODE_VERSION=12.13.0
       before_cache:
         - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
         - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
@@ -83,7 +83,7 @@ matrix:
       podfile: './Example/ios/Podfile'
       xcode_sdk: iphonesimulator12.2
       xcode_destination: platform=iOS Simulator,OS=12.2,name=iPhone X
-      env: NODE_VERSION=10.19.0
+      env: NODE_VERSION=12.13.0
 
       branches:
         only:
