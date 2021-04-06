@@ -23,7 +23,7 @@
     "hoist-non-react-statics": "^3.3.2",
     "invariant": "^2.2.4",
     "react": "16.13.1",
-    "react-native": "0.63.3",
+    "react-native": "0.64.0",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.15.0"
   },
