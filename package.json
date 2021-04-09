@@ -70,7 +70,7 @@
     "@types/jest": "^26.0.19",
     "@types/hammerjs": "^2.0.38",
     "@types/react": "^17.0.0",
-    "@types/react-native": "^0.63.49",
+    "@types/react-native": "^0.64.2",
     "@types/react-test-renderer": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
