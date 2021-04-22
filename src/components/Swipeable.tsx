@@ -45,7 +45,7 @@ interface SwipeableProps
   onSwipeableRightOpen?: () => void;
   onSwipeableOpen?: () => void;
   // onSwipeableClose?: () => void;
-  // CHANGES WERE MADE TO KNOW HOW MUCH SWIPED OCCUR AND INVOKE ACTION UPON THAT.
+  // Changes were made to know how much swipe occurred and invoke action based on swipe distance.
   onSwipeableClose?: (x: Animated.AnimatedInterpolation) => void;
   onSwipeableLeftWillOpen?: () => void;
   onSwipeableRightWillOpen?: () => void;
@@ -295,7 +295,7 @@ export default class Swipeable extends Component<
         if (toValue === 0) {
 	
            // this.props.onSwipeableClose?.();
-	   // CHANGES WERE MADE TO KNOW HOW MUCH SWIPED OCCUR AND INVOKE ACTION UPON THAT.
+	   // Changes were made to know how much swipe occurred and invoke action based on swipe distance.
 	   this.props.onSwipeableClose?.(this.state.rowTranslation);
         } else {
           this.props.onSwipeableOpen?.();
