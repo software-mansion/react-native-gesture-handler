@@ -13,15 +13,6 @@
 #define TEST_MAX_IF_NOT_NAN(value, max) \
 (!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
 
-#define APPLY_PROP(recognizer, config, type, prop, propName) do { \
-id value = config[propName]; \
-if (value != nil) recognizer.prop = [RCTConvert type:value]; \
-} while(0)
-
-#define APPLY_FLOAT_PROP(prop) do { APPLY_PROP(recognizer, config, CGFloat, prop, @#prop); } while(0)
-#define APPLY_INT_PROP(prop) do { APPLY_PROP(recognizer, config, NSInteger, prop, @#prop); } while(0)
-#define APPLY_NAMED_INT_PROP(prop, propName) do { APPLY_PROP(recognizer, config, NSInteger, prop, propName); } while(0)
-
 #define APPLY_PROP_OR_DEFAULT(recognizer, config, type, prop, propName, default) do { \
 id value = config[propName]; \
 if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
