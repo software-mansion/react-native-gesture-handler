@@ -25,6 +25,13 @@ public class FlingGestureHandler extends GestureHandler<FlingGestureHandler> {
     }
   };
 
+  @Override
+  public void resetConfig() {
+    super.resetConfig();
+    mNumberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
+    mDirection = DEFAULT_DIRECTION;
+  }
+
   public void setNumberOfPointersRequired(int numberOfPointersRequired) {
     mNumberOfPointersRequired = numberOfPointersRequired;
   }

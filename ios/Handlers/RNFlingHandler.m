@@ -2,6 +2,9 @@
 
 @implementation RNFlingGestureHandler
 
+static const UISwipeGestureRecognizerDirection defaultDirection = UISwipeGestureRecognizerDirectionRight;
+static const NSUInteger defaultNumberOfTouchesRequired = 1;
+
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super initWithTag:tag])) {
@@ -19,12 +22,16 @@
     id prop = config[@"direction"];
     if (prop != nil) {
         recognizer.direction = [RCTConvert NSInteger:prop];
+    } else {
+        recognizer.direction = defaultDirection;
     }
     
 #if !TARGET_OS_TV
     prop = config[@"numberOfPointers"];
     if (prop != nil) {
         recognizer.numberOfTouchesRequired = [RCTConvert NSInteger:prop];
+    } else {
+        recognizer.numberOfTouchesRequired = defaultNumberOfTouchesRequired;
     }
 #endif
 }
