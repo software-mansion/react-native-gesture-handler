@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
-import { Animated, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  Animated,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import {
   PanGestureHandler,
   State,
   PanGestureHandlerStateChangeEvent,
   PanGestureHandlerGestureEvent,
+  RectButton,
 } from 'react-native-gesture-handler';
-
-import { USE_NATIVE_DRIVER } from '../config';
-import { LoremIpsum } from '../common';
 
 type DraggableBoxProps = {
   minDist?: number;
@@ -35,7 +40,7 @@ export class DraggableBox extends Component<DraggableBoxProps> {
           },
         },
       ],
-      { useNativeDriver: USE_NATIVE_DRIVER }
+      { useNativeDriver: true }
     );
   }
   private onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
@@ -54,7 +59,7 @@ export class DraggableBox extends Component<DraggableBoxProps> {
         {...this.props}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}
-        minDist={this.props.minDist}>
+        minDist={this.props.minDist ? 100 : undefined}>
         <Animated.View
           style={[
             styles.box,
@@ -72,13 +77,24 @@ export class DraggableBox extends Component<DraggableBoxProps> {
   }
 }
 
-export default class Example extends Component {
+export default class Example extends Component<{}, { drag: boolean }> {
   render() {
     return (
       <View style={styles.scrollView}>
-        <LoremIpsum words={40} />
-        <DraggableBox />
-        <LoremIpsum />
+        <RectButton
+          style={{ alignSelf: 'center', margin: 20 }}
+          onPress={() =>
+            this.setState((prevState) => ({
+              drag: prevState?.drag ? false : true,
+            }))
+          }>
+          <Text>
+            {this.state?.drag
+              ? 'Click to remove dragging'
+              : 'Click to add dragging'}
+          </Text>
+        </RectButton>
+        <DraggableBox minDist={this.state?.drag ? 1 : undefined} />
       </View>
     );
   }

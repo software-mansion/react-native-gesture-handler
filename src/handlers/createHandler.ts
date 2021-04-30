@@ -95,10 +95,10 @@ function filterConfig(
   defaults: Record<string, unknown> = {}
 ) {
   const res = { ...defaults };
+
   validProps.forEach((key) => {
-    const value = props[key];
+    let value = props[key];
     if (isConfigParam(value, key)) {
-      let value = props[key];
       if (key === 'simultaneousHandlers' || key === 'waitFor') {
         value = transformIntoHandlerTags(props[key]);
       } else if (key === 'hitSlop') {
@@ -337,6 +337,11 @@ export default function createHandler<
         transformProps ? transformProps(this.props) : this.props,
         [...allowedProps, ...customNativeProps],
         config
+      );
+      console.log(
+        `${Handler.displayName}: old config: ${JSON.stringify(
+          this.config
+        )}, new config: ${JSON.stringify(newConfig)}`
       );
       if (!deepEqual(this.config, newConfig)) {
         this.updateGestureHandler(newConfig);
