@@ -38,6 +38,11 @@
   NSInteger _maxNumberOfTouches;
 }
 
+static const NSUInteger defaultNumberOfTaps = 1;
+static const NSInteger defaultMinPointers = 1;
+static const CGFloat defaultMaxDelay = 0.2;
+static const NSTimeInterval defaultMaxDuration = NAN;
+
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
@@ -183,25 +188,31 @@
   [super configure:config];
   RNBetterTapGestureRecognizer *recognizer = (RNBetterTapGestureRecognizer *)_recognizer;
   
-  APPLY_INT_PROP(numberOfTaps);
-  APPLY_INT_PROP(minPointers);
-  APPLY_FLOAT_PROP(maxDeltaX);
-  APPLY_FLOAT_PROP(maxDeltaY);
+  APPLY_INT_PROP_OR_DEFAULT(numberOfTaps, defaultNumberOfTaps);
+  APPLY_INT_PROP_OR_DEFAULT(minPointers, defaultMinPointers);
+  APPLY_FLOAT_PROP_OR_DEFAULT(maxDeltaX, NAN);
+  APPLY_FLOAT_PROP_OR_DEFAULT(maxDeltaY, NAN);
   
   id prop = config[@"maxDelayMs"];
   if (prop != nil) {
     recognizer.maxDelay = [RCTConvert CGFloat:prop] / 1000.0;
+  } else {
+    recognizer.maxDelay = defaultMaxDelay;
   }
   
   prop = config[@"maxDurationMs"];
   if (prop != nil) {
     recognizer.maxDuration = [RCTConvert CGFloat:prop] / 1000.0;
+  } else {
+    recognizer.maxDuration = defaultMaxDuration;
   }
   
   prop = config[@"maxDist"];
   if (prop != nil) {
     CGFloat dist = [RCTConvert CGFloat:prop];
     recognizer.maxDistSq = dist * dist;
+  } else {
+    recognizer.maxDistSq = NAN;
   }
 }
 
