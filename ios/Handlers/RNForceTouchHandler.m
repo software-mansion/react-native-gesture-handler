@@ -20,15 +20,19 @@
   UITouch *_firstTouch;
 }
 
+static const CGFloat defaultForce = 0;
+static const CGFloat defaultMinForce = 0.2;
+static const CGFloat defaultMaxForce = NAN;
+static const BOOL defaultFeedbackOnActivation = NO;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
-    _force = 0;
-    _minForce = 0.2;
-    _maxForce = NAN;
-    _feedbackOnActivation = NO;
+    _force = defaultForce;
+    _minForce = defaultMinForce;
+    _maxForce = defaultMaxForce;
+    _feedbackOnActivation = defaultFeedbackOnActivation;
   }
   return self;
 }
@@ -126,12 +130,14 @@
   [super configure:config];
   RNForceTouchGestureRecognizer *recognizer = (RNForceTouchGestureRecognizer *)_recognizer;
 
-  APPLY_FLOAT_PROP(maxForce);
-  APPLY_FLOAT_PROP(minForce);
+  APPLY_FLOAT_PROP_OR_DEFAULT(maxForce, defaultMaxForce);
+  APPLY_FLOAT_PROP_OR_DEFAULT(minForce, defaultMinForce);
 
   id prop = config[@"feedbackOnActivation"];
   if (prop != nil) {
     recognizer.feedbackOnActivation = [RCTConvert BOOL:prop];
+  } else {
+    recognizer.feedbackOnActivation = defaultFeedbackOnActivation;
   }
 }
 
