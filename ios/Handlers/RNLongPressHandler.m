@@ -22,6 +22,9 @@
   __weak RNGestureHandler *_gestureHandler;
 }
 
+static const NSTimeInterval defaultMinimumPressDuration = 0.5;
+static const CGFloat defaultAllowableMovement = 10;
+
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
@@ -60,11 +63,15 @@
   id prop = config[@"minDurationMs"];
   if (prop != nil) {
     recognizer.minimumPressDuration = [RCTConvert CGFloat:prop] / 1000.0;
+  } else {
+    recognizer.minimumPressDuration = defaultMinimumPressDuration;
   }
   
   prop = config[@"maxDist"];
   if (prop != nil) {
     recognizer.allowableMovement = [RCTConvert CGFloat:prop];
+  } else {
+    recognizer.allowableMovement = defaultAllowableMovement;
   }
 }
 
