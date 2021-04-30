@@ -93,6 +93,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     public abstract T create(Context context);
 
     public void configure(T handler, ReadableMap config) {
+      handler.resetConfig();
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
         handler.setShouldCancelWhenOutside(config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE));
       }
