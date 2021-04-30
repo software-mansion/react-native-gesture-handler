@@ -22,6 +22,16 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 #define APPLY_INT_PROP(prop) do { APPLY_PROP(recognizer, config, NSInteger, prop, @#prop); } while(0)
 #define APPLY_NAMED_INT_PROP(prop, propName) do { APPLY_PROP(recognizer, config, NSInteger, prop, propName); } while(0)
 
+#define APPLY_PROP_OR_DEFAULT(recognizer, config, type, prop, propName, default) do { \
+id value = config[propName]; \
+if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
+else { recognizer.prop = default; }\
+} while(0)
+
+#define APPLY_FLOAT_PROP_OR_DEFAULT(prop, default) do { APPLY_PROP_OR_DEFAULT(recognizer, config, CGFloat, prop, @#prop, default); } while(0)
+#define APPLY_INT_PROP_OR_DEFAULT(prop, default) do { APPLY_PROP_OR_DEFAULT(recognizer, config, NSInteger, prop, @#prop, default); } while(0)
+#define APPLY_NAMED_INT_PROP_OR_DEFAULT(prop, propName, default) do { APPLY_PROP_OR_DEFAULT(recognizer, config, NSInteger, prop, propName, default); } while(0)
+
 @protocol RNGestureHandlerEventEmitter
 
 - (void)sendTouchEvent:(nonnull RNGestureHandlerEvent *)event;
