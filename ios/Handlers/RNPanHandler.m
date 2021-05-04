@@ -190,21 +190,47 @@
   return self;
 }
 
+- (void)resetConfig
+{
+  [super resetConfig];
+  RNBetterPanGestureRecognizer *recognizer = (RNBetterPanGestureRecognizer *)_recognizer;
+  recognizer.minVelocityX = NAN;
+  recognizer.minVelocityY = NAN;
+  recognizer.activeOffsetXStart = NAN;
+  recognizer.activeOffsetXEnd = NAN;
+  recognizer.failOffsetXStart = NAN;
+  recognizer.failOffsetXEnd = NAN;
+  recognizer.activeOffsetYStart = NAN;
+  recognizer.activeOffsetYEnd = NAN;
+  recognizer.failOffsetYStart = NAN;
+  recognizer.failOffsetYStart = NAN;
+  recognizer.failOffsetYEnd = NAN;
+#if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
+  if (@available(iOS 13.4, *)) {
+    recognizer.allowedScrollTypesMask = 0;
+  }
+#endif
+  recognizer.minimumNumberOfTouches = 1;
+  recognizer.maximumNumberOfTouches = NSUIntegerMax;
+  recognizer.minDistSq = NAN;
+  recognizer.minVelocitySq = NAN;
+}
+
 - (void)configure:(NSDictionary *)config
 {
   [super configure:config];
   RNBetterPanGestureRecognizer *recognizer = (RNBetterPanGestureRecognizer *)_recognizer;
   
-  APPLY_FLOAT_PROP_OR_DEFAULT(minVelocityX, NAN);
-  APPLY_FLOAT_PROP_OR_DEFAULT(minVelocityY, NAN);
-  APPLY_FLOAT_PROP_OR_DEFAULT(activeOffsetXStart, NAN);
-  APPLY_FLOAT_PROP_OR_DEFAULT(activeOffsetXEnd, NAN);
-  APPLY_FLOAT_PROP_OR_DEFAULT(failOffsetXStart, NAN);
-  APPLY_FLOAT_PROP_OR_DEFAULT(failOffsetXEnd, NAN);
-  APPLY_FLOAT_PROP_OR_DEFAULT(activeOffsetYStart, NAN);
-  APPLY_FLOAT_PROP_OR_DEFAULT(activeOffsetYEnd, NAN);
-  APPLY_FLOAT_PROP_OR_DEFAULT(failOffsetYStart, NAN);
-  APPLY_FLOAT_PROP_OR_DEFAULT(failOffsetYEnd, NAN);
+  APPLY_FLOAT_PROP(minVelocityX);
+  APPLY_FLOAT_PROP(minVelocityY);
+  APPLY_FLOAT_PROP(activeOffsetXStart);
+  APPLY_FLOAT_PROP(activeOffsetXEnd);
+  APPLY_FLOAT_PROP(failOffsetXStart);
+  APPLY_FLOAT_PROP(failOffsetXEnd);
+  APPLY_FLOAT_PROP(activeOffsetYStart);
+  APPLY_FLOAT_PROP(activeOffsetYEnd);
+  APPLY_FLOAT_PROP(failOffsetYStart);
+  APPLY_FLOAT_PROP(failOffsetYEnd);
 
 #if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
   if (@available(iOS 13.4, *)) {
@@ -214,24 +240,20 @@
     }
   }
 
-  APPLY_NAMED_INT_PROP_OR_DEFAULT(minimumNumberOfTouches, @"minPointers", 1);
-  APPLY_NAMED_INT_PROP_OR_DEFAULT(maximumNumberOfTouches, @"maxPointers", NSUIntegerMax);
+  APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
+  APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
 #endif
     
   id prop = config[@"minDist"];
   if (prop != nil) {
     CGFloat dist = [RCTConvert CGFloat:prop];
     recognizer.minDistSq = dist * dist;
-  } else {
-    recognizer.minDistSq = NAN;
   }
   
   prop = config[@"minVelocity"];
   if (prop != nil) {
     CGFloat velocity = [RCTConvert CGFloat:prop];
     recognizer.minVelocitySq = velocity * velocity;
-  } else {
-    recognizer.minVelocitySq = NAN;
   }
   [recognizer updateHasCustomActivationCriteria];
 }

@@ -13,15 +13,14 @@
 #define TEST_MAX_IF_NOT_NAN(value, max) \
 (!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
 
-#define APPLY_PROP_OR_DEFAULT(recognizer, config, type, prop, propName, default) do { \
+#define APPLY_PROP(recognizer, config, type, prop, propName) do { \
 id value = config[propName]; \
 if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
-else { recognizer.prop = default; }\
 } while(0)
 
-#define APPLY_FLOAT_PROP_OR_DEFAULT(prop, default) do { APPLY_PROP_OR_DEFAULT(recognizer, config, CGFloat, prop, @#prop, default); } while(0)
-#define APPLY_INT_PROP_OR_DEFAULT(prop, default) do { APPLY_PROP_OR_DEFAULT(recognizer, config, NSInteger, prop, @#prop, default); } while(0)
-#define APPLY_NAMED_INT_PROP_OR_DEFAULT(prop, propName, default) do { APPLY_PROP_OR_DEFAULT(recognizer, config, NSInteger, prop, propName, default); } while(0)
+#define APPLY_FLOAT_PROP(prop) do { APPLY_PROP(recognizer, config, CGFloat, prop, @#prop); } while(0)
+#define APPLY_INT_PROP(prop) do { APPLY_PROP(recognizer, config, NSInteger, prop, @#prop); } while(0)
+#define APPLY_NAMED_INT_PROP(prop, propName) do { APPLY_PROP(recognizer, config, NSInteger, prop, propName); } while(0)
 
 @protocol RNGestureHandlerEventEmitter
 
@@ -59,6 +58,7 @@ else { recognizer.prop = default; }\
 
 - (void)bindToView:(nonnull UIView *)view;
 - (void)unbindFromView;
+- (void)resetConfig NS_REQUIRES_SUPER;
 - (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)handleGesture:(nonnull id)recognizer;
 - (BOOL)containsPointInView;

@@ -125,19 +125,27 @@ static const BOOL defaultFeedbackOnActivation = NO;
   return self;
 }
 
+- (void)resetConfig
+{
+  [super resetConfig];
+  RNForceTouchGestureRecognizer *recognizer = (RNForceTouchGestureRecognizer *)_recognizer;
+  
+  recognizer.feedbackOnActivation = defaultFeedbackOnActivation;
+  recognizer.maxForce = defaultMaxForce;
+  recognizer.minForce = defaultMinForce;
+}
+
 - (void)configure:(NSDictionary *)config
 {
   [super configure:config];
   RNForceTouchGestureRecognizer *recognizer = (RNForceTouchGestureRecognizer *)_recognizer;
 
-  APPLY_FLOAT_PROP_OR_DEFAULT(maxForce, defaultMaxForce);
-  APPLY_FLOAT_PROP_OR_DEFAULT(minForce, defaultMinForce);
+  APPLY_FLOAT_PROP(maxForce);
+  APPLY_FLOAT_PROP(minForce);
 
   id prop = config[@"feedbackOnActivation"];
   if (prop != nil) {
     recognizer.feedbackOnActivation = [RCTConvert BOOL:prop];
-  } else {
-    recognizer.feedbackOnActivation = defaultFeedbackOnActivation;
   }
 }
 
