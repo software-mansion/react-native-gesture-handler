@@ -84,23 +84,29 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return self;
 }
 
+- (void)resetConfig
+{
+  self.enabled = YES;
+  _shouldCancelWhenOutside = NO;
+  _handlersToWaitFor = nil;
+  _simultaneousHandlers = nil;
+  _hitSlop = RNGHHitSlopEmpty;
+}
+
 - (void)configure:(NSDictionary *)config
 {
+  [self resetConfig];
     _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
     _simultaneousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
 
     id prop = config[@"enabled"];
     if (prop != nil) {
         self.enabled = [RCTConvert BOOL:prop];
-    } else {
-        self.enabled = YES;
     }
 
     prop = config[@"shouldCancelWhenOutside"];
     if (prop != nil) {
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
-    } else {
-        _shouldCancelWhenOutside = NO;
     }
 
     prop = config[@"hitSlop"];

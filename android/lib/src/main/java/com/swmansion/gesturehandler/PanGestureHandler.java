@@ -7,12 +7,13 @@ import android.view.ViewConfiguration;
 
 public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
 
-  private static float MIN_VALUE_IGNORE = Float.MAX_VALUE;
-  private static float MAX_VALUE_IGNORE = Float.MIN_VALUE;
+  private static final float MIN_VALUE_IGNORE = Float.MAX_VALUE;
+  private static final float MAX_VALUE_IGNORE = Float.MIN_VALUE;
 
-  private static int DEFAULT_MIN_POINTERS = 1;
-  private static int DEFAULT_MAX_POINTERS = 10;
+  private static final int DEFAULT_MIN_POINTERS = 1;
+  private static final int DEFAULT_MAX_POINTERS = 10;
 
+  private final float mDefaultMinDistSq;
   private float mMinDistSq = MAX_VALUE_IGNORE;
 
   private float mActiveOffsetXStart = MIN_VALUE_IGNORE;
@@ -56,7 +57,37 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   public PanGestureHandler(Context context) {
     ViewConfiguration vc = ViewConfiguration.get(context);
     int touchSlop = vc.getScaledTouchSlop();
-    mMinDistSq = touchSlop * touchSlop;
+    mDefaultMinDistSq = touchSlop * touchSlop;
+    mMinDistSq = mDefaultMinDistSq;
+  }
+
+  @Override
+  public void resetConfig() {
+    super.resetConfig();
+    mMinDistSq = MAX_VALUE_IGNORE;
+
+    mActiveOffsetXStart = MIN_VALUE_IGNORE;
+    mActiveOffsetXEnd = MAX_VALUE_IGNORE;
+
+    mFailOffsetXStart = MAX_VALUE_IGNORE;
+    mFailOffsetXEnd = MIN_VALUE_IGNORE;
+
+    mActiveOffsetYStart = MIN_VALUE_IGNORE;
+    mActiveOffsetYEnd = MAX_VALUE_IGNORE;
+
+    mFailOffsetYStart = MAX_VALUE_IGNORE;
+    mFailOffsetYEnd = MIN_VALUE_IGNORE;
+
+    mMinVelocityX = MIN_VALUE_IGNORE;
+    mMinVelocityY = MIN_VALUE_IGNORE;
+    mMinVelocitySq = MIN_VALUE_IGNORE;
+
+    mMinDistSq = mDefaultMinDistSq;
+
+    mMinPointers = DEFAULT_MIN_POINTERS;
+    mMaxPointers = DEFAULT_MAX_POINTERS;
+
+    mAverageTouches = false;
   }
 
   public PanGestureHandler setActiveOffsetXStart(float activeOffsetXStart) {

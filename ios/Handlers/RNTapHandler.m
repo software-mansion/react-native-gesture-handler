@@ -38,15 +38,20 @@
   NSInteger _maxNumberOfTouches;
 }
 
+static const NSUInteger defaultNumberOfTaps = 1;
+static const NSInteger defaultMinPointers = 1;
+static const CGFloat defaultMaxDelay = 0.2;
+static const NSTimeInterval defaultMaxDuration = NAN;
+
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     _tapsSoFar = 0;
-    _numberOfTaps = 1;
-    _minPointers = 1;
-    _maxDelay = 0.2;
-    _maxDuration = NAN;
+    _numberOfTaps = defaultNumberOfTaps;
+    _minPointers = defaultMinPointers;
+    _maxDelay = defaultMaxDelay;
+    _maxDuration = defaultMaxDuration;
     _maxDeltaX = NAN;
     _maxDeltaY = NAN;
     _maxDistSq = NAN;
@@ -176,6 +181,20 @@
     _recognizer = [[RNBetterTapGestureRecognizer alloc] initWithGestureHandler:self];
   }
   return self;
+}
+
+- (void)resetConfig
+{
+  [super resetConfig];
+  RNBetterTapGestureRecognizer *recognizer = (RNBetterTapGestureRecognizer *)_recognizer;
+  
+  recognizer.numberOfTaps = defaultNumberOfTaps;
+  recognizer.minPointers = defaultMinPointers;
+  recognizer.maxDeltaX = NAN;
+  recognizer.maxDeltaY = NAN;
+  recognizer.maxDelay = defaultMaxDelay;
+  recognizer.maxDuration = defaultMaxDuration;
+  recognizer.maxDistSq = NAN;
 }
 
 - (void)configure:(NSDictionary *)config

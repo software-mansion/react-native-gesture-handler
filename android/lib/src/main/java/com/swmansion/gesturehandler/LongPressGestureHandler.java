@@ -7,16 +7,25 @@ import android.view.MotionEvent;
 public class LongPressGestureHandler extends GestureHandler<LongPressGestureHandler> {
 
   private static final long DEFAULT_MIN_DURATION_MS = 500; // 1 sec
-  private static float DEFAULT_MAX_DIST_DP = 10; // 20dp
+  private static final float DEFAULT_MAX_DIST_DP = 10; // 20dp
 
   private long mMinDurationMs = DEFAULT_MIN_DURATION_MS;
+  private final float mDefaultMaxDistSq;
   private float mMaxDistSq;
   private float mStartX, mStartY;
   private Handler mHandler;
 
   public LongPressGestureHandler(Context context) {
     setShouldCancelWhenOutside(true);
-    mMaxDistSq = DEFAULT_MAX_DIST_DP * context.getResources().getDisplayMetrics().density;
+    mDefaultMaxDistSq = DEFAULT_MAX_DIST_DP * context.getResources().getDisplayMetrics().density;
+    mMaxDistSq = mDefaultMaxDistSq;
+  }
+
+  @Override
+  public void resetConfig() {
+    super.resetConfig();
+    mMinDurationMs = DEFAULT_MIN_DURATION_MS;
+    mMaxDistSq = mDefaultMaxDistSq;
   }
 
   public void setMinDurationMs(long minDurationMs) {

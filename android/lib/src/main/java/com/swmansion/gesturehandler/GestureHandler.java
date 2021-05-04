@@ -88,6 +88,12 @@ public class GestureHandler<T extends GestureHandler> {
     }
   }
 
+  public void resetConfig() {
+    mShouldCancelWhenOutside = false;
+    mEnabled = true;
+    mHitSlop = null;
+  }
+
   public boolean hasCommonPointers(GestureHandler other) {
     for (int i = 0; i < mTrackedPointerIDs.length; i++) {
       if (mTrackedPointerIDs[i] != -1 && other.mTrackedPointerIDs[i] != -1) {

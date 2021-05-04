@@ -15,7 +15,7 @@
 
 #define APPLY_PROP(recognizer, config, type, prop, propName) do { \
 id value = config[propName]; \
-if (value != nil) recognizer.prop = [RCTConvert type:value]; \
+if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 } while(0)
 
 #define APPLY_FLOAT_PROP(prop) do { APPLY_PROP(recognizer, config, CGFloat, prop, @#prop); } while(0)
@@ -58,6 +58,7 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 
 - (void)bindToView:(nonnull UIView *)view;
 - (void)unbindFromView;
+- (void)resetConfig NS_REQUIRES_SUPER;
 - (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)handleGesture:(nonnull id)recognizer;
 - (BOOL)containsPointInView;

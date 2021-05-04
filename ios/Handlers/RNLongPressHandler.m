@@ -52,6 +52,15 @@
   return self;
 }
 
+- (void)resetConfig
+{
+  [super resetConfig];
+  UILongPressGestureRecognizer *recognizer = (UILongPressGestureRecognizer *)_recognizer;
+  
+  recognizer.minimumPressDuration = 0.5;
+  recognizer.allowableMovement = 10;
+}
+
 - (void)configure:(NSDictionary *)config
 {
   [super configure:config];

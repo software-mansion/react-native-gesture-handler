@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.view.MotionEvent;
 
 public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
-  private static float MAX_VALUE_IGNORE = Float.MIN_VALUE;
+  private static final float MAX_VALUE_IGNORE = Float.MIN_VALUE;
   private static final long DEFAULT_MAX_DURATION_MS = 500;
   private static final long DEFAULT_MAX_DELAY_MS = 500;
   private static final int DEFAULT_NUMBER_OF_TAPS = 1;
@@ -33,6 +33,19 @@ public class TapGestureHandler extends GestureHandler<TapGestureHandler> {
       fail();
     }
   };
+
+  @Override
+  public void resetConfig() {
+    super.resetConfig();
+    mMaxDeltaX = MAX_VALUE_IGNORE;
+    mMaxDeltaY = MAX_VALUE_IGNORE;
+    mMaxDistSq = MAX_VALUE_IGNORE;
+
+    mMaxDurationMs = DEFAULT_MAX_DURATION_MS;
+    mMaxDelayMs = DEFAULT_MAX_DELAY_MS;
+    mNumberOfTaps = DEFAULT_NUMBER_OF_TAPS;
+    mMinNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
+  }
 
   public TapGestureHandler setNumberOfTaps(int numberOfTaps) {
     mNumberOfTaps = numberOfTaps;
