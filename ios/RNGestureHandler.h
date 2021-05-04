@@ -34,7 +34,7 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 @protocol RNRootViewGestureRecognizerDelegate <UIGestureRecognizerDelegate>
 
 - (void)gestureRecognizer:(nullable UIGestureRecognizer *)gestureRecognizer
-    didActivateInRootView:(nullable UIView *)rootView;
+    didActivateInViewWithTouchHandler:(nullable UIView *)viewWithTouchHandler;
 
 @end
 
