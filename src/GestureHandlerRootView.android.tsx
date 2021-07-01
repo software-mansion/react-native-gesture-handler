@@ -1,17 +1,36 @@
 import * as React from 'react';
-import { PropsWithChildren } from 'react';
-import { requireNativeComponent } from 'react-native';
+import { View, requireNativeComponent } from 'react-native';
+import { GestureHandlerRootViewProps } from './GestureHandlerRootView';
 
 const GestureHandlerRootViewNative = requireNativeComponent(
   'GestureHandlerRootView'
 );
 
-type Props = PropsWithChildren<Record<string, unknown>>;
+const GestureHandlerRootViewContext = React.createContext(false);
 
-export default function GestureHandlerRootView({ children, ...rest }: Props) {
+export default function GestureHandlerRootView({
+  children,
+  forcedRender,
+  ...rest
+}: GestureHandlerRootViewProps) {
   return (
-    <GestureHandlerRootViewNative {...rest}>
-      {children}
-    </GestureHandlerRootViewNative>
+    <GestureHandlerRootViewContext.Consumer>
+      {(available) => {
+        if (available && !forcedRender) {
+          // If we already have a parent wrapped in the gesture handler root view,
+          // We don't need to wrap it again in root view
+          // We still wrap it in a normal view so our styling stays the same
+          return <View {...rest}>{children}</View>;
+        }
+
+        return (
+          <GestureHandlerRootViewContext.Provider value>
+            <GestureHandlerRootViewNative {...rest}>
+              {children}
+            </GestureHandlerRootViewNative>
+          </GestureHandlerRootViewContext.Provider>
+        );
+      }}
+    </GestureHandlerRootViewContext.Consumer>
   );
 }
