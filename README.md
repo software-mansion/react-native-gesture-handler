@@ -17,7 +17,7 @@ Check out our dedicated documentation page for info about this library, API refe
 
 ## Examples
 
-If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `Example/` folder and run:
+If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `examples/Example/` folder and run:
 
 ```bash
   yarn install
