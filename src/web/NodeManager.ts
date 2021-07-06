@@ -22,6 +22,9 @@ export function createGestureHandler(
 }
 
 export function dropGestureHandler(handlerTag: number) {
+  if (!(handlerTag in gestures)) {
+    return;
+  }
   getHandler(handlerTag).destroy();
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete gestures[handlerTag];
