@@ -14,7 +14,7 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
   private final float mDefaultMaxDistSq;
   private float mMaxDistSq;
   private float mStartX, mStartY;
-  private long mStartTime;
+  private long mStartTime, mPreviousTime;
   private Handler mHandler;
 
   public LongPressGestureHandler(Context context) {
@@ -42,7 +42,7 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
   @Override
   protected void onHandle(MotionEvent event) {
     if (getState() == STATE_UNDETERMINED) {
-      mStartTime = SystemClock.uptimeMillis();
+      mStartTime = mPreviousTime = SystemClock.uptimeMillis();
       begin();
       mStartX = event.getRawX();
       mStartY = event.getRawY();
@@ -91,7 +91,19 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
     }
   }
 
-  public long getStartTime() {
-    return mStartTime;
+  @Override
+  void dispatchStateChange(int newState, int prevState) {
+    mPreviousTime = SystemClock.uptimeMillis();
+    super.dispatchStateChange(newState, prevState);
+  }
+
+  @Override
+  void dispatchTouchEvent(MotionEvent event) {
+    mPreviousTime = SystemClock.uptimeMillis();
+    super.dispatchTouchEvent(event);
+  }
+
+  public int getDuration() {
+    return (int)(mPreviousTime - mStartTime);
   }
 }

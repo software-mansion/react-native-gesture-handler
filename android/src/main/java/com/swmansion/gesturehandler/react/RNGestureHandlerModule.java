@@ -235,7 +235,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.getLastRelativePositionY()));
       eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionX()));
       eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionY()));
-      eventData.putInt("duration", (int)(SystemClock.uptimeMillis() - handler.getStartTime()));
+      eventData.putInt("duration", handler.getDuration());
     }
   }
 

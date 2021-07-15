@@ -12,12 +12,15 @@
 
 #import <React/RCTConvert.h>
 
+#import <mach/mach_time.h>
+
 @interface RNBetterLongPressGestureRecognizer : UILongPressGestureRecognizer {
-  double startTime;
+  uint64_t startTime;
+  uint64_t previousTime;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
-- (void)handle:(UIGestureRecognizer *)recognizer;
+- (void)handleGesture:(UIGestureRecognizer *)recognizer;
 - (NSUInteger) getDuration;
 
 @end
@@ -28,17 +31,18 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handle:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
   }
   return self;
 }
 
-- (void)handle:(UIGestureRecognizer *)recognizer
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
   if (recognizer.state == UIGestureRecognizerStateBegan) {
-    startTime = [NSDate timeIntervalSinceReferenceDate];
+    startTime = mach_absolute_time();
   }
+  previousTime = mach_absolute_time();
 
   [_gestureHandler handleGesture:recognizer];
 }
@@ -54,7 +58,7 @@
 
 - (NSUInteger)getDuration
 {
-  return (NSUInteger)(([NSDate timeIntervalSinceReferenceDate] - startTime + self.minimumPressDuration) * 1000);
+  return (NSUInteger)(((previousTime - startTime) / 1000000 + self.minimumPressDuration * 1000));
 }
 
 @end
