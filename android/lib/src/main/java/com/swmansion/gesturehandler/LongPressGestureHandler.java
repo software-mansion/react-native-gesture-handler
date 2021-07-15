@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.MotionEvent;
 
 public class LongPressGestureHandler extends GestureHandler<LongPressGestureHandler> {
@@ -13,6 +14,7 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
   private final float mDefaultMaxDistSq;
   private float mMaxDistSq;
   private float mStartX, mStartY;
+  private long mStartTime;
   private Handler mHandler;
 
   public LongPressGestureHandler(Context context) {
@@ -40,6 +42,7 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
   @Override
   protected void onHandle(MotionEvent event) {
     if (getState() == STATE_UNDETERMINED) {
+      mStartTime = SystemClock.uptimeMillis();
       begin();
       mStartX = event.getRawX();
       mStartY = event.getRawY();
@@ -86,5 +89,9 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
       mHandler.removeCallbacksAndMessages(null);
       mHandler = null;
     }
+  }
+
+  public long getStartTime() {
+    return mStartTime;
   }
 }

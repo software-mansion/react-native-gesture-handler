@@ -205,6 +205,7 @@ export type LongPressGestureHandlerEventPayload = {
   y: number;
   absoluteX: number;
   absoluteY: number;
+  duration: number;
 };
 
 export interface LongPressGestureHandlerProps

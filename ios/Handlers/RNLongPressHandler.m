@@ -12,9 +12,13 @@
 
 #import <React/RCTConvert.h>
 
-@interface RNBetterLongPressGestureRecognizer : UILongPressGestureRecognizer
+@interface RNBetterLongPressGestureRecognizer : UILongPressGestureRecognizer {
+  double startTime;
+}
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
+- (void)handle:(UIGestureRecognizer *)recognizer;
+- (NSUInteger) getDuration;
 
 @end
 
@@ -24,10 +28,19 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handle:)])) {
     _gestureHandler = gestureHandler;
   }
   return self;
+}
+
+- (void)handle:(UIGestureRecognizer *)recognizer
+{
+  if (recognizer.state == UIGestureRecognizerStateBegan) {
+    startTime = [NSDate timeIntervalSinceReferenceDate];
+  }
+
+  [_gestureHandler handleGesture:recognizer];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -37,6 +50,11 @@
     self.enabled = NO;
     self.enabled = YES;
   }
+}
+
+- (NSUInteger)getDuration
+{
+  return (NSUInteger)(([NSDate timeIntervalSinceReferenceDate] - startTime + self.minimumPressDuration) * 1000);
 }
 
 @end
@@ -87,6 +105,15 @@
     return RNGestureHandlerStateActive;
   }
   return [super state];
+}
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
+{
+    return [RNGestureHandlerEventExtraData
+            forPosition:[recognizer locationInView:recognizer.view]
+            withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+            withNumberOfTouches:recognizer.numberOfTouches
+            withDuration:[(RNBetterLongPressGestureRecognizer*)recognizer getDuration]];
 }
 @end
 
