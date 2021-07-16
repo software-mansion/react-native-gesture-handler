@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Alert } from 'react-native';
+import { StyleSheet, View, Alert, Text } from 'react-native';
 
 import {
   LongPressGestureHandler,
@@ -12,14 +12,19 @@ import {
 
 import { LoremIpsum } from '../common';
 
-export class PressBox extends Component {
+interface PressBoxProps {
+  setDuration: (duration: number) => void;
+}
+
+interface ExampleState {
+  longPressDuration: number;
+}
+export class PressBox extends Component<PressBoxProps> {
   private doubleTapRef = React.createRef<TapGestureHandler>();
   private onHandlerStateChange = (
     event: LongPressGestureHandlerStateChangeEvent
   ) => {
-    if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert("I'm being pressed for so long");
-    }
+    this.props.setDuration(event.nativeEvent.duration);
   };
   private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
@@ -51,12 +56,28 @@ export class PressBox extends Component {
   }
 }
 
-export default class Example extends Component {
+export default class Example extends Component<
+  Record<string, never>,
+  ExampleState
+> {
+  constructor(props: Record<string, never>) {
+    super(props);
+
+    this.state = { longPressDuration: 0 };
+  }
+
   render() {
     return (
       <ScrollView style={styles.scrollView}>
         <LoremIpsum words={40} />
-        <PressBox />
+        <Text style={styles.text}>
+          Duration of the last long press: {this.state.longPressDuration}ms
+        </Text>
+        <PressBox
+          setDuration={(duration: number) =>
+            this.setState({ longPressDuration: duration })
+          }
+        />
         <LoremIpsum />
       </ScrollView>
     );
@@ -74,5 +95,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'plum',
     margin: 10,
     zIndex: 200,
+  },
+  text: {
+    marginLeft: 20,
   },
 });
