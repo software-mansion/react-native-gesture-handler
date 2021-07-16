@@ -42,6 +42,9 @@ X coordinate, expressed in points, of the current position of the pointer (finge
 
 Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the handler can be transformed as an effect of the gesture.
 
+### `duration`
+
+Duration of the long press (time since the start of the event), expressed in milliseconds.
 ## Example
 
 See the [multitap example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/src/multitap/index.tsx) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
