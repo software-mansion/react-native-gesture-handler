@@ -25,7 +25,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 public class RNGestureHandlerButtonViewManager extends
         ViewGroupManager<RNGestureHandlerButtonViewManager.ButtonViewGroup> {
 
-  static class ButtonViewGroup extends ViewGroup {
+  public static class ButtonViewGroup extends ViewGroup {
 
     static TypedValue sResolveOutValue = new TypedValue();
     static ButtonViewGroup sResponder;
@@ -41,6 +41,7 @@ public class RNGestureHandlerButtonViewManager extends
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
+    private boolean mExclusive = true;
     boolean mNeedBackgroundUpdate = false;
     long mLastEventTime = 0;
     public static final String SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground";
@@ -62,6 +63,10 @@ public class RNGestureHandlerButtonViewManager extends
     public void setBackgroundColor(int color) {
       mBackgroundColor = color;
       mNeedBackgroundUpdate = true;
+    }
+
+    public void setExclusive(boolean exclusive) {
+      mExclusive = exclusive;
     }
 
     public void setRippleColor(Integer color) {
@@ -226,14 +231,20 @@ public class RNGestureHandlerButtonViewManager extends
       }
     }
 
+    public boolean setResponder() {
+      if (sResponder == null) {
+        if (mExclusive) {
+          sResponder = this;
+        }
+        return true;
+      }
+      return false;
+    }
+
     @Override
     public void setPressed(boolean pressed) {
-      if (pressed && sResponder == null) {
-        // first button to be pressed grabs button responder
-        sResponder = this;
-      }
-      if (!pressed || sResponder == this) {
-        // we set pressed state only for current responder
+      if (!pressed || sResponder == this || (sResponder == null && !mExclusive)) {
+        // we set pressed state only for current responder if exclusive
         super.setPressed(pressed);
       }
       if (!pressed && sResponder == this) {
@@ -284,6 +295,10 @@ public class RNGestureHandlerButtonViewManager extends
     view.setRippleColor(rippleColor);
   }
 
+  @ReactProp(name = "exclusive", defaultBoolean = true)
+  public void setExclusive(ButtonViewGroup view, boolean exclusive) {
+    view.setExclusive(exclusive);
+    
   @ReactProp(name = "rippleRadius")
   public void setRippleRadius(ButtonViewGroup view, Integer rippleRadius) {
     view.setRippleRadius(rippleRadius);

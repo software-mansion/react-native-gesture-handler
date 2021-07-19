@@ -5,6 +5,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager;
+
 public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHandler> {
 
   private boolean mShouldActivateOnStart;
@@ -41,6 +43,18 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
     return super.shouldRequireToWaitForFailure(handler);
   }
 
+  private boolean isPreventedFromBeginning() {
+    // RNGestureHandlerButtonViewManager is connected with logic
+    // related to handling exclusive touches which should prevent
+    // another buttons from beginning gesture recognition.
+    View view = getView();
+    if (view instanceof RNGestureHandlerButtonViewManager.ButtonViewGroup) {
+      // setting flag for an exclusive touch for buttons
+      return !((RNGestureHandlerButtonViewManager.ButtonViewGroup) view).setResponder();
+    }
+    return false;
+  }
+
   @Override
   public boolean shouldRecognizeSimultaneously(GestureHandler handler) {
     if (handler instanceof NativeViewGestureHandler) {
@@ -60,7 +74,7 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
     int otherState = handler.getState();
 
     if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
-      // if both handlers are active and the current handler can be interruped it we return `false`
+      // if both handlers are active and the current handler can be interrupted it we return `false`
       // as it means the other handler has turned active and returning `true` would prevent it from
       // interrupting the current handler
       return false;
@@ -92,8 +106,9 @@ public class NativeViewGestureHandler extends GestureHandler<NativeViewGestureHa
       } else if (tryIntercept(view, event)) {
         view.onTouchEvent(event);
         activate();
-      } else if (state != STATE_BEGAN) {
+      } else if (state != STATE_BEGAN && !isPreventedFromBeginning()) {
         begin();
+
       }
     } else if (state == STATE_ACTIVE) {
       view.onTouchEvent(event);
