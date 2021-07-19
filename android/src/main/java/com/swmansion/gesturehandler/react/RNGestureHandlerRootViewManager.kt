@@ -13,13 +13,9 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
  */
 @ReactModule(name = RNGestureHandlerRootViewManager.REACT_CLASS)
 class RNGestureHandlerRootViewManager : ViewGroupManager<RNGestureHandlerRootView>() {
-  override fun getName(): String {
-    return REACT_CLASS
-  }
+  override fun getName() = REACT_CLASS
 
-  override fun createViewInstance(reactContext: ThemedReactContext): RNGestureHandlerRootView {
-    return RNGestureHandlerRootView(reactContext)
-  }
+  override fun createViewInstance(reactContext: ThemedReactContext) = RNGestureHandlerRootView(reactContext)
 
   override fun onDropViewInstance(view: RNGestureHandlerRootView) {
     view.tearDown()
@@ -29,12 +25,12 @@ class RNGestureHandlerRootViewManager : ViewGroupManager<RNGestureHandlerRootVie
    * The following event configuration is necessary even if you are not using
    * GestureHandlerRootView component directly.
    */
-  override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any>? {
-    return MapBuilder.of<String, Map<String, String>>(
-        RNGestureHandlerEvent.EVENT_NAME,
-        MapBuilder.of("registrationName", RNGestureHandlerEvent.EVENT_NAME),
-        RNGestureHandlerStateChangeEvent.EVENT_NAME,
-        MapBuilder.of("registrationName", RNGestureHandlerStateChangeEvent.EVENT_NAME))
+  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Map<String, String>> {
+    return mutableMapOf(
+      RNGestureHandlerEvent.EVENT_NAME to
+        mutableMapOf("registrationName" to RNGestureHandlerEvent.EVENT_NAME),
+      RNGestureHandlerStateChangeEvent.EVENT_NAME to
+        mutableMapOf("registrationName" to RNGestureHandlerStateChangeEvent.EVENT_NAME))
   }
 
   companion object {
