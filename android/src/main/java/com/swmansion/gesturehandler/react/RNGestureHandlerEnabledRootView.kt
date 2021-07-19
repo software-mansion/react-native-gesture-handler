@@ -8,22 +8,20 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 
 class RNGestureHandlerEnabledRootView : ReactRootView {
-  private var mReactInstanceManager: ReactInstanceManager? = null
-  private var mGestureRootHelper: RNGestureHandlerRootHelper? = null
+  private lateinit var _reactInstanceManager: ReactInstanceManager
+  private var gestureRootHelper: RNGestureHandlerRootHelper? = null
 
   constructor(context: Context?) : super(context) {}
   constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    if (mGestureRootHelper != null) {
-      mGestureRootHelper!!.requestDisallowInterceptTouchEvent(disallowIntercept)
-    }
+    gestureRootHelper?.requestDisallowInterceptTouchEvent(disallowIntercept)
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    return if (mGestureRootHelper != null && mGestureRootHelper!!.dispatchTouchEvent(ev)) {
-      true
+    return if (gestureRootHelper?.dispatchTouchEvent(ev) == true) {
+      return true
     } else super.dispatchTouchEvent(ev)
   }
 
@@ -35,23 +33,24 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
    * default RN behavior.
    */
   fun initialize() {
-    check(mGestureRootHelper == null) { "GestureHandler already initialized for root view $this" }
-    mGestureRootHelper = RNGestureHandlerRootHelper(
-        mReactInstanceManager!!.currentReactContext, this)
+    check(gestureRootHelper == null) { "GestureHandler already initialized for root view $this" }
+    gestureRootHelper = RNGestureHandlerRootHelper(
+        _reactInstanceManager.currentReactContext, this)
   }
 
   fun tearDown() {
-    if (mGestureRootHelper != null) {
-      mGestureRootHelper!!.tearDown()
-      mGestureRootHelper = null
+    gestureRootHelper?.let {
+      it.tearDown()
+      gestureRootHelper = null
     }
   }
 
   override fun startReactApplication(
       reactInstanceManager: ReactInstanceManager,
       moduleName: String,
-      initialProperties: Bundle?) {
+      initialProperties: Bundle?,
+  ) {
     super.startReactApplication(reactInstanceManager, moduleName, initialProperties)
-    mReactInstanceManager = reactInstanceManager
+    _reactInstanceManager = reactInstanceManager
   }
 }
