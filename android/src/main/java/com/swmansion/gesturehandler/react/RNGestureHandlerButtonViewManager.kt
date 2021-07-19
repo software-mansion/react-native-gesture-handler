@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler.react
 
-import android.R
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
@@ -24,249 +23,264 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
-    class ButtonViewGroup(context: Context?) : ViewGroup(context) {
-        var mBackgroundColor = Color.TRANSPARENT
+  override fun getName(): String {
+    return "RNGestureHandlerButton"
+  }
 
-        // Using object because of handling null representing no value set.
-        var mRippleColor: Int? = null
-        var mRippleRadius: Int? = null
-        var mUseForeground = false
-        var mUseBorderless = false
-        var mBorderRadius = 0f
-        var mNeedBackgroundUpdate = false
-        var mLastEventTime: Long = 0
-        override fun setBackgroundColor(color: Int) {
-            mBackgroundColor = color
-            mNeedBackgroundUpdate = true
-        }
+  public override fun createViewInstance(context: ThemedReactContext): ButtonViewGroup {
+    return ButtonViewGroup(context)
+  }
 
-        fun setRippleColor(color: Int?) {
-            mRippleColor = color
-            mNeedBackgroundUpdate = true
-        }
+  @TargetApi(Build.VERSION_CODES.M)
+  @ReactProp(name = "foreground")
+  fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
+    view.useDrawableOnForeground = useDrawableOnForeground
+  }
 
-        fun setRippleRadius(radius: Int?) {
-            mRippleRadius = radius
-            mNeedBackgroundUpdate = true
-        }
+  @ReactProp(name = "borderless")
+  fun setBorderless(view: ButtonViewGroup, useBorderlessDrawable: Boolean) {
+    view.useBorderlessDrawable = useBorderlessDrawable
+  }
 
-        fun setBorderRadius(borderRadius: Float) {
-            mBorderRadius = borderRadius * resources.displayMetrics.density
-            mNeedBackgroundUpdate = true
-        }
+  @ReactProp(name = "enabled")
+  fun setEnabled(view: ButtonViewGroup, enabled: Boolean) {
+    view.isEnabled = enabled
+  }
 
-        private fun applyRippleEffectWhenNeeded(selectable: Drawable): Drawable {
-            if (mRippleColor != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && selectable is RippleDrawable) {
-                val states = arrayOf(intArrayOf(R.attr.state_enabled))
-                val colors = intArrayOf(mRippleColor!!)
-                val colorStateList = ColorStateList(states, colors)
-                selectable.setColor(colorStateList)
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mRippleRadius != null && selectable is RippleDrawable) {
-                selectable.radius = PixelUtil.toPixelFromDIP(mRippleRadius!!.toFloat()).toInt()
-            }
-            return selectable
-        }
+  @ReactProp(name = ViewProps.BORDER_RADIUS)
+  override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
+    view.borderRadius = borderRadius
+  }
 
-        override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-            if (super.onInterceptTouchEvent(ev)) {
-                return true
-            }
-            // We call `onTouchEvent` and wait until button changes state to `pressed`, if it's pressed
-            // we return true so that the gesture handler can activate.
-            onTouchEvent(ev)
-            return isPressed
-        }
+  @ReactProp(name = "rippleColor")
+  fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
+    view.rippleColor = rippleColor
+  }
 
-        /**
-         * Buttons in RN are wrapped in NativeViewGestureHandler which manages
-         * calling onTouchEvent after activation of the handler. Problem is, in order to verify that
-         * underlying button implementation is interested in receiving touches we have to call onTouchEvent
-         * and check if button is pressed.
-         *
-         * This leads to invoking onTouchEvent twice which isn't idempotent in View - it calls OnClickListener
-         * and plays sound effect if OnClickListener was set.
-         *
-         * To mitigate this behavior we use mLastEventTime variable to check that we already handled
-         * the event in [.onInterceptTouchEvent]. We assume here that different events
-         * will have different event times.
-         *
-         * Reference:
-         * [com.swmansion.gesturehandler.NativeViewGestureHandler.onHandle]  */
-        @SuppressLint("ClickableViewAccessibility")
-        override fun onTouchEvent(event: MotionEvent): Boolean {
-            val eventTime = event.eventTime
-            if (mLastEventTime != eventTime || mLastEventTime == 0L) {
-                mLastEventTime = eventTime
-                return super.onTouchEvent(event)
-            }
-            return false
-        }
+  @ReactProp(name = "rippleRadius")
+  fun setRippleRadius(view: ButtonViewGroup, rippleRadius: Int?) {
+    view.rippleRadius = rippleRadius
+  }
 
-        fun updateBackground() {
-            if (!mNeedBackgroundUpdate) {
-                return
-            }
-            mNeedBackgroundUpdate = false
-            if (mBackgroundColor == Color.TRANSPARENT) {
-                // reset background
-                background = null
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // reset foreground
-                foreground = null
-            }
-            if (mUseForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                foreground = applyRippleEffectWhenNeeded(createSelectableDrawable())
-                if (mBackgroundColor != Color.TRANSPARENT) {
-                    setBackgroundColor(mBackgroundColor)
-                }
-            } else if (mBackgroundColor == Color.TRANSPARENT && mRippleColor == null) {
-                background = createSelectableDrawable()
-            } else {
-                val colorDrawable = PaintDrawable(mBackgroundColor)
-                val selectable = createSelectableDrawable()
-                if (mBorderRadius != 0f) {
-                    // Radius-connected lines below ought to be considered
-                    // as a temporary solution. It do not allow to set
-                    // different radius on each corner. However, I suppose it's fairly
-                    // fine for button-related use cases.
-                    // Therefore it might be used as long as:
-                    // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
-                    // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
-                    colorDrawable.setCornerRadius(mBorderRadius)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                            && selectable is RippleDrawable) {
-                        val mask = PaintDrawable(Color.WHITE)
-                        mask.setCornerRadius(mBorderRadius)
-                        selectable.setDrawableByLayerId(R.id.mask, mask)
-                    }
-                }
-                applyRippleEffectWhenNeeded(selectable)
-                val layerDrawable = LayerDrawable(arrayOf(colorDrawable, selectable))
-                background = layerDrawable
-            }
-        }
+  override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
+    view.updateBackground()
+  }
 
-        fun setUseDrawableOnForeground(useForeground: Boolean) {
-            mUseForeground = useForeground
-            mNeedBackgroundUpdate = true
-        }
+  class ButtonViewGroup(context: Context?) : ViewGroup(context) {
+    var rippleColor: Int? = null
+      set(color) {
+        field = color
+        needBackgroundUpdate = true
+      }
+    var rippleRadius: Int? = null
+      set(radius) {
+        field = radius
+        needBackgroundUpdate = true
+      }
 
-        fun setUseBorderlessDrawable(useBorderless: Boolean) {
-            mUseBorderless = useBorderless
-        }
+    var borderRadius = 0f
+      set(borderRadius) {
+        field = borderRadius * resources.displayMetrics.density
+        needBackgroundUpdate = true
+      }
 
-        private fun createSelectableDrawable(): Drawable {
-            val version = Build.VERSION.SDK_INT
-            val identifier = if (mUseBorderless && version >= 21) SELECTABLE_ITEM_BACKGROUND_BORDERLESS else SELECTABLE_ITEM_BACKGROUND
-            val attrID = getAttrId(context, identifier)
-            context.theme.resolveAttribute(attrID, sResolveOutValue, true)
-            return if (version >= 21) {
-                resources.getDrawable(sResolveOutValue.resourceId, context.theme)
-            } else {
-                resources.getDrawable(sResolveOutValue.resourceId)
-            }
-        }
+    var useDrawableOnForeground = false
+      set(useForeground) {
+        field = useForeground
+        needBackgroundUpdate = true
+      }
 
-        override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-            // No-op
-        }
+    var useBorderlessDrawable = false
 
-        override fun drawableHotspotChanged(x: Float, y: Float) {
-            if (sResponder == null || sResponder === this) {
-                super.drawableHotspotChanged(x, y)
-            }
-        }
+    private var _backgroundColor = Color.TRANSPARENT
+    private var needBackgroundUpdate = false
+    private var lastEventTime: Long = 0
 
-        override fun setPressed(pressed: Boolean) {
-            if (pressed && sResponder == null) {
-                // first button to be pressed grabs button responder
-                sResponder = this
-            }
-            if (!pressed || sResponder === this) {
-                // we set pressed state only for current responder
-                super.setPressed(pressed)
-            }
-            if (!pressed && sResponder === this) {
-                // if the responder is no longer pressed we release button responder
-                sResponder = null
-            }
-        }
-
-        override fun dispatchDrawableHotspotChanged(x: Float, y: Float) {
-            // by default viewgroup would pass hotspot change events
-        }
-
-        companion object {
-            var sResolveOutValue = TypedValue()
-            var sResponder: ButtonViewGroup? = null
-            var sDummyClickListener = OnClickListener { }
-            const val SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground"
-            const val SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless"
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            private fun getAttrId(context: Context, attr: String): Int {
-                SoftAssertions.assertNotNull(attr)
-                return if (SELECTABLE_ITEM_BACKGROUND == attr) {
-                    R.attr.selectableItemBackground
-                } else if (SELECTABLE_ITEM_BACKGROUND_BORDERLESS == attr) {
-                    R.attr.selectableItemBackgroundBorderless
-                } else {
-                    context.resources.getIdentifier(attr, "attr", "android")
-                }
-            }
-        }
-
-        init {
-
-            // we attach empty click listener to trigger tap sounds (see View#performClick())
-            setOnClickListener(sDummyClickListener)
-            isClickable = true
-            isFocusable = true
-            mNeedBackgroundUpdate = true
-        }
+    init {
+      // we attach empty click listener to trigger tap sounds (see View#performClick())
+      setOnClickListener(dummyClickListener)
+      isClickable = true
+      isFocusable = true
+      needBackgroundUpdate = true
     }
 
-    override fun getName(): String {
-        return "RNGestureHandlerButton"
+    override fun setBackgroundColor(color: Int) {
+      _backgroundColor = color
+      needBackgroundUpdate = true
     }
 
-    public override fun createViewInstance(context: ThemedReactContext): ButtonViewGroup {
-        return ButtonViewGroup(context)
+    private fun applyRippleEffectWhenNeeded(selectable: Drawable): Drawable {
+      val rippleColor = rippleColor
+      if (rippleColor != null
+          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+          && selectable is RippleDrawable) {
+        val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
+        val colors = intArrayOf(rippleColor)
+        val colorStateList = ColorStateList(states, colors)
+        selectable.setColor(colorStateList)
+      }
+
+      val rippleRadius = rippleRadius
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+          && rippleRadius != null
+          && selectable is RippleDrawable) {
+        selectable.radius = PixelUtil.toPixelFromDIP(rippleRadius.toFloat()).toInt()
+      }
+      return selectable
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
-    @ReactProp(name = "foreground")
-    fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
-        view.setUseDrawableOnForeground(useDrawableOnForeground)
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+      if (super.onInterceptTouchEvent(ev)) {
+        return true
+      }
+      // We call `onTouchEvent` and wait until button changes state to `pressed`, if it's pressed
+      // we return true so that the gesture handler can activate.
+      onTouchEvent(ev)
+      return isPressed
     }
 
-    @ReactProp(name = "borderless")
-    fun setBorderless(view: ButtonViewGroup, useBorderlessDrawable: Boolean) {
-        view.setUseBorderlessDrawable(useBorderlessDrawable)
+    /**
+     * Buttons in RN are wrapped in NativeViewGestureHandler which manages
+     * calling onTouchEvent after activation of the handler. Problem is, in order to verify that
+     * underlying button implementation is interested in receiving touches we have to call onTouchEvent
+     * and check if button is pressed.
+     *
+     * This leads to invoking onTouchEvent twice which isn't idempotent in View - it calls OnClickListener
+     * and plays sound effect if OnClickListener was set.
+     *
+     * To mitigate this behavior we use mLastEventTime variable to check that we already handled
+     * the event in [.onInterceptTouchEvent]. We assume here that different events
+     * will have different event times.
+     *
+     * Reference:
+     * [com.swmansion.gesturehandler.NativeViewGestureHandler.onHandle]  */
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+      val eventTime = event.eventTime
+      if (lastEventTime != eventTime || lastEventTime == 0L) {
+        lastEventTime = eventTime
+        return super.onTouchEvent(event)
+      }
+      return false
     }
 
-    @ReactProp(name = "enabled")
-    fun setEnabled(view: ButtonViewGroup, enabled: Boolean) {
-        view.isEnabled = enabled
+    fun updateBackground() {
+      if (!needBackgroundUpdate) {
+        return
+      }
+      needBackgroundUpdate = false
+
+      if (_backgroundColor == Color.TRANSPARENT) {
+        // reset background
+        background = null
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        // reset foreground
+        foreground = null
+      }
+      if (useDrawableOnForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        foreground = applyRippleEffectWhenNeeded(createSelectableDrawable())
+        if (_backgroundColor != Color.TRANSPARENT) {
+          setBackgroundColor(_backgroundColor)
+        }
+      } else if (_backgroundColor == Color.TRANSPARENT && rippleColor == null) {
+        background = createSelectableDrawable()
+      } else {
+        val colorDrawable = PaintDrawable(_backgroundColor)
+        val selectable = createSelectableDrawable()
+        if (borderRadius != 0f) {
+          // Radius-connected lines below ought to be considered
+          // as a temporary solution. It do not allow to set
+          // different radius on each corner. However, I suppose it's fairly
+          // fine for button-related use cases.
+          // Therefore it might be used as long as:
+          // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
+          // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
+          colorDrawable.setCornerRadius(borderRadius)
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+              && selectable is RippleDrawable) {
+            val mask = PaintDrawable(Color.WHITE)
+            mask.setCornerRadius(borderRadius)
+            selectable.setDrawableByLayerId(android.R.id.mask, mask)
+          }
+        }
+        applyRippleEffectWhenNeeded(selectable)
+        val layerDrawable = LayerDrawable(arrayOf(colorDrawable, selectable))
+        background = layerDrawable
+      }
     }
 
-    @ReactProp(name = ViewProps.BORDER_RADIUS)
-    override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
-        view.setBorderRadius(borderRadius)
+    private fun createSelectableDrawable(): Drawable {
+      val version = Build.VERSION.SDK_INT
+      val identifier =
+          if (useBorderlessDrawable
+              && version >= Build.VERSION_CODES.LOLLIPOP) {
+            SELECTABLE_ITEM_BACKGROUND_BORDERLESS
+          } else SELECTABLE_ITEM_BACKGROUND
+
+      val attrID = getAttrId(context, identifier)
+      context.theme.resolveAttribute(attrID, resolveOutValue, true)
+      return if (version >= Build.VERSION_CODES.LOLLIPOP) {
+        resources.getDrawable(resolveOutValue.resourceId, context.theme)
+      } else {
+        @Suppress("Deprecation")
+        resources.getDrawable(resolveOutValue.resourceId)
+      }
     }
 
-    @ReactProp(name = "rippleColor")
-    fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
-        view.setRippleColor(rippleColor)
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+      // No-op
     }
 
-    @ReactProp(name = "rippleRadius")
-    fun setRippleRadius(view: ButtonViewGroup, rippleRadius: Int?) {
-        view.setRippleRadius(rippleRadius)
+    override fun drawableHotspotChanged(x: Float, y: Float) {
+      if (responder == null || responder === this) {
+        super.drawableHotspotChanged(x, y)
+      }
     }
 
-    override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
-        view.updateBackground()
+    override fun setPressed(pressed: Boolean) {
+      if (pressed && responder == null) {
+        // first button to be pressed grabs button responder
+        responder = this
+      }
+      if (!pressed || responder === this) {
+        // we set pressed state only for current responder
+        super.setPressed(pressed)
+      }
+      if (!pressed && responder === this) {
+        // if the responder is no longer pressed we release button responder
+        responder = null
+      }
     }
+
+    override fun dispatchDrawableHotspotChanged(x: Float, y: Float) {
+      // No-op
+      // By default viewgroup would pass hotspot change events
+    }
+
+    companion object {
+      const val SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground"
+      const val SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless"
+
+      var resolveOutValue = TypedValue()
+      var responder: ButtonViewGroup? = null
+      var dummyClickListener = OnClickListener { }
+
+      @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+      private fun getAttrId(context: Context, attr: String?): Int {
+        SoftAssertions.assertNotNull(attr)
+        return when (attr) {
+          SELECTABLE_ITEM_BACKGROUND -> {
+            R.attr.selectableItemBackground
+          }
+          SELECTABLE_ITEM_BACKGROUND_BORDERLESS -> {
+            R.attr.selectableItemBackgroundBorderless
+          }
+          else -> {
+            context.resources.getIdentifier(attr, "attr", "android")
+          }
+        }
+      }
+    }
+  }
 }
