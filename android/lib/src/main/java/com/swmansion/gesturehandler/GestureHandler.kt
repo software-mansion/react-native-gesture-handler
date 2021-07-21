@@ -398,7 +398,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  protected open fun onHandle(event: MotionEvent?) {
+  protected open fun onHandle(event: MotionEvent) {
     moveToState(STATE_FAILED)
   }
 

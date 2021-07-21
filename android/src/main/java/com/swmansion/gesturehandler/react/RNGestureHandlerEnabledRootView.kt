@@ -34,8 +34,7 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
    */
   fun initialize() {
     check(gestureRootHelper == null) { "GestureHandler already initialized for root view $this" }
-    gestureRootHelper = RNGestureHandlerRootHelper(
-        _reactInstanceManager.currentReactContext, this)
+    gestureRootHelper = RNGestureHandlerRootHelper(_reactInstanceManager.currentReactContext!!, this)
   }
 
   fun tearDown() {
@@ -46,9 +45,9 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
   }
 
   override fun startReactApplication(
-      reactInstanceManager: ReactInstanceManager,
-      moduleName: String,
-      initialProperties: Bundle?,
+    reactInstanceManager: ReactInstanceManager,
+    moduleName: String,
+    initialProperties: Bundle?,
   ) {
     super.startReactApplication(reactInstanceManager, moduleName, initialProperties)
     _reactInstanceManager = reactInstanceManager

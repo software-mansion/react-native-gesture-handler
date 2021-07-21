@@ -14,30 +14,49 @@ import com.facebook.react.views.modal.RNGHModalUtils.isDialogRootViewGroup
 import com.swmansion.gesturehandler.GestureHandler
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator
 
-class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) {
-  private val mContext: ReactContext
+class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
   private val mOrchestrator: GestureHandlerOrchestrator?
   private val mJSGestureHandler: GestureHandler<*>?
   val rootView: ViewGroup
   private var mShouldIntercept = false
   private var mPassingTouch = false
+
+  init {
+    UiThreadUtil.assertOnUiThread()
+    val wrappedViewTag = wrappedView.id
+    check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
+    val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
+    val registry = module.registry
+    rootView = findRootViewTag(wrappedView)
+    Log.i(ReactConstants.TAG,
+      "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
+    mOrchestrator = GestureHandlerOrchestrator(wrappedView, registry, RNViewConfigurationHelper()).apply {
+      setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH)
+    }
+    mJSGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
+    registry.apply {
+      registerHandler(mJSGestureHandler)
+      attachHandlerToView(mJSGestureHandler.tag, wrappedViewTag)
+    }
+    module.registerRootHelper(this)
+  }
+
   fun tearDown() {
-    Log.i(
-      ReactConstants.TAG,
-      "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + rootView)
-    val module = mContext.getNativeModule(RNGestureHandlerModule::class.java)
-    module!!.registry.dropHandler(mJSGestureHandler!!.tag)
+    Log.i(ReactConstants.TAG,
+      "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView")
+    val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
+    module.registry.dropHandler(mJSGestureHandler!!.tag)
     module.unregisterRootHelper(this)
   }
 
-  private inner class RootViewGestureHandler : GestureHandler<Any?>() {
-    override fun onHandle(event: MotionEvent?) {
+  private inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
+    override fun onHandle(event: MotionEvent) {
       val currentState = state
       if (currentState == STATE_UNDETERMINED) {
         begin()
         mShouldIntercept = false
       }
-      if (event!!.actionMasked == MotionEvent.ACTION_UP) {
+      if (event.actionMasked == MotionEvent.ACTION_UP) {
         end()
       }
     }
@@ -45,8 +64,9 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
     override fun onCancel() {
       mShouldIntercept = true
       val time = SystemClock.uptimeMillis()
-      val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
-      event.action = MotionEvent.ACTION_CANCEL
+      val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
+        action = MotionEvent.ACTION_CANCEL
+      }
       if (rootView is ReactRootView) {
         rootView.onChildStartedNativeGesture(event)
       } else {
@@ -55,7 +75,7 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
     }
   }
 
-  fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+  fun requestDisallowInterceptTouchEvent(_disallowIntercept: Boolean) {
     // If this method gets called it means that some native view is attempting to grab lock for
     // touch event delivery. In that case we cancel all gesture recognizers
     if (mOrchestrator != null && !mPassingTouch) {
@@ -77,15 +97,17 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
 
   private fun tryCancelAllHandlers() {
     // In order to cancel handlers we activate handler that is hooked to the root view
-    if (mJSGestureHandler != null && mJSGestureHandler.state == GestureHandler.STATE_BEGAN) {
-      // Try activate main JS handler
-      mJSGestureHandler.activate()
-      mJSGestureHandler.end()
+    mJSGestureHandler?.apply{
+      if(state == GestureHandler.STATE_BEGAN){
+        // Try activate main JS handler
+        activate()
+        end()
+      }
     }
   }
 
   /*package*/
-  fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
+  fun handleSetJSResponder(_viewTag: Int, blockNativeResponder: Boolean) {
     if (blockNativeResponder) {
       UiThreadUtil.runOnUiThread { tryCancelAllHandlers() }
     }
@@ -100,31 +122,9 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
         parent = parent.parent
       }
       checkNotNull(parent) {
-        "View " + viewGroup + " has not been mounted under" +
-          " ReactRootView"
+        "View $viewGroup has not been mounted under ReactRootView"
       }
       return parent as ViewGroup
     }
-  }
-
-  init {
-    UiThreadUtil.assertOnUiThread()
-    val wrappedViewTag = wrappedView.id
-    check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
-    val module = context.getNativeModule(RNGestureHandlerModule::class.java)
-    val registry = module!!.registry
-    rootView = findRootViewTag(wrappedView)
-    Log.i(
-      ReactConstants.TAG,
-      "[GESTURE HANDLER] Initialize gesture handler for root view " + rootView)
-    mContext = context
-    mOrchestrator = GestureHandlerOrchestrator(
-      wrappedView, registry, RNViewConfigurationHelper())
-    mOrchestrator.setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH)
-    mJSGestureHandler = RootViewGestureHandler()
-    mJSGestureHandler.tag = -wrappedViewTag
-    registry.registerHandler(mJSGestureHandler)
-    registry.attachHandlerToView(mJSGestureHandler.tag, wrappedViewTag)
-    module.registerRootHelper(this)
   }
 }
