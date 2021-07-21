@@ -11,6 +11,7 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   private val mHandlers = SparseArray<GestureHandler<*>>()
   private val mAttachedTo = SparseArray<Int?>()
   private val mHandlersForView = SparseArray<ArrayList<GestureHandler<*>>>()
+
   @Synchronized
   fun registerHandler(handler: GestureHandler<*>) {
     mHandlers.put(handler.tag, handler)
@@ -24,13 +25,11 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   @Synchronized
   fun attachHandlerToView(handlerTag: Int, viewTag: Int): Boolean {
     val handler = mHandlers[handlerTag]
-    return if (handler != null) {
+    return handler?.let {
       detachHandler(handler)
       registerHandlerForViewWithTag(viewTag, handler)
       true
-    } else {
-      false
-    }
+    } ?: false
   }
 
   @Synchronized
@@ -70,9 +69,8 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
 
   @Synchronized
   fun dropHandler(handlerTag: Int) {
-    val handler = mHandlers[handlerTag]
-    if (handler != null) {
-      detachHandler(handler)
+    mHandlers[handlerTag]?.let {
+      detachHandler(it)
       mHandlers.remove(handlerTag)
     }
   }
@@ -85,12 +83,12 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler<*>> {
+  fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler<*>>? {
     return mHandlersForView[viewTag]
   }
 
   @Synchronized
-  override fun getHandlersForView(view: View): ArrayList<GestureHandler<*>> {
+  override fun getHandlersForView(view: View): ArrayList<GestureHandler<*>>? {
     return getHandlersForViewWithTag(view.id)
   }
 }
