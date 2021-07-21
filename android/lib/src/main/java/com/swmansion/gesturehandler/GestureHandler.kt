@@ -7,7 +7,7 @@ import android.view.View
 import com.facebook.react.bridge.UiThreadUtil
 import java.util.*
 
-open class GestureHandler<T : GestureHandler<*>?> {
+open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
   private val mTrackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
   private var mTrackedPointersCount = 0
   var tag = 0
@@ -23,46 +23,48 @@ open class GestureHandler<T : GestureHandler<*>?> {
     private set
   var isEnabled = true
     private set
-  private var mHitSlop: FloatArray?
+
+  private var mHitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
     private set
   var lastAbsolutePositionX = 0f
     private set
   var lastAbsolutePositionY = 0f
     private set
+
   private var mLastEventOffsetX = 0f
   private var mLastEventOffsetY = 0f
   private var mShouldCancelWhenOutside = false
   var numberOfPointers = 0
     private set
   private var mOrchestrator: GestureHandlerOrchestrator? = null
-  private var mListener: OnTouchEventListener<T>? = null
+  private var mListener: OnTouchEventListener<ConcreteGestureHandlerT>? = null
   private var mInteractionController: GestureHandlerInteractionController? = null
 
-  /*package*/
-  var mActivationIndex // set and accessed only by the orchestrator
-      = 0
+  @Suppress("UNCHECKED_CAST")
+  protected fun self(): ConcreteGestureHandlerT = this as ConcreteGestureHandlerT
 
-  /*package*/
-  var mIsActive // set and accessed only by the orchestrator
-      = false
+  protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT =
+    self().apply { block() }
 
-  /*package*/
-  var mIsAwaiting // set and accessed only by the orchestrator
-      = false
+  // set and accessed only by the orchestrator
+  @JvmField
+  var mActivationIndex = 0
 
-  /*package*/
+  // set and accessed only by the orchestrator
+  @JvmField
+  var mIsActive = false
+
+  // set and accessed only by the orchestrator
+  @JvmField
+  var mIsAwaiting = false
+
   fun dispatchStateChange(newState: Int, prevState: Int) {
-    if (mListener != null) {
-      mListener!!.onStateChange(this as T, newState, prevState)
-    }
+    mListener?.onStateChange(self(), newState, prevState)
   }
 
-  /*package*/
   fun dispatchTouchEvent(event: MotionEvent?) {
-    if (mListener != null) {
-      mListener!!.onTouchEvent(this as T, event)
-    }
+    mListener?.onTouchEvent(self(), event)
   }
 
   open fun resetConfig() {
@@ -80,22 +82,20 @@ open class GestureHandler<T : GestureHandler<*>?> {
     return false
   }
 
-  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): T {
+  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean) = applySelf {
     mShouldCancelWhenOutside = shouldCancelWhenOutside
-    return this as T
   }
 
-  fun setEnabled(enabled: Boolean): T {
+  fun setEnabled(enabled: Boolean) = applySelf {
     if (view != null) {
       // If view is set then handler is in "active" state. In that case we want to "cancel" handler
       // when it changes enabled state so that it gets cleared from the orchestrator
       UiThreadUtil.runOnUiThread { cancel() }
     }
     isEnabled = enabled
-    return this as T
   }
 
-  fun setHitSlop(leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float, width: Float, height: Float): T {
+  fun setHitSlop(leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float, width: Float, height: Float) = applySelf {
     if (mHitSlop == null) {
       mHitSlop = FloatArray(6)
     }
@@ -109,16 +109,14 @@ open class GestureHandler<T : GestureHandler<*>?> {
     require(!(hitSlopSet(width) && !hitSlopSet(leftPad) && !hitSlopSet(rightPad))) { "When width is set one of left or right pads need to be defined" }
     require(!(hitSlopSet(height) && hitSlopSet(bottomPad) && hitSlopSet(topPad))) { "Cannot have all of top, bottom and height defined" }
     require(!(hitSlopSet(height) && !hitSlopSet(bottomPad) && !hitSlopSet(topPad))) { "When height is set one of top or bottom pads need to be defined" }
-    return this as T
   }
 
-  fun setHitSlop(padding: Float): T {
+  fun setHitSlop(padding: Float): ConcreteGestureHandlerT {
     return setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
   }
 
-  fun setInteractionController(controller: GestureHandlerInteractionController?): T {
+  fun setInteractionController(controller: GestureHandlerInteractionController?) = applySelf {
     mInteractionController = controller
-    return this as T
   }
 
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
@@ -166,8 +164,10 @@ open class GestureHandler<T : GestureHandler<*>?> {
     if (event.pointerCount != mTrackedPointersCount) {
       return true
     }
+
     for (i in mTrackedPointerIDs.indices) {
-      if (mTrackedPointerIDs[i] != -1 && mTrackedPointerIDs[i] != i) {
+      val trackedPointer = mTrackedPointerIDs[i]
+      if (trackedPointer != -1 && trackedPointer != i) {
         return true
       }
     }
@@ -207,8 +207,8 @@ open class GestureHandler<T : GestureHandler<*>?> {
     while (index < size) {
       val origPointerId = event.getPointerId(index)
       if (mTrackedPointerIDs[origPointerId] != -1) {
-        event.getPointerProperties(index, sPointerProps!![count])
-        sPointerProps!![count]!!.id = mTrackedPointerIDs[origPointerId]
+        event.getPointerProperties(index, sPointerProps[count])
+        sPointerProps[count]!!.id = mTrackedPointerIDs[origPointerId]
         event.getPointerCoords(index, sPointerCoords[count])
         if (index == actionIndex) {
           action = action or (count shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
@@ -218,27 +218,31 @@ open class GestureHandler<T : GestureHandler<*>?> {
       index++
     }
     val result = MotionEvent.obtain(
-        event.downTime,
-        event.eventTime,
-        action,
-        count,
-        sPointerProps,  /* props are copied and hence it is safe to use static array here */
-        sPointerCoords,  /* same applies to coords */
-        event.metaState,
-        event.buttonState,
-        event.xPrecision,
-        event.yPrecision,
-        event.deviceId,
-        event.edgeFlags,
-        event.source,
-        event.flags)
+      event.downTime,
+      event.eventTime,
+      action,
+      count,
+      sPointerProps,  /* props are copied and hence it is safe to use static array here */
+      sPointerCoords,  /* same applies to coords */
+      event.metaState,
+      event.buttonState,
+      event.xPrecision,
+      event.yPrecision,
+      event.deviceId,
+      event.edgeFlags,
+      event.source,
+      event.flags)
     event.setLocation(oldX, oldY)
     result.setLocation(oldX, oldY)
     return result
   }
 
   fun handle(origEvent: MotionEvent) {
-    if (!isEnabled || state == STATE_CANCELLED || state == STATE_FAILED || state == STATE_END || mTrackedPointersCount < 1) {
+    if (!isEnabled
+      || state == STATE_CANCELLED
+      || state == STATE_FAILED
+      || state == STATE_END
+      || mTrackedPointersCount < 1) {
       return
     }
     val event = adaptEvent(origEvent)
@@ -282,37 +286,43 @@ open class GestureHandler<T : GestureHandler<*>?> {
   }
 
   fun wantEvents(): Boolean {
-    return isEnabled && state != STATE_FAILED && state != STATE_CANCELLED && state != STATE_END && mTrackedPointersCount > 0
+    return isEnabled
+      && state != STATE_FAILED
+      && state != STATE_CANCELLED
+      && state != STATE_END
+      && mTrackedPointersCount > 0
   }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
-    return if (handler !== this && mInteractionController != null) {
-      mInteractionController!!.shouldRequireHandlerToWaitForFailure(this, handler)
-    } else false
+    if (handler === this) {
+      return false
+    }
+
+    return mInteractionController?.shouldRequireHandlerToWaitForFailure(this, handler) ?: false
   }
 
   fun shouldWaitForHandlerFailure(handler: GestureHandler<*>): Boolean {
-    return if (handler !== this && mInteractionController != null) {
-      mInteractionController!!.shouldWaitForHandlerFailure(this, handler)
-    } else false
+    if (handler === this) {
+      return false
+    }
+
+    return mInteractionController?.shouldWaitForHandlerFailure(this, handler) ?: false
   }
 
   open fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
     if (handler === this) {
       return true
     }
-    return if (mInteractionController != null) {
-      mInteractionController!!.shouldRecognizeSimultaneously(this, handler)
-    } else false
+
+    return mInteractionController?.shouldRecognizeSimultaneously(this, handler) ?: false
   }
 
   open fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
     if (handler === this) {
       return false
     }
-    return if (mInteractionController != null) {
-      mInteractionController!!.shouldHandlerBeCancelledBy(this, handler)
-    } else false
+
+    return mInteractionController?.shouldHandlerBeCancelledBy(this, handler) ?: false
   }
 
   fun isWithinBounds(view: View?, posX: Float, posY: Float): Boolean {
@@ -354,7 +364,7 @@ open class GestureHandler<T : GestureHandler<*>?> {
         }
       }
     }
-    return posX >= left && posX <= right && posY >= top && posY <= bottom
+    return posX in left..right && posY >= top && posY <= bottom
   }
 
   fun cancel() {
@@ -403,7 +413,7 @@ open class GestureHandler<T : GestureHandler<*>?> {
     onReset()
   }
 
-  fun setOnTouchEventListener(listener: OnTouchEventListener<T>?): GestureHandler<*> {
+  fun setOnTouchEventListener(listener: OnTouchEventListener<ConcreteGestureHandlerT>?): GestureHandler<*> {
     mListener = listener
     return this
   }
@@ -437,16 +447,16 @@ open class GestureHandler<T : GestureHandler<*>?> {
     const val DIRECTION_UP = 4
     const val DIRECTION_DOWN = 8
     private const val MAX_POINTERS_COUNT = 12
-    private var sPointerProps: Array<PointerProperties?>?
-    private var sPointerCoords: Array<PointerCoords?>
+    private lateinit var sPointerProps: Array<PointerProperties?>
+    private lateinit var sPointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
       var size = size
-      if (sPointerProps == null) {
+      if (!::sPointerProps.isInitialized) {
         sPointerProps = arrayOfNulls(MAX_POINTERS_COUNT)
         sPointerCoords = arrayOfNulls(MAX_POINTERS_COUNT)
       }
-      while (size > 0 && sPointerProps!![size - 1] == null) {
-        sPointerProps!![size - 1] = PointerProperties()
+      while (size > 0 && sPointerProps[size - 1] == null) {
+        sPointerProps[size - 1] = PointerProperties()
         sPointerCoords[size - 1] = PointerCoords()
         size--
       }
