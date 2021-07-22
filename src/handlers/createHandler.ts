@@ -17,6 +17,7 @@ import {
   HandlerStateChangeEvent,
 } from './gestureHandlers';
 import { ValueOf } from '../typeUtils';
+import { bool } from 'prop-types';
 
 function findNodeHandle(
   node: null | number | React.Component<any, any> | React.ComponentClass<any>
@@ -452,4 +453,419 @@ export default function createHandler<
     }
   }
   return Handler;
+}
+
+export class Tap {
+  constructor(config) {
+    this.handlerName = 'TapGestureHandler';
+    this.handlerTag = -1;
+    this.config = config;
+  }
+
+  onUpdate(e) {
+    this.config.onUpdate(e);
+  }
+}
+
+export class Pan {
+  constructor(config) {
+    this.handlerName = 'PanGestureHandler';
+    this.handlerTag = -1;
+    this.config = config;
+  }
+
+  onUpdate(e) {
+    this.config.onUpdate(e);
+  }
+}
+
+export class Pinch {
+  constructor(config) {
+    this.handlerName = 'PinchGestureHandler';
+    this.handlerTag = -1;
+    this.config = config;
+  }
+
+  onUpdate(e) {
+    this.config.onUpdate(e);
+  }
+}
+
+export class Rotation {
+  constructor(config) {
+    this.handlerName = 'RotationGestureHandler';
+    this.handlerTag = -1;
+    this.config = config;
+  }
+
+  onUpdate(e) {
+    this.config.onUpdate(e);
+  }
+}
+
+export class LongPress {
+  constructor(config) {
+    this.handlerName = 'LongPressGestureHandler';
+    this.handlerTag = -1;
+    this.config = config;
+  }
+
+  onUpdate(e) {
+    this.config.onUpdate(e);
+  }
+}
+
+export class Fling {
+  constructor(config) {
+    this.handlerName = 'FlingGestureHandler';
+    this.handlerTag = -1;
+    this.config = config;
+  }
+
+  onUpdate(e) {
+    this.config.onUpdate(e);
+  }
+}
+
+export class Simultaneous {
+  constructor(gestures) {
+    this.gestures = gestures;
+  }
+
+  prepare() {
+    let tags = [];
+    for (const gs of this.gestures) {
+      tags.push(handlerTag++);
+    }
+
+    for (let i = 0; i < this.gestures.length; i++) {
+      this.gestures[i].handlerTag = tags[i];
+      this.gestures[i].config.simultaneousHandlers = tags;
+
+      RNGestureHandlerModule.createGestureHandler(
+        this.gestures[i].handlerName,
+        this.gestures[i].handlerTag,
+        this.gestures[i].config
+      );
+    }
+
+    return this.gestures;
+  }
+
+  update(ref) {
+    for (let i = 0; i < this.gestures.length; i++) {
+      ref.current[i].config = this.gestures[i].config;
+    }
+  }
+}
+
+export class Exclusive {
+  constructor(gestures) {
+    this.gestures = gestures;
+  }
+
+  prepare() {
+    for (const gs of this.gestures) {
+      gs.handlerTag = handlerTag++;
+
+      RNGestureHandlerModule.createGestureHandler(
+        gs.handlerName,
+        gs.handlerTag,
+        gs.config
+      );
+    }
+
+    return this.gestures;
+  }
+}
+
+export class Sequence {
+  constructor(gestures) {
+    this.gestures = gestures;
+    this.active = [];
+  }
+
+  prepare() {
+    let tags = [];
+
+    for (const gs of this.gestures) {
+      tags.push(handlerTag++);
+    }
+
+    for (let i = 0; i < this.gestures.length; i++) {
+      let originalUpdate = this.gestures[i].config.onUpdate;
+
+      this.active.push(false);
+
+      this.gestures[i].handlerTag = tags[i];
+      this.gestures[i].config.simultaneousHandlers = tags;
+
+      this.gestures[i].config.onUpdate = (e) => {
+        if (this.active[i]) {
+          if (e.nativeEvent.state == 4) {
+            this.active[i + 1] = true;
+          } else if (
+            i > 0 &&
+            (e.nativeEvent.state == 3 || e.nativeEvent.state == 5)
+          ) {
+            this.active[i] = false;
+          }
+
+          originalUpdate(e);
+        }
+      };
+
+      RNGestureHandlerModule.createGestureHandler(
+        this.gestures[i].handlerName,
+        this.gestures[i].handlerTag,
+        this.gestures[i].config
+      );
+    }
+
+    this.active[0] = true;
+
+    return this.gestures;
+  }
+}
+
+export function useGesture(gesture) {
+  const result = React.useRef(null);
+
+  if (
+    gesture instanceof Simultaneous ||
+    gesture instanceof Sequence ||
+    gesture instanceof Exclusive
+  ) {
+    if (!result.current) {
+      result.current = gesture.prepare();
+    } else {
+      gesture.update(result);
+    }
+  } else {
+    if (!result.current) {
+      gesture.handlerTag = handlerTag++;
+      RNGestureHandlerModule.createGestureHandler(
+        gesture.handlerName,
+        gesture.handlerTag,
+        gesture.config
+      );
+
+      result.current = [gesture];
+    } else {
+      result.current[0].config = gesture.config;
+      RNGestureHandlerModule.updateGestureHandler(
+        result.current[0].handlerTag,
+        gesture.config
+      );
+    }
+  }
+
+  React.useEffect(() => {
+    return () => {
+      for (const g of result.current)
+        RNGestureHandlerModule.dropGestureHandler(g.handlerTag);
+    };
+  }, []);
+
+  return result;
+}
+
+export class GestureMonitor extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.propsRef = React.createRef();
+  }
+
+  componentDidMount() {
+    setImmediate(() => {
+      this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
+    });
+
+    this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
+  }
+
+  componentDidUpdate() {
+    const viewTag = findNodeHandle(this.viewNode);
+    if (this.viewTag !== viewTag) {
+      this.attachGestureHandlers(viewTag as number);
+    }
+    //this.update();
+  }
+
+  private refHandler = (node: any) => {
+    this.viewNode = node;
+
+    const child = React.Children.only(this.props.children);
+    // TODO(TS) fix ref type
+    const { ref }: any = child;
+    if (ref !== null) {
+      if (typeof ref === 'function') {
+        ref(node);
+      } else {
+        ref.current = node;
+      }
+    }
+  };
+
+  attachGestureHandlers(newViewTag) {
+    if (this.props.gesture.current)
+      for (const gesture of this.props.gesture.current) {
+        RNGestureHandlerModule.attachGestureHandler(
+          gesture.handlerTag,
+          newViewTag
+        );
+      }
+  }
+
+  private onGestureHandlerEvent = (event: GestureEvent<U>) => {
+    let handled = false;
+    for (const gesture of this.props.gesture.current) {
+      if (gesture.handlerTag === event.nativeEvent.handlerTag) {
+        gesture.onUpdate(event);
+        handled = true;
+        break;
+      }
+    }
+
+    if (!handled) {
+      this.props.onGestureHandlerEvent?.(event);
+    }
+  };
+
+  // TODO(TS) - make sure this is right type for event
+  private onGestureHandlerStateChange = (event: HandlerStateChangeEvent<U>) => {
+    let handled = false;
+    for (const gesture of this.props.gesture.current) {
+      if (gesture.handlerTag === event.nativeEvent.handlerTag) {
+        gesture.onUpdate(event);
+        handled = true;
+        break;
+      }
+    }
+
+    if (!handled) {
+      this.props.onGestureHandlerStateChange?.(event);
+    }
+  };
+
+  render() {
+    /*const child: any = React.Children.only(this.props.children);
+
+    const events = {
+      onGestureHandlerEvent: (e) => {
+        for (const gesture of this.props.gesture) {
+          if (gesture.handlerTag === e.nativeEvent.handlerTag) {
+            gesture.onUpdate(e);
+            break;
+          }
+        }
+      },
+      onGestureHandlerStateChange: (e) => {
+        for (const gesture of this.props.gesture) {
+          if (gesture.handlerTag === e.nativeEvent.handlerTag) {
+            gesture.onUpdate(e);
+            break;
+          }
+        }
+      },
+    };
+
+    return React.cloneElement(child, {ref: this.refHandler, ...events}, child.props.children);*/
+    let gestureEventHandler = this.onGestureHandlerEvent;
+    // Another instance of https://github.com/microsoft/TypeScript/issues/13995
+    type OnGestureEventHandlers = {
+      onGestureEvent?: BaseGestureHandlerProps<U>['onGestureEvent'];
+      onGestureHandlerEvent?: InternalEventHandlers['onGestureHandlerEvent'];
+    };
+    const {
+      onGestureEvent,
+      onGestureHandlerEvent,
+    }: OnGestureEventHandlers = this.props;
+    if (onGestureEvent && typeof onGestureEvent !== 'function') {
+      // If it's not a method it should be an native Animated.event
+      // object. We set it directly as the handler for the view
+      // In this case nested handlers are not going to be supported
+      if (onGestureHandlerEvent) {
+        throw new Error(
+          'Nesting touch handlers with native animated driver is not supported yet'
+        );
+      }
+      gestureEventHandler = onGestureEvent;
+    } else {
+      if (
+        onGestureHandlerEvent &&
+        typeof onGestureHandlerEvent !== 'function'
+      ) {
+        throw new Error(
+          'Nesting touch handlers with native animated driver is not supported yet'
+        );
+      }
+    }
+
+    let gestureStateEventHandler = this.onGestureHandlerStateChange;
+    // Another instance of https://github.com/microsoft/TypeScript/issues/13995
+    type OnGestureStateChangeHandlers = {
+      onHandlerStateChange?: BaseGestureHandlerProps<U>['onHandlerStateChange'];
+      onGestureHandlerStateChange?: InternalEventHandlers['onGestureHandlerStateChange'];
+    };
+    const {
+      onHandlerStateChange,
+      onGestureHandlerStateChange,
+    }: OnGestureStateChangeHandlers = this.props;
+    if (onHandlerStateChange && typeof onHandlerStateChange !== 'function') {
+      // If it's not a method it should be an native Animated.event
+      // object. We set it directly as the handler for the view
+      // In this case nested handlers are not going to be supported
+      if (onGestureHandlerStateChange) {
+        throw new Error(
+          'Nesting touch handlers with native animated driver is not supported yet'
+        );
+      }
+      gestureStateEventHandler = onHandlerStateChange;
+    } else {
+      if (
+        onGestureHandlerStateChange &&
+        typeof onGestureHandlerStateChange !== 'function'
+      ) {
+        throw new Error(
+          'Nesting touch handlers with native animated driver is not supported yet'
+        );
+      }
+    }
+    const events = {
+      onGestureHandlerEvent: gestureEventHandler,
+      onGestureHandlerStateChange: gestureStateEventHandler,
+    };
+
+    this.propsRef.current = events;
+
+    const child: any = React.Children.only(this.props.children);
+    let grandChildren = child.props.children;
+    if (
+      Touchable.TOUCH_TARGET_DEBUG &&
+      child.type &&
+      (child.type === 'RNGestureHandlerButton' ||
+        child.type.name === 'View' ||
+        child.type.displayName === 'View')
+    ) {
+      grandChildren = React.Children.toArray(grandChildren);
+      grandChildren.push(
+        Touchable.renderDebugView({
+          color: 'mediumspringgreen',
+          hitSlop: child.props.hitSlop,
+        })
+      );
+    }
+
+    return React.cloneElement(
+      child,
+      {
+        ref: this.refHandler,
+        collapsable: false,
+        ...events,
+      },
+      grandChildren
+    );
+  }
 }

@@ -7,6 +7,12 @@ import {
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
 
+import ProtoDrag from './prot_drag';
+import ProtoGallery from './prot_gallery';
+import ProtoSwipe from './prot_swipe';
+import ProtoSiblings from './prot_siblings';
+import ProtoParent from './prot_parent';
+
 import Rows from './rows';
 import Bouncing from './bouncing';
 import Draggable from './draggable';
@@ -33,6 +39,14 @@ type Screens = Record<
 >;
 
 const SCREENS: Screens = {
+  ProtoDrag: { component: ProtoDrag, title: 'Example: Drag' },
+  ProtoGallery: { component: ProtoGallery, title: 'Example: Gallery' },
+  ProtoSwipe: { component: ProtoSwipe, title: 'Example: Swipe' },
+  ProtoSiblings: {
+    component: ProtoSiblings,
+    title: 'Example: Overlap (siblings)',
+  },
+  ProtoParent: { component: ProtoParent, title: 'Example: Overlap (parent)' },
   Rows: { component: Rows, title: 'Table rows & buttons' },
   Multitap: { component: Multitap },
   Draggable: { component: Draggable },

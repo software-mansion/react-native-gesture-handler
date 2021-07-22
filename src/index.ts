@@ -35,6 +35,19 @@ export {
   FlingGestureHandler,
 } from './handlers/gestureHandlers';
 export { default as createNativeWrapper } from './handlers/createNativeWrapper';
+export {
+  GestureMonitor,
+  useGesture,
+  Simultaneous,
+  Sequence,
+  Exclusive,
+  Tap,
+  Pan,
+  Pinch,
+  Rotation,
+  Fling,
+  LongPress,
+} from './handlers/createHandler';
 export type {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,
