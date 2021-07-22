@@ -687,6 +687,7 @@ export class GestureMonitor extends React.Component {
 
   componentDidUpdate() {
     const viewTag = findNodeHandle(this.viewNode);
+
     if (this.viewTag !== viewTag) {
       this.attachGestureHandlers(viewTag as number);
     }
@@ -709,13 +710,16 @@ export class GestureMonitor extends React.Component {
   };
 
   attachGestureHandlers(newViewTag) {
-    if (this.props.gesture.current)
+    this.viewTag = newViewTag;
+
+    if (this.props.gesture.current) {
       for (const gesture of this.props.gesture.current) {
         RNGestureHandlerModule.attachGestureHandler(
           gesture.handlerTag,
           newViewTag
         );
       }
+    }
   }
 
   private onGestureHandlerEvent = (event: GestureEvent<U>) => {
@@ -750,28 +754,6 @@ export class GestureMonitor extends React.Component {
   };
 
   render() {
-    /*const child: any = React.Children.only(this.props.children);
-
-    const events = {
-      onGestureHandlerEvent: (e) => {
-        for (const gesture of this.props.gesture) {
-          if (gesture.handlerTag === e.nativeEvent.handlerTag) {
-            gesture.onUpdate(e);
-            break;
-          }
-        }
-      },
-      onGestureHandlerStateChange: (e) => {
-        for (const gesture of this.props.gesture) {
-          if (gesture.handlerTag === e.nativeEvent.handlerTag) {
-            gesture.onUpdate(e);
-            break;
-          }
-        }
-      },
-    };
-
-    return React.cloneElement(child, {ref: this.refHandler, ...events}, child.props.children);*/
     let gestureEventHandler = this.onGestureHandlerEvent;
     // Another instance of https://github.com/microsoft/TypeScript/issues/13995
     type OnGestureEventHandlers = {

@@ -39,7 +39,7 @@ function getState(s: number) {
 function Box(props) {
   const [s, setS] = useState(0);
   const gs = useGesture(
-    new Rotation({
+    new Tap({
       onUpdate: (e) => {
         console.log(
           props.color + ' ' + getState(e.nativeEvent.state) + ' ' + s
@@ -49,8 +49,6 @@ function Box(props) {
       },
     })
   );
-
-  console.log('render');
 
   return (
     <GestureMonitor gesture={gs}>
@@ -69,11 +67,8 @@ export default function Example() {
   return (
     <View style={styles.home}>
       <Box color="red" style={{ zIndex: 3 }} />
+      <Box color="green" overlap={true} />
     </View>
-    /*<View style={styles.home}>
-        <Box color="red" style={{zIndex: 3}}/>
-        <Box color="green" overlap={true}/>
-    </View>*/
   );
 }
 

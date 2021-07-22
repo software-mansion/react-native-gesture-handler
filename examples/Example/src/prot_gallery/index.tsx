@@ -43,7 +43,7 @@ function Photo() {
 
   const translationX = useRef(new Animated.Value(0)).current;
   const translationY = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(1)).current;
+  const [scale, setScale] = useState(1);
   const rotation = useRef(new Animated.Value(0)).current;
 
   const rotateData = rotation.interpolate({
@@ -72,7 +72,7 @@ function Photo() {
         numberOfTaps: 2,
         onUpdate: (e) => {
           if (e.nativeEvent.state == 4) {
-            scale.setValue(scale._value + 0.25);
+            setScale(scale + 0.25);
           }
         },
       }),
@@ -86,9 +86,9 @@ function Photo() {
       new Pinch({
         onUpdate: (e) => {
           if (e.nativeEvent.state == 4) {
-            scale.setValue(s * e.nativeEvent.scale);
+            setScale(s * e.nativeEvent.scale);
           } else if (e.nativeEvent.state == 2) {
-            s = scale._value;
+            s = scale;
           }
         },
       }),
