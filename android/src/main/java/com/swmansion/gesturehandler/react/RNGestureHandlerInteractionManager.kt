@@ -34,43 +34,20 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
     }
   }
 
-  override fun shouldWaitForHandlerFailure(handler: GestureHandler<*>, otherHandler: GestureHandler<*>): Boolean {
-    val waitForTags = mWaitForRelations[handler.tag]
-    if (waitForTags != null) {
-      for (i in waitForTags.indices) {
-        if (waitForTags[i] == otherHandler.tag) {
-          return true
-        }
-      }
-    }
-    return false
-  }
+  override fun shouldWaitForHandlerFailure(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) =
+    mWaitForRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   override fun shouldRequireHandlerToWaitForFailure(
-    handler: GestureHandler<*>?,
-    otherHandler: GestureHandler<*>?
-  ): Boolean {
-    return false
-  }
+    handler: GestureHandler<*>,
+    otherHandler: GestureHandler<*>,
+  ) = false
 
-  override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>?, otherHandler: GestureHandler<*>?): Boolean {
-    return false
-  }
+  override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) = false
 
   override fun shouldRecognizeSimultaneously(
     handler: GestureHandler<*>,
-    otherHandler: GestureHandler<*>
-  ): Boolean {
-    val simultHandlerTags = mSimultaneousRelations[handler.tag]
-    if (simultHandlerTags != null) {
-      for (i in simultHandlerTags.indices) {
-        if (simultHandlerTags[i] == otherHandler.tag) {
-          return true
-        }
-      }
-    }
-    return false
-  }
+    otherHandler: GestureHandler<*>,
+  ) = mSimultaneousRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   fun reset() {
     mWaitForRelations.clear()
