@@ -42,7 +42,8 @@ public class RNGestureHandlerButtonViewManager extends
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
     boolean mNeedBackgroundUpdate = false;
-    long mLastEventTime = 0;
+    long mLastEventTime = -1;
+    int mLastAction = -1;
     public static final String SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground";
     public static final String SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless";
 
@@ -117,9 +118,11 @@ public class RNGestureHandlerButtonViewManager extends
      * This leads to invoking onTouchEvent twice which isn't idempotent in View - it calls OnClickListener
      * and plays sound effect if OnClickListener was set.
      *
-     * To mitigate this behavior we use mLastEventTime variable to check that we already handled
+     * To mitigate this behavior we use mLastEventTime and mLastAction variables to check that we already handled
      * the event in {@link #onInterceptTouchEvent(MotionEvent)}. We assume here that different events
-     * will have different event times.
+     * will have different event times or actions.
+     * Events with same event time can occur on some devices for different actions.
+     * (e.g. move and up in one gesture; move and cancel)
      *
      * Reference:
      * {@link com.swmansion.gesturehandler.NativeViewGestureHandler#onHandle(MotionEvent)} */
@@ -127,8 +130,13 @@ public class RNGestureHandlerButtonViewManager extends
     @Override
     public boolean onTouchEvent(MotionEvent event) {
       long eventTime = event.getEventTime();
-      if (mLastEventTime != eventTime || mLastEventTime == 0) {
+      int action = event.getAction();
+      if (
+        mLastEventTime != eventTime || mLastEventTime == -1 ||
+        mLastAction != action || mLastAction == -1
+      ) {
         mLastEventTime = eventTime;
+        mLastAction = action;
         return super.onTouchEvent(event);
       }
       return false;
