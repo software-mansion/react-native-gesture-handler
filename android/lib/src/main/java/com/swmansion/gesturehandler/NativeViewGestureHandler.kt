@@ -8,6 +8,11 @@ import android.view.ViewGroup
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var mShouldActivateOnStart = false
   private var mDisallowInterruption = false
+
+  init {
+    setShouldCancelWhenOutside(true)
+  }
+
   override fun resetConfig() {
     super.resetConfig()
     mShouldActivateOnStart = false
@@ -29,10 +34,6 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     return this
   }
 
-  override fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
-    return super.shouldRequireToWaitForFailure(handler!!)
-  }
-
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
     if (handler is NativeViewGestureHandler) {
       // Special case when the peer handler is also an instance of NativeViewGestureHandler:
@@ -46,10 +47,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       }
     }
     val canBeInterrupted = !mDisallowInterruption
-    val state = state
     val otherState = handler.state
     return if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
-      // if both handlers are active and the current handler can be interruped it we return `false`
+      // if both handlers are active and the current handler can be interrupted it we return `false`
       // as it means the other handler has turned active and returning `true` would prevent it from
       // interrupting the current handler
       false
@@ -63,7 +63,6 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun onHandle(event: MotionEvent) {
     val view = view!!
-    val state = state
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       view.onTouchEvent(event)
       if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
@@ -88,20 +87,15 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun onCancel() {
     val time = SystemClock.uptimeMillis()
-    val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
-    event.action = MotionEvent.ACTION_CANCEL
+    val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
+      action = MotionEvent.ACTION_CANCEL
+    }
     view!!.onTouchEvent(event)
   }
 
   companion object {
     private fun tryIntercept(view: View, event: MotionEvent): Boolean {
-      return if (view is ViewGroup && view.onInterceptTouchEvent(event)) {
-        true
-      } else false
+      return view is ViewGroup && view.onInterceptTouchEvent(event)
     }
-  }
-
-  init {
-    setShouldCancelWhenOutside(true)
   }
 }
