@@ -1,7 +1,6 @@
-package com.swmansion.gesturehandler;
+package com.swmansion.gesturehandler
 
-public enum PointerEventsConfig {
-
+enum class PointerEventsConfig {
   /**
    * Neither the container nor its children receive events.
    */
@@ -20,6 +19,5 @@ public enum PointerEventsConfig {
   /**
    * Container and all of its children receive touch events (like pointerEvents is unspecified).
    */
-  AUTO,
-  ;
+  AUTO
 }
