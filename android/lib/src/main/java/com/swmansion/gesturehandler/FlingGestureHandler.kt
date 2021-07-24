@@ -3,7 +3,7 @@ package com.swmansion.gesturehandler
 import android.os.Handler
 import android.view.MotionEvent
 
-class FlingGestureHandler : GestureHandler<FlingGestureHandler?>() {
+class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   private val mMaxDurationMs = DEFAULT_MAX_DURATION_MS
   private val mMinAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA
   private var mDirection = DEFAULT_DIRECTION
@@ -33,7 +33,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler?>() {
     begin()
     mMaxNumberOfPointersSimultaneously = 1
     if (mHandler == null) {
-      mHandler = Handler()
+      mHandler = Handler() // lazy delegate?
     } else {
       mHandler!!.removeCallbacksAndMessages(null)
     }
@@ -41,7 +41,8 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler?>() {
   }
 
   private fun tryEndFling(event: MotionEvent): Boolean {
-    return if (mMaxNumberOfPointersSimultaneously == mNumberOfPointersRequired &&
+    return if (
+      mMaxNumberOfPointersSimultaneously == mNumberOfPointersRequired &&
       (mDirection and DIRECTION_RIGHT != 0 &&
         event.rawX - mStartX > mMinAcceptableDelta ||
         mDirection and DIRECTION_LEFT != 0 &&
@@ -83,15 +84,11 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler?>() {
   }
 
   override fun onCancel() {
-    if (mHandler != null) {
-      mHandler!!.removeCallbacksAndMessages(null)
-    }
+    mHandler?.removeCallbacksAndMessages(null)
   }
 
   override fun onReset() {
-    if (mHandler != null) {
-      mHandler!!.removeCallbacksAndMessages(null)
-    }
+    mHandler?.removeCallbacksAndMessages(null)
   }
 
   companion object {
