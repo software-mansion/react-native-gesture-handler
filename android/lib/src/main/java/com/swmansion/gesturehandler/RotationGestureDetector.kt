@@ -1,14 +1,13 @@
 package com.swmansion.gesturehandler
 
-import com.swmansion.gesturehandler.RotationGestureDetector.OnRotationGestureListener
-import com.swmansion.gesturehandler.RotationGestureDetector
 import android.view.MotionEvent
+import kotlin.math.atan2
 
 class RotationGestureDetector(private val mListener: OnRotationGestureListener?) {
   interface OnRotationGestureListener {
-    fun onRotation(detector: RotationGestureDetector?): Boolean
-    fun onRotationBegin(detector: RotationGestureDetector?): Boolean
-    fun onRotationEnd(detector: RotationGestureDetector?)
+    fun onRotation(detector: RotationGestureDetector): Boolean
+    fun onRotationBegin(detector: RotationGestureDetector): Boolean
+    fun onRotationEnd(detector: RotationGestureDetector)
   }
 
   private var mCurrTime: Long = 0
@@ -57,12 +56,11 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener?)
     anchorY = (firstPtY + secondPtY) * 0.5f
 
     // Angle diff should be positive when rotating in clockwise direction
-    val angle = -Math.atan2(vectorY.toDouble(), vectorX.toDouble())
-    if (java.lang.Double.isNaN(mPrevAngle)) {
-      rotation = 0.0
-    } else {
-      rotation = mPrevAngle - angle
-    }
+    val angle = -atan2(vectorY.toDouble(), vectorX.toDouble())
+    rotation = if (java.lang.Double.isNaN(mPrevAngle)) {
+      0.0
+    } else mPrevAngle - angle
+
     mPrevAngle = angle
     if (rotation > Math.PI) {
       rotation -= Math.PI
