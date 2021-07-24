@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler
 
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.RotationGestureDetector.OnRotationGestureListener
+import kotlin.math.abs
 
 class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   private var mRotationGestureDetector: RotationGestureDetector? = null
@@ -17,19 +18,21 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
       if (delta > 0) {
         velocity = (rotation - prevRotation) / delta
       }
-      if (Math.abs(rotation) >= ROTATION_RECOGNITION_THRESHOLD && state == STATE_BEGAN) {
+      if (abs(rotation) >= ROTATION_RECOGNITION_THRESHOLD && state == STATE_BEGAN) {
         activate()
       }
       return true
     }
 
-    override fun onRotationBegin(detector: RotationGestureDetector): Boolean {
-      return true
-    }
+    override fun onRotationBegin(detector: RotationGestureDetector) = true
 
     override fun onRotationEnd(detector: RotationGestureDetector) {
       end()
     }
+  }
+
+  init {
+    setShouldCancelWhenOutside(false)
   }
 
   override fun onHandle(event: MotionEvent) {
@@ -40,9 +43,7 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
       mRotationGestureDetector = RotationGestureDetector(mGestureListener)
       begin()
     }
-    if (mRotationGestureDetector != null) {
-      mRotationGestureDetector!!.onTouchEvent(event)
-    }
+    mRotationGestureDetector?.onTouchEvent(event)
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
         end()
@@ -59,19 +60,11 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   }
 
   val anchorX: Float
-    get() = if (mRotationGestureDetector == null) {
-      Float.NaN
-    } else mRotationGestureDetector!!.anchorX
+    get() = mRotationGestureDetector?.anchorX ?: Float.NaN
   val anchorY: Float
-    get() = if (mRotationGestureDetector == null) {
-      Float.NaN
-    } else mRotationGestureDetector!!.anchorY
+    get() = mRotationGestureDetector?.anchorY ?: Float.NaN
 
   companion object {
     private const val ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36.0 // 5 deg in radians
-  }
-
-  init {
-    setShouldCancelWhenOutside(false)
   }
 }
