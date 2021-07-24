@@ -4,6 +4,7 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.ScaleGestureDetector.OnScaleGestureListener
 import android.view.ViewConfiguration
+import kotlin.math.abs
 
 class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   private var mScaleGestureDetector: ScaleGestureDetector? = null
@@ -21,7 +22,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       if (delta > 0) {
         velocity = (scale - prevScaleFactor) / delta
       }
-      if (Math.abs(mStartingSpan - detector.currentSpan) >= mSpanSlop
+      if (abs(mStartingSpan - detector.currentSpan) >= mSpanSlop
         && state == STATE_BEGAN) {
         activate()
       }
@@ -39,6 +40,10 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     }
   }
 
+  init {
+    setShouldCancelWhenOutside(false)
+  }
+
   override fun onHandle(event: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       val context = view!!.context
@@ -49,9 +54,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       mSpanSlop = configuration.scaledTouchSlop.toFloat()
       begin()
     }
-    if (mScaleGestureDetector != null) {
-      mScaleGestureDetector!!.onTouchEvent(event)
-    }
+    mScaleGestureDetector?.onTouchEvent(event)
     var activePointers = event.pointerCount
     if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       activePointers -= 1
@@ -70,15 +73,8 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   }
 
   val focalPointX: Float
-    get() = if (mScaleGestureDetector == null) {
-      Float.NaN
-    } else mScaleGestureDetector!!.focusX
-  val focalPointY: Float
-    get() = if (mScaleGestureDetector == null) {
-      Float.NaN
-    } else mScaleGestureDetector!!.focusY
+    get() = mScaleGestureDetector?.focusX ?: Float.NaN
 
-  init {
-    setShouldCancelWhenOutside(false)
-  }
+  val focalPointY: Float
+    get() = mScaleGestureDetector?.focusY ?: Float.NaN
 }
