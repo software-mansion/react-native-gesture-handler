@@ -7,7 +7,7 @@ import android.view.ViewConfiguration
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerY
 
-class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler?>() {
+class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>() {
   private val mDefaultMinDistSq: Float
   private var mMinDistSq = MAX_VALUE_IGNORE
   private var mActiveOffsetXStart = MIN_VALUE_IGNORE
@@ -35,6 +35,26 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler?>(
     private set
   private var mVelocityTracker: VelocityTracker? = null
   private var mAverageTouches = false
+
+  /**
+   * On Android when there are multiple pointers on the screen pan gestures most often just consider
+   * the last placed pointer. The behaviour on iOS is quite different where the x and y component
+   * of the pan pointer is calculated as an average out of all the pointers placed on the screen.
+   *
+   * This behaviour can be customized on android by setting averageTouches property of the handler
+   * object. This could be useful in particular for the usecases when we attach other handlers that
+   * recognizes multi-finger gestures such as rotation. In that case when we only rely on the last
+   * placed finger it is easier for the gesture handler to trigger when we do a rotation gesture
+   * because each finger when treated separately will travel some distance, whereas the average
+   * position of all the fingers will remain still while doing a rotation gesture.
+   */
+  init {
+    val vc = ViewConfiguration.get(context)
+    val touchSlop = vc.scaledTouchSlop
+    mDefaultMinDistSq = (touchSlop * touchSlop).toFloat()
+    mMinDistSq = mDefaultMinDistSq
+  }
+
   override fun resetConfig() {
     super.resetConfig()
     mMinDistSq = MAX_VALUE_IGNORE
@@ -154,18 +174,19 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler?>(
     }
     val vx = velocityX
     if (mMinVelocityX != MIN_VALUE_IGNORE &&
-      (mMinVelocityX < 0 && vx <= mMinVelocityX || mMinVelocityX >= 0 && vx >= mMinVelocityX)) {
+      (mMinVelocityX < 0 && vx <= mMinVelocityX || mMinVelocityX in 0.0f..vx)) {
       return true
     }
     val vy = velocityY
     if (mMinVelocityY != MIN_VALUE_IGNORE &&
-      (mMinVelocityY < 0 && vx <= mMinVelocityY || mMinVelocityY >= 0 && vx >= mMinVelocityY)) {
+      (mMinVelocityY < 0 && vx <= mMinVelocityY || mMinVelocityY in 0.0f..vx)) {
       return true
     }
     val velocitySq = vx * vx + vy * vy
-    return if (mMinVelocitySq != MIN_VALUE_IGNORE && velocitySq >= mMinVelocitySq) {
-      true
-    } else false
+    if (mMinVelocitySq != MIN_VALUE_IGNORE && velocitySq >= mMinVelocitySq) {
+      return true
+    }
+    return false
   }
 
   private fun shouldFail(): Boolean {
@@ -180,13 +201,13 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler?>(
     if (mFailOffsetYStart != MAX_VALUE_IGNORE && dy < mFailOffsetYStart) {
       return true
     }
-    return if (mFailOffsetYEnd != MIN_VALUE_IGNORE && dy > mFailOffsetYEnd) {
-      true
-    } else false
+    if (mFailOffsetYEnd != MIN_VALUE_IGNORE && dy > mFailOffsetYEnd) {
+      return true
+    }
+    return false
   }
 
   override fun onHandle(event: MotionEvent) {
-    val state = state
     val action = event.actionMasked
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
       // update offset if new pointer gets added or removed
@@ -202,20 +223,22 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler?>(
       mLastX = getLastPointerX(event, mAverageTouches)
       mLastY = getLastPointerY(event, mAverageTouches)
     }
+
     if (state == STATE_UNDETERMINED && event.pointerCount >= mMinPointers) {
       mStartX = mLastX
       mStartY = mLastY
       mOffsetX = 0f
       mOffsetY = 0f
       mVelocityTracker = VelocityTracker.obtain()
-      addVelocityMovement(mVelocityTracker, event)
+      addVelocityMovement(mVelocityTracker!!, event)
       begin()
     } else if (mVelocityTracker != null) {
-      addVelocityMovement(mVelocityTracker, event)
+      addVelocityMovement(mVelocityTracker!!, event)
       mVelocityTracker!!.computeCurrentVelocity(1000)
       velocityX = mVelocityTracker!!.xVelocity
       velocityY = mVelocityTracker!!.yVelocity
     }
+
     if (action == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE || state == STATE_BEGAN) {
         end()
@@ -229,7 +252,9 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler?>(
       } else {
         fail()
       }
-    } else if (action == MotionEvent.ACTION_POINTER_UP && state == STATE_ACTIVE && event.pointerCount < mMinPointers) {
+    } else if (action == MotionEvent.ACTION_POINTER_UP &&
+      state == STATE_ACTIVE &&
+      event.pointerCount < mMinPointers) {
       // When finger is lifted up (POINTER_UP) and the number of pointers falls below MIN_POINTERS
       // threshold, we only want to take an action when the handler has already activated. Otherwise
       // we can still expect more fingers to be placed on screen and fulfill MIN_POINTERS criteria.
@@ -247,8 +272,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler?>(
   }
 
   override fun onReset() {
-    if (mVelocityTracker != null) {
-      mVelocityTracker!!.recycle()
+    mVelocityTracker?.let {
+      it.recycle()
       mVelocityTracker = null
     }
   }
@@ -270,31 +295,12 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler?>(
      * because if the underlying view moves along with the finger using relative x/y coords yields
      * incorrect results.
      */
-    private fun addVelocityMovement(tracker: VelocityTracker?, event: MotionEvent) {
+    private fun addVelocityMovement(tracker: VelocityTracker, event: MotionEvent) {
       val offsetX = event.rawX - event.x
       val offsetY = event.rawY - event.y
       event.offsetLocation(offsetX, offsetY)
-      tracker!!.addMovement(event)
+      tracker.addMovement(event)
       event.offsetLocation(-offsetX, -offsetY)
     }
-  }
-
-  /**
-   * On Android when there are multiple pointers on the screen pan gestures most often just consider
-   * the last placed pointer. The behaviour on iOS is quite different where the x and y component
-   * of the pan pointer is calculated as an average out of all the pointers placed on the screen.
-   *
-   * This behaviour can be customized on android by setting averageTouches property of the handler
-   * object. This could be useful in particular for the usecases when we attach other handlers that
-   * recognizes multi-finger gestures such as rotation. In that case when we only rely on the last
-   * placed finger it is easier for the gesture handler to trigger when we do a rotation gesture
-   * because each finger when treated separately will travel some distance, whereas the average
-   * position of all the fingers will remain still while doing a rotation gesture.
-   */
-  init {
-    val vc = ViewConfiguration.get(context)
-    val touchSlop = vc.scaledTouchSlop
-    mDefaultMinDistSq = (touchSlop * touchSlop).toFloat()
-    mMinDistSq = mDefaultMinDistSq
   }
 }
