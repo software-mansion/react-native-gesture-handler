@@ -4,13 +4,20 @@ import android.content.Context
 import android.os.Handler
 import android.view.MotionEvent
 
-class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestureHandler?>() {
+class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestureHandler>() {
   private var mMinDurationMs = DEFAULT_MIN_DURATION_MS
   private val mDefaultMaxDistSq: Float
   private var mMaxDistSq: Float
   private var mStartX = 0f
   private var mStartY = 0f
   private var mHandler: Handler? = null
+
+  init {
+    setShouldCancelWhenOutside(true)
+    mDefaultMaxDistSq = DEFAULT_MAX_DIST_DP * context.resources.displayMetrics.density
+    mMaxDistSq = mDefaultMaxDistSq
+  }
+
   override fun resetConfig() {
     super.resetConfig()
     mMinDurationMs = DEFAULT_MIN_DURATION_MS
@@ -23,7 +30,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
 
   fun setMaxDist(maxDist: Float): LongPressGestureHandler {
     mMaxDistSq = maxDist * maxDist
-    return this
+    return this // ?
   }
 
   override fun onHandle(event: MotionEvent) {
@@ -64,20 +71,14 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   }
 
   override fun onStateChange(newState: Int, previousState: Int) {
-    if (mHandler != null) {
-      mHandler!!.removeCallbacksAndMessages(null)
+    mHandler?.let{
+      it.removeCallbacksAndMessages(null)
       mHandler = null
     }
   }
 
   companion object {
-    private const val DEFAULT_MIN_DURATION_MS: Long = 500 // 1 sec
+    private const val DEFAULT_MIN_DURATION_MS: Long = 500
     private const val DEFAULT_MAX_DIST_DP = 10f // 20dp
-  }
-
-  init {
-    setShouldCancelWhenOutside(true)
-    mDefaultMaxDistSq = DEFAULT_MAX_DIST_DP * context.resources.displayMetrics.density
-    mMaxDistSq = mDefaultMaxDistSq
   }
 }
