@@ -4,6 +4,7 @@ import android.os.Handler
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerY
+import kotlin.math.abs
 
 class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   private var mMaxDeltaX = MAX_VALUE_IGNORE
@@ -23,6 +24,11 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   private var mHandler: Handler? = null
   private var mTapsSoFar = 0
   private val mFailDelayed = Runnable { fail() }
+
+  init {
+    setShouldCancelWhenOutside(true)
+  }
+
   override fun resetConfig() {
     super.resetConfig()
     mMaxDeltaX = MAX_VALUE_IGNORE
@@ -94,11 +100,11 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
 
   private fun shouldFail(): Boolean {
     val dx = mLastX - mStartX + mOffsetX
-    if (mMaxDeltaX != MAX_VALUE_IGNORE && Math.abs(dx) > mMaxDeltaX) {
+    if (mMaxDeltaX != MAX_VALUE_IGNORE && abs(dx) > mMaxDeltaX) {
       return true
     }
     val dy = mLastY - mStartY + mOffsetY
-    if (mMaxDeltaY != MAX_VALUE_IGNORE && Math.abs(dy) > mMaxDeltaY) {
+    if (mMaxDeltaY != MAX_VALUE_IGNORE && abs(dy) > mMaxDeltaY) {
       return true
     }
     val dist = dy * dy + dx * dx
@@ -106,7 +112,6 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   }
 
   override fun onHandle(event: MotionEvent) {
-    val state = state
     val action = event.actionMasked
     if (state == STATE_UNDETERMINED) {
       mOffsetX = 0f
@@ -145,17 +150,13 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   }
 
   override fun onCancel() {
-    if (mHandler != null) {
-      mHandler!!.removeCallbacksAndMessages(null)
-    }
+    mHandler?.removeCallbacksAndMessages(null)
   }
 
   override fun onReset() {
     mTapsSoFar = 0
     mNumberOfPointers = 0
-    if (mHandler != null) {
-      mHandler!!.removeCallbacksAndMessages(null)
-    }
+    mHandler?.removeCallbacksAndMessages(null)
   }
 
   companion object {
@@ -164,9 +165,5 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     private const val DEFAULT_MAX_DELAY_MS: Long = 500
     private const val DEFAULT_NUMBER_OF_TAPS = 1
     private const val DEFAULT_MIN_NUMBER_OF_POINTERS = 1
-  }
-
-  init {
-    setShouldCancelWhenOutside(true)
   }
 }
