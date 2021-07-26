@@ -464,7 +464,7 @@ export class Tap {
 
   onUpdate(e, vt) {
     if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e);
+      this.config.onUpdate(e, vt);
     } else {
       RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
     }
@@ -481,7 +481,7 @@ export class Pan {
 
   onUpdate(e, vt) {
     if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e);
+      this.config.onUpdate(e, vt);
     } else {
       RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
     }
@@ -498,7 +498,7 @@ export class Pinch {
 
   onUpdate(e, vt) {
     if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e);
+      this.config.onUpdate(e, vt);
     } else {
       RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
     }
@@ -515,7 +515,7 @@ export class Rotation {
 
   onUpdate(e, vt) {
     if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e);
+      this.config.onUpdate(e, vt);
     } else {
       RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
     }
@@ -532,7 +532,7 @@ export class LongPress {
 
   onUpdate(e, vt) {
     if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e);
+      this.config.onUpdate(e, vt);
     } else {
       RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
     }
@@ -606,6 +606,12 @@ export class Exclusive {
 
     return this.gestures;
   }
+
+  update(ref) {
+    for (let i = 0; i < this.gestures.length; i++) {
+      ref.current[i].config = this.gestures[i].config;
+    }
+  }
 }
 
 export class Sequence {
@@ -629,7 +635,9 @@ export class Sequence {
       this.gestures[i].handlerTag = tags[i];
       this.gestures[i].config.simultaneousHandlers = tags;
 
-      this.gestures[i].config.onUpdate = (e) => {
+      this.gestures[i].originalUpdate = originalUpdate;
+
+      this.gestures[i].config.onUpdate = (e, vt) => {
         if (this.active[i]) {
           if (e.nativeEvent.state == 4) {
             this.active[i + 1] = true;
@@ -640,20 +648,34 @@ export class Sequence {
             this.active[i] = false;
           }
 
-          originalUpdate(e);
+          if (typeof originalUpdate === 'function') {
+            originalUpdate(e);
+          } else {
+            RNGestureHandlerModule.dispatchEvent(
+              this.gestures[i].eventName,
+              vt,
+              e.nativeEvent
+            );
+          }
         }
       };
 
       RNGestureHandlerModule.createGestureHandler(
         this.gestures[i].handlerName,
         this.gestures[i].handlerTag,
-        this.gestures[i].config
+        { simultaneousHandlers: tags } //this.gestures[i].config
       );
     }
 
     this.active[0] = true;
 
     return this.gestures;
+  }
+
+  update(ref) {
+    for (let i = 0; i < this.gestures.length; i++) {
+      //ref.current[i].config = this.gestures[i].config;
+    }
   }
 }
 
@@ -753,11 +775,13 @@ export class GestureMonitor extends React.Component {
 
   private onGestureHandlerEvent = (event: GestureEvent<U>) => {
     let handled = false;
-    for (const gesture of this.props.gesture.current) {
-      if (gesture.handlerTag === event.nativeEvent.handlerTag) {
-        gesture.onUpdate?.(event, this.viewTag);
-        handled = true;
-        break;
+    if (Array.isArray(this.props.gesture.current)) {
+      for (const gesture of this.props.gesture.current) {
+        if (gesture.handlerTag === event.nativeEvent.handlerTag) {
+          gesture.onUpdate?.(event, this.viewTag);
+          handled = true;
+          break;
+        }
       }
     }
 
@@ -769,11 +793,13 @@ export class GestureMonitor extends React.Component {
   // TODO(TS) - make sure this is right type for event
   private onGestureHandlerStateChange = (event: HandlerStateChangeEvent<U>) => {
     let handled = false;
-    for (const gesture of this.props.gesture.current) {
-      if (gesture.handlerTag === event.nativeEvent.handlerTag) {
-        gesture.onUpdate?.(event, this.viewTag);
-        handled = true;
-        break;
+    if (Array.isArray(this.props.gesture.current)) {
+      for (const gesture of this.props.gesture.current) {
+        if (gesture.handlerTag === event.nativeEvent.handlerTag) {
+          gesture.onUpdate?.(event, this.viewTag);
+          handled = true;
+          break;
+        }
       }
     }
 
@@ -786,17 +812,25 @@ export class GestureMonitor extends React.Component {
     let gestureEventHandler = this.onGestureHandlerEvent;
     let gestureStateEventHandler = this.onGestureHandlerStateChange;
 
-    //gestureEventHandler = this.props.onGestureEvent;
+    //gestureEventHandler = this.props.gs;
+    //gestureStateEventHandler = this.props.gs;
 
     const events = {
       onGestureHandlerEvent: gestureEventHandler,
       onGestureHandlerStateChange: gestureStateEventHandler,
     };
 
+    events['animatedEvent'] = this.props.animated;
+
     if (this.props.gesture.current) {
       for (const gs of this.props.gesture.current) {
         if (gs.config.onUpdate && typeof gs.config.onUpdate !== 'function') {
           events[gs.eventName] = gs.config.onUpdate;
+        } else if (
+          gs.originalUpdate &&
+          typeof gs.originalUpdate !== 'function'
+        ) {
+          events[gs.eventName] = gs.originalUpdate;
         }
       }
     }

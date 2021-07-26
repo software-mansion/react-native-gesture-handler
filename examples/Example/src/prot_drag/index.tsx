@@ -16,6 +16,7 @@ import {
   Sequence,
   LongPress,
 } from 'react-native-gesture-handler';
+import { useState } from 'react';
 
 function getState(s: number) {
   switch (s) {
@@ -40,8 +41,10 @@ function Draggable() {
   const translationY = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(1)).current;
 
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
   const gs = useGesture(
-    new Simultaneous([
+    new Sequence([
       new LongPress({
         onUpdate: (e) => {
           if (e.nativeEvent.state == 1) {
@@ -69,7 +72,18 @@ function Draggable() {
               },
             },
           ],
-          { useNativeDriver: true }
+          {
+            useNativeDriver: false,
+            listener: (e) => {
+              if (e.nativeEvent.state == 5) {
+                Animated.timing(scale, {
+                  toValue: 1,
+                  duration: 500,
+                  useNativeDriver: true,
+                }).start();
+              }
+            },
+          }
         ),
       }),
     ])

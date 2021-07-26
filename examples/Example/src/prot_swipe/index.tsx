@@ -16,6 +16,7 @@ import {
   Sequence,
   LongPress,
 } from 'react-native-gesture-handler';
+import { useState } from 'react';
 
 function getState(s: number) {
   switch (s) {
@@ -38,6 +39,8 @@ function getState(s: number) {
 function Draggable() {
   let x = 0;
 
+  const [opened, setOpened] = useState(false);
+
   const gs = useGesture(
     new Pan({
       onUpdate: (e) => {
@@ -53,6 +56,44 @@ function Draggable() {
           }
         } else {
           translationX.setValue(0);
+        }
+        const cutoff = 40;
+        if (e.nativeEvent.state == 5) {
+          if (opened) {
+            if (e.nativeEvent.translationX > cutoff) {
+              setOpened(false);
+              Animated.timing(translationX, {
+                toValue: 0,
+                duration: 150,
+                useNativeDriver: true,
+              }).start();
+              translationX._value = 0;
+            } else {
+              Animated.timing(translationX, {
+                toValue: -150,
+                duration: 150,
+                useNativeDriver: true,
+              }).start();
+              translationX._value = -150;
+            }
+          } else if (!opened) {
+            if (e.nativeEvent.translationX < cutoff) {
+              setOpened(true);
+              Animated.timing(translationX, {
+                toValue: -150,
+                duration: 150,
+                useNativeDriver: true,
+              }).start();
+              translationX._value = -150;
+            } else {
+              Animated.timing(translationX, {
+                toValue: 0,
+                duration: 150,
+                useNativeDriver: true,
+              }).start();
+              translationX._value = 0;
+            }
+          }
         }
       },
     })

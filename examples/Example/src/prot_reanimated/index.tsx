@@ -24,6 +24,7 @@ import Animated, {
   useAnimatedGestureHandler,
   useEvent,
   runOnJS,
+  call,
 } from 'react-native-reanimated';
 
 function getState(s: number) {
@@ -44,51 +45,58 @@ function getState(s: number) {
   return s;
 }
 
-function useAnim(g, event) {
-  const handler = (e) => {
-    'worklet';
-    runOnJS(g.onUpdate)(e);
+function useAnimatedGesture(g) {
+  const callback = (e) => {
+    for (const gs of g.current) {
+      if (gs.handlerTag == e.handlerTag) {
+        gs.onUpdate(e);
+      }
+    }
   };
 
-  return useEvent(handler, [event], false);
+  const handler = (e) => {
+    'worklet';
+    runOnJS(callback)(e);
+  };
+
+  return useEvent(
+    handler,
+    ['onGestureHandlerStateChange', 'onGestureHandlerEvent'],
+    false
+  );
 }
 
 function Draggable() {
-  const offset = useSharedValue(0);
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: offset.value }],
-    };
-  });
-  const eventHandler = useAnim(
-    {
-      onUpdate: (event) => {
-        console.log('rot: ' + JSON.stringify(event));
-        //offset.value = event.translationX
-      },
-    },
-    'onRotationEvent'
-  );
-
-  const eventHandler2 = useAnim(
-    {
-      onUpdate: (event) => {
-        console.log('pinch: ' + JSON.stringify(event));
-        //offset.value = event.translationX
-      },
-    },
-    'onPinchEvent'
-  );
+  const offsetX = useSharedValue(0);
+  const offsetY = useSharedValue(0);
+  const startX = useSharedValue(0);
+  const startY = useSharedValue(0);
 
   const gs = useGesture(
     new Simultaneous([
-      new Rotation({ onUpdate: eventHandler }),
-      new Pinch({ onUpdate: eventHandler2 }),
+      new Pan({
+        onUpdate: (e) => {
+          if (e.state == 4) {
+            offsetX.value = e.translationX + startX.value;
+            offsetY.value = e.translationY + startY.value;
+          } else if (e.state == 2) {
+            startX.value = offsetX.value;
+            startY.value = offsetY.value;
+          }
+        },
+      }),
     ])
   );
 
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: offsetX.value }, { translateY: offsetY.value }],
+    };
+  });
+  const animatedHandler = useAnimatedGesture(gs);
+
   return (
-    <GestureMonitor gesture={gs}>
+    <GestureMonitor gesture={gs} animated={animatedHandler}>
       <Animated.View style={[styles.button, animatedStyles]} />
     </GestureMonitor>
   );
