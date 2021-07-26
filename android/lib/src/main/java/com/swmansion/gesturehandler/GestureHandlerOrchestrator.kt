@@ -10,7 +10,7 @@ import java.util.*
 class GestureHandlerOrchestrator(
   private val mWrapperView: ViewGroup,
   private val mHandlerRegistry: GestureHandlerRegistry,
-  private val mViewConfigHelper: ViewConfigurationHelper
+  private val mViewConfigHelper: ViewConfigurationHelper,
 ) {
   private val mGestureHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private val mAwaitingHandlers: Array<GestureHandler<*>?> = arrayOfNulls(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
@@ -159,7 +159,7 @@ class GestureHandlerOrchestrator(
     // Cancel all handlers that are required to be cancel upon current handler's activation
     for (i in 0 until mGestureHandlersCount) {
       val otherHandler = mGestureHandlers[i]
-      if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
+      if (shouldHandlerBeCancelledBy(otherHandler!!, handler)) {
         mHandlersToCancel[toCancelCount++] = otherHandler
       }
     }
@@ -170,8 +170,8 @@ class GestureHandlerOrchestrator(
     // Clear all awaiting handlers waiting for the current handler to fail
     for (i in mAwaitingHandlersCount - 1 downTo 0) {
       val otherHandler = mAwaitingHandlers[i]
-      if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler!!.cancel()
+      if (shouldHandlerBeCancelledBy(otherHandler!!, handler)) {
+        otherHandler.cancel()
         otherHandler.mIsAwaiting = false
       }
     }
@@ -318,19 +318,15 @@ class GestureHandlerOrchestrator(
   }
 
   private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int): Boolean {
-    val handlers = mHandlerRegistry.getHandlersForView(view)
     var found = false
-    if (handlers != null) {
-      var i = 0
-      val size = handlers.size
-      while (i < size) {
+    mHandlerRegistry.getHandlersForView(view)?.let { handlers ->
+      for (i in 0 until handlers.size) {
         val handler = handlers[i]
         if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
           recordHandlerIfNotPresent(handler, view)
           handler.startTrackingPointer(pointerId)
           found = true
         }
-        i++
       }
     }
     return found
@@ -392,6 +388,7 @@ class GestureHandlerOrchestrator(
       if (view is ViewGroup) {
         found = extractGestureHandlers(view, coords, pointerId)
       }
+
       (recordViewHandlersForPointer(view, coords, pointerId)
         || found || shouldHandlerlessViewBecomeTouchTarget(view, coords))
     } else {
@@ -400,15 +397,13 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun canReceiveEvents(view: View): Boolean {
-    return view.visibility == View.VISIBLE && view.alpha >= mMinAlphaForTraversal
-  }
+  private fun canReceiveEvents(view: View) =
+    view.visibility == View.VISIBLE && view.alpha >= mMinAlphaForTraversal
 
-  private fun isClipping(view: View): Boolean {
-    // if view is not a view group it is clipping, otherwise we check for `getClipChildren` flag to
-    // be turned on and also confirm with the ViewConfigHelper implementation
-    return view !is ViewGroup || mViewConfigHelper.isViewClippingChildren(view)
-  }
+  // if view is not a view group it is clipping, otherwise we check for `getClipChildren` flag to
+  // be turned on and also confirm with the ViewConfigHelper implementation
+  private fun isClipping(view: View) =
+    view !is ViewGroup || mViewConfigHelper.isViewClippingChildren(view)
 
   companion object {
     // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
@@ -422,20 +417,21 @@ class GestureHandlerOrchestrator(
     private val sInverseMatrix = Matrix()
     private val sTempCoords = FloatArray(2)
     private val sHandlersComparator = Comparator<GestureHandler<*>?> { a, b ->
-      if (a.mIsActive && b.mIsActive || a.mIsAwaiting && b.mIsAwaiting) {
+      return@Comparator if (a.mIsActive && b.mIsActive || a.mIsAwaiting && b.mIsAwaiting) {
         // both A and B are either active or awaiting activation, in which case we prefer one that
         // has activated (or turned into "awaiting" state) earlier
-        return@Comparator Integer.signum(b.mActivationIndex - a.mActivationIndex)
+        Integer.signum(b.mActivationIndex - a.mActivationIndex)
       } else if (a.mIsActive) {
-        return@Comparator -1 // only A is active
+        -1 // only A is active
       } else if (b.mIsActive) {
-        return@Comparator 1 // only B is active
+        1 // only B is active
       } else if (a.mIsAwaiting) {
-        return@Comparator -1 // only A is awaiting, B is inactive
+        -1 // only A is awaiting, B is inactive
       } else if (b.mIsAwaiting) {
-        return@Comparator 1 // only B is awaiting, A is inactive
+        1 // only B is awaiting, A is inactive
+      } else {
+        0 // both A and B are inactive, stable order matters
       }
-      0 // both A and B are inactive, stable order matters
     }
 
     private fun shouldHandlerlessViewBecomeTouchTarget(view: View, coords: FloatArray): Boolean {
@@ -454,7 +450,7 @@ class GestureHandlerOrchestrator(
       y: Float,
       parent: ViewGroup,
       child: View,
-      outLocalPoint: PointF
+      outLocalPoint: PointF,
     ) {
       var localX = x + parent.scrollX - child.left
       var localY = y + parent.scrollY - child.top
@@ -472,21 +468,23 @@ class GestureHandlerOrchestrator(
       outLocalPoint[localX] = localY
     }
 
-    private fun isTransformedTouchPointInView(x: Float, y: Float, child: View): Boolean {
-      return x >= 0 && x <= child.width && y >= 0 && y < child.height
-    }
+    private fun isTransformedTouchPointInView(x: Float, y: Float, child: View) =
+      x >= 0 &&
+        x <= child.width &&
+        y >= 0 &&
+        y < child.height
 
-    private fun shouldHandlerWaitForOther(handler: GestureHandler<*>, other: GestureHandler<*>?): Boolean {
-      return handler !== other && (handler.shouldWaitForHandlerFailure(other!!)
-        || other.shouldRequireToWaitForFailure(handler))
-    }
+    private fun shouldHandlerWaitForOther(handler: GestureHandler<*>, other: GestureHandler<*>?) =
+      handler !== other &&
+        (handler.shouldWaitForHandlerFailure(other!!) || other.shouldRequireToWaitForFailure(handler))
 
-    private fun canRunSimultaneously(a: GestureHandler<*>?, b: GestureHandler<*>): Boolean {
-      return a === b || a!!.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
-    }
+    private fun canRunSimultaneously(a: GestureHandler<*>?, b: GestureHandler<*>) =
+      a === b ||
+        a!!.shouldRecognizeSimultaneously(b) ||
+        b.shouldRecognizeSimultaneously(a)
 
-    private fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>?, other: GestureHandler<*>): Boolean {
-      if (!handler!!.hasCommonPointers(other)) {
+    private fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, other: GestureHandler<*>): Boolean {
+      if (!handler.hasCommonPointers(other)) {
         // if two handlers share no common pointer one can never trigger cancel for the other
         return false
       }
@@ -503,8 +501,9 @@ class GestureHandlerOrchestrator(
       } else true
     }
 
-    private fun isFinished(state: Int): Boolean {
-      return state == GestureHandler.STATE_CANCELLED || state == GestureHandler.STATE_FAILED || state == GestureHandler.STATE_END
-    }
+    private fun isFinished(state: Int) =
+      state == GestureHandler.STATE_CANCELLED ||
+        state == GestureHandler.STATE_FAILED ||
+        state == GestureHandler.STATE_END
   }
 }
