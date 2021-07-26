@@ -12,6 +12,7 @@ import ProtoGallery from './prot_gallery';
 import ProtoSwipe from './prot_swipe';
 import ProtoSiblings from './prot_siblings';
 import ProtoParent from './prot_parent';
+import ProtoReanimated from './prot_reanimated';
 
 import Rows from './rows';
 import Bouncing from './bouncing';
@@ -47,6 +48,7 @@ const SCREENS: Screens = {
     title: 'Example: Overlap (siblings)',
   },
   ProtoParent: { component: ProtoParent, title: 'Example: Overlap (parent)' },
+  ProtoReanimated: { component: ProtoReanimated, title: 'Example: Reanimated' },
   Rows: { component: Rows, title: 'Table rows & buttons' },
   Multitap: { component: Multitap },
   Draggable: { component: Draggable },

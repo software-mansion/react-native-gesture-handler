@@ -5,6 +5,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
@@ -40,10 +41,17 @@ public class RNGestureHandlerRootViewManager extends ViewGroupManager<RNGestureH
    */
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.of(
-            RNGestureHandlerEvent.EVENT_NAME,
-            MapBuilder.of("registrationName", RNGestureHandlerEvent.EVENT_NAME),
-            RNGestureHandlerStateChangeEvent.EVENT_NAME,
-            MapBuilder.of("registrationName", RNGestureHandlerStateChangeEvent.EVENT_NAME));
+    HashMap<String, Map> result = new HashMap<>();
+
+    result.put(RNGestureHandlerEvent.EVENT_NAME, MapBuilder.of("registrationName", RNGestureHandlerEvent.EVENT_NAME));
+    result.put(RNGestureHandlerStateChangeEvent.EVENT_NAME, MapBuilder.of("registrationName", RNGestureHandlerStateChangeEvent.EVENT_NAME));
+    result.put("onPanEvent", MapBuilder.of("registrationName", "onPanEvent"));
+    result.put("onFlingEvent", MapBuilder.of("registrationName", "onFlingEvent"));
+    result.put("onLongPressEvent", MapBuilder.of("registrationName", "onLongPressEvent"));
+    result.put("onRotationEvent", MapBuilder.of("registrationName", "onRotationEvent"));
+    result.put("onPinchEvent", MapBuilder.of("registrationName", "onPinchEvent"));
+    result.put("onTapEvent", MapBuilder.of("registrationName", "onTapEvent"));
+
+    return result;
   }
 }

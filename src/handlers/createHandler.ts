@@ -4,20 +4,19 @@ import {
   NativeModules,
   Platform,
   Touchable,
+  NativeEventEmitter,
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
-
 import {
   BaseGestureHandlerProps,
   GestureEvent,
   HandlerStateChangeEvent,
 } from './gestureHandlers';
 import { ValueOf } from '../typeUtils';
-import { bool } from 'prop-types';
 
 function findNodeHandle(
   node: null | number | React.Component<any, any> | React.ComponentClass<any>
@@ -458,72 +457,102 @@ export default function createHandler<
 export class Tap {
   constructor(config) {
     this.handlerName = 'TapGestureHandler';
+    this.eventName = 'onTapEvent';
     this.handlerTag = -1;
     this.config = config;
   }
 
-  onUpdate(e) {
-    this.config.onUpdate(e);
+  onUpdate(e, vt) {
+    if (typeof this.config.onUpdate === 'function') {
+      this.config.onUpdate(e);
+    } else {
+      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
+    }
   }
 }
 
 export class Pan {
   constructor(config) {
     this.handlerName = 'PanGestureHandler';
+    this.eventName = 'onPanEvent';
     this.handlerTag = -1;
     this.config = config;
   }
 
-  onUpdate(e) {
-    this.config.onUpdate(e);
+  onUpdate(e, vt) {
+    if (typeof this.config.onUpdate === 'function') {
+      this.config.onUpdate(e);
+    } else {
+      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
+    }
   }
 }
 
 export class Pinch {
   constructor(config) {
     this.handlerName = 'PinchGestureHandler';
+    this.eventName = 'onPinchEvent';
     this.handlerTag = -1;
     this.config = config;
   }
 
-  onUpdate(e) {
-    this.config.onUpdate(e);
+  onUpdate(e, vt) {
+    if (typeof this.config.onUpdate === 'function') {
+      this.config.onUpdate(e);
+    } else {
+      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
+    }
   }
 }
 
 export class Rotation {
   constructor(config) {
     this.handlerName = 'RotationGestureHandler';
+    this.eventName = 'onRotationEvent';
     this.handlerTag = -1;
     this.config = config;
   }
 
-  onUpdate(e) {
-    this.config.onUpdate(e);
+  onUpdate(e, vt) {
+    if (typeof this.config.onUpdate === 'function') {
+      this.config.onUpdate(e);
+    } else {
+      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
+    }
   }
 }
 
 export class LongPress {
   constructor(config) {
     this.handlerName = 'LongPressGestureHandler';
+    this.eventName = 'onLongPressEvent';
     this.handlerTag = -1;
     this.config = config;
   }
 
-  onUpdate(e) {
-    this.config.onUpdate(e);
+  onUpdate(e, vt) {
+    if (typeof this.config.onUpdate === 'function') {
+      this.config.onUpdate(e);
+    } else {
+      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
+    }
   }
 }
 
 export class Fling {
   constructor(config) {
     this.handlerName = 'FlingGestureHandler';
+    this.eventName = 'onFlingEvent';
     this.handlerTag = -1;
     this.config = config;
   }
 
-  onUpdate(e) {
-    this.config.onUpdate(e);
+  onUpdate(e, vt) {
+    if (typeof this.config.onUpdate === 'function') {
+      this.config.onUpdate(e);
+    } else {
+      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
+    }
   }
 }
 
@@ -545,7 +574,7 @@ export class Simultaneous {
       RNGestureHandlerModule.createGestureHandler(
         this.gestures[i].handlerName,
         this.gestures[i].handlerTag,
-        this.gestures[i].config
+        { simultaneousHandlers: this.gestures[i].config.simultaneousHandlers } //this.gestures[i].config
       );
     }
 
@@ -571,7 +600,7 @@ export class Exclusive {
       RNGestureHandlerModule.createGestureHandler(
         gs.handlerName,
         gs.handlerTag,
-        gs.config
+        {} //gs.config
       );
     }
 
@@ -647,7 +676,7 @@ export function useGesture(gesture) {
       RNGestureHandlerModule.createGestureHandler(
         gesture.handlerName,
         gesture.handlerTag,
-        gesture.config
+        {} //gesture.config
       );
 
       result.current = [gesture];
@@ -726,7 +755,7 @@ export class GestureMonitor extends React.Component {
     let handled = false;
     for (const gesture of this.props.gesture.current) {
       if (gesture.handlerTag === event.nativeEvent.handlerTag) {
-        gesture.onUpdate(event);
+        gesture.onUpdate?.(event, this.viewTag);
         handled = true;
         break;
       }
@@ -742,7 +771,7 @@ export class GestureMonitor extends React.Component {
     let handled = false;
     for (const gesture of this.props.gesture.current) {
       if (gesture.handlerTag === event.nativeEvent.handlerTag) {
-        gesture.onUpdate(event);
+        gesture.onUpdate?.(event, this.viewTag);
         handled = true;
         break;
       }
@@ -755,70 +784,22 @@ export class GestureMonitor extends React.Component {
 
   render() {
     let gestureEventHandler = this.onGestureHandlerEvent;
-    // Another instance of https://github.com/microsoft/TypeScript/issues/13995
-    type OnGestureEventHandlers = {
-      onGestureEvent?: BaseGestureHandlerProps<U>['onGestureEvent'];
-      onGestureHandlerEvent?: InternalEventHandlers['onGestureHandlerEvent'];
-    };
-    const {
-      onGestureEvent,
-      onGestureHandlerEvent,
-    }: OnGestureEventHandlers = this.props;
-    if (onGestureEvent && typeof onGestureEvent !== 'function') {
-      // If it's not a method it should be an native Animated.event
-      // object. We set it directly as the handler for the view
-      // In this case nested handlers are not going to be supported
-      if (onGestureHandlerEvent) {
-        throw new Error(
-          'Nesting touch handlers with native animated driver is not supported yet'
-        );
-      }
-      gestureEventHandler = onGestureEvent;
-    } else {
-      if (
-        onGestureHandlerEvent &&
-        typeof onGestureHandlerEvent !== 'function'
-      ) {
-        throw new Error(
-          'Nesting touch handlers with native animated driver is not supported yet'
-        );
-      }
-    }
-
     let gestureStateEventHandler = this.onGestureHandlerStateChange;
-    // Another instance of https://github.com/microsoft/TypeScript/issues/13995
-    type OnGestureStateChangeHandlers = {
-      onHandlerStateChange?: BaseGestureHandlerProps<U>['onHandlerStateChange'];
-      onGestureHandlerStateChange?: InternalEventHandlers['onGestureHandlerStateChange'];
-    };
-    const {
-      onHandlerStateChange,
-      onGestureHandlerStateChange,
-    }: OnGestureStateChangeHandlers = this.props;
-    if (onHandlerStateChange && typeof onHandlerStateChange !== 'function') {
-      // If it's not a method it should be an native Animated.event
-      // object. We set it directly as the handler for the view
-      // In this case nested handlers are not going to be supported
-      if (onGestureHandlerStateChange) {
-        throw new Error(
-          'Nesting touch handlers with native animated driver is not supported yet'
-        );
-      }
-      gestureStateEventHandler = onHandlerStateChange;
-    } else {
-      if (
-        onGestureHandlerStateChange &&
-        typeof onGestureHandlerStateChange !== 'function'
-      ) {
-        throw new Error(
-          'Nesting touch handlers with native animated driver is not supported yet'
-        );
-      }
-    }
+
+    //gestureEventHandler = this.props.onGestureEvent;
+
     const events = {
       onGestureHandlerEvent: gestureEventHandler,
       onGestureHandlerStateChange: gestureStateEventHandler,
     };
+
+    if (this.props.gesture.current) {
+      for (const gs of this.props.gesture.current) {
+        if (gs.config.onUpdate && typeof gs.config.onUpdate !== 'function') {
+          events[gs.eventName] = gs.config.onUpdate;
+        }
+      }
+    }
 
     this.propsRef.current = events;
 

@@ -62,10 +62,17 @@ function Photo() {
         },
       }),
       new Pan({
-        onUpdate: (e) => {
-          translationX.setValue(x + e.nativeEvent.translationX);
-          translationY.setValue(y + e.nativeEvent.translationY);
-        },
+        onUpdate: Animated.event(
+          [
+            {
+              nativeEvent: {
+                translationX: translationX,
+                translationY: translationY,
+              },
+            },
+          ],
+          { useNativeDriver: true }
+        ),
         avgTouches: true,
       }),
       new Tap({

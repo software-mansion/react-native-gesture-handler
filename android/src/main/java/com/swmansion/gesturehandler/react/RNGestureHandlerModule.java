@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -20,7 +21,9 @@ import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.swmansion.gesturehandler.FlingGestureHandler;
 import com.swmansion.gesturehandler.GestureHandler;
 import com.swmansion.gesturehandler.LongPressGestureHandler;
@@ -527,6 +530,46 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void handleClearJSResponder() {
+  }
+
+  @ReactMethod
+  public void dispatchEvent(String name, int viewTag, ReadableMap options) {
+    EventDispatcher eventDispatcher = getReactApplicationContext()
+            .getNativeModule(UIManagerModule.class)
+            .getEventDispatcher();
+
+    CEvent e = new CEvent(name, viewTag, options);
+
+    eventDispatcher.dispatchEvent(e);
+  }
+
+  class CEvent extends Event<CEvent> {
+
+    private ReadableMap data;
+    private String name;
+
+    CEvent(String name, int viewTag, ReadableMap options) {
+      init(viewTag);
+      data = options;
+      this.name = name;
+    }
+
+    @Override
+    protected void init(int viewTag) {
+      super.init(viewTag);
+    }
+
+    @Override
+    public String getEventName() {
+      return name;
+    }
+
+    @Override
+    public void dispatch(RCTEventEmitter rctEventEmitter) {
+      WritableMap event = Arguments.createMap();
+      event.merge(data);
+      rctEventEmitter.receiveEvent(getViewTag(), getEventName(), event);
+    }
   }
 
   @Override

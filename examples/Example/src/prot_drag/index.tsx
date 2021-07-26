@@ -36,39 +36,44 @@ function getState(s: number) {
 }
 
 function Draggable() {
-  let x = 0,
-    y = 0;
+  const translationX = useRef(new Animated.Value(0)).current;
+  const translationY = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(1)).current;
 
   const gs = useGesture(
-    new Sequence([
+    new Simultaneous([
       new LongPress({
         onUpdate: (e) => {
           if (e.nativeEvent.state == 1) {
-            Animated.timing(scale, { toValue: 1, duration: 500 }).start();
+            Animated.timing(scale, {
+              toValue: 1,
+              duration: 500,
+              useNativeDriver: true,
+            }).start();
           } else if (e.nativeEvent.state == 2) {
-            Animated.timing(scale, { toValue: 1.2, duration: 500 }).start();
-
-            x = translationX._value;
-            y = translationY._value;
+            Animated.timing(scale, {
+              toValue: 1.2,
+              duration: 500,
+              useNativeDriver: true,
+            }).start();
           }
         },
       }),
       new Pan({
-        onUpdate: (e) => {
-          translationX.setValue(x + e.nativeEvent.translationX);
-          translationY.setValue(y + e.nativeEvent.translationY);
-
-          if (e.nativeEvent.state == 5) {
-            Animated.timing(scale, { toValue: 1, duration: 500 }).start();
-          }
-        },
+        onUpdate: Animated.event(
+          [
+            {
+              nativeEvent: {
+                translationX: translationX,
+                translationY: translationY,
+              },
+            },
+          ],
+          { useNativeDriver: true }
+        ),
       }),
     ])
   );
-
-  const translationX = useRef(new Animated.Value(0)).current;
-  const translationY = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(1)).current;
 
   return (
     <GestureMonitor gesture={gs}>
