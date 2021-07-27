@@ -5,6 +5,9 @@ import { USE_NATIVE_DRIVER } from '../config';
 import {
   TapGestureHandler,
   PanGestureHandler,
+  LongPressGestureHandler,
+  RotationGestureHandler,
+  PinchGestureHandler,
   GestureMonitor,
   useGesture,
   Pan,
@@ -17,6 +20,7 @@ import {
   LongPress,
 } from 'react-native-gesture-handler';
 import { useState } from 'react';
+import { createRef } from 'react';
 
 function getState(s: number) {
   switch (s) {
@@ -43,54 +47,58 @@ function Draggable() {
 
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-  const gs = useGesture(
-    new Sequence([
-      new LongPress({
-        onUpdate: (e) => {
-          if (e.nativeEvent.state == 1) {
-            Animated.timing(scale, {
-              toValue: 1,
-              duration: 500,
-              useNativeDriver: true,
-            }).start();
-          } else if (e.nativeEvent.state == 2) {
-            Animated.timing(scale, {
-              toValue: 1.2,
-              duration: 500,
-              useNativeDriver: true,
-            }).start();
-          }
-        },
-      }),
-      new Pan({
-        onUpdate: Animated.event(
-          [
-            {
-              nativeEvent: {
-                translationX: translationX,
-                translationY: translationY,
-              },
-            },
-          ],
+  const gs = new Simultaneous([ //useGesture(
+    new LongPress({
+      onUpdate: (e) => {
+        if (e.nativeEvent.state == 1) {
+          Animated.timing(scale, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }).start();
+        } else if (e.nativeEvent.state == 2) {
+          Animated.timing(scale, {
+            toValue: 1.2,
+            duration: 500,
+            useNativeDriver: true,
+          }).start();
+        }
+      },
+    }),
+    new Pan({
+      onUpdate: Animated.event(
+        [
           {
-            useNativeDriver: false,
-            listener: (e) => {
-              if (e.nativeEvent.state == 5) {
-                Animated.timing(scale, {
-                  toValue: 1,
-                  duration: 500,
-                  useNativeDriver: true,
-                }).start();
-              }
+            nativeEvent: {
+              translationX: translationX,
+              translationY: translationY,
             },
-          }
-        ),
-      }),
-    ])
-  );
+          },
+        ],
+        {
+          useNativeDriver: false,
+          listener: (e) => {
+            if (e.nativeEvent.state == 5) {
+              Animated.timing(scale, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+              }).start();
+            }
+          },
+        }
+      ),
+    }),
+    new Tap({
+      onUpdate: (e) => {
+        console.log(e.nativeEvent);
+      },
+    }),
+  ]);
+  //);
 
   return (
-    <GestureMonitor gesture={gs}>
+    <GestureDetector gesture={gs}>
       <Animated.View
         style={[
           styles.button,
@@ -103,7 +111,7 @@ function Draggable() {
           },
         ]}
       />
-    </GestureMonitor>
+    </GestureDetector>
   );
 }
 
@@ -113,6 +121,71 @@ export default function Example() {
       <Draggable />
     </View>
   );
+}
+
+function GestureDetector(props) {
+  let result = props.children;
+
+  if (props.gesture instanceof Exclusive) {
+    for (const gesture of props.gesture.gestures) {
+      result = React.createElement(
+        getHandler(gesture.handlerName),
+        {
+          onGestureEvent: gesture.config.onUpdate,
+          onHandlerStateChange: gesture.config.onUpdate,
+        },
+        result
+      );
+    }
+  } else if (props.gesture instanceof Simultaneous) {
+    let refs = [];
+
+    for (const gesture of props.gesture.gestures) {
+      let ref = createRef();
+
+      refs.push(ref);
+      gesture.ref = ref;
+    }
+
+    for (const gesture of props.gesture.gestures) {
+      result = React.createElement(
+        getHandler(gesture.handlerName),
+        {
+          onGestureEvent: gesture.config.onUpdate,
+          onHandlerStateChange: gesture.config.onUpdate,
+          ref: gesture.ref,
+          simultaneousHandlers: refs,
+        },
+        result
+      );
+    }
+  } else {
+    result = React.createElement(
+      getHandler(props.gesture.handlerName),
+      {
+        onGestureEvent: props.gesture.config.onUpdate,
+        onHandlerStateChange: props.gesture.config.onUpdate,
+      },
+      result
+    );
+  }
+
+  return result;
+}
+
+function getHandler(name) {
+  switch (name) {
+    case 'LongPressGestureHandler':
+      return LongPressGestureHandler;
+    case 'TapGestureHandler':
+      return TapGestureHandler;
+    case 'RotationGestureHandler':
+      return RotationGestureHandler;
+    case 'PinchGestureHandler':
+      return PinchGestureHandler;
+    case 'PanGestureHandler':
+      return PanGestureHandler;
+  }
 }
 
 const styles = StyleSheet.create({
