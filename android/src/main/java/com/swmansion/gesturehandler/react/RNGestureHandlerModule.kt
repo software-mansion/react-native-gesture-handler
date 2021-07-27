@@ -11,15 +11,14 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.UIManagerModule
 import com.swmansion.gesturehandler.*
-import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import java.util.*
 
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
-  private abstract class HandlerFactory<T : GestureHandler<*>>() : RNGestureHandlerEventDataExtractor<T> {
+  private abstract class HandlerFactory<T : GestureHandler<T>> : RNGestureHandlerEventDataExtractor<T> {
     abstract val type: Class<T>
     abstract val name: String
-    abstract fun create(context: Context?): T
+    abstract fun create(context: Context): T
     open fun configure(handler: T, config: ReadableMap) {
       handler.resetConfig()
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
@@ -29,7 +28,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
         handler.setEnabled(config.getBoolean(KEY_ENABLED))
       }
       if (config.hasKey(KEY_HIT_SLOP)) {
-        handleHitSlopProperty((handler), config)
+        handleHitSlopProperty(handler, config)
       }
     }
 
@@ -38,11 +37,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class NativeViewGestureHandlerFactory() : HandlerFactory<NativeViewGestureHandler>() {
+  private class NativeViewGestureHandlerFactory : HandlerFactory<NativeViewGestureHandler>() {
     override val type = NativeViewGestureHandler::class.java
     override val name = "NativeViewGestureHandler"
 
-    override fun create(context: Context?) = NativeViewGestureHandler()
+    override fun create(context: Context) = NativeViewGestureHandler()
 
     override fun configure(handler: NativeViewGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
@@ -61,11 +60,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class TapGestureHandlerFactory() : HandlerFactory<TapGestureHandler>() {
+  private class TapGestureHandlerFactory : HandlerFactory<TapGestureHandler>() {
     override val type = TapGestureHandler::class.java
     override val name = "TapGestureHandler"
 
-    override fun create(context: Context?): TapGestureHandler {
+    override fun create(context: Context): TapGestureHandler {
       return TapGestureHandler()
     }
 
@@ -103,11 +102,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class LongPressGestureHandlerFactory() : HandlerFactory<LongPressGestureHandler>() {
+  private class LongPressGestureHandlerFactory : HandlerFactory<LongPressGestureHandler>() {
     override val type = LongPressGestureHandler::class.java
     override val name = "LongPressGestureHandler"
 
-    override fun create(context: Context?) = LongPressGestureHandler(context)
+    override fun create(context: Context) = LongPressGestureHandler(context)
 
     override fun configure(handler: LongPressGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
@@ -128,11 +127,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class PanGestureHandlerFactory() : HandlerFactory<PanGestureHandler>() {
+  private class PanGestureHandlerFactory : HandlerFactory<PanGestureHandler>() {
     override val type = PanGestureHandler::class.java
     override val name = "PanGestureHandler"
 
-    override fun create(context: Context?) = PanGestureHandler(context)
+    override fun create(context: Context) = PanGestureHandler(context)
 
     override fun configure(handler: PanGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
@@ -215,11 +214,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class PinchGestureHandlerFactory() : HandlerFactory<PinchGestureHandler>() {
+  private class PinchGestureHandlerFactory : HandlerFactory<PinchGestureHandler>() {
     override val type = PinchGestureHandler::class.java
     override val name = "PinchGestureHandler"
 
-    override fun create(context: Context?) = PinchGestureHandler()
+    override fun create(context: Context) = PinchGestureHandler()
 
     override fun extractEventData(handler: PinchGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
@@ -230,11 +229,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class FlingGestureHandlerFactory() : HandlerFactory<FlingGestureHandler>() {
+  private class FlingGestureHandlerFactory : HandlerFactory<FlingGestureHandler>() {
     override val type = FlingGestureHandler::class.java
     override val name = "FlingGestureHandler"
 
-    override fun create(context: Context?) = FlingGestureHandler()
+    override fun create(context: Context) = FlingGestureHandler()
 
     override fun configure(handler: FlingGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
@@ -255,11 +254,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class RotationGestureHandlerFactory() : HandlerFactory<RotationGestureHandler>() {
+  private class RotationGestureHandlerFactory : HandlerFactory<RotationGestureHandler>() {
     override val type = RotationGestureHandler::class.java
     override val name = "RotationGestureHandler"
 
-    override fun create(context: Context?) = RotationGestureHandler()
+    override fun create(context: Context) = RotationGestureHandler()
 
     override fun extractEventData(handler: RotationGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
@@ -270,7 +269,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private val mEventListener:  OnTouchEventListener<GestureHandler<*>> = object : OnTouchEventListener<GestureHandler<*>> {
+  private val mEventListener: OnTouchEventListener<GestureHandler<*>> = object : OnTouchEventListener<GestureHandler<*>> {
     override fun onTouchEvent(handler: GestureHandler<*>, event: MotionEvent?) {
       this@RNGestureHandlerModule.onTouchEvent(handler, event)
     }
@@ -297,20 +296,21 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   @ReactMethod
-  fun createGestureHandler(
+  fun <T : GestureHandler<T>> createGestureHandler(
     handlerName: String,
     handlerTag: Int,
-    config: ReadableMap?,
+    config: ReadableMap,
   ) {
     for (i in mHandlerFactories.indices) {
-      val handlerFactory = mHandlerFactories[i]
+      @Suppress("UNCHECKED_CAST")
+      val handlerFactory = mHandlerFactories[i] as HandlerFactory<T>
       if ((handlerFactory.name == handlerName)) {
-        val handler = (handlerFactory.create(reactApplicationContext))
+        val handler = handlerFactory.create(reactApplicationContext)
         handler.tag = handlerTag
         handler.setOnTouchEventListener(mEventListener)
         registry.registerHandler(handler)
         mInteractionManager.configureInteractions(handler, config)
-        handlerFactory.configure(handler, (config)!!)
+        handlerFactory.configure(handler, config)
         return
       }
     }
@@ -327,17 +327,18 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   @ReactMethod
-  fun updateGestureHandler(
+  @Suppress("UNCHECKED_CAST")
+  fun <T : GestureHandler<T>>updateGestureHandler(
     handlerTag: Int,
-    config: ReadableMap?,
+    config: ReadableMap,
   ) {
-    val handler = registry.getHandler(handlerTag)
+    val handler = registry.getHandler(handlerTag) as T?
     if (handler != null) {
-      val factory = findFactoryForHandler(handler)
+      val factory = findFactoryForHandler(handler) as HandlerFactory<T>?
       if (factory != null) {
         mInteractionManager.dropRelationsForHandlerWithTag(handlerTag)
         mInteractionManager.configureInteractions(handler, config)
-        factory.configure(handler, (config)!!)
+        factory.configure(handler, config)
       }
     }
   }
@@ -345,7 +346,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   @ReactMethod
   fun dropGestureHandler(handlerTag: Int) {
     mInteractionManager.dropRelationsForHandlerWithTag(handlerTag)
-    registry!!.dropHandler(handlerTag)
+    registry.dropHandler(handlerTag)
   }
 
   @ReactMethod
@@ -360,7 +361,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   fun handleClearJSResponder() {
   }
 
-  override fun getConstants(): MutableMap<String, Any>? {
+  override fun getConstants(): Map<String, Any> {
     return MapBuilder.of<String, Map<String, Int>>("State", MapBuilder.of(
       "UNDETERMINED", GestureHandler.STATE_UNDETERMINED,
       "BEGAN", GestureHandler.STATE_BEGAN,
@@ -377,12 +378,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   override fun onCatalystInstanceDestroy() {
-    registry!!.dropAllHandlers()
+    registry.dropAllHandlers()
     mInteractionManager.reset()
     synchronized(mRoots) {
-      while (!mRoots.isEmpty()) {
+      while (mRoots.isNotEmpty()) {
         val sizeBefore: Int = mRoots.size
-        val root: RNGestureHandlerRootHelper = mRoots.get(0)
+        val root: RNGestureHandlerRootHelper = mRoots[0]
         val reactRootView: ViewGroup = root.rootView
         if (reactRootView is RNGestureHandlerEnabledRootView) {
           reactRootView.tearDown()
@@ -406,9 +407,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
     synchronized(mRoots) {
       for (i in mRoots.indices) {
-        val root: RNGestureHandlerRootHelper = mRoots.get(i)
+        val root: RNGestureHandlerRootHelper = mRoots[i]
         val rootView: ViewGroup = root.rootView
-        if (rootView is ReactRootView && rootView.getRootViewTag() == rootViewTag) {
+        if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           // we have found root helper registered for a given react root, we don't need to
           // initialize a new one then
           return
@@ -440,7 +441,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
     synchronized(mRoots) {
       if (mRoots.contains(root)) {
-        throw IllegalStateException("Root helper" + root + " already registered")
+        throw IllegalStateException("Root helper$root already registered")
       }
       mRoots.add(root)
     }
@@ -458,9 +459,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
     synchronized(mRoots) {
       for (i in mRoots.indices) {
-        val root: RNGestureHandlerRootHelper = mRoots.get(i)
+        val root: RNGestureHandlerRootHelper = mRoots[i]
         val rootView: ViewGroup = root.rootView
-        if (rootView is ReactRootView && rootView.getRootViewTag() == rootViewTag) {
+        if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           return root
         }
       }
@@ -486,8 +487,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     if (handler.state == GestureHandler.STATE_ACTIVE) {
       val handlerFactory = findFactoryForHandler(handler)
       val eventDispatcher = reactApplicationContext
-        .getNativeModule(UIManagerModule::class.java)
-        .getEventDispatcher()
+        .getNativeModule(UIManagerModule::class.java)!!
+        .eventDispatcher
       val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
       eventDispatcher.dispatchEvent(event)
     }
@@ -500,8 +501,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
     val handlerFactory = findFactoryForHandler(handler)
     val eventDispatcher = reactApplicationContext
-      .getNativeModule(UIManagerModule::class.java)
-      .getEventDispatcher()
+      .getNativeModule(UIManagerModule::class.java)!!
+      .eventDispatcher
     val event = RNGestureHandlerStateChangeEvent.obtain(
       handler,
       newState,
@@ -512,45 +513,45 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
   companion object {
     const val MODULE_NAME = "RNGestureHandlerModule"
-    private val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
-    private val KEY_ENABLED = "enabled"
-    private val KEY_HIT_SLOP = "hitSlop"
-    private val KEY_HIT_SLOP_LEFT = "left"
-    private val KEY_HIT_SLOP_TOP = "top"
-    private val KEY_HIT_SLOP_RIGHT = "right"
-    private val KEY_HIT_SLOP_BOTTOM = "bottom"
-    private val KEY_HIT_SLOP_VERTICAL = "vertical"
-    private val KEY_HIT_SLOP_HORIZONTAL = "horizontal"
-    private val KEY_HIT_SLOP_WIDTH = "width"
-    private val KEY_HIT_SLOP_HEIGHT = "height"
-    private val KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart"
-    private val KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION = "disallowInterruption"
-    private val KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps"
-    private val KEY_TAP_MAX_DURATION_MS = "maxDurationMs"
-    private val KEY_TAP_MAX_DELAY_MS = "maxDelayMs"
-    private val KEY_TAP_MAX_DELTA_X = "maxDeltaX"
-    private val KEY_TAP_MAX_DELTA_Y = "maxDeltaY"
-    private val KEY_TAP_MAX_DIST = "maxDist"
-    private val KEY_TAP_MIN_POINTERS = "minPointers"
-    private val KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs"
-    private val KEY_LONG_PRESS_MAX_DIST = "maxDist"
-    private val KEY_PAN_ACTIVE_OFFSET_X_START = "activeOffsetXStart"
-    private val KEY_PAN_ACTIVE_OFFSET_X_END = "activeOffsetXEnd"
-    private val KEY_PAN_FAIL_OFFSET_RANGE_X_START = "failOffsetXStart"
-    private val KEY_PAN_FAIL_OFFSET_RANGE_X_END = "failOffsetXEnd"
-    private val KEY_PAN_ACTIVE_OFFSET_Y_START = "activeOffsetYStart"
-    private val KEY_PAN_ACTIVE_OFFSET_Y_END = "activeOffsetYEnd"
-    private val KEY_PAN_FAIL_OFFSET_RANGE_Y_START = "failOffsetYStart"
-    private val KEY_PAN_FAIL_OFFSET_RANGE_Y_END = "failOffsetYEnd"
-    private val KEY_PAN_MIN_DIST = "minDist"
-    private val KEY_PAN_MIN_VELOCITY = "minVelocity"
-    private val KEY_PAN_MIN_VELOCITY_X = "minVelocityX"
-    private val KEY_PAN_MIN_VELOCITY_Y = "minVelocityY"
-    private val KEY_PAN_MIN_POINTERS = "minPointers"
-    private val KEY_PAN_MAX_POINTERS = "maxPointers"
-    private val KEY_PAN_AVG_TOUCHES = "avgTouches"
-    private val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
-    private val KEY_DIRECTION = "direction"
+    private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
+    private const val KEY_ENABLED = "enabled"
+    private const val KEY_HIT_SLOP = "hitSlop"
+    private const val KEY_HIT_SLOP_LEFT = "left"
+    private const val KEY_HIT_SLOP_TOP = "top"
+    private const val KEY_HIT_SLOP_RIGHT = "right"
+    private const val KEY_HIT_SLOP_BOTTOM = "bottom"
+    private const val KEY_HIT_SLOP_VERTICAL = "vertical"
+    private const val KEY_HIT_SLOP_HORIZONTAL = "horizontal"
+    private const val KEY_HIT_SLOP_WIDTH = "width"
+    private const val KEY_HIT_SLOP_HEIGHT = "height"
+    private const val KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart"
+    private const val KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION = "disallowInterruption"
+    private const val KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps"
+    private const val KEY_TAP_MAX_DURATION_MS = "maxDurationMs"
+    private const val KEY_TAP_MAX_DELAY_MS = "maxDelayMs"
+    private const val KEY_TAP_MAX_DELTA_X = "maxDeltaX"
+    private const val KEY_TAP_MAX_DELTA_Y = "maxDeltaY"
+    private const val KEY_TAP_MAX_DIST = "maxDist"
+    private const val KEY_TAP_MIN_POINTERS = "minPointers"
+    private const val KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs"
+    private const val KEY_LONG_PRESS_MAX_DIST = "maxDist"
+    private const val KEY_PAN_ACTIVE_OFFSET_X_START = "activeOffsetXStart"
+    private const val KEY_PAN_ACTIVE_OFFSET_X_END = "activeOffsetXEnd"
+    private const val KEY_PAN_FAIL_OFFSET_RANGE_X_START = "failOffsetXStart"
+    private const val KEY_PAN_FAIL_OFFSET_RANGE_X_END = "failOffsetXEnd"
+    private const val KEY_PAN_ACTIVE_OFFSET_Y_START = "activeOffsetYStart"
+    private const val KEY_PAN_ACTIVE_OFFSET_Y_END = "activeOffsetYEnd"
+    private const val KEY_PAN_FAIL_OFFSET_RANGE_Y_START = "failOffsetYStart"
+    private const val KEY_PAN_FAIL_OFFSET_RANGE_Y_END = "failOffsetYEnd"
+    private const val KEY_PAN_MIN_DIST = "minDist"
+    private const val KEY_PAN_MIN_VELOCITY = "minVelocity"
+    private const val KEY_PAN_MIN_VELOCITY_X = "minVelocityX"
+    private const val KEY_PAN_MIN_VELOCITY_Y = "minVelocityY"
+    private const val KEY_PAN_MIN_POINTERS = "minPointers"
+    private const val KEY_PAN_MAX_POINTERS = "maxPointers"
+    private const val KEY_PAN_AVG_TOUCHES = "avgTouches"
+    private const val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
+    private const val KEY_DIRECTION = "direction"
     private fun handleHitSlopProperty(handler: GestureHandler<*>, config: ReadableMap) {
       if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
         val hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP))
