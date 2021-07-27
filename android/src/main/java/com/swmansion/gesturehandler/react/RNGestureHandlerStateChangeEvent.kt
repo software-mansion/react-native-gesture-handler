@@ -7,20 +7,21 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.swmansion.gesturehandler.GestureHandler
 
-class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHandlerStateChangeEvent?>() {
+class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHandlerStateChangeEvent>() {
   private var mExtraData: WritableMap? = null
-  private fun init(
-    handler: GestureHandler<*>,
+  private fun <T : GestureHandler<T>>init(
+    handler: T,
     newState: Int,
     oldState: Int,
-    dataExtractor: RNGestureHandlerEventDataExtractor<*>?
+    dataExtractor: RNGestureHandlerEventDataExtractor<T>?
   ) {
     super.init(handler.view!!.id)
-    mExtraData = Arguments.createMap()
-    dataExtractor?.extractEventData(handler, mExtraData!!)
-    mExtraData.putInt("handlerTag", handler.tag)
-    mExtraData.putInt("state", newState)
-    mExtraData.putInt("oldState", oldState)
+    mExtraData = Arguments.createMap().apply {
+      dataExtractor?.extractEventData(handler, this)
+      putInt("handlerTag", handler.tag)
+      putInt("state", newState)
+      putInt("oldState", oldState)
+    }
   }
 
   override fun onDispose() {
@@ -50,11 +51,11 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     const val EVENT_NAME = "onGestureHandlerStateChange"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerStateChangeEvent>(TOUCH_EVENTS_POOL_SIZE)
-    fun obtain(
-      handler: GestureHandler<*>,
+    fun <T : GestureHandler<T>>obtain(
+      handler: T,
       newState: Int,
       oldState: Int,
-      dataExtractor: RNGestureHandlerEventDataExtractor<*>?
+      dataExtractor: RNGestureHandlerEventDataExtractor<T>?
     ): RNGestureHandlerStateChangeEvent {
       var event = EVENTS_POOL.acquire()
       if (event == null) {
