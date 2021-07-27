@@ -7,18 +7,19 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.swmansion.gesturehandler.GestureHandler
 
-class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent?>() {
+class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>() {
   private var mExtraData: WritableMap? = null
   private var mCoalescingKey: Short = 0
-  private fun init(
-    handler: GestureHandler<*>,
-    dataExtractor: RNGestureHandlerEventDataExtractor<*>?
+  private fun <T : GestureHandler<T>> init(
+    handler: T,
+    dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
   ) {
     super.init(handler.view!!.id)
-    mExtraData = Arguments.createMap()
-    dataExtractor?.extractEventData(handler, mExtraData!!)
-    mExtraData.putInt("handlerTag", handler.tag)
-    mExtraData.putInt("state", handler.state)
+    mExtraData = Arguments.createMap().apply {
+      dataExtractor?.extractEventData(handler, this)
+      putInt("handlerTag", handler.tag)
+      putInt("state", handler.state)
+    }
     mCoalescingKey = handler.eventCoalescingKey
   }
 
@@ -47,9 +48,9 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent?
     const val EVENT_NAME = "onGestureHandlerEvent"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerEvent>(TOUCH_EVENTS_POOL_SIZE)
-    fun obtain(
-      handler: GestureHandler<*>,
-      dataExtractor: RNGestureHandlerEventDataExtractor<*>?
+    fun <T : GestureHandler<T>> obtain(
+      handler: T,
+      dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
     ): RNGestureHandlerEvent {
       var event = EVENTS_POOL.acquire()
       if (event == null) {
