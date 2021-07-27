@@ -413,7 +413,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     onReset()
   }
 
-  fun setOnTouchEventListener(listener: OnTouchEventListener<ConcreteGestureHandlerT>?): GestureHandler<*> {
+  fun setOnTouchEventListener(listener: OnTouchEventListener<ConcreteGestureHandlerT>): GestureHandler<*> {
     mListener = listener
     return this
   }
