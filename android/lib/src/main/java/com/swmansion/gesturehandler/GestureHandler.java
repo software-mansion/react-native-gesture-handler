@@ -71,6 +71,8 @@ public class GestureHandler<T extends GestureHandler> {
   /*package*/ int mActivationIndex; // set and accessed only by the orchestrator
   /*package*/ boolean mIsActive; // set and accessed only by the orchestrator
   /*package*/ boolean mIsAwaiting; // set and accessed only by the orchestrator
+  /*package*/ boolean mIsAwaitingForActivation; // set and accessed only by the orchestrator
+  /*package*/ long mPreviousActivated; // set and accessed only by the orchestrator
 
   private static boolean hitSlopSet(float value) {
     return !Float.isNaN(value);
@@ -377,6 +379,20 @@ public class GestureHandler<T extends GestureHandler> {
   public boolean shouldWaitForHandlerFailure(GestureHandler handler) {
     if (handler != this && mInteractionController != null) {
       return mInteractionController.shouldWaitForHandlerFailure(this, handler);
+    }
+    return false;
+  }
+
+  public boolean shouldWaitForAnyHandlerActivation() {
+    if (mInteractionController != null) {
+      return mInteractionController.shouldWaitForAnyHandlerActivation(this);
+    }
+    return false;
+  }
+
+  public boolean shouldWaitForHandlerActivation(GestureHandler handler) {
+    if (handler != this && mInteractionController != null) {
+      return mInteractionController.shouldWaitForHandlerActivation(this, handler);
     }
     return false;
   }

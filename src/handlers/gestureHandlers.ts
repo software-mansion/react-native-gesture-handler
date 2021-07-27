@@ -77,6 +77,7 @@ export const baseProps = [
   'minPointers',
   'waitFor',
   'simultaneousHandlers',
+  'after',
   'shouldCancelWhenOutside',
   'hitSlop',
   'onBegan',

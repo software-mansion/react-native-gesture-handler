@@ -99,7 +99,11 @@ function filterConfig(
     const value = props[key];
     if (isConfigParam(value, key)) {
       let value = props[key];
-      if (key === 'simultaneousHandlers' || key === 'waitFor') {
+      if (
+        key === 'simultaneousHandlers' ||
+        key === 'waitFor' ||
+        key === 'after'
+      ) {
         value = transformIntoHandlerTags(props[key]);
       } else if (key === 'hitSlop') {
         if (typeof value !== 'object') {
@@ -144,7 +148,11 @@ function hasUnresolvedRefs<T extends Record<string, unknown>>(
     }
     return refs.some((r) => r && r.current === null);
   };
-  return extract(props['simultaneousHandlers']) || extract(props['waitFor']);
+  return (
+    extract(props['simultaneousHandlers']) ||
+    extract(props['waitFor']) ||
+    extract(props['after'])
+  );
 }
 
 const stateToPropMappings = {

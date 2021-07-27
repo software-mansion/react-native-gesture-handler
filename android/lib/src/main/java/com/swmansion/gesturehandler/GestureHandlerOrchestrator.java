@@ -2,6 +2,8 @@ package com.swmansion.gesturehandler;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,12 +57,15 @@ public class GestureHandlerOrchestrator {
           = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
   private final GestureHandler[] mAwaitingHandlers
           = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
+  private final GestureHandler[] mAwaitingForActivationHandlers
+          = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
   private final GestureHandler[] mPreparedHandlers
           = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
   private final GestureHandler[] mHandlersToCancel
           = new GestureHandler[SIMULTANEOUS_GESTURE_HANDLER_LIMIT];
   private int mGestureHandlersCount = 0;
   private int mAwaitingHandlersCount = 0;
+  private int mAwaitingForActivationHandlersCount = 0;
 
   private boolean mIsHandlingTouch = false;
   private int mHandlingChangeSemaphore = 0;
@@ -114,16 +119,30 @@ public class GestureHandlerOrchestrator {
     }
   }
 
+  private boolean hasOtherHandlersWaitingForActivation(GestureHandler handler) {
+    for (int i = 0; i < mGestureHandlersCount; i++) {
+      GestureHandler otherHandler = mGestureHandlers[i];
+      if (//(otherHandler.getState() != GestureHandler.STATE_ACTIVE && otherHandler.getState() != GestureHandler.STATE_END)
+              otherHandler != null &&
+              shouldHandlerWaitForOtherActivation(otherHandler, handler)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   private void cleanupFinishedHandlers() {
     boolean shouldCleanEmptyCells = false;
     for (int i = mGestureHandlersCount - 1; i >= 0; i--) {
       GestureHandler handler = mGestureHandlers[i];
-      if (isFinished(handler.getState()) && !handler.mIsAwaiting) {
+      if (isFinished(handler.getState()) && !handler.mIsAwaiting && !handler.mIsAwaitingForActivation) {
         mGestureHandlers[i] = null;
         shouldCleanEmptyCells = true;
         handler.reset();
         handler.mIsActive = false;
         handler.mIsAwaiting = false;
+        handler.mIsAwaitingForActivation = false;
         handler.mActivationIndex = Integer.MAX_VALUE;
       }
     }
@@ -150,11 +169,37 @@ public class GestureHandlerOrchestrator {
     return false;
   }
 
+  private boolean hasOtherHandlerToWaitForActivation(GestureHandler handler) {
+    for (int i = 0; i < mGestureHandlersCount; i++) {
+      GestureHandler otherHandler = mGestureHandlers[i];
+      if ((otherHandler.getState() != GestureHandler.STATE_ACTIVE && otherHandler.getState() != GestureHandler.STATE_END) &&
+               shouldHandlerWaitForOtherActivation(handler, otherHandler)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   private void tryActivate(GestureHandler handler) {
+    if (handler instanceof PanGestureHandler) {
+      Log.w("A", (SystemClock.uptimeMillis() - handler.mPreviousActivated)+" ");
+    }
     // see if there is anyone else who we need to wait for
     if (hasOtherHandlerToWaitFor(handler)) {
       addAwaitingHandler(handler);
-    } else {
+      if (handler instanceof PanGestureHandler) {
+        Log.w("A1", (SystemClock.uptimeMillis() - handler.mPreviousActivated)+" ");
+      }
+    } else if (hasOtherHandlerToWaitForActivation(handler) && !(SystemClock.uptimeMillis() - handler.mPreviousActivated < 1000)) {
+      addAwaitingForActivationHandler(handler);
+      if (handler instanceof PanGestureHandler) {
+        Log.w("A2", (SystemClock.uptimeMillis() - handler.mPreviousActivated)+" ");
+      }
+    } else if (!handler.shouldWaitForAnyHandlerActivation() || SystemClock.uptimeMillis() - handler.mPreviousActivated < 1000) {
+      if (handler instanceof PanGestureHandler) {
+        Log.w("A3", (SystemClock.uptimeMillis() - handler.mPreviousActivated)+" ");
+      }
       // we can activate handler right away
       makeActive(handler);
       handler.mIsAwaiting = false;
@@ -169,6 +214,14 @@ public class GestureHandlerOrchestrator {
       }
     }
     mAwaitingHandlersCount = out;
+
+    out = 0;
+    for (int i = 0; i < mAwaitingForActivationHandlersCount; i++) {
+      if (mAwaitingForActivationHandlers[i].mIsAwaitingForActivation) {
+        mAwaitingForActivationHandlers[out++] = mAwaitingForActivationHandlers[i];
+      }
+    }
+    mAwaitingForActivationHandlersCount = out;
   }
 
   /*package*/ void onHandlerStateChange(GestureHandler handler, int newState, int prevState) {
@@ -188,8 +241,35 @@ public class GestureHandlerOrchestrator {
           }
         }
       }
+
+      handler.mPreviousActivated = 0;
+
+      if (newState != GestureHandler.STATE_END) {
+        for (int i = 0; i < mAwaitingForActivationHandlersCount; i++) {
+          GestureHandler otherHandler = mAwaitingForActivationHandlers[i];
+          if (shouldHandlerWaitForOtherActivation(otherHandler, handler)) {
+            otherHandler.cancel();
+            otherHandler.mIsAwaitingForActivation = false;
+          }
+        }
+      }
+
+      if (prevState == GestureHandler.STATE_ACTIVE) {
+        for (int i = 0; i < mAwaitingForActivationHandlersCount; i++) {
+          GestureHandler otherHandler = mAwaitingForActivationHandlers[i];
+          if (shouldHandlerWaitForOtherActivation(otherHandler, handler)) {
+            tryActivate(otherHandler);
+          }
+        }
+      }
+
       cleanupAwaitingHandlers();
     }
+
+    if (handler instanceof PinchGestureHandler) {
+      Log.w("A", prevState+" "+newState+" "+handler.mIsActive+" "+(SystemClock.uptimeMillis() - handler.mPreviousActivated));
+    }
+
     if (newState == GestureHandler.STATE_ACTIVE) {
       tryActivate(handler);
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
@@ -232,6 +312,14 @@ public class GestureHandlerOrchestrator {
       }
     }
     cleanupAwaitingHandlers();
+
+
+    for (int i = 0; i < mGestureHandlersCount; i++) {
+      GestureHandler otherHandler = mGestureHandlers[i];
+      if (shouldHandlerWaitForOtherActivation(otherHandler, handler)) {
+        otherHandler.mPreviousActivated = SystemClock.uptimeMillis();
+      }
+    }
 
     // Dispatch state change event if handler is no longer in the active state we should also
     // trigger END state change and UNDETERMINED state change if necessary
@@ -360,6 +448,20 @@ public class GestureHandlerOrchestrator {
     }
     mAwaitingHandlers[mAwaitingHandlersCount++] = handler;
     handler.mIsAwaiting = true;
+    handler.mActivationIndex = mActivationIndex++;
+  }
+
+  private void addAwaitingForActivationHandler(GestureHandler handler) {
+    for (int i = 0; i < mAwaitingForActivationHandlersCount; i++) {
+      if (mAwaitingForActivationHandlers[i] == handler) {
+        return;
+      }
+    }
+    if (mAwaitingForActivationHandlersCount >= mAwaitingHandlers.length) {
+      throw new IllegalStateException("Too many recognizers");
+    }
+    mAwaitingForActivationHandlers[mAwaitingForActivationHandlersCount++] = handler;
+    handler.mIsAwaitingForActivation = true;
     handler.mActivationIndex = mActivationIndex++;
   }
 
@@ -510,6 +612,10 @@ public class GestureHandlerOrchestrator {
   private static boolean shouldHandlerWaitForOther(GestureHandler handler, GestureHandler other) {
     return handler != other && (handler.shouldWaitForHandlerFailure(other)
             || other.shouldRequireToWaitForFailure(handler));
+  }
+
+  private static boolean shouldHandlerWaitForOtherActivation(GestureHandler handler, GestureHandler other) {
+    return handler != other && handler.shouldWaitForHandlerActivation(other);
   }
 
   private static boolean canRunSimultaneously(GestureHandler a, GestureHandler b) {
