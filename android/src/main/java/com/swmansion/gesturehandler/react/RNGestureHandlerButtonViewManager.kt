@@ -109,14 +109,17 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     }
 
     private fun applyRippleEffectWhenNeeded(selectable: Drawable): Drawable {
+      val rippleColor = rippleColor
       if (rippleColor != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && selectable is RippleDrawable) {
         val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
-        val colors = intArrayOf(rippleColor!!)
+        val colors = intArrayOf(rippleColor)
         val colorStateList = ColorStateList(states, colors)
         selectable.setColor(colorStateList)
       }
+
+      val rippleRadius = rippleRadius
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && rippleRadius != null && selectable is RippleDrawable) {
-        selectable.radius = PixelUtil.toPixelFromDIP(rippleRadius!!.toFloat()).toInt()
+        selectable.radius = PixelUtil.toPixelFromDIP(rippleRadius.toFloat()).toInt()
       }
       return selectable
     }
