@@ -213,6 +213,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       return if (version >= 21) {
         resources.getDrawable(resolveOutValue.resourceId, context.theme)
       } else {
+        @Suppress("Deprecation")
         resources.getDrawable(resolveOutValue.resourceId)
       }
     }
