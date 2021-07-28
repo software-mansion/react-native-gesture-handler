@@ -164,8 +164,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     if (event.pointerCount != mTrackedPointersCount) {
       return true
     }
+
     for (i in mTrackedPointerIDs.indices) {
-      if (mTrackedPointerIDs[i] != -1 && mTrackedPointerIDs[i] != i) {
+      val trackedPointer = mTrackedPointerIDs[i]
+      if (trackedPointer != -1 && trackedPointer != i) {
         return true
       }
     }
