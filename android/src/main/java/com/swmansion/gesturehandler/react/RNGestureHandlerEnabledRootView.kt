@@ -15,14 +15,12 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
   constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    if (mGestureRootHelper != null) {
-      mGestureRootHelper!!.requestDisallowInterceptTouchEvent(disallowIntercept)
-    }
+    mGestureRootHelper?.requestDisallowInterceptTouchEvent(disallowIntercept)
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    return if (mGestureRootHelper != null && mGestureRootHelper!!.dispatchTouchEvent(ev)) {
+    return if (mGestureRootHelper?.dispatchTouchEvent(ev) == true) {
       true
     } else super.dispatchTouchEvent(ev)
   }
@@ -41,8 +39,8 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
   }
 
   fun tearDown() {
-    if (mGestureRootHelper != null) {
-      mGestureRootHelper!!.tearDown()
+    mGestureRootHelper?.let {
+      it.tearDown()
       mGestureRootHelper = null
     }
   }
@@ -50,7 +48,7 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
   override fun startReactApplication(
     reactInstanceManager: ReactInstanceManager,
     moduleName: String,
-    initialProperties: Bundle?
+    initialProperties: Bundle?,
   ) {
     super.startReactApplication(reactInstanceManager, moduleName, initialProperties)
     _reactInstanceManager = reactInstanceManager
