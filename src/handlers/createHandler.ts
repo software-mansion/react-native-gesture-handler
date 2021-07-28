@@ -690,6 +690,7 @@ export class Sequence {
 export class Gesture {
   constructor(config) {
     this.gestures = [];
+    this.ready = false;
 
     if (config) {
       this.config = config;
@@ -770,8 +771,9 @@ export class Gesture {
 let allowedProps = ['numberOfTaps', 'maxDist'];
 
 export function useGesture(gesture) {
-  const result = React.useRef(null);
-  if (!result.current) {
+  const result = React.useRef(gesture);
+
+  React.useEffect(() => {
     gesture.initialize();
     gesture.prepare();
 
@@ -826,10 +828,19 @@ export function useGesture(gesture) {
       });
     }
 
+    gesture.callback = result.current.callback;
     result.current = gesture;
-  } else {
-    gesture.prepare();
 
+    result.current.callback?.();
+
+    return () => {
+      for (const g of result.current.gestures) {
+        RNGestureHandlerModule.dropGestureHandler(g.handlerTag);
+      }
+    };
+  }, []);
+
+  if (result.current) {
     for (let i = 0; i < gesture.gestures.length; i++) {
       const gst = result.current.gestures[i];
       gst.config = gesture.gestures[i].config;
@@ -845,14 +856,6 @@ export function useGesture(gesture) {
     }
   }
 
-  React.useEffect(() => {
-    return () => {
-      //for (const g of result.current.gestures)
-      //RNGestureHandlerModule.dropGestureHandler(g.handlerTag);
-      //result.current = null;
-    };
-  }, []);
-
   return result;
 }
 
@@ -865,10 +868,20 @@ export class GestureMonitor extends React.Component {
 
   componentDidMount() {
     setImmediate(() => {
-      this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
+      if (this.props.gesture.current) {
+        if (this.props.gesture.current instanceof Gesture) {
+          this.props.gesture.current.callback = () => {
+            this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
+          };
+        }
+      } else if (this.props.gesture.gesture.current) {
+        if (this.props.gesture.gesture.current instanceof Gesture) {
+          this.props.gesture.gesture.current.callback = () => {
+            this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
+          };
+        }
+      }
     });
-
-    this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
   }
 
   componentDidUpdate() {
@@ -900,6 +913,7 @@ export class GestureMonitor extends React.Component {
     if (this.props.gesture.current) {
       if (this.props.gesture.current instanceof Gesture) {
         for (const gesture of this.props.gesture.current.gestures) {
+          console.log(gesture.handlerName + ' ' + gesture.handlerTag);
           RNGestureHandlerModule.attachGestureHandler(
             gesture.handlerTag,
             newViewTag
@@ -909,6 +923,7 @@ export class GestureMonitor extends React.Component {
     } else if (this.props.gesture.gesture.current) {
       if (this.props.gesture.gesture.current instanceof Gesture) {
         for (const gesture of this.props.gesture.gesture.current.gestures) {
+          console.log(gesture.handlerName + ' ' + gesture.handlerTag);
           RNGestureHandlerModule.attachGestureHandler(
             gesture.handlerTag,
             newViewTag
@@ -976,6 +991,7 @@ export class GestureMonitor extends React.Component {
 
     if (this.props.gesture.gesture) {
       gestureEventHandler = this.props.gesture.event;
+      gestureStateEventHandler = this.props.gesture.event;
     }
 
     //gestureEventHandler = this.props.gs;
@@ -983,7 +999,6 @@ export class GestureMonitor extends React.Component {
 
     const events = {
       onGestureHandlerEvent: gestureEventHandler,
-      onGestureHandlerStateChange: gestureStateEventHandler,
     };
 
     this.propsRef.current = events;

@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -9,6 +11,14 @@ import Animated, {
 import { useAnimatedGesture } from '../useAnimatedGesture';
 
 function Draggable() {
+  const [a, sa] = useState(1);
+
+  useEffect(() => {
+    setInterval(() => {
+      sa((a) => a + 1);
+    }, 1000);
+  }, []);
+
   const pressed = useSharedValue(false);
   const offsetX = useSharedValue(0);
   const offsetY = useSharedValue(0);
@@ -39,14 +49,18 @@ function Draggable() {
       onUpdate: (e) => {
         offsetX.value = e.translationX + startX.value;
         offsetY.value = e.translationY + startY.value;
+        console.log(a);
       },
     })
   );
 
   return (
-    <GestureMonitor gesture={gs}>
-      <Animated.View style={[styles.button, animatedStyles]} />
-    </GestureMonitor>
+    <View>
+      <Text>{a}</Text>
+      <GestureMonitor gesture={gs}>
+        <Animated.View style={[styles.button, animatedStyles]} />
+      </GestureMonitor>
+    </View>
   );
 }
 

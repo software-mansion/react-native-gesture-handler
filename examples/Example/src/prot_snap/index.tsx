@@ -49,18 +49,15 @@ export default function Home() {
     );
   }
 
-  const panGestureHandler = useGesture(
+  const panGestureHandler = useAnimatedGesture(
     new Gesture().pan({
       ref: panGestureRef,
       onUpdate: (e) => {
-        if (e && e.nativeEvent) {
-          filter.value =
-            filter.value +
-            (filterOffset.value - e.nativeEvent.translationX) * 0.01;
-          filterOffset.value = e.nativeEvent.translationX;
+        filter.value =
+          filter.value + (filterOffset.value - e.translationX) * 0.01;
+        filterOffset.value = e.translationX;
 
-          updateSelectedFilter();
-        }
+        updateSelectedFilter();
       },
       onEnd: () => {
         filterOffset.value = 0;
