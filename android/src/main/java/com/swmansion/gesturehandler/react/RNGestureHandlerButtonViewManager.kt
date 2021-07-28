@@ -86,24 +86,25 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       mNeedBackgroundUpdate = true
     }
 
-    override fun setBackgroundColor(color: Int) {
+    private inline fun withBackgroundUpdate(block: () -> Unit) {
+      block()
+      mNeedBackgroundUpdate = true
+    }
+
+    override fun setBackgroundColor(color: Int) = withBackgroundUpdate {
       mBackgroundColor = color
-      mNeedBackgroundUpdate = true
     }
 
-    fun setRippleColor(color: Int?) {
+    fun setRippleColor(color: Int?) = withBackgroundUpdate {
       mRippleColor = color
-      mNeedBackgroundUpdate = true
     }
 
-    fun setRippleRadius(radius: Int?) {
+    fun setRippleRadius(radius: Int?) = withBackgroundUpdate {
       mRippleRadius = radius
-      mNeedBackgroundUpdate = true
     }
 
-    fun setBorderRadius(borderRadius: Float) {
+    fun setBorderRadius(borderRadius: Float) = withBackgroundUpdate {
       mBorderRadius = borderRadius * resources.displayMetrics.density
-      mNeedBackgroundUpdate = true
     }
 
     private fun applyRippleEffectWhenNeeded(selectable: Drawable): Drawable {
@@ -159,6 +160,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
         return
       }
       mNeedBackgroundUpdate = false
+      
       if (mBackgroundColor == Color.TRANSPARENT) {
         // reset background
         background = null
@@ -199,9 +201,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       }
     }
 
-    fun setUseDrawableOnForeground(useForeground: Boolean) {
+    fun setUseDrawableOnForeground(useForeground: Boolean) = withBackgroundUpdate {
       mUseForeground = useForeground
-      mNeedBackgroundUpdate = true
     }
 
     fun setUseBorderlessDrawable(useBorderless: Boolean) {
@@ -255,6 +256,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       var sDummyClickListener = OnClickListener { }
       const val SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground"
       const val SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless"
+
       @TargetApi(Build.VERSION_CODES.LOLLIPOP)
       private fun getAttrId(context: Context, attr: String): Int {
         SoftAssertions.assertNotNull(attr)
