@@ -207,8 +207,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     while (index < size) {
       val origPointerId = event.getPointerId(index)
       if (mTrackedPointerIDs[origPointerId] != -1) {
-        event.getPointerProperties(index, sPointerProps!![count])
-        sPointerProps!![count]!!.id = mTrackedPointerIDs[origPointerId]
+        event.getPointerProperties(index, sPointerProps[count])
+        sPointerProps[count]!!.id = mTrackedPointerIDs[origPointerId]
         event.getPointerCoords(index, sPointerCoords[count])
         if (index == actionIndex) {
           action = action or (count shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
@@ -455,8 +455,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         sPointerProps = arrayOfNulls(MAX_POINTERS_COUNT)
         sPointerCoords = arrayOfNulls(MAX_POINTERS_COUNT)
       }
-      while (size > 0 && sPointerProps!![size - 1] == null) {
-        sPointerProps!![size - 1] = PointerProperties()
+      while (size > 0 && sPointerProps[size - 1] == null) {
+        sPointerProps[size - 1] = PointerProperties()
         sPointerCoords[size - 1] = PointerCoords()
         size--
       }
