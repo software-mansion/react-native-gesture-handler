@@ -23,6 +23,49 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
+  override fun getName(): String {
+    return "RNGestureHandlerButton"
+  }
+
+  public override fun createViewInstance(context: ThemedReactContext): ButtonViewGroup {
+    return ButtonViewGroup(context)
+  }
+
+  @TargetApi(Build.VERSION_CODES.M)
+  @ReactProp(name = "foreground")
+  fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
+    view.setUseDrawableOnForeground(useDrawableOnForeground)
+  }
+
+  @ReactProp(name = "borderless")
+  fun setBorderless(view: ButtonViewGroup, useBorderlessDrawable: Boolean) {
+    view.setUseBorderlessDrawable(useBorderlessDrawable)
+  }
+
+  @ReactProp(name = "enabled")
+  fun setEnabled(view: ButtonViewGroup, enabled: Boolean) {
+    view.isEnabled = enabled
+  }
+
+  @ReactProp(name = ViewProps.BORDER_RADIUS)
+  override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
+    view.setBorderRadius(borderRadius)
+  }
+
+  @ReactProp(name = "rippleColor")
+  fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
+    view.setRippleColor(rippleColor)
+  }
+
+  @ReactProp(name = "rippleRadius")
+  fun setRippleRadius(view: ButtonViewGroup, rippleRadius: Int?) {
+    view.setRippleRadius(rippleRadius)
+  }
+
+  override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
+    view.updateBackground()
+  }
+
   class ButtonViewGroup(context: Context?) : ViewGroup(context) {
     var mBackgroundColor = Color.TRANSPARENT
 
@@ -34,6 +77,15 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     var mBorderRadius = 0f
     var mNeedBackgroundUpdate = false
     var mLastEventTime: Long = 0
+    
+    init {
+      // we attach empty click listener to trigger tap sounds (see View#performClick())
+      setOnClickListener(sDummyClickListener)
+      isClickable = true
+      isFocusable = true
+      mNeedBackgroundUpdate = true
+    }
+
     override fun setBackgroundColor(color: Int) {
       mBackgroundColor = color
       mNeedBackgroundUpdate = true
@@ -215,57 +267,5 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
         }
       }
     }
-
-    init {
-
-      // we attach empty click listener to trigger tap sounds (see View#performClick())
-      setOnClickListener(sDummyClickListener)
-      isClickable = true
-      isFocusable = true
-      mNeedBackgroundUpdate = true
-    }
-  }
-
-  override fun getName(): String {
-    return "RNGestureHandlerButton"
-  }
-
-  public override fun createViewInstance(context: ThemedReactContext): ButtonViewGroup {
-    return ButtonViewGroup(context)
-  }
-
-  @TargetApi(Build.VERSION_CODES.M)
-  @ReactProp(name = "foreground")
-  fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
-    view.setUseDrawableOnForeground(useDrawableOnForeground)
-  }
-
-  @ReactProp(name = "borderless")
-  fun setBorderless(view: ButtonViewGroup, useBorderlessDrawable: Boolean) {
-    view.setUseBorderlessDrawable(useBorderlessDrawable)
-  }
-
-  @ReactProp(name = "enabled")
-  fun setEnabled(view: ButtonViewGroup, enabled: Boolean) {
-    view.isEnabled = enabled
-  }
-
-  @ReactProp(name = ViewProps.BORDER_RADIUS)
-  override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
-    view.setBorderRadius(borderRadius)
-  }
-
-  @ReactProp(name = "rippleColor")
-  fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
-    view.setRippleColor(rippleColor)
-  }
-
-  @ReactProp(name = "rippleRadius")
-  fun setRippleRadius(view: ButtonViewGroup, rippleRadius: Int?) {
-    view.setRippleRadius(rippleRadius)
-  }
-
-  override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
-    view.updateBackground()
   }
 }
