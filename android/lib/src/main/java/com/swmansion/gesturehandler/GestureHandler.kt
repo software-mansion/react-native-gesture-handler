@@ -7,7 +7,7 @@ import android.view.View
 import com.facebook.react.bridge.UiThreadUtil
 import java.util.*
 
-open class GestureHandler<T : GestureHandler<*>?> {
+open class GestureHandler<T : GestureHandler<T>> {
   private val mTrackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
   private var mTrackedPointersCount = 0
   var tag = 0
@@ -23,7 +23,7 @@ open class GestureHandler<T : GestureHandler<*>?> {
     private set
   var isEnabled = true
     private set
-  private var mHitSlop: FloatArray?
+  private var mHitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
     private set
   var lastAbsolutePositionX = 0f
@@ -440,11 +440,11 @@ open class GestureHandler<T : GestureHandler<*>?> {
     const val DIRECTION_UP = 4
     const val DIRECTION_DOWN = 8
     private const val MAX_POINTERS_COUNT = 12
-    private var sPointerProps: Array<PointerProperties?>?
-    private var sPointerCoords: Array<PointerCoords?>
+    private lateinit var sPointerProps: Array<PointerProperties?>
+    private lateinit var sPointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
       var size = size
-      if (sPointerProps == null) {
+      if (!::sPointerProps.isInitialized) {
         sPointerProps = arrayOfNulls(MAX_POINTERS_COUNT)
         sPointerCoords = arrayOfNulls(MAX_POINTERS_COUNT)
       }
