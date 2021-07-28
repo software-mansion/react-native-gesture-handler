@@ -39,6 +39,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   private var mListener: OnTouchEventListener<ConcreteGestureHandlerT>? = null
   private var mInteractionController: GestureHandlerInteractionController? = null
 
+  @Suppress("UNCHECKED_CAST")
+  protected fun self(): ConcreteGestureHandlerT = this as ConcreteGestureHandlerT
+
+  protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT =
+    self().apply { block() }
+
   /*package*/
   @JvmField
   var mActivationIndex // set and accessed only by the orchestrator
@@ -57,14 +63,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   /*package*/
   open fun dispatchStateChange(newState: Int, prevState: Int) {
     if (mListener != null) {
-      mListener!!.onStateChange(this as ConcreteGestureHandlerT, newState, prevState)
+      mListener!!.onStateChange(self(), newState, prevState)
     }
   }
 
   /*package*/
   open fun dispatchTouchEvent(event: MotionEvent?) {
     if (mListener != null) {
-      mListener!!.onTouchEvent(this as ConcreteGestureHandlerT, event)
+      mListener!!.onTouchEvent(self(), event)
     }
   }
 
@@ -83,22 +89,20 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return false
   }
 
-  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT {
+  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean) = applySelf {
     mShouldCancelWhenOutside = shouldCancelWhenOutside
-    return this as ConcreteGestureHandlerT
   }
 
-  fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT {
+  fun setEnabled(enabled: Boolean) = applySelf {
     if (view != null) {
       // If view is set then handler is in "active" state. In that case we want to "cancel" handler
       // when it changes enabled state so that it gets cleared from the orchestrator
       UiThreadUtil.runOnUiThread { cancel() }
     }
     isEnabled = enabled
-    return this as ConcreteGestureHandlerT
   }
 
-  fun setHitSlop(leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float, width: Float, height: Float): ConcreteGestureHandlerT {
+  fun setHitSlop(leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float, width: Float, height: Float) = applySelf {
     if (mHitSlop == null) {
       mHitSlop = FloatArray(6)
     }
@@ -112,16 +116,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     require(!(hitSlopSet(width) && !hitSlopSet(leftPad) && !hitSlopSet(rightPad))) { "When width is set one of left or right pads need to be defined" }
     require(!(hitSlopSet(height) && hitSlopSet(bottomPad) && hitSlopSet(topPad))) { "Cannot have all of top, bottom and height defined" }
     require(!(hitSlopSet(height) && !hitSlopSet(bottomPad) && !hitSlopSet(topPad))) { "When height is set one of top or bottom pads need to be defined" }
-    return this as ConcreteGestureHandlerT
   }
 
   fun setHitSlop(padding: Float): ConcreteGestureHandlerT {
     return setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
   }
 
-  fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT {
+  fun setInteractionController(controller: GestureHandlerInteractionController?) = applySelf {
     mInteractionController = controller
-    return this as ConcreteGestureHandlerT
   }
 
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
