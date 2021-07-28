@@ -59,11 +59,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   @JvmField
   var mIsAwaiting = false
 
-  fun dispatchStateChange(newState: Int, prevState: Int) {
+  open fun dispatchStateChange(newState: Int, prevState: Int) {
     mListener?.onStateChange(self(), newState, prevState)
   }
 
-  fun dispatchTouchEvent(event: MotionEvent?) {
+  open fun dispatchTouchEvent(event: MotionEvent?) {
     mListener?.onTouchEvent(self(), event)
   }
 

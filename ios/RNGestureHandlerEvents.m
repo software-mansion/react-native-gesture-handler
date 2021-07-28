@@ -25,6 +25,22 @@
                            @"numberOfPointers": @(numberOfTouches)}];
 }
 
++ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
+                           withAbsolutePosition:(CGPoint)absolutePosition
+                            withNumberOfTouches:(NSUInteger)numberOfTouches
+                                   withDuration:(NSUInteger)duration
+{
+    return [[RNGestureHandlerEventExtraData alloc]
+            initWithData:@{
+                           @"x": @(position.x),
+                           @"y": @(position.y),
+                           @"absoluteX": @(absolutePosition.x),
+                           @"absoluteY": @(absolutePosition.y),
+                           @"numberOfPointers": @(numberOfTouches),
+                           @"duration":@(duration)
+            }];
+}
+
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation

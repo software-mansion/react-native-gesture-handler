@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler
 
 import android.content.Context
 import android.os.Handler
+import android.os.SystemClock
 import android.view.MotionEvent
 
 class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestureHandler>() {
@@ -11,6 +12,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   private var mStartX = 0f
   private var mStartY = 0f
   private var mHandler: Handler? = null
+  private var mStartTime = 0L
+  private var mPreviousTime = 0L
 
   init {
     setShouldCancelWhenOutside(true)
@@ -75,6 +78,20 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       it.removeCallbacksAndMessages(null)
       mHandler = null
     }
+  }
+
+  override fun dispatchStateChange(newState: Int, prevState: Int) {
+    mPreviousTime = SystemClock.uptimeMillis()
+    super.dispatchStateChange(newState, prevState)
+  }
+
+  override fun dispatchTouchEvent(event: MotionEvent?) {
+    mPreviousTime = SystemClock.uptimeMillis()
+    super.dispatchTouchEvent(event)
+  }
+
+  fun getDuration(): Int {
+    return (mPreviousTime - mStartTime).toInt()
   }
 
   companion object {

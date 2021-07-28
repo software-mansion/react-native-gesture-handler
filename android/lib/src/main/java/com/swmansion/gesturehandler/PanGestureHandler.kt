@@ -240,7 +240,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     }
 
     if (action == MotionEvent.ACTION_UP) {
-      if (state == STATE_ACTIVE || state == STATE_BEGAN) {
+      if (state == STATE_ACTIVE) {
         end()
       } else {
         fail()

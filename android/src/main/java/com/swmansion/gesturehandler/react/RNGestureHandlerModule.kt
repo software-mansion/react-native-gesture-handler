@@ -127,6 +127,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
         putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
         putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
         putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+        putInt("duration", handler.getDuration());
       }
     }
   }
