@@ -240,15 +240,17 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     }
 
     override fun dispatchDrawableHotspotChanged(x: Float, y: Float) {
+      // No-op
       // by default Viewgroup would pass hotspot change events
     }
 
     companion object {
+      const val SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground"
+      const val SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless"
+
       var resolveOutValue = TypedValue()
       var responder: ButtonViewGroup? = null
       var dummyClickListener = OnClickListener { }
-      const val SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground"
-      const val SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless"
 
       @TargetApi(Build.VERSION_CODES.LOLLIPOP)
       private fun getAttrId(context: Context, attr: String): Int {
