@@ -182,24 +182,12 @@ public class GestureHandlerOrchestrator {
   }
 
   private void tryActivate(GestureHandler handler) {
-    if (handler instanceof PanGestureHandler) {
-      Log.w("A", (SystemClock.uptimeMillis() - handler.mPreviousActivated)+" ");
-    }
     // see if there is anyone else who we need to wait for
     if (hasOtherHandlerToWaitFor(handler)) {
       addAwaitingHandler(handler);
-      if (handler instanceof PanGestureHandler) {
-        Log.w("A1", (SystemClock.uptimeMillis() - handler.mPreviousActivated)+" ");
-      }
     } else if (hasOtherHandlerToWaitForActivation(handler) && !(SystemClock.uptimeMillis() - handler.mPreviousActivated < 1000)) {
       addAwaitingForActivationHandler(handler);
-      if (handler instanceof PanGestureHandler) {
-        Log.w("A2", (SystemClock.uptimeMillis() - handler.mPreviousActivated)+" ");
-      }
     } else if (!handler.shouldWaitForAnyHandlerActivation() || SystemClock.uptimeMillis() - handler.mPreviousActivated < 1000) {
-      if (handler instanceof PanGestureHandler) {
-        Log.w("A3", (SystemClock.uptimeMillis() - handler.mPreviousActivated)+" ");
-      }
       // we can activate handler right away
       makeActive(handler);
       handler.mIsAwaiting = false;
@@ -264,10 +252,6 @@ public class GestureHandlerOrchestrator {
       }
 
       cleanupAwaitingHandlers();
-    }
-
-    if (handler instanceof PinchGestureHandler) {
-      Log.w("A", prevState+" "+newState+" "+handler.mIsActive+" "+(SystemClock.uptimeMillis() - handler.mPreviousActivated));
     }
 
     if (newState == GestureHandler.STATE_ACTIVE) {
@@ -631,6 +615,9 @@ public class GestureHandlerOrchestrator {
     if (canRunSimultaneously(handler, other)) {
       // if handlers are allowed to run simultaneously, when first activates second can still remain
       // in began state
+      return false;
+    }
+    if (shouldHandlerWaitForOtherActivation(handler, other)) {
       return false;
     }
     if (handler != other &&

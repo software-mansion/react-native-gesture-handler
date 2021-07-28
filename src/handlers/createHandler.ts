@@ -687,42 +687,169 @@ export class Sequence {
   }
 }
 
+export class Gesture {
+  constructor(config) {
+    this.gestures = [];
+
+    if (config) {
+      this.config = config;
+    } else {
+      this.config = {};
+    }
+  }
+
+  tap(config) {
+    this.gestures.push(new Tap(config));
+
+    return this;
+  }
+
+  longPress(config) {
+    this.gestures.push(new LongPress(config));
+
+    return this;
+  }
+
+  pan(config) {
+    this.gestures.push(new Pan(config));
+
+    return this;
+  }
+
+  rotation(config) {
+    this.gestures.push(new Rotation(config));
+
+    return this;
+  }
+
+  pinch(config) {
+    this.gestures.push(new Pinch(config));
+
+    return this;
+  }
+
+  fling(config) {
+    this.gestures.push(new Fling(config));
+
+    return this;
+  }
+
+  initialize() {
+    for (const gesture of this.gestures) {
+      gesture.handlerTag = handlerTag++;
+
+      if (gesture.config.ref) {
+        gesture.config.ref.current = gesture.handlerTag;
+      }
+    }
+  }
+
+  prepare() {
+    for (const gesture of this.gestures) {
+      if (
+        gesture.config.requireToFail &&
+        !Array.isArray(gesture.config.requireToFail)
+      ) {
+        gesture.config.requireToFail = [gesture.config.requireToFail];
+      }
+
+      if (gesture.config.after && !Array.isArray(gesture.config.after)) {
+        gesture.config.after = [gesture.config.after];
+      }
+
+      if (
+        gesture.config.simultaneousWith &&
+        !Array.isArray(gesture.config.simultaneousWith)
+      ) {
+        gesture.config.simultaneousWith = [gesture.config.simultaneousWith];
+      }
+    }
+  }
+}
+
+let allowedProps = ['numberOfTaps', 'maxDist'];
+
 export function useGesture(gesture) {
   const result = React.useRef(null);
+  if (!result.current) {
+    gesture.initialize();
+    gesture.prepare();
 
-  if (
-    gesture instanceof Simultaneous ||
-    gesture instanceof Sequence ||
-    gesture instanceof Exclusive
-  ) {
-    if (!result.current) {
-      result.current = gesture.prepare();
-    } else {
-      gesture.update(result);
-    }
-  } else {
-    if (!result.current) {
-      gesture.handlerTag = handlerTag++;
+    for (const gst of gesture.gestures) {
       RNGestureHandlerModule.createGestureHandler(
-        gesture.handlerName,
-        gesture.handlerTag,
-        {} //gesture.config
+        gst.handlerName,
+        gst.handlerTag,
+        filterConfig(gst.config, allowedProps, {})
       );
 
-      result.current = [gesture];
-    } else {
-      result.current[0].config = gesture.config;
+      setImmediate(() => {
+        let requireToFail = [];
+        if (gst.config.requireToFail) {
+          requireToFail = gst.config.requireToFail.map((ref) => {
+            return ref.current;
+          });
+        }
+
+        let after = [];
+        if (gst.config.after) {
+          after = gst.config.after.map((ref) => {
+            return ref.current;
+          });
+        }
+
+        let simultaneousWith = [];
+        if (gst.config.simultaneousWith) {
+          simultaneousWith = gst.config.simultaneousWith.map((ref) => {
+            return ref.current;
+          });
+        }
+
+        if (result.current.config.simultaneous) {
+          simultaneousWith = [
+            ...simultaneousWith,
+            ...result.current.gestures.map((g) => g.handlerTag),
+          ];
+        }
+
+        gst.requireToFail = requireToFail;
+        gst.after = after;
+        gst.simultaneousWith = simultaneousWith;
+
+        RNGestureHandlerModule.updateGestureHandler(
+          gst.handlerTag,
+          filterConfig(gst.config, allowedProps, {
+            waitFor: requireToFail,
+            after: after,
+            simultaneousHandlers: simultaneousWith,
+          })
+        );
+      });
+    }
+
+    result.current = gesture;
+  } else {
+    gesture.prepare();
+
+    for (let i = 0; i < gesture.gestures.length; i++) {
+      const gst = result.current.gestures[i];
+      gst.config = gesture.gestures[i].config;
+
       RNGestureHandlerModule.updateGestureHandler(
-        result.current[0].handlerTag,
-        gesture.config
+        gst.handlerTag,
+        filterConfig(gst.config, allowedProps, {
+          waitFor: gst.requireToFail,
+          after: gst.after,
+          simultaneousHandlers: gst.simultaneousWith,
+        })
       );
     }
   }
 
   React.useEffect(() => {
     return () => {
-      for (const g of result.current)
-        RNGestureHandlerModule.dropGestureHandler(g.handlerTag);
+      //for (const g of result.current.gestures)
+      //RNGestureHandlerModule.dropGestureHandler(g.handlerTag);
+      //result.current = null;
     };
   }, []);
 
@@ -770,23 +897,36 @@ export class GestureMonitor extends React.Component {
 
   attachGestureHandlers(newViewTag) {
     this.viewTag = newViewTag;
-
     if (this.props.gesture.current) {
-      for (const gesture of this.props.gesture.current) {
-        RNGestureHandlerModule.attachGestureHandler(
-          gesture.handlerTag,
-          newViewTag
-        );
+      if (this.props.gesture.current instanceof Gesture) {
+        for (const gesture of this.props.gesture.current.gestures) {
+          RNGestureHandlerModule.attachGestureHandler(
+            gesture.handlerTag,
+            newViewTag
+          );
+        }
+      }
+    } else if (this.props.gesture.gesture.current) {
+      if (this.props.gesture.gesture.current instanceof Gesture) {
+        for (const gesture of this.props.gesture.gesture.current.gestures) {
+          RNGestureHandlerModule.attachGestureHandler(
+            gesture.handlerTag,
+            newViewTag
+          );
+        }
       }
     }
   }
 
   private onGestureHandlerEvent = (event: GestureEvent<U>) => {
     let handled = false;
-    if (Array.isArray(this.props.gesture.current)) {
-      for (const gesture of this.props.gesture.current) {
+    if (
+      this.props.gesture.current &&
+      Array.isArray(this.props.gesture.current.gestures)
+    ) {
+      for (const gesture of this.props.gesture.current.gestures) {
         if (gesture.handlerTag === event.nativeEvent.handlerTag) {
-          gesture.onUpdate?.(event, this.viewTag);
+          gesture.config.onUpdate?.(event);
           handled = true;
           break;
         }
@@ -801,10 +941,24 @@ export class GestureMonitor extends React.Component {
   // TODO(TS) - make sure this is right type for event
   private onGestureHandlerStateChange = (event: HandlerStateChangeEvent<U>) => {
     let handled = false;
-    if (Array.isArray(this.props.gesture.current)) {
-      for (const gesture of this.props.gesture.current) {
+    if (
+      this.props.gesture.current &&
+      Array.isArray(this.props.gesture.current.gestures)
+    ) {
+      for (const gesture of this.props.gesture.current.gestures) {
         if (gesture.handlerTag === event.nativeEvent.handlerTag) {
-          gesture.onUpdate?.(event, this.viewTag);
+          if (event.nativeEvent.oldState == 2 && event.nativeEvent.state == 4) {
+            gesture.config.onStart?.(event);
+          } else if (
+            event.nativeEvent.oldState == 4 &&
+            event.nativeEvent.state == 5
+          ) {
+            gesture.config.onEnd?.(event);
+          } else if (event.nativeEvent.state == 1) {
+            gesture.config.onFail?.(event);
+          } else if (event.nativeEvent.state == 3) {
+            gesture.config.onCancel?.(event);
+          }
           handled = true;
           break;
         }
@@ -820,6 +974,10 @@ export class GestureMonitor extends React.Component {
     let gestureEventHandler = this.onGestureHandlerEvent;
     let gestureStateEventHandler = this.onGestureHandlerStateChange;
 
+    if (this.props.gesture.gesture) {
+      gestureEventHandler = this.props.gesture.event;
+    }
+
     //gestureEventHandler = this.props.gs;
     //gestureStateEventHandler = this.props.gs;
 
@@ -827,21 +985,6 @@ export class GestureMonitor extends React.Component {
       onGestureHandlerEvent: gestureEventHandler,
       onGestureHandlerStateChange: gestureStateEventHandler,
     };
-
-    events['animatedEvent'] = this.props.animated;
-
-    if (this.props.gesture.current) {
-      for (const gs of this.props.gesture.current) {
-        if (gs.config.onUpdate && typeof gs.config.onUpdate !== 'function') {
-          events[gs.eventName] = gs.config.onUpdate;
-        } else if (
-          gs.originalUpdate &&
-          typeof gs.originalUpdate !== 'function'
-        ) {
-          events[gs.eventName] = gs.originalUpdate;
-        }
-      }
-    }
 
     this.propsRef.current = events;
 

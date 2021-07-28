@@ -47,6 +47,7 @@ export {
   Rotation,
   Fling,
   LongPress,
+  Gesture,
 } from './handlers/createHandler';
 export type {
   NativeViewGestureHandlerPayload,
