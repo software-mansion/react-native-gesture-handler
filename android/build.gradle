@@ -1,7 +1,12 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+repositories {
+    mavenCentral()
 }
 
 android {
@@ -14,7 +19,7 @@ android {
         versionName "1.0"
     }
 
-    // Include "lib/" as sources, unfortunetely react-native link can't handle
+    // Include "lib/" as sources, unfortunately react-native link can't handle
     // setting up alternative gradle modules. We still have "lib" defined as a
     // standalone gradle module just to be used in AndroidNativeExample
     sourceSets {
@@ -26,4 +31,6 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation "androidx.core:core-ktx:1.6.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
