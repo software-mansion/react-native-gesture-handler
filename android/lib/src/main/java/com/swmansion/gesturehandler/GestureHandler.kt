@@ -59,18 +59,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   @JvmField
   var mIsAwaiting = false
 
-  /*package*/
   open fun dispatchStateChange(newState: Int, prevState: Int) {
-    if (mListener != null) {
-      mListener!!.onStateChange(self(), newState, prevState)
-    }
+    mListener?.onStateChange(self(), newState, prevState)
   }
 
-  /*package*/
   open fun dispatchTouchEvent(event: MotionEvent?) {
-    if (mListener != null) {
-      mListener!!.onTouchEvent(self(), event)
-    }
+    mListener?.onTouchEvent(self(), event)
   }
 
   open fun resetConfig() {
@@ -298,33 +292,35 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
-    return if (handler !== this && mInteractionController != null) {
-      mInteractionController!!.shouldRequireHandlerToWaitForFailure(this, handler)
-    } else false
+    if (handler === this) {
+      return false
+    }
+
+    return mInteractionController?.shouldRequireHandlerToWaitForFailure(this, handler) ?: false
   }
 
   fun shouldWaitForHandlerFailure(handler: GestureHandler<*>): Boolean {
-    return if (handler !== this && mInteractionController != null) {
-      mInteractionController!!.shouldWaitForHandlerFailure(this, handler)
-    } else false
+    if (handler === this) {
+      return false
+    }
+
+    return mInteractionController?.shouldWaitForHandlerFailure(this, handler) ?: false
   }
 
   open fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
     if (handler === this) {
       return true
     }
-    return if (mInteractionController != null) {
-      mInteractionController!!.shouldRecognizeSimultaneously(this, handler)
-    } else false
+
+    return mInteractionController?.shouldRecognizeSimultaneously(this, handler) ?: false
   }
 
   open fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
     if (handler === this) {
       return false
     }
-    return if (mInteractionController != null) {
-      mInteractionController!!.shouldHandlerBeCancelledBy(this, handler)
-    } else false
+
+    return mInteractionController?.shouldHandlerBeCancelledBy(this, handler) ?: false
   }
 
   fun isWithinBounds(view: View?, posX: Float, posY: Float): Boolean {
