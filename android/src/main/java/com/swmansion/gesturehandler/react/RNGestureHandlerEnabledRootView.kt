@@ -9,18 +9,18 @@ import com.facebook.react.ReactRootView
 
 class RNGestureHandlerEnabledRootView : ReactRootView {
   private lateinit var _reactInstanceManager: ReactInstanceManager
-  private var mGestureRootHelper: RNGestureHandlerRootHelper? = null
+  private var gestureRootHelper: RNGestureHandlerRootHelper? = null
 
   constructor(context: Context?) : super(context) {}
   constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    mGestureRootHelper?.requestDisallowInterceptTouchEvent(disallowIntercept)
+    gestureRootHelper?.requestDisallowInterceptTouchEvent(disallowIntercept)
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    return if (mGestureRootHelper?.dispatchTouchEvent(ev) == true) {
+    return if (gestureRootHelper?.dispatchTouchEvent(ev) == true) {
       true
     } else super.dispatchTouchEvent(ev)
   }
@@ -33,15 +33,15 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
    * default RN behavior.
    */
   fun initialize() {
-    check(mGestureRootHelper == null) { "GestureHandler already initialized for root view $this" }
-    mGestureRootHelper = RNGestureHandlerRootHelper(
+    check(gestureRootHelper == null) { "GestureHandler already initialized for root view $this" }
+    gestureRootHelper = RNGestureHandlerRootHelper(
       _reactInstanceManager.currentReactContext, this)
   }
 
   fun tearDown() {
-    mGestureRootHelper?.let {
+    gestureRootHelper?.let {
       it.tearDown()
-      mGestureRootHelper = null
+      gestureRootHelper = null
     }
   }
 
