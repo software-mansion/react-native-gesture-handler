@@ -23,13 +23,9 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
-  override fun getName(): String {
-    return "RNGestureHandlerButton"
-  }
+  override fun getName() = "RNGestureHandlerButton"
 
-  public override fun createViewInstance(context: ThemedReactContext): ButtonViewGroup {
-    return ButtonViewGroup(context)
-  }
+  public override fun createViewInstance(context: ThemedReactContext) = ButtonViewGroup(context)
 
   @TargetApi(Build.VERSION_CODES.M)
   @ReactProp(name = "foreground")
@@ -112,8 +108,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     private fun applyRippleEffectWhenNeeded(selectable: Drawable): Drawable {
       val rippleColor = rippleColor
       if (rippleColor != null
-          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-          && selectable is RippleDrawable) {
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+        && selectable is RippleDrawable) {
         val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
         val colors = intArrayOf(rippleColor)
         val colorStateList = ColorStateList(states, colors)
@@ -122,8 +118,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
 
       val rippleRadius = rippleRadius
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-          && rippleRadius != null
-          && selectable is RippleDrawable) {
+        && rippleRadius != null
+        && selectable is RippleDrawable) {
         selectable.radius = PixelUtil.toPixelFromDIP(rippleRadius.toFloat()).toInt()
       }
       return selectable
@@ -198,7 +194,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
           // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
           colorDrawable.setCornerRadius(borderRadius)
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-              && selectable is RippleDrawable) {
+            && selectable is RippleDrawable) {
             val mask = PaintDrawable(Color.WHITE)
             mask.setCornerRadius(borderRadius)
             selectable.setDrawableByLayerId(android.R.id.mask, mask)
@@ -213,10 +209,10 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     private fun createSelectableDrawable(): Drawable {
       val version = Build.VERSION.SDK_INT
       val identifier =
-          if (useBorderlessDrawable
-              && version >= Build.VERSION_CODES.LOLLIPOP) {
-            SELECTABLE_ITEM_BACKGROUND_BORDERLESS
-          } else SELECTABLE_ITEM_BACKGROUND
+        if (useBorderlessDrawable
+          && version >= Build.VERSION_CODES.LOLLIPOP) {
+          SELECTABLE_ITEM_BACKGROUND_BORDERLESS
+        } else SELECTABLE_ITEM_BACKGROUND
 
       val attrID = getAttrId(context, identifier)
       context.theme.resolveAttribute(attrID, resolveOutValue, true)

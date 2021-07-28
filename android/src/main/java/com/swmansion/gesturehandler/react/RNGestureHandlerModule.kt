@@ -95,10 +95,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
     override fun extractEventData(handler: TapGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+      eventData.apply {
+        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
+        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+      }
     }
   }
 
@@ -120,10 +122,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
     override fun extractEventData(handler: LongPressGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+      eventData.apply {
+        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
+        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+      }
     }
   }
 
@@ -203,14 +207,16 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
     override fun extractEventData(handler: PanGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
-      eventData.putDouble("translationX", PixelUtil.toDIPFromPixel(handler.translationX).toDouble())
-      eventData.putDouble("translationY", PixelUtil.toDIPFromPixel(handler.translationY).toDouble())
-      eventData.putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.velocityX).toDouble())
-      eventData.putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.velocityY).toDouble())
+      eventData.apply {
+        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
+        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+        putDouble("translationX", PixelUtil.toDIPFromPixel(handler.translationX).toDouble())
+        putDouble("translationY", PixelUtil.toDIPFromPixel(handler.translationY).toDouble())
+        putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.velocityX).toDouble())
+        putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.velocityY).toDouble())
+      }
     }
   }
 
@@ -222,10 +228,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
     override fun extractEventData(handler: PinchGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData.putDouble("scale", handler.scale)
-      eventData.putDouble("focalX", PixelUtil.toDIPFromPixel(handler.focalPointX).toDouble())
-      eventData.putDouble("focalY", PixelUtil.toDIPFromPixel(handler.focalPointY).toDouble())
-      eventData.putDouble("velocity", handler.velocity)
+      eventData.apply {
+        putDouble("scale", handler.scale)
+        putDouble("focalX", PixelUtil.toDIPFromPixel(handler.focalPointX).toDouble())
+        putDouble("focalY", PixelUtil.toDIPFromPixel(handler.focalPointY).toDouble())
+        putDouble("velocity", handler.velocity)
+      }
     }
   }
 
@@ -247,10 +255,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
     override fun extractEventData(handler: FlingGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData.putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+      eventData.apply {
+        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
+        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+      }
     }
   }
 
@@ -262,10 +272,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
     override fun extractEventData(handler: RotationGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData.putDouble("rotation", handler.rotation)
-      eventData.putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.anchorX).toDouble())
-      eventData.putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.anchorY).toDouble())
-      eventData.putDouble("velocity", handler.velocity)
+      eventData.apply {
+        putDouble("rotation", handler.rotation)
+        putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.anchorX).toDouble())
+        putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.anchorY).toDouble())
+        putDouble("velocity", handler.velocity)
+      }
     }
   }
 
@@ -291,9 +303,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   private val mInteractionManager = RNGestureHandlerInteractionManager()
   private val mRoots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val mEnqueuedRootViewInit: MutableList<Int> = ArrayList()
-  override fun getName(): String {
-    return MODULE_NAME
-  }
+  override fun getName() = MODULE_NAME
 
   @ReactMethod
   @Suppress("UNCHECKED_CAST")
@@ -304,12 +314,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   ) {
     for (i in mHandlerFactories.indices) {
       val handlerFactory = mHandlerFactories[i] as HandlerFactory<T>
-      if ((handlerFactory.name == handlerName)) {
-        val handler = handlerFactory.create(reactApplicationContext)
-        handler.tag = handlerTag
-        handler.setOnTouchEventListener(mEventListener)
-        registry.registerHandler(handler)
-        mInteractionManager.configureInteractions(handler, config)
+      if (handlerFactory.name == handlerName) {
+        val handler = handlerFactory.create(reactApplicationContext).apply {
+          tag = handlerTag
+          setOnTouchEventListener(mEventListener)
+          registry.registerHandler(this)
+          mInteractionManager.configureInteractions(this, config)
+        }
         handlerFactory.configure(handler, config)
         return
       }
@@ -359,6 +370,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
   @ReactMethod
   fun handleClearJSResponder() {
+    // ?
   }
 
   override fun getConstants(): Map<String, Any> {
@@ -399,16 +411,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private fun tryInitializeHandlerForReactRootView(ancestorViewTag: Int) {
-    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)
-    val rootViewTag = uiManager!!.resolveRootTagFromReactTag(ancestorViewTag)
+    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)!!
+    val rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag)
     if (rootViewTag < 1) {
-      throw JSApplicationIllegalArgumentException(("Could find root view for a given ancestor with tag "
-        + ancestorViewTag))
+      throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
     }
     synchronized(mRoots) {
-      for (i in mRoots.indices) {
-        val root: RNGestureHandlerRootHelper = mRoots[i]
-        val rootView: ViewGroup = root.rootView
+      for (root in mRoots) {
+        val rootView = root.rootView
         if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           // we have found root helper registered for a given react root, we don't need to
           // initialize a new one then
@@ -425,7 +435,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
     // root helper for a given root tag has not been found, we may wat to check if the root view is
     // an instance of RNGestureHandlerEnabledRootView and then initialize gesture handler with it
-    uiManager.addUIBlock(UIBlock { nativeViewHierarchyManager ->
+    uiManager.addUIBlock { nativeViewHierarchyManager ->
       val view = nativeViewHierarchyManager.resolveView(rootViewTag)
       if (view is RNGestureHandlerEnabledRootView) {
         view.initialize()
@@ -435,7 +445,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
         // FIXME: check and warn about gestureHandlerRootHOC
       }
       synchronized(mEnqueuedRootViewInit) { mEnqueuedRootViewInit.remove(rootViewTag) }
-    })
+    }
   }
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
@@ -452,14 +462,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private fun findRootHelperForViewAncestor(viewTag: Int): RNGestureHandlerRootHelper? {
-    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)
-    val rootViewTag = uiManager!!.resolveRootTagFromReactTag(viewTag)
+    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)!!
+    val rootViewTag = uiManager.resolveRootTagFromReactTag(viewTag)
     if (rootViewTag < 1) {
       return null
     }
     synchronized(mRoots) {
-      for (i in mRoots.indices) {
-        val root: RNGestureHandlerRootHelper = mRoots[i]
+      for(root in mRoots) {
         val rootView: ViewGroup = root.rootView
         if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           return root
@@ -469,10 +478,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     return null
   }
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? {
-    for (i in mHandlerFactories.indices) {
-      val factory = mHandlerFactories[i]
-      if ((factory.type == handler.javaClass)) {
+    for (factory in mHandlerFactories) {
+      if (factory.type == handler.javaClass) {
         return factory as HandlerFactory<T>
       }
     }
@@ -507,7 +516,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       .getNativeModule(UIManagerModule::class.java)!!
       .eventDispatcher
     val event = RNGestureHandlerStateChangeEvent.obtain(
-      handler as T,
+      handler,
       newState,
       oldState,
       handlerFactory as HandlerFactory<T>)
@@ -560,14 +569,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
         val hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP))
         handler.setHitSlop(hitSlop, hitSlop, hitSlop, hitSlop, GestureHandler.HIT_SLOP_NONE, GestureHandler.HIT_SLOP_NONE)
       } else {
-        val hitSlop = config.getMap(KEY_HIT_SLOP)
+        val hitSlop = config.getMap(KEY_HIT_SLOP)!!
         var left = GestureHandler.HIT_SLOP_NONE
         var top = GestureHandler.HIT_SLOP_NONE
         var right = GestureHandler.HIT_SLOP_NONE
         var bottom = GestureHandler.HIT_SLOP_NONE
         var width = GestureHandler.HIT_SLOP_NONE
         var height = GestureHandler.HIT_SLOP_NONE
-        if (hitSlop!!.hasKey(KEY_HIT_SLOP_HORIZONTAL)) {
+        if (hitSlop.hasKey(KEY_HIT_SLOP_HORIZONTAL)) {
           val horizontalPad = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_HORIZONTAL))
           right = horizontalPad
           left = right

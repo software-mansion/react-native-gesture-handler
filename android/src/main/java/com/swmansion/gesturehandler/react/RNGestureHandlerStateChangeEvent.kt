@@ -9,11 +9,11 @@ import com.swmansion.gesturehandler.GestureHandler
 
 class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHandlerStateChangeEvent>() {
   private var mExtraData: WritableMap? = null
-  private fun <T : GestureHandler<T>>init(
+  private fun <T : GestureHandler<T>> init(
     handler: T,
     newState: Int,
     oldState: Int,
-    dataExtractor: RNGestureHandlerEventDataExtractor<T>?
+    dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
   ) {
     super.init(handler.view!!.id)
     mExtraData = Arguments.createMap().apply {
@@ -29,19 +29,13 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName(): String {
-    return EVENT_NAME
-  }
+  override fun getEventName() = EVENT_NAME
 
-  override fun canCoalesce(): Boolean {
-    // TODO: coalescing
-    return false
-  }
+  // TODO: coalescing
+  override fun canCoalesce() = false
 
-  override fun getCoalescingKey(): Short {
-    // TODO: coalescing
-    return 0
-  }
+  // TODO: coalescing
+  override fun getCoalescingKey(): Short = 0
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
     rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, mExtraData)
@@ -51,18 +45,16 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     const val EVENT_NAME = "onGestureHandlerStateChange"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerStateChangeEvent>(TOUCH_EVENTS_POOL_SIZE)
-    fun <T : GestureHandler<T>>obtain(
+    fun <T : GestureHandler<T>> obtain(
       handler: T,
       newState: Int,
       oldState: Int,
-      dataExtractor: RNGestureHandlerEventDataExtractor<T>?
+      dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
     ): RNGestureHandlerStateChangeEvent {
-      var event = EVENTS_POOL.acquire()
-      if (event == null) {
-        event = RNGestureHandlerStateChangeEvent()
-      }
-      event.init(handler, newState, oldState, dataExtractor)
-      return event
+      return (EVENTS_POOL.acquire() ?: RNGestureHandlerStateChangeEvent())
+        .apply {
+          init(handler, newState, oldState, dataExtractor)
+        }
     }
   }
 }

@@ -14,12 +14,12 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   }
 
   private fun convertHandlerTagsArray(config: ReadableMap, key: String): IntArray {
-    val array = config.getArray(key)
-    val result = IntArray(array!!.size())
-    for (i in result.indices) {
-      result[i] = array.getInt(i)
+    val array = config.getArray(key)!!
+    return IntArray(array.size()).also {
+      for (i in it.indices) {
+        it[i] = array.getInt(i)
+      }
     }
-    return result
   }
 
   fun configureInteractions(handler: GestureHandler<*>, config: ReadableMap) {

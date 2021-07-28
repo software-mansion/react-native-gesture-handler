@@ -28,17 +28,11 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName(): String {
-    return EVENT_NAME
-  }
+  override fun getEventName() = EVENT_NAME
 
-  override fun canCoalesce(): Boolean {
-    return true
-  }
+  override fun canCoalesce() = true
 
-  override fun getCoalescingKey(): Short {
-    return mCoalescingKey
-  }
+  override fun getCoalescingKey(): Short = mCoalescingKey
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
     rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, mExtraData)
@@ -51,13 +45,8 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     fun <T : GestureHandler<T>> obtain(
       handler: T,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
-    ): RNGestureHandlerEvent {
-      var event = EVENTS_POOL.acquire()
-      if (event == null) {
-        event = RNGestureHandlerEvent()
-      }
-      event.init(handler, dataExtractor)
-      return event
-    }
+    ): RNGestureHandlerEvent =
+      (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent())
+        .apply { init(handler, dataExtractor) }
   }
 }
