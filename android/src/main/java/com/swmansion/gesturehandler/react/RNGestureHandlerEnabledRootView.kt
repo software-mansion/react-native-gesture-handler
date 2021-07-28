@@ -8,7 +8,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 
 class RNGestureHandlerEnabledRootView : ReactRootView {
-  private var mReactInstanceManager: ReactInstanceManager? = null
+  private lateinit var _reactInstanceManager: ReactInstanceManager
   private var mGestureRootHelper: RNGestureHandlerRootHelper? = null
 
   constructor(context: Context?) : super(context) {}
@@ -37,7 +37,7 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
   fun initialize() {
     check(mGestureRootHelper == null) { "GestureHandler already initialized for root view $this" }
     mGestureRootHelper = RNGestureHandlerRootHelper(
-      mReactInstanceManager!!.currentReactContext, this)
+      _reactInstanceManager.currentReactContext, this)
   }
 
   fun tearDown() {
@@ -53,6 +53,6 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
     initialProperties: Bundle?
   ) {
     super.startReactApplication(reactInstanceManager, moduleName, initialProperties)
-    mReactInstanceManager = reactInstanceManager
+    _reactInstanceManager = reactInstanceManager
   }
 }
