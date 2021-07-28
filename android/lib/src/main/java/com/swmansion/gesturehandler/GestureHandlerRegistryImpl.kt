@@ -17,5 +17,5 @@ class GestureHandlerRegistryImpl : GestureHandlerRegistry {
     return handler
   }
 
-  override fun getHandlersForView(view: View?) = mHandlers[view]
+  override fun getHandlersForView(view: View) = mHandlers[view]
 }

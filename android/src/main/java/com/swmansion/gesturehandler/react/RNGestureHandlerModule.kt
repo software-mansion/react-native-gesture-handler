@@ -269,12 +269,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private val mEventListener: OnTouchEventListener<GestureHandler<*>> = object : OnTouchEventListener<GestureHandler<*>> {
-    override fun onTouchEvent(handler: GestureHandler<*>, event: MotionEvent?) {
+  private val mEventListener: OnTouchEventListener = object : OnTouchEventListener {
+    override fun <T : GestureHandler<T>> onTouchEvent(handler: T, event: MotionEvent?) {
       this@RNGestureHandlerModule.onTouchEvent(handler, event)
     }
 
-    override fun onStateChange(handler: GestureHandler<*>, newState: Int, oldState: Int) {
+    override fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
       this@RNGestureHandlerModule.onStateChange(handler, newState, oldState)
     }
   }
@@ -296,13 +296,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   @ReactMethod
+  @Suppress("UNCHECKED_CAST")
   fun <T : GestureHandler<T>> createGestureHandler(
     handlerName: String,
     handlerTag: Int,
     config: ReadableMap,
   ) {
     for (i in mHandlerFactories.indices) {
-      @Suppress("UNCHECKED_CAST")
       val handlerFactory = mHandlerFactories[i] as HandlerFactory<T>
       if ((handlerFactory.name == handlerName)) {
         val handler = handlerFactory.create(reactApplicationContext)
@@ -328,13 +328,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
   @ReactMethod
   @Suppress("UNCHECKED_CAST")
-  fun <T : GestureHandler<T>>updateGestureHandler(
+  fun <T : GestureHandler<T>> updateGestureHandler(
     handlerTag: Int,
     config: ReadableMap,
   ) {
     val handler = registry.getHandler(handlerTag) as T?
     if (handler != null) {
-      val factory = findFactoryForHandler(handler) as HandlerFactory<T>?
+      val factory = findFactoryForHandler(handler)
       if (factory != null) {
         mInteractionManager.dropRelationsForHandlerWithTag(handlerTag)
         mInteractionManager.configureInteractions(handler, config)
@@ -469,32 +469,35 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     return null
   }
 
-  private fun findFactoryForHandler(handler: GestureHandler<*>): HandlerFactory<*>? {
+  private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? {
     for (i in mHandlerFactories.indices) {
       val factory = mHandlerFactories[i]
       if ((factory.type == handler.javaClass)) {
-        return factory
+        return factory as HandlerFactory<T>
       }
     }
     return null
   }
 
-  private fun onTouchEvent(handler: GestureHandler<*>, motionEvent: MotionEvent?) {
+  @Suppress("UNCHECKED_CAST")
+  private fun <T : GestureHandler<T>> onTouchEvent(handler: T, motionEvent: MotionEvent?) {
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
     if (handler.state == GestureHandler.STATE_ACTIVE) {
       val handlerFactory = findFactoryForHandler(handler)
-      val eventDispatcher = reactApplicationContext
+      reactApplicationContext
         .getNativeModule(UIManagerModule::class.java)!!
-        .eventDispatcher
-      val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
-      eventDispatcher.dispatchEvent(event)
+        .eventDispatcher.let {
+          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+          it.dispatchEvent(event)
+        }
     }
   }
 
-  private fun onStateChange(handler: GestureHandler<*>, newState: Int, oldState: Int) {
+  @Suppress("UNCHECKED_CAST")
+  private fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
@@ -504,10 +507,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       .getNativeModule(UIManagerModule::class.java)!!
       .eventDispatcher
     val event = RNGestureHandlerStateChangeEvent.obtain(
-      handler,
+      handler as T,
       newState,
       oldState,
-      handlerFactory)
+      handlerFactory as HandlerFactory<T>)
     eventDispatcher.dispatchEvent(event)
   }
 
