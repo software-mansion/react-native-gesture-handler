@@ -23,6 +23,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var isEnabled = true
     private set
+
   private var mHitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
     private set
@@ -30,6 +31,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var lastAbsolutePositionY = 0f
     private set
+
   private var mLastEventOffsetX = 0f
   private var mLastEventOffsetY = 0f
   private var mShouldCancelWhenOutside = false
@@ -45,20 +47,17 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT =
     self().apply { block() }
 
-  /*package*/
+  // set and accessed only by the orchestrator
   @JvmField
-  var mActivationIndex // set and accessed only by the orchestrator
-    = 0
+  var mActivationIndex = 0
 
-  /*package*/
+  // set and accessed only by the orchestrator
   @JvmField
-  var mIsActive // set and accessed only by the orchestrator
-    = false
+  var mIsActive = false
 
-  /*package*/
+  // set and accessed only by the orchestrator
   @JvmField
-  var mIsAwaiting // set and accessed only by the orchestrator
-    = false
+  var mIsAwaiting = false
 
   /*package*/
   open fun dispatchStateChange(newState: Int, prevState: Int) {
@@ -243,7 +242,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun handle(origEvent: MotionEvent) {
-    if (!isEnabled || state == STATE_CANCELLED || state == STATE_FAILED || state == STATE_END || mTrackedPointersCount < 1) {
+    if (!isEnabled
+      || state == STATE_CANCELLED
+      || state == STATE_FAILED
+      || state == STATE_END
+      || mTrackedPointersCount < 1) {
       return
     }
     val event = adaptEvent(origEvent)
@@ -287,7 +290,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun wantEvents(): Boolean {
-    return isEnabled && state != STATE_FAILED && state != STATE_CANCELLED && state != STATE_END && mTrackedPointersCount > 0
+    return isEnabled
+      && state != STATE_FAILED
+      && state != STATE_CANCELLED
+      && state != STATE_END
+      && mTrackedPointersCount > 0
   }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
