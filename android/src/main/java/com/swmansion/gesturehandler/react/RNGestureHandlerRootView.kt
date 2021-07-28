@@ -27,9 +27,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   }
 
   fun tearDown() {
-    if (mRootHelper != null) {
-      mRootHelper!!.tearDown()
-    }
+    mRootHelper?.tearDown()
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
