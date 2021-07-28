@@ -156,7 +156,7 @@ function MainScreenItem(props: MainScreenItemProps) {
   const { title } = props.item;
   return (
     <RectButton
-      style={[styles.button, { borderRadius: 20 }]}
+      style={[styles.button]}
       onPress={() => props.onPressItem(props.item)}>
       <Text style={styles.buttonText}>{title}</Text>
     </RectButton>
