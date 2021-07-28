@@ -11,7 +11,7 @@
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2",
     "react": "16.9.0",
-    "react-native": "0.61.2",
+    "react-native": "0.62.3",
     "react-navigation": "^3.9.1"
   },
   "devDependencies": {
