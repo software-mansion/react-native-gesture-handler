@@ -7,13 +7,11 @@ import com.facebook.react.uimanager.ViewManager
 import java.util.*
 
 class RNGestureHandlerPackage : ReactPackage {
-  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return Arrays.asList<NativeModule>(RNGestureHandlerModule(reactContext))
-  }
+  override fun createNativeModules(reactContext: ReactApplicationContext) =
+    listOf<NativeModule>(RNGestureHandlerModule(reactContext))
 
-  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return Arrays.asList<ViewManager<*, *>>(
+  override fun createViewManagers(reactContext: ReactApplicationContext) =
+    listOf<ViewManager<*, *>>(
       RNGestureHandlerRootViewManager(),
       RNGestureHandlerButtonViewManager())
-  }
 }
