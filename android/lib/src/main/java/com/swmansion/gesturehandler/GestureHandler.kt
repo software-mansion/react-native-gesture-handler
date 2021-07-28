@@ -7,7 +7,7 @@ import android.view.View
 import com.facebook.react.bridge.UiThreadUtil
 import java.util.*
 
-open class GestureHandler<T : GestureHandler<T>> {
+open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
   private val mTrackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
   private var mTrackedPointersCount = 0
   var tag = 0
@@ -36,7 +36,7 @@ open class GestureHandler<T : GestureHandler<T>> {
   var numberOfPointers = 0
     private set
   private var mOrchestrator: GestureHandlerOrchestrator? = null
-  private var mListener: OnTouchEventListener<T>? = null
+  private var mListener: OnTouchEventListener<ConcreteGestureHandlerT>? = null
   private var mInteractionController: GestureHandlerInteractionController? = null
 
   /*package*/
@@ -57,14 +57,14 @@ open class GestureHandler<T : GestureHandler<T>> {
   /*package*/
   open fun dispatchStateChange(newState: Int, prevState: Int) {
     if (mListener != null) {
-      mListener!!.onStateChange(this as T, newState, prevState)
+      mListener!!.onStateChange(this as ConcreteGestureHandlerT, newState, prevState)
     }
   }
 
   /*package*/
   open fun dispatchTouchEvent(event: MotionEvent?) {
     if (mListener != null) {
-      mListener!!.onTouchEvent(this as T, event)
+      mListener!!.onTouchEvent(this as ConcreteGestureHandlerT, event)
     }
   }
 
@@ -83,22 +83,22 @@ open class GestureHandler<T : GestureHandler<T>> {
     return false
   }
 
-  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): T {
+  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT {
     mShouldCancelWhenOutside = shouldCancelWhenOutside
-    return this as T
+    return this as ConcreteGestureHandlerT
   }
 
-  fun setEnabled(enabled: Boolean): T {
+  fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT {
     if (view != null) {
       // If view is set then handler is in "active" state. In that case we want to "cancel" handler
       // when it changes enabled state so that it gets cleared from the orchestrator
       UiThreadUtil.runOnUiThread { cancel() }
     }
     isEnabled = enabled
-    return this as T
+    return this as ConcreteGestureHandlerT
   }
 
-  fun setHitSlop(leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float, width: Float, height: Float): T {
+  fun setHitSlop(leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float, width: Float, height: Float): ConcreteGestureHandlerT {
     if (mHitSlop == null) {
       mHitSlop = FloatArray(6)
     }
@@ -112,16 +112,16 @@ open class GestureHandler<T : GestureHandler<T>> {
     require(!(hitSlopSet(width) && !hitSlopSet(leftPad) && !hitSlopSet(rightPad))) { "When width is set one of left or right pads need to be defined" }
     require(!(hitSlopSet(height) && hitSlopSet(bottomPad) && hitSlopSet(topPad))) { "Cannot have all of top, bottom and height defined" }
     require(!(hitSlopSet(height) && !hitSlopSet(bottomPad) && !hitSlopSet(topPad))) { "When height is set one of top or bottom pads need to be defined" }
-    return this as T
+    return this as ConcreteGestureHandlerT
   }
 
-  fun setHitSlop(padding: Float): T {
+  fun setHitSlop(padding: Float): ConcreteGestureHandlerT {
     return setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
   }
 
-  fun setInteractionController(controller: GestureHandlerInteractionController?): T {
+  fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT {
     mInteractionController = controller
-    return this as T
+    return this as ConcreteGestureHandlerT
   }
 
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
@@ -406,7 +406,7 @@ open class GestureHandler<T : GestureHandler<T>> {
     onReset()
   }
 
-  fun setOnTouchEventListener(listener: OnTouchEventListener<T>?): GestureHandler<*> {
+  fun setOnTouchEventListener(listener: OnTouchEventListener<ConcreteGestureHandlerT>?): GestureHandler<*> {
     mListener = listener
     return this
   }
