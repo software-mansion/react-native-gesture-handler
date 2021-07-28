@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler.react
 
-import android.R
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
@@ -57,7 +56,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
 
     private fun applyRippleEffectWhenNeeded(selectable: Drawable): Drawable {
       if (mRippleColor != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && selectable is RippleDrawable) {
-        val states = arrayOf(intArrayOf(R.attr.state_enabled))
+        val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
         val colors = intArrayOf(mRippleColor!!)
         val colorStateList = ColorStateList(states, colors)
         selectable.setColor(colorStateList)
@@ -139,7 +138,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
             && selectable is RippleDrawable) {
             val mask = PaintDrawable(Color.WHITE)
             mask.setCornerRadius(mBorderRadius)
-            selectable.setDrawableByLayerId(R.id.mask, mask)
+            selectable.setDrawableByLayerId(android.R.id.mask, mask)
           }
         }
         applyRippleEffectWhenNeeded(selectable)
