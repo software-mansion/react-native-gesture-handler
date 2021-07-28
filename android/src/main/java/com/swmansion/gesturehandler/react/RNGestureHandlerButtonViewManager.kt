@@ -77,7 +77,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     var mBorderRadius = 0f
     var mNeedBackgroundUpdate = false
     var mLastEventTime: Long = 0
-    
+
     init {
       // we attach empty click listener to trigger tap sounds (see View#performClick())
       setOnClickListener(sDummyClickListener)
@@ -246,7 +246,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     }
 
     override fun dispatchDrawableHotspotChanged(x: Float, y: Float) {
-      // by default viewgroup would pass hotspot change events
+      // by default Viewgroup would pass hotspot change events
     }
 
     companion object {
@@ -258,12 +258,16 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       @TargetApi(Build.VERSION_CODES.LOLLIPOP)
       private fun getAttrId(context: Context, attr: String): Int {
         SoftAssertions.assertNotNull(attr)
-        return if (SELECTABLE_ITEM_BACKGROUND == attr) {
-          R.attr.selectableItemBackground
-        } else if (SELECTABLE_ITEM_BACKGROUND_BORDERLESS == attr) {
-          R.attr.selectableItemBackgroundBorderless
-        } else {
-          context.resources.getIdentifier(attr, "attr", "android")
+        return when {
+          SELECTABLE_ITEM_BACKGROUND == attr -> {
+            R.attr.selectableItemBackground
+          }
+          SELECTABLE_ITEM_BACKGROUND_BORDERLESS == attr -> {
+            R.attr.selectableItemBackgroundBorderless
+          }
+          else -> {
+            context.resources.getIdentifier(attr, "attr", "android")
+          }
         }
       }
     }
