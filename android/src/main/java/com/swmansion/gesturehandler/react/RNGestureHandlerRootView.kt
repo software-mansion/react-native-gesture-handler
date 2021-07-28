@@ -11,34 +11,34 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.views.view.ReactViewGroup
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
-  private var mEnabled = false
-  private var mRootHelper: RNGestureHandlerRootHelper? = null
+  private var _enabled = false
+  private var rootHelper: RNGestureHandlerRootHelper? = null
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
-    mEnabled = !hasGestureHandlerEnabledRootView(this)
-    if (!mEnabled) {
+    _enabled = !hasGestureHandlerEnabledRootView(this)
+    if (!_enabled) {
       Log.i(
         ReactConstants.TAG,
         "[GESTURE HANDLER] Gesture handler is already enabled for a parent view")
     }
-    if (mEnabled && mRootHelper == null) {
-      mRootHelper = RNGestureHandlerRootHelper(context as ReactContext, this)
+    if (_enabled && rootHelper == null) {
+      rootHelper = RNGestureHandlerRootHelper(context as ReactContext, this)
     }
   }
 
   fun tearDown() {
-    mRootHelper?.tearDown()
+    rootHelper?.tearDown()
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    return if (mEnabled && Assertions.assertNotNull(mRootHelper).dispatchTouchEvent(ev)) {
+    return if (_enabled && Assertions.assertNotNull(rootHelper).dispatchTouchEvent(ev)) {
       true
     } else super.dispatchTouchEvent(ev)
   }
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    if (mEnabled) {
-      Assertions.assertNotNull(mRootHelper).requestDisallowInterceptTouchEvent(disallowIntercept)
+    if (_enabled) {
+      Assertions.assertNotNull(rootHelper).requestDisallowInterceptTouchEvent(disallowIntercept)
     }
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
   }
