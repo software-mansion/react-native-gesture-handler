@@ -6,14 +6,15 @@ import android.view.MotionEvent
 class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   var numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
   var direction = DEFAULT_DIRECTION
-  
+
   private val maxDurationMs = DEFAULT_MAX_DURATION_MS
   private val minAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA
   private var startX = 0f
   private var startY = 0f
-  private var mHandler: Handler? = null
+  private var handler: Handler? = null
   private var maxNumberOfPointersSimultaneously = 0
   private val failDelayed = Runnable { fail() }
+
   override fun resetConfig() {
     super.resetConfig()
     numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
@@ -25,33 +26,32 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     startY = event.rawY
     begin()
     maxNumberOfPointersSimultaneously = 1
-    if (mHandler == null) {
-      mHandler = Handler() // lazy delegate?
+    if (handler == null) {
+      handler = Handler() // lazy delegate?
     } else {
-      mHandler!!.removeCallbacksAndMessages(null)
+      handler!!.removeCallbacksAndMessages(null)
     }
-    mHandler!!.postDelayed(failDelayed, maxDurationMs)
+    handler!!.postDelayed(failDelayed, maxDurationMs)
   }
 
-  private fun tryEndFling(event: MotionEvent): Boolean {
-    return if (
-      maxNumberOfPointersSimultaneously == numberOfPointersRequired &&
-      (direction and DIRECTION_RIGHT != 0 &&
-        event.rawX - startX > minAcceptableDelta ||
-        direction and DIRECTION_LEFT != 0 &&
-        startX - event.rawX > minAcceptableDelta ||
-        direction and DIRECTION_UP != 0 &&
-        startY - event.rawY > minAcceptableDelta ||
-        direction and DIRECTION_DOWN != 0 &&
-        event.rawY - startY > minAcceptableDelta)) {
-      mHandler!!.removeCallbacksAndMessages(null)
-      activate()
-      end()
-      true
-    } else {
-      false
-    }
+  private fun tryEndFling(event: MotionEvent) = if (
+    maxNumberOfPointersSimultaneously == numberOfPointersRequired &&
+    (direction and DIRECTION_RIGHT != 0 &&
+      event.rawX - startX > minAcceptableDelta ||
+      direction and DIRECTION_LEFT != 0 &&
+      startX - event.rawX > minAcceptableDelta ||
+      direction and DIRECTION_UP != 0 &&
+      startY - event.rawY > minAcceptableDelta ||
+      direction and DIRECTION_DOWN != 0 &&
+      event.rawY - startY > minAcceptableDelta)) {
+    handler!!.removeCallbacksAndMessages(null)
+    activate()
+    end()
+    true
+  } else {
+    false
   }
+
 
   private fun endFling(event: MotionEvent) {
     if (!tryEndFling(event)) {
@@ -77,11 +77,11 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   }
 
   override fun onCancel() {
-    mHandler?.removeCallbacksAndMessages(null)
+    handler?.removeCallbacksAndMessages(null)
   }
 
   override fun onReset() {
-    mHandler?.removeCallbacksAndMessages(null)
+    handler?.removeCallbacksAndMessages(null)
   }
 
   companion object {
