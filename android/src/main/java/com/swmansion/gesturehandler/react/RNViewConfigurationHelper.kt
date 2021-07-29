@@ -34,7 +34,7 @@ class RNViewConfigurationHelper : ViewConfigurationHelper {
     }
   }
 
-  override fun getChildInDrawingOrderAtIndex(parent: ViewGroup, index: Int): View? {
+  override fun getChildInDrawingOrderAtIndex(parent: ViewGroup, index: Int): View {
     return if (parent is ReactViewGroup) {
       parent.getChildAt(parent.getZIndexMappedChildIndex(index))
     } else parent.getChildAt(index)
