@@ -4,53 +4,53 @@ import android.os.Handler
 import android.view.MotionEvent
 
 class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
-  private val mMaxDurationMs = DEFAULT_MAX_DURATION_MS
-  private val mMinAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA
-  private var mDirection = DEFAULT_DIRECTION
-  private var mNumberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
-  private var mStartX = 0f
-  private var mStartY = 0f
+  private val maxDurationMs = DEFAULT_MAX_DURATION_MS
+  private val minAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA
+  private var direction = DEFAULT_DIRECTION
+  private var numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
+  private var startX = 0f
+  private var startY = 0f
   private var mHandler: Handler? = null
-  private var mMaxNumberOfPointersSimultaneously = 0
-  private val mFailDelayed = Runnable { fail() }
+  private var maxNumberOfPointersSimultaneously = 0
+  private val failDelayed = Runnable { fail() }
   override fun resetConfig() {
     super.resetConfig()
-    mNumberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
-    mDirection = DEFAULT_DIRECTION
+    numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
+    direction = DEFAULT_DIRECTION
   }
 
   fun setNumberOfPointersRequired(numberOfPointersRequired: Int) {
-    mNumberOfPointersRequired = numberOfPointersRequired
+    this.numberOfPointersRequired = numberOfPointersRequired
   }
 
   fun setDirection(direction: Int) {
-    mDirection = direction
+    this.direction = direction
   }
 
   private fun startFling(event: MotionEvent) {
-    mStartX = event.rawX
-    mStartY = event.rawY
+    startX = event.rawX
+    startY = event.rawY
     begin()
-    mMaxNumberOfPointersSimultaneously = 1
+    maxNumberOfPointersSimultaneously = 1
     if (mHandler == null) {
       mHandler = Handler() // lazy delegate?
     } else {
       mHandler!!.removeCallbacksAndMessages(null)
     }
-    mHandler!!.postDelayed(mFailDelayed, mMaxDurationMs)
+    mHandler!!.postDelayed(failDelayed, maxDurationMs)
   }
 
   private fun tryEndFling(event: MotionEvent): Boolean {
     return if (
-      mMaxNumberOfPointersSimultaneously == mNumberOfPointersRequired &&
-      (mDirection and DIRECTION_RIGHT != 0 &&
-        event.rawX - mStartX > mMinAcceptableDelta ||
-        mDirection and DIRECTION_LEFT != 0 &&
-        mStartX - event.rawX > mMinAcceptableDelta ||
-        mDirection and DIRECTION_UP != 0 &&
-        mStartY - event.rawY > mMinAcceptableDelta ||
-        mDirection and DIRECTION_DOWN != 0 &&
-        event.rawY - mStartY > mMinAcceptableDelta)) {
+      maxNumberOfPointersSimultaneously == numberOfPointersRequired &&
+      (direction and DIRECTION_RIGHT != 0 &&
+        event.rawX - startX > minAcceptableDelta ||
+        direction and DIRECTION_LEFT != 0 &&
+        startX - event.rawX > minAcceptableDelta ||
+        direction and DIRECTION_UP != 0 &&
+        startY - event.rawY > minAcceptableDelta ||
+        direction and DIRECTION_DOWN != 0 &&
+        event.rawY - startY > minAcceptableDelta)) {
       mHandler!!.removeCallbacksAndMessages(null)
       activate()
       end()
@@ -73,8 +73,8 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     }
     if (state == STATE_BEGAN) {
       tryEndFling(event)
-      if (event.pointerCount > mMaxNumberOfPointersSimultaneously) {
-        mMaxNumberOfPointersSimultaneously = event.pointerCount
+      if (event.pointerCount > maxNumberOfPointersSimultaneously) {
+        maxNumberOfPointersSimultaneously = event.pointerCount
       }
       val action = event.actionMasked
       if (action == MotionEvent.ACTION_UP) {
