@@ -23,13 +23,9 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
-  override fun getName(): String {
-    return "RNGestureHandlerButton"
-  }
+  override fun getName() = "RNGestureHandlerButton"
 
-  public override fun createViewInstance(context: ThemedReactContext): ButtonViewGroup {
-    return ButtonViewGroup(context)
-  }
+  public override fun createViewInstance(context: ThemedReactContext) = ButtonViewGroup(context)
 
   @TargetApi(Build.VERSION_CODES.M)
   @ReactProp(name = "foreground")
@@ -259,11 +255,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       @TargetApi(Build.VERSION_CODES.LOLLIPOP)
       private fun getAttrId(context: Context, attr: String): Int {
         SoftAssertions.assertNotNull(attr)
-        return when {
-          SELECTABLE_ITEM_BACKGROUND == attr -> {
+        return when (attr) {
+          SELECTABLE_ITEM_BACKGROUND -> {
             R.attr.selectableItemBackground
           }
-          SELECTABLE_ITEM_BACKGROUND_BORDERLESS == attr -> {
+          SELECTABLE_ITEM_BACKGROUND_BORDERLESS -> {
             R.attr.selectableItemBackgroundBorderless
           }
           else -> {
