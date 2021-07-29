@@ -39,14 +39,10 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
 
   override fun shouldRequireHandlerToWaitForFailure(
     handler: GestureHandler<*>,
-    otherHandler: GestureHandler<*>
-  ): Boolean {
-    return false
-  }
+    otherHandler: GestureHandler<*>,
+  ) = false
 
-  override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>): Boolean {
-    return false
-  }
+  override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) = false
 
   override fun shouldRecognizeSimultaneously(
     handler: GestureHandler<*>,
