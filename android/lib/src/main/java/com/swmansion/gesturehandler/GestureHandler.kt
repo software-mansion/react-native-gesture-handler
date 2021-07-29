@@ -364,7 +364,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         }
       }
     }
-    return posX in left..right && posY >= top && posY <= bottom
+    return posX in left..right && posY in top..bottom
   }
 
   fun cancel() {
