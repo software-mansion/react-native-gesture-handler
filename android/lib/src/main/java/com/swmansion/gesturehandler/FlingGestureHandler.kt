@@ -4,10 +4,11 @@ import android.os.Handler
 import android.view.MotionEvent
 
 class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
+  var numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
+  var direction = DEFAULT_DIRECTION
+  
   private val maxDurationMs = DEFAULT_MAX_DURATION_MS
   private val minAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA
-  private var direction = DEFAULT_DIRECTION
-  private var numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
   private var startX = 0f
   private var startY = 0f
   private var mHandler: Handler? = null
@@ -17,14 +18,6 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     super.resetConfig()
     numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
     direction = DEFAULT_DIRECTION
-  }
-
-  fun setNumberOfPointersRequired(numberOfPointersRequired: Int) {
-    this.numberOfPointersRequired = numberOfPointersRequired
-  }
-
-  fun setDirection(direction: Int) {
-    this.direction = direction
   }
 
   private fun startFling(event: MotionEvent) {
