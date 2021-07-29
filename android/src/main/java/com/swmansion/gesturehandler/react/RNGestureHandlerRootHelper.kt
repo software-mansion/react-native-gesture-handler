@@ -29,7 +29,7 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
     module.unregisterRootHelper(this)
   }
 
-  private inner class RootViewGestureHandler : GestureHandler<Any?>() {
+  private inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
     override fun onHandle(event: MotionEvent) {
       val currentState = state
       if (currentState == STATE_UNDETERMINED) {
