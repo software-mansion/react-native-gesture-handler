@@ -82,11 +82,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return false
   }
 
-  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean) = applySelf {
-    mShouldCancelWhenOutside = shouldCancelWhenOutside
-  }
+  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT =
+    applySelf { mShouldCancelWhenOutside = shouldCancelWhenOutside }
 
-  fun setEnabled(enabled: Boolean) = applySelf {
+  fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT = applySelf {
     if (view != null) {
       // If view is set then handler is in "active" state. In that case we want to "cancel" handler
       // when it changes enabled state so that it gets cleared from the orchestrator
@@ -95,7 +94,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     isEnabled = enabled
   }
 
-  fun setHitSlop(leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float, width: Float, height: Float) = applySelf {
+  fun setHitSlop(
+    leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float,
+    width: Float, height: Float,
+  ): ConcreteGestureHandlerT = applySelf {
     if (mHitSlop == null) {
       mHitSlop = FloatArray(6)
     }
@@ -115,9 +117,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
   }
 
-  fun setInteractionController(controller: GestureHandlerInteractionController?) = applySelf {
-    mInteractionController = controller
-  }
+  fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT =
+    applySelf { mInteractionController = controller }
 
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
     check(!(this.view != null || mOrchestrator != null)) { "Already prepared or hasn't been reset" }
