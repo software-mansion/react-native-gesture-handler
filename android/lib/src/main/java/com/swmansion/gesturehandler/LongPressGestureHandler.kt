@@ -14,6 +14,13 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   private var mStartTime: Long = 0
   private var mPreviousTime: Long = 0
   private var mHandler: Handler? = null
+  
+  init {
+    setShouldCancelWhenOutside(true)
+    mDefaultMaxDistSq = DEFAULT_MAX_DIST_DP * context.resources.displayMetrics.density
+    mMaxDistSq = mDefaultMaxDistSq
+  }
+
   override fun resetConfig() {
     super.resetConfig()
     mMinDurationMs = DEFAULT_MIN_DURATION_MS
@@ -91,11 +98,5 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   companion object {
     private const val DEFAULT_MIN_DURATION_MS: Long = 500 // 1 sec
     private const val DEFAULT_MAX_DIST_DP = 10f // 20dp
-  }
-
-  init {
-    setShouldCancelWhenOutside(true)
-    mDefaultMaxDistSq = DEFAULT_MAX_DIST_DP * context.resources.displayMetrics.density
-    mMaxDistSq = mDefaultMaxDistSq
   }
 }
