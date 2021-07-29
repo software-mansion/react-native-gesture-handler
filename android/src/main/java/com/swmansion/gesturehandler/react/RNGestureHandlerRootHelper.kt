@@ -13,8 +13,7 @@ import com.facebook.react.views.modal.RNGHModalUtils
 import com.swmansion.gesturehandler.GestureHandler
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator
 
-class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) {
-  private val mContext: ReactContext
+class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
   private val mOrchestrator: GestureHandlerOrchestrator?
   private val mJSGestureHandler: GestureHandler<*>?
   val rootView: ViewGroup
@@ -31,7 +30,6 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
     Log.i(
       ReactConstants.TAG,
       "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
-    mContext = context
     mOrchestrator = GestureHandlerOrchestrator(
       wrappedView, registry, RNViewConfigurationHelper()).apply {
       setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH)
@@ -48,7 +46,7 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
     Log.i(
       ReactConstants.TAG,
       "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView")
-    val module = mContext.getNativeModule(RNGestureHandlerModule::class.java)
+    val module = context.getNativeModule(RNGestureHandlerModule::class.java)
     module!!.registry.dropHandler(mJSGestureHandler!!.tag)
     module.unregisterRootHelper(this)
   }
