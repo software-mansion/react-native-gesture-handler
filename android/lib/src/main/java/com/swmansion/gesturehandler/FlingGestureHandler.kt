@@ -33,7 +33,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     begin()
     mMaxNumberOfPointersSimultaneously = 1
     if (mHandler == null) {
-      mHandler = Handler()
+      mHandler = Handler() // lazy delegate?
     } else {
       mHandler!!.removeCallbacksAndMessages(null)
     }
@@ -41,7 +41,8 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   }
 
   private fun tryEndFling(event: MotionEvent): Boolean {
-    return if (mMaxNumberOfPointersSimultaneously == mNumberOfPointersRequired &&
+    return if (
+      mMaxNumberOfPointersSimultaneously == mNumberOfPointersRequired &&
       (mDirection and DIRECTION_RIGHT != 0 &&
         event.rawX - mStartX > mMinAcceptableDelta ||
         mDirection and DIRECTION_LEFT != 0 &&
