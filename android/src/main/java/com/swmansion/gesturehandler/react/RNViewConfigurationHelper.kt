@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler.react
 
-import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.uimanager.PointerEvents
@@ -26,12 +25,13 @@ class RNViewConfigurationHelper : ViewConfigurationHelper {
         return PointerEventsConfig.NONE
       }
     }
-    when (pointerEvents) {
-      PointerEvents.BOX_ONLY -> return PointerEventsConfig.BOX_ONLY
-      PointerEvents.BOX_NONE -> return PointerEventsConfig.BOX_NONE
-      PointerEvents.NONE -> return PointerEventsConfig.NONE
+
+    return when (pointerEvents) {
+      PointerEvents.BOX_ONLY -> PointerEventsConfig.BOX_ONLY
+      PointerEvents.BOX_NONE -> PointerEventsConfig.BOX_NONE
+      PointerEvents.NONE -> PointerEventsConfig.NONE
+      PointerEvents.AUTO -> PointerEventsConfig.AUTO
     }
-    return PointerEventsConfig.AUTO
   }
 
   override fun getChildInDrawingOrderAtIndex(parent: ViewGroup, index: Int): View? {
