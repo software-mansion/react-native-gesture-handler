@@ -3,7 +3,7 @@ package com.swmansion.gesturehandler
 import android.os.Handler
 import android.view.MotionEvent
 
-class FlingGestureHandler : GestureHandler<FlingGestureHandler?>() {
+class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   private val mMaxDurationMs = DEFAULT_MAX_DURATION_MS
   private val mMinAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA
   private var mDirection = DEFAULT_DIRECTION
