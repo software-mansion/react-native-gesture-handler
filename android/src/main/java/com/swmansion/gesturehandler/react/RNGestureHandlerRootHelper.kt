@@ -20,6 +20,28 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
   val rootView: ViewGroup
   private var mShouldIntercept = false
   private var mPassingTouch = false
+
+  init {
+    UiThreadUtil.assertOnUiThread()
+    val wrappedViewTag = wrappedView.id
+    check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
+    val module = context.getNativeModule(RNGestureHandlerModule::class.java)
+    val registry = module!!.registry
+    rootView = findRootViewTag(wrappedView)
+    Log.i(
+      ReactConstants.TAG,
+      "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
+    mContext = context
+    mOrchestrator = GestureHandlerOrchestrator(
+      wrappedView, registry, RNViewConfigurationHelper())
+    mOrchestrator.setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH)
+    mJSGestureHandler = RootViewGestureHandler()
+    mJSGestureHandler.tag = -wrappedViewTag
+    registry.registerHandler(mJSGestureHandler)
+    registry.attachHandlerToView(mJSGestureHandler.tag, wrappedViewTag)
+    module.registerRootHelper(this)
+  }
+
   fun tearDown() {
     Log.i(
       ReactConstants.TAG,
@@ -103,26 +125,5 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
       }
       return parent as ViewGroup
     }
-  }
-
-  init {
-    UiThreadUtil.assertOnUiThread()
-    val wrappedViewTag = wrappedView.id
-    check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
-    val module = context.getNativeModule(RNGestureHandlerModule::class.java)
-    val registry = module!!.registry
-    rootView = findRootViewTag(wrappedView)
-    Log.i(
-      ReactConstants.TAG,
-      "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
-    mContext = context
-    mOrchestrator = GestureHandlerOrchestrator(
-      wrappedView, registry, RNViewConfigurationHelper())
-    mOrchestrator.setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH)
-    mJSGestureHandler = RootViewGestureHandler()
-    mJSGestureHandler.tag = -wrappedViewTag
-    registry.registerHandler(mJSGestureHandler)
-    registry.attachHandlerToView(mJSGestureHandler.tag, wrappedViewTag)
-    module.registerRootHelper(this)
   }
 }
