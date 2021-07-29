@@ -98,10 +98,12 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
 
   private fun tryCancelAllHandlers() {
     // In order to cancel handlers we activate handler that is hooked to the root view
-    if (mJSGestureHandler != null && mJSGestureHandler.state == GestureHandler.STATE_BEGAN) {
-      // Try activate main JS handler
-      mJSGestureHandler.activate()
-      mJSGestureHandler.end()
+    mJSGestureHandler?.apply {
+      if (state == GestureHandler.STATE_BEGAN) {
+        // Try activate main JS handler
+        activate()
+        end()
+      }
     }
   }
 
