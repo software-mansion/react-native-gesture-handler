@@ -10,14 +10,11 @@ object GestureUtils {
     return if (averageTouches) {
       var sum = 0f
       var count = 0
-      var i = 0
-      val size = event.pointerCount
-      while (i < size) {
+      for (i in 0 until event.pointerCount) {
         if (i != excludeIndex) {
           sum += event.getX(i) + offset
           count++
         }
-        i++
       }
       sum / count
     } else {
@@ -36,14 +33,11 @@ object GestureUtils {
     return if (averageTouches) {
       var sum = 0f
       var count = 0
-      var i = 0
-      val size = event.pointerCount
-      while (i < size) {
+      for (i in 0 until event.pointerCount) {
         if (i != excludeIndex) {
           sum += event.getY(i) + offset
           count++
         }
-        i++
       }
       sum / count
     } else {
