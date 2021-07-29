@@ -41,13 +41,11 @@ class RNViewConfigurationHelper : ViewConfigurationHelper {
   }
 
   override fun isViewClippingChildren(view: ViewGroup): Boolean {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && !view.clipChildren) {
-      if (view is ReactViewGroup) {
-        val overflow = view.overflow
-        return "hidden" == overflow
-      }
-      return false
+    if (view.clipChildren) {
+      return true
     }
-    return true
+    return if (view is ReactViewGroup) {
+      "hidden" == view.overflow
+    } else false
   }
 }
