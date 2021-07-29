@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.SystemClock
 import android.view.MotionEvent
 
-class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestureHandler?>() {
+class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestureHandler>() {
   private var mMinDurationMs = DEFAULT_MIN_DURATION_MS
   private val mDefaultMaxDistSq: Float
   private var mMaxDistSq: Float
