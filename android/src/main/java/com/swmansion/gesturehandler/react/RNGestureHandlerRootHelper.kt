@@ -33,12 +33,14 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
       "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
     mContext = context
     mOrchestrator = GestureHandlerOrchestrator(
-      wrappedView, registry, RNViewConfigurationHelper())
-    mOrchestrator.setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH)
-    mJSGestureHandler = RootViewGestureHandler()
-    mJSGestureHandler.tag = -wrappedViewTag
-    registry.registerHandler(mJSGestureHandler)
-    registry.attachHandlerToView(mJSGestureHandler.tag, wrappedViewTag)
+      wrappedView, registry, RNViewConfigurationHelper()).apply {
+      setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH)
+    }
+    mJSGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
+    registry.apply {
+      registerHandler(mJSGestureHandler)
+      attachHandlerToView(mJSGestureHandler.tag, wrappedViewTag)
+    }
     module.registerRootHelper(this)
   }
 
@@ -66,8 +68,9 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
     override fun onCancel() {
       mShouldIntercept = true
       val time = SystemClock.uptimeMillis()
-      val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
-      event.action = MotionEvent.ACTION_CANCEL
+      val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
+        action = MotionEvent.ACTION_CANCEL
+      }
       if (rootView is ReactRootView) {
         rootView.onChildStartedNativeGesture(event)
       } else {
