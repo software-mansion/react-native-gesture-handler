@@ -24,8 +24,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     UiThreadUtil.assertOnUiThread()
     val wrappedViewTag = wrappedView.id
     check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
-    val module = context.getNativeModule(RNGestureHandlerModule::class.java)
-    val registry = module!!.registry
+    val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
+    val registry = module.registry
     rootView = findRootViewTag(wrappedView)
     Log.i(
       ReactConstants.TAG,
@@ -35,7 +35,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH)
     }
     jsGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
-    registry.apply {
+    with(registry) {
       registerHandler(jsGestureHandler)
       attachHandlerToView(jsGestureHandler.tag, wrappedViewTag)
     }
@@ -46,9 +46,11 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     Log.i(
       ReactConstants.TAG,
       "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView")
-    val module = context.getNativeModule(RNGestureHandlerModule::class.java)
-    module!!.registry.dropHandler(jsGestureHandler!!.tag)
-    module.unregisterRootHelper(this)
+    val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
+    with(module) {
+      registry.dropHandler(jsGestureHandler!!.tag)
+      unregisterRootHelper(this@RNGestureHandlerRootHelper)
+    }
   }
 
   private inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
