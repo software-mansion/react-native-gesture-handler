@@ -92,13 +92,13 @@ public class LongPressGestureHandler extends GestureHandler<LongPressGestureHand
   }
 
   @Override
-  void dispatchStateChange(int newState, int prevState) {
+  public void dispatchStateChange(int newState, int prevState) {
     mPreviousTime = SystemClock.uptimeMillis();
     super.dispatchStateChange(newState, prevState);
   }
 
   @Override
-  void dispatchTouchEvent(MotionEvent event) {
+  public void dispatchTouchEvent(MotionEvent event) {
     mPreviousTime = SystemClock.uptimeMillis();
     super.dispatchTouchEvent(event);
   }
