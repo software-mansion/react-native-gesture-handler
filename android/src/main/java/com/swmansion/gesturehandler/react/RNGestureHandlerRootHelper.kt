@@ -23,7 +23,7 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
   fun tearDown() {
     Log.i(
       ReactConstants.TAG,
-      "[GESTURE HANDLER] Tearing down gesture handler registered for root view " + rootView)
+      "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView")
     val module = mContext.getNativeModule(RNGestureHandlerModule::class.java)
     module!!.registry.dropHandler(mJSGestureHandler!!.tag)
     module.unregisterRootHelper(this)
@@ -99,8 +99,7 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
         parent = parent.parent
       }
       checkNotNull(parent) {
-        "View " + viewGroup + " has not been mounted under" +
-          " ReactRootView"
+        "View $viewGroup has not been mounted under ReactRootView"
       }
       return parent as ViewGroup
     }
@@ -115,7 +114,7 @@ class RNGestureHandlerRootHelper(context: ReactContext, wrappedView: ViewGroup) 
     rootView = findRootViewTag(wrappedView)
     Log.i(
       ReactConstants.TAG,
-      "[GESTURE HANDLER] Initialize gesture handler for root view " + rootView)
+      "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
     mContext = context
     mOrchestrator = GestureHandlerOrchestrator(
       wrappedView, registry, RNViewConfigurationHelper())
