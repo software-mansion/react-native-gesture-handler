@@ -84,15 +84,11 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   }
 
   override fun onCancel() {
-    if (mHandler != null) {
-      mHandler!!.removeCallbacksAndMessages(null)
-    }
+    mHandler?.removeCallbacksAndMessages(null)
   }
 
   override fun onReset() {
-    if (mHandler != null) {
-      mHandler!!.removeCallbacksAndMessages(null)
-    }
+    mHandler?.removeCallbacksAndMessages(null)
   }
 
   companion object {
