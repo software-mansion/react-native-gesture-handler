@@ -771,7 +771,7 @@ export class Gesture {
 let allowedProps = ['numberOfTaps', 'maxDist'];
 
 export function useGesture(gesture) {
-  const result = React.useRef(gesture);
+  const result = React.useRef([gesture]);
 
   React.useEffect(() => {
     gesture.initialize();
@@ -806,10 +806,10 @@ export function useGesture(gesture) {
           });
         }
 
-        if (result.current.config.simultaneous) {
+        if (result.current[0].config.simultaneous) {
           simultaneousWith = [
             ...simultaneousWith,
-            ...result.current.gestures.map((g) => g.handlerTag),
+            ...result.current[0].gestures.map((g) => g.handlerTag),
           ];
         }
 
@@ -828,13 +828,10 @@ export function useGesture(gesture) {
       });
     }
 
-    gesture.callback = result.current.callback;
-    result.current = gesture;
-
-    result.current.callback?.();
+    result.current[1]?.();
 
     return () => {
-      for (const g of result.current.gestures) {
+      for (const g of result.current[0].gestures) {
         RNGestureHandlerModule.dropGestureHandler(g.handlerTag);
       }
     };
@@ -842,7 +839,7 @@ export function useGesture(gesture) {
 
   if (result.current) {
     for (let i = 0; i < gesture.gestures.length; i++) {
-      const gst = result.current.gestures[i];
+      const gst = result.current[0].gestures[i];
       gst.config = gesture.gestures[i].config;
 
       RNGestureHandlerModule.updateGestureHandler(
@@ -869,17 +866,9 @@ export class GestureMonitor extends React.Component {
   componentDidMount() {
     setImmediate(() => {
       if (this.props.gesture.current) {
-        if (this.props.gesture.current instanceof Gesture) {
-          this.props.gesture.current.callback = () => {
-            this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
-          };
-        }
-      } else if (this.props.gesture.gesture.current) {
-        if (this.props.gesture.gesture.current instanceof Gesture) {
-          this.props.gesture.gesture.current.callback = () => {
-            this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
-          };
-        }
+        this.props.gesture.current[1] = () => {
+          this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
+        };
       }
     });
   }
@@ -911,18 +900,8 @@ export class GestureMonitor extends React.Component {
   attachGestureHandlers(newViewTag) {
     this.viewTag = newViewTag;
     if (this.props.gesture.current) {
-      if (this.props.gesture.current instanceof Gesture) {
-        for (const gesture of this.props.gesture.current.gestures) {
-          console.log(gesture.handlerName + ' ' + gesture.handlerTag);
-          RNGestureHandlerModule.attachGestureHandler(
-            gesture.handlerTag,
-            newViewTag
-          );
-        }
-      }
-    } else if (this.props.gesture.gesture.current) {
-      if (this.props.gesture.gesture.current instanceof Gesture) {
-        for (const gesture of this.props.gesture.gesture.current.gestures) {
+      if (this.props.gesture.current[0] instanceof Gesture) {
+        for (const gesture of this.props.gesture.current[0].gestures) {
           console.log(gesture.handlerName + ' ' + gesture.handlerTag);
           RNGestureHandlerModule.attachGestureHandler(
             gesture.handlerTag,
@@ -937,9 +916,9 @@ export class GestureMonitor extends React.Component {
     let handled = false;
     if (
       this.props.gesture.current &&
-      Array.isArray(this.props.gesture.current.gestures)
+      Array.isArray(this.props.gesture.current[0].gestures)
     ) {
-      for (const gesture of this.props.gesture.current.gestures) {
+      for (const gesture of this.props.gesture.current[0].gestures) {
         if (gesture.handlerTag === event.nativeEvent.handlerTag) {
           gesture.config.onUpdate?.(event);
           handled = true;
@@ -958,21 +937,26 @@ export class GestureMonitor extends React.Component {
     let handled = false;
     if (
       this.props.gesture.current &&
-      Array.isArray(this.props.gesture.current.gestures)
+      Array.isArray(this.props.gesture.current[0].gestures)
     ) {
-      for (const gesture of this.props.gesture.current.gestures) {
+      for (const gesture of this.props.gesture.current[0].gestures) {
         if (gesture.handlerTag === event.nativeEvent.handlerTag) {
-          if (event.nativeEvent.oldState == 2 && event.nativeEvent.state == 4) {
+          if (event.nativeEvent.oldState == 0 && event.nativeEvent.state == 2) {
+            gesture.config.onBegan?.(event);
+          } else if (
+            event.nativeEvent.oldState == 2 &&
+            event.nativeEvent.state == 4
+          ) {
             gesture.config.onStart?.(event);
           } else if (
             event.nativeEvent.oldState == 4 &&
             event.nativeEvent.state == 5
           ) {
-            gesture.config.onEnd?.(event);
+            gesture.config.onEnd?.(event, true);
           } else if (event.nativeEvent.state == 1) {
-            gesture.config.onFail?.(event);
+            gesture.config.onEnd?.(event, false);
           } else if (event.nativeEvent.state == 3) {
-            gesture.config.onCancel?.(event);
+            gesture.config.onEnd?.(event, false);
           }
           handled = true;
           break;
@@ -989,17 +973,14 @@ export class GestureMonitor extends React.Component {
     let gestureEventHandler = this.onGestureHandlerEvent;
     let gestureStateEventHandler = this.onGestureHandlerStateChange;
 
-    if (this.props.gesture.gesture) {
-      gestureEventHandler = this.props.gesture.event;
-      gestureStateEventHandler = this.props.gesture.event;
+    const events = {};
+
+    if (this.props.gesture.current && this.props.gesture.current[2]) {
+      events['onGestureHandlerEvent'] = this.props.gesture.current[2];
+    } else {
+      events['onGestureHandlerEvent'] = gestureEventHandler;
+      events['onGestureHandlerStateChange'] = gestureStateEventHandler;
     }
-
-    //gestureEventHandler = this.props.gs;
-    //gestureStateEventHandler = this.props.gs;
-
-    const events = {
-      onGestureHandlerEvent: gestureEventHandler,
-    };
 
     this.propsRef.current = events;
 

@@ -49,7 +49,7 @@ function Draggable() {
       onUpdate: (e) => {
         offsetX.value = e.translationX + startX.value;
         offsetY.value = e.translationY + startY.value;
-        console.log(a);
+        //console.log(a);
       },
     })
   );

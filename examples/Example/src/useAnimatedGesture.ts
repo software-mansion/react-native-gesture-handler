@@ -6,7 +6,7 @@ export function useAnimatedGesture(gesture) {
   const result = useGesture(gesture);
 
   const callback = (e) => {
-    for (const gesture of result.current.gestures) {
+    for (const gesture of result.current[0].gestures) {
       if (e.handlerTag == gesture.handlerTag) {
         if (e.oldState || e.oldState == 0) {
           if (e.oldState == 0 && e.state == 2) {
@@ -39,5 +39,7 @@ export function useAnimatedGesture(gesture) {
     false
   );
 
-  return { gesture: result, event: event };
+  result.current[2] = event;
+
+  return result;
 }
