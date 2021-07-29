@@ -10,9 +10,11 @@ import com.swmansion.gesturehandler.PointerEventsConfig
 import com.swmansion.gesturehandler.ViewConfigurationHelper
 
 class RNViewConfigurationHelper : ViewConfigurationHelper {
-  override fun getPointerEventsConfigForView(view: View?): PointerEventsConfig? {
-    val pointerEvents: PointerEvents
-    pointerEvents = if (view is ReactPointerEventsView) (view as ReactPointerEventsView).pointerEvents else PointerEvents.AUTO
+  override fun getPointerEventsConfigForView(view: View?): PointerEventsConfig {
+    val pointerEvents: PointerEvents =
+      if (view is ReactPointerEventsView) {
+        (view as ReactPointerEventsView).pointerEvents
+      } else PointerEvents.AUTO
 
     // Views that are disabled should never be the target of pointer events. However, their children
     // can be because some views (SwipeRefreshLayout) use enabled but still have children that can
