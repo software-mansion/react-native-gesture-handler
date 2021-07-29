@@ -10,7 +10,7 @@ import com.swmansion.gesturehandler.PointerEventsConfig
 import com.swmansion.gesturehandler.ViewConfigurationHelper
 
 class RNViewConfigurationHelper : ViewConfigurationHelper {
-  override fun getPointerEventsConfigForView(view: View?): PointerEventsConfig {
+  override fun getPointerEventsConfigForView(view: View): PointerEventsConfig {
     val pointerEvents: PointerEvents =
       if (view is ReactPointerEventsView) {
         (view as ReactPointerEventsView).pointerEvents
@@ -19,7 +19,7 @@ class RNViewConfigurationHelper : ViewConfigurationHelper {
     // Views that are disabled should never be the target of pointer events. However, their children
     // can be because some views (SwipeRefreshLayout) use enabled but still have children that can
     // be valid targets.
-    if (!view!!.isEnabled) {
+    if (!view.isEnabled) {
       if (pointerEvents == PointerEvents.AUTO) {
         return PointerEventsConfig.BOX_NONE
       } else if (pointerEvents == PointerEvents.BOX_ONLY) {
@@ -34,14 +34,14 @@ class RNViewConfigurationHelper : ViewConfigurationHelper {
     return PointerEventsConfig.AUTO
   }
 
-  override fun getChildInDrawingOrderAtIndex(parent: ViewGroup?, index: Int): View? {
+  override fun getChildInDrawingOrderAtIndex(parent: ViewGroup, index: Int): View? {
     return if (parent is ReactViewGroup) {
       parent.getChildAt(parent.getZIndexMappedChildIndex(index))
-    } else parent!!.getChildAt(index)
+    } else parent.getChildAt(index)
   }
 
-  override fun isViewClippingChildren(view: ViewGroup?): Boolean {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && !view!!.clipChildren) {
+  override fun isViewClippingChildren(view: ViewGroup): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && !view.clipChildren) {
       if (view is ReactViewGroup) {
         val overflow = view.overflow
         return "hidden" == overflow
