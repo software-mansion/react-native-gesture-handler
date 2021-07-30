@@ -47,7 +47,6 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       }
     }
     val canBeInterrupted = !disallowInterruption
-    val state = state
     val otherState = handler.state
     return if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
       // if both handlers are active and the current handler can be interrupted it we return `false`
@@ -64,7 +63,6 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun onHandle(event: MotionEvent) {
     val view = view!!
-    val state = state
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       view.onTouchEvent(event)
       if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
