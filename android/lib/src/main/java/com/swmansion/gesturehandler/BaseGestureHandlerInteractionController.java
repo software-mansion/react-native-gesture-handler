@@ -20,4 +20,9 @@ public abstract class BaseGestureHandlerInteractionController
                                                GestureHandler otherHandler) {
     return false;
   }
+
+  @Override
+  public int[] getSimultaneousRelations(GestureHandler handler) {
+    return new int[0];
+  }
 }
