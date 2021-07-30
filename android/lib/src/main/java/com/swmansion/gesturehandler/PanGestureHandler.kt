@@ -163,9 +163,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       return true
     }
     val velocitySq = vx * vx + vy * vy
-    return if (mMinVelocitySq != MIN_VALUE_IGNORE && velocitySq >= mMinVelocitySq) {
-      true
-    } else false
+    return mMinVelocitySq != MIN_VALUE_IGNORE && velocitySq >= mMinVelocitySq
   }
 
   private fun shouldFail(): Boolean {
@@ -180,9 +178,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     if (mFailOffsetYStart != MAX_VALUE_IGNORE && dy < mFailOffsetYStart) {
       return true
     }
-    return if (mFailOffsetYEnd != MIN_VALUE_IGNORE && dy > mFailOffsetYEnd) {
-      true
-    } else false
+    return mFailOffsetYEnd != MIN_VALUE_IGNORE && dy > mFailOffsetYEnd
   }
 
   override fun onHandle(event: MotionEvent) {
