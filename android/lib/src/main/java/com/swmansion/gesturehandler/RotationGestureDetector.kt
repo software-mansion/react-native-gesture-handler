@@ -3,16 +3,16 @@ package com.swmansion.gesturehandler
 import android.view.MotionEvent
 import kotlin.math.atan2
 
-class RotationGestureDetector(private val mListener: OnRotationGestureListener?) {
+class RotationGestureDetector(private val gestureListener: OnRotationGestureListener?) {
   interface OnRotationGestureListener {
     fun onRotation(detector: RotationGestureDetector): Boolean
     fun onRotationBegin(detector: RotationGestureDetector): Boolean
     fun onRotationEnd(detector: RotationGestureDetector)
   }
 
-  private var mCurrTime: Long = 0
-  private var mPrevTime: Long = 0
-  private var mPrevAngle = 0.0
+  private var currentTime: Long = 0
+  private var previousTime: Long = 0
+  private var previousAngle = 0.0
 
   /**
    * Returns rotation in radians since the previous rotation event.
@@ -47,16 +47,16 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener?)
    * @return Time difference since the last rotation event in milliseconds.
    */
   val timeDelta: Long
-    get() = mCurrTime - mPrevTime
+    get() = currentTime - previousTime
 
-  private var mInProgress = false
-  private val mPointerIds = IntArray(2)
-  
+  private var isInProgress = false
+  private val pointerIds = IntArray(2)
+
   private fun updateCurrent(event: MotionEvent) {
-    mPrevTime = mCurrTime
-    mCurrTime = event.eventTime
-    val firstPointerIndex = event.findPointerIndex(mPointerIds[0])
-    val secondPointerIndex = event.findPointerIndex(mPointerIds[1])
+    previousTime = currentTime
+    currentTime = event.eventTime
+    val firstPointerIndex = event.findPointerIndex(pointerIds[0])
+    val secondPointerIndex = event.findPointerIndex(pointerIds[1])
     val firstPtX = event.getX(firstPointerIndex)
     val firstPtY = event.getY(firstPointerIndex)
     val secondPtX = event.getX(secondPointerIndex)
@@ -68,11 +68,11 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener?)
 
     // Angle diff should be positive when rotating in clockwise direction
     val angle = -atan2(vectorY.toDouble(), vectorX.toDouble())
-    rotation = if (java.lang.Double.isNaN(mPrevAngle)) {
+    rotation = if (java.lang.Double.isNaN(previousAngle)) {
       0.0
-    } else mPrevAngle - angle
+    } else previousAngle - angle
 
-    mPrevAngle = angle
+    previousAngle = angle
     if (rotation > Math.PI) {
       rotation -= Math.PI
     } else if (rotation < -Math.PI) {
@@ -86,34 +86,34 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener?)
   }
 
   private fun finish() {
-    if (mInProgress) {
-      mInProgress = false
-      mListener?.onRotationEnd(this)
+    if (isInProgress) {
+      isInProgress = false
+      gestureListener?.onRotationEnd(this)
     }
   }
 
   fun onTouchEvent(event: MotionEvent): Boolean {
     when (event.actionMasked) {
       MotionEvent.ACTION_DOWN -> {
-        mInProgress = false
-        mPointerIds[0] = event.getPointerId(event.actionIndex)
-        mPointerIds[1] = MotionEvent.INVALID_POINTER_ID
+        isInProgress = false
+        pointerIds[0] = event.getPointerId(event.actionIndex)
+        pointerIds[1] = MotionEvent.INVALID_POINTER_ID
       }
-      MotionEvent.ACTION_POINTER_DOWN -> if (!mInProgress) {
-        mPointerIds[1] = event.getPointerId(event.actionIndex)
-        mInProgress = true
-        mPrevTime = event.eventTime
-        mPrevAngle = Double.NaN
+      MotionEvent.ACTION_POINTER_DOWN -> if (!isInProgress) {
+        pointerIds[1] = event.getPointerId(event.actionIndex)
+        isInProgress = true
+        previousTime = event.eventTime
+        previousAngle = Double.NaN
         updateCurrent(event)
-        mListener?.onRotationBegin(this)
+        gestureListener?.onRotationBegin(this)
       }
-      MotionEvent.ACTION_MOVE -> if (mInProgress) {
+      MotionEvent.ACTION_MOVE -> if (isInProgress) {
         updateCurrent(event)
-        mListener?.onRotation(this)
+        gestureListener?.onRotation(this)
       }
-      MotionEvent.ACTION_POINTER_UP -> if (mInProgress) {
+      MotionEvent.ACTION_POINTER_UP -> if (isInProgress) {
         val pointerId = event.getPointerId(event.actionIndex)
-        if (pointerId == mPointerIds[0] || pointerId == mPointerIds[1]) {
+        if (pointerId == pointerIds[0] || pointerId == pointerIds[1]) {
           // One of the key pointer has been lifted up, we have to end the gesture
           finish()
         }
