@@ -5,7 +5,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 
-class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler?>() {
+class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var mShouldActivateOnStart = false
   private var mDisallowInterruption = false
   override fun resetConfig() {
@@ -29,7 +29,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler?>() {
     return this
   }
 
-  override fun shouldRequireToWaitForFailure(handler: GestureHandler<*>?): Boolean {
+  override fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
     return super.shouldRequireToWaitForFailure(handler!!)
   }
 
@@ -57,7 +57,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler?>() {
     // otherwise we can only return `true` if already in an active state
   }
 
-  override fun shouldBeCancelledBy(handler: GestureHandler<*>?): Boolean {
+  override fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
     return !mDisallowInterruption
   }
 
