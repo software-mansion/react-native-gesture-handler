@@ -122,7 +122,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     private fun findRootViewTag(viewGroup: ViewGroup): ViewGroup {
       UiThreadUtil.assertOnUiThread()
       var parent: ViewParent? = viewGroup
-      while (parent != null && !(parent is ReactRootView || RNGHModalUtils.isDialogRootViewGroup(parent))) {
+      while (parent != null && parent !is ReactRootView && !RNGHModalUtils.isDialogRootViewGroup(parent)) {
         parent = parent.parent
       }
       checkNotNull(parent) {
