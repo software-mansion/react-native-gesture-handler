@@ -39,8 +39,19 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener?)
    */
   var anchorY = 0f
     private set
+
+  /**
+   * Return the time difference in milliseconds between the previous
+   * accepted rotation event and the current rotation event.
+   *
+   * @return Time difference since the last rotation event in milliseconds.
+   */
+  val timeDelta: Long
+    get() = mCurrTime - mPrevTime
+
   private var mInProgress = false
   private val mPointerIds = IntArray(2)
+  
   private fun updateCurrent(event: MotionEvent) {
     mPrevTime = mCurrTime
     mCurrTime = event.eventTime
@@ -111,13 +122,4 @@ class RotationGestureDetector(private val mListener: OnRotationGestureListener?)
     }
     return true
   }
-
-  /**
-   * Return the time difference in milliseconds between the previous
-   * accepted rotation event and the current rotation event.
-   *
-   * @return Time difference since the last rotation event in milliseconds.
-   */
-  val timeDelta: Long
-    get() = mCurrTime - mPrevTime
 }
