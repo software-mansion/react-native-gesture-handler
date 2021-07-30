@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
-  private var mShouldActivateOnStart = false
-  private var mDisallowInterruption = false
+  private var shouldActivateOnStart = false
+  private var disallowInterruption = false
 
   init {
     setShouldCancelWhenOutside(true)
@@ -15,12 +15,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun resetConfig() {
     super.resetConfig()
-    mShouldActivateOnStart = false
-    mDisallowInterruption = false
+    shouldActivateOnStart = false
+    disallowInterruption = false
   }
 
   fun setShouldActivateOnStart(shouldActivateOnStart: Boolean): NativeViewGestureHandler {
-    mShouldActivateOnStart = shouldActivateOnStart
+    this.shouldActivateOnStart = shouldActivateOnStart
     return this
   }
 
@@ -30,7 +30,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
    * aren't supposed to be cancelled by scrollview or other container that may also handle touches.
    */
   fun setDisallowInterruption(disallowInterruption: Boolean): NativeViewGestureHandler {
-    mDisallowInterruption = disallowInterruption
+    this.disallowInterruption = disallowInterruption
     return this
   }
 
@@ -41,12 +41,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       // accessed as a peer, because simultaneous recognizers can be set on either side of the
       // connection.
       val nativeWrapper = handler
-      if (nativeWrapper.state == STATE_ACTIVE && nativeWrapper.mDisallowInterruption) {
+      if (nativeWrapper.state == STATE_ACTIVE && nativeWrapper.disallowInterruption) {
         // other handler is active and it disallows interruption, we don't want to get into its way
         return false
       }
     }
-    val canBeInterrupted = !mDisallowInterruption
+    val canBeInterrupted = !disallowInterruption
     val state = state
     val otherState = handler.state
     return if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
@@ -59,7 +59,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   override fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
-    return !mDisallowInterruption
+    return !disallowInterruption
   }
 
   override fun onHandle(event: MotionEvent) {
@@ -73,7 +73,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       end()
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       when {
-        mShouldActivateOnStart -> {
+        shouldActivateOnStart -> {
           tryIntercept(view, event)
           view.onTouchEvent(event)
           activate()
