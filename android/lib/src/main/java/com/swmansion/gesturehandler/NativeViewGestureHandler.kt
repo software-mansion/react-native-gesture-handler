@@ -35,7 +35,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   override fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
-    return super.shouldRequireToWaitForFailure(handler!!)
+    return super.shouldRequireToWaitForFailure(handler)
   }
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
@@ -99,10 +99,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   companion object {
-    private fun tryIntercept(view: View, event: MotionEvent): Boolean {
-      return if (view is ViewGroup && view.onInterceptTouchEvent(event)) {
-        true
-      } else false
-    }
+    private fun tryIntercept(view: View, event: MotionEvent) =
+      view is ViewGroup && view.onInterceptTouchEvent(event)
   }
 }
