@@ -5,7 +5,7 @@ import android.view.ScaleGestureDetector
 import android.view.ScaleGestureDetector.OnScaleGestureListener
 import android.view.ViewConfiguration
 
-class PinchGestureHandler : GestureHandler<PinchGestureHandler?>() {
+class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   private var mScaleGestureDetector: ScaleGestureDetector? = null
   var scale = 0.0
     private set
