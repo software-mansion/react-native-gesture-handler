@@ -47,8 +47,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       }
     }
     if (event.actionMasked == MotionEvent.ACTION_UP) {
-      if (handler != null) {
-        handler!!.removeCallbacksAndMessages(null)
+      handler?.let {
+        it.removeCallbacksAndMessages(null)
         handler = null
       }
       if (state == STATE_ACTIVE) {
@@ -72,8 +72,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   }
 
   override fun onStateChange(newState: Int, previousState: Int) {
-    if (handler != null) {
-      handler!!.removeCallbacksAndMessages(null)
+    handler?.let {
+      it.removeCallbacksAndMessages(null)
       handler = null
     }
   }
