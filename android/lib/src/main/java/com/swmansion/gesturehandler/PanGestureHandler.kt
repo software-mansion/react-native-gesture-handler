@@ -7,7 +7,7 @@ import android.view.ViewConfiguration
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerY
 
-class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler?>() {
+class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>() {
   private val mDefaultMinDistSq: Float
   private var mMinDistSq = MAX_VALUE_IGNORE
   private var mActiveOffsetXStart = MIN_VALUE_IGNORE
