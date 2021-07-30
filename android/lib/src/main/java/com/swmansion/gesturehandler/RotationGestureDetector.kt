@@ -4,9 +4,9 @@ import android.view.MotionEvent
 
 class RotationGestureDetector(private val mListener: OnRotationGestureListener?) {
   interface OnRotationGestureListener {
-    fun onRotation(detector: RotationGestureDetector?): Boolean
-    fun onRotationBegin(detector: RotationGestureDetector?): Boolean
-    fun onRotationEnd(detector: RotationGestureDetector?)
+    fun onRotation(detector: RotationGestureDetector): Boolean
+    fun onRotationBegin(detector: RotationGestureDetector): Boolean
+    fun onRotationEnd(detector: RotationGestureDetector)
   }
 
   private var mCurrTime: Long = 0
