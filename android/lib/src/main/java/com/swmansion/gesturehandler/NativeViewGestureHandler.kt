@@ -8,6 +8,11 @@ import android.view.ViewGroup
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var mShouldActivateOnStart = false
   private var mDisallowInterruption = false
+
+  init {
+    setShouldCancelWhenOutside(true)
+  }
+
   override fun resetConfig() {
     super.resetConfig()
     mShouldActivateOnStart = false
@@ -99,9 +104,5 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         true
       } else false
     }
-  }
-
-  init {
-    setShouldCancelWhenOutside(true)
   }
 }
