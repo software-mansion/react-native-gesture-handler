@@ -1,7 +1,7 @@
 package com.example;
 
-  import com.facebook.react.bridge.JSIModulePackage; // <- add
-  import com.swmansion.reanimated.ReanimatedJSIModulePackage; // <- add
+import com.facebook.react.bridge.JSIModulePackage; // <- add
+import com.swmansion.reanimated.ReanimatedJSIModulePackage; // <- add
 import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
@@ -38,9 +38,9 @@ public class MainApplication extends Application implements ReactApplication {
         }
 
         @Override
-      protected JSIModulePackage getJSIModulePackage() {
-        return new ReanimatedJSIModulePackage(); // <- add
-      }
+        protected JSIModulePackage getJSIModulePackage() {
+          return new ReanimatedJSIModulePackage(); // <- add
+        }
       };
 
   @Override

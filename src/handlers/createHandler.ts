@@ -828,6 +828,7 @@ export function useGesture(gesture) {
       });
     }
 
+    result.current[0] = gesture;
     result.current[1]?.();
 
     return () => {
@@ -902,7 +903,6 @@ export class GestureMonitor extends React.Component {
     if (this.props.gesture.current) {
       if (this.props.gesture.current[0] instanceof Gesture) {
         for (const gesture of this.props.gesture.current[0].gestures) {
-          console.log(gesture.handlerName + ' ' + gesture.handlerTag);
           RNGestureHandlerModule.attachGestureHandler(
             gesture.handlerTag,
             newViewTag

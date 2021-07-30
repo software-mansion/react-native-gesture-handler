@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     alignSelf: 'center',
-    backgroundColor: 'plum',
+    backgroundColor: 'red',
   },
   button: {
     width: 100,

@@ -61,15 +61,17 @@ export default function Example() {
         ref: doubleTap,
         requireToFail: tripleTap,
         numberOfTaps: 2,
-        onEnd: (event) => {
-          console.log('double tap');
+        onEnd: (event, sc) => {
+          if (sc) console.log('double tap');
         },
       })
       .tap({
         requireToFail: doubleTap,
-        onEnd: (event) => {
-          console.log('single tap, counter: ' + (counter + 1));
-          setCounter(counter + 1);
+        onEnd: (event, sc) => {
+          if (sc) {
+            console.log('single tap, counter: ' + (counter + 1));
+            setCounter(counter + 1);
+          }
         },
       })
       .longPress({
@@ -78,10 +80,11 @@ export default function Example() {
         onStart: (event) => {
           console.log('long press start');
         },
-        onEnd: (event) => {
-          console.log(
-            'long pressed for: ' + event.nativeEvent.duration + ' ms'
-          );
+        onEnd: (event, sc) => {
+          if (sc)
+            console.log(
+              'long pressed for: ' + event.nativeEvent.duration + ' ms'
+            );
         },
       })
       .pan({
@@ -104,8 +107,8 @@ export default function Example() {
     new Gesture().tap({
       ref: tripleTap,
       numberOfTaps: 3,
-      onStart: (e) => {
-        console.log('triple tap');
+      onEnd: (e, sc) => {
+        if (sc) console.log('triple tap');
       },
     })
   );
