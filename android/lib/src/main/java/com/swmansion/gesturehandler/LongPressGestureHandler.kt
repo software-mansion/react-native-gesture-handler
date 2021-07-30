@@ -7,6 +7,8 @@ import android.view.MotionEvent
 
 class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestureHandler>() {
   var minDurationMs = DEFAULT_MIN_DURATION_MS
+  val duration: Int
+    get() = (previousTime - startTime).toInt()
   private val defaultMaxDistSq: Float
   private var maxDistSq: Float
   private var startX = 0f
@@ -87,9 +89,6 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     previousTime = SystemClock.uptimeMillis()
     super.dispatchTouchEvent(event)
   }
-
-  val duration: Int
-    get() = (previousTime - startTime).toInt()
 
   companion object {
     private const val DEFAULT_MIN_DURATION_MS: Long = 500 // 1 sec
