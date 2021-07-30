@@ -34,10 +34,6 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     return this
   }
 
-  override fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
-    return super.shouldRequireToWaitForFailure(handler)
-  }
-
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
     if (handler is NativeViewGestureHandler) {
       // Special case when the peer handler is also an instance of NativeViewGestureHandler:
