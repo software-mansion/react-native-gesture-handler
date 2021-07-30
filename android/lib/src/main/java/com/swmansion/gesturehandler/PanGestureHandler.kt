@@ -263,8 +263,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   }
 
   override fun onReset() {
-    if (mVelocityTracker != null) {
-      mVelocityTracker!!.recycle()
+    mVelocityTracker?.let {
+      it.recycle()
       mVelocityTracker = null
     }
   }
