@@ -8,33 +8,33 @@ import com.swmansion.gesturehandler.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerY
 
 class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>() {
-  private val mDefaultMinDistSq: Float
-  private var mMinDistSq = MAX_VALUE_IGNORE
-  private var mActiveOffsetXStart = MIN_VALUE_IGNORE
-  private var mActiveOffsetXEnd = MAX_VALUE_IGNORE
-  private var mFailOffsetXStart = MAX_VALUE_IGNORE
-  private var mFailOffsetXEnd = MIN_VALUE_IGNORE
-  private var mActiveOffsetYStart = MIN_VALUE_IGNORE
-  private var mActiveOffsetYEnd = MAX_VALUE_IGNORE
-  private var mFailOffsetYStart = MAX_VALUE_IGNORE
-  private var mFailOffsetYEnd = MIN_VALUE_IGNORE
-  private var mMinVelocityX = MIN_VALUE_IGNORE
-  private var mMinVelocityY = MIN_VALUE_IGNORE
-  private var mMinVelocitySq = MIN_VALUE_IGNORE
-  private var mMinPointers = DEFAULT_MIN_POINTERS
-  private var mMaxPointers = DEFAULT_MAX_POINTERS
-  private var mStartX = 0f
-  private var mStartY = 0f
-  private var mOffsetX = 0f
-  private var mOffsetY = 0f
-  private var mLastX = 0f
-  private var mLastY = 0f
   var velocityX = 0f
     private set
   var velocityY = 0f
     private set
-  private var mVelocityTracker: VelocityTracker? = null
-  private var mAverageTouches = false
+  private val defaultMinDistSq: Float
+  private var minDistSq = MAX_VALUE_IGNORE
+  private var activeOffsetXStart = MIN_VALUE_IGNORE
+  private var activeOffsetXEnd = MAX_VALUE_IGNORE
+  private var failOffsetXStart = MAX_VALUE_IGNORE
+  private var failOffsetXEnd = MIN_VALUE_IGNORE
+  private var activeOffsetYStart = MIN_VALUE_IGNORE
+  private var activeOffsetYEnd = MAX_VALUE_IGNORE
+  private var failOffsetYStart = MAX_VALUE_IGNORE
+  private var failOffsetYEnd = MIN_VALUE_IGNORE
+  private var minVelocityX = MIN_VALUE_IGNORE
+  private var minVelocityY = MIN_VALUE_IGNORE
+  private var minVelocitySq = MIN_VALUE_IGNORE
+  private var minPointers = DEFAULT_MIN_POINTERS
+  private var maxPointers = DEFAULT_MAX_POINTERS
+  private var startX = 0f
+  private var startY = 0f
+  private var offsetX = 0f
+  private var offsetY = 0f
+  private var lastX = 0f
+  private var lastY = 0f
+  private var velocityTracker: VelocityTracker? = null
+  private var averageTouches = false
 
   /**
    * On Android when there are multiple pointers on the screen pan gestures most often just consider
@@ -51,87 +51,87 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   init {
     val vc = ViewConfiguration.get(context)
     val touchSlop = vc.scaledTouchSlop
-    mDefaultMinDistSq = (touchSlop * touchSlop).toFloat()
-    mMinDistSq = mDefaultMinDistSq
+    defaultMinDistSq = (touchSlop * touchSlop).toFloat()
+    minDistSq = defaultMinDistSq
   }
 
   override fun resetConfig() {
     super.resetConfig()
-    mMinDistSq = MAX_VALUE_IGNORE
-    mActiveOffsetXStart = MIN_VALUE_IGNORE
-    mActiveOffsetXEnd = MAX_VALUE_IGNORE
-    mFailOffsetXStart = MAX_VALUE_IGNORE
-    mFailOffsetXEnd = MIN_VALUE_IGNORE
-    mActiveOffsetYStart = MIN_VALUE_IGNORE
-    mActiveOffsetYEnd = MAX_VALUE_IGNORE
-    mFailOffsetYStart = MAX_VALUE_IGNORE
-    mFailOffsetYEnd = MIN_VALUE_IGNORE
-    mMinVelocityX = MIN_VALUE_IGNORE
-    mMinVelocityY = MIN_VALUE_IGNORE
-    mMinVelocitySq = MIN_VALUE_IGNORE
-    mMinDistSq = mDefaultMinDistSq
-    mMinPointers = DEFAULT_MIN_POINTERS
-    mMaxPointers = DEFAULT_MAX_POINTERS
-    mAverageTouches = false
+    minDistSq = MAX_VALUE_IGNORE
+    activeOffsetXStart = MIN_VALUE_IGNORE
+    activeOffsetXEnd = MAX_VALUE_IGNORE
+    failOffsetXStart = MAX_VALUE_IGNORE
+    failOffsetXEnd = MIN_VALUE_IGNORE
+    activeOffsetYStart = MIN_VALUE_IGNORE
+    activeOffsetYEnd = MAX_VALUE_IGNORE
+    failOffsetYStart = MAX_VALUE_IGNORE
+    failOffsetYEnd = MIN_VALUE_IGNORE
+    minVelocityX = MIN_VALUE_IGNORE
+    minVelocityY = MIN_VALUE_IGNORE
+    minVelocitySq = MIN_VALUE_IGNORE
+    minDistSq = defaultMinDistSq
+    minPointers = DEFAULT_MIN_POINTERS
+    maxPointers = DEFAULT_MAX_POINTERS
+    averageTouches = false
   }
 
   fun setActiveOffsetXStart(activeOffsetXStart: Float): PanGestureHandler {
-    mActiveOffsetXStart = activeOffsetXStart
+    this.activeOffsetXStart = activeOffsetXStart
     return this
   }
 
   fun setActiveOffsetXEnd(activeOffsetXEnd: Float): PanGestureHandler {
-    mActiveOffsetXEnd = activeOffsetXEnd
+    this.activeOffsetXEnd = activeOffsetXEnd
     return this
   }
 
   fun setFailOffsetXStart(failOffsetXStart: Float): PanGestureHandler {
-    mFailOffsetXStart = failOffsetXStart
+    this.failOffsetXStart = failOffsetXStart
     return this
   }
 
   fun setFailOffsetXEnd(failOffsetXEnd: Float): PanGestureHandler {
-    mFailOffsetXEnd = failOffsetXEnd
+    this.failOffsetXEnd = failOffsetXEnd
     return this
   }
 
   fun setActiveOffsetYStart(activeOffsetYStart: Float): PanGestureHandler {
-    mActiveOffsetYStart = activeOffsetYStart
+    this.activeOffsetYStart = activeOffsetYStart
     return this
   }
 
   fun setActiveOffsetYEnd(activeOffsetYEnd: Float): PanGestureHandler {
-    mActiveOffsetYEnd = activeOffsetYEnd
+    this.activeOffsetYEnd = activeOffsetYEnd
     return this
   }
 
   fun setFailOffsetYStart(failOffsetYStart: Float): PanGestureHandler {
-    mFailOffsetYStart = failOffsetYStart
+    this.failOffsetYStart = failOffsetYStart
     return this
   }
 
   fun setFailOffsetYEnd(failOffsetYEnd: Float): PanGestureHandler {
-    mFailOffsetYEnd = failOffsetYEnd
+    this.failOffsetYEnd = failOffsetYEnd
     return this
   }
 
   fun setMinDist(minDist: Float): PanGestureHandler {
-    mMinDistSq = minDist * minDist
+    minDistSq = minDist * minDist
     return this
   }
 
   fun setMinPointers(minPointers: Int): PanGestureHandler {
-    mMinPointers = minPointers
+    this.minPointers = minPointers
     return this
   }
 
   fun setMaxPointers(maxPointers: Int): PanGestureHandler {
-    mMaxPointers = maxPointers
+    this.maxPointers = maxPointers
     return this
   }
 
   fun setAverageTouches(averageTouches: Boolean): PanGestureHandler {
-    mAverageTouches = averageTouches
+    this.averageTouches = averageTouches
     return this
   }
 
@@ -139,66 +139,66 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
    * @param minVelocity in pixels per second
    */
   fun setMinVelocity(minVelocity: Float): PanGestureHandler {
-    mMinVelocitySq = minVelocity * minVelocity
+    minVelocitySq = minVelocity * minVelocity
     return this
   }
 
   fun setMinVelocityX(minVelocityX: Float): PanGestureHandler {
-    mMinVelocityX = minVelocityX
+    this.minVelocityX = minVelocityX
     return this
   }
 
   fun setMinVelocityY(minVelocityY: Float): PanGestureHandler {
-    mMinVelocityY = minVelocityY
+    this.minVelocityY = minVelocityY
     return this
   }
 
   private fun shouldActivate(): Boolean {
-    val dx = mLastX - mStartX + mOffsetX
-    if (mActiveOffsetXStart != MIN_VALUE_IGNORE && dx < mActiveOffsetXStart) {
+    val dx = lastX - startX + offsetX
+    if (activeOffsetXStart != MIN_VALUE_IGNORE && dx < activeOffsetXStart) {
       return true
     }
-    if (mActiveOffsetXEnd != MAX_VALUE_IGNORE && dx > mActiveOffsetXEnd) {
+    if (activeOffsetXEnd != MAX_VALUE_IGNORE && dx > activeOffsetXEnd) {
       return true
     }
-    val dy = mLastY - mStartY + mOffsetY
-    if (mActiveOffsetYStart != MIN_VALUE_IGNORE && dy < mActiveOffsetYStart) {
+    val dy = lastY - startY + offsetY
+    if (activeOffsetYStart != MIN_VALUE_IGNORE && dy < activeOffsetYStart) {
       return true
     }
-    if (mActiveOffsetYEnd != MAX_VALUE_IGNORE && dy > mActiveOffsetYEnd) {
+    if (activeOffsetYEnd != MAX_VALUE_IGNORE && dy > activeOffsetYEnd) {
       return true
     }
     val distSq = dx * dx + dy * dy
-    if (mMinDistSq != MIN_VALUE_IGNORE && distSq >= mMinDistSq) {
+    if (minDistSq != MIN_VALUE_IGNORE && distSq >= minDistSq) {
       return true
     }
     val vx = velocityX
-    if (mMinVelocityX != MIN_VALUE_IGNORE &&
-      (mMinVelocityX < 0 && vx <= mMinVelocityX || mMinVelocityX in 0.0f..vx)) {
+    if (minVelocityX != MIN_VALUE_IGNORE &&
+      (minVelocityX < 0 && vx <= minVelocityX || minVelocityX in 0.0f..vx)) {
       return true
     }
     val vy = velocityY
-    if (mMinVelocityY != MIN_VALUE_IGNORE &&
-      (mMinVelocityY < 0 && vx <= mMinVelocityY || mMinVelocityY in 0.0f..vx)) {
+    if (minVelocityY != MIN_VALUE_IGNORE &&
+      (minVelocityY < 0 && vx <= minVelocityY || minVelocityY in 0.0f..vx)) {
       return true
     }
     val velocitySq = vx * vx + vy * vy
-    return mMinVelocitySq != MIN_VALUE_IGNORE && velocitySq >= mMinVelocitySq
+    return minVelocitySq != MIN_VALUE_IGNORE && velocitySq >= minVelocitySq
   }
 
   private fun shouldFail(): Boolean {
-    val dx = mLastX - mStartX + mOffsetX
-    if (mFailOffsetXStart != MAX_VALUE_IGNORE && dx < mFailOffsetXStart) {
+    val dx = lastX - startX + offsetX
+    if (failOffsetXStart != MAX_VALUE_IGNORE && dx < failOffsetXStart) {
       return true
     }
-    if (mFailOffsetXEnd != MIN_VALUE_IGNORE && dx > mFailOffsetXEnd) {
+    if (failOffsetXEnd != MIN_VALUE_IGNORE && dx > failOffsetXEnd) {
       return true
     }
-    val dy = mLastY - mStartY + mOffsetY
-    if (mFailOffsetYStart != MAX_VALUE_IGNORE && dy < mFailOffsetYStart) {
+    val dy = lastY - startY + offsetY
+    if (failOffsetYStart != MAX_VALUE_IGNORE && dy < failOffsetYStart) {
       return true
     }
-    return mFailOffsetYEnd != MIN_VALUE_IGNORE && dy > mFailOffsetYEnd
+    return failOffsetYEnd != MIN_VALUE_IGNORE && dy > failOffsetYEnd
   }
 
   override fun onHandle(event: MotionEvent) {
@@ -206,31 +206,31 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     val action = event.actionMasked
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
       // update offset if new pointer gets added or removed
-      mOffsetX += mLastX - mStartX
-      mOffsetY += mLastY - mStartY
+      offsetX += lastX - startX
+      offsetY += lastY - startY
 
       // reset starting point
-      mLastX = getLastPointerX(event, mAverageTouches)
-      mLastY = getLastPointerY(event, mAverageTouches)
-      mStartX = mLastX
-      mStartY = mLastY
+      lastX = getLastPointerX(event, averageTouches)
+      lastY = getLastPointerY(event, averageTouches)
+      startX = lastX
+      startY = lastY
     } else {
-      mLastX = getLastPointerX(event, mAverageTouches)
-      mLastY = getLastPointerY(event, mAverageTouches)
+      lastX = getLastPointerX(event, averageTouches)
+      lastY = getLastPointerY(event, averageTouches)
     }
-    if (state == STATE_UNDETERMINED && event.pointerCount >= mMinPointers) {
-      mStartX = mLastX
-      mStartY = mLastY
-      mOffsetX = 0f
-      mOffsetY = 0f
-      mVelocityTracker = VelocityTracker.obtain()
-      addVelocityMovement(mVelocityTracker, event)
+    if (state == STATE_UNDETERMINED && event.pointerCount >= minPointers) {
+      startX = lastX
+      startY = lastY
+      offsetX = 0f
+      offsetY = 0f
+      velocityTracker = VelocityTracker.obtain()
+      addVelocityMovement(velocityTracker, event)
       begin()
-    } else if (mVelocityTracker != null) {
-      addVelocityMovement(mVelocityTracker, event)
-      mVelocityTracker!!.computeCurrentVelocity(1000)
-      velocityX = mVelocityTracker!!.xVelocity
-      velocityY = mVelocityTracker!!.yVelocity
+    } else if (velocityTracker != null) {
+      addVelocityMovement(velocityTracker, event)
+      velocityTracker!!.computeCurrentVelocity(1000)
+      velocityX = velocityTracker!!.xVelocity
+      velocityY = velocityTracker!!.yVelocity
     }
     if (action == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
@@ -238,14 +238,14 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       } else {
         fail()
       }
-    } else if (action == MotionEvent.ACTION_POINTER_DOWN && event.pointerCount > mMaxPointers) {
+    } else if (action == MotionEvent.ACTION_POINTER_DOWN && event.pointerCount > maxPointers) {
       // When new finger is placed down (POINTER_DOWN) we check if MAX_POINTERS is not exceeded
       if (state == STATE_ACTIVE) {
         cancel()
       } else {
         fail()
       }
-    } else if (action == MotionEvent.ACTION_POINTER_UP && state == STATE_ACTIVE && event.pointerCount < mMinPointers) {
+    } else if (action == MotionEvent.ACTION_POINTER_UP && state == STATE_ACTIVE && event.pointerCount < minPointers) {
       // When finger is lifted up (POINTER_UP) and the number of pointers falls below MIN_POINTERS
       // threshold, we only want to take an action when the handler has already activated. Otherwise
       // we can still expect more fingers to be placed on screen and fulfill MIN_POINTERS criteria.
@@ -255,24 +255,24 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
         fail()
       } else if (shouldActivate()) {
         // reset starting point
-        mStartX = mLastX
-        mStartY = mLastY
+        startX = lastX
+        startY = lastY
         activate()
       }
     }
   }
 
   override fun onReset() {
-    mVelocityTracker?.let {
+    velocityTracker?.let {
       it.recycle()
-      mVelocityTracker = null
+      velocityTracker = null
     }
   }
 
   val translationX: Float
-    get() = mLastX - mStartX + mOffsetX
+    get() = lastX - startX + offsetX
   val translationY: Float
-    get() = mLastY - mStartY + mOffsetY
+    get() = lastY - startY + offsetY
 
   companion object {
     private const val MIN_VALUE_IGNORE = Float.MAX_VALUE
