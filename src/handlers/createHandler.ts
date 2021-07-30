@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {
   findNodeHandle as findNodeHandleRN,
-  NativeModules,
   Platform,
   Touchable,
+  UIManager,
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
@@ -24,8 +24,6 @@ function findNodeHandle(
   if (Platform.OS === 'web') return node;
   return findNodeHandleRN(node);
 }
-
-const { UIManager = {} } = NativeModules;
 
 const customGHEventsConfig = {
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
