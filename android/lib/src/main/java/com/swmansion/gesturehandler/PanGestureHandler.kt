@@ -35,6 +35,26 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     private set
   private var mVelocityTracker: VelocityTracker? = null
   private var mAverageTouches = false
+
+  /**
+   * On Android when there are multiple pointers on the screen pan gestures most often just consider
+   * the last placed pointer. The behaviour on iOS is quite different where the x and y component
+   * of the pan pointer is calculated as an average out of all the pointers placed on the screen.
+   *
+   * This behaviour can be customized on android by setting averageTouches property of the handler
+   * object. This could be useful in particular for the usecases when we attach other handlers that
+   * recognizes multi-finger gestures such as rotation. In that case when we only rely on the last
+   * placed finger it is easier for the gesture handler to trigger when we do a rotation gesture
+   * because each finger when treated separately will travel some distance, whereas the average
+   * position of all the fingers will remain still while doing a rotation gesture.
+   */
+  init {
+    val vc = ViewConfiguration.get(context)
+    val touchSlop = vc.scaledTouchSlop
+    mDefaultMinDistSq = (touchSlop * touchSlop).toFloat()
+    mMinDistSq = mDefaultMinDistSq
+  }
+
   override fun resetConfig() {
     super.resetConfig()
     mMinDistSq = MAX_VALUE_IGNORE
@@ -273,24 +293,5 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       tracker!!.addMovement(event)
       event.offsetLocation(-offsetX, -offsetY)
     }
-  }
-
-  /**
-   * On Android when there are multiple pointers on the screen pan gestures most often just consider
-   * the last placed pointer. The behaviour on iOS is quite different where the x and y component
-   * of the pan pointer is calculated as an average out of all the pointers placed on the screen.
-   *
-   * This behaviour can be customized on android by setting averageTouches property of the handler
-   * object. This could be useful in particular for the usecases when we attach other handlers that
-   * recognizes multi-finger gestures such as rotation. In that case when we only rely on the last
-   * placed finger it is easier for the gesture handler to trigger when we do a rotation gesture
-   * because each finger when treated separately will travel some distance, whereas the average
-   * position of all the fingers will remain still while doing a rotation gesture.
-   */
-  init {
-    val vc = ViewConfiguration.get(context)
-    val touchSlop = vc.scaledTouchSlop
-    mDefaultMinDistSq = (touchSlop * touchSlop).toFloat()
-    mMinDistSq = mDefaultMinDistSq
   }
 }
