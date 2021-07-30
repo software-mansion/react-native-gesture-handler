@@ -63,7 +63,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     mListener?.onStateChange(self(), newState, prevState)
   }
 
-  open fun dispatchTouchEvent(event: MotionEvent?) {
+  open fun dispatchTouchEvent(event: MotionEvent) {
     mListener?.onTouchEvent(self(), event)
   }
 
