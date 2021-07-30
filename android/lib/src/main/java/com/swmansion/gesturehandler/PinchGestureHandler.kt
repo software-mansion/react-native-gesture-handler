@@ -4,6 +4,7 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.ScaleGestureDetector.OnScaleGestureListener
 import android.view.ViewConfiguration
+import kotlin.math.abs
 
 class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   private var mScaleGestureDetector: ScaleGestureDetector? = null
@@ -21,7 +22,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       if (delta > 0) {
         velocity = (scale - prevScaleFactor) / delta
       }
-      if (Math.abs(mStartingSpan - detector.currentSpan) >= mSpanSlop
+      if (abs(mStartingSpan - detector.currentSpan) >= mSpanSlop
         && state == STATE_BEGAN) {
         activate()
       }
