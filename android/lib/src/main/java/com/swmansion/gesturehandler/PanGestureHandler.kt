@@ -12,6 +12,11 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     private set
   var velocityY = 0f
     private set
+  val translationX: Float
+    get() = lastX - startX + offsetX
+  val translationY: Float
+    get() = lastY - startY + offsetY
+
   private val defaultMinDistSq: Float
   private var minDistSq = MAX_VALUE_IGNORE
   private var activeOffsetXStart = MIN_VALUE_IGNORE
@@ -253,11 +258,6 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       velocityTracker = null
     }
   }
-
-  val translationX: Float
-    get() = lastX - startX + offsetX
-  val translationY: Float
-    get() = lastY - startY + offsetY
 
   companion object {
     private const val MIN_VALUE_IGNORE = Float.MAX_VALUE
