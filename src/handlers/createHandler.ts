@@ -740,7 +740,7 @@ export class Gesture {
       gesture.handlerTag = handlerTag++;
 
       if (gesture.config.ref) {
-        gesture.config.ref.current = gesture.handlerTag;
+        gesture.config.ref.current = gesture;
       }
     }
   }
@@ -775,7 +775,6 @@ export function useGesture(gesture) {
 
   React.useEffect(() => {
     gesture.initialize();
-    gesture.prepare();
 
     for (const gst of gesture.gestures) {
       RNGestureHandlerModule.createGestureHandler(
@@ -785,24 +784,26 @@ export function useGesture(gesture) {
       );
 
       setImmediate(() => {
+        gesture.prepare();
+
         let requireToFail = [];
         if (gst.config.requireToFail) {
           requireToFail = gst.config.requireToFail.map((ref) => {
-            return ref.current;
+            return ref.current.handlerTag;
           });
         }
 
         let after = [];
         if (gst.config.after) {
           after = gst.config.after.map((ref) => {
-            return ref.current;
+            return ref.current.handlerTag;
           });
         }
 
         let simultaneousWith = [];
         if (gst.config.simultaneousWith) {
           simultaneousWith = gst.config.simultaneousWith.map((ref) => {
-            return ref.current;
+            return ref.current.handlerTag;
           });
         }
 

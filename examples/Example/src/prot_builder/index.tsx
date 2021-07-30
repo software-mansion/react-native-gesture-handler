@@ -103,18 +103,23 @@ export default function Example() {
       })
   );
 
-  let tripleTapGesture = useGesture(
-    new Gesture().tap({
-      ref: tripleTap,
-      numberOfTaps: 3,
-      onEnd: (e, sc) => {
-        if (sc) console.log('triple tap');
-      },
-    })
-  );
+  // let tripleTapGesture = useGesture(
+  //   new Gesture().tap({
+  //     ref: tripleTap,
+  //     numberOfTaps: 3,
+  //     onEnd: (e, sc) => {
+  //       if (sc) console.log('triple tap');
+  //     },
+  //   })
+  // );
 
   return (
-    <GestureMonitor gesture={tripleTapGesture}>
+    <TapGestureHandler
+      ref={tripleTap}
+      onHandlerStateChange={(e) => {
+        if (e.nativeEvent.state == 4) console.log('triple');
+      }}
+      numberOfTaps={3}>
       <View style={styles.home}>
         <GestureMonitor gesture={gesture}>
           <View style={[styles.button]}>
@@ -122,7 +127,7 @@ export default function Example() {
           </View>
         </GestureMonitor>
       </View>
-    </GestureMonitor>
+    </TapGestureHandler>
   );
 }
 
