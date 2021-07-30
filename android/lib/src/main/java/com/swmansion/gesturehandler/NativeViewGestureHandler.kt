@@ -54,7 +54,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     val state = state
     val otherState = handler.state
     return if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
-      // if both handlers are active and the current handler can be interruped it we return `false`
+      // if both handlers are active and the current handler can be interrupted it we return `false`
       // as it means the other handler has turned active and returning `true` would prevent it from
       // interrupting the current handler
       false
@@ -76,15 +76,19 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       }
       end()
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
-      if (mShouldActivateOnStart) {
-        tryIntercept(view, event)
-        view.onTouchEvent(event)
-        activate()
-      } else if (tryIntercept(view, event)) {
-        view.onTouchEvent(event)
-        activate()
-      } else if (state != STATE_BEGAN) {
-        begin()
+      when {
+        mShouldActivateOnStart -> {
+          tryIntercept(view, event)
+          view.onTouchEvent(event)
+          activate()
+        }
+        tryIntercept(view, event) -> {
+          view.onTouchEvent(event)
+          activate()
+        }
+        state != STATE_BEGAN -> {
+          begin()
+        }
       }
     } else if (state == STATE_ACTIVE) {
       view.onTouchEvent(event)
