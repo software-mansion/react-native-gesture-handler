@@ -12,13 +12,9 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   var velocity = 0.0
     private set
   val focalPointX: Float
-    get() = if (mScaleGestureDetector == null) {
-      Float.NaN
-    } else mScaleGestureDetector!!.focusX
+    get() = mScaleGestureDetector?.focusX ?: Float.NaN
   val focalPointY: Float
-    get() = if (mScaleGestureDetector == null) {
-      Float.NaN
-    } else mScaleGestureDetector!!.focusY
+    get() = mScaleGestureDetector?.focusY ?: Float.NaN
 
   private var mScaleGestureDetector: ScaleGestureDetector? = null
   private var mStartingSpan = 0f
