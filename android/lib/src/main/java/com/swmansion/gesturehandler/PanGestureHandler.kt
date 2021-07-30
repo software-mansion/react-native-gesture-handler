@@ -174,12 +174,12 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     }
     val vx = velocityX
     if (mMinVelocityX != MIN_VALUE_IGNORE &&
-      (mMinVelocityX < 0 && vx <= mMinVelocityX || mMinVelocityX >= 0 && vx >= mMinVelocityX)) {
+      (mMinVelocityX < 0 && vx <= mMinVelocityX || mMinVelocityX in 0.0f..vx)) {
       return true
     }
     val vy = velocityY
     if (mMinVelocityY != MIN_VALUE_IGNORE &&
-      (mMinVelocityY < 0 && vx <= mMinVelocityY || mMinVelocityY >= 0 && vx >= mMinVelocityY)) {
+      (mMinVelocityY < 0 && vx <= mMinVelocityY || mMinVelocityY in 0.0f..vx)) {
       return true
     }
     val velocitySq = vx * vx + vy * vy
