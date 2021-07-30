@@ -19,9 +19,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     disallowInterruption = false
   }
 
-  fun setShouldActivateOnStart(shouldActivateOnStart: Boolean): NativeViewGestureHandler {
+  fun setShouldActivateOnStart(shouldActivateOnStart: Boolean) = apply {
     this.shouldActivateOnStart = shouldActivateOnStart
-    return this
   }
 
   /**
@@ -29,9 +28,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
    * target for a touch stream. Like for example switch or slider component which when activated
    * aren't supposed to be cancelled by scrollview or other container that may also handle touches.
    */
-  fun setDisallowInterruption(disallowInterruption: Boolean): NativeViewGestureHandler {
+  fun setDisallowInterruption(disallowInterruption: Boolean) = apply {
     this.disallowInterruption = disallowInterruption
-    return this
   }
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
