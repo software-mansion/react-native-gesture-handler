@@ -93,8 +93,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun onCancel() {
     val time = SystemClock.uptimeMillis()
-    val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
-    event.action = MotionEvent.ACTION_CANCEL
+    val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
+      action =  MotionEvent.ACTION_CANCEL
+    }
     view!!.onTouchEvent(event)
   }
 
