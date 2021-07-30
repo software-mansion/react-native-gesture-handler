@@ -75,82 +75,67 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     averageTouches = false
   }
 
-  fun setActiveOffsetXStart(activeOffsetXStart: Float): PanGestureHandler {
+  fun setActiveOffsetXStart(activeOffsetXStart: Float) = apply {
     this.activeOffsetXStart = activeOffsetXStart
-    return this
   }
 
-  fun setActiveOffsetXEnd(activeOffsetXEnd: Float): PanGestureHandler {
+  fun setActiveOffsetXEnd(activeOffsetXEnd: Float) = apply {
     this.activeOffsetXEnd = activeOffsetXEnd
-    return this
   }
 
-  fun setFailOffsetXStart(failOffsetXStart: Float): PanGestureHandler {
+  fun setFailOffsetXStart(failOffsetXStart: Float) = apply {
     this.failOffsetXStart = failOffsetXStart
-    return this
   }
 
-  fun setFailOffsetXEnd(failOffsetXEnd: Float): PanGestureHandler {
+  fun setFailOffsetXEnd(failOffsetXEnd: Float) = apply {
     this.failOffsetXEnd = failOffsetXEnd
-    return this
   }
 
-  fun setActiveOffsetYStart(activeOffsetYStart: Float): PanGestureHandler {
+  fun setActiveOffsetYStart(activeOffsetYStart: Float) = apply {
     this.activeOffsetYStart = activeOffsetYStart
-    return this
   }
 
-  fun setActiveOffsetYEnd(activeOffsetYEnd: Float): PanGestureHandler {
+  fun setActiveOffsetYEnd(activeOffsetYEnd: Float) = apply {
     this.activeOffsetYEnd = activeOffsetYEnd
-    return this
   }
 
-  fun setFailOffsetYStart(failOffsetYStart: Float): PanGestureHandler {
+  fun setFailOffsetYStart(failOffsetYStart: Float) = apply {
     this.failOffsetYStart = failOffsetYStart
-    return this
   }
 
-  fun setFailOffsetYEnd(failOffsetYEnd: Float): PanGestureHandler {
+  fun setFailOffsetYEnd(failOffsetYEnd: Float) = apply {
     this.failOffsetYEnd = failOffsetYEnd
-    return this
   }
 
-  fun setMinDist(minDist: Float): PanGestureHandler {
+  fun setMinDist(minDist: Float) = apply {
     minDistSq = minDist * minDist
-    return this
   }
 
-  fun setMinPointers(minPointers: Int): PanGestureHandler {
+  fun setMinPointers(minPointers: Int) = apply {
     this.minPointers = minPointers
-    return this
   }
 
-  fun setMaxPointers(maxPointers: Int): PanGestureHandler {
+  fun setMaxPointers(maxPointers: Int) = apply {
     this.maxPointers = maxPointers
-    return this
   }
 
-  fun setAverageTouches(averageTouches: Boolean): PanGestureHandler {
+  fun setAverageTouches(averageTouches: Boolean) = apply {
     this.averageTouches = averageTouches
-    return this
   }
 
   /**
    * @param minVelocity in pixels per second
    */
-  fun setMinVelocity(minVelocity: Float): PanGestureHandler {
+  fun setMinVelocity(minVelocity: Float) = apply {
     minVelocitySq = minVelocity * minVelocity
-    return this
   }
 
-  fun setMinVelocityX(minVelocityX: Float): PanGestureHandler {
+  fun setMinVelocityX(minVelocityX: Float) = apply {
     this.minVelocityX = minVelocityX
-    return this
   }
 
-  fun setMinVelocityY(minVelocityY: Float): PanGestureHandler {
+  fun setMinVelocityY(minVelocityY: Float) = apply {
     this.minVelocityY = minVelocityY
-    return this
   }
 
   private fun shouldActivate(): Boolean {
