@@ -10,8 +10,8 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
     fun onRotationEnd(detector: RotationGestureDetector)
   }
 
-  private var currentTime: Long = 0
-  private var previousTime: Long = 0
+  private var currentTime = 0L
+  private var previousTime = 0L
   private var previousAngle = 0.0
 
   /**
@@ -68,7 +68,7 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
 
     // Angle diff should be positive when rotating in clockwise direction
     val angle = -atan2(vectorY.toDouble(), vectorX.toDouble())
-    rotation = if (java.lang.Double.isNaN(previousAngle)) {
+    rotation = if (previousAngle.isNaN()) {
       0.0
     } else previousAngle - angle
 
