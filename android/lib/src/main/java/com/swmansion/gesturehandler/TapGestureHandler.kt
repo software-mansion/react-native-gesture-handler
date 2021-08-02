@@ -35,39 +35,32 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     mMinNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS
   }
 
-  fun setNumberOfTaps(numberOfTaps: Int): TapGestureHandler {
+  fun setNumberOfTaps(numberOfTaps: Int) = apply {
     mNumberOfTaps = numberOfTaps
-    return this
   }
 
-  fun setMaxDelayMs(maxDelayMs: Long): TapGestureHandler {
+  fun setMaxDelayMs(maxDelayMs: Long) = apply {
     mMaxDelayMs = maxDelayMs
-    return this
   }
 
-  fun setMaxDurationMs(maxDurationMs: Long): TapGestureHandler {
+  fun setMaxDurationMs(maxDurationMs: Long) = apply {
     mMaxDurationMs = maxDurationMs
-    return this
   }
 
-  fun setMaxDx(deltaX: Float): TapGestureHandler {
+  fun setMaxDx(deltaX: Float) = apply {
     mMaxDeltaX = deltaX
-    return this
   }
 
-  fun setMaxDy(deltaY: Float): TapGestureHandler {
+  fun setMaxDy(deltaY: Float) = apply {
     mMaxDeltaY = deltaY
-    return this
   }
 
-  fun setMaxDist(maxDist: Float): TapGestureHandler {
+  fun setMaxDist(maxDist: Float) = apply {
     mMaxDistSq = maxDist * maxDist
-    return this
   }
 
-  fun setMinNumberOfPointers(minNumberOfPointers: Int): TapGestureHandler {
+  fun setMinNumberOfPointers(minNumberOfPointers: Int) = apply {
     mMinNumberOfPointers = minNumberOfPointers
-    return this
   }
 
   private fun startTap() {
