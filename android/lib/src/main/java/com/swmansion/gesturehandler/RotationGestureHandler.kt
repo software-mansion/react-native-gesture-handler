@@ -48,9 +48,7 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
       rotationGestureDetector = RotationGestureDetector(gestureListener)
       begin()
     }
-    if (rotationGestureDetector != null) {
-      rotationGestureDetector!!.onTouchEvent(event)
-    }
+    rotationGestureDetector?.onTouchEvent(event)
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
         end()
