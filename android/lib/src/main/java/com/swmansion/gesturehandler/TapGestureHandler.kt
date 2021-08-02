@@ -4,6 +4,7 @@ import android.os.Handler
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerY
+import kotlin.math.abs
 
 class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   private var mMaxDeltaX = MAX_VALUE_IGNORE
@@ -94,11 +95,11 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
 
   private fun shouldFail(): Boolean {
     val dx = mLastX - mStartX + mOffsetX
-    if (mMaxDeltaX != MAX_VALUE_IGNORE && Math.abs(dx) > mMaxDeltaX) {
+    if (mMaxDeltaX != MAX_VALUE_IGNORE && abs(dx) > mMaxDeltaX) {
       return true
     }
     val dy = mLastY - mStartY + mOffsetY
-    if (mMaxDeltaY != MAX_VALUE_IGNORE && Math.abs(dy) > mMaxDeltaY) {
+    if (mMaxDeltaY != MAX_VALUE_IGNORE && abs(dy) > mMaxDeltaY) {
       return true
     }
     val dist = dy * dy + dx * dx
