@@ -32,7 +32,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
     orchestrator = GestureHandlerOrchestrator(
       wrappedView, registry, RNViewConfigurationHelper()).apply {
-      setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH)
+      minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
     jsGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
     with(registry) {

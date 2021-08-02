@@ -12,6 +12,13 @@ class GestureHandlerOrchestrator(
   private val mHandlerRegistry: GestureHandlerRegistry,
   private val mViewConfigHelper: ViewConfigurationHelper
 ) {
+  /**
+   * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
+   * gesture target. E.g. if set to 0.1 then views that less than 10% opaque will be ignored when
+   * traversing view hierarchy and looking for gesture handlers.
+   */
+  var minimumAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
+
   private val mGestureHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private val mAwaitingHandlers: Array<GestureHandler<*>?> = arrayOfNulls(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private val mPreparedHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
@@ -22,16 +29,6 @@ class GestureHandlerOrchestrator(
   private var mHandlingChangeSemaphore = 0
   private var mFinishedHandlersCleanupScheduled = false
   private var mActivationIndex = 0
-  private var mMinAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
-
-  /**
-   * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
-   * gesture target. E.g. if set to 0.1 then views that less than 10% opaque will be ignored when
-   * traversing view hierarchy and looking for gesture handlers.
-   */
-  fun setMinimumAlphaForTraversal(alpha: Float) {
-    mMinAlphaForTraversal = alpha
-  }
 
   /**
    * Should be called from the view wrapper
@@ -401,7 +398,7 @@ class GestureHandlerOrchestrator(
   }
 
   private fun canReceiveEvents(view: View): Boolean {
-    return view.visibility == View.VISIBLE && view.alpha >= mMinAlphaForTraversal
+    return view.visibility == View.VISIBLE && view.alpha >= minimumAlphaForTraversal
   }
 
   private fun isClipping(view: View): Boolean {
