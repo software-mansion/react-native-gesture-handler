@@ -4,12 +4,12 @@ import android.view.MotionEvent
 import com.swmansion.gesturehandler.RotationGestureDetector.OnRotationGestureListener
 
 class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
-  private var mRotationGestureDetector: RotationGestureDetector? = null
+  private var rotationGestureDetector: RotationGestureDetector? = null
   var rotation = 0.0
     private set
   var velocity = 0.0
     private set
-  private val mGestureListener: OnRotationGestureListener = object : OnRotationGestureListener {
+  private val gestureListener: OnRotationGestureListener = object : OnRotationGestureListener {
     override fun onRotation(detector: RotationGestureDetector): Boolean {
       val prevRotation: Double = rotation
       rotation += detector.rotation
@@ -37,11 +37,11 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     if (state == STATE_UNDETERMINED) {
       velocity = 0.0
       rotation = 0.0
-      mRotationGestureDetector = RotationGestureDetector(mGestureListener)
+      rotationGestureDetector = RotationGestureDetector(gestureListener)
       begin()
     }
-    if (mRotationGestureDetector != null) {
-      mRotationGestureDetector!!.onTouchEvent(event)
+    if (rotationGestureDetector != null) {
+      rotationGestureDetector!!.onTouchEvent(event)
     }
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
@@ -53,19 +53,19 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   }
 
   override fun onReset() {
-    mRotationGestureDetector = null
+    rotationGestureDetector = null
     velocity = 0.0
     rotation = 0.0
   }
 
   val anchorX: Float
-    get() = if (mRotationGestureDetector == null) {
+    get() = if (rotationGestureDetector == null) {
       Float.NaN
-    } else mRotationGestureDetector!!.anchorX
+    } else rotationGestureDetector!!.anchorX
   val anchorY: Float
-    get() = if (mRotationGestureDetector == null) {
+    get() = if (rotationGestureDetector == null) {
       Float.NaN
-    } else mRotationGestureDetector!!.anchorY
+    } else rotationGestureDetector!!.anchorY
 
   companion object {
     private const val ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36.0 // 5 deg in radians
