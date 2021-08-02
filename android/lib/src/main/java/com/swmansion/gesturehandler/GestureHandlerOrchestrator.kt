@@ -469,7 +469,7 @@ class GestureHandlerOrchestrator(
     }
 
     private fun isTransformedTouchPointInView(x: Float, y: Float, child: View) =
-      x >= 0 && x <= child.width && y >= 0 && y < child.height
+      x in 0f..child.width.toFloat() && y in 0f..child.height.toFloat()
 
     private fun shouldHandlerWaitForOther(handler: GestureHandler<*>, other: GestureHandler<*>?): Boolean {
       return handler !== other && (handler.shouldWaitForHandlerFailure(other!!)
