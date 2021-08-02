@@ -397,15 +397,14 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun canReceiveEvents(view: View): Boolean {
-    return view.visibility == View.VISIBLE && view.alpha >= minimumAlphaForTraversal
-  }
+  private fun canReceiveEvents(view: View) =
+    view.visibility == View.VISIBLE && view.alpha >= minimumAlphaForTraversal
 
-  private fun isClipping(view: View): Boolean {
-    // if view is not a view group it is clipping, otherwise we check for `getClipChildren` flag to
-    // be turned on and also confirm with the ViewConfigHelper implementation
-    return view !is ViewGroup || mViewConfigHelper.isViewClippingChildren(view)
-  }
+  // if view is not a view group it is clipping, otherwise we check for `getClipChildren` flag to
+  // be turned on and also confirm with the ViewConfigHelper implementation
+  private fun isClipping(view: View) =
+    view !is ViewGroup || mViewConfigHelper.isViewClippingChildren(view)
+
 
   companion object {
     // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
@@ -469,18 +468,17 @@ class GestureHandlerOrchestrator(
       outLocalPoint[localX] = localY
     }
 
-    private fun isTransformedTouchPointInView(x: Float, y: Float, child: View): Boolean {
-      return x >= 0 && x <= child.width && y >= 0 && y < child.height
-    }
+    private fun isTransformedTouchPointInView(x: Float, y: Float, child: View) =
+      x >= 0 && x <= child.width && y >= 0 && y < child.height
 
     private fun shouldHandlerWaitForOther(handler: GestureHandler<*>, other: GestureHandler<*>?): Boolean {
       return handler !== other && (handler.shouldWaitForHandlerFailure(other!!)
         || other.shouldRequireToWaitForFailure(handler))
     }
 
-    private fun canRunSimultaneously(a: GestureHandler<*>?, b: GestureHandler<*>): Boolean {
-      return a === b || a!!.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
-    }
+    private fun canRunSimultaneously(a: GestureHandler<*>?, b: GestureHandler<*>) =
+      a === b || a!!.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
+
 
     private fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>?, other: GestureHandler<*>): Boolean {
       if (!handler!!.hasCommonPointers(other)) {
@@ -500,8 +498,9 @@ class GestureHandlerOrchestrator(
       } else true
     }
 
-    private fun isFinished(state: Int): Boolean {
-      return state == GestureHandler.STATE_CANCELLED || state == GestureHandler.STATE_FAILED || state == GestureHandler.STATE_END
-    }
+    private fun isFinished(state: Int) =
+      state == GestureHandler.STATE_CANCELLED
+        || state == GestureHandler.STATE_FAILED
+        || state == GestureHandler.STATE_END
   }
 }
