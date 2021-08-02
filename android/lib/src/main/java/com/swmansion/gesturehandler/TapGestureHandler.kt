@@ -70,7 +70,7 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
 
   private fun startTap() {
     if (handler == null) {
-      handler = Handler()
+      handler = Handler() // TODO: lazy init (handle else branch correctly)
     } else {
       handler!!.removeCallbacksAndMessages(null)
     }
