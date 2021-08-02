@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler
 
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.RotationGestureDetector.OnRotationGestureListener
+import kotlin.math.abs
 
 class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   private var rotationGestureDetector: RotationGestureDetector? = null
@@ -27,15 +28,13 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
       if (delta > 0) {
         velocity = (rotation - prevRotation) / delta
       }
-      if (Math.abs(rotation) >= ROTATION_RECOGNITION_THRESHOLD && state == STATE_BEGAN) {
+      if (abs(rotation) >= ROTATION_RECOGNITION_THRESHOLD && state == STATE_BEGAN) {
         activate()
       }
       return true
     }
 
-    override fun onRotationBegin(detector: RotationGestureDetector): Boolean {
-      return true
-    }
+    override fun onRotationBegin(detector: RotationGestureDetector) = true
 
     override fun onRotationEnd(detector: RotationGestureDetector) {
       end()
