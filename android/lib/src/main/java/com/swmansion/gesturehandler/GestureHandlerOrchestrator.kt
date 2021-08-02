@@ -10,7 +10,7 @@ import java.util.*
 class GestureHandlerOrchestrator(
   private val mWrapperView: ViewGroup,
   private val mHandlerRegistry: GestureHandlerRegistry,
-  private val mViewConfigHelper: ViewConfigurationHelper
+  private val mViewConfigHelper: ViewConfigurationHelper,
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
@@ -20,7 +20,7 @@ class GestureHandlerOrchestrator(
   var minimumAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
 
   private val mGestureHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
-  private val mAwaitingHandlers: Array<GestureHandler<*>?> = arrayOfNulls(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
+  private val mAwaitingHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private val mPreparedHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private val mHandlersToCancel = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private var mGestureHandlersCount = 0
@@ -451,7 +451,7 @@ class GestureHandlerOrchestrator(
       y: Float,
       parent: ViewGroup,
       child: View,
-      outLocalPoint: PointF
+      outLocalPoint: PointF,
     ) {
       var localX = x + parent.scrollX - child.left
       var localY = y + parent.scrollY - child.top
