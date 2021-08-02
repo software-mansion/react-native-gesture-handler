@@ -11,13 +11,9 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     private set
 
   val anchorX: Float
-    get() = if (rotationGestureDetector == null) {
-      Float.NaN
-    } else rotationGestureDetector!!.anchorX
+    get() = rotationGestureDetector?.anchorX ?: Float.NaN
   val anchorY: Float
-    get() = if (rotationGestureDetector == null) {
-      Float.NaN
-    } else rotationGestureDetector!!.anchorY
+    get() = rotationGestureDetector?.anchorY ?: Float.NaN
 
   init {
     setShouldCancelWhenOutside(false)
