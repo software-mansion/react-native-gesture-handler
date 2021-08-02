@@ -13,7 +13,7 @@ class GestureHandlerOrchestrator(
   private val mViewConfigHelper: ViewConfigurationHelper
 ) {
   private val mGestureHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
-  private val mAwaitingHandlers: Array<GestureHandler<*>> = arrayOfNulls(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
+  private val mAwaitingHandlers: Array<GestureHandler<*>?> = arrayOfNulls(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private val mPreparedHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private val mHandlersToCancel = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private var mGestureHandlersCount = 0
@@ -110,7 +110,7 @@ class GestureHandlerOrchestrator(
   private fun cleanupAwaitingHandlers() {
     var out = 0
     for (i in 0 until mAwaitingHandlersCount) {
-      if (mAwaitingHandlers[i].mIsAwaiting) {
+      if (mAwaitingHandlers[i]!!.mIsAwaiting) {
         mAwaitingHandlers[out++] = mAwaitingHandlers[i]
       }
     }
@@ -124,7 +124,7 @@ class GestureHandlerOrchestrator(
       // if there were handlers awaiting completion of this handler, we can trigger active state
       for (i in 0 until mAwaitingHandlersCount) {
         val otherHandler = mAwaitingHandlers[i]
-        if (shouldHandlerWaitForOther(otherHandler, handler)) {
+        if (shouldHandlerWaitForOther(otherHandler!!, handler)) {
           if (newState == GestureHandler.STATE_END) {
             // gesture has ended, we need to kill the awaiting handler
             otherHandler.cancel()
@@ -170,7 +170,7 @@ class GestureHandlerOrchestrator(
     // Clear all awaiting handlers waiting for the current handler to fail
     for (i in mAwaitingHandlersCount - 1 downTo 0) {
       val otherHandler = mAwaitingHandlers[i]
-      if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
+      if (shouldHandlerBeCancelledBy(otherHandler!!, handler)) {
         otherHandler.cancel()
         otherHandler.mIsAwaiting = false
       }
@@ -206,7 +206,7 @@ class GestureHandlerOrchestrator(
 
   private fun cancelAll() {
     for (i in mAwaitingHandlersCount - 1 downTo 0) {
-      mAwaitingHandlers[i].cancel()
+      mAwaitingHandlers[i]!!.cancel()
     }
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
@@ -421,7 +421,7 @@ class GestureHandlerOrchestrator(
     private val sMatrixTransformCoords = FloatArray(2)
     private val sInverseMatrix = Matrix()
     private val sTempCoords = FloatArray(2)
-    private val sHandlersComparator = Comparator<GestureHandler<*>> { a, b ->
+    private val sHandlersComparator = Comparator<GestureHandler<*>?> { a, b ->
       if (a.mIsActive && b.mIsActive || a.mIsAwaiting && b.mIsAwaiting) {
         // both A and B are either active or awaiting activation, in which case we prefer one that
         // has activated (or turned into "awaiting" state) earlier
