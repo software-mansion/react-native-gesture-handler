@@ -9,6 +9,20 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     private set
   var velocity = 0.0
     private set
+
+  val anchorX: Float
+    get() = if (rotationGestureDetector == null) {
+      Float.NaN
+    } else rotationGestureDetector!!.anchorX
+  val anchorY: Float
+    get() = if (rotationGestureDetector == null) {
+      Float.NaN
+    } else rotationGestureDetector!!.anchorY
+
+  init {
+    setShouldCancelWhenOutside(false)
+  }
+
   private val gestureListener: OnRotationGestureListener = object : OnRotationGestureListener {
     override fun onRotation(detector: RotationGestureDetector): Boolean {
       val prevRotation: Double = rotation
@@ -58,20 +72,7 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     rotation = 0.0
   }
 
-  val anchorX: Float
-    get() = if (rotationGestureDetector == null) {
-      Float.NaN
-    } else rotationGestureDetector!!.anchorX
-  val anchorY: Float
-    get() = if (rotationGestureDetector == null) {
-      Float.NaN
-    } else rotationGestureDetector!!.anchorY
-
   companion object {
     private const val ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36.0 // 5 deg in radians
-  }
-
-  init {
-    setShouldCancelWhenOutside(false)
   }
 }
