@@ -43,7 +43,6 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   }
 
   override fun onHandle(event: MotionEvent) {
-    val state = state
     if (state == STATE_UNDETERMINED) {
       velocity = 0.0
       rotation = 0.0
