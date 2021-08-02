@@ -3,7 +3,7 @@ package com.swmansion.gesturehandler
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.RotationGestureDetector.OnRotationGestureListener
 
-class RotationGestureHandler : GestureHandler<RotationGestureHandler?>() {
+class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   private var mRotationGestureDetector: RotationGestureDetector? = null
   var rotation = 0.0
     private set
