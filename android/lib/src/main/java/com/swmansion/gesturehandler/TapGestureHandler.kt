@@ -24,6 +24,7 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   private var mHandler: Handler? = null
   private var mTapsSoFar = 0
   private val mFailDelayed = Runnable { fail() }
+  
   override fun resetConfig() {
     super.resetConfig()
     mMaxDeltaX = MAX_VALUE_IGNORE
@@ -139,17 +140,13 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   }
 
   override fun onCancel() {
-    if (mHandler != null) {
-      mHandler!!.removeCallbacksAndMessages(null)
-    }
+    mHandler?.removeCallbacksAndMessages(null)
   }
 
   override fun onReset() {
     mTapsSoFar = 0
     mNumberOfPointers = 0
-    if (mHandler != null) {
-      mHandler!!.removeCallbacksAndMessages(null)
-    }
+    mHandler?.removeCallbacksAndMessages(null)
   }
 
   companion object {
