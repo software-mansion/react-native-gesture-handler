@@ -24,7 +24,11 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   private var mHandler: Handler? = null
   private var mTapsSoFar = 0
   private val mFailDelayed = Runnable { fail() }
-  
+
+  init {
+    setShouldCancelWhenOutside(true)
+  }
+
   override fun resetConfig() {
     super.resetConfig()
     mMaxDeltaX = MAX_VALUE_IGNORE
@@ -155,9 +159,5 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     private const val DEFAULT_MAX_DELAY_MS: Long = 500
     private const val DEFAULT_NUMBER_OF_TAPS = 1
     private const val DEFAULT_MIN_NUMBER_OF_POINTERS = 1
-  }
-
-  init {
-    setShouldCancelWhenOutside(true)
   }
 }
