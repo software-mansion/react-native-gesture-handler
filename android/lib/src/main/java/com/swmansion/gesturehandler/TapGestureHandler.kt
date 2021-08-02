@@ -5,7 +5,7 @@ import android.view.MotionEvent
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.GestureUtils.getLastPointerY
 
-class TapGestureHandler : GestureHandler<TapGestureHandler?>() {
+class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   private var mMaxDeltaX = MAX_VALUE_IGNORE
   private var mMaxDeltaY = MAX_VALUE_IGNORE
   private var mMaxDistSq = MAX_VALUE_IGNORE
