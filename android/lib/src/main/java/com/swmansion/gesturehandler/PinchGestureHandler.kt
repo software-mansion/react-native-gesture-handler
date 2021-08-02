@@ -12,14 +12,14 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   var velocity = 0.0
     private set
   val focalPointX: Float
-    get() = mScaleGestureDetector?.focusX ?: Float.NaN
+    get() = scaleGestureDetector?.focusX ?: Float.NaN
   val focalPointY: Float
-    get() = mScaleGestureDetector?.focusY ?: Float.NaN
+    get() = scaleGestureDetector?.focusY ?: Float.NaN
 
-  private var mScaleGestureDetector: ScaleGestureDetector? = null
-  private var mStartingSpan = 0f
-  private var mSpanSlop = 0f
-  private val mGestureListener: OnScaleGestureListener = object : OnScaleGestureListener {
+  private var scaleGestureDetector: ScaleGestureDetector? = null
+  private var startingSpan = 0f
+  private var spanSlop = 0f
+  private val gestureListener: OnScaleGestureListener = object : OnScaleGestureListener {
     override fun onScale(detector: ScaleGestureDetector): Boolean {
       val prevScaleFactor: Double = scale
       scale *= detector.scaleFactor.toDouble()
@@ -27,7 +27,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       if (delta > 0) {
         velocity = (scale - prevScaleFactor) / delta
       }
-      if (abs(mStartingSpan - detector.currentSpan) >= mSpanSlop
+      if (abs(startingSpan - detector.currentSpan) >= spanSlop
         && state == STATE_BEGAN) {
         activate()
       }
@@ -39,7 +39,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     }
 
     override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
-      mStartingSpan = detector.currentSpan
+      startingSpan = detector.currentSpan
       return true
     }
 
@@ -54,12 +54,12 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       val context = view!!.context
       velocity = 0.0
       scale = 1.0
-      mScaleGestureDetector = ScaleGestureDetector(context, mGestureListener)
+      scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
       val configuration = ViewConfiguration.get(context)
-      mSpanSlop = configuration.scaledTouchSlop.toFloat()
+      spanSlop = configuration.scaledTouchSlop.toFloat()
       begin()
     }
-    mScaleGestureDetector?.onTouchEvent(event)
+    scaleGestureDetector?.onTouchEvent(event)
     var activePointers = event.pointerCount
     if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       activePointers -= 1
@@ -72,7 +72,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   }
 
   override fun onReset() {
-    mScaleGestureDetector = null
+    scaleGestureDetector = null
     velocity = 0.0
     scale = 1.0
   }
