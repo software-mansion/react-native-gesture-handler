@@ -7,23 +7,23 @@ import com.swmansion.gesturehandler.GestureUtils.getLastPointerY
 import kotlin.math.abs
 
 class TapGestureHandler : GestureHandler<TapGestureHandler>() {
-  private var mMaxDeltaX = MAX_VALUE_IGNORE
-  private var mMaxDeltaY = MAX_VALUE_IGNORE
-  private var mMaxDistSq = MAX_VALUE_IGNORE
-  private var mMaxDurationMs = DEFAULT_MAX_DURATION_MS
-  private var mMaxDelayMs = DEFAULT_MAX_DELAY_MS
-  private var mNumberOfTaps = DEFAULT_NUMBER_OF_TAPS
-  private var mMinNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS
-  private var mNumberOfPointers = 1
-  private var mStartX = 0f
-  private var mStartY = 0f
-  private var mOffsetX = 0f
-  private var mOffsetY = 0f
-  private var mLastX = 0f
-  private var mLastY = 0f
-  private var mHandler: Handler? = null
-  private var mTapsSoFar = 0
-  private val mFailDelayed = Runnable { fail() }
+  private var maxDeltaX = MAX_VALUE_IGNORE
+  private var maxDeltaY = MAX_VALUE_IGNORE
+  private var maxDistSq = MAX_VALUE_IGNORE
+  private var maxDurationMs = DEFAULT_MAX_DURATION_MS
+  private var maxDelayMs = DEFAULT_MAX_DELAY_MS
+  private var numberOfTaps = DEFAULT_NUMBER_OF_TAPS
+  private var minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS
+  private var currentMaxNumberOfPointers = 1
+  private var startX = 0f
+  private var startY = 0f
+  private var offsetX = 0f
+  private var offsetY = 0f
+  private var lastX = 0f
+  private var lastY = 0f
+  private var handler: Handler? = null
+  private var tapsSoFar = 0
+  private val failDelayed = Runnable { fail() }
 
   init {
     setShouldCancelWhenOutside(true)
@@ -31,101 +31,101 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
 
   override fun resetConfig() {
     super.resetConfig()
-    mMaxDeltaX = MAX_VALUE_IGNORE
-    mMaxDeltaY = MAX_VALUE_IGNORE
-    mMaxDistSq = MAX_VALUE_IGNORE
-    mMaxDurationMs = DEFAULT_MAX_DURATION_MS
-    mMaxDelayMs = DEFAULT_MAX_DELAY_MS
-    mNumberOfTaps = DEFAULT_NUMBER_OF_TAPS
-    mMinNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS
+    maxDeltaX = MAX_VALUE_IGNORE
+    maxDeltaY = MAX_VALUE_IGNORE
+    maxDistSq = MAX_VALUE_IGNORE
+    maxDurationMs = DEFAULT_MAX_DURATION_MS
+    maxDelayMs = DEFAULT_MAX_DELAY_MS
+    numberOfTaps = DEFAULT_NUMBER_OF_TAPS
+    minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS
   }
 
   fun setNumberOfTaps(numberOfTaps: Int) = apply {
-    mNumberOfTaps = numberOfTaps
+    this.numberOfTaps = numberOfTaps
   }
 
   fun setMaxDelayMs(maxDelayMs: Long) = apply {
-    mMaxDelayMs = maxDelayMs
+    this.maxDelayMs = maxDelayMs
   }
 
   fun setMaxDurationMs(maxDurationMs: Long) = apply {
-    mMaxDurationMs = maxDurationMs
+    this.maxDurationMs = maxDurationMs
   }
 
   fun setMaxDx(deltaX: Float) = apply {
-    mMaxDeltaX = deltaX
+    maxDeltaX = deltaX
   }
 
   fun setMaxDy(deltaY: Float) = apply {
-    mMaxDeltaY = deltaY
+    maxDeltaY = deltaY
   }
 
   fun setMaxDist(maxDist: Float) = apply {
-    mMaxDistSq = maxDist * maxDist
+    maxDistSq = maxDist * maxDist
   }
 
   fun setMinNumberOfPointers(minNumberOfPointers: Int) = apply {
-    mMinNumberOfPointers = minNumberOfPointers
+    this.minNumberOfPointers = minNumberOfPointers
   }
 
   private fun startTap() {
-    if (mHandler == null) {
-      mHandler = Handler()
+    if (handler == null) {
+      handler = Handler()
     } else {
-      mHandler!!.removeCallbacksAndMessages(null)
+      handler!!.removeCallbacksAndMessages(null)
     }
-    mHandler!!.postDelayed(mFailDelayed, mMaxDurationMs)
+    handler!!.postDelayed(failDelayed, maxDurationMs)
   }
 
   private fun endTap() {
-    if (mHandler == null) {
-      mHandler = Handler()
+    if (handler == null) {
+      handler = Handler()
     } else {
-      mHandler!!.removeCallbacksAndMessages(null)
+      handler!!.removeCallbacksAndMessages(null)
     }
-    if (++mTapsSoFar == mNumberOfTaps && mNumberOfPointers >= mMinNumberOfPointers) {
+    if (++tapsSoFar == numberOfTaps && currentMaxNumberOfPointers >= minNumberOfPointers) {
       activate()
       end()
     } else {
-      mHandler!!.postDelayed(mFailDelayed, mMaxDelayMs)
+      handler!!.postDelayed(failDelayed, maxDelayMs)
     }
   }
 
   private fun shouldFail(): Boolean {
-    val dx = mLastX - mStartX + mOffsetX
-    if (mMaxDeltaX != MAX_VALUE_IGNORE && abs(dx) > mMaxDeltaX) {
+    val dx = lastX - startX + offsetX
+    if (maxDeltaX != MAX_VALUE_IGNORE && abs(dx) > maxDeltaX) {
       return true
     }
-    val dy = mLastY - mStartY + mOffsetY
-    if (mMaxDeltaY != MAX_VALUE_IGNORE && abs(dy) > mMaxDeltaY) {
+    val dy = lastY - startY + offsetY
+    if (maxDeltaY != MAX_VALUE_IGNORE && abs(dy) > maxDeltaY) {
       return true
     }
     val dist = dy * dy + dx * dx
-    return mMaxDistSq != MAX_VALUE_IGNORE && dist > mMaxDistSq
+    return maxDistSq != MAX_VALUE_IGNORE && dist > maxDistSq
   }
 
   override fun onHandle(event: MotionEvent) {
     val state = state
     val action = event.actionMasked
     if (state == STATE_UNDETERMINED) {
-      mOffsetX = 0f
-      mOffsetY = 0f
-      mStartX = event.rawX
-      mStartY = event.rawY
+      offsetX = 0f
+      offsetY = 0f
+      startX = event.rawX
+      startY = event.rawY
     }
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
-      mOffsetX += mLastX - mStartX
-      mOffsetY += mLastY - mStartY
-      mLastX = getLastPointerX(event, true)
-      mLastY = getLastPointerY(event, true)
-      mStartX = mLastX
-      mStartY = mLastY
+      offsetX += lastX - startX
+      offsetY += lastY - startY
+      lastX = getLastPointerX(event, true)
+      lastY = getLastPointerY(event, true)
+      startX = lastX
+      startY = lastY
     } else {
-      mLastX = getLastPointerX(event, true)
-      mLastY = getLastPointerY(event, true)
+      lastX = getLastPointerX(event, true)
+      lastY = getLastPointerY(event, true)
     }
-    if (mNumberOfPointers < event.pointerCount) {
-      mNumberOfPointers = event.pointerCount
+    if (currentMaxNumberOfPointers < event.pointerCount) {
+      currentMaxNumberOfPointers = event.pointerCount
     }
     if (shouldFail()) {
       fail()
@@ -144,13 +144,13 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   }
 
   override fun onCancel() {
-    mHandler?.removeCallbacksAndMessages(null)
+    handler?.removeCallbacksAndMessages(null)
   }
 
   override fun onReset() {
-    mTapsSoFar = 0
-    mNumberOfPointers = 0
-    mHandler?.removeCallbacksAndMessages(null)
+    tapsSoFar = 0
+    currentMaxNumberOfPointers = 0
+    handler?.removeCallbacksAndMessages(null)
   }
 
   companion object {
