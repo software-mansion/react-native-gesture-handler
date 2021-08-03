@@ -15,10 +15,11 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
   ) {
     super.init(handler.view!!.id)
-    extraData = Arguments.createMap()
-    dataExtractor?.extractEventData(handler, extraData)
-    extraData!!.putInt("handlerTag", handler.tag)
-    extraData!!.putInt("state", handler.state)
+    extraData = Arguments.createMap().apply {
+      dataExtractor?.extractEventData(handler, this)
+      putInt("handlerTag", handler.tag)
+      putInt("state", handler.state)
+    }
     coalescingKey = handler.eventCoalescingKey
   }
 
