@@ -4,7 +4,6 @@ import {
   NativeModules,
   Platform,
   Touchable,
-  NativeEventEmitter,
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
@@ -17,6 +16,7 @@ import {
   HandlerStateChangeEvent,
 } from './gestureHandlers';
 import { ValueOf } from '../typeUtils';
+import { nextHandlerTag } from './handlerCounter';
 import { default as RNRenderer } from 'react-native/Libraries/Renderer/shims/ReactNative';
 
 function findNodeHandle(
@@ -75,7 +75,6 @@ UIManager.clearJSResponder = () => {
   oldClearJSResponder();
 };
 
-let handlerTag = 1;
 const handlerIDToTag: Record<string, number> = {};
 
 function isConfigParam(param: unknown, name: string) {
@@ -204,7 +203,7 @@ export default function createHandler<
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
-      this.handlerTag = handlerTag++;
+      this.handlerTag = nextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
       if (props.id) {
@@ -615,7 +614,7 @@ export class Gesture {
 
   initialize() {
     for (const gesture of this.gestures) {
-      gesture.handlerTag = handlerTag++;
+      gesture.handlerTag = nextHandlerTag();
 
       if (gesture.config.ref) {
         gesture.config.ref.current = gesture;
