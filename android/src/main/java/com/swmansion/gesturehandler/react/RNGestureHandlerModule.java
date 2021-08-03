@@ -84,7 +84,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   private static final String KEY_NUMBER_OF_POINTERS = "numberOfPointers";
   private static final String KEY_DIRECTION= "direction";
 
-  private abstract static class HandlerFactory<T extends GestureHandler>
+  private abstract static class HandlerFactory<T extends GestureHandler<T>>
           implements RNGestureHandlerEventDataExtractor<T> {
 
     public abstract Class<T> getType();
