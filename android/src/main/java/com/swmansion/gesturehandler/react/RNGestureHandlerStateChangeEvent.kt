@@ -29,19 +29,13 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName(): String {
-    return EVENT_NAME
-  }
+  override fun getEventName() = EVENT_NAME
 
-  override fun canCoalesce(): Boolean {
-    // TODO: coalescing
-    return false
-  }
+  // TODO: coalescing
+  override fun canCoalesce() = false
 
-  override fun getCoalescingKey(): Short {
-    // TODO: coalescing
-    return 0
-  }
+  // TODO: coalescing
+  override fun getCoalescingKey(): Short = 0
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
     rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, mExtraData)
