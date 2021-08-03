@@ -5,8 +5,8 @@ import com.swmansion.gesturehandler.GestureHandlerRegistry
 import java.util.*
 
 class GestureHandlerRegistryImpl : GestureHandlerRegistry {
-  private val mHandlers = WeakHashMap<View, ArrayList<GestureHandler<*>>>()
-  fun <T : GestureHandler<*>> registerHandlerForView(view: View, handler: T): T {
+  private val mHandlers = WeakHashMap<View?, ArrayList<GestureHandler<*>>>()
+  fun <T : GestureHandler<*>> registerHandlerForView(view: View?, handler: T): T {
     var listToAdd = mHandlers[view]
     if (listToAdd == null) {
       listToAdd = ArrayList(1)
@@ -18,7 +18,5 @@ class GestureHandlerRegistryImpl : GestureHandlerRegistry {
     return handler
   }
 
-  override fun getHandlersForView(view: View): ArrayList<GestureHandler<*>> {
-    return mHandlers[view]!!
-  }
+  override fun getHandlersForView(view: View) = mHandlers[view]
 }
