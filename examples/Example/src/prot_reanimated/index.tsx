@@ -58,10 +58,31 @@ function Draggable() {
     <View>
       <Text>{a}</Text>
       <GestureMonitor gesture={gs}>
-        <Animated.View style={[styles.button, animatedStyles]} />
+        <Test s={animatedStyles} />
       </GestureMonitor>
     </View>
   );
+}
+
+const Test = wrapAnimated((props) => {
+  return (
+    <View>
+      <Animated.View style={[styles.button, props.s]} />
+    </View>
+  );
+});
+
+function wrapAnimated(Fc) {
+  return React.forwardRef((props, ref) => {
+    return (
+      <Animated.View
+        ref={ref}
+        onGestureHandlerEvent={props.onGestureHandlerEvent}
+        onGestureHandlerStateChange={props.onGestureHandlerStateChange}>
+        <Fc {...props} />
+      </Animated.View>
+    );
+  });
 }
 
 export default function Example() {

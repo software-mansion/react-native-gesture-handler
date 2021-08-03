@@ -17,6 +17,7 @@ import {
   HandlerStateChangeEvent,
 } from './gestureHandlers';
 import { ValueOf } from '../typeUtils';
+import { default as RNRenderer } from 'react-native/Libraries/Renderer/shims/ReactNative';
 
 function findNodeHandle(
   node: null | number | React.Component<any, any> | React.ComponentClass<any>
@@ -768,7 +769,7 @@ export class Gesture {
   }
 }
 
-let allowedProps = ['numberOfTaps', 'maxDist'];
+let allowedProps = ['numberOfTaps', 'maxDist', 'priority'];
 
 export function useGesture(gesture) {
   const result = React.useRef([gesture]);
@@ -840,6 +841,9 @@ export function useGesture(gesture) {
   }, []);
 
   if (result.current) {
+    console.log(
+      result.current[0].gestures.length + ' ' + gesture.gestures.length
+    );
     for (let i = 0; i < gesture.gestures.length; i++) {
       const gst = result.current[0].gestures[i];
       gst.config = gesture.gestures[i].config;
@@ -857,6 +861,8 @@ export function useGesture(gesture) {
 
   return result;
 }
+
+let handlers = [];
 
 export class GestureMonitor extends React.Component {
   constructor(props) {
@@ -899,17 +905,48 @@ export class GestureMonitor extends React.Component {
     }
   };
 
+  visit(a, i) {
+    let s = '';
+    for (let b = 0; b < i; b++) s += '  ';
+
+    if (a._nativeTag) {
+      console.log(s + ' ' + a._nativeTag);
+
+      for (const c of a._children) {
+        this.visit(c, i + 1);
+      }
+    }
+  }
+
   attachGestureHandlers(newViewTag) {
+    //newViewTag = RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag;
+    if (this.viewTag) {
+      handlers[this.viewTag] = undefined;
+    }
+
     this.viewTag = newViewTag;
+    //this.visit(RNRenderer.findHostInstance_DEPRECATED(this), 0);
+    //console.log(RNRenderer.findHostInstance_DEPRECATED(this));
     if (this.props.gesture.current) {
       if (this.props.gesture.current[0] instanceof Gesture) {
         for (const gesture of this.props.gesture.current[0].gestures) {
+          console.log(newViewTag + ' ' + gesture.handlerName);
           RNGestureHandlerModule.attachGestureHandler(
             gesture.handlerTag,
             newViewTag
           );
+
+          if (handlers[newViewTag]) {
+            handlers[newViewTag].push(gesture.handlerTag);
+          } else {
+            handlers[newViewTag] = [gesture.handlerTag];
+          }
         }
       }
+    }
+
+    if (newViewTag == 487) {
+      //console.log(handlers)
     }
   }
 

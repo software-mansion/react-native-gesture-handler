@@ -68,6 +68,8 @@ public class GestureHandler<T extends GestureHandler> {
   private GestureHandlerOrchestrator mOrchestrator;
   private OnTouchEventListener<T> mListener;
   private GestureHandlerInteractionController mInteractionController;
+
+  public int priority = 0;
   /*package*/ int mActivationIndex; // set and accessed only by the orchestrator
   /*package*/ boolean mIsActive; // set and accessed only by the orchestrator
   /*package*/ boolean mIsAwaiting; // set and accessed only by the orchestrator

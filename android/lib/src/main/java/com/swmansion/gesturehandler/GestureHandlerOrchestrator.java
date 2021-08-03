@@ -15,6 +15,8 @@ import java.util.Comparator;
 
 import androidx.annotation.Nullable;
 
+import com.swmansion.gesturehandler.react.RNGestureHandlerRegistry;
+
 public class GestureHandlerOrchestrator {
 
   // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
@@ -73,6 +75,8 @@ public class GestureHandlerOrchestrator {
   private int mActivationIndex = 0;
 
   private float mMinAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL;
+
+  private static Tree tree;
 
   public GestureHandlerOrchestrator(
           ViewGroup wrapperView,
@@ -182,6 +186,7 @@ public class GestureHandlerOrchestrator {
   }
 
   private void tryActivate(GestureHandler handler) {
+    Log.w("A", "try activate " + handler);
     // see if there is anyone else who we need to wait for
     if (hasOtherHandlerToWaitFor(handler)) {
       addAwaitingHandler(handler);
@@ -481,7 +486,143 @@ public class GestureHandlerOrchestrator {
     return found;
   }
 
+  class Node {
+    public int id;
+    public ArrayList<Node> children;
+
+    public Node(int id) {
+      this.id = id;
+      children = new ArrayList<>();
+    }
+
+    ArrayList<GestureHandler> getHandlers() {
+      return ((RNGestureHandlerRegistry) mHandlerRegistry).getHandlersForViewWithTag(this.id);
+    }
+
+    boolean hasHandler(int h) {
+      ArrayList<GestureHandler> handlers = getHandlers();
+      for (int i = 0; i < handlers.size(); i++) {
+        if (handlers.get(i).getTag() == h)
+          return true;
+      }
+
+      return false;
+    }
+  }
+
+  class Tree {
+    public Node root;
+
+    public Tree(Node root) {
+      this.root = root;
+    }
+
+    int findHandlerViewId(int handler) {
+      return findHandlerViewId(handler, root);
+    }
+
+    int findHandlerViewId(int handler, Node n) {
+      if (n.hasHandler(handler)) return n.id;
+
+      for (int i = 0; i < n.children.size(); i++) {
+        int r = findHandlerViewId(handler, n.children.get(i));
+        if (r > 0)
+          return r;
+      }
+
+      return -1;
+    }
+
+    Node findNode(int id) {
+      return findNode(id, root);
+    }
+
+    Node findNode(int id, Node n) {
+      if (n == null) return  null;
+      if (n.id == id) return n;
+      if (n != root && id > n.id) return null;
+
+      for (int i = 0; i < n.children.size(); i++) {
+        Node r = findNode(id, n.children.get(i));
+        if (r != null)
+          return r;
+      }
+
+      return null;
+    }
+
+    boolean isHandlerDescendantOf(int handler, int of) {
+      if (handler == of) return false;
+
+      int hView = findHandlerViewId(handler);
+      int oView = findHandlerViewId(of);
+
+      if (hView > 0 && oView > 0) {
+        if (findNode(hView, findNode(oView)) != null)
+          return true;
+      }
+
+      return false;
+    }
+  }
+
+  private Node visit(ViewGroup viewGroup) {
+    Node result = new Node(viewGroup.getId());
+
+    for (int i = 0; i < viewGroup.getChildCount(); i++) {
+      View child = viewGroup.getChildAt(i);
+
+      if (child instanceof ViewGroup) {
+        visit((ViewGroup) child, result);
+      } else {
+        if (mHandlerRegistry.getHandlersForView(child) != null) {
+          result.children.add(new Node(child.getId()));
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private void visit(ViewGroup viewGroup, Node parent) {
+    Node prnt;
+
+    if (mHandlerRegistry.getHandlersForView(viewGroup) == null) {
+      prnt = parent;
+    } else {
+      prnt = new Node(viewGroup.getId());
+
+      parent.children.add(prnt);
+    }
+
+    for (int i = 0; i < viewGroup.getChildCount(); i++) {
+      View child = viewGroup.getChildAt(i);
+
+      if (child instanceof ViewGroup) {
+        visit((ViewGroup) child, prnt);
+      } else {
+        if (mHandlerRegistry.getHandlersForView(child) != null) {
+          prnt.children.add(new Node(child.getId()));
+        }
+      }
+    }
+  }
+
+  private void show(Node node, int indent) {
+    String ind = "";
+    for (int i = 0; i < indent; i++) ind += "  ";
+
+    Log.w("A", ind + node.id+" "+node.getHandlers());
+
+    for (int i = 0; i < node.children.size(); i++) {
+      show(node.children.get(i), indent + 1);
+    }
+  }
+
   private void extractGestureHandlers(MotionEvent event) {
+    tree = new Tree(visit(mWrapperView));
+    //show(tree.root, 0);
+
     int actionIndex = event.getActionIndex();
     int pointerId = event.getPointerId(actionIndex);
     sTempCoords[0] = event.getX(actionIndex);
@@ -594,8 +735,13 @@ public class GestureHandlerOrchestrator {
   }
 
   private static boolean shouldHandlerWaitForOther(GestureHandler handler, GestureHandler other) {
-    return handler != other && (handler.shouldWaitForHandlerFailure(other)
-            || other.shouldRequireToWaitForFailure(handler));
+    boolean highPriority = false;
+    if (tree != null && tree.isHandlerDescendantOf(handler.getTag(), other.getTag())) {
+      if (other.priority > handler.priority) highPriority = true;
+    }
+
+    return highPriority || (handler != other && (handler.shouldWaitForHandlerFailure(other)
+            || other.shouldRequireToWaitForFailure(handler)));
   }
 
   private static boolean shouldHandlerWaitForOtherActivation(GestureHandler handler, GestureHandler other) {

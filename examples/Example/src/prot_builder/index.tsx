@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, forwardRef } from 'react';
 import { useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { USE_NATIVE_DRIVER } from '../config';
@@ -45,11 +45,11 @@ function getState(s: number) {
 export default function Example() {
   const [counter, setCounter] = useState(0);
 
-  useEffect(() => {
-    setInterval(() => {
-      setCounter((c) => c + 1);
-    }, 1000);
-  }, []);
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     setCounter((c) => c + 1);
+  //   }, 1000);
+  // }, []);
 
   const tripleTap = useRef();
   const doubleTap = useRef();
@@ -66,7 +66,7 @@ export default function Example() {
         },
       })
       .tap({
-        requireToFail: doubleTap,
+        requireToFail: [doubleTap, tripleTap],
         onEnd: (event, sc) => {
           if (sc) {
             console.log('single tap, counter: ' + (counter + 1));
@@ -122,13 +122,69 @@ export default function Example() {
       numberOfTaps={3}>
       <View style={styles.home}>
         <GestureMonitor gesture={gesture}>
-          <View style={[styles.button]}>
-            <Text>{counter}</Text>
-          </View>
+          <Test counter={counter} />
         </GestureMonitor>
       </View>
     </TapGestureHandler>
   );
+
+  // return (
+  //   <View>
+  //     <GestureMonitor gesture={useGesture(new Gesture().pinch({onUpdate: e => { console.log('pinch') }, priority: 1 }))}>
+  //       <View>
+  //         <GestureMonitor gesture={useGesture(new Gesture().rotation({onUpdate: e => { console.log('rotate') }}))}>
+  //           <View style={styles.button} />
+  //         </GestureMonitor>
+  //       </View>
+  //     </GestureMonitor>
+
+  //     {/* <GestureMonitor gesture={useGesture(new Gesture().tap({onEnd: (e, s) => {if(s)console.log("outer")}, priority: 1 }))}>
+  //       <View>
+  //         <GestureMonitor gesture={useGesture(new Gesture().tap({onEnd: (e, s) => {if(s)console.log("inner")}}))}>
+  //           <View style={styles.button}/>
+  //         </GestureMonitor>
+
+  //         <GestureMonitor gesture={useGesture(new Gesture().fling({}))}>
+  //           <View>
+  //             <GestureMonitor gesture={useGesture(new Gesture().pinch({}).rotation({}))}>
+  //               <View>
+  //                 <Text>{counter}</Text>
+  //               </View>
+  //             </GestureMonitor>
+  //           </View>
+  //         </GestureMonitor>
+  //       </View>
+  //     </GestureMonitor> */}
+  //   </View>
+  // )
+}
+
+// function Test(props) {
+//   return <View style={[styles.button]} {...props}>
+//     <Text>{props.counter}</Text>
+//   </View>
+// }
+
+const Test = wrap((props) => {
+  return (
+    <View style={[styles.button]}>
+      <Text>{props.counter}</Text>
+    </View>
+  );
+});
+
+function wrap(Fc) {
+  return React.forwardRef((props, ref) => {
+    return (
+      <View
+        ref={ref}
+        style={{ backgroundColor: 'transparent' }}
+        onGestureHandlerEvent={props.onGestureHandlerEvent}
+        onGestureHandlerStateChange={props.onGestureHandlerStateChange}>
+        <Fc {...props} />
+      </View>
+    );
+  });
 }
 
 const styles = StyleSheet.create({
@@ -139,8 +195,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'plum',
   },
   button: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     backgroundColor: 'green',
     alignSelf: 'center',
   },
