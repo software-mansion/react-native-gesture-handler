@@ -565,129 +565,6 @@ export class Fling {
   }
 }
 
-export class Simultaneous {
-  constructor(gestures) {
-    this.gestures = gestures;
-  }
-
-  prepare() {
-    let tags = [];
-    for (const gs of this.gestures) {
-      tags.push(handlerTag++);
-    }
-
-    for (let i = 0; i < this.gestures.length; i++) {
-      this.gestures[i].handlerTag = tags[i];
-      this.gestures[i].config.simultaneousHandlers = tags;
-
-      RNGestureHandlerModule.createGestureHandler(
-        this.gestures[i].handlerName,
-        this.gestures[i].handlerTag,
-        { simultaneousHandlers: this.gestures[i].config.simultaneousHandlers } //this.gestures[i].config
-      );
-    }
-
-    return this.gestures;
-  }
-
-  update(ref) {
-    for (let i = 0; i < this.gestures.length; i++) {
-      ref.current[i].config = this.gestures[i].config;
-    }
-  }
-}
-
-export class Exclusive {
-  constructor(gestures) {
-    this.gestures = gestures;
-  }
-
-  prepare() {
-    for (const gs of this.gestures) {
-      gs.handlerTag = handlerTag++;
-
-      RNGestureHandlerModule.createGestureHandler(
-        gs.handlerName,
-        gs.handlerTag,
-        {} //gs.config
-      );
-    }
-
-    return this.gestures;
-  }
-
-  update(ref) {
-    for (let i = 0; i < this.gestures.length; i++) {
-      ref.current[i].config = this.gestures[i].config;
-    }
-  }
-}
-
-export class Sequence {
-  constructor(gestures) {
-    this.gestures = gestures;
-    this.active = [];
-  }
-
-  prepare() {
-    let tags = [];
-
-    for (const gs of this.gestures) {
-      tags.push(handlerTag++);
-    }
-
-    for (let i = 0; i < this.gestures.length; i++) {
-      let originalUpdate = this.gestures[i].config.onUpdate;
-
-      this.active.push(false);
-
-      this.gestures[i].handlerTag = tags[i];
-      this.gestures[i].config.simultaneousHandlers = tags;
-
-      this.gestures[i].originalUpdate = originalUpdate;
-
-      this.gestures[i].config.onUpdate = (e, vt) => {
-        if (this.active[i]) {
-          if (e.nativeEvent.state == 4) {
-            this.active[i + 1] = true;
-          } else if (
-            i > 0 &&
-            (e.nativeEvent.state == 3 || e.nativeEvent.state == 5)
-          ) {
-            this.active[i] = false;
-          }
-
-          if (typeof originalUpdate === 'function') {
-            originalUpdate(e);
-          } else {
-            RNGestureHandlerModule.dispatchEvent(
-              this.gestures[i].eventName,
-              vt,
-              e.nativeEvent
-            );
-          }
-        }
-      };
-
-      RNGestureHandlerModule.createGestureHandler(
-        this.gestures[i].handlerName,
-        this.gestures[i].handlerTag,
-        { simultaneousHandlers: tags } //this.gestures[i].config
-      );
-    }
-
-    this.active[0] = true;
-
-    return this.gestures;
-  }
-
-  update(ref) {
-    for (let i = 0; i < this.gestures.length; i++) {
-      //ref.current[i].config = this.gestures[i].config;
-    }
-  }
-}
-
 export class Gesture {
   constructor(config) {
     this.gestures = [];
@@ -774,7 +651,13 @@ let allowedProps = ['numberOfTaps', 'maxDist', 'priority'];
 export function useGesture(gesture) {
   const result = React.useRef([gesture]);
 
-  React.useEffect(() => {
+  function dropHandlers() {
+    for (const g of result.current[0].gestures) {
+      RNGestureHandlerModule.dropGestureHandler(g.handlerTag);
+    }
+  }
+
+  function attachHandlers() {
     gesture.initialize();
 
     for (const gst of gesture.gestures) {
@@ -832,18 +715,9 @@ export function useGesture(gesture) {
 
     result.current[0] = gesture;
     result.current[1]?.();
+  }
 
-    return () => {
-      for (const g of result.current[0].gestures) {
-        RNGestureHandlerModule.dropGestureHandler(g.handlerTag);
-      }
-    };
-  }, []);
-
-  if (result.current) {
-    console.log(
-      result.current[0].gestures.length + ' ' + gesture.gestures.length
-    );
+  function updateHandlers() {
     for (let i = 0; i < gesture.gestures.length; i++) {
       const gst = result.current[0].gestures[i];
       gst.config = gesture.gestures[i].config;
@@ -859,11 +733,42 @@ export function useGesture(gesture) {
     }
   }
 
+  function needsToReattach() {
+    if (gesture.gestures.length != result.current[0].gestures.length) {
+      return true;
+    } else {
+      for (let i = 0; i < gesture.gestures.length; i++) {
+        if (
+          gesture.gestures[i].handlerName !=
+          result.current[0].gestures[i].handlerName
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  React.useEffect(() => {
+    attachHandlers();
+
+    return () => {
+      dropHandlers();
+    };
+  }, []);
+
+  if (result.current && result.current.length > 1) {
+    if (needsToReattach()) {
+      dropHandlers();
+      attachHandlers();
+    } else {
+      updateHandlers();
+    }
+  }
+
   return result;
 }
-
-let handlers = [];
-
 export class GestureMonitor extends React.Component {
   constructor(props) {
     super(props);
@@ -919,34 +824,16 @@ export class GestureMonitor extends React.Component {
   }
 
   attachGestureHandlers(newViewTag) {
-    //newViewTag = RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag;
-    if (this.viewTag) {
-      handlers[this.viewTag] = undefined;
-    }
-
     this.viewTag = newViewTag;
-    //this.visit(RNRenderer.findHostInstance_DEPRECATED(this), 0);
-    //console.log(RNRenderer.findHostInstance_DEPRECATED(this));
     if (this.props.gesture.current) {
       if (this.props.gesture.current[0] instanceof Gesture) {
         for (const gesture of this.props.gesture.current[0].gestures) {
-          console.log(newViewTag + ' ' + gesture.handlerName);
           RNGestureHandlerModule.attachGestureHandler(
             gesture.handlerTag,
             newViewTag
           );
-
-          if (handlers[newViewTag]) {
-            handlers[newViewTag].push(gesture.handlerTag);
-          } else {
-            handlers[newViewTag] = [gesture.handlerTag];
-          }
         }
       }
-    }
-
-    if (newViewTag == 487) {
-      //console.log(handlers)
     }
   }
 
