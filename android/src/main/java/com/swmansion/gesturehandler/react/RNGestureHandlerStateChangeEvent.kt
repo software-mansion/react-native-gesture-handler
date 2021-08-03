@@ -58,13 +58,9 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
       newState: Int,
       oldState: Int,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
-    ): RNGestureHandlerStateChangeEvent {
-      var event = EVENTS_POOL.acquire()
-      if (event == null) {
-        event = RNGestureHandlerStateChangeEvent()
+    ): RNGestureHandlerStateChangeEvent =
+      (EVENTS_POOL.acquire() ?: RNGestureHandlerStateChangeEvent()).apply {
+        init(handler, newState, oldState, dataExtractor)
       }
-      event.init(handler, newState, oldState, dataExtractor)
-      return event
-    }
   }
 }
