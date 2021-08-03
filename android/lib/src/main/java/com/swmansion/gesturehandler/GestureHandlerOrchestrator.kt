@@ -57,6 +57,16 @@ class GestureHandlerOrchestrator(
     }
   }
 
+  private inline fun compactHandlersIf(handlers: Array<GestureHandler<*>?>, count: Int, predicate: (handler: GestureHandler<*>?) -> Boolean): Int {
+    var out = 0
+    for (i in 0 until count) {
+      if (predicate(handlers[i])) {
+        handlers[out++] = handlers[i]
+      }
+    }
+    return out
+  }
+
   private fun cleanupFinishedHandlers() {
     var shouldCleanEmptyCells = false
     for (i in gestureHandlersCount - 1 downTo 0) {
@@ -73,13 +83,9 @@ class GestureHandlerOrchestrator(
       }
     }
     if (shouldCleanEmptyCells) {
-      var out = 0
-      for (i in 0 until gestureHandlersCount) {
-        if (gestureHandlers[i] != null) {
-          gestureHandlers[out++] = gestureHandlers[i]
-        }
+      gestureHandlersCount = compactHandlersIf(gestureHandlers, gestureHandlersCount) { handler ->
+        handler != null
       }
-      gestureHandlersCount = out
     }
     finishedHandlersCleanupScheduled = false
   }
@@ -106,13 +112,9 @@ class GestureHandlerOrchestrator(
   }
 
   private fun cleanupAwaitingHandlers() {
-    var out = 0
-    for (i in 0 until awaitingHandlersCount) {
-      if (awaitingHandlers[i]!!.mIsAwaiting) {
-        awaitingHandlers[out++] = awaitingHandlers[i]
-      }
+    awaitingHandlersCount = compactHandlersIf(awaitingHandlers, awaitingHandlersCount) { handler ->
+      handler!!.mIsAwaiting
     }
-    awaitingHandlersCount = out
   }
 
   /*package*/
