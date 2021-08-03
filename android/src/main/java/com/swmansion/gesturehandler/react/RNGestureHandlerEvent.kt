@@ -46,13 +46,9 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     fun <T : GestureHandler<T>> obtain(
       handler: T,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
-    ): RNGestureHandlerEvent {
-      var event = EVENTS_POOL.acquire()
-      if (event == null) {
-        event = RNGestureHandlerEvent()
+    ): RNGestureHandlerEvent =
+      (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent()).apply {
+        init(handler, dataExtractor)
       }
-      event.init(handler, dataExtractor)
-      return event
-    }
   }
 }
