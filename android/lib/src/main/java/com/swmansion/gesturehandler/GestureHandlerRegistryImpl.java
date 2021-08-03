@@ -7,10 +7,10 @@ import java.util.WeakHashMap;
 
 public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
 
-  private WeakHashMap<View, ArrayList<GestureHandler>> mHandlers = new WeakHashMap<>();
+  private WeakHashMap<View, ArrayList<GestureHandler<?>>> mHandlers = new WeakHashMap<>();
 
-  public <T extends GestureHandler> T registerHandlerForView(View view, T handler) {
-    ArrayList<GestureHandler> listToAdd = mHandlers.get(view);
+  public <T extends GestureHandler<?>> T registerHandlerForView(View view, T handler) {
+    ArrayList<GestureHandler<?>> listToAdd = mHandlers.get(view);
     if (listToAdd == null) {
       listToAdd = new ArrayList<>(1);
       listToAdd.add(handler);
@@ -22,7 +22,7 @@ public class GestureHandlerRegistryImpl implements GestureHandlerRegistry {
   }
 
   @Override
-  public ArrayList<GestureHandler> getHandlersForView(View view) {
+  public ArrayList<GestureHandler<?>> getHandlersForView(View view) {
     return mHandlers.get(view);
   }
 }
