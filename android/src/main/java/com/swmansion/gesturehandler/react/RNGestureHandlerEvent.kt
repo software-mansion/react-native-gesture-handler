@@ -8,22 +8,22 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.swmansion.gesturehandler.GestureHandler
 
 class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>() {
-  private var mExtraData: WritableMap? = null
-  private var mCoalescingKey: Short = 0
+  private var extraData: WritableMap? = null
+  private var coalescingKey: Short = 0
   private fun <T : GestureHandler<T>> init(
     handler: T,
     dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
   ) {
     super.init(handler.view!!.id)
-    mExtraData = Arguments.createMap()
-    dataExtractor?.extractEventData(handler, mExtraData)
-    mExtraData!!.putInt("handlerTag", handler.tag)
-    mExtraData!!.putInt("state", handler.state)
-    mCoalescingKey = handler.eventCoalescingKey
+    extraData = Arguments.createMap()
+    dataExtractor?.extractEventData(handler, extraData)
+    extraData!!.putInt("handlerTag", handler.tag)
+    extraData!!.putInt("state", handler.state)
+    coalescingKey = handler.eventCoalescingKey
   }
 
   override fun onDispose() {
-    mExtraData = null
+    extraData = null
     EVENTS_POOL.release(this)
   }
 
@@ -36,11 +36,11 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   }
 
   override fun getCoalescingKey(): Short {
-    return mCoalescingKey
+    return coalescingKey
   }
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, mExtraData)
+    rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, extraData)
   }
 
   companion object {
