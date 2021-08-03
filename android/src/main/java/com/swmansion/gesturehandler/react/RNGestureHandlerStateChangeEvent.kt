@@ -2,10 +2,8 @@ package com.swmansion.gesturehandler.react
 
 import androidx.core.util.Pools
 import com.facebook.react.bridge.Arguments
-import com.swmansion.gesturehandler.react.RNGestureHandlerStateChangeEvent
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
-import com.swmansion.gesturehandler.react.RNGestureHandlerEventDataExtractor
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.swmansion.gesturehandler.GestureHandler
 
@@ -18,11 +16,12 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
   ) {
     super.init(handler.view!!.id)
-    mExtraData = Arguments.createMap()
-    dataExtractor?.extractEventData(handler, mExtraData)
-    mExtraData!!.putInt("handlerTag", handler.tag)
-    mExtraData!!.putInt("state", newState)
-    mExtraData!!.putInt("oldState", oldState)
+    mExtraData = Arguments.createMap().apply {
+      dataExtractor?.extractEventData(handler, this)
+      putInt("handlerTag", handler.tag)
+      putInt("state", newState)
+      putInt("oldState", oldState)
+    }
   }
 
   override fun onDispose() {
