@@ -158,7 +158,7 @@ class GestureHandlerOrchestrator(
     var toCancelCount = 0
     // Cancel all handlers that are required to be cancel upon current handler's activation
     for (i in 0 until gestureHandlersCount) {
-      val otherHandler = gestureHandlers[i]
+      val otherHandler = gestureHandlers[i]!!
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
         handlersToCancel[toCancelCount++] = otherHandler
       }
@@ -474,8 +474,8 @@ class GestureHandlerOrchestrator(
     private fun isTransformedTouchPointInView(x: Float, y: Float, child: View) =
       x in 0f..child.width.toFloat() && y in 0f..child.height.toFloat()
 
-    private fun shouldHandlerWaitForOther(handler: GestureHandler<*>, other: GestureHandler<*>?): Boolean {
-      return handler !== other && (handler.shouldWaitForHandlerFailure(other!!)
+    private fun shouldHandlerWaitForOther(handler: GestureHandler<*>, other: GestureHandler<*>): Boolean {
+      return handler !== other && (handler.shouldWaitForHandlerFailure(other)
         || other.shouldRequireToWaitForFailure(handler))
     }
 
@@ -483,8 +483,8 @@ class GestureHandlerOrchestrator(
       a === b || a!!.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
 
 
-    private fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>?, other: GestureHandler<*>): Boolean {
-      if (!handler!!.hasCommonPointers(other)) {
+    private fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, other: GestureHandler<*>): Boolean {
+      if (!handler.hasCommonPointers(other)) {
         // if two handlers share no common pointer one can never trigger cancel for the other
         return false
       }
