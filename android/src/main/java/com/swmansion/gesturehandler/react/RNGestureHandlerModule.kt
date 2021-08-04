@@ -284,12 +284,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private val mEventListener: OnTouchEventListener<*> = object : OnTouchEventListener<Any?> {
-    override fun onTouchEvent(handler: GestureHandler<*>, event: MotionEvent) {
+  private val mEventListener = object : OnTouchEventListener {
+    override fun <T : GestureHandler<T>> onTouchEvent(handler: T, event: MotionEvent) {
       this@RNGestureHandlerModule.onTouchEvent(handler, event)
     }
 
-    override fun onStateChange(handler: GestureHandler<*>, newState: Int, oldState: Int) {
+    override fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
       this@RNGestureHandlerModule.onStateChange(handler, newState, oldState)
     }
   }
