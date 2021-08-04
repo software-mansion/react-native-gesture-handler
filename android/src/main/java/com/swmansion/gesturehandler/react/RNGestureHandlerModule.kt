@@ -15,7 +15,7 @@ import java.util.*
 
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
-  private abstract class HandlerFactory<T : GestureHandler<T>>() : RNGestureHandlerEventDataExtractor<T> {
+  private abstract class HandlerFactory<T : GestureHandler<T>> : RNGestureHandlerEventDataExtractor<T> {
     abstract val type: Class<T>
     abstract val name: String
     abstract fun create(context: Context?): T
@@ -37,7 +37,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class NativeViewGestureHandlerFactory() : HandlerFactory<NativeViewGestureHandler>() {
+  private class NativeViewGestureHandlerFactory : HandlerFactory<NativeViewGestureHandler>() {
     override val type = NativeViewGestureHandler::class.java
     override val name = "NativeViewGestureHandler"
 
@@ -62,7 +62,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class TapGestureHandlerFactory() : HandlerFactory<TapGestureHandler>() {
+  private class TapGestureHandlerFactory : HandlerFactory<TapGestureHandler>() {
     override val type = TapGestureHandler::class.java
     override val name = "TapGestureHandler"
 
@@ -106,7 +106,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class LongPressGestureHandlerFactory() : HandlerFactory<LongPressGestureHandler>() {
+  private class LongPressGestureHandlerFactory : HandlerFactory<LongPressGestureHandler>() {
     override val type = LongPressGestureHandler::class.java
     override val name = "LongPressGestureHandler"
 
@@ -136,7 +136,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class PanGestureHandlerFactory() : HandlerFactory<PanGestureHandler>() {
+  private class PanGestureHandlerFactory : HandlerFactory<PanGestureHandler>() {
     override val type = PanGestureHandler::class.java
     override val name = "PanGestureHandler"
 
@@ -227,7 +227,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class PinchGestureHandlerFactory() : HandlerFactory<PinchGestureHandler>() {
+  private class PinchGestureHandlerFactory : HandlerFactory<PinchGestureHandler>() {
     override val type = PinchGestureHandler::class.java
     override val name = "PinchGestureHandler"
 
@@ -246,7 +246,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class FlingGestureHandlerFactory() : HandlerFactory<FlingGestureHandler>() {
+  private class FlingGestureHandlerFactory : HandlerFactory<FlingGestureHandler>() {
     override val type = FlingGestureHandler::class.java
     override val name = "FlingGestureHandler"
 
@@ -275,7 +275,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private class RotationGestureHandlerFactory() : HandlerFactory<RotationGestureHandler>() {
+  private class RotationGestureHandlerFactory : HandlerFactory<RotationGestureHandler>() {
     override val type = RotationGestureHandler::class.java
     override val name = "RotationGestureHandler"
 
@@ -435,7 +435,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       for (i in mRoots.indices) {
         val root: RNGestureHandlerRootHelper = mRoots.get(i)
         val rootView: ViewGroup = root.rootView
-        if (rootView is ReactRootView && rootView.getRootViewTag() == rootViewTag) {
+        if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           // we have found root helper registered for a given react root, we don't need to
           // initialize a new one then
           return
@@ -487,7 +487,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       for (i in mRoots.indices) {
         val root: RNGestureHandlerRootHelper = mRoots.get(i)
         val rootView: ViewGroup = root.rootView
-        if (rootView is ReactRootView && rootView.getRootViewTag() == rootViewTag) {
+        if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           return root
         }
       }
