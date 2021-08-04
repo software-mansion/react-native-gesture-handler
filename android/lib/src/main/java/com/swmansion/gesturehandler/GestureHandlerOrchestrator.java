@@ -380,7 +380,7 @@ public class GestureHandlerOrchestrator {
   }
 
   private boolean recordViewHandlersForPointer(View view, float[] coords, int pointerId) {
-    ArrayList<GestureHandler> handlers = mHandlerRegistry.getHandlersForView(view);
+    ArrayList<GestureHandler<?>> handlers = mHandlerRegistry.getHandlersForView(view);
     boolean found = false;
     if (handlers != null) {
       for (int i = 0, size = handlers.size(); i < size; i++) {
