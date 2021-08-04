@@ -423,8 +423,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)
     val rootViewTag = uiManager!!.resolveRootTagFromReactTag(ancestorViewTag)
     if (rootViewTag < 1) {
-      throw JSApplicationIllegalArgumentException(("Could find root view for a given ancestor with tag "
-        + ancestorViewTag))
+      throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
     }
     synchronized(roots) {
       for (i in roots.indices) {
