@@ -314,7 +314,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     RotationGestureHandlerFactory(),
     FlingGestureHandlerFactory()
   )
-  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
+  val registry: RNGestureHandlerRegistry? = RNGestureHandlerRegistry()
   private val mInteractionManager = RNGestureHandlerInteractionManager()
   private val mRoots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val mEnqueuedRootViewInit: MutableList<Int> = ArrayList()
