@@ -18,7 +18,7 @@ import {
   Exclusive,
   Sequence,
   LongPress,
-  Gesture,
+  ComplexGesture,
 } from 'react-native-gesture-handler';
 import { useState } from 'react';
 import { createRef } from 'react';
@@ -56,7 +56,7 @@ export default function Example() {
   const longPress = useRef();
 
   let gesture = useGesture(
-    new Gesture()
+    new ComplexGesture()
       .tap({
         ref: doubleTap,
         requireToFail: tripleTap,

@@ -20,110 +20,109 @@ import { nextHandlerTag } from './handlerCounter';
 import { default as RNRenderer } from 'react-native/Libraries/Renderer/shims/ReactNative';
 import { filterConfig } from './createHandler';
 
-export class Tap {
-  constructor(config) {
+class Gesture {
+  public gestures: Array<Gesture> = [];
+}
+
+class SimpleGesture extends Gesture {
+  public handlerTag: number = -1;
+  public handlerName: string = '';
+  public config: any = {};
+
+  constructor(config: any) {
+    super();
+    this.config = config;
+
+    this.gestures = [this];
+  }
+
+  initialize() {
+    this.handlerTag = nextHandlerTag();
+
+    if (this.config.ref) {
+      this.config.ref.current = this;
+    }
+  }
+
+  prepare() {
+    if (
+      this.config.requireToFail &&
+      !Array.isArray(this.config.requireToFail)
+    ) {
+      this.config.requireToFail = [this.config.requireToFail];
+    }
+
+    if (this.config.after && !Array.isArray(this.config.after)) {
+      this.config.after = [this.config.after];
+    }
+
+    if (
+      this.config.simultaneousWith &&
+      !Array.isArray(this.config.simultaneousWith)
+    ) {
+      this.config.simultaneousWith = [this.config.simultaneousWith];
+    }
+  }
+}
+
+export class Tap extends SimpleGesture {
+  constructor(config: any) {
+    super(config);
+
     this.handlerName = 'TapGestureHandler';
-    this.eventName = 'onTapEvent';
     this.handlerTag = -1;
-    this.config = config;
-  }
-
-  onUpdate(e, vt) {
-    if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e, vt);
-    } else {
-      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
-    }
   }
 }
 
-export class Pan {
-  constructor(config) {
+export class Pan extends SimpleGesture {
+  constructor(config: any) {
+    super(config);
+
     this.handlerName = 'PanGestureHandler';
-    this.eventName = 'onPanEvent';
     this.handlerTag = -1;
-    this.config = config;
-  }
-
-  onUpdate(e, vt) {
-    if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e, vt);
-    } else {
-      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
-    }
   }
 }
 
-export class Pinch {
-  constructor(config) {
+export class Pinch extends SimpleGesture {
+  constructor(config: any) {
+    super(config);
+
     this.handlerName = 'PinchGestureHandler';
-    this.eventName = 'onPinchEvent';
     this.handlerTag = -1;
-    this.config = config;
-  }
-
-  onUpdate(e, vt) {
-    if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e, vt);
-    } else {
-      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
-    }
   }
 }
 
-export class Rotation {
-  constructor(config) {
+export class Rotation extends SimpleGesture {
+  constructor(config: any) {
+    super(config);
+
     this.handlerName = 'RotationGestureHandler';
-    this.eventName = 'onRotationEvent';
     this.handlerTag = -1;
-    this.config = config;
-  }
-
-  onUpdate(e, vt) {
-    if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e, vt);
-    } else {
-      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
-    }
   }
 }
 
-export class LongPress {
-  constructor(config) {
+export class LongPress extends SimpleGesture {
+  constructor(config: any) {
+    super(config);
+
     this.handlerName = 'LongPressGestureHandler';
-    this.eventName = 'onLongPressEvent';
     this.handlerTag = -1;
-    this.config = config;
-  }
-
-  onUpdate(e, vt) {
-    if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e, vt);
-    } else {
-      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
-    }
   }
 }
 
-export class Fling {
-  constructor(config) {
+export class Fling extends SimpleGesture {
+  constructor(config: any) {
+    super(config);
+
     this.handlerName = 'FlingGestureHandler';
-    this.eventName = 'onFlingEvent';
     this.handlerTag = -1;
-    this.config = config;
-  }
-
-  onUpdate(e, vt) {
-    if (typeof this.config.onUpdate === 'function') {
-      this.config.onUpdate(e);
-    } else {
-      RNGestureHandlerModule.dispatchEvent(this.eventName, vt, e.nativeEvent);
-    }
   }
 }
 
-export class Gesture {
+export class ComplexGesture extends Gesture {
   constructor(config) {
+    super();
+
     this.gestures = [];
     this.ready = false;
 
@@ -172,33 +171,13 @@ export class Gesture {
 
   initialize() {
     for (const gesture of this.gestures) {
-      gesture.handlerTag = nextHandlerTag();
-
-      if (gesture.config.ref) {
-        gesture.config.ref.current = gesture;
-      }
+      gesture.initialize();
     }
   }
 
   prepare() {
     for (const gesture of this.gestures) {
-      if (
-        gesture.config.requireToFail &&
-        !Array.isArray(gesture.config.requireToFail)
-      ) {
-        gesture.config.requireToFail = [gesture.config.requireToFail];
-      }
-
-      if (gesture.config.after && !Array.isArray(gesture.config.after)) {
-        gesture.config.after = [gesture.config.after];
-      }
-
-      if (
-        gesture.config.simultaneousWith &&
-        !Array.isArray(gesture.config.simultaneousWith)
-      ) {
-        gesture.config.simultaneousWith = [gesture.config.simultaneousWith];
-      }
+      gesture.prepare();
     }
   }
 }

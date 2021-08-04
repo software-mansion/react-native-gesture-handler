@@ -44,7 +44,7 @@ export {
   Rotation,
   Fling,
   LongPress,
-  Gesture,
+  ComplexGesture,
 } from './handlers/GestureMonitor';
 export type {
   NativeViewGestureHandlerPayload,

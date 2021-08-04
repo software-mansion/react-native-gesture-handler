@@ -2,7 +2,11 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
+import {
+  GestureMonitor,
+  ComplexGesture,
+  Pan,
+} from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -37,7 +41,7 @@ function Draggable() {
   });
 
   const gs = useAnimatedGesture(
-    new Gesture().pan({
+    new Pan({
       onBegan: (e) => {
         pressed.value = true;
       },
