@@ -342,17 +342,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   fun attachGestureHandler(handlerTag: Int, viewTag: Int) {
     tryInitializeHandlerForReactRootView(viewTag)
     if (!registry.attachHandlerToView(handlerTag, viewTag)) {
-      throw JSApplicationIllegalArgumentException(
-        "Handler with tag $handlerTag does not exists")
+      throw JSApplicationIllegalArgumentException("Handler with tag $handlerTag does not exists")
     }
   }
 
   @ReactMethod
   @Suppress("UNCHECKED_CAST")
-  fun <T : GestureHandler<T>> updateGestureHandler(
-    handlerTag: Int,
-    config: ReadableMap,
-  ) {
+  fun <T : GestureHandler<T>> updateGestureHandler(handlerTag: Int, config: ReadableMap) {
     val handler = registry.getHandler(handlerTag) as T?
     if (handler != null) {
       val factory = findFactoryForHandler(handler)
