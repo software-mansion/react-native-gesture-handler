@@ -375,33 +375,33 @@ class GestureHandlerOrchestrator(
     return false
   }
 
-  private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int): Boolean {
-    val pointerEvents = viewConfigHelper.getPointerEventsConfigForView(view)
-    return if (pointerEvents == PointerEventsConfig.NONE) {
-      // This view and its children can't be the target
-      false
-    } else if (pointerEvents == PointerEventsConfig.BOX_ONLY) {
-      // This view is the target, its children don't matter
-      (recordViewHandlersForPointer(view, coords, pointerId)
-        || shouldHandlerlessViewBecomeTouchTarget(view, coords))
-    } else if (pointerEvents == PointerEventsConfig.BOX_NONE) {
-      // This view can't be the target, but its children might
-      if (view is ViewGroup) {
-        extractGestureHandlers(view, coords, pointerId)
-      } else false
-    } else if (pointerEvents == PointerEventsConfig.AUTO) {
-      // Either this view or one of its children is the target
-      var found = false
-      if (view is ViewGroup) {
-        found = extractGestureHandlers(view, coords, pointerId)
+  private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int): Boolean =
+    when (viewConfigHelper.getPointerEventsConfigForView(view)) {
+      PointerEventsConfig.NONE -> {
+        // This view and its children can't be the target
+        false
       }
-      (recordViewHandlersForPointer(view, coords, pointerId)
-        || found || shouldHandlerlessViewBecomeTouchTarget(view, coords))
-    } else {
-      throw IllegalArgumentException(
-        "Unknown pointer event type: $pointerEvents")
+      PointerEventsConfig.BOX_ONLY -> {
+        // This view is the target, its children don't matter
+        (recordViewHandlersForPointer(view, coords, pointerId)
+          || shouldHandlerlessViewBecomeTouchTarget(view, coords))
+      }
+      PointerEventsConfig.BOX_NONE -> {
+        // This view can't be the target, but its children might
+        if (view is ViewGroup) {
+          extractGestureHandlers(view, coords, pointerId)
+        } else false
+      }
+      PointerEventsConfig.AUTO -> {
+        // Either this view or one of its children is the target
+        var found = false
+        if (view is ViewGroup) {
+          found = extractGestureHandlers(view, coords, pointerId)
+        }
+        (recordViewHandlersForPointer(view, coords, pointerId)
+          || found || shouldHandlerlessViewBecomeTouchTarget(view, coords))
+      }
     }
-  }
 
   private fun canReceiveEvents(view: View) =
     view.visibility == View.VISIBLE && view.alpha >= minimumAlphaForTraversal
