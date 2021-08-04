@@ -441,7 +441,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       }
     }
     synchronized(enqueuedRootViewInit) {
-      if (enqueuedRootViewInit.contains(rootViewTag)) {
+      if (rootViewTag in enqueuedRootViewInit) {
         // root view initialization already enqueued -> we skip
         return
       }
@@ -464,7 +464,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
     synchronized(roots) {
-      if (roots.contains(root)) {
+      if (root in roots) {
         throw IllegalStateException("Root helper$root already registered")
       }
       roots.add(root)
@@ -568,7 +568,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     private const val KEY_PAN_AVG_TOUCHES = "avgTouches"
     private const val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
     private const val KEY_DIRECTION = "direction"
-    
+
     private fun handleHitSlopProperty(handler: GestureHandler<*>, config: ReadableMap) {
       if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
         val hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP))
