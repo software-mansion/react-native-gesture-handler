@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { useRef } from 'react';
 import { Alert, StyleSheet, useWindowDimensions } from 'react-native';
 import {
   GestureMonitor,
-  useGesture,
-  ComplexGesture,
   Pan,
   Pinch,
   LongPress,
@@ -30,27 +27,6 @@ export default function Home() {
   const [remainingTime, setRemainingTime] = useState(MAX_VIDEO_DURATION);
   const [recordingInterval, setRecordingInterval] = useState(-1);
 
-  function updateSelectedFilter() {
-    let targetFilter = Math.round(filter.value);
-    if (targetFilter < 0) targetFilter = 0;
-    if (targetFilter >= filters.length) targetFilter = filters.length - 1;
-    setSelectedFilter(targetFilter);
-
-    return targetFilter;
-  }
-
-  function finishRecording() {
-    setRecording(false);
-    clearInterval(recordingInterval);
-    setRemainingTime(MAX_VIDEO_DURATION);
-
-    Alert.alert(
-      'You took a video (' +
-        (MAX_VIDEO_DURATION - remainingTime) * 0.001 +
-        ' s)'
-    );
-  }
-
   const filtersPanGesture = new Pan({
     onUpdate: (e) => {
       filter.value =
@@ -74,12 +50,6 @@ export default function Home() {
 
   const buttonPanGesture = new Pan({
     simultaneousWith: filtersPanGesture,
-    onBegin: () => {
-      console.log('begin');
-    },
-    onCancel: () => {
-      console.log('cancel');
-    },
     onUpdate: (e) => {
       if (recording) {
         if (e.velocityY < 0) {
@@ -129,6 +99,27 @@ export default function Home() {
 
   if (remainingTime <= 0) {
     finishRecording();
+  }
+
+  function updateSelectedFilter() {
+    let targetFilter = Math.round(filter.value);
+    if (targetFilter < 0) targetFilter = 0;
+    if (targetFilter >= filters.length) targetFilter = filters.length - 1;
+    setSelectedFilter(targetFilter);
+
+    return targetFilter;
+  }
+
+  function finishRecording() {
+    setRecording(false);
+    clearInterval(recordingInterval);
+    setRemainingTime(MAX_VIDEO_DURATION);
+
+    Alert.alert(
+      'You took a video (' +
+        (MAX_VIDEO_DURATION - remainingTime) * 0.001 +
+        ' s)'
+    );
   }
 
   const zoomStyle = useAnimatedStyle(() => {
