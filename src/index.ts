@@ -38,9 +38,6 @@ export { default as createNativeWrapper } from './handlers/createNativeWrapper';
 export {
   GestureMonitor,
   useGesture,
-  Simultaneous,
-  Sequence,
-  Exclusive,
   Tap,
   Pan,
   Pinch,
@@ -48,7 +45,7 @@ export {
   Fling,
   LongPress,
   Gesture,
-} from './handlers/createHandler';
+} from './handlers/GestureMonitor';
 export type {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,
