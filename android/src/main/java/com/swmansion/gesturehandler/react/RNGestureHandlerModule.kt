@@ -316,9 +316,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val enqueuedRootViewInit: MutableList<Int> = ArrayList()
-  override fun getName(): String {
-    return MODULE_NAME
-  }
+  override fun getName() = MODULE_NAME
 
   @ReactMethod
   @Suppress("UNCHECKED_CAST")
