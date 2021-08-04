@@ -376,7 +376,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   fun handleClearJSResponder() {
   }
 
-  override fun getConstants(): MutableMap<String, Any>? {
+  override fun getConstants(): Map<String, Any> {
     return MapBuilder.of<String, Map<String, Int>>("State", MapBuilder.of(
       "UNDETERMINED", GestureHandler.STATE_UNDETERMINED,
       "BEGAN", GestureHandler.STATE_BEGAN,
