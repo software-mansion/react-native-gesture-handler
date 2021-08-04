@@ -321,19 +321,16 @@ class GestureHandlerOrchestrator(
   }
 
   private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int): Boolean {
-    val handlers = handlerRegistry.getHandlersForView(view)
     var found = false
-    handlers?.let {
-      var i = 0
+    handlerRegistry.getHandlersForView(view)?.let {
       val size = it.size
-      while (i < size) {
+      for (i in 0..size) {
         val handler = it[i]
         if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
           recordHandlerIfNotPresent(handler, view)
           handler.startTrackingPointer(pointerId)
           found = true
         }
-        i++
       }
     }
     return found
