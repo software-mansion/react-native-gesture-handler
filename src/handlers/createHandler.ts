@@ -18,6 +18,8 @@ import {
 } from './gestureHandlers';
 import { ValueOf } from '../typeUtils';
 
+const UIManagerAny = UIManager as any;
+
 function findNodeHandle(
   node: null | number | React.Component<any, any> | React.ComponentClass<any>
 ): null | number | React.Component<any, any> | React.ComponentClass<any> {
@@ -36,16 +38,16 @@ const customGHEventsConfig = {
 // native module.
 // Once new event types are registered with react it is possible to dispatch these
 // events to all kind of native views.
-UIManager.genericDirectEventTypes = {
-  ...UIManager.genericDirectEventTypes,
+UIManagerAny.genericDirectEventTypes = {
+  ...UIManagerAny.genericDirectEventTypes,
   ...customGHEventsConfig,
 };
 // In newer versions of RN the `genericDirectEventTypes` is located in the object
 // returned by UIManager.getViewManagerConfig('getConstants') or in older RN UIManager.getConstants(), we need to add it there as well to make
 // it compatible with RN 61+
 const UIManagerConstants =
-  UIManager.getViewManagerConfig?.('getConstants') ??
-  UIManager.getConstants?.();
+  UIManagerAny.getViewManagerConfig?.('getConstants') ??
+  UIManagerAny.getConstants?.();
 
 if (UIManagerConstants) {
   UIManagerConstants.genericDirectEventTypes = {
@@ -62,12 +64,12 @@ const {
   clearJSResponder: oldClearJSResponder = () => {
     //no operation
   },
-} = UIManager;
-UIManager.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
+} = UIManagerAny;
+UIManagerAny.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
   oldSetJSResponder(tag, blockNativeResponder);
 };
-UIManager.clearJSResponder = () => {
+UIManagerAny.clearJSResponder = () => {
   RNGestureHandlerModule.handleClearJSResponder();
   oldClearJSResponder();
 };
