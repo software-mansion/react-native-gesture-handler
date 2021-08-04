@@ -495,7 +495,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     return null
   }
 
-  private fun onTouchEvent(handler: GestureHandler<*>, motionEvent: MotionEvent) {
+  private fun <T : GestureHandler<T>> onTouchEvent(handler: T, motionEvent: MotionEvent) {
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
@@ -503,27 +503,27 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     if (handler.state == GestureHandler.STATE_ACTIVE) {
       val handlerFactory = findFactoryForHandler(handler)
       val eventDispatcher = reactApplicationContext
-        .getNativeModule(UIManagerModule::class.java)
-        .getEventDispatcher()
+        .getNativeModule(UIManagerModule::class.java)!!
+        .eventDispatcher
       val event = obtain(handler, (handlerFactory)!!)
       eventDispatcher.dispatchEvent(event)
     }
   }
 
-  private fun onStateChange(handler: GestureHandler<*>, newState: Int, oldState: Int) {
+  private fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
     val handlerFactory = findFactoryForHandler(handler)
     val eventDispatcher = reactApplicationContext
-      .getNativeModule(UIManagerModule::class.java)
-      .getEventDispatcher()
+      .getNativeModule(UIManagerModule::class.java)!!
+      .eventDispatcher
     val event = obtain(
       handler,
       newState,
       oldState,
-      (handlerFactory)!!)
+      handlerFactory)
     eventDispatcher.dispatchEvent(event)
   }
 
