@@ -294,7 +294,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
-  private val mEventListener = object : OnTouchEventListener {
+  private val eventListener = object : OnTouchEventListener {
     override fun <T : GestureHandler<T>> onTouchEvent(handler: T, event: MotionEvent) {
       this@RNGestureHandlerModule.onTouchEvent(handler, event)
     }
@@ -303,7 +303,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       this@RNGestureHandlerModule.onStateChange(handler, newState, oldState)
     }
   }
-  private val mHandlerFactories = arrayOf<HandlerFactory<*>>(
+  private val handlerFactories = arrayOf<HandlerFactory<*>>(
     NativeViewGestureHandlerFactory(),
     TapGestureHandlerFactory(),
     LongPressGestureHandlerFactory(),
@@ -313,9 +313,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     FlingGestureHandlerFactory()
   )
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
-  private val mInteractionManager = RNGestureHandlerInteractionManager()
-  private val mRoots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
-  private val mEnqueuedRootViewInit: MutableList<Int> = ArrayList()
+  private val interactionManager = RNGestureHandlerInteractionManager()
+  private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
+  private val enqueuedRootViewInit: MutableList<Int> = ArrayList()
   override fun getName(): String {
     return MODULE_NAME
   }
@@ -327,14 +327,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     handlerTag: Int,
     config: ReadableMap?,
   ) {
-    for (i in mHandlerFactories.indices) {
-      val handlerFactory = mHandlerFactories[i] as HandlerFactory<T>
+    for (i in handlerFactories.indices) {
+      val handlerFactory = handlerFactories[i] as HandlerFactory<T>
       if ((handlerFactory.name == handlerName)) {
         val handler = (handlerFactory.create(reactApplicationContext))
         handler.tag = handlerTag
-        handler.setOnTouchEventListener(mEventListener)
+        handler.setOnTouchEventListener(eventListener)
         registry.registerHandler(handler)
-        mInteractionManager.configureInteractions(handler, (config)!!)
+        interactionManager.configureInteractions(handler, (config)!!)
         handlerFactory.configure(handler, config)
         return
       }
@@ -361,8 +361,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     if (handler != null) {
       val factory = findFactoryForHandler(handler)
       if (factory != null) {
-        mInteractionManager.dropRelationsForHandlerWithTag(handlerTag)
-        mInteractionManager.configureInteractions(handler, config)
+        interactionManager.dropRelationsForHandlerWithTag(handlerTag)
+        interactionManager.configureInteractions(handler, config)
         factory.configure(handler, config)
       }
     }
@@ -370,7 +370,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
   @ReactMethod
   fun dropGestureHandler(handlerTag: Int) {
-    mInteractionManager.dropRelationsForHandlerWithTag(handlerTag)
+    interactionManager.dropRelationsForHandlerWithTag(handlerTag)
     registry.dropHandler(handlerTag)
   }
 
@@ -405,18 +405,18 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
   override fun onCatalystInstanceDestroy() {
     registry.dropAllHandlers()
-    mInteractionManager.reset()
-    synchronized(mRoots) {
-      while (mRoots.isNotEmpty()) {
-        val sizeBefore: Int = mRoots.size
-        val root: RNGestureHandlerRootHelper = mRoots[0]
+    interactionManager.reset()
+    synchronized(roots) {
+      while (roots.isNotEmpty()) {
+        val sizeBefore: Int = roots.size
+        val root: RNGestureHandlerRootHelper = roots[0]
         val reactRootView: ViewGroup = root.rootView
         if (reactRootView is RNGestureHandlerEnabledRootView) {
           reactRootView.tearDown()
         } else {
           root.tearDown()
         }
-        if (mRoots.size >= sizeBefore) {
+        if (roots.size >= sizeBefore) {
           throw IllegalStateException("Expected root helper to get unregistered while tearing down")
         }
       }
@@ -431,9 +431,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       throw JSApplicationIllegalArgumentException(("Could find root view for a given ancestor with tag "
         + ancestorViewTag))
     }
-    synchronized(mRoots) {
-      for (i in mRoots.indices) {
-        val root: RNGestureHandlerRootHelper = mRoots[i]
+    synchronized(roots) {
+      for (i in roots.indices) {
+        val root: RNGestureHandlerRootHelper = roots[i]
         val rootView: ViewGroup = root.rootView
         if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           // we have found root helper registered for a given react root, we don't need to
@@ -442,12 +442,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
         }
       }
     }
-    synchronized(mEnqueuedRootViewInit) {
-      if (mEnqueuedRootViewInit.contains(rootViewTag)) {
+    synchronized(enqueuedRootViewInit) {
+      if (enqueuedRootViewInit.contains(rootViewTag)) {
         // root view initialization already enqueued -> we skip
         return
       }
-      mEnqueuedRootViewInit.add(rootViewTag)
+      enqueuedRootViewInit.add(rootViewTag)
     }
     // root helper for a given root tag has not been found, we may wat to check if the root view is
     // an instance of RNGestureHandlerEnabledRootView and then initialize gesture handler with it
@@ -460,21 +460,21 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
         // is fine though as long as gestureHandlerRootHOC is used in JS
         // FIXME: check and warn about gestureHandlerRootHOC
       }
-      synchronized(mEnqueuedRootViewInit) { mEnqueuedRootViewInit.remove(rootViewTag) }
+      synchronized(enqueuedRootViewInit) { enqueuedRootViewInit.remove(rootViewTag) }
     })
   }
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
-    synchronized(mRoots) {
-      if (mRoots.contains(root)) {
+    synchronized(roots) {
+      if (roots.contains(root)) {
         throw IllegalStateException("Root helper$root already registered")
       }
-      mRoots.add(root)
+      roots.add(root)
     }
   }
 
   fun unregisterRootHelper(root: RNGestureHandlerRootHelper) {
-    synchronized(mRoots) { mRoots.remove(root) }
+    synchronized(roots) { roots.remove(root) }
   }
 
   private fun findRootHelperForViewAncestor(viewTag: Int): RNGestureHandlerRootHelper? {
@@ -483,9 +483,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     if (rootViewTag < 1) {
       return null
     }
-    synchronized(mRoots) {
-      for (i in mRoots.indices) {
-        val root: RNGestureHandlerRootHelper = mRoots[i]
+    synchronized(roots) {
+      for (i in roots.indices) {
+        val root: RNGestureHandlerRootHelper = roots[i]
         val rootView: ViewGroup = root.rootView
         if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           return root
@@ -497,8 +497,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
   @Suppress("UNCHECKED_CAST")
   private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? {
-    for (i in mHandlerFactories.indices) {
-      val factory = mHandlerFactories[i]
+    for (i in handlerFactories.indices) {
+      val factory = handlerFactories[i]
       if ((factory.type == handler.javaClass)) {
         return factory as HandlerFactory<T>
       }
