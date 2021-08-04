@@ -407,9 +407,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     registry.dropAllHandlers()
     mInteractionManager.reset()
     synchronized(mRoots) {
-      while (!mRoots.isEmpty()) {
+      while (mRoots.isNotEmpty()) {
         val sizeBefore: Int = mRoots.size
-        val root: RNGestureHandlerRootHelper = mRoots.get(0)
+        val root: RNGestureHandlerRootHelper = mRoots[0]
         val reactRootView: ViewGroup = root.rootView
         if (reactRootView is RNGestureHandlerEnabledRootView) {
           reactRootView.tearDown()
@@ -433,7 +433,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
     synchronized(mRoots) {
       for (i in mRoots.indices) {
-        val root: RNGestureHandlerRootHelper = mRoots.get(i)
+        val root: RNGestureHandlerRootHelper = mRoots[i]
         val rootView: ViewGroup = root.rootView
         if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           // we have found root helper registered for a given react root, we don't need to
@@ -485,7 +485,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
     synchronized(mRoots) {
       for (i in mRoots.indices) {
-        val root: RNGestureHandlerRootHelper = mRoots.get(i)
+        val root: RNGestureHandlerRootHelper = mRoots[i]
         val rootView: ViewGroup = root.rootView
         if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           return root
