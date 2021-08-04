@@ -426,8 +426,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
     }
     synchronized(roots) {
-      for (i in roots.indices) {
-        val root: RNGestureHandlerRootHelper = roots[i]
+      for (root in roots) {
         val rootView: ViewGroup = root.rootView
         if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
           // we have found root helper registered for a given react root, we don't need to
