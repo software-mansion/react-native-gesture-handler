@@ -302,7 +302,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     RotationGestureHandlerFactory(),
     FlingGestureHandlerFactory()
   )
-  val registry: RNGestureHandlerRegistry? = RNGestureHandlerRegistry()
+  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val mInteractionManager = RNGestureHandlerInteractionManager()
   private val mRoots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val mEnqueuedRootViewInit: MutableList<Int> = ArrayList()
@@ -311,20 +311,21 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   @ReactMethod
-  fun createGestureHandler(
+  @Suppress("UNCHECKED_CAST")
+  fun <T : GestureHandler<T>> createGestureHandler(
     handlerName: String,
     handlerTag: Int,
     config: ReadableMap?,
   ) {
     for (i in mHandlerFactories.indices) {
-      val handlerFactory = mHandlerFactories[i]
+      val handlerFactory = mHandlerFactories[i] as HandlerFactory<T>
       if ((handlerFactory.name == handlerName)) {
-        val handler = (handlerFactory.create(reactApplicationContext))!!
+        val handler = (handlerFactory.create(reactApplicationContext))
         handler.tag = handlerTag
         handler.setOnTouchEventListener(mEventListener)
         registry!!.registerHandler(handler)
         mInteractionManager.configureInteractions(handler, (config)!!)
-        handlerFactory.configure(handler, (config)!!)
+        handlerFactory.configure(handler, config)
         return
       }
     }
@@ -341,17 +342,18 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   @ReactMethod
-  fun updateGestureHandler(
+  @Suppress("UNCHECKED_CAST")
+  fun <T : GestureHandler<T>> updateGestureHandler(
     handlerTag: Int,
-    config: ReadableMap?,
+    config: ReadableMap,
   ) {
-    val handler = registry!!.getHandler(handlerTag)
+    val handler = registry!!.getHandler(handlerTag) as T?
     if (handler != null) {
       val factory = findFactoryForHandler(handler)
       if (factory != null) {
         mInteractionManager.dropRelationsForHandlerWithTag(handlerTag)
-        mInteractionManager.configureInteractions(handler, (config)!!)
-        factory.configure(handler, (config)!!)
+        mInteractionManager.configureInteractions(handler, config)
+        factory.configure(handler, config)
       }
     }
   }
@@ -482,11 +484,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     return null
   }
 
-  private fun findFactoryForHandler(handler: GestureHandler<*>): HandlerFactory<*>? {
+  @Suppress("UNCHECKED_CAST")
+  private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? {
     for (i in mHandlerFactories.indices) {
       val factory = mHandlerFactories[i]
       if ((factory.type == handler.javaClass)) {
-        return factory
+        return factory as HandlerFactory<T>
       }
     }
     return null
