@@ -194,13 +194,14 @@ class GestureHandlerOrchestrator(
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
     val handlersCount = gestureHandlersCount
-    System.arraycopy(gestureHandlers, 0, preparedHandlers, 0, handlersCount)
+
+    gestureHandlers.copyInto(preparedHandlers, 0, 0, handlersCount)
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
     // order in which handlers has been added ("most direct" children goes first). Therefore we rely
     // on Arrays.sort providing a stable sort (as children are registered in order in which they
     // should be tested)
-    Arrays.sort(preparedHandlers, 0, handlersCount, handlersComparator)
+    preparedHandlers.sortWith(handlersComparator, 0, handlersCount)
     for (i in 0 until handlersCount) {
       deliverEventToGestureHandler(preparedHandlers[i]!!, event)
     }
