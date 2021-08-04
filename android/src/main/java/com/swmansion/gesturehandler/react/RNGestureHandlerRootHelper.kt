@@ -32,7 +32,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
     orchestrator = GestureHandlerOrchestrator(
       wrappedView, registry, RNViewConfigurationHelper()).apply {
-      setMinimumAlphaForTraversal(MIN_ALPHA_FOR_TOUCH)
+      minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
     jsGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
     with(registry) {
@@ -89,7 +89,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
   }
 
-  fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+  fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     // We mark `mPassingTouch` before we get into `mOrchestrator.onTouchEvent` so that we can tell
     // if `requestDisallow` has been called as a result of a normal gesture handling process or
     // as a result of one of the gesture handlers activating
