@@ -24,16 +24,124 @@ class Gesture {
   public gestures: Array<Gesture> = [];
 }
 
+export class SimultaneousGesture extends Gesture {
+  private needsToPrepare: boolean = false;
+
+  constructor(a: SimpleGesture, b: SimpleGesture) {
+    super();
+
+    this.gestures = [a, b];
+  }
+
+  simultaneousWith(other: SimpleGesture): SimultaneousGesture {
+    this.gestures.push(other);
+
+    return this;
+  }
+
+  initialize() {
+    for (const gesture of this.gestures) {
+      gesture.initialize();
+    }
+
+    this.needsToPrepare = true;
+  }
+
+  prepare() {
+    if (!this.needsToPrepare) {
+      return;
+    }
+
+    let tags = this.gestures.map((g) => g.handlerTag);
+
+    for (const gesture of this.gestures) {
+      gesture.prepare();
+
+      if (gesture.config.simultaneousWith) {
+        gesture.config.simultaneousWith = [
+          ...gesture.config.simultaneousWith,
+          ...tags,
+        ];
+      } else {
+        gesture.config.simultaneousWith = [...tags];
+      }
+    }
+  }
+}
+
+export class ExclusiveGesture extends Gesture {
+  constructor(a: SimpleGesture, b: SimpleGesture) {
+    super();
+
+    this.gestures = [a, b];
+  }
+
+  exclusiveWith(other: SimpleGesture): ExclusiveGesture {
+    this.gestures.push(other);
+
+    return this;
+  }
+
+  initialize() {
+    for (const gesture of this.gestures) {
+      gesture.initialize();
+    }
+  }
+
+  prepare() {
+    for (const gesture of this.gestures) {
+      gesture.prepare();
+    }
+  }
+}
+
+export class SequenceGesture extends Gesture {
+  constructor(a: SimpleGesture, b: SimpleGesture) {
+    super();
+
+    this.gestures = [a, b];
+  }
+
+  initialize() {
+    for (const gesture of this.gestures) {
+      gesture.initialize();
+    }
+  }
+
+  prepare() {
+    let first = this.gestures[0];
+    let second = this.gestures[1];
+
+    second.config.after = [first.handlerTag];
+
+    for (const gesture of this.gestures) {
+      gesture.prepare();
+    }
+  }
+}
+
 class SimpleGesture extends Gesture {
   public handlerTag: number = -1;
   public handlerName: string = '';
-  public config: any = {};
+  public config: any;
 
   constructor(config: any) {
     super();
     this.config = config;
 
     this.gestures = [this];
+  }
+
+  simultaneousWith(other: SimpleGesture): SimultaneousGesture {
+    return new SimultaneousGesture(this, other);
+  }
+
+  exclusiveWith(other: SimpleGesture): ExclusiveGesture {
+    return new ExclusiveGesture(this, other);
+  }
+
+  after(other: SimpleGesture): SequenceGesture {
+    return new SequenceGesture(other, this);
   }
 
   initialize() {
@@ -182,7 +290,7 @@ export class ComplexGesture extends Gesture {
   }
 }
 
-let allowedProps = ['numberOfTaps', 'maxDist', 'priority'];
+let allowedProps = ['numberOfTaps', 'maxDist', 'priority', 'avgTouches'];
 
 export function useGesture(gesture) {
   const result = React.useRef([gesture]);
@@ -209,25 +317,43 @@ export function useGesture(gesture) {
         let requireToFail = [];
         if (gst.config.requireToFail) {
           requireToFail = gst.config.requireToFail.map((ref) => {
-            return ref.current.handlerTag;
+            if (typeof ref === 'number') {
+              return ref;
+            } else if (ref instanceof SimpleGesture) {
+              return ref.handlerTag;
+            } else {
+              return ref.current.handlerTag;
+            }
           });
         }
 
         let after = [];
         if (gst.config.after) {
           after = gst.config.after.map((ref) => {
-            return ref.current.handlerTag;
+            if (typeof ref === 'number') {
+              return ref;
+            } else if (ref instanceof SimpleGesture) {
+              return ref.handlerTag;
+            } else {
+              return ref.current.handlerTag;
+            }
           });
         }
 
         let simultaneousWith = [];
         if (gst.config.simultaneousWith) {
           simultaneousWith = gst.config.simultaneousWith.map((ref) => {
-            return ref.current.handlerTag;
+            if (typeof ref === 'number') {
+              return ref;
+            } else if (ref instanceof SimpleGesture) {
+              return ref.handlerTag;
+            } else {
+              return ref.current.handlerTag;
+            }
           });
         }
 
-        if (result.current[0].config.simultaneous) {
+        if (result.current[0].config && result.current[0].config.simultaneous) {
           simultaneousWith = [
             ...simultaneousWith,
             ...result.current[0].gestures.map((g) => g.handlerTag),

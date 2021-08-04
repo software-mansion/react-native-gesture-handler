@@ -4,7 +4,11 @@ import { Alert, StyleSheet, useWindowDimensions } from 'react-native';
 import {
   GestureMonitor,
   useGesture,
-  Gesture,
+  ComplexGesture,
+  Pan,
+  Pinch,
+  LongPress,
+  Tap,
 } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -25,8 +29,6 @@ export default function Home() {
   const [recording, setRecording] = useState(false);
   const [remainingTime, setRemainingTime] = useState(MAX_VIDEO_DURATION);
   const [recordingInterval, setRecordingInterval] = useState(-1);
-
-  const panGestureRef = useRef();
 
   function updateSelectedFilter() {
     let targetFilter = Math.round(filter.value);
@@ -49,77 +51,81 @@ export default function Home() {
     );
   }
 
-  const panGestureHandler = useAnimatedGesture(
-    new Gesture().pan({
-      ref: panGestureRef,
-      onUpdate: (e) => {
-        filter.value =
-          filter.value + (filterOffset.value - e.translationX) * 0.01;
-        filterOffset.value = e.translationX;
+  const filtersPanGesture = new Pan({
+    onUpdate: (e) => {
+      filter.value =
+        filter.value + (filterOffset.value - e.translationX) * 0.01;
+      filterOffset.value = e.translationX;
 
-        updateSelectedFilter();
-      },
-      onEnd: () => {
-        filterOffset.value = 0;
-        filter.value = withTiming(updateSelectedFilter(), { duration: 200 });
-      },
-    })
-  );
+      updateSelectedFilter();
+    },
+    onEnd: () => {
+      filterOffset.value = 0;
+      filter.value = withTiming(updateSelectedFilter(), { duration: 200 });
+    },
+  });
+
+  const buttonTapGesture = new Tap({
+    maxDist: 3,
+    onEnd: (e, success) => {
+      if (success) Alert.alert('You took a photo');
+    },
+  });
+
+  const buttonPanGesture = new Pan({
+    simultaneousWith: filtersPanGesture,
+    onBegin: () => {
+      console.log('begin');
+    },
+    onCancel: () => {
+      console.log('cancel');
+    },
+    onUpdate: (e) => {
+      if (recording) {
+        if (e.velocityY < 0) {
+          zoom.value = zoom.value * 1.05;
+        } else if (e.velocityY > 0) {
+          zoom.value = zoom.value * 0.95;
+        }
+      }
+    },
+    onEnd: (e) => {
+      if (recording) {
+        finishRecording();
+      }
+    },
+  });
+
+  const buttonLongPressGesture = new LongPress({
+    onStart: () => {
+      setRecording(true);
+      setRemainingTime(MAX_VIDEO_DURATION);
+      setRecordingInterval(
+        setInterval(() => {
+          setRemainingTime((r) => r - 200);
+        }, 200)
+      );
+    },
+  });
+
+  const previewPinchGesture = new Pinch({
+    onStart: () => {
+      setScale(zoom.value);
+    },
+    onUpdate: (e) => {
+      zoom.value = scale * e.scale;
+    },
+  });
+
+  const panGestureHandler = useAnimatedGesture(filtersPanGesture);
 
   const buttonGestureHandler = useAnimatedGesture(
-    new Gesture({ simultaneous: true })
-      .tap({
-        maxDist: 3,
-        onEnd: (e, success) => {
-          if (success) Alert.alert('You took a photo');
-        },
-      })
-      .longPress({
-        onStart: () => {
-          setRecording(true);
-          setRemainingTime(MAX_VIDEO_DURATION);
-          setRecordingInterval(
-            setInterval(() => {
-              setRemainingTime((r) => r - 200);
-            }, 200)
-          );
-        },
-      })
-      .pan({
-        onBegin: () => {
-          console.log('begin');
-        },
-        onCancel: () => {
-          console.log('cancel');
-        },
-        simultaneousWith: panGestureRef,
-        onUpdate: (e) => {
-          if (recording) {
-            if (e.velocityY < 0) {
-              zoom.value = zoom.value * 1.05;
-            } else if (e.velocityY > 0) {
-              zoom.value = zoom.value * 0.95;
-            }
-          }
-        },
-        onEnd: (e) => {
-          if (recording) {
-            finishRecording();
-          }
-        },
-      })
+    buttonTapGesture
+      .simultaneousWith(buttonLongPressGesture)
+      .simultaneousWith(buttonPanGesture)
   );
 
-  const scaleGestureHandler = useAnimatedGesture(
-    new Gesture().pinch({
-      onStart: () => {
-        setScale(zoom.value);
-      },
-      onUpdate: (e) => {
-        zoom.value = scale * e.scale;
-      },
-    })
-  );
+  const scaleGestureHandler = useAnimatedGesture(previewPinchGesture);
 
   if (remainingTime <= 0) {
     finishRecording();

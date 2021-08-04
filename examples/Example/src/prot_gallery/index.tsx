@@ -9,11 +9,8 @@ import {
   useGesture,
   Pan,
   Tap,
-  Simultaneous,
   Pinch,
   Rotation,
-  Exclusive,
-  Sequence,
   LongPress,
 } from 'react-native-gesture-handler';
 import { useState } from 'react';
@@ -51,56 +48,46 @@ function Photo() {
     outputRange: ['0deg', '360deg'],
   });
 
-  const gs = useGesture(
-    new Simultaneous([
-      new Tap({
-        onUpdate: (e) => {
-          if (e.nativeEvent.state == 2) {
-            x = translationX._value;
-            y = translationY._value;
-          }
+  let g = new Rotation({
+    onUpdate: (e) => {
+      rotation.setValue(e.nativeEvent.rotation / (Math.PI * 2));
+    },
+  })
+    .simultaneousWith(
+      new Pinch({
+        onStart: () => {
+          s = scale;
         },
-      }),
+        onUpdate: (e) => {
+          setScale(s * e.nativeEvent.scale);
+        },
+      })
+    )
+    .simultaneousWith(
       new Pan({
-        onUpdate: Animated.event(
-          [
-            {
-              nativeEvent: {
-                translationX: translationX,
-                translationY: translationY,
-              },
-            },
-          ],
-          { useNativeDriver: true }
-        ),
         avgTouches: true,
-      }),
+        onStart: (e) => {
+          x = translationX._value;
+          y = translationY._value;
+        },
+        onUpdate: (e) => {
+          translationX.setValue(x + e.nativeEvent.translationX);
+          translationY.setValue(y + e.nativeEvent.translationY);
+        },
+      })
+    )
+    .simultaneousWith(
       new Tap({
         numberOfTaps: 2,
-        onUpdate: (e) => {
-          if (e.nativeEvent.state == 4) {
+        onEnd: (e, s) => {
+          if (s) {
             setScale(scale + 0.25);
           }
         },
-      }),
-      new Rotation({
-        onUpdate: (e) => {
-          if (e.nativeEvent.state == 4) {
-            rotation.setValue(e.nativeEvent.rotation / (Math.PI * 2));
-          }
-        },
-      }),
-      new Pinch({
-        onUpdate: (e) => {
-          if (e.nativeEvent.state == 4) {
-            setScale(s * e.nativeEvent.scale);
-          } else if (e.nativeEvent.state == 2) {
-            s = scale;
-          }
-        },
-      }),
-    ])
-  );
+      })
+    );
+
+  const gs = useGesture(g);
 
   return (
     <GestureMonitor gesture={gs}>
