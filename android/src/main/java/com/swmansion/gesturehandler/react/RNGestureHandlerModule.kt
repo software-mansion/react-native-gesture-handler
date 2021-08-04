@@ -468,7 +468,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
     synchronized(mRoots) {
       if (mRoots.contains(root)) {
-        throw IllegalStateException("Root helper" + root + " already registered")
+        throw IllegalStateException("Root helper$root already registered")
       }
       mRoots.add(root)
     }
