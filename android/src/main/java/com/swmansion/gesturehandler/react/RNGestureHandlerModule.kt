@@ -494,15 +494,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   @Suppress("UNCHECKED_CAST")
-  private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? {
-    for (i in handlerFactories.indices) {
-      val factory = handlerFactories[i]
-      if ((factory.type == handler.javaClass)) {
-        return factory as HandlerFactory<T>
-      }
-    }
-    return null
-  }
+  private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? =
+    handlerFactories.firstOrNull { it.type == handler.javaClass } as HandlerFactory<T>?
 
   private fun <T : GestureHandler<T>> onTouchEvent(handler: T, motionEvent: MotionEvent) {
     if (handler.tag < 0) {
