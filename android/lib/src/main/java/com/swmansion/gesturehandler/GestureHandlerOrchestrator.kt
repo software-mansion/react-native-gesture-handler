@@ -71,14 +71,14 @@ class GestureHandlerOrchestrator(
     var shouldCleanEmptyCells = false
     for (i in gestureHandlersCount - 1 downTo 0) {
       val handler = gestureHandlers[i]!!
-      if (isFinished(handler.state) && !handler.mIsAwaiting) {
+      if (isFinished(handler.state) && !handler.isAwaiting) {
         gestureHandlers[i] = null
         shouldCleanEmptyCells = true
         handler.reset()
         handler.apply {
-          mIsActive = false
-          mIsAwaiting = false
-          mActivationIndex = Int.MAX_VALUE
+          isActive = false
+          isAwaiting = false
+          activationIndex = Int.MAX_VALUE
         }
       }
     }
@@ -107,13 +107,13 @@ class GestureHandlerOrchestrator(
     } else {
       // we can activate handler right away
       makeActive(handler)
-      handler.mIsAwaiting = false
+      handler.isAwaiting = false
     }
   }
 
   private fun cleanupAwaitingHandlers() {
     awaitingHandlersCount = compactHandlersIf(awaitingHandlers, awaitingHandlersCount) { handler ->
-      handler!!.mIsAwaiting
+      handler!!.isAwaiting
     }
   }
 
@@ -128,7 +128,7 @@ class GestureHandlerOrchestrator(
           if (newState == GestureHandler.STATE_END) {
             // gesture has ended, we need to kill the awaiting handler
             otherHandler.cancel()
-            otherHandler.mIsAwaiting = false
+            otherHandler.isAwaiting = false
           } else {
             // gesture has failed recognition, we may try activating
             tryActivate(otherHandler)
@@ -140,7 +140,7 @@ class GestureHandlerOrchestrator(
     if (newState == GestureHandler.STATE_ACTIVE) {
       tryActivate(handler)
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
-      if (handler.mIsActive) {
+      if (handler.isActive) {
         handler.dispatchStateChange(newState, prevState)
       }
     } else {
@@ -153,9 +153,9 @@ class GestureHandlerOrchestrator(
   private fun makeActive(handler: GestureHandler<*>) {
     val currentState = handler.state
     handler.apply {
-      mIsAwaiting = false
-      mIsActive = true
-      mActivationIndex = activationIndex++
+      isAwaiting = false
+      isActive = true
+      activationIndex = activationIndex++
     }
     var toCancelCount = 0
     // Cancel all handlers that are required to be cancel upon current handler's activation
@@ -174,7 +174,7 @@ class GestureHandlerOrchestrator(
       val otherHandler = awaitingHandlers[i]!!
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
         otherHandler.cancel()
-        otherHandler.mIsAwaiting = false
+        otherHandler.isAwaiting = false
       }
     }
     cleanupAwaitingHandlers()
@@ -231,7 +231,7 @@ class GestureHandlerOrchestrator(
       return
     }
     val action = event.actionMasked
-    if (handler.mIsAwaiting && action == MotionEvent.ACTION_MOVE) {
+    if (handler.isAwaiting && action == MotionEvent.ACTION_MOVE) {
       return
     }
     val coords = tempCoords
@@ -246,7 +246,7 @@ class GestureHandlerOrchestrator(
     // for pinch so I don't know yet if we should transform or not...
     event.setLocation(coords[0], coords[1])
     handler.handle(event)
-    if (handler.mIsActive) {
+    if (handler.isActive) {
       handler.dispatchTouchEvent(event)
     }
     event.setLocation(oldX, oldY)
@@ -302,8 +302,8 @@ class GestureHandlerOrchestrator(
     }
     check(awaitingHandlersCount < awaitingHandlers.size) { "Too many recognizers" }
     awaitingHandlers[awaitingHandlersCount++] = handler
-    handler.mIsAwaiting = true
-    handler.mActivationIndex = activationIndex++
+    handler.isAwaiting = true
+    handler.activationIndex = activationIndex++
   }
 
   private fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
@@ -314,9 +314,9 @@ class GestureHandlerOrchestrator(
     }
     check(gestureHandlersCount < gestureHandlers.size) { "Too many recognizers" }
     gestureHandlers[gestureHandlersCount++] = handler
-    handler.mIsActive = false
-    handler.mIsAwaiting = false
-    handler.mActivationIndex = Int.MAX_VALUE
+    handler.isActive = false
+    handler.isAwaiting = false
+    handler.activationIndex = Int.MAX_VALUE
     handler.prepare(view, this)
   }
 
@@ -421,17 +421,17 @@ class GestureHandlerOrchestrator(
     private val inverseMatrix = Matrix()
     private val tempCoords = FloatArray(2)
     private val handlersComparator = Comparator<GestureHandler<*>?> { a, b ->
-      return@Comparator if (a.mIsActive && b.mIsActive || a.mIsAwaiting && b.mIsAwaiting) {
+      return@Comparator if (a.isActive && b.isActive || a.isAwaiting && b.isAwaiting) {
         // both A and B are either active or awaiting activation, in which case we prefer one that
         // has activated (or turned into "awaiting" state) earlier
-        Integer.signum(b.mActivationIndex - a.mActivationIndex)
-      } else if (a.mIsActive) {
+        Integer.signum(b.activationIndex - a.activationIndex)
+      } else if (a.isActive) {
         -1 // only A is active
-      } else if (b.mIsActive) {
+      } else if (b.isActive) {
         1 // only B is active
-      } else if (a.mIsAwaiting) {
+      } else if (a.isAwaiting) {
         -1 // only A is awaiting, B is inactive
-      } else if (b.mIsAwaiting) {
+      } else if (b.isAwaiting) {
         1 // only B is awaiting, A is inactive
       } else {
         0 // both A and B are inactive, stable order matters
@@ -494,7 +494,7 @@ class GestureHandlerOrchestrator(
         return false
       }
       return if (handler !== other &&
-        (handler.mIsAwaiting || handler.state == GestureHandler.STATE_ACTIVE)) {
+        (handler.isAwaiting || handler.state == GestureHandler.STATE_ACTIVE)) {
         // in every other case as long as the handler is about to be activated or already in active
         // state, we delegate the decision to the implementation of GestureHandler#shouldBeCancelledBy
         handler.shouldBeCancelledBy(other)

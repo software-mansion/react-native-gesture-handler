@@ -8,8 +8,8 @@ import com.facebook.react.bridge.UiThreadUtil
 import java.util.*
 
 open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
-  private val mTrackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
-  private var mTrackedPointersCount = 0
+  private val trackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
+  private var trackedPointersCount = 0
   var tag = 0
   var view: View? = null
     private set
@@ -32,14 +32,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   var lastAbsolutePositionY = 0f
     private set
 
-  private var mLastEventOffsetX = 0f
-  private var mLastEventOffsetY = 0f
-  private var mShouldCancelWhenOutside = false
+  private var lastEventOffsetX = 0f
+  private var lastEventOffsetY = 0f
+  private var shouldCancelWhenOutside = false
   var numberOfPointers = 0
     private set
-  private var mOrchestrator: GestureHandlerOrchestrator? = null
-  private var mListener: OnTouchEventListener<ConcreteGestureHandlerT>? = null
-  private var mInteractionController: GestureHandlerInteractionController? = null
+  private var orchestrator: GestureHandlerOrchestrator? = null
+  private var onTouchEventListener: OnTouchEventListener<ConcreteGestureHandlerT>? = null
+  private var interactionController: GestureHandlerInteractionController? = null
 
   @Suppress("UNCHECKED_CAST")
   protected fun self(): ConcreteGestureHandlerT = this as ConcreteGestureHandlerT
@@ -48,34 +48,31 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     self().apply { block() }
 
   // set and accessed only by the orchestrator
-  @JvmField
-  var mActivationIndex = 0
+  var activationIndex = 0
 
   // set and accessed only by the orchestrator
-  @JvmField
-  var mIsActive = false
+  var isActive = false
 
   // set and accessed only by the orchestrator
-  @JvmField
-  var mIsAwaiting = false
+  var isAwaiting = false
 
   open fun dispatchStateChange(newState: Int, prevState: Int) {
-    mListener?.onStateChange(self(), newState, prevState)
+    onTouchEventListener?.onStateChange(self(), newState, prevState)
   }
 
   open fun dispatchTouchEvent(event: MotionEvent) {
-    mListener?.onTouchEvent(self(), event)
+    onTouchEventListener?.onTouchEvent(self(), event)
   }
 
   open fun resetConfig() {
-    mShouldCancelWhenOutside = false
+    shouldCancelWhenOutside = false
     isEnabled = true
     mHitSlop = null
   }
 
   fun hasCommonPointers(other: GestureHandler<*>): Boolean {
-    for (i in mTrackedPointerIDs.indices) {
-      if (mTrackedPointerIDs[i] != -1 && other.mTrackedPointerIDs[i] != -1) {
+    for (i in trackedPointerIDs.indices) {
+      if (trackedPointerIDs[i] != -1 && other.trackedPointerIDs[i] != -1) {
         return true
       }
     }
@@ -83,7 +80,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT =
-    applySelf { mShouldCancelWhenOutside = shouldCancelWhenOutside }
+    applySelf { this.shouldCancelWhenOutside = shouldCancelWhenOutside }
 
   fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT = applySelf {
     if (view != null) {
@@ -118,28 +115,28 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT =
-    applySelf { mInteractionController = controller }
+    applySelf { interactionController = controller }
 
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
-    check(!(this.view != null || mOrchestrator != null)) { "Already prepared or hasn't been reset" }
-    Arrays.fill(mTrackedPointerIDs, -1)
-    mTrackedPointersCount = 0
+    check(!(this.view != null || this.orchestrator != null)) { "Already prepared or hasn't been reset" }
+    Arrays.fill(trackedPointerIDs, -1)
+    trackedPointersCount = 0
     state = STATE_UNDETERMINED
     this.view = view
-    mOrchestrator = orchestrator
+    this.orchestrator = orchestrator
   }
 
   private fun findNextLocalPointerId(): Int {
     var localPointerId = 0
-    while (localPointerId < mTrackedPointersCount) {
+    while (localPointerId < trackedPointersCount) {
       var i = 0
-      while (i < mTrackedPointerIDs.size) {
-        if (mTrackedPointerIDs[i] == localPointerId) {
+      while (i < trackedPointerIDs.size) {
+        if (trackedPointerIDs[i] == localPointerId) {
           break
         }
         i++
       }
-      if (i == mTrackedPointerIDs.size) {
+      if (i == trackedPointerIDs.size) {
         return localPointerId
       }
       localPointerId++
@@ -148,26 +145,26 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun startTrackingPointer(pointerId: Int) {
-    if (mTrackedPointerIDs[pointerId] == -1) {
-      mTrackedPointerIDs[pointerId] = findNextLocalPointerId()
-      mTrackedPointersCount++
+    if (trackedPointerIDs[pointerId] == -1) {
+      trackedPointerIDs[pointerId] = findNextLocalPointerId()
+      trackedPointersCount++
     }
   }
 
   fun stopTrackingPointer(pointerId: Int) {
-    if (mTrackedPointerIDs[pointerId] != -1) {
-      mTrackedPointerIDs[pointerId] = -1
-      mTrackedPointersCount--
+    if (trackedPointerIDs[pointerId] != -1) {
+      trackedPointerIDs[pointerId] = -1
+      trackedPointersCount--
     }
   }
 
   private fun needAdapt(event: MotionEvent): Boolean {
-    if (event.pointerCount != mTrackedPointersCount) {
+    if (event.pointerCount != trackedPointersCount) {
       return true
     }
 
-    for (i in mTrackedPointerIDs.indices) {
-      val trackedPointer = mTrackedPointerIDs[i]
+    for (i in trackedPointerIDs.indices) {
+      val trackedPointer = trackedPointerIDs[i]
       if (trackedPointer != -1 && trackedPointer != i) {
         return true
       }
@@ -184,21 +181,21 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
       actionIndex = event.actionIndex
       val actionPointer = event.getPointerId(actionIndex)
-      action = if (mTrackedPointerIDs[actionPointer] != -1) {
-        if (mTrackedPointersCount == 1) MotionEvent.ACTION_DOWN else MotionEvent.ACTION_POINTER_DOWN
+      action = if (trackedPointerIDs[actionPointer] != -1) {
+        if (trackedPointersCount == 1) MotionEvent.ACTION_DOWN else MotionEvent.ACTION_POINTER_DOWN
       } else {
         MotionEvent.ACTION_MOVE
       }
     } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
       actionIndex = event.actionIndex
       val actionPointer = event.getPointerId(actionIndex)
-      action = if (mTrackedPointerIDs[actionPointer] != -1) {
-        if (mTrackedPointersCount == 1) MotionEvent.ACTION_UP else MotionEvent.ACTION_POINTER_UP
+      action = if (trackedPointerIDs[actionPointer] != -1) {
+        if (trackedPointersCount == 1) MotionEvent.ACTION_UP else MotionEvent.ACTION_POINTER_UP
       } else {
         MotionEvent.ACTION_MOVE
       }
     }
-    initPointerProps(mTrackedPointersCount)
+    initPointerProps(trackedPointersCount)
     var count = 0
     val oldX = event.x
     val oldY = event.y
@@ -207,9 +204,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     val size = event.pointerCount
     while (index < size) {
       val origPointerId = event.getPointerId(index)
-      if (mTrackedPointerIDs[origPointerId] != -1) {
+      if (trackedPointerIDs[origPointerId] != -1) {
         event.getPointerProperties(index, sPointerProps[count])
-        sPointerProps[count]!!.id = mTrackedPointerIDs[origPointerId]
+        sPointerProps[count]!!.id = trackedPointerIDs[origPointerId]
         event.getPointerCoords(index, sPointerCoords[count])
         if (index == actionIndex) {
           action = action or (count shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
@@ -243,7 +240,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       || state == STATE_CANCELLED
       || state == STATE_FAILED
       || state == STATE_END
-      || mTrackedPointersCount < 1) {
+      || trackedPointersCount < 1) {
       return
     }
     val event = adaptEvent(origEvent)
@@ -251,7 +248,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     y = event.y
     numberOfPointers = event.pointerCount
     isWithinBounds = isWithinBounds(view, x, y)
-    if (mShouldCancelWhenOutside && !isWithinBounds) {
+    if (shouldCancelWhenOutside && !isWithinBounds) {
       if (state == STATE_ACTIVE) {
         cancel()
       } else if (state == STATE_BEGAN) {
@@ -261,8 +258,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
     lastAbsolutePositionX = GestureUtils.getLastPointerX(event, true)
     lastAbsolutePositionY = GestureUtils.getLastPointerY(event, true)
-    mLastEventOffsetX = event.rawX - event.x
-    mLastEventOffsetY = event.rawY - event.y
+    lastEventOffsetX = event.rawX - event.x
+    lastEventOffsetY = event.rawY - event.y
     onHandle(event)
     if (event != origEvent) {
       event.recycle()
@@ -282,7 +279,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       // generated faster than they can be treated by JS thread
       eventCoalescingKey = sNextEventCoalescingKey++
     }
-    mOrchestrator!!.onHandlerStateChange(this, newState, oldState)
+    orchestrator!!.onHandlerStateChange(this, newState, oldState)
     onStateChange(newState, oldState)
   }
 
@@ -291,7 +288,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       && state != STATE_FAILED
       && state != STATE_CANCELLED
       && state != STATE_END
-      && mTrackedPointersCount > 0
+      && trackedPointersCount > 0
   }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
@@ -299,7 +296,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       return false
     }
 
-    return mInteractionController?.shouldRequireHandlerToWaitForFailure(this, handler) ?: false
+    return interactionController?.shouldRequireHandlerToWaitForFailure(this, handler) ?: false
   }
 
   fun shouldWaitForHandlerFailure(handler: GestureHandler<*>): Boolean {
@@ -307,7 +304,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       return false
     }
 
-    return mInteractionController?.shouldWaitForHandlerFailure(this, handler) ?: false
+    return interactionController?.shouldWaitForHandlerFailure(this, handler) ?: false
   }
 
   open fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
@@ -315,7 +312,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       return true
     }
 
-    return mInteractionController?.shouldRecognizeSimultaneously(this, handler) ?: false
+    return interactionController?.shouldRecognizeSimultaneously(this, handler) ?: false
   }
 
   open fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
@@ -323,7 +320,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       return false
     }
 
-    return mInteractionController?.shouldHandlerBeCancelledBy(this, handler) ?: false
+    return interactionController?.shouldHandlerBeCancelledBy(this, handler) ?: false
   }
 
   fun isWithinBounds(view: View?, posX: Float, posY: Float): Boolean {
@@ -408,14 +405,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected open fun onCancel() {}
   fun reset() {
     view = null
-    mOrchestrator = null
-    Arrays.fill(mTrackedPointerIDs, -1)
-    mTrackedPointersCount = 0
+    orchestrator = null
+    Arrays.fill(trackedPointerIDs, -1)
+    trackedPointersCount = 0
     onReset()
   }
 
   fun setOnTouchEventListener(listener: OnTouchEventListener<ConcreteGestureHandlerT>?): GestureHandler<*> {
-    mListener = listener
+    onTouchEventListener = listener
     return this
   }
 
@@ -425,9 +422,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   val lastRelativePositionX: Float
-    get() = lastAbsolutePositionX - mLastEventOffsetX
+    get() = lastAbsolutePositionX - lastEventOffsetX
   val lastRelativePositionY: Float
-    get() = lastAbsolutePositionY - mLastEventOffsetY
+    get() = lastAbsolutePositionY - lastEventOffsetY
 
   companion object {
     const val STATE_UNDETERMINED = 0
