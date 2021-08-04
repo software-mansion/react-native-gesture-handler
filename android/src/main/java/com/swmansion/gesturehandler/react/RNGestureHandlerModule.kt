@@ -501,12 +501,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       return
     }
     if (handler.state == GestureHandler.STATE_ACTIVE) {
-      val handlerFactory = findFactoryForHandler(handler)
       val eventDispatcher = reactApplicationContext
         .getNativeModule(UIManagerModule::class.java)!!
-        .eventDispatcher
-      val event = obtain(handler, (handlerFactory)!!)
-      eventDispatcher.dispatchEvent(event)
+        .eventDispatcher.let {
+          val handlerFactory = findFactoryForHandler(handler)
+          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+          it.dispatchEvent(event)
+        }
     }
   }
 
@@ -515,16 +516,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
-    val handlerFactory = findFactoryForHandler(handler)
     val eventDispatcher = reactApplicationContext
       .getNativeModule(UIManagerModule::class.java)!!
-      .eventDispatcher
-    val event = obtain(
-      handler,
-      newState,
-      oldState,
-      handlerFactory)
-    eventDispatcher.dispatchEvent(event)
+      .eventDispatcher.let {
+        val handlerFactory = findFactoryForHandler(handler)
+        val event = obtain(handler, newState, oldState, handlerFactory)
+        it.dispatchEvent(event)
+      }
   }
 
   companion object {
