@@ -321,18 +321,16 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   @ReactMethod
   @Suppress("UNCHECKED_CAST")
   fun <T : GestureHandler<T>> createGestureHandler(
-    handlerName: String,
-    handlerTag: Int,
-    config: ReadableMap?,
+    handlerName: String, handlerTag: Int, config: ReadableMap,
   ) {
-    for (i in handlerFactories.indices) {
-      val handlerFactory = handlerFactories[i] as HandlerFactory<T>
-      if ((handlerFactory.name == handlerName)) {
-        val handler = (handlerFactory.create(reactApplicationContext))
-        handler.tag = handlerTag
-        handler.setOnTouchEventListener(eventListener)
+    for (handlerFactory in handlerFactories as Array<HandlerFactory<T>>) {
+      if (handlerFactory.name == handlerName) {
+        val handler = handlerFactory.create(reactApplicationContext).apply {
+          tag = handlerTag
+          setOnTouchEventListener(eventListener)
+        }
         registry.registerHandler(handler)
-        interactionManager.configureInteractions(handler, (config)!!)
+        interactionManager.configureInteractions(handler, config)
         handlerFactory.configure(handler, config)
         return
       }
