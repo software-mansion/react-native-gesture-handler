@@ -34,8 +34,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       }
     }
 
-    override fun extractEventData(handler: T, eventData: WritableMap?) {
-      eventData!!.putDouble("numberOfPointers", handler.numberOfPointers.toDouble())
+    override fun extractEventData(handler: T, eventData: WritableMap) {
+      eventData.putDouble("numberOfPointers", handler.numberOfPointers.toDouble())
     }
   }
 
@@ -58,9 +58,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       }
     }
 
-    override fun extractEventData(handler: NativeViewGestureHandler, eventData: WritableMap?) {
+    override fun extractEventData(handler: NativeViewGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData!!.putBoolean("pointerInside", handler.isWithinBounds)
+      eventData.putBoolean("pointerInside", handler.isWithinBounds)
     }
   }
 
@@ -97,12 +97,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       }
     }
 
-    override fun extractEventData(handler: TapGestureHandler, eventData: WritableMap?) {
+    override fun extractEventData(handler: TapGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData!!.putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+      with(eventData) {
+        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
+        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+      }
     }
   }
 
@@ -124,13 +126,15 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       }
     }
 
-    override fun extractEventData(handler: LongPressGestureHandler, eventData: WritableMap?) {
+    override fun extractEventData(handler: LongPressGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData!!.putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
-      eventData.putInt("duration", handler.duration)
+      with(eventData) {
+        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
+        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+        putInt("duration", handler.duration)
+      }
     }
   }
 
@@ -210,16 +214,18 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       }
     }
 
-    override fun extractEventData(handler: PanGestureHandler, eventData: WritableMap?) {
+    override fun extractEventData(handler: PanGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData!!.putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
-      eventData.putDouble("translationX", PixelUtil.toDIPFromPixel(handler.translationX).toDouble())
-      eventData.putDouble("translationY", PixelUtil.toDIPFromPixel(handler.translationY).toDouble())
-      eventData.putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.velocityX).toDouble())
-      eventData.putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.velocityY).toDouble())
+      with(eventData) {
+        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
+        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+        putDouble("translationX", PixelUtil.toDIPFromPixel(handler.translationX).toDouble())
+        putDouble("translationY", PixelUtil.toDIPFromPixel(handler.translationY).toDouble())
+        putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.velocityX).toDouble())
+        putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.velocityY).toDouble())
+      }
     }
   }
 
@@ -231,12 +237,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       return PinchGestureHandler()
     }
 
-    override fun extractEventData(handler: PinchGestureHandler, eventData: WritableMap?) {
+    override fun extractEventData(handler: PinchGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData!!.putDouble("scale", handler.scale)
-      eventData.putDouble("focalX", PixelUtil.toDIPFromPixel(handler.focalPointX).toDouble())
-      eventData.putDouble("focalY", PixelUtil.toDIPFromPixel(handler.focalPointY).toDouble())
-      eventData.putDouble("velocity", handler.velocity)
+      with(eventData) {
+        putDouble("scale", handler.scale)
+        putDouble("focalX", PixelUtil.toDIPFromPixel(handler.focalPointX).toDouble())
+        putDouble("focalY", PixelUtil.toDIPFromPixel(handler.focalPointY).toDouble())
+        putDouble("velocity", handler.velocity)
+      }
     }
   }
 
@@ -258,12 +266,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       }
     }
 
-    override fun extractEventData(handler: FlingGestureHandler, eventData: WritableMap?) {
+    override fun extractEventData(handler: FlingGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData!!.putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-      eventData.putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-      eventData.putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-      eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+      with(eventData) {
+        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
+        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+      }
     }
   }
 
@@ -275,12 +285,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       return RotationGestureHandler()
     }
 
-    override fun extractEventData(handler: RotationGestureHandler, eventData: WritableMap?) {
+    override fun extractEventData(handler: RotationGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
-      eventData!!.putDouble("rotation", handler.rotation)
-      eventData.putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.anchorX).toDouble())
-      eventData.putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.anchorY).toDouble())
-      eventData.putDouble("velocity", handler.velocity)
+      with(eventData) {
+        putDouble("rotation", handler.rotation)
+        putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.anchorX).toDouble())
+        putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.anchorY).toDouble())
+        putDouble("velocity", handler.velocity)
+      }
     }
   }
 
