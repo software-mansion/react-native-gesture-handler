@@ -397,7 +397,7 @@ class GestureHandlerOrchestrator(
         val found = if (view is ViewGroup) {
           extractGestureHandlers(view, coords, pointerId)
         } else false
-        
+
         (recordViewHandlersForPointer(view, coords, pointerId)
           || found || shouldHandlerlessViewBecomeTouchTarget(view, coords))
       }
@@ -482,8 +482,8 @@ class GestureHandlerOrchestrator(
         || other.shouldRequireToWaitForFailure(handler))
     }
 
-    private fun canRunSimultaneously(a: GestureHandler<*>?, b: GestureHandler<*>) =
-      a === b || a!!.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
+    private fun canRunSimultaneously(a: GestureHandler<*>, b: GestureHandler<*>) =
+      a === b || a.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
 
 
     private fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, other: GestureHandler<*>): Boolean {
