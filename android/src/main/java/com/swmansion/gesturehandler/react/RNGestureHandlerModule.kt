@@ -568,19 +568,20 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     private const val KEY_PAN_AVG_TOUCHES = "avgTouches"
     private const val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
     private const val KEY_DIRECTION = "direction"
+    
     private fun handleHitSlopProperty(handler: GestureHandler<*>, config: ReadableMap) {
       if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
         val hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP))
         handler.setHitSlop(hitSlop, hitSlop, hitSlop, hitSlop, GestureHandler.HIT_SLOP_NONE, GestureHandler.HIT_SLOP_NONE)
       } else {
-        val hitSlop = config.getMap(KEY_HIT_SLOP)
+        val hitSlop = config.getMap(KEY_HIT_SLOP)!!
         var left = GestureHandler.HIT_SLOP_NONE
         var top = GestureHandler.HIT_SLOP_NONE
         var right = GestureHandler.HIT_SLOP_NONE
         var bottom = GestureHandler.HIT_SLOP_NONE
         var width = GestureHandler.HIT_SLOP_NONE
         var height = GestureHandler.HIT_SLOP_NONE
-        if (hitSlop!!.hasKey(KEY_HIT_SLOP_HORIZONTAL)) {
+        if (hitSlop.hasKey(KEY_HIT_SLOP_HORIZONTAL)) {
           val horizontalPad = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_HORIZONTAL))
           right = horizontalPad
           left = right
