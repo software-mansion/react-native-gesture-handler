@@ -48,6 +48,17 @@ export default function Home() {
     },
   });
 
+  const buttonDoubleTapGesture = new Tap({
+    maxDist: 3,
+    numberOfTaps: 2,
+    priority: 1,
+    onEnd: (e, success) => {
+      if (success) {
+        Alert.alert('You took a series of photos');
+      }
+    },
+  });
+
   const buttonPanGesture = new Pan({
     simultaneousWith: filtersPanGesture,
     onUpdate: (e) => {
@@ -93,6 +104,7 @@ export default function Home() {
     buttonTapGesture
       .simultaneousWith(buttonLongPressGesture)
       .simultaneousWith(buttonPanGesture)
+      .simultaneousWith(buttonDoubleTapGesture)
   );
 
   const scaleGestureHandler = useAnimatedGesture(previewPinchGesture);
