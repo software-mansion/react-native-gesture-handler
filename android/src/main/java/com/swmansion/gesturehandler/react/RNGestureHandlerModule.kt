@@ -5,7 +5,6 @@ import android.view.MotionEvent
 import android.view.ViewGroup
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.*
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
