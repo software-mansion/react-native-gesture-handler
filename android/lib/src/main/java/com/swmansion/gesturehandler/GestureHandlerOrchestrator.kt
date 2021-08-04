@@ -394,10 +394,10 @@ class GestureHandlerOrchestrator(
       }
       PointerEventsConfig.AUTO -> {
         // Either this view or one of its children is the target
-        var found = false
-        if (view is ViewGroup) {
-          found = extractGestureHandlers(view, coords, pointerId)
-        }
+        val found = if (view is ViewGroup) {
+          extractGestureHandlers(view, coords, pointerId)
+        } else false
+        
         (recordViewHandlersForPointer(view, coords, pointerId)
           || found || shouldHandlerlessViewBecomeTouchTarget(view, coords))
       }
