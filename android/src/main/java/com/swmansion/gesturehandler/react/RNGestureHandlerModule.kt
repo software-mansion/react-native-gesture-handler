@@ -314,7 +314,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     RotationGestureHandlerFactory(),
     FlingGestureHandlerFactory()
   )
-  val registry: RNGestureHandlerRegistry? = RNGestureHandlerRegistry()
+  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val mInteractionManager = RNGestureHandlerInteractionManager()
   private val mRoots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val mEnqueuedRootViewInit: MutableList<Int> = ArrayList()
@@ -335,7 +335,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
         val handler = (handlerFactory.create(reactApplicationContext))
         handler.tag = handlerTag
         handler.setOnTouchEventListener(mEventListener)
-        registry!!.registerHandler(handler)
+        registry.registerHandler(handler)
         mInteractionManager.configureInteractions(handler, (config)!!)
         handlerFactory.configure(handler, config)
         return
@@ -347,7 +347,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   @ReactMethod
   fun attachGestureHandler(handlerTag: Int, viewTag: Int) {
     tryInitializeHandlerForReactRootView(viewTag)
-    if (!registry!!.attachHandlerToView(handlerTag, viewTag)) {
+    if (!registry.attachHandlerToView(handlerTag, viewTag)) {
       throw JSApplicationIllegalArgumentException(
         "Handler with tag $handlerTag does not exists")
     }
@@ -359,7 +359,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     handlerTag: Int,
     config: ReadableMap,
   ) {
-    val handler = registry!!.getHandler(handlerTag) as T?
+    val handler = registry.getHandler(handlerTag) as T?
     if (handler != null) {
       val factory = findFactoryForHandler(handler)
       if (factory != null) {
@@ -373,11 +373,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   @ReactMethod
   fun dropGestureHandler(handlerTag: Int) {
     mInteractionManager.dropRelationsForHandlerWithTag(handlerTag)
-    registry!!.dropHandler(handlerTag)
+    registry.dropHandler(handlerTag)
   }
 
   @ReactMethod
   fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
+    // TODO: check if it can be null
     if (registry != null) {
       val rootView = findRootHelperForViewAncestor(viewTag)
       rootView?.handleSetJSResponder(viewTag, blockNativeResponder)
@@ -405,7 +406,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   override fun onCatalystInstanceDestroy() {
-    registry!!.dropAllHandlers()
+    registry.dropAllHandlers()
     mInteractionManager.reset()
     synchronized(mRoots) {
       while (!mRoots.isEmpty()) {
