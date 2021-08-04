@@ -380,19 +380,22 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   override fun getConstants(): Map<String, Any> {
-    return MapBuilder.of<String, Map<String, Int>>("State", MapBuilder.of(
-      "UNDETERMINED", GestureHandler.STATE_UNDETERMINED,
-      "BEGAN", GestureHandler.STATE_BEGAN,
-      "ACTIVE", GestureHandler.STATE_ACTIVE,
-      "CANCELLED", GestureHandler.STATE_CANCELLED,
-      "FAILED", GestureHandler.STATE_FAILED,
-      "END", GestureHandler.STATE_END
-    ), "Direction", MapBuilder.of(
-      "RIGHT", GestureHandler.DIRECTION_RIGHT,
-      "LEFT", GestureHandler.DIRECTION_LEFT,
-      "UP", GestureHandler.DIRECTION_UP,
-      "DOWN", GestureHandler.DIRECTION_DOWN
-    ))
+    return mapOf(
+      "State" to mapOf(
+        "UNDETERMINED" to GestureHandler.STATE_UNDETERMINED,
+        "BEGAN" to GestureHandler.STATE_BEGAN,
+        "ACTIVE" to GestureHandler.STATE_ACTIVE,
+        "CANCELLED" to GestureHandler.STATE_CANCELLED,
+        "FAILED" to GestureHandler.STATE_FAILED,
+        "END" to GestureHandler.STATE_END
+      ),
+      "Direction" to mapOf(
+        "RIGHT" to GestureHandler.DIRECTION_RIGHT,
+        "LEFT" to GestureHandler.DIRECTION_LEFT,
+        "UP" to GestureHandler.DIRECTION_UP,
+        "DOWN" to GestureHandler.DIRECTION_DOWN
+      )
+    )
   }
 
   override fun onCatalystInstanceDestroy() {
