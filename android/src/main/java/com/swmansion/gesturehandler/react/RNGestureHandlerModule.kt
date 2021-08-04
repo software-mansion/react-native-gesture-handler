@@ -11,8 +11,6 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.UIManagerModule
 import com.swmansion.gesturehandler.*
-import com.swmansion.gesturehandler.react.RNGestureHandlerEvent.Companion.obtain
-import com.swmansion.gesturehandler.react.RNGestureHandlerStateChangeEvent.Companion.obtain
 import java.util.*
 
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
@@ -514,7 +512,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       return
     }
     if (handler.state == GestureHandler.STATE_ACTIVE) {
-      val eventDispatcher = reactApplicationContext
+      reactApplicationContext
         .getNativeModule(UIManagerModule::class.java)!!
         .eventDispatcher.let {
           val handlerFactory = findFactoryForHandler(handler)
@@ -529,11 +527,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
-    val eventDispatcher = reactApplicationContext
+    reactApplicationContext
       .getNativeModule(UIManagerModule::class.java)!!
       .eventDispatcher.let {
         val handlerFactory = findFactoryForHandler(handler)
-        val event = obtain(handler, newState, oldState, handlerFactory)
+        val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
         it.dispatchEvent(event)
       }
   }
