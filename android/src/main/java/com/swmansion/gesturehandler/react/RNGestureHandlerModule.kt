@@ -17,12 +17,12 @@ import java.util.*
 
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
-  private abstract class HandlerFactory<T : GestureHandler<T>?>() : RNGestureHandlerEventDataExtractor<T> {
+  private abstract class HandlerFactory<T : GestureHandler<T>>() : RNGestureHandlerEventDataExtractor<T> {
     abstract val type: Class<T>
     abstract val name: String
     abstract fun create(context: Context?): T
     open fun configure(handler: T, config: ReadableMap) {
-      handler!!.resetConfig()
+      handler.resetConfig()
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
         handler.setShouldCancelWhenOutside(config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE))
       }
@@ -35,7 +35,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
 
     override fun extractEventData(handler: T, eventData: WritableMap?) {
-      eventData!!.putDouble("numberOfPointers", handler!!.numberOfPointers.toDouble())
+      eventData!!.putDouble("numberOfPointers", handler.numberOfPointers.toDouble())
     }
   }
 
