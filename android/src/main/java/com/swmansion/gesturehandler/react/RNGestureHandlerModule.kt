@@ -471,21 +471,16 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private fun findRootHelperForViewAncestor(viewTag: Int): RNGestureHandlerRootHelper? {
-    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)
-    val rootViewTag = uiManager!!.resolveRootTagFromReactTag(viewTag)
+    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)!!
+    val rootViewTag = uiManager.resolveRootTagFromReactTag(viewTag)
     if (rootViewTag < 1) {
       return null
     }
     synchronized(roots) {
-      for (i in roots.indices) {
-        val root: RNGestureHandlerRootHelper = roots[i]
-        val rootView: ViewGroup = root.rootView
-        if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
-          return root
-        }
+      return roots.firstOrNull {
+        it.rootView is ReactRootView && it.rootView.rootViewTag == rootViewTag
       }
     }
-    return null
   }
 
   @Suppress("UNCHECKED_CAST")
