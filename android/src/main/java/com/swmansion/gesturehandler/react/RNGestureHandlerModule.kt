@@ -40,10 +40,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private class NativeViewGestureHandlerFactory() : HandlerFactory<NativeViewGestureHandler>() {
-    override val type: Class<T>
-      get() = NativeViewGestureHandler::class.java
-    override val name: String
-      get() = "NativeViewGestureHandler"
+    override val type = NativeViewGestureHandler::class.java
+    override val name = "NativeViewGestureHandler"
 
     override fun create(context: Context?): NativeViewGestureHandler {
       return NativeViewGestureHandler()
@@ -67,10 +65,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private class TapGestureHandlerFactory() : HandlerFactory<TapGestureHandler>() {
-    override val type: Class<T>
-      get() = TapGestureHandler::class.java
-    override val name: String
-      get() = "TapGestureHandler"
+    override val type = TapGestureHandler::class.java
+    override val name = "TapGestureHandler"
 
     override fun create(context: Context?): TapGestureHandler {
       return TapGestureHandler()
@@ -111,10 +107,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private class LongPressGestureHandlerFactory() : HandlerFactory<LongPressGestureHandler>() {
-    override val type: Class<T>
-      get() = LongPressGestureHandler::class.java
-    override val name: String
-      get() = "LongPressGestureHandler"
+    override val type = LongPressGestureHandler::class.java
+    override val name = "LongPressGestureHandler"
 
     override fun create(context: Context?): LongPressGestureHandler {
       return LongPressGestureHandler((context)!!)
@@ -141,10 +135,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private class PanGestureHandlerFactory() : HandlerFactory<PanGestureHandler>() {
-    override val type: Class<T>
-      get() = PanGestureHandler::class.java
-    override val name: String
-      get() = "PanGestureHandler"
+    override val type = PanGestureHandler::class.java
+    override val name = "PanGestureHandler"
 
     override fun create(context: Context?): PanGestureHandler {
       return PanGestureHandler(context)
@@ -232,10 +224,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private class PinchGestureHandlerFactory() : HandlerFactory<PinchGestureHandler>() {
-    override val type: Class<T>
-      get() = PinchGestureHandler::class.java
-    override val name: String
-      get() = "PinchGestureHandler"
+    override val type = PinchGestureHandler::class.java
+    override val name = "PinchGestureHandler"
 
     override fun create(context: Context?): PinchGestureHandler {
       return PinchGestureHandler()
@@ -251,10 +241,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private class FlingGestureHandlerFactory() : HandlerFactory<FlingGestureHandler>() {
-    override val type: Class<T>
-      get() = FlingGestureHandler::class.java
-    override val name: String
-      get() = "FlingGestureHandler"
+    override val type = FlingGestureHandler::class.java
+    override val name = "FlingGestureHandler"
 
     override fun create(context: Context?): FlingGestureHandler {
       return FlingGestureHandler()
@@ -280,10 +268,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private class RotationGestureHandlerFactory() : HandlerFactory<RotationGestureHandler>() {
-    override val type: Class<T>
-      get() = RotationGestureHandler::class.java
-    override val name: String
-      get() = "RotationGestureHandler"
+    override val type = RotationGestureHandler::class.java
+    override val name = "RotationGestureHandler"
 
     override fun create(context: Context?): RotationGestureHandler {
       return RotationGestureHandler()
@@ -328,7 +314,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   fun createGestureHandler(
     handlerName: String,
     handlerTag: Int,
-    config: ReadableMap?
+    config: ReadableMap?,
   ) {
     for (i in mHandlerFactories.indices) {
       val handlerFactory = mHandlerFactories[i]
@@ -357,7 +343,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   @ReactMethod
   fun updateGestureHandler(
     handlerTag: Int,
-    config: ReadableMap?
+    config: ReadableMap?,
   ) {
     val handler = registry!!.getHandler(handlerTag)
     if (handler != null) {
