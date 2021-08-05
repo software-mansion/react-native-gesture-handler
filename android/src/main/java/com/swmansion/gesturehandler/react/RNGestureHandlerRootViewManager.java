@@ -39,18 +39,22 @@ public class RNGestureHandlerRootViewManager extends ViewGroupManager<RNGestureH
    * The following event configuration is necessary even if you are not using
    * GestureHandlerRootView component directly.
    */
+//  @Override
+//  public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+//    HashMap<String, Map> result = new HashMap<>();
+//
+//    result.put(RNGestureHandlerEvent.EVENT_NAME, MapBuilder.of("registrationName", RNGestureHandlerEvent.EVENT_NAME));
+//    result.put(RNGestureHandlerStateChangeEvent.EVENT_NAME, MapBuilder.of("registrationName", RNGestureHandlerStateChangeEvent.EVENT_NAME));
+//
+//    return result;
+//  }
+
   @Override
-  public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+  public Map getExportedCustomBubblingEventTypeConstants() {
     HashMap<String, Map> result = new HashMap<>();
 
-    result.put(RNGestureHandlerEvent.EVENT_NAME, MapBuilder.of("registrationName", RNGestureHandlerEvent.EVENT_NAME));
-    result.put(RNGestureHandlerStateChangeEvent.EVENT_NAME, MapBuilder.of("registrationName", RNGestureHandlerStateChangeEvent.EVENT_NAME));
-    result.put("onPanEvent", MapBuilder.of("registrationName", "onPanEvent"));
-    result.put("onFlingEvent", MapBuilder.of("registrationName", "onFlingEvent"));
-    result.put("onLongPressEvent", MapBuilder.of("registrationName", "onLongPressEvent"));
-    result.put("onRotationEvent", MapBuilder.of("registrationName", "onRotationEvent"));
-    result.put("onPinchEvent", MapBuilder.of("registrationName", "onPinchEvent"));
-    result.put("onTapEvent", MapBuilder.of("registrationName", "onTapEvent"));
+    result.put(RNGestureHandlerEvent.EVENT_NAME, MapBuilder.of("phasedRegistrationNames", MapBuilder.of("bubbled", RNGestureHandlerEvent.EVENT_NAME)));
+    result.put(RNGestureHandlerStateChangeEvent.EVENT_NAME, MapBuilder.of("phasedRegistrationNames", MapBuilder.of("bubbled", RNGestureHandlerStateChangeEvent.EVENT_NAME)));
 
     return result;
   }

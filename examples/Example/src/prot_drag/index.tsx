@@ -45,12 +45,32 @@ function Draggable() {
 
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
+  let pan = new Pan({
+    onUpdate: (e) => {
+      console.log('pan');
+    },
+  });
+
   const gs = useGesture(
-    new ComplexGesture().tap({
-      onEnd: (e) => {
-        console.log('tap');
+    // pan.after(new LongPress({}))
+    //   .simultaneousWith(new Tap({
+    //     onEnd: (e, s) => {if (s) console.log("tap")}
+    //   }))
+    //   .requireToFail(new Tap({
+    //     numberOfTaps: 2,
+    //     onEnd: (e, s) => {if (s) console.log("double tap")}
+    //   }))
+    new Rotation({
+      onUpdate: (e) => {
+        console.log('rotate');
       },
-    })
+    }).after(
+      new Pinch({
+        onUpdate: (e) => {
+          console.log('scale');
+        },
+      })
+    )
   );
 
   return (

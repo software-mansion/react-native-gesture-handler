@@ -45,11 +45,11 @@ function getState(s: number) {
 export default function Example() {
   const [counter, setCounter] = useState(0);
 
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     setCounter((c) => c + 1);
-  //   }, 1000);
-  // }, []);
+  useEffect(() => {
+    setInterval(() => {
+      setCounter((c) => c + 1);
+    }, 1000);
+  }, []);
 
   const tripleTap = useRef();
   const doubleTap = useRef();

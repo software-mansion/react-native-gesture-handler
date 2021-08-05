@@ -186,7 +186,6 @@ public class GestureHandlerOrchestrator {
   }
 
   private void tryActivate(GestureHandler handler) {
-    Log.w("A", "try activate " + handler);
     // see if there is anyone else who we need to wait for
     if (hasOtherHandlerToWaitFor(handler)) {
       addAwaitingHandler(handler);
@@ -307,6 +306,8 @@ public class GestureHandlerOrchestrator {
       GestureHandler otherHandler = mGestureHandlers[i];
       if (shouldHandlerWaitForOtherActivation(otherHandler, handler)) {
         otherHandler.mPreviousActivated = SystemClock.uptimeMillis();
+
+        tryActivate(otherHandler);
       }
     }
 
@@ -476,7 +477,8 @@ public class GestureHandlerOrchestrator {
     if (handlers != null) {
       for (int i = 0, size = handlers.size(); i < size; i++) {
         GestureHandler handler = handlers.get(i);
-        if (handler.isEnabled() && handler.isWithinBounds(view, coords[0], coords[1])) {
+        if (handler.isEnabled() &&
+                handler.isWithinBounds(view, coords[0], coords[1])) {
           recordHandlerIfNotPresent(handler, view);
           handler.startTrackingPointer(pointerId);
           found = true;
@@ -627,6 +629,22 @@ public class GestureHandlerOrchestrator {
     int pointerId = event.getPointerId(actionIndex);
     sTempCoords[0] = event.getX(actionIndex);
     sTempCoords[1] = event.getY(actionIndex);
+
+//    View a = mWrapperView.findViewById(485);
+//    if (a != null) {
+//      float[] localXY = sMatrixTransformCoords;
+//      localXY[0] = a.getLeft();
+//      localXY[1] = a.getTop();
+//      a.getMatrix().mapPoints(localXY);
+//      Log.w("A", a.getWidth()+" "+a.getHeight()+" "+localXY[0]+" "+localXY[1]);
+//
+//      a = ((ViewGroup) a).getChildAt(0);
+//      localXY[0] = a.getLeft();
+//      localXY[1] = a.getTop();
+//      a.getMatrix().mapPoints(localXY);
+//      Log.w("A", a.getWidth()+" "+a.getHeight()+" "+localXY[0]+" "+localXY[1]);
+//    }
+
     traverseWithPointerEvents(mWrapperView, sTempCoords, pointerId);
     extractGestureHandlers(mWrapperView, sTempCoords, pointerId);
   }
@@ -763,6 +781,7 @@ public class GestureHandlerOrchestrator {
       // in began state
       return false;
     }
+    // only allows chains of 2, not checking whether the other handler is waiting for something
     if (shouldHandlerWaitForOtherActivation(handler, other)) {
       return false;
     }

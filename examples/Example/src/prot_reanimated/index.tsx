@@ -13,15 +13,16 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useAnimatedGesture } from '../useAnimatedGesture';
+import { RootAnimated } from '../RootAnimated';
 
 function Draggable() {
   const [a, sa] = useState(1);
 
-  useEffect(() => {
-    setInterval(() => {
-      sa((a) => a + 1);
-    }, 1000);
-  }, []);
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     sa((a) => a + 1);
+  //   }, 1000);
+  // }, []);
 
   const pressed = useSharedValue(false);
   const offsetX = useSharedValue(0);
@@ -59,34 +60,20 @@ function Draggable() {
   );
 
   return (
-    <View>
-      <Text>{a}</Text>
-      <GestureMonitor gesture={gs}>
-        <Test s={animatedStyles} />
-      </GestureMonitor>
-    </View>
+    <Animated.View
+      onGestureHandlerEvent={(e) => console.log('should not be visible')}>
+      <RootAnimated>
+        <Text>{a}</Text>
+        <GestureMonitor gesture={gs}>
+          <Element styles={animatedStyles} />
+        </GestureMonitor>
+      </RootAnimated>
+    </Animated.View>
   );
 }
 
-const Test = wrapAnimated((props) => {
-  return (
-    <View>
-      <Animated.View style={[styles.button, props.s]} />
-    </View>
-  );
-});
-
-function wrapAnimated(Fc) {
-  return React.forwardRef((props, ref) => {
-    return (
-      <Animated.View
-        ref={ref}
-        onGestureHandlerEvent={props.onGestureHandlerEvent}
-        onGestureHandlerStateChange={props.onGestureHandlerStateChange}>
-        <Fc {...props} />
-      </Animated.View>
-    );
-  });
+function Element(props) {
+  return <Animated.View style={[styles.button, props.styles]} />;
 }
 
 export default function Example() {

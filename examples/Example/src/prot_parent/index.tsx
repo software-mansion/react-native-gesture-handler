@@ -9,12 +9,10 @@ import {
   useGesture,
   Pan,
   Tap,
-  Simultaneous,
   Pinch,
   Rotation,
-  Exclusive,
-  Sequence,
   LongPress,
+  Root,
 } from 'react-native-gesture-handler';
 
 function getState(s: number) {
@@ -38,8 +36,8 @@ function getState(s: number) {
 function Box(props) {
   const gs = useGesture(
     new Tap({
-      onUpdate: (e) => {
-        console.log(props.color + ' ' + getState(e.nativeEvent.state));
+      onEnd: (e, s) => {
+        if (s) console.log(props.color + ' ' + getState(e.nativeEvent.state));
       },
     })
   );
@@ -59,12 +57,24 @@ function Box(props) {
 }
 
 export default function Example() {
+  const gs = useGesture(
+    new Pan({
+      onUpdate: (e) => {
+        console.log('pan');
+      },
+    })
+  );
+
   return (
-    <View style={styles.home}>
-      <Box color="red">
-        <Box color="green" overlap={true} />
-      </Box>
-    </View>
+    <Root>
+      <View style={styles.home}>
+        <GestureMonitor gesture={gs}>
+          <Box color="red">
+            <Box color="green" overlap={true} />
+          </Box>
+        </GestureMonitor>
+      </View>
+    </Root>
   );
 }
 

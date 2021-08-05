@@ -4,6 +4,7 @@ import {
   NativeModules,
   Platform,
   Touchable,
+  View,
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
@@ -24,98 +25,112 @@ class Gesture {
   public gestures: Array<Gesture> = [];
 }
 
-export class SimultaneousGesture extends Gesture {
-  private needsToPrepare: boolean = false;
+enum Relation {
+  Simultaneous,
+  Exclusive,
+  After,
+  RequireToFail,
+}
 
-  constructor(a: SimpleGesture, b: SimpleGesture) {
+type PendingGesture = {
+  relation: Relation;
+  gesture: SimpleGesture;
+};
+
+export class GestureBuilder extends Gesture {
+  private log: Array<PendingGesture> = [];
+
+  constructor(base: SimpleGesture) {
     super();
 
-    this.gestures = [a, b];
+    this.log.push({ relation: Relation.Exclusive, gesture: base });
   }
 
-  simultaneousWith(other: SimpleGesture): SimultaneousGesture {
-    this.gestures.push(other);
+  simultaneousWith(gesture: SimpleGesture): GestureBuilder {
+    this.log.push({ relation: Relation.Simultaneous, gesture: gesture });
 
     return this;
+  }
+
+  exclusiveWith(gesture: SimpleGesture): GestureBuilder {
+    this.log.push({ relation: Relation.Exclusive, gesture: gesture });
+
+    return this;
+  }
+
+  after(gesture: SimpleGesture): GestureBuilder {
+    this.log.push({ relation: Relation.After, gesture: gesture });
+
+    return this;
+  }
+
+  requireToFail(gesture: SimpleGesture): GestureBuilder {
+    this.log.push({ relation: Relation.RequireToFail, gesture: gesture });
+
+    return this;
+  }
+
+  build() {
+    for (const pendingGesture of this.log) {
+      this.gestures.push(pendingGesture.gesture);
+    }
   }
 
   initialize() {
     for (const gesture of this.gestures) {
       gesture.initialize();
     }
-
-    this.needsToPrepare = true;
   }
 
   prepare() {
-    if (!this.needsToPrepare) {
-      return;
-    }
+    let simultaneous = [];
+    let after = [];
+    let waitFor = [];
 
-    let tags = this.gestures.map((g) => g.handlerTag);
+    for (let i = this.log.length - 1; i >= 0; i--) {
+      let pendingGesture = this.log[i];
+      pendingGesture.gesture.prepare();
 
-    for (const gesture of this.gestures) {
-      gesture.prepare();
-
-      if (gesture.config.simultaneousWith) {
-        gesture.config.simultaneousWith = [
-          ...gesture.config.simultaneousWith,
-          ...tags,
+      if (pendingGesture.gesture.config.simultaneousWith) {
+        pendingGesture.gesture.config.simultaneousWith = [
+          ...pendingGesture.gesture.config.simultaneousWith,
+          ...simultaneous,
         ];
       } else {
-        gesture.config.simultaneousWith = [...tags];
+        pendingGesture.gesture.config.simultaneousWith = [...simultaneous];
       }
-    }
-  }
-}
 
-export class ExclusiveGesture extends Gesture {
-  constructor(a: SimpleGesture, b: SimpleGesture) {
-    super();
+      if (pendingGesture.gesture.config.requireToFail) {
+        pendingGesture.gesture.config.requireToFail = [
+          ...pendingGesture.gesture.config.requireToFail,
+          ...waitFor,
+        ];
+      } else {
+        pendingGesture.gesture.config.requireToFail = [...waitFor];
+      }
 
-    this.gestures = [a, b];
-  }
+      if (pendingGesture.gesture.config.after) {
+        pendingGesture.gesture.config.after = [
+          ...pendingGesture.gesture.config.after,
+          ...after,
+        ];
+      } else {
+        pendingGesture.gesture.config.after = [...after];
+      }
 
-  exclusiveWith(other: SimpleGesture): ExclusiveGesture {
-    this.gestures.push(other);
-
-    return this;
-  }
-
-  initialize() {
-    for (const gesture of this.gestures) {
-      gesture.initialize();
-    }
-  }
-
-  prepare() {
-    for (const gesture of this.gestures) {
-      gesture.prepare();
-    }
-  }
-}
-
-export class SequenceGesture extends Gesture {
-  constructor(a: SimpleGesture, b: SimpleGesture) {
-    super();
-
-    this.gestures = [a, b];
-  }
-
-  initialize() {
-    for (const gesture of this.gestures) {
-      gesture.initialize();
-    }
-  }
-
-  prepare() {
-    let first = this.gestures[0];
-    let second = this.gestures[1];
-
-    second.config.after = [first.handlerTag];
-
-    for (const gesture of this.gestures) {
-      gesture.prepare();
+      switch (pendingGesture.relation) {
+        case Relation.Simultaneous:
+          simultaneous.push(pendingGesture.gesture.handlerTag);
+          break;
+        case Relation.Exclusive:
+          break;
+        case Relation.After:
+          after.push(pendingGesture.gesture.handlerTag);
+          break;
+        case Relation.RequireToFail:
+          waitFor.push(pendingGesture.gesture.handlerTag);
+          break;
+      }
     }
   }
 }
@@ -132,16 +147,20 @@ class SimpleGesture extends Gesture {
     this.gestures = [this];
   }
 
-  simultaneousWith(other: SimpleGesture): SimultaneousGesture {
-    return new SimultaneousGesture(this, other);
+  simultaneousWith(other: SimpleGesture): GestureBuilder {
+    return new GestureBuilder(this).simultaneousWith(other);
   }
 
-  exclusiveWith(other: SimpleGesture): ExclusiveGesture {
-    return new ExclusiveGesture(this, other);
+  exclusiveWith(other: SimpleGesture): GestureBuilder {
+    return new GestureBuilder(this).exclusiveWith(other);
   }
 
-  after(other: SimpleGesture): SequenceGesture {
-    return new SequenceGesture(other, this);
+  requireToFail(other: SimpleGesture): GestureBuilder {
+    return new GestureBuilder(this).requireToFail(other);
+  }
+
+  after(other: SimpleGesture): GestureBuilder {
+    return new GestureBuilder(this).after(other);
   }
 
   initialize() {
@@ -232,7 +251,6 @@ export class ComplexGesture extends Gesture {
     super();
 
     this.gestures = [];
-    this.ready = false;
 
     if (config) {
       this.config = config;
@@ -292,12 +310,20 @@ export class ComplexGesture extends Gesture {
 
 let allowedProps = ['numberOfTaps', 'maxDist', 'priority', 'avgTouches'];
 
+const handlers = new Map();
+
+export function findHandler(tag) {
+  return handlers.get(tag);
+}
+
 export function useGesture(gesture) {
   const result = React.useRef([gesture]);
 
   function dropHandlers() {
     for (const g of result.current[0].gestures) {
       RNGestureHandlerModule.dropGestureHandler(g.handlerTag);
+
+      handlers.delete(g.handlerTag);
     }
   }
 
@@ -310,6 +336,8 @@ export function useGesture(gesture) {
         gst.handlerTag,
         filterConfig(gst.config, allowedProps, {})
       );
+
+      handlers.set(gst.handlerTag, gst);
 
       setImmediate(() => {
         gesture.prepare();
@@ -392,6 +420,8 @@ export function useGesture(gesture) {
           simultaneousHandlers: gst.simultaneousWith,
         })
       );
+
+      handlers.set(gst.handlerTag, gst);
     }
   }
 
@@ -410,6 +440,10 @@ export function useGesture(gesture) {
     }
 
     return false;
+  }
+
+  if (gesture instanceof GestureBuilder) {
+    gesture.build();
   }
 
   React.useEffect(() => {
@@ -431,6 +465,43 @@ export function useGesture(gesture) {
 
   return result;
 }
+
+export function Root(props) {
+  return React.createElement(
+    View,
+    {
+      onGestureHandlerEvent: (e) => {
+        const handler = findHandler(e.nativeEvent.handlerTag);
+
+        if (handler) {
+          handler.config.onUpdate(e);
+        }
+      },
+      onGestureHandlerStateChange: (event) => {
+        const gesture = findHandler(event.nativeEvent.handlerTag);
+        if (event.nativeEvent.oldState == 0 && event.nativeEvent.state == 2) {
+          gesture.config.onBegan?.(event);
+        } else if (
+          event.nativeEvent.oldState == 2 &&
+          event.nativeEvent.state == 4
+        ) {
+          gesture.config.onStart?.(event);
+        } else if (
+          event.nativeEvent.oldState == 4 &&
+          event.nativeEvent.state == 5
+        ) {
+          gesture.config.onEnd?.(event, true);
+        } else if (event.nativeEvent.state == 1) {
+          gesture.config.onEnd?.(event, false);
+        } else if (event.nativeEvent.state == 3) {
+          gesture.config.onEnd?.(event, false);
+        }
+      },
+    },
+    React.Children.only(props.children)
+  );
+}
+
 export class GestureMonitor extends React.Component {
   constructor(props) {
     super(props);
@@ -486,6 +557,8 @@ export class GestureMonitor extends React.Component {
   }
 
   attachGestureHandlers(newViewTag) {
+    //newViewTag = RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag;
+    //console.log(RNRenderer.findHostInstance_DEPRECATED(this)._internalFiberInstanceHandleDEV.pendingProps);
     this.viewTag = newViewTag;
     if (this.props.gesture.current) {
       if (this.props.gesture.current[0] instanceof Gesture) {
@@ -504,6 +577,7 @@ export class GestureMonitor extends React.Component {
 
   private onGestureHandlerEvent = (event: GestureEvent<U>) => {
     let handled = false;
+    console.log(this.viewTag + ' ' + event.nativeEvent.handlerTag);
     if (
       this.props.gesture.current &&
       Array.isArray(this.props.gesture.current[0].gestures)
@@ -524,6 +598,7 @@ export class GestureMonitor extends React.Component {
 
   // TODO(TS) - make sure this is right type for event
   private onGestureHandlerStateChange = (event: HandlerStateChangeEvent<U>) => {
+    console.log(event.nativeEvent);
     let handled = false;
     if (
       this.props.gesture.current &&
@@ -592,6 +667,12 @@ export class GestureMonitor extends React.Component {
       );
     }
 
+    return React.createElement(
+      Wrapper,
+      { ref: this.refHandler, ...events },
+      child
+    );
+
     return React.cloneElement(
       child,
       {
@@ -601,5 +682,23 @@ export class GestureMonitor extends React.Component {
       },
       grandChildren
     );
+  }
+}
+
+class Wrapper extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    let child: any = React.Children.only(this.props.children);
+
+    let result = React.cloneElement(
+      child,
+      {},
+      React.Children.toArray(child.props.children)
+    );
+
+    return result;
   }
 }

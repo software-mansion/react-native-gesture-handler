@@ -45,63 +45,68 @@ function getState(s: number) {
 
 function Box(props) {
   const [s, setS] = useState(0);
-  const gs = useGesture(
-    new Tap({
-      onUpdate: (e) => {
-        console.log(
-          props.color + ' ' + getState(e.nativeEvent.state) + ' ' + s
-        );
+  // const gs = useGesture(
+  //   new Tap({
+  //     onUpdate: (e) => {
+  //       console.log(
+  //         props.color + ' ' + getState(e.nativeEvent.state) + ' ' + s
+  //       );
 
-        if (e.nativeEvent.state == 4) setS(s + 1);
-      },
-    })
-  );
+  //       if (e.nativeEvent.state == 4) setS(s + 1);
+  //     },
+  //   })
+  // );
 
   return (
-    <GestureMonitor gesture={gs}>
-      <View
-        style={[
-          styles.box,
-          { backgroundColor: props.color },
-          props.overlap ? styles.overlap : {},
-          props.style,
-        ]}></View>
-    </GestureMonitor>
+    <View
+      style={[
+        styles.box,
+        { backgroundColor: props.color },
+        props.overlap ? styles.overlap : {},
+        props.style,
+      ]}></View>
   );
-
-  /*const offset = useSharedValue(0);
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: offset.value * 255 }],
-    };
-  });
-  const eventHandler = useAnimatedGestureHandler({
-    onEnd: (event, ctx) => {
-      offset.value = Math.random();
-    },
-  });
-
-    return <Gesture gestures={[new Tap({ onUpdate: (e) => {
-      console.log(props.color+" "+getState(e.nativeEvent.state)+" "+s);
-
-      if (e.nativeEvent.state == 4)
-          offset.value = Math.random();
-      } }), new Pan({
-        onUpdate: (e) => {
-          console.log("Pan "+e.nativeEvent.state);
-        }
-      })]}>
-        <Animated.View style={[ styles.box, { backgroundColor: props.color }, (props.overlap ? styles.overlap : {}), animatedStyles, props.style]}>
-            
-        </Animated.View>
-    </Gesture>*/
 }
 
 export default function Example() {
+  const tap = new Tap({
+    onEnd: (e, s) => {
+      if (s) console.log('tap');
+    },
+  });
+
+  const gs = useGesture(tap);
+
   return (
-    <View style={styles.home}>
-      <Box color="red" style={{ zIndex: 3 }} />
+    <View
+      style={styles.home}
+      onGestureHandlerStateChange={(e) => {
+        console.log('view');
+      }}>
+      <Wrap
+        onGestureHandlerStateChange={(e) => {
+          console.log('wrapper');
+        }}>
+        <GestureMonitor
+          gesture={gs}
+          onGestureHandlerStateChange={(e) => {
+            console.log('monitor');
+          }}>
+          <View style={[styles.box, { backgroundColor: 'red' }]} />
+        </GestureMonitor>
+      </Wrap>
       <Box color="green" overlap={true} />
+    </View>
+  );
+}
+
+function Wrap(props) {
+  return (
+    <View
+      onGestureHandlerStateChange={(e) => {
+        console.log('wrapper view');
+      }}>
+      {props.children}
     </View>
   );
 }
@@ -123,39 +128,3 @@ const styles = StyleSheet.create({
     top: 75,
   },
 });
-
-export class Gesture extends React.Component {
-  render() {
-    let res = this.props.children;
-    for (const gesture of this.props.gestures) {
-      res = React.createElement(
-        this.getHandler(gesture.handlerName),
-        {
-          onGestureEvent: gesture.config.onUpdate,
-          onHandlerStateChange: gesture.config.onUpdate,
-        },
-        res
-      );
-    }
-    return res;
-  }
-
-  getHandler(name) {
-    switch (name) {
-      case 'TapGestureHandler':
-        return TapGestureHandler;
-      case 'PanGestureHandler':
-        return PanGestureHandler;
-      case 'PinchGestureHandler':
-        return PinchGestureHandler;
-      case 'RotationGestureHandler':
-        return RotationGestureHandler;
-      case 'LongPressGestureHandler':
-        return LongPressGestureHandler;
-      case 'FlingGestureHandler':
-        return FlingGestureHandler;
-    }
-
-    return View;
-  }
-}

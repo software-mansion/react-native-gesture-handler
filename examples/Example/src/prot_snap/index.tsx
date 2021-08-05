@@ -13,6 +13,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useAnimatedGesture } from '../useAnimatedGesture';
+import { RootAnimated } from '../RootAnimated';
 
 const filters = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
 const MAX_VIDEO_DURATION = 60000;
@@ -139,27 +140,29 @@ export default function Home() {
   });
 
   return (
-    <Animated.View style={styles.container}>
-      <GestureMonitor gesture={scaleGestureHandler}>
-        <Animated.View
-          style={[styles.home, { backgroundColor: filters[selectedFilter] }]}>
-          <Animated.View style={[styles.box, zoomStyle]} />
-        </Animated.View>
-      </GestureMonitor>
+    <RootAnimated>
+      <Animated.View style={styles.container}>
+        <GestureMonitor gesture={scaleGestureHandler}>
+          <Animated.View
+            style={[styles.home, { backgroundColor: filters[selectedFilter] }]}>
+            <Animated.View style={[styles.box, zoomStyle]} />
+          </Animated.View>
+        </GestureMonitor>
 
-      <GestureMonitor gesture={panGestureHandler}>
-        <Animated.View style={styles.buttonContainer}>
-          <FilterCarousel filters={filters} selected={filter} />
-          <GestureMonitor gesture={buttonGestureHandler}>
-            <Animated.View style={styles.shutterContainer}>
-              <CaptureButton
-                progress={1 - remainingTime / MAX_VIDEO_DURATION}
-              />
-            </Animated.View>
-          </GestureMonitor>
-        </Animated.View>
-      </GestureMonitor>
-    </Animated.View>
+        <GestureMonitor gesture={panGestureHandler}>
+          <Animated.View style={styles.buttonContainer}>
+            <FilterCarousel filters={filters} selected={filter} />
+            <GestureMonitor gesture={buttonGestureHandler}>
+              <Animated.View style={styles.shutterContainer}>
+                <CaptureButton
+                  progress={1 - remainingTime / MAX_VIDEO_DURATION}
+                />
+              </Animated.View>
+            </GestureMonitor>
+          </Animated.View>
+        </GestureMonitor>
+      </Animated.View>
+    </RootAnimated>
   );
 }
 
