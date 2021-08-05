@@ -38,7 +38,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   var numberOfPointers = 0
     private set
   private var orchestrator: GestureHandlerOrchestrator? = null
-  private var onTouchEventListener: OnTouchEventListener<ConcreteGestureHandlerT>? = null
+  private var onTouchEventListener: OnTouchEventListener? = null
   private var interactionController: GestureHandlerInteractionController? = null
 
   @Suppress("UNCHECKED_CAST")
@@ -411,7 +411,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     onReset()
   }
 
-  fun setOnTouchEventListener(listener: OnTouchEventListener<ConcreteGestureHandlerT>?): GestureHandler<*> {
+  fun setOnTouchEventListener(listener: OnTouchEventListener?): GestureHandler<*> {
     onTouchEventListener = listener
     return this
   }
