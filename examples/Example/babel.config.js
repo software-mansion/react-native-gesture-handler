@@ -14,6 +14,7 @@ module.exports = {
             '../../src/components/Swipeable',
           'react-native-gesture-handler': '../../src/index',
           'react': './node_modules/react',
+          'react-native-reanimated': './node_modules/react-native-reanimated',
           'react-native': './node_modules/react-native',
           '@babel': './node_modules/@babel',
           '@egjs/hammerjs': './node_modules/@egjs/hammerjs',

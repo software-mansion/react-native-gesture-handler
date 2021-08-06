@@ -39,7 +39,7 @@ public class RNGestureHandlerEvent extends Event<RNGestureHandlerEvent> {
   private void init(
           GestureHandler handler,
           @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
-    super.init(handler.getView().getId());
+    super.init(handler.receiverTag);
     mExtraData = Arguments.createMap();
     if (dataExtractor != null) {
       dataExtractor.extractEventData(handler, mExtraData);

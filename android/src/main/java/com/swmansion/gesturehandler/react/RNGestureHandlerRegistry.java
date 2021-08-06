@@ -26,9 +26,14 @@ public class RNGestureHandlerRegistry implements GestureHandlerRegistry {
   }
 
   public synchronized boolean attachHandlerToView(int handlerTag, int viewTag) {
+    return attachHandlerToView(handlerTag, viewTag, viewTag);
+  }
+
+  public synchronized boolean attachHandlerToView(int handlerTag, int viewTag, int receiverTag) {
     GestureHandler handler = mHandlers.get(handlerTag);
     if (handler != null) {
       detachHandler(handler);
+      handler.receiverTag = receiverTag;
       registerHandlerForViewWithTag(viewTag, handler);
       return true;
     } else {

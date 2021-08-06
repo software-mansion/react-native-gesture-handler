@@ -76,37 +76,22 @@ export default function Example() {
   });
 
   const gs = useGesture(tap);
-
-  return (
-    <View
-      style={styles.home}
-      onGestureHandlerStateChange={(e) => {
-        console.log('view');
-      }}>
-      <Wrap
-        onGestureHandlerStateChange={(e) => {
-          console.log('wrapper');
-        }}>
-        <GestureMonitor
-          gesture={gs}
-          onGestureHandlerStateChange={(e) => {
-            console.log('monitor');
-          }}>
-          <View style={[styles.box, { backgroundColor: 'red' }]} />
-        </GestureMonitor>
-      </Wrap>
-      <Box color="green" overlap={true} />
-    </View>
+  const gs2 = useGesture(
+    new Tap({
+      onEnd: (e, s) => {
+        if (s) console.log('green');
+      },
+    })
   );
-}
 
-function Wrap(props) {
   return (
-    <View
-      onGestureHandlerStateChange={(e) => {
-        console.log('wrapper view');
-      }}>
-      {props.children}
+    <View style={styles.home}>
+      <GestureMonitor gesture={gs}>
+        <View style={[styles.box, { backgroundColor: 'red' }]} />
+      </GestureMonitor>
+      <GestureMonitor gesture={gs2}>
+        <Box color="green" overlap={true} />
+      </GestureMonitor>
     </View>
   );
 }

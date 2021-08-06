@@ -5,6 +5,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import {
   GestureMonitor,
   ComplexGesture,
+  useGesture,
   Pan,
 } from 'react-native-gesture-handler';
 import Animated, {
@@ -44,14 +45,17 @@ function Draggable() {
   const gs = useAnimatedGesture(
     new Pan({
       onBegan: (e) => {
+        'worklet';
         pressed.value = true;
       },
       onEnd: (e, success) => {
+        'worklet';
         startX.value = offsetX.value;
         startY.value = offsetY.value;
         pressed.value = false;
       },
       onUpdate: (e) => {
+        'worklet';
         offsetX.value = e.translationX + startX.value;
         offsetY.value = e.translationY + startY.value;
         //console.log(a);
@@ -60,14 +64,11 @@ function Draggable() {
   );
 
   return (
-    <Animated.View
-      onGestureHandlerEvent={(e) => console.log('should not be visible')}>
-      <RootAnimated>
-        <Text>{a}</Text>
-        <GestureMonitor gesture={gs}>
-          <Element styles={animatedStyles} />
-        </GestureMonitor>
-      </RootAnimated>
+    <Animated.View>
+      <Text>{a}</Text>
+      <GestureMonitor gesture={gs}>
+        <Element styles={animatedStyles} />
+      </GestureMonitor>
     </Animated.View>
   );
 }

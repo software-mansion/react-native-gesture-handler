@@ -66,15 +66,13 @@ export default function Example() {
   );
 
   return (
-    <Root>
-      <View style={styles.home}>
-        <GestureMonitor gesture={gs}>
-          <Box color="red">
-            <Box color="green" overlap={true} />
-          </Box>
-        </GestureMonitor>
-      </View>
-    </Root>
+    <View style={styles.home}>
+      <GestureMonitor gesture={gs}>
+        <Box color="red">
+          <Box color="green" overlap={true} />
+        </Box>
+      </GestureMonitor>
+    </View>
   );
 }
 

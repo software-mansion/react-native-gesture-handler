@@ -20,6 +20,7 @@ import { ValueOf } from '../typeUtils';
 import { nextHandlerTag } from './handlerCounter';
 import { default as RNRenderer } from 'react-native/Libraries/Renderer/shims/ReactNative';
 import { filterConfig } from './createHandler';
+import Reanimated from 'react-native-reanimated';
 
 class Gesture {
   public gestures: Array<Gesture> = [];
@@ -564,12 +565,27 @@ export class GestureMonitor extends React.Component {
       if (this.props.gesture.current[0] instanceof Gesture) {
         for (const gesture of this.props.gesture.current[0].gestures) {
           console.log(
-            gesture.handlerName + ' ' + newViewTag + ' ' + gesture.handlerTag
+            gesture.handlerName +
+              ' ' +
+              newViewTag +
+              ' ' +
+              gesture.handlerTag +
+              ' ' +
+              RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag
           );
-          RNGestureHandlerModule.attachGestureHandler(
-            gesture.handlerTag,
-            newViewTag
-          );
+          if (this.props.gesture.current && this.props.gesture.current[2]) {
+            RNGestureHandlerModule.attachGestureHandlerWithReceiver(
+              gesture.handlerTag,
+              newViewTag,
+              newViewTag
+            );
+          } else {
+            RNGestureHandlerModule.attachGestureHandlerWithReceiver(
+              gesture.handlerTag,
+              RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag,
+              newViewTag
+            );
+          }
         }
       }
     }
@@ -577,7 +593,7 @@ export class GestureMonitor extends React.Component {
 
   private onGestureHandlerEvent = (event: GestureEvent<U>) => {
     let handled = false;
-    console.log(this.viewTag + ' ' + event.nativeEvent.handlerTag);
+    //console.log(this.viewTag + ' ' + event.nativeEvent.handlerTag);
     if (
       this.props.gesture.current &&
       Array.isArray(this.props.gesture.current[0].gestures)
@@ -598,7 +614,7 @@ export class GestureMonitor extends React.Component {
 
   // TODO(TS) - make sure this is right type for event
   private onGestureHandlerStateChange = (event: HandlerStateChangeEvent<U>) => {
-    console.log(event.nativeEvent);
+    //console.log(event.nativeEvent);
     let handled = false;
     if (
       this.props.gesture.current &&
@@ -650,40 +666,64 @@ export class GestureMonitor extends React.Component {
     this.propsRef.current = events;
 
     const child: any = React.Children.only(this.props.children);
-    let grandChildren = child.props.children;
-    if (
-      Touchable.TOUCH_TARGET_DEBUG &&
-      child.type &&
-      (child.type === 'RNGestureHandlerButton' ||
-        child.type.name === 'View' ||
-        child.type.displayName === 'View')
-    ) {
-      grandChildren = React.Children.toArray(grandChildren);
-      grandChildren.push(
-        Touchable.renderDebugView({
-          color: 'mediumspringgreen',
-          hitSlop: child.props.hitSlop,
-        })
+    // let grandChildren = child.props.children;
+    // if (
+    //   Touchable.TOUCH_TARGET_DEBUG &&
+    //   child.type &&
+    //   (child.type === 'RNGestureHandlerButton' ||
+    //     child.type.name === 'View' ||
+    //     child.type.displayName === 'View')
+    // ) {
+    //   grandChildren = React.Children.toArray(grandChildren);
+    //   grandChildren.push(
+    //     Touchable.renderDebugView({
+    //       color: 'mediumspringgreen',
+    //       hitSlop: child.props.hitSlop,
+    //     })
+    //   );
+    // }
+
+    if (this.props.gesture.current && this.props.gesture.current[2]) {
+      return React.createElement(
+        AnimatedWrap,
+        { ref: this.refHandler, ...events },
+        this.props.children
       );
+    } else {
+      return [
+        child,
+        React.createElement(View, {
+          ref: this.refHandler,
+          ...events,
+          style: { width: 0, height: 0, backgroundColor: 'transparent' },
+        }),
+      ];
     }
+    // return React.createElement(
+    //   Wrapper,
+    //   { ref: this.refHandler, ...events },
+    //   child
+    // );
 
-    return React.createElement(
-      Wrapper,
-      { ref: this.refHandler, ...events },
-      child
-    );
-
-    return React.cloneElement(
-      child,
-      {
-        ref: this.refHandler,
-        collapsable: false,
-        ...events,
-      },
-      grandChildren
-    );
+    // return React.cloneElement(
+    //   child,
+    //   {
+    //     ref: this.refHandler,
+    //     collapsable: false,
+    //     ...events,
+    //   },
+    //   grandChildren
+    // );
   }
 }
+
+class Wrap extends React.Component {
+  render() {
+    return this.props.children;
+  }
+}
+
+const AnimatedWrap = Reanimated.createAnimatedComponent(Wrap);
 
 class Wrapper extends React.Component {
   constructor(props) {

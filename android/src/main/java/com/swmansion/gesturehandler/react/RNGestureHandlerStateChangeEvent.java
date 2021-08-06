@@ -42,7 +42,7 @@ public class RNGestureHandlerStateChangeEvent extends Event<RNGestureHandlerStat
           int newState,
           int oldState,
           @Nullable RNGestureHandlerEventDataExtractor dataExtractor) {
-    super.init(handler.getView().getId());
+    super.init(handler.receiverTag);
     mExtraData = Arguments.createMap();
     if (dataExtractor != null) {
       dataExtractor.extractEventData(handler, mExtraData);

@@ -25,6 +25,11 @@ export type RNGestureHandlerModuleProps = {
     config: Readonly<Record<string, unknown>>
   ) => void;
   attachGestureHandler: (handlerTag: number, newView: number) => void;
+  attachGestureHandlerWithReceiver: (
+    handlerTag: number,
+    newView: number,
+    receiverTag: number
+  ) => void;
   updateGestureHandler: (
     handlerTag: number,
     newConfig: Readonly<Record<string, unknown>>

@@ -140,29 +140,27 @@ export default function Home() {
   });
 
   return (
-    <RootAnimated>
-      <Animated.View style={styles.container}>
-        <GestureMonitor gesture={scaleGestureHandler}>
-          <Animated.View
-            style={[styles.home, { backgroundColor: filters[selectedFilter] }]}>
-            <Animated.View style={[styles.box, zoomStyle]} />
-          </Animated.View>
-        </GestureMonitor>
+    <Animated.View style={styles.container}>
+      <GestureMonitor gesture={scaleGestureHandler}>
+        <Animated.View
+          style={[styles.home, { backgroundColor: filters[selectedFilter] }]}>
+          <Animated.View style={[styles.box, zoomStyle]} />
+        </Animated.View>
+      </GestureMonitor>
 
-        <GestureMonitor gesture={panGestureHandler}>
-          <Animated.View style={styles.buttonContainer}>
-            <FilterCarousel filters={filters} selected={filter} />
-            <GestureMonitor gesture={buttonGestureHandler}>
-              <Animated.View style={styles.shutterContainer}>
-                <CaptureButton
-                  progress={1 - remainingTime / MAX_VIDEO_DURATION}
-                />
-              </Animated.View>
-            </GestureMonitor>
-          </Animated.View>
-        </GestureMonitor>
-      </Animated.View>
-    </RootAnimated>
+      <GestureMonitor gesture={panGestureHandler}>
+        <Animated.View style={styles.buttonContainer}>
+          <FilterCarousel filters={filters} selected={filter} />
+          <GestureMonitor gesture={buttonGestureHandler}>
+            <Animated.View style={styles.shutterContainer}>
+              <CaptureButton
+                progress={1 - remainingTime / MAX_VIDEO_DURATION}
+              />
+            </Animated.View>
+          </GestureMonitor>
+        </Animated.View>
+      </GestureMonitor>
+    </Animated.View>
   );
 }
 

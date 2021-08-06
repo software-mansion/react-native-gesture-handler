@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler.react;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +17,14 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.EventDispatcherListener;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.swmansion.gesturehandler.FlingGestureHandler;
 import com.swmansion.gesturehandler.GestureHandler;
@@ -500,6 +503,15 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void attachGestureHandlerWithReceiver(int handlerTag, int viewTag, int receiverTag) {
+    tryInitializeHandlerForReactRootView(viewTag);
+    if (!mRegistry.attachHandlerToView(handlerTag, viewTag, receiverTag)) {
+      throw new JSApplicationIllegalArgumentException(
+              "Handler with tag " + handlerTag + " does not exists");
+    }
+  }
+
+  @ReactMethod
   public void updateGestureHandler(
           int handlerTag,
           ReadableMap config) {
@@ -539,6 +551,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     EventDispatcher eventDispatcher = getReactApplicationContext()
             .getNativeModule(UIManagerModule.class)
             .getEventDispatcher();
+
+    //getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit();
 
     CEvent e = new CEvent(name, viewTag, options);
 
