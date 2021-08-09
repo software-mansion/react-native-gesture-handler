@@ -37,7 +37,7 @@ function Box(props) {
   const gs = useGesture(
     new Tap({
       onEnd: (e, s) => {
-        if (s) console.log(props.color + ' ' + getState(e.nativeEvent.state));
+        if (s) console.log(props.color + ' ' + getState(e.state));
       },
     })
   );

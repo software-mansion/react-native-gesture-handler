@@ -60,17 +60,17 @@ function Draggable() {
     //     numberOfTaps: 2,
     //     onEnd: (e, s) => {if (s) console.log("double tap")}
     //   }))
-    new Rotation({
+    new Pan({
+      activeOffsetX: [0, 190],
+      failOffsetY: [-10, 10],
+      failOffsetX: -1,
       onUpdate: (e) => {
-        console.log('rotate');
+        console.log('event 1');
       },
-    }).after(
-      new Pinch({
-        onUpdate: (e) => {
-          console.log('scale');
-        },
-      })
-    )
+      onEnd: (e, s) => {
+        console.log('end 1: ' + s);
+      },
+    })
   );
 
   return (

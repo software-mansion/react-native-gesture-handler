@@ -21,6 +21,17 @@ import { nextHandlerTag } from './handlerCounter';
 import { default as RNRenderer } from 'react-native/Libraries/Renderer/shims/ReactNative';
 import { filterConfig } from './createHandler';
 import Reanimated from 'react-native-reanimated';
+import { default as EventReceiver } from '../components/EventReceiver';
+import { DeviceEventEmitter } from 'react-native';
+import {
+  basePropsNew,
+  flingGestureHandlerProps,
+  longPressGestureHandlerProps,
+  panGestureHandlerProps,
+  tapGestureHandlerProps,
+  managePanProps,
+  panGestureHandlerCustomNativeProps,
+} from './allowedProps';
 
 class Gesture {
   public gestures: Array<Gesture> = [];
@@ -141,11 +152,13 @@ class SimpleGesture extends Gesture {
   public handlerName: string = '';
   public config: any;
 
+  static allowedProps = basePropsNew;
+
   constructor(config: any) {
     super();
     this.config = config;
 
-    this.gestures = [this];
+    this.gestures = [this]; //TODO change cyclic structure, worklets do not like that
   }
 
   simultaneousWith(other: SimpleGesture): GestureBuilder {
@@ -191,23 +204,51 @@ class SimpleGesture extends Gesture {
       this.config.simultaneousWith = [this.config.simultaneousWith];
     }
   }
+
+  getAllowedProps() {
+    return SimpleGesture.allowedProps;
+  }
+
+  transformProps() {
+    return this.config;
+  }
 }
 
 export class Tap extends SimpleGesture {
+  static allowedProps = [...basePropsNew, ...tapGestureHandlerProps];
+
   constructor(config: any) {
     super(config);
 
     this.handlerName = 'TapGestureHandler';
     this.handlerTag = -1;
   }
+
+  getAllowedProps() {
+    return Tap.allowedProps;
+  }
 }
 
 export class Pan extends SimpleGesture {
+  static allowedProps = [
+    ...basePropsNew,
+    ...panGestureHandlerProps,
+    ...panGestureHandlerCustomNativeProps,
+  ];
+
   constructor(config: any) {
     super(config);
 
     this.handlerName = 'PanGestureHandler';
     this.handlerTag = -1;
+  }
+
+  getAllowedProps() {
+    return Pan.allowedProps;
+  }
+
+  transformProps() {
+    return managePanProps(this.config);
   }
 }
 
@@ -230,20 +271,32 @@ export class Rotation extends SimpleGesture {
 }
 
 export class LongPress extends SimpleGesture {
+  static allowedProps = [...basePropsNew, ...longPressGestureHandlerProps];
+
   constructor(config: any) {
     super(config);
 
     this.handlerName = 'LongPressGestureHandler';
     this.handlerTag = -1;
   }
+
+  getAllowedProps() {
+    return LongPress.allowedProps;
+  }
 }
 
 export class Fling extends SimpleGesture {
+  static allowedProps = [...basePropsNew, ...flingGestureHandlerProps];
+
   constructor(config: any) {
     super(config);
 
     this.handlerName = 'FlingGestureHandler';
     this.handlerTag = -1;
+  }
+
+  getAllowedProps() {
+    return Fling.allowedProps;
   }
 }
 
@@ -309,8 +362,6 @@ export class ComplexGesture extends Gesture {
   }
 }
 
-let allowedProps = ['numberOfTaps', 'maxDist', 'priority', 'avgTouches'];
-
 const handlers = new Map();
 
 export function findHandler(tag) {
@@ -335,7 +386,7 @@ export function useGesture(gesture) {
       RNGestureHandlerModule.createGestureHandler(
         gst.handlerName,
         gst.handlerTag,
-        filterConfig(gst.config, allowedProps, {})
+        filterConfig(gst.transformProps(), gst.getAllowedProps(), {})
       );
 
       handlers.set(gst.handlerTag, gst);
@@ -395,7 +446,7 @@ export function useGesture(gesture) {
 
         RNGestureHandlerModule.updateGestureHandler(
           gst.handlerTag,
-          filterConfig(gst.config, allowedProps, {
+          filterConfig(gst.transformProps(), gst.getAllowedProps(), {
             waitFor: requireToFail,
             after: after,
             simultaneousHandlers: simultaneousWith,
@@ -415,7 +466,7 @@ export function useGesture(gesture) {
 
       RNGestureHandlerModule.updateGestureHandler(
         gst.handlerTag,
-        filterConfig(gst.config, allowedProps, {
+        filterConfig(gst.transformProps(), gst.getAllowedProps(), {
           waitFor: gst.requireToFail,
           after: gst.after,
           simultaneousHandlers: gst.simultaneousWith,
@@ -544,22 +595,11 @@ export class GestureMonitor extends React.Component {
     }
   };
 
-  visit(a, i) {
-    let s = '';
-    for (let b = 0; b < i; b++) s += '  ';
-
-    if (a._nativeTag) {
-      console.log(s + ' ' + a._nativeTag);
-
-      for (const c of a._children) {
-        this.visit(c, i + 1);
-      }
-    }
-  }
-
   attachGestureHandlers(newViewTag) {
-    //newViewTag = RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag;
-    //console.log(RNRenderer.findHostInstance_DEPRECATED(this)._internalFiberInstanceHandleDEV.pendingProps);
+    newViewTag = RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag;
+    console.log(
+      RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag + ' ' + newViewTag
+    );
     this.viewTag = newViewTag;
     if (this.props.gesture.current) {
       if (this.props.gesture.current[0] instanceof Gesture) {
@@ -583,7 +623,7 @@ export class GestureMonitor extends React.Component {
             RNGestureHandlerModule.attachGestureHandlerWithReceiver(
               gesture.handlerTag,
               RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag,
-              newViewTag
+              -1
             );
           }
         }
@@ -690,12 +730,12 @@ export class GestureMonitor extends React.Component {
         this.props.children
       );
     } else {
-      return [
+      return child;
+      [
         child,
-        React.createElement(View, {
+        React.createElement(EventReceiver, {
           ref: this.refHandler,
           ...events,
-          style: { width: 0, height: 0, backgroundColor: 'transparent' },
         }),
       ];
     }
@@ -716,6 +756,39 @@ export class GestureMonitor extends React.Component {
     // );
   }
 }
+
+function onGestureHandlerEvent(event) {
+  const handler = findHandler(event.handlerTag);
+
+  if (handler) {
+    handler.config.onUpdate(event);
+  }
+}
+
+function onGestureHandlerStateChange(event) {
+  const gesture = findHandler(event.handlerTag);
+
+  if (gesture) {
+    if (event.oldState == 0 && event.state == 2) {
+      gesture.config.onBegan?.(event);
+    } else if (event.oldState == 2 && event.state == 4) {
+      gesture.config.onStart?.(event);
+    } else if (event.oldState == 4 && event.state == 5) {
+      gesture.config.onEnd?.(event, true);
+    } else if (event.state == 1) {
+      gesture.config.onEnd?.(event, false);
+    } else if (event.state == 3) {
+      gesture.config.onEnd?.(event, false);
+    }
+  }
+}
+
+DeviceEventEmitter.addListener('onGestureHandlerEvent', onGestureHandlerEvent);
+
+DeviceEventEmitter.addListener(
+  'onGestureHandlerStateChange',
+  onGestureHandlerStateChange
+);
 
 class Wrap extends React.Component {
   render() {

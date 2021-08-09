@@ -36,7 +36,7 @@ export function useAnimatedGesture(gesture) {
   const event = useEvent(
     handler,
     ['onGestureHandlerStateChange', 'onGestureHandlerEvent'],
-    false
+    true
   );
 
   result.current[2] = event;

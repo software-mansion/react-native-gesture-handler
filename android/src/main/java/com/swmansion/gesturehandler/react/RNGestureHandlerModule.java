@@ -728,11 +728,23 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
     if (handler.getState() == GestureHandler.STATE_ACTIVE) {
       HandlerFactory handlerFactory = findFactoryForHandler(handler);
-      EventDispatcher eventDispatcher = getReactApplicationContext()
-              .getNativeModule(UIManagerModule.class)
-              .getEventDispatcher();
-      RNGestureHandlerEvent event = RNGestureHandlerEvent.obtain(handler, handlerFactory);
-      eventDispatcher.dispatchEvent(event);
+
+      if (handler.receiverTag == handler.getView().getId()) {
+        EventDispatcher eventDispatcher = getReactApplicationContext()
+                .getNativeModule(UIManagerModule.class)
+                .getEventDispatcher();
+        RNGestureHandlerEvent event = RNGestureHandlerEvent.obtain(handler, handlerFactory);
+        eventDispatcher.dispatchEvent(event);
+      } else {
+        WritableMap args = Arguments.createMap();
+        if (handlerFactory != null) {
+          handlerFactory.extractEventData(handler, args);
+        }
+        args.putInt("handlerTag", handler.getTag());
+        args.putInt("state", handler.getState());
+
+        getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("onGestureHandlerEvent", args);
+      }
     }
   }
 
@@ -742,15 +754,28 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       return;
     }
     HandlerFactory handlerFactory = findFactoryForHandler(handler);
-    EventDispatcher eventDispatcher = getReactApplicationContext()
-            .getNativeModule(UIManagerModule.class)
-            .getEventDispatcher();
-    RNGestureHandlerStateChangeEvent event = RNGestureHandlerStateChangeEvent.obtain(
-            handler,
-            newState,
-            oldState,
-            handlerFactory);
-    eventDispatcher.dispatchEvent(event);
+
+    if (handler.receiverTag == handler.getView().getId()) {
+      EventDispatcher eventDispatcher = getReactApplicationContext()
+              .getNativeModule(UIManagerModule.class)
+              .getEventDispatcher();
+      RNGestureHandlerStateChangeEvent event = RNGestureHandlerStateChangeEvent.obtain(
+              handler,
+              newState,
+              oldState,
+              handlerFactory);
+      eventDispatcher.dispatchEvent(event);
+    } else {
+      WritableMap args = Arguments.createMap();
+      if (handlerFactory != null) {
+        handlerFactory.extractEventData(handler, args);
+      }
+      args.putInt("handlerTag", handler.getTag());
+      args.putInt("state", newState);
+      args.putInt("oldState", oldState);
+
+      getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("onGestureHandlerStateChange", args);
+    }
   }
 
   private static void handleHitSlopProperty(GestureHandler handler, ReadableMap config) {

@@ -1,5 +1,6 @@
 import createHandler from './createHandler';
-import { BaseGestureHandlerProps, baseProps } from './gestureHandlers';
+import { BaseGestureHandlerProps } from './gestureHandlers';
+import { baseProps } from './allowedProps';
 
 export interface NativeViewGestureHandlerProps
   extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload> {
