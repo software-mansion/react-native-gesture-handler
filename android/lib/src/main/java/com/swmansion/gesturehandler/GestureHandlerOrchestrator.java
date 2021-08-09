@@ -503,6 +503,9 @@ public class GestureHandlerOrchestrator {
 
     boolean hasHandler(int h) {
       ArrayList<GestureHandler> handlers = getHandlers();
+
+      if (handlers == null) return false;
+
       for (int i = 0; i < handlers.size(); i++) {
         if (handlers.get(i).getTag() == h)
           return true;

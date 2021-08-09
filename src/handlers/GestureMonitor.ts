@@ -34,7 +34,28 @@ import {
 } from './allowedProps';
 
 class Gesture {
+  _requireToFail = [];
+  _after = [];
+  _simultaneousWith = [];
+
+  build(): BuiltGesture {
+    return new BuiltGesture();
+  }
+}
+class BuiltGesture {
   public gestures: Array<Gesture> = [];
+
+  initialize() {
+    for (const gesture of this.gestures) {
+      gesture.initialize();
+    }
+  }
+
+  prepare() {
+    for (const gesture of this.gestures) {
+      gesture.prepare();
+    }
+  }
 }
 
 enum Relation {
@@ -82,10 +103,66 @@ export class GestureBuilder extends Gesture {
     return this;
   }
 
-  build() {
-    for (const pendingGesture of this.log) {
-      this.gestures.push(pendingGesture.gesture);
+  build(): BuiltGesture {
+    let result = new BuiltGesture();
+
+    result.gestures = [];
+
+    for (const pg of this.log) {
+      result.gestures.push(pg.gesture);
     }
+
+    result.prepare = () => {
+      let simultaneous = [];
+      let after = [];
+      let waitFor = [];
+
+      for (let i = this.log.length - 1; i >= 0; i--) {
+        let pendingGesture = this.log[i];
+        pendingGesture.gesture.prepare();
+
+        let newConfig = { ...pendingGesture.gesture.config };
+
+        if (newConfig.simultaneousWith) {
+          newConfig.simultaneousWith = [
+            ...newConfig.simultaneousWith,
+            ...simultaneous,
+          ];
+        } else {
+          newConfig.simultaneousWith = [...simultaneous];
+        }
+
+        if (newConfig.requireToFail) {
+          newConfig.requireToFail = [...newConfig.requireToFail, ...waitFor];
+        } else {
+          newConfig.requireToFail = [...waitFor];
+        }
+
+        if (newConfig.after) {
+          newConfig.after = [...newConfig.after, ...after];
+        } else {
+          newConfig.after = [...after];
+        }
+
+        pendingGesture.gesture.config = newConfig;
+
+        switch (pendingGesture.relation) {
+          case Relation.Simultaneous:
+            simultaneous.push(pendingGesture.gesture.handlerTag);
+            break;
+          case Relation.Exclusive:
+            break;
+          case Relation.After:
+            after.push(pendingGesture.gesture.handlerTag);
+            break;
+          case Relation.RequireToFail:
+            waitFor.push(pendingGesture.gesture.handlerTag);
+            break;
+        }
+      }
+    };
+
+    return result;
   }
 
   initialize() {
@@ -157,8 +234,6 @@ class SimpleGesture extends Gesture {
   constructor(config: any) {
     super();
     this.config = config;
-
-    this.gestures = [this]; //TODO change cyclic structure, worklets do not like that
   }
 
   simultaneousWith(other: SimpleGesture): GestureBuilder {
@@ -183,6 +258,14 @@ class SimpleGesture extends Gesture {
     if (this.config.ref) {
       this.config.ref.current = this;
     }
+  }
+
+  build(): BuiltGesture {
+    let result = new BuiltGesture();
+
+    result.gestures = [this];
+
+    return result;
   }
 
   prepare() {
@@ -360,6 +443,14 @@ export class ComplexGesture extends Gesture {
       gesture.prepare();
     }
   }
+
+  build(): BuiltGesture {
+    let result = new BuiltGesture();
+
+    result.gestures = this.gestures;
+
+    return result;
+  }
 }
 
 const handlers = new Map();
@@ -369,6 +460,8 @@ export function findHandler(tag) {
 }
 
 export function useGesture(gesture) {
+  gesture = gesture.build();
+
   const result = React.useRef([gesture]);
 
   function dropHandlers() {
@@ -440,9 +533,9 @@ export function useGesture(gesture) {
           ];
         }
 
-        gst.requireToFail = requireToFail;
-        gst.after = after;
-        gst.simultaneousWith = simultaneousWith;
+        gst._requireToFail = requireToFail;
+        gst._after = after;
+        gst._simultaneousWith = simultaneousWith;
 
         RNGestureHandlerModule.updateGestureHandler(
           gst.handlerTag,
@@ -457,6 +550,10 @@ export function useGesture(gesture) {
 
     result.current[0] = gesture;
     result.current[1]?.();
+
+    if (result.current[3]) {
+      result.current[3].value = gesture;
+    }
   }
 
   function updateHandlers() {
@@ -467,13 +564,17 @@ export function useGesture(gesture) {
       RNGestureHandlerModule.updateGestureHandler(
         gst.handlerTag,
         filterConfig(gst.transformProps(), gst.getAllowedProps(), {
-          waitFor: gst.requireToFail,
-          after: gst.after,
-          simultaneousHandlers: gst.simultaneousWith,
+          waitFor: gst._requireToFail,
+          after: gst._after,
+          simultaneousHandlers: gst._simultaneousWith,
         })
       );
 
       handlers.set(gst.handlerTag, gst);
+    }
+
+    if (result.current[3]) {
+      result.current[3].value = result.current[0];
     }
   }
 
@@ -494,7 +595,7 @@ export function useGesture(gesture) {
     return false;
   }
 
-  if (gesture instanceof GestureBuilder) {
+  if (gesture.build) {
     gesture.build();
   }
 
@@ -597,35 +698,31 @@ export class GestureMonitor extends React.Component {
 
   attachGestureHandlers(newViewTag) {
     newViewTag = RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag;
-    console.log(
-      RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag + ' ' + newViewTag
-    );
+    //console.log(RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag + ' ' + newViewTag);
     this.viewTag = newViewTag;
     if (this.props.gesture.current) {
-      if (this.props.gesture.current[0] instanceof Gesture) {
-        for (const gesture of this.props.gesture.current[0].gestures) {
-          console.log(
-            gesture.handlerName +
-              ' ' +
-              newViewTag +
-              ' ' +
-              gesture.handlerTag +
-              ' ' +
-              RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag
+      for (const gesture of this.props.gesture.current[0].gestures) {
+        console.log(
+          gesture.handlerName +
+            ' ' +
+            newViewTag +
+            ' ' +
+            gesture.handlerTag +
+            ' ' +
+            RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag
+        );
+        if (this.props.gesture.current && this.props.gesture.current[2]) {
+          RNGestureHandlerModule.attachGestureHandlerWithReceiver(
+            gesture.handlerTag,
+            newViewTag,
+            newViewTag
           );
-          if (this.props.gesture.current && this.props.gesture.current[2]) {
-            RNGestureHandlerModule.attachGestureHandlerWithReceiver(
-              gesture.handlerTag,
-              newViewTag,
-              newViewTag
-            );
-          } else {
-            RNGestureHandlerModule.attachGestureHandlerWithReceiver(
-              gesture.handlerTag,
-              RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag,
-              -1
-            );
-          }
+        } else {
+          RNGestureHandlerModule.attachGestureHandlerWithReceiver(
+            gesture.handlerTag,
+            RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag,
+            -1
+          );
         }
       }
     }

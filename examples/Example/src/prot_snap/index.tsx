@@ -11,6 +11,7 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  runOnJS,
 } from 'react-native-reanimated';
 import { useAnimatedGesture } from '../useAnimatedGesture';
 import { RootAnimated } from '../RootAnimated';
@@ -30,22 +31,25 @@ export default function Home() {
 
   const filtersPanGesture = new Pan({
     onUpdate: (e) => {
+      'worklet';
       filter.value =
         filter.value + (filterOffset.value - e.translationX) * 0.01;
       filterOffset.value = e.translationX;
 
-      updateSelectedFilter();
+      runOnJS(updateSelectedFilter)();
     },
     onEnd: () => {
+      'worklet';
       filterOffset.value = 0;
-      filter.value = withTiming(updateSelectedFilter(), { duration: 200 });
+      runOnJS(stopFilterScroll)();
     },
   });
 
   const buttonTapGesture = new Tap({
     maxDist: 3,
     onEnd: (e, success) => {
-      if (success) Alert.alert('You took a photo');
+      'worklet';
+      if (success) runOnJS(takePhoto)();
     },
   });
 
@@ -54,8 +58,9 @@ export default function Home() {
     numberOfTaps: 2,
     priority: 1,
     onEnd: (e, success) => {
+      'worklet';
       if (success) {
-        Alert.alert('You took a series of photos');
+        runOnJS(takeSeries)();
       }
     },
   });
@@ -63,6 +68,7 @@ export default function Home() {
   const buttonPanGesture = new Pan({
     simultaneousWith: filtersPanGesture,
     onUpdate: (e) => {
+      'worklet';
       if (recording) {
         if (e.velocityY < 0) {
           zoom.value = zoom.value * 1.05;
@@ -72,29 +78,27 @@ export default function Home() {
       }
     },
     onEnd: (e) => {
+      'worklet';
       if (recording) {
-        finishRecording();
+        runOnJS(finishRecording)();
       }
     },
   });
 
   const buttonLongPressGesture = new LongPress({
     onStart: () => {
-      setRecording(true);
-      setRemainingTime(MAX_VIDEO_DURATION);
-      setRecordingInterval(
-        setInterval(() => {
-          setRemainingTime((r) => r - 200);
-        }, 200)
-      );
+      'worklet';
+      runOnJS(startRecording)();
     },
   });
 
   const previewPinchGesture = new Pinch({
     onStart: () => {
-      setScale(zoom.value);
+      'worklet';
+      runOnJS(setScale)(zoom.value);
     },
     onUpdate: (e) => {
+      'worklet';
       zoom.value = scale * e.scale;
     },
   });
@@ -114,6 +118,10 @@ export default function Home() {
     finishRecording();
   }
 
+  function stopFilterScroll() {
+    filter.value = withTiming(updateSelectedFilter(), { duration: 200 });
+  }
+
   function updateSelectedFilter() {
     let targetFilter = Math.round(filter.value);
     if (targetFilter < 0) targetFilter = 0;
@@ -121,6 +129,24 @@ export default function Home() {
     setSelectedFilter(targetFilter);
 
     return targetFilter;
+  }
+
+  function takePhoto() {
+    Alert.alert('You took a photo');
+  }
+
+  function takeSeries() {
+    Alert.alert('You took a series of photos');
+  }
+
+  function startRecording() {
+    setRecording(true);
+    setRemainingTime(MAX_VIDEO_DURATION);
+    setRecordingInterval(
+      setInterval(() => {
+        setRemainingTime((r) => r - 200);
+      }, 200)
+    );
   }
 
   function finishRecording() {
