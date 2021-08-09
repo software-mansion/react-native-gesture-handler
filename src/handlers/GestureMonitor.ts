@@ -269,6 +269,26 @@ class SimpleGesture extends Gesture {
     this.config[key] = value;
   }
 
+  private addDependency(
+    key: string,
+    gesture: SimpleGesture | React.Ref<SimpleGesture>
+  ) {
+    if (this.config[key]) {
+      if (Array.isArray(this.config[key])) {
+        this.config[key].push(gesture);
+      } else {
+        this.config[key] = [this.config[key], gesture];
+      }
+    } else {
+      this.config[key] = [gesture];
+    }
+  }
+
+  setRef(ref) {
+    this.setConfig('ref', ref);
+    return this;
+  }
+
   setOnBegan(callback) {
     this.setConfig('onBegan', callback);
     return this;
@@ -294,19 +314,40 @@ class SimpleGesture extends Gesture {
     return this;
   }
 
-  addSimultaneousGesture(gesture) {
-    if (this.config['simultaneousWith']) {
-      if (Array.isArray(this.config['simultaneousWith'])) {
-        this.config['simultaneousWith'].push(gesture);
-      } else {
-        this.config['simultaneousWith'] = [
-          this.config['simultaneousWith'],
-          gesture,
-        ];
-      }
-    } else {
-      this.config['simultaneousWith'] = [gesture];
-    }
+  setEnabled(enabled) {
+    this.setConfig('enabled', enabled);
+    return this;
+  }
+
+  setMinPointers(minPointers) {
+    this.setConfig('minPointers', minPointers);
+    return this;
+  }
+
+  setShouldCancelWhenOutside(value) {
+    this.setConfig('shouldCancelWhenOutside', value);
+    return this;
+  }
+
+  setHitSlop(hitSlop) {
+    this.setConfig('hitSlop', hitSlop);
+    return this;
+  }
+
+  addSimultaneousGesture(gesture: SimpleGesture | React.Ref<SimpleGesture>) {
+    this.addDependency('simultaneousWith', gesture);
+
+    return this;
+  }
+
+  addRequiredToFailGesture(gesture: SimpleGesture | React.Ref<SimpleGesture>) {
+    this.addDependency('requireToFail', gesture);
+
+    return this;
+  }
+
+  addRequiredActiveGesture(gesture: SimpleGesture | React.Ref<SimpleGesture>) {
+    this.addDependency('after', gesture);
 
     return this;
   }
@@ -392,6 +433,26 @@ export class Tap extends SimpleGesture {
     return this;
   }
 
+  setMaxDuration(duration) {
+    this.setConfig('maxDurationMs', duration);
+    return this;
+  }
+
+  setMaxDelay(delay) {
+    this.setConfig('maxDelayMs', delay);
+    return this;
+  }
+
+  setMaxDeltaX(delta) {
+    this.setConfig('maxDeltaX', delta);
+    return this;
+  }
+
+  setMaxDeltaY(delta) {
+    this.setConfig('maxDeltaY', delta);
+    return this;
+  }
+
   getAllowedProps() {
     return Tap.allowedProps;
   }
@@ -409,6 +470,36 @@ export class Pan extends SimpleGesture {
 
     this.handlerName = 'PanGestureHandler';
     this.handlerTag = -1;
+  }
+
+  setActiveOffsetY(offset) {
+    this.setConfig('activeOffsetY', offset);
+    return this;
+  }
+
+  setActiveOffsetX(offset) {
+    this.setConfig('activeOffsetX', offset);
+    return this;
+  }
+
+  setFailOffsetY(offset) {
+    this.setConfig('failOffsetY', offset);
+    return this;
+  }
+
+  setMinDistance(distance) {
+    this.setConfig('minDist', distance);
+    return this;
+  }
+
+  setAverageTouches(value) {
+    this.setConfig('avgTouches', value);
+    return this;
+  }
+
+  setEnableTrackpadTwoFingerGesture(value) {
+    this.setConfig('enableTrackpadTwoFingerGesture', value);
+    return this;
   }
 
   getAllowedProps() {
@@ -448,6 +539,16 @@ export class LongPress extends SimpleGesture {
     this.handlerTag = -1;
   }
 
+  setMinDuration(duration) {
+    this.setConfig('minDurationMs', duration);
+    return this;
+  }
+
+  setMaxDistance(distance) {
+    this.setConfig('maxDist', distance);
+    return this;
+  }
+
   getAllowedProps() {
     return LongPress.allowedProps;
   }
@@ -463,78 +564,18 @@ export class Fling extends SimpleGesture {
     this.handlerTag = -1;
   }
 
+  setNumberOfPointers(pointers) {
+    this.setConfig('numberOfPointers', pointers);
+    return this;
+  }
+
+  setDirection(direction) {
+    this.setConfig('direction', direction);
+    return this;
+  }
+
   getAllowedProps() {
     return Fling.allowedProps;
-  }
-}
-
-export class ComplexGesture extends Gesture {
-  constructor(config) {
-    super();
-
-    this.gestures = [];
-
-    if (config) {
-      this.config = config;
-    } else {
-      this.config = {};
-    }
-  }
-
-  tap(config) {
-    this.gestures.push(new Tap(config));
-
-    return this;
-  }
-
-  longPress(config) {
-    this.gestures.push(new LongPress(config));
-
-    return this;
-  }
-
-  pan(config) {
-    this.gestures.push(new Pan(config));
-
-    return this;
-  }
-
-  rotation(config) {
-    this.gestures.push(new Rotation(config));
-
-    return this;
-  }
-
-  pinch(config) {
-    this.gestures.push(new Pinch(config));
-
-    return this;
-  }
-
-  fling(config) {
-    this.gestures.push(new Fling(config));
-
-    return this;
-  }
-
-  initialize() {
-    for (const gesture of this.gestures) {
-      gesture.initialize();
-    }
-  }
-
-  prepare() {
-    for (const gesture of this.gestures) {
-      gesture.prepare();
-    }
-  }
-
-  build(): BuiltGesture {
-    let result = new BuiltGesture();
-
-    result.gestures = this.gestures;
-
-    return result;
   }
 }
 
@@ -704,42 +745,6 @@ export function useGesture(gesture) {
   return result;
 }
 
-export function Root(props) {
-  return React.createElement(
-    View,
-    {
-      onGestureHandlerEvent: (e) => {
-        const handler = findHandler(e.nativeEvent.handlerTag);
-
-        if (handler) {
-          handler.config.onUpdate(e);
-        }
-      },
-      onGestureHandlerStateChange: (event) => {
-        const gesture = findHandler(event.nativeEvent.handlerTag);
-        if (event.nativeEvent.oldState == 0 && event.nativeEvent.state == 2) {
-          gesture.config.onBegan?.(event);
-        } else if (
-          event.nativeEvent.oldState == 2 &&
-          event.nativeEvent.state == 4
-        ) {
-          gesture.config.onStart?.(event);
-        } else if (
-          event.nativeEvent.oldState == 4 &&
-          event.nativeEvent.state == 5
-        ) {
-          gesture.config.onEnd?.(event, true);
-        } else if (event.nativeEvent.state == 1) {
-          gesture.config.onEnd?.(event, false);
-        } else if (event.nativeEvent.state == 3) {
-          gesture.config.onEnd?.(event, false);
-        }
-      },
-    },
-    React.Children.only(props.children)
-  );
-}
-
 export class GestureMonitor extends React.Component {
   constructor(props) {
     super(props);
@@ -787,15 +792,6 @@ export class GestureMonitor extends React.Component {
     this.viewTag = newViewTag;
     if (this.props.gesture.current) {
       for (const gesture of this.props.gesture.current[0].gestures) {
-        console.log(
-          gesture.handlerName +
-            ' ' +
-            newViewTag +
-            ' ' +
-            gesture.handlerTag +
-            ' ' +
-            RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag
-        );
         if (this.props.gesture.current && this.props.gesture.current[2]) {
           RNGestureHandlerModule.attachGestureHandlerWithReceiver(
             gesture.handlerTag,
@@ -921,21 +917,6 @@ export class GestureMonitor extends React.Component {
         }),
       ];
     }
-    // return React.createElement(
-    //   Wrapper,
-    //   { ref: this.refHandler, ...events },
-    //   child
-    // );
-
-    // return React.cloneElement(
-    //   child,
-    //   {
-    //     ref: this.refHandler,
-    //     collapsable: false,
-    //     ...events,
-    //   },
-    //   grandChildren
-    // );
   }
 }
 
@@ -943,7 +924,7 @@ function onGestureHandlerEvent(event) {
   const handler = findHandler(event.handlerTag);
 
   if (handler) {
-    handler.config.onUpdate(event);
+    handler.config.onUpdate?.(event);
   }
 }
 

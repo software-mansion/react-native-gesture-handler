@@ -32,14 +32,8 @@ export function useAnimatedGesture(gesture) {
     }
   };
 
-  const handler = (event) => {
-    'worklet';
-
-    callback(event);
-  };
-
   const event = useEvent(
-    handler,
+    callback,
     ['onGestureHandlerStateChange', 'onGestureHandlerEvent'],
     true
   );

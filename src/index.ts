@@ -45,7 +45,6 @@ export {
   Rotation,
   Fling,
   LongPress,
-  ComplexGesture,
   Gesture,
   findHandler,
   Root,

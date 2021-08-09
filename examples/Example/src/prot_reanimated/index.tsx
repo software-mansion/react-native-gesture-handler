@@ -2,12 +2,7 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import {
-  GestureMonitor,
-  ComplexGesture,
-  useGesture,
-  Pan,
-} from 'react-native-gesture-handler';
+import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -43,24 +38,23 @@ function Draggable() {
   });
 
   const gs = useAnimatedGesture(
-    new Pan({
-      onBegan: (e) => {
+    Gesture.pan()
+      .setOnBegan((e) => {
         'worklet';
         pressed.value = true;
-      },
-      onEnd: (e, success) => {
-        'worklet';
-        startX.value = offsetX.value;
-        startY.value = offsetY.value;
-        pressed.value = false;
-      },
-      onUpdate: (e) => {
+      })
+      .setOnUpdate((e) => {
         'worklet';
         offsetX.value = e.translationX + startX.value;
         offsetY.value = e.translationY + startY.value;
         //console.log('a');
-      },
-    })
+      })
+      .setOnEnd((e, success) => {
+        'worklet';
+        startX.value = offsetX.value;
+        startY.value = offsetY.value;
+        pressed.value = false;
+      })
   );
 
   return (
