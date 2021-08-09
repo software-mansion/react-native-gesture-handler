@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, useWindowDimensions } from 'react-native';
-import {
-  GestureMonitor,
-  Pan,
-  Pinch,
-  LongPress,
-  Tap,
-} from 'react-native-gesture-handler';
+import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -29,45 +23,42 @@ export default function Home() {
   const [remainingTime, setRemainingTime] = useState(MAX_VIDEO_DURATION);
   const [recordingInterval, setRecordingInterval] = useState(-1);
 
-  const filtersPanGesture = new Pan({
-    onUpdate: (e) => {
+  const filtersPanGesture = Gesture.pan()
+    .setOnUpdate((e) => {
       'worklet';
       filter.value =
         filter.value + (filterOffset.value - e.translationX) * 0.01;
       filterOffset.value = e.translationX;
 
       runOnJS(updateSelectedFilter)();
-    },
-    onEnd: () => {
+    })
+    .setOnEnd(() => {
       'worklet';
       filterOffset.value = 0;
       runOnJS(stopFilterScroll)();
-    },
-  });
+    });
 
-  const buttonTapGesture = new Tap({
-    maxDist: 3,
-    onEnd: (e, success) => {
+  const buttonTapGesture = Gesture.tap()
+    .setMaxDistance(3)
+    .setOnEnd((e, success) => {
       'worklet';
       if (success) runOnJS(takePhoto)();
-    },
-  });
+    });
 
-  const buttonDoubleTapGesture = new Tap({
-    maxDist: 3,
-    numberOfTaps: 2,
-    priority: 1,
-    onEnd: (e, success) => {
+  const buttonDoubleTapGesture = Gesture.tap()
+    .setTapCount(2)
+    .setMaxDistance(3)
+    .setPriority(1)
+    .setOnEnd((e, success) => {
       'worklet';
       if (success) {
         runOnJS(takeSeries)();
       }
-    },
-  });
+    });
 
-  const buttonPanGesture = new Pan({
-    simultaneousWith: filtersPanGesture,
-    onUpdate: (e) => {
+  const buttonPanGesture = Gesture.pan()
+    .addSimultaneousGesture(filtersPanGesture)
+    .setOnUpdate((e) => {
       'worklet';
       if (recording) {
         if (e.velocityY < 0) {
@@ -76,32 +67,28 @@ export default function Home() {
           zoom.value = zoom.value * 0.95;
         }
       }
-    },
-    onEnd: (e) => {
+    })
+    .setOnEnd((e) => {
       'worklet';
       if (recording) {
         runOnJS(finishRecording)();
       }
-    },
+    });
+
+  const buttonLongPressGesture = Gesture.longPress().setOnStart(() => {
+    'worklet';
+    runOnJS(startRecording)();
   });
 
-  const buttonLongPressGesture = new LongPress({
-    onStart: () => {
-      'worklet';
-      runOnJS(startRecording)();
-    },
-  });
-
-  const previewPinchGesture = new Pinch({
-    onStart: () => {
+  const previewPinchGesture = Gesture.pinch()
+    .setOnStart(() => {
       'worklet';
       runOnJS(setScale)(zoom.value);
-    },
-    onUpdate: (e) => {
+    })
+    .setOnUpdate((e) => {
       'worklet';
       zoom.value = scale * e.scale;
-    },
-  });
+    });
 
   const panGestureHandler = useAnimatedGesture(filtersPanGesture);
 
@@ -178,11 +165,7 @@ export default function Home() {
         <Animated.View style={styles.buttonContainer}>
           <FilterCarousel filters={filters} selected={filter} />
           <GestureMonitor gesture={buttonGestureHandler}>
-            <Animated.View style={styles.shutterContainer}>
-              <CaptureButton
-                progress={1 - remainingTime / MAX_VIDEO_DURATION}
-              />
-            </Animated.View>
+            <CaptureButton progress={1 - remainingTime / MAX_VIDEO_DURATION} />
           </GestureMonitor>
         </Animated.View>
       </GestureMonitor>

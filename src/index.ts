@@ -46,6 +46,7 @@ export {
   Fling,
   LongPress,
   ComplexGesture,
+  Gesture,
   findHandler,
   Root,
 } from './handlers/GestureMonitor';

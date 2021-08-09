@@ -33,13 +33,37 @@ import {
   panGestureHandlerCustomNativeProps,
 } from './allowedProps';
 
-class Gesture {
+export class Gesture {
   _requireToFail = [];
   _after = [];
   _simultaneousWith = [];
 
   build(): BuiltGesture {
     return new BuiltGesture();
+  }
+
+  static tap(config?: any) {
+    return new Tap(config);
+  }
+
+  static pan(config?: any) {
+    return new Pan(config);
+  }
+
+  static pinch(config?: any) {
+    return new Pinch(config);
+  }
+
+  static rotation(config?: any) {
+    return new Rotation(config);
+  }
+
+  static fling(config?: any) {
+    return new Fling(config);
+  }
+
+  static longPress(config?: any) {
+    return new LongPress(config);
   }
 }
 class BuiltGesture {
@@ -233,7 +257,58 @@ class SimpleGesture extends Gesture {
 
   constructor(config: any) {
     super();
-    this.config = config;
+
+    if (config) {
+      this.config = config;
+    } else {
+      this.config = {};
+    }
+  }
+
+  protected setConfig(key: string, value: any) {
+    this.config[key] = value;
+  }
+
+  setOnBegan(callback) {
+    this.setConfig('onBegan', callback);
+    return this;
+  }
+
+  setOnStart(callback) {
+    this.setConfig('onStart', callback);
+    return this;
+  }
+
+  setOnEnd(callback) {
+    this.setConfig('onEnd', callback);
+    return this;
+  }
+
+  setOnUpdate(callback) {
+    this.setConfig('onUpdate', callback);
+    return this;
+  }
+
+  setPriority(priority) {
+    this.setConfig('priority', priority);
+    return this;
+  }
+
+  addSimultaneousGesture(gesture) {
+    if (this.config['simultaneousWith']) {
+      if (Array.isArray(this.config['simultaneousWith'])) {
+        this.config['simultaneousWith'].push(gesture);
+      } else {
+        this.config['simultaneousWith'] = [
+          this.config['simultaneousWith'],
+          gesture,
+        ];
+      }
+    } else {
+      this.config['simultaneousWith'] = [gesture];
+    }
+
+    return this;
   }
 
   simultaneousWith(other: SimpleGesture): GestureBuilder {
@@ -305,6 +380,16 @@ export class Tap extends SimpleGesture {
 
     this.handlerName = 'TapGestureHandler';
     this.handlerTag = -1;
+  }
+
+  setTapCount(count) {
+    this.setConfig('numberOfTaps', count);
+    return this;
+  }
+
+  setMaxDistance(maxDist) {
+    this.setConfig('maxDist', maxDist);
+    return this;
   }
 
   getAllowedProps() {
