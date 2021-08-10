@@ -251,18 +251,12 @@ export class GestureBuilder extends Gesture {
 class SimpleGesture extends Gesture {
   public handlerTag: number = -1;
   public handlerName: string = '';
-  public config: any;
+  public config: any = {};
 
   static allowedProps = basePropsNew;
 
-  constructor(config: any) {
+  constructor() {
     super();
-
-    if (config) {
-      this.config = config;
-    } else {
-      this.config = {};
-    }
   }
 
   protected setConfig(key: string, value: any) {
@@ -419,8 +413,8 @@ class SimpleGesture extends Gesture {
 export class Tap extends SimpleGesture {
   static allowedProps = [...basePropsNew, ...tapGestureHandlerProps];
 
-  constructor(config: any) {
-    super(config);
+  constructor() {
+    super();
 
     this.handlerName = 'TapGestureHandler';
     this.handlerTag = -1;
@@ -468,8 +462,8 @@ export class Pan extends SimpleGesture {
     ...panGestureHandlerCustomNativeProps,
   ];
 
-  constructor(config: any) {
-    super(config);
+  constructor() {
+    super();
 
     this.handlerName = 'PanGestureHandler';
     this.handlerTag = -1;
@@ -520,8 +514,8 @@ export class Pan extends SimpleGesture {
 }
 
 export class Pinch extends SimpleGesture {
-  constructor(config: any) {
-    super(config);
+  constructor() {
+    super();
 
     this.handlerName = 'PinchGestureHandler';
     this.handlerTag = -1;
@@ -529,8 +523,8 @@ export class Pinch extends SimpleGesture {
 }
 
 export class Rotation extends SimpleGesture {
-  constructor(config: any) {
-    super(config);
+  constructor() {
+    super();
 
     this.handlerName = 'RotationGestureHandler';
     this.handlerTag = -1;
@@ -540,8 +534,8 @@ export class Rotation extends SimpleGesture {
 export class LongPress extends SimpleGesture {
   static allowedProps = [...basePropsNew, ...longPressGestureHandlerProps];
 
-  constructor(config: any) {
-    super(config);
+  constructor() {
+    super();
 
     this.handlerName = 'LongPressGestureHandler';
     this.handlerTag = -1;
@@ -565,8 +559,8 @@ export class LongPress extends SimpleGesture {
 export class Fling extends SimpleGesture {
   static allowedProps = [...basePropsNew, ...flingGestureHandlerProps];
 
-  constructor(config: any) {
-    super(config);
+  constructor() {
+    super();
 
     this.handlerName = 'FlingGestureHandler';
     this.handlerTag = -1;
@@ -593,6 +587,9 @@ export function findHandler(tag) {
   return handlers.get(tag);
 }
 
+//create `handlers` property alongside config to store event handlers
+//only this one would be passed to the worklets therefore solving problems
+//with refs
 export function useGesture(gesture) {
   gesture = gesture.build();
 
@@ -987,21 +984,3 @@ class Wrap extends React.Component {
 }
 
 const AnimatedWrap = Reanimated.createAnimatedComponent(Wrap);
-
-class Wrapper extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    let child: any = React.Children.only(this.props.children);
-
-    let result = React.cloneElement(
-      child,
-      {},
-      React.Children.toArray(child.props.children)
-    );
-
-    return result;
-  }
-}
