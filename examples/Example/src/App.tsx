@@ -15,6 +15,7 @@ import ProtoSiblings from './prot_siblings';
 import ProtoParent from './prot_parent';
 import ProtoReanimated from './prot_reanimated';
 import ProtoSnap from './prot_snap';
+import ProtoCalc from './prot_calculator';
 
 import Rows from './rows';
 import Bouncing from './bouncing';
@@ -53,6 +54,7 @@ const SCREENS: Screens = {
   ProtoParent: { component: ProtoParent, title: 'Example: Overlap (parent)' },
   ProtoReanimated: { component: ProtoReanimated, title: 'Example: Reanimated' },
   ProtoSnap: { component: ProtoSnap, title: 'Example: Snap' },
+  ProtoCalc: { component: ProtoCalc, title: 'Example: Calculator' },
   Rows: { component: Rows, title: 'Table rows & buttons' },
   Multitap: { component: Multitap },
   Draggable: { component: Draggable },
