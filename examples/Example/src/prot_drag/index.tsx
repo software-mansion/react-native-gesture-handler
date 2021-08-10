@@ -15,7 +15,7 @@ import {
   Pinch,
   Rotation,
   LongPress,
-  ComplexGesture,
+  Gesture,
 } from 'react-native-gesture-handler';
 import { useState } from 'react';
 import { createRef } from 'react';
@@ -52,25 +52,16 @@ function Draggable() {
   });
 
   const gs = useGesture(
-    // pan.after(new LongPress({}))
-    //   .simultaneousWith(new Tap({
-    //     onEnd: (e, s) => {if (s) console.log("tap")}
-    //   }))
-    //   .requireToFail(new Tap({
-    //     numberOfTaps: 2,
-    //     onEnd: (e, s) => {if (s) console.log("double tap")}
-    //   }))
-    new Pan({
-      activeOffsetX: [0, 190],
-      failOffsetY: [-10, 10],
-      failOffsetX: -1,
-      onUpdate: (e) => {
+    Gesture.pan()
+      .setActiveOffsetX([0, 190])
+      .setFailOffsetY([-10, 10])
+      .setFailOffsetX(-1)
+      .setOnUpdate((e) => {
         console.log('event 1');
-      },
-      onEnd: (e, s) => {
+      })
+      .setOnEnd((e, s) => {
         console.log('end 1: ' + s);
-      },
-    })
+      })
   );
 
   return (

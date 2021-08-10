@@ -487,6 +487,11 @@ export class Pan extends SimpleGesture {
     return this;
   }
 
+  setFailOffsetX(offset) {
+    this.setConfig('failOffsetX', offset);
+    return this;
+  }
+
   setMinDistance(distance) {
     this.setConfig('minDist', distance);
     return this;
@@ -756,14 +761,18 @@ export class GestureMonitor extends React.Component {
     setImmediate(() => {
       if (this.props.gesture.current) {
         this.props.gesture.current[1] = () => {
-          this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
+          //this.attachGestureHandlers(findNodeHandle(this.viewNode) as number);
+          this.attachGestureHandlers(
+            RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag
+          );
         };
       }
     });
   }
 
   componentDidUpdate() {
-    const viewTag = findNodeHandle(this.viewNode);
+    //const viewTag = findNodeHandle(this.viewNode);
+    const viewTag = RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag;
 
     if (this.viewTag !== viewTag) {
       this.attachGestureHandlers(viewTag as number);
@@ -787,7 +796,7 @@ export class GestureMonitor extends React.Component {
   };
 
   attachGestureHandlers(newViewTag) {
-    newViewTag = RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag;
+    //newViewTag = RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag;
     //console.log(RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag + ' ' + newViewTag);
     this.viewTag = newViewTag;
     if (this.props.gesture.current) {

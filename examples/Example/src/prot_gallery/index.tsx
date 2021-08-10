@@ -1,19 +1,11 @@
-import React, { Component } from 'react';
-import { useRef } from 'react';
-import { StyleSheet, View, Animated } from 'react-native';
-import { USE_NATIVE_DRIVER } from '../config';
-import {
-  TapGestureHandler,
-  PanGestureHandler,
-  GestureMonitor,
-  useGesture,
-  Pan,
-  Tap,
-  Pinch,
-  Rotation,
-  LongPress,
-} from 'react-native-gesture-handler';
-import { useState } from 'react';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
+import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
+import { useAnimatedGesture } from '../useAnimatedGesture';
 
 function getState(s: number) {
   switch (s) {
@@ -34,76 +26,76 @@ function getState(s: number) {
 }
 
 function Photo() {
-  let x = 0,
-    y = 0,
-    s = 1;
+  const offsetX = useSharedValue(0);
+  const offsetY = useSharedValue(0);
+  const translationX = useSharedValue(0);
+  const translationY = useSharedValue(0);
+  const savedScale = useSharedValue(1);
+  const scale = useSharedValue(1);
+  const savedRotation = useSharedValue(0);
+  const rotation = useSharedValue(0);
 
-  const translationX = useRef(new Animated.Value(0)).current;
-  const translationY = useRef(new Animated.Value(0)).current;
-  const [scale, setScale] = useState(1);
-  const rotation = useRef(new Animated.Value(0)).current;
-
-  const rotateData = rotation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
+  const style = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: translationX.value },
+        { translateY: translationY.value },
+        { scale: scale.value },
+        { rotateZ: `${rotation.value}rad` },
+      ],
+    };
   });
 
-  let g = new Rotation({
-    onUpdate: (e) => {
-      rotation.setValue(e.nativeEvent.rotation / (Math.PI * 2));
-    },
-  })
+  let g = Gesture.rotation()
+    .setOnUpdate((e) => {
+      'worklet';
+      rotation.value = savedRotation.value + e.rotation;
+    })
+    .setOnEnd((e) => {
+      'worklet';
+      savedRotation.value = rotation.value;
+    })
     .simultaneousWith(
-      new Pinch({
-        onStart: () => {
-          s = scale;
-        },
-        onUpdate: (e) => {
-          setScale(s * e.nativeEvent.scale);
-        },
-      })
+      Gesture.pinch()
+        .setOnUpdate((e) => {
+          'worklet';
+          scale.value = savedScale.value * e.scale;
+        })
+        .setOnEnd(() => {
+          'worklet';
+          savedScale.value = scale.value;
+        })
     )
     .simultaneousWith(
-      new Pan({
-        avgTouches: true,
-        onStart: (e) => {
-          x = translationX._value;
-          y = translationY._value;
-        },
-        onUpdate: (e) => {
-          translationX.setValue(x + e.nativeEvent.translationX);
-          translationY.setValue(y + e.nativeEvent.translationY);
-        },
-      })
+      Gesture.pan()
+        .setAverageTouches(true)
+        .setOnUpdate((e) => {
+          'worklet';
+          translationX.value = offsetX.value + e.translationX;
+          translationY.value = offsetY.value + e.translationY;
+        })
+        .setOnEnd((e) => {
+          'worklet';
+          offsetX.value = translationX.value;
+          offsetY.value = translationY.value;
+        })
     )
     .simultaneousWith(
-      new Tap({
-        numberOfTaps: 2,
-        onEnd: (e, s) => {
+      Gesture.tap()
+        .setTapCount(2)
+        .setOnEnd((e, s) => {
+          'worklet';
           if (s) {
-            setScale(scale + 0.25);
+            scale.value = scale.value * 1.25;
           }
-        },
-      })
+        })
     );
 
-  const gs = useGesture(g);
+  const gs = useAnimatedGesture(g);
 
   return (
     <GestureMonitor gesture={gs}>
-      <Animated.View
-        style={[
-          styles.button,
-          {
-            transform: [
-              { translateX: translationX },
-              { translateY: translationY },
-              { scale: scale },
-              { rotateZ: rotateData },
-            ],
-          },
-        ]}
-      />
+      <Animated.View style={[styles.button, style]} />
     </GestureMonitor>
   );
 }
