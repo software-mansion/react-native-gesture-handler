@@ -52,18 +52,20 @@ export default function Example() {
   //   }, 1000);
   // }, []);
 
+  const doubleTap: React.Ref<any> = useRef();
   const tripleTap: React.Ref<any> = useRef();
 
-  let doubleTapGesture = Gesture.tap()
-    .setTapCount(2)
-    .addRequiredToFailGesture(tripleTap)
+  let tripleTapGesture = Gesture.tap()
+    .setRef(tripleTap)
+    .setTapCount(3)
+    .addRequiredToFailGesture(doubleTap)
     .setOnEnd((event, sc) => {
-      if (sc) console.log('double tap');
+      if (sc) console.log('triple tap');
     });
 
   let singleTapGesture = Gesture.tap()
-    .addRequiredToFailGesture(tripleTap)
-    .addRequiredToFailGesture(doubleTapGesture)
+    .addRequiredToFailGesture(doubleTap)
+    .addRequiredToFailGesture(tripleTapGesture)
     .setOnEnd((event, sc) => {
       if (sc) {
         console.log('single tap, counter: ' + (counter + 1));
@@ -90,18 +92,19 @@ export default function Example() {
 
   let gesture = useGesture(
     singleTapGesture
-      .exclusiveWith(doubleTapGesture)
+      .exclusiveWith(tripleTapGesture)
       .exclusiveWith(longPressGesture)
       .exclusiveWith(panGesture)
   );
 
   return (
     <TapGestureHandler
-      ref={tripleTap}
+      ref={doubleTap}
+      waitFor={tripleTap}
       onHandlerStateChange={(e) => {
-        if (e.nativeEvent.state == 4) console.log('triple');
+        if (e.nativeEvent.state == 4) console.log('double');
       }}
-      numberOfTaps={3}>
+      numberOfTaps={2}>
       <View style={styles.home}>
         <GestureMonitor gesture={gesture}>
           <Test counter={counter} />

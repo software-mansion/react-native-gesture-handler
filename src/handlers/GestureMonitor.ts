@@ -373,6 +373,9 @@ class SimpleGesture extends Gesture {
 
     if (this.config.ref) {
       this.config.ref.current = this;
+
+      //temp? clear circular property
+      this.config.ref = null;
     }
   }
 
@@ -594,6 +597,11 @@ export function useGesture(gesture) {
   gesture = gesture.build();
 
   const result = React.useRef([gesture]);
+  const handlersAttached = React.useRef(false);
+
+  if (!handlersAttached.current) {
+    gesture.initialize();
+  }
 
   function dropHandlers() {
     for (const g of result.current[0].gestures) {
@@ -604,7 +612,11 @@ export function useGesture(gesture) {
   }
 
   function attachHandlers() {
-    gesture.initialize();
+    if (handlersAttached.current) {
+      gesture.initialize();
+    } else {
+      handlersAttached.current = true;
+    }
 
     for (const gst of gesture.gestures) {
       RNGestureHandlerModule.createGestureHandler(
@@ -690,6 +702,12 @@ export function useGesture(gesture) {
   function updateHandlers() {
     for (let i = 0; i < gesture.gestures.length; i++) {
       const gst = result.current[0].gestures[i];
+
+      //temp, clear refs for worklets
+      if (gesture.gestures[i].config.ref) {
+        gesture.gestures[i].config.ref = null;
+      }
+
       gst.config = gesture.gestures[i].config;
 
       RNGestureHandlerModule.updateGestureHandler(

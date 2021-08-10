@@ -10,21 +10,24 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useAnimatedGesture } from '../useAnimatedGesture';
 import { RootAnimated } from '../RootAnimated';
+import { useRef } from 'react';
 
 function Draggable() {
   const [a, sa] = useState(1);
 
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     sa((a) => a + 1);
-  //   }, 1000);
-  // }, []);
+  useEffect(() => {
+    setInterval(() => {
+      sa((a) => a + 1);
+    }, 1000);
+  }, []);
 
   const pressed = useSharedValue(false);
   const offsetX = useSharedValue(0);
   const offsetY = useSharedValue(0);
   const startX = useSharedValue(0);
   const startY = useSharedValue(0);
+
+  const ref = useRef();
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -39,6 +42,7 @@ function Draggable() {
 
   const gs = useAnimatedGesture(
     Gesture.pan()
+      .setRef(ref)
       .setOnBegan((e) => {
         'worklet';
         pressed.value = true;

@@ -43,6 +43,7 @@ export default function CalculatorUI() {
 
 function Output(props) {
   const layout = useRef({});
+  const scrollView = useRef();
   const drag = useSharedValue(0);
   const dragOffset = useSharedValue(0);
   const [opened, setOpened] = useState(false);
@@ -99,6 +100,8 @@ function Output(props) {
       })
   );
 
+  scrollView.current?.scrollToEnd({ animated: true });
+
   return (
     <GestureMonitor gesture={dragGesture}>
       <Animated.View
@@ -107,6 +110,7 @@ function Output(props) {
         <ScrollView
           ref={(ref) => {
             if (!opened && ref) ref.scrollToEnd({ animated: false });
+            scrollView.current = ref;
           }}
           enabled={opened}
           contentContainerStyle={{ flexGrow: 1 }}>
