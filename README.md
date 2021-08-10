@@ -39,7 +39,7 @@ You will need to have an Android or iOS device or emulator connected as well as 
 | 1.1.0+  | 0.57.2+              |
 | <1.1.0  | 0.50.0+              |
 
-It may be possible to use newer versions of react-native-gesture-handler by reverse Jetifying.
+It may be possible to use newer versions of react-native-gesture-handler on React Native with version <= 0.59 by reverse Jetifying.
 Read more on that here https://github.com/mikehardy/jetifier#to-reverse-jetify--convert-node_modules-dependencies-to-support-libraries
 ## License
 
