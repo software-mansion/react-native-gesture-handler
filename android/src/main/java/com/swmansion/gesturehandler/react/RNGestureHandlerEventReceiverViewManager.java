@@ -17,6 +17,8 @@ public class RNGestureHandlerEventReceiverViewManager extends SimpleViewManager<
     @NonNull
     @Override
     protected View createViewInstance(@NonNull ThemedReactContext reactContext) {
-        return new View(reactContext);
+        View result = new View(reactContext);
+        result.setVisibility(View.GONE);
+        return result;
     }
 }
