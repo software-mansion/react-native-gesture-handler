@@ -343,6 +343,8 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       eventData.putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.getLastAbsolutePositionY()));
       eventData.putDouble("translationX", PixelUtil.toDIPFromPixel(handler.getTranslationX()));
       eventData.putDouble("translationY", PixelUtil.toDIPFromPixel(handler.getTranslationY()));
+      eventData.putDouble("changeX", PixelUtil.toDIPFromPixel(handler.getChangeX()));
+      eventData.putDouble("changeY", PixelUtil.toDIPFromPixel(handler.getChangeY()));
       eventData.putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.getVelocityX()));
       eventData.putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.getVelocityY()));
     }

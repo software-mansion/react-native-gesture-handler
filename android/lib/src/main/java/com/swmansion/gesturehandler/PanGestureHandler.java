@@ -37,6 +37,7 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   private float mStartX, mStartY;
   private float mOffsetX, mOffsetY;
   private float mLastX, mLastY;
+  private float mPreviousTranslationX, mPreviousTranslationY;
   private float mLastVelocityX, mLastVelocityY;
   private VelocityTracker mVelocityTracker;
 
@@ -241,6 +242,9 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
     int state = getState();
     int action = event.getActionMasked();
 
+    mPreviousTranslationX = getTranslationX();
+    mPreviousTranslationY = getTranslationY();
+
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
       // update offset if new pointer gets added or removed
       mOffsetX += mLastX - mStartX;
@@ -317,6 +321,9 @@ public class PanGestureHandler extends GestureHandler<PanGestureHandler> {
   public float getTranslationY() {
     return mLastY - mStartY + mOffsetY;
   }
+
+  public float getChangeX() { return getTranslationX() - mPreviousTranslationX; }
+  public float getChangeY() { return getTranslationY() - mPreviousTranslationY; }
 
   public float getVelocityX() {
     return mLastVelocityX;

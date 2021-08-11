@@ -45,7 +45,6 @@ function Output(props) {
   const layout = useRef({});
   const scrollView = useRef();
   const drag = useSharedValue(0);
-  const dragOffset = useSharedValue(0);
   const [opened, setOpened] = useState(false);
 
   function measure(e) {
@@ -54,14 +53,12 @@ function Output(props) {
 
   function open() {
     drag.value = withTiming(-props.offset.value, { duration: 300 });
-    dragOffset.value = -props.offset.value;
 
     setOpened(true);
   }
 
   function close() {
     drag.value = withTiming(0, { duration: 300 });
-    dragOffset.value = 0;
 
     setOpened(false);
   }
@@ -76,7 +73,7 @@ function Output(props) {
     Gesture.pan()
       .setOnUpdate((e) => {
         'worklet';
-        let value = dragOffset.value + e.translationY;
+        let value = drag.value + e.changeY;
 
         if (value > -props.offset.value) {
           drag.value = -props.offset.value;
@@ -88,7 +85,7 @@ function Output(props) {
       })
       .setOnEnd((e, s) => {
         'worklet';
-        let value = dragOffset.value + e.translationY;
+        let value = drag.value + e.changeY;
 
         if (opened) {
           if (value < -props.offset.value - 100) runOnJS(close)();
@@ -181,20 +178,17 @@ function NumPad(props) {
 function Operations(props) {
   const layout = useSharedValue({});
   const drag = useSharedValue(0);
-  const dragOffset = useSharedValue(0);
   const [opened, setOpened] = useState(false);
 
   function open() {
     let margin = window.width - layout.value.x;
 
-    dragOffset.value = -layout.value.width + margin;
     drag.value = withTiming(-layout.value.width + margin, { duration: 300 });
 
     setOpened(true);
   }
 
   function close() {
-    dragOffset.value = 0;
     drag.value = withTiming(0, { duration: 300 });
 
     setOpened(false);
@@ -205,7 +199,7 @@ function Operations(props) {
       .setOnUpdate((e) => {
         'worklet';
         let margin = window.width - layout.value.x;
-        let value = dragOffset.value + e.translationX;
+        let value = drag.value + e.changeX;
 
         if (value < -layout.value.width + margin) {
           drag.value = -layout.value.width + margin;
@@ -218,7 +212,7 @@ function Operations(props) {
       .setOnEnd((e, s) => {
         'worklet';
         let margin = window.width - layout.value.x;
-        let value = dragOffset.value + e.translationX;
+        let value = drag.value + e.changeX;
 
         if (opened) {
           if (value > -layout.value.width + margin + 75) runOnJS(close)();
