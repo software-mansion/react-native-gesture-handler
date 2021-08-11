@@ -731,13 +731,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     if (handler.getState() == GestureHandler.STATE_ACTIVE) {
       HandlerFactory handlerFactory = findFactoryForHandler(handler);
 
-      if (handler.receiverTag == handler.getView().getId()) {
-        EventDispatcher eventDispatcher = getReactApplicationContext()
-                .getNativeModule(UIManagerModule.class)
-                .getEventDispatcher();
-        RNGestureHandlerEvent event = RNGestureHandlerEvent.obtain(handler, handlerFactory);
-        eventDispatcher.dispatchEvent(event);
-      } else {
+      if (handler.receiverTag == -1) {
         WritableMap args = Arguments.createMap();
         if (handlerFactory != null) {
           handlerFactory.extractEventData(handler, args);
@@ -746,6 +740,12 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
         args.putInt("state", handler.getState());
 
         getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("onGestureHandlerEvent", args);
+      } else {
+        EventDispatcher eventDispatcher = getReactApplicationContext()
+                .getNativeModule(UIManagerModule.class)
+                .getEventDispatcher();
+        RNGestureHandlerEvent event = RNGestureHandlerEvent.obtain(handler, handlerFactory);
+        eventDispatcher.dispatchEvent(event);
       }
     }
   }
@@ -757,17 +757,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     }
     HandlerFactory handlerFactory = findFactoryForHandler(handler);
 
-    if (handler.receiverTag == handler.getView().getId()) {
-      EventDispatcher eventDispatcher = getReactApplicationContext()
-              .getNativeModule(UIManagerModule.class)
-              .getEventDispatcher();
-      RNGestureHandlerStateChangeEvent event = RNGestureHandlerStateChangeEvent.obtain(
-              handler,
-              newState,
-              oldState,
-              handlerFactory);
-      eventDispatcher.dispatchEvent(event);
-    } else {
+    if (handler.receiverTag == -1) {
       WritableMap args = Arguments.createMap();
       if (handlerFactory != null) {
         handlerFactory.extractEventData(handler, args);
@@ -777,6 +767,16 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
       args.putInt("oldState", oldState);
 
       getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("onGestureHandlerStateChange", args);
+    } else {
+      EventDispatcher eventDispatcher = getReactApplicationContext()
+              .getNativeModule(UIManagerModule.class)
+              .getEventDispatcher();
+      RNGestureHandlerStateChangeEvent event = RNGestureHandlerStateChangeEvent.obtain(
+              handler,
+              newState,
+              oldState,
+              handlerFactory);
+      eventDispatcher.dispatchEvent(event);
     }
   }
 
