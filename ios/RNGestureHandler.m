@@ -58,11 +58,13 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
     return rect;
 }
 
+static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 @implementation RNGestureHandler {
     NSArray<NSNumber *> *_handlersToWaitFor;
     NSArray<NSNumber *> *_simultaneousHandlers;
     RNGHHitSlop _hitSlop;
+    uint16_t _eventCoalescingKey;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -71,27 +73,40 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
         _tag = tag;
         _lastState = RNGestureHandlerStateUndetermined;
         _hitSlop = RNGHHitSlopEmpty;
+
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            allGestureHandlers = [NSHashTable weakObjectsHashTable];
+        });
+
+        [allGestureHandlers addObject:self];
     }
     return self;
 }
 
+- (void)resetConfig
+{
+  self.enabled = YES;
+  _shouldCancelWhenOutside = NO;
+  _handlersToWaitFor = nil;
+  _simultaneousHandlers = nil;
+  _hitSlop = RNGHHitSlopEmpty;
+}
+
 - (void)configure:(NSDictionary *)config
 {
+  [self resetConfig];
     _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
     _simultaneousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
 
     id prop = config[@"enabled"];
     if (prop != nil) {
         self.enabled = [RCTConvert BOOL:prop];
-    } else {
-        self.enabled = YES;
     }
 
     prop = config[@"shouldCancelWhenOutside"];
     if (prop != nil) {
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
-    } else {
-        _shouldCancelWhenOutside = NO;
     }
 
     prop = config[@"hitSlop"];
@@ -158,30 +173,37 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(RNGestureHandlerEventExtraData *)extraData
 {
-    id touchEvent = [[RNGestureHandlerEvent alloc] initWithRactTag:reactTag
-                                                        handlerTag:_tag
-                                                             state:state
-                                                         extraData:extraData];
-
     if (state != _lastState) {
-        if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
-            [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
-                                                                                         handlerTag:_tag
-                                                                                              state:RNGestureHandlerStateActive
-                                                                                          prevState:_lastState
-                                                                                          extraData:extraData]];
+        if (state == RNGestureHandlerStateActive) {
+            // Generate a unique coalescing-key each time the gesture-handler becomes active. All events will have
+            // the same coalescing-key allowing RCTEventDispatcher to coalesce RNGestureHandlerEvents when events are
+            // generated faster than they can be treated by JS thread
+            static uint16_t nextEventCoalescingKey = 0;
+            self->_eventCoalescingKey = nextEventCoalescingKey++;
+
+        } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
+            [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
+                                                                                          handlerTag:_tag
+                                                                                               state:RNGestureHandlerStateActive
+                                                                                           prevState:_lastState
+                                                                                           extraData:extraData]];
             _lastState = RNGestureHandlerStateActive;
         }
-        id stateEvent = [[RNGestureHandlerStateChange alloc] initWithRactTag:reactTag
-                                                                  handlerTag:_tag
-                                                                       state:state
-                                                                   prevState:_lastState
-                                                                   extraData:extraData];
+        id stateEvent = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
+                                                                   handlerTag:_tag
+                                                                        state:state
+                                                                    prevState:_lastState
+                                                                    extraData:extraData];
         [self.emitter sendStateChangeEvent:stateEvent];
         _lastState = state;
     }
 
     if (state == RNGestureHandlerStateActive) {
+        id touchEvent = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
+                                                             handlerTag:_tag
+                                                                  state:state
+                                                              extraData:extraData
+                                                          coalescingKey:self->_eventCoalescingKey];
         [self.emitter sendTouchEvent:touchEvent];
     }
 }
@@ -284,8 +306,28 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     _lastState = RNGestureHandlerStateUndetermined;
 }
 
+ - (BOOL)containsPointInView
+ {
+     CGPoint pt = [_recognizer locationInView:_recognizer.view];
+     CGRect hitFrame = RNGHHitSlopInsetRect(_recognizer.view.bounds, _hitSlop);
+     return CGRectContainsPoint(hitFrame, pt);
+ }
+
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
+    if ([_handlersToWaitFor count]) {
+        for (RNGestureHandler *handler in [allGestureHandlers allObjects]) {
+            if (handler != nil
+                && (handler.state == RNGestureHandlerStateActive || handler->_recognizer.state == UIGestureRecognizerStateBegan)) {
+                for (NSNumber *handlerTag in _handlersToWaitFor) {
+                    if ([handler.tag isEqual:handlerTag]) {
+                        return NO;
+                    }
+                }
+            }
+        }
+    }
+
     [self reset];
     return YES;
 }

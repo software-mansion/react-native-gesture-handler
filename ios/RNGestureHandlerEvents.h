@@ -14,6 +14,10 @@
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
                             withNumberOfTouches:(NSUInteger)numberOfTouches;
++ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
+                           withAbsolutePosition:(CGPoint)absolutePosition
+                            withNumberOfTouches:(NSUInteger)numberOfTouches
+                                   withDuration:(NSUInteger)duration;
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation
@@ -36,20 +40,21 @@
 
 @interface RNGestureHandlerEvent : NSObject <RCTEvent>
 
-- (instancetype)initWithRactTag:(NSNumber *)reactTag
-                     handlerTag:(NSNumber *)handlerTag
-                          state:(RNGestureHandlerState)state
-                      extraData:(RNGestureHandlerEventExtraData*)extraData NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithReactTag:(NSNumber *)reactTag
+                      handlerTag:(NSNumber *)handlerTag
+                           state:(RNGestureHandlerState)state
+                       extraData:(RNGestureHandlerEventExtraData*)extraData
+                   coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
 
 @end
 
 
 @interface RNGestureHandlerStateChange : NSObject <RCTEvent>
 
-- (instancetype)initWithRactTag:(NSNumber *)reactTag
-                     handlerTag:(NSNumber *)handlerTag
-                          state:(RNGestureHandlerState)state
-                      prevState:(RNGestureHandlerState)prevState
-                      extraData:(RNGestureHandlerEventExtraData*)extraData NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithReactTag:(NSNumber *)reactTag
+                      handlerTag:(NSNumber *)handlerTag
+                           state:(RNGestureHandlerState)state
+                       prevState:(RNGestureHandlerState)prevState
+                       extraData:(RNGestureHandlerEventExtraData*)extraData NS_DESIGNATED_INITIALIZER;
 
 @end

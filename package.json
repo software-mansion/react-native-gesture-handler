@@ -1,36 +1,41 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "1.0.12",
+  "version": "1.10.3",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "prepare": "bob build",
     "test": "jest",
-    "precommit": "lint-staged"
+    "build": "yarn tsc",
+    "precommit": "lint-staged",
+    "release": "npm login && release-it",
+    "ts-check": "yarn tsc --noEmit",
+    "lint-check": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check src/"
   },
-  "main": "index.js",
-  "types": "react-native-gesture-handler.d.ts",
+  "react-native": "src/index.ts",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/index.d.ts",
   "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
     "android/build.gradle",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "ios/",
+    "Swipeable/",
+    "DrawerLayout/",
     "README.md",
-    "NATIVE_NAVIGATORS.md",
-    "GestureHandler.js",
-    "index.js",
-    "Swipeable.js",
-    "DrawerLayout.js",
-    "gestureHandlerRootHOC.android.js",
-    "gestureHandlerRootHOC.ios.js",
-    "gestureHandlerRootHOC.js",
-    "react-native-gesture-handler.d.ts",
+    "jestSetup.js",
     "RNGestureHandler.podspec"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kmagiera/react-native-gesture-handler.git"
+    "url": "git+https://github.com/software-mansion/react-native-gesture-handler.git"
   },
   "author": {
     "email": "krzys.magiera@gmail.com",
@@ -39,43 +44,81 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "bugs": {
-    "url": "https://github.com/kmagiera/react-native-gesture-handler/issues"
+    "url": "https://github.com/software-mansion/react-native-gesture-handler/issues"
   },
-  "homepage": "https://github.com/kmagiera/react-native-gesture-handler#readme",
+  "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
   "dependencies": {
-    "hoist-non-react-statics": "^2.3.1",
-    "invariant": "^2.2.2",
-    "prop-types": "^15.5.10"
-  },
-  "peerDependencies": {
-    "react": "> 15.0.0",
-    "react-native": ">= 0.50.0"
+    "@egjs/hammerjs": "^2.0.17",
+    "fbjs": "^3.0.0",
+    "hoist-non-react-statics": "^3.3.0",
+    "invariant": "^2.2.4",
+    "prop-types": "^15.7.2"
   },
   "jest": {
-    "preset": "jest-react-native"
-  },
-  "devDependencies": {
-    "@types/react": "^16.0.31",
-    "@types/react-native": "^0.51.3",
-    "babel-jest": "16.0.0",
-    "babel-preset-react-native": "1.9.0",
-    "flow-bin": "^0.56.0",
-    "husky": "^0.14.3",
-    "jest": "16.0.2",
-    "jest-react-native": "16.0.0",
-    "lint-staged": "^8.0.0-beta.1",
-    "prettier": "^1.13.7",
-    "react": "^16.0.0",
-    "react-native": "^0.50.1",
-    "react-test-renderer": "15.3.2"
-  },
-  "lint-staged": {
-    "*.js": [
-      "prettier --write --print-width 80 --tab-width 2 --single-quote --jsx-bracket-same-line=true --trailing-comma=es5",
-      "git add"
+    "preset": "jest-react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/lib/"
     ]
   },
-  "resolutions": {
-    "fsevents": "1.2.4"
-  }
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-typescript": "^7.12.7",
+    "@babel/runtime": "^7.12.5",
+    "@types/hoist-non-react-statics": "^3.3.1",
+    "@types/jest": "^26.0.19",
+    "@types/hammerjs": "^2.0.38",
+    "@types/react": "^17.0.0",
+    "@types/react-native": "^0.64.2",
+    "@types/react-test-renderer": "^17.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
+    "@typescript-eslint/parser": "^4.10.0",
+    "babel-jest": "^26.6.3",
+    "eslint": "^7.15.0",
+    "eslint-config-satya164": "^3.1.8",
+    "eslint-import-resolver-babel-module": "^5.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "expo": "^35.0.1",
+    "flow-bin": "^0.98.0",
+    "husky": "^0.14.3",
+    "jest": "^24.7.1",
+    "jest-react-native": "16.0.0",
+    "lint-staged": "^10.2.11",
+    "metro-react-native-babel-preset": "^0.64.0",
+    "prettier": "^2.2.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.12.0",
+    "react-native": "^0.64.0",
+    "react-native-builder-bob": "^0.17.1",
+    "react-native-web": "^0.11.7",
+    "react-test-renderer": "16.8.6",
+    "release-it": "^13.6.5",
+    "typescript": "^4.1.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write"
+    ]
+  },
+  "release-it": {
+    "hooks": {
+      "before:git:bump": [
+        "# check if version corresponds to changes in native files  \n if git diff --name-only ${latestVersion} HEAD | egrep \"(android/.*)|(ios/.*)\" -q; then egrep '\\.0$' -q <<< ${version}; else test $? -eq 1; fi"
+      ]
+    }
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ]
 }

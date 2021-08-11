@@ -54,7 +54,9 @@
     _failOffsetYStart = NAN;
     _failOffsetYEnd = NAN;
     _hasCustomActivationCriteria = NO;
+#if !TARGET_OS_TV
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
+#endif
   }
   return self;
 }
@@ -66,6 +68,7 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+#if !TARGET_OS_TV
   if (_hasCustomActivationCriteria) {
     // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
     // the gesture too early before we are sure that all criteria (e.g. minimum distance
@@ -74,6 +77,7 @@
   } else {
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
   }
+#endif
   [super touchesBegan:touches withEvent:event];
 }
 
@@ -84,9 +88,8 @@
     self.state = UIGestureRecognizerStateFailed;
     return;
   }
-  if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged) && _gestureHandler.shouldCancelWhenOutside) {
-    CGPoint pt = [self locationInView:self.view];
-    if (!CGRectContainsPoint(self.view.bounds, pt)) {
+  if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged)) {
+    if (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) {
       // If the previous recognizer state is UIGestureRecognizerStateChanged
       // then UIGestureRecognizer's sate machine will only transition to
       // UIGestureRecognizerStateCancelled even if you set the state to
@@ -99,11 +102,13 @@
     }
   }
   if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible && [self shouldActivateUnderCustomCriteria]) {
+#if !TARGET_OS_TV
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
     if ([self numberOfTouches] >= _realMinimumNumberOfTouches) {
       self.state = UIGestureRecognizerStateBegan;
       [self setTranslation:CGPointMake(0, 0) inView:self.view];
     }
+#endif
   }
 }
 
@@ -185,6 +190,32 @@
   return self;
 }
 
+- (void)resetConfig
+{
+  [super resetConfig];
+  RNBetterPanGestureRecognizer *recognizer = (RNBetterPanGestureRecognizer *)_recognizer;
+  recognizer.minVelocityX = NAN;
+  recognizer.minVelocityY = NAN;
+  recognizer.activeOffsetXStart = NAN;
+  recognizer.activeOffsetXEnd = NAN;
+  recognizer.failOffsetXStart = NAN;
+  recognizer.failOffsetXEnd = NAN;
+  recognizer.activeOffsetYStart = NAN;
+  recognizer.activeOffsetYEnd = NAN;
+  recognizer.failOffsetYStart = NAN;
+  recognizer.failOffsetYStart = NAN;
+  recognizer.failOffsetYEnd = NAN;
+#if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
+  if (@available(iOS 13.4, *)) {
+    recognizer.allowedScrollTypesMask = 0;
+  }
+#endif
+  recognizer.minimumNumberOfTouches = 1;
+  recognizer.maximumNumberOfTouches = NSUIntegerMax;
+  recognizer.minDistSq = NAN;
+  recognizer.minVelocitySq = NAN;
+}
+
 - (void)configure:(NSDictionary *)config
 {
   [super configure:config];
@@ -200,11 +231,19 @@
   APPLY_FLOAT_PROP(activeOffsetYEnd);
   APPLY_FLOAT_PROP(failOffsetYStart);
   APPLY_FLOAT_PROP(failOffsetYEnd);
-  
-  
+
+#if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
+  if (@available(iOS 13.4, *)) {
+    bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:config[@"enableTrackpadTwoFingerGesture"]];
+    if(enableTrackpadTwoFingerGesture){
+      recognizer.allowedScrollTypesMask = UIScrollTypeMaskAll;
+    }
+  }
+
   APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
   APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
-  
+#endif
+    
   id prop = config[@"minDist"];
   if (prop != nil) {
     CGFloat dist = [RCTConvert CGFloat:prop];

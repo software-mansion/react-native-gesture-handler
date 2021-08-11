@@ -20,15 +20,19 @@
   UITouch *_firstTouch;
 }
 
+static const CGFloat defaultForce = 0;
+static const CGFloat defaultMinForce = 0.2;
+static const CGFloat defaultMaxForce = NAN;
+static const BOOL defaultFeedbackOnActivation = NO;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
-    _force = 0;
-    _minForce = 0.2;
-    _maxForce = NAN;
-    _feedbackOnActivation = NO;
+    _force = defaultForce;
+    _minForce = defaultMinForce;
+    _maxForce = defaultMaxForce;
+    _feedbackOnActivation = defaultFeedbackOnActivation;
   }
   return self;
 }
@@ -76,9 +80,13 @@
 
 - (void)performFeedbackIfRequired
 {
+#if !TARGET_OS_TV
   if (_feedbackOnActivation) {
-    [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
+    if (@available(iOS 10.0, *)) {
+      [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
+    }
   }
+#endif
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -115,6 +123,16 @@
     _recognizer = [[RNForceTouchGestureRecognizer alloc] initWithGestureHandler:self];
   }
   return self;
+}
+
+- (void)resetConfig
+{
+  [super resetConfig];
+  RNForceTouchGestureRecognizer *recognizer = (RNForceTouchGestureRecognizer *)_recognizer;
+  
+  recognizer.feedbackOnActivation = defaultFeedbackOnActivation;
+  recognizer.maxForce = defaultMaxForce;
+  recognizer.minForce = defaultMinForce;
 }
 
 - (void)configure:(NSDictionary *)config

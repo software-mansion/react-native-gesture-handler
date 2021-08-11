@@ -1,0 +1,53 @@
+{
+  "name": "gesture-handler-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "react-native start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "fbjs": "^1.0.0",
+    "invariant": "^2.2.4",
+    "prop-types": "^15.7.2",
+    "react": "16.9.0",
+    "react-native": "0.62.3",
+    "react-navigation": "^3.9.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "@babel/plugin-proposal-class-properties": "^7.3.0",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/runtime": "^7.6.0",
+    "@react-native-community/cli": "^1.9.4",
+    "babel-jest": "^24.8.0",
+    "babel-plugin-module-resolver": "^3.2.0",
+    "detox": "^17.10.0",
+    "glob-to-regexp": "^0.4.1",
+    "jest": "^24.9.0",
+    "metro-react-native-babel-preset": "^0.56.0",
+    "mocha": "^6.1.4",
+    "react-test-renderer": "16.9.0"
+  },
+  "jest": {
+    "preset": "react-native"
+  },
+  "detox": {
+    "configurations": {
+      "ios.sim.debug": {
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/ExampleE2E.app",
+        "build": "xcodebuild -workspace ios/ExampleE2E.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme ExampleE2E -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES",
+        "type": "ios.simulator",
+        "name": "iPhone X"
+      },
+      "ios.sim.release": {
+        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/ExampleE2E.app",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/ExampleE2E.xcworkspace -destination 'platform=iOS Simulator,OS=12.2,name=iPhone X' -scheme ExampleE2E -parallelizeTargets -configuration Release -derivedDataPath ios/build -UseModernBuildSystem=YES",
+        "type": "ios.simulator",
+        "name": "iPhone X"
+      }
+    },
+    "test-runner": "mocha"
+  }
+}

@@ -5,6 +5,14 @@
 #import <React/RCTComponent.h>
 #import <React/RCTRootView.h>
 #import <React/RCTTouchHandler.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTEventDispatcher.h>
+
+#if __has_include(<React/RCTRootContentView.h>)
+#import <React/RCTRootContentView.h>
+#else
+#import "RCTRootContentView.h"
+#endif
 
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandler.h"
@@ -32,7 +40,7 @@
 {
     RNGestureHandlerRegistry *_registry;
     RCTUIManager *_uiManager;
-    NSMutableSet<UIView*> *_rootViews;
+    NSHashTable<RNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
     RCTEventDispatcher *_eventDispatcher;
 }
 
@@ -43,7 +51,7 @@
         _uiManager = uiManager;
         _eventDispatcher = eventDispatcher;
         _registry = [RNGestureHandlerRegistry new];
-        _rootViews = [NSMutableSet new];
+        _rootViewGestureRecognizers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
     }
     return self;
 }
@@ -89,8 +97,8 @@
 
     [_registry attachHandlerWithTag:handlerTag toView:view];
 
-    // register root view if not already there
-    [self registerRootViewIfNeeded:view];
+    // register view if not already there
+    [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
 }
 
 - (void)updateGestureHandler:(NSNumber *)handlerTag config:(NSDictionary *)config
@@ -107,12 +115,8 @@
 - (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder
 {
     if ([blockNativeResponder boolValue]) {
-        for (RCTRootView *rootView in _rootViews) {
-            for (UIGestureRecognizer *recognizer in rootView.gestureRecognizers) {
-                if ([recognizer isKindOfClass:[RNRootViewGestureRecognizer class]]) {
-                    [(RNRootViewGestureRecognizer *)recognizer blockOtherRecognizers];
-                }
-            }
+        for (RNRootViewGestureRecognizer *recognizer in _rootViewGestureRecognizers) {
+            [recognizer blockOtherRecognizers];
         }
     }
 }
@@ -124,25 +128,35 @@
 
 #pragma mark Root Views Management
 
-- (void)registerRootViewIfNeeded:(UIView*)childView
+- (void)registerViewWithGestureRecognizerAttachedIfNeeded:(UIView *)childView
 {
     UIView *parent = childView;
-    while (parent != nil && ![parent isKindOfClass:[RCTRootView class]]) parent = parent.superview;
-    
-    RCTRootView *rootView = (RCTRootView *)parent;
-    UIView *rootContentView = rootView.contentView;
-    if (rootContentView != nil && ![_rootViews containsObject:rootContentView]) {
-        RCTLifecycleLog(@"[GESTURE HANDLER] Initialize gesture handler for root view %@", rootContentView);
-        [_rootViews addObject:rootContentView];
-        RNRootViewGestureRecognizer *recognizer = [RNRootViewGestureRecognizer new];
-        recognizer.delegate = self;
-        rootContentView.userInteractionEnabled = YES;
-        [rootContentView addGestureRecognizer:recognizer];
+    while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) parent = parent.superview;
+
+    // Many views can return the same touchHandler so we check if the one we want to register
+    // is not already present in the set.
+    UIView *touchHandlerView = [[parent performSelector:@selector(touchHandler)] view];
+  
+    if (touchHandlerView == nil) {
+      return;
     }
+  
+    for (UIGestureRecognizer *recognizer in touchHandlerView.gestureRecognizers) {
+      if ([recognizer isKindOfClass:[RNRootViewGestureRecognizer class]]) {
+        return;
+      }
+    }
+  
+    RCTLifecycleLog(@"[GESTURE HANDLER] Initialize gesture handler for view %@", touchHandlerView);
+    RNRootViewGestureRecognizer *recognizer = [RNRootViewGestureRecognizer new];
+    recognizer.delegate = self;
+    touchHandlerView.userInteractionEnabled = YES;
+    [touchHandlerView addGestureRecognizer:recognizer];
+    [_rootViewGestureRecognizers addObject:recognizer];
 }
 
 - (void)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
-    didActivateInRootView:(UIView *)rootContentView
+    didActivateInViewWithTouchHandler:(UIView *)viewWithTouchHandler
 {
     // Cancel touches in RN's root view in order to cancel all in-js recognizers
 
@@ -157,17 +171,8 @@
     // Once the upstream fix lands the line below along with this comment can be removed
     if ([gestureRecognizer.view isKindOfClass:[UIScrollView class]]) return;
 
-    UIView *parent = rootContentView.superview;
-    if ([parent isKindOfClass:[RCTRootView class]]) {
-        [(RCTRootView*)parent cancelTouches];
-    }
-}
-
-- (void)dealloc
-{
-    if ([_rootViews count] > 0) {
-        RCTLifecycleLog(@"[GESTURE HANDLER] Tearing down gesture handler registered for views %@", _rootViews);
-    }
+    RCTTouchHandler *touchHandler = [viewWithTouchHandler performSelector:@selector(touchHandler)];
+    [touchHandler cancel];
 }
 
 #pragma mark Events
