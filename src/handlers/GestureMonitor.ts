@@ -252,6 +252,13 @@ class SimpleGesture extends Gesture {
   public handlerTag: number = -1;
   public handlerName: string = '';
   public config: any = {};
+  public handlers: any = {
+    handlerTag: -1,
+    onBegin: null,
+    onUpdate: null,
+    onEnd: null,
+    onStart: null,
+  };
 
   static allowedProps = basePropsNew;
 
@@ -261,6 +268,10 @@ class SimpleGesture extends Gesture {
 
   protected setConfig(key: string, value: any) {
     this.config[key] = value;
+  }
+
+  protected setHandler(key: string, value: any) {
+    this.handlers[key] = value;
   }
 
   private addDependency(
@@ -284,22 +295,22 @@ class SimpleGesture extends Gesture {
   }
 
   setOnBegan(callback) {
-    this.setConfig('onBegan', callback);
+    this.setHandler('onBegan', callback);
     return this;
   }
 
   setOnStart(callback) {
-    this.setConfig('onStart', callback);
+    this.setHandler('onStart', callback);
     return this;
   }
 
   setOnEnd(callback) {
-    this.setConfig('onEnd', callback);
+    this.setHandler('onEnd', callback);
     return this;
   }
 
   setOnUpdate(callback) {
-    this.setConfig('onUpdate', callback);
+    this.setHandler('onUpdate', callback);
     return this;
   }
 
@@ -364,12 +375,10 @@ class SimpleGesture extends Gesture {
 
   initialize() {
     this.handlerTag = nextHandlerTag();
+    this.setHandler('handlerTag', this.handlerTag);
 
     if (this.config.ref) {
       this.config.ref.current = this;
-
-      //temp? clear circular property
-      this.config.ref = null;
     }
   }
 
@@ -692,7 +701,7 @@ export function useGesture(gesture) {
     result.current[1]?.();
 
     if (result.current[3]) {
-      result.current[3].value = gesture;
+      result.current[3].value = gesture.gestures.map((g) => g.handlers);
     }
   }
 
@@ -700,12 +709,9 @@ export function useGesture(gesture) {
     for (let i = 0; i < gesture.gestures.length; i++) {
       const gst = result.current[0].gestures[i];
 
-      //temp, clear refs for worklets
-      if (gesture.gestures[i].config.ref) {
-        gesture.gestures[i].config.ref = null;
-      }
-
       gst.config = gesture.gestures[i].config;
+      gst.handlers = gesture.gestures[i].handlers;
+      gst.handlers.handlerTag = gst.handlerTag;
 
       RNGestureHandlerModule.updateGestureHandler(
         gst.handlerTag,
@@ -720,7 +726,9 @@ export function useGesture(gesture) {
     }
 
     if (result.current[3]) {
-      result.current[3].value = result.current[0];
+      result.current[3].value = result.current[0].gestures.map(
+        (g) => g.handlers
+      );
     }
   }
 
@@ -842,7 +850,7 @@ export class GestureMonitor extends React.Component {
     ) {
       for (const gesture of this.props.gesture.current[0].gestures) {
         if (gesture.handlerTag === event.nativeEvent.handlerTag) {
-          gesture.config.onUpdate?.(event);
+          gesture.handlers.onUpdate?.(event);
           handled = true;
           break;
         }
@@ -865,21 +873,21 @@ export class GestureMonitor extends React.Component {
       for (const gesture of this.props.gesture.current[0].gestures) {
         if (gesture.handlerTag === event.nativeEvent.handlerTag) {
           if (event.nativeEvent.oldState == 0 && event.nativeEvent.state == 2) {
-            gesture.config.onBegan?.(event);
+            gesture.handlers.onBegan?.(event);
           } else if (
             event.nativeEvent.oldState == 2 &&
             event.nativeEvent.state == 4
           ) {
-            gesture.config.onStart?.(event);
+            gesture.handlers.onStart?.(event);
           } else if (
             event.nativeEvent.oldState == 4 &&
             event.nativeEvent.state == 5
           ) {
-            gesture.config.onEnd?.(event, true);
+            gesture.handlers.onEnd?.(event, true);
           } else if (event.nativeEvent.state == 1) {
-            gesture.config.onEnd?.(event, false);
+            gesture.handlers.onEnd?.(event, false);
           } else if (event.nativeEvent.state == 3) {
-            gesture.config.onEnd?.(event, false);
+            gesture.handlers.onEnd?.(event, false);
           }
           handled = true;
           break;
@@ -948,7 +956,7 @@ function onGestureHandlerEvent(event) {
   const handler = findHandler(event.handlerTag);
 
   if (handler) {
-    handler.config.onUpdate?.(event);
+    handler.handlers.onUpdate?.(event);
   }
 }
 
@@ -957,15 +965,15 @@ function onGestureHandlerStateChange(event) {
 
   if (gesture) {
     if (event.oldState == 0 && event.state == 2) {
-      gesture.config.onBegan?.(event);
+      gesture.handlers.onBegan?.(event);
     } else if (event.oldState == 2 && event.state == 4) {
-      gesture.config.onStart?.(event);
+      gesture.handlers.onStart?.(event);
     } else if (event.oldState == 4 && event.state == 5) {
-      gesture.config.onEnd?.(event, true);
+      gesture.handlers.onEnd?.(event, true);
     } else if (event.state == 1) {
-      gesture.config.onEnd?.(event, false);
+      gesture.handlers.onEnd?.(event, false);
     } else if (event.state == 3) {
-      gesture.config.onEnd?.(event, false);
+      gesture.handlers.onEnd?.(event, false);
     }
   }
 }
