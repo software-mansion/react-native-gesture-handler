@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import {
   GestureMonitor,
   useGesture,
-  Tap,
   Gesture,
 } from 'react-native-gesture-handler';
 import { useState } from 'react';

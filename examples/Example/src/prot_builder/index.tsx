@@ -1,29 +1,13 @@
-import React, { Component, forwardRef } from 'react';
+import React from 'react';
 import { useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { USE_NATIVE_DRIVER } from '../config';
 import {
   TapGestureHandler,
-  PanGestureHandler,
-  LongPressGestureHandler,
-  RotationGestureHandler,
-  PinchGestureHandler,
   GestureMonitor,
   useGesture,
-  Pan,
-  Tap,
-  Simultaneous,
-  Pinch,
-  Rotation,
-  Exclusive,
-  Sequence,
-  LongPress,
-  ComplexGesture,
   Gesture,
 } from 'react-native-gesture-handler';
 import { useState } from 'react';
-import { createRef } from 'react';
-import { useEffect } from 'react';
 
 function getState(s: number) {
   switch (s) {

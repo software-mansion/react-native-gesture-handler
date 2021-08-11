@@ -8,7 +8,6 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { useAnimatedGesture } from '../useAnimatedGesture';
-import { RootAnimated } from '../RootAnimated';
 
 const filters = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
 const MAX_VIDEO_DURATION = 60000;

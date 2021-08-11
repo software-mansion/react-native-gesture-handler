@@ -9,7 +9,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useAnimatedGesture } from '../useAnimatedGesture';
-import { RootAnimated } from '../RootAnimated';
 import { useRef } from 'react';
 
 function Draggable() {
@@ -51,7 +50,6 @@ function Draggable() {
         'worklet';
         offsetX.value = e.translationX + startX.value;
         offsetY.value = e.translationY + startY.value;
-        //console.log('a');
       })
       .setOnEnd((e, success) => {
         'worklet';

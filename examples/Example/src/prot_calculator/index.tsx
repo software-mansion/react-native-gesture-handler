@@ -5,7 +5,6 @@ import { StyleSheet, View, Text, Dimensions } from 'react-native';
 import {
   GestureMonitor,
   Gesture,
-  useGesture,
   ScrollView,
 } from 'react-native-gesture-handler';
 import Animated, {
