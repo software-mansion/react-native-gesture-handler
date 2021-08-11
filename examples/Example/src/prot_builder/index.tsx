@@ -52,8 +52,8 @@ export default function Example() {
   //   }, 1000);
   // }, []);
 
-  const doubleTap: React.Ref<any> = useRef();
-  const tripleTap: React.Ref<any> = useRef();
+  const doubleTap: React.RefObject<any> = useRef();
+  const tripleTap: React.RefObject<any> = useRef();
 
   let tripleTapGesture = Gesture.tap()
     .setRef(tripleTap)
