@@ -633,21 +633,6 @@ public class GestureHandlerOrchestrator {
     sTempCoords[0] = event.getX(actionIndex);
     sTempCoords[1] = event.getY(actionIndex);
 
-//    View a = mWrapperView.findViewById(485);
-//    if (a != null) {
-//      float[] localXY = sMatrixTransformCoords;
-//      localXY[0] = a.getLeft();
-//      localXY[1] = a.getTop();
-//      a.getMatrix().mapPoints(localXY);
-//      Log.w("A", a.getWidth()+" "+a.getHeight()+" "+localXY[0]+" "+localXY[1]);
-//
-//      a = ((ViewGroup) a).getChildAt(0);
-//      localXY[0] = a.getLeft();
-//      localXY[1] = a.getTop();
-//      a.getMatrix().mapPoints(localXY);
-//      Log.w("A", a.getWidth()+" "+a.getHeight()+" "+localXY[0]+" "+localXY[1]);
-//    }
-
     traverseWithPointerEvents(mWrapperView, sTempCoords, pointerId);
     extractGestureHandlers(mWrapperView, sTempCoords, pointerId);
   }
