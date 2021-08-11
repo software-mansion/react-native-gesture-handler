@@ -20,9 +20,13 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    return if (gestureRootHelper?.dispatchTouchEvent(ev) == true) {
-      true
-    } else super.dispatchTouchEvent(ev)
+    try {
+      if (gestureRootHelper?.dispatchTouchEvent(ev)|| super.dispatchTouchEvent(ev)) {
+        return true
+      }
+    } catch (e: IllegalArgumentException) {}
+
+    return super.dispatchTouchEvent(ev)
   }
 
   /**
