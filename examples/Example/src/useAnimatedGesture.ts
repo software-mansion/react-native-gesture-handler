@@ -16,7 +16,7 @@ export function useAnimatedGesture(gesture) {
         if (e.oldState || e.oldState == 0) {
           if (e.oldState == 0 && e.state == 2) {
             gesture.onBegan?.(e);
-          } else if (e.oldState == 2 && e.state == 4) {
+          } else if ((e.oldState == 2 || e.oldState == 0) && e.state == 4) {
             gesture.onStart?.(e);
           } else if (e.oldState == 4 && e.state == 5) {
             gesture.onEnd?.(e, true);

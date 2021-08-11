@@ -194,7 +194,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                         state:state
                                                                     prevState:_lastState
                                                                     extraData:extraData];
-        [self.emitter sendStateChangeEvent:stateEvent];
+        if (self.receiverTag.intValue == -1) {
+          [self.emitter sendDeviceStateChangeEvent:stateEvent];
+        } else {
+          [self.emitter sendStateChangeEvent:stateEvent];
+        }
         _lastState = state;
     }
 
@@ -204,7 +208,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                   state:state
                                                               extraData:extraData
                                                           coalescingKey:self->_eventCoalescingKey];
-        [self.emitter sendTouchEvent:touchEvent];
+        if (self.receiverTag.intValue == -1) {
+          [self.emitter sendDeviceTouchEvent:touchEvent];
+        } else {
+          [self.emitter sendTouchEvent:touchEvent];
+        }
     }
 }
 

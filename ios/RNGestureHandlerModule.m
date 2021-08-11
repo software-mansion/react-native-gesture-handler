@@ -109,6 +109,13 @@ RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWith
     }];
 }
 
+RCT_EXPORT_METHOD(attachGestureHandlerWithReceiver:(nonnull NSNumber *)handlerTag toViewWithTag:(nonnull NSNumber *)viewTag withReceiver:(nonnull NSNumber *)receiverTag)
+{
+    [self addOperationBlock:^(RNGestureHandlerManager *manager) {
+        [manager attachGestureHandler:handlerTag toViewWithTag:viewTag withReceiver:receiverTag];
+    }];
+}
+
 RCT_EXPORT_METHOD(updateGestureHandler:(nonnull NSNumber *)handlerTag config:(NSDictionary *)config)
 {
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {

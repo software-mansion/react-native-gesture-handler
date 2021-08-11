@@ -93,7 +93,7 @@ export default function Home() {
 
   const buttonGestureHandler = useAnimatedGesture(
     buttonPanGesture
-      .after(buttonLongPressGesture)
+      .simultaneousWith(buttonLongPressGesture)
       .simultaneousWith(buttonTapGesture)
       .simultaneousWith(buttonDoubleTapGesture)
   );

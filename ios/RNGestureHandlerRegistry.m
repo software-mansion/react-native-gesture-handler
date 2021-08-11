@@ -40,6 +40,15 @@
     [handler bindToView:view];
 }
 
+- (void)attachHandlerWithTag:(NSNumber *)handlerTag toView:(UIView *)view withReceiver:(nonnull NSNumber *)receiverTag
+{
+    RNGestureHandler *handler = _handlers[handlerTag];
+    RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
+    handler.receiverTag = receiverTag;
+    [handler unbindFromView];
+    [handler bindToView:view];
+}
+
 - (void)dropHandlerWithTag:(NSNumber *)handlerTag
 {
     RNGestureHandler *handler = _handlers[handlerTag];

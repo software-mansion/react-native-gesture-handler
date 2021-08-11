@@ -336,7 +336,8 @@ class SimpleGesture extends Gesture {
 
   initialize() {
     this.handlerTag = nextHandlerTag();
-    this.setHandler('handlerTag', this.handlerTag);
+    this.handlers = { ...this.handlers, handlerTag: this.handlerTag };
+    //this.setHandler('handlerTag', this.handlerTag);
 
     if (this.config.ref) {
       this.config.ref.current = this;
@@ -772,7 +773,6 @@ export class GestureMonitor extends React.Component<GestureMonitorProps> {
     if (this.viewTag !== viewTag) {
       this.attachGestureHandlers(viewTag as number);
     }
-    //this.update();
   }
 
   private refHandler = (node: any) => {
@@ -930,7 +930,10 @@ function onGestureHandlerStateChange(
   if (gesture) {
     if (event.oldState == 0 && event.state == 2) {
       gesture.handlers.onBegan?.(event);
-    } else if (event.oldState == 2 && event.state == 4) {
+    } else if (
+      (event.oldState == 2 || event.oldState == 0) &&
+      event.state == 4
+    ) {
       gesture.handlers.onStart?.(event);
     } else if (event.oldState == 4 && event.state == 5) {
       gesture.handlers.onEnd?.(event, true);
