@@ -1,18 +1,10 @@
 import React, { Component } from 'react';
-import { useRef } from 'react';
 import { StyleSheet, View, Animated, Text } from 'react-native';
-import { USE_NATIVE_DRIVER } from '../config';
 import {
-  TapGestureHandler,
-  PanGestureHandler,
   GestureMonitor,
   useGesture,
   Pan,
-  Tap,
-  Pinch,
-  Rotation,
-  LongPress,
-  Root,
+  Gesture,
 } from 'react-native-gesture-handler';
 
 function getState(s: number) {
@@ -35,10 +27,8 @@ function getState(s: number) {
 
 function Box(props) {
   const gs = useGesture(
-    new Tap({
-      onEnd: (e, s) => {
-        if (s) console.log(props.color + ' ' + getState(e.state));
-      },
+    Gesture.tap().setOnEnd((e, s) => {
+      if (s) console.log(props.color + ' ' + getState(e.state));
     })
   );
   return (
@@ -58,10 +48,8 @@ function Box(props) {
 
 export default function Example() {
   const gs = useGesture(
-    new Pan({
-      onUpdate: (e) => {
-        console.log('pan');
-      },
+    Gesture.pan().setOnUpdate((e) => {
+      console.log('pan');
     })
   );
 

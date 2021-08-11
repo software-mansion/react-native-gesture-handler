@@ -259,7 +259,7 @@ class SimpleGesture extends Gesture {
     return this;
   }
 
-  setOnEnd(callback: (event: any) => void) {
+  setOnEnd(callback: (event: any, success: boolean) => void) {
     this.setHandler('onEnd', callback);
     return this;
   }
@@ -439,22 +439,22 @@ export class Pan extends SimpleGesture {
     this.handlerTag = -1;
   }
 
-  setActiveOffsetY(offset: number) {
+  setActiveOffsetY(offset: number | Array<number>) {
     this.setConfig('activeOffsetY', offset);
     return this;
   }
 
-  setActiveOffsetX(offset: number) {
+  setActiveOffsetX(offset: number | Array<number>) {
     this.setConfig('activeOffsetX', offset);
     return this;
   }
 
-  setFailOffsetY(offset: number) {
+  setFailOffsetY(offset: number | Array<number>) {
     this.setConfig('failOffsetY', offset);
     return this;
   }
 
-  setFailOffsetX(offset: number) {
+  setFailOffsetX(offset: number | Array<number>) {
     this.setConfig('failOffsetX', offset);
     return this;
   }

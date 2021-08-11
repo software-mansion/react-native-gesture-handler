@@ -1,29 +1,12 @@
 import React, { Component } from 'react';
-import { useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { USE_NATIVE_DRIVER } from '../config';
 import {
-  TapGestureHandler,
-  PanGestureHandler,
   GestureMonitor,
   useGesture,
-  Pan,
   Tap,
-  Simultaneous,
-  Pinch,
-  Rotation,
-  Exclusive,
-  Sequence,
-  LongPress,
+  Gesture,
 } from 'react-native-gesture-handler';
 import { useState } from 'react';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  useAnimatedGestureHandler,
-  event,
-} from 'react-native-reanimated';
 
 function getState(s: number) {
   switch (s) {
@@ -45,17 +28,6 @@ function getState(s: number) {
 
 function Box(props) {
   const [s, setS] = useState(0);
-  // const gs = useGesture(
-  //   new Tap({
-  //     onUpdate: (e) => {
-  //       console.log(
-  //         props.color + ' ' + getState(e.nativeEvent.state) + ' ' + s
-  //       );
-
-  //       if (e.nativeEvent.state == 4) setS(s + 1);
-  //     },
-  //   })
-  // );
 
   return (
     <View
@@ -69,18 +41,14 @@ function Box(props) {
 }
 
 export default function Example() {
-  const tap = new Tap({
-    onEnd: (e, s) => {
-      if (s) console.log('tap');
-    },
+  const tap = Gesture.tap().setOnEnd((e, s) => {
+    if (s) console.log('red');
   });
 
   const gs = useGesture(tap);
   const gs2 = useGesture(
-    new Tap({
-      onEnd: (e, s) => {
-        if (s) console.log('green');
-      },
+    Gesture.tap().setOnEnd((e, s) => {
+      if (s) console.log('green');
     })
   );
 
