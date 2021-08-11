@@ -38,8 +38,8 @@ export function useAnimatedGesture(gesture) {
     true
   );
 
-  result.current[2] = event;
-  result.current[3] = shared;
+  result.current.animatedEventHandler = event;
+  result.current.animatedHandlers = shared;
 
   return result;
 }
