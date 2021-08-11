@@ -168,7 +168,7 @@ function Input(props) {
 }
 
 function NumPad(props) {
-  let buttons = [1, 2, 3, 4, 5, 6, 7, 8, 9, '<', 0, '.'];
+  let buttons = [7, 8, 9, 4, 5, 6, 1, 2, 3, '<', 0, '.'];
   return (
     <View style={styles.numPad}>
       {buttons.map((text) => {
@@ -202,6 +202,7 @@ function Operations(props) {
 
   const dragGesture = useAnimatedGesture(
     Gesture.pan()
+      .setRef(useRef())
       .setOnUpdate((e) => {
         'worklet';
         let margin = window.width - layout.value.x;
