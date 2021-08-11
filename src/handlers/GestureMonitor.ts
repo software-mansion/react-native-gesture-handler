@@ -42,28 +42,28 @@ export class Gesture {
     return new BuiltGesture();
   }
 
-  static tap(config?: any) {
-    return new Tap(config);
+  static tap() {
+    return new Tap();
   }
 
-  static pan(config?: any) {
-    return new Pan(config);
+  static pan() {
+    return new Pan();
   }
 
-  static pinch(config?: any) {
-    return new Pinch(config);
+  static pinch() {
+    return new Pinch();
   }
 
-  static rotation(config?: any) {
-    return new Rotation(config);
+  static rotation() {
+    return new Rotation();
   }
 
-  static fling(config?: any) {
-    return new Fling(config);
+  static fling() {
+    return new Fling();
   }
 
-  static longPress(config?: any) {
-    return new LongPress(config);
+  static longPress() {
+    return new LongPress();
   }
 }
 class BuiltGesture {

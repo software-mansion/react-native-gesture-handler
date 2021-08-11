@@ -202,7 +202,6 @@ function Operations(props) {
 
   const dragGesture = useAnimatedGesture(
     Gesture.pan()
-      .setRef(useRef())
       .setOnUpdate((e) => {
         'worklet';
         let margin = window.width - layout.value.x;
