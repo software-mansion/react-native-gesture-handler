@@ -1,6 +1,7 @@
 import React from 'react';
-import { runOnJS, useEvent, useSharedValue } from 'react-native-reanimated';
+import { useEvent, useSharedValue } from 'react-native-reanimated';
 import { useGesture } from 'react-native-gesture-handler';
+import { State } from 'react-native-gesture-handler';
 
 export function useAnimatedGesture(gesture) {
   const preparedGesture = useGesture(gesture);
@@ -12,17 +13,20 @@ export function useAnimatedGesture(gesture) {
     for (let i = 0; i < sharedHandlersCallbacks.value.length; i++) {
       let gesture = sharedHandlersCallbacks.value[i];
 
-      if (e.handlerTag == gesture.handlerTag) {
+      if (e.handlerTag === gesture.handlerTag) {
         if (e.oldState != null) {
-          if (e.oldState == 0 && e.state == 2) {
+          if (e.oldState === State.UNDETERMINED && e.state === State.BEGAN) {
             gesture.onBegan?.(e);
-          } else if ((e.oldState == 2 || e.oldState == 0) && e.state == 4) {
+          } else if (
+            (e.oldState === State.BEGAN || e.oldState === State.UNDETERMINED) &&
+            e.state === 4
+          ) {
             gesture.onStart?.(e);
-          } else if (e.oldState == 4 && e.state == 5) {
+          } else if (e.oldState === State.ACTIVE && e.state === State.END) {
             gesture.onEnd?.(e, true);
-          } else if (e.state == 1) {
+          } else if (e.state === State.FAILED) {
             gesture.onEnd?.(e, false);
-          } else if (e.state == 3) {
+          } else if (e.state === State.CANCELLED) {
             gesture.onEnd?.(e, false);
           }
         } else {

@@ -849,21 +849,25 @@ export class GestureMonitor extends React.Component<GestureMonitorProps> {
     ) {
       for (const gesture of this.props.gesture.current.config.gestures) {
         if (gesture.handlerTag === event.nativeEvent.handlerTag) {
-          if (event.nativeEvent.oldState == 0 && event.nativeEvent.state == 2) {
+          if (
+            event.nativeEvent.oldState === State.UNDETERMINED &&
+            event.nativeEvent.state === State.BEGAN
+          ) {
             gesture.handlers.onBegan?.(event);
           } else if (
-            event.nativeEvent.oldState == 2 &&
-            event.nativeEvent.state == 4
+            (event.nativeEvent.oldState === State.BEGAN ||
+              event.nativeEvent.oldState === State.UNDETERMINED) &&
+            event.nativeEvent.state === State.ACTIVE
           ) {
             gesture.handlers.onStart?.(event);
           } else if (
-            event.nativeEvent.oldState == 4 &&
-            event.nativeEvent.state == 5
+            event.nativeEvent.oldState === State.ACTIVE &&
+            event.nativeEvent.state === State.END
           ) {
             gesture.handlers.onEnd?.(event, true);
-          } else if (event.nativeEvent.state == 1) {
+          } else if (event.nativeEvent.state === State.FAILED) {
             gesture.handlers.onEnd?.(event, false);
-          } else if (event.nativeEvent.state == 3) {
+          } else if (event.nativeEvent.state === State.CANCELLED) {
             gesture.handlers.onEnd?.(event, false);
           }
           break;
@@ -937,18 +941,19 @@ function onGestureHandlerStateChange(
   const gesture = findHandler(event.handlerTag);
 
   if (gesture) {
-    if (event.oldState == 0 && event.state == 2) {
+    if (event.oldState === State.UNDETERMINED && event.state === State.BEGAN) {
       gesture.handlers.onBegan?.(event);
     } else if (
-      (event.oldState == 2 || event.oldState == 0) &&
-      event.state == 4
+      (event.oldState === State.BEGAN ||
+        event.oldState === State.UNDETERMINED) &&
+      event.state === State.ACTIVE
     ) {
       gesture.handlers.onStart?.(event);
-    } else if (event.oldState == 4 && event.state == 5) {
+    } else if (event.oldState === State.ACTIVE && event.state === State.END) {
       gesture.handlers.onEnd?.(event, true);
-    } else if (event.state == 1) {
+    } else if (event.state === State.FAILED) {
       gesture.handlers.onEnd?.(event, false);
-    } else if (event.state == 3) {
+    } else if (event.state === State.CANCELLED) {
       gesture.handlers.onEnd?.(event, false);
     }
   }
