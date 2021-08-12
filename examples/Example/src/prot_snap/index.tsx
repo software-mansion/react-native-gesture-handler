@@ -210,11 +210,9 @@ const styles = StyleSheet.create({
 function FilterCarousel(props) {
   return (
     <Animated.View style={filterCarouselStyles.container}>
-      {props.filters.map((filter) => {
-        return (
-          <Filter key={filter} filter={filter} selected={props.selected} />
-        );
-      })}
+      {props.filters.map((filter) => (
+        <Filter key={filter} filter={filter} selected={props.selected} />
+      ))}
     </Animated.View>
   );
 }
