@@ -20,9 +20,9 @@ export default function Home() {
   const zoom = useSharedValue(1);
   const [scale, setScale] = useState(1);
   const [selectedFilter, setSelectedFilter] = useState(0);
-  const [recording, setRecording] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [remainingTime, setRemainingTime] = useState(MAX_VIDEO_DURATION);
-  const [recordingInterval, setRecordingInterval] = useState(-1);
+  const [recordingIntervalHandle, setRecordingIntervalHandle] = useState(-1);
 
   const filtersPanGesture = Gesture.pan()
     .setOnUpdate((e) => {
@@ -60,7 +60,7 @@ export default function Home() {
     .addSimultaneousGesture(filtersPanGesture)
     .setOnUpdate((e) => {
       'worklet';
-      if (recording) {
+      if (isRecording) {
         if (e.velocityY < 0) {
           zoom.value = zoom.value * 1.05;
         } else if (e.velocityY > 0) {
@@ -70,7 +70,7 @@ export default function Home() {
     })
     .setOnEnd((e) => {
       'worklet';
-      if (recording) {
+      if (isRecording) {
         runOnJS(finishRecording)();
       }
     });
@@ -127,9 +127,9 @@ export default function Home() {
   }
 
   function startRecording() {
-    setRecording(true);
+    setIsRecording(true);
     setRemainingTime(MAX_VIDEO_DURATION);
-    setRecordingInterval(
+    setRecordingIntervalHandle(
       setInterval(() => {
         setRemainingTime((r) => r - 200);
       }, 200)
@@ -137,8 +137,8 @@ export default function Home() {
   }
 
   function finishRecording() {
-    setRecording(false);
-    clearInterval(recordingInterval);
+    setIsRecording(false);
+    clearInterval(recordingIntervalHandle);
     setRemainingTime(MAX_VIDEO_DURATION);
 
     Alert.alert(
