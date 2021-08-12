@@ -12,11 +12,11 @@ import { useAnimatedGesture } from '../useAnimatedGesture';
 import { useRef } from 'react';
 
 function Draggable() {
-  const [a, sa] = useState(1);
+  const [counter, setCounter] = useState(1);
 
   useEffect(() => {
     setInterval(() => {
-      sa((a) => a + 1);
+      setCounter((a) => a + 1);
     }, 1000);
   }, []);
 
@@ -42,7 +42,7 @@ function Draggable() {
   const gs = useAnimatedGesture(
     Gesture.pan()
       .setRef(ref)
-      .setOnBegan((e) => {
+      .setOnBegan((_e) => {
         'worklet';
         pressed.value = true;
       })
@@ -51,7 +51,7 @@ function Draggable() {
         offsetX.value = e.translationX * 1.2 + startX.value;
         offsetY.value = e.translationY * 1.2 + startY.value;
       })
-      .setOnEnd((e, success) => {
+      .setOnEnd((_e, _success) => {
         'worklet';
         startX.value = offsetX.value;
         startY.value = offsetY.value;
@@ -61,7 +61,7 @@ function Draggable() {
 
   return (
     <Animated.View>
-      <Text>{a}</Text>
+      <Text>{counter}</Text>
       <GestureMonitor gesture={gs}>
         <Element styles={animatedStyles} />
       </GestureMonitor>
