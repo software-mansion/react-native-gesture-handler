@@ -543,48 +543,6 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
   public void handleClearJSResponder() {
   }
 
-  @ReactMethod
-  public void dispatchEvent(String name, int viewTag, ReadableMap options) {
-    EventDispatcher eventDispatcher = getReactApplicationContext()
-            .getNativeModule(UIManagerModule.class)
-            .getEventDispatcher();
-
-    //getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit();
-
-    CEvent e = new CEvent(name, viewTag, options);
-
-    eventDispatcher.dispatchEvent(e);
-  }
-
-  class CEvent extends Event<CEvent> {
-
-    private ReadableMap data;
-    private String name;
-
-    CEvent(String name, int viewTag, ReadableMap options) {
-      init(viewTag);
-      data = options;
-      this.name = name;
-    }
-
-    @Override
-    protected void init(int viewTag) {
-      super.init(viewTag);
-    }
-
-    @Override
-    public String getEventName() {
-      return name;
-    }
-
-    @Override
-    public void dispatch(RCTEventEmitter rctEventEmitter) {
-      WritableMap event = Arguments.createMap();
-      event.merge(data);
-      rctEventEmitter.receiveEvent(getViewTag(), getEventName(), event);
-    }
-  }
-
   @Override
   public @Nullable Map getConstants() {
     return MapBuilder.of("State", MapBuilder.of(

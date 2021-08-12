@@ -1,8 +1,4 @@
 import { NativeModules } from 'react-native';
-import {
-  GestureHandlerGestureEvent,
-  GestureHandlerStateChangeEvent,
-} from './handlers/gestureHandlerTypesCompat';
 const { RNGestureHandlerModule } = NativeModules;
 
 if (RNGestureHandlerModule == null) {
@@ -35,11 +31,6 @@ export type RNGestureHandlerModuleProps = {
     newConfig: Readonly<Record<string, unknown>>
   ) => void;
   dropGestureHandler: (handlerTag: number) => void;
-  dispatchEvent: (
-    name: String,
-    viewTag: number,
-    event: GestureHandlerGestureEvent | GestureHandlerStateChangeEvent
-  ) => void;
 };
 
 export default RNGestureHandlerModule as RNGestureHandlerModuleProps;
