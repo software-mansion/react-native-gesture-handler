@@ -5,11 +5,8 @@ import {
   useGesture,
   Gesture,
 } from 'react-native-gesture-handler';
-import { useState } from 'react';
 
 function Box(props) {
-  const [s, setS] = useState(0);
-
   return (
     <View
       style={[
