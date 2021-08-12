@@ -41,7 +41,9 @@ export default function Home() {
 
   const buttonTapGesture = Gesture.tap().setOnEnd((e, success) => {
     'worklet';
-    if (success) runOnJS(takePhoto)();
+    if (success) {
+      runOnJS(takePhoto)();
+    }
   });
 
   const buttonDoubleTapGesture = Gesture.tap()
