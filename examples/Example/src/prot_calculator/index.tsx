@@ -15,6 +15,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useAnimatedGesture } from '../useAnimatedGesture';
 
+const DRAG_ANIMATION_DURATION = 300;
+const TAP_ANIMATION_DURATION = 100;
 const window = Dimensions.get('window');
 
 export default function CalculatorUI() {
@@ -52,14 +54,16 @@ function Output(props) {
   }
 
   function open() {
-    drag.value = withTiming(-props.offset.value, { duration: 300 });
+    drag.value = withTiming(-props.offset.value, {
+      duration: DRAG_ANIMATION_DURATION,
+    });
     dragOffset.value = -props.offset.value;
 
     setOpened(true);
   }
 
   function close() {
-    drag.value = withTiming(0, { duration: 300 });
+    drag.value = withTiming(0, { duration: DRAG_ANIMATION_DURATION });
     dragOffset.value = 0;
 
     setOpened(false);
@@ -173,7 +177,7 @@ function Input(props) {
 }
 
 function NumPad(props) {
-  let buttons = [7, 8, 9, 4, 5, 6, 1, 2, 3, '<', 0, '.'];
+  const buttons = [7, 8, 9, 4, 5, 6, 1, 2, 3, '<', 0, '.'];
   return (
     <View style={styles.numPad}>
       {buttons.map((text) => {
@@ -192,14 +196,16 @@ function Operations(props) {
   function open() {
     let margin = window.width - layout.value.x;
 
-    drag.value = withTiming(-layout.value.width + margin, { duration: 300 });
+    drag.value = withTiming(-layout.value.width + margin, {
+      duration: DRAG_ANIMATION_DURATION,
+    });
     dragOffset.value = -layout.value.width + margin;
 
     setOpened(true);
   }
 
   function close() {
-    drag.value = withTiming(0, { duration: 300 });
+    drag.value = withTiming(0, { duration: DRAG_ANIMATION_DURATION });
     dragOffset.value = 0;
 
     setOpened(false);
@@ -273,7 +279,7 @@ function Button(props) {
     Gesture.tap()
       .setOnEnd((e, s) => {
         'worklet';
-        alpha.value = withTiming(0, { duration: 100 });
+        alpha.value = withTiming(0, { duration: TAP_ANIMATION_DURATION });
 
         if (s) {
           runOnJS(props.append)(props.text);
@@ -281,7 +287,7 @@ function Button(props) {
       })
       .setOnBegan((e) => {
         'worklet';
-        alpha.value = withTiming(0.75, { duration: 100 });
+        alpha.value = withTiming(0.75, { duration: TAP_ANIMATION_DURATION });
       })
   );
 
