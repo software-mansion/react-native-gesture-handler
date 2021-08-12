@@ -10,7 +10,7 @@ import Animated, {
 import { useAnimatedGesture } from '../useAnimatedGesture';
 
 const filters = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
-const MAX_VIDEO_DURATION = 60000;
+const MAX_VIDEO_DURATION = 60_000;
 const CAPTURE_BUTTON_RADIUS = 50;
 const FILTER_BUTTON_RADIUS = 35;
 
