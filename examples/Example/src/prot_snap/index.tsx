@@ -110,12 +110,12 @@ export default function Home() {
   }
 
   function updateSelectedFilter() {
-    let targetFilter = Math.round(filter.value);
-    if (targetFilter < 0) targetFilter = 0;
-    if (targetFilter >= filters.length) targetFilter = filters.length - 1;
-    setSelectedFilter(targetFilter);
+    const selectedFilter = Math.round(
+      Math.min(filters.length - 1, Math.max(filter.value, 0))
+    );
+    setSelectedFilter(selectedFilter);
 
-    return targetFilter;
+    return selectedFilter;
   }
 
   function takePhoto() {
