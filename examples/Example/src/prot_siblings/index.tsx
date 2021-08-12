@@ -17,7 +17,8 @@ function Box(props) {
         { backgroundColor: props.color },
         props.overlap ? styles.overlap : {},
         props.style,
-      ]}></View>
+      ]}
+    />
   );
 }
 
