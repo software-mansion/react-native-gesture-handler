@@ -20,14 +20,14 @@ function Box(props) {
 }
 
 export default function Example() {
-  const tap = Gesture.tap().setOnEnd((e, s) => {
-    if (s) console.log('red');
+  const tap = Gesture.tap().setOnEnd((_e, success) => {
+    if (success) console.log('red');
   });
 
   const gs = useGesture(tap);
   const gs2 = useGesture(
-    Gesture.tap().setOnEnd((e, s) => {
-      if (s) console.log('green');
+    Gesture.tap().setOnEnd((_e, success) => {
+      if (success) console.log('green');
     })
   );
 
