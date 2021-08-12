@@ -27,7 +27,7 @@ import { default as EventReceiver } from '../components/EventReceiver';
 import { DeviceEventEmitter } from 'react-native';
 import { Directions } from '../Directions';
 import {
-  basePropsNew,
+  baseGestureHandlerWithMonitorProps,
   flingGestureHandlerProps,
   longPressGestureHandlerProps,
   panGestureHandlerProps,
@@ -215,7 +215,7 @@ class SimpleGesture extends Gesture {
     onStart: null,
   };
 
-  static allowedProps = basePropsNew;
+  static allowedProps = baseGestureHandlerWithMonitorProps;
 
   constructor() {
     super();
@@ -382,7 +382,10 @@ class SimpleGesture extends Gesture {
 }
 
 export class Tap extends SimpleGesture {
-  static allowedProps = [...basePropsNew, ...tapGestureHandlerProps];
+  static allowedProps = [
+    ...baseGestureHandlerWithMonitorProps,
+    ...tapGestureHandlerProps,
+  ];
 
   constructor() {
     super();
@@ -428,7 +431,7 @@ export class Tap extends SimpleGesture {
 
 export class Pan extends SimpleGesture {
   static allowedProps = [
-    ...basePropsNew,
+    ...baseGestureHandlerWithMonitorProps,
     ...panGestureHandlerProps,
     ...panGestureHandlerCustomNativeProps,
   ];
@@ -503,7 +506,10 @@ export class Rotation extends SimpleGesture {
 }
 
 export class LongPress extends SimpleGesture {
-  static allowedProps = [...basePropsNew, ...longPressGestureHandlerProps];
+  static allowedProps = [
+    ...baseGestureHandlerWithMonitorProps,
+    ...longPressGestureHandlerProps,
+  ];
 
   constructor() {
     super();
@@ -528,7 +534,10 @@ export class LongPress extends SimpleGesture {
 }
 
 export class Fling extends SimpleGesture {
-  static allowedProps = [...basePropsNew, ...flingGestureHandlerProps];
+  static allowedProps = [
+    ...baseGestureHandlerWithMonitorProps,
+    ...flingGestureHandlerProps,
+  ];
 
   constructor() {
     super();

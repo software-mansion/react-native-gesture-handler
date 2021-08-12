@@ -1,6 +1,6 @@
 import createHandler from './createHandler';
 import { BaseGestureHandlerProps } from './gestureHandlers';
-import { baseProps } from './allowedProps';
+import { baseGestureHandlerProps } from './allowedProps';
 
 export interface NativeViewGestureHandlerProps
   extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload> {
@@ -13,7 +13,7 @@ export type NativeViewGestureHandlerPayload = {
 };
 
 export const nativeViewProps = [
-  ...baseProps,
+  ...baseGestureHandlerProps,
   'shouldActivateOnStart',
   'disallowInterruption',
 ] as const;

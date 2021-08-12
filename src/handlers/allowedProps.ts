@@ -1,11 +1,16 @@
-export const baseProps = [
+const commonProps = [
   'id',
   'enabled',
   'minPointers',
-  'waitFor',
-  'simultaneousHandlers',
   'shouldCancelWhenOutside',
   'hitSlop',
+];
+
+const componentInteractionProps = ['waitFor', 'simultaneousHandlers'];
+
+export const baseGestureHandlerProps = [
+  ...commonProps,
+  ...componentInteractionProps,
   'onBegan',
   'onFailed',
   'onCancelled',
@@ -15,20 +20,7 @@ export const baseProps = [
   'onHandlerStateChange',
 ];
 
-export const basePropsNew = [
-  'id',
-  'enabled',
-  'minPointers',
-  'shouldCancelWhenOutside',
-  'hitSlop',
-  'onBegan',
-  'onFailed',
-  'onCancelled',
-  'onActivated',
-  'onEnded',
-  'onGestureEvent',
-  'onHandlerStateChange',
-];
+export const baseGestureHandlerWithMonitorProps = [...commonProps];
 
 export const tapGestureHandlerProps = [
   'maxDurationMs',

@@ -9,7 +9,7 @@ import PlatformConstants from '../PlatformConstants';
 import { State } from '../State';
 import { ValueOf } from '../typeUtils';
 import {
-  baseProps,
+  baseGestureHandlerProps,
   tapGestureHandlerProps,
   flingGestureHandlerProps,
   forceTouchGestureHandlerProps,
@@ -106,7 +106,10 @@ export const TapGestureHandler = createHandler<
   TapGestureHandlerEventPayload
 >({
   name: 'TapGestureHandler',
-  allowedProps: [...baseProps, ...tapGestureHandlerProps] as const,
+  allowedProps: [
+    ...baseGestureHandlerProps,
+    ...tapGestureHandlerProps,
+  ] as const,
   config: {},
 });
 
@@ -130,7 +133,10 @@ export const FlingGestureHandler = createHandler<
   FlingGestureHandlerEventPayload
 >({
   name: 'FlingGestureHandler',
-  allowedProps: [...baseProps, ...flingGestureHandlerProps] as const,
+  allowedProps: [
+    ...baseGestureHandlerProps,
+    ...flingGestureHandlerProps,
+  ] as const,
   config: {},
 });
 
@@ -171,7 +177,10 @@ export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
       ForceTouchGestureHandlerEventPayload
     >({
       name: 'ForceTouchGestureHandler',
-      allowedProps: [...baseProps, ...forceTouchGestureHandlerProps] as const,
+      allowedProps: [
+        ...baseGestureHandlerProps,
+        ...forceTouchGestureHandlerProps,
+      ] as const,
       config: {},
     })
   : ForceTouchFallback;
@@ -200,7 +209,10 @@ export const LongPressGestureHandler = createHandler<
   LongPressGestureHandlerEventPayload
 >({
   name: 'LongPressGestureHandler',
-  allowedProps: [...baseProps, ...longPressGestureHandlerProps] as const,
+  allowedProps: [
+    ...baseGestureHandlerProps,
+    ...longPressGestureHandlerProps,
+  ] as const,
   config: {},
 });
 
@@ -250,7 +262,10 @@ export const PanGestureHandler = createHandler<
   PanGestureHandlerEventPayload
 >({
   name: 'PanGestureHandler',
-  allowedProps: [...baseProps, ...panGestureHandlerProps] as const,
+  allowedProps: [
+    ...baseGestureHandlerProps,
+    ...panGestureHandlerProps,
+  ] as const,
   config: {},
   transformProps: managePanProps,
   customNativeProps: panGestureHandlerCustomNativeProps,
@@ -273,7 +288,7 @@ export const PinchGestureHandler = createHandler<
   PinchGestureHandlerEventPayload
 >({
   name: 'PinchGestureHandler',
-  allowedProps: baseProps,
+  allowedProps: baseGestureHandlerProps,
   config: {},
 });
 
@@ -294,6 +309,6 @@ export const RotationGestureHandler = createHandler<
   RotationGestureHandlerEventPayload
 >({
   name: 'RotationGestureHandler',
-  allowedProps: baseProps,
+  allowedProps: baseGestureHandlerProps,
   config: {},
 });
