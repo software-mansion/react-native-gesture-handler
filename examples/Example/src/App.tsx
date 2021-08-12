@@ -1,11 +1,15 @@
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import {
   createStackNavigator,
   StackScreenProps,
 } from '@react-navigation/stack';
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
-import { RectButton } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  RectButton,
+  FlatList,
+} from 'react-native-gesture-handler';
 
 import Rows from './rows';
 import Bouncing from './bouncing';
@@ -100,24 +104,26 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          options={{ title: '✌️ Gesture Handler Demo' }}
-          component={MainScreen}
-        />
-        {Object.keys(SCREENS).map((name) => (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <Stack.Navigator>
           <Stack.Screen
-            key={name}
-            name={name}
-            getComponent={() => SCREENS[name].component}
-            options={{ title: SCREENS[name].title || name }}
+            name="Home"
+            options={{ title: '✌️ Gesture Handler Demo' }}
+            component={MainScreen}
           />
-        ))}
-        <Stack.Screen name="TouchableExample" component={TouchableExample} />
-      </Stack.Navigator>
-    </NavigationContainer>
+          {Object.entries(SCREENS).map(([name, screen]) => (
+            <Stack.Screen
+              key={name}
+              name={name}
+              getComponent={() => screen.component}
+              options={{ title: screen.title || name }}
+            />
+          ))}
+          <Stack.Screen name="TouchableExample" component={TouchableExample} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 
@@ -131,34 +137,26 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
     <FlatList
       style={styles.list}
       data={data}
-      ItemSeparatorComponent={ItemSeparator}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
       renderItem={(props) => (
         <MainScreenItem
           {...props}
           onPressItem={({ key }) => navigation.navigate(key)}
         />
       )}
-      renderScrollComponent={(props) => <ScrollView {...props} />}
     />
   );
 }
 
-function ItemSeparator() {
-  return <View style={styles.separator} />;
-}
-
-type MainScreenItemProps = {
+interface MainScreenItemProps {
   item: { key: string; title: string };
   onPressItem: (item: { key: string }) => void;
-};
+}
 
-function MainScreenItem(props: MainScreenItemProps) {
-  const { title } = props.item;
+function MainScreenItem({ item, onPressItem }: MainScreenItemProps) {
   return (
-    <RectButton
-      style={[styles.button]}
-      onPress={() => props.onPressItem(props.item)}>
-      <Text style={styles.buttonText}>{title}</Text>
+    <RectButton style={[styles.button]} onPress={() => onPressItem(item)}>
+      <Text style={styles.buttonText}>{item.title}</Text>
     </RectButton>
   );
 }
