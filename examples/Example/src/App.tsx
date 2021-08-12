@@ -7,14 +7,14 @@ import {
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
 
-import ProtoBuilder from './prot_builder';
-import ProtoDrag from './prot_drag';
-import ProtoGallery from './prot_gallery';
-import ProtoSiblings from './prot_siblings';
-import ProtoParent from './prot_parent';
-import ProtoReanimated from './prot_reanimated';
-import ProtoSnap from './prot_snap';
-import ProtoCalc from './prot_calculator';
+import Builder from './prot_builder';
+import Drag from './prot_drag';
+import Gallery from './prot_gallery';
+import OverlapSiblings from './prot_siblings';
+import OverlapParent from './prot_parent';
+import Reanimated from './prot_reanimated';
+import Snap from './prot_snap';
+import Calculator from './prot_calculator';
 
 import Rows from './rows';
 import Bouncing from './bouncing';
@@ -41,18 +41,25 @@ type Screens = Record<
   { component: React.ComponentType<any>; title?: string }
 >;
 
-const SCREENS: Screens = {
-  ProtoBuilder: { component: ProtoBuilder, title: 'Builder test' },
-  ProtoDrag: { component: ProtoDrag, title: 'Example: Drag' },
-  ProtoGallery: { component: ProtoGallery, title: 'Example: Gallery' },
-  ProtoSiblings: {
-    component: ProtoSiblings,
+const NEW_API_SCREENS: Screens = {
+  Builder: { component: Builder, title: 'Builder test' },
+  Drag: { component: Drag, title: 'Example: Drag' },
+  Gallery: { component: Gallery, title: 'Example: Gallery' },
+  OverlapSiblings: {
+    component: OverlapSiblings,
     title: 'Example: Overlap (siblings)',
   },
-  ProtoParent: { component: ProtoParent, title: 'Example: Overlap (parent)' },
-  ProtoReanimated: { component: ProtoReanimated, title: 'Example: Reanimated' },
-  ProtoSnap: { component: ProtoSnap, title: 'Example: Snap' },
-  ProtoCalc: { component: ProtoCalc, title: 'Example: Calculator' },
+  OverlapParent: {
+    component: OverlapParent,
+    title: 'Example: Overlap (parent)',
+  },
+  Reanimated: { component: Reanimated, title: 'Example: Reanimated' },
+  Snap: { component: Snap, title: 'Example: Snap' },
+  Calculator: { component: Calculator, title: 'Example: Calculator' },
+};
+
+const SCREENS: Screens = {
+  NewApi: { component: NewApiExamplesScreen, title: 'New API examples' },
   Rows: { component: Rows, title: 'Table rows & buttons' },
   Multitap: { component: Multitap },
   Draggable: { component: Draggable },
@@ -135,6 +142,14 @@ export default function App() {
             options={{ title: SCREENS[name].title || name }}
           />
         ))}
+        {Object.keys(NEW_API_SCREENS).map((name) => (
+          <Stack.Screen
+            key={name}
+            name={name}
+            getComponent={() => NEW_API_SCREENS[name].component}
+            options={{ title: NEW_API_SCREENS[name].title || name }}
+          />
+        ))}
         <Stack.Screen name="TouchableExample" component={TouchableExample} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -144,6 +159,28 @@ export default function App() {
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   const data = Object.keys(SCREENS).map((key) => {
     const item = SCREENS[key];
+    return { key, title: item.title || key };
+  });
+
+  return (
+    <FlatList
+      style={styles.list}
+      data={data}
+      ItemSeparatorComponent={ItemSeparator}
+      renderItem={(props) => (
+        <MainScreenItem
+          {...props}
+          onPressItem={({ key }) => navigation.navigate(key)}
+        />
+      )}
+      renderScrollComponent={(props) => <ScrollView {...props} />}
+    />
+  );
+}
+
+function NewApiExamplesScreen({ navigation }: StackScreenProps<ParamListBase>) {
+  const data = Object.keys(NEW_API_SCREENS).map((key) => {
+    const item = NEW_API_SCREENS[key];
     return { key, title: item.title || key };
   });
 
