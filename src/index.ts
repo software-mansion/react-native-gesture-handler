@@ -2,7 +2,6 @@ export { Directions } from './Directions';
 export { State } from './State';
 export { default as gestureHandlerRootHOC } from './gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './GestureHandlerRootView';
-export { default as GestureHandlerModule } from './RNGestureHandlerModule';
 export type {
   // event types
   GestureEvent,
@@ -47,7 +46,6 @@ export {
   LongPress,
   Gesture,
   findHandler,
-  Root,
 } from './handlers/GestureMonitor';
 export type {
   NativeViewGestureHandlerPayload,
