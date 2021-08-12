@@ -203,7 +203,7 @@ export class GestureBuilder extends Gesture {
   }
 }
 
-class SimpleGesture extends Gesture {
+export class SimpleGesture extends Gesture {
   public handlerTag: number = -1;
   public handlerName: string = '';
   public config: any = {};

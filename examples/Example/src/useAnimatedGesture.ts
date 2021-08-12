@@ -1,9 +1,13 @@
 import React from 'react';
 import { useEvent, useSharedValue } from 'react-native-reanimated';
-import { useGesture } from 'react-native-gesture-handler';
-import { State } from 'react-native-gesture-handler';
+import {
+  useGesture,
+  State,
+  GestureBuilder,
+  SimpleGesture,
+} from 'react-native-gesture-handler';
 
-export function useAnimatedGesture(gesture) {
+export function useAnimatedGesture(gesture: GestureBuilder | SimpleGesture) {
   const preparedGesture = useGesture(gesture);
   const sharedHandlersCallbacks = useSharedValue(null);
 

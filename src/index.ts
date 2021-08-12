@@ -46,6 +46,8 @@ export {
   LongPress,
   Gesture,
   findHandler,
+  GestureBuilder,
+  SimpleGesture,
 } from './handlers/GestureMonitor';
 export type {
   NativeViewGestureHandlerPayload,
