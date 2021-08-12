@@ -39,16 +39,13 @@ export default function Home() {
       runOnJS(stopFilterScroll)();
     });
 
-  const buttonTapGesture = Gesture.tap()
-    .setMaxDistance(3)
-    .setOnEnd((e, success) => {
-      'worklet';
-      if (success) runOnJS(takePhoto)();
-    });
+  const buttonTapGesture = Gesture.tap().setOnEnd((e, success) => {
+    'worklet';
+    if (success) runOnJS(takePhoto)();
+  });
 
   const buttonDoubleTapGesture = Gesture.tap()
     .setTapCount(2)
-    .setMaxDistance(3)
     .setOnEnd((e, success) => {
       'worklet';
       if (success) {
