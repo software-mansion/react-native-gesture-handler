@@ -11,6 +11,8 @@ import { useAnimatedGesture } from '../useAnimatedGesture';
 
 const filters = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
 const MAX_VIDEO_DURATION = 60000;
+const CAPTURE_BUTTON_RADIUS = 50;
+const FILTER_BUTTON_RADIUS = 35;
 
 export default function Home() {
   const filter = useSharedValue(0);
@@ -186,14 +188,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: '100%',
-    height: 100,
+    height: CAPTURE_BUTTON_RADIUS * 2,
     position: 'absolute',
     bottom: 50,
     zIndex: 10,
   },
   shutterContainer: {
-    width: 100,
-    height: 100,
+    width: CAPTURE_BUTTON_RADIUS * 2,
+    height: CAPTURE_BUTTON_RADIUS * 2,
     alignSelf: 'center',
   },
   box: {
@@ -223,7 +225,10 @@ function Filter(props) {
     return {
       transform: [
         {
-          translateX: window.width * 0.5 - 35 - 15 - 100 * props.selected.value,
+          translateX:
+            window.width * 0.5 -
+            CAPTURE_BUTTON_RADIUS -
+            CAPTURE_BUTTON_RADIUS * 2 * props.selected.value,
         },
       ],
     };
@@ -243,17 +248,17 @@ function Filter(props) {
 const filterCarouselStyles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 100,
+    height: CAPTURE_BUTTON_RADIUS * 2,
     alignSelf: 'center',
     position: 'absolute',
     flexDirection: 'row',
   },
   filter: {
-    width: 70,
-    height: 70,
-    borderRadius: 100,
+    width: FILTER_BUTTON_RADIUS * 2,
+    height: FILTER_BUTTON_RADIUS * 2,
+    borderRadius: FILTER_BUTTON_RADIUS * 2,
     alignSelf: 'flex-start',
-    margin: 15,
+    margin: CAPTURE_BUTTON_RADIUS - FILTER_BUTTON_RADIUS,
     borderWidth: 0.5,
     borderColor: 'gray',
   },
@@ -265,31 +270,26 @@ function CaptureButton(props) {
       progress = 1;
     }
 
-    if (progress <= 0.5) {
-      return (
-        <Animated.View
-          style={[
-            captureButtonStyles.overlay,
-            captureButtonStyles.overlayLessThanHalf,
-            {
-              transform: [{ rotateZ: 45 + 360 * progress + 'deg' }],
-            },
-          ]}
-        />
-      );
-    } else {
-      return (
-        <Animated.View
-          style={[
-            captureButtonStyles.overlay,
-            captureButtonStyles.overlayMoreThanHalf,
-            {
-              transform: [{ rotateZ: 45 + 360 * (progress - 0.5) + 'deg' }],
-            },
-          ]}
-        />
-      );
-    }
+    const progressBelowHalf = progress <= 0.5;
+    return (
+      <Animated.View
+        style={[
+          captureButtonStyles.overlay,
+          progressBelowHalf
+            ? captureButtonStyles.overlayLessThanHalf
+            : captureButtonStyles.overlayMoreThanHalf,
+          {
+            transform: [
+              {
+                rotateZ: `${
+                  45 + 360 * (progressBelowHalf ? progress : progress - 0.5)
+                }deg`,
+              },
+            ],
+          },
+        ]}
+      />
+    );
   }
 
   return (
@@ -302,21 +302,21 @@ function CaptureButton(props) {
 
 const captureButtonStyles = StyleSheet.create({
   container: {
-    width: 100,
-    height: 100,
+    width: CAPTURE_BUTTON_RADIUS * 2,
+    height: CAPTURE_BUTTON_RADIUS * 2,
     alignSelf: 'center',
     borderWidth: 8,
-    borderRadius: 100,
+    borderRadius: CAPTURE_BUTTON_RADIUS * 2,
     borderColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
   },
   progress: {
-    width: 100,
-    height: 100,
+    width: CAPTURE_BUTTON_RADIUS * 2,
+    height: CAPTURE_BUTTON_RADIUS * 2,
     borderWidth: 8,
-    borderRadius: 50,
+    borderRadius: CAPTURE_BUTTON_RADIUS,
     position: 'absolute',
     borderLeftColor: 'transparent',
     borderBottomColor: 'transparent',
@@ -325,10 +325,10 @@ const captureButtonStyles = StyleSheet.create({
     transform: [{ rotateZ: '45deg' }],
   },
   overlay: {
-    width: 100,
-    height: 100,
+    width: CAPTURE_BUTTON_RADIUS * 2,
+    height: CAPTURE_BUTTON_RADIUS * 2,
     borderWidth: 8,
-    borderRadius: 50,
+    borderRadius: CAPTURE_BUTTON_RADIUS,
     position: 'absolute',
   },
   overlayLessThanHalf: {
