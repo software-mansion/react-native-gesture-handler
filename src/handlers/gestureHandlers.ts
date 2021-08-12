@@ -253,7 +253,7 @@ export const PanGestureHandler = createHandler<
   allowedProps: [...baseProps, ...panGestureHandlerProps] as const,
   config: {},
   transformProps: managePanProps,
-  customNativeProps: [...panGestureHandlerCustomNativeProps],
+  customNativeProps: panGestureHandlerCustomNativeProps,
 });
 
 export type PinchGestureHandlerEventPayload = {
