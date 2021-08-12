@@ -1,44 +1,34 @@
 import React from 'react';
-import { useRef } from 'react';
-import { StyleSheet, View, Animated } from 'react-native';
-import {
-  GestureMonitor,
-  useGesture,
-  Gesture,
-} from 'react-native-gesture-handler';
+import { StyleSheet, View } from 'react-native';
+import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
+import { useAnimatedGesture } from '../useAnimatedGesture';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 function Draggable() {
-  const translationX = useRef(new Animated.Value(0)).current;
-  const translationY = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(1)).current;
+  const translation = useSharedValue({ x: 0, y: 0 });
 
-  const gs = useGesture(
-    Gesture.pan()
-      .setActiveOffsetX([0, 190])
-      .setFailOffsetY([-10, 10])
-      .setFailOffsetX(-1)
-      .setOnUpdate((e) => {
-        console.log('event 1');
-      })
-      .setOnEnd((e, s) => {
-        console.log('end 1: ' + s);
-      })
+  const gs = useAnimatedGesture(
+    Gesture.pan().setOnUpdate((e) => {
+      'worklet';
+      translation.value = { x: e.translationX, y: e.translationY };
+    })
   );
+
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: translation.value.x },
+        { translateY: translation.value.y },
+      ],
+    };
+  });
 
   return (
     <GestureMonitor gesture={gs}>
-      <Animated.View
-        style={[
-          styles.button,
-          {
-            transform: [
-              { translateX: translationX },
-              { translateY: translationY },
-              { scale: scale },
-            ],
-          },
-        ]}
-      />
+      <Animated.View style={[styles.button, animatedStyles]} />
     </GestureMonitor>
   );
 }
