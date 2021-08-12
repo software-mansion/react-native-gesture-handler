@@ -8,10 +8,6 @@ import {
   TapGestureHandler,
   LongPressGestureHandlerStateChangeEvent,
   TapGestureHandlerStateChangeEvent,
-  PanGestureHandler,
-  RotationGestureHandler,
-  PinchGestureHandler,
-  PanGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../common';
@@ -24,51 +20,38 @@ interface ExampleState {
   longPressDuration: number;
 }
 export class PressBox extends Component<PressBoxProps> {
-  private tapRef = React.createRef<TapGestureHandler>();
-  private longPressRef = React.createRef<TapGestureHandler>();
-  private tX = 0;
-  private tY = 0;
-  private onTap = (event: TapGestureHandlerStateChangeEvent) => {
-    console.log('tap ' + event.nativeEvent.state);
+  private doubleTapRef = React.createRef<TapGestureHandler>();
+  private onHandlerStateChange = (
+    event: LongPressGestureHandlerStateChangeEvent
+  ) => {
+    this.props.setDuration(event.nativeEvent.duration);
   };
-  private onLongPress = (event: LongPressGestureHandlerStateChangeEvent) => {
-    console.log('long ' + event.nativeEvent.state);
-  };
-
-  private onPan = (event: PanGestureHandlerGestureEvent) => {
+  private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      this.tX = event.nativeEvent.translationX;
-      this.tY = event.nativeEvent.translationY;
-
-      this.forceUpdate();
+      Alert.alert("I'm touched");
     }
   };
-
+  private onDoubleTap = (event: TapGestureHandlerStateChangeEvent) => {
+    if (event.nativeEvent.state === State.ACTIVE) {
+      Alert.alert('Double tap, good job!');
+    }
+  };
   render() {
     return (
-      <TapGestureHandler onHandlerStateChange={this.onTap} ref={this.tapRef}>
-        <LongPressGestureHandler
-          onHandlerStateChange={this.onLongPress}
-          minDurationMs={700}
-          ref={this.longPressRef}
-          after={this.tapRef}
-          simultaneousHandlers={this.tapRef}>
-          <PanGestureHandler
-            onGestureEvent={this.onPan}
-            onHandlerStateChange={this.onPan}
-            simultaneousHandlers={[this.tapRef, this.longPressRef]}
-            after={this.longPressRef}>
-            <View
-              style={[
-                styles.box,
-                {
-                  transform: [{ translateX: this.tX }, { translateY: this.tY }],
-                },
-              ]}
-            />
-          </PanGestureHandler>
-        </LongPressGestureHandler>
-      </TapGestureHandler>
+      <LongPressGestureHandler
+        onHandlerStateChange={this.onHandlerStateChange}
+        minDurationMs={800}>
+        <TapGestureHandler
+          onHandlerStateChange={this.onSingleTap}
+          waitFor={this.doubleTapRef}>
+          <TapGestureHandler
+            ref={this.doubleTapRef}
+            onHandlerStateChange={this.onDoubleTap}
+            numberOfTaps={2}>
+            <View style={styles.box} />
+          </TapGestureHandler>
+        </TapGestureHandler>
+      </LongPressGestureHandler>
     );
   }
 }
