@@ -1,9 +1,11 @@
 import * as React from 'react';
 import {
   findNodeHandle as findNodeHandleRN,
-  NativeModules,
   Platform,
   Touchable,
+  UIManager,
+  DeviceEventEmitter,
+  EmitterSubscription,
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
@@ -18,14 +20,14 @@ import {
 import { ValueOf } from '../typeUtils';
 import { nextHandlerTag } from './handlerCounter';
 
+const UIManagerAny = UIManager as any;
+
 function findNodeHandle(
   node: null | number | React.Component<any, any> | React.ComponentClass<any>
 ): null | number | React.Component<any, any> | React.ComponentClass<any> {
   if (Platform.OS === 'web') return node;
   return findNodeHandleRN(node);
 }
-
-const { UIManager = {} } = NativeModules;
 
 const customGHEventsConfig = {
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
@@ -38,16 +40,16 @@ const customGHEventsConfig = {
 // native module.
 // Once new event types are registered with react it is possible to dispatch these
 // events to all kind of native views.
-UIManager.genericDirectEventTypes = {
-  ...UIManager.genericDirectEventTypes,
+UIManagerAny.genericDirectEventTypes = {
+  ...UIManagerAny.genericDirectEventTypes,
   ...customGHEventsConfig,
 };
 // In newer versions of RN the `genericDirectEventTypes` is located in the object
 // returned by UIManager.getViewManagerConfig('getConstants') or in older RN UIManager.getConstants(), we need to add it there as well to make
 // it compatible with RN 61+
 const UIManagerConstants =
-  UIManager.getViewManagerConfig?.('getConstants') ??
-  UIManager.getConstants?.();
+  UIManagerAny.getViewManagerConfig?.('getConstants') ??
+  UIManagerAny.getConstants?.();
 
 if (UIManagerConstants) {
   UIManagerConstants.genericDirectEventTypes = {
@@ -64,15 +66,25 @@ const {
   clearJSResponder: oldClearJSResponder = () => {
     //no operation
   },
-} = UIManager;
-UIManager.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
+} = UIManagerAny;
+UIManagerAny.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
   RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
   oldSetJSResponder(tag, blockNativeResponder);
 };
-UIManager.clearJSResponder = () => {
+UIManagerAny.clearJSResponder = () => {
   RNGestureHandlerModule.handleClearJSResponder();
   oldClearJSResponder();
 };
+
+let allowTouches = true;
+const DEV_ON_ANDROID = __DEV__ && Platform.OS === 'android';
+// Toggled inspector blocks touch events in order to allow inspecting on Android
+// This needs to be a global variable in order to set initial state for `allowTouches` property in Handler component
+if (DEV_ON_ANDROID) {
+  DeviceEventEmitter.addListener('toggleElementInspector', () => {
+    allowTouches = !allowTouches;
+  });
+}
 
 const handlerIDToTag: Record<string, number> = {};
 
@@ -190,7 +202,13 @@ export default function createHandler<
   transformProps,
   customNativeProps = [],
 }: CreateHandlerArgs<T>): React.ComponentType<T & React.RefAttributes<any>> {
-  class Handler extends React.Component<T & InternalEventHandlers> {
+  interface HandlerState {
+    allowTouches: boolean;
+  }
+  class Handler extends React.Component<
+    T & InternalEventHandlers,
+    HandlerState
+  > {
     static displayName = name;
 
     private handlerTag: number;
@@ -199,12 +217,14 @@ export default function createHandler<
     private viewNode: any;
     private viewTag?: number;
     private updateEnqueued: ReturnType<typeof setImmediate> | null = null;
+    private inspectorToggleListener?: EmitterSubscription;
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
       this.handlerTag = nextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
+      this.state = { allowTouches };
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);
@@ -215,11 +235,21 @@ export default function createHandler<
 
     componentDidMount() {
       const props: HandlerProps<U> = this.props;
+
+      if (DEV_ON_ANDROID) {
+        this.inspectorToggleListener = DeviceEventEmitter.addListener(
+          'toggleElementInspector',
+          () => {
+            this.setState((_) => ({ allowTouches }));
+            this.update();
+          }
+        );
+      }
       if (hasUnresolvedRefs(props)) {
         // If there are unresolved refs (e.g. ".current" has not yet been set)
         // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
         // _update method that will try to update native handler props using
-        // setImmediate. This makes it so _update function gets called after all
+        // setImmediate. This makes it so update() function gets called after all
         // react components are mounted and we expect the missing ref object to
         // be resolved by then.
         this.updateEnqueued = setImmediate(() => {
@@ -248,6 +278,7 @@ export default function createHandler<
     }
 
     componentWillUnmount() {
+      this.inspectorToggleListener?.remove();
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
       if (this.updateEnqueued) {
         clearImmediate(this.updateEnqueued);
@@ -423,8 +454,12 @@ export default function createHandler<
         }
       }
       const events = {
-        onGestureHandlerEvent: gestureEventHandler,
-        onGestureHandlerStateChange: gestureStateEventHandler,
+        onGestureHandlerEvent: this.state.allowTouches
+          ? gestureEventHandler
+          : undefined,
+        onGestureHandlerStateChange: this.state.allowTouches
+          ? gestureStateEventHandler
+          : undefined,
       };
 
       this.propsRef.current = events;

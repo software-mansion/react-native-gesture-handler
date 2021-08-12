@@ -37,6 +37,9 @@ Since the library uses native support for handling gestures, it requires an exte
 | 1.1.0+    | 0.57.2+                |
 | &lt;1.1.0 | 0.50.0+                |
 
+It may be possible to use newer versions of react-native-gesture-handler on React Native with version <= 0.59 by reverse Jetifying.
+Read more on that here https://github.com/mikehardy/jetifier#to-reverse-jetify--convert-node_modules-dependencies-to-support-libraries
+
 Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](interactions.md) you need to use v16.3 of [React](https://reactjs.org/)
 
 #### JS
@@ -141,15 +144,18 @@ import PushedScreen from './PushedScreen';
 
 // register all screens of the app (including internal ones)
 export function registerScreens() {
-  Navigation.registerComponent('example.FirstTabScreen', 
+  Navigation.registerComponent(
+    'example.FirstTabScreen',
     () => gestureHandlerRootHOC(FirstTabScreen),
     () => FirstTabScreen
   );
-  Navigation.registerComponent('example.SecondTabScreen', 
+  Navigation.registerComponent(
+    'example.SecondTabScreen',
     () => gestureHandlerRootHOC(SecondTabScreen),
     () => SecondTabScreen
   );
-  Navigation.registerComponent('example.PushedScreen', 
+  Navigation.registerComponent(
+    'example.PushedScreen',
     () => gestureHandlerRootHOC(PushedScreen),
     () => PushedScreen
   );
