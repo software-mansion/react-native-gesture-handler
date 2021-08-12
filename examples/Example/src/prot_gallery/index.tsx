@@ -7,24 +7,6 @@ import Animated, {
 import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
 import { useAnimatedGesture } from '../useAnimatedGesture';
 
-function getState(s: number) {
-  switch (s) {
-    case 0:
-      return 'Undetermined';
-    case 1:
-      return 'Failed';
-    case 2:
-      return 'Began';
-    case 3:
-      return 'Cancelled';
-    case 4:
-      return 'Active';
-    case 5:
-      return 'End';
-  }
-  return s;
-}
-
 function Photo() {
   const offsetX = useSharedValue(0);
   const offsetY = useSharedValue(0);

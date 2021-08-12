@@ -6,28 +6,10 @@ import {
   Gesture,
 } from 'react-native-gesture-handler';
 
-function getState(s: number) {
-  switch (s) {
-    case 0:
-      return 'Undetermined';
-    case 1:
-      return 'Failed';
-    case 2:
-      return 'Began';
-    case 3:
-      return 'Cancelled';
-    case 4:
-      return 'Active';
-    case 5:
-      return 'End';
-  }
-  return s;
-}
-
 function Box(props) {
   const gs = useGesture(
     Gesture.tap().setOnEnd((e, s) => {
-      if (s) console.log(props.color + ' ' + getState(e.state));
+      if (s) console.log(props.color);
     })
   );
   return (

@@ -9,24 +9,6 @@ import {
 } from 'react-native-gesture-handler';
 import { useState } from 'react';
 
-function getState(s: number) {
-  switch (s) {
-    case 0:
-      return 'Undetermined';
-    case 1:
-      return 'Failed';
-    case 2:
-      return 'Began';
-    case 3:
-      return 'Cancelled';
-    case 4:
-      return 'Active';
-    case 5:
-      return 'End';
-  }
-  return s;
-}
-
 export default function Example() {
   const [counter, setCounter] = useState(0);
 

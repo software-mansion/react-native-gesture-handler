@@ -7,24 +7,6 @@ import {
   Gesture,
 } from 'react-native-gesture-handler';
 
-function getState(s: number) {
-  switch (s) {
-    case 0:
-      return 'Undetermined';
-    case 1:
-      return 'Failed';
-    case 2:
-      return 'Began';
-    case 3:
-      return 'Cancelled';
-    case 4:
-      return 'Active';
-    case 5:
-      return 'End';
-  }
-  return s;
-}
-
 function Draggable() {
   const translationX = useRef(new Animated.Value(0)).current;
   const translationY = useRef(new Animated.Value(0)).current;
