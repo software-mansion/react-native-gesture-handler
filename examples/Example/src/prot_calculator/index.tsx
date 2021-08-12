@@ -90,11 +90,17 @@ function Output(props) {
         let value = dragOffset.value + e.translationY;
 
         if (opened) {
-          if (value < -props.offset.value - 100) runOnJS(close)();
-          else runOnJS(open)();
+          if (value < -props.offset.value - 100) {
+            runOnJS(close)();
+          } else {
+            runOnJS(open)();
+          }
         } else {
-          if (value > 100) runOnJS(open)();
-          else runOnJS(close)();
+          if (value > 100) {
+            runOnJS(open)();
+          } else {
+            runOnJS(close)();
+          }
         }
       })
   );
@@ -220,11 +226,17 @@ function Operations(props) {
         let value = dragOffset.value + e.translationX;
 
         if (opened) {
-          if (value > -layout.value.width + margin + 75) runOnJS(close)();
-          else runOnJS(open)();
+          if (value > -layout.value.width + margin + 75) {
+            runOnJS(close)();
+          } else {
+            runOnJS(open)();
+          }
         } else {
-          if (value < -75) runOnJS(open)();
-          else runOnJS(close)();
+          if (value < -75) {
+            runOnJS(open)();
+          } else {
+            runOnJS(close)();
+          }
         }
       })
   );
