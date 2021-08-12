@@ -10,7 +10,7 @@ import Animated, {
 import { useAnimatedGesture } from '../useAnimatedGesture';
 
 const filters = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
-const MAX_VIDEO_DURATION = 60000;
+const MAX_VIDEO_DURATION = 6000;
 const CAPTURE_BUTTON_RADIUS = 50;
 const FILTER_BUTTON_RADIUS = 35;
 
@@ -101,10 +101,6 @@ export default function Home() {
 
   const scaleGestureHandler = useAnimatedGesture(previewPinchGesture);
 
-  if (remainingTime <= 0) {
-    finishRecording();
-  }
-
   function stopFilterScroll() {
     filter.value = withTiming(updateSelectedFilter(), { duration: 200 });
   }
@@ -165,7 +161,12 @@ export default function Home() {
         <Animated.View style={styles.buttonContainer}>
           <FilterCarousel filters={filters} selected={filter} />
           <GestureMonitor gesture={buttonGestureHandler}>
-            <CaptureButton progress={1 - remainingTime / MAX_VIDEO_DURATION} />
+            <CaptureButton
+              progress={1 - remainingTime / MAX_VIDEO_DURATION}
+              onTimerFinished={() => {
+                finishRecording();
+              }}
+            />
           </GestureMonitor>
         </Animated.View>
       </GestureMonitor>
@@ -266,6 +267,8 @@ function CaptureButton(props) {
   function getOverlay(progress) {
     if (progress > 1) {
       progress = 1;
+
+      props.onTimerFinished?.();
     }
 
     const progressBelowHalf = progress <= 0.5;
