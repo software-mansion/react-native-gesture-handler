@@ -12,12 +12,6 @@ import { useState } from 'react';
 export default function Example() {
   const [counter, setCounter] = useState(0);
 
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     setCounter((c) => c + 1);
-  //   }, 1000);
-  // }, []);
-
   const doubleTap: React.RefObject<any> = useRef();
   const tripleTap: React.RefObject<any> = useRef();
 
