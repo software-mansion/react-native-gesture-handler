@@ -13,7 +13,7 @@ export function useAnimatedGesture(gesture) {
       let gesture = shared.value[i];
 
       if (e.handlerTag == gesture.handlerTag) {
-        if (e.oldState || e.oldState == 0) {
+        if (e.oldState != null) {
           if (e.oldState == 0 && e.state == 2) {
             gesture.onBegan?.(e);
           } else if ((e.oldState == 2 || e.oldState == 0) && e.state == 4) {
