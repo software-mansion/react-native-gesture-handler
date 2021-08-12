@@ -21,18 +21,16 @@ function Draggable() {
   }, []);
 
   const pressed = useSharedValue(false);
-  const offsetX = useSharedValue(0);
-  const offsetY = useSharedValue(0);
-  const startX = useSharedValue(0);
-  const startY = useSharedValue(0);
+  const offset = useSharedValue({ x: 0, y: 0 });
+  const start = useSharedValue({ x: 0, y: 0 });
 
   const ref = useRef();
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
       transform: [
-        { translateX: offsetX.value },
-        { translateY: offsetY.value },
+        { translateX: offset.value.x },
+        { translateY: offset.value.y },
         { scale: withSpring(pressed.value ? 1.2 : 1) },
       ],
       backgroundColor: pressed.value ? 'yellow' : 'blue',
@@ -48,13 +46,17 @@ function Draggable() {
       })
       .setOnUpdate((e) => {
         'worklet';
-        offsetX.value = e.translationX * 1.2 + startX.value;
-        offsetY.value = e.translationY * 1.2 + startY.value;
+        offset.value = {
+          x: e.translationX + start.value.x,
+          y: e.translationY + start.value.y,
+        };
       })
       .setOnEnd((_e, _success) => {
         'worklet';
-        startX.value = offsetX.value;
-        startY.value = offsetY.value;
+        start.value = {
+          x: offset.value.x,
+          y: offset.value.y,
+        };
         pressed.value = false;
       })
   );
