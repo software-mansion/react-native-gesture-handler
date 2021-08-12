@@ -47,7 +47,6 @@ export default function Home() {
   const buttonDoubleTapGesture = Gesture.tap()
     .setTapCount(2)
     .setMaxDistance(3)
-    .setPriority(1)
     .setOnEnd((e, success) => {
       'worklet';
       if (success) {
@@ -92,10 +91,10 @@ export default function Home() {
   const panGestureHandler = useAnimatedGesture(filtersPanGesture);
 
   const buttonGestureHandler = useAnimatedGesture(
-    buttonPanGesture
+    buttonTapGesture
+      .requireToFail(buttonDoubleTapGesture)
+      .simultaneousWith(buttonPanGesture)
       .simultaneousWith(buttonLongPressGesture)
-      .simultaneousWith(buttonTapGesture)
-      .simultaneousWith(buttonDoubleTapGesture)
   );
 
   const scaleGestureHandler = useAnimatedGesture(previewPinchGesture);

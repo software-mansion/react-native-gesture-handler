@@ -48,8 +48,8 @@ function Draggable() {
       })
       .setOnUpdate((e) => {
         'worklet';
-        offsetX.value = e.translationX + startX.value;
-        offsetY.value = e.translationY + startY.value;
+        offsetX.value = e.translationX * 1.2 + startX.value;
+        offsetY.value = e.translationY * 1.2 + startY.value;
       })
       .setOnEnd((e, success) => {
         'worklet';

@@ -15,12 +15,10 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
 
   private SparseArray<int[]> mWaitForRelations = new SparseArray<>();
   private SparseArray<int[]> mSimultaneousRelations = new SparseArray<>();
-  private SparseArray<int[]> mAfterRelations = new SparseArray<>();
 
   public void dropRelationsForHandlerWithTag(int handlerTag) {
     mWaitForRelations.remove(handlerTag);
     mSimultaneousRelations.remove(handlerTag);
-    mAfterRelations.remove(handlerTag);
   }
 
   private int[] convertHandlerTagsArray(ReadableMap config, String key) {
@@ -42,19 +40,6 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
       int[] tags = convertHandlerTagsArray(config, KEY_SIMULTANEOUS_HANDLERS);
       mSimultaneousRelations.put(handler.getTag(), tags);
     }
-    if (config.hasKey("after")) {
-      int[] tags = convertHandlerTagsArray(config, "after");
-      mAfterRelations.put(handler.getTag(), tags);
-    }
-  }
-
-  @Override
-  public boolean shouldWaitForAnyHandlerActivation(GestureHandler handler) {
-    int[] afterTags = mAfterRelations.get(handler.getTag());
-    if (afterTags != null) {
-      return afterTags.length > 0;
-    }
-    return false;
   }
 
   @Override
@@ -63,19 +48,6 @@ public class RNGestureHandlerInteractionManager implements GestureHandlerInterac
     if (waitForTags != null) {
       for (int i = 0; i < waitForTags.length; i++) {
         if (waitForTags[i] == otherHandler.getTag()) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  @Override
-  public boolean shouldWaitForHandlerActivation(GestureHandler handler, GestureHandler otherHandler) {
-    int[] afterTags = mAfterRelations.get(handler.getTag());
-    if (afterTags != null) {
-      for (int i = 0; i < afterTags.length; i++) {
-        if (afterTags[i] == otherHandler.getTag()) {
           return true;
         }
       }

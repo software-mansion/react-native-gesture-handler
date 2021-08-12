@@ -4,7 +4,6 @@ export const baseProps = [
   'minPointers',
   'waitFor',
   'simultaneousHandlers',
-  'after',
   'shouldCancelWhenOutside',
   'hitSlop',
   'onBegan',
@@ -29,7 +28,6 @@ export const basePropsNew = [
   'onEnded',
   'onGestureEvent',
   'onHandlerStateChange',
-  'priority',
 ];
 
 export const tapGestureHandlerProps = [
