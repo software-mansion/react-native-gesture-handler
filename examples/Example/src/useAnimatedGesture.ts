@@ -3,14 +3,14 @@ import { runOnJS, useEvent, useSharedValue } from 'react-native-reanimated';
 import { useGesture } from 'react-native-gesture-handler';
 
 export function useAnimatedGesture(gesture) {
-  const result = useGesture(gesture);
-  const shared = useSharedValue(null);
+  const preparedGesture = useGesture(gesture);
+  const sharedHandlersCallbacks = useSharedValue(null);
 
   const callback = (e) => {
     'worklet';
 
-    for (let i = 0; i < shared.value.length; i++) {
-      let gesture = shared.value[i];
+    for (let i = 0; i < sharedHandlersCallbacks.value.length; i++) {
+      let gesture = sharedHandlersCallbacks.value[i];
 
       if (e.handlerTag == gesture.handlerTag) {
         if (e.oldState != null) {
@@ -38,8 +38,8 @@ export function useAnimatedGesture(gesture) {
     true
   );
 
-  result.current.animatedEventHandler = event;
-  result.current.animatedHandlers = shared;
+  preparedGesture.current.animatedEventHandler = event;
+  preparedGesture.current.animatedHandlers = sharedHandlersCallbacks;
 
-  return result;
+  return preparedGesture;
 }
