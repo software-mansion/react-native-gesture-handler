@@ -20,7 +20,10 @@ import {
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 
-import { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
+import {
+  NativeViewGestureHandlerProps,
+  nativeViewProps,
+} from '../handlers/NativeViewGestureHandler';
 
 export const ScrollView = createNativeWrapper<
   PropsWithChildren<RNScrollViewProps>
@@ -52,13 +55,32 @@ export const DrawerLayoutAndroid = createNativeWrapper<
 export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
   RNDrawerLayoutAndroid;
 
-export const FlatList = React.forwardRef((props, ref) => (
-  <RNFlatList
-    ref={ref}
-    {...props}
-    renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
-  />
-)) as <ItemT = any>(
+export const FlatList = React.forwardRef((props, ref) => {
+  const flatListProps = {};
+  const scrollViewProps = {};
+  for (const [propName, value] of Object.entries(props)) {
+    // https://github.com/microsoft/TypeScript/issues/26255
+    if ((nativeViewProps as readonly string[]).includes(propName)) {
+      // @ts-ignore - this function cannot have generic type so we have to ignore this error
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      scrollViewProps[propName] = value;
+    } else {
+      // @ts-ignore - this function cannot have generic type so we have to ignore this error
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      flatListProps[propName] = value;
+    }
+  }
+  return (
+    // @ts-ignore - this function cannot have generic type so we have to ignore this error
+    <RNFlatList
+      ref={ref}
+      {...flatListProps}
+      renderScrollComponent={(scrollProps) => (
+        <ScrollView {...{ ...scrollProps, ...scrollViewProps }} />
+      )}
+    />
+  );
+}) as <ItemT = any>(
   props: PropsWithChildren<
     RNFlatListProps<ItemT> &
       RefAttributes<FlatList<ItemT>> &

@@ -4,6 +4,8 @@ import {
   Platform,
   Touchable,
   UIManager,
+  DeviceEventEmitter,
+  EmitterSubscription,
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'fbjs/lib/areEqual';
@@ -75,6 +77,15 @@ UIManagerAny.clearJSResponder = () => {
   oldClearJSResponder();
 };
 
+let allowTouches = true;
+const DEV_ON_ANDROID = __DEV__ && Platform.OS === 'android';
+// Toggled inspector blocks touch events in order to allow inspecting on Android
+// This needs to be a global variable in order to set initial state for `allowTouches` property in Handler component
+if (DEV_ON_ANDROID) {
+  DeviceEventEmitter.addListener('toggleElementInspector', () => {
+    allowTouches = !allowTouches;
+  });
+}
 function isConfigParam(param: unknown, name: string) {
   // param !== Object(param) returns false if `param` is a function
   // or an object and returns true if `param` is null
@@ -181,7 +192,13 @@ export default function createHandler<
   transformProps,
   customNativeProps = [],
 }: CreateHandlerArgs<T>): React.ComponentType<T & React.RefAttributes<any>> {
-  class Handler extends React.Component<T & InternalEventHandlers> {
+  interface HandlerState {
+    allowTouches: boolean;
+  }
+  class Handler extends React.Component<
+    T & InternalEventHandlers,
+    HandlerState
+  > {
     static displayName = name;
 
     private handlerTag: number;
@@ -190,12 +207,14 @@ export default function createHandler<
     private viewNode: any;
     private viewTag?: number;
     private updateEnqueued: ReturnType<typeof setImmediate> | null = null;
+    private inspectorToggleListener?: EmitterSubscription;
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
       this.handlerTag = getNextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
+      this.state = { allowTouches };
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);
@@ -206,11 +225,21 @@ export default function createHandler<
 
     componentDidMount() {
       const props: HandlerProps<U> = this.props;
+
+      if (DEV_ON_ANDROID) {
+        this.inspectorToggleListener = DeviceEventEmitter.addListener(
+          'toggleElementInspector',
+          () => {
+            this.setState((_) => ({ allowTouches }));
+            this.update();
+          }
+        );
+      }
       if (hasUnresolvedRefs(props)) {
         // If there are unresolved refs (e.g. ".current" has not yet been set)
         // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
         // _update method that will try to update native handler props using
-        // setImmediate. This makes it so _update function gets called after all
+        // setImmediate. This makes it so update() function gets called after all
         // react components are mounted and we expect the missing ref object to
         // be resolved by then.
         this.updateEnqueued = setImmediate(() => {
@@ -239,6 +268,7 @@ export default function createHandler<
     }
 
     componentWillUnmount() {
+      this.inspectorToggleListener?.remove();
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
       if (this.updateEnqueued) {
         clearImmediate(this.updateEnqueued);
@@ -414,8 +444,12 @@ export default function createHandler<
         }
       }
       const events = {
-        onGestureHandlerEvent: gestureEventHandler,
-        onGestureHandlerStateChange: gestureStateEventHandler,
+        onGestureHandlerEvent: this.state.allowTouches
+          ? gestureEventHandler
+          : undefined,
+        onGestureHandlerStateChange: this.state.allowTouches
+          ? gestureStateEventHandler
+          : undefined,
       };
 
       this.propsRef.current = events;
