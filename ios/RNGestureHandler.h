@@ -28,6 +28,10 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 
 - (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event;
 
+- (void)sendTouchDeviceEvent:(nonnull RNGestureHandlerEvent *)event;
+
+- (void)sendStateChangeDeviceEvent:(nonnull RNGestureHandlerStateChange *)event;
+
 @end
 
 
@@ -54,6 +58,7 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 @property (nonatomic, weak, nullable) id<RNGestureHandlerEventEmitter> emitter;
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
 @property (nonatomic) BOOL enabled;
+@property (nonatomic) BOOL usesDeviceEvents;
 @property(nonatomic) BOOL shouldCancelWhenOutside;
 
 - (void)bindToView:(nonnull UIView *)view;

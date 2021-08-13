@@ -182,11 +182,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             self->_eventCoalescingKey = nextEventCoalescingKey++;
 
         } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
-            [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
-                                                                                          handlerTag:_tag
-                                                                                               state:RNGestureHandlerStateActive
-                                                                                           prevState:_lastState
-                                                                                           extraData:extraData]];
+            id event = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
+                                                                  handlerTag:_tag
+                                                                       state:RNGestureHandlerStateActive
+                                                                   prevState:_lastState
+                                                                   extraData:extraData];
+            if (self.usesDeviceEvents) {
+              [self.emitter sendStateChangeDeviceEvent:event];
+            } else {
+              [self.emitter sendStateChangeEvent:event];
+            }
             _lastState = RNGestureHandlerStateActive;
         }
         id stateEvent = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
@@ -194,7 +199,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                         state:state
                                                                     prevState:_lastState
                                                                     extraData:extraData];
-        [self.emitter sendStateChangeEvent:stateEvent];
+        if (self.usesDeviceEvents) {
+          [self.emitter sendStateChangeDeviceEvent:stateEvent];
+        } else {
+          [self.emitter sendStateChangeEvent:stateEvent];
+        }
         _lastState = state;
     }
 
@@ -204,7 +213,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                   state:state
                                                               extraData:extraData
                                                           coalescingKey:self->_eventCoalescingKey];
-        [self.emitter sendTouchEvent:touchEvent];
+        if (self.usesDeviceEvents) {
+          [self.emitter sendStateChangeDeviceEvent:touchEvent];
+        } else {
+          [self.emitter sendStateChangeEvent:touchEvent];
+        }
     }
 }
 
@@ -279,6 +292,7 @@ shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecog
             }
         }
     }
+  //sNSLog(@"%d", [gestureRecognizer.view.reactTag intValue]);
     return NO;
 }
 

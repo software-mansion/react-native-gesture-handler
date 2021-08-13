@@ -101,6 +101,17 @@
     [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
 }
 
+- (void)attachGestureHandlerForDeviceEvents:(nonnull NSNumber *)handlerTag
+                              toViewWithTag:(nonnull NSNumber *)viewTag
+{
+    UIView *view = [_uiManager viewForReactTag:viewTag];
+
+    [_registry attachHandlerWithTagForDeviceEvents:handlerTag toView:view];
+
+    // register view if not already there
+    [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
+}
+
 - (void)updateGestureHandler:(NSNumber *)handlerTag config:(NSDictionary *)config
 {
     RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
@@ -185,6 +196,18 @@
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
 {
     [_eventDispatcher sendEvent:event];
+}
+
+- (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event
+{
+    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
+    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerEvent" body:body];
+}
+
+- (void)sendStateChangeDeviceEvent:(RNGestureHandlerStateChange *)event
+{
+    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
+    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }
 
 @end
