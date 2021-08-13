@@ -5,25 +5,39 @@ import {
   RectButtonProps,
 } from '../components/GestureButtons';
 import {
-  FlingGestureHandlerEventPayload,
-  FlingGestureHandlerProps,
-  ForceTouchGestureHandlerEventPayload,
-  ForceTouchGestureHandlerProps,
   GestureEvent,
   GestureEventPayload,
   HandlerStateChangeEvent,
   HandlerStateChangeEventPayload,
+} from './gestureHandlerCommon';
+import {
+  FlingGestureHandlerEventPayload,
+  FlingGestureHandlerProps,
+} from './FlingGestureHandler';
+import {
+  ForceTouchGestureHandlerEventPayload,
+  ForceTouchGestureHandlerProps,
+} from './ForceTouchGestureHandler';
+import {
   LongPressGestureHandlerEventPayload,
   LongPressGestureHandlerProps,
+} from './LongPressGestureHandler';
+import {
   PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
+} from './PanGestureHandler';
+import {
   PinchGestureHandlerEventPayload,
   PinchGestureHandlerProps,
+} from './PinchGestureHandler';
+import {
   RotationGestureHandlerEventPayload,
   RotationGestureHandlerProps,
+} from './RotationGestureHandler';
+import {
   TapGestureHandlerEventPayload,
   TapGestureHandlerProps,
-} from './gestureHandlers';
+} from './TapGestureHandler';
 import {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,

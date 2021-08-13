@@ -25,12 +25,16 @@ import {
 
 import {
   GestureEvent,
+  HandlerStateChangeEvent,
+} from '../handlers/gestureHandlerCommon';
+import {
   PanGestureHandler,
   PanGestureHandlerEventPayload,
+} from '../handlers/PanGestureHandler';
+import {
   TapGestureHandler,
-  HandlerStateChangeEvent,
   TapGestureHandlerEventPayload,
-} from '../handlers/gestureHandlers';
+} from '../handlers/TapGestureHandler';
 import { State } from '../State';
 
 const DRAG_TOSS = 0.05;

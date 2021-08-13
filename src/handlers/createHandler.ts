@@ -12,12 +12,13 @@ import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
+import { handlerIDToTag, getNextHandlerTag } from './handlersRegistry';
 
 import {
   BaseGestureHandlerProps,
   GestureEvent,
   HandlerStateChangeEvent,
-} from './gestureHandlers';
+} from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
 
 const UIManagerAny = UIManager as any;
@@ -85,10 +86,6 @@ if (DEV_ON_ANDROID) {
     allowTouches = !allowTouches;
   });
 }
-
-let handlerTag = 1;
-const handlerIDToTag: Record<string, number> = {};
-
 function isConfigParam(param: unknown, name: string) {
   // param !== Object(param) returns false if `param` is a function
   // or an object and returns true if `param` is null
@@ -214,7 +211,7 @@ export default function createHandler<
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
-      this.handlerTag = handlerTag++;
+      this.handlerTag = getNextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
       this.state = { allowTouches };

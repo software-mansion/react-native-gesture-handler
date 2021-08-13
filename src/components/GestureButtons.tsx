@@ -15,7 +15,7 @@ import { State } from '../State';
 import {
   GestureEvent,
   HandlerStateChangeEvent,
-} from '../handlers/gestureHandlers';
+} from '../handlers/gestureHandlerCommon';
 import {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,

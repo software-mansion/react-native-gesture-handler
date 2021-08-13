@@ -14,7 +14,7 @@ import { BaseButton } from '../GestureButtons';
 import {
   GestureEvent,
   HandlerStateChangeEvent,
-} from '../../handlers/gestureHandlers';
+} from '../../handlers/gestureHandlerCommon';
 import { NativeViewGestureHandlerPayload } from '../../handlers/NativeViewGestureHandler';
 import { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedback.android';
 
