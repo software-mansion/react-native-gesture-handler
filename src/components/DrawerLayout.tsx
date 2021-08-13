@@ -30,7 +30,7 @@ import {
   TapGestureHandler,
   HandlerStateChangeEvent,
   TapGestureHandlerEventPayload,
-} from '../handlers/gestureHandlers';
+} from '../handlers/gestureHandlerCommon';
 import { State } from '../State';
 
 const DRAG_TOSS = 0.05;

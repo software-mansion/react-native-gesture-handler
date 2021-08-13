@@ -23,7 +23,7 @@ import {
   RotationGestureHandlerProps,
   TapGestureHandlerEventPayload,
   TapGestureHandlerProps,
-} from './gestureHandlers';
+} from './gestureHandlerCommon';
 import {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,

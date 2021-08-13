@@ -24,7 +24,7 @@ export type {
   PinchGestureHandlerProps,
   RotationGestureHandlerProps,
   FlingGestureHandlerProps,
-} from './handlers/gestureHandlers';
+} from './handlers/gestureHandlerCommon';
 export {
   TapGestureHandler,
   ForceTouchGestureHandler,
@@ -33,7 +33,7 @@ export {
   PinchGestureHandler,
   RotationGestureHandler,
   FlingGestureHandler,
-} from './handlers/gestureHandlers';
+} from './handlers/gestureHandlerCommon';
 export { default as createNativeWrapper } from './handlers/createNativeWrapper';
 export type {
   NativeViewGestureHandlerPayload,

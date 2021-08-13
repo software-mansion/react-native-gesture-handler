@@ -1,4 +1,4 @@
-import { PanGestureHandlerProps } from './gestureHandlers';
+import { PanGestureHandlerProps } from './gestureHandlerCommon';
 
 const commonProps = [
   'id',

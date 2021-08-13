@@ -18,7 +18,7 @@ import {
   BaseGestureHandlerProps,
   GestureEvent,
   HandlerStateChangeEvent,
-} from './gestureHandlers';
+} from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
 
 const UIManagerAny = UIManager as any;

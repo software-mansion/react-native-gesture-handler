@@ -1,5 +1,5 @@
 import createHandler from './createHandler';
-import { BaseGestureHandlerProps } from './gestureHandlers';
+import { BaseGestureHandlerProps } from './gestureHandlerCommon';
 import {
   baseGestureHandlerProps,
   nativeViewGestureHandlerProps,
