@@ -15,14 +15,18 @@ import {
 } from 'react-native';
 
 import {
-  PanGestureHandler,
-  TapGestureHandler,
-  PanGestureHandlerProps,
   GestureEvent,
-  PanGestureHandlerEventPayload,
   HandlerStateChangeEvent,
-  TapGestureHandlerEventPayload,
 } from '../handlers/gestureHandlerCommon';
+import {
+  PanGestureHandler,
+  PanGestureHandlerEventPayload,
+  PanGestureHandlerProps,
+} from '../handlers/PanGestureHandler';
+import {
+  TapGestureHandler,
+  TapGestureHandlerEventPayload,
+} from '../handlers/TapGestureHandler';
 import { State } from '../State';
 
 const DRAG_TOSS = 0.05;

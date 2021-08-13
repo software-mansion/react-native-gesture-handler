@@ -1,52 +1,8 @@
-import { PanGestureHandlerProps } from './gestureHandlerCommon';
-
-const commonProps = [
-  'id',
-  'enabled',
-  'minPointers',
-  'shouldCancelWhenOutside',
-  'hitSlop',
-] as const;
-
-const componentInteractionProps = ['waitFor', 'simultaneousHandlers'] as const;
-
-export const baseGestureHandlerProps = [
-  ...commonProps,
-  ...componentInteractionProps,
-  'onBegan',
-  'onFailed',
-  'onCancelled',
-  'onActivated',
-  'onEnded',
-  'onGestureEvent',
-  'onHandlerStateChange',
-] as const;
-
-export const tapGestureHandlerProps = [
-  'maxDurationMs',
-  'maxDelayMs',
-  'numberOfTaps',
-  'maxDeltaX',
-  'maxDeltaY',
-  'maxDist',
-  'minPointers',
-] as const;
-
-export const flingGestureHandlerProps = [
-  'numberOfPointers',
-  'direction',
-] as const;
-
-export const forceTouchGestureHandlerProps = [
-  'minForce',
-  'maxForce',
-  'feedbackOnActivation',
-] as const;
-
-export const longPressGestureHandlerProps = [
-  'minDurationMs',
-  'maxDist',
-] as const;
+import createHandler from './createHandler';
+import {
+  BaseGestureHandlerProps,
+  baseGestureHandlerProps,
+} from './gestureHandlerCommon';
 
 export const panGestureHandlerProps = [
   'activeOffsetY',
@@ -74,10 +30,60 @@ export const panGestureHandlerCustomNativeProps = [
   'failOffsetXEnd',
 ] as const;
 
-export const nativeViewGestureHandlerProps = [
-  'shouldActivateOnStart',
-  'disallowInterruption',
-] as const;
+export type PanGestureHandlerEventPayload = {
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+  translationX: number;
+  translationY: number;
+  velocityX: number;
+  velocityY: number;
+};
+
+export interface PanGestureHandlerProps
+  extends BaseGestureHandlerProps<PanGestureHandlerEventPayload> {
+  /** @deprecated  use activeOffsetX*/
+  minDeltaX?: number;
+  /** @deprecated  use activeOffsetY*/
+  minDeltaY?: number;
+  /** @deprecated  use failOffsetX*/
+  maxDeltaX?: number;
+  /** @deprecated  use failOffsetY*/
+  maxDeltaY?: number;
+  /** @deprecated  use activeOffsetX*/
+  minOffsetX?: number;
+  /** @deprecated  use failOffsetY*/
+  minOffsetY?: number;
+  activeOffsetY?: number | number[];
+  activeOffsetX?: number | number[];
+  failOffsetY?: number | number[];
+  failOffsetX?: number | number[];
+  minDist?: number;
+  minVelocity?: number;
+  minVelocityX?: number;
+  minVelocityY?: number;
+  minPointers?: number;
+  maxPointers?: number;
+  avgTouches?: boolean;
+  enableTrackpadTwoFingerGesture?: boolean;
+}
+
+export type PanGestureHandler = typeof PanGestureHandler;
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
+export const PanGestureHandler = createHandler<
+  PanGestureHandlerProps,
+  PanGestureHandlerEventPayload
+>({
+  name: 'PanGestureHandler',
+  allowedProps: [
+    ...baseGestureHandlerProps,
+    ...panGestureHandlerProps,
+  ] as const,
+  config: {},
+  transformProps: managePanProps,
+  customNativeProps: panGestureHandlerCustomNativeProps,
+});
 
 function validatePanGestureHandlerProps(props: PanGestureHandlerProps) {
   if (props.minDeltaX && props.activeOffsetX) {
