@@ -70,7 +70,7 @@ export interface PanGestureHandlerProps
 }
 
 export type PanGestureHandler = typeof PanGestureHandler;
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of this file
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const PanGestureHandler = createHandler<
   PanGestureHandlerProps,
   PanGestureHandlerEventPayload
