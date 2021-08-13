@@ -10,6 +10,7 @@ import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
+import { handlerIDToTag, getNextHandlerTag } from './handlersRegistry';
 
 import {
   BaseGestureHandlerProps,
@@ -73,9 +74,6 @@ UIManagerAny.clearJSResponder = () => {
   RNGestureHandlerModule.handleClearJSResponder();
   oldClearJSResponder();
 };
-
-let handlerTag = 1;
-const handlerIDToTag: Record<string, number> = {};
 
 function isConfigParam(param: unknown, name: string) {
   // param !== Object(param) returns false if `param` is a function
@@ -195,7 +193,7 @@ export default function createHandler<
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
-      this.handlerTag = handlerTag++;
+      this.handlerTag = getNextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
       if (props.id) {
