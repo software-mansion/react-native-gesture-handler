@@ -10,11 +10,25 @@ export const nativeViewGestureHandlerProps = [
 ] as const;
 export interface NativeViewGestureHandlerProps
   extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload> {
+  /**
+   * Android only.
+   *
+   * Determines whether the handler should check for an existing touch event on
+   * instantiation.
+   */
   shouldActivateOnStart?: boolean;
+
+  /**
+   * When `true`, cancels all other gesture handlers when this
+   * `NativeViewGestureHandler` receives an `ACTIVE` state event.
+   */
   disallowInterruption?: boolean;
 }
 
 export type NativeViewGestureHandlerPayload = {
+  /**
+   * True if gesture was performed inside of containing view, false otherwise.
+   */
   pointerInside: boolean;
 };
 
