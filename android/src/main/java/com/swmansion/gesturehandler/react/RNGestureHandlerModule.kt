@@ -6,10 +6,8 @@ import android.view.ViewGroup
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
-import com.facebook.react.uimanager.UIManagerModule
 import com.swmansion.gesturehandler.*
 import java.util.*
 
