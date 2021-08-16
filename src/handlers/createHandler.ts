@@ -342,12 +342,14 @@ export default function createHandler<
         (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
           this.handlerTag,
           newViewTag,
+          false,
           this.propsRef
         );
       } else {
         RNGestureHandlerModule.attachGestureHandler(
           this.handlerTag,
-          newViewTag
+          newViewTag,
+          false
         );
       }
     };

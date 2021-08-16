@@ -15,11 +15,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
   ) {
     super.init(handler.view!!.id)
-    extraData = Arguments.createMap().apply {
-      dataExtractor?.extractEventData(handler, this)
-      putInt("handlerTag", handler.tag)
-      putInt("state", handler.state)
-    }
+    extraData = createEventData(handler, dataExtractor)
     coalescingKey = handler.eventCoalescingKey
   }
 
@@ -43,13 +39,21 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerEvent>(TOUCH_EVENTS_POOL_SIZE)
 
-    @JvmStatic
     fun <T : GestureHandler<T>> obtain(
       handler: T,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
     ): RNGestureHandlerEvent =
       (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent()).apply {
         init(handler, dataExtractor)
+      }
+
+    fun <T: GestureHandler<T>> createEventData(
+      handler: T,
+      dataExtractor: RNGestureHandlerEventDataExtractor<T>?
+    ): WritableMap = Arguments.createMap().apply {
+        dataExtractor?.extractEventData(handler, this)
+        putInt("handlerTag", handler.tag)
+        putInt("state", handler.state)
       }
   }
 }

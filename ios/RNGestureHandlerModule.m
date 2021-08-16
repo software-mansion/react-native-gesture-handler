@@ -102,10 +102,14 @@ RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSString *)handlerName tag:(nonn
     }];
 }
 
-RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWithTag:(nonnull NSNumber *)viewTag)
+RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWithTag:(nonnull NSNumber *)viewTag useDeviceEvents: (BOOL)useDeviceEvents)
 {
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-        [manager attachGestureHandler:handlerTag toViewWithTag:viewTag];
+        if (useDeviceEvents) {
+            [manager attachGestureHandlerForDeviceEvents:handlerTag toViewWithTag:viewTag];
+        } else {
+            [manager attachGestureHandler:handlerTag toViewWithTag:viewTag];
+        }
     }];
 }
 

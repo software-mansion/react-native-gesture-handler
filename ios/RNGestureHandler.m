@@ -182,11 +182,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             self->_eventCoalescingKey = nextEventCoalescingKey++;
 
         } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
-            [self.emitter sendStateChangeEvent:[[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
-                                                                                          handlerTag:_tag
-                                                                                               state:RNGestureHandlerStateActive
-                                                                                           prevState:_lastState
-                                                                                           extraData:extraData]];
+            id event = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
+                                                                  handlerTag:_tag
+                                                                       state:RNGestureHandlerStateActive
+                                                                   prevState:_lastState
+                                                                   extraData:extraData];
+            [self sendStateChangeEvent:event];
             _lastState = RNGestureHandlerStateActive;
         }
         id stateEvent = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
@@ -194,7 +195,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                         state:state
                                                                     prevState:_lastState
                                                                     extraData:extraData];
-        [self.emitter sendStateChangeEvent:stateEvent];
+        [self sendStateChangeEvent:stateEvent];
         _lastState = state;
     }
 
@@ -204,7 +205,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                   state:state
                                                               extraData:extraData
                                                           coalescingKey:self->_eventCoalescingKey];
-        [self.emitter sendTouchEvent:touchEvent];
+        [self sendStateChangeEvent:touchEvent];
+    }
+}
+
+- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
+{
+    if (self.usesDeviceEvents) {
+        [self.emitter sendStateChangeDeviceEvent:event];
+    } else {
+        [self.emitter sendStateChangeEvent:event];
     }
 }
 

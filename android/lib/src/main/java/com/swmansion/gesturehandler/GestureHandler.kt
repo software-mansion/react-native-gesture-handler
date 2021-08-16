@@ -23,6 +23,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var isEnabled = true
     private set
+  var usesDeviceEvents = false
 
   private var mHitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0

@@ -8,7 +8,6 @@ import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
-import com.facebook.react.uimanager.UIManagerModule
 import com.swmansion.gesturehandler.*
 import java.util.*
 
@@ -338,9 +337,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   @ReactMethod
-  fun attachGestureHandler(handlerTag: Int, viewTag: Int) {
+  fun attachGestureHandler(handlerTag: Int, viewTag: Int, useDeviceEvents: Boolean) {
     tryInitializeHandlerForReactRootView(viewTag)
-    if (!registry.attachHandlerToView(handlerTag, viewTag)) {
+
+    if (!registry.attachHandlerToView(handlerTag, viewTag, useDeviceEvents)) {
       throw JSApplicationIllegalArgumentException("Handler with tag $handlerTag does not exists")
     }
   }
@@ -419,8 +419,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private fun tryInitializeHandlerForReactRootView(ancestorViewTag: Int) {
-    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)
-    val rootViewTag = uiManager!!.resolveRootTagFromReactTag(ancestorViewTag)
+    val uiManager = reactApplicationContext.UIManager
+    val rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag)
     if (rootViewTag < 1) {
       throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
     }
@@ -470,7 +470,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private fun findRootHelperForViewAncestor(viewTag: Int): RNGestureHandlerRootHelper? {
-    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)!!
+    val uiManager = reactApplicationContext.UIManager
     val rootViewTag = uiManager.resolveRootTagFromReactTag(viewTag)
     if (rootViewTag < 1) {
       return null
@@ -492,13 +492,22 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       return
     }
     if (handler.state == GestureHandler.STATE_ACTIVE) {
-      reactApplicationContext
-        .getNativeModule(UIManagerModule::class.java)!!
-        .eventDispatcher.let {
-          val handlerFactory = findFactoryForHandler(handler)
-          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
-          it.dispatchEvent(event)
-        }
+      val handlerFactory = findFactoryForHandler(handler)
+
+      if (handler.usesDeviceEvents) {
+        val data = RNGestureHandlerEvent.createEventData(handler, handlerFactory)
+
+        reactApplicationContext
+          .deviceEventEmitter
+          .emit(RNGestureHandlerEvent.EVENT_NAME, data)
+      } else {
+        reactApplicationContext
+          .UIManager
+          .eventDispatcher.let {
+            val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+            it.dispatchEvent(event)
+          }
+      }
     }
   }
 
@@ -507,13 +516,28 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
-    reactApplicationContext
-      .getNativeModule(UIManagerModule::class.java)!!
-      .eventDispatcher.let {
-        val handlerFactory = findFactoryForHandler(handler)
-        val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
-        it.dispatchEvent(event)
-      }
+    val handlerFactory = findFactoryForHandler(handler)
+
+    if (handler.usesDeviceEvents) {
+      val data = RNGestureHandlerStateChangeEvent.createEventData(
+        handler,
+        handlerFactory,
+        newState,
+        oldState,
+      )
+
+      reactApplicationContext
+        .deviceEventEmitter
+        .emit(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
+    } else {
+      reactApplicationContext
+        .UIManager
+        .eventDispatcher.let {
+          val event =
+            RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
+          it.dispatchEvent(event)
+        }
+    }
   }
 
   companion object {

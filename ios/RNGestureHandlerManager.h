@@ -17,6 +17,9 @@
 - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
                toViewWithTag:(nonnull NSNumber *)viewTag;
 
+- (void)attachGestureHandlerForDeviceEvents:(nonnull NSNumber *)handlerTag
+                              toViewWithTag:(nonnull NSNumber *)viewTag;
+
 - (void)updateGestureHandler:(nonnull NSNumber *)handlerTag config:(nonnull NSDictionary *)config;
 
 - (void)dropGestureHandler:(nonnull NSNumber *)handlerTag;
