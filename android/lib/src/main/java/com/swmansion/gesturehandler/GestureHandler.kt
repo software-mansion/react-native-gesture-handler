@@ -218,8 +218,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     // introduced in 1.11.0, remove if crashes are not reported
-    if(sPointerProps.isEmpty()|| sPointerCoords.isEmpty()){
-      throw IllegalStateException("pointerCoords.size=${sPointerCoords.size}, pointerProps.size=${sPointerProps.size}")
+    if(pointerProps.isEmpty()|| pointerCoords.isEmpty()){
+      throw IllegalStateException("pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}")
     }
 
     val result = MotionEvent.obtain(
