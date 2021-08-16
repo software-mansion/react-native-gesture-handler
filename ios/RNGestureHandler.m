@@ -292,7 +292,6 @@ shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecog
             }
         }
     }
-  //sNSLog(@"%d", [gestureRecognizer.view.reactTag intValue]);
     return NO;
 }
 
