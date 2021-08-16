@@ -138,7 +138,10 @@ export interface DrawerLayoutProps {
   drawerContainerStyle?: StyleProp<ViewStyle>;
 
   /**
-   * Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+   * Enables two-finger gestures on supported devices, for example iPads with
+   * trackpads. If not enabled the gesture will require click + drag, with
+   * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
+   * the gesture.
    */
   enableTrackpadTwoFingerGesture?: boolean;
 
