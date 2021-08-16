@@ -139,7 +139,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
      * This leads to invoking onTouchEvent twice which isn't idempotent in View - it calls OnClickListener
      * and plays sound effect if OnClickListener was set.
      *
-     * To mitigate this behavior we use mLastEventTime variable to check that we already handled
+     * To mitigate this behavior we use lastEventTime variable to check that we already handled
      * the event in [.onInterceptTouchEvent]. We assume here that different events
      * will have different event times.
      *
