@@ -498,10 +498,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       val handlerFactory = findFactoryForHandler(handler)
 
       if (handler.usesDeviceEvents) {
-        val data = Arguments.createMap()
-        handlerFactory?.extractEventData(handler, data)
-        data.putInt("handlerTag", handler.tag)
-        data.putInt("state", handler.state)
+        val data = RNGestureHandlerEvent.createEventData(handler, handlerFactory)
 
         reactApplicationContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
@@ -525,11 +522,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     val handlerFactory = findFactoryForHandler(handler)
 
     if (handler.usesDeviceEvents) {
-      val data = Arguments.createMap()
-      handlerFactory?.extractEventData(handler, data)
-      data.putInt("handlerTag", handler.tag)
-      data.putInt("oldState", oldState)
-      data.putInt("state", newState)
+      val data = RNGestureHandlerStateChangeEvent.createEventData(
+        handler,
+        handlerFactory,
+        newState,
+        oldState,
+      )
 
       reactApplicationContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
