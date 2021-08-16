@@ -58,13 +58,11 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
       newState: Int,
       oldState: Int,
-    ): WritableMap {
-      return Arguments.createMap().apply {
+    ): WritableMap = Arguments.createMap().apply {
         dataExtractor?.extractEventData(handler, this)
         putInt("handlerTag", handler.tag)
         putInt("state", newState)
         putInt("oldState", oldState)
       }
-    }
   }
 }
