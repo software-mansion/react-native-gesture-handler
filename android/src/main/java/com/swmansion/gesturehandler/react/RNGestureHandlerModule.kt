@@ -422,8 +422,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private fun tryInitializeHandlerForReactRootView(ancestorViewTag: Int) {
-    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)
-    val rootViewTag = uiManager!!.resolveRootTagFromReactTag(ancestorViewTag)
+    val uiManager = reactApplicationContext.UIManager
+    val rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag)
     if (rootViewTag < 1) {
       throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
     }
@@ -473,7 +473,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private fun findRootHelperForViewAncestor(viewTag: Int): RNGestureHandlerRootHelper? {
-    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)!!
+    val uiManager = reactApplicationContext.UIManager
     val rootViewTag = uiManager.resolveRootTagFromReactTag(viewTag)
     if (rootViewTag < 1) {
       return null
@@ -501,11 +501,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
         val data = RNGestureHandlerEvent.createEventData(handler, handlerFactory)
 
         reactApplicationContext
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+          .deviceEventEmitter
           .emit(RNGestureHandlerEvent.EVENT_NAME, data)
       } else {
         reactApplicationContext
-          .getNativeModule(UIManagerModule::class.java)!!
+          .UIManager
           .eventDispatcher.let {
             val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
             it.dispatchEvent(event)
@@ -530,11 +530,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       )
 
       reactApplicationContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+        .deviceEventEmitter
         .emit(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
     } else {
       reactApplicationContext
-        .getNativeModule(UIManagerModule::class.java)!!
+        .UIManager
         .eventDispatcher.let {
           val event =
             RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
