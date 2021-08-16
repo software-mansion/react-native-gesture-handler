@@ -39,7 +39,6 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerEvent>(TOUCH_EVENTS_POOL_SIZE)
 
-    @JvmStatic
     fun <T : GestureHandler<T>> obtain(
       handler: T,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
@@ -48,7 +47,6 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
         init(handler, dataExtractor)
       }
 
-    @JvmStatic
     fun <T: GestureHandler<T>> createEventData(
       handler: T,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?
