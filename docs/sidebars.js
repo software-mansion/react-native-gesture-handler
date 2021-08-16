@@ -18,6 +18,7 @@ module.exports = {
           'api/gesture-handlers/fling-gh',
           'api/gesture-handlers/pinch-gh',
           'api/gesture-handlers/force-gh',
+          'api/gesture-handlers/nativeview-gh',
           'api/gesture-handlers/create-native-wrapper'
         ],
         Components: [
