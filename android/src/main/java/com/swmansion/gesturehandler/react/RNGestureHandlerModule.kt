@@ -337,7 +337,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   @ReactMethod
-  private fun attachGestureHandler(handlerTag: Int, viewTag: Int, useDeviceEvents: Boolean) {
+  fun attachGestureHandler(handlerTag: Int, viewTag: Int, useDeviceEvents: Boolean) {
     tryInitializeHandlerForReactRootView(viewTag)
 
     if ((!useDeviceEvents && !registry.attachHandlerToView(handlerTag, viewTag))
