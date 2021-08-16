@@ -5,6 +5,7 @@ import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
 import com.facebook.react.bridge.UiThreadUtil
+import java.lang.IllegalStateException
 import java.util.*
 
 open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
@@ -215,6 +216,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       }
       index++
     }
+
+    // introduced in 1.11.0, remove if crashes are not reported
+    if(pointerProps.isEmpty()|| pointerCoords.isEmpty()){
+      throw IllegalStateException("pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}")
+    }
+
     val result = MotionEvent.obtain(
       event.downTime,
       event.eventTime,
