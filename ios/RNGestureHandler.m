@@ -187,11 +187,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                        state:RNGestureHandlerStateActive
                                                                    prevState:_lastState
                                                                    extraData:extraData];
-            if (self.usesDeviceEvents) {
-              [self.emitter sendStateChangeDeviceEvent:event];
-            } else {
-              [self.emitter sendStateChangeEvent:event];
-            }
+            [self sendStateChangeEvent:event];
             _lastState = RNGestureHandlerStateActive;
         }
         id stateEvent = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
@@ -199,11 +195,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                         state:state
                                                                     prevState:_lastState
                                                                     extraData:extraData];
-        if (self.usesDeviceEvents) {
-          [self.emitter sendStateChangeDeviceEvent:stateEvent];
-        } else {
-          [self.emitter sendStateChangeEvent:stateEvent];
-        }
+        [self sendStateChangeEvent:stateEvent];
         _lastState = state;
     }
 
@@ -213,11 +205,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                   state:state
                                                               extraData:extraData
                                                           coalescingKey:self->_eventCoalescingKey];
-        if (self.usesDeviceEvents) {
-          [self.emitter sendStateChangeDeviceEvent:touchEvent];
-        } else {
-          [self.emitter sendStateChangeEvent:touchEvent];
-        }
+        [self sendStateChangeEvent:touchEvent];
+    }
+}
+
+- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
+{
+    if (self.usesDeviceEvents) {
+        [self.emitter sendStateChangeDeviceEvent:event];
+    } else {
+        [self.emitter sendStateChangeEvent:event];
     }
 }
 
