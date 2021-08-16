@@ -339,17 +339,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   @ReactMethod
-  fun attachGestureHandler(handlerTag: Int, viewTag: Int) {
+  private fun attachGestureHandler(handlerTag: Int, viewTag: Int, useDeviceEvents: Boolean) {
     tryInitializeHandlerForReactRootView(viewTag)
-    if (!registry.attachHandlerToView(handlerTag, viewTag)) {
-      throw JSApplicationIllegalArgumentException("Handler with tag $handlerTag does not exists")
-    }
-  }
 
-  @ReactMethod
-  fun attachGestureHandlerForDeviceEvents(handlerTag: Int, viewTag: Int) {
-    tryInitializeHandlerForReactRootView(viewTag)
-    if (!registry.attachHandlerToViewForDeviceEvents(handlerTag, viewTag)) {
+    if ((!useDeviceEvents && !registry.attachHandlerToView(handlerTag, viewTag))
+      || (useDeviceEvents && !registry.attachHandlerToViewForDeviceEvents(handlerTag, viewTag))) {
       throw JSApplicationIllegalArgumentException("Handler with tag $handlerTag does not exists")
     }
   }
