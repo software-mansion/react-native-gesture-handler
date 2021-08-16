@@ -39,7 +39,10 @@ type SwipeableExcludes = Exclude<
 interface SwipeableProps
   extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
   /**
-   * Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+   * Enables two-finger gestures on supported devices, for example iPads with
+   * trackpads. If not enabled the gesture will require click + drag, with
+   * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
+   * the gesture.
    */
   enableTrackpadTwoFingerGesture?: boolean;
 
