@@ -23,6 +23,8 @@ target 'Example' do
   post_install do |installer|
     flipper_post_install(installer)
 
+    # Fixes "The iOS Simulator deployment target 'IPHONEOS_DEPLOYMENT_TARGET' 
+    # is set to 8.0, but the range of supported deployment target versions is 9.0 to 14.5.99." errors
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         if Gem::Version.new('9.0') > Gem::Version.new(config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'])
