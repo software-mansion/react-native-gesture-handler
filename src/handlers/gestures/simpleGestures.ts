@@ -2,24 +2,12 @@ import { Gesture } from './gesture';
 import { GestureBuilder, BuiltGesture } from './gestureBuilder';
 import { Directions } from '../../Directions';
 import {
-  baseGestureHandlerWithMonitorProps,
   GestureEventPayload,
   HandlerStateChangeEventPayload,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
-import { tapGestureHandlerProps } from '../TapGestureHandler';
-import {
-  panGestureHandlerProps,
-  panGestureHandlerCustomNativeProps,
-  managePanProps,
-  PanGestureHandlerEventPayload,
-} from '../PanGestureHandler';
-import { longPressGestureHandlerProps } from '../LongPressGestureHandler';
-import { flingGestureHandlerProps } from '../FlingGestureHandler';
-import {
-  ForceTouchGestureHandlerEventPayload,
-  forceTouchGestureHandlerProps,
-} from '../ForceTouchGestureHandler';
+import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
+import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandler';
 import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 
@@ -77,9 +65,6 @@ export abstract class SimpleGesture extends Gesture {
   public handlers: HandlerCallbacks = {
     handlerTag: -1,
   };
-
-  //TODO fix type
-  static allowedProps: any = baseGestureHandlerWithMonitorProps;
 
   private addDependency(
     key: 'simultaneousWith' | 'requireToFail',
@@ -190,14 +175,6 @@ export abstract class SimpleGesture extends Gesture {
       this.config.simultaneousWith = this.toArray(this.config.simultaneousWith);
     }
   };
-
-  getAllowedProps(): any {
-    return SimpleGesture.allowedProps;
-  }
-
-  transformProps() {
-    return this.config;
-  }
 }
 
 type TapGestureConfig = CommonGestureConfig & {
@@ -211,11 +188,6 @@ type TapGestureConfig = CommonGestureConfig & {
 
 export class Tap extends SimpleGesture {
   public config: Partial<TapGestureConfig> = {};
-
-  static allowedProps = [
-    ...baseGestureHandlerWithMonitorProps,
-    ...tapGestureHandlerProps,
-  ];
 
   constructor() {
     super();
@@ -252,17 +224,17 @@ export class Tap extends SimpleGesture {
     this.config.maxDeltaY = delta;
     return this;
   }
-
-  getAllowedProps() {
-    return Tap.allowedProps;
-  }
 }
 
 type PanGestureConfig = CommonGestureConfig & {
-  activeOffsetY: number | number[];
-  activeOffsetX: number | number[];
-  failOffsetY: number | number[];
-  failOffsetX: number | number[];
+  activeOffsetYStart: number;
+  activeOffsetYEnd: number;
+  activeOffsetXStart: number;
+  activeOffsetXEnd: number;
+  failOffsetYStart: number;
+  failOffsetYEnd: number;
+  failOffsetXStart: number;
+  failOffsetXEnd: number;
   minDist: number;
   avgTouches: boolean;
   enableTrackpadTwoFingerGesture: boolean;
@@ -270,11 +242,6 @@ type PanGestureConfig = CommonGestureConfig & {
 
 export class Pan extends SimpleGesture {
   public config: Partial<PanGestureConfig> = {};
-  static allowedProps = [
-    ...baseGestureHandlerWithMonitorProps,
-    ...panGestureHandlerProps,
-    ...panGestureHandlerCustomNativeProps,
-  ];
 
   constructor() {
     super();
@@ -288,22 +255,50 @@ export class Pan extends SimpleGesture {
   }
 
   setActiveOffsetY(offset: number | number[]) {
-    this.config.activeOffsetY = offset;
+    if (Array.isArray(offset)) {
+      this.config.activeOffsetYStart = offset[0];
+      this.config.activeOffsetYEnd = offset[1];
+    } else if (offset < 0) {
+      this.config.activeOffsetYStart = offset;
+    } else {
+      this.config.activeOffsetYEnd = offset;
+    }
     return this;
   }
 
   setActiveOffsetX(offset: number | number[]) {
-    this.config.activeOffsetX = offset;
+    if (Array.isArray(offset)) {
+      this.config.activeOffsetXStart = offset[0];
+      this.config.activeOffsetXEnd = offset[1];
+    } else if (offset < 0) {
+      this.config.activeOffsetXStart = offset;
+    } else {
+      this.config.activeOffsetXEnd = offset;
+    }
     return this;
   }
 
   setFailOffsetY(offset: number | number[]) {
-    this.config.failOffsetY = offset;
+    if (Array.isArray(offset)) {
+      this.config.failOffsetYStart = offset[0];
+      this.config.failOffsetYEnd = offset[1];
+    } else if (offset < 0) {
+      this.config.failOffsetYStart = offset;
+    } else {
+      this.config.failOffsetYEnd = offset;
+    }
     return this;
   }
 
   setFailOffsetX(offset: number | number[]) {
-    this.config.failOffsetX = offset;
+    if (Array.isArray(offset)) {
+      this.config.failOffsetXStart = offset[0];
+      this.config.failOffsetXEnd = offset[1];
+    } else if (offset < 0) {
+      this.config.failOffsetXStart = offset;
+    } else {
+      this.config.failOffsetXEnd = offset;
+    }
     return this;
   }
 
@@ -320,14 +315,6 @@ export class Pan extends SimpleGesture {
   setEnableTrackpadTwoFingerGesture(value: boolean) {
     this.config.enableTrackpadTwoFingerGesture = value;
     return this;
-  }
-
-  getAllowedProps() {
-    return Pan.allowedProps;
-  }
-
-  transformProps() {
-    return managePanProps(this.config);
   }
 }
 
@@ -364,10 +351,6 @@ type LongPressGestureConfig = CommonGestureConfig & {
 
 export class LongPress extends SimpleGesture {
   public config: Partial<LongPressGestureConfig> = {};
-  static allowedProps = [
-    ...baseGestureHandlerWithMonitorProps,
-    ...longPressGestureHandlerProps,
-  ];
 
   constructor() {
     super();
@@ -384,10 +367,6 @@ export class LongPress extends SimpleGesture {
     this.config.maxDist = distance;
     return this;
   }
-
-  getAllowedProps() {
-    return LongPress.allowedProps;
-  }
 }
 
 type FlingGestureConfig = CommonGestureConfig & {
@@ -397,10 +376,6 @@ type FlingGestureConfig = CommonGestureConfig & {
 
 export class Fling extends SimpleGesture {
   public config: Partial<FlingGestureConfig> = {};
-  static allowedProps = [
-    ...baseGestureHandlerWithMonitorProps,
-    ...flingGestureHandlerProps,
-  ];
 
   constructor() {
     super();
@@ -417,10 +392,6 @@ export class Fling extends SimpleGesture {
     this.config.direction = direction;
     return this;
   }
-
-  getAllowedProps() {
-    return Fling.allowedProps;
-  }
 }
 
 type ForceTouchGestureConfig = CommonGestureConfig & {
@@ -431,10 +402,6 @@ type ForceTouchGestureConfig = CommonGestureConfig & {
 
 export class ForceTouch extends SimpleGesture {
   public config: Partial<ForceTouchGestureConfig> = {};
-  static allowedProps = [
-    ...baseGestureHandlerWithMonitorProps,
-    ...forceTouchGestureHandlerProps,
-  ];
 
   constructor() {
     super();
@@ -460,9 +427,5 @@ export class ForceTouch extends SimpleGesture {
   setFeedbackOnActivation(value: boolean) {
     this.config.feedbackOnActivation = value;
     return this;
-  }
-
-  getAllowedProps() {
-    return ForceTouch.allowedProps;
   }
 }
