@@ -1,5 +1,5 @@
 import { Gesture } from './gesture';
-import { GestureBuilder } from './gestureBuilder';
+import { InteractionBuilder } from './gestureBuilder';
 import { Directions } from '../../Directions';
 import {
   GestureEventPayload,
@@ -121,16 +121,16 @@ export abstract class SimpleGesture extends Gesture {
     return this;
   }
 
-  simultaneousWith(other: SimpleGesture): GestureBuilder {
-    return new GestureBuilder(this).simultaneousWith(other);
+  simultaneousWith(other: SimpleGesture): InteractionBuilder {
+    return new InteractionBuilder(this).simultaneousWith(other);
   }
 
-  exclusiveWith(other: SimpleGesture): GestureBuilder {
-    return new GestureBuilder(this).exclusiveWith(other);
+  exclusiveWith(other: SimpleGesture): InteractionBuilder {
+    return new InteractionBuilder(this).exclusiveWith(other);
   }
 
-  requireToFail(other: SimpleGesture): GestureBuilder {
-    return new GestureBuilder(this).requireToFail(other);
+  requireToFail(other: SimpleGesture): InteractionBuilder {
+    return new InteractionBuilder(this).requireToFail(other);
   }
 
   initialize() {

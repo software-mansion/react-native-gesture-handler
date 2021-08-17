@@ -12,7 +12,7 @@ type PendingGesture = {
   gesture: SimpleGesture;
 };
 
-export class GestureBuilder extends Gesture {
+export class InteractionBuilder extends Gesture {
   private pendingGestures: PendingGesture[] = [];
 
   constructor(base: SimpleGesture) {
@@ -20,28 +20,28 @@ export class GestureBuilder extends Gesture {
     this.addGesture({ relation: Relation.Exclusive, gesture: base });
   }
 
-  simultaneousWith(gesture: SimpleGesture): GestureBuilder {
+  simultaneousWith(gesture: SimpleGesture): InteractionBuilder {
     return this.addGesture({
       relation: Relation.Simultaneous,
       gesture: gesture,
     });
   }
 
-  exclusiveWith(gesture: SimpleGesture): GestureBuilder {
+  exclusiveWith(gesture: SimpleGesture): InteractionBuilder {
     return this.addGesture({
       relation: Relation.Exclusive,
       gesture: gesture,
     });
   }
 
-  requireToFail(gesture: SimpleGesture): GestureBuilder {
+  requireToFail(gesture: SimpleGesture): InteractionBuilder {
     return this.addGesture({
       relation: Relation.RequireToFail,
       gesture: gesture,
     });
   }
 
-  private addGesture(gesture: PendingGesture): GestureBuilder {
+  private addGesture(gesture: PendingGesture): InteractionBuilder {
     this.pendingGestures.push(gesture);
     return this;
   }
