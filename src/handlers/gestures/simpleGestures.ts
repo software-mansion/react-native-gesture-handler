@@ -3,6 +3,7 @@ import { GestureBuilder, BuiltGesture } from './gestureBuilder';
 import { Directions } from '../../Directions';
 import {
   baseGestureHandlerWithMonitorProps,
+  GestureEventPayload,
   HandlerStateChangeEventPayload,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
@@ -22,31 +23,66 @@ import {
 import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 
+type HitSlopType =
+  | number
+  | Partial<
+      Record<
+        'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
+        number
+      >
+    >
+  | Record<'width' | 'left', number>
+  | Record<'width' | 'right', number>
+  | Record<'height' | 'top', number>
+  | Record<'height' | 'bottom', number>;
+
+type CommonGestureConfig = {
+  ref: React.RefObject<SimpleGesture>;
+  enabled: boolean;
+  minPointers: number;
+  shouldCancelWhenOutside: boolean;
+  hitSlop: HitSlopType;
+  requireToFail: (number | SimpleGesture | React.RefObject<SimpleGesture>)[];
+  simultaneousWith: (number | SimpleGesture | React.RefObject<SimpleGesture>)[];
+};
+
+type PanGestureHandlerEvent = GestureEventPayload &
+  PanGestureHandlerEventPayload;
+
+type PinchGestureHandlerEvent = GestureEventPayload &
+  PinchGestureHandlerEventPayload;
+
+type RotationGestureHandlerEvent = GestureEventPayload &
+  RotationGestureHandlerEventPayload;
+
+type ForceTouchGestureHandlerEvent = GestureEventPayload &
+  ForceTouchGestureHandlerEventPayload;
+
+type HandlerCallbacks = {
+  handlerTag: number;
+  onBegan?: (event: HandlerStateChangeEventPayload) => void;
+  onStart?: (event: HandlerStateChangeEventPayload) => void;
+  onEnd?: (event: HandlerStateChangeEventPayload, success: boolean) => void;
+  onUpdate?:
+    | ((event: PanGestureHandlerEvent) => void)
+    | ((event: PinchGestureHandlerEvent) => void)
+    | ((event: RotationGestureHandlerEvent) => void)
+    | ((event: ForceTouchGestureHandlerEvent) => void);
+};
+
 export abstract class SimpleGesture extends Gesture {
   public handlerTag = -1;
   public handlerName = '';
-  public config: any = {};
-  public handlers: any = {
+  public config: Partial<CommonGestureConfig> = {};
+  public handlers: HandlerCallbacks = {
     handlerTag: -1,
-    onBegin: null,
-    onUpdate: null,
-    onEnd: null,
-    onStart: null,
   };
 
   //TODO fix type
   static allowedProps: any = baseGestureHandlerWithMonitorProps;
 
-  protected setConfig(key: string, value: unknown) {
-    this.config[key] = value;
-  }
-
-  protected setHandler(key: string, value: unknown) {
-    this.handlers[key] = value;
-  }
-
   private addDependency(
-    key: string,
+    key: 'simultaneousWith' | 'requireToFail',
     gesture: SimpleGesture | React.RefObject<SimpleGesture>
   ) {
     this.config[key] = this.config[key]
@@ -54,62 +90,49 @@ export abstract class SimpleGesture extends Gesture {
       : [gesture];
   }
 
-  private toArray(x: any) {
+  private toArray(x: unknown) {
     return [].concat(x);
   }
 
-  setRef(ref: React.RefObject<unknown>) {
-    this.setConfig('ref', ref);
+  setRef(ref: React.RefObject<SimpleGesture>) {
+    this.config.ref = ref;
     return this;
   }
 
   setOnBegan(callback: (event: HandlerStateChangeEventPayload) => void) {
-    this.setHandler('onBegan', callback);
+    this.handlers.onBegan = callback;
     return this;
   }
 
   setOnStart(callback: (event: HandlerStateChangeEventPayload) => void) {
-    this.setHandler('onStart', callback);
+    this.handlers.onStart = callback;
     return this;
   }
 
   setOnEnd(
     callback: (event: HandlerStateChangeEventPayload, success: boolean) => void
   ) {
-    this.setHandler('onEnd', callback);
+    this.handlers.onEnd = callback;
     return this;
   }
 
   setEnabled(enabled: boolean) {
-    this.setConfig('enabled', enabled);
+    this.config.enabled = enabled;
     return this;
   }
 
   setMinPointers(minPointers: number) {
-    this.setConfig('minPointers', minPointers);
+    this.config.minPointers = minPointers;
     return this;
   }
 
   setShouldCancelWhenOutside(value: boolean) {
-    this.setConfig('shouldCancelWhenOutside', value);
+    this.config.shouldCancelWhenOutside = value;
     return this;
   }
 
-  setHitSlop(
-    hitSlop:
-      | number
-      | Partial<
-          Record<
-            'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
-            number
-          >
-        >
-      | Record<'width' | 'left', number>
-      | Record<'width' | 'right', number>
-      | Record<'height' | 'top', number>
-      | Record<'height' | 'bottom', number>
-  ) {
-    this.setConfig('hitSlop', hitSlop);
+  setHitSlop(hitSlop: HitSlopType) {
+    this.config.hitSlop = hitSlop;
     return this;
   }
 
@@ -163,10 +186,6 @@ export abstract class SimpleGesture extends Gesture {
       this.config.requireToFail = this.toArray(this.config.requireToFail);
     }
 
-    if (this.config.after !== undefined) {
-      this.config.after = this.toArray(this.config.after);
-    }
-
     if (this.config.simultaneousWith !== undefined) {
       this.config.simultaneousWith = this.toArray(this.config.simultaneousWith);
     }
@@ -181,7 +200,18 @@ export abstract class SimpleGesture extends Gesture {
   }
 }
 
+type TapGestureConfig = CommonGestureConfig & {
+  numberOfTaps: number;
+  maxDist: number;
+  maxDurationMs: number;
+  maxDelayMs: number;
+  maxDeltaX: number;
+  maxDeltaY: number;
+};
+
 export class Tap extends SimpleGesture {
+  public config: Partial<TapGestureConfig> = {};
+
   static allowedProps = [
     ...baseGestureHandlerWithMonitorProps,
     ...tapGestureHandlerProps,
@@ -194,32 +224,32 @@ export class Tap extends SimpleGesture {
   }
 
   setTapCount(count: number) {
-    this.setConfig('numberOfTaps', count);
+    this.config.numberOfTaps = count;
     return this;
   }
 
   setMaxDistance(maxDist: number) {
-    this.setConfig('maxDist', maxDist);
+    this.config.maxDist = maxDist;
     return this;
   }
 
   setMaxDuration(duration: number) {
-    this.setConfig('maxDurationMs', duration);
+    this.config.maxDurationMs = duration;
     return this;
   }
 
   setMaxDelay(delay: number) {
-    this.setConfig('maxDelayMs', delay);
+    this.config.maxDelayMs = delay;
     return this;
   }
 
   setMaxDeltaX(delta: number) {
-    this.setConfig('maxDeltaX', delta);
+    this.config.maxDeltaX = delta;
     return this;
   }
 
   setMaxDeltaY(delta: number) {
-    this.setConfig('maxDeltaY', delta);
+    this.config.maxDeltaY = delta;
     return this;
   }
 
@@ -228,7 +258,18 @@ export class Tap extends SimpleGesture {
   }
 }
 
+type PanGestureConfig = CommonGestureConfig & {
+  activeOffsetY: number | number[];
+  activeOffsetX: number | number[];
+  failOffsetY: number | number[];
+  failOffsetX: number | number[];
+  minDist: number;
+  avgTouches: boolean;
+  enableTrackpadTwoFingerGesture: boolean;
+};
+
 export class Pan extends SimpleGesture {
+  public config: Partial<PanGestureConfig> = {};
   static allowedProps = [
     ...baseGestureHandlerWithMonitorProps,
     ...panGestureHandlerProps,
@@ -241,43 +282,43 @@ export class Pan extends SimpleGesture {
     this.handlerName = 'PanGestureHandler';
   }
 
-  setOnUpdate(callback: (event: PanGestureHandlerEventPayload) => void) {
-    this.setHandler('onUpdate', callback);
+  setOnUpdate(callback: (event: PanGestureHandlerEvent) => void) {
+    this.handlers.onUpdate = callback;
     return this;
   }
 
   setActiveOffsetY(offset: number | number[]) {
-    this.setConfig('activeOffsetY', offset);
+    this.config.activeOffsetY = offset;
     return this;
   }
 
   setActiveOffsetX(offset: number | number[]) {
-    this.setConfig('activeOffsetX', offset);
+    this.config.activeOffsetX = offset;
     return this;
   }
 
   setFailOffsetY(offset: number | number[]) {
-    this.setConfig('failOffsetY', offset);
+    this.config.failOffsetY = offset;
     return this;
   }
 
   setFailOffsetX(offset: number | number[]) {
-    this.setConfig('failOffsetX', offset);
+    this.config.failOffsetX = offset;
     return this;
   }
 
   setMinDistance(distance: number) {
-    this.setConfig('minDist', distance);
+    this.config.minDist = distance;
     return this;
   }
 
-  setAverageTouches(value: number) {
-    this.setConfig('avgTouches', value);
+  setAverageTouches(value: boolean) {
+    this.config.avgTouches = value;
     return this;
   }
 
   setEnableTrackpadTwoFingerGesture(value: boolean) {
-    this.setConfig('enableTrackpadTwoFingerGesture', value);
+    this.config.enableTrackpadTwoFingerGesture = value;
     return this;
   }
 
@@ -297,8 +338,8 @@ export class Pinch extends SimpleGesture {
     this.handlerName = 'PinchGestureHandler';
   }
 
-  setOnUpdate(callback: (event: PinchGestureHandlerEventPayload) => void) {
-    this.setHandler('onUpdate', callback);
+  setOnUpdate(callback: (event: PinchGestureHandlerEvent) => void) {
+    this.handlers.onUpdate = callback;
     return this;
   }
 }
@@ -311,12 +352,18 @@ export class Rotation extends SimpleGesture {
   }
 
   setOnUpdate(callback: (event: RotationGestureHandlerEventPayload) => void) {
-    this.setHandler('onUpdate', callback);
+    this.handlers.onUpdate = callback;
     return this;
   }
 }
 
+type LongPressGestureConfig = CommonGestureConfig & {
+  minDurationMs: number;
+  maxDist: number;
+};
+
 export class LongPress extends SimpleGesture {
+  public config: Partial<LongPressGestureConfig> = {};
   static allowedProps = [
     ...baseGestureHandlerWithMonitorProps,
     ...longPressGestureHandlerProps,
@@ -329,12 +376,12 @@ export class LongPress extends SimpleGesture {
   }
 
   setMinDuration(duration: number) {
-    this.setConfig('minDurationMs', duration);
+    this.config.minDurationMs = duration;
     return this;
   }
 
   setMaxDistance(distance: number) {
-    this.setConfig('maxDist', distance);
+    this.config.maxDist = distance;
     return this;
   }
 
@@ -343,7 +390,13 @@ export class LongPress extends SimpleGesture {
   }
 }
 
+type FlingGestureConfig = CommonGestureConfig & {
+  numberOfPointers: number;
+  direction: Directions;
+};
+
 export class Fling extends SimpleGesture {
+  public config: Partial<FlingGestureConfig> = {};
   static allowedProps = [
     ...baseGestureHandlerWithMonitorProps,
     ...flingGestureHandlerProps,
@@ -356,12 +409,12 @@ export class Fling extends SimpleGesture {
   }
 
   setNumberOfPointers(pointers: number) {
-    this.setConfig('numberOfPointers', pointers);
+    this.config.numberOfPointers = pointers;
     return this;
   }
 
   setDirection(direction: Directions) {
-    this.setConfig('direction', direction);
+    this.config.direction = direction;
     return this;
   }
 
@@ -370,7 +423,14 @@ export class Fling extends SimpleGesture {
   }
 }
 
+type ForceTouchGestureConfig = CommonGestureConfig & {
+  minForce: number;
+  maxForce: number;
+  feedbackOnActivation: boolean;
+};
+
 export class ForceTouch extends SimpleGesture {
+  public config: Partial<ForceTouchGestureConfig> = {};
   static allowedProps = [
     ...baseGestureHandlerWithMonitorProps,
     ...forceTouchGestureHandlerProps,
@@ -381,23 +441,24 @@ export class ForceTouch extends SimpleGesture {
 
     this.handlerName = 'ForceTouchGestureHandler';
   }
+
   setOnUpdate(callback: (event: ForceTouchGestureHandlerEventPayload) => void) {
-    this.setHandler('onUpdate', callback);
+    this.handlers.onUpdate = callback;
     return this;
   }
 
   setMinForce(force: number) {
-    this.setConfig('minForce', force);
+    this.config.minForce = force;
     return this;
   }
 
   setMaxForce(force: number) {
-    this.setConfig('maxForce', force);
+    this.config.maxForce = force;
     return this;
   }
 
   setFeedbackOnActivation(value: boolean) {
-    this.setConfig('feedbackOnActivation', value);
+    this.config.feedbackOnActivation = value;
     return this;
   }
 

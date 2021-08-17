@@ -3,7 +3,6 @@ import { SimpleGesture } from './simpleGestures';
 enum Relation {
   Simultaneous,
   Exclusive,
-  After,
   RequireToFail,
 }
 
@@ -38,13 +37,6 @@ export class GestureBuilder {
     });
   }
 
-  after(gesture: SimpleGesture): GestureBuilder {
-    return this.addGesture({
-      relation: Relation.After,
-      gesture: gesture,
-    });
-  }
-
   requireToFail(gesture: SimpleGesture): GestureBuilder {
     this.pendingGestures.push({
       relation: Relation.RequireToFail,
@@ -61,9 +53,8 @@ export class GestureBuilder {
   }
 
   prepare = () => {
-    const simultaneous = [];
-    const after = [];
-    const waitFor = [];
+    const simultaneous: number[] = [];
+    const waitFor: number[] = [];
 
     for (let i = this.pendingGestures.length - 1; i >= 0; i--) {
       const pendingGesture = this.pendingGestures[i];
@@ -86,12 +77,6 @@ export class GestureBuilder {
         newConfig.requireToFail = [...waitFor];
       }
 
-      if (newConfig.after) {
-        newConfig.after = [...newConfig.after, ...after];
-      } else {
-        newConfig.after = [...after];
-      }
-
       pendingGesture.gesture.config = newConfig;
 
       switch (pendingGesture.relation) {
@@ -99,9 +84,6 @@ export class GestureBuilder {
           simultaneous.push(pendingGesture.gesture.handlerTag);
           break;
         case Relation.Exclusive:
-          break;
-        case Relation.After:
-          after.push(pendingGesture.gesture.handlerTag);
           break;
         case Relation.RequireToFail:
           waitFor.push(pendingGesture.gesture.handlerTag);
