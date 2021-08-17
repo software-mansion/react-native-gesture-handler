@@ -13,32 +13,44 @@ type PendingGesture = {
 };
 
 export class GestureBuilder {
-  private log: Array<PendingGesture> = [];
+  private pendingGestures: Array<PendingGesture> = [];
 
   constructor(base: SimpleGesture) {
-    this.log.push({ relation: Relation.Exclusive, gesture: base });
+    this.pendingGestures.push({ relation: Relation.Exclusive, gesture: base });
   }
 
   simultaneousWith(gesture: SimpleGesture): GestureBuilder {
-    this.log.push({ relation: Relation.Simultaneous, gesture: gesture });
+    this.pendingGestures.push({
+      relation: Relation.Simultaneous,
+      gesture: gesture,
+    });
 
     return this;
   }
 
   exclusiveWith(gesture: SimpleGesture): GestureBuilder {
-    this.log.push({ relation: Relation.Exclusive, gesture: gesture });
+    this.pendingGestures.push({
+      relation: Relation.Exclusive,
+      gesture: gesture,
+    });
 
     return this;
   }
 
   after(gesture: SimpleGesture): GestureBuilder {
-    this.log.push({ relation: Relation.After, gesture: gesture });
+    this.pendingGestures.push({
+      relation: Relation.After,
+      gesture: gesture,
+    });
 
     return this;
   }
 
   requireToFail(gesture: SimpleGesture): GestureBuilder {
-    this.log.push({ relation: Relation.RequireToFail, gesture: gesture });
+    this.pendingGestures.push({
+      relation: Relation.RequireToFail,
+      gesture: gesture,
+    });
 
     return this;
   }
@@ -48,7 +60,7 @@ export class GestureBuilder {
 
     result.gestures = [];
 
-    for (const pg of this.log) {
+    for (const pg of this.pendingGestures) {
       result.gestures.push(pg.gesture);
     }
 
@@ -60,8 +72,8 @@ export class GestureBuilder {
     let after = [];
     let waitFor = [];
 
-    for (let i = this.log.length - 1; i >= 0; i--) {
-      let pendingGesture = this.log[i];
+    for (let i = this.pendingGestures.length - 1; i >= 0; i--) {
+      let pendingGesture = this.pendingGestures[i];
       pendingGesture.gesture.prepare();
 
       let newConfig = { ...pendingGesture.gesture.config };
