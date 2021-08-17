@@ -63,10 +63,6 @@ export abstract class SimpleGesture extends Gesture {
       : [gesture];
   }
 
-  private toArray(x: unknown) {
-    return [].concat(x);
-  }
-
   setRef(ref: React.RefObject<SimpleGesture>) {
     this.config.ref = ref;
     return this;
@@ -161,6 +157,10 @@ export abstract class SimpleGesture extends Gesture {
       this.config.simultaneousWith = this.toArray(this.config.simultaneousWith);
     }
   };
+
+  private toArray(x: unknown) {
+    return [].concat(x);
+  }
 }
 
 type TapGestureConfig = CommonGestureConfig & {
