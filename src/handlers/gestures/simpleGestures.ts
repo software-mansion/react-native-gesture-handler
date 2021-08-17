@@ -160,9 +160,7 @@ export abstract class SimpleGesture extends Gesture {
 
   build(): BuiltGesture {
     const result = new BuiltGesture(this.prepare);
-
     result.gestures = [this];
-
     return result;
   }
 
