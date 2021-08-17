@@ -10,10 +10,6 @@ import {
 } from './simpleGestures';
 
 export abstract class Gesture {
-  _requireToFail = [];
-  _after = [];
-  _simultaneousWith = [];
-
   abstract build(): BuiltGesture;
 
   abstract initialize(): void;
