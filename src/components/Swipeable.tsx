@@ -1,6 +1,6 @@
 // Similarily to the DrawerLayout component this deserves to be put in a
-// separate repo. Although, keeping it here for the time being will allow us
-// to move faster and fix possible issues quicker
+// separate repo. Although, keeping it here for the time being will allow us to
+// move faster and fix possible issues quicker
 
 import * as React from 'react';
 import { Component } from 'react';
@@ -15,14 +15,18 @@ import {
 } from 'react-native';
 
 import {
-  PanGestureHandler,
-  TapGestureHandler,
-  PanGestureHandlerProps,
   GestureEvent,
-  PanGestureHandlerEventPayload,
   HandlerStateChangeEvent,
+} from '../handlers/gestureHandlerCommon';
+import {
+  PanGestureHandler,
+  PanGestureHandlerEventPayload,
+  PanGestureHandlerProps,
+} from '../handlers/PanGestureHandler';
+import {
+  TapGestureHandler,
   TapGestureHandlerEventPayload,
-} from '../handlers/gestureHandlers';
+} from '../handlers/TapGestureHandler';
 import { State } from '../State';
 
 const DRAG_TOSS = 0.05;
@@ -34,28 +38,103 @@ type SwipeableExcludes = Exclude<
 
 interface SwipeableProps
   extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
+  /**
+   * Enables two-finger gestures on supported devices, for example iPads with
+   * trackpads. If not enabled the gesture will require click + drag, with
+   * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
+   * the gesture.
+   */
   enableTrackpadTwoFingerGesture?: boolean;
+
+  /**
+   * Specifies how much the visual interaction will be delayed compared to the
+   * gesture distance. e.g. value of 1 will indicate that the swipeable panel
+   * should exactly follow the gesture, 2 means it is going to be two times
+   * "slower".
+   */
   friction?: number;
+
+  /**
+   * Distance from the left edge at which released panel will animate to the
+   * open state (or the open panel will animate into the closed state). By
+   * default it's a half of the panel's width.
+   */
   leftThreshold?: number;
+
+  /**
+   * Distance from the right edge at which released panel will animate to the
+   * open state (or the open panel will animate into the closed state). By
+   * default it's a half of the panel's width.
+   */
   rightThreshold?: number;
+
+  /**
+   * Value indicating if the swipeable panel can be pulled further than the left
+   * actions panel's width. It is set to true by default as long as the left
+   * panel render method is present.
+   */
   overshootLeft?: boolean;
+
+  /**
+   * Value indicating if the swipeable panel can be pulled further than the
+   * right actions panel's width. It is set to true by default as long as the
+   * right panel render method is present.
+   */
   overshootRight?: boolean;
+
+  /**
+   * Specifies how much the visual interaction will be delayed compared to the
+   * gesture distance at overshoot. Default value is 1, it mean no friction, for
+   * a native feel, try 8 or above.
+   */
   overshootFriction?: number;
+
+  /**
+   * Called when left action panel gets open.
+   */
   onSwipeableLeftOpen?: () => void;
+
+  /**
+   * Called when right action panel gets open.
+   */
   onSwipeableRightOpen?: () => void;
+
+  /**
+   * Called when action panel gets open (either right or left).
+   */
   onSwipeableOpen?: () => void;
+
+  /**
+   * Called when action panel is closed.
+   */
   onSwipeableClose?: () => void;
+
+  /**
+   * Called when left action panel starts animating on open.
+   */
   onSwipeableLeftWillOpen?: () => void;
+
+  /**
+   * Called when right action panel starts animating on open.
+   */
   onSwipeableRightWillOpen?: () => void;
+
+  /**
+   * Called when action panel starts animating on open (either right or left).
+   */
   onSwipeableWillOpen?: () => void;
+
+  /**
+   * Called when action panel starts animating on close.
+   */
   onSwipeableWillClose?: () => void;
+
   /**
    *
    * This map describes the values to use as inputRange for extra interpolation:
    * AnimatedValue: [startValue, endValue]
    *
-   * progressAnimatedValue: [0, 1]
-   * dragAnimatedValue: [0, +]
+   * progressAnimatedValue: [0, 1] dragAnimatedValue: [0, +]
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
@@ -68,8 +147,7 @@ interface SwipeableProps
    * This map describes the values to use as inputRange for extra interpolation:
    * AnimatedValue: [startValue, endValue]
    *
-   * progressAnimatedValue: [0, 1]
-   * dragAnimatedValue: [0, -]
+   * progressAnimatedValue: [0, 1] dragAnimatedValue: [0, -]
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
@@ -77,9 +155,21 @@ interface SwipeableProps
     progressAnimatedValue: Animated.AnimatedInterpolation,
     dragAnimatedValue: Animated.AnimatedInterpolation
   ) => React.ReactNode;
+
   useNativeAnimations?: boolean;
+
   animationOptions?: Record<string, unknown>;
+
+  /**
+   * Style object for the container (`Animated.View`), for example to override
+   * `overflow: 'hidden'`.
+   */
   containerStyle?: StyleProp<ViewStyle>;
+
+  /**
+   * Style object for the children container (`Animated.View`), for example to
+   * apply `flex: 1`
+   */
   childrenContainerStyle?: StyleProp<ViewStyle>;
 }
 
@@ -350,7 +440,9 @@ export default class Swipeable extends Component<
       <Animated.View
         style={[
           styles.leftActions,
-          // all those and below parameters can have ! since they are all asigned in constructor in `updateAnimatedEvent` but TS cannot spot it for some reason
+          // all those and below parameters can have ! since they are all
+          // asigned in constructor in `updateAnimatedEvent` but TS cannot spot
+          // it for some reason
           { transform: [{ translateX: this.leftActionTranslate! }] },
         ]}>
         {renderLeftActions(this.showLeftAction!, this.transX!)}

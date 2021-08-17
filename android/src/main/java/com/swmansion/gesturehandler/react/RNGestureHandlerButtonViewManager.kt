@@ -141,7 +141,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
      * and plays sound effect if OnClickListener was set.
      *
      * To mitigate this behavior we use lastEventTime and lastAction variables to check that we already handled
-     * the event in {@link #onInterceptTouchEvent(MotionEvent)}. We assume here that different events
+     * the event in [onInterceptTouchEvent]. We assume here that different events
      * will have different event times or actions.
      * Events with same event time can occur on some devices for different actions.
      * (e.g. move and up in one gesture; move and cancel)
@@ -152,6 +152,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     override fun onTouchEvent(event: MotionEvent): Boolean {
       val eventTime = event.eventTime
       val action = event.action
+      // always true when lastEventTime or lastAction have default value (-1)
       if (lastEventTime != eventTime || lastAction != action) {
         lastEventTime = eventTime
         lastAction = action

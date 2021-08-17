@@ -8,23 +8,23 @@ import com.swmansion.gesturehandler.GestureHandlerRegistry
 import java.util.*
 
 class RNGestureHandlerRegistry : GestureHandlerRegistry {
-  private val mHandlers = SparseArray<GestureHandler<*>>()
-  private val mAttachedTo = SparseArray<Int?>()
-  private val mHandlersForView = SparseArray<ArrayList<GestureHandler<*>>>()
+  private val handlers = SparseArray<GestureHandler<*>>()
+  private val attachedTo = SparseArray<Int?>()
+  private val handlersForView = SparseArray<ArrayList<GestureHandler<*>>>()
 
   @Synchronized
   fun registerHandler(handler: GestureHandler<*>) {
-    mHandlers.put(handler.tag, handler)
+    handlers.put(handler.tag, handler)
   }
 
   @Synchronized
   fun getHandler(handlerTag: Int): GestureHandler<*>? {
-    return mHandlers[handlerTag]
+    return handlers[handlerTag]
   }
 
   @Synchronized
   fun attachHandlerToView(handlerTag: Int, viewTag: Int): Boolean {
-    val handler = mHandlers[handlerTag]
+    val handler = handlers[handlerTag]
     return handler?.let {
       detachHandler(handler)
       registerHandlerForViewWithTag(viewTag, handler)
@@ -34,13 +34,13 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
 
   @Synchronized
   private fun registerHandlerForViewWithTag(viewTag: Int, handler: GestureHandler<*>) {
-    check(mAttachedTo[handler.tag] == null) { "Handler $handler already attached" }
-    mAttachedTo.put(handler.tag, viewTag)
-    var listToAdd = mHandlersForView[viewTag]
+    check(attachedTo[handler.tag] == null) { "Handler $handler already attached" }
+    attachedTo.put(handler.tag, viewTag)
+    var listToAdd = handlersForView[viewTag]
     if (listToAdd == null) {
       listToAdd = ArrayList(1)
       listToAdd.add(handler)
-      mHandlersForView.put(viewTag, listToAdd)
+      handlersForView.put(viewTag, listToAdd)
     } else {
       listToAdd.add(handler)
     }
@@ -48,14 +48,14 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
 
   @Synchronized
   private fun detachHandler(handler: GestureHandler<*>) {
-    val attachedToView = mAttachedTo[handler.tag]
+    val attachedToView = attachedTo[handler.tag]
     if (attachedToView != null) {
-      mAttachedTo.remove(handler.tag)
-      val attachedHandlers = mHandlersForView[attachedToView]
+      attachedTo.remove(handler.tag)
+      val attachedHandlers = handlersForView[attachedToView]
       if (attachedHandlers != null) {
         attachedHandlers.remove(handler)
         if (attachedHandlers.size == 0) {
-          mHandlersForView.remove(attachedToView)
+          handlersForView.remove(attachedToView)
         }
       }
     }
@@ -69,22 +69,22 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
 
   @Synchronized
   fun dropHandler(handlerTag: Int) {
-    mHandlers[handlerTag]?.let {
+    handlers[handlerTag]?.let {
       detachHandler(it)
-      mHandlers.remove(handlerTag)
+      handlers.remove(handlerTag)
     }
   }
 
   @Synchronized
   fun dropAllHandlers() {
-    mHandlers.clear()
-    mAttachedTo.clear()
-    mHandlersForView.clear()
+    handlers.clear()
+    attachedTo.clear()
+    handlersForView.clear()
   }
 
   @Synchronized
   fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler<*>>? {
-    return mHandlersForView[viewTag]
+    return handlersForView[viewTag]
   }
 
   @Synchronized

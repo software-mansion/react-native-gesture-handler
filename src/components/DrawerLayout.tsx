@@ -1,10 +1,10 @@
 // This component is based on RN's DrawerLayoutAndroid API
 //
-// It perhaps deserves to be put in a separate repo, but since it relies
-// on react-native-gesture-handler library which isn't very popular at the
-// moment I decided to keep it here for the time being. It will allow us
-// to move faster and fix issues that may arise in gesture handler library
-// that could be found when using the drawer component
+// It perhaps deserves to be put in a separate repo, but since it relies on
+// react-native-gesture-handler library which isn't very popular at the moment I
+// decided to keep it here for the time being. It will allow us to move faster
+// and fix issues that may arise in gesture handler library that could be found
+// when using the drawer component
 
 import * as React from 'react';
 import { Component } from 'react';
@@ -25,12 +25,16 @@ import {
 
 import {
   GestureEvent,
+  HandlerStateChangeEvent,
+} from '../handlers/gestureHandlerCommon';
+import {
   PanGestureHandler,
   PanGestureHandlerEventPayload,
+} from '../handlers/PanGestureHandler';
+import {
   TapGestureHandler,
-  HandlerStateChangeEvent,
   TapGestureHandlerEventPayload,
-} from '../handlers/gestureHandlers';
+} from '../handlers/TapGestureHandler';
 import { State } from '../State';
 
 const DRAG_TOSS = 0.05;
@@ -50,16 +54,42 @@ export type DrawerLockMode = 'unlocked' | 'locked-closed' | 'locked-open';
 export type DrawerKeyboardDismissMode = 'none' | 'on-drag';
 
 export interface DrawerLayoutProps {
+  /**
+   * This attribute is present in the standard implementation already and is one
+   * of the required params. Gesture handler version of DrawerLayout make it
+   * possible for the function passed as `renderNavigationView` to take an
+   * Animated value as a parameter that indicates the progress of drawer
+   * opening/closing animation (progress value is 0 when closed and 1 when
+   * opened). This can be used by the drawer component to animated its children
+   * while the drawer is opening or closing.
+   */
   renderNavigationView: (
     progressAnimatedValue: Animated.Value
   ) => React.ReactNode;
+
   drawerPosition?: DrawerPosition;
+
   drawerWidth?: number;
+
   drawerBackgroundColor?: string;
+
   drawerLockMode?: DrawerLockMode;
+
   keyboardDismissMode?: DrawerKeyboardDismissMode;
+
+  /**
+   * Called when the drawer is closed.
+   */
   onDrawerClose?: () => void;
+
+  /**
+   * Called when the drawer is opened.
+   */
   onDrawerOpen?: () => void;
+
+  /**
+   * Called when the status of the drawer changes.
+   */
   onDrawerStateChanged?: (
     newState: DrawerState,
     drawerWillShow: boolean
@@ -67,15 +97,56 @@ export interface DrawerLayoutProps {
   useNativeAnimations?: boolean;
 
   drawerType?: DrawerType;
+
+  /**
+   * Defines how far from the edge of the content view the gesture should
+   * activate.
+   */
   edgeWidth?: number;
+
   minSwipeDistance?: number;
+
+  /**
+   * When set to true Drawer component will use
+   * {@link https://reactnative.dev/docs/statusbar StatusBar} API to hide the OS
+   * status bar whenever the drawer is pulled or when its in an "open" state.
+   */
   hideStatusBar?: boolean;
+
+  /**
+   * @default 'slide'
+   *
+   * Can be used when hideStatusBar is set to true and will select the animation
+   * used for hiding/showing the status bar. See
+   * {@link https://reactnative.dev/docs/statusbar StatusBar} documentation for
+   * more details
+   */
   statusBarAnimation?: StatusBarAnimation;
+
+  /**
+   * @default black
+   *
+   * Color of a semi-transparent overlay to be displayed on top of the content
+   * view when drawer gets open. A solid color should be used as the opacity is
+   * added by the Drawer itself and the opacity of the overlay is animated (from
+   * 0% to 70%).
+   */
   overlayColor?: string;
+
   contentContainerStyle?: StyleProp<ViewStyle>;
+
   drawerContainerStyle?: StyleProp<ViewStyle>;
+
+  /**
+   * Enables two-finger gestures on supported devices, for example iPads with
+   * trackpads. If not enabled the gesture will require click + drag, with
+   * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
+   * the gesture.
+   */
   enableTrackpadTwoFingerGesture?: boolean;
+
   onDrawerSlide?: (position: number) => void;
+
   onGestureRef?: (ref: PanGestureHandler) => void;
 }
 
@@ -168,13 +239,12 @@ export default class DrawerLayout extends Component<
     let touchX = touchXValue;
 
     if (drawerPosition !== 'left') {
-      // Most of the code is written in a way to handle left-side drawer.
-      // In order to handle right-side drawer the only thing we need to
-      // do is to reverse events coming from gesture handler in a way they
-      // emulate left-side drawer gestures. E.g. dragX is simply -dragX, and
-      // touchX is calulcated by subtracing real touchX from the width of the
-      // container (such that when touch happens at the right edge the value
-      // is simply 0)
+      // Most of the code is written in a way to handle left-side drawer. In
+      // order to handle right-side drawer the only thing we need to do is to
+      // reverse events coming from gesture handler in a way they emulate
+      // left-side drawer gestures. E.g. dragX is simply -dragX, and touchX is
+      // calulcated by subtracing real touchX from the width of the container
+      // (such that when touch happens at the right edge the value is simply 0)
       dragX = Animated.multiply(
         new Animated.Value(-1),
         dragXValue
@@ -204,11 +274,12 @@ export default class DrawerLayout extends Component<
     //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
     //    +---------------+    +---------------+    +---------------+    +---------------+
     //
-    // For the above to work properly we define animated value that will keep start position
-    // of the gesture. Then we use that value to calculate how much we need to subtract from
-    // the dragX. If the gesture started on the greyed out area we take the distance from the
-    // edge of the drawer to the start position. Otherwise we don't subtract at all and the
-    // drawer be pulled back as soon as you start the pan.
+    // For the above to work properly we define animated value that will keep
+    // start position of the gesture. Then we use that value to calculate how
+    // much we need to subtract from the dragX. If the gesture started on the
+    // greyed out area we take the distance from the edge of the drawer to the
+    // start position. Otherwise we don't subtract at all and the drawer be
+    // pulled back as soon as you start the pan.
     //
     // This is used only when drawerType is "front"
     //
@@ -345,14 +416,14 @@ export default class DrawerLayout extends Component<
     });
     const { drawerPosition, minSwipeDistance, edgeWidth } = this.props;
     const fromLeft = drawerPosition === 'left';
-    // gestureOrientation is 1 if the expected gesture is from left to right and -1 otherwise
-    // e.g. when drawer is on the left and is closed we expect left to right gesture, thus
-    // orientation will be 1.
+    // gestureOrientation is 1 if the expected gesture is from left to right and
+    // -1 otherwise e.g. when drawer is on the left and is closed we expect left
+    // to right gesture, thus orientation will be 1.
     const gestureOrientation =
       (fromLeft ? 1 : -1) * (this.drawerShown ? -1 : 1);
-    // When drawer is closed we want the hitSlop to be horizontally shorter
-    // than the container size by the value of SLOP. This will make it only
-    // activate when gesture happens not further than SLOP away from the edge
+    // When drawer is closed we want the hitSlop to be horizontally shorter than
+    // the container size by the value of SLOP. This will make it only activate
+    // when gesture happens not further than SLOP away from the edge
     const hitSlop = fromLeft
       ? { left: 0, width: showing ? undefined : edgeWidth }
       : { right: 0, width: showing ? undefined : edgeWidth };
@@ -377,10 +448,10 @@ export default class DrawerLayout extends Component<
     if (fromValue != null) {
       let nextFramePosition = fromValue;
       if (this.props.useNativeAnimations) {
-        // When using native driver, we predict the next position of the animation
-        // because it takes one frame of a roundtrip to pass RELEASE event from
-        // native driver to JS before we can start animating. Without it, it is more
-        // noticable that the frame is dropped.
+        // When using native driver, we predict the next position of the
+        // animation because it takes one frame of a roundtrip to pass RELEASE
+        // event from native driver to JS before we can start animating. Without
+        // it, it is more noticable that the frame is dropped.
         if (fromValue < toValue && velocity > 0) {
           nextFramePosition = Math.min(fromValue + velocity / 60.0, toValue);
         } else if (fromValue > toValue && velocity < 0) {
@@ -422,7 +493,8 @@ export default class DrawerLayout extends Component<
       options.velocity ? options.velocity : 0
     );
 
-    // We need to force the update, otherwise the overlay is not rerendered and it would not be clickable
+    // We need to force the update, otherwise the overlay is not rerendered and
+    // it would not be clickable
     this.forceUpdate();
   };
 
@@ -430,7 +502,8 @@ export default class DrawerLayout extends Component<
     // TODO: decide if it should be null or undefined is the proper value
     this.animateDrawer(undefined, 0, options.velocity ? options.velocity : 0);
 
-    // We need to force the update, otherwise the overlay is not rerendered and it would be still clickable
+    // We need to force the update, otherwise the overlay is not rerendered and
+    // it would be still clickable
     this.forceUpdate();
   };
 
@@ -474,8 +547,8 @@ export default class DrawerLayout extends Component<
 
     // we rely on row and row-reverse flex directions to position the drawer
     // properly. Apparently for RTL these are flipped which requires us to use
-    // the opposite setting for the drawer to appear from left or right according
-    // to the drawerPosition prop
+    // the opposite setting for the drawer to appear from left or right
+    // according to the drawerPosition prop
     const reverseContentDirection = I18nManager.isRTL ? fromLeft : !fromLeft;
 
     const dynamicDrawerStyles = {
@@ -546,8 +619,8 @@ export default class DrawerLayout extends Component<
   };
 
   private setPanGestureRef = (ref: PanGestureHandler) => {
-    // TODO(TS): make sure it is OK
-    // taken from https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065#issuecomment-596081842
+    // TODO(TS): make sure it is OK taken from
+    // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065#issuecomment-596081842
     (this
       .panGestureHandler as React.MutableRefObject<PanGestureHandler>).current = ref;
     this.props.onGestureRef?.(ref);
@@ -563,15 +636,15 @@ export default class DrawerLayout extends Component<
 
     const fromLeft = drawerPosition === 'left';
 
-    // gestureOrientation is 1 if the expected gesture is from left to right and -1 otherwise
-    // e.g. when drawer is on the left and is closed we expect left to right gesture, thus
-    // orientation will be 1.
+    // gestureOrientation is 1 if the expected gesture is from left to right and
+    // -1 otherwise e.g. when drawer is on the left and is closed we expect left
+    // to right gesture, thus orientation will be 1.
     const gestureOrientation =
       (fromLeft ? 1 : -1) * (this.drawerShown ? -1 : 1);
 
-    // When drawer is closed we want the hitSlop to be horizontally shorter
-    // than the container size by the value of SLOP. This will make it only
-    // activate when gesture happens not further than SLOP away from the edge
+    // When drawer is closed we want the hitSlop to be horizontally shorter than
+    // the container size by the value of SLOP. This will make it only activate
+    // when gesture happens not further than SLOP away from the edge
     const hitSlop = fromLeft
       ? { left: 0, width: this.drawerShown ? undefined : edgeWidth }
       : { right: 0, width: this.drawerShown ? undefined : edgeWidth };

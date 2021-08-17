@@ -15,32 +15,74 @@ import { State } from '../State';
 import {
   GestureEvent,
   HandlerStateChangeEvent,
-} from '../handlers/gestureHandlers';
+} from '../handlers/gestureHandlerCommon';
 import {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,
 } from '../handlers/NativeViewGestureHandler';
 
 export interface RawButtonProps extends NativeViewGestureHandlerProps {
+  /**
+   * iOS only.
+   *
+   * Defines if more than one button could be pressed simultaneously. By default
+   * set true.
+   */
   exclusive?: boolean;
   // TODO: we should transform props in `createNativeWrapper`
+
+  /**
+   * Android only.
+   *
+   * Defines color of native ripple animation used since API level 21.
+   */
   rippleColor?: any; // it was present in BaseButtonProps before but is used here in code
 }
 
 export interface BaseButtonProps extends RawButtonProps {
+  /**
+   * Called when the button gets pressed (analogous to `onPress` in
+   * `TouchableHighlight` from RN core).
+   */
   onPress?: (pointerInside: boolean) => void;
+
+  /**
+   * Called when button changes from inactive to active and vice versa. It
+   * passes active state as a boolean variable as a first parameter for that
+   * method.
+   */
   onActiveStateChange?: (active: boolean) => void;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }
 
 export interface RectButtonProps extends BaseButtonProps {
+  /**
+   * Background color that will be dimmed when button is in active state.
+   */
   underlayColor?: string;
+
+  /**
+   * iOS only.
+   *
+   * Opacity applied to the underlay when button is in active state.
+   */
   activeOpacity?: number;
 }
 
 export interface BorderlessButtonProps extends BaseButtonProps {
+  /**
+   * Android only.
+   *
+   * Set this to false if you want the ripple animation to render only within view bounds.
+   */
   borderless?: boolean;
+
+  /**
+   * iOS only.
+   *
+   * Opacity applied to the button when it is in an active state.
+   */
   activeOpacity?: number;
 }
 
@@ -79,10 +121,10 @@ export class BaseButton extends React.Component<BaseButtonProps> {
     this.lastActive = active;
   };
 
-  // Normally, the parent would execute it's handler first,
-  // then forward the event to listeners. However, here our handler
-  // is virtually only forwarding events to listeners, so we reverse the order
-  // to keep the proper order of the callbacks (from "raw" ones to "processed").
+  // Normally, the parent would execute it's handler first, then forward the
+  // event to listeners. However, here our handler is virtually only forwarding
+  // events to listeners, so we reverse the order to keep the proper order of
+  // the callbacks (from "raw" ones to "processed").
   private onHandlerStateChange = (
     e: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
   ) => {

@@ -152,10 +152,10 @@ class GestureHandlerOrchestrator(
 
   private fun makeActive(handler: GestureHandler<*>) {
     val currentState = handler.state
-    handler.apply {
+    with(handler) {
       isAwaiting = false
       isActive = true
-      activationIndex = activationIndex++
+      activationIndex = this@GestureHandlerOrchestrator.activationIndex++
     }
     var toCancelCount = 0
     // Cancel all handlers that are required to be cancel upon current handler's activation
@@ -302,8 +302,10 @@ class GestureHandlerOrchestrator(
     }
     check(awaitingHandlersCount < awaitingHandlers.size) { "Too many recognizers" }
     awaitingHandlers[awaitingHandlersCount++] = handler
-    handler.isAwaiting = true
-    handler.activationIndex = activationIndex++
+    with(handler) {
+      isAwaiting = true
+      activationIndex = this@GestureHandlerOrchestrator.activationIndex++
+    }
   }
 
   private fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
