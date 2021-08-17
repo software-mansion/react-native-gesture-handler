@@ -40,15 +40,9 @@ export abstract class SimpleGesture extends Gesture {
     key: string,
     gesture: SimpleGesture | React.RefObject<SimpleGesture>
   ) {
-    if (this.config[key]) {
-      if (Array.isArray(this.config[key])) {
-        this.config[key].push(gesture);
-      } else {
-        this.config[key] = [this.config[key], gesture];
-      }
-    } else {
-      this.config[key] = [gesture];
-    }
+    this.config[key] = this.config[key]
+      ? [].concat(this.config[key], gesture)
+      : [gesture];
   }
 
   private toArray(x: any) {
