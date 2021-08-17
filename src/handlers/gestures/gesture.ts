@@ -10,7 +10,7 @@ import {
 } from './simpleGestures';
 
 export abstract class Gesture {
-  abstract build(): GestureConfig;
+  abstract configure(): GestureConfig;
 
   abstract initialize(): void;
 

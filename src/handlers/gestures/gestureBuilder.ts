@@ -44,7 +44,7 @@ export class GestureBuilder {
     return this;
   }
 
-  build(): GestureConfig {
+  configure(): GestureConfig {
     const gesturesConfig = new GestureConfig(this.prepare);
     gesturesConfig.gestures = this.pendingGestures.map(
       (pending) => pending.gesture
