@@ -33,12 +33,10 @@ export class GestureBuilder {
   }
 
   requireToFail(gesture: SimpleGesture): GestureBuilder {
-    this.pendingGestures.push({
+    return this.addGesture({
       relation: Relation.RequireToFail,
       gesture: gesture,
     });
-
-    return this;
   }
 
   private addGesture(gesture: PendingGesture): GestureBuilder {
