@@ -4,6 +4,7 @@ import { Directions } from '../../Directions';
 import {
   GestureEventPayload,
   HandlerStateChangeEventPayload,
+  HitSlop,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
 import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
@@ -11,25 +12,12 @@ import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandle
 import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 
-type HitSlopType =
-  | number
-  | Partial<
-      Record<
-        'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
-        number
-      >
-    >
-  | Record<'width' | 'left', number>
-  | Record<'width' | 'right', number>
-  | Record<'height' | 'top', number>
-  | Record<'height' | 'bottom', number>;
-
 type CommonGestureConfig = {
   ref: React.RefObject<SimpleGesture>;
   enabled: boolean;
   minPointers: number;
   shouldCancelWhenOutside: boolean;
-  hitSlop: HitSlopType;
+  hitSlop: HitSlop;
   requireToFail: (number | SimpleGesture | React.RefObject<SimpleGesture>)[];
   simultaneousWith: (number | SimpleGesture | React.RefObject<SimpleGesture>)[];
 };
@@ -116,7 +104,7 @@ export abstract class SimpleGesture extends Gesture {
     return this;
   }
 
-  setHitSlop(hitSlop: HitSlopType) {
+  setHitSlop(hitSlop: HitSlop) {
     this.config.hitSlop = hitSlop;
     return this;
   }
