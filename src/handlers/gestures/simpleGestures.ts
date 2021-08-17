@@ -1,7 +1,11 @@
 import { Gesture } from './gesture';
 import { GestureBuilder, BuiltGesture } from './gestureBuilder';
 import { Directions } from '../../Directions';
-import { baseGestureHandlerWithMonitorProps } from '../gestureHandlerCommon';
+import {
+  baseGestureHandlerWithMonitorProps,
+  GestureEventPayload,
+  HandlerStateChangeEventPayload,
+} from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
 import {
@@ -28,11 +32,11 @@ export abstract class SimpleGesture extends Gesture {
   //TODO fix type
   static allowedProps: any = baseGestureHandlerWithMonitorProps;
 
-  protected setConfig(key: string, value: any) {
+  protected setConfig(key: string, value: unknown) {
     this.config[key] = value;
   }
 
-  protected setHandler(key: string, value: any) {
+  protected setHandler(key: string, value: unknown) {
     this.handlers[key] = value;
   }
 
@@ -49,27 +53,29 @@ export abstract class SimpleGesture extends Gesture {
     return [].concat(x);
   }
 
-  setRef(ref: React.RefObject<any>) {
+  setRef(ref: React.RefObject<unknown>) {
     this.setConfig('ref', ref);
     return this;
   }
 
-  setOnBegan(callback: (event: any) => void) {
+  setOnBegan(callback: (event: HandlerStateChangeEventPayload) => void) {
     this.setHandler('onBegan', callback);
     return this;
   }
 
-  setOnStart(callback: (event: any) => void) {
+  setOnStart(callback: (event: HandlerStateChangeEventPayload) => void) {
     this.setHandler('onStart', callback);
     return this;
   }
 
-  setOnEnd(callback: (event: any, success: boolean) => void) {
+  setOnEnd(
+    callback: (event: HandlerStateChangeEventPayload, success: boolean) => void
+  ) {
     this.setHandler('onEnd', callback);
     return this;
   }
 
-  setOnUpdate(callback: (event: any) => void) {
+  setOnUpdate(callback: (event: GestureEventPayload) => void) {
     this.setHandler('onUpdate', callback);
     return this;
   }
@@ -89,7 +95,20 @@ export abstract class SimpleGesture extends Gesture {
     return this;
   }
 
-  setHitSlop(hitSlop: any) {
+  setHitSlop(
+    hitSlop:
+      | number
+      | Partial<
+          Record<
+            'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
+            number
+          >
+        >
+      | Record<'width' | 'left', number>
+      | Record<'width' | 'right', number>
+      | Record<'height' | 'top', number>
+      | Record<'height' | 'bottom', number>
+  ) {
     this.setConfig('hitSlop', hitSlop);
     return this;
   }
