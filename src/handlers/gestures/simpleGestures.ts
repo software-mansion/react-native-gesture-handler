@@ -51,6 +51,10 @@ export abstract class SimpleGesture extends Gesture {
     }
   }
 
+  private toArray(x: any) {
+    return [].concat(x);
+  }
+
   setRef(ref: React.RefObject<any>) {
     this.setConfig('ref', ref);
     return this;
@@ -142,22 +146,16 @@ export abstract class SimpleGesture extends Gesture {
   }
 
   prepare = () => {
-    if (
-      this.config.requireToFail &&
-      !Array.isArray(this.config.requireToFail)
-    ) {
-      this.config.requireToFail = [this.config.requireToFail];
+    if (this.config.requireToFail !== undefined) {
+      this.config.requireToFail = this.toArray(this.config.requireToFail);
     }
 
-    if (this.config.after && !Array.isArray(this.config.after)) {
-      this.config.after = [this.config.after];
+    if (this.config.after !== undefined) {
+      this.config.after = this.toArray(this.config.after);
     }
 
-    if (
-      this.config.simultaneousWith &&
-      !Array.isArray(this.config.simultaneousWith)
-    ) {
-      this.config.simultaneousWith = [this.config.simultaneousWith];
+    if (this.config.simultaneousWith !== undefined) {
+      this.config.simultaneousWith = this.toArray(this.config.simultaneousWith);
     }
   };
 
