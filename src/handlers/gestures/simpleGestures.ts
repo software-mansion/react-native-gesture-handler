@@ -1,5 +1,5 @@
 import { Gesture } from './gesture';
-import { InteractionBuilder } from './gestureBuilder';
+import { InteractionBuilder } from './interactionBuilder';
 import { Directions } from '../../Directions';
 import {
   GestureEventPayload,
