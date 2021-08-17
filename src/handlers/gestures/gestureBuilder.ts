@@ -16,34 +16,33 @@ export class GestureBuilder {
   private pendingGestures: Array<PendingGesture> = [];
 
   constructor(base: SimpleGesture) {
-    this.pendingGestures.push({ relation: Relation.Exclusive, gesture: base });
+    this.addGesture({ relation: Relation.Exclusive, gesture: base });
+  }
+
+  private addGesture(gesture: PendingGesture): GestureBuilder {
+    this.pendingGestures.push(gesture);
+    return this;
   }
 
   simultaneousWith(gesture: SimpleGesture): GestureBuilder {
-    this.pendingGestures.push({
+    return this.addGesture({
       relation: Relation.Simultaneous,
       gesture: gesture,
     });
-
-    return this;
   }
 
   exclusiveWith(gesture: SimpleGesture): GestureBuilder {
-    this.pendingGestures.push({
+    return this.addGesture({
       relation: Relation.Exclusive,
       gesture: gesture,
     });
-
-    return this;
   }
 
   after(gesture: SimpleGesture): GestureBuilder {
-    this.pendingGestures.push({
+    return this.addGesture({
       relation: Relation.After,
       gesture: gesture,
     });
-
-    return this;
   }
 
   requireToFail(gesture: SimpleGesture): GestureBuilder {
