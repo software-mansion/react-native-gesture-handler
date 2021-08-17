@@ -1,4 +1,4 @@
-import { BuiltGesture } from './gestureBuilder';
+import { GestureConfig } from './gestureBuilder';
 import {
   Tap,
   Pan,
@@ -10,7 +10,7 @@ import {
 } from './simpleGestures';
 
 export abstract class Gesture {
-  abstract build(): BuiltGesture;
+  abstract build(): GestureConfig;
 
   abstract initialize(): void;
 

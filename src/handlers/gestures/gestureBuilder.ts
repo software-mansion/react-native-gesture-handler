@@ -44,10 +44,12 @@ export class GestureBuilder {
     return this;
   }
 
-  build(): BuiltGesture {
-    const result = new BuiltGesture(this.prepare);
-    result.gestures = this.pendingGestures.map((pending) => pending.gesture);
-    return result;
+  build(): GestureConfig {
+    const gesturesConfig = new GestureConfig(this.prepare);
+    gesturesConfig.gestures = this.pendingGestures.map(
+      (pending) => pending.gesture
+    );
+    return gesturesConfig;
   }
 
   prepare = () => {
@@ -91,7 +93,7 @@ export class GestureBuilder {
   };
 }
 
-export class BuiltGesture {
+export class GestureConfig {
   public gestures: SimpleGesture[] = [];
   private prepareCallback: () => void;
 

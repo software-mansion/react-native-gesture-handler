@@ -1,5 +1,5 @@
 import { Gesture } from './gesture';
-import { GestureBuilder, BuiltGesture } from './gestureBuilder';
+import { GestureBuilder, GestureConfig } from './gestureBuilder';
 import { Directions } from '../../Directions';
 import {
   GestureEventPayload,
@@ -142,10 +142,10 @@ export abstract class SimpleGesture extends Gesture {
     }
   }
 
-  build(): BuiltGesture {
-    const result = new BuiltGesture(this.prepare);
-    result.gestures = [this];
-    return result;
+  build(): GestureConfig {
+    const gesturesConfig = new GestureConfig(this.prepare);
+    gesturesConfig.gestures = [this];
+    return gesturesConfig;
   }
 
   prepare = () => {
