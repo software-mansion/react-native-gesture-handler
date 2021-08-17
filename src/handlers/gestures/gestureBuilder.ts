@@ -56,13 +56,7 @@ export class GestureBuilder {
 
   build(): BuiltGesture {
     const result = new BuiltGesture(this.prepare);
-
-    result.gestures = [];
-
-    for (const pg of this.pendingGestures) {
-      result.gestures.push(pg.gesture);
-    }
-
+    result.gestures = this.pendingGestures.map((pending) => pending.gesture);
     return result;
   }
 
