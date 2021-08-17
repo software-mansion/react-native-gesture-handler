@@ -1,3 +1,4 @@
+import { Gesture } from './gesture';
 import { SimpleGesture } from './simpleGestures';
 
 enum Relation {
@@ -11,10 +12,11 @@ type PendingGesture = {
   gesture: SimpleGesture;
 };
 
-export class GestureBuilder {
+export class GestureBuilder extends Gesture {
   private pendingGestures: PendingGesture[] = [];
 
   constructor(base: SimpleGesture) {
+    super();
     this.addGesture({ relation: Relation.Exclusive, gesture: base });
   }
 
@@ -44,15 +46,11 @@ export class GestureBuilder {
     return this;
   }
 
-  configure(): GestureConfig {
-    const gesturesConfig = new GestureConfig(this.prepare);
-    gesturesConfig.gestures = this.pendingGestures.map(
-      (pending) => pending.gesture
-    );
-    return gesturesConfig;
+  configure(): SimpleGesture[] {
+    return this.pendingGestures.map((pending) => pending.gesture);
   }
 
-  prepare = () => {
+  prepare() {
     const simultaneousTags: number[] = [];
     const waitForTags: number[] = [];
 
@@ -90,24 +88,11 @@ export class GestureBuilder {
           break;
       }
     }
-  };
-}
-
-export class GestureConfig {
-  public gestures: SimpleGesture[] = [];
-  private prepareCallback: () => void;
-
-  constructor(prepareCallback: () => void) {
-    this.prepareCallback = prepareCallback;
   }
 
   initialize() {
-    for (const gesture of this.gestures) {
-      gesture.initialize();
+    for (const pendingGesture of this.pendingGestures) {
+      pendingGesture.gesture.initialize();
     }
-  }
-
-  prepare() {
-    this.prepareCallback();
   }
 }

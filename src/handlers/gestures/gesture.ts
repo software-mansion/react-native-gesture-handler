@@ -1,4 +1,3 @@
-import { GestureConfig } from './gestureBuilder';
 import {
   Tap,
   Pan,
@@ -7,14 +6,15 @@ import {
   Fling,
   LongPress,
   ForceTouch,
+  SimpleGesture,
 } from './simpleGestures';
 
 export abstract class Gesture {
   /**
-   * Return GestureConfig, providing the same interface for creating and updating
+   * Return array of gestures, providing the same interface for creating and updating
    * handlers, no matter which object was used to create gesture instance.
    */
-  abstract configure(): GestureConfig;
+  abstract configure(): SimpleGesture[];
 
   /**
    * Assign handlerTag to the gesture instance and set ref.current (if a ref is set)
