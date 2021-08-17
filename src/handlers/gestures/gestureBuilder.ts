@@ -13,7 +13,7 @@ type PendingGesture = {
 };
 
 export class GestureBuilder {
-  private pendingGestures: Array<PendingGesture> = [];
+  private pendingGestures: PendingGesture[] = [];
 
   constructor(base: SimpleGesture) {
     this.addGesture({ relation: Relation.Exclusive, gesture: base });
@@ -55,7 +55,7 @@ export class GestureBuilder {
   }
 
   build(): BuiltGesture {
-    let result = new BuiltGesture(this.prepare);
+    const result = new BuiltGesture(this.prepare);
 
     result.gestures = [];
 
@@ -67,15 +67,15 @@ export class GestureBuilder {
   }
 
   prepare = () => {
-    let simultaneous = [];
-    let after = [];
-    let waitFor = [];
+    const simultaneous = [];
+    const after = [];
+    const waitFor = [];
 
     for (let i = this.pendingGestures.length - 1; i >= 0; i--) {
-      let pendingGesture = this.pendingGestures[i];
+      const pendingGesture = this.pendingGestures[i];
       pendingGesture.gesture.prepare();
 
-      let newConfig = { ...pendingGesture.gesture.config };
+      const newConfig = { ...pendingGesture.gesture.config };
 
       if (newConfig.simultaneousWith) {
         newConfig.simultaneousWith = [
@@ -118,7 +118,7 @@ export class GestureBuilder {
 }
 
 export class BuiltGesture {
-  public gestures: Array<SimpleGesture> = [];
+  public gestures: SimpleGesture[] = [];
   private prepareCallback: () => void;
 
   constructor(prepareCallback: () => void) {

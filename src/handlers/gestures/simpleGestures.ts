@@ -14,8 +14,8 @@ import { flingGestureHandlerProps } from '../FlingGestureHandler';
 import { forceTouchGestureHandlerProps } from '../ForceTouchGestureHandler';
 
 export abstract class SimpleGesture extends Gesture {
-  public handlerTag: number = -1;
-  public handlerName: string = '';
+  public handlerTag = -1;
+  public handlerName = '';
   public config: any = {};
   public handlers: any = {
     handlerTag: -1,
@@ -27,10 +27,6 @@ export abstract class SimpleGesture extends Gesture {
 
   //TODO fix type
   static allowedProps: any = baseGestureHandlerWithMonitorProps;
-
-  constructor() {
-    super();
-  }
 
   protected setConfig(key: string, value: any) {
     this.config[key] = value;
@@ -138,7 +134,7 @@ export abstract class SimpleGesture extends Gesture {
   }
 
   build(): BuiltGesture {
-    let result = new BuiltGesture(this.prepare);
+    const result = new BuiltGesture(this.prepare);
 
     result.gestures = [this];
 
@@ -234,22 +230,22 @@ export class Pan extends SimpleGesture {
     this.handlerName = 'PanGestureHandler';
   }
 
-  setActiveOffsetY(offset: number | Array<number>) {
+  setActiveOffsetY(offset: number | number[]) {
     this.setConfig('activeOffsetY', offset);
     return this;
   }
 
-  setActiveOffsetX(offset: number | Array<number>) {
+  setActiveOffsetX(offset: number | number[]) {
     this.setConfig('activeOffsetX', offset);
     return this;
   }
 
-  setFailOffsetY(offset: number | Array<number>) {
+  setFailOffsetY(offset: number | number[]) {
     this.setConfig('failOffsetY', offset);
     return this;
   }
 
-  setFailOffsetX(offset: number | Array<number>) {
+  setFailOffsetX(offset: number | number[]) {
     this.setConfig('failOffsetX', offset);
     return this;
   }
