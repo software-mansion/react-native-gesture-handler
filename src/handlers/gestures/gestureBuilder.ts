@@ -18,11 +18,6 @@ export class GestureBuilder {
     this.addGesture({ relation: Relation.Exclusive, gesture: base });
   }
 
-  private addGesture(gesture: PendingGesture): GestureBuilder {
-    this.pendingGestures.push(gesture);
-    return this;
-  }
-
   simultaneousWith(gesture: SimpleGesture): GestureBuilder {
     return this.addGesture({
       relation: Relation.Simultaneous,
@@ -43,6 +38,11 @@ export class GestureBuilder {
       gesture: gesture,
     });
 
+    return this;
+  }
+
+  private addGesture(gesture: PendingGesture): GestureBuilder {
+    this.pendingGestures.push(gesture);
     return this;
   }
 
