@@ -142,7 +142,7 @@ export abstract class SimpleGesture extends Gesture {
     }
   }
 
-  build(): GestureConfig {
+  configure(): GestureConfig {
     const gesturesConfig = new GestureConfig(this.prepare);
     gesturesConfig.gestures = [this];
     return gesturesConfig;

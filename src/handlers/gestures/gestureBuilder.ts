@@ -53,8 +53,8 @@ export class GestureBuilder {
   }
 
   prepare = () => {
-    const simultaneous: number[] = [];
-    const waitFor: number[] = [];
+    const simultaneousTags: number[] = [];
+    const waitForTags: number[] = [];
 
     for (let i = this.pendingGestures.length - 1; i >= 0; i--) {
       const pendingGesture = this.pendingGestures[i];
@@ -65,28 +65,28 @@ export class GestureBuilder {
       if (newConfig.simultaneousWith) {
         newConfig.simultaneousWith = [
           ...newConfig.simultaneousWith,
-          ...simultaneous,
+          ...simultaneousTags,
         ];
       } else {
-        newConfig.simultaneousWith = [...simultaneous];
+        newConfig.simultaneousWith = [...simultaneousTags];
       }
 
       if (newConfig.requireToFail) {
-        newConfig.requireToFail = [...newConfig.requireToFail, ...waitFor];
+        newConfig.requireToFail = [...newConfig.requireToFail, ...waitForTags];
       } else {
-        newConfig.requireToFail = [...waitFor];
+        newConfig.requireToFail = [...waitForTags];
       }
 
       pendingGesture.gesture.config = newConfig;
 
       switch (pendingGesture.relation) {
         case Relation.Simultaneous:
-          simultaneous.push(pendingGesture.gesture.handlerTag);
+          simultaneousTags.push(pendingGesture.gesture.handlerTag);
           break;
         case Relation.Exclusive:
           break;
         case Relation.RequireToFail:
-          waitFor.push(pendingGesture.gesture.handlerTag);
+          waitForTags.push(pendingGesture.gesture.handlerTag);
           break;
       }
     }
