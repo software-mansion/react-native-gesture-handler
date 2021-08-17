@@ -85,7 +85,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
 
     private var _backgroundColor = Color.TRANSPARENT
     private var needBackgroundUpdate = false
-    private var lastEventTime = 0L
+    private var lastEventTime = -1L
+    private var lastAction = -1
 
     init {
       // we attach empty click listener to trigger tap sounds (see View#performClick())
@@ -139,17 +140,22 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
      * This leads to invoking onTouchEvent twice which isn't idempotent in View - it calls OnClickListener
      * and plays sound effect if OnClickListener was set.
      *
-     * To mitigate this behavior we use lastEventTime variable to check that we already handled
-     * the event in [.onInterceptTouchEvent]. We assume here that different events
-     * will have different event times.
+     * To mitigate this behavior we use lastEventTime and lastAction variables to check that we already handled
+     * the event in [onInterceptTouchEvent]. We assume here that different events
+     * will have different event times or actions.
+     * Events with same event time can occur on some devices for different actions.
+     * (e.g. move and up in one gesture; move and cancel)
      *
      * Reference:
      * [com.swmansion.gesturehandler.NativeViewGestureHandler.onHandle]  */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
       val eventTime = event.eventTime
-      if (lastEventTime != eventTime || lastEventTime == 0L) {
+      val action = event.action
+      // always true when lastEventTime or lastAction have default value (-1)
+      if (lastEventTime != eventTime || lastAction != action) {
         lastEventTime = eventTime
+        lastAction = action
         return super.onTouchEvent(event)
       }
       return false
