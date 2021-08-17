@@ -60,20 +60,14 @@ export class InteractionBuilder extends Gesture {
 
       const newConfig = { ...pendingGesture.gesture.config };
 
-      if (newConfig.simultaneousWith) {
-        newConfig.simultaneousWith = [
-          ...newConfig.simultaneousWith,
-          ...simultaneousTags,
-        ];
-      } else {
-        newConfig.simultaneousWith = [...simultaneousTags];
-      }
-
-      if (newConfig.requireToFail) {
-        newConfig.requireToFail = [...newConfig.requireToFail, ...waitForTags];
-      } else {
-        newConfig.requireToFail = [...waitForTags];
-      }
+      newConfig.simultaneousWith = this.extendRelation(
+        newConfig.simultaneousWith,
+        simultaneousTags
+      );
+      newConfig.requireToFail = this.extendRelation(
+        newConfig.requireToFail,
+        waitForTags
+      );
 
       pendingGesture.gesture.config = newConfig;
 
@@ -87,6 +81,19 @@ export class InteractionBuilder extends Gesture {
           waitForTags.push(pendingGesture.gesture.handlerTag);
           break;
       }
+    }
+  }
+
+  private extendRelation(
+    currentRelation:
+      | (number | SimpleGesture | React.RefObject<SimpleGesture>)[]
+      | undefined,
+    extendWith: number[]
+  ) {
+    if (currentRelation === undefined) {
+      return [...extendWith];
+    } else {
+      return [...currentRelation, ...extendWith];
     }
   }
 
