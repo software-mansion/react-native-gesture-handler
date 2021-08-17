@@ -146,7 +146,7 @@ export abstract class SimpleGesture extends Gesture {
     return [this];
   }
 
-  prepare = () => {
+  prepare() {
     if (this.config.requireToFail !== undefined) {
       this.config.requireToFail = this.toArray(this.config.requireToFail);
     }
@@ -154,7 +154,7 @@ export abstract class SimpleGesture extends Gesture {
     if (this.config.simultaneousWith !== undefined) {
       this.config.simultaneousWith = this.toArray(this.config.simultaneousWith);
     }
-  };
+  }
 
   private toArray(x: unknown) {
     return [].concat(x);
