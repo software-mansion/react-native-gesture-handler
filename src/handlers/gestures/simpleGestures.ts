@@ -3,7 +3,6 @@ import { GestureBuilder, BuiltGesture } from './gestureBuilder';
 import { Directions } from '../../Directions';
 import {
   baseGestureHandlerWithMonitorProps,
-  GestureEventPayload,
   HandlerStateChangeEventPayload,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
@@ -12,10 +11,16 @@ import {
   panGestureHandlerProps,
   panGestureHandlerCustomNativeProps,
   managePanProps,
+  PanGestureHandlerEventPayload,
 } from '../PanGestureHandler';
 import { longPressGestureHandlerProps } from '../LongPressGestureHandler';
 import { flingGestureHandlerProps } from '../FlingGestureHandler';
-import { forceTouchGestureHandlerProps } from '../ForceTouchGestureHandler';
+import {
+  ForceTouchGestureHandlerEventPayload,
+  forceTouchGestureHandlerProps,
+} from '../ForceTouchGestureHandler';
+import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
+import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 
 export abstract class SimpleGesture extends Gesture {
   public handlerTag = -1;
@@ -72,11 +77,6 @@ export abstract class SimpleGesture extends Gesture {
     callback: (event: HandlerStateChangeEventPayload, success: boolean) => void
   ) {
     this.setHandler('onEnd', callback);
-    return this;
-  }
-
-  setOnUpdate(callback: (event: GestureEventPayload) => void) {
-    this.setHandler('onUpdate', callback);
     return this;
   }
 
@@ -241,6 +241,11 @@ export class Pan extends SimpleGesture {
     this.handlerName = 'PanGestureHandler';
   }
 
+  setOnUpdate(callback: (event: PanGestureHandlerEventPayload) => void) {
+    this.setHandler('onUpdate', callback);
+    return this;
+  }
+
   setActiveOffsetY(offset: number | number[]) {
     this.setConfig('activeOffsetY', offset);
     return this;
@@ -291,6 +296,11 @@ export class Pinch extends SimpleGesture {
 
     this.handlerName = 'PinchGestureHandler';
   }
+
+  setOnUpdate(callback: (event: PinchGestureHandlerEventPayload) => void) {
+    this.setHandler('onUpdate', callback);
+    return this;
+  }
 }
 
 export class Rotation extends SimpleGesture {
@@ -298,6 +308,11 @@ export class Rotation extends SimpleGesture {
     super();
 
     this.handlerName = 'RotationGestureHandler';
+  }
+
+  setOnUpdate(callback: (event: RotationGestureHandlerEventPayload) => void) {
+    this.setHandler('onUpdate', callback);
+    return this;
   }
 }
 
@@ -365,6 +380,10 @@ export class ForceTouch extends SimpleGesture {
     super();
 
     this.handlerName = 'ForceTouchGestureHandler';
+  }
+  setOnUpdate(callback: (event: ForceTouchGestureHandlerEventPayload) => void) {
+    this.setHandler('onUpdate', callback);
+    return this;
   }
 
   setMinForce(force: number) {
