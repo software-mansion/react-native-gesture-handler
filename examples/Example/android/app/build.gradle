@@ -118,6 +118,10 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
+ project.ext.react = [
+  enableHermes: true
+]
+
 def enableHermes = project.ext.react.get("enableHermes", false);
 
 android {
