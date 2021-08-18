@@ -1,20 +1,18 @@
-import {
-  Tap,
-  Pan,
-  Pinch,
-  Rotation,
-  Fling,
-  LongPress,
-  ForceTouch,
-  SimpleGesture,
-} from './simpleGestures';
+import { BaseGesture } from './baseGesture';
+import { FlingGesture } from './flingGesture';
+import { ForceTouchGesture } from './forceTouchGesture';
+import { LongPressGesture } from './longPressGesture';
+import { PanGesture } from './panGesture';
+import { PinchGesture } from './pinchGesture';
+import { RotationGesture } from './rotationGesture';
+import { TapGesture } from './tapGesture';
 
 export abstract class Gesture {
   /**
    * Return array of gestures, providing the same interface for creating and updating
    * handlers, no matter which object was used to create gesture instance.
    */
-  abstract configure(): SimpleGesture[];
+  abstract configure(): BaseGesture<any>[];
 
   /**
    * Assign handlerTag to the gesture instance and set ref.current (if a ref is set)
@@ -29,30 +27,30 @@ export abstract class Gesture {
   abstract prepare(): void;
 
   static tap() {
-    return new Tap();
+    return new TapGesture();
   }
 
   static pan() {
-    return new Pan();
+    return new PanGesture();
   }
 
   static pinch() {
-    return new Pinch();
+    return new PinchGesture();
   }
 
   static rotation() {
-    return new Rotation();
+    return new RotationGesture();
   }
 
   static fling() {
-    return new Fling();
+    return new FlingGesture();
   }
 
   static longPress() {
-    return new LongPress();
+    return new LongPressGesture();
   }
 
   static forceTouch() {
-    return new ForceTouch();
+    return new ForceTouchGesture();
   }
 }

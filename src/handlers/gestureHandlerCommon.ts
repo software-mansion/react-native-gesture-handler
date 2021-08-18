@@ -66,6 +66,14 @@ export interface HandlerStateChangeEvent<
   nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
 }
 
+export type UnwrappedGestureHandlerEvent<
+  GestureEventPayloadT = Record<string, unknown>
+> = GestureEventPayload & GestureEventPayloadT;
+
+export type UnwrappedGestureHandlerStateChangeEvent<
+  GestureStateChangeEventPayloadT = Record<string, unknown>
+> = HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT;
+
 export interface CommonGestureConfig {
   enabled?: boolean;
   minPointers?: number;

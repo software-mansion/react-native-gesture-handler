@@ -1,5 +1,5 @@
 import { Gesture } from './gesture';
-import { SimpleGesture } from './simpleGestures';
+import { BaseGesture } from './baseGesture';
 
 enum Relation {
   Simultaneous,
@@ -9,32 +9,32 @@ enum Relation {
 
 type PendingGesture = {
   relation: Relation;
-  gesture: SimpleGesture;
+  gesture: BaseGesture<unknown>;
 };
 
 export class InteractionBuilder extends Gesture {
   private pendingGestures: PendingGesture[] = [];
 
-  constructor(base: SimpleGesture) {
+  constructor(base: BaseGesture<any>) {
     super();
     this.addGesture({ relation: Relation.Exclusive, gesture: base });
   }
 
-  simultaneousWith(gesture: SimpleGesture): InteractionBuilder {
+  simultaneousWith(gesture: BaseGesture<any>): InteractionBuilder {
     return this.addGesture({
       relation: Relation.Simultaneous,
       gesture: gesture,
     });
   }
 
-  exclusiveWith(gesture: SimpleGesture): InteractionBuilder {
+  exclusiveWith(gesture: BaseGesture<any>): InteractionBuilder {
     return this.addGesture({
       relation: Relation.Exclusive,
       gesture: gesture,
     });
   }
 
-  requireToFail(gesture: SimpleGesture): InteractionBuilder {
+  requireToFail(gesture: BaseGesture<any>): InteractionBuilder {
     return this.addGesture({
       relation: Relation.RequireToFail,
       gesture: gesture,
@@ -46,7 +46,7 @@ export class InteractionBuilder extends Gesture {
     return this;
   }
 
-  configure(): SimpleGesture[] {
+  configure(): BaseGesture<unknown>[] {
     return this.pendingGestures.map((pending) => pending.gesture);
   }
 
@@ -86,7 +86,11 @@ export class InteractionBuilder extends Gesture {
 
   private extendRelation(
     currentRelation:
-      | (number | SimpleGesture | React.RefObject<SimpleGesture>)[]
+      | (
+          | number
+          | BaseGesture<unknown>
+          | React.RefObject<BaseGesture<unknown>>
+        )[]
       | undefined,
     extendWith: number[]
   ) {
