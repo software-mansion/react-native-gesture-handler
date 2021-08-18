@@ -74,7 +74,7 @@ export type UnwrappedGestureHandlerStateChangeEvent<
   GestureStateChangeEventPayloadT = Record<string, unknown>
 > = HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT;
 
-export interface CommonGestureConfig {
+export interface CommonGestureConfig extends Record<string, unknown> {
   enabled?: boolean;
   minPointers?: number;
   shouldCancelWhenOutside?: boolean;

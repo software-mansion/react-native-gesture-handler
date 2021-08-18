@@ -9,7 +9,7 @@ import {
 import { getNextHandlerTag } from '../handlersRegistry';
 
 export interface BaseGestureConfig extends CommonGestureConfig {
-  ref?: React.RefObject<BaseGesture<unknown>>;
+  ref?: React.MutableRefObject<BaseGesture<any>>;
   requireToFail?: (
     | number
     | BaseGesture<unknown>
@@ -50,11 +50,11 @@ export abstract class BaseGesture<EventPayloadT> extends Gesture {
     gesture: BaseGesture<unknown> | React.RefObject<BaseGesture<unknown>>
   ) {
     this.config[key] = this.config[key]
-      ? [].concat(this.config[key], gesture)
+      ? [].concat(this.config[key] as never, gesture as never)
       : [gesture];
   }
 
-  setRef(ref: React.RefObject<BaseGesture<unknown>>) {
+  setRef(ref: React.MutableRefObject<BaseGesture<unknown>>) {
     this.config.ref = ref;
     return this;
   }
@@ -159,6 +159,6 @@ export abstract class BaseGesture<EventPayloadT> extends Gesture {
   }
 
   private toArray(x: unknown) {
-    return [].concat(x);
+    return [].concat(x as never);
   }
 }
