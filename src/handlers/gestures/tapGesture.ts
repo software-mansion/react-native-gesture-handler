@@ -1,4 +1,4 @@
-import { BaseGestureConfig, BaseGesture } from './baseGesture';
+import { BaseGestureConfig, BaseGesture } from './gesture';
 import {
   TapGestureConfig,
   TapGestureHandlerEventPayload,

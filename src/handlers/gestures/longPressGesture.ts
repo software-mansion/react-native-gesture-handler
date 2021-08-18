@@ -1,4 +1,4 @@
-import { BaseGesture, BaseGestureConfig } from './baseGesture';
+import { BaseGesture, BaseGestureConfig } from './gesture';
 import {
   LongPressGestureConfig,
   LongPressGestureHandlerEventPayload,

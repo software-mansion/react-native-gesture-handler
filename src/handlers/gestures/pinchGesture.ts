@@ -1,5 +1,5 @@
 import { UnwrappedGestureHandlerEvent } from '../gestureHandlerCommon';
-import { BaseGesture } from './baseGesture';
+import { BaseGesture } from './gesture';
 import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 
 export class PinchGesture extends BaseGesture<PinchGestureHandlerEventPayload> {

@@ -1,5 +1,5 @@
 import { UnwrappedGestureHandlerEvent } from '../gestureHandlerCommon';
-import { BaseGesture, BaseGestureConfig } from './baseGesture';
+import { BaseGesture, BaseGestureConfig } from './gesture';
 import {
   PanGestureConfig,
   PanGestureHandlerEventPayload,

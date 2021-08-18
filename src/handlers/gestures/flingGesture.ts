@@ -1,5 +1,5 @@
 import { Directions } from '../../Directions';
-import { BaseGesture, BaseGestureConfig } from './baseGesture';
+import { BaseGesture, BaseGestureConfig } from './gesture';
 import {
   FlingGestureConfig,
   FlingGestureHandlerEventPayload,

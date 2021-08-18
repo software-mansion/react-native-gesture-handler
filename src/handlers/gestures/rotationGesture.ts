@@ -1,5 +1,5 @@
 import { UnwrappedGestureHandlerEvent } from '../gestureHandlerCommon';
-import { BaseGesture } from './baseGesture';
+import { BaseGesture } from './gesture';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 
 export class RotationGesture extends BaseGesture<RotationGestureHandlerEventPayload> {
