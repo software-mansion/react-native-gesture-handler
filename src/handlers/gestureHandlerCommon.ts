@@ -66,18 +66,21 @@ export interface HandlerStateChangeEvent<
   nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
 }
 
+export interface CommonGestureConfig {
+  enabled?: boolean;
+  minPointers?: number;
+  shouldCancelWhenOutside?: boolean;
+  hitSlop?: HitSlop;
+}
+
 // Events payloads are types instead of interfaces due to TS limitation.
 // See https://github.com/microsoft/TypeScript/issues/15300 for more info.
 export type BaseGestureHandlerProps<
   ExtraEventPayloadT extends Record<string, unknown> = Record<string, unknown>
-> = {
+> = CommonGestureConfig & {
   id?: string;
-  enabled?: boolean;
-  minPointers?: number;
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
   simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
-  shouldCancelWhenOutside?: boolean;
-  hitSlop?: HitSlop;
   // TODO(TS) - fix event types
   onBegan?: (event: HandlerStateChangeEvent) => void;
   onFailed?: (event: HandlerStateChangeEvent) => void;

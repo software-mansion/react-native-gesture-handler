@@ -5,25 +5,41 @@ import {
   GestureEventPayload,
   HandlerStateChangeEventPayload,
   HitSlop,
+  CommonGestureConfig,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
-import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
-import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandler';
+import {
+  PanGestureConfig,
+  PanGestureHandlerEventPayload,
+} from '../PanGestureHandler';
+import {
+  ForceTouchGestureConfig,
+  ForceTouchGestureHandlerEventPayload,
+} from '../ForceTouchGestureHandler';
 import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
-import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
-import { LongPressGestureHandlerEventPayload } from '../LongPressGestureHandler';
-import { FlingGestureHandlerEventPayload } from '../FlingGestureHandler';
+import {
+  TapGestureHandlerEventPayload,
+  TapGestureConfig,
+} from '../TapGestureHandler';
+import {
+  LongPressGestureConfig,
+  LongPressGestureHandlerEventPayload,
+} from '../LongPressGestureHandler';
+import {
+  FlingGestureConfig,
+  FlingGestureHandlerEventPayload,
+} from '../FlingGestureHandler';
 
-type CommonGestureConfig = {
-  ref: React.RefObject<SimpleGesture>;
-  enabled: boolean;
-  minPointers: number;
-  shouldCancelWhenOutside: boolean;
-  hitSlop: HitSlop;
-  requireToFail: (number | SimpleGesture | React.RefObject<SimpleGesture>)[];
-  simultaneousWith: (number | SimpleGesture | React.RefObject<SimpleGesture>)[];
-};
+interface BaseGestureConfig extends CommonGestureConfig {
+  ref?: React.RefObject<SimpleGesture>;
+  requireToFail?: (number | SimpleGesture | React.RefObject<SimpleGesture>)[];
+  simultaneousWith?: (
+    | number
+    | SimpleGesture
+    | React.RefObject<SimpleGesture>
+  )[];
+}
 
 type GestureHandlerEvent<
   GestureEventPayloadT = Record<string, unknown>
@@ -68,7 +84,7 @@ type HandlerCallbacks = {
 export abstract class SimpleGesture extends Gesture {
   public handlerTag = -1;
   public handlerName = '';
-  public config: Partial<CommonGestureConfig> = {};
+  public config: BaseGestureConfig = {};
   public handlers: HandlerCallbacks = {
     handlerTag: -1,
   };
@@ -183,17 +199,8 @@ export abstract class SimpleGesture extends Gesture {
   }
 }
 
-type TapGestureConfig = CommonGestureConfig & {
-  numberOfTaps: number;
-  maxDist: number;
-  maxDurationMs: number;
-  maxDelayMs: number;
-  maxDeltaX: number;
-  maxDeltaY: number;
-};
-
 export class Tap extends SimpleGesture {
-  public config: Partial<TapGestureConfig> = {};
+  public config: BaseGestureConfig & TapGestureConfig = {};
 
   constructor() {
     super();
@@ -257,22 +264,8 @@ export class Tap extends SimpleGesture {
   }
 }
 
-type PanGestureConfig = CommonGestureConfig & {
-  activeOffsetYStart: number;
-  activeOffsetYEnd: number;
-  activeOffsetXStart: number;
-  activeOffsetXEnd: number;
-  failOffsetYStart: number;
-  failOffsetYEnd: number;
-  failOffsetXStart: number;
-  failOffsetXEnd: number;
-  minDist: number;
-  avgTouches: boolean;
-  enableTrackpadTwoFingerGesture: boolean;
-};
-
 export class Pan extends SimpleGesture {
-  public config: Partial<PanGestureConfig> = {};
+  public config: BaseGestureConfig & PanGestureConfig = {};
 
   constructor() {
     super();
@@ -437,13 +430,8 @@ export class Rotation extends SimpleGesture {
   }
 }
 
-type LongPressGestureConfig = CommonGestureConfig & {
-  minDurationMs: number;
-  maxDist: number;
-};
-
 export class LongPress extends SimpleGesture {
-  public config: Partial<LongPressGestureConfig> = {};
+  public config: BaseGestureConfig & LongPressGestureConfig = {};
 
   constructor() {
     super();
@@ -487,13 +475,8 @@ export class LongPress extends SimpleGesture {
   }
 }
 
-type FlingGestureConfig = CommonGestureConfig & {
-  numberOfPointers: number;
-  direction: Directions;
-};
-
 export class Fling extends SimpleGesture {
-  public config: Partial<FlingGestureConfig> = {};
+  public config: BaseGestureConfig & FlingGestureConfig = {};
 
   constructor() {
     super();
@@ -537,14 +520,8 @@ export class Fling extends SimpleGesture {
   }
 }
 
-type ForceTouchGestureConfig = CommonGestureConfig & {
-  minForce: number;
-  maxForce: number;
-  feedbackOnActivation: boolean;
-};
-
 export class ForceTouch extends SimpleGesture {
-  public config: Partial<ForceTouchGestureConfig> = {};
+  public config: BaseGestureConfig & ForceTouchGestureConfig = {};
 
   constructor() {
     super();
