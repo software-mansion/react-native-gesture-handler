@@ -11,6 +11,9 @@ import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
 import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandler';
 import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
+import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
+import { LongPressGestureHandlerEventPayload } from '../LongPressGestureHandler';
+import { FlingGestureHandlerEventPayload } from '../FlingGestureHandler';
 
 type CommonGestureConfig = {
   ref: React.RefObject<SimpleGesture>;
@@ -22,28 +25,44 @@ type CommonGestureConfig = {
   simultaneousWith: (number | SimpleGesture | React.RefObject<SimpleGesture>)[];
 };
 
-type PanGestureHandlerEvent = GestureEventPayload &
-  PanGestureHandlerEventPayload;
+type GestureHandlerEvent<
+  GestureEventPayloadT = Record<string, unknown>
+> = GestureEventPayload & GestureEventPayloadT;
 
-type PinchGestureHandlerEvent = GestureEventPayload &
-  PinchGestureHandlerEventPayload;
+type GestureHandlerStateChangeEvent<
+  GestureStateChangeEventPayloadT = Record<string, unknown>
+> = HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT;
 
-type RotationGestureHandlerEvent = GestureEventPayload &
-  RotationGestureHandlerEventPayload;
+type GestureHandlerEventPayload =
+  | TapGestureHandlerEventPayload
+  | PanGestureHandlerEventPayload
+  | PinchGestureHandlerEventPayload
+  | RotationGestureHandlerEventPayload
+  | LongPressGestureHandlerEventPayload
+  | ForceTouchGestureHandlerEventPayload
+  | FlingGestureHandlerEventPayload;
 
-type ForceTouchGestureHandlerEvent = GestureEventPayload &
-  ForceTouchGestureHandlerEventPayload;
+type ContinousGestureHandlerEventCallback =
+  | ((event: GestureHandlerEvent<PanGestureHandlerEventPayload>) => void)
+  | ((event: GestureHandlerEvent<PinchGestureHandlerEventPayload>) => void)
+  | ((event: GestureHandlerEvent<RotationGestureHandlerEventPayload>) => void)
+  | ((
+      event: GestureHandlerEvent<ForceTouchGestureHandlerEventPayload>
+    ) => void);
 
 type HandlerCallbacks = {
   handlerTag: number;
-  onBegan?: (event: HandlerStateChangeEventPayload) => void;
-  onStart?: (event: HandlerStateChangeEventPayload) => void;
-  onEnd?: (event: HandlerStateChangeEventPayload, success: boolean) => void;
-  onUpdate?:
-    | ((event: PanGestureHandlerEvent) => void)
-    | ((event: PinchGestureHandlerEvent) => void)
-    | ((event: RotationGestureHandlerEvent) => void)
-    | ((event: ForceTouchGestureHandlerEvent) => void);
+  onBegan?: (
+    event: GestureHandlerStateChangeEvent<GestureHandlerEventPayload>
+  ) => void;
+  onStart?: (
+    event: GestureHandlerStateChangeEvent<GestureHandlerEventPayload>
+  ) => void;
+  onEnd?: (
+    event: GestureHandlerStateChangeEvent<GestureHandlerEventPayload>,
+    success: boolean
+  ) => void;
+  onUpdate?: ContinousGestureHandlerEventCallback;
 };
 
 export abstract class SimpleGesture extends Gesture {
@@ -68,18 +87,21 @@ export abstract class SimpleGesture extends Gesture {
     return this;
   }
 
-  setOnBegan(callback: (event: HandlerStateChangeEventPayload) => void) {
+  setOnBegan(callback: (event: GestureHandlerStateChangeEvent<any>) => void) {
     this.handlers.onBegan = callback;
     return this;
   }
 
-  setOnStart(callback: (event: HandlerStateChangeEventPayload) => void) {
+  setOnStart(callback: (event: GestureHandlerStateChangeEvent<any>) => void) {
     this.handlers.onStart = callback;
     return this;
   }
 
   setOnEnd(
-    callback: (event: HandlerStateChangeEventPayload, success: boolean) => void
+    callback: (
+      event: GestureHandlerStateChangeEvent<any>,
+      success: boolean
+    ) => void
   ) {
     this.handlers.onEnd = callback;
     return this;
@@ -179,6 +201,31 @@ export class Tap extends SimpleGesture {
     this.handlerName = 'TapGestureHandler';
   }
 
+  setOnBegan(
+    callback: (
+      event: GestureHandlerStateChangeEvent<TapGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnBegan(callback);
+  }
+
+  setOnStart(
+    callback: (
+      event: GestureHandlerStateChangeEvent<TapGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnStart(callback);
+  }
+
+  setOnEnd(
+    callback: (
+      event: GestureHandlerStateChangeEvent<TapGestureHandlerEventPayload>,
+      success: boolean
+    ) => void
+  ) {
+    return super.setOnEnd(callback);
+  }
+
   setTapCount(count: number) {
     this.config.numberOfTaps = count;
     return this;
@@ -233,7 +280,36 @@ export class Pan extends SimpleGesture {
     this.handlerName = 'PanGestureHandler';
   }
 
-  setOnUpdate(callback: (event: PanGestureHandlerEvent) => void) {
+  setOnBegan(
+    callback: (
+      event: GestureHandlerStateChangeEvent<PanGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnBegan(callback);
+  }
+
+  setOnStart(
+    callback: (
+      event: GestureHandlerStateChangeEvent<PanGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnStart(callback);
+  }
+
+  setOnEnd(
+    callback: (
+      event: GestureHandlerStateChangeEvent<PanGestureHandlerEventPayload>,
+      success: boolean
+    ) => void
+  ) {
+    return super.setOnEnd(callback);
+  }
+
+  setOnUpdate(
+    callback: (
+      event: GestureHandlerEvent<PanGestureHandlerEventPayload>
+    ) => void
+  ) {
     this.handlers.onUpdate = callback;
     return this;
   }
@@ -309,7 +385,11 @@ export class Pinch extends SimpleGesture {
     this.handlerName = 'PinchGestureHandler';
   }
 
-  setOnUpdate(callback: (event: PinchGestureHandlerEvent) => void) {
+  setOnUpdate(
+    callback: (
+      event: GestureHandlerEvent<PinchGestureHandlerEventPayload>
+    ) => void
+  ) {
     this.handlers.onUpdate = callback;
     return this;
   }
@@ -322,7 +402,36 @@ export class Rotation extends SimpleGesture {
     this.handlerName = 'RotationGestureHandler';
   }
 
-  setOnUpdate(callback: (event: RotationGestureHandlerEventPayload) => void) {
+  setOnBegan(
+    callback: (
+      event: GestureHandlerStateChangeEvent<RotationGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnBegan(callback);
+  }
+
+  setOnStart(
+    callback: (
+      event: GestureHandlerStateChangeEvent<RotationGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnStart(callback);
+  }
+
+  setOnEnd(
+    callback: (
+      event: GestureHandlerStateChangeEvent<RotationGestureHandlerEventPayload>,
+      success: boolean
+    ) => void
+  ) {
+    return super.setOnEnd(callback);
+  }
+
+  setOnUpdate(
+    callback: (
+      event: GestureHandlerEvent<RotationGestureHandlerEventPayload>
+    ) => void
+  ) {
     this.handlers.onUpdate = callback;
     return this;
   }
@@ -340,6 +449,31 @@ export class LongPress extends SimpleGesture {
     super();
 
     this.handlerName = 'LongPressGestureHandler';
+  }
+
+  setOnBegan(
+    callback: (
+      event: GestureHandlerStateChangeEvent<LongPressGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnBegan(callback);
+  }
+
+  setOnStart(
+    callback: (
+      event: GestureHandlerStateChangeEvent<LongPressGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnStart(callback);
+  }
+
+  setOnEnd(
+    callback: (
+      event: GestureHandlerStateChangeEvent<LongPressGestureHandlerEventPayload>,
+      success: boolean
+    ) => void
+  ) {
+    return super.setOnEnd(callback);
   }
 
   setMinDuration(duration: number) {
@@ -365,6 +499,31 @@ export class Fling extends SimpleGesture {
     super();
 
     this.handlerName = 'FlingGestureHandler';
+  }
+
+  setOnBegan(
+    callback: (
+      event: GestureHandlerStateChangeEvent<FlingGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnBegan(callback);
+  }
+
+  setOnStart(
+    callback: (
+      event: GestureHandlerStateChangeEvent<FlingGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnStart(callback);
+  }
+
+  setOnEnd(
+    callback: (
+      event: GestureHandlerStateChangeEvent<FlingGestureHandlerEventPayload>,
+      success: boolean
+    ) => void
+  ) {
+    return super.setOnEnd(callback);
   }
 
   setNumberOfPointers(pointers: number) {
@@ -393,7 +552,36 @@ export class ForceTouch extends SimpleGesture {
     this.handlerName = 'ForceTouchGestureHandler';
   }
 
-  setOnUpdate(callback: (event: ForceTouchGestureHandlerEventPayload) => void) {
+  setOnBegan(
+    callback: (
+      event: GestureHandlerStateChangeEvent<ForceTouchGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnBegan(callback);
+  }
+
+  setOnStart(
+    callback: (
+      event: GestureHandlerStateChangeEvent<ForceTouchGestureHandlerEventPayload>
+    ) => void
+  ) {
+    return super.setOnStart(callback);
+  }
+
+  setOnEnd(
+    callback: (
+      event: GestureHandlerStateChangeEvent<ForceTouchGestureHandlerEventPayload>,
+      success: boolean
+    ) => void
+  ) {
+    return super.setOnEnd(callback);
+  }
+
+  setOnUpdate(
+    callback: (
+      event: GestureHandlerEvent<ForceTouchGestureHandlerEventPayload>
+    ) => void
+  ) {
     this.handlers.onUpdate = callback;
     return this;
   }
