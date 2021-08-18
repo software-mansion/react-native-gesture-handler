@@ -42,6 +42,19 @@ export interface HandlerStateChangeEventPayload {
   oldState: ValueOf<typeof State>;
 }
 
+export type HitSlop =
+  | number
+  | Partial<
+      Record<
+        'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
+        number
+      >
+    >
+  | Record<'width' | 'left', number>
+  | Record<'width' | 'right', number>
+  | Record<'height' | 'top', number>
+  | Record<'height' | 'bottom', number>;
+
 //TODO(TS) events in handlers
 
 export interface GestureEvent<ExtraEventPayloadT = Record<string, unknown>> {
@@ -53,30 +66,29 @@ export interface HandlerStateChangeEvent<
   nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
 }
 
+export type UnwrappedGestureHandlerEvent<
+  GestureEventPayloadT = Record<string, unknown>
+> = GestureEventPayload & GestureEventPayloadT;
+
+export type UnwrappedGestureHandlerStateChangeEvent<
+  GestureStateChangeEventPayloadT = Record<string, unknown>
+> = HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT;
+
+export interface CommonGestureConfig extends Record<string, unknown> {
+  enabled?: boolean;
+  minPointers?: number;
+  shouldCancelWhenOutside?: boolean;
+  hitSlop?: HitSlop;
+}
+
 // Events payloads are types instead of interfaces due to TS limitation.
 // See https://github.com/microsoft/TypeScript/issues/15300 for more info.
 export type BaseGestureHandlerProps<
   ExtraEventPayloadT extends Record<string, unknown> = Record<string, unknown>
-> = {
+> = CommonGestureConfig & {
   id?: string;
-  enabled?: boolean;
-  minPointers?: number;
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
   simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
-  shouldCancelWhenOutside?: boolean;
-  hitSlop?:
-    | number
-    // TODO(TS) take into consideration types from GestureHandler#setHitSlop
-    | Partial<
-        Record<
-          'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
-          number
-        >
-      >
-    | Record<'width' | 'left', number>
-    | Record<'width' | 'right', number>
-    | Record<'height' | 'top', number>
-    | Record<'height' | 'bottom', number>;
   // TODO(TS) - fix event types
   onBegan?: (event: HandlerStateChangeEvent) => void;
   onFailed?: (event: HandlerStateChangeEvent) => void;

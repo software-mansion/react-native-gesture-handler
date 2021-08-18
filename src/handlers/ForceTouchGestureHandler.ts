@@ -32,12 +32,15 @@ export type ForceTouchGestureHandlerEventPayload = {
   force: number;
 };
 
-export interface ForceTouchGestureHandlerProps
-  extends BaseGestureHandlerProps<ForceTouchGestureHandlerEventPayload> {
+export interface ForceTouchGestureConfig {
   minForce?: number;
   maxForce?: number;
   feedbackOnActivation?: boolean;
 }
+
+export interface ForceTouchGestureHandlerProps
+  extends BaseGestureHandlerProps<ForceTouchGestureHandlerEventPayload>,
+    ForceTouchGestureConfig {}
 
 export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
   forceTouchAvailable: boolean;

@@ -21,16 +21,18 @@ export type TapGestureHandlerEventPayload = {
   absoluteY: number;
 };
 
-export interface TapGestureHandlerProps
-  extends BaseGestureHandlerProps<TapGestureHandlerEventPayload> {
-  minPointers?: number;
+export interface TapGestureConfig {
+  numberOfTaps?: number;
+  maxDist?: number;
   maxDurationMs?: number;
   maxDelayMs?: number;
-  numberOfTaps?: number;
   maxDeltaX?: number;
   maxDeltaY?: number;
-  maxDist?: number;
 }
+
+export interface TapGestureHandlerProps
+  extends BaseGestureHandlerProps<TapGestureHandlerEventPayload>,
+    TapGestureConfig {}
 
 export type TapGestureHandler = typeof TapGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file

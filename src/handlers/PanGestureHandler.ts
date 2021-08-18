@@ -41,8 +41,26 @@ export type PanGestureHandlerEventPayload = {
   velocityY: number;
 };
 
+interface CommonPanProperties {
+  minDist?: number;
+  avgTouches?: boolean;
+  enableTrackpadTwoFingerGesture?: boolean;
+}
+
+export interface PanGestureConfig extends CommonPanProperties {
+  activeOffsetYStart?: number;
+  activeOffsetYEnd?: number;
+  activeOffsetXStart?: number;
+  activeOffsetXEnd?: number;
+  failOffsetYStart?: number;
+  failOffsetYEnd?: number;
+  failOffsetXStart?: number;
+  failOffsetXEnd?: number;
+}
+
 export interface PanGestureHandlerProps
-  extends BaseGestureHandlerProps<PanGestureHandlerEventPayload> {
+  extends BaseGestureHandlerProps<PanGestureHandlerEventPayload>,
+    CommonPanProperties {
   /** @deprecated  use activeOffsetX*/
   minDeltaX?: number;
   /** @deprecated  use activeOffsetY*/
@@ -59,14 +77,10 @@ export interface PanGestureHandlerProps
   activeOffsetX?: number | number[];
   failOffsetY?: number | number[];
   failOffsetX?: number | number[];
-  minDist?: number;
   minVelocity?: number;
   minVelocityX?: number;
   minVelocityY?: number;
-  minPointers?: number;
   maxPointers?: number;
-  avgTouches?: boolean;
-  enableTrackpadTwoFingerGesture?: boolean;
 }
 
 export type PanGestureHandler = typeof PanGestureHandler;
