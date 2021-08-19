@@ -24,7 +24,7 @@ export interface BaseGestureConfig extends CommonGestureConfig {
   )[];
 }
 
-type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
+export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
   handlerTag: number;
   onBegan?: (
     event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>

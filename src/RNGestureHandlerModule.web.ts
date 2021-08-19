@@ -44,7 +44,7 @@ export default {
   attachGestureHandler(
     handlerTag: number,
     newView: number,
-    usingDeviceEvents: boolean,
+    _usingDeviceEvents: boolean,
     propsRef: React.RefObject<unknown>
   ) {
     NodeManager.getHandler(handlerTag).setView(newView, propsRef);
