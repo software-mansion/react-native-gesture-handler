@@ -8,6 +8,28 @@ import {
 } from './gesture';
 import { registerHandler, unregisterHandler } from '../handlersRegistry';
 import Animated from 'react-native-reanimated';
+import {
+  baseGestureHandlerWithMonitorProps,
+  filterConfig,
+} from '../gestureHandlerCommon';
+import { tapGestureHandlerProps } from '../TapGestureHandler';
+import {
+  panGestureHandlerProps,
+  panGestureHandlerCustomNativeProps,
+} from '../PanGestureHandler';
+import { longPressGestureHandlerProps } from '../LongPressGestureHandler';
+import { forceTouchGestureHandlerProps } from '../ForceTouchGestureHandler';
+import { flingGestureHandlerProps } from '../FlingGestureHandler';
+
+const ALLOWED_PROPS = [
+  ...baseGestureHandlerWithMonitorProps,
+  ...tapGestureHandlerProps,
+  ...panGestureHandlerProps,
+  ...panGestureHandlerCustomNativeProps,
+  ...longPressGestureHandlerProps,
+  ...forceTouchGestureHandlerProps,
+  ...flingGestureHandlerProps,
+];
 
 export type GestureConfigReference = {
   config: BaseGesture<Record<string, unknown>>[];
@@ -58,21 +80,6 @@ export function useGesture(
     }
   }
 
-  function filterConfig(config) {
-    const filtered = {};
-    for (const key of Object.keys(config)) {
-      if (
-        key !== 'ref' &&
-        typeof config[key] !== 'function' &&
-        key !== 'simultaneousWith' &&
-        key !== 'requireToFail'
-      ) {
-        filtered[key] = config[key];
-      }
-    }
-    return filtered;
-  }
-
   function attachHandlers() {
     if (!result.current.firstExecution) {
       gestureConfig.initialize();
@@ -84,7 +91,7 @@ export function useGesture(
       RNGestureHandlerModule.createGestureHandler(
         gst.handlerName,
         gst.handlerTag,
-        filterConfig(gst.config)
+        filterConfig(gst.config, ALLOWED_PROPS)
       );
 
       registerHandler(gst.handlerTag, gst);
@@ -106,11 +113,13 @@ export function useGesture(
             .filter((tag) => tag > 0);
         }
 
-        RNGestureHandlerModule.updateGestureHandler(gst.handlerTag, {
-          ...filterConfig(gst.config),
-          simultaneousHandlers: simultaneousWith,
-          waitFor: requireToFail,
-        });
+        RNGestureHandlerModule.updateGestureHandler(
+          gst.handlerTag,
+          filterConfig(gst.config, ALLOWED_PROPS, {
+            simultaneousHandlers: simultaneousWith,
+            waitFor: requireToFail,
+          })
+        );
       });
     }
     result.current.config = gesture;
@@ -152,11 +161,13 @@ export function useGesture(
           .filter((tag) => tag > 0);
       }
 
-      RNGestureHandlerModule.updateGestureHandler(gst.handlerTag, {
-        ...filterConfig(gst.config),
-        simultaneousHandlers: simultaneousWith,
-        waitFor: requireToFail,
-      });
+      RNGestureHandlerModule.updateGestureHandler(
+        gst.handlerTag,
+        filterConfig(gst.config, ALLOWED_PROPS, {
+          simultaneousHandlers: simultaneousWith,
+          waitFor: requireToFail,
+        })
+      );
 
       registerHandler(gst.handlerTag, gst);
     }

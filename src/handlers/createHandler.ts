@@ -16,6 +16,7 @@ import { handlerIDToTag, getNextHandlerTag } from './handlersRegistry';
 
 import {
   BaseGestureHandlerProps,
+  filterConfig,
   GestureEvent,
   HandlerStateChangeEvent,
 } from './gestureHandlerCommon';
@@ -85,59 +86,6 @@ if (DEV_ON_ANDROID) {
   DeviceEventEmitter.addListener('toggleElementInspector', () => {
     allowTouches = !allowTouches;
   });
-}
-function isConfigParam(param: unknown, name: string) {
-  // param !== Object(param) returns false if `param` is a function
-  // or an object and returns true if `param` is null
-  return (
-    param !== undefined &&
-    (param !== Object(param) ||
-      !('__isNative' in (param as Record<string, unknown>))) &&
-    name !== 'onHandlerStateChange' &&
-    name !== 'onGestureEvent'
-  );
-}
-
-function filterConfig(
-  props: Record<string, unknown>,
-  validProps: string[],
-  defaults: Record<string, unknown> = {}
-) {
-  const res = { ...defaults };
-  validProps.forEach((key) => {
-    const value = props[key];
-    if (isConfigParam(value, key)) {
-      let value = props[key];
-      if (key === 'simultaneousHandlers' || key === 'waitFor') {
-        value = transformIntoHandlerTags(props[key]);
-      } else if (key === 'hitSlop') {
-        if (typeof value !== 'object') {
-          value = { top: value, left: value, bottom: value, right: value };
-        }
-      }
-      res[key] = value;
-    }
-  });
-  return res;
-}
-
-function transformIntoHandlerTags(handlerIDs: any) {
-  if (!Array.isArray(handlerIDs)) {
-    handlerIDs = [handlerIDs];
-  }
-
-  if (Platform.OS === 'web') {
-    return handlerIDs
-      .map(({ current }: { current: any }) => current)
-      .filter((handle: any) => handle);
-  }
-  // converts handler string IDs into their numeric tags
-  return handlerIDs
-    .map(
-      (handlerID: any) =>
-        handlerIDToTag[handlerID] || handlerID.current?.handlerTag || -1
-    )
-    .filter((handlerTag: number) => handlerTag > 0);
 }
 
 type HandlerProps<T extends Record<string, unknown>> = Readonly<
