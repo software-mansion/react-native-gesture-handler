@@ -7,6 +7,7 @@ import {
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
 
+import NewApi from './new_api';
 import Rows from './rows';
 import Bouncing from './bouncing';
 import Draggable from './draggable';
@@ -33,6 +34,7 @@ type Screens = Record<
 >;
 
 const SCREENS: Screens = {
+  NewApi: { component: NewApi, title: 'New API example' },
   Rows: { component: Rows, title: 'Table rows & buttons' },
   Multitap: { component: Multitap },
   Draggable: { component: Draggable },
