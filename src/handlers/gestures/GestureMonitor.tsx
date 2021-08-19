@@ -3,7 +3,7 @@ import { GestureConfigReference } from './useGesture';
 import { default as RNRenderer } from 'react-native/Libraries/Renderer/shims/ReactNative';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { startListening } from './eventReceiver';
-//import Reanimated from 'react-native-reanimated';
+import Reanimated from 'react-native-reanimated';
 
 startListening();
 
@@ -96,5 +96,4 @@ class Wrap extends React.Component<{ onGestureHandlerEvent: any }> {
   }
 }
 
-//const AnimatedWrap = Reanimated.createAnimatedComponent(Wrap);
-const AnimatedWrap = Wrap;
+const AnimatedWrap = Reanimated.createAnimatedComponent(Wrap);

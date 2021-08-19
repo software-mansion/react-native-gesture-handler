@@ -180,13 +180,12 @@ export abstract class BaseGesture<
   }
 
   prepare() {
-    if (this.config.requireToFail !== undefined) {
-      this.config.requireToFail = this.toArray(this.config.requireToFail);
-    }
-
-    if (this.config.simultaneousWith !== undefined) {
-      this.config.simultaneousWith = this.toArray(this.config.simultaneousWith);
-    }
+    // if (this.config.requireToFail !== undefined) {
+    //   this.config.requireToFail = this.toArray(this.config.requireToFail);
+    // }
+    // if (this.config.simultaneousWith !== undefined) {
+    //   this.config.simultaneousWith = this.toArray(this.config.simultaneousWith);
+    // }
   }
 
   private toArray(x: unknown) {
@@ -250,8 +249,8 @@ export class InteractionBuilder extends Gesture {
   }
 
   prepare() {
-    const simultaneousTags: number[] = [];
-    const waitForTags: number[] = [];
+    const simultaneousGestures: BaseGesture<Record<string, unknown>>[] = [];
+    const waitForGestures: BaseGesture<Record<string, unknown>>[] = [];
 
     for (let i = this.pendingGestures.length - 1; i >= 0; i--) {
       const pendingGesture = this.pendingGestures[i];
@@ -261,23 +260,23 @@ export class InteractionBuilder extends Gesture {
 
       newConfig.simultaneousWith = this.extendRelation(
         newConfig.simultaneousWith,
-        simultaneousTags
+        simultaneousGestures
       );
       newConfig.requireToFail = this.extendRelation(
         newConfig.requireToFail,
-        waitForTags
+        waitForGestures
       );
 
       pendingGesture.gesture.config = newConfig;
 
       switch (pendingGesture.relation) {
         case Relation.Simultaneous:
-          simultaneousTags.push(pendingGesture.gesture.handlerTag);
+          simultaneousGestures.push(pendingGesture.gesture);
           break;
         case Relation.Exclusive:
           break;
         case Relation.RequireToFail:
-          waitForTags.push(pendingGesture.gesture.handlerTag);
+          waitForGestures.push(pendingGesture.gesture);
           break;
       }
     }
@@ -285,7 +284,7 @@ export class InteractionBuilder extends Gesture {
 
   private extendRelation(
     currentRelation: GestureRef[] | undefined,
-    extendWith: number[]
+    extendWith: BaseGesture<Record<string, unknown>>[]
   ) {
     if (currentRelation === undefined) {
       return [...extendWith];

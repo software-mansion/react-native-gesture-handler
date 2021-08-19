@@ -7,14 +7,15 @@ import {
   InteractionBuilder,
 } from './gesture';
 import { registerHandler, unregisterHandler } from '../handlersRegistry';
-//import Animated from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 export type GestureConfigReference = {
   config: BaseGesture<Record<string, unknown>>[];
   callback: null | (() => void);
   animatedEventHandler: any;
-  //animatedHandlers: Animated.SharedValue<HandlerCallbacks<Record<string, unknown>>[] | null> | null;
-  animatedHandlers: any;
+  animatedHandlers: Animated.SharedValue<
+    HandlerCallbacks<Record<string, unknown>>[] | null
+  > | null;
   firstExecution: boolean;
 };
 
@@ -57,6 +58,21 @@ export function useGesture(
     }
   }
 
+  function filterConfig(config) {
+    const filtered = {};
+    for (const key of Object.keys(config)) {
+      if (
+        key !== 'ref' &&
+        typeof config[key] !== 'function' &&
+        key !== 'simultaneousWith' &&
+        key !== 'requireToFail'
+      ) {
+        filtered[key] = config[key];
+      }
+    }
+    return filtered;
+  }
+
   function attachHandlers() {
     if (!result.current.firstExecution) {
       gestureConfig.initialize();
@@ -68,7 +84,7 @@ export function useGesture(
       RNGestureHandlerModule.createGestureHandler(
         gst.handlerName,
         gst.handlerTag,
-        gst.config
+        filterConfig(gst.config)
       );
 
       registerHandler(gst.handlerTag, gst);
@@ -91,13 +107,12 @@ export function useGesture(
         }
 
         RNGestureHandlerModule.updateGestureHandler(gst.handlerTag, {
-          ...gst.config,
-          simultaneousWith: simultaneousWith,
+          ...filterConfig(gst.config),
+          simultaneousHandlers: simultaneousWith,
           waitFor: requireToFail,
         });
       });
     }
-
     result.current.config = gesture;
     result.current.callback?.();
 
@@ -108,6 +123,13 @@ export function useGesture(
 
   function updateHandlers() {
     gestureConfig.prepare();
+
+    for (let i = 0; i < gesture.length; i++) {
+      const gst = result.current.config[i];
+
+      gesture[i].handlerTag = gst.handlerTag;
+      gesture[i].handlers.handlerTag = gst.handlerTag;
+    }
 
     for (let i = 0; i < gesture.length; i++) {
       const gst = result.current.config[i];
@@ -131,8 +153,8 @@ export function useGesture(
       }
 
       RNGestureHandlerModule.updateGestureHandler(gst.handlerTag, {
-        ...gst.config,
-        simultaneousWith: simultaneousWith,
+        ...filterConfig(gst.config),
+        simultaneousHandlers: simultaneousWith,
         waitFor: requireToFail,
       });
 
