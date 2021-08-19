@@ -173,18 +173,8 @@ export abstract class BaseGesture<
     return [this as GestureType];
   }
 
-  prepare() {
-    // if (this.config.requireToFail !== undefined) {
-    //   this.config.requireToFail = this.toArray(this.config.requireToFail);
-    // }
-    // if (this.config.simultaneousWith !== undefined) {
-    //   this.config.simultaneousWith = this.toArray(this.config.simultaneousWith);
-    // }
-  }
-
-  private toArray(x: unknown) {
-    return [].concat(x as never);
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  prepare() {}
 }
 
 enum Relation {
