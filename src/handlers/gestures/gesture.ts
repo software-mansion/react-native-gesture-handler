@@ -1,3 +1,5 @@
+import { FlingGestureHandlerEventPayload } from '../FlingGestureHandler';
+import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandler';
 import {
   HitSlop,
   CommonGestureConfig,
@@ -5,23 +7,27 @@ import {
   UnwrappedGestureHandlerEvent,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
+import { LongPressGestureHandlerEventPayload } from '../LongPressGestureHandler';
+import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
+import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
+import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
+import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
 
-export type GestureRef =
-  | number
+export type GestureType =
   | BaseGesture<Record<string, unknown>>
-  | React.RefObject<BaseGesture<Record<string, unknown>>>;
+  | BaseGesture<TapGestureHandlerEventPayload>
+  | BaseGesture<PanGestureHandlerEventPayload>
+  | BaseGesture<LongPressGestureHandlerEventPayload>
+  | BaseGesture<RotationGestureHandlerEventPayload>
+  | BaseGesture<PinchGestureHandlerEventPayload>
+  | BaseGesture<FlingGestureHandlerEventPayload>
+  | BaseGesture<ForceTouchGestureHandlerEventPayload>;
+
+export type GestureRef = number | GestureType | React.RefObject<GestureType>;
 export interface BaseGestureConfig extends CommonGestureConfig {
-  ref?: React.MutableRefObject<BaseGesture<Record<string, unknown>>>;
-  requireToFail?: (
-    | number
-    | BaseGesture<Record<string, unknown>>
-    | React.RefObject<BaseGesture<Record<string, unknown>>>
-  )[];
-  simultaneousWith?: (
-    | number
-    | BaseGesture<Record<string, unknown>>
-    | React.RefObject<BaseGesture<Record<string, unknown>>>
-  )[];
+  ref?: React.MutableRefObject<GestureType>;
+  requireToFail?: (number | GestureType | React.RefObject<GestureType>)[];
+  simultaneousWith?: (number | GestureType | React.RefObject<GestureType>)[];
 }
 
 export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
@@ -44,7 +50,7 @@ export abstract class Gesture {
    * Return array of gestures, providing the same interface for creating and updating
    * handlers, no matter which object was used to create gesture instance.
    */
-  abstract configure(): BaseGesture<Record<string, unknown>>[];
+  abstract configure(): GestureType[];
 
   /**
    * Assign handlerTag to the gesture instance and set ref.current (if a ref is set)
@@ -79,7 +85,7 @@ export abstract class BaseGesture<
       : [gesture];
   }
 
-  setRef(ref: React.MutableRefObject<BaseGesture<Record<string, unknown>>>) {
+  setRef(ref: React.MutableRefObject<GestureType>) {
     this.config.ref = ref;
     return this;
   }
@@ -142,28 +148,16 @@ export abstract class BaseGesture<
     return this;
   }
 
-  simultaneousWith(
-    other: BaseGesture<Record<string, unknown>>
-  ): InteractionBuilder {
-    return new InteractionBuilder(
-      this as BaseGesture<Record<string, unknown>>
-    ).simultaneousWith(other);
+  simultaneousWith(other: GestureType): InteractionBuilder {
+    return new InteractionBuilder(this as GestureType).simultaneousWith(other);
   }
 
-  exclusiveWith(
-    other: BaseGesture<Record<string, unknown>>
-  ): InteractionBuilder {
-    return new InteractionBuilder(
-      this as BaseGesture<Record<string, unknown>>
-    ).exclusiveWith(other);
+  exclusiveWith(other: GestureType): InteractionBuilder {
+    return new InteractionBuilder(this as GestureType).exclusiveWith(other);
   }
 
-  requireToFail(
-    other: BaseGesture<Record<string, unknown>>
-  ): InteractionBuilder {
-    return new InteractionBuilder(
-      this as BaseGesture<Record<string, unknown>>
-    ).requireToFail(other);
+  requireToFail(other: GestureType): InteractionBuilder {
+    return new InteractionBuilder(this as GestureType).requireToFail(other);
   }
 
   initialize() {
@@ -171,12 +165,12 @@ export abstract class BaseGesture<
     this.handlers = { ...this.handlers, handlerTag: this.handlerTag };
 
     if (this.config.ref) {
-      this.config.ref.current = this as BaseGesture<Record<string, unknown>>;
+      this.config.ref.current = this as GestureType;
     }
   }
 
-  configure(): BaseGesture<Record<string, unknown>>[] {
-    return [this as BaseGesture<Record<string, unknown>>];
+  configure(): GestureType[] {
+    return [this as GestureType];
   }
 
   prepare() {
@@ -201,38 +195,32 @@ enum Relation {
 
 type PendingGesture = {
   relation: Relation;
-  gesture: BaseGesture<Record<string, unknown>>;
+  gesture: GestureType;
 };
 
 export class InteractionBuilder extends Gesture {
   private pendingGestures: PendingGesture[] = [];
 
-  constructor(base: BaseGesture<Record<string, unknown>>) {
+  constructor(base: GestureType) {
     super();
     this.addGesture({ relation: Relation.Exclusive, gesture: base });
   }
 
-  simultaneousWith(
-    gesture: BaseGesture<Record<string, unknown>>
-  ): InteractionBuilder {
+  simultaneousWith(gesture: GestureType): InteractionBuilder {
     return this.addGesture({
       relation: Relation.Simultaneous,
       gesture,
     });
   }
 
-  exclusiveWith(
-    gesture: BaseGesture<Record<string, unknown>>
-  ): InteractionBuilder {
+  exclusiveWith(gesture: GestureType): InteractionBuilder {
     return this.addGesture({
       relation: Relation.Exclusive,
       gesture,
     });
   }
 
-  requireToFail(
-    gesture: BaseGesture<Record<string, unknown>>
-  ): InteractionBuilder {
+  requireToFail(gesture: GestureType): InteractionBuilder {
     return this.addGesture({
       relation: Relation.RequireToFail,
       gesture,
@@ -244,13 +232,13 @@ export class InteractionBuilder extends Gesture {
     return this;
   }
 
-  configure(): BaseGesture<Record<string, unknown>>[] {
+  configure(): GestureType[] {
     return this.pendingGestures.map((pending) => pending.gesture);
   }
 
   prepare() {
-    const simultaneousGestures: BaseGesture<Record<string, unknown>>[] = [];
-    const waitForGestures: BaseGesture<Record<string, unknown>>[] = [];
+    const simultaneousGestures: GestureType[] = [];
+    const waitForGestures: GestureType[] = [];
 
     for (let i = this.pendingGestures.length - 1; i >= 0; i--) {
       const pendingGesture = this.pendingGestures[i];
@@ -284,7 +272,7 @@ export class InteractionBuilder extends Gesture {
 
   private extendRelation(
     currentRelation: GestureRef[] | undefined,
-    extendWith: BaseGesture<Record<string, unknown>>[]
+    extendWith: GestureType[]
   ) {
     if (currentRelation === undefined) {
       return [...extendWith];

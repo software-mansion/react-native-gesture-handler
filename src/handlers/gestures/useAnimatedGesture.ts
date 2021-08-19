@@ -1,23 +1,36 @@
-import React from 'react';
 import { useEvent, useSharedValue } from 'react-native-reanimated';
 import { useGesture } from './useGesture';
 import { State } from '../../State';
-import { InteractionBuilder, BaseGesture } from './gesture';
+import { InteractionBuilder, GestureType, HandlerCallbacks } from './gesture';
+import {
+  UnwrappedGestureHandlerEvent,
+  UnwrappedGestureHandlerStateChangeEvent,
+} from '../gestureHandlerCommon';
 
-export function useAnimatedGesture(
-  gesture: InteractionBuilder | BaseGesture<Record<string, unknown>>
-) {
+export function useAnimatedGesture(gesture: InteractionBuilder | GestureType) {
   const preparedGesture = useGesture(gesture);
-  const sharedHandlersCallbacks = useSharedValue(null);
+  const sharedHandlersCallbacks = useSharedValue<
+    HandlerCallbacks<Record<string, unknown>>[] | null
+  >(null);
 
-  const callback = (e) => {
+  const callback = (
+    event:
+      | UnwrappedGestureHandlerStateChangeEvent
+      | UnwrappedGestureHandlerEvent
+  ) => {
     'worklet';
 
-    //eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for (let i = 0; i < sharedHandlersCallbacks.value.length; i++) {
-      const gesture = sharedHandlersCallbacks.value[i];
+    const currentCallback = sharedHandlersCallbacks.value;
+    if (!currentCallback) {
+      return;
+    }
 
-      if (e.handlerTag === gesture.handlerTag) {
+    //eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for (let i = 0; i < currentCallback.length; i++) {
+      const gesture = currentCallback[i];
+
+      if (event.handlerTag === gesture.handlerTag) {
+        const e = event as UnwrappedGestureHandlerStateChangeEvent;
         if (e.oldState != null) {
           if (e.oldState === State.UNDETERMINED && e.state === State.BEGAN) {
             gesture.onBegan?.(e);
@@ -34,6 +47,7 @@ export function useAnimatedGesture(
             gesture.onEnd?.(e, false);
           }
         } else {
+          const e = event as UnwrappedGestureHandlerEvent;
           gesture.onUpdate?.(e);
         }
       }

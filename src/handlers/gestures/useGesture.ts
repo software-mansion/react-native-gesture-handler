@@ -3,6 +3,7 @@ import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import {
   BaseGesture,
   GestureRef,
+  GestureType,
   HandlerCallbacks,
   InteractionBuilder,
 } from './gesture';
@@ -32,7 +33,7 @@ const ALLOWED_PROPS = [
 ];
 
 export type GestureConfigReference = {
-  config: BaseGesture<Record<string, unknown>>[];
+  config: GestureType[];
   callback: null | (() => void);
   animatedEventHandler: any;
   animatedHandlers: Animated.SharedValue<
@@ -41,9 +42,7 @@ export type GestureConfigReference = {
   firstExecution: boolean;
 };
 
-export function useGesture(
-  gestureConfig: InteractionBuilder | BaseGesture<Record<string, unknown>>
-) {
+export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
   const gesture = gestureConfig.configure();
 
   const result = React.useRef<GestureConfigReference>({
@@ -126,7 +125,9 @@ export function useGesture(
     result.current.callback?.();
 
     if (result.current.animatedHandlers) {
-      result.current.animatedHandlers.value = gesture.map((g) => g.handlers);
+      result.current.animatedHandlers.value = (gesture.map(
+        (g) => g.handlers
+      ) as unknown) as HandlerCallbacks<Record<string, unknown>>[];
     }
   }
 
@@ -173,9 +174,9 @@ export function useGesture(
     }
 
     if (result.current.animatedHandlers) {
-      result.current.animatedHandlers.value = result.current.config.map(
+      result.current.animatedHandlers.value = (result.current.config.map(
         (g) => g.handlers
-      );
+      ) as unknown) as HandlerCallbacks<Record<string, unknown>>[];
     }
   }
 
