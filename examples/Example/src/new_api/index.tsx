@@ -11,6 +11,27 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+type StylesType = {
+  transform: (
+    | {
+        translateX: number;
+        translateY?: undefined;
+        scale?: undefined;
+      }
+    | {
+        translateY: number;
+        translateX?: undefined;
+        scale?: undefined;
+      }
+    | {
+        scale: number;
+        translateX?: undefined;
+        translateY?: undefined;
+      }
+  )[];
+  backgroundColor: string;
+};
+
 function Draggable() {
   const [counter, setCounter] = useState(1);
 
@@ -24,7 +45,7 @@ function Draggable() {
   const offset = useSharedValue({ x: 0, y: 0 });
   const start = useSharedValue({ x: 0, y: 0 });
 
-  const animatedStyles = useAnimatedStyle(() => {
+  const animatedStyles: StylesType = useAnimatedStyle(() => {
     return {
       transform: [
         { translateX: offset.value.x },
@@ -67,7 +88,7 @@ function Draggable() {
   );
 }
 
-function Box(props: { styles: unknown; counter: number }) {
+function Box(props: { styles: StylesType; counter: number }) {
   return (
     <Animated.View style={[styles.button, props.styles]}>
       <Text style={styles.text}>{props.counter}</Text>
