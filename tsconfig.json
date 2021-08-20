@@ -13,6 +13,7 @@
     "target": "esnext",
     "declaration": true,
     "declarationMap": false,
+    "outDir": "lib/typescript",
 
     "noStrictGenericChecks": false,
     "forceConsistentCasingInFileNames": true,
