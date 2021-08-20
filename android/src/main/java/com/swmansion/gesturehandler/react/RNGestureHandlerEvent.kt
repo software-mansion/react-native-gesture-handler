@@ -36,6 +36,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
+    x=y+2-z
     rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, extraData)
   }
 
