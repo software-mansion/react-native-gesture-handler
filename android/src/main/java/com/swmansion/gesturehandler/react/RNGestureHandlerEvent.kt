@@ -34,6 +34,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
   override fun getCoalescingKey() = coalescingKey
 
+
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
     rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, extraData)
   }
