@@ -26,8 +26,8 @@ export type GestureType =
 export type GestureRef = number | GestureType | React.RefObject<GestureType>;
 export interface BaseGestureConfig extends CommonGestureConfig {
   ref?: React.MutableRefObject<GestureType>;
-  requireToFail?: (number | GestureType | React.RefObject<GestureType>)[];
-  simultaneousWith?: (number | GestureType | React.RefObject<GestureType>)[];
+  requireToFail?: GestureRef[];
+  simultaneousWith?: GestureRef[];
 }
 
 export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
