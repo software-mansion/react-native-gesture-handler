@@ -33,9 +33,10 @@ function onGestureHandlerStateChange(
       gesture.handlers.onStart?.(event);
     } else if (event.oldState === State.ACTIVE && event.state === State.END) {
       gesture.handlers.onEnd?.(event, true);
-    } else if (event.state === State.FAILED) {
-      gesture.handlers.onEnd?.(event, false);
-    } else if (event.state === State.CANCELLED) {
+    } else if (
+      event.state === State.FAILED ||
+      event.state === State.CANCELLED
+    ) {
       gesture.handlers.onEnd?.(event, false);
     }
   }

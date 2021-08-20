@@ -56,9 +56,10 @@ export function useAnimatedGesture(gesture: InteractionBuilder | GestureType) {
             event.state === State.END
           ) {
             gesture.onEnd?.(event, true);
-          } else if (event.state === State.FAILED) {
-            gesture.onEnd?.(event, false);
-          } else if (event.state === State.CANCELLED) {
+          } else if (
+            event.state === State.FAILED ||
+            event.state === State.CANCELLED
+          ) {
             gesture.onEnd?.(event, false);
           }
         } else {
