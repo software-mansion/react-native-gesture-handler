@@ -97,7 +97,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)configure:(NSDictionary *)config
 {
-  [self resetConfig];
+  [self resetConfig_no_function];
     _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
     _simultaneousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
 
