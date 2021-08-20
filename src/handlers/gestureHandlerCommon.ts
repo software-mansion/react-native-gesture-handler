@@ -124,22 +124,19 @@ export function filterConfig(
   validProps: string[],
   defaults: Record<string, unknown> = {}
 ) {
-  const res = { ...defaults };
-  validProps.forEach((key) => {
-    const value = props[key];
+  const filteredConfig = { ...defaults };
+  for (const [key, value] of Object.entries(validProps)) {
     if (isConfigParam(value, key)) {
       let value = props[key];
       if (key === 'simultaneousHandlers' || key === 'waitFor') {
         value = transformIntoHandlerTags(props[key]);
-      } else if (key === 'hitSlop') {
-        if (typeof value !== 'object') {
-          value = { top: value, left: value, bottom: value, right: value };
-        }
+      } else if (key === 'hitSlop' && typeof value !== 'object') {
+        value = { top: value, left: value, bottom: value, right: value };
       }
-      res[key] = value;
+      filteredConfig[key] = value;
     }
-  });
-  return res;
+  }
+  return filteredConfig;
 }
 
 function transformIntoHandlerTags(handlerIDs: any) {
