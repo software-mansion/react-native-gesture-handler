@@ -12,6 +12,7 @@ import Camera from './new_api/camera';
 import Transformations from './new_api/transformations';
 import OverlapParents from './new_api/overlap_parent';
 import OverlapSiblings from './new_api/overlap_siblings';
+import Calculator from './new_api/calculator';
 
 import Rows from './rows';
 import Bouncing from './bouncing';
@@ -53,6 +54,7 @@ const NEW_API_SCREENS: Screens = {
     component: OverlapSiblings,
     title: 'Overlapping siblings',
   },
+  Calculator: { component: Calculator, title: 'Calculator' },
 };
 
 const SCREENS: Screens = {
