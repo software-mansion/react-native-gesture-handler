@@ -58,10 +58,10 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
   }
 
   function dropHandlers() {
-    for (const g of result.current.config) {
-      RNGestureHandlerModule.dropGestureHandler(g.handlerTag);
+    for (const handler of result.current.config) {
+      RNGestureHandlerModule.dropGestureHandler(handler.handlerTag);
 
-      unregisterHandler(g.handlerTag);
+      unregisterHandler(handler.handlerTag);
     }
   }
 
