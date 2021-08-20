@@ -37,7 +37,7 @@ function Draggable() {
 
   const gesture = useAnimatedGesture(
     Gesture.pan()
-      .setOnBegan((_e) => {
+      .setOnBegan(() => {
         'worklet';
         isPressed.value = true;
       })
@@ -48,7 +48,7 @@ function Draggable() {
           y: e.translationY + start.value.y,
         };
       })
-      .setOnEnd((_e, _success) => {
+      .setOnEnd(() => {
         'worklet';
         start.value = {
           x: offset.value.x,
