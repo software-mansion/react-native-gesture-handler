@@ -9,6 +9,7 @@ import { RectButton } from 'react-native-gesture-handler';
 
 import ReanimatedSimple from './new_api/reanimated';
 import Camera from './new_api/camera';
+import Transformations from './new_api/transformations';
 
 import Rows from './rows';
 import Bouncing from './bouncing';
@@ -41,6 +42,7 @@ const NEW_API_SCREENS: Screens = {
     title: 'Simple interaction with Reanimated',
   },
   Camera: { component: Camera, title: 'Camera' },
+  Transformations: { component: Transformations, title: 'Transformations' },
 };
 
 const SCREENS: Screens = {
