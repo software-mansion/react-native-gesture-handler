@@ -31,4 +31,4 @@ jobs:
         run: pod install
       - name: Build app
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: xcodebuild -workspace ios/Example.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 8' -scheme Example -parallelizeTargets -configuration Debug -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty
+        run: yarn ios
