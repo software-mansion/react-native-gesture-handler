@@ -51,14 +51,14 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
     animatedEventHandler: null,
     animatedHandlers: null,
     firstExecution: true,
-  });
+  }).current;
 
-  if (preparedGesture.current.firstExecution) {
+  if (preparedGesture.firstExecution) {
     gestureConfig.initialize();
   }
 
   function dropHandlers() {
-    for (const handler of preparedGesture.current.config) {
+    for (const handler of preparedGesture.config) {
       RNGestureHandlerModule.dropGestureHandler(handler.handlerTag);
 
       unregisterHandler(handler.handlerTag);
@@ -76,10 +76,10 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
   }
 
   function attachHandlers() {
-    if (!preparedGesture.current.firstExecution) {
+    if (!preparedGesture.firstExecution) {
       gestureConfig.initialize();
     } else {
-      preparedGesture.current.firstExecution = false;
+      preparedGesture.firstExecution = false;
     }
 
     for (const handler of gesture) {
@@ -117,11 +117,11 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
         );
       });
     }
-    preparedGesture.current.config = gesture;
-    preparedGesture.current.callback?.();
+    preparedGesture.config = gesture;
+    preparedGesture.callback?.();
 
-    if (preparedGesture.current.animatedHandlers) {
-      preparedGesture.current.animatedHandlers.value = (gesture.map(
+    if (preparedGesture.animatedHandlers) {
+      preparedGesture.animatedHandlers.value = (gesture.map(
         (g) => g.handlers
       ) as unknown) as HandlerCallbacks<Record<string, unknown>>[];
     }
@@ -131,14 +131,14 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
     gestureConfig.prepare();
 
     for (let i = 0; i < gesture.length; i++) {
-      const handler = preparedGesture.current.config[i];
+      const handler = preparedGesture.config[i];
 
       gesture[i].handlerTag = handler.handlerTag;
       gesture[i].handlers.handlerTag = handler.handlerTag;
     }
 
     for (let i = 0; i < gesture.length; i++) {
-      const handler = preparedGesture.current.config[i];
+      const handler = preparedGesture.config[i];
 
       handler.config = gesture[i].config;
       handler.handlers = gesture[i].handlers;
@@ -165,21 +165,19 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
       registerHandler(handler.handlerTag, handler);
     }
 
-    if (preparedGesture.current.animatedHandlers) {
-      preparedGesture.current.animatedHandlers.value = (preparedGesture.current.config.map(
+    if (preparedGesture.animatedHandlers) {
+      preparedGesture.animatedHandlers.value = (preparedGesture.config.map(
         (g) => g.handlers
       ) as unknown) as HandlerCallbacks<Record<string, unknown>>[];
     }
   }
 
   function needsToReattach() {
-    if (gesture.length !== preparedGesture.current.config.length) {
+    if (gesture.length !== preparedGesture.config.length) {
       return true;
     }
     for (let i = 0; i < gesture.length; i++) {
-      if (
-        gesture[i].handlerName !== preparedGesture.current.config[i].handlerName
-      ) {
+      if (gesture[i].handlerName !== preparedGesture.config[i].handlerName) {
         return true;
       }
     }
@@ -195,7 +193,7 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
     };
   }, []);
 
-  if (preparedGesture.current?.callback) {
+  if (preparedGesture?.callback) {
     if (needsToReattach()) {
       dropHandlers();
       attachHandlers();

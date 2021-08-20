@@ -8,7 +8,7 @@ import Reanimated from 'react-native-reanimated';
 startListening();
 
 type GestureMonitorProps = {
-  gesture: React.RefObject<GestureConfigReference>;
+  gesture: GestureConfigReference;
 };
 
 export class GestureMonitor extends React.Component<GestureMonitorProps> {
@@ -21,8 +21,8 @@ export class GestureMonitor extends React.Component<GestureMonitorProps> {
 
   componentDidMount() {
     setImmediate(() => {
-      if (this.props.gesture.current) {
-        this.props.gesture.current.callback = () => {
+      if (this.props.gesture) {
+        this.props.gesture.callback = () => {
           this.attachGestureHandlers(
             RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag
           );
@@ -54,9 +54,9 @@ export class GestureMonitor extends React.Component<GestureMonitorProps> {
 
   attachGestureHandlers(newViewTag: number) {
     this.viewTag = newViewTag;
-    if (this.props.gesture.current) {
-      for (const gesture of this.props.gesture.current.config) {
-        if (this.props.gesture.current?.animatedEventHandler) {
+    if (this.props.gesture) {
+      for (const gesture of this.props.gesture.config) {
+        if (this.props.gesture?.animatedEventHandler) {
           RNGestureHandlerModule.attachGestureHandler(
             gesture.handlerTag,
             newViewTag,
@@ -74,13 +74,11 @@ export class GestureMonitor extends React.Component<GestureMonitorProps> {
   }
 
   render() {
-    if (this.props.gesture.current?.animatedEventHandler) {
+    if (this.props.gesture?.animatedEventHandler) {
       return (
         <AnimatedWrap
           ref={this.refHandler}
-          onGestureHandlerEvent={
-            this.props.gesture.current?.animatedEventHandler
-          }>
+          onGestureHandlerEvent={this.props.gesture?.animatedEventHandler}>
           {this.props.children}
         </AnimatedWrap>
       );

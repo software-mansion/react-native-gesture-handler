@@ -74,8 +74,8 @@ export function useAnimatedGesture(gesture: InteractionBuilder | GestureType) {
     true
   );
 
-  preparedGesture.current.animatedEventHandler = event;
-  preparedGesture.current.animatedHandlers = sharedHandlersCallbacks;
+  preparedGesture.animatedEventHandler = event;
+  preparedGesture.animatedHandlers = sharedHandlersCallbacks;
 
   return preparedGesture;
 }
