@@ -13,7 +13,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     concurrency: 
-      group: static-example-${{ github.ref }}
+      group: static-root-${{ github.ref }}
       cancel-in-progress: true
     steps:
       - name: checkout
