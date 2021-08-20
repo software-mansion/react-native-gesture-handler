@@ -8,6 +8,8 @@ import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
 
 import ReanimatedSimple from './new_api/reanimated';
+import Camera from './new_api/camera';
+
 import Rows from './rows';
 import Bouncing from './bouncing';
 import Draggable from './draggable';
@@ -38,6 +40,7 @@ const NEW_API_SCREENS: Screens = {
     component: ReanimatedSimple,
     title: 'Simple interaction with Reanimated',
   },
+  Camera: { component: Camera, title: 'Camera' },
 };
 
 const SCREENS: Screens = {
