@@ -34,6 +34,8 @@ export function useAnimatedGesture(gesture: InteractionBuilder | GestureType) {
       return;
     }
 
+    //Using for-of loop here causes crash, because worklets do not support it,
+    //consider changing this in future when support for it is added
     //eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < currentCallback.length; i++) {
       const gesture = currentCallback[i];
