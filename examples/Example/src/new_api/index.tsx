@@ -20,7 +20,7 @@ function Draggable() {
     }, 1000);
   }, []);
 
-  const pressed = useSharedValue(false);
+  const isPressed = useSharedValue(false);
   const offset = useSharedValue({ x: 0, y: 0 });
   const start = useSharedValue({ x: 0, y: 0 });
 
@@ -29,17 +29,17 @@ function Draggable() {
       transform: [
         { translateX: offset.value.x },
         { translateY: offset.value.y },
-        { scale: withSpring(pressed.value ? 1.2 : 1) },
+        { scale: withSpring(isPressed.value ? 1.2 : 1) },
       ],
-      backgroundColor: pressed.value ? 'yellow' : 'blue',
+      backgroundColor: isPressed.value ? 'yellow' : 'blue',
     };
   });
 
-  const gs = useAnimatedGesture(
+  const gesture = useAnimatedGesture(
     Gesture.pan()
       .setOnBegan((_e) => {
         'worklet';
-        pressed.value = true;
+        isPressed.value = true;
       })
       .setOnUpdate((e) => {
         'worklet';
@@ -54,20 +54,20 @@ function Draggable() {
           x: offset.value.x,
           y: offset.value.y,
         };
-        pressed.value = false;
+        isPressed.value = false;
       })
   );
 
   return (
     <Animated.View>
-      <GestureMonitor gesture={gs}>
-        <Element styles={animatedStyles} counter={counter} />
+      <GestureMonitor gesture={gesture}>
+        <Box styles={animatedStyles} counter={counter} />
       </GestureMonitor>
     </Animated.View>
   );
 }
 
-function Element(props: { styles: unknown; counter: number }) {
+function Box(props: { styles: unknown; counter: number }) {
   return (
     <Animated.View style={[styles.button, props.styles]}>
       <Text style={styles.text}>{props.counter}</Text>
@@ -77,14 +77,14 @@ function Element(props: { styles: unknown; counter: number }) {
 
 export default function Example() {
   return (
-    <View style={styles.home}>
+    <View style={styles.container}>
       <Draggable />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  home: {
+  container: {
     width: '100%',
     height: '100%',
     alignSelf: 'center',
