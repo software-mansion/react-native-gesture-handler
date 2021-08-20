@@ -8,6 +8,15 @@ import {
 } from '../gestureHandlerCommon';
 
 export function useAnimatedGesture(gesture: InteractionBuilder | GestureType) {
+  function isStateChangeEvent(
+    event:
+      | UnwrappedGestureHandlerEvent
+      | UnwrappedGestureHandlerStateChangeEvent
+  ): event is UnwrappedGestureHandlerStateChangeEvent {
+    'worklet';
+    return event.oldState != null;
+  }
+
   const preparedGesture = useGesture(gesture);
   const sharedHandlersCallbacks = useSharedValue<
     HandlerCallbacks<Record<string, unknown>>[] | null
@@ -30,25 +39,30 @@ export function useAnimatedGesture(gesture: InteractionBuilder | GestureType) {
       const gesture = currentCallback[i];
 
       if (event.handlerTag === gesture.handlerTag) {
-        const e = event as UnwrappedGestureHandlerStateChangeEvent;
-        if (e.oldState != null) {
-          if (e.oldState === State.UNDETERMINED && e.state === State.BEGAN) {
-            gesture.onBegan?.(e);
-          } else if (
-            (e.oldState === State.BEGAN || e.oldState === State.UNDETERMINED) &&
-            e.state === 4
+        if (isStateChangeEvent(event)) {
+          if (
+            event.oldState === State.UNDETERMINED &&
+            event.state === State.BEGAN
           ) {
-            gesture.onStart?.(e);
-          } else if (e.oldState === State.ACTIVE && e.state === State.END) {
-            gesture.onEnd?.(e, true);
-          } else if (e.state === State.FAILED) {
-            gesture.onEnd?.(e, false);
-          } else if (e.state === State.CANCELLED) {
-            gesture.onEnd?.(e, false);
+            gesture.onBegan?.(event);
+          } else if (
+            (event.oldState === State.BEGAN ||
+              event.oldState === State.UNDETERMINED) &&
+            event.state === State.ACTIVE
+          ) {
+            gesture.onStart?.(event);
+          } else if (
+            event.oldState === State.ACTIVE &&
+            event.state === State.END
+          ) {
+            gesture.onEnd?.(event, true);
+          } else if (event.state === State.FAILED) {
+            gesture.onEnd?.(event, false);
+          } else if (event.state === State.CANCELLED) {
+            gesture.onEnd?.(event, false);
           }
         } else {
-          const e = event as UnwrappedGestureHandlerEvent;
-          gesture.onUpdate?.(e);
+          gesture.onUpdate?.(event);
         }
       }
     }
