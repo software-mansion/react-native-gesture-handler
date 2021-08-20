@@ -13,7 +13,7 @@ import {
 import { LoremIpsum } from '../common';
 
 interface PressBoxProps {
-  setDuration: (duration: number) => void;
+  setDuration?: (duration: number) => void;
 }
 
 interface ExampleState {
@@ -24,7 +24,7 @@ export class PressBox extends Component<PressBoxProps> {
   private onHandlerStateChange = (
     event: LongPressGestureHandlerStateChangeEvent
   ) => {
-    this.props.setDuration(event.nativeEvent.duration);
+    this.props.setDuration?.(event.nativeEvent.duration);
   };
   private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
