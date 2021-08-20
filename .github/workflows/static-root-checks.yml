@@ -3,7 +3,6 @@ on:
   pull_request:
     branches: 
       - master
-  # Whenever sth is merged, push event is fired
   push:
     branches:
       - master

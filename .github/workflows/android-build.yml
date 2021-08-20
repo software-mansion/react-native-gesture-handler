@@ -1,11 +1,10 @@
 name: Test Android build
 on:
   pull_request:
-    branches: 
+    branches:
       - master
     paths:
-      - "android/**"
-  # Whenever sth is merged, push event is fired
+      - 'android/**'
   push:
     branches:
       - master
@@ -14,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       WORKING_DIRECTORY: examples/Example
-    concurrency: 
+    concurrency:
       group: android-${{ github.ref }}
       cancel-in-progress: true
     steps:
