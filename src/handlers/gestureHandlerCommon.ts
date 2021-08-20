@@ -8,6 +8,7 @@ import { Platform } from 'react-native';
 import { State } from '../State';
 import { ValueOf } from '../typeUtils';
 import { handlerIDToTag } from './handlersRegistry';
+import { toArray } from '../utils';
 
 const commonProps = [
   'id',
@@ -140,9 +141,7 @@ export function filterConfig(
 }
 
 function transformIntoHandlerTags(handlerIDs: any) {
-  if (!Array.isArray(handlerIDs)) {
-    handlerIDs = [handlerIDs];
-  }
+  handlerIDs = toArray(handlerIDs);
 
   if (Platform.OS === 'web') {
     return handlerIDs
