@@ -82,35 +82,35 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
       preparedGesture.current.firstExecution = false;
     }
 
-    for (const gst of gesture) {
+    for (const handler of gesture) {
       RNGestureHandlerModule.createGestureHandler(
-        gst.handlerName,
-        gst.handlerTag,
-        filterConfig(gst.config, ALLOWED_PROPS)
+        handler.handlerName,
+        handler.handlerTag,
+        filterConfig(handler.config, ALLOWED_PROPS)
       );
 
-      registerHandler(gst.handlerTag, gst);
+      registerHandler(handler.handlerTag, handler);
 
       setImmediate(() => {
         gestureConfig.prepare();
 
         let requireToFail: number[] = [];
-        if (gst.config.requireToFail) {
-          requireToFail = gst.config.requireToFail
+        if (handler.config.requireToFail) {
+          requireToFail = handler.config.requireToFail
             .map(convertToHandlerTag)
             .filter((tag) => tag > 0);
         }
 
         let simultaneousWith: number[] = [];
-        if (gst.config.simultaneousWith) {
-          simultaneousWith = gst.config.simultaneousWith
+        if (handler.config.simultaneousWith) {
+          simultaneousWith = handler.config.simultaneousWith
             .map(convertToHandlerTag)
             .filter((tag) => tag > 0);
         }
 
         RNGestureHandlerModule.updateGestureHandler(
-          gst.handlerTag,
-          filterConfig(gst.config, ALLOWED_PROPS, {
+          handler.handlerTag,
+          filterConfig(handler.config, ALLOWED_PROPS, {
             simultaneousHandlers: simultaneousWith,
             waitFor: requireToFail,
           })
