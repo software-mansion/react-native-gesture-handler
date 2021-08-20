@@ -46,26 +46,46 @@ export function useAnimatedGesture(gesture: InteractionBuilder | GestureType) {
             event.oldState === State.UNDETERMINED &&
             event.state === State.BEGAN
           ) {
-            gesture.onBegan?.(event);
+            if (gesture.isOnBeganWorklet) {
+              gesture.onBegan?.(event);
+            } else if (gesture.onBegan) {
+              console.warn('Animated gesture callback must be a worklet');
+            }
           } else if (
             (event.oldState === State.BEGAN ||
               event.oldState === State.UNDETERMINED) &&
             event.state === State.ACTIVE
           ) {
-            gesture.onStart?.(event);
+            if (gesture.isOnStartWorklet) {
+              gesture.onStart?.(event);
+            } else if (gesture.onStart) {
+              console.warn('Animated gesture callback must be a worklet');
+            }
           } else if (
             event.oldState === State.ACTIVE &&
             event.state === State.END
           ) {
-            gesture.onEnd?.(event, true);
+            if (gesture.isOnEndWorklet) {
+              gesture.onEnd?.(event, true);
+            } else if (gesture.onEnd) {
+              console.warn('Animated gesture callback must be a worklet');
+            }
           } else if (
             event.state === State.FAILED ||
             event.state === State.CANCELLED
           ) {
-            gesture.onEnd?.(event, false);
+            if (gesture.isOnEndWorklet) {
+              gesture.onEnd?.(event, false);
+            } else if (gesture.onEnd) {
+              console.warn('Animated gesture callback must be a worklet');
+            }
           }
         } else {
-          gesture.onUpdate?.(event);
+          if (gesture.isOnUpdateWorklet) {
+            gesture.onUpdate?.(event);
+          } else if (gesture.onUpdate) {
+            console.warn('Animated gesture callback must be a worklet');
+          }
         }
       }
     }

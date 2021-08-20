@@ -43,6 +43,10 @@ export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
     success: boolean
   ) => void;
   onUpdate?: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void;
+  isOnBeganWorklet?: boolean;
+  isOnStartWorklet?: boolean;
+  isOnEndWorklet?: boolean;
+  isOnUpdateWorklet?: boolean;
 };
 
 export abstract class Gesture {
@@ -96,6 +100,8 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onBegan = callback;
+    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    this.handlers.isOnBeganWorklet = callback.__workletHash != null;
     return this;
   }
 
@@ -105,6 +111,8 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onStart = callback;
+    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    this.handlers.isOnStartWorklet = callback.__workletHash != null;
     return this;
   }
 
@@ -115,6 +123,8 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onEnd = callback;
+    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    this.handlers.isOnEndWorklet = callback.__workletHash != null;
     return this;
   }
 
