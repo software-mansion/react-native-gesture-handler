@@ -125,7 +125,7 @@ export function filterConfig(
   validProps: string[],
   defaults: Record<string, unknown> = {}
 ) {
-  const filteredProps = { ...defaults };
+  const filteredConfig = { ...defaults };
   for (const key of validProps) {
     let value = props[key];
     if (isConfigParam(value, key)) {
@@ -134,10 +134,10 @@ export function filterConfig(
       } else if (key === 'hitSlop' && typeof value !== 'object') {
         value = { top: value, left: value, bottom: value, right: value };
       }
-      filteredProps[key] = value;
+      filteredConfig[key] = value;
     }
   }
-  return filteredProps;
+  return filteredConfig;
 }
 
 function transformIntoHandlerTags(handlerIDs: any) {
