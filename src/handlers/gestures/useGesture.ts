@@ -144,19 +144,15 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
       handler.handlers = gesture[i].handlers;
       handler.handlers.handlerTag = handler.handlerTag;
 
-      let requireToFail: number[] = [];
-      if (handler.config.requireToFail) {
-        requireToFail = handler.config.requireToFail
-          .map(convertToHandlerTag)
-          .filter((tag) => tag > 0);
-      }
+      const requireToFail =
+        handler.config.requireToFail
+          ?.map(convertToHandlerTag)
+          ?.filter((tag) => tag > 0) ?? [];
 
-      let simultaneousWith: number[] = [];
-      if (handler.config.simultaneousWith) {
-        simultaneousWith = handler.config.simultaneousWith
-          .map(convertToHandlerTag)
-          .filter((tag) => tag > 0);
-      }
+      const simultaneousWith =
+        handler.config.simultaneousWith
+          ?.map(convertToHandlerTag)
+          ?.filter((tag) => tag > 0) ?? [];
 
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
