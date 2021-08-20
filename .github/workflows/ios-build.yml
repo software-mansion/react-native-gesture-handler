@@ -14,6 +14,9 @@ jobs:
     runs-on: macos-latest
     env:
       WORKING_DIRECTORY: examples/Example
+    concurrency: 
+      group: ios-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - name: checkout
         uses: actions/checkout@v2
