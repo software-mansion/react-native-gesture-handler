@@ -71,11 +71,7 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
     } else if (ref instanceof BaseGesture) {
       return ref.handlerTag;
     } else {
-      let tag = ref.current?.handlerTag;
-      if (tag === undefined) {
-        tag = -1;
-      }
-      return tag;
+      return ref.current?.handlerTag ?? -1;
     }
   }
 
