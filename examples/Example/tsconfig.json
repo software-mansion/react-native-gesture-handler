@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "noEmit": true,
     "baseUrl": ".",
     "paths": {
       "react-native-gesture-handler": ["../../src/index.ts"],
