@@ -131,42 +131,42 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
     gestureConfig.prepare();
 
     for (let i = 0; i < gesture.length; i++) {
-      const gst = preparedGesture.current.config[i];
+      const handler = preparedGesture.current.config[i];
 
-      gesture[i].handlerTag = gst.handlerTag;
-      gesture[i].handlers.handlerTag = gst.handlerTag;
+      gesture[i].handlerTag = handler.handlerTag;
+      gesture[i].handlers.handlerTag = handler.handlerTag;
     }
 
     for (let i = 0; i < gesture.length; i++) {
-      const gst = preparedGesture.current.config[i];
+      const handler = preparedGesture.current.config[i];
 
-      gst.config = gesture[i].config;
-      gst.handlers = gesture[i].handlers;
-      gst.handlers.handlerTag = gst.handlerTag;
+      handler.config = gesture[i].config;
+      handler.handlers = gesture[i].handlers;
+      handler.handlers.handlerTag = handler.handlerTag;
 
       let requireToFail: number[] = [];
-      if (gst.config.requireToFail) {
-        requireToFail = gst.config.requireToFail
+      if (handler.config.requireToFail) {
+        requireToFail = handler.config.requireToFail
           .map(convertToHandlerTag)
           .filter((tag) => tag > 0);
       }
 
       let simultaneousWith: number[] = [];
-      if (gst.config.simultaneousWith) {
-        simultaneousWith = gst.config.simultaneousWith
+      if (handler.config.simultaneousWith) {
+        simultaneousWith = handler.config.simultaneousWith
           .map(convertToHandlerTag)
           .filter((tag) => tag > 0);
       }
 
       RNGestureHandlerModule.updateGestureHandler(
-        gst.handlerTag,
-        filterConfig(gst.config, ALLOWED_PROPS, {
+        handler.handlerTag,
+        filterConfig(handler.config, ALLOWED_PROPS, {
           simultaneousHandlers: simultaneousWith,
           waitFor: requireToFail,
         })
       );
 
-      registerHandler(gst.handlerTag, gst);
+      registerHandler(handler.handlerTag, handler);
     }
 
     if (preparedGesture.current.animatedHandlers) {
