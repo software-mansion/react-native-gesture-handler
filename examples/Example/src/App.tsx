@@ -10,6 +10,8 @@ import { RectButton } from 'react-native-gesture-handler';
 import ReanimatedSimple from './new_api/reanimated';
 import Camera from './new_api/camera';
 import Transformations from './new_api/transformations';
+import OverlapParents from './new_api/overlap_parent';
+import OverlapSiblings from './new_api/overlap_siblings';
 
 import Rows from './rows';
 import Bouncing from './bouncing';
@@ -43,6 +45,14 @@ const NEW_API_SCREENS: Screens = {
   },
   Camera: { component: Camera, title: 'Camera' },
   Transformations: { component: Transformations, title: 'Transformations' },
+  OverlapParents: {
+    component: OverlapParents,
+    title: 'Child overlapping parent',
+  },
+  OverlapSiblings: {
+    component: OverlapSiblings,
+    title: 'Overlapping siblings',
+  },
 };
 
 const SCREENS: Screens = {
