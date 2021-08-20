@@ -27,5 +27,5 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn
       - name: Build app
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: ${{ env.WORKING_DIRECTORY }}/android
         run: ./gradlew assembleDebug --console=plain
