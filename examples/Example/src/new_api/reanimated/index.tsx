@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import {
   GestureMonitor,
@@ -24,11 +25,16 @@ type StylesType = {
 
 function Draggable() {
   const [counter, setCounter] = useState(1);
+  const intervalHandle = useRef<number>(0);
 
   useEffect(() => {
-    setInterval(() => {
+    intervalHandle.current = setInterval(() => {
       setCounter((a) => a + 1);
     }, 1000);
+
+    return () => {
+      clearInterval(intervalHandle.current);
+    };
   }, []);
 
   const isPressed = useSharedValue(false);

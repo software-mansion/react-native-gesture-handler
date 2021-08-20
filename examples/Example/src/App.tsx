@@ -7,7 +7,7 @@ import {
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
 
-import NewApi from './new_api';
+import ReanimatedSimple from './new_api/reanimated';
 import Rows from './rows';
 import Bouncing from './bouncing';
 import Draggable from './draggable';
@@ -33,8 +33,15 @@ type Screens = Record<
   { component: React.ComponentType<any>; title?: string }
 >;
 
+const NEW_API_SCREENS: Screens = {
+  ReanimatedSimple: {
+    component: ReanimatedSimple,
+    title: 'Simple interaction with Reanimated',
+  },
+};
+
 const SCREENS: Screens = {
-  NewApi: { component: NewApi, title: 'New API example' },
+  NewApiScreen: { component: NewApiScreen, title: 'Examples with the new API' },
   Rows: { component: Rows, title: 'Table rows & buttons' },
   Multitap: { component: Multitap },
   Draggable: { component: Draggable },
@@ -117,6 +124,14 @@ export default function App() {
             options={{ title: SCREENS[name].title || name }}
           />
         ))}
+        {Object.keys(NEW_API_SCREENS).map((name) => (
+          <Stack.Screen
+            key={name}
+            name={name}
+            getComponent={() => NEW_API_SCREENS[name].component}
+            options={{ title: NEW_API_SCREENS[name].title || name }}
+          />
+        ))}
         <Stack.Screen name="TouchableExample" component={TouchableExample} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -126,6 +141,28 @@ export default function App() {
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   const data = Object.keys(SCREENS).map((key) => {
     const item = SCREENS[key];
+    return { key, title: item.title || key };
+  });
+
+  return (
+    <FlatList
+      style={styles.list}
+      data={data}
+      ItemSeparatorComponent={ItemSeparator}
+      renderItem={(props) => (
+        <MainScreenItem
+          {...props}
+          onPressItem={({ key }) => navigation.navigate(key)}
+        />
+      )}
+      renderScrollComponent={(props) => <ScrollView {...props} />}
+    />
+  );
+}
+
+function NewApiScreen({ navigation }: StackScreenProps<ParamListBase>) {
+  const data = Object.keys(NEW_API_SCREENS).map((key) => {
+    const item = NEW_API_SCREENS[key];
     return { key, title: item.title || key };
   });
 
