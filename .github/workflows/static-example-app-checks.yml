@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - 'examples/Example/**'
+      - 'example/**'
   push:
     branches:
       - master
@@ -12,7 +12,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      WORKING_DIRECTORY: examples/Example
+      WORKING_DIRECTORY: example
     concurrency:
       group: static-example-${{ github.ref }}
       cancel-in-progress: true
