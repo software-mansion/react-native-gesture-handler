@@ -2,8 +2,7 @@ name: Test iOS build
 on:
   pull_request:
     paths:
-      - "ios/**"
-  # Whenever sth is merged, push event is fired
+      - 'ios/**'
   push:
     branches:
       - master
@@ -12,7 +11,7 @@ jobs:
     runs-on: macos-latest
     env:
       WORKING_DIRECTORY: examples/Example
-    concurrency: 
+    concurrency:
       group: ios-${{ github.ref }}
       cancel-in-progress: true
     steps:
