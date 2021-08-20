@@ -11,24 +11,14 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+type AtLeastOne<T> = { [K in keyof T]: Pick<T, K> }[keyof T];
+
 type StylesType = {
-  transform: (
-    | {
-        translateX: number;
-        translateY?: undefined;
-        scale?: undefined;
-      }
-    | {
-        translateY: number;
-        translateX?: undefined;
-        scale?: undefined;
-      }
-    | {
-        scale: number;
-        translateX?: undefined;
-        translateY?: undefined;
-      }
-  )[];
+  transform: AtLeastOne<{
+    translateX: number;
+    translateY: number;
+    scale: number;
+  }>[];
   backgroundColor: string;
 };
 

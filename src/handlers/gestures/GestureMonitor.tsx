@@ -88,7 +88,7 @@ export class GestureMonitor extends React.Component<GestureMonitorProps> {
   }
 }
 
-class Wrap extends React.Component<{ onGestureHandlerEvent: any }> {
+class Wrap extends React.Component<{ onGestureHandlerEvent: unknown }> {
   render() {
     return this.props.children;
   }
