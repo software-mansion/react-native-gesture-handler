@@ -179,14 +179,12 @@ export function useGesture(gestureConfig: InteractionBuilder | GestureType) {
   function needsToReattach() {
     if (gesture.length !== preparedGesture.current.config.length) {
       return true;
-    } else {
-      for (let i = 0; i < gesture.length; i++) {
-        if (
-          gesture[i].handlerName !==
-          preparedGesture.current.config[i].handlerName
-        ) {
-          return true;
-        }
+    }
+    for (let i = 0; i < gesture.length; i++) {
+      if (
+        gesture[i].handlerName !== preparedGesture.current.config[i].handlerName
+      ) {
+        return true;
       }
     }
 
