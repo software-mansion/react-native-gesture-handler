@@ -14,7 +14,7 @@ import {
   RotationGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import { USE_NATIVE_DRIVER } from '../config';
+import { USE_NATIVE_DRIVER } from '../../config';
 
 export class PinchableBox extends React.Component {
   private panRef = React.createRef<PanGestureHandler>();
