@@ -71,7 +71,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Double draggable', component: DoubleDraggable },
       { name: 'Rows', component: Rows },
       { name: 'Combo', component: ComboWithGHScroll },
-      { name: 'Touchables', component: TouchablesIndex },
+      { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
     ],
   },
 ];
