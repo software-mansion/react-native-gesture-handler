@@ -8,8 +8,8 @@ import {
   PanGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 
-import { USE_NATIVE_DRIVER } from '../config';
-import { LoremIpsum } from '../common';
+import { USE_NATIVE_DRIVER } from '../../config';
+import { LoremIpsum } from '../../common';
 
 type DraggableBoxProps = {
   minDist?: number;

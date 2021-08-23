@@ -22,11 +22,11 @@ import {
 import Slider from '@react-native-community/slider';
 
 import { Swipeable, InfoButton } from '../rows';
-import { DraggableBox } from '../draggable';
-import { PinchableBox } from '../scaleAndRotate';
-import { PressBox } from '../multitap';
+import { DraggableBox } from '../../basic/draggable';
+import { PinchableBox } from '../../recipes/scaleAndRotate';
+import { PressBox } from '../../basic/multitap';
 
-import { LoremIpsum } from '../common';
+import { LoremIpsum } from '../../common';
 
 const CHILD_REF = 'CHILD_REF';
 

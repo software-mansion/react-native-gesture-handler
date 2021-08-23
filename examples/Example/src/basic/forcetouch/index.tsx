@@ -7,7 +7,7 @@ import {
   ForceTouchGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import { USE_NATIVE_DRIVER } from '../config';
+import { USE_NATIVE_DRIVER } from '../../config';
 
 export default class Example extends Component {
   private force = new Animated.Value(0);

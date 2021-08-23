@@ -9,8 +9,8 @@ import {
   TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import { USE_NATIVE_DRIVER } from '../config';
-import { LoremIpsum } from '../common';
+import { USE_NATIVE_DRIVER } from '../../config';
+import { LoremIpsum } from '../../common';
 
 const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;

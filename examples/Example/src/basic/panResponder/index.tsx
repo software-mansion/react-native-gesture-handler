@@ -13,7 +13,7 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { DraggableBox } from '../draggable';
-import { LoremIpsum } from '../common';
+import { LoremIpsum } from '../../common';
 
 const CIRCLE_SIZE = 80;
 

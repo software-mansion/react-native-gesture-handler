@@ -11,7 +11,7 @@ import {
   RotationGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import { USE_NATIVE_DRIVER } from '../config';
+import { USE_NATIVE_DRIVER } from '../../config';
 
 class Snappable extends Component<Record<string, unknown>> {
   private onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;

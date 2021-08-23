@@ -10,7 +10,7 @@ import {
   TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import { LoremIpsum } from '../common';
+import { LoremIpsum } from '../../common';
 
 interface PressBoxProps {
   setDuration?: (duration: number) => void;

@@ -16,8 +16,8 @@ import {
   PanGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 
-import { LoremIpsum } from '../common';
-import { USE_NATIVE_DRIVER } from '../config';
+import { LoremIpsum } from '../../common';
+import { USE_NATIVE_DRIVER } from '../../config';
 
 type BottomSheetState = {
   lastSnap: number;
