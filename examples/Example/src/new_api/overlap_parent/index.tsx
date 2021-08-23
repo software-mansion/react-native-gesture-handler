@@ -13,7 +13,9 @@ function Box(props: {
 }) {
   const gesture = useGesture(
     Gesture.tap().setOnEnd((_e, success) => {
-      if (success) console.log(props.color);
+      if (success) {
+        console.log(props.color);
+      }
     })
   );
 
