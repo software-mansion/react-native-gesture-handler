@@ -5,6 +5,7 @@ import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
 import com.facebook.react.bridge.UiThreadUtil
+import java.lang.IllegalStateException
 import java.util.*
 
 open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
@@ -25,7 +26,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var usesDeviceEvents = false
 
-  private var mHitSlop: FloatArray? = null
+  private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
     private set
   var lastAbsolutePositionX = 0f
@@ -68,7 +69,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   open fun resetConfig() {
     shouldCancelWhenOutside = false
     isEnabled = true
-    mHitSlop = null
+    hitSlop = null
   }
 
   fun hasCommonPointers(other: GestureHandler<*>): Boolean {
@@ -96,15 +97,15 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float,
     width: Float, height: Float,
   ): ConcreteGestureHandlerT = applySelf {
-    if (mHitSlop == null) {
-      mHitSlop = FloatArray(6)
+    if (hitSlop == null) {
+      hitSlop = FloatArray(6)
     }
-    mHitSlop!![HIT_SLOP_LEFT_IDX] = leftPad
-    mHitSlop!![HIT_SLOP_TOP_IDX] = topPad
-    mHitSlop!![HIT_SLOP_RIGHT_IDX] = rightPad
-    mHitSlop!![HIT_SLOP_BOTTOM_IDX] = bottomPad
-    mHitSlop!![HIT_SLOP_WIDTH_IDX] = width
-    mHitSlop!![HIT_SLOP_HEIGHT_IDX] = height
+    hitSlop!![HIT_SLOP_LEFT_IDX] = leftPad
+    hitSlop!![HIT_SLOP_TOP_IDX] = topPad
+    hitSlop!![HIT_SLOP_RIGHT_IDX] = rightPad
+    hitSlop!![HIT_SLOP_BOTTOM_IDX] = bottomPad
+    hitSlop!![HIT_SLOP_WIDTH_IDX] = width
+    hitSlop!![HIT_SLOP_HEIGHT_IDX] = height
     require(!(hitSlopSet(width) && hitSlopSet(leftPad) && hitSlopSet(rightPad))) { "Cannot have all of left, right and width defined" }
     require(!(hitSlopSet(width) && !hitSlopSet(leftPad) && !hitSlopSet(rightPad))) { "When width is set one of left or right pads need to be defined" }
     require(!(hitSlopSet(height) && hitSlopSet(bottomPad) && hitSlopSet(topPad))) { "Cannot have all of top, bottom and height defined" }
@@ -206,9 +207,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     while (index < size) {
       val origPointerId = event.getPointerId(index)
       if (trackedPointerIDs[origPointerId] != -1) {
-        event.getPointerProperties(index, sPointerProps[count])
-        sPointerProps[count]!!.id = trackedPointerIDs[origPointerId]
-        event.getPointerCoords(index, sPointerCoords[count])
+        event.getPointerProperties(index, pointerProps[count])
+        pointerProps[count]!!.id = trackedPointerIDs[origPointerId]
+        event.getPointerCoords(index, pointerCoords[count])
         if (index == actionIndex) {
           action = action or (count shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
         }
@@ -216,13 +217,19 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       }
       index++
     }
+
+    // introduced in 1.11.0, remove if crashes are not reported
+    if(pointerProps.isEmpty()|| pointerCoords.isEmpty()){
+      throw IllegalStateException("pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}")
+    }
+
     val result = MotionEvent.obtain(
       event.downTime,
       event.eventTime,
       action,
       count,
-      sPointerProps,  /* props are copied and hence it is safe to use static array here */
-      sPointerCoords,  /* same applies to coords */
+      pointerProps,  /* props are copied and hence it is safe to use static array here */
+      pointerCoords,  /* same applies to coords */
       event.metaState,
       event.buttonState,
       event.xPrecision,
@@ -278,7 +285,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       // Generate a unique coalescing-key each time the gesture-handler becomes active. All events will have
       // the same coalescing-key allowing EventDispatcher to coalesce RNGestureHandlerEvents when events are
       // generated faster than they can be treated by JS thread
-      eventCoalescingKey = sNextEventCoalescingKey++
+      eventCoalescingKey = nextEventCoalescingKey++
     }
     orchestrator!!.onHandlerStateChange(this, newState, oldState)
     onStateChange(newState, oldState)
@@ -329,11 +336,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     var top = 0f
     var right = view!!.width.toFloat()
     var bottom = view.height.toFloat()
-    if (mHitSlop != null) {
-      val padLeft = mHitSlop!![HIT_SLOP_LEFT_IDX]
-      val padTop = mHitSlop!![HIT_SLOP_TOP_IDX]
-      val padRight = mHitSlop!![HIT_SLOP_RIGHT_IDX]
-      val padBottom = mHitSlop!![HIT_SLOP_BOTTOM_IDX]
+    if (hitSlop != null) {
+      val padLeft = hitSlop!![HIT_SLOP_LEFT_IDX]
+      val padTop = hitSlop!![HIT_SLOP_TOP_IDX]
+      val padRight = hitSlop!![HIT_SLOP_RIGHT_IDX]
+      val padBottom = hitSlop!![HIT_SLOP_BOTTOM_IDX]
       if (hitSlopSet(padLeft)) {
         left -= padLeft
       }
@@ -346,8 +353,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       if (hitSlopSet(padBottom)) {
         bottom += padBottom
       }
-      val width = mHitSlop!![HIT_SLOP_WIDTH_IDX]
-      val height = mHitSlop!![HIT_SLOP_HEIGHT_IDX]
+      val width = hitSlop!![HIT_SLOP_WIDTH_IDX]
+      val height = hitSlop!![HIT_SLOP_HEIGHT_IDX]
       if (hitSlopSet(width)) {
         if (!hitSlopSet(padLeft)) {
           left = right - width
@@ -446,22 +453,22 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     const val DIRECTION_UP = 4
     const val DIRECTION_DOWN = 8
     private const val MAX_POINTERS_COUNT = 12
-    private lateinit var sPointerProps: Array<PointerProperties?>
-    private lateinit var sPointerCoords: Array<PointerCoords?>
+    private lateinit var pointerProps: Array<PointerProperties?>
+    private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
       var size = size
-      if (!::sPointerProps.isInitialized) {
-        sPointerProps = arrayOfNulls(MAX_POINTERS_COUNT)
-        sPointerCoords = arrayOfNulls(MAX_POINTERS_COUNT)
+      if (!::pointerProps.isInitialized) {
+        pointerProps = arrayOfNulls(MAX_POINTERS_COUNT)
+        pointerCoords = arrayOfNulls(MAX_POINTERS_COUNT)
       }
-      while (size > 0 && sPointerProps[size - 1] == null) {
-        sPointerProps[size - 1] = PointerProperties()
-        sPointerCoords[size - 1] = PointerCoords()
+      while (size > 0 && pointerProps[size - 1] == null) {
+        pointerProps[size - 1] = PointerProperties()
+        pointerCoords[size - 1] = PointerCoords()
         size--
       }
     }
 
-    private var sNextEventCoalescingKey: Short = 0
+    private var nextEventCoalescingKey: Short = 0
     private fun hitSlopSet(value: Float): Boolean {
       return !java.lang.Float.isNaN(value)
     }

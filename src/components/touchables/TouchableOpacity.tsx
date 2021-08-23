@@ -36,7 +36,7 @@ export default class TouchableOpacity extends Component<
       toValue: value,
       duration: duration,
       easing: Easing.inOut(Easing.quad),
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
   };
 
