@@ -25,8 +25,6 @@ let Reanimated: {
 
 try {
   Reanimated = require('react-native-reanimated');
-} catch (e) {
-  console.log('RNGH: react-native-reanimated not available');
-}
+} catch (e) {}
 
 export { Reanimated };
