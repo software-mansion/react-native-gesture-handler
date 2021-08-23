@@ -57,7 +57,7 @@ interface OutputProps {
   history: string[];
 }
 
-function Output(props: OutputProps) {
+function Output({ offset, expression, history }: OutputProps) {
   const layout = useRef({});
   const scrollView = useRef<ScrollView>();
   const drag = useSharedValue(0);
@@ -69,10 +69,10 @@ function Output(props: OutputProps) {
   }
 
   function open() {
-    drag.value = withTiming(-props.offset.value, {
+    drag.value = withTiming(-offset.value, {
       duration: DRAG_ANIMATION_DURATION,
     });
-    dragOffset.value = -props.offset.value;
+    dragOffset.value = -offset.value;
 
     setOpened(true);
   }
@@ -86,7 +86,7 @@ function Output(props: OutputProps) {
 
   const translationStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: props.offset.value + drag.value }],
+      transform: [{ translateY: offset.value + drag.value }],
     };
   });
 
@@ -96,8 +96,8 @@ function Output(props: OutputProps) {
         'worklet';
         const translatedOffset = dragOffset.value + e.translationY;
 
-        if (translatedOffset > -props.offset.value) {
-          drag.value = -props.offset.value;
+        if (translatedOffset > -offset.value) {
+          drag.value = -offset.value;
         } else if (translatedOffset < 0) {
           drag.value = 0;
         } else {
@@ -109,7 +109,7 @@ function Output(props: OutputProps) {
         const translatedOffset = dragOffset.value + e.translationY;
 
         if (opened) {
-          if (translatedOffset < -props.offset.value - 100) {
+          if (translatedOffset < -offset.value - 100) {
             runOnJS(close)();
           } else {
             runOnJS(open)();
@@ -142,11 +142,11 @@ function Output(props: OutputProps) {
           contentContainerStyle={{ flexGrow: 1 }}>
           <View style={{ flexGrow: 1 }} />
 
-          {props.history.map((exp: string) => {
+          {history.map((exp: string) => {
             return <Expression expression={exp} key={exp} />;
           })}
 
-          <Expression expression={props.expression} />
+          <Expression expression={expression} />
         </ScrollView>
         <View style={styles.handleView}>
           <View style={styles.handle} />
@@ -177,26 +177,30 @@ interface InputProps {
   expression: string;
 }
 
-function Input(props: InputProps) {
+function Input({
+  setHistory,
+  setExpression,
+  measure,
+  offset,
+  expression,
+}: InputProps) {
   const translationStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: props.offset.value }],
+      transform: [{ translateY: offset.value }],
     };
   });
 
   function append(symbol: string) {
     if (symbol === '<') {
-      props.setHistory((h) => [...h, props.expression]);
-      props.setExpression((_e) => '');
+      setHistory((h) => [...h, expression]);
+      setExpression((_e) => '');
     } else {
-      props.setExpression((e) => e + symbol);
+      setExpression((e) => e + symbol);
     }
   }
 
   return (
-    <Animated.View
-      style={[styles.input, translationStyle]}
-      onLayout={props.measure}>
+    <Animated.View style={[styles.input, translationStyle]} onLayout={measure}>
       <NumPad append={append} />
       <Operations />
     </Animated.View>
@@ -308,7 +312,7 @@ interface ButtonProps {
   append: (text: string) => void;
 }
 
-function Button(props: ButtonProps) {
+function Button({ text, append }: ButtonProps) {
   const alpha = useSharedValue(0);
 
   const backgroundStyles = useAnimatedStyle(() => {
@@ -324,7 +328,7 @@ function Button(props: ButtonProps) {
         alpha.value = withTiming(0, { duration: TAP_ANIMATION_DURATION });
 
         if (s) {
-          runOnJS(props.append)(props.text);
+          runOnJS(append)(text);
         }
       })
       .setOnBegan((_e) => {
@@ -337,7 +341,7 @@ function Button(props: ButtonProps) {
     <GestureMonitor gesture={tapHandler}>
       <Animated.View style={styles.button}>
         <Animated.View style={[styles.buttonTextContainer, backgroundStyles]}>
-          <Text style={styles.buttonText}>{props.text}</Text>
+          <Text style={styles.buttonText}>{text}</Text>
         </Animated.View>
       </Animated.View>
     </GestureMonitor>
