@@ -135,8 +135,8 @@ function Output({ offset, expression, history }: OutputProps) {
         onLayout={measure}>
         <ScrollView
           ref={(ref: ScrollView) => {
-            if (!opened && ref) {
-              ref.scrollToEnd({ animated: false });
+            if (!opened) {
+              ref?.scrollToEnd({ animated: false });
             }
             scrollView.current = ref;
           }}
