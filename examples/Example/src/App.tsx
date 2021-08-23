@@ -138,7 +138,7 @@ export default function App() {
             key={name}
             name={name}
             getComponent={() => SCREENS[name].component}
-            options={{ title: SCREENS[name].title || name }}
+            options={{ title: SCREENS[name].title ?? name }}
           />
         ))}
         {Object.keys(NEW_API_SCREENS).map((name) => (
@@ -146,7 +146,7 @@ export default function App() {
             key={name}
             name={name}
             getComponent={() => NEW_API_SCREENS[name].component}
-            options={{ title: NEW_API_SCREENS[name].title || name }}
+            options={{ title: NEW_API_SCREENS[name].title ?? name }}
           />
         ))}
         <Stack.Screen name="TouchableExample" component={TouchableExample} />
@@ -158,7 +158,7 @@ export default function App() {
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   const data = Object.keys(SCREENS).map((key) => {
     const item = SCREENS[key];
-    return { key, title: item.title || key };
+    return { key, title: item.title ?? key };
   });
 
   return (
@@ -180,7 +180,7 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
 function NewApiScreen({ navigation }: StackScreenProps<ParamListBase>) {
   const data = Object.keys(NEW_API_SCREENS).map((key) => {
     const item = NEW_API_SCREENS[key];
-    return { key, title: item.title || key };
+    return { key, title: item.title ?? key };
   });
 
   return (
