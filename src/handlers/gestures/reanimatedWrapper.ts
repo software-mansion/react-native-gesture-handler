@@ -1,3 +1,4 @@
+import { ComponentClass } from 'react';
 import {
   UnwrappedGestureHandlerEvent,
   UnwrappedGestureHandlerStateChangeEvent,
@@ -9,7 +10,10 @@ export interface SharedValue<T> {
 
 let Reanimated: {
   default: {
-    createAnimatedComponent: (Component: any) => any;
+    createAnimatedComponent<P extends object>(
+      component: ComponentClass<P>,
+      options?: unknown
+    ): ComponentClass<P>;
   };
   useEvent: (
     callback: (
