@@ -133,7 +133,9 @@ function Output(props: OutputProps) {
         onLayout={measure}>
         <ScrollView
           ref={(ref: ScrollView) => {
-            if (!opened && ref) ref.scrollToEnd({ animated: false });
+            if (!opened && ref) {
+              ref.scrollToEnd({ animated: false });
+            }
             scrollView.current = ref;
           }}
           enabled={opened}
@@ -158,12 +160,12 @@ interface ExpressionProps {
   expression: string;
 }
 
-function Expression(props: ExpressionProps) {
+function Expression({ expression }: ExpressionProps) {
   return (
     <View style={styles.expression}>
       <View style={{ flexDirection: 'column' }}>
-        <Text style={styles.expressionText}>{props.expression}</Text>
-        <Text style={styles.expressionResult}>{props.expression}</Text>
+        <Text style={styles.expressionText}>{expression}</Text>
+        <Text style={styles.expressionResult}>{expression}</Text>
       </View>
     </View>
   );
@@ -207,12 +209,12 @@ interface NumPadProps {
   append: (text: string) => void;
 }
 
-function NumPad(props: NumPadProps) {
+function NumPad({ append }: NumPadProps) {
   const buttons = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '<', '0', '.'];
   return (
     <View style={styles.numPad}>
       {buttons.map((text) => {
-        return <Button text={text} key={text} append={props.append} />;
+        return <Button text={text} key={text} append={append} />;
       })}
     </View>
   );
