@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const filters = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
-const MAX_VIDEO_DURATION = 60_000;
+const MAX_VIDEO_DURATION_MS = 60_000;
 const CAPTURE_BUTTON_RADIUS = 50;
 const FILTER_BUTTON_RADIUS = 35;
 
@@ -24,7 +24,7 @@ export default function Home() {
   const [scale, setScale] = useState(1);
   const [selectedFilter, setSelectedFilter] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(MAX_VIDEO_DURATION);
+  const [remainingTimeMs, setRemainingTimeMs] = useState(MAX_VIDEO_DURATION_MS);
   const [recordingIntervalHandle, setRecordingIntervalHandle] = useState(-1);
 
   const filtersPanGesture = Gesture.pan()
@@ -41,7 +41,7 @@ export default function Home() {
       runOnJS(stopFilterScroll)();
     });
 
-  const buttonTapGesture = Gesture.tap().setOnEnd((e, success) => {
+  const buttonTapGesture = Gesture.tap().setOnEnd((_e, success) => {
     'worklet';
     if (success) {
       runOnJS(takePhoto)();
@@ -125,10 +125,10 @@ export default function Home() {
 
   function startRecording() {
     setIsRecording(true);
-    setRemainingTime(MAX_VIDEO_DURATION);
+    setRemainingTimeMs(MAX_VIDEO_DURATION_MS);
     setRecordingIntervalHandle(
       setInterval(() => {
-        setRemainingTime((r) => r - 200);
+        setRemainingTimeMs((r) => r - 200);
       }, 200)
     );
   }
@@ -136,10 +136,10 @@ export default function Home() {
   function finishRecording() {
     setIsRecording(false);
     clearInterval(recordingIntervalHandle);
-    setRemainingTime(MAX_VIDEO_DURATION);
+    setRemainingTimeMs(MAX_VIDEO_DURATION_MS);
 
     Alert.alert(
-      `You took a video (${(MAX_VIDEO_DURATION - remainingTime) / 1000} s)`
+      `You took a video (${(MAX_VIDEO_DURATION_MS - remainingTimeMs) / 1000} s)`
     );
   }
 
@@ -161,7 +161,7 @@ export default function Home() {
           <FilterCarousel filters={filters} selected={filter} />
           <GestureMonitor gesture={buttonGestureHandler}>
             <CaptureButton
-              progress={1 - remainingTime / MAX_VIDEO_DURATION}
+              progress={1 - remainingTimeMs / MAX_VIDEO_DURATION_MS}
               onTimerFinished={() => {
                 finishRecording();
               }}
