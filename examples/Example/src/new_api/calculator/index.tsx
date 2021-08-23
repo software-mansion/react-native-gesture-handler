@@ -29,8 +29,12 @@ export default function CalculatorUI() {
   const [history, setHistory] = useState(Array<string>());
   const [expression, setExpression] = useState('');
 
-  function measure(e: LayoutChangeEvent) {
-    outputOffset.value = -e.nativeEvent.layout.height;
+  function measure({
+    nativeEvent: {
+      layout: { height },
+    },
+  }: LayoutChangeEvent) {
+    outputOffset.value = -height;
   }
 
   return (
@@ -58,8 +62,8 @@ function Output(props: {
   const dragOffset = useSharedValue(0);
   const [opened, setOpened] = useState(false);
 
-  function measure(e: LayoutChangeEvent) {
-    layout.current = e.nativeEvent.layout;
+  function measure({ nativeEvent: { layout: newLayout } }: LayoutChangeEvent) {
+    layout.current = newLayout;
   }
 
   function open() {
@@ -273,8 +277,8 @@ function Operations() {
     };
   });
 
-  function measure(e: LayoutChangeEvent) {
-    layout.value = e.nativeEvent.layout;
+  function measure({ nativeEvent: { layout: newLayout } }: LayoutChangeEvent) {
+    layout.value = newLayout;
   }
 
   return (
