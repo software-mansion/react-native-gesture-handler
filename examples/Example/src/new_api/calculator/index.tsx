@@ -163,10 +163,8 @@ interface ExpressionProps {
 function Expression({ expression }: ExpressionProps) {
   return (
     <View style={styles.expression}>
-      <View style={{ flexDirection: 'column' }}>
-        <Text style={styles.expressionText}>{expression}</Text>
-        <Text style={styles.expressionResult}>{expression}</Text>
-      </View>
+      <Text style={styles.expressionText}>{expression}</Text>
+      <Text style={styles.expressionResult}>{expression}</Text>
     </View>
   );
 }
@@ -370,12 +368,12 @@ const styles = StyleSheet.create({
   },
   expression: {
     width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: 'column',
     padding: 30,
   },
   expressionText: {
     fontSize: 35,
+    alignSelf: 'flex-end',
   },
   expressionResult: {
     fontSize: 24,
