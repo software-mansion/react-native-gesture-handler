@@ -51,11 +51,13 @@ export default function CalculatorUI() {
   );
 }
 
-function Output(props: {
+interface OutputProps {
   offset: Animated.SharedValue<number>;
   expression: string;
   history: string[];
-}) {
+}
+
+function Output(props: OutputProps) {
   const layout = useRef({});
   const scrollView = useRef<ScrollView>();
   const drag = useSharedValue(0);
@@ -152,7 +154,11 @@ function Output(props: {
   );
 }
 
-function Expression(props: { expression: string }) {
+interface ExpressionProps {
+  expression: string;
+}
+
+function Expression(props: ExpressionProps) {
   return (
     <View style={styles.expression}>
       <View style={{ flexDirection: 'column' }}>
@@ -163,13 +169,15 @@ function Expression(props: { expression: string }) {
   );
 }
 
-function Input(props: {
+interface InputProps {
   setHistory: Dispatch<SetStateAction<string[]>>;
   setExpression: Dispatch<SetStateAction<string>>;
   measure: (e: LayoutChangeEvent) => void;
   offset: Animated.SharedValue<number>;
   expression: string;
-}) {
+}
+
+function Input(props: InputProps) {
   const translationStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: props.offset.value }],
@@ -195,7 +203,11 @@ function Input(props: {
   );
 }
 
-function NumPad(props: { append: (text: string) => void }) {
+interface NumPadProps {
+  append: (text: string) => void;
+}
+
+function NumPad(props: NumPadProps) {
   const buttons = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '<', '0', '.'];
   return (
     <View style={styles.numPad}>
@@ -291,7 +303,12 @@ function Operations() {
   );
 }
 
-function Button(props: { text: string; append: (text: string) => void }) {
+interface ButtonProps {
+  text: string;
+  append: (text: string) => void;
+}
+
+function Button(props: ButtonProps) {
   const alpha = useSharedValue(0);
 
   const backgroundStyles = useAnimatedStyle(() => {
