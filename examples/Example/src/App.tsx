@@ -9,7 +9,6 @@ import {
   GestureHandlerRootView,
   RectButton,
 } from 'react-native-gesture-handler';
-import NewApi from './new_api';
 import DoublePinchRotate from './release_tests/doubleScalePinchAndRotate';
 import DoubleDraggable from './release_tests/doubleDraggable';
 import { ComboWithGHScroll } from './release_tests/combo';
@@ -28,6 +27,13 @@ import HorizontalDrawer from './basic/horizontalDrawer';
 import PagerAndDrawer from './basic/pagerAndDrawer';
 import ForceTouch from './basic/forcetouch';
 
+import ReanimatedSimple from './new_api/reanimated';
+import Camera from './new_api/camera';
+import Transformations from './new_api/transformations';
+import OverlapParents from './new_api/overlap_parent';
+import OverlapSiblings from './new_api/overlap_siblings';
+import Calculator from './new_api/calculator';
+
 interface Example {
   name: string;
   component: React.ComponentType;
@@ -41,7 +47,6 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Basic examples',
     data: [
-      { name: 'New API', component: NewApi },
       { name: 'Draggable', component: DraggableBox },
       { name: 'Multitap', component: MultiTap },
       { name: 'Bouncing box', component: BouncingBox },
@@ -74,6 +79,20 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Rows', component: Rows },
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
+    ],
+  },
+  {
+    sectionTitle: 'New api',
+    data: [
+      {
+        name: 'Simple interaction with Reanimated',
+        component: ReanimatedSimple,
+      },
+      { name: 'Camera', component: Camera },
+      { name: 'Transformations', component: Transformations },
+      { name: 'Overlap parents', component: OverlapParents },
+      { name: 'Overlap siblings', component: OverlapSiblings },
+      { name: 'Calculator', component: Calculator },
     ],
   },
 ];

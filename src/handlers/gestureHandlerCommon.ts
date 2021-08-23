@@ -126,9 +126,9 @@ export function filterConfig(
   defaults: Record<string, unknown> = {}
 ) {
   const filteredConfig = { ...defaults };
-  for (const [key, value] of Object.entries(validProps)) {
+  for (const key of validProps) {
+    let value = props[key];
     if (isConfigParam(value, key)) {
-      let value = props[key];
       if (key === 'simultaneousHandlers' || key === 'waitFor') {
         value = transformIntoHandlerTags(props[key]);
       } else if (key === 'hitSlop' && typeof value !== 'object') {
