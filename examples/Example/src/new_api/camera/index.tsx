@@ -30,8 +30,7 @@ export default function Home() {
   const filtersPanGesture = Gesture.pan()
     .setOnUpdate((e) => {
       'worklet';
-      filter.value =
-        filter.value + (filterOffset.value - e.translationX) * 0.01;
+      filter.value = filter.value + (filterOffset.value - e.translationX) / 100;
       filterOffset.value = e.translationX;
 
       runOnJS(updateSelectedFilter)();
@@ -140,7 +139,7 @@ export default function Home() {
     setRemainingTime(MAX_VIDEO_DURATION);
 
     Alert.alert(
-      `You took a video (${(MAX_VIDEO_DURATION - remainingTime) * 0.001} s)`
+      `You took a video (${(MAX_VIDEO_DURATION - remainingTime) / 1000} s)`
     );
   }
 
@@ -226,7 +225,7 @@ function Filter(props: {
       transform: [
         {
           translateX:
-            window.width * 0.5 -
+            window.width / 2 -
             CAPTURE_BUTTON_RADIUS -
             CAPTURE_BUTTON_RADIUS * 2 * props.selected.value,
         },
