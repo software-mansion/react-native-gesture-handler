@@ -31,19 +31,81 @@ export const panGestureHandlerCustomNativeProps = [
 ] as const;
 
 export type PanGestureHandlerEventPayload = {
+  /**
+   * X coordinate of the current position of the pointer (finger or a leading
+   * pointer when there are multiple fingers placed) relative to the view
+   * attached to the handler. Expressed in point units.
+   */
   x: number;
+
+  /**
+   * Y coordinate of the current position of the pointer (finger or a leading
+   * pointer when there are multiple fingers placed) relative to the view
+   * attached to the handler. Expressed in point units.
+   */
   y: number;
+
+  /**
+   * X coordinate of the current position of the pointer (finger or a leading
+   * pointer when there are multiple fingers placed) relative to the root view.
+   * The value is expressed in point units. It is recommended to use it instead
+   * of `x` in cases when the original view can be transformed as an effect of
+   * the gesture.
+   */
   absoluteX: number;
+
+  /**
+   * Y coordinate of the current position of the pointer (finger or a leading
+   * pointer when there are multiple fingers placed) relative to the root view.
+   * The value is expressed in point units. It is recommended to use it instead
+   * of `y` in cases when the original view can be transformed as an
+   * effect of the gesture.
+   */
   absoluteY: number;
+
+  /**
+   * Translation of the pan gesture along X axis accumulated over the time of
+   * the gesture. The value is expressed in the point units.
+   */
   translationX: number;
+
+  /**
+   * Translation of the pan gesture along Y axis accumulated over the time of
+   * the gesture. The value is expressed in the point units.
+   */
   translationY: number;
+
+  /**
+   * Velocity of the pan gesture along the X axis in the current moment. The
+   * value is expressed in point units per second.
+   */
   velocityX: number;
+
+  /**
+   * Velocity of the pan gesture along the Y axis in the current moment. The
+   * value is expressed in point units per second.
+   */
   velocityY: number;
 };
 
 interface CommonPanProperties {
+  /**
+   * Minimum distance the finger (or multiple finger) need to travel before the
+   * handler activates. Expressed in points.
+   */
   minDist?: number;
+
+  /**
+   * Android only.
+   */
   avgTouches?: boolean;
+
+  /**
+   * Enables two-finger gestures on supported devices, for example iPads with
+   * trackpads. If not enabled the gesture will require click + drag, with
+   * enableTrackpadTwoFingerGesture swiping with two fingers will also trigger
+   * the gesture.
+   */
   enableTrackpadTwoFingerGesture?: boolean;
 }
 
@@ -61,25 +123,126 @@ export interface PanGestureConfig extends CommonPanProperties {
 export interface PanGestureHandlerProps
   extends BaseGestureHandlerProps<PanGestureHandlerEventPayload>,
     CommonPanProperties {
-  /** @deprecated  use activeOffsetX*/
+  /**
+   * @deprecated Instead of `minDeltaX={N}` use `activeOffsetX={[-N, N]}`.
+   *
+   * Minimum distance along X (in points) axis the finger (or multiple finger)
+   * need to travel (left or right) before the handler activates. Unlike
+   * `minOffsetX` this parameter accepts only non-lower or equal to 0 numbers
+   * that represents the distance in point units. If you want for the handler to
+   * activate for the movement in one particular direction use `minOffsetX`
+   * instead.
+   */
   minDeltaX?: number;
-  /** @deprecated  use activeOffsetY*/
+
+  /**
+   * @deprecated Instead of `minDeltaY={N}` use `activeOffsetY={[-N, N]}`.
+   *
+   * Minimum distance along Y (in points) axis the finger (or multiple finger)
+   * need to travel (left or right) before the handler activates. Unlike
+   * `minOffsetY` this parameter accepts only non-lower or equal to 0 numbers
+   * that represents the distance in point units. If you want for the handler to
+   * activate for the movement in one particular direction use `minOffsetY`
+   * instead.
+   */
   minDeltaY?: number;
-  /** @deprecated  use failOffsetX*/
+
+  /**
+   * @deprecated Instead of `maxDeltaX={N}` use `failOffsetX={[-N, N]}`.
+   *
+   * When the finger travels the given distance expressed in points along X axis
+   * and handler hasn't yet activated it will fail
+   * recognizing the gesture.
+   */
   maxDeltaX?: number;
-  /** @deprecated  use failOffsetY*/
+
+  /**
+   * @deprecated Instead of `maxDeltaY={N}` use `failOffsetY={[-N, N]}`.
+   *
+   * When the finger travels the given distance expressed in points along Y axis
+   * and handler hasn't yet activated it will fail
+   * recognizing the gesture.
+   */
   maxDeltaY?: number;
-  /** @deprecated  use activeOffsetX*/
+
+  /**
+   * @deprecated Instead of `minOffsetX={N}` use `activeOffsetX={N}`.
+   *
+   * Minimum distance along X (in points) axis the finger (or multiple finger)
+   * need to travel before the handler activates. If set to a lower or equal to
+   * 0 value we expect the finger to travel "left" by the given distance. When
+   * set to a higher or equal to 0 number the handler will activate on a
+   * movement to the "right". If you wish for the movement direction to be
+   * ignored use `minDeltaX` instead.
+   */
   minOffsetX?: number;
-  /** @deprecated  use failOffsetY*/
+
+  /**
+   * @deprecated Instead of `minOffsetY={N}` use `activeOffsetY={N}`.
+   *
+   * Minimum distance along Y (in points) axis the finger (or multiple finger)
+   * need to travel before the handler activates. If set to a lower or equal to
+   * 0 value we expect the finger to travel "up" by the given distance. When
+   * set to a higher or equal to 0 number the handler will activate on a
+   * movement to the "bottom". If you wish for the movement direction to be
+   * ignored use `minDeltaY` instead.
+   */
   minOffsetY?: number;
+
+  /**
+   * Range along X axis (in points) where fingers travels without activation of
+   * handler. Moving outside of this range implies activation of handler. Range
+   * can be given as an array or a single number. If range is set as an array,
+   * first value must be lower or equal to 0, a the second one higher or equal
+   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
+   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+   */
   activeOffsetY?: number | number[];
+
+  /**
+   * Range along X axis (in points) where fingers travels without activation of
+   * handler. Moving outside of this range implies activation of handler. Range
+   * can be given as an array or a single number. If range is set as an array,
+   * first value must be lower or equal to 0, a the second one higher or equal
+   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
+   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+   */
   activeOffsetX?: number | number[];
+
+  /**
+   * When the finger moves outside this range (in points) along Y axis and
+   * handler hasn't yet activated it will fail recognizing the gesture. Range
+   * can be given as an array or a single number. If range is set as an array,
+   * first value must be lower or equal to 0, a the second one higher or equal
+   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
+   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+   */
   failOffsetY?: number | number[];
+
+  /**
+   * When the finger moves outside this range (in points) along X axis and
+   * handler hasn't yet activated it will fail recognizing the gesture. Range
+   * can be given as an array or a single number. If range is set as an array,
+   * first value must be lower or equal to 0, a the second one higher or equal
+   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
+   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+   */
   failOffsetX?: number | number[];
   minVelocity?: number;
   minVelocityX?: number;
   minVelocityY?: number;
+
+  /**
+   * A number of fingers that is required to be placed before handler can
+   * activate. Should be a higher or equal to 0 integer.
+   */
+  minPointers?: number;
+
+  /**
+   * When the given number of fingers is placed on the screen and handler hasn't
+   * yet activated it will fail recognizing the gesture. Should be a higher or
+   * equal to 0 integer.
+   */
   maxPointers?: number;
 }
 

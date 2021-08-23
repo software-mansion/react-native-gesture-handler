@@ -6,11 +6,11 @@ import com.swmansion.gesturehandler.GestureHandler
 import com.swmansion.gesturehandler.GestureHandlerInteractionController
 
 class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
-  private val mWaitForRelations = SparseArray<IntArray>()
-  private val mSimultaneousRelations = SparseArray<IntArray>()
+  private val waitForRelations = SparseArray<IntArray>()
+  private val simultaneousRelations = SparseArray<IntArray>()
   fun dropRelationsForHandlerWithTag(handlerTag: Int) {
-    mWaitForRelations.remove(handlerTag)
-    mSimultaneousRelations.remove(handlerTag)
+    waitForRelations.remove(handlerTag)
+    simultaneousRelations.remove(handlerTag)
   }
 
   private fun convertHandlerTagsArray(config: ReadableMap, key: String): IntArray {
@@ -26,16 +26,16 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
     handler.setInteractionController(this)
     if (config.hasKey(KEY_WAIT_FOR)) {
       val tags = convertHandlerTagsArray(config, KEY_WAIT_FOR)
-      mWaitForRelations.put(handler.tag, tags)
+      waitForRelations.put(handler.tag, tags)
     }
     if (config.hasKey(KEY_SIMULTANEOUS_HANDLERS)) {
       val tags = convertHandlerTagsArray(config, KEY_SIMULTANEOUS_HANDLERS)
-      mSimultaneousRelations.put(handler.tag, tags)
+      simultaneousRelations.put(handler.tag, tags)
     }
   }
 
   override fun shouldWaitForHandlerFailure(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) =
-    mWaitForRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
+    waitForRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   override fun shouldRequireHandlerToWaitForFailure(
     handler: GestureHandler<*>,
@@ -47,11 +47,11 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   override fun shouldRecognizeSimultaneously(
     handler: GestureHandler<*>,
     otherHandler: GestureHandler<*>,
-  ) = mSimultaneousRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
+  ) = simultaneousRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   fun reset() {
-    mWaitForRelations.clear()
-    mSimultaneousRelations.clear()
+    waitForRelations.clear()
+    simultaneousRelations.clear()
   }
 
   companion object {

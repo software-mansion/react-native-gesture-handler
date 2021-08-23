@@ -21,7 +21,6 @@ module.exports = {
           'fbjs': './node_modules/fbjs',
           'hoist-non-react-statics': './node_modules/hoist-non-react-statics',
           'invariant': './node_modules/invariant',
-          'prop-types': './node_modules/prop-types',
         },
       },
     ],

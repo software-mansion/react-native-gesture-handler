@@ -1,184 +1,175 @@
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, SectionList, Platform } from 'react-native';
 import {
   createStackNavigator,
   StackScreenProps,
 } from '@react-navigation/stack';
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
-import { RectButton } from 'react-native-gesture-handler';
-
+import {
+  GestureHandlerRootView,
+  RectButton,
+} from 'react-native-gesture-handler';
 import NewApi from './new_api';
-import Rows from './rows';
-import Bouncing from './bouncing';
-import Draggable from './draggable';
-import Multitap from './multitap';
-import ScaleAndRotate from './scaleAndRotate';
-import SwipeableTable from './swipeable';
-import doubleScalePinchAndRotate from './doubleScalePinchAndRotate';
-import PagerAndDrawer from './pagerAndDrawer';
-import HorizontalDrawer from './horizontalDrawer';
-import PanAndScroll from './panAndScroll';
-import Fling from './fling';
-import PanResponder from './panResponder';
-import DoubleDraggable from './doubleDraggable';
-import ForceTouch from './forcetouch';
-import BottomSheet from './bottomSheet';
-import { TouchablesIndex, TouchableExample } from './touchables';
-import { ComboWithGHScroll, ComboWithRNScroll } from './combo';
-import ChatHeads from './chatHeads';
+import DoublePinchRotate from './release_tests/doubleScalePinchAndRotate';
+import DoubleDraggable from './release_tests/doubleDraggable';
+import { ComboWithGHScroll } from './release_tests/combo';
+import { TouchablesIndex, TouchableExample } from './release_tests/touchables';
+import Rows from './release_tests/rows';
+import { PinchableBox } from './recipes/scaleAndRotate';
+import PanAndScroll from './recipes/panAndScroll';
+import { BottomSheet } from './showcase/bottomSheet';
+import Swipeables from './showcase/swipeable';
+import ChatHeads from './showcase/chatHeads';
+import { DraggableBox } from './basic/draggable';
+import MultiTap from './basic/multitap';
+import BouncingBox from './basic/bouncing';
+import PanResponder from './basic/panResponder';
+import HorizontalDrawer from './basic/horizontalDrawer';
+import PagerAndDrawer from './basic/pagerAndDrawer';
+import ForceTouch from './basic/forcetouch';
 
-type Screens = Record<
-  string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  { component: React.ComponentType<any>; title?: string }
->;
+interface Example {
+  name: string;
+  component: React.ComponentType;
+}
+interface ExamplesSection {
+  sectionTitle: string;
+  data: Example[];
+}
 
-const SCREENS: Screens = {
-  NewApi: { component: NewApi, title: 'New API example' },
-  Rows: { component: Rows, title: 'Table rows & buttons' },
-  Multitap: { component: Multitap },
-  Draggable: { component: Draggable },
-  ScaleAndRotate: { component: ScaleAndRotate, title: 'Scale, rotate & tilt' },
-  ScaleAndRotateSimultaneously: {
-    component: doubleScalePinchAndRotate,
-    title: 'Scale, rotate & tilt & more',
+const EXAMPLES: ExamplesSection[] = [
+  {
+    sectionTitle: 'Basic examples',
+    data: [
+      { name: 'New API', component: NewApi },
+      { name: 'Draggable', component: DraggableBox },
+      { name: 'Multitap', component: MultiTap },
+      { name: 'Bouncing box', component: BouncingBox },
+      { name: 'Pan responder', component: PanResponder },
+      { name: 'Horizontal drawer', component: HorizontalDrawer },
+      { name: 'Pager & drawer', component: PagerAndDrawer },
+      { name: 'Force touch', component: ForceTouch },
+    ],
   },
-  PagerAndDrawer: {
-    component: PagerAndDrawer,
-    title: 'Android pager & drawer',
+  {
+    sectionTitle: 'Recipes',
+    data: [
+      { name: 'Pinch & rotate', component: PinchableBox },
+      { name: 'Pan & scroll', component: PanAndScroll },
+    ],
   },
-  HorizontalDrawer: {
-    component: HorizontalDrawer,
-    title: 'Gesture handler based DrawerLayout',
+  {
+    sectionTitle: 'Showcase',
+    data: [
+      { name: 'Bottom sheet', component: BottomSheet },
+      { name: 'Swipeables', component: Swipeables },
+      { name: 'Chat heads', component: ChatHeads },
+    ],
   },
-  SwipeableTable: {
-    component: SwipeableTable,
-    title: 'Gesture handler based SwipeableRow',
+  {
+    sectionTitle: 'Release tests',
+    data: [
+      { name: 'Double pinch & rotate', component: DoublePinchRotate },
+      { name: 'Double draggable', component: DoubleDraggable },
+      { name: 'Rows', component: Rows },
+      { name: 'Combo', component: ComboWithGHScroll },
+      { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
+    ],
   },
-  PanAndScroll: {
-    component: PanAndScroll,
-    title: 'Horizontal pan or tap in ScrollView',
-  },
-  Fling: {
-    component: Fling,
-    title: 'Flinghandler',
-  },
-  PanResponder: { component: PanResponder },
-  Bouncing: { component: Bouncing, title: 'Twist & bounce back animation' },
-  ChatHeads: {
-    component: ChatHeads,
-    title: 'Chat Heads (no native animated support yet)',
-  },
-  Combo: { component: ComboWithGHScroll },
-  BottomSheet: {
-    title: 'BottomSheet gestures interactions',
-    component: BottomSheet,
-  },
-  ComboWithRNScroll: {
-    component: ComboWithRNScroll,
-    title: "Combo with RN's ScrollView",
-  },
-  DoubleDraggable: {
-    component: DoubleDraggable,
-    title: 'Two handlers simultaneously',
-  },
-  Touchables: {
-    component: TouchablesIndex,
-    title: 'Touchables',
-  },
-  ForceTouch: {
-    component: ForceTouch,
-    title: 'Force touch',
-  },
-};
+];
 
 type RootStackParamList = {
   Home: undefined;
 } & {
-  [P in keyof typeof SCREENS]: undefined;
+  [Screen: string]: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          options={{ title: '✌️ Gesture Handler Demo' }}
-          component={MainScreen}
-        />
-        {Object.keys(SCREENS).map((name) => (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <Stack.Navigator>
           <Stack.Screen
-            key={name}
-            name={name}
-            getComponent={() => SCREENS[name].component}
-            options={{ title: SCREENS[name].title || name }}
+            name="Home"
+            options={{ title: '✌️ Gesture Handler Demo' }}
+            component={MainScreen}
           />
-        ))}
-        <Stack.Screen name="TouchableExample" component={TouchableExample} />
-      </Stack.Navigator>
-    </NavigationContainer>
+          {EXAMPLES.flatMap(({ data }) => data).flatMap(
+            ({ name, component }) => (
+              <Stack.Screen
+                key={name}
+                name={name}
+                getComponent={() => component}
+                options={{ title: name }}
+              />
+            )
+          )}
+          <Stack.Screen name="TouchableExample" component={TouchableExample} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
-  const data = Object.keys(SCREENS).map((key) => {
-    const item = SCREENS[key];
-    return { key, title: item.title || key };
-  });
-
   return (
-    <FlatList
+    <SectionList
       style={styles.list}
-      data={data}
-      ItemSeparatorComponent={ItemSeparator}
-      renderItem={(props) => (
+      sections={EXAMPLES}
+      keyExtractor={(example) => example.name}
+      renderItem={({ item }) => (
         <MainScreenItem
-          {...props}
-          onPressItem={({ key }) => navigation.navigate(key)}
+          name={item.name}
+          onPressItem={(name) => navigation.navigate(name)}
         />
       )}
-      renderScrollComponent={(props) => <ScrollView {...props} />}
+      renderSectionHeader={({ section: { sectionTitle } }) => (
+        <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+      )}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
     />
   );
 }
 
-function ItemSeparator() {
-  return <View style={styles.separator} />;
+interface MainScreenItemProps {
+  name: string;
+  onPressItem: (name: string) => void;
 }
 
-type MainScreenItemProps = {
-  item: { key: string; title: string };
-  onPressItem: (item: { key: string }) => void;
-};
-
-function MainScreenItem(props: MainScreenItemProps) {
-  const { title } = props.item;
+function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
-    <RectButton
-      style={[styles.button]}
-      onPress={() => props.onPressItem(props.item)}>
-      <Text style={styles.buttonText}>{title}</Text>
+    <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
+      <Text>{name}</Text>
     </RectButton>
   );
 }
 
 const styles = StyleSheet.create({
-  list: {
-    backgroundColor: '#EFEFF4',
+  sectionTitle: {
+    ...Platform.select({
+      ios: {
+        fontSize: 17,
+        fontWeight: '500',
+      },
+      android: {
+        fontSize: 19,
+        fontFamily: 'sans-serif-medium',
+      },
+    }),
+    paddingTop: 10,
+    paddingBottom: 5,
+    paddingLeft: 10,
+    backgroundColor: '#efefef',
   },
+  list: {},
   separator: {
-    height: 1,
-    backgroundColor: '#DBDBE0',
-  },
-  buttonText: {
-    backgroundColor: 'transparent',
+    height: 2,
   },
   button: {
     flex: 1,
-    height: 60,
+    height: 50,
     padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
