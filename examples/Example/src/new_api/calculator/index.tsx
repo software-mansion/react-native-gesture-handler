@@ -22,6 +22,8 @@ import Animated, {
 
 const DRAG_ANIMATION_DURATION = 300;
 const TAP_ANIMATION_DURATION = 100;
+const OPERATIONS_TOGGLE_OFFSET = 75;
+const OUTPUT_TOGGLE_OFFSET = 100;
 const window = Dimensions.get('window');
 
 export default function CalculatorUI() {
@@ -109,13 +111,13 @@ function Output({ offset, expression, history }: OutputProps) {
         const translatedOffset = dragOffset.value + e.translationY;
 
         if (opened) {
-          if (translatedOffset < -offset.value - 100) {
+          if (translatedOffset < -offset.value - OUTPUT_TOGGLE_OFFSET) {
             runOnJS(close)();
           } else {
             runOnJS(open)();
           }
         } else {
-          if (translatedOffset > 100) {
+          if (translatedOffset > OUTPUT_TOGGLE_OFFSET) {
             runOnJS(open)();
           } else {
             runOnJS(close)();
@@ -192,7 +194,7 @@ function Input({
 
   function append(symbol: string) {
     if (symbol === '<') {
-      setHistory((h) => [...h, expression]);
+      setHistory((h) => h.concat(expression));
       setExpression((_e) => '');
     } else {
       setExpression((e) => e + symbol);
@@ -272,13 +274,16 @@ function Operations() {
         const translatedOffset = dragOffset.value + e.translationX;
 
         if (opened) {
-          if (translatedOffset > -layout.value.width + margin + 75) {
+          if (
+            translatedOffset >
+            -layout.value.width + margin + OPERATIONS_TOGGLE_OFFSET
+          ) {
             runOnJS(close)();
           } else {
             runOnJS(open)();
           }
         } else {
-          if (translatedOffset < -75) {
+          if (translatedOffset < -OPERATIONS_TOGGLE_OFFSET) {
             runOnJS(open)();
           } else {
             runOnJS(close)();
