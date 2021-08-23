@@ -9,35 +9,40 @@ import { findHandler } from '../handlersRegistry';
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
 
-function onGestureHandlerEvent(event: UnwrappedGestureHandlerEvent) {
+function isStateChangeEvent(
+  event: UnwrappedGestureHandlerEvent | UnwrappedGestureHandlerStateChangeEvent
+): event is UnwrappedGestureHandlerStateChangeEvent {
+  return event.oldState != null;
+}
+
+function onGestureHandlerEvent(
+  event: UnwrappedGestureHandlerEvent | UnwrappedGestureHandlerStateChangeEvent
+) {
   const handler = findHandler(event.handlerTag);
 
   if (handler) {
-    handler.handlers.onUpdate?.(event);
-  }
-}
-
-function onGestureHandlerStateChange(
-  event: UnwrappedGestureHandlerStateChangeEvent
-) {
-  const gesture = findHandler(event.handlerTag);
-
-  if (gesture) {
-    if (event.oldState === State.UNDETERMINED && event.state === State.BEGAN) {
-      gesture.handlers.onBegan?.(event);
-    } else if (
-      (event.oldState === State.BEGAN ||
-        event.oldState === State.UNDETERMINED) &&
-      event.state === State.ACTIVE
-    ) {
-      gesture.handlers.onStart?.(event);
-    } else if (event.oldState === State.ACTIVE && event.state === State.END) {
-      gesture.handlers.onEnd?.(event, true);
-    } else if (
-      event.state === State.FAILED ||
-      event.state === State.CANCELLED
-    ) {
-      gesture.handlers.onEnd?.(event, false);
+    if (isStateChangeEvent(event)) {
+      if (
+        event.oldState === State.UNDETERMINED &&
+        event.state === State.BEGAN
+      ) {
+        handler.handlers.onBegan?.(event);
+      } else if (
+        (event.oldState === State.BEGAN ||
+          event.oldState === State.UNDETERMINED) &&
+        event.state === State.ACTIVE
+      ) {
+        handler.handlers.onStart?.(event);
+      } else if (event.oldState === State.ACTIVE && event.state === State.END) {
+        handler.handlers.onEnd?.(event, true);
+      } else if (
+        event.state === State.FAILED ||
+        event.state === State.CANCELLED
+      ) {
+        handler.handlers.onEnd?.(event, false);
+      }
+    } else {
+      handler.handlers.onUpdate?.(event);
     }
   }
 }
@@ -52,7 +57,7 @@ export function startListening() {
 
   gestureHandlerStateChangeEventSubscription = DeviceEventEmitter.addListener(
     'onGestureHandlerStateChange',
-    onGestureHandlerStateChange
+    onGestureHandlerEvent
   );
 }
 
