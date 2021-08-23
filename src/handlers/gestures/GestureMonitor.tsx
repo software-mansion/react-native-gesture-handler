@@ -1,5 +1,6 @@
 import React from 'react';
 import { GestureConfigReference } from './useGesture';
+//@ts-ignore Ignore TypeScript message about missing file
 import { default as RNRenderer } from 'react-native/Libraries/Renderer/shims/ReactNative';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { startListening } from './eventReceiver';
@@ -20,15 +21,13 @@ export class GestureMonitor extends React.Component<GestureMonitorProps> {
   }
 
   componentDidMount() {
-    setImmediate(() => {
-      if (this.props.gesture) {
-        this.props.gesture.callback = () => {
-          this.attachGestureHandlers(
-            RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag
-          );
-        };
-      }
-    });
+    if (this.props.gesture) {
+      this.props.gesture.callback = () => {
+        this.attachGestureHandlers(
+          RNRenderer.findHostInstance_DEPRECATED(this)._nativeTag
+        );
+      };
+    }
   }
 
   componentDidUpdate() {

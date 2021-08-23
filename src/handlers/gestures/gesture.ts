@@ -24,7 +24,9 @@ export type GestureType =
   | BaseGesture<ForceTouchGestureHandlerEventPayload>;
 
 export type GestureRef = number | GestureType | React.RefObject<GestureType>;
-export interface BaseGestureConfig extends CommonGestureConfig {
+export interface BaseGestureConfig
+  extends CommonGestureConfig,
+    Record<string, unknown> {
   ref?: React.MutableRefObject<GestureType>;
   requireToFail?: GestureRef[];
   simultaneousWith?: GestureRef[];

@@ -79,12 +79,12 @@ export type UnwrappedGestureHandlerStateChangeEvent<
   GestureStateChangeEventPayloadT = Record<string, unknown>
 > = HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT;
 
-export interface CommonGestureConfig extends Record<string, unknown> {
+export type CommonGestureConfig = {
   enabled?: boolean;
   minPointers?: number;
   shouldCancelWhenOutside?: boolean;
   hitSlop?: HitSlop;
-}
+};
 
 // Events payloads are types instead of interfaces due to TS limitation.
 // See https://github.com/microsoft/TypeScript/issues/15300 for more info.

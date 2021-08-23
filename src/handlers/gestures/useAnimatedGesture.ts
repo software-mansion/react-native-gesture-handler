@@ -1,3 +1,4 @@
+//@ts-ignore useEvent is exported
 import { useEvent, useSharedValue } from 'react-native-reanimated';
 import { useGesture } from './useGesture';
 import { State } from '../../State';
