@@ -94,28 +94,28 @@ function Output(props: OutputProps) {
     Gesture.pan()
       .setOnUpdate((e) => {
         'worklet';
-        const value = dragOffset.value + e.translationY;
+        const translatedOffset = dragOffset.value + e.translationY;
 
-        if (value > -props.offset.value) {
+        if (translatedOffset > -props.offset.value) {
           drag.value = -props.offset.value;
-        } else if (value < 0) {
+        } else if (translatedOffset < 0) {
           drag.value = 0;
         } else {
-          drag.value = value;
+          drag.value = translatedOffset;
         }
       })
       .setOnEnd((e) => {
         'worklet';
-        const value = dragOffset.value + e.translationY;
+        const translatedOffset = dragOffset.value + e.translationY;
 
         if (opened) {
-          if (value < -props.offset.value - 100) {
+          if (translatedOffset < -props.offset.value - 100) {
             runOnJS(close)();
           } else {
             runOnJS(open)();
           }
         } else {
-          if (value > 100) {
+          if (translatedOffset > 100) {
             runOnJS(open)();
           } else {
             runOnJS(close)();
@@ -252,29 +252,29 @@ function Operations() {
       .setOnUpdate((e) => {
         'worklet';
         const margin = window.width - layout.value.x;
-        const value = dragOffset.value + e.translationX;
+        const translatedOffset = dragOffset.value + e.translationX;
 
-        if (value < -layout.value.width + margin) {
+        if (translatedOffset < -layout.value.width + margin) {
           drag.value = -layout.value.width + margin;
-        } else if (value > 0) {
+        } else if (translatedOffset > 0) {
           drag.value = 0;
         } else {
-          drag.value = value;
+          drag.value = translatedOffset;
         }
       })
       .setOnEnd((e) => {
         'worklet';
         const margin = window.width - layout.value.x;
-        const value = dragOffset.value + e.translationX;
+        const translatedOffset = dragOffset.value + e.translationX;
 
         if (opened) {
-          if (value > -layout.value.width + margin + 75) {
+          if (translatedOffset > -layout.value.width + margin + 75) {
             runOnJS(close)();
           } else {
             runOnJS(open)();
           }
         } else {
-          if (value < -75) {
+          if (translatedOffset < -75) {
             runOnJS(open)();
           } else {
             runOnJS(close)();
