@@ -28,20 +28,20 @@ export default function Home() {
   const [recordingIntervalHandle, setRecordingIntervalHandle] = useState(-1);
 
   const filtersPanGesture = Gesture.pan()
-    .setOnUpdate((e) => {
+    .onUpdate((e) => {
       'worklet';
       filter.value = filter.value + (filterOffset.value - e.translationX) / 100;
       filterOffset.value = e.translationX;
 
       runOnJS(updateSelectedFilter)();
     })
-    .setOnEnd(() => {
+    .onEnd(() => {
       'worklet';
       filterOffset.value = 0;
       runOnJS(stopFilterScroll)();
     });
 
-  const buttonTapGesture = Gesture.tap().setOnEnd((_e, success) => {
+  const buttonTapGesture = Gesture.tap().onEnd((_e, success) => {
     'worklet';
     if (success) {
       runOnJS(takePhoto)();
@@ -49,8 +49,8 @@ export default function Home() {
   });
 
   const buttonDoubleTapGesture = Gesture.tap()
-    .setTapCount(2)
-    .setOnEnd((_e, success) => {
+    .numberOfTaps(2)
+    .onEnd((_e, success) => {
       'worklet';
       if (success) {
         runOnJS(takeSeries)();
@@ -59,7 +59,7 @@ export default function Home() {
 
   const buttonPanGesture = Gesture.pan()
     .addSimultaneousGesture(filtersPanGesture)
-    .setOnUpdate((e) => {
+    .onUpdate((e) => {
       'worklet';
       if (isRecording) {
         if (e.velocityY < 0) {
@@ -69,24 +69,24 @@ export default function Home() {
         }
       }
     })
-    .setOnEnd(() => {
+    .onEnd(() => {
       'worklet';
       if (isRecording) {
         runOnJS(finishRecording)();
       }
     });
 
-  const buttonLongPressGesture = Gesture.longPress().setOnStart(() => {
+  const buttonLongPressGesture = Gesture.longPress().onStart(() => {
     'worklet';
     runOnJS(startRecording)();
   });
 
   const previewPinchGesture = Gesture.pinch()
-    .setOnStart(() => {
+    .onStart(() => {
       'worklet';
       runOnJS(setScale)(zoom.value);
     })
-    .setOnUpdate((e) => {
+    .onUpdate((e) => {
       'worklet';
       zoom.value = scale * e.scale;
     });

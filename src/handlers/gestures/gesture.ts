@@ -91,12 +91,12 @@ export abstract class BaseGesture<
       : [gesture];
   }
 
-  setRef(ref: React.MutableRefObject<GestureType>) {
+  withRef(ref: React.MutableRefObject<GestureType>) {
     this.config.ref = ref;
     return this;
   }
 
-  setOnBegan(
+  onBegan(
     callback: (
       event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
     ) => void
@@ -107,7 +107,7 @@ export abstract class BaseGesture<
     return this;
   }
 
-  setOnStart(
+  onStart(
     callback: (
       event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
     ) => void
@@ -118,7 +118,7 @@ export abstract class BaseGesture<
     return this;
   }
 
-  setOnEnd(
+  onEnd(
     callback: (
       event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>,
       success: boolean
@@ -130,22 +130,22 @@ export abstract class BaseGesture<
     return this;
   }
 
-  setEnabled(enabled: boolean) {
+  enabled(enabled: boolean) {
     this.config.enabled = enabled;
     return this;
   }
 
-  setMinPointers(minPointers: number) {
+  minPointers(minPointers: number) {
     this.config.minPointers = minPointers;
     return this;
   }
 
-  setShouldCancelWhenOutside(value: boolean) {
+  shouldCancelWhenOutside(value: boolean) {
     this.config.shouldCancelWhenOutside = value;
     return this;
   }
 
-  setHitSlop(hitSlop: HitSlop) {
+  hitSlop(hitSlop: HitSlop) {
     this.config.hitSlop = hitSlop;
     return this;
   }

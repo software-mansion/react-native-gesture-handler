@@ -13,32 +13,32 @@ export class TapGesture extends BaseGesture<TapGestureHandlerEventPayload> {
     this.handlerName = 'TapGestureHandler';
   }
 
-  setTapCount(count: number) {
+  numberOfTaps(count: number) {
     this.config.numberOfTaps = count;
     return this;
   }
 
-  setMaxDistance(maxDist: number) {
+  maxDistance(maxDist: number) {
     this.config.maxDist = maxDist;
     return this;
   }
 
-  setMaxDuration(duration: number) {
+  maxDuration(duration: number) {
     this.config.maxDurationMs = duration;
     return this;
   }
 
-  setMaxDelay(delay: number) {
+  maxDelay(delay: number) {
     this.config.maxDelayMs = delay;
     return this;
   }
 
-  setMaxDeltaX(delta: number) {
+  maxDeltaX(delta: number) {
     this.config.maxDeltaX = delta;
     return this;
   }
 
-  setMaxDeltaY(delta: number) {
+  maxDeltaY(delta: number) {
     this.config.maxDeltaY = delta;
     return this;
   }

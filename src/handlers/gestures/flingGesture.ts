@@ -14,12 +14,12 @@ export class FlingGesture extends BaseGesture<FlingGestureHandlerEventPayload> {
     this.handlerName = 'FlingGestureHandler';
   }
 
-  setNumberOfPointers(pointers: number) {
+  numberOfPointers(pointers: number) {
     this.config.numberOfPointers = pointers;
     return this;
   }
 
-  setDirection(direction: Directions) {
+  direction(direction: Directions) {
     this.config.direction = direction;
     return this;
   }
