@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, useWindowDimensions } from 'react-native';
-import {
-  GestureMonitor,
-  Gesture,
-  useAnimatedGesture,
-} from 'react-native-gesture-handler';
+import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -91,16 +87,10 @@ export default function Home() {
       zoom.value = scale * e.scale;
     });
 
-  const panGestureHandler = useAnimatedGesture(filtersPanGesture);
-
-  const buttonGestureHandler = useAnimatedGesture(
-    buttonTapGesture
-      .requireToFail(buttonDoubleTapGesture)
-      .simultaneousWith(buttonPanGesture)
-      .simultaneousWith(buttonLongPressGesture)
-  );
-
-  const scaleGestureHandler = useAnimatedGesture(previewPinchGesture);
+  const buttonGesture = buttonTapGesture
+    .requireToFail(buttonDoubleTapGesture)
+    .requireToFail(buttonPanGesture)
+    .simultaneousWith(buttonLongPressGesture);
 
   function stopFilterScroll() {
     filter.value = withTiming(updateSelectedFilter(), { duration: 200 });
@@ -149,17 +139,17 @@ export default function Home() {
 
   return (
     <Animated.View style={styles.container}>
-      <GestureMonitor gesture={scaleGestureHandler}>
+      <GestureMonitor animatedGesture={previewPinchGesture}>
         <Animated.View
           style={[styles.home, { backgroundColor: filters[selectedFilter] }]}>
           <Animated.View style={[styles.box, zoomStyle]} />
         </Animated.View>
       </GestureMonitor>
 
-      <GestureMonitor gesture={panGestureHandler}>
+      <GestureMonitor animatedGesture={filtersPanGesture}>
         <Animated.View style={styles.buttonContainer}>
           <FilterCarousel filters={filters} selected={filter} />
-          <GestureMonitor gesture={buttonGestureHandler}>
+          <GestureMonitor animatedGesture={buttonGesture}>
             <CaptureButton
               progress={1 - remainingTimeMs / MAX_VIDEO_DURATION_MS}
               onTimerFinished={() => {

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  findNodeHandle as findNodeHandleRN,
   Platform,
   Touchable,
   UIManager,
@@ -19,17 +18,11 @@ import {
   filterConfig,
   GestureEvent,
   HandlerStateChangeEvent,
+  findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
 
 const UIManagerAny = UIManager as any;
-
-function findNodeHandle(
-  node: null | number | React.Component<any, any> | React.ComponentClass<any>
-): null | number | React.Component<any, any> | React.ComponentClass<any> {
-  if (Platform.OS === 'web') return node;
-  return findNodeHandleRN(node);
-}
 
 const customGHEventsConfig = {
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },

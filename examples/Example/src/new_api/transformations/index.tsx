@@ -4,11 +4,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import {
-  GestureMonitor,
-  Gesture,
-  useAnimatedGesture,
-} from 'react-native-gesture-handler';
+import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
 
 function Photo() {
   const offsetX = useSharedValue(0);
@@ -76,10 +72,8 @@ function Photo() {
         })
     );
 
-  const preparedGesture = useAnimatedGesture(gesture);
-
   return (
-    <GestureMonitor gesture={preparedGesture}>
+    <GestureMonitor animatedGesture={gesture}>
       <Animated.View style={[styles.button, style]} />
     </GestureMonitor>
   );

@@ -1,23 +1,17 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import {
-  GestureMonitor,
-  useGesture,
-  Gesture,
-} from 'react-native-gesture-handler';
+import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
 
 function Box(props: {
   color: string;
   overlap?: boolean;
   children?: React.ReactNode;
 }) {
-  const gesture = useGesture(
-    Gesture.tap().setOnEnd((_e, success) => {
-      if (success) {
-        console.log(props.color);
-      }
-    })
-  );
+  const gesture = Gesture.tap().setOnEnd((_e, success) => {
+    if (success) {
+      console.log(props.color);
+    }
+  });
 
   return (
     <GestureMonitor gesture={gesture}>

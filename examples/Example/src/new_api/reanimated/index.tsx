@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+
 import { StyleSheet, View, Text } from 'react-native';
-import {
-  GestureMonitor,
-  Gesture,
-  useAnimatedGesture,
-} from 'react-native-gesture-handler';
+import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -52,32 +48,30 @@ function Draggable() {
     };
   });
 
-  const gesture = useAnimatedGesture(
-    Gesture.pan()
-      .setOnBegan(() => {
-        'worklet';
-        isPressed.value = true;
-      })
-      .setOnUpdate((e) => {
-        'worklet';
-        offset.value = {
-          x: e.translationX + start.value.x,
-          y: e.translationY + start.value.y,
-        };
-      })
-      .setOnEnd(() => {
-        'worklet';
-        start.value = {
-          x: offset.value.x,
-          y: offset.value.y,
-        };
-        isPressed.value = false;
-      })
-  );
+  const gesture = Gesture.pan()
+    .setOnBegan(() => {
+      'worklet';
+      isPressed.value = true;
+    })
+    .setOnUpdate((e) => {
+      'worklet';
+      offset.value = {
+        x: e.translationX + start.value.x,
+        y: e.translationY + start.value.y,
+      };
+    })
+    .setOnEnd(() => {
+      'worklet';
+      start.value = {
+        x: offset.value.x,
+        y: offset.value.y,
+      };
+      isPressed.value = false;
+    });
 
   return (
     <Animated.View>
-      <GestureMonitor gesture={gesture}>
+      <GestureMonitor animatedGesture={gesture}>
         <Box styles={animatedStyles} counter={counter} />
       </GestureMonitor>
     </Animated.View>

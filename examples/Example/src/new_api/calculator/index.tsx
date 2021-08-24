@@ -11,7 +11,6 @@ import {
   GestureMonitor,
   Gesture,
   ScrollView,
-  useAnimatedGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -92,44 +91,42 @@ function Output({ offset, expression, history }: OutputProps) {
     };
   });
 
-  const dragGesture = useAnimatedGesture(
-    Gesture.pan()
-      .setOnUpdate((e) => {
-        'worklet';
-        const translatedOffset = dragOffset.value + e.translationY;
+  const dragGesture = Gesture.pan()
+    .setOnUpdate((e) => {
+      'worklet';
+      const translatedOffset = dragOffset.value + e.translationY;
 
-        if (translatedOffset > -offset.value) {
-          drag.value = -offset.value;
-        } else if (translatedOffset < 0) {
-          drag.value = 0;
-        } else {
-          drag.value = translatedOffset;
-        }
-      })
-      .setOnEnd((e) => {
-        'worklet';
-        const translatedOffset = dragOffset.value + e.translationY;
+      if (translatedOffset > -offset.value) {
+        drag.value = -offset.value;
+      } else if (translatedOffset < 0) {
+        drag.value = 0;
+      } else {
+        drag.value = translatedOffset;
+      }
+    })
+    .setOnEnd((e) => {
+      'worklet';
+      const translatedOffset = dragOffset.value + e.translationY;
 
-        if (opened) {
-          if (translatedOffset < -offset.value - OUTPUT_TOGGLE_OFFSET) {
-            runOnJS(close)();
-          } else {
-            runOnJS(open)();
-          }
+      if (opened) {
+        if (translatedOffset < -offset.value - OUTPUT_TOGGLE_OFFSET) {
+          runOnJS(close)();
         } else {
-          if (translatedOffset > OUTPUT_TOGGLE_OFFSET) {
-            runOnJS(open)();
-          } else {
-            runOnJS(close)();
-          }
+          runOnJS(open)();
         }
-      })
-  );
+      } else {
+        if (translatedOffset > OUTPUT_TOGGLE_OFFSET) {
+          runOnJS(open)();
+        } else {
+          runOnJS(close)();
+        }
+      }
+    });
 
   scrollView.current?.scrollToEnd({ animated: true });
 
   return (
-    <GestureMonitor gesture={dragGesture}>
+    <GestureMonitor animatedGesture={dragGesture}>
       <Animated.View
         style={[styles.output, translationStyle]}
         onLayout={measure}>
@@ -253,44 +250,42 @@ function Operations() {
     setOpened(false);
   }
 
-  const dragGesture = useAnimatedGesture(
-    Gesture.pan()
-      .setOnUpdate((e) => {
-        'worklet';
-        const margin = window.width - layout.value.x;
-        const translatedOffset = dragOffset.value + e.translationX;
+  const dragGesture = Gesture.pan()
+    .setOnUpdate((e) => {
+      'worklet';
+      const margin = window.width - layout.value.x;
+      const translatedOffset = dragOffset.value + e.translationX;
 
-        if (translatedOffset < -layout.value.width + margin) {
-          drag.value = -layout.value.width + margin;
-        } else if (translatedOffset > 0) {
-          drag.value = 0;
-        } else {
-          drag.value = translatedOffset;
-        }
-      })
-      .setOnEnd((e) => {
-        'worklet';
-        const margin = window.width - layout.value.x;
-        const translatedOffset = dragOffset.value + e.translationX;
+      if (translatedOffset < -layout.value.width + margin) {
+        drag.value = -layout.value.width + margin;
+      } else if (translatedOffset > 0) {
+        drag.value = 0;
+      } else {
+        drag.value = translatedOffset;
+      }
+    })
+    .setOnEnd((e) => {
+      'worklet';
+      const margin = window.width - layout.value.x;
+      const translatedOffset = dragOffset.value + e.translationX;
 
-        if (opened) {
-          if (
-            translatedOffset >
-            -layout.value.width + margin + OPERATIONS_TOGGLE_OFFSET
-          ) {
-            runOnJS(close)();
-          } else {
-            runOnJS(open)();
-          }
+      if (opened) {
+        if (
+          translatedOffset >
+          -layout.value.width + margin + OPERATIONS_TOGGLE_OFFSET
+        ) {
+          runOnJS(close)();
         } else {
-          if (translatedOffset < -OPERATIONS_TOGGLE_OFFSET) {
-            runOnJS(open)();
-          } else {
-            runOnJS(close)();
-          }
+          runOnJS(open)();
         }
-      })
-  );
+      } else {
+        if (translatedOffset < -OPERATIONS_TOGGLE_OFFSET) {
+          runOnJS(open)();
+        } else {
+          runOnJS(close)();
+        }
+      }
+    });
 
   const translationStyle = useAnimatedStyle(() => {
     return {
@@ -303,7 +298,7 @@ function Operations() {
   }
 
   return (
-    <GestureMonitor gesture={dragGesture}>
+    <GestureMonitor animatedGesture={dragGesture}>
       <Animated.View
         style={[styles.operations, translationStyle]}
         onLayout={measure}
@@ -326,24 +321,22 @@ function Button({ text, append }: ButtonProps) {
     };
   });
 
-  const tapHandler = useAnimatedGesture(
-    Gesture.tap()
-      .setOnEnd((_e, s) => {
-        'worklet';
-        alpha.value = withTiming(0, { duration: TAP_ANIMATION_DURATION });
+  const tapHandler = Gesture.tap()
+    .setOnEnd((_e, s) => {
+      'worklet';
+      alpha.value = withTiming(0, { duration: TAP_ANIMATION_DURATION });
 
-        if (s) {
-          runOnJS(append)(text);
-        }
-      })
-      .setOnBegan((_e) => {
-        'worklet';
-        alpha.value = withTiming(0.75, { duration: TAP_ANIMATION_DURATION });
-      })
-  );
+      if (s) {
+        runOnJS(append)(text);
+      }
+    })
+    .setOnBegan((_e) => {
+      'worklet';
+      alpha.value = withTiming(0.75, { duration: TAP_ANIMATION_DURATION });
+    });
 
   return (
-    <GestureMonitor gesture={tapHandler}>
+    <GestureMonitor animatedGesture={tapHandler}>
       <Animated.View style={styles.button}>
         <Animated.View style={[styles.buttonTextContainer, backgroundStyles]}>
           <Text style={styles.buttonText}>{text}</Text>
