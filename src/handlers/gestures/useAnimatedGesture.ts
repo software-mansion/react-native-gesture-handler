@@ -1,5 +1,4 @@
-//@ts-ignore useEvent is exported
-import { useEvent, useSharedValue } from 'react-native-reanimated';
+import { Reanimated } from './reanimatedWrapper';
 import { useGesture } from './useGesture';
 import { State } from '../../State';
 import { InteractionBuilder, GestureType, HandlerCallbacks } from './gesture';
@@ -19,7 +18,15 @@ export function useAnimatedGesture(gesture: InteractionBuilder | GestureType) {
   }
 
   const preparedGesture = useGesture(gesture);
-  const sharedHandlersCallbacks = useSharedValue<
+  if (!Reanimated) {
+    return preparedGesture;
+  }
+
+  // The following code will be executed only if react-native-reanimated
+  // has been successfully imported. This state shoouldn't change while
+  // the app is running so the execution path will be the same
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const sharedHandlersCallbacks = Reanimated.useSharedValue<
     HandlerCallbacks<Record<string, unknown>>[] | null
   >(null);
 
@@ -92,7 +99,8 @@ export function useAnimatedGesture(gesture: InteractionBuilder | GestureType) {
     }
   };
 
-  const event = useEvent(
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const event = Reanimated.useEvent(
     callback,
     ['onGestureHandlerStateChange', 'onGestureHandlerEvent'],
     true
