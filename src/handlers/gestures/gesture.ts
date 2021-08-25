@@ -105,15 +105,24 @@ export abstract class BaseGesture<
     return this;
   }
 
+  protected isWorklet(
+    callback:
+      | ((event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void)
+      | ((
+          event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
+        ) => void)
+  ) {
+    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    return callback.__workletHash !== undefined;
+  }
+
   setOnBegan(
     callback: (
       event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
     ) => void
   ) {
     this.handlers.onBegan = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.BEGAN] =
-      //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-      callback.__workletHash != null;
+    this.handlers.isWorklet[CALLBACK_TYPE.BEGAN] = this.isWorklet(callback);
     return this;
   }
 
@@ -123,9 +132,7 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onStart = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.START] =
-      //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-      callback.__workletHash != null;
+    this.handlers.isWorklet[CALLBACK_TYPE.START] = this.isWorklet(callback);
     return this;
   }
 
@@ -137,7 +144,7 @@ export abstract class BaseGesture<
   ) {
     this.handlers.onEnd = callback;
     //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    this.handlers.isWorklet[CALLBACK_TYPE.END] = callback.__workletHash != null;
+    this.handlers.isWorklet[CALLBACK_TYPE.END] = this.isWorklet(callback);
     return this;
   }
 
@@ -203,13 +210,6 @@ export abstract class BaseGesture<
 export abstract class ContinousBaseGesture<
   EventPayloadT extends Record<string, unknown>
 > extends BaseGesture<EventPayloadT> {
-  private isWorklet(
-    callback: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void
-  ) {
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    return callback.__workletHash != null;
-  }
-
   setOnUpdate(
     callback: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void
   ) {
