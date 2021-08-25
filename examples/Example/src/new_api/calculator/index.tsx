@@ -322,11 +322,11 @@ function Button({ text, append }: ButtonProps) {
   });
 
   const tapHandler = Gesture.tap()
-    .setOnEnd((_e, s) => {
+    .setOnEnd((_e, success) => {
       'worklet';
       alpha.value = withTiming(0, { duration: TAP_ANIMATION_DURATION });
 
-      if (s) {
+      if (success) {
         runOnJS(append)(text);
       }
     })
