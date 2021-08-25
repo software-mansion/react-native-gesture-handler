@@ -1,5 +1,11 @@
 import { FlingGesture } from './flingGesture';
 import { ForceTouchGesture } from './forceTouchGesture';
+import { Gesture } from './gesture';
+import {
+  ComposedGesture,
+  RequireToFailGesture,
+  SimultaneousGesture,
+} from './gestureInteractions';
 import { LongPressGesture } from './longPressGesture';
 import { PanGesture } from './panGesture';
 import { PinchGesture } from './pinchGesture';
@@ -33,5 +39,17 @@ export const GestureObjects = {
 
   forceTouch() {
     return new ForceTouchGesture();
+  },
+
+  exclusive(...gestures: Gesture[]) {
+    return new ComposedGesture(...gestures);
+  },
+
+  simultaneous(first: Gesture, second: Gesture) {
+    return new SimultaneousGesture(first, second);
+  },
+
+  requireToFail(first: Gesture, second: Gesture) {
+    return new RequireToFailGesture(first, second);
   },
 };

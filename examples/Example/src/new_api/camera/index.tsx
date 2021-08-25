@@ -54,7 +54,7 @@ export default function Home() {
     });
 
   const buttonPanGesture = Gesture.pan()
-    .addSimultaneousGesture(filtersPanGesture)
+    .simulteneousWithExternalGesture(filtersPanGesture)
     .onUpdate((e) => {
       'worklet';
       if (isRecording) {
@@ -87,10 +87,13 @@ export default function Home() {
       zoom.value = scale * e.scale;
     });
 
-  const buttonGesture = buttonTapGesture
-    .requireToFail(buttonDoubleTapGesture)
-    .requireToFail(buttonPanGesture)
-    .simultaneousWith(buttonLongPressGesture);
+  const buttonGesture = Gesture.simultaneous(
+    buttonLongPressGesture,
+    Gesture.exclusive(
+      Gesture.requireToFail(buttonTapGesture, buttonDoubleTapGesture),
+      buttonPanGesture
+    )
+  );
 
   function stopFilterScroll() {
     filter.value = withTiming(updateSelectedFilter(), { duration: 200 });

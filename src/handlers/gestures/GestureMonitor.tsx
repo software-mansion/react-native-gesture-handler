@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  InteractionBuilder,
   GestureType,
   HandlerCallbacks,
   BaseGesture,
@@ -26,6 +25,7 @@ import {
 } from '../PanGestureHandler';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
+import { ComposedGesture } from './gestureInteractions';
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -73,7 +73,7 @@ function dropHandlers(preparedGesture: GestureConfigReference) {
 
 interface AttachHandlersConfig {
   preparedGesture: GestureConfigReference;
-  gestureConfig: InteractionBuilder | GestureType | undefined;
+  gestureConfig: ComposedGesture | GestureType | undefined;
   gesture: GestureType[];
   viewTag: number;
   useAnimated: boolean;
@@ -92,6 +92,12 @@ function attachHandlers({
     preparedGesture.firstExecution = false;
   }
 
+  // use setImmediate to extract handlerTags, because all refs should be initialized
+  // when it's ran
+  setImmediate(() => {
+    gestureConfig?.prepare();
+  });
+
   for (const handler of gesture) {
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
@@ -104,8 +110,6 @@ function attachHandlers({
     // use setImmediate to extract handlerTags, because all refs should be initialized
     // when it's ran
     setImmediate(() => {
-      gestureConfig?.prepare();
-
       let requireToFail: number[] = [];
       if (handler.config.requireToFail) {
         requireToFail = extractValidHandlerTags(handler.config.requireToFail);
@@ -146,7 +150,7 @@ function attachHandlers({
 
 function updateHandlers(
   preparedGesture: GestureConfigReference,
-  gestureConfig: InteractionBuilder | GestureType | undefined,
+  gestureConfig: ComposedGesture | GestureType | undefined,
   gesture: GestureType[]
 ) {
   gestureConfig?.prepare();
@@ -330,8 +334,8 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
 }
 
 interface GestureMonitorProps {
-  gesture?: InteractionBuilder | GestureType;
-  animatedGesture?: InteractionBuilder | GestureType;
+  gesture?: ComposedGesture | GestureType;
+  animatedGesture?: ComposedGesture | GestureType;
 }
 export const GestureMonitor: React.FunctionComponent<GestureMonitorProps> = (
   props
