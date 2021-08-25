@@ -4,6 +4,7 @@ import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var shouldActivateOnStart = false
@@ -59,6 +60,14 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     return !disallowInterruption
   }
 
+  private fun canStart(view: View): Boolean {
+    if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
+      return view.tryGrabbingResponder()
+    }
+
+    return true
+  }
+
   override fun onHandle(event: MotionEvent) {
     val view = view!!
     if (event.actionMasked == MotionEvent.ACTION_UP) {
@@ -66,7 +75,11 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
         activate()
       }
-      end()
+      if (state == STATE_BEGAN || state == STATE_ACTIVE) {
+        end()
+      } else {
+        fail()
+      }
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       when {
         shouldActivateOnStart -> {
@@ -78,7 +91,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
           view.onTouchEvent(event)
           activate()
         }
-        state != STATE_BEGAN -> {
+        state != STATE_BEGAN && canStart(view) -> {
           begin()
         }
       }

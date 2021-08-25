@@ -14,6 +14,7 @@ import DoubleDraggable from './release_tests/doubleDraggable';
 import { ComboWithGHScroll } from './release_tests/combo';
 import { TouchablesIndex, TouchableExample } from './release_tests/touchables';
 import Rows from './release_tests/rows';
+import NestedTouchables from './release_tests/nestedTouchables';
 import { PinchableBox } from './recipes/scaleAndRotate';
 import PanAndScroll from './recipes/panAndScroll';
 import { BottomSheet } from './showcase/bottomSheet';
@@ -72,6 +73,10 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Rows', component: Rows },
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
+      {
+        name: 'Nested Touchables',
+        component: NestedTouchables as React.ComponentType,
+      },
     ],
   },
 ];

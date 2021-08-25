@@ -58,6 +58,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     view.rippleRadius = rippleRadius
   }
 
+  @ReactProp(name = "exclusive")
+  fun setExclusive(view: ButtonViewGroup, exclusive: Boolean = true) {
+    view.exclusive = exclusive
+  }
+
   override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
     view.updateBackground()
   }
@@ -82,6 +87,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       set(radius) = withBackgroundUpdate {
         field = radius * resources.displayMetrics.density
       }
+    var exclusive = true
 
     private var _backgroundColor = Color.TRANSPARENT
     private var needBackgroundUpdate = false
@@ -230,12 +236,18 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       }
     }
 
-    override fun setPressed(pressed: Boolean) {
-      if (pressed && responder == null) {
-        // first button to be pressed grabs button responder
-        responder = this
+    fun tryGrabbingResponder(): Boolean {
+      if (responder == null) {
+        if (exclusive) {
+          responder = this
+        }
+        return true
       }
-      if (!pressed || responder === this) {
+      return false
+    }
+
+    override fun setPressed(pressed: Boolean) {
+      if (!pressed || responder === this || (responder == null && !exclusive)) {
         // we set pressed state only for current responder
         super.setPressed(pressed)
       }
