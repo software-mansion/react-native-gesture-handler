@@ -13,12 +13,12 @@ export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPa
     this.handlerName = 'LongPressGestureHandler';
   }
 
-  setMinDuration(duration: number) {
+  minDuration(duration: number) {
     this.config.minDurationMs = duration;
     return this;
   }
 
-  setMaxDistance(distance: number) {
+  maxDistance(distance: number) {
     this.config.maxDist = distance;
     return this;
   }

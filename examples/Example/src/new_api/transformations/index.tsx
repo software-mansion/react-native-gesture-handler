@@ -28,34 +28,34 @@ function Photo() {
   });
 
   const gesture = Gesture.rotation()
-    .setOnUpdate((e) => {
+    .onUpdate((e) => {
       'worklet';
       rotation.value = savedRotation.value + e.rotation;
     })
-    .setOnEnd(() => {
+    .onEnd(() => {
       'worklet';
       savedRotation.value = rotation.value;
     })
     .simultaneousWith(
       Gesture.pinch()
-        .setOnUpdate((e) => {
+        .onUpdate((e) => {
           'worklet';
           scale.value = savedScale.value * e.scale;
         })
-        .setOnEnd(() => {
+        .onEnd(() => {
           'worklet';
           savedScale.value = scale.value;
         })
     )
     .simultaneousWith(
       Gesture.pan()
-        .setAverageTouches(true)
-        .setOnUpdate((e) => {
+        .averageTouches(true)
+        .onUpdate((e) => {
           'worklet';
           translationX.value = offsetX.value + e.translationX;
           translationY.value = offsetY.value + e.translationY;
         })
-        .setOnEnd(() => {
+        .onEnd(() => {
           'worklet';
           offsetX.value = translationX.value;
           offsetY.value = translationY.value;
@@ -63,8 +63,8 @@ function Photo() {
     )
     .simultaneousWith(
       Gesture.tap()
-        .setTapCount(2)
-        .setOnEnd((_e, success) => {
+        .numberOfTaps(2)
+        .onEnd((_e, success) => {
           'worklet';
           if (success) {
             scale.value = scale.value * 1.25;

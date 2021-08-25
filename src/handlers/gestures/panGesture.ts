@@ -25,7 +25,7 @@ export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPaylo
     return this;
   }
 
-  setActiveOffsetX(offset: number | number[]) {
+  activeOffsetX(offset: number | number[]) {
     if (Array.isArray(offset)) {
       this.config.activeOffsetXStart = offset[0];
       this.config.activeOffsetXEnd = offset[1];
@@ -37,7 +37,7 @@ export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPaylo
     return this;
   }
 
-  setFailOffsetY(offset: number | number[]) {
+  failOffsetY(offset: number | number[]) {
     if (Array.isArray(offset)) {
       this.config.failOffsetYStart = offset[0];
       this.config.failOffsetYEnd = offset[1];
@@ -49,7 +49,7 @@ export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPaylo
     return this;
   }
 
-  setFailOffsetX(offset: number | number[]) {
+  failOffsetX(offset: number | number[]) {
     if (Array.isArray(offset)) {
       this.config.failOffsetXStart = offset[0];
       this.config.failOffsetXEnd = offset[1];
@@ -61,17 +61,17 @@ export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPaylo
     return this;
   }
 
-  setMinDistance(distance: number) {
+  minDistance(distance: number) {
     this.config.minDist = distance;
     return this;
   }
 
-  setAverageTouches(value: boolean) {
+  averageTouches(value: boolean) {
     this.config.avgTouches = value;
     return this;
   }
 
-  setEnableTrackpadTwoFingerGesture(value: boolean) {
+  enableTrackpadTwoFingerGesture(value: boolean) {
     this.config.enableTrackpadTwoFingerGesture = value;
     return this;
   }

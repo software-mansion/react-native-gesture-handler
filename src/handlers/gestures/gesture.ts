@@ -100,7 +100,7 @@ export abstract class BaseGesture<
       : [gesture];
   }
 
-  setRef(ref: React.MutableRefObject<GestureType>) {
+  withRef(ref: React.MutableRefObject<GestureType>) {
     this.config.ref = ref;
     return this;
   }
@@ -116,7 +116,7 @@ export abstract class BaseGesture<
     return callback.__workletHash !== undefined;
   }
 
-  setOnBegan(
+  onBegan(
     callback: (
       event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
     ) => void
@@ -126,7 +126,7 @@ export abstract class BaseGesture<
     return this;
   }
 
-  setOnStart(
+  onStart(
     callback: (
       event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
     ) => void
@@ -136,7 +136,7 @@ export abstract class BaseGesture<
     return this;
   }
 
-  setOnEnd(
+  onEnd(
     callback: (
       event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>,
       success: boolean
@@ -148,22 +148,22 @@ export abstract class BaseGesture<
     return this;
   }
 
-  setEnabled(enabled: boolean) {
+  enabled(enabled: boolean) {
     this.config.enabled = enabled;
     return this;
   }
 
-  setMinPointers(minPointers: number) {
+  minPointers(minPointers: number) {
     this.config.minPointers = minPointers;
     return this;
   }
 
-  setShouldCancelWhenOutside(value: boolean) {
+  shouldCancelWhenOutside(value: boolean) {
     this.config.shouldCancelWhenOutside = value;
     return this;
   }
 
-  setHitSlop(hitSlop: HitSlop) {
+  hitSlop(hitSlop: HitSlop) {
     this.config.hitSlop = hitSlop;
     return this;
   }
@@ -210,7 +210,7 @@ export abstract class BaseGesture<
 export abstract class ContinousBaseGesture<
   EventPayloadT extends Record<string, unknown>
 > extends BaseGesture<EventPayloadT> {
-  setOnUpdate(
+  onUpdate(
     callback: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void
   ) {
     this.handlers.onUpdate = callback;

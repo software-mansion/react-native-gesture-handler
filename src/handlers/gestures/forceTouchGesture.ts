@@ -18,12 +18,12 @@ export class ForceTouchGesture extends ContinousBaseGesture<ForceTouchGestureHan
     return this;
   }
 
-  setMaxForce(force: number) {
+  maxForce(force: number) {
     this.config.maxForce = force;
     return this;
   }
 
-  setFeedbackOnActivation(value: boolean) {
+  feedbackOnActivation(value: boolean) {
     this.config.feedbackOnActivation = value;
     return this;
   }
