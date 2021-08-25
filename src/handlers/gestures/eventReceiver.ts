@@ -5,6 +5,7 @@ import {
   UnwrappedGestureHandlerStateChangeEvent,
 } from '../gestureHandlerCommon';
 import { findHandler } from '../handlersRegistry';
+import { BaseGesture } from './gesture';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
@@ -18,7 +19,9 @@ function isStateChangeEvent(
 function onGestureHandlerEvent(
   event: UnwrappedGestureHandlerEvent | UnwrappedGestureHandlerStateChangeEvent
 ) {
-  const handler = findHandler(event.handlerTag);
+  const handler = findHandler(event.handlerTag) as BaseGesture<
+    Record<string, unknown>
+  >;
 
   if (handler) {
     if (isStateChangeEvent(event)) {

@@ -1,11 +1,10 @@
-import { UnwrappedGestureHandlerEvent } from '../gestureHandlerCommon';
-import { BaseGesture, BaseGestureConfig } from './gesture';
+import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
 import {
   PanGestureConfig,
   PanGestureHandlerEventPayload,
 } from '../PanGestureHandler';
 
-export class PanGesture extends BaseGesture<PanGestureHandlerEventPayload> {
+export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPayload> {
   public config: BaseGestureConfig & PanGestureConfig = {};
 
   constructor() {
@@ -14,18 +13,7 @@ export class PanGesture extends BaseGesture<PanGestureHandlerEventPayload> {
     this.handlerName = 'PanGestureHandler';
   }
 
-  onUpdate(
-    callback: (
-      event: UnwrappedGestureHandlerEvent<PanGestureHandlerEventPayload>
-    ) => void
-  ) {
-    this.handlers.onUpdate = callback;
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    this.handlers.isOnUpdateWorklet = callback.__workletHash != null;
-    return this;
-  }
-
-  activeOffsetY(offset: number | number[]) {
+  setActiveOffsetY(offset: number | number[]) {
     if (Array.isArray(offset)) {
       this.config.activeOffsetYStart = offset[0];
       this.config.activeOffsetYEnd = offset[1];

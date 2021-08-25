@@ -1,7 +1,7 @@
-import { BaseGesture } from './gestures/gesture';
+import { GestureType } from './gestures/gesture';
 
 export const handlerIDToTag: Record<string, number> = {};
-const handlers = new Map<number, BaseGesture<any>>();
+const handlers = new Map<number, GestureType>();
 
 let handlerTag = 1;
 
@@ -9,7 +9,7 @@ export function getNextHandlerTag(): number {
   return handlerTag++;
 }
 
-export function registerHandler(handlerTag: number, handler: BaseGesture<any>) {
+export function registerHandler(handlerTag: number, handler: GestureType) {
   handlers.set(handlerTag, handler);
 }
 

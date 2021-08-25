@@ -1,10 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import {
-  GestureMonitor,
-  useGesture,
-  Gesture,
-} from 'react-native-gesture-handler';
+import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
 
 function Box(props: { color: string; overlap?: boolean }) {
   return (
@@ -31,15 +27,12 @@ export default function Example() {
     }
   });
 
-  const gestureTapRed = useGesture(tapRed);
-  const gestureTapGreen = useGesture(tapGreen);
-
   return (
     <View style={styles.home}>
-      <GestureMonitor gesture={gestureTapRed}>
+      <GestureMonitor gesture={tapRed}>
         <Box color="red" />
       </GestureMonitor>
-      <GestureMonitor gesture={gestureTapGreen}>
+      <GestureMonitor gesture={tapGreen}>
         <Box color="green" overlap />
       </GestureMonitor>
     </View>

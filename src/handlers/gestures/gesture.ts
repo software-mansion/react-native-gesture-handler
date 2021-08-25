@@ -45,11 +45,19 @@ export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
     success: boolean
   ) => void;
   onUpdate?: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void;
-  isOnBeganWorklet?: boolean;
-  isOnStartWorklet?: boolean;
-  isOnEndWorklet?: boolean;
-  isOnUpdateWorklet?: boolean;
+  isWorklet: boolean[];
 };
+
+export const CALLBACK_TYPE = {
+  BEGAN: 1,
+  START: 2,
+  UPDATE: 3,
+  END: 4,
+} as const;
+
+// Allow using CALLBACK_TYPE as object and type
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type CALLBACK_TYPE = typeof CALLBACK_TYPE[keyof typeof CALLBACK_TYPE];
 
 export abstract class Gesture {
   /**
@@ -79,6 +87,7 @@ export abstract class BaseGesture<
   public config: BaseGestureConfig = {};
   public handlers: HandlerCallbacks<EventPayloadT> = {
     handlerTag: -1,
+    isWorklet: [false, false, false, false],
   };
 
   private addDependency(
@@ -96,14 +105,24 @@ export abstract class BaseGesture<
     return this;
   }
 
+  protected isWorklet(
+    callback:
+      | ((event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void)
+      | ((
+          event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
+        ) => void)
+  ) {
+    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    return callback.__workletHash !== undefined;
+  }
+
   onBegan(
     callback: (
       event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
     ) => void
   ) {
     this.handlers.onBegan = callback;
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    this.handlers.isOnBeganWorklet = callback.__workletHash != null;
+    this.handlers.isWorklet[CALLBACK_TYPE.BEGAN] = this.isWorklet(callback);
     return this;
   }
 
@@ -113,8 +132,7 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onStart = callback;
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    this.handlers.isOnStartWorklet = callback.__workletHash != null;
+    this.handlers.isWorklet[CALLBACK_TYPE.START] = this.isWorklet(callback);
     return this;
   }
 
@@ -126,7 +144,7 @@ export abstract class BaseGesture<
   ) {
     this.handlers.onEnd = callback;
     //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    this.handlers.isOnEndWorklet = callback.__workletHash != null;
+    this.handlers.isWorklet[CALLBACK_TYPE.END] = this.isWorklet(callback);
     return this;
   }
 
@@ -187,6 +205,18 @@ export abstract class BaseGesture<
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prepare() {}
+}
+
+export abstract class ContinousBaseGesture<
+  EventPayloadT extends Record<string, unknown>
+> extends BaseGesture<EventPayloadT> {
+  onUpdate(
+    callback: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void
+  ) {
+    this.handlers.onUpdate = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] = this.isWorklet(callback);
+    return this;
+  }
 }
 
 enum Relation {

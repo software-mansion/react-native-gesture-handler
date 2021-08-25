@@ -1,11 +1,10 @@
-import { UnwrappedGestureHandlerEvent } from '../gestureHandlerCommon';
-import { BaseGesture, BaseGestureConfig } from './gesture';
+import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
 import {
   ForceTouchGestureConfig,
   ForceTouchGestureHandlerEventPayload,
 } from '../ForceTouchGestureHandler';
 
-export class ForceTouchGesture extends BaseGesture<ForceTouchGestureHandlerEventPayload> {
+export class ForceTouchGesture extends ContinousBaseGesture<ForceTouchGestureHandlerEventPayload> {
   public config: BaseGestureConfig & ForceTouchGestureConfig = {};
 
   constructor() {
@@ -14,18 +13,7 @@ export class ForceTouchGesture extends BaseGesture<ForceTouchGestureHandlerEvent
     this.handlerName = 'ForceTouchGestureHandler';
   }
 
-  onUpdate(
-    callback: (
-      event: UnwrappedGestureHandlerEvent<ForceTouchGestureHandlerEventPayload>
-    ) => void
-  ) {
-    this.handlers.onUpdate = callback;
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    this.handlers.isOnUpdateWorklet = callback.__workletHash != null;
-    return this;
-  }
-
-  minForce(force: number) {
+  setMinForce(force: number) {
     this.config.minForce = force;
     return this;
   }

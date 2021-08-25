@@ -1,3 +1,5 @@
+import { initialize } from './init';
+
 export { Directions } from './Directions';
 export { State } from './State';
 export { default as gestureHandlerRootHOC } from './gestureHandlerRootHOC';
@@ -51,8 +53,6 @@ export type {
   NativeViewGestureHandlerProps,
 } from './handlers/NativeViewGestureHandler';
 export { GestureMonitor } from './handlers/gestures/GestureMonitor';
-export { useGesture } from './handlers/gestures/useGesture';
-export { useAnimatedGesture } from './handlers/gestures/useAnimatedGesture';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
@@ -129,3 +129,5 @@ export type {
   DrawerKeyboardDismissMode,
 } from './components/DrawerLayout';
 export { default as DrawerLayout } from './components/DrawerLayout';
+
+initialize();

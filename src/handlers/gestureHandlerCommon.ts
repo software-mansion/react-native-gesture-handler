@@ -3,7 +3,7 @@
 // e.g. React.createRef<TapGestureHandler> -> React.createRef<typeof TapGestureHandler>.
 // See https://www.typescriptlang.org/docs/handbook/classes.html#constructor-functions for reference.
 import * as React from 'react';
-import { Platform } from 'react-native';
+import { Platform, findNodeHandle as findNodeHandleRN } from 'react-native';
 
 import { State } from '../State';
 import { ValueOf } from '../typeUtils';
@@ -155,4 +155,11 @@ function transformIntoHandlerTags(handlerIDs: any) {
         handlerIDToTag[handlerID] || handlerID.current?.handlerTag || -1
     )
     .filter((handlerTag: number) => handlerTag > 0);
+}
+
+export function findNodeHandle(
+  node: null | number | React.Component<any, any> | React.ComponentClass<any>
+): null | number | React.Component<any, any> | React.ComponentClass<any> {
+  if (Platform.OS === 'web') return node;
+  return findNodeHandleRN(node);
 }
