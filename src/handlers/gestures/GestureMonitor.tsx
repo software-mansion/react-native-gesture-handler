@@ -59,6 +59,12 @@ function convertToHandlerTag(ref: GestureRef): number {
   }
 }
 
+function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
+  return (
+    interactionGroup?.map(convertToHandlerTag)?.filter((tag) => tag > 0) ?? []
+  );
+}
+
 function dropHandlers(preparedGesture: GestureConfigReference) {
   for (const handler of preparedGesture.config) {
     RNGestureHandlerModule.dropGestureHandler(handler.handlerTag);
@@ -94,16 +100,14 @@ function attachHandlers(
 
       let requireToFail: number[] = [];
       if (handler.config.requireToFail) {
-        requireToFail = handler.config.requireToFail
-          .map(convertToHandlerTag)
-          .filter((tag) => tag > 0);
+        requireToFail = extractValidHandlerTags(handler.config.requireToFail);
       }
 
       let simultaneousWith: number[] = [];
       if (handler.config.simultaneousWith) {
-        simultaneousWith = handler.config.simultaneousWith
-          .map(convertToHandlerTag)
-          .filter((tag) => tag > 0);
+        simultaneousWith = extractValidHandlerTags(
+          handler.config.simultaneousWith
+        );
       }
 
       RNGestureHandlerModule.updateGestureHandler(
@@ -154,15 +158,13 @@ function updateHandlers(
       handler.handlers = gesture[i].handlers;
       handler.handlers.handlerTag = handler.handlerTag;
 
-      const requireToFail =
+      const requireToFail = extractValidHandlerTags(
         handler.config.requireToFail
-          ?.map(convertToHandlerTag)
-          ?.filter((tag) => tag > 0) ?? [];
+      );
 
-      const simultaneousWith =
+      const simultaneousWith = extractValidHandlerTags(
         handler.config.simultaneousWith
-          ?.map(convertToHandlerTag)
-          ?.filter((tag) => tag > 0) ?? [];
+      );
 
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
