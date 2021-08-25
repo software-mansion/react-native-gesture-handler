@@ -118,19 +118,11 @@ function attachHandlers(
   preparedGesture.config = gesture;
 
   for (const gesture of preparedGesture.config) {
-    if (useAnimated) {
-      RNGestureHandlerModule.attachGestureHandler(
-        gesture.handlerTag,
-        viewTag,
-        false
-      );
-    } else {
-      RNGestureHandlerModule.attachGestureHandler(
-        gesture.handlerTag,
-        viewTag,
-        true
-      );
-    }
+    RNGestureHandlerModule.attachGestureHandler(
+      gesture.handlerTag,
+      viewTag,
+      !useAnimated //send direct events when using animatedGesture, device events otherwise
+    );
   }
 
   if (preparedGesture.animatedHandlers) {
