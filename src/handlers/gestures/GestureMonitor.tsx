@@ -6,6 +6,7 @@ import {
   HandlerCallbacks,
   BaseGesture,
   GestureRef,
+  CALLBACK_TYPE,
 } from './gesture';
 import { Reanimated, SharedValue } from './reanimatedWrapper';
 import { registerHandler, unregisterHandler } from '../handlersRegistry';
@@ -227,6 +228,43 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     'worklet';
     return event.oldState != null;
   }
+
+  function getHandler(
+    type: CALLBACK_TYPE,
+    gesture: HandlerCallbacks<Record<string, unknown>>
+  ) {
+    'worklet';
+    switch (type) {
+      case CALLBACK_TYPE.BEGAN:
+        return gesture.onBegan;
+      case CALLBACK_TYPE.START:
+        return gesture.onStart;
+      case CALLBACK_TYPE.UPDATE:
+        return gesture.onUpdate;
+      case CALLBACK_TYPE.END:
+        return gesture.onEnd;
+    }
+  }
+
+  function runWorklet(
+    type: CALLBACK_TYPE,
+    gesture: HandlerCallbacks<Record<string, unknown>>,
+    event:
+      | UnwrappedGestureHandlerStateChangeEvent
+      | UnwrappedGestureHandlerEvent,
+    success?: boolean
+  ) {
+    'worklet';
+    const handler = getHandler(type, gesture);
+    if (gesture.isWorklet[type]) {
+      // @ts-ignore Logic below makes sure the correct event is send to the
+      // correct handler.
+      handler?.(event, success);
+    } else if (handler) {
+      console.warn('Animated gesture callback must be a worklet');
+    }
+  }
+
   // Hooks are called conditionally, but the condition is whether the
   // react-native-reanimated is installed, which shouldn't change while running
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -258,46 +296,26 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
             event.oldState === State.UNDETERMINED &&
             event.state === State.BEGAN
           ) {
-            if (gesture.isOnBeganWorklet) {
-              gesture.onBegan?.(event);
-            } else if (gesture.onBegan) {
-              console.warn('Animated gesture callback must be a worklet');
-            }
+            runWorklet(CALLBACK_TYPE.BEGAN, gesture, event);
           } else if (
             (event.oldState === State.BEGAN ||
               event.oldState === State.UNDETERMINED) &&
             event.state === State.ACTIVE
           ) {
-            if (gesture.isOnStartWorklet) {
-              gesture.onStart?.(event);
-            } else if (gesture.onStart) {
-              console.warn('Animated gesture callback must be a worklet');
-            }
+            runWorklet(CALLBACK_TYPE.START, gesture, event);
           } else if (
             event.oldState === State.ACTIVE &&
             event.state === State.END
           ) {
-            if (gesture.isOnEndWorklet) {
-              gesture.onEnd?.(event, true);
-            } else if (gesture.onEnd) {
-              console.warn('Animated gesture callback must be a worklet');
-            }
+            runWorklet(CALLBACK_TYPE.END, gesture, event, true);
           } else if (
             event.state === State.FAILED ||
             event.state === State.CANCELLED
           ) {
-            if (gesture.isOnEndWorklet) {
-              gesture.onEnd?.(event, false);
-            } else if (gesture.onEnd) {
-              console.warn('Animated gesture callback must be a worklet');
-            }
+            runWorklet(CALLBACK_TYPE.END, gesture, event, false);
           }
         } else {
-          if (gesture.isOnUpdateWorklet) {
-            gesture.onUpdate?.(event);
-          } else if (gesture.onUpdate) {
-            console.warn('Animated gesture callback must be a worklet');
-          }
+          runWorklet(CALLBACK_TYPE.UPDATE, gesture, event);
         }
       }
     }

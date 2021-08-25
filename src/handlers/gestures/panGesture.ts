@@ -1,5 +1,5 @@
 import { UnwrappedGestureHandlerEvent } from '../gestureHandlerCommon';
-import { BaseGesture, BaseGestureConfig } from './gesture';
+import { BaseGesture, BaseGestureConfig, CALLBACK_TYPE } from './gesture';
 import {
   PanGestureConfig,
   PanGestureHandlerEventPayload,
@@ -20,8 +20,9 @@ export class PanGesture extends BaseGesture<PanGestureHandlerEventPayload> {
     ) => void
   ) {
     this.handlers.onUpdate = callback;
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    this.handlers.isOnUpdateWorklet = callback.__workletHash != null;
+    this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] =
+      //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+      callback.__workletHash != null;
     return this;
   }
 
