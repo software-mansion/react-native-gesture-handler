@@ -202,7 +202,9 @@ function needsToReattach(
 }
 
 function useAnimatedGesture(preparedGesture: GestureConfigReference) {
-  if (!Reanimated) return;
+  if (!Reanimated) {
+    return;
+  }
 
   function isStateChangeEvent(
     event:
