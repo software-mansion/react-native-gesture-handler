@@ -73,13 +73,21 @@ function dropHandlers(preparedGesture: GestureConfigReference) {
   }
 }
 
-function attachHandlers(
-  preparedGesture: GestureConfigReference,
-  gestureConfig: InteractionBuilder | GestureType | undefined,
-  gesture: GestureType[],
-  viewTag: number,
-  useAnimated: boolean
-) {
+interface AttachHandlersConfig {
+  preparedGesture: GestureConfigReference;
+  gestureConfig: InteractionBuilder | GestureType | undefined;
+  gesture: GestureType[];
+  viewTag: number;
+  useAnimated: boolean;
+}
+
+function attachHandlers({
+  preparedGesture,
+  gestureConfig,
+  gesture,
+  viewTag,
+  useAnimated,
+}: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
     gestureConfig?.initialize();
   } else {
@@ -347,13 +355,13 @@ export const GestureMonitor: React.FunctionComponent<GestureMonitorProps> = (
   useEffect(() => {
     firstRenderRef.current = true;
     const viewTag = findNodeHandle(viewRef.current) as number;
-    attachHandlers(
+    attachHandlers({
       preparedGesture,
       gestureConfig,
       gesture,
       viewTag,
-      useAnimated
-    );
+      useAnimated,
+    });
 
     return () => {
       dropHandlers(preparedGesture);
@@ -366,13 +374,13 @@ export const GestureMonitor: React.FunctionComponent<GestureMonitorProps> = (
 
       if (needsToReattach(preparedGesture, gesture)) {
         dropHandlers(preparedGesture);
-        attachHandlers(
+        attachHandlers({
           preparedGesture,
           gestureConfig,
           gesture,
           viewTag,
-          useAnimated
-        );
+          useAnimated,
+        });
       } else {
         updateHandlers(preparedGesture, gestureConfig, gesture);
       }
