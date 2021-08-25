@@ -200,6 +200,25 @@ export abstract class BaseGesture<
   prepare() {}
 }
 
+export abstract class ContinousBaseGesture<
+  EventPayloadT extends Record<string, unknown>
+> extends BaseGesture<EventPayloadT> {
+  private isWorklet(
+    callback: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void
+  ) {
+    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    return callback.__workletHash != null;
+  }
+
+  setOnUpdate(
+    callback: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void
+  ) {
+    this.handlers.onUpdate = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] = this.isWorklet(callback);
+    return this;
+  }
+}
+
 enum Relation {
   Simultaneous,
   Exclusive,
