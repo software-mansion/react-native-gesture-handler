@@ -64,7 +64,7 @@ export abstract class Gesture {
    * Return array of gestures, providing the same interface for creating and updating
    * handlers, no matter which object was used to create gesture instance.
    */
-  abstract configure(): GestureType[];
+  abstract toGestureArray(): GestureType[];
 
   /**
    * Assign handlerTag to the gesture instance and set ref.current (if a ref is set)
@@ -187,7 +187,7 @@ export abstract class BaseGesture<
     }
   }
 
-  configure(): GestureType[] {
+  toGestureArray(): GestureType[] {
     return [this as GestureType];
   }
 

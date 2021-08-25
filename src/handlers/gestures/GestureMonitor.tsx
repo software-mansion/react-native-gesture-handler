@@ -342,7 +342,7 @@ export const GestureMonitor: React.FunctionComponent<GestureMonitorProps> = (
 ) => {
   const useAnimated = props.animatedGesture != null;
   const gestureConfig = props.animatedGesture ?? props.gesture;
-  const gesture = gestureConfig?.configure?.() ?? [];
+  const gesture = gestureConfig?.toGestureArray?.() ?? [];
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
 

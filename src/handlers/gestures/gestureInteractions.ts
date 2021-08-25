@@ -66,8 +66,8 @@ export class ComposedGesture extends Gesture {
     }
   }
 
-  configure(): GestureType[] {
-    return this.gestures.map((gesture) => gesture.configure()).flat();
+  toGestureArray(): GestureType[] {
+    return this.gestures.map((gesture) => gesture.toGestureArray()).flat();
   }
 }
 
@@ -77,8 +77,8 @@ export class SimultaneousGesture extends ComposedGesture {
   }
 
   prepare() {
-    const leftSide = this.gestures[0].configure();
-    const rightSide = this.gestures[1].configure();
+    const leftSide = this.gestures[0].toGestureArray();
+    const rightSide = this.gestures[1].toGestureArray();
 
     this.prepareSingleGesture(
       this.gestures[0],
@@ -99,7 +99,7 @@ export class RequireToFailGesture extends ComposedGesture {
   }
 
   prepare() {
-    const rightSide = this.gestures[1].configure();
+    const rightSide = this.gestures[1].toGestureArray();
 
     this.prepareSingleGesture(
       this.gestures[0],
