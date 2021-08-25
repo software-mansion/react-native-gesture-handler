@@ -95,6 +95,8 @@ function attachHandlers(
 
     registerHandler(handler.handlerTag, handler);
 
+    // use setImmediate to extract handlerTags, because all refs should be initialized
+    // when it's ran
     setImmediate(() => {
       gestureConfig?.prepare();
 
@@ -125,7 +127,7 @@ function attachHandlers(
     RNGestureHandlerModule.attachGestureHandler(
       gesture.handlerTag,
       viewTag,
-      !useAnimated //send direct events when using animatedGesture, device events otherwise
+      !useAnimated // send direct events when using animatedGesture, device events otherwise
     );
   }
 
@@ -150,6 +152,9 @@ function updateHandlers(
     gesture[i].handlers.handlerTag = handler.handlerTag;
   }
 
+  // use setImmediate to extract handlerTags, because when it's ran, all refs should be updated
+  // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
+  // in case of external relations)
   setImmediate(() => {
     for (let i = 0; i < gesture.length; i++) {
       const handler = preparedGesture.config[i];
