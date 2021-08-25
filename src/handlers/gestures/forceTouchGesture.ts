@@ -14,7 +14,7 @@ export class ForceTouchGesture extends BaseGesture<ForceTouchGestureHandlerEvent
     this.handlerName = 'ForceTouchGestureHandler';
   }
 
-  setOnUpdate(
+  onUpdate(
     callback: (
       event: UnwrappedGestureHandlerEvent<ForceTouchGestureHandlerEventPayload>
     ) => void
@@ -25,17 +25,17 @@ export class ForceTouchGesture extends BaseGesture<ForceTouchGestureHandlerEvent
     return this;
   }
 
-  setMinForce(force: number) {
+  minForce(force: number) {
     this.config.minForce = force;
     return this;
   }
 
-  setMaxForce(force: number) {
+  maxForce(force: number) {
     this.config.maxForce = force;
     return this;
   }
 
-  setFeedbackOnActivation(value: boolean) {
+  feedbackOnActivation(value: boolean) {
     this.config.feedbackOnActivation = value;
     return this;
   }

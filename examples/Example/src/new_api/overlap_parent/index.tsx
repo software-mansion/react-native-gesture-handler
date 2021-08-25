@@ -12,7 +12,7 @@ function Box(props: {
   children?: React.ReactNode;
 }) {
   const gesture = useGesture(
-    Gesture.tap().setOnEnd((_e, success) => {
+    Gesture.tap().onEnd((_e, success) => {
       if (success) {
         console.log(props.color);
       }

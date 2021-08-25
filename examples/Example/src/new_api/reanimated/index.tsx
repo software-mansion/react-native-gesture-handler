@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import {
   GestureMonitor,
@@ -54,18 +53,18 @@ function Draggable() {
 
   const gesture = useAnimatedGesture(
     Gesture.pan()
-      .setOnBegan(() => {
+      .onBegan(() => {
         'worklet';
         isPressed.value = true;
       })
-      .setOnUpdate((e) => {
+      .onUpdate((e) => {
         'worklet';
         offset.value = {
           x: e.translationX + start.value.x,
           y: e.translationY + start.value.y,
         };
       })
-      .setOnEnd(() => {
+      .onEnd(() => {
         'worklet';
         start.value = {
           x: offset.value.x,

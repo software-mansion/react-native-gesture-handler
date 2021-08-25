@@ -9,7 +9,7 @@ export class PinchGesture extends BaseGesture<PinchGestureHandlerEventPayload> {
     this.handlerName = 'PinchGestureHandler';
   }
 
-  setOnUpdate(
+  onUpdate(
     callback: (
       event: UnwrappedGestureHandlerEvent<PinchGestureHandlerEventPayload>
     ) => void

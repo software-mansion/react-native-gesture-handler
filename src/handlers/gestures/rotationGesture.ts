@@ -9,7 +9,7 @@ export class RotationGesture extends BaseGesture<RotationGestureHandlerEventPayl
     this.handlerName = 'RotationGestureHandler';
   }
 
-  setOnUpdate(
+  onUpdate(
     callback: (
       event: UnwrappedGestureHandlerEvent<RotationGestureHandlerEventPayload>
     ) => void
