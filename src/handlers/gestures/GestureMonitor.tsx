@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { startListening } from './eventReceiver';
 import {
   InteractionBuilder,
   GestureType,
@@ -27,8 +26,6 @@ import {
 } from '../PanGestureHandler';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
-
-startListening();
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
