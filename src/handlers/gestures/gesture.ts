@@ -168,7 +168,7 @@ export abstract class BaseGesture<
     return this;
   }
 
-  simulteneousWithExternalGesture(gesture: Exclude<GestureRef, number>) {
+  simultaneousWithExternalGesture(gesture: Exclude<GestureRef, number>) {
     this.addDependency('simultaneousWith', gesture);
     return this;
   }
