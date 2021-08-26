@@ -1,20 +1,20 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 function Box(props: {
   color: string;
   overlap?: boolean;
   children?: React.ReactNode;
 }) {
-  const gesture = Gesture.tap().onEnd((_e, success) => {
+  const gesture = Gesture.Tap().onEnd((_e, success) => {
     if (success) {
       console.log(props.color);
     }
   });
 
   return (
-    <GestureMonitor gesture={gesture}>
+    <GestureDetector gesture={gesture}>
       <View
         style={[
           styles.box,
@@ -23,7 +23,7 @@ function Box(props: {
         ]}>
         {props.children}
       </View>
-    </GestureMonitor>
+    </GestureDetector>
   );
 }
 

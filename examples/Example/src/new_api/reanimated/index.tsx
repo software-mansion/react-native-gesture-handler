@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -47,7 +47,7 @@ function Draggable() {
     };
   });
 
-  const gesture = Gesture.pan()
+  const gesture = Gesture.Pan()
     .onBegan(() => {
       'worklet';
       isPressed.value = true;
@@ -70,9 +70,9 @@ function Draggable() {
 
   return (
     <Animated.View>
-      <GestureMonitor animatedGesture={gesture}>
+      <GestureDetector animatedGesture={gesture}>
         <Box styles={animatedStyles} counter={counter} />
-      </GestureMonitor>
+      </GestureDetector>
     </Animated.View>
   );
 }

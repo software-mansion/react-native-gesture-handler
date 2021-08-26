@@ -333,11 +333,11 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   preparedGesture.animatedHandlers = sharedHandlersCallbacks;
 }
 
-interface GestureMonitorProps {
+interface GestureDetectorProps {
   gesture?: ComposedGesture | GestureType;
   animatedGesture?: ComposedGesture | GestureType;
 }
-export const GestureMonitor: React.FunctionComponent<GestureMonitorProps> = (
+export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   props
 ) => {
   const useAnimated = props.animatedGesture != null;
