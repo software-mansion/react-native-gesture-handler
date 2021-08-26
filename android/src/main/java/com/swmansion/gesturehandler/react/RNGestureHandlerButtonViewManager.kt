@@ -12,8 +12,10 @@ import android.graphics.drawable.RippleDrawable
 import android.os.Build
 import android.util.TypedValue
 import android.view.MotionEvent
+import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import androidx.core.view.children
 import com.facebook.react.bridge.SoftAssertions
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ThemedReactContext
@@ -93,6 +95,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
+
+    var isTouched = false
 
     init {
       // we attach empty click listener to trigger tap sounds (see View#performClick())
@@ -237,19 +241,46 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     }
 
     fun tryGrabbingResponder(): Boolean {
-      if (responder == null) {
-        if (exclusive) {
-          responder = this
-        }
-        return true
+      if (isChildTouched()) {
+        return false
       }
+
+      return if (responder == null) {
+        responder = this
+        true
+      } else {
+        if (exclusive) {
+          responder === this
+        } else {
+          !(responder?.exclusive ?: false)
+        }
+      }
+    }
+
+    fun tryFreeingResponder() {
+      if (responder === this) {
+        responder = null
+      }
+    }
+
+    private fun isChildTouched(children: Sequence<View> = this.children): Boolean {
+      for (child in children) {
+        if (child is ButtonViewGroup && (child.isTouched || child.isPressed)) {
+          return true
+        } else if (child is ViewGroup) {
+          return isChildTouched(child.children)
+        }
+      }
+
       return false
     }
 
     override fun setPressed(pressed: Boolean) {
-      if (!pressed || responder === this || (responder == null && !exclusive)) {
-        // we set pressed state only for current responder
+      if (!pressed || responder === this || (!exclusive && responder?.exclusive != true && !isChildTouched())) {
+        // we set pressed state only for current responder or any non-exclusive button when responder
+        // is null or non-exclusive, assuming it doesn't have pressed children
         super.setPressed(pressed)
+        isTouched = pressed
       }
       if (!pressed && responder === this) {
         // if the responder is no longer pressed we release button responder

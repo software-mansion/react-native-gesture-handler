@@ -62,10 +62,21 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   private fun canStart(view: View): Boolean {
     if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
-      return view.tryGrabbingResponder()
+      val isResponder = view.tryGrabbingResponder()
+      if (isResponder) {
+        view.isTouched = true
+      }
+      return isResponder
     }
 
     return true
+  }
+
+  private fun afterFinish(view: View) {
+    if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
+      view.tryFreeingResponder()
+      view.isTouched = false
+    }
   }
 
   override fun onHandle(event: MotionEvent) {
@@ -75,11 +86,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
         activate()
       }
-      if (state == STATE_BEGAN || state == STATE_ACTIVE) {
-        end()
-      } else {
-        fail()
-      }
+      end()
+      afterFinish(view)
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       when {
         shouldActivateOnStart -> {
@@ -91,8 +99,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
           view.onTouchEvent(event)
           activate()
         }
-        state != STATE_BEGAN && canStart(view) -> {
-          begin()
+        state != STATE_BEGAN -> {
+          if (canStart(view)) {
+            begin()
+          } else {
+            cancel()
+          }
         }
       }
     } else if (state == STATE_ACTIVE) {
