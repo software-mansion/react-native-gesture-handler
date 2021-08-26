@@ -65,7 +65,7 @@ function Photo() {
     .onEnd((_e, success) => {
       'worklet';
       if (success) {
-        scale.value = scale.value * 1.25;
+        scale.value *= 1.25;
       }
     });
 

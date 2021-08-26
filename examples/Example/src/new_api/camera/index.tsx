@@ -54,7 +54,7 @@ export default function Home() {
     });
 
   const buttonPanGesture = Gesture.pan()
-    .simulteneousWithExternalGesture(filtersPanGesture)
+    .simultaneousWithExternalGesture(filtersPanGesture)
     .onUpdate((e) => {
       'worklet';
       if (isRecording) {
