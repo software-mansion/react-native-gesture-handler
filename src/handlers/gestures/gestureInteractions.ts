@@ -67,7 +67,7 @@ export class ComposedGesture extends Gesture {
   }
 
   toGestureArray(): GestureType[] {
-    return this.gestures.map((gesture) => gesture.toGestureArray()).flat();
+    return this.gestures.flatMap((gesture) => gesture.toGestureArray());
   }
 }
 
