@@ -23,7 +23,7 @@ export default function Home() {
   const [remainingTimeMs, setRemainingTimeMs] = useState(MAX_VIDEO_DURATION_MS);
   const [recordingIntervalHandle, setRecordingIntervalHandle] = useState(-1);
 
-  const filtersPanGesture = Gesture.pan()
+  const filtersPanGesture = Gesture.Pan()
     .onUpdate((e) => {
       'worklet';
       filter.value = filter.value + (filterOffset.value - e.translationX) / 100;
@@ -37,14 +37,14 @@ export default function Home() {
       runOnJS(stopFilterScroll)();
     });
 
-  const buttonTapGesture = Gesture.tap().onEnd((_e, success) => {
+  const buttonTapGesture = Gesture.Tap().onEnd((_e, success) => {
     'worklet';
     if (success) {
       runOnJS(takePhoto)();
     }
   });
 
-  const buttonDoubleTapGesture = Gesture.tap()
+  const buttonDoubleTapGesture = Gesture.Tap()
     .numberOfTaps(2)
     .onEnd((_e, success) => {
       'worklet';
@@ -53,7 +53,7 @@ export default function Home() {
       }
     });
 
-  const buttonPanGesture = Gesture.pan()
+  const buttonPanGesture = Gesture.Pan()
     .simultaneousWithExternalGesture(filtersPanGesture)
     .onUpdate((e) => {
       'worklet';
@@ -72,12 +72,12 @@ export default function Home() {
       }
     });
 
-  const buttonLongPressGesture = Gesture.longPress().onStart(() => {
+  const buttonLongPressGesture = Gesture.LongPress().onStart(() => {
     'worklet';
     runOnJS(startRecording)();
   });
 
-  const previewPinchGesture = Gesture.pinch()
+  const previewPinchGesture = Gesture.Pinch()
     .onStart(() => {
       'worklet';
       runOnJS(setScale)(zoom.value);
@@ -87,10 +87,10 @@ export default function Home() {
       zoom.value = scale * e.scale;
     });
 
-  const buttonGesture = Gesture.simultaneous(
+  const buttonGesture = Gesture.Simultaneous(
     buttonLongPressGesture,
-    Gesture.exclusive(
-      Gesture.requireToFail(buttonTapGesture, buttonDoubleTapGesture),
+    Gesture.Exclusive(
+      Gesture.RequireToFail(buttonTapGesture, buttonDoubleTapGesture),
       buttonPanGesture
     )
   );

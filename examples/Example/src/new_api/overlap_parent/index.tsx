@@ -7,7 +7,7 @@ function Box(props: {
   overlap?: boolean;
   children?: React.ReactNode;
 }) {
-  const gesture = Gesture.tap().onEnd((_e, success) => {
+  const gesture = Gesture.Tap().onEnd((_e, success) => {
     if (success) {
       console.log(props.color);
     }

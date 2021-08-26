@@ -27,7 +27,7 @@ function Photo() {
     };
   });
 
-  const rotationGesture = Gesture.rotation()
+  const rotationGesture = Gesture.Rotation()
     .onUpdate((e) => {
       'worklet';
       rotation.value = savedRotation.value + e.rotation;
@@ -37,7 +37,7 @@ function Photo() {
       savedRotation.value = rotation.value;
     });
 
-  const scaleGesture = Gesture.pinch()
+  const scaleGesture = Gesture.Pinch()
     .onUpdate((e) => {
       'worklet';
       scale.value = savedScale.value * e.scale;
@@ -47,7 +47,7 @@ function Photo() {
       savedScale.value = scale.value;
     });
 
-  const panGesture = Gesture.pan()
+  const panGesture = Gesture.Pan()
     .averageTouches(true)
     .onUpdate((e) => {
       'worklet';
@@ -60,7 +60,7 @@ function Photo() {
       offsetY.value = translationY.value;
     });
 
-  const doubleTapGesture = Gesture.tap()
+  const doubleTapGesture = Gesture.Tap()
     .numberOfTaps(2)
     .onEnd((_e, success) => {
       'worklet';
@@ -69,11 +69,11 @@ function Photo() {
       }
     });
 
-  const gesture = Gesture.simultaneous(
+  const gesture = Gesture.Simultaneous(
     rotationGesture,
-    Gesture.simultaneous(
+    Gesture.Simultaneous(
       scaleGesture,
-      Gesture.simultaneous(panGesture, doubleTapGesture)
+      Gesture.Simultaneous(panGesture, doubleTapGesture)
     )
   );
 

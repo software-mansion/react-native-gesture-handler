@@ -15,13 +15,13 @@ function Box(props: { color: string; overlap?: boolean }) {
 }
 
 export default function Example() {
-  const tapRed = Gesture.tap().onEnd((_e, success) => {
+  const tapRed = Gesture.Tap().onEnd((_e, success) => {
     if (success) {
       console.log('red');
     }
   });
 
-  const tapGreen = Gesture.tap().onEnd((_e, success) => {
+  const tapGreen = Gesture.Tap().onEnd((_e, success) => {
     if (success) {
       console.log('green');
     }

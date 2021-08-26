@@ -47,7 +47,7 @@ function Draggable() {
     };
   });
 
-  const gesture = Gesture.pan()
+  const gesture = Gesture.Pan()
     .onBegan(() => {
       'worklet';
       isPressed.value = true;

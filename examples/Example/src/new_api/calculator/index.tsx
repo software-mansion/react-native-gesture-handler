@@ -91,7 +91,7 @@ function Output({ offset, expression, history }: OutputProps) {
     };
   });
 
-  const dragGesture = Gesture.pan()
+  const dragGesture = Gesture.Pan()
     .onUpdate((e) => {
       'worklet';
       const translatedOffset = dragOffset.value + e.translationY;
@@ -250,7 +250,7 @@ function Operations() {
     setOpened(false);
   }
 
-  const dragGesture = Gesture.pan()
+  const dragGesture = Gesture.Pan()
     .onUpdate((e) => {
       'worklet';
       const margin = window.width - layout.value.x;
@@ -321,7 +321,7 @@ function Button({ text, append }: ButtonProps) {
     };
   });
 
-  const tapHandler = Gesture.tap()
+  const tapHandler = Gesture.Tap()
     .onEnd((_e, success) => {
       'worklet';
       alpha.value = withTiming(0, { duration: TAP_ANIMATION_DURATION });

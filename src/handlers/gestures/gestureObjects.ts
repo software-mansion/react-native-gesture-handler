@@ -13,31 +13,31 @@ import { RotationGesture } from './rotationGesture';
 import { TapGesture } from './tapGesture';
 
 export const GestureObjects = {
-  tap() {
+  Tap() {
     return new TapGesture();
   },
 
-  pan() {
+  Pan() {
     return new PanGesture();
   },
 
-  pinch() {
+  Pinch() {
     return new PinchGesture();
   },
 
-  rotation() {
+  Rotation() {
     return new RotationGesture();
   },
 
-  fling() {
+  Fling() {
     return new FlingGesture();
   },
 
-  longPress() {
+  LongPress() {
     return new LongPressGesture();
   },
 
-  forceTouch() {
+  ForceTouch() {
     return new ForceTouchGesture();
   },
 
@@ -45,7 +45,7 @@ export const GestureObjects = {
    * Builds a composed gesture consisting of gestures provided as parameters.
    * Only one of them can become active at the same time, the rest will be cancelled.
    */
-  exclusive(...gestures: Gesture[]) {
+  Exclusive(...gestures: Gesture[]) {
     return new ComposedGesture(...gestures);
   },
 
@@ -55,7 +55,7 @@ export const GestureObjects = {
    * @param second A gesture to run simultaneously with the first one
    * @returns ComposedGesture consisting of the gestures provided as parameters.
    */
-  simultaneous(first: Gesture, second: Gesture) {
+  Simultaneous(first: Gesture, second: Gesture) {
     return new SimultaneousGesture(first, second);
   },
 
@@ -68,7 +68,7 @@ export const GestureObjects = {
    * @param second A gesture that is required to fail by the first one to activate.
    * @returns ComposedGesture consisting of the gestures provided as parameters.
    */
-  requireToFail(first: Gesture, second: Gesture) {
+  RequireToFail(first: Gesture, second: Gesture) {
     return new RequireToFailGesture(first, second);
   },
 };
