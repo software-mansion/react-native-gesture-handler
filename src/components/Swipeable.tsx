@@ -36,7 +36,7 @@ type SwipeableExcludes = Exclude<
   'onGestureEvent' | 'onHandlerStateChange'
 >;
 
-interface SwipeableProps
+export interface SwipeableProps
   extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
   /**
    * Enables two-finger gestures on supported devices, for example iPads with
