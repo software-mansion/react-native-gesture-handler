@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 function Box(props: {
   color: string;
@@ -14,7 +14,7 @@ function Box(props: {
   });
 
   return (
-    <GestureMonitor gesture={gesture}>
+    <GestureDetector gesture={gesture}>
       <View
         style={[
           styles.box,
@@ -23,7 +23,7 @@ function Box(props: {
         ]}>
         {props.children}
       </View>
-    </GestureMonitor>
+    </GestureDetector>
   );
 }
 

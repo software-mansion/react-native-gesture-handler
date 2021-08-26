@@ -52,7 +52,7 @@ export type {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,
 } from './handlers/NativeViewGestureHandler';
-export { GestureMonitor } from './handlers/gestures/GestureMonitor';
+export { GestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {

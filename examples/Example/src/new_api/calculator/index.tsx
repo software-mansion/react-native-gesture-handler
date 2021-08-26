@@ -8,7 +8,7 @@ import {
   LayoutRectangle,
 } from 'react-native';
 import {
-  GestureMonitor,
+  GestureDetector,
   Gesture,
   ScrollView,
 } from 'react-native-gesture-handler';
@@ -126,7 +126,7 @@ function Output({ offset, expression, history }: OutputProps) {
   scrollView.current?.scrollToEnd({ animated: true });
 
   return (
-    <GestureMonitor animatedGesture={dragGesture}>
+    <GestureDetector animatedGesture={dragGesture}>
       <Animated.View
         style={[styles.output, translationStyle]}
         onLayout={measure}>
@@ -151,7 +151,7 @@ function Output({ offset, expression, history }: OutputProps) {
           <View style={styles.handle} />
         </View>
       </Animated.View>
-    </GestureMonitor>
+    </GestureDetector>
   );
 }
 
@@ -298,12 +298,12 @@ function Operations() {
   }
 
   return (
-    <GestureMonitor animatedGesture={dragGesture}>
+    <GestureDetector animatedGesture={dragGesture}>
       <Animated.View
         style={[styles.operations, translationStyle]}
         onLayout={measure}
       />
-    </GestureMonitor>
+    </GestureDetector>
   );
 }
 
@@ -336,13 +336,13 @@ function Button({ text, append }: ButtonProps) {
     });
 
   return (
-    <GestureMonitor animatedGesture={tapHandler}>
+    <GestureDetector animatedGesture={tapHandler}>
       <Animated.View style={styles.button}>
         <Animated.View style={[styles.buttonTextContainer, backgroundStyles]}>
           <Text style={styles.buttonText}>{text}</Text>
         </Animated.View>
       </Animated.View>
-    </GestureMonitor>
+    </GestureDetector>
   );
 }
 

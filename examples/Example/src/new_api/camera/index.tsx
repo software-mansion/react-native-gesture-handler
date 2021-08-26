@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, useWindowDimensions } from 'react-native';
-import { GestureMonitor, Gesture } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -142,26 +142,26 @@ export default function Home() {
 
   return (
     <Animated.View style={styles.container}>
-      <GestureMonitor animatedGesture={previewPinchGesture}>
+      <GestureDetector animatedGesture={previewPinchGesture}>
         <Animated.View
           style={[styles.home, { backgroundColor: filters[selectedFilter] }]}>
           <Animated.View style={[styles.box, zoomStyle]} />
         </Animated.View>
-      </GestureMonitor>
+      </GestureDetector>
 
-      <GestureMonitor animatedGesture={filtersPanGesture}>
+      <GestureDetector animatedGesture={filtersPanGesture}>
         <Animated.View style={styles.buttonContainer}>
           <FilterCarousel filters={filters} selected={filter} />
-          <GestureMonitor animatedGesture={buttonGesture}>
+          <GestureDetector animatedGesture={buttonGesture}>
             <CaptureButton
               progress={1 - remainingTimeMs / MAX_VIDEO_DURATION_MS}
               onTimerFinished={() => {
                 finishRecording();
               }}
             />
-          </GestureMonitor>
+          </GestureDetector>
         </Animated.View>
-      </GestureMonitor>
+      </GestureDetector>
     </Animated.View>
   );
 }
