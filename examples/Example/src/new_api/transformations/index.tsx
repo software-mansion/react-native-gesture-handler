@@ -27,7 +27,7 @@ function Photo() {
     };
   });
 
-  const gesture = Gesture.rotation()
+  const rotationGesture = Gesture.rotation()
     .onUpdate((e) => {
       'worklet';
       rotation.value = savedRotation.value + e.rotation;
@@ -35,42 +35,47 @@ function Photo() {
     .onEnd(() => {
       'worklet';
       savedRotation.value = rotation.value;
+    });
+
+  const scaleGesture = Gesture.pinch()
+    .onUpdate((e) => {
+      'worklet';
+      scale.value = savedScale.value * e.scale;
     })
-    .simultaneousWith(
-      Gesture.pinch()
-        .onUpdate((e) => {
-          'worklet';
-          scale.value = savedScale.value * e.scale;
-        })
-        .onEnd(() => {
-          'worklet';
-          savedScale.value = scale.value;
-        })
+    .onEnd(() => {
+      'worklet';
+      savedScale.value = scale.value;
+    });
+
+  const panGesture = Gesture.pan()
+    .averageTouches(true)
+    .onUpdate((e) => {
+      'worklet';
+      translationX.value = offsetX.value + e.translationX;
+      translationY.value = offsetY.value + e.translationY;
+    })
+    .onEnd(() => {
+      'worklet';
+      offsetX.value = translationX.value;
+      offsetY.value = translationY.value;
+    });
+
+  const doubleTapGesture = Gesture.tap()
+    .numberOfTaps(2)
+    .onEnd((_e, success) => {
+      'worklet';
+      if (success) {
+        scale.value *= 1.25;
+      }
+    });
+
+  const gesture = Gesture.simultaneous(
+    rotationGesture,
+    Gesture.simultaneous(
+      scaleGesture,
+      Gesture.simultaneous(panGesture, doubleTapGesture)
     )
-    .simultaneousWith(
-      Gesture.pan()
-        .averageTouches(true)
-        .onUpdate((e) => {
-          'worklet';
-          translationX.value = offsetX.value + e.translationX;
-          translationY.value = offsetY.value + e.translationY;
-        })
-        .onEnd(() => {
-          'worklet';
-          offsetX.value = translationX.value;
-          offsetY.value = translationY.value;
-        })
-    )
-    .simultaneousWith(
-      Gesture.tap()
-        .numberOfTaps(2)
-        .onEnd((_e, success) => {
-          'worklet';
-          if (success) {
-            scale.value = scale.value * 1.25;
-          }
-        })
-    );
+  );
 
   return (
     <GestureMonitor animatedGesture={gesture}>

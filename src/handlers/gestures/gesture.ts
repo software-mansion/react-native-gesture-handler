@@ -64,7 +64,7 @@ export abstract class Gesture {
    * Return array of gestures, providing the same interface for creating and updating
    * handlers, no matter which object was used to create gesture instance.
    */
-  abstract configure(): GestureType[];
+  abstract toGestureArray(): GestureType[];
 
   /**
    * Assign handlerTag to the gesture instance and set ref.current (if a ref is set)
@@ -168,26 +168,14 @@ export abstract class BaseGesture<
     return this;
   }
 
-  addSimultaneousGesture(gesture: Exclude<GestureRef, number>) {
+  simultaneousWithExternalGesture(gesture: Exclude<GestureRef, number>) {
     this.addDependency('simultaneousWith', gesture);
     return this;
   }
 
-  addRequiredToFailGesture(gesture: Exclude<GestureRef, number>) {
+  requireExternalGestureToFail(gesture: Exclude<GestureRef, number>) {
     this.addDependency('requireToFail', gesture);
     return this;
-  }
-
-  simultaneousWith(other: GestureType): InteractionBuilder {
-    return new InteractionBuilder(this as GestureType).simultaneousWith(other);
-  }
-
-  exclusiveWith(other: GestureType): InteractionBuilder {
-    return new InteractionBuilder(this as GestureType).exclusiveWith(other);
-  }
-
-  requireToFail(other: GestureType): InteractionBuilder {
-    return new InteractionBuilder(this as GestureType).requireToFail(other);
   }
 
   initialize() {
@@ -199,7 +187,7 @@ export abstract class BaseGesture<
     }
   }
 
-  configure(): GestureType[] {
+  toGestureArray(): GestureType[] {
     return [this as GestureType];
   }
 
@@ -216,106 +204,5 @@ export abstract class ContinousBaseGesture<
     this.handlers.onUpdate = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] = this.isWorklet(callback);
     return this;
-  }
-}
-
-enum Relation {
-  Simultaneous,
-  Exclusive,
-  RequireToFail,
-}
-
-type PendingGesture = {
-  relation: Relation;
-  gesture: GestureType;
-};
-
-export class InteractionBuilder extends Gesture {
-  private pendingGestures: PendingGesture[] = [];
-
-  constructor(base: GestureType) {
-    super();
-    this.addGesture({ relation: Relation.Exclusive, gesture: base });
-  }
-
-  simultaneousWith(gesture: GestureType): InteractionBuilder {
-    return this.addGesture({
-      relation: Relation.Simultaneous,
-      gesture,
-    });
-  }
-
-  exclusiveWith(gesture: GestureType): InteractionBuilder {
-    return this.addGesture({
-      relation: Relation.Exclusive,
-      gesture,
-    });
-  }
-
-  requireToFail(gesture: GestureType): InteractionBuilder {
-    return this.addGesture({
-      relation: Relation.RequireToFail,
-      gesture,
-    });
-  }
-
-  private addGesture(gesture: PendingGesture): InteractionBuilder {
-    this.pendingGestures.push(gesture);
-    return this;
-  }
-
-  configure(): GestureType[] {
-    return this.pendingGestures.map((pending) => pending.gesture);
-  }
-
-  prepare() {
-    const simultaneousGestures: GestureType[] = [];
-    const waitForGestures: GestureType[] = [];
-
-    for (let i = this.pendingGestures.length - 1; i >= 0; i--) {
-      const pendingGesture = this.pendingGestures[i];
-      pendingGesture.gesture.prepare();
-
-      const newConfig = { ...pendingGesture.gesture.config };
-
-      newConfig.simultaneousWith = this.extendRelation(
-        newConfig.simultaneousWith,
-        simultaneousGestures
-      );
-      newConfig.requireToFail = this.extendRelation(
-        newConfig.requireToFail,
-        waitForGestures
-      );
-
-      pendingGesture.gesture.config = newConfig;
-
-      switch (pendingGesture.relation) {
-        case Relation.Simultaneous:
-          simultaneousGestures.push(pendingGesture.gesture);
-          break;
-        case Relation.Exclusive:
-          break;
-        case Relation.RequireToFail:
-          waitForGestures.push(pendingGesture.gesture);
-          break;
-      }
-    }
-  }
-
-  private extendRelation(
-    currentRelation: GestureRef[] | undefined,
-    extendWith: GestureType[]
-  ) {
-    if (currentRelation === undefined) {
-      return [...extendWith];
-    } else {
-      return [...currentRelation, ...extendWith];
-    }
-  }
-
-  initialize() {
-    for (const pendingGesture of this.pendingGestures) {
-      pendingGesture.gesture.initialize();
-    }
   }
 }
