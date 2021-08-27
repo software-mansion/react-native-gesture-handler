@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -7,36 +7,11 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-type AtLeastOne<T> = { [K in keyof T]: Pick<T, K> }[keyof T];
-
-type StylesType = {
-  transform: AtLeastOne<{
-    translateX: number;
-    translateY: number;
-    scale: number;
-  }>[];
-  backgroundColor: string;
-};
-
-function Draggable() {
-  const [counter, setCounter] = useState(1);
-  const intervalHandle = useRef<number>(0);
-
-  useEffect(() => {
-    intervalHandle.current = setInterval(() => {
-      setCounter((a) => a + 1);
-    }, 1000);
-
-    return () => {
-      clearInterval(intervalHandle.current);
-    };
-  }, []);
-
+function Ball() {
   const isPressed = useSharedValue(false);
   const offset = useSharedValue({ x: 0, y: 0 });
-  const start = useSharedValue({ x: 0, y: 0 });
 
-  const animatedStyles: StylesType = useAnimatedStyle(() => {
+  const animatedStyles = useAnimatedStyle(() => {
     return {
       transform: [
         { translateX: offset.value.x },
@@ -47,6 +22,7 @@ function Draggable() {
     };
   });
 
+  const start = useSharedValue({ x: 0, y: 0 });
   const gesture = Gesture.Pan()
     .onBegan(() => {
       'worklet';
@@ -69,47 +45,29 @@ function Draggable() {
     });
 
   return (
-    <Animated.View>
-      <GestureDetector animatedGesture={gesture}>
-        <Box styles={animatedStyles} counter={counter} />
-      </GestureDetector>
-    </Animated.View>
-  );
-}
-
-function Box(props: { styles: StylesType; counter: number }) {
-  return (
-    <Animated.View style={[styles.button, props.styles]}>
-      <Text style={styles.text}>{props.counter}</Text>
-    </Animated.View>
+    <GestureDetector animatedGesture={gesture}>
+      <Animated.View style={[styles.ball, animatedStyles]} />
+    </GestureDetector>
   );
 }
 
 export default function Example() {
   return (
     <View style={styles.container}>
-      <Draggable />
+      <Ball />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    height: '100%',
-    alignSelf: 'center',
-    backgroundColor: 'red',
+    flex: 1,
   },
-  button: {
+  ball: {
     width: 100,
     height: 100,
     borderRadius: 100,
     backgroundColor: 'blue',
     alignSelf: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    alignSelf: 'center',
-    fontSize: 16,
   },
 });

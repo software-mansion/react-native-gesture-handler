@@ -13,7 +13,6 @@ import { toArray } from '../utils';
 const commonProps = [
   'id',
   'enabled',
-  'minPointers',
   'shouldCancelWhenOutside',
   'hitSlop',
 ] as const;
@@ -81,7 +80,6 @@ export type UnwrappedGestureHandlerStateChangeEvent<
 
 export type CommonGestureConfig = {
   enabled?: boolean;
-  minPointers?: number;
   shouldCancelWhenOutside?: boolean;
   hitSlop?: HitSlop;
 };

@@ -13,6 +13,11 @@ export class TapGesture extends BaseGesture<TapGestureHandlerEventPayload> {
     this.handlerName = 'TapGestureHandler';
   }
 
+  minPointers(minPointers: number) {
+    this.config.minPointers = minPointers;
+    return this;
+  }
+
   numberOfTaps(count: number) {
     this.config.numberOfTaps = count;
     return this;
