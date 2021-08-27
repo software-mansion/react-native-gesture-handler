@@ -61,6 +61,11 @@ export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPaylo
     return this;
   }
 
+  minPointers(minPointers: number) {
+    this.config.minPointers = minPointers;
+    return this;
+  }
+
   minDistance(distance: number) {
     this.config.minDist = distance;
     return this;

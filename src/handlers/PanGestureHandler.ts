@@ -10,6 +10,7 @@ export const panGestureHandlerProps = [
   'failOffsetY',
   'failOffsetX',
   'minDist',
+  'minPointers',
   'minVelocity',
   'minVelocityX',
   'minVelocityY',
@@ -107,6 +108,12 @@ interface CommonPanProperties {
    * the gesture.
    */
   enableTrackpadTwoFingerGesture?: boolean;
+
+  /**
+   * A number of fingers that is required to be placed before handler can
+   * activate. Should be a higher or equal to 0 integer.
+   */
+  minPointers?: number;
 }
 
 export interface PanGestureConfig extends CommonPanProperties {

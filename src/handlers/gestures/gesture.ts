@@ -153,11 +153,6 @@ export abstract class BaseGesture<
     return this;
   }
 
-  minPointers(minPointers: number) {
-    this.config.minPointers = minPointers;
-    return this;
-  }
-
   shouldCancelWhenOutside(value: boolean) {
     this.config.shouldCancelWhenOutside = value;
     return this;
