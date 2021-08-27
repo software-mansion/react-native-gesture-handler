@@ -6,7 +6,7 @@ sidebar_label: Quick start
 
 RNGH2 provides much simpler way to add gestures to your app. All you need to do is wrap the view that you want your gesture to work on with [`GestureDetector`](./gesture-detector.md), define the gesture and pass it to detector. That's all!
 
-To demonstrate how you would use the new api, let's make a sime app where you can drag a ball around. You will need to add `react-native-gesture-handler` (for gestures) and `react-native-reanimated` (for animations) modules.
+To demonstrate how you would use the new API, let's make a simple app where you can drag a ball around. You will need to add `react-native-gesture-handler` (for gestures) and `react-native-reanimated` (for animations) modules.
 
 First let's define styles we will ned to make the app:
 
