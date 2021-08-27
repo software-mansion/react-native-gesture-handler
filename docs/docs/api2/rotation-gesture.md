@@ -4,13 +4,13 @@ title: Rotation gesture
 sidebar_label: Rotation gesture
 ---
 
-A continuous gesture handler that can recognize a rotation gesture and track its movement.
+A continuous gesture that can recognize a rotation gesture and track its movement.
 
-The handler [activates](state.md#active) when fingers are placed on the screen and change position in a proper way.
+The gesture [activates](state.md#active) when fingers are placed on the screen and change position in a proper way.
 
 Gesture callback can be used for continuous tracking of the rotation gesture. It provides information about the gesture such as the amount rotated, the focal point of the rotation (anchor), and its instantaneous velocity.
 
-The handler is implemented using [UIRotationGestureRecognizer](https://developer.apple.com/documentation/uikit/uirotationgesturerecognizer) on iOS and from scratch on Android.
+The gesture is implemented using [UIRotationGestureRecognizer](https://developer.apple.com/documentation/uikit/uirotationgesturerecognizer) on iOS and from scratch on Android.
 
 ## Config
 
