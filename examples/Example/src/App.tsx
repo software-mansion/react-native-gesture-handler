@@ -74,7 +74,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
       {
-        name: 'Nested Touchables',
+        name: 'Nested Touchables - issue #784',
         component: NestedTouchables as React.ComponentType,
       },
     ],

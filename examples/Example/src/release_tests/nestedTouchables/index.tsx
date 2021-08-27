@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Text } from 'react-native';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import { LoremIpsum } from '../../common';
 
@@ -7,10 +7,11 @@ export default function Example() {
   return (
     <ScrollView>
       <LoremIpsum words={40} />
+      <Text>Touchables with `exclusive` set to true:</Text>
       <Boxes />
-      <LoremIpsum words={40} />
+      <Text>Touchables with `exclusive` set to false:</Text>
       <Boxes exclusive={false} />
-      <LoremIpsum words={40} />
+      <Text>Touchables with `exclusive` set to false:</Text>
       <Boxes exclusive={false} />
       <LoremIpsum words={40} />
     </ScrollView>
