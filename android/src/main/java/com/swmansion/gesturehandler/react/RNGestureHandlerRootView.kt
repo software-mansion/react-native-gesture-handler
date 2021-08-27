@@ -57,7 +57,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
         // Checks other roots views but it's mainly for ReactModalHostView.DialogRootViewGroup
         // since modals are outside RN hierachy and we have to initialize GH's root view for it
         // Note that RNGestureHandlerEnabledRootView implements RootView - that's why this check has to be below
-        if (parent is RootView){
+        if (parent is RootView) {
           return false
         }
         parent = parent.parent
