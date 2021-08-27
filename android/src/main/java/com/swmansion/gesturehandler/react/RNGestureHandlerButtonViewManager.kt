@@ -245,15 +245,14 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
         return false
       }
 
-      return if (responder == null) {
+      if (responder == null) {
         responder = this
-        true
+        return true
+      }
+      return if (exclusive) {
+        responder === this
       } else {
-        if (exclusive) {
-          responder === this
-        } else {
-          !(responder?.exclusive ?: false)
-        }
+        !(responder?.exclusive ?: false)
       }
     }
 
