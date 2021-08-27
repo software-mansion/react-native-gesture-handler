@@ -15,7 +15,7 @@ Since this behaviour is only provided on some iOS devices, this gesture should n
 
 ## Config
 
-See [set of properties common to all gestures](common-gesture#config). Below is a list of properties specific to `ForceTouchGesture`:
+See [set of properties common to all gestures](./common-gesture.md#config). Below is a list of properties specific to `ForceTouchGesture`:
 
 ### `minForce(value: number)`
 
@@ -31,7 +31,7 @@ Value defining if haptic feedback has to be performed on activation.
 
 ## Event data
 
-See [set of event attributes common to all gestures](common-gesture#event-data). Below is a list of gesture event attributes specific to `ForceTouchGesture`:
+See [set of event attributes common to all gestures](./common-gesture.md#event-data). Below is a list of gesture event attributes specific to `ForceTouchGesture`:
 
 ### `force`
 

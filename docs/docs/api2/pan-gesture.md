@@ -32,7 +32,7 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 
 ## Config
 
-See [set of properties common to all gestures](common-gesture#config). Below is a list of properties specific to `PanGesture`:
+See [set of properties common to all gestures](./common-gesture.md#config). Below is a list of properties specific to `PanGesture`:
 
 ### `minDist(value: number)`
 
@@ -78,7 +78,7 @@ Enables two-finger gestures on supported devices, for example iPads with trackpa
 
 ## Event data
 
-See [set of event attributes common to all gestures](common-gesture#event-data). Below is a list of gesture event attributes specific to `PanGesture`:
+See [set of event attributes common to all gestures](./common-gesture.md#event-data). Below is a list of gesture event attributes specific to `PanGesture`:
 
 ### `translationX`
 
@@ -98,11 +98,11 @@ Velocity of the pan gesture along the Y axis in the current moment. The value is
 
 ### `x`
 
-X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](gesture-detector). Expressed in point units.
+X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](./gesture-detector.md). Expressed in point units.
 
 ### `y`
 
-Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](gesture-detector). Expressed in point units.
+Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](./gesture-detector.md). Expressed in point units.
 
 ### `absoluteX`
 

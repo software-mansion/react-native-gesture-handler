@@ -6,7 +6,7 @@ sidebar_label: Rotation gesture
 
 A continuous gesture that can recognize a rotation gesture and track its movement.
 
-The gesture [activates](state.md#active) when fingers are placed on the screen and change position in a proper way.
+The gesture [activates](./state.md#active) when fingers are placed on the screen and change position in a proper way.
 
 Gesture callback can be used for continuous tracking of the rotation gesture. It provides information about the gesture such as the amount rotated, the focal point of the rotation (anchor), and its instantaneous velocity.
 
@@ -14,11 +14,11 @@ The gesture is implemented using [UIRotationGestureRecognizer](https://developer
 
 ## Config
 
-Rotation gesture does not extend the [common gesture config](common-gesture).
+Rotation gesture does not extend the [common gesture config](./common-gesture.md).
 
 ## Event data
 
-See [set of event attributes common to all gestures](common-gesture#event-data). Below is a list of gesture event attributes specific to `RotationGesture`:
+See [set of event attributes common to all gestures](./common-gesture.md#event-data). Below is a list of gesture event attributes specific to `RotationGesture`:
 
 ### `rotation`
 

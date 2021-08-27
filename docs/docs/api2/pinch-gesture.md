@@ -17,11 +17,11 @@ The gesture is implemented using [UIPinchGestureRecognizer](https://developer.ap
 
 ## Config
 
-Pinch gesture does not extend the [common gesture config](common-gesture).
+Pinch gesture does not extend the [common gesture config](./common-gesture.md).
 
 ## Event data
 
-See [set of event attributes common to all gestures](common-gesture#event-data). Below is a list of gesture event attributes specific to `PinchGesture`:
+See [set of event attributes common to all gestures](./common-gesture.md#event-data). Below is a list of gesture event attributes specific to `PinchGesture`:
 
 ### `scale`
 

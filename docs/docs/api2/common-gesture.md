@@ -10,21 +10,21 @@ All gesture objects extend the `BaseGesture` class, therefore they share some of
 
 ### `onBegan(callback)`
 
-Set the [`onBegan`](./events#onbegan) callback.
+Set the [`onBegan`](./events.md#onbegan) callback.
 
 ### `onStart(callback)`
 
-Set the [`onStart`](./events#onstart) callback.
+Set the [`onStart`](./events.md#onstart) callback.
 
 ### `onEnd(callback)`
 
-Set the [`onEnd`](./events#onend) callback.
+Set the [`onEnd`](./events.md#onend) callback.
 
 ### `onUpdate(callback)`
 
 > Only available on continuous gestures: `Pan`, `Pinch`, `Rotation` and `ForceTouch`.
 
-Set the [`onUpdate`](./events#onupdate) callback.
+Set the [`onUpdate`](./events.md#onupdate) callback.
 
 ## Config
 
@@ -39,7 +39,7 @@ Default value is `true`.
 
 When `true` the handler will [cancel](../state.md#cancelled) or [fail](../state.md#failed) recognition (depending on its current state) whenever the finger leaves the area of the connected view.
 Default value of this property is different depending on the handler type.
-Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGesture`](longpress-gesture) and [`TapGesture`](tap-gesture) which default to `true`.
+Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGesture`](./long-press-gesture.md) and [`TapGesture`](./tap-gesture.md) which default to `true`.
 
 ### `hitSlop(settings)`
 
@@ -59,13 +59,13 @@ Specifying `width` or `height` is useful if we only want the gesture to activate
 
 Adds a gesture that should be recognized simultaneously with this one.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing](composing-gestures) them. [`GestureDetector`](gesture-detector) will not recognize the `otherGesture` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing](./composing-gestures.md) them. [`GestureDetector`](./gesture-detector.md) will not recognize the `otherGesture` and it needs to be added to another detector in order to be recognized.
 
 ### `requireExternalGestureToFail(otherGesture)`
 
 Adds a relation requiring another gesture to fail, before this one can activate.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing](composing-gestures) them. [`GestureDetector`](gesture-detector) will not recognize the `otherGesture` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing](./composing-gestures.md) them. [`GestureDetector`](./gesture-detector.md) will not recognize the `otherGesture` and it needs to be added to another detector in order to be recognized.
 
 ## Event data
 

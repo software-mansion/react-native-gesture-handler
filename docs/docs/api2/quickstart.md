@@ -4,7 +4,7 @@ title: Quick start
 sidebar_label: Quick start
 ---
 
-RNGH2 provides much simpler way to add gestures to your app. All you need to do is wrap the view that you want your gesture to work on with [`GestureDetector`](gesture-detector), define the gesture and pass it to detector. That's all!
+RNGH2 provides much simpler way to add gestures to your app. All you need to do is wrap the view that you want your gesture to work on with [`GestureDetector`](./gesture-detector.md), define the gesture and pass it to detector. That's all!
 
 To demonstrate how you would use the new api, let's make a sime app where you can drag a ball around. You will need to add `react-native-gesture-handler` (for gestures) and `react-native-reanimated` (for animations) modules.
 
@@ -61,27 +61,27 @@ And add it to the ball's styles:
 The only thing left is to define the pan gesture and assign it to the detector:
 
 ```js
-const start = useSharedValue({ x: 0, y: 0 });  
+const start = useSharedValue({ x: 0, y: 0 });
 const gesture = Gesture.Pan()
-    .onBegan(() => {
-      'worklet';
-      isPressed.value = true;
-    })
-    .onUpdate((e) => {
-      'worklet';
-      offset.value = {
-        x: e.translationX + start.value.x,
-        y: e.translationY + start.value.y,
-      };
-    })
-    .onEnd(() => {
-      'worklet';
-      start.value = {
-        x: offset.value.x,
-        y: offset.value.y,
-      };
-      isPressed.value = false;
-    });
+  .onBegan(() => {
+    'worklet';
+    isPressed.value = true;
+  })
+  .onUpdate((e) => {
+    'worklet';
+    offset.value = {
+      x: e.translationX + start.value.x,
+      y: e.translationY + start.value.y,
+    };
+  })
+  .onEnd(() => {
+    'worklet';
+    start.value = {
+      x: offset.value.x,
+      y: offset.value.y,
+    };
+    isPressed.value = false;
+  });
 ```
 
 ```js

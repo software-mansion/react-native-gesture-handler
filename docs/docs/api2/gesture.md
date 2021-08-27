@@ -6,30 +6,30 @@ sidebar_label: Gesture
 
 `Gesture` is the object that allows you to create and compose gestures.
 
-### Gesture.Tap(): [TapGesture](./tap-gesture)
+### Gesture.Tap(): [TapGesture](./tap-gesture.md)
 
-Creates a new instance of [`TapGesture`](./tap-gesture) with its default config and no callbacks.
+Creates a new instance of [`TapGesture`](./tap-gesture.md) with its default config and no callbacks.
 
-### Gesture.Pan(): [PanGesture](./pan-gesture)
+### Gesture.Pan(): [PanGesture](./pan-gesture.md)
 
-Creates a new instance of [`PanGesture`](./pan-gesture) with its default config and no callbacks.
+Creates a new instance of [`PanGesture`](./pan-gesture.md) with its default config and no callbacks.
 
-### Gesture.LongPress(): [LongPressGesture](./long-press-gesture)
+### Gesture.LongPress(): [LongPressGesture](./long-press-gesture.md)
 
-Creates a new instance of [`LongPressGesture`](./long-press-gesture) with its default config and no callbacks.
+Creates a new instance of [`LongPressGesture`](./long-press-gesture.md) with its default config and no callbacks.
 
-### Gesture.Fling(): [FlingGesture](./fling-gesture)
+### Gesture.Fling(): [FlingGesture](./fling-gesture.md)
 
-Creates a new instance of [`FlingGesture`](./fling-gesture) with its default config and no callbacks.
+Creates a new instance of [`FlingGesture`](./fling-gesture.md) with its default config and no callbacks.
 
-### Gesture.Pinch(): [PinchGesture](./pinch-gesture)
+### Gesture.Pinch(): [PinchGesture](./pinch-gesture.md)
 
-Creates a new instance of [`PinchGesture`](./pinch-gesture) with its default config and no callbacks.
+Creates a new instance of [`PinchGesture`](./pinch-gesture.md) with its default config and no callbacks.
 
-### Gesture.Rotation(): [RotationGesture](./rotation-gesture)
+### Gesture.Rotation(): [RotationGesture](./rotation-gesture.md)
 
-Creates a new instance of [`RotationGesture`](./rotation-gesture) with its default config and no callbacks.
+Creates a new instance of [`RotationGesture`](./rotation-gesture.md) with its default config and no callbacks.
 
-### Gesture.ForceTouch(): [ForceTouchGesture](./force-touch-gesture)
+### Gesture.ForceTouch(): [ForceTouchGesture](./force-touch-gesture.md)
 
-Creates a new instance of [`ForceTouchGesture`](./force-touch-gesture) with its default config and no callbacks.
+Creates a new instance of [`ForceTouchGesture`](./force-touch-gesture.md) with its default config and no callbacks.

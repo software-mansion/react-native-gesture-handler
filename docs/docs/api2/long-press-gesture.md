@@ -12,7 +12,7 @@ The gesture is implemented using [UILongPressGestureRecognizer](https://develope
 
 ## Config
 
-See [set of properties common to all gestures](common-gesture#config). Below is a list of properties specific to `LongPressGesture`:
+See [set of properties common to all gestures](./common-gesture.md#config). Below is a list of properties specific to `LongPressGesture`:
 
 ### `minDurationMs(value: number)`
 
@@ -24,23 +24,23 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 
 ## Event data
 
-See [set of event attributes common to all gestures](common-gesture#event-data). Below is a list of gesture event attributes specific to `LongPressGesture`:
+See [set of event attributes common to all gestures](./common-gesture.md#event-data). Below is a list of gesture event attributes specific to `LongPressGesture`:
 
 ### `x`
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](gesture-detector).
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](./gesture-detector.md).
 
 ### `y`
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](gesture-detector).
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](./gesture-detector.md).
 
 ### `absoluteX`
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](gesture-detector) can be transformed as an effect of the gesture.
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](./gesture-detector.md) can be transformed as an effect of the gesture.
 
 ### `absoluteY`
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](gesture-detector) can be transformed as an effect of the gesture.
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](./gesture-detector.md) can be transformed as an effect of the gesture.
 
 ### `duration`
 
