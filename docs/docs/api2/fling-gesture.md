@@ -16,7 +16,7 @@ See [set of properties common to all gestures](./common-gesture.md#config). Belo
 
 ### `direction(value: Directions)`
 
-Expressed allowed direction of movement. It's possible to pass one or many directions in one parameter:
+Expressed allowed direction of movement. Expected values are exported as constants in the `Directions` object. It's possible to pass one or many directions in one parameter:
 
 ```js
 fling.direction(Directions.RIGHT | Directions.LEFT);
