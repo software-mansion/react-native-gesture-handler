@@ -28,6 +28,7 @@ module.exports = {
           'api/components/drawer-layout',
         ],
         RNGH2: [
+          'api2/quickstart',
           'api2/gesture',
           'api2/events',
           'api2/gesture-detector',
