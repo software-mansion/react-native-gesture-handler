@@ -60,22 +60,19 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     return !disallowInterruption
   }
 
-  private fun canStart(view: View): Boolean {
-    if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
-      val isResponder = view.tryGrabbingResponder()
-      if (isResponder) {
-        view.isTouched = true
-      }
-      return isResponder
+  private fun canStart(): Boolean {
+    val view = view
+    if (view is StateChangeHook) {
+      return view.canStart()
     }
 
     return true
   }
 
-  private fun afterFinish(view: View) {
-    if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
-      view.tryFreeingResponder()
-      view.isTouched = false
+  private fun afterGestureEnd() {
+    val view = view
+    if (view is StateChangeHook) {
+      view.afterGestureEnd()
     }
   }
 
@@ -87,7 +84,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         activate()
       }
       end()
-      afterFinish(view)
+      afterGestureEnd()
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       when {
         shouldActivateOnStart -> {
@@ -100,7 +97,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
           activate()
         }
         state != STATE_BEGAN -> {
-          if (canStart(view)) {
+          if (canStart()) {
             begin()
           } else {
             cancel()
@@ -123,5 +120,10 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   companion object {
     private fun tryIntercept(view: View, event: MotionEvent) =
       view is ViewGroup && view.onInterceptTouchEvent(event)
+  }
+
+  interface StateChangeHook {
+    fun canStart(): Boolean
+    fun afterGestureEnd()
   }
 }

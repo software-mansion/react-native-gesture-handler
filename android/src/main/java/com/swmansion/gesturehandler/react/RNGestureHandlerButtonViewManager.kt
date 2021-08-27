@@ -22,6 +22,7 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
+import com.swmansion.gesturehandler.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
@@ -69,7 +70,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     view.updateBackground()
   }
 
-  class ButtonViewGroup(context: Context?) : ViewGroup(context) {
+  class ButtonViewGroup(context: Context?) : ViewGroup(context),
+    NativeViewGestureHandler.StateChangeHook {
     // Using object because of handling null representing no value set.
     var rippleColor: Int? = null
       set(color) = withBackgroundUpdate {
@@ -240,7 +242,20 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       }
     }
 
-    fun tryGrabbingResponder(): Boolean {
+    override fun canStart(): Boolean {
+      val isResponder = tryGrabbingResponder()
+      if (isResponder) {
+        isTouched = true
+      }
+      return isResponder
+    }
+
+    override fun afterGestureEnd() {
+      tryFreeingResponder()
+      isTouched = false
+    }
+
+    private fun tryGrabbingResponder(): Boolean {
       if (isChildTouched()) {
         return false
       }
@@ -256,7 +271,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       }
     }
 
-    fun tryFreeingResponder() {
+    private fun tryFreeingResponder() {
       if (responder === this) {
         responder = null
       }
