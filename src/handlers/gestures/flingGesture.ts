@@ -1,4 +1,3 @@
-import { Directions } from '../../Directions';
 import { BaseGesture, BaseGestureConfig } from './gesture';
 import {
   FlingGestureConfig,
@@ -19,7 +18,7 @@ export class FlingGesture extends BaseGesture<FlingGestureHandlerEventPayload> {
     return this;
   }
 
-  direction(direction: Directions) {
+  direction(direction: number) {
     this.config.direction = direction;
     return this;
   }
