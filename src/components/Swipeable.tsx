@@ -255,17 +255,12 @@ export default class Swipeable extends Component<
         outputRange: [0, 1],
       })
     ).interpolate({
-      inputRange: [
-        -rightWidth - (overshootRight ? 1 : overshootFriction!),
-        -rightWidth,
-        leftWidth,
-        leftWidth + (overshootLeft ? 1 : overshootFriction!),
-      ],
+      inputRange: [-rightWidth - 1, -rightWidth, leftWidth, leftWidth + 1],
       outputRange: [
-        -rightWidth - (overshootRight || overshootFriction! > 1 ? 1 : 0),
+        -rightWidth - (overshootRight ? 1 / overshootFriction! : 0),
         -rightWidth,
         leftWidth,
-        leftWidth + (overshootLeft || overshootFriction! > 1 ? 1 : 0),
+        leftWidth + (overshootLeft ? 1 / overshootFriction! : 0),
       ],
     });
     this.transX = transX;
