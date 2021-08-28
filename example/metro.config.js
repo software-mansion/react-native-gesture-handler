@@ -4,19 +4,17 @@ const path = require('path');
 const glob = require('glob-to-regexp');
 
 function getBlacklist() {
+  const rootDir = path.resolve(__dirname, '..')
+  const currentDir = path.resolve(__dirname)
   const nodeModuleDirs = [
-    glob(`${path.resolve(__dirname, '..')}/node_modules/*`),
-    glob(`${path.resolve(__dirname, '..')}/e2e/*`),
-    glob(`${path.resolve(__dirname)}/node_modules/*/node_modules/fbjs/*`),
+    glob(`${rootDir}/node_modules/*`),
+    glob(`${rootDir}/e2e/*`),
+    glob(`${currentDir}/node_modules/*/node_modules/fbjs/*`),
     glob(
-      `${path.resolve(
-        __dirname
-      )}/node_modules/react-native/node_modules/@babel/*`
+      `${currentDir}/node_modules/react-native/node_modules/@babel/*`
     ),
     glob(
-      `${path.resolve(
-        __dirname
-      )}/node_modules/*/node_modules/hoist-non-react-statics/*`
+      `${currentDir}/node_modules/*/node_modules/hoist-non-react-statics/*`
     ),
   ];
   return blacklist(nodeModuleDirs);
