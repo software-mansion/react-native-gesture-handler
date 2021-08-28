@@ -1,7 +1,6 @@
-<p align="center">
-  <h1 align="center">React Native Gesture Handler</h1>
-  <h3 align="center">Declarative API exposing platform native touch and gesture system to React Native.</h3>
-</p>
+<img src="https://user-images.githubusercontent.com/16062886/117444014-2d1ffd80-af39-11eb-9bbb-33c320599d93.png" width="100%" alt="React Native Gesture Handler by Software Mansion">
+
+### Declarative API exposing platform native touch and gesture system to React Native.
 
 React Native Gesture Handler provides native-driven gesture management APIs for building best possible touch-based experiences in React Native.
 
@@ -18,7 +17,7 @@ Check out our dedicated documentation page for info about this library, API refe
 
 ## Examples
 
-If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `Example/` folder and run:
+If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `examples/Example/` folder and run:
 
 ```bash
   yarn install
@@ -40,6 +39,8 @@ You will need to have an Android or iOS device or emulator connected as well as 
 | 1.1.0+  | 0.57.2+              |
 | <1.1.0  | 0.50.0+              |
 
+It may be possible to use newer versions of react-native-gesture-handler on React Native with version <= 0.59 by reverse Jetifying.
+Read more on that here https://github.com/mikehardy/jetifier#to-reverse-jetify--convert-node_modules-dependencies-to-support-libraries
 ## License
 
 Gesture handler library is licensed under [The MIT License](LICENSE).

@@ -10,6 +10,13 @@
     }
     return self;
 }
+- (void)resetConfig
+{
+  [super resetConfig];
+  UISwipeGestureRecognizer *recognizer = (UISwipeGestureRecognizer *)_recognizer;
+  recognizer.direction = UISwipeGestureRecognizerDirectionRight;
+  recognizer.numberOfTouchesRequired = 1;
+}
 
 - (void)configure:(NSDictionary *)config
 {

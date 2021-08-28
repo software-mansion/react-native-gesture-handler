@@ -14,6 +14,10 @@
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
                             withNumberOfTouches:(NSUInteger)numberOfTouches;
++ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
+                           withAbsolutePosition:(CGPoint)absolutePosition
+                            withNumberOfTouches:(NSUInteger)numberOfTouches
+                                   withDuration:(NSUInteger)duration;
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation

@@ -5,7 +5,7 @@ console.log(versions);
 const allDocHomesPaths = [
   '/docs/next/',
   '/docs/',
-  ...versions.slice(1).map(version => `/docs/${version}/`),
+  ...versions.slice(1).map((version) => `/docs/${version}/`),
 ];
 
 const baseUrl = process.env.BASE_URL || '/';
@@ -37,6 +37,13 @@ module.exports = {
     ],
   ],
   themeConfig: {
+    algolia: {
+      apiKey: 'd738e28e9c67a26dd7933b011fe2b9e4',
+      indexName: 'react-native-gesture-handler',
+
+      contextualSearch: true,
+      searchParameters: {},
+    },
     colorMode: { disableSwitch: true },
     prism: {
       theme: {

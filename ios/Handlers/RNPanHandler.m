@@ -190,6 +190,32 @@
   return self;
 }
 
+- (void)resetConfig
+{
+  [super resetConfig];
+  RNBetterPanGestureRecognizer *recognizer = (RNBetterPanGestureRecognizer *)_recognizer;
+  recognizer.minVelocityX = NAN;
+  recognizer.minVelocityY = NAN;
+  recognizer.activeOffsetXStart = NAN;
+  recognizer.activeOffsetXEnd = NAN;
+  recognizer.failOffsetXStart = NAN;
+  recognizer.failOffsetXEnd = NAN;
+  recognizer.activeOffsetYStart = NAN;
+  recognizer.activeOffsetYEnd = NAN;
+  recognizer.failOffsetYStart = NAN;
+  recognizer.failOffsetYStart = NAN;
+  recognizer.failOffsetYEnd = NAN;
+#if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
+  if (@available(iOS 13.4, *)) {
+    recognizer.allowedScrollTypesMask = 0;
+  }
+#endif
+  recognizer.minimumNumberOfTouches = 1;
+  recognizer.maximumNumberOfTouches = NSUIntegerMax;
+  recognizer.minDistSq = NAN;
+  recognizer.minVelocitySq = NAN;
+}
+
 - (void)configure:(NSDictionary *)config
 {
   [super configure:config];
@@ -205,15 +231,15 @@
   APPLY_FLOAT_PROP(activeOffsetYEnd);
   APPLY_FLOAT_PROP(failOffsetYStart);
   APPLY_FLOAT_PROP(failOffsetYEnd);
-  
+
+#if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
   if (@available(iOS 13.4, *)) {
     bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:config[@"enableTrackpadTwoFingerGesture"]];
     if(enableTrackpadTwoFingerGesture){
       recognizer.allowedScrollTypesMask = UIScrollTypeMaskAll;
     }
   }
-  
-#if !TARGET_OS_TV
+
   APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
   APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
 #endif

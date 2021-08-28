@@ -19,17 +19,7 @@ In a nutshell, the library provides:
 
 ## Installation
 
-### Managed [Expo](https://expo.io)
-
-To use the version of react-native-gesture-handler that is compatible with your managed Expo project, run `expo install react-native-gesture-handler`.
-
-The Expo SDK incorporates the latest version of react-native-gesture-handler available at the time of each SDK release, so managed Expo apps might not always support all our latest features as soon as they are available.
-
-### Bare [React Native](http://facebook.github.io/react-native/)
-
-Since the library uses native support for handling gestures, it requires an extended installation to the norm. If you are starting a new project, you may want to initialize it with [expo-cli](https://docs.expo.io/versions/latest/workflow/expo-cli/) and use a bare template, they come pre-installed with react-native-gesture-handler.
-
-#### Requirements
+### Requirements
 
 | version   | `react-native` version |
 | --------- | ---------------------- |
@@ -37,9 +27,24 @@ Since the library uses native support for handling gestures, it requires an exte
 | 1.1.0+    | 0.57.2+                |
 | &lt;1.1.0 | 0.50.0+                |
 
+It may be possible to use newer versions of react-native-gesture-handler on React Native with version <= 0.59 by reverse Jetifying.
+Read more on that here https://github.com/mikehardy/jetifier#to-reverse-jetify--convert-node_modules-dependencies-to-support-libraries
+
 Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](interactions.md) you need to use v16.3 of [React](https://reactjs.org/)
 
-#### JS
+### Expo
+
+#### Managed [Expo](https://expo.io)
+
+To use the version of react-native-gesture-handler that is compatible with your managed Expo project, run `expo install react-native-gesture-handler`.
+
+The Expo SDK incorporates the latest version of react-native-gesture-handler available at the time of each SDK release, so managed Expo apps might not always support all our latest features as soon as they are available.
+
+#### Bare [React Native](http://facebook.github.io/react-native/)
+
+Since the library uses native support for handling gestures, it requires an extended installation to the norm. If you are starting a new project, you may want to initialize it with [expo-cli](https://docs.expo.io/versions/latest/workflow/expo-cli/) and use a bare template, they come pre-installed with react-native-gesture-handler.
+
+### JS
 
 First, install the library using `yarn`:
 
@@ -53,6 +58,27 @@ or with `npm` if you prefer:
 npm install --save react-native-gesture-handler
 ```
 
+After installation, wrap your entry point with `<GestureHandlerRootView>` or
+`gestureHandlerRootHOC`.
+
+For example:
+
+```js
+export default function App() {
+  return <GestureHandlerRootView>{/* content */}</GestureHandlerRootView>;
+}
+```
+
+:::info
+If you use props such as `shouldCancelWhenOutside`, `simultaneousHandlers`, `waitFor` etc. with gesture handlers, the handlers need to be mounted under a single `GestureHandlerRootView`. So it's important to keep the `GestureHandlerRootView` as close to the actual root view as possible.
+
+Note that `GestureHandlerRootView` acts like a normal `View`. So if you want it to fill the screen, you will need to pass `{ flex: 1 }` like you'll need to do with a normal `View`. By default, it'll take the size of the content nested inside.
+:::
+
+:::tip
+If you're using gesture handler in your component library, you may want to wrap your library's code in the GestureHandlerRootView component. This will avoid extra configuration for the user.
+:::
+
 #### Linking
 
 > **Important**: You only need to do this step if you're using React Native 0.59 or lower. Since v0.60, linking happens automatically.
@@ -61,13 +87,22 @@ npm install --save react-native-gesture-handler
 react-native link react-native-gesture-handler
 ```
 
-#### Android
+### Android
 
 Follow the steps below:
 
-If you use one of the _native navigation libraries_ (e.g. [wix/react-native-navigation](https://github.com/wix/react-native-navigation)), you should follow [this separate guide](#with-wixreact-native-navigation) to get gesture handler library set up on Android. Ignore the rest of this step – it only applies to RN apps that use a standard Android project layout.
+If you use one of the _native navigation libraries_ (e.g.
+[wix/react-native-navigation](https://github.com/wix/react-native-navigation)),
+you should follow [this separate guide](#with-wixreact-native-navigation) to get
+gesture handler library set up on Android. Ignore the rest of this step – it
+only applies to RN apps that use a standard Android project layout.
 
-##### Updating `MainActivity.java`
+#### Updating `MainActivity.java`
+
+:::caution
+From version 2.0.0 this step isn't needed. You should use
+`<GestureHandlerRootView />` component instead.
+:::
 
 Update your `MainActivity.java` file (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating `ReactRootView` instance and then use the root view wrapper provided by this library. Do not forget to import `ReactActivityDelegate`, `ReactRootView`, and `RNGestureHandlerEnabledRootView`:
 
@@ -98,32 +133,46 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-##### Running jetifier
+#### Usage with modals on Android
 
-> **Important:** You only need to do this step if you're on React Native 0.60 or greater.
+On Android RNGH does not work by default because modals are not located under React Native Root view in native hierarchy.
+To fix that, components need to be wrapped with `gestureHandlerRootHOC` (it's no-op on iOS and web).
 
-React Native 0.60 migrated from Support Library to AndroidX. React Native Gesture Handler is not yet compatible with AndroidX.
+For example:
 
-Make sure to [update the React Native CLI to the latest version](https://github.com/react-native-community/cli/tree/master#updating-the-cli) which runs [`jetifier`](https://www.npmjs.com/package/jetifier) – the AndroidX migration tool – during the `run-android` command.
+```js
+const ExampleWithHoc = gestureHandlerRootHOC(() => (
+    <View>
+      <DraggableBox />
+    </View>
+  );
+);
 
-#### iOS
+export default function Example() {
+  return (
+    <Modal>
+      <ExampleWithHoc />
+    </Modal>
+  );
+}
+```
+
+### iOS
 
 There is no additional configuration required on iOS except what follows in the next steps.
 
 If you're in a CocoaPods project (the default setup since React Native 0.60),
 make sure to install pods before you run your app:
 
-```sh
+```bash
 cd ios && pod install
 ```
 
 For React Native 0.61 or greater, add the library as the first import in your index.js file:
 
-```
+```js
 import 'react-native-gesture-handler';
 ```
-
-Now you're all set. Run your app with `react-native run-android` or `react-native run-ios`.
 
 ### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
 
@@ -141,14 +190,20 @@ import PushedScreen from './PushedScreen';
 
 // register all screens of the app (including internal ones)
 export function registerScreens() {
-  Navigation.registerComponent('example.FirstTabScreen', () =>
-    gestureHandlerRootHOC(FirstTabScreen)
+  Navigation.registerComponent(
+    'example.FirstTabScreen',
+    () => gestureHandlerRootHOC(FirstTabScreen),
+    () => FirstTabScreen
   );
-  Navigation.registerComponent('example.SecondTabScreen', () =>
-    gestureHandlerRootHOC(SecondTabScreen)
+  Navigation.registerComponent(
+    'example.SecondTabScreen',
+    () => gestureHandlerRootHOC(SecondTabScreen),
+    () => SecondTabScreen
   );
-  Navigation.registerComponent('example.PushedScreen', () =>
-    gestureHandlerRootHOC(PushedScreen)
+  Navigation.registerComponent(
+    'example.PushedScreen',
+    () => gestureHandlerRootHOC(PushedScreen),
+    () => PushedScreen
   );
 }
 ```
@@ -156,51 +211,6 @@ export function registerScreens() {
 You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
 
 Remember that you need to wrap each screen that you use in your app with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
-
-### Usage with modals on Android
-
-On Android RNGH does not work by default because modals are not located under React Native Root view in native hierarchy.
-In order to make it workable, components need to be wrapped with `gestureHandlerRootHOC` (it's no-op on iOS and web).
-
-E.g.
-
-```js
-const ExampleWithHoc = gestureHandlerRootHOC(function GestureExample() {
-  return (
-    <View>
-      <DraggableBox />
-    </View>
-  );
-});
-
-export default function Example() {
-  return (
-    <Modal animationType="slide" transparent={false}>
-      <ExampleWithHoc />
-    </Modal>
-  );
-}
-```
-
-### For library authors
-
-If you're using gesture handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration in `MainActivity.java` for the user.
-
-```js
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-export default MyComponent() {
-  return (
-    <GestureHandlerRootView>
-      {/* content */}
-    </GestureHandlerRootView>
-  )
-}
-```
-
-If you use props such as `shouldCancelWhenOutside`, `simultaneousHandlers`, `waitFor` etc. with gesture handlers, the handlers need to be mounted under a single `GestureHandlerRootView`. So it's important to keep the `GestureHandlerRootView` as close to the actual root view as possible.
-
-Note that `GestureHandlerRootView` acts like a normal `View`. So if you want it to fill the screen, you will need to pass `{ flex: 1 }` like you'll need to do with a normal `View`. By default, it'll take the size of the content nested inside.
 
 ### Testing
 

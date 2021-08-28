@@ -15,7 +15,7 @@ export class PressBox extends Component {
     lastGH: false,
   };
   doubleTapRef = React.createRef();
-  _onHandlerStateChange = event => {
+  _onHandlerStateChange = (event) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm being pressed for so long");
       this.setState({
@@ -23,7 +23,7 @@ export class PressBox extends Component {
       });
     }
   };
-  _onSingleTap = event => {
+  _onSingleTap = (event) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm touched");
       this.setState({
@@ -31,7 +31,7 @@ export class PressBox extends Component {
       });
     }
   };
-  _onDoubleTap = event => {
+  _onDoubleTap = (event) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert('Double tap, good job!');
       this.setState({

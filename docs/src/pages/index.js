@@ -208,9 +208,7 @@ function Home() {
                     get it here using Expo
                   </a>
                   . Or just{' '}
-                  <a href="/react-native-gesture-handler/docs/example">
-                    go to this page
-                  </a>{' '}
+                  <Link to={useBaseUrl('docs/example/')}>go to this page</Link>{' '}
                   to see how you can run it locally with React Native on both
                   Android and iOS.
                 </p>
