@@ -102,12 +102,12 @@ export interface SwipeableProps
   /**
    * Called when action panel gets open (either right or left).
    */
-  onSwipeableOpen?: () => void;
+  onSwipeableOpen?: (direction: 'left' | 'right') => void;
 
   /**
    * Called when action panel is closed.
    */
-  onSwipeableClose?: () => void;
+  onSwipeableClose?: (direction: 'left' | 'right') => void;
 
   /**
    * Called when left action panel starts animating on open.
@@ -122,12 +122,12 @@ export interface SwipeableProps
   /**
    * Called when action panel starts animating on open (either right or left).
    */
-  onSwipeableWillOpen?: () => void;
+  onSwipeableWillOpen?: (direction: 'left' | 'right') => void;
 
   /**
    * Called when action panel starts animating on close.
    */
-  onSwipeableWillClose?: () => void;
+  onSwipeableWillClose?: (direction: 'left' | 'right') => void;
 
   /**
    *
@@ -369,29 +369,27 @@ export default class Swipeable extends Component<
       ...this.props.animationOptions,
     }).start(({ finished }) => {
       if (finished) {
-        if (toValue > 0 && this.props.onSwipeableLeftOpen) {
-          this.props.onSwipeableLeftOpen();
-        } else if (toValue < 0 && this.props.onSwipeableRightOpen) {
-          this.props.onSwipeableRightOpen();
-        }
-
-        if (toValue === 0) {
-          this.props.onSwipeableClose?.();
+        if (toValue > 0) {
+          this.props.onSwipeableLeftOpen?.();
+          this.props.onSwipeableOpen?.('left');
+        } else if (toValue < 0) {
+          this.props.onSwipeableRightOpen?.();
+          this.props.onSwipeableOpen?.('right');
         } else {
-          this.props.onSwipeableOpen?.();
+          const closingDirection = fromValue > 0 ? 'left' : 'right';
+          this.props.onSwipeableClose?.(closingDirection);
         }
       }
     });
-    if (toValue > 0 && this.props.onSwipeableLeftWillOpen) {
-      this.props.onSwipeableLeftWillOpen();
-    } else if (toValue < 0 && this.props.onSwipeableRightWillOpen) {
-      this.props.onSwipeableRightWillOpen();
-    }
-
-    if (toValue === 0) {
-      this.props.onSwipeableWillClose?.();
+    if (toValue > 0) {
+      this.props.onSwipeableLeftWillOpen?.();
+      this.props.onSwipeableWillOpen?.('left');
+    } else if (toValue < 0) {
+      this.props.onSwipeableRightWillOpen?.();
+      this.props.onSwipeableWillOpen?.('right');
     } else {
-      this.props.onSwipeableWillOpen?.();
+      const closingDirection = fromValue > 0 ? 'left' : 'right';
+      this.props.onSwipeableWillClose?.(closingDirection);
     }
   };
 
