@@ -137,7 +137,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   if (TEST_MAX_IF_NOT_NAN(fabs(trans.y), _maxDeltaY)) {
     return YES;
   }
-  if (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x + trans.x), _maxDistSq)) {
+  if (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x * trans.x), _maxDistSq)) {
     return YES;
   }
   return NO;
