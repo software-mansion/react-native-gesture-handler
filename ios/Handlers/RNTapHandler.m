@@ -41,7 +41,7 @@
 static const NSUInteger defaultNumberOfTaps = 1;
 static const NSInteger defaultMinPointers = 1;
 static const CGFloat defaultMaxDelay = 0.2;
-static const NSTimeInterval defaultMaxDuration = NAN;
+static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
@@ -73,6 +73,10 @@ static const NSTimeInterval defaultMaxDuration = NAN;
 {
   [super touchesBegan:touches withEvent:event];
   if (_tapsSoFar == 0) {
+    // this recognizer sends UNDETERMINED -> BEGAN state change event before gestureRecognizerShouldBegin
+    // is called (it resets the gesture handler), making it send whatever the last known state as oldState
+    // in the event. If we reset it here i correctly sends UNDETERMINED as oldState.
+    [_gestureHandler reset];
     _initPosition = [self locationInView:self.view];
   }
   _tapsSoFar++;
@@ -224,13 +228,27 @@ static const NSTimeInterval defaultMaxDuration = NAN;
   }
 }
 
-- (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer{
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
+{
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         return _lastData;
     }
     
     _lastData = [super eventExtraData:recognizer];
     return _lastData;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  // UNDETERMINED -> BEGAN state change event is sent before this method is called,
+  // in RNGestureHandler it resets _lastSatate variable, making is seem like handler
+  // went from UNDETERMINED to BEGAN and then from UNDETERMINED to ACTIVE.
+  // This way we preserve _lastState between events and keep correct state flow.
+  RNGestureHandlerState savedState = _lastState;
+  BOOL originalResult = [super gestureRecognizerShouldBegin:gestureRecognizer];
+  _lastState = savedState;
+  
+  return originalResult;
 }
 
 @end
