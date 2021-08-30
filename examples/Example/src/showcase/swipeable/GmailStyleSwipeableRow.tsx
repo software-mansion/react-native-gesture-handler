@@ -59,7 +59,10 @@ export default class GmailStyleSwipeableRow extends Component {
         enableTrackpadTwoFingerGesture
         rightThreshold={40}
         renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}>
+        renderRightActions={this.renderRightActions}
+        onDragging={(position) =>
+          console.log(`Dragging swipeable, current position: ${position}`)
+        }>
         {children}
       </Swipeable>
     );

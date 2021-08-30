@@ -129,6 +129,8 @@ export interface SwipeableProps
    */
   onSwipeableWillClose?: (direction: 'left' | 'right') => void;
 
+  onDragging?: (position: number) => void;
+
   /**
    *
    * This map describes the values to use as inputRange for extra interpolation:
@@ -223,6 +225,21 @@ export default class Swipeable extends Component<
     ) {
       this.updateAnimatedEvent(props, state);
     }
+  }
+
+  componentDidMount() {
+    if (this.props.onDragging) {
+      this.state.dragX.addListener(({ value }) => {
+        if (this.state.rowWidth) {
+          const position = value / (this.state.rowWidth * 2);
+          this.props.onDragging?.(position);
+        }
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    this.state.dragX.removeAllListeners();
   }
 
   private onGestureEvent?: (
@@ -357,7 +374,6 @@ export default class Swipeable extends Component<
     const { dragX, rowTranslation } = this.state;
     dragX.setValue(0);
     rowTranslation.setValue(fromValue);
-
     this.setState({ rowState: Math.sign(toValue) });
     Animated.spring(rowTranslation, {
       restSpeedThreshold: 1.7,
