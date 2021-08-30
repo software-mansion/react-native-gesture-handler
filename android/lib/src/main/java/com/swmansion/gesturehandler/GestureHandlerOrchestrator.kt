@@ -143,6 +143,10 @@ class GestureHandlerOrchestrator(
       if (handler.isActive) {
         handler.dispatchStateChange(newState, prevState)
       }
+    } else if (prevState == GestureHandler.STATE_UNDETERMINED) {
+      if (newState == GestureHandler.STATE_BEGAN) {
+        handler.dispatchStateChange(newState, prevState)
+      }
     } else {
       handler.dispatchStateChange(newState, prevState)
     }
