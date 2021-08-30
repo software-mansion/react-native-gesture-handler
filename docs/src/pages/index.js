@@ -12,7 +12,7 @@ const screenshotUrl = 'gifs/sampleswipeable.gif';
 
 const boxes = [
   {
-    title: <>Use platform native gesture recognizers👍</>,
+    title: <>Use platform native gesture recognizers</>,
     description: (
       <>
         With Gesture Handler touch stream handling happens on the UI thread and
@@ -93,14 +93,6 @@ function Hero() {
                 )}
                 to={useBaseUrl('docs/')}>
                 View Docs
-              </Link>
-              <Link
-                className={classnames(
-                  'button button--primary button--lg',
-                  styles.getStarted
-                )}
-                to="https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo">
-                Try demo app on Expo
               </Link>
             </div>
           </div>
