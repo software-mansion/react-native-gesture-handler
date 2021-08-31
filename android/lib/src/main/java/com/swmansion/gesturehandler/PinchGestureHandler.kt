@@ -74,7 +74,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       if ((endOnFingerRelease && activePointers < 2) || activePointers == 0) {
         end()
       }
-    } else if (event.actionMasked == MotionEvent.ACTION_UP && state == STATE_BEGAN) {
+    } else if (event.actionMasked == MotionEvent.ACTION_UP) {
       fail()
     }
   }
