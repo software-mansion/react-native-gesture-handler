@@ -3,9 +3,9 @@ import { ForceTouchGesture } from './forceTouchGesture';
 import { Gesture } from './gesture';
 import {
   ComposedGesture,
-  RequireToFailGesture,
+  ExclusiveGesture,
   SimultaneousGesture,
-} from './gestureInteractions';
+} from './gestureComposition';
 import { LongPressGesture } from './longPressGesture';
 import { PanGesture } from './panGesture';
 import { PinchGesture } from './pinchGesture';
@@ -43,9 +43,9 @@ export const GestureObjects = {
 
   /**
    * Builds a composed gesture consisting of gestures provided as parameters.
-   * Only one of them can become active at the same time, the rest will be cancelled.
+   * The first one that becomes active cancels the rest of gestures.
    */
-  Exclusive(...gestures: Gesture[]) {
+  FirstOf(...gestures: Gesture[]) {
     return new ComposedGesture(...gestures);
   },
 
@@ -60,15 +60,16 @@ export const GestureObjects = {
   },
 
   /**
-   * Builds a composed gesture that makes the first gesture wait with activation until
-   * the second one fails.
+   * Builds a composed gesture where only one of the provided gestures can become active.
+   * Priority is decided through the order of gestures: the first one has higher priority
+   * than the second one.
    * For example, to make a gesture that recognizes both single and double tap you need
-   * to call requireToFail(singleTap, doubleTap).
-   * @param first A gesture that requires the second one to fail in order to activate
-   * @param second A gesture that is required to fail by the first one to activate.
+   * to call Exclusive(doubleTap, singleTap).
+   * @param first A gesture with higher priority
+   * @param second A gesture with lower priority
    * @returns ComposedGesture consisting of the gestures provided as parameters.
    */
-  RequireToFail(first: Gesture, second: Gesture) {
-    return new RequireToFailGesture(first, second);
+  Exclusive(first: Gesture, second: Gesture) {
+    return new ExclusiveGesture(first, second);
   },
 };

@@ -93,23 +93,23 @@ export class SimultaneousGesture extends ComposedGesture {
   }
 }
 
-export class RequireToFailGesture extends ComposedGesture {
+export class ExclusiveGesture extends ComposedGesture {
   constructor(first: Gesture, second: Gesture) {
     super(first, second);
   }
 
   prepare() {
-    const rightSide = this.gestures[1].toGestureArray();
+    const leftSide = this.gestures[0].toGestureArray();
 
     this.prepareSingleGesture(
       this.gestures[0],
       this.simultaneousGestures,
-      this.requireGesturesToFail.concat(rightSide)
+      this.requireGesturesToFail
     );
     this.prepareSingleGesture(
       this.gestures[1],
       this.simultaneousGestures,
-      this.requireGesturesToFail
+      this.requireGesturesToFail.concat(leftSide)
     );
   }
 }

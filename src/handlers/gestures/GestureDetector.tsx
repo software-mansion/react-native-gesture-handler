@@ -25,7 +25,7 @@ import {
 } from '../PanGestureHandler';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
-import { ComposedGesture } from './gestureInteractions';
+import { ComposedGesture } from './gestureComposition';
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
