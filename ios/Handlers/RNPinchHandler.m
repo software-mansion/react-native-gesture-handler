@@ -35,7 +35,7 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   _pointers++;
-  NSLog(@"end: %d", _endOnFingerRelease);
+
   [super touchesBegan:touches withEvent:event];
 }
 
