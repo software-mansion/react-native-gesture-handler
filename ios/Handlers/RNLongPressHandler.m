@@ -56,31 +56,24 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [super touchesBegan:touches withEvent:event];
+
   _initPosition = [self locationInView:self.view];
   startTime = mach_absolute_time();
   [_gestureHandler reset];
   [self triggerAction];
-  
-  [super touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
-  
+
   CGPoint trans = [self translationInView];
   if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView])
       || (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x + trans.x), self.allowableMovement * self.allowableMovement))) {
     self.enabled = NO;
     self.enabled = YES;
   }
-}
-
-- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-  [super touchesCancelled:touches withEvent:event];
-  self.state = UIGestureRecognizerStateCancelled;
-  [self reset];
 }
 
 - (void)reset
@@ -94,7 +87,13 @@
 
 - (NSUInteger)getDuration
 {
-  return (NSUInteger)(((previousTime - startTime) / 1000000));
+  static mach_timebase_info_data_t sTimebaseInfo;
+  
+  if (sTimebaseInfo.denom == 0) {
+    mach_timebase_info(&sTimebaseInfo);
+  }
+  
+  return (NSUInteger)(((previousTime - startTime) * sTimebaseInfo.numer / (sTimebaseInfo.denom * 1000000)));
 }
 
 @end
