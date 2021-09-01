@@ -10,7 +10,7 @@ sidebar_label: Gesture detector
 
 ### `gesture`
 
-A gesture object containing the configuration and callbacks. Can be any of the base gestures (`Tap`, `Pan`, `LongPress`, `Fling`, `Pinch`, `Rotation`, `ForceTouch`) or any `ComposedGesture` (`OneOf`, `Simultaneous`, `Exclusive`).
+A gesture object containing the configuration and callbacks. Can be any of the base gestures (`Tap`, `Pan`, `LongPress`, `Fling`, `Pinch`, `Rotation`, `ForceTouch`) or any `ComposedGesture` (`Race`, `Simultaneous`, `Exclusive`).
 
 ### `animatedGesture`
 

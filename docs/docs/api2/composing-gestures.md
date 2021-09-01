@@ -4,14 +4,14 @@ title: Composing gestures
 sidebar_label: Composing gestures
 ---
 
-Composing gestures is much simpler in RNGH2, you don't need to create a ref for every gesture that depends on another one. Instead you can use `OneOf`, `Simultaneous` and `Exclusive` methods provided by the `Gesture` object.
+Composing gestures is much simpler in RNGH2, you don't need to create a ref for every gesture that depends on another one. Instead you can use `Race`, `Simultaneous` and `Exclusive` methods provided by the `Gesture` object.
 
-## OneOf
+## Race
 
 Only one of the provided gestures can become active at the same time. The fist gesture to become active will cancel the rest of the gestures. It accepts variable number of arguments.
 It is the equivalent to having more than one gesture handler without defining `simultaneousHandlers` and `waitFor` props.
 
-For example, lets say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `OneOf`:
+For example, lets say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `Race`:
 
 ```js
 const offset = useSharedValue({ x: 0, y: 0 });
@@ -61,7 +61,7 @@ const longPressGesture = Gesture.LongPress().onStart((_event) => {
   popupAlpha.value = withTiming(1);
 });
 
-const composed = Gesture.OneOf(dragGesture, longPressGesture);
+const composed = Gesture.Race(dragGesture, longPressGesture);
 
 return (
   <Animated.View>
