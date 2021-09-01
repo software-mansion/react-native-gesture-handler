@@ -75,7 +75,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   if (_tapsSoFar == 0) {
     // this recognizer sends UNDETERMINED -> BEGAN state change event before gestureRecognizerShouldBegin
     // is called (it resets the gesture handler), making it send whatever the last known state as oldState
-    // in the event. If we reset it here i correctly sends UNDETERMINED as oldState.
+    // in the event. If we reset it here it correctly sends UNDETERMINED as oldState.
     [_gestureHandler reset];
     _initPosition = [self locationInView:self.view];
   }
