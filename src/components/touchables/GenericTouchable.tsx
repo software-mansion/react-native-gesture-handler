@@ -3,8 +3,6 @@ import { Component } from 'react';
 import {
   Animated,
   Platform,
-  StyleProp,
-  ViewStyle,
   TouchableWithoutFeedbackProps,
 } from 'react-native';
 
@@ -17,6 +15,8 @@ import {
 } from '../../handlers/gestureHandlerCommon';
 import { NativeViewGestureHandlerPayload } from '../../handlers/NativeViewGestureHandler';
 import { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedback.android';
+
+const AnimatedBaseButton = Animated.createAnimatedComponent(BaseButton);
 
 /**
  * Each touchable is a states' machine which preforms transitions.
@@ -46,8 +46,6 @@ export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
   nativeID?: string;
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
-
-  containerStyle?: StyleProp<ViewStyle>;
 }
 
 interface InternalProps {
@@ -263,8 +261,8 @@ export default class GenericTouchable extends Component<
     };
 
     return (
-      <BaseButton
-        style={this.props.containerStyle}
+      <AnimatedBaseButton
+        style={this.props.style}
         onHandlerStateChange={
           // TODO: not sure if it can be undefined instead of null
           this.props.disabled ? undefined : this.onHandlerStateChange
@@ -274,11 +272,10 @@ export default class GenericTouchable extends Component<
         shouldActivateOnStart={this.props.shouldActivateOnStart}
         disallowInterruption={this.props.disallowInterruption}
         testID={this.props.testID}
+        {...coreProps}
         {...this.props.extraButtonProps}>
-        <Animated.View {...coreProps} style={this.props.style}>
-          {this.props.children}
-        </Animated.View>
-      </BaseButton>
+        {this.props.children}
+      </AnimatedBaseButton>
     );
   }
 }
