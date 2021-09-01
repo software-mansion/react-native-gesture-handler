@@ -330,6 +330,23 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return interactionController?.shouldHandlerBeCancelledBy(this, handler) ?: false
   }
 
+  // this differs from shouldRecognizeSimultaneously because this method is called to check if there
+  // is an already active handler that prevents this from activating, while shouldRecognizeSimultaneously
+  // is called to check which handlers to cancel when a handler becoming active
+  // main reason behind this method is the fact that when a handler activates it cancels all other
+  // handlers that cannot be recognized simultaneously but when another pointer is placed on screen
+  // while it is already active it has no influence over the ones extracted from the new pointer.
+  // we could just use shouldRecognizeSimultaneously in this case but that would break things like
+  // separate draggable objects without `simultaneousHandlers` set, when the problem it's trying to
+  // solve is a scrollview activating when there is active PinchGH inside
+  open fun canActivateAlongsideAlreadyActive(handler: GestureHandler<*>): Boolean {
+    if (handler === this) {
+      return true
+    }
+
+    return interactionController?.canHandlerActivateAlongsideAlreadyActive(this, handler) ?: true
+  }
+
   fun isWithinBounds(view: View?, posX: Float, posY: Float): Boolean {
     var left = 0f
     var top = 0f

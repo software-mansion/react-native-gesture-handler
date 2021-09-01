@@ -100,7 +100,26 @@ class GestureHandlerOrchestrator(
     return false
   }
 
+  private fun isThereActiveHandlerPreventingActivation(handler: GestureHandler<*>): Boolean {
+    for (i in 0 until gestureHandlersCount) {
+      val otherHandler = gestureHandlers[i] ?: continue
+      if (otherHandler.isActive && !handler.canActivateAlongsideAlreadyActive(otherHandler)) {
+        return true
+      }
+    }
+
+    return false
+  }
+
   private fun tryActivate(handler: GestureHandler<*>) {
+    // check if there already is active handler that prevents this one from activating
+    // if there is we need to cancel this one to prevent unexpected behavior
+    if (isThereActiveHandlerPreventingActivation(handler)) {
+      handler.cancel()
+      handler.isAwaiting = false
+      return
+    }
+
     // see if there is anyone else who we need to wait for
     if (hasOtherHandlerToWaitFor(handler)) {
       addAwaitingHandler(handler)
