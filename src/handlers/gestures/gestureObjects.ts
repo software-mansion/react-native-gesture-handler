@@ -45,7 +45,7 @@ export const GestureObjects = {
    * Builds a composed gesture consisting of gestures provided as parameters.
    * The first one that becomes active cancels the rest of gestures.
    */
-  FirstOf(...gestures: Gesture[]) {
+  OneOf(...gestures: Gesture[]) {
     return new ComposedGesture(...gestures);
   },
 
