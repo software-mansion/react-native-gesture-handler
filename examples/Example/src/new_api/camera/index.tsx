@@ -90,7 +90,7 @@ export default function Home() {
   const buttonGesture = Gesture.Simultaneous(
     buttonLongPressGesture,
     Gesture.Exclusive(
-      Gesture.RequireToFail(buttonTapGesture, buttonDoubleTapGesture),
+      Gesture.Exclusive(buttonDoubleTapGesture, buttonTapGesture),
       buttonPanGesture
     )
   );

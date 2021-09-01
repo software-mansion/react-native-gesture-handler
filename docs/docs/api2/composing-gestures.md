@@ -4,13 +4,14 @@ title: Composing gestures
 sidebar_label: Composing gestures
 ---
 
-Composing gestures is much simpler in RNGH2, you don't need to create a ref for every gesture that depends on another one. Instead you can use `Exclusive`, `Simultaneous` and `RequireToFail` methods provided by the `Gesture` object.
+Composing gestures is much simpler in RNGH2, you don't need to create a ref for every gesture that depends on another one. Instead you can use `Race`, `Simultaneous` and `Exclusive` methods provided by the `Gesture` object.
 
-## Exclusive
+## Race
 
-Is the equivalent to just having more than one gesture handler without defining `simultaneousHandlers` and `waitFor` props. It means that only one of the provided gestures can become active at the same time. It accepts variable number of arguments.
+Only one of the provided gestures can become active at the same time. The fist gesture to become active will cancel the rest of the gestures. It accepts variable number of arguments.
+It is the equivalent to having more than one gesture handler without defining `simultaneousHandlers` and `waitFor` props.
 
-For example, lets say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `Exclusive`:
+For example, lets say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `Race`:
 
 ```js
 const offset = useSharedValue({ x: 0, y: 0 });
@@ -54,19 +55,18 @@ const dragGesture = Gesture.Pan()
     };
   });
 
-const longPressGesture = Gesture.LongPress()
-  .onStart((_event) => {
-    'worklet';
-    popupPosition.value = { x: offset.value.x, y: offset.value.y };
-    popupAlpha.value = withTiming(1);
-  });
+const longPressGesture = Gesture.LongPress().onStart((_event) => {
+  'worklet';
+  popupPosition.value = { x: offset.value.x, y: offset.value.y };
+  popupAlpha.value = withTiming(1);
+});
 
-const exclusive = Gesture.Exclusive(dragGesture, longPressGesture);
+const composed = Gesture.Race(dragGesture, longPressGesture);
 
 return (
   <Animated.View>
     <Popup style={animatedPopupStyles} />
-    <GestureDetector gesture={exclusive}>
+    <GestureDetector gesture={composed}>
       <Component style={animatedStyles} />
     </GestureDetector>
   </Animated.View>
@@ -75,7 +75,8 @@ return (
 
 ## Simultaneous
 
-It accepts 2 arguments and it is the equivalent to having two gesture handlers, each with `simultaneousHandlers` prop set to the other handler.
+It accepts 2 arguments and both of the provided gestures can activate at the same time. Activation of one will not cancel the other.
+It is the equivalent to having two gesture handlers, each with `simultaneousHandlers` prop set to the other handler.
 
 For example, if you want to make a gallery app, you might want user to be able to zoom, rotate and pan around photos. You can do it with `Simultaneous`:
 
@@ -135,25 +136,26 @@ const rotateGesture = Gesture.Rotation()
     savedRotation.value = rotation.value;
   });
 
-const simultaneous = Gesture.Simultaneous(
+const composed = Gesture.Simultaneous(
   dragGesture,
   Gesture.Simultaneous(zoomGesture, rotateGesture)
 );
 
 return (
   <Animated.View>
-    <GestureDetector gesture={simultaneous}>
-    	<Photo style={animatedStyles} />
+    <GestureDetector gesture={composed}>
+      <Photo style={animatedStyles} />
     </GestureDetector>
   </Animated.View>
 );
 ```
 
-## RequireToFail
+## Exclusive
 
-It accepts 2 arguments and it is equivalent to having two gesture handlers where the first one has the `waitFor` prop set to the other handler. We hope that the changed name will be less ambigous than `waitFor`, which could be interpreted both as `wait for other handler to fail` or `wait for other handler to activate`.
+It accepts 2 arguments and only one of them can become active, with the first one having a higher priority than the second one (if both gestures are still possible, the second one will wait for the first one to fail before it activates).
+It is equivalent to having two gesture handlers where the second one has the `waitFor` prop set to the other handler.
 
-For example, if you want to make a component that responds to single tap as well as to a double tap, you can accomplish that using `RequireToFail`:
+For example, if you want to make a component that responds to single tap as well as to a double tap, you can accomplish that using `Exclusive`:
 
 ```js
 const singleTap = Gesture.Tap().onEnd((_event, success) => {
@@ -169,7 +171,7 @@ const doubleTap = Gesture.Tap()
     }
   });
 
-const taps = Gesture.RequireToFail(singleTap, doubleTap);
+const taps = Gesture.Exclusive(doubleTap, singleTap);
 
 return (
   <GestureDetector gesture={taps}>
