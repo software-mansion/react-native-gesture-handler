@@ -13,7 +13,7 @@ export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPaylo
     this.handlerName = 'PanGestureHandler';
   }
 
-  setActiveOffsetY(offset: number | number[]) {
+  activeOffsetY(offset: number | number[]) {
     if (Array.isArray(offset)) {
       this.config.activeOffsetYStart = offset[0];
       this.config.activeOffsetYEnd = offset[1];
