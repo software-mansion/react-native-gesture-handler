@@ -120,6 +120,7 @@ export type {
 } from './handlers/gestureHandlerTypesCompat';
 
 export { default as Swipeable } from './components/Swipeable';
+export { Swipeable as BetterSwipeable } from './components/BetterSwipeable';
 export type {
   DrawerLayoutProps,
   DrawerPosition,
