@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { I18nManager, StyleSheet } from 'react-native';
-import { BetterSwipeable, RectButton } from 'react-native-gesture-handler';
+import {
+  BetterSwipeable,
+  RectButton,
+  SwipeableController,
+} from 'react-native-gesture-handler';
 import Animated, {
   Extrapolate,
   useAnimatedStyle,
@@ -9,6 +13,8 @@ import Animated, {
 export const GmailStyleSwipeableRow: React.FunctionComponent<unknown> = (
   props
 ) => {
+  const controller = useRef<SwipeableController>(null);
+
   function LeftActions(
     _progress: Animated.SharedValue<number>,
     drag: Animated.SharedValue<number>
@@ -29,7 +35,9 @@ export const GmailStyleSwipeableRow: React.FunctionComponent<unknown> = (
     });
 
     return (
-      <RectButton style={styles.leftAction}>
+      <RectButton
+        style={styles.leftAction}
+        onPress={controller?.current?.close}>
         {/* Change it to some icons */}
         <Animated.View style={[styles.actionIcon, animatedStyle]} />
       </RectButton>
@@ -56,7 +64,9 @@ export const GmailStyleSwipeableRow: React.FunctionComponent<unknown> = (
     });
 
     return (
-      <RectButton style={styles.rightAction}>
+      <RectButton
+        style={styles.rightAction}
+        onPress={controller?.current?.close}>
         {/* Change it to some icons */}
         <Animated.View style={[styles.actionIcon, animatedStyle]} />
       </RectButton>
@@ -65,6 +75,7 @@ export const GmailStyleSwipeableRow: React.FunctionComponent<unknown> = (
 
   return (
     <BetterSwipeable
+      ref={controller}
       renderLeftActions={LeftActions}
       renderRightActions={RightActions}>
       {props.children}

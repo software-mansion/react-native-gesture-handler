@@ -1,6 +1,10 @@
-import React from 'react';
-import { I18nManager, StyleSheet, Text } from 'react-native';
-import { BetterSwipeable, RectButton } from 'react-native-gesture-handler';
+import React, { useRef } from 'react';
+import { Alert, I18nManager, StyleSheet, Text } from 'react-native';
+import {
+  BetterSwipeable,
+  SwipeableController,
+  RectButton,
+} from 'react-native-gesture-handler';
 import Animated, {
   Extrapolate,
   useAnimatedStyle,
@@ -9,6 +13,8 @@ import Animated, {
 export const AppleStyleSwipeableRow: React.FunctionComponent<unknown> = (
   props
 ) => {
+  const controller = useRef<SwipeableController>(null);
+
   function LeftActions(
     _progress: Animated.SharedValue<number>,
     drag: Animated.SharedValue<number>
@@ -29,7 +35,9 @@ export const AppleStyleSwipeableRow: React.FunctionComponent<unknown> = (
     });
 
     return (
-      <RectButton style={styles.leftAction}>
+      <RectButton
+        style={styles.leftAction}
+        onPress={controller?.current?.close}>
         <Animated.View style={animatedStyle}>
           <Text style={styles.actionText}>Archive</Text>
         </Animated.View>
@@ -53,7 +61,12 @@ export const AppleStyleSwipeableRow: React.FunctionComponent<unknown> = (
 
     return (
       <Animated.View style={[animatedStyles, { flex: 1 }]}>
-        <RectButton style={[styles.rightAction, { backgroundColor: color }]}>
+        <RectButton
+          style={[styles.rightAction, { backgroundColor: color }]}
+          onPress={() => {
+            Alert.alert(text);
+            controller?.current?.close();
+          }}>
           <Text style={styles.actionText}>{text}</Text>
         </RectButton>
       </Animated.View>
@@ -79,6 +92,7 @@ export const AppleStyleSwipeableRow: React.FunctionComponent<unknown> = (
 
   return (
     <BetterSwipeable
+      ref={controller}
       renderLeftActions={LeftActions}
       renderRightActions={RightActions}>
       {props.children}
