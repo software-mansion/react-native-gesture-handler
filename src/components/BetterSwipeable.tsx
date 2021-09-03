@@ -369,6 +369,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
     });
 
     const tapGesture = Gesture.Tap();
+    // only enable tap when swipeable is opened (causes problems on iOS otherwise)
     tapGesture.enabled(rowState !== 0);
 
     tapGesture.onEnd((_event, success) => {
@@ -386,10 +387,12 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
           animateRowTo(0);
         },
         openLeft: () => {
-          animateRowTo(rowState === 0 ? leftWidth : 0);
+          // don't allow to go directly from right opened to left opened
+          animateRowTo(rowState !== -1 ? leftWidth : 0);
         },
         openRight: () => {
-          animateRowTo(rowState === 0 ? -rightWidth : 0);
+          // don't allow to go directly from left opened to right opened
+          animateRowTo(rowState !== 1 ? -rightWidth : 0);
         },
       };
 
