@@ -160,10 +160,13 @@ interface SwipeableProps
 export const Swipeable: React.FunctionComponent<SwipeableProps> = (props) => {
   const { children, renderLeftActions, renderRightActions } = props;
 
-  const [rowWidth, setRowWidth] = useState(1);
-  const [leftWidth, setLeftWidth] = useState(1);
-  const [rightOffset, setRightOffset] = useState(1);
-  const rightWidth = rowWidth - rightOffset;
+  const [rowWidth, setRowWidth] = useState(0);
+  const [leftWidth, setLeftWidth] = useState(0);
+  // when renderRightActions is not set the rightOffset is equal to 0, making rightWidth equal to
+  // rowWidth. With undefined as a starting point it is possible to determine when no right actions
+  // are set
+  const [rightOffset, setRightOffset] = useState<number | undefined>(undefined);
+  const rightWidth = rowWidth - (rightOffset ?? rowWidth);
 
   const rowState = useSharedValue(0); // current state: 1 - left, 0 - closed, -1 - right
   const dragOffset = useSharedValue(0); // offset for the top component
@@ -173,7 +176,8 @@ export const Swipeable: React.FunctionComponent<SwipeableProps> = (props) => {
 
   // parameters passed to actions' render methods
   const leftActionProgress = useDerivedValue(() => {
-    return dragOffset.value / leftWidth;
+    const progress = dragOffset.value / leftWidth;
+    return isNaN(progress) ? 0 : progress;
   }, [dragOffset, leftWidth]);
 
   const leftActionDrag = useDerivedValue(() => {
@@ -181,11 +185,12 @@ export const Swipeable: React.FunctionComponent<SwipeableProps> = (props) => {
   }, [dragOffset]);
 
   const rightActionProgress = useDerivedValue(() => {
-    return -dragOffset.value / rightWidth;
+    const progress = -dragOffset.value / rightWidth;
+    return isNaN(progress) ? 0 : progress;
   }, [dragOffset, rightWidth]);
 
   const rightActionDrag = useDerivedValue(() => {
-    return -dragOffset.value;
+    return dragOffset.value;
   }, [dragOffset]);
 
   // default config
