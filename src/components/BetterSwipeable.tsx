@@ -377,7 +377,7 @@ export const Swipeable: React.FunctionComponent<SwipeableProps> = (props) => {
   });
 
   return (
-    <GestureDetector animatedGesture={Gesture.Race(panGesture, tapGesture)}>
+    <GestureDetector animatedGesture={panGesture}>
       <Animated.View
         style={[styles.container, props.containerStyle]}
         onLayout={({ nativeEvent }) => {
@@ -385,10 +385,12 @@ export const Swipeable: React.FunctionComponent<SwipeableProps> = (props) => {
         }}>
         {left}
         {right}
-        <Animated.View
-          style={[childContainerStyle, props.childrenContainerStyle]}>
-          {children}
-        </Animated.View>
+        <GestureDetector animatedGesture={tapGesture}>
+          <Animated.View
+            style={[childContainerStyle, props.childrenContainerStyle]}>
+            {children}
+          </Animated.View>
+        </GestureDetector>
       </Animated.View>
     </GestureDetector>
   );
