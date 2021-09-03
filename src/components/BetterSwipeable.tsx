@@ -157,6 +157,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
   (props, ref) => {
     const { children, renderLeftActions, renderRightActions } = props;
 
+    const [rowState, setRowState] = useState(0); // current state: 1 - left, 0 - closed, -1 - right
     const [rowWidth, setRowWidth] = useState(0);
     const [leftWidth, setLeftWidth] = useState(0);
     // when renderRightActions is not set the rightOffset is equal to 0, making rightWidth equal to
@@ -167,7 +168,6 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
     );
     const rightWidth = rowWidth - (rightOffset ?? rowWidth);
 
-    const rowState = useSharedValue(0); // current state: 1 - left, 0 - closed, -1 - right
     const dragOffset = useSharedValue(0); // offset for the top component
     const dragStartOffset = useSharedValue(0); // origin for pan gesture handler translation
     const leftActionOffset = useSharedValue(0); // offset used to hide left panel when right is opened
@@ -287,13 +287,12 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
       );
 
       if (toOffset !== dragOffset.value) {
-        // when tap gesture is activated on already closed swipeable don't send events
-        // (tap calls this method with 0 as argument, when closed the offset is 0)
+        // don't send events when already in target state
         runOnJS(dispatchAnimationStartEvents)(newState);
       }
 
       dragStartOffset.value = withSpring(toOffset, animationOptions);
-      rowState.value = newState;
+      runOnJS(setRowState)(newState);
     }
 
     const panGesture = Gesture.Pan();
@@ -343,7 +342,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
       const currentValue = dragOffset.value;
 
       let toValue = 0;
-      if (rowState.value === 0) {
+      if (rowState === 0) {
         // swipeable is closed
         if (currentValue > leftThreshold) {
           // left treshold reached, open left panel
@@ -352,7 +351,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
           // right treshold reached, open right panel
           toValue = -rightWidth;
         }
-      } else if (rowState.value === 1) {
+      } else if (rowState === 1) {
         // left panel is opened
         if (currentValue > leftWidth - leftThreshold) {
           // swiped to left but threshold not reached, keep the panel open
@@ -370,6 +369,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
     });
 
     const tapGesture = Gesture.Tap();
+    tapGesture.enabled(rowState !== 0);
 
     tapGesture.onEnd((_event, success) => {
       'worklet';
@@ -386,10 +386,10 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
           animateRowTo(0);
         },
         openLeft: () => {
-          animateRowTo(rowState.value === 0 ? leftWidth : 0);
+          animateRowTo(rowState === 0 ? leftWidth : 0);
         },
         openRight: () => {
-          animateRowTo(rowState.value === 0 ? -rightWidth : 0);
+          animateRowTo(rowState === 0 ? -rightWidth : 0);
         },
       };
 
@@ -411,6 +411,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
           {right}
           <GestureDetector animatedGesture={tapGesture}>
             <Animated.View
+              pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
               style={[childContainerStyle, props.childrenContainerStyle]}>
               {children}
             </Animated.View>
