@@ -68,7 +68,10 @@ const EXAMPLES: ExamplesSection[] = [
     sectionTitle: 'Showcase',
     data: [
       { name: 'Bottom sheet', component: BottomSheet },
-      { name: 'BetterSwipeables', component: BetterSwipeables },
+      {
+        name: 'Swipeables (Reanimated 2 & RNGH 2)',
+        component: BetterSwipeables,
+      },
       { name: 'Swipeables', component: Swipeables },
       { name: 'Chat heads', component: ChatHeads },
     ],
