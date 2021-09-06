@@ -145,6 +145,23 @@ interface SwipeableProps {
   children?: React.ReactNode;
 }
 
+enum State {
+  Closed = 'CLOSED',
+  LeftOpened = 'LEFT_OPEN',
+  RightOpened = 'RIGHT_OPEN',
+}
+
+function getStateFromOffsetSign(sign: number) {
+  'worklet';
+  if (sign === 1) {
+    return State.LeftOpened;
+  } else if (sign === 0) {
+    return State.Closed;
+  } else {
+    return State.RightOpened;
+  }
+}
+
 export interface SwipeableController {
   close: () => void;
   openLeft: () => void;
@@ -156,7 +173,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
   (props, ref) => {
     const { children, renderLeftActions, renderRightActions } = props;
 
-    const [rowState, setRowState] = useState(0); // current state: 1 - left, 0 - closed, -1 - right
+    const [rowState, setRowState] = useState(State.Closed);
     const [rowWidth, setRowWidth] = useState(0);
     const [leftWidth, setLeftWidth] = useState(0);
     // when renderRightActions is not set the rightOffset is equal to 0, making rightWidth equal to
@@ -244,11 +261,11 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
       </Animated.View>
     );
 
-    function dispatchAnimationStartEvents(toState: number) {
-      if (toState === 1) {
+    function dispatchAnimationStartEvents(toState: State) {
+      if (toState === State.LeftOpened) {
         props.onSwipeableLeftWillOpen?.();
         props.onSwipeableWillOpen?.();
-      } else if (toState === 0) {
+      } else if (toState === State.Closed) {
         props.onSwipeableWillClose?.();
       } else {
         props.onSwipeableRightWillOpen?.();
@@ -256,11 +273,11 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
       }
     }
 
-    function dispatchAnimationEndEvents(toState: number) {
-      if (toState === 1) {
+    function dispatchAnimationEndEvents(toState: State) {
+      if (toState === State.LeftOpened) {
         props.onSwipeableLeftOpen?.();
         props.onSwipeableOpen?.();
-      } else if (toState === 0) {
+      } else if (toState === State.Closed) {
         props.onSwipeableClose?.();
       } else {
         props.onSwipeableRightOpen?.();
@@ -271,7 +288,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
     // helper for starting animations
     function animateRowTo(toOffset: number) {
       'worklet';
-      const newState = Math.sign(toOffset);
+      const newState = getStateFromOffsetSign(Math.sign(toOffset));
 
       dragOffset.value = withSpring(
         toOffset,
@@ -341,7 +358,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
       const currentValue = dragOffset.value;
 
       let toValue = 0;
-      if (rowState === 0) {
+      if (rowState === State.Closed) {
         // swipeable is closed
         if (currentValue > leftThreshold) {
           // left treshold reached, open left panel
@@ -350,7 +367,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
           // right treshold reached, open right panel
           toValue = -rightWidth;
         }
-      } else if (rowState === 1) {
+      } else if (rowState === State.LeftOpened) {
         // left panel is opened
         if (currentValue > leftWidth - leftThreshold) {
           // swiped to left but threshold not reached, keep the panel open
@@ -369,7 +386,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
 
     const tapGesture = Gesture.Tap();
     // only enable tap when swipeable is opened (causes problems on iOS otherwise)
-    tapGesture.enabled(rowState !== 0);
+    tapGesture.enabled(rowState !== State.Closed);
 
     tapGesture.onEnd((_event, success) => {
       'worklet';
@@ -387,11 +404,11 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
         },
         openLeft: () => {
           // don't allow to go directly from right opened to left opened
-          animateRowTo(rowState !== -1 ? leftWidth : 0);
+          animateRowTo(rowState !== State.RightOpened ? leftWidth : 0);
         },
         openRight: () => {
           // don't allow to go directly from left opened to right opened
-          animateRowTo(rowState !== 1 ? -rightWidth : 0);
+          animateRowTo(rowState !== State.LeftOpened ? -rightWidth : 0);
         },
       };
 
@@ -413,7 +430,7 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
           {right}
           <GestureDetector animatedGesture={tapGesture}>
             <Animated.View
-              pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
+              pointerEvents={rowState === State.Closed ? 'auto' : 'box-only'}
               style={[childContainerStyle, props.childrenContainerStyle]}>
               {children}
             </Animated.View>
