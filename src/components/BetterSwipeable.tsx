@@ -221,23 +221,17 @@ export const Swipeable = React.forwardRef<SwipeableController, SwipeableProps>(
     };
 
     // animated styles for panels
-    const childContainerStyle = useAnimatedStyle(() => {
-      return {
-        transform: [{ translateX: dragOffset.value }],
-      };
-    });
+    const childContainerStyle = useAnimatedStyle(() => ({
+      transform: [{ translateX: dragOffset.value }],
+    }));
 
-    const leftActionStyle = useAnimatedStyle(() => {
-      return {
-        transform: [{ translateX: leftActionOffset.value }],
-      };
-    });
+    const leftActionStyle = useAnimatedStyle(() => ({
+      transform: [{ translateX: leftActionOffset.value }],
+    }));
 
-    const rightActionStyle = useAnimatedStyle(() => {
-      return {
-        transform: [{ translateX: rightActionOffset.value }],
-      };
-    });
+    const rightActionStyle = useAnimatedStyle(() => ({
+      transform: [{ translateX: rightActionOffset.value }],
+    }));
 
     const left = renderLeftActions && (
       <Animated.View style={[styles.leftActions, leftActionStyle]}>

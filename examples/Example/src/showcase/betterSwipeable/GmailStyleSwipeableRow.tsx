@@ -19,20 +19,18 @@ export const GmailStyleSwipeableRow = (props: {
     _progress: Animated.SharedValue<number>,
     drag: Animated.SharedValue<number>
   ) {
-    const animatedStyle = useAnimatedStyle(() => {
-      return {
-        transform: [
-          {
-            scale: Animated.interpolate(
-              drag.value,
-              [0, 80],
-              [0, 1],
-              Extrapolate.CLAMP
-            ),
-          },
-        ],
-      };
-    });
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          scale: Animated.interpolate(
+            drag.value,
+            [0, 80],
+            [0, 1],
+            Extrapolate.CLAMP
+          ),
+        },
+      ],
+    }));
 
     return (
       <RectButton
@@ -48,20 +46,18 @@ export const GmailStyleSwipeableRow = (props: {
     _progress: Animated.SharedValue<number>,
     drag: Animated.SharedValue<number>
   ) {
-    const animatedStyle = useAnimatedStyle(() => {
-      return {
-        transform: [
-          {
-            scale: Animated.interpolate(
-              drag.value,
-              [-80, 0],
-              [1, 0],
-              Extrapolate.CLAMP
-            ),
-          },
-        ],
-      };
-    });
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          scale: Animated.interpolate(
+            drag.value,
+            [-80, 0],
+            [1, 0],
+            Extrapolate.CLAMP
+          ),
+        },
+      ],
+    }));
 
     return (
       <RectButton

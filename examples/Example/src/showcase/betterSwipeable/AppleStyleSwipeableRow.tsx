@@ -19,20 +19,18 @@ export const AppleStyleSwipeableRow = (props: {
     _progress: Animated.SharedValue<number>,
     drag: Animated.SharedValue<number>
   ) {
-    const animatedStyle = useAnimatedStyle(() => {
-      return {
-        transform: [
-          {
-            translateX: Animated.interpolate(
-              drag.value,
-              [0, 50, 100, 101],
-              [-20, 0, 0, 1],
-              Extrapolate.CLAMP
-            ),
-          },
-        ],
-      };
-    });
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: Animated.interpolate(
+            drag.value,
+            [0, 50, 100, 101],
+            [-20, 0, 0, 1],
+            Extrapolate.CLAMP
+          ),
+        },
+      ],
+    }));
 
     return (
       <RectButton
@@ -51,13 +49,11 @@ export const AppleStyleSwipeableRow = (props: {
     x: number,
     progress: Animated.SharedValue<number>
   ) {
-    const animatedStyles = useAnimatedStyle(() => {
-      return {
-        transform: [
-          { translateX: Animated.interpolate(progress.value, [0, 1], [x, 0]) },
-        ],
-      };
-    });
+    const animatedStyles = useAnimatedStyle(() => ({
+      transform: [
+        { translateX: Animated.interpolate(progress.value, [0, 1], [x, 0]) },
+      ],
+    }));
 
     return (
       <Animated.View style={[animatedStyles, { flex: 1 }]}>
