@@ -10,9 +10,9 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-export const AppleStyleSwipeableRow: React.FunctionComponent<unknown> = (
-  props
-) => {
+export const AppleStyleSwipeableRow = (props: {
+  children: React.ReactNode;
+}) => {
   const controller = useRef<SwipeableController>(null);
 
   function LeftActions(

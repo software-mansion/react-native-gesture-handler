@@ -142,7 +142,6 @@ interface SwipeableProps {
    */
   childrenContainerStyle?: StyleProp<ViewStyle>;
 
-  // typescript is determined that component created with forwardRef cannot have children
   children?: React.ReactNode;
 }
 

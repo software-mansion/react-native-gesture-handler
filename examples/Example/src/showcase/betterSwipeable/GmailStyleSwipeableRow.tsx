@@ -10,9 +10,9 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-export const GmailStyleSwipeableRow: React.FunctionComponent<unknown> = (
-  props
-) => {
+export const GmailStyleSwipeableRow = (props: {
+  children: React.ReactNode;
+}) => {
   const controller = useRef<SwipeableController>(null);
 
   function LeftActions(
