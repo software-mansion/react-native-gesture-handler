@@ -22,19 +22,13 @@ const Row = ({ item }: { item: DataRow }) => (
 );
 
 const SwipeableRow = ({ item, index }: { item: DataRow; index: number }) => {
-  if (index % 2 === 0) {
-    return (
-      <GmailStyleSwipeableRow>
-        <Row item={item} />
-      </GmailStyleSwipeableRow>
-    );
-  } else {
-    return (
-      <AppleStyleSwipeableRow>
-        <Row item={item} />
-      </AppleStyleSwipeableRow>
-    );
-  }
+  const SwipeableRow =
+    index % 2 === 0 ? GmailStyleSwipeableRow : AppleStyleSwipeableRow;
+  return (
+    <SwipeableRow>
+      <Row item={item} />
+    </SwipeableRow>
+  );
 };
 
 export default function Swipeables() {
