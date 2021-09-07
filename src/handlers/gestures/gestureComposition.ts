@@ -74,8 +74,7 @@ export class ComposedGesture extends Gesture {
 export class SimultaneousGesture extends ComposedGesture {
   prepare() {
     const simultaneousArray = this.gestures
-      .map((gesture) => gesture.toGestureArray())
-      .flat()
+      .flatMap((gesture) => gesture.toGestureArray())
       .concat(this.simultaneousGestures);
 
     for (const gesture of this.gestures) {
