@@ -13,7 +13,6 @@ import {
   DrawerKeyboardDismissMode,
   DrawerLockMode,
   DrawerPosition,
-  DrawerState,
   DrawerType,
 } from './DrawerLayout';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
@@ -25,6 +24,12 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+
+export enum BetterDrawerState {
+  IDLE = 'Idle',
+  DRAGGING = 'Dragging',
+  SETTLING = 'Settling',
+}
 
 export interface BetterDrawerLayoutProps {
   /**
@@ -64,7 +69,7 @@ export interface BetterDrawerLayoutProps {
    * Called when the status of the drawer changes.
    */
   onDrawerStateChanged?: (
-    newState: DrawerState,
+    newState: BetterDrawerState,
     drawerWillShow: boolean
   ) => void;
 
@@ -125,10 +130,6 @@ export interface BetterDrawerLayoutProps {
 
   children?: React.ReactNode;
 }
-
-const IDLE: DrawerState = 'Idle';
-const DRAGGING: DrawerState = 'Dragging';
-const SETTLING: DrawerState = 'Settling';
 
 interface OverlayProps {
   drawerType: DrawerType;
@@ -204,7 +205,7 @@ export const DrawerLayout = React.forwardRef<
   const [containerWidth, setContainerWidth] = useState(Number.NaN);
   const [drawerVisible, setDrawerVisible] = useState(false);
 
-  const drawerState = useSharedValue<DrawerState>(IDLE);
+  const drawerState = useSharedValue(BetterDrawerState.IDLE);
   // between 0 and drawerWidth (drawer on the left) or -drawerWidth and 0 (drawer on the right)
   const drawerOffset = useSharedValue(0);
   // stores value of the offset at the start of the gesture
@@ -256,7 +257,7 @@ export const DrawerLayout = React.forwardRef<
     }
   }
 
-  function setState(newState: DrawerState, willShow: boolean) {
+  function setState(newState: BetterDrawerState, willShow: boolean) {
     if (props.hideStatusBar === true) {
       StatusBar.setHidden(willShow, props.statusBarAnimation ?? 'slide');
     }
@@ -273,7 +274,7 @@ export const DrawerLayout = React.forwardRef<
       setDrawerVisible(willShow);
     }
 
-    if (newState === IDLE) {
+    if (newState === BetterDrawerState.IDLE) {
       if (willShow) {
         props.onDrawerOpen?.();
       } else {
@@ -288,7 +289,7 @@ export const DrawerLayout = React.forwardRef<
     'worklet';
     if (fromLeft && drawerOffset.value < drawerWidth) {
       // drawer is on the left and is not fully opened
-      runOnJS(setState)(SETTLING, true);
+      runOnJS(setState)(BetterDrawerState.SETTLING, true);
 
       drawerOffset.value = withSpring(
         drawerWidth,
@@ -298,13 +299,13 @@ export const DrawerLayout = React.forwardRef<
           if (finished) {
             // animation cannot be interrupted by a drag, but can be by
             // calling close or open (through tap or a controller)
-            runOnJS(setState)(IDLE, true);
+            runOnJS(setState)(BetterDrawerState.IDLE, true);
           }
         }
       );
     } else if (!fromLeft && drawerOffset.value > -drawerWidth) {
       // drawer is on the right and is not fully opened
-      runOnJS(setState)(SETTLING, true);
+      runOnJS(setState)(BetterDrawerState.SETTLING, true);
 
       drawerOffset.value = withSpring(
         -drawerWidth,
@@ -314,13 +315,13 @@ export const DrawerLayout = React.forwardRef<
           if (finished) {
             // animation cannot be interrupted by a drag, but can be by
             // calling close or open (through tap or a controller)
-            runOnJS(setState)(IDLE, true);
+            runOnJS(setState)(BetterDrawerState.IDLE, true);
           }
         }
       );
     } else {
       // drawer is fully opened
-      runOnJS(setState)(IDLE, true);
+      runOnJS(setState)(BetterDrawerState.IDLE, true);
     }
   }
 
@@ -328,31 +329,31 @@ export const DrawerLayout = React.forwardRef<
     'worklet';
     if (fromLeft && drawerOffset.value > 0) {
       // drawer is on the left and is not fully closed
-      runOnJS(setState)(SETTLING, false);
+      runOnJS(setState)(BetterDrawerState.SETTLING, false);
 
       drawerOffset.value = withSpring(0, animationConfig, (finished) => {
         drawerSavedOffset.value = drawerOffset.value;
         if (finished) {
           // animation cannot be interrupted by a drag, but can be by
           // calling close or open (through tap or a controller)
-          runOnJS(setState)(IDLE, false);
+          runOnJS(setState)(BetterDrawerState.IDLE, false);
         }
       });
     } else if (!fromLeft && drawerOffset.value < 0) {
       // drawer is on the right and is not fully closed
-      runOnJS(setState)(SETTLING, false);
+      runOnJS(setState)(BetterDrawerState.SETTLING, false);
 
       drawerOffset.value = withSpring(0, animationConfig, (finished) => {
         drawerSavedOffset.value = drawerOffset.value;
         if (finished) {
           // animation cannot be interrupted by a drag, but can be by
           // calling close or open (through tap or a controller)
-          runOnJS(setState)(IDLE, false);
+          runOnJS(setState)(BetterDrawerState.IDLE, false);
         }
       });
     } else {
       // drawer is fully closed
-      runOnJS(setState)(IDLE, false);
+      runOnJS(setState)(BetterDrawerState.IDLE, false);
     }
   }
 
@@ -411,12 +412,12 @@ export const DrawerLayout = React.forwardRef<
   });
   pan.onUpdate((event) => {
     'worklet';
-    if (drawerState.value === IDLE) {
-      runOnJS(setState)(DRAGGING, drawerVisible);
+    if (drawerState.value === BetterDrawerState.IDLE) {
+      runOnJS(setState)(BetterDrawerState.DRAGGING, drawerVisible);
       runOnJS(onDragStart)();
     }
 
-    if (drawerState.value === DRAGGING) {
+    if (drawerState.value === BetterDrawerState.DRAGGING) {
       let newOffset =
         drawerSavedOffset.value + event.translationX - ignoredOffset.value;
 
@@ -459,7 +460,7 @@ export const DrawerLayout = React.forwardRef<
   });
   pan.onEnd((_event) => {
     'worklet';
-    if (drawerState.value === DRAGGING) {
+    if (drawerState.value === BetterDrawerState.DRAGGING) {
       // update offsets and animations only when the drag was not ignored
       drawerSavedOffset.value = drawerOffset.value;
 
