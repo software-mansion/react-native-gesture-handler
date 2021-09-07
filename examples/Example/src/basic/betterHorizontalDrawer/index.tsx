@@ -11,7 +11,7 @@ import {
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 const TYPES: DrawerType[] = ['front', 'back', 'back', 'slide'];
-const PARALLAX: boolean[] = [false, false, true, false];
+const PARALLAX = [false, false, true, false];
 
 interface PageProps {
   fromLeft: boolean;
