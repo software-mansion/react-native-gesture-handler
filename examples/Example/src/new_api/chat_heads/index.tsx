@@ -4,6 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
@@ -35,18 +36,10 @@ function FollowingChatHead({
   offset,
   offsetToFollow,
 }: FollowingChatHeadProps) {
-  useAnimatedReaction(
-    () => {
-      return {
-        x: offsetToFollow.x.value,
-        y: offsetToFollow.y.value,
-      };
-    },
-    (followOffset) => {
-      offset.x.value = withSpring(followOffset.x);
-      offset.y.value = withSpring(followOffset.y);
-    }
-  );
+  useDerivedValue(() => {
+    offset.x.value = withSpring(offsetToFollow.x.value);
+    offset.y.value = withSpring(offsetToFollow.y.value);
+  }, []);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -86,14 +79,13 @@ const Example = () => {
   };
 
   const panHandler = Gesture.Pan()
-    .onUpdate((e) => {
+    .onUpdate(({ translationX, translationY }) => {
       'worklet';
-      dragOffset.x.value = mainChatHeadPosition.x.value + e.translationX;
-      dragOffset.y.value = mainChatHeadPosition.y.value + e.translationY;
+      dragOffset.x.value = mainChatHeadPosition.x.value + translationX;
+      dragOffset.y.value = mainChatHeadPosition.y.value + translationY;
     })
-    .onEnd((e) => {
+    .onEnd(({ absoluteX, absoluteY }) => {
       const { height, width } = dimensions;
-      const { absoluteX, absoluteY } = e;
 
       const distFromTop = absoluteY - HEADER_HEIGHT;
       const distFromBottom = height - absoluteY;
@@ -136,8 +128,7 @@ const Example = () => {
       }
     });
 
-  const headsComponents = CHAT_HEADS.map((head, idx) => {
-    const { imageUrl } = head;
+  const headsComponents = CHAT_HEADS.map(({ imageUrl }, idx) => {
     const headOffset = chatHeadsOffsets[idx];
     if (idx === 0) {
       return (
