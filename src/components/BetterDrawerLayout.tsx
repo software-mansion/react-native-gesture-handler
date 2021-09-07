@@ -140,23 +140,20 @@ interface OverlayProps {
 }
 
 function Overlay(props: OverlayProps) {
-  const overlayStyle = useAnimatedStyle(
-    () => ({
-      backgroundColor: props.color,
-      opacity: props.progress.value,
-      transform: [
-        {
-          translateX:
-            // when the overlay should not be visible move it off the screen
-            // to prevent it from intercepting touch events on Android
-            props.drawerType !== 'front' || props.progress.value === 0
-              ? 10000
-              : 0,
-        },
-      ],
-    }),
-    [props]
-  );
+  const overlayStyle = useAnimatedStyle(() => ({
+    backgroundColor: props.color,
+    opacity: props.progress.value,
+    transform: [
+      {
+        translateX:
+          // when the overlay should not be visible move it off the screen
+          // to prevent it from intercepting touch events on Android
+          props.drawerType !== 'front' || props.progress.value === 0
+            ? 10000
+            : 0,
+      },
+    ],
+  }));
 
   const tap = Gesture.Tap();
   tap.onEnd((_event, success) => {
@@ -519,7 +516,7 @@ export const DrawerLayout = React.forwardRef<
       flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
       transform: [{ translateX: translation }],
     };
-  }, [drawerSlide, drawerWidth, containerWidth, fromLeft]);
+  });
 
   const containerStyle = useAnimatedStyle(() => {
     let translation = 0;
@@ -532,7 +529,7 @@ export const DrawerLayout = React.forwardRef<
     return {
       transform: [{ translateX: translation }],
     };
-  }, [containerSlide]);
+  });
 
   if (ref != null) {
     // ref is set, create a controller and pass it
