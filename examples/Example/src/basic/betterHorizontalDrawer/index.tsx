@@ -56,13 +56,13 @@ function Page({
 
 function DrawerContent(
   offset: Animated.SharedValue<number>,
-  parralax: boolean,
+  parallax: boolean,
   fromLeft: boolean
 ) {
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [
       {
-        translateX: parralax
+        translateX: parallax
           ? Animated.interpolate(offset.value, [0, 1], [fromLeft ? -50 : 50, 0])
           : 0,
       },
@@ -72,7 +72,7 @@ function DrawerContent(
   return (
     <Animated.View style={[styles.drawerContainer, animatedStyles]}>
       <Text style={styles.drawerText}>
-        {parralax ? 'Drawer with parallax' : 'Drawer'}
+        {parallax ? 'Drawer with parallax' : 'Drawer'}
       </Text>
     </Animated.View>
   );
