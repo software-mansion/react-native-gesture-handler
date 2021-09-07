@@ -531,7 +531,7 @@ export const DrawerLayout = React.forwardRef<
     };
   });
 
-  if (ref != null) {
+  if (ref !== null) {
     // ref is set, create a controller and pass it
     const controller: DrawerLayoutController = {
       open: () => {
