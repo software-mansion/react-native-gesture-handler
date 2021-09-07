@@ -249,13 +249,13 @@ export const DrawerLayout = React.forwardRef<
     // this is required in addition to the similar call below, because the gesture
     // doesn't change `drawerVisible` state to prevent re-render during gesture
     // so when dragging from closed it wouldn't hide the status bar
-    if (props.hideStatusBar === true) {
+    if (props.hideStatusBar) {
       StatusBar.setHidden(true, props.statusBarAnimation ?? 'slide');
     }
   }
 
   function setState(newState: BetterDrawerState, willShow: boolean) {
-    if (props.hideStatusBar === true) {
+    if (props.hideStatusBar) {
       StatusBar.setHidden(willShow, props.statusBarAnimation ?? 'slide');
     }
 
