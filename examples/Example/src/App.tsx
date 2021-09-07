@@ -33,6 +33,7 @@ import Transformations from './new_api/transformations';
 import OverlapParents from './new_api/overlap_parent';
 import OverlapSiblings from './new_api/overlap_siblings';
 import Calculator from './new_api/calculator';
+import ChatHeadsNewApi from './new_api/chat_heads';
 
 interface Example {
   name: string;
@@ -93,6 +94,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Overlap parents', component: OverlapParents },
       { name: 'Overlap siblings', component: OverlapSiblings },
       { name: 'Calculator', component: Calculator },
+      { name: 'Chat Heads', component: ChatHeadsNewApi },
     ],
   },
 ];
