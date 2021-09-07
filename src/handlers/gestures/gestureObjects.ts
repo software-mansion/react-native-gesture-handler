@@ -50,13 +50,10 @@ export const GestureObjects = {
   },
 
   /**
-   * Builds a composed gesture that allows its two base gestures to run simultaneously.
-   * @param first A gesture to run simultaneously with the second one
-   * @param second A gesture to run simultaneously with the first one
-   * @returns ComposedGesture consisting of the gestures provided as parameters.
+   * Builds a composed gesture that allows all base gestures to run simultaneously.
    */
-  Simultaneous(first: Gesture, second: Gesture) {
-    return new SimultaneousGesture(first, second);
+  Simultaneous(...gestures: Gesture[]) {
+    return new SimultaneousGesture(...gestures);
   },
 
   /**
