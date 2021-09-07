@@ -485,49 +485,49 @@ export const DrawerLayout = React.forwardRef<
   };
 
   const drawerStyle = useAnimatedStyle(() => {
-    let translation = 0;
+    let translateX = 0;
 
     if (drawerSlide) {
       // drawer is supposed to be moved with the gesture (in this case
       // drawer is anchored to be off the screen when not opened)
       if (fromLeft) {
-        translation = -drawerWidth;
+        translateX = -drawerWidth;
       } else {
-        translation = containerWidth;
+        translateX = containerWidth;
       }
-      translation += drawerOffset.value;
+      translateX += drawerOffset.value;
     } else {
       // drawer is stationary (in this case drawer is below the content
       // so it's anchored left edge to left edge or right to right)
       if (fromLeft) {
-        translation = 0;
+        translateX = 0;
       } else {
-        translation = containerWidth - drawerWidth;
+        translateX = containerWidth - drawerWidth;
       }
     }
 
     // if the drawer is not visible move it off the screen to prevent it
     // from intercepting touch events on Android
     if (drawerOffset.value === 0) {
-      translation = 10000;
+      translateX = 10000;
     }
 
     return {
       flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
-      transform: [{ translateX: translation }],
+      transform: [{ translateX }],
     };
   });
 
   const containerStyle = useAnimatedStyle(() => {
-    let translation = 0;
+    let translateX = 0;
 
     if (containerSlide) {
       // the container should be moved with the gesture
-      translation = drawerOffset.value;
+      translateX = drawerOffset.value;
     }
 
     return {
-      transform: [{ translateX: translation }],
+      transform: [{ translateX }],
     };
   });
 
