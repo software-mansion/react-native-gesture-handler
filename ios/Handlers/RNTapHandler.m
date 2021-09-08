@@ -77,7 +77,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
     // is called (it resets the gesture handler), making it send whatever the last known state as oldState
     // in the event. If we reset it here it correctly sends UNDETERMINED as oldState.
     [_gestureHandler reset];
-    _initPosition = [self locationInView:self.view];
+    _initPosition = [self locationInView:self.view.window];
   }
   _tapsSoFar++;
   if (_tapsSoFar) {
@@ -118,7 +118,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 }
 
 - (CGPoint)translationInView {
-  CGPoint currentPosition = [self locationInView:self.view];
+  CGPoint currentPosition = [self locationInView:self.view.window];
   return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
 }
 
