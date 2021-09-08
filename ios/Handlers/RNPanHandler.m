@@ -136,7 +136,7 @@
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
-  CGPoint trans = [self translationInView:self.view];
+  CGPoint trans = [self translationInView:self.view.window];
   if (!isnan(_failOffsetXStart) && trans.x < _failOffsetXStart) {
     return YES;
   }
@@ -154,7 +154,7 @@
 
 - (BOOL)shouldActivateUnderCustomCriteria
 {
-  CGPoint trans = [self translationInView:self.view];
+  CGPoint trans = [self translationInView:self.view.window];
   if (!isnan(_activeOffsetXStart) && trans.x < _activeOffsetXStart) {
     return YES;
   }
@@ -280,7 +280,7 @@
   return [RNGestureHandlerEventExtraData
           forPan:[recognizer locationInView:recognizer.view]
           withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-          withTranslation:[recognizer translationInView:recognizer.view]
+          withTranslation:[recognizer translationInView:recognizer.view.window]
           withVelocity:[recognizer velocityInView:recognizer.view.window]
           withNumberOfTouches:recognizer.numberOfTouches];
 }
