@@ -94,22 +94,21 @@ export class SimultaneousGesture extends ComposedGesture {
 }
 
 export class ExclusiveGesture extends ComposedGesture {
-  constructor(first: Gesture, second: Gesture) {
-    super(first, second);
-  }
-
   prepare() {
-    const leftSide = this.gestures[0].toGestureArray();
+    const gestureArrays = this.gestures.map((gesture) =>
+      gesture.toGestureArray()
+    );
 
-    this.prepareSingleGesture(
-      this.gestures[0],
-      this.simultaneousGestures,
-      this.requireGesturesToFail
-    );
-    this.prepareSingleGesture(
-      this.gestures[1],
-      this.simultaneousGestures,
-      this.requireGesturesToFail.concat(leftSide)
-    );
+    let requireToFail: GestureType[] = [];
+
+    for (let i = 0; i < this.gestures.length; i++) {
+      this.prepareSingleGesture(
+        this.gestures[i],
+        this.simultaneousGestures,
+        this.requireGesturesToFail.concat(requireToFail)
+      );
+
+      requireToFail = requireToFail.concat(gestureArrays[i]);
+    }
   }
 }
