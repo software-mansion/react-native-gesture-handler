@@ -12,6 +12,7 @@ import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
 import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
+import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
@@ -21,7 +22,8 @@ export type GestureType =
   | BaseGesture<RotationGestureHandlerEventPayload>
   | BaseGesture<PinchGestureHandlerEventPayload>
   | BaseGesture<FlingGestureHandlerEventPayload>
-  | BaseGesture<ForceTouchGestureHandlerEventPayload>;
+  | BaseGesture<ForceTouchGestureHandlerEventPayload>
+  | BaseGesture<NativeViewGestureHandlerPayload>;
 
 export type GestureRef = number | GestureType | React.RefObject<GestureType>;
 export interface BaseGestureConfig
