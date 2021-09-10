@@ -13,31 +13,31 @@ import { RotationGesture } from './rotationGesture';
 import { TapGesture } from './tapGesture';
 
 export const GestureObjects = {
-  Tap() {
+  Tap: () => {
     return new TapGesture();
   },
 
-  Pan() {
+  Pan: () => {
     return new PanGesture();
   },
 
-  Pinch() {
+  Pinch: () => {
     return new PinchGesture();
   },
 
-  Rotation() {
+  Rotation: () => {
     return new RotationGesture();
   },
 
-  Fling() {
+  Fling: () => {
     return new FlingGesture();
   },
 
-  LongPress() {
+  LongPress: () => {
     return new LongPressGesture();
   },
 
-  ForceTouch() {
+  ForceTouch: () => {
     return new ForceTouchGesture();
   },
 
@@ -45,7 +45,7 @@ export const GestureObjects = {
    * Builds a composed gesture consisting of gestures provided as parameters.
    * The first one that becomes active cancels the rest of gestures.
    */
-  Race(...gestures: Gesture[]) {
+  Race: (...gestures: Gesture[]) => {
     return new ComposedGesture(...gestures);
   },
 
@@ -55,7 +55,7 @@ export const GestureObjects = {
    * @param second A gesture to run simultaneously with the first one
    * @returns ComposedGesture consisting of the gestures provided as parameters.
    */
-  Simultaneous(first: Gesture, second: Gesture) {
+  Simultaneous: (first: Gesture, second: Gesture) => {
     return new SimultaneousGesture(first, second);
   },
 
@@ -69,7 +69,7 @@ export const GestureObjects = {
    * @param second A gesture with lower priority
    * @returns ComposedGesture consisting of the gestures provided as parameters.
    */
-  Exclusive(first: Gesture, second: Gesture) {
+  Exclusive: (first: Gesture, second: Gesture) => {
     return new ExclusiveGesture(first, second);
   },
 };
