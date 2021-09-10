@@ -163,13 +163,17 @@ export abstract class BaseGesture<
     return this;
   }
 
-  simultaneousWithExternalGesture(gesture: Exclude<GestureRef, number>) {
-    this.addDependency('simultaneousWith', gesture);
+  simultaneousWithExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
+    for (const gesture of gestures) {
+      this.addDependency('simultaneousWith', gesture);
+    }
     return this;
   }
 
-  requireExternalGestureToFail(gesture: Exclude<GestureRef, number>) {
-    this.addDependency('requireToFail', gesture);
+  requireExternalGestureToFail(...gestures: Exclude<GestureRef, number>[]) {
+    for (const gesture of gestures) {
+      this.addDependency('requireToFail', gesture);
+    }
     return this;
   }
 
