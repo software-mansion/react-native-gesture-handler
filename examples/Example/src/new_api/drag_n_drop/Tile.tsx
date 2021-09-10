@@ -60,11 +60,11 @@ function Tile({ data, draggingActive, tileSize, isActive }: TileProps) {
     return {
       transform: [
         {
-          rotateZ: interpolate(
+          rotateZ: `${interpolate(
             shakeAnimation.value,
             [0, 0.3, 0.7, 1],
-            [0, -0.07, 0.07, 0]
-          ),
+            [0, -5, 5, 0]
+          )}deg`,
         },
         {
           scale: tileScale.value,

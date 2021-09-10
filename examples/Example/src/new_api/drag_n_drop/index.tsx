@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import DragAndDrop, { DraggableItemData } from './DragAndDrop';
 import Tile, { ColorTile } from './Tile';
 
@@ -23,7 +24,7 @@ const COLORS_ITEMS = COLORS.map((c) => ({
 
 const Example = () => {
   const handleOrderChange = (items: ColorTile[]) => {
-    // console.log(items);
+    // do stuff with newly ordered items
   };
 
   const renderItem = ({

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useRef } from 'react';
+import React, { FunctionComponent } from 'react';
 import { StyleSheet } from 'react-native';
 import {
   PanGestureHandlerEventPayload,
@@ -6,6 +6,7 @@ import {
   GestureDetector,
 } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { TapGesture } from '../../../../../src/handlers/gestures/tapGesture';
 
 type AnimatedPostion = {
   x: Animated.SharedValue<number>;
@@ -19,7 +20,9 @@ interface DraggableProps {
   enabled: boolean;
   isActive: boolean;
   translation: AnimatedPostion;
+  position: { x: number; y: number };
   dragGesture: any;
+  tapEndGesture: any;
   tileSize: number;
   rowGap: number;
   columnGap: number;
@@ -32,30 +35,16 @@ const Draggable: FunctionComponent<DraggableProps> = ({
   isActive,
   translation,
   dragGesture,
+  tapEndGesture,
   columnGap,
   rowGap,
+  position,
 }) => {
-  const [position, setPosition] = useState<{ x: number; y: number }>({
-    x: 0,
-    y: 0,
-  });
-
-  const elementRef = useRef<Animated.View>(null);
-  const measurePosition = () => {
-    elementRef?.current?.measure((x: number, y: number) => {
-      console.log(x, y);
-      setPosition({ x, y });
-      onLongPress(id);
-    });
-  };
-
   const tapGesture = Gesture.LongPress()
     .minDuration(300)
-    .shouldCancelWhenOutside(false)
-    .onStart(() => {
-      measurePosition();
-    })
-    .simultaneousWithExternalGesture(dragGesture);
+    .onStart(() => onLongPress(id))
+    .simultaneousWithExternalGesture(dragGesture)
+    .simultaneousWithExternalGesture(tapEndGesture);
 
   const translateStyle = useAnimatedStyle(() => {
     return {
@@ -73,7 +62,6 @@ const Draggable: FunctionComponent<DraggableProps> = ({
   return (
     <GestureDetector gesture={tapGesture}>
       <Animated.View
-        ref={elementRef}
         style={[
           isActive
             ? { ...styles.absolute, left: position.x, top: position.y }

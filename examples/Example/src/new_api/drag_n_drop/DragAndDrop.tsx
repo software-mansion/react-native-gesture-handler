@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { LayoutAnimation, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  LayoutAnimation,
+  Platform,
+  StyleSheet,
+  UIManager,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -8,6 +15,12 @@ import {
 import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { getSizeConstants } from './constants';
 import Draggable from './Draggable';
+
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
 
 export interface DraggableItemData<T> {
   data: T;
@@ -82,6 +95,7 @@ function DragAndDrop<T extends { id: string }>({
 
   const disableDragging = () => {
     if (!dragActive) return;
+
     updateDataOnDragEnd();
     setActiveElementId(null);
     setDragActive(false);
@@ -102,43 +116,33 @@ function DragAndDrop<T extends { id: string }>({
     return index !== -1 ? index : null;
   };
 
-  const _renderItems = () => {
-    const newData = [...data];
-
-    const activeElementIndex = getActiveElementIndex();
-    if (placeholderIndex !== null) {
-      if (activeElementIndex !== null) {
-        newData.splice(activeElementIndex, 1);
-      }
-      newData.splice(placeholderIndex, 0, PlaceholderComponent);
-      const activeElement = getActiveElementById();
-      if (activeElement) {
-        newData.push(activeElement);
-      }
-    }
-    return newData.map(_renderItem);
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const calculateActiveElementPositionFromIndex = (index: number | null) => {
+  const getItemCenterPosition = (index: number | null) => {
     if (!index) {
-      return;
+      return null;
     }
     const row = Math.floor(index / itemsInRowCount) + 1;
 
-    const activeElementCenterPointY = row * ROW_HEIGHT - TILE_SIZE / 2;
+    const yCenterPosition = row * ROW_HEIGHT - TILE_SIZE / 2;
 
     const elementsBeforeCount = (row - 1) * itemsInRowCount;
-    const activeElementCenterPointX =
+    const xCenterPosition =
       TILE_WITH_MARGIN_SIZE * (index + 1 - elementsBeforeCount) - TILE_SIZE / 2;
 
-    setActiveElementInitialPosition({
-      x: activeElementCenterPointX,
-      y: activeElementCenterPointY,
-    });
+    return { x: xCenterPosition, y: yCenterPosition };
   };
 
-  const calculatePlaceholderIndexFromPosition = ({
+  const setActiveElementPositionFromIndex = () => {
+    const index = getActiveElementIndex();
+    const activeElementCenterPosition = getItemCenterPosition(index);
+
+    if (!activeElementCenterPosition) {
+      return;
+    }
+
+    setActiveElementInitialPosition(activeElementCenterPosition);
+  };
+
+  const setPlaceholderIndexFromGesturePosition = ({
     translationX,
     translationY,
   }: PanGestureHandlerEventPayload) => {
@@ -168,14 +172,14 @@ function DragAndDrop<T extends { id: string }>({
 
   useEffect(() => {
     // react to activeElement change
-    calculateActiveElementPositionFromIndex(getActiveElementIndex());
+    setActiveElementPositionFromIndex();
     setPlaceholderIndex(getActiveElementIndex());
   }, [activeElementId]);
 
   const onPositionUpdate = (e: PanGestureHandlerEventPayload) => {
     const { translationX, translationY } = e;
 
-    calculatePlaceholderIndexFromPosition(e);
+    setPlaceholderIndexFromGesturePosition(e);
     activeElementTranslation.x.value = withSpring(translationX, { mass: 0.5 });
     activeElementTranslation.y.value = withSpring(translationY, { mass: 0.5 });
   };
@@ -189,11 +193,27 @@ function DragAndDrop<T extends { id: string }>({
   const dragGesture = Gesture.Pan()
     .onUpdate(onUpdateHandler)
     .onEnd(() => {
-      if (!dragActive) return;
       disableDragging();
     });
 
   const tapEndedGesture = Gesture.Tap().onEnd(disableDragging);
+
+  const _renderItems = () => {
+    const newData = [...data];
+
+    const activeElementIndex = getActiveElementIndex();
+    if (placeholderIndex !== null) {
+      if (activeElementIndex !== null) {
+        newData.splice(activeElementIndex, 1);
+      }
+      newData.splice(placeholderIndex, 0, PlaceholderComponent);
+      const activeElement = getActiveElementById();
+      if (activeElement) {
+        newData.push(activeElement);
+      }
+    }
+    return newData.map(_renderItem);
+  };
 
   const _renderItem = (item: T) => {
     const isActive = activeElementId === item.id;
@@ -207,9 +227,14 @@ function DragAndDrop<T extends { id: string }>({
         isActive={activeElementId === item.id}
         translation={activeElementTranslation}
         dragGesture={dragGesture}
+        tapEndGesture={tapEndedGesture}
         tileSize={TILE_SIZE}
         rowGap={rowGap}
-        columnGap={columnGap}>
+        columnGap={columnGap}
+        position={{
+          x: activeElementInitialPosition.x - TILE_SIZE / 2,
+          y: activeElementInitialPosition.y - TILE_SIZE / 2,
+        }}>
         {renderItem({
           data: item,
           isActive,
@@ -221,25 +246,22 @@ function DragAndDrop<T extends { id: string }>({
   };
 
   return (
-    <GestureDetector
-      gesture={Gesture.Simultaneous(dragGesture, tapEndedGesture)}>
-      <View style={containerStyle}>
-        <View
-          style={[
-            styles.container,
-            { paddingHorizontal: columnGap / 2, paddingVertical: rowGap / 2 },
-          ]}>
-          {_renderItems()}
-        </View>
+    <GestureDetector gesture={dragGesture}>
+      <View
+        style={[
+          styles.container,
+          { paddingHorizontal: columnGap / 2, paddingVertical: rowGap / 2 },
+        ]}>
+        {_renderItems()}
       </View>
     </GestureDetector>
   );
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
+    backgroundColor: 'transparent',
   },
 });
 
