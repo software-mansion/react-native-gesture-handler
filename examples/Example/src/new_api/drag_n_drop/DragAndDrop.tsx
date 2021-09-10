@@ -5,7 +5,6 @@ import {
   StyleSheet,
   UIManager,
   View,
-  ViewStyle,
 } from 'react-native';
 import {
   Gesture,
@@ -36,13 +35,11 @@ interface DragAndDropProps<T> {
   renderItem: (data: DraggableItemData<T>) => React.ReactElement;
   rowGap?: number;
   columnGap: number;
-  containerStyle?: ViewStyle;
 }
 
 function DragAndDrop<T extends { id: string }>({
   items,
   renderItem,
-  containerStyle,
   onOrderUpdate,
   itemsInRowCount,
   columnGap,

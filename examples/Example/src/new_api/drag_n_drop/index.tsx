@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import DragAndDrop, { DraggableItemData } from './DragAndDrop';
 import Tile, { ColorTile } from './Tile';
 
