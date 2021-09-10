@@ -11,7 +11,11 @@ import {
   GestureDetector,
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
-import { useSharedValue, withSpring } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { getSizeConstants } from './constants';
 import Draggable from './Draggable';
 
@@ -90,14 +94,27 @@ function DragAndDrop<T extends { id: string }>({
     setDragActive(true);
   };
 
-  const disableDragging = () => {
-    if (!dragActive) return;
-
-    updateDataOnDragEnd();
-    setActiveElementId(null);
+  const updateDataOnEnd = () => {
     setDragActive(false);
+    setActiveElementId(null);
+    updateDataOnDragEnd();
     activeElementTranslation.x.value = 0;
     activeElementTranslation.y.value = 0;
+  };
+
+  const onDragEnd = () => {
+    const newPlacePosition = getItemCenterPosition(placeholderIndex);
+    if (newPlacePosition !== null) {
+      activeElementTranslation.x.value = withTiming(
+        newPlacePosition.x - activeElementInitialPosition.x,
+        { duration: 100 }
+      );
+      activeElementTranslation.y.value = withTiming(
+        newPlacePosition.y - activeElementInitialPosition.y,
+        { duration: 100 }
+      );
+      setTimeout(updateDataOnEnd, 120);
+    }
   };
 
   const getActiveElementById = () => {
@@ -114,7 +131,7 @@ function DragAndDrop<T extends { id: string }>({
   };
 
   const getItemCenterPosition = (index: number | null) => {
-    if (!index) {
+    if (index === null) {
       return null;
     }
     const row = Math.floor(index / itemsInRowCount) + 1;
@@ -187,13 +204,12 @@ function DragAndDrop<T extends { id: string }>({
         /* empty handler */
       };
 
-  const dragGesture = Gesture.Pan()
-    .onUpdate(onUpdateHandler)
-    .onEnd(() => {
-      disableDragging();
-    });
-
-  const tapEndedGesture = Gesture.Tap().onEnd(disableDragging);
+  const dragGesture = Gesture.Pan().onUpdate(onUpdateHandler).onEnd(onDragEnd);
+  const tapEndedGesture = Gesture.Tap().onEnd((_, isFinished) => {
+    if (isFinished) {
+      updateDataOnEnd();
+    }
+  });
 
   const _renderItems = () => {
     const newData = [...data];
@@ -243,7 +259,7 @@ function DragAndDrop<T extends { id: string }>({
   };
 
   return (
-    <GestureDetector gesture={dragGesture}>
+    <GestureDetector gesture={Gesture.Exclusive(dragGesture, tapEndedGesture)}>
       <View
         style={[
           styles.container,
@@ -258,7 +274,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    backgroundColor: 'transparent',
+    backgroundColor: 'transparent', // needed for gestures to work on android
   },
 });
 
