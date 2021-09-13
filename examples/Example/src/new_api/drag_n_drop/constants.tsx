@@ -21,3 +21,5 @@ export function getSizeConstants({
     ROW_HEIGHT,
   };
 }
+
+export const ANIMATE_TO_NEW_PLACE_DURATION = 100;

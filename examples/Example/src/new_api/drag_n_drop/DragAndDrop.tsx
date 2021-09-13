@@ -16,13 +16,14 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { getSizeConstants } from './constants';
+import { ANIMATE_TO_NEW_PLACE_DURATION, getSizeConstants } from './constants';
 import Draggable from './Draggable';
 
-if (Platform.OS === 'android') {
-  if (UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
+if (
+  Platform.OS === 'android' &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 export interface DraggableItemData<T> {
@@ -55,7 +56,7 @@ function DragAndDrop<T extends { id: string }>({
     columnGap,
   });
 
-  const PlaceholderComponent = { id: 'dnd-transparent' } as T;
+  const PlaceholderComponent = { id: 'dnd-placeholder' } as T;
   const [data, setData] = useState(items);
   const [dragActive, setDragActive] = useState(false);
   const [activeElementId, setActiveElementId] = useState<null | string>(null);
@@ -80,7 +81,7 @@ function DragAndDrop<T extends { id: string }>({
     const activeElementIndex = getActiveElementIndex();
     if (activeElementIndex !== null && placeholderIndex !== null) {
       newData.splice(activeElementIndex, 1);
-      const activeElement = getActiveElementById();
+      const activeElement = getActiveElement();
       if (activeElement) {
         newData.splice(placeholderIndex, 0, activeElement);
       }
@@ -107,26 +108,24 @@ function DragAndDrop<T extends { id: string }>({
     if (newPlacePosition !== null) {
       activeElementTranslation.x.value = withTiming(
         newPlacePosition.x - activeElementInitialPosition.x,
-        { duration: 100 }
+        { duration: ANIMATE_TO_NEW_PLACE_DURATION }
       );
       activeElementTranslation.y.value = withTiming(
         newPlacePosition.y - activeElementInitialPosition.y,
-        { duration: 100 }
+        { duration: ANIMATE_TO_NEW_PLACE_DURATION }
       );
-      setTimeout(updateDataOnEnd, 120);
+      // we want to wait till animation to a new place will finish
+      // I think there's a bug in RN2 with how withTiming callback works so we can't use it :(
+      setTimeout(updateDataOnEnd, ANIMATE_TO_NEW_PLACE_DURATION + 20);
     }
   };
 
-  const getActiveElementById = () => {
+  const getActiveElement = () => {
     return data.find((el) => el.id === activeElementId);
   };
 
-  const getActiveElementIndexById = () => {
-    return data.findIndex((el) => el.id === activeElementId);
-  };
-
   const getActiveElementIndex = () => {
-    const index = getActiveElementIndexById();
+    const index = data.findIndex((el) => el.id === activeElementId);
     return index !== -1 ? index : null;
   };
 
@@ -149,11 +148,9 @@ function DragAndDrop<T extends { id: string }>({
     const index = getActiveElementIndex();
     const activeElementCenterPosition = getItemCenterPosition(index);
 
-    if (!activeElementCenterPosition) {
-      return;
+    if (activeElementCenterPosition) {
+      setActiveElementInitialPosition(activeElementCenterPosition);
     }
-
-    setActiveElementInitialPosition(activeElementCenterPosition);
   };
 
   const setPlaceholderIndexFromGesturePosition = ({
