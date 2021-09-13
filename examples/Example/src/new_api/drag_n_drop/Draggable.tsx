@@ -4,9 +4,10 @@ import {
   PanGestureHandlerEventPayload,
   Gesture,
   GestureDetector,
-  PanGesture,
 } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { PanGesture } from '../../../../../src/handlers/gestures/panGesture';
+import { TapGesture } from '../../../../../src/handlers/gestures/tapGesture';
 
 type AnimatedPostion = {
   x: Animated.SharedValue<number>;
@@ -22,7 +23,7 @@ interface DraggableProps {
   translation: AnimatedPostion;
   position: { x: number; y: number };
   dragGesture: PanGesture;
-  tapEndGesture: any;
+  tapEndGesture: TapGesture;
   tileSize: number;
   rowGap: number;
   columnGap: number;
