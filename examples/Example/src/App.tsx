@@ -33,6 +33,7 @@ import Transformations from './new_api/transformations';
 import OverlapParents from './new_api/overlap_parent';
 import OverlapSiblings from './new_api/overlap_siblings';
 import Calculator from './new_api/calculator';
+import BottomSheetNewApi from './new_api/bottom_sheet';
 
 interface Example {
   name: string;
@@ -93,6 +94,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Overlap parents', component: OverlapParents },
       { name: 'Overlap siblings', component: OverlapSiblings },
       { name: 'Calculator', component: Calculator },
+      { name: 'Bottom Sheet', component: BottomSheetNewApi },
     ],
   },
 ];
