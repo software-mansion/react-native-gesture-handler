@@ -81,3 +81,5 @@ export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPaylo
     return this;
   }
 }
+
+export type PanGestureType = InstanceType<typeof PanGesture>;

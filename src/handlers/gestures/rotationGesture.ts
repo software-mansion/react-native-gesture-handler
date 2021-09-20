@@ -8,3 +8,5 @@ export class RotationGesture extends ContinousBaseGesture<RotationGestureHandler
     this.handlerName = 'RotationGestureHandler';
   }
 }
+
+export type RotationGestureType = InstanceType<typeof RotationGesture>;
