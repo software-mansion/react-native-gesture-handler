@@ -217,7 +217,7 @@ function DragAndDrop<T extends { id: string }>({
         newData.splice(activeElementIndex, 1);
       }
       newData.splice(placeholderIndex, 0, PlaceholderComponent);
-      const activeElement = getActiveElementById();
+      const activeElement = getActiveElement();
       if (activeElement) {
         newData.push(activeElement);
       }
