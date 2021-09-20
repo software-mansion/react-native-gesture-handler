@@ -72,24 +72,18 @@ export class ComposedGesture extends Gesture {
 }
 
 export class SimultaneousGesture extends ComposedGesture {
-  constructor(first: Gesture, second: Gesture) {
-    super(first, second);
-  }
-
   prepare() {
-    const leftSide = this.gestures[0].toGestureArray();
-    const rightSide = this.gestures[1].toGestureArray();
+    const simultaneousArray = this.gestures
+      .flatMap((gesture) => gesture.toGestureArray())
+      .concat(this.simultaneousGestures);
 
-    this.prepareSingleGesture(
-      this.gestures[0],
-      this.simultaneousGestures.concat(rightSide),
-      this.requireGesturesToFail
-    );
-    this.prepareSingleGesture(
-      this.gestures[1],
-      this.simultaneousGestures.concat(leftSide),
-      this.requireGesturesToFail
-    );
+    for (const gesture of this.gestures) {
+      this.prepareSingleGesture(
+        gesture,
+        simultaneousArray,
+        this.requireGesturesToFail
+      );
+    }
   }
 }
 
