@@ -12,6 +12,7 @@ import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
 import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
+import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
@@ -21,7 +22,8 @@ export type GestureType =
   | BaseGesture<RotationGestureHandlerEventPayload>
   | BaseGesture<PinchGestureHandlerEventPayload>
   | BaseGesture<FlingGestureHandlerEventPayload>
-  | BaseGesture<ForceTouchGestureHandlerEventPayload>;
+  | BaseGesture<ForceTouchGestureHandlerEventPayload>
+  | BaseGesture<NativeViewGestureHandlerPayload>;
 
 export type GestureRef = number | GestureType | React.RefObject<GestureType>;
 export interface BaseGestureConfig
@@ -163,13 +165,17 @@ export abstract class BaseGesture<
     return this;
   }
 
-  simultaneousWithExternalGesture(gesture: Exclude<GestureRef, number>) {
-    this.addDependency('simultaneousWith', gesture);
+  simultaneousWithExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
+    for (const gesture of gestures) {
+      this.addDependency('simultaneousWith', gesture);
+    }
     return this;
   }
 
-  requireExternalGestureToFail(gesture: Exclude<GestureRef, number>) {
-    this.addDependency('requireToFail', gesture);
+  requireExternalGestureToFail(...gestures: Exclude<GestureRef, number>[]) {
+    for (const gesture of gestures) {
+      this.addDependency('requireToFail', gesture);
+    }
     return this;
   }
 
