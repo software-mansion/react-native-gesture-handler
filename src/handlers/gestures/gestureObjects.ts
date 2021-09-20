@@ -59,14 +59,11 @@ export const GestureObjects = {
   /**
    * Builds a composed gesture where only one of the provided gestures can become active.
    * Priority is decided through the order of gestures: the first one has higher priority
-   * than the second one.
+   * than the second one, second one has higher priority than the third one, and so on.
    * For example, to make a gesture that recognizes both single and double tap you need
    * to call Exclusive(doubleTap, singleTap).
-   * @param first A gesture with higher priority
-   * @param second A gesture with lower priority
-   * @returns ComposedGesture consisting of the gestures provided as parameters.
    */
-  Exclusive(first: Gesture, second: Gesture) {
-    return new ExclusiveGesture(first, second);
+  Exclusive(...gestures: Gesture[]) {
+    return new ExclusiveGesture(...gestures);
   },
 };
