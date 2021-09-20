@@ -11,6 +11,7 @@ import { PanGesture } from './panGesture';
 import { PinchGesture } from './pinchGesture';
 import { RotationGesture } from './rotationGesture';
 import { TapGesture } from './tapGesture';
+import { NativeGesture } from './nativeGesture';
 
 export const GestureObjects = {
   Tap() {
@@ -39,6 +40,10 @@ export const GestureObjects = {
 
   ForceTouch() {
     return new ForceTouchGesture();
+  },
+
+  Native() {
+    return new NativeGesture();
   },
 
   /**
