@@ -54,6 +54,19 @@ export type {
 } from './handlers/NativeViewGestureHandler';
 export { GestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
+export { TapGesture } from './handlers/gestures/tapGesture';
+export { PanGesture } from './handlers/gestures/panGesture';
+export { FlingGesture } from './handlers/gestures/flingGesture';
+export { LongPressGesture } from './handlers/gestures/longPressGesture';
+export { PinchGesture } from './handlers/gestures/pinchGesture';
+export { RotationGesture } from './handlers/gestures/rotationGesture';
+export { ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
+export { NativeGesture } from './handlers/gestures/nativeGesture';
+export {
+  ComposedGesture,
+  SimultaneousGesture,
+  ExclusiveGesture,
+} from './handlers/gestures/gestureComposition';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
   RawButtonProps,
