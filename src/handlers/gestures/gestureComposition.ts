@@ -1,7 +1,3 @@
-/* eslint-disable no-useless-constructor */
-/* eslint-disable @typescript-eslint/no-useless-constructor */
-// eslint is convinced that constructor limiting the number of arguments an
-// inheriting class can accept is useless
 import { BaseGesture, Gesture, GestureRef, GestureType } from './gesture';
 
 function extendRelation(

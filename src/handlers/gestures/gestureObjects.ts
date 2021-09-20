@@ -14,35 +14,35 @@ import { TapGesture } from './tapGesture';
 import { NativeGesture } from './nativeGesture';
 
 export const GestureObjects = {
-  Tap() {
+  Tap: () => {
     return new TapGesture();
   },
 
-  Pan() {
+  Pan: () => {
     return new PanGesture();
   },
 
-  Pinch() {
+  Pinch: () => {
     return new PinchGesture();
   },
 
-  Rotation() {
+  Rotation: () => {
     return new RotationGesture();
   },
 
-  Fling() {
+  Fling: () => {
     return new FlingGesture();
   },
 
-  LongPress() {
+  LongPress: () => {
     return new LongPressGesture();
   },
 
-  ForceTouch() {
+  ForceTouch: () => {
     return new ForceTouchGesture();
   },
 
-  Native() {
+  Native: () => {
     return new NativeGesture();
   },
 
@@ -50,7 +50,7 @@ export const GestureObjects = {
    * Builds a composed gesture consisting of gestures provided as parameters.
    * The first one that becomes active cancels the rest of gestures.
    */
-  Race(...gestures: Gesture[]) {
+  Race: (...gestures: Gesture[]) => {
     return new ComposedGesture(...gestures);
   },
 
