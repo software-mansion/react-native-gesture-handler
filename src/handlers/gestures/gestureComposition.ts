@@ -102,3 +102,8 @@ export class ExclusiveGesture extends ComposedGesture {
     }
   }
 }
+
+export type ComposedGestureType = InstanceType<typeof ComposedGesture>;
+export type RaceGestureType = ComposedGestureType;
+export type SimultaneousGestureType = InstanceType<typeof SimultaneousGesture>;
+export type ExclusiveGestureType = InstanceType<typeof ExclusiveGesture>;

@@ -48,3 +48,5 @@ export class TapGesture extends BaseGesture<TapGestureHandlerEventPayload> {
     return this;
   }
 }
+
+export type TapGestureType = InstanceType<typeof TapGesture>;

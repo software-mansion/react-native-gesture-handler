@@ -23,3 +23,5 @@ export class NativeGesture extends BaseGesture<NativeViewGestureHandlerPayload> 
     return this;
   }
 }
+
+export type NativeGestureType = InstanceType<typeof NativeGesture>;

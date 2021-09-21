@@ -28,3 +28,5 @@ export class ForceTouchGesture extends ContinousBaseGesture<ForceTouchGestureHan
     return this;
   }
 }
+
+export type ForceTouchGestureType = InstanceType<typeof ForceTouchGesture>;
