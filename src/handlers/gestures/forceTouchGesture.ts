@@ -13,7 +13,7 @@ export class ForceTouchGesture extends ContinousBaseGesture<ForceTouchGestureHan
     this.handlerName = 'ForceTouchGestureHandler';
   }
 
-  setMinForce(force: number) {
+  minForce(force: number) {
     this.config.minForce = force;
     return this;
   }
