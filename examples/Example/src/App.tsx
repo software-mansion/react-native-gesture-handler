@@ -34,6 +34,7 @@ import Transformations from './new_api/transformations';
 import OverlapParents from './new_api/overlap_parent';
 import OverlapSiblings from './new_api/overlap_siblings';
 import Calculator from './new_api/calculator';
+import DragNDrop from './new_api/drag_n_drop';
 
 interface Example {
   name: string;
@@ -98,6 +99,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Overlap parents', component: OverlapParents },
       { name: 'Overlap siblings', component: OverlapSiblings },
       { name: 'Calculator', component: Calculator },
+      { name: 'Drag and drop', component: DragNDrop },
     ],
   },
 ];
