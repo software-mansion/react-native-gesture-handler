@@ -71,10 +71,9 @@ function Photo() {
 
   const gesture = Gesture.Simultaneous(
     rotationGesture,
-    Gesture.Simultaneous(
-      scaleGesture,
-      Gesture.Simultaneous(panGesture, doubleTapGesture)
-    )
+    scaleGesture,
+    panGesture,
+    doubleTapGesture
   );
 
   return (

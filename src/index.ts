@@ -54,6 +54,20 @@ export type {
 } from './handlers/NativeViewGestureHandler';
 export { GestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
+export { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
+export { PanGestureType as PanGesture } from './handlers/gestures/panGesture';
+export { FlingGestureType as FlingGesture } from './handlers/gestures/flingGesture';
+export { LongPressGestureType as LongPressGesture } from './handlers/gestures/longPressGesture';
+export { PinchGestureType as PinchGesture } from './handlers/gestures/pinchGesture';
+export { RotationGestureType as RotationGesture } from './handlers/gestures/rotationGesture';
+export { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
+export { NativeGestureType as NativeGesture } from './handlers/gestures/nativeGesture';
+export {
+  ComposedGestureType as ComposedGesture,
+  RaceGestureType as RaceGesture,
+  SimultaneousGestureType as SimultaneousGesture,
+  ExclusiveGestureType as ExclusiveGesture,
+} from './handlers/gestures/gestureComposition';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
   RawButtonProps,
@@ -120,6 +134,10 @@ export type {
 } from './handlers/gestureHandlerTypesCompat';
 
 export { default as Swipeable } from './components/Swipeable';
+export {
+  DrawerLayout as BetterDrawerLayout,
+  DrawerLayoutController,
+} from './components/BetterDrawerLayout';
 export type {
   DrawerLayoutProps,
   DrawerPosition,
