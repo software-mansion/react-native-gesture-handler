@@ -22,7 +22,7 @@ const COLORS_ITEMS = COLORS.map((c) => ({
 }));
 
 const Example = () => {
-  const handleOrderChange = (items: ColorTile[]) => {
+  const handleOrderChange = (_items: ColorTile[]) => {
     // do stuff with newly ordered items
   };
 

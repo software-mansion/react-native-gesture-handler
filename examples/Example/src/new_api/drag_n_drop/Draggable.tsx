@@ -4,10 +4,10 @@ import {
   PanGestureHandlerEventPayload,
   Gesture,
   GestureDetector,
+  PanGesture,
+  TapGesture,
 } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { PanGesture } from '../../../../../src/handlers/gestures/panGesture';
-import { TapGesture } from '../../../../../src/handlers/gestures/tapGesture';
 
 type AnimatedPostion = {
   x: Animated.SharedValue<number>;
