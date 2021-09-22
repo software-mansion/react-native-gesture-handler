@@ -1,15 +1,8 @@
 import React, { useRef, useState } from 'react';
-import {
-  Dimensions,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import {
   Gesture,
   GestureDetector,
-  NativeViewGestureHandler,
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, {
@@ -27,33 +20,12 @@ const FULLY_OPEN_SNAP_POINT = SNAP_POINTS_FROM_TOP[0];
 const CLOSED_SNAP_POINT = SNAP_POINTS_FROM_TOP[SNAP_POINTS_FROM_TOP.length - 1];
 
 function Example() {
-  const nativeViewRef = useRef(Gesture.Pan());
   const panGestureRef = useRef(Gesture.Pan());
   const blockScrollUntilAtTheTopRef = useRef(Gesture.Tap());
   const [snapPoint, setSnapPoint] = useState(CLOSED_SNAP_POINT);
   const translationY = useSharedValue(0);
   const scrollOffset = useSharedValue(0);
   const bottomSheetTranslateY = useSharedValue(CLOSED_SNAP_POINT);
-
-  const saveScrollOffset = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    scrollOffset.value = e.nativeEvent.contentOffset.y;
-  };
-
-  const onPanHandlerUpdate = (e: PanGestureHandlerEventPayload) => {
-    translationY.value = e.translationY - scrollOffset.value;
-  };
-
-  const onHeaderHandlerUpdate = (e: PanGestureHandlerEventPayload) => {
-    translationY.value = e.translationY;
-  };
-
-  const onHeaderHandlerEnd = (e: PanGestureHandlerEventPayload) => {
-    onHandlerEnd(e);
-  };
-
-  const onPanHandlerEnd = (e: PanGestureHandlerEventPayload) => {
-    onHandlerEnd(e);
-  };
 
   const onHandlerEnd = ({ velocityY }: PanGestureHandlerEventPayload) => {
     const dragToss = 0.05;
@@ -89,20 +61,35 @@ function Example() {
     setSnapPoint(destSnapPoint);
   };
 
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      // when bottom sheet is not fully opened scroll offset should not influence
+      // its position (prevents random snapping when opening bottom sheet when
+      // the content is already scrolled)
+      if (snapPoint === FULLY_OPEN_SNAP_POINT) {
+        translationY.value = e.translationY - scrollOffset.value;
+      } else {
+        translationY.value = e.translationY;
+      }
+    })
+    .onEnd(onHandlerEnd)
+    .withRef(panGestureRef);
+
   const blockScrollUntilAtTheTop = Gesture.Tap()
     .maxDeltaY(snapPoint - FULLY_OPEN_SNAP_POINT)
     .maxDuration(100000)
+    .simultaneousWithExternalGesture(panGesture)
     .withRef(blockScrollUntilAtTheTopRef);
 
-  const panGesture = Gesture.Pan()
-    .onUpdate(onPanHandlerUpdate)
-    .onEnd(onPanHandlerEnd)
-    .simultaneousWithExternalGesture(nativeViewRef)
-    .withRef(panGestureRef);
-
   const headerGesture = Gesture.Pan()
-    .onUpdate(onHeaderHandlerUpdate)
-    .onEnd(onHeaderHandlerEnd);
+    .onUpdate((e) => {
+      translationY.value = e.translationY;
+    })
+    .onEnd(onHandlerEnd);
+
+  const scrollViewGesture = Gesture.Native().requireExternalGestureToFail(
+    blockScrollUntilAtTheTop
+  );
 
   const bottomSheetAnimatedStyle = useAnimatedStyle(() => {
     const translateY = bottomSheetTranslateY.value + translationY.value;
@@ -115,9 +102,9 @@ function Example() {
   });
 
   return (
-    <GestureDetector gesture={blockScrollUntilAtTheTop}>
-      <View style={styles.container}>
-        <LoremIpsum words={200} />
+    <View style={styles.container}>
+      <LoremIpsum words={200} />
+      <GestureDetector gesture={blockScrollUntilAtTheTop}>
         <Animated.View style={[styles.bottomSheet, bottomSheetAnimatedStyle]}>
           <GestureDetector gesture={headerGesture}>
             <View style={styles.header} />
@@ -127,23 +114,23 @@ function Example() {
               panGesture,
               blockScrollUntilAtTheTop
             )}>
-            <NativeViewGestureHandler
-              ref={nativeViewRef}
-              simultaneousHandlers={panGestureRef}
-              waitFor={blockScrollUntilAtTheTopRef}>
+            <GestureDetector
+              gesture={Gesture.Simultaneous(panGesture, scrollViewGesture)}>
               <Animated.ScrollView
                 bounces={false}
                 scrollEventThrottle={1}
-                onScrollBeginDrag={saveScrollOffset}>
+                onScrollBeginDrag={(e) => {
+                  scrollOffset.value = e.nativeEvent.contentOffset.y;
+                }}>
                 <LoremIpsum />
                 <LoremIpsum />
                 <LoremIpsum />
               </Animated.ScrollView>
-            </NativeViewGestureHandler>
+            </GestureDetector>
           </GestureDetector>
         </Animated.View>
-      </View>
-    </GestureDetector>
+      </GestureDetector>
+    </View>
   );
 }
 
