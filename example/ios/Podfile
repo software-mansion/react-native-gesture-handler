@@ -8,7 +8,7 @@ target 'Example' do
 
   use_react_native!(:path => config["reactNativePath"])
 
-  pod 'RNGestureHandler', :path => '../../..'
+  pod 'RNGestureHandler', :path => '../..'
 
   target 'ExampleTests' do
     inherit! :complete
