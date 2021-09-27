@@ -64,6 +64,13 @@ export default function Home() {
           zoom.value *= 0.95;
         }
       }
+    });
+
+  const buttonLongPressGesture = Gesture.LongPress()
+    .maxDistance(10000)
+    .onStart(() => {
+      'worklet';
+      runOnJS(startRecording)();
     })
     .onEnd(() => {
       'worklet';
@@ -71,11 +78,6 @@ export default function Home() {
         runOnJS(finishRecording)();
       }
     });
-
-  const buttonLongPressGesture = Gesture.LongPress().onStart(() => {
-    'worklet';
-    runOnJS(startRecording)();
-  });
 
   const previewPinchGesture = Gesture.Pinch()
     .onStart(() => {
@@ -90,8 +92,9 @@ export default function Home() {
   const buttonGesture = Gesture.Simultaneous(
     buttonLongPressGesture,
     Gesture.Exclusive(
-      Gesture.Exclusive(buttonDoubleTapGesture, buttonTapGesture),
-      buttonPanGesture
+      buttonPanGesture,
+      buttonDoubleTapGesture,
+      buttonTapGesture
     )
   );
 
