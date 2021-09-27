@@ -8,7 +8,10 @@ import {
   RectButton,
   BetterDrawerLayout,
 } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  interpolate,
+} from 'react-native-reanimated';
 
 const TYPES: DrawerType[] = ['front', 'back', 'back', 'slide'];
 const PARALLAX = [false, false, true, false];
@@ -63,7 +66,7 @@ function DrawerContent(
     transform: [
       {
         translateX: parallax
-          ? Animated.interpolate(offset.value, [0, 1], [fromLeft ? -50 : 50, 0])
+          ? interpolate(offset.value, [0, 1], [fromLeft ? -50 : 50, 0])
           : 0,
       },
     ],
