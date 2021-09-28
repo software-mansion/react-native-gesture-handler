@@ -10,7 +10,6 @@ export const panGestureHandlerProps = [
   'failOffsetY',
   'failOffsetX',
   'minDist',
-  'minPointers',
   'minVelocity',
   'minVelocityX',
   'minVelocityY',
@@ -114,6 +113,17 @@ interface CommonPanProperties {
    * activate. Should be a higher or equal to 0 integer.
    */
   minPointers?: number;
+
+  /**
+   * When the given number of fingers is placed on the screen and handler hasn't
+   * yet activated it will fail recognizing the gesture. Should be a higher or
+   * equal to 0 integer.
+   */
+  maxPointers?: number;
+
+  minVelocity?: number;
+  minVelocityX?: number;
+  minVelocityY?: number;
 }
 
 export interface PanGestureConfig extends CommonPanProperties {
@@ -235,22 +245,6 @@ export interface PanGestureHandlerProps
    * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
    */
   failOffsetX?: number | number[];
-  minVelocity?: number;
-  minVelocityX?: number;
-  minVelocityY?: number;
-
-  /**
-   * A number of fingers that is required to be placed before handler can
-   * activate. Should be a higher or equal to 0 integer.
-   */
-  minPointers?: number;
-
-  /**
-   * When the given number of fingers is placed on the screen and handler hasn't
-   * yet activated it will fail recognizing the gesture. Should be a higher or
-   * equal to 0 integer.
-   */
-  maxPointers?: number;
 }
 
 export type PanGestureHandler = typeof PanGestureHandler;
