@@ -126,7 +126,7 @@ function Output({ offset, expression, history }: OutputProps) {
   scrollView.current?.scrollToEnd({ animated: true });
 
   return (
-    <GestureDetector animatedGesture={dragGesture}>
+    <GestureDetector gesture={dragGesture}>
       <Animated.View
         style={[styles.output, translationStyle]}
         onLayout={measure}>
@@ -298,7 +298,7 @@ function Operations() {
   }
 
   return (
-    <GestureDetector animatedGesture={dragGesture}>
+    <GestureDetector gesture={dragGesture}>
       <Animated.View
         style={[styles.operations, translationStyle]}
         onLayout={measure}
@@ -336,7 +336,7 @@ function Button({ text, append }: ButtonProps) {
     });
 
   return (
-    <GestureDetector animatedGesture={tapHandler}>
+    <GestureDetector gesture={tapHandler}>
       <Animated.View style={styles.button}>
         <Animated.View style={[styles.buttonTextContainer, backgroundStyles]}>
           <Text style={styles.buttonText}>{text}</Text>

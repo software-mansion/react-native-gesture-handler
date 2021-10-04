@@ -166,7 +166,7 @@ function Overlay(props: OverlayProps) {
   });
 
   return (
-    <GestureDetector animatedGesture={tap}>
+    <GestureDetector gesture={tap}>
       <Animated.View style={[styles.overlay, overlayStyle]} />
     </GestureDetector>
   );
@@ -566,7 +566,7 @@ export const DrawerLayout = React.forwardRef<
     }
 
     return (
-      <GestureDetector animatedGesture={pan}>
+      <GestureDetector gesture={pan}>
         <Animated.View style={styles.main} onLayout={handleContainerLayout}>
           <Animated.View
             style={[

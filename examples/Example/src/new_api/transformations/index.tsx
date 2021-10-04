@@ -77,7 +77,7 @@ function Photo() {
   );
 
   return (
-    <GestureDetector animatedGesture={gesture}>
+    <GestureDetector gesture={gesture}>
       <Animated.View style={[styles.button, style]} />
     </GestureDetector>
   );

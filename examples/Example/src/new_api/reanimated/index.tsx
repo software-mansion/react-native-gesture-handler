@@ -45,7 +45,7 @@ function Ball() {
     });
 
   return (
-    <GestureDetector animatedGesture={gesture}>
+    <GestureDetector gesture={gesture}>
       <Animated.View style={[styles.ball, animatedStyles]} />
     </GestureDetector>
   );
