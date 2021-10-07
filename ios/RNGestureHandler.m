@@ -76,6 +76,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
         _tag = tag;
         _lastState = RNGestureHandlerStateUndetermined;
         _hitSlop = RNGHHitSlopEmpty;
+        _state = RNGestureHandlerStateBegan;
 
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -345,7 +346,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)reset
 {
-    _lastState = RNGestureHandlerStateUndetermined;
+    // do not reset states while gesture is tracking pointers, as gestureRecognizerShouldBegin
+    // might be called after some pointers are down, and after state manipulation by the user.
+    // Pointer tracker calls this method when it resets, and in that case it no longer tracks
+    // any pointers, thus entering this if
+    if (!_needsPointerData || _pointerTracker.trackedPointersCount == 0) {
+        _lastState = RNGestureHandlerStateUndetermined;
+        _state = RNGestureHandlerStateBegan;
+    }
 }
 
  - (BOOL)containsPointInView
