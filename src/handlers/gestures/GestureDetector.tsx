@@ -15,7 +15,12 @@ import {
   findNodeHandle,
   UnwrappedGestureHandlerEvent,
   UnwrappedGestureHandlerStateChangeEvent,
+  GesturePointerEvent,
 } from '../gestureHandlerCommon';
+import {
+  GestureStateManager,
+  GestureStateManagerType,
+} from './gestureStateManager';
 import { flingGestureHandlerProps } from '../FlingGestureHandler';
 import { forceTouchGestureHandlerProps } from '../ForceTouchGestureHandler';
 import { longPressGestureHandlerProps } from '../LongPressGestureHandler';
@@ -25,6 +30,7 @@ import {
 } from '../PanGestureHandler';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
+import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
 
 const ALLOWED_PROPS = [
@@ -225,9 +231,22 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     event:
       | UnwrappedGestureHandlerEvent
       | UnwrappedGestureHandlerStateChangeEvent
+      | GesturePointerEvent
   ): event is UnwrappedGestureHandlerStateChangeEvent {
     'worklet';
+    // @ts-ignore Yes, the oldState prop is missing on UnwrappedGestureHandlerPointerEvent,
+    // that's the point
     return event.oldState != null;
+  }
+
+  function isPointerEvent(
+    event:
+      | UnwrappedGestureHandlerEvent
+      | UnwrappedGestureHandlerStateChangeEvent
+      | GesturePointerEvent
+  ): event is GesturePointerEvent {
+    'worklet';
+    return event.eventType != null;
   }
 
   function getHandler(
@@ -244,6 +263,16 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
         return gesture.onUpdate;
       case CALLBACK_TYPE.END:
         return gesture.onEnd;
+      case CALLBACK_TYPE.POINTER_DOWN:
+        return gesture.onPointerDown;
+      case CALLBACK_TYPE.POINTER_MOVE:
+        return gesture.onPointerMove;
+      case CALLBACK_TYPE.POINTER_UP:
+        return gesture.onPointerUp;
+      case CALLBACK_TYPE.POINTER_CANCELLED:
+        return gesture.onPointerCancelled;
+      case CALLBACK_TYPE.POINTER_CHANGE:
+        return gesture.onPointerChange;
     }
   }
 
@@ -252,15 +281,16 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     gesture: HandlerCallbacks<Record<string, unknown>>,
     event:
       | UnwrappedGestureHandlerStateChangeEvent
-      | UnwrappedGestureHandlerEvent,
-    success?: boolean
+      | UnwrappedGestureHandlerEvent
+      | GesturePointerEvent,
+    ...args: any[]
   ) {
     'worklet';
     const handler = getHandler(type, gesture);
     if (gesture.isWorklet[type]) {
       // @ts-ignore Logic below makes sure the correct event is send to the
       // correct handler.
-      handler?.(event, success);
+      handler?.(event, ...args);
     } else if (handler) {
       console.warn('Animated gesture callback must be a worklet');
     }
@@ -273,10 +303,14 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     HandlerCallbacks<Record<string, unknown>>[] | null
   >(null);
 
+  // not every gesture needs a state controller, init them lazily
+  const stateControllers: GestureStateManagerType[] = [];
+
   const callback = (
     event:
       | UnwrappedGestureHandlerStateChangeEvent
       | UnwrappedGestureHandlerEvent
+      | GesturePointerEvent
   ) => {
     'worklet';
 
@@ -285,9 +319,6 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
       return;
     }
 
-    //Using for-of loop here causes crash, because worklets do not support it,
-    //consider changing this in future when support for it is added
-    //eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < currentCallback.length; i++) {
       const gesture = currentCallback[i];
 
@@ -310,10 +341,56 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
           ) {
             runWorklet(CALLBACK_TYPE.END, gesture, event, true);
           } else if (
-            event.state === State.FAILED ||
-            event.state === State.CANCELLED
+            (event.state === State.FAILED || event.state === State.CANCELLED) &&
+            event.state !== event.oldState
           ) {
             runWorklet(CALLBACK_TYPE.END, gesture, event, false);
+          }
+        } else if (isPointerEvent(event)) {
+          if (!stateControllers[i]) {
+            stateControllers[i] = GestureStateManager.create(event.handlerTag);
+          }
+
+          runWorklet(
+            CALLBACK_TYPE.POINTER_CHANGE,
+            gesture,
+            event,
+            stateControllers[i]
+          );
+
+          switch (event.eventType) {
+            case EventType.POINTER_DOWN:
+              runWorklet(
+                CALLBACK_TYPE.POINTER_DOWN,
+                gesture,
+                event,
+                stateControllers[i]
+              );
+              break;
+            case EventType.POINTER_MOVE:
+              runWorklet(
+                CALLBACK_TYPE.POINTER_MOVE,
+                gesture,
+                event,
+                stateControllers[i]
+              );
+              break;
+            case EventType.POINTER_UP:
+              runWorklet(
+                CALLBACK_TYPE.POINTER_UP,
+                gesture,
+                event,
+                stateControllers[i]
+              );
+              break;
+            case EventType.POINTER_CANCELLED:
+              runWorklet(
+                CALLBACK_TYPE.POINTER_CANCELLED,
+                gesture,
+                event,
+                stateControllers[i]
+              );
+              break;
           }
         } else {
           runWorklet(CALLBACK_TYPE.UPDATE, gesture, event);

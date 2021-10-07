@@ -5,8 +5,10 @@ import {
   CommonGestureConfig,
   UnwrappedGestureHandlerStateChangeEvent,
   UnwrappedGestureHandlerEvent,
+  GesturePointerEvent,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
+import { GestureStateManagerType } from './gestureStateManager';
 import { LongPressGestureHandlerEventPayload } from '../LongPressGestureHandler';
 import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
 import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
@@ -32,7 +34,13 @@ export interface BaseGestureConfig
   ref?: React.MutableRefObject<GestureType>;
   requireToFail?: GestureRef[];
   simultaneousWith?: GestureRef[];
+  needsPointerData?: boolean;
 }
+
+type PointerEventHandlerType = (
+  event: GesturePointerEvent,
+  stateManager: GestureStateManagerType
+) => void;
 
 export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
   handlerTag: number;
@@ -47,6 +55,11 @@ export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
     success: boolean
   ) => void;
   onUpdate?: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void;
+  onPointerDown?: PointerEventHandlerType;
+  onPointerMove?: PointerEventHandlerType;
+  onPointerUp?: PointerEventHandlerType;
+  onPointerCancelled?: PointerEventHandlerType;
+  onPointerChange?: PointerEventHandlerType;
   isWorklet: boolean[];
 };
 
@@ -55,6 +68,11 @@ export const CALLBACK_TYPE = {
   START: 2,
   UPDATE: 3,
   END: 4,
+  POINTER_DOWN: 5,
+  POINTER_MOVE: 6,
+  POINTER_UP: 7,
+  POINTER_CANCELLED: 8,
+  POINTER_CHANGE: 9,
 } as const;
 
 // Allow using CALLBACK_TYPE as object and type
@@ -109,6 +127,7 @@ export abstract class BaseGesture<
 
   protected isWorklet(
     callback:
+      | PointerEventHandlerType
       | ((event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void)
       | ((
           event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
@@ -147,6 +166,56 @@ export abstract class BaseGesture<
     this.handlers.onEnd = callback;
     //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     this.handlers.isWorklet[CALLBACK_TYPE.END] = this.isWorklet(callback);
+    return this;
+  }
+
+  onPointerDown(callback: PointerEventHandlerType) {
+    this.config.needsPointerData = true;
+    this.handlers.onPointerDown = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.POINTER_DOWN] = this.isWorklet(
+      callback
+    );
+
+    return this;
+  }
+
+  onPointerMove(callback: PointerEventHandlerType) {
+    this.config.needsPointerData = true;
+    this.handlers.onPointerMove = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.POINTER_MOVE] = this.isWorklet(
+      callback
+    );
+
+    return this;
+  }
+
+  onPointerUp(callback: PointerEventHandlerType) {
+    this.config.needsPointerData = true;
+    this.handlers.onPointerUp = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.POINTER_UP] = this.isWorklet(
+      callback
+    );
+
+    return this;
+  }
+
+  onPointerCancelled(callback: PointerEventHandlerType) {
+    this.config.needsPointerData = true;
+    this.handlers.onPointerCancelled = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.POINTER_CANCELLED] = this.isWorklet(
+      callback
+    );
+
+    return this;
+  }
+
+  onPointerChange(callback: PointerEventHandlerType) {
+    this.config.needsPointerData = true;
+    this.handlers.onPointerChange = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.POINTER_CHANGE] = this.isWorklet(
+      callback
+    );
+
     return this;
   }
 
