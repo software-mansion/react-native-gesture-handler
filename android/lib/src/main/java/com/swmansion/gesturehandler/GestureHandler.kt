@@ -10,7 +10,7 @@ import java.util.*
 
 open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
   private val trackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
-  private var trackedPointersCount = 0
+  private var trackedPointersIDsCount = 0
   var tag = 0
   var view: View? = null
     private set
@@ -122,7 +122,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
     check(!(this.view != null || this.orchestrator != null)) { "Already prepared or hasn't been reset" }
     Arrays.fill(trackedPointerIDs, -1)
-    trackedPointersCount = 0
+    trackedPointersIDsCount = 0
     state = STATE_UNDETERMINED
     this.view = view
     this.orchestrator = orchestrator
@@ -130,7 +130,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   private fun findNextLocalPointerId(): Int {
     var localPointerId = 0
-    while (localPointerId < trackedPointersCount) {
+    while (localPointerId < trackedPointersIDsCount) {
       var i = 0
       while (i < trackedPointerIDs.size) {
         if (trackedPointerIDs[i] == localPointerId) {
@@ -149,19 +149,19 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   fun startTrackingPointer(pointerId: Int) {
     if (trackedPointerIDs[pointerId] == -1) {
       trackedPointerIDs[pointerId] = findNextLocalPointerId()
-      trackedPointersCount++
+      trackedPointersIDsCount++
     }
   }
 
   fun stopTrackingPointer(pointerId: Int) {
     if (trackedPointerIDs[pointerId] != -1) {
       trackedPointerIDs[pointerId] = -1
-      trackedPointersCount--
+      trackedPointersIDsCount--
     }
   }
 
   private fun needAdapt(event: MotionEvent): Boolean {
-    if (event.pointerCount != trackedPointersCount) {
+    if (event.pointerCount != trackedPointersIDsCount) {
       return true
     }
 
@@ -184,7 +184,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       actionIndex = event.actionIndex
       val actionPointer = event.getPointerId(actionIndex)
       action = if (trackedPointerIDs[actionPointer] != -1) {
-        if (trackedPointersCount == 1) MotionEvent.ACTION_DOWN else MotionEvent.ACTION_POINTER_DOWN
+        if (trackedPointersIDsCount == 1) MotionEvent.ACTION_DOWN else MotionEvent.ACTION_POINTER_DOWN
       } else {
         MotionEvent.ACTION_MOVE
       }
@@ -192,12 +192,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       actionIndex = event.actionIndex
       val actionPointer = event.getPointerId(actionIndex)
       action = if (trackedPointerIDs[actionPointer] != -1) {
-        if (trackedPointersCount == 1) MotionEvent.ACTION_UP else MotionEvent.ACTION_POINTER_UP
+        if (trackedPointersIDsCount == 1) MotionEvent.ACTION_UP else MotionEvent.ACTION_POINTER_UP
       } else {
         MotionEvent.ACTION_MOVE
       }
     }
-    initPointerProps(trackedPointersCount)
+    initPointerProps(trackedPointersIDsCount)
     var count = 0
     val oldX = event.x
     val oldY = event.y
@@ -248,7 +248,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       || state == STATE_CANCELLED
       || state == STATE_FAILED
       || state == STATE_END
-      || trackedPointersCount < 1) {
+      || trackedPointersIDsCount < 1) {
       return
     }
     val event = adaptEvent(origEvent)
@@ -296,7 +296,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       && state != STATE_FAILED
       && state != STATE_CANCELLED
       && state != STATE_END
-      && trackedPointersCount > 0
+      && trackedPointersIDsCount > 0
   }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
@@ -415,7 +415,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     view = null
     orchestrator = null
     Arrays.fill(trackedPointerIDs, -1)
-    trackedPointersCount = 0
+    trackedPointersIDsCount = 0
     onReset()
   }
 
