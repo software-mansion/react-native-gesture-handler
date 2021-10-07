@@ -31,6 +31,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config)
       }
+      if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
+        handler.setManualActivation(config.getBoolean(KEY_MANUAL_ACTIVATION))
+      }
     }
 
     override fun extractEventData(handler: T, eventData: WritableMap) {
@@ -560,6 +563,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     const val MODULE_NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
+    private const val KEY_MANUAL_ACTIVATION = "manualActivation"
     private const val KEY_HIT_SLOP = "hitSlop"
     private const val KEY_HIT_SLOP_LEFT = "left"
     private const val KEY_HIT_SLOP_TOP = "top"
