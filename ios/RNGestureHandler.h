@@ -59,7 +59,8 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
 @property (nonatomic) BOOL enabled;
 @property (nonatomic) BOOL usesDeviceEvents;
-@property(nonatomic) BOOL shouldCancelWhenOutside;
+@property (nonatomic) BOOL shouldCancelWhenOutside;
+@property (nonatomic) BOOL requireManualActivation;
 
 - (void)bindToView:(nonnull UIView *)view;
 - (void)unbindFromView;
@@ -70,6 +71,8 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
 
+- (void)stopActivationBlocker;
+- (void)resetManualActivation;
 - (void)reset;
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag

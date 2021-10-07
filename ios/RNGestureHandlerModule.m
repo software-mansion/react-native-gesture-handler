@@ -154,11 +154,19 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
     } else if (state == 3) { // CANCELLED
       handler.recognizer.state = UIGestureRecognizerStateCancelled;
     } else if (state == 4) { // ACTIVE
+      [handler stopActivationBlocker];
       handler.recognizer.state = UIGestureRecognizerStateBegan;
     } else if (state == 5) { // ENDED
       handler.recognizer.state = UIGestureRecognizerStateEnded;
     }
   }
+  
+  // the code needs to be uncommented after merging relevant PRs, I left it
+  // here not to forget about it later
+  // if the gesture was set to finish, cancel all pointers it was tracking
+//  if (state == 1 || state == 3 || state == 5) {
+//    [handler.pointerTracker cancelPointers];
+//  }
   
   // do not send state change event when activating because it bypasses
   // shouldRequireFailureOfGestureRecognizer
