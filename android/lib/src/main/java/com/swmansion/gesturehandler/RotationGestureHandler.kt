@@ -58,6 +58,11 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     }
   }
 
+  override fun beforeActivation() {
+    rotation = 0.0
+    velocity = 0.0
+  }
+
   override fun onReset() {
     rotationGestureDetector = null
     velocity = 0.0
