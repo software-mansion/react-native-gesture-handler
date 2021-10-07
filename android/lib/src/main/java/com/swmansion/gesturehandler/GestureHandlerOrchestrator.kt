@@ -231,9 +231,6 @@ class GestureHandlerOrchestrator(
       return
     }
     val action = event.actionMasked
-    if (handler.isAwaiting && action == MotionEvent.ACTION_MOVE) {
-      return
-    }
     val coords = tempCoords
     extractCoordsForView(handler.view, event, coords)
     val oldX = event.x
@@ -245,17 +242,25 @@ class GestureHandlerOrchestrator(
     // approach when we want to use pointer coordinates to calculate velocity or distance
     // for pinch so I don't know yet if we should transform or not...
     event.setLocation(coords[0], coords[1])
-    handler.handle(event)
-    if (handler.isActive) {
-      handler.dispatchTouchEvent(event)
+    if (handler.needsPointerData) {
+      handler.updatePointerData(event)
     }
+
+    if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
+      handler.handle(event)
+      if (handler.isActive) {
+        handler.dispatchTouchEvent(event)
+      }
+
+      // if event was of type UP or POINTER_UP we request handler to stop tracking now that
+      // the event has been dispatched
+      if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
+        val pointerId = event.getPointerId(event.actionIndex)
+        handler.stopTrackingPointer(pointerId)
+      }
+    }
+
     event.setLocation(oldX, oldY)
-    // if event was of type UP or POINTER_UP we request handler to stop tracking now that
-    // the event has been dispatched
-    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
-      val pointerId = event.getPointerId(event.actionIndex)
-      handler.stopTrackingPointer(pointerId)
-    }
   }
 
   /**
