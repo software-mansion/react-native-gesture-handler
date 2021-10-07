@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler.react
 
 import android.content.Context
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import com.facebook.react.ReactRootView
@@ -8,11 +9,13 @@ import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
+import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
 import java.util.*
 
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
-class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
+class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
+  : ReactContextBaseJavaModule(reactContext), GestureHandlerStateManager {
   private abstract class HandlerFactory<T : GestureHandler<T>> : RNGestureHandlerEventDataExtractor<T> {
     abstract val type: Class<T>
     abstract val name: String
@@ -376,6 +379,19 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
   @ReactMethod
   fun handleClearJSResponder() {
+  }
+
+  override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
+    Log.w("A", "state $newState for handler $handlerTag")
+    registry.getHandler(handlerTag)?.let { handler ->
+      when (newState) {
+        GestureHandler.STATE_ACTIVE -> handler.activate()
+        GestureHandler.STATE_BEGAN -> handler.begin()
+        GestureHandler.STATE_END -> handler.end()
+        GestureHandler.STATE_FAILED -> handler.fail()
+        GestureHandler.STATE_CANCELLED -> handler.cancel()
+      }
+    }
   }
 
   override fun getConstants(): Map<String, Any> {

@@ -13,8 +13,9 @@
 #import "RNGestureHandlerManager.h"
 
 #import "RNGestureHandlerButton.h"
+#import "RNGestureHandlerStateManager.h"
 
-@interface RNGestureHandlerModule () <RCTUIManagerObserver>
+@interface RNGestureHandlerModule () <RCTUIManagerObserver, RNGestureHandlerStateManager>
 
 @end
 
@@ -139,6 +140,31 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
         [manager handleClearJSResponder];
     }];
+}
+
+- (void)setGestureState:(int)state forHandler:(int)handlerTag
+{
+  RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];
+
+  if (handler != nil) {
+    if (state == 1) { // FAILED
+      handler.recognizer.state = UIGestureRecognizerStateFailed;
+    } else if (state == 2) { // BEGAN
+      handler.recognizer.state = UIGestureRecognizerStatePossible;
+    } else if (state == 3) { // CANCELLED
+      handler.recognizer.state = UIGestureRecognizerStateCancelled;
+    } else if (state == 4) { // ACTIVE
+      handler.recognizer.state = UIGestureRecognizerStateBegan;
+    } else if (state == 5) { // ENDED
+      handler.recognizer.state = UIGestureRecognizerStateEnded;
+    }
+  }
+  
+  // do not send state change event when activating because it bypasses
+  // shouldRequireFailureOfGestureRecognizer
+  if (state != 4) {
+    [handler handleGesture:handler.recognizer];
+  }
 }
 
 #pragma mark -- Batch handling
