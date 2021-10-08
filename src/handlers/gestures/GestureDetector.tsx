@@ -276,6 +276,21 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     }
   }
 
+  function pointerEventTypeToCallbackType(eventType: EventType): CALLBACK_TYPE {
+    'worklet';
+    switch (eventType) {
+      case EventType.POINTER_DOWN:
+        return CALLBACK_TYPE.POINTER_DOWN;
+      case EventType.POINTER_MOVE:
+        return CALLBACK_TYPE.POINTER_MOVE;
+      case EventType.POINTER_UP:
+        return CALLBACK_TYPE.POINTER_UP;
+      case EventType.POINTER_CANCELLED:
+        return CALLBACK_TYPE.POINTER_CANCELLED;
+    }
+    return CALLBACK_TYPE.UNDEFINED;
+  }
+
   function runWorklet(
     type: CALLBACK_TYPE,
     gesture: HandlerCallbacks<Record<string, unknown>>,
@@ -351,46 +366,20 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
             stateControllers[i] = GestureStateManager.create(event.handlerTag);
           }
 
-          runWorklet(
-            CALLBACK_TYPE.POINTER_CHANGE,
-            gesture,
-            event,
-            stateControllers[i]
-          );
+          if (event.eventType !== EventType.UNDETERMINED) {
+            runWorklet(
+              CALLBACK_TYPE.POINTER_CHANGE,
+              gesture,
+              event,
+              stateControllers[i]
+            );
 
-          switch (event.eventType) {
-            case EventType.POINTER_DOWN:
-              runWorklet(
-                CALLBACK_TYPE.POINTER_DOWN,
-                gesture,
-                event,
-                stateControllers[i]
-              );
-              break;
-            case EventType.POINTER_MOVE:
-              runWorklet(
-                CALLBACK_TYPE.POINTER_MOVE,
-                gesture,
-                event,
-                stateControllers[i]
-              );
-              break;
-            case EventType.POINTER_UP:
-              runWorklet(
-                CALLBACK_TYPE.POINTER_UP,
-                gesture,
-                event,
-                stateControllers[i]
-              );
-              break;
-            case EventType.POINTER_CANCELLED:
-              runWorklet(
-                CALLBACK_TYPE.POINTER_CANCELLED,
-                gesture,
-                event,
-                stateControllers[i]
-              );
-              break;
+            runWorklet(
+              pointerEventTypeToCallbackType(event.eventType),
+              gesture,
+              event,
+              stateControllers[i]
+            );
           }
         } else {
           runWorklet(CALLBACK_TYPE.UPDATE, gesture, event);

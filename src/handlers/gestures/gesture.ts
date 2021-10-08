@@ -64,6 +64,7 @@ export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
 };
 
 export const CALLBACK_TYPE = {
+  UNDEFINED: 0,
   BEGAN: 1,
   START: 2,
   UPDATE: 3,
