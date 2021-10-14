@@ -73,15 +73,15 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Modals with nested GHRootViews - issue #139',
         component: NestedGestureHandlerRootViewWithModal,
       },
+      {
+        name: 'Nested Touchables - issue #784',
+        component: NestedTouchables as React.ComponentType,
+      },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
       { name: 'Rows', component: Rows },
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
-      {
-        name: 'Nested Touchables - issue #784',
-        component: NestedTouchables as React.ComponentType,
-      },
     ],
   },
 ];
