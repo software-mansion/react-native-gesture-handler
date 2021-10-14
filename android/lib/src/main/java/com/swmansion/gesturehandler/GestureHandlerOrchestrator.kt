@@ -103,7 +103,7 @@ class GestureHandlerOrchestrator(
   private fun isThereActiveHandlerPreventingActivation(handler: GestureHandler<*>): Boolean {
     for (i in 0 until gestureHandlersCount) {
       val otherHandler = gestureHandlers[i] ?: continue
-      if (otherHandler.isActive && !handler.canActivateAlongsideAlreadyActive(otherHandler)) {
+      if (otherHandler.isActive && otherHandler.needsToPreventOtherFromActivating(handler)) {
         return true
       }
     }

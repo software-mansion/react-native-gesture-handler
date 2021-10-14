@@ -16,8 +16,8 @@ abstract class BaseGestureHandlerInteractionController : GestureHandlerInteracti
     otherHandler: GestureHandler<*>,
   ) = false
 
-  override fun canHandlerActivateAlongsideAlreadyActive(
+  override fun needsToPreventOtherHandlerFromActivating(
     handler: GestureHandler<*>,
     otherHandler: GestureHandler<*>
-  ) = true
+  ) = false
 }

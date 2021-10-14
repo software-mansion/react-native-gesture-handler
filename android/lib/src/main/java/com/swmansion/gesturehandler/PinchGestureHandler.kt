@@ -78,6 +78,14 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     }
   }
 
+  override fun needsToPreventOtherFromActivating(handler: GestureHandler<*>): Boolean {
+    if (handler is NativeViewGestureHandler) {
+      return true
+    }
+
+    return super.needsToPreventOtherFromActivating(handler)
+  }
+
   override fun onReset() {
     scaleGestureDetector = null
     velocity = 0.0

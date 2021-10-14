@@ -95,16 +95,6 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     view!!.onTouchEvent(event)
   }
 
-  override fun canActivateAlongsideAlreadyActive(handler: GestureHandler<*>): Boolean {
-    // when there is an active PinchGH lifting finger up and placing it back on the screen activates
-    // scrollview alongside PinchGH resulting in weird behavior
-    if (handler is PinchGestureHandler) {
-      return false
-    }
-
-    return super.canActivateAlongsideAlreadyActive(handler)
-  }
-
   companion object {
     private fun tryIntercept(view: View, event: MotionEvent) =
       view is ViewGroup && view.onInterceptTouchEvent(event)

@@ -49,7 +49,7 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
     otherHandler: GestureHandler<*>,
   ) = simultaneousRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
-  override fun canHandlerActivateAlongsideAlreadyActive(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) = true
+  override fun needsToPreventOtherHandlerFromActivating(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) = false
 
   fun reset() {
     waitForRelations.clear()
