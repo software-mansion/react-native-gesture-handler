@@ -4,7 +4,7 @@ const path = require('path');
 const glob = require('glob-to-regexp');
 
 function getBlacklist() {
-  const rootDir = path.resolve(__dirname, '../..')
+  const rootDir = path.resolve(__dirname, '..')
   const currentDir = path.resolve(__dirname)
   const nodeModuleDirs = [
     glob(`${rootDir}/node_modules/*`),
@@ -25,7 +25,7 @@ module.exports = {
     blocklist: getBlacklist(),
     resolverMainFields: ['browser', 'react-native', 'main'],
   },
-  watchFolders: [path.resolve(__dirname, '../..')],
+  watchFolders: [path.resolve(__dirname, '..')],
   transformer: {
     getTransformOptions: async () => ({
       transform: {
