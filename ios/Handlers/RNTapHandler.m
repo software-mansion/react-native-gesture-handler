@@ -245,10 +245,10 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   // went from UNDETERMINED to BEGAN and then from UNDETERMINED to ACTIVE.
   // This way we preserve _lastState between events and keep correct state flow.
   RNGestureHandlerState savedState = _lastState;
-  BOOL originalResult = [super gestureRecognizerShouldBegin:gestureRecognizer];
+  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
   _lastState = savedState;
   
-  return originalResult;
+  return shouldBegin;
 }
 
 @end
