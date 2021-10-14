@@ -344,9 +344,7 @@ class GestureHandlerOrchestrator(
         val parentViewGroup: ViewGroup = parent
 
         handlerRegistry.getHandlersForView(parent)?.let {
-          for (i in 0 until it.size) {
-            val handler = it[i]
-
+          for (handler in it) {
             if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
               found = true
               recordHandlerIfNotPresent(handler, parentViewGroup)
