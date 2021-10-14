@@ -150,10 +150,10 @@
 {
   //same as TapGH, this needs to be unified when all handlers are updated
   RNGestureHandlerState savedState = _lastState;
-  BOOL originalResult = [super gestureRecognizerShouldBegin:gestureRecognizer];
+  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
   _lastState = savedState;
   
-  return originalResult;
+  return shouldBegin;
 }
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
