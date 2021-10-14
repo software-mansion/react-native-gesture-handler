@@ -290,7 +290,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     }
 
     override fun setPressed(pressed: Boolean) {
-      if (!pressed || responder === this || (!exclusive && responder?.exclusive != true && !isChildTouched())) {
+      // button can be pressed alongside other button if both are non-exclusive and it doesn't have
+      // any pressed children (to prevent pressing the parent when children is pressed).
+      val canBePressedAlongsideOther = !exclusive && responder?.exclusive != true && !isChildTouched()
+
+      if (!pressed || responder === this || canBePressedAlongsideOther) {
         // we set pressed state only for current responder or any non-exclusive button when responder
         // is null or non-exclusive, assuming it doesn't have pressed children
         super.setPressed(pressed)
