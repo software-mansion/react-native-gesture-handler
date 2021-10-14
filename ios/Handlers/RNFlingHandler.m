@@ -78,10 +78,10 @@
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     RNGestureHandlerState savedState = _lastState;
-    BOOL originalResult = [super gestureRecognizerShouldBegin:gestureRecognizer];
+    BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
     _lastState = savedState;
     
-    return originalResult;
+    return shouldBegin;
 }
 
 @end
