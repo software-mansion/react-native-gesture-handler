@@ -48,10 +48,8 @@
   if (_pointers < 2 && _endOnFingerRelease) {
     if (self.state == UIGestureRecognizerStateChanged) {
       self.state = UIGestureRecognizerStateEnded;
-      [self reset];
-    } else {
-      [self reset];
     }
+    [self reset];
   }
 }
 
