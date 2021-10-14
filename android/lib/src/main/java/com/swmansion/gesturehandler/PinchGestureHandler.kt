@@ -52,6 +52,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   }
 
   override fun onHandle(event: MotionEvent) {
+    // begin pinch only when there are at least two active pointers on the screen
     if (state == STATE_UNDETERMINED && event.pointerCount >= 2) {
       val context = view!!.context
       velocity = 0.0
