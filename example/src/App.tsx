@@ -9,6 +9,7 @@ import {
   GestureHandlerRootView,
   RectButton,
 } from 'react-native-gesture-handler';
+import OverflowParent from './release_tests/overflowParent';
 import DoublePinchRotate from './release_tests/doubleScalePinchAndRotate';
 import DoubleDraggable from './release_tests/doubleDraggable';
 import { ComboWithGHScroll } from './release_tests/combo';
@@ -67,6 +68,10 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Release tests',
     data: [
+      {
+        name: 'Views overflowing parents - issue 1532',
+        component: OverflowParent,
+      },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
       { name: 'Rows', component: Rows },
