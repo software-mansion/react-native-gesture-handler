@@ -94,7 +94,7 @@ function onGestureHandlerEvent(
           handler.handlers?.onPointerDown?.(event, dummyStateManager);
           break;
         case EventType.POINTER_MOVE:
-          handler.handlers?.onPointerDown?.(event, dummyStateManager);
+          handler.handlers?.onPointerMove?.(event, dummyStateManager);
           break;
         case EventType.POINTER_UP:
           handler.handlers?.onPointerUp?.(event, dummyStateManager);
