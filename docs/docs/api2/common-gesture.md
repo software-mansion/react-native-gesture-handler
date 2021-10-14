@@ -26,7 +26,29 @@ Set the [`onEnd`](./events.md#onend) callback.
 
 Set the [`onUpdate`](./events.md#onupdate) callback.
 
+### `onPointerDown(callback)`
+
+Set the [`onPointerDown`](./events.md) callback.
+
+### `onPointerMove(callback)`
+
+Set the [`onPointerMove`](./events.md) callback.
+
+### `onPointerUp(callback)`
+
+Set the [`onPointerUp`](./events.md) callback.
+
+### `onPointerChange(callback)`
+
+Set the [`onPointerChange`](./events.md) callback.
+
 ## Config
+
+### `manualActivation(value: boolead)`
+
+> Only available on continuous gestures: `Pan`, `Pinch`, `Rotation` and `ForceTouch`.
+
+When `true` the handler will not activate by itself even if its activation criteria are met. Instead you can manipulate its state using [state manager](./state-manager.md).
 
 ### `enabled(value: boolean)`
 

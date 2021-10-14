@@ -41,6 +41,8 @@ module.exports = {
           'api2/pinch-gesture',
           'api2/rotation-gesture',
           'api2/force-touch-gesture',
+          'api2/custom-gesture',
+          'api2/state-manager',
         ],
       },
     ],
