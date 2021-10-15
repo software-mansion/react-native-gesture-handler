@@ -222,25 +222,49 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       throw IllegalStateException("pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}")
     }
 
-    val result = MotionEvent.obtain(
-      event.downTime,
-      event.eventTime,
-      action,
-      count,
-      pointerProps,  /* props are copied and hence it is safe to use static array here */
-      pointerCoords,  /* same applies to coords */
-      event.metaState,
-      event.buttonState,
-      event.xPrecision,
-      event.yPrecision,
-      event.deviceId,
-      event.edgeFlags,
-      event.source,
-      event.flags)
+    val result: MotionEvent
+    try {
+      result = MotionEvent.obtain(
+        event.downTime,
+        event.eventTime,
+        action,
+        count,
+        pointerProps,  /* props are copied and hence it is safe to use static array here */
+        pointerCoords,  /* same applies to coords */
+        event.metaState,
+        event.buttonState,
+        event.xPrecision,
+        event.yPrecision,
+        event.deviceId,
+        event.edgeFlags,
+        event.source,
+        event.flags
+      )
+    } catch (e: IllegalArgumentException) {
+      throw AdaptEventException(this, event, e)
+    }
     event.setLocation(oldX, oldY)
     result.setLocation(oldX, oldY)
     return result
   }
+
+  // exception to help debug https://github.com/software-mansion/react-native-gesture-handler/issues/1188
+  class AdaptEventException(
+    handler: GestureHandler<*>,
+    event: MotionEvent,
+    e: IllegalArgumentException
+  ) : Exception("""
+    handler: ${handler::class.simpleName}
+    state: ${handler.state}
+    view: ${handler.view}
+    orchestrator: ${handler.orchestrator}
+    isEnabled: ${handler.isEnabled}
+    isActive: ${handler.isActive}
+    isAwaiting: ${handler.isAwaiting}
+    trackedPointersCount: ${handler.trackedPointersCount}
+    trackedPointers: ${handler.trackedPointerIDs.joinToString(separator = ", ")}
+    while handling event: $event
+  """.trimIndent(), e) {}
 
   fun handle(origEvent: MotionEvent) {
     if (!isEnabled
