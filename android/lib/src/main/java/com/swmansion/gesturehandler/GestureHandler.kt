@@ -330,6 +330,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return interactionController?.shouldHandlerBeCancelledBy(this, handler) ?: false
   }
 
+  open fun needsToPreventOtherFromActivating(handler: GestureHandler<*>): Boolean {
+    if (handler === this) {
+      return false
+    }
+
+    return interactionController?.needsToPreventOtherHandlerFromActivating(this, handler) ?: false
+  }
+
   fun isWithinBounds(view: View?, posX: Float, posY: Float): Boolean {
     var left = 0f
     var top = 0f

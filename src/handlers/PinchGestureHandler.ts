@@ -4,6 +4,8 @@ import {
   baseGestureHandlerProps,
 } from './gestureHandlerCommon';
 
+export const pinchGestureHandlerProps = ['endOnFingerRelease'] as const;
+
 export type PinchGestureHandlerEventPayload = {
   /**
    * The scale factor relative to the points of the two touches in screen
@@ -32,7 +34,9 @@ export type PinchGestureHandlerEventPayload = {
 };
 
 export interface PinchGestureHandlerProps
-  extends BaseGestureHandlerProps<PinchGestureHandlerEventPayload> {}
+  extends BaseGestureHandlerProps<PinchGestureHandlerEventPayload> {
+  endOnFingerRelease?: boolean;
+}
 
 export type PinchGestureHandler = typeof PinchGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
@@ -41,6 +45,6 @@ export const PinchGestureHandler = createHandler<
   PinchGestureHandlerEventPayload
 >({
   name: 'PinchGestureHandler',
-  allowedProps: baseGestureHandlerProps,
+  allowedProps: [...baseGestureHandlerProps, ...pinchGestureHandlerProps],
   config: {},
 });

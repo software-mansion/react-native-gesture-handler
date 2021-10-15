@@ -7,6 +7,8 @@ import android.view.ViewConfiguration
 import kotlin.math.abs
 
 class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
+  var endOnFingerRelease = false
+
   var scale = 0.0
     private set
   var velocity = 0.0
@@ -50,7 +52,8 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   }
 
   override fun onHandle(event: MotionEvent) {
-    if (state == STATE_UNDETERMINED) {
+    // begin pinch only when there are at least two active pointers on the screen
+    if (state == STATE_UNDETERMINED && event.pointerCount >= 2) {
       val context = view!!.context
       velocity = 0.0
       scale = 1.0
@@ -59,16 +62,29 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       spanSlop = configuration.scaledTouchSlop.toFloat()
       begin()
     }
-    scaleGestureDetector?.onTouchEvent(event)
+    if (state == STATE_BEGAN || state == STATE_ACTIVE) {
+      scaleGestureDetector?.onTouchEvent(event)
+    }
     var activePointers = event.pointerCount
-    if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+    if (event.actionMasked == MotionEvent.ACTION_POINTER_UP || event.action == MotionEvent.ACTION_UP) {
       activePointers -= 1
     }
-    if (state == STATE_ACTIVE && activePointers < 2) {
-      end()
+
+    if (state == STATE_ACTIVE) {
+      if ((endOnFingerRelease && activePointers < 2) || activePointers == 0) {
+        end()
+      }
     } else if (event.actionMasked == MotionEvent.ACTION_UP) {
       fail()
     }
+  }
+
+  override fun needsToPreventOtherFromActivating(handler: GestureHandler<*>): Boolean {
+    if (handler is NativeViewGestureHandler) {
+      return true
+    }
+
+    return super.needsToPreventOtherFromActivating(handler)
   }
 
   override fun onReset() {
