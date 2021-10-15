@@ -27,6 +27,7 @@
 
 @implementation RNBetterLongPressGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
+  CGPoint _initPosition;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
@@ -39,26 +40,60 @@
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
-  if (recognizer.state == UIGestureRecognizerStateBegan) {
-    startTime = mach_absolute_time();
-  }
   previousTime = mach_absolute_time();
-
   [_gestureHandler handleGesture:recognizer];
+}
+
+- (void)triggerAction
+{
+  [self handleGesture:self];
+}
+
+- (CGPoint)translationInView {
+  CGPoint currentPosition = [self locationInView:self.view];
+  return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesBegan:touches withEvent:event];
+
+  _initPosition = [self locationInView:self.view];
+  startTime = mach_absolute_time();
+  [_gestureHandler reset];
+  [self triggerAction];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
-  if (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) {
+
+  CGPoint trans = [self translationInView];
+  if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView])
+      || (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x + trans.x), self.allowableMovement * self.allowableMovement))) {
     self.enabled = NO;
     self.enabled = YES;
   }
 }
 
+- (void)reset
+{
+  if (self.state == UIGestureRecognizerStateFailed) {
+    [self triggerAction];
+  }
+  
+  [super reset];
+}
+
 - (NSUInteger)getDuration
 {
-  return (NSUInteger)(((previousTime - startTime) / 1000000 + self.minimumPressDuration * 1000));
+  static mach_timebase_info_data_t sTimebaseInfo;
+  
+  if (sTimebaseInfo.denom == 0) {
+    mach_timebase_info(&sTimebaseInfo);
+  }
+  
+  return (NSUInteger)(((previousTime - startTime) * sTimebaseInfo.numer / (sTimebaseInfo.denom * 1000000)));
 }
 
 @end
@@ -109,6 +144,16 @@
     return RNGestureHandlerStateActive;
   }
   return [super state];
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  //same as TapGH, this needs to be unified when all handlers are updated
+  RNGestureHandlerState savedState = _lastState;
+  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
+  _lastState = savedState;
+  
+  return shouldBegin;
 }
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
