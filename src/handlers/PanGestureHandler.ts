@@ -10,7 +10,6 @@ export const panGestureHandlerProps = [
   'failOffsetY',
   'failOffsetX',
   'minDist',
-  'minPointers',
   'minVelocity',
   'minVelocityX',
   'minVelocityY',
@@ -114,6 +113,17 @@ interface CommonPanProperties {
    * activate. Should be a higher or equal to 0 integer.
    */
   minPointers?: number;
+
+  /**
+   * When the given number of fingers is placed on the screen and handler hasn't
+   * yet activated it will fail recognizing the gesture. Should be a higher or
+   * equal to 0 integer.
+   */
+  maxPointers?: number;
+
+  minVelocity?: number;
+  minVelocityX?: number;
+  minVelocityY?: number;
 }
 
 export interface PanGestureConfig extends CommonPanProperties {
@@ -130,72 +140,6 @@ export interface PanGestureConfig extends CommonPanProperties {
 export interface PanGestureHandlerProps
   extends BaseGestureHandlerProps<PanGestureHandlerEventPayload>,
     CommonPanProperties {
-  /**
-   * @deprecated Instead of `minDeltaX={N}` use `activeOffsetX={[-N, N]}`.
-   *
-   * Minimum distance along X (in points) axis the finger (or multiple finger)
-   * need to travel (left or right) before the handler activates. Unlike
-   * `minOffsetX` this parameter accepts only non-lower or equal to 0 numbers
-   * that represents the distance in point units. If you want for the handler to
-   * activate for the movement in one particular direction use `minOffsetX`
-   * instead.
-   */
-  minDeltaX?: number;
-
-  /**
-   * @deprecated Instead of `minDeltaY={N}` use `activeOffsetY={[-N, N]}`.
-   *
-   * Minimum distance along Y (in points) axis the finger (or multiple finger)
-   * need to travel (left or right) before the handler activates. Unlike
-   * `minOffsetY` this parameter accepts only non-lower or equal to 0 numbers
-   * that represents the distance in point units. If you want for the handler to
-   * activate for the movement in one particular direction use `minOffsetY`
-   * instead.
-   */
-  minDeltaY?: number;
-
-  /**
-   * @deprecated Instead of `maxDeltaX={N}` use `failOffsetX={[-N, N]}`.
-   *
-   * When the finger travels the given distance expressed in points along X axis
-   * and handler hasn't yet activated it will fail
-   * recognizing the gesture.
-   */
-  maxDeltaX?: number;
-
-  /**
-   * @deprecated Instead of `maxDeltaY={N}` use `failOffsetY={[-N, N]}`.
-   *
-   * When the finger travels the given distance expressed in points along Y axis
-   * and handler hasn't yet activated it will fail
-   * recognizing the gesture.
-   */
-  maxDeltaY?: number;
-
-  /**
-   * @deprecated Instead of `minOffsetX={N}` use `activeOffsetX={N}`.
-   *
-   * Minimum distance along X (in points) axis the finger (or multiple finger)
-   * need to travel before the handler activates. If set to a lower or equal to
-   * 0 value we expect the finger to travel "left" by the given distance. When
-   * set to a higher or equal to 0 number the handler will activate on a
-   * movement to the "right". If you wish for the movement direction to be
-   * ignored use `minDeltaX` instead.
-   */
-  minOffsetX?: number;
-
-  /**
-   * @deprecated Instead of `minOffsetY={N}` use `activeOffsetY={N}`.
-   *
-   * Minimum distance along Y (in points) axis the finger (or multiple finger)
-   * need to travel before the handler activates. If set to a lower or equal to
-   * 0 value we expect the finger to travel "up" by the given distance. When
-   * set to a higher or equal to 0 number the handler will activate on a
-   * movement to the "bottom". If you wish for the movement direction to be
-   * ignored use `minDeltaY` instead.
-   */
-  minOffsetY?: number;
-
   /**
    * Range along X axis (in points) where fingers travels without activation of
    * handler. Moving outside of this range implies activation of handler. Range
@@ -235,22 +179,6 @@ export interface PanGestureHandlerProps
    * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
    */
   failOffsetX?: number | number[];
-  minVelocity?: number;
-  minVelocityX?: number;
-  minVelocityY?: number;
-
-  /**
-   * A number of fingers that is required to be placed before handler can
-   * activate. Should be a higher or equal to 0 integer.
-   */
-  minPointers?: number;
-
-  /**
-   * When the given number of fingers is placed on the screen and handler hasn't
-   * yet activated it will fail recognizing the gesture. Should be a higher or
-   * equal to 0 integer.
-   */
-  maxPointers?: number;
 }
 
 export type PanGestureHandler = typeof PanGestureHandler;
@@ -270,26 +198,6 @@ export const PanGestureHandler = createHandler<
 });
 
 function validatePanGestureHandlerProps(props: PanGestureHandlerProps) {
-  if (props.minDeltaX && props.activeOffsetX) {
-    throw new Error(
-      `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
-    );
-  }
-  if (props.maxDeltaX && props.failOffsetX) {
-    throw new Error(
-      `It's not supported use minDeltaX with activeOffsetXStart or activeOffsetXEnd`
-    );
-  }
-  if (props.minDeltaY && props.activeOffsetY) {
-    throw new Error(
-      `It's not supported use minDeltaX with activeOffsetYStart or activeOffsetYEnd`
-    );
-  }
-  if (props.maxDeltaY && props.failOffsetY) {
-    throw new Error(
-      `It's not supported use minDeltaX with activeOffsetYStart or activeOffsetYEnd`
-    );
-  }
   if (
     Array.isArray(props.activeOffsetX) &&
     (props.activeOffsetX[0] > 0 || props.activeOffsetX[1] < 0)
@@ -341,44 +249,6 @@ function transformPanGestureHandlerProps(props: PanGestureHandlerProps) {
     Partial<Record<InternalPanGHKeys, number>>;
 
   const res: PanGestureHandlerInternalProps = { ...props };
-  if (props.minDeltaX !== undefined) {
-    delete res.minDeltaX;
-    res.activeOffsetXStart = -props.minDeltaX;
-    res.activeOffsetXEnd = props.minDeltaX;
-  }
-  if (props.maxDeltaX !== undefined) {
-    delete res.maxDeltaX;
-    res.failOffsetXStart = -props.maxDeltaX;
-    res.failOffsetXEnd = props.maxDeltaX;
-  }
-  if (props.minOffsetX !== undefined) {
-    delete res.minOffsetX;
-    if (props.minOffsetX < 0) {
-      res.activeOffsetXStart = props.minOffsetX;
-    } else {
-      res.activeOffsetXEnd = props.minOffsetX;
-    }
-  }
-
-  if (props.minDeltaY !== undefined) {
-    delete res.minDeltaY;
-    res.activeOffsetYStart = -props.minDeltaY;
-    res.activeOffsetYEnd = props.minDeltaY;
-  }
-  if (props.maxDeltaY !== undefined) {
-    delete res.maxDeltaY;
-    res.failOffsetYStart = -props.maxDeltaY;
-    res.failOffsetYEnd = props.maxDeltaY;
-  }
-
-  if (props.minOffsetY !== undefined) {
-    delete res.minOffsetY;
-    if (props.minOffsetY < 0) {
-      res.activeOffsetYStart = props.minOffsetY;
-    } else {
-      res.activeOffsetYEnd = props.minOffsetY;
-    }
-  }
 
   if (props.activeOffsetX !== undefined) {
     delete res.activeOffsetX;
