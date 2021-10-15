@@ -367,11 +367,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
   @ReactMethod
   fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
-    // TODO: check if it can be null
-    if (registry != null) {
-      val rootView = findRootHelperForViewAncestor(viewTag)
-      rootView?.handleSetJSResponder(viewTag, blockNativeResponder)
-    }
+    val rootView = findRootHelperForViewAncestor(viewTag)
+    rootView?.handleSetJSResponder(viewTag, blockNativeResponder)
   }
 
   @ReactMethod
