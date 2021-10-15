@@ -14,6 +14,7 @@ import DoubleDraggable from './release_tests/doubleDraggable';
 import { ComboWithGHScroll } from './release_tests/combo';
 import { TouchablesIndex, TouchableExample } from './release_tests/touchables';
 import Rows from './release_tests/rows';
+import NestedTouchables from './release_tests/nestedTouchables';
 import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
 import { PinchableBox } from './recipes/scaleAndRotate';
 import PanAndScroll from './recipes/panAndScroll';
@@ -71,6 +72,10 @@ const EXAMPLES: ExamplesSection[] = [
       {
         name: 'Modals with nested GHRootViews - issue #139',
         component: NestedGestureHandlerRootViewWithModal,
+      },
+      {
+        name: 'Nested Touchables - issue #784',
+        component: NestedTouchables as React.ComponentType,
       },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },

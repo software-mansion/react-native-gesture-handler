@@ -23,8 +23,6 @@ import {
 
 export interface RawButtonProps extends NativeViewGestureHandlerProps {
   /**
-   * iOS only.
-   *
    * Defines if more than one button could be pressed simultaneously. By default
    * set true.
    */
