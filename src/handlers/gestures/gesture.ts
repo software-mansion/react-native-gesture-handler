@@ -36,7 +36,7 @@ export interface BaseGestureConfig
 
 export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
   handlerTag: number;
-  onBegan?: (
+  onBegin?: (
     event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
   ) => void;
   onStart?: (
@@ -118,12 +118,12 @@ export abstract class BaseGesture<
     return callback.__workletHash !== undefined;
   }
 
-  onBegan(
+  onBegin(
     callback: (
       event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
     ) => void
   ) {
-    this.handlers.onBegan = callback;
+    this.handlers.onBegin = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.BEGAN] = this.isWorklet(callback);
     return this;
   }

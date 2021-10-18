@@ -237,7 +237,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     'worklet';
     switch (type) {
       case CALLBACK_TYPE.BEGAN:
-        return gesture.onBegan;
+        return gesture.onBegin;
       case CALLBACK_TYPE.START:
         return gesture.onStart;
       case CALLBACK_TYPE.UPDATE:

@@ -24,7 +24,7 @@ function Ball() {
 
   const start = useSharedValue({ x: 0, y: 0 });
   const gesture = Gesture.Pan()
-    .onBegan(() => {
+    .onBegin(() => {
       'worklet';
       isPressed.value = true;
     })

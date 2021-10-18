@@ -63,7 +63,7 @@ The only thing left is to define the pan gesture and assign it to the detector:
 ```js
 const start = useSharedValue({ x: 0, y: 0 });
 const gesture = Gesture.Pan()
-  .onBegan(() => {
+  .onBegin(() => {
     'worklet';
     isPressed.value = true;
   })

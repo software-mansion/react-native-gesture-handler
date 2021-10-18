@@ -22,7 +22,7 @@ const componentInteractionProps = ['waitFor', 'simultaneousHandlers'] as const;
 export const baseGestureHandlerProps = [
   ...commonProps,
   ...componentInteractionProps,
-  'onBegan',
+  'onBegin',
   'onFailed',
   'onCancelled',
   'onActivated',
@@ -93,7 +93,7 @@ export type BaseGestureHandlerProps<
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
   simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
   // TODO(TS) - fix event types
-  onBegan?: (event: HandlerStateChangeEvent) => void;
+  onBegin?: (event: HandlerStateChangeEvent) => void;
   onFailed?: (event: HandlerStateChangeEvent) => void;
   onCancelled?: (event: HandlerStateChangeEvent) => void;
   onActivated?: (event: HandlerStateChangeEvent) => void;
