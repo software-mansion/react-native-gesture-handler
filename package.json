@@ -120,8 +120,5 @@
   "eslintIgnore": [
     "node_modules/",
     "lib/"
-  ],
-  "optionalDependencies": {
-    "react-native-reanimated": "^2.0.0"
-  }
+  ]
 }
