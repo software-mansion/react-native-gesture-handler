@@ -10,8 +10,4 @@ sidebar_label: Gesture detector
 
 ### `gesture`
 
-A gesture object containing the configuration and callbacks. Can be any of the base gestures (`Tap`, `Pan`, `LongPress`, `Fling`, `Pinch`, `Rotation`, `ForceTouch`) or any `ComposedGesture` (`Race`, `Simultaneous`, `Exclusive`).
-
-### `animatedGesture`
-
-Same as `gesture` but intended to use alongside `react-native-reanimated`. At the moment all callbacks must be marked as `worklet` or wrapped with `createWorklet` function and all calls to external functions must be wrapped with `runOnJS`. In case both `animatedGesture` and `gesture` are provided, the `animatedGesture` will be used.
+A gesture object containing the configuration and callbacks. Can be any of the base gestures (`Tap`, `Pan`, `LongPress`, `Fling`, `Pinch`, `Rotation`, `ForceTouch`) or any `ComposedGesture` (`Race`, `Simultaneous`, `Exclusive`). If `react-native-reanimated` is installed, Gesture Handler will automatically use features it provides as long as any of the callbacks is a `worklet` (Reanimated will auto-workletize gesture callbacks).

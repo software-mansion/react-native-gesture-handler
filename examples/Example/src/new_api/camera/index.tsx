@@ -145,17 +145,17 @@ export default function Home() {
 
   return (
     <Animated.View style={styles.container}>
-      <GestureDetector animatedGesture={previewPinchGesture}>
+      <GestureDetector gesture={previewPinchGesture}>
         <Animated.View
           style={[styles.home, { backgroundColor: filters[selectedFilter] }]}>
           <Animated.View style={[styles.box, zoomStyle]} />
         </Animated.View>
       </GestureDetector>
 
-      <GestureDetector animatedGesture={filtersPanGesture}>
+      <GestureDetector gesture={filtersPanGesture}>
         <Animated.View style={styles.buttonContainer}>
           <FilterCarousel filters={filters} selected={filter} />
-          <GestureDetector animatedGesture={buttonGesture}>
+          <GestureDetector gesture={buttonGesture}>
             <CaptureButton
               progress={1 - remainingTimeMs / MAX_VIDEO_DURATION_MS}
               onTimerFinished={() => {
