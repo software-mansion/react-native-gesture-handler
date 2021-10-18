@@ -91,6 +91,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _handlersToWaitFor = nil;
   _simultaneousHandlers = nil;
   _hitSlop = RNGHHitSlopEmpty;
+  _recognizer.cancelsTouchesInView = YES;
 }
 
 - (void)configure:(NSDictionary *)config
@@ -107,6 +108,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     prop = config[@"shouldCancelWhenOutside"];
     if (prop != nil) {
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
+    }
+  
+    prop = config[@"cancelsTouchesInView"];
+    if (prop != nil) {
+        _recognizer.cancelsTouchesInView = [RCTConvert BOOL:prop];
     }
 
     prop = config[@"hitSlop"];

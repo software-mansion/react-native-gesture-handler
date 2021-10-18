@@ -13,6 +13,7 @@ const commonProps = [
   'minPointers',
   'shouldCancelWhenOutside',
   'hitSlop',
+  'cancelsTouchesInView',
 ] as const;
 
 const componentInteractionProps = ['waitFor', 'simultaneousHandlers'] as const;
@@ -64,6 +65,7 @@ export type BaseGestureHandlerProps<
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
   simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
   shouldCancelWhenOutside?: boolean;
+  cancelsTouchesInView?: boolean;
   hitSlop?:
     | number
     // TODO(TS) take into consideration types from GestureHandler#setHitSlop

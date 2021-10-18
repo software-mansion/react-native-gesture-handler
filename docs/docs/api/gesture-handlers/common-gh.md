@@ -31,6 +31,12 @@ When `true` the handler will [cancel](../../state.md#cancelled) or [fail](../../
 Default value of this property is different depending on the handler type.
 Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGestureHandler`](longpress-gh) and [`TapGestureHandler`](tap-gh) which default to `true`.
 
+### `cancelsTouchesInView` (**iOS only**)
+
+Accepts a boolean value.
+When `true` the candler will cancel touches for native ui components (`UIButton`, `UISwitch`, ..., and buttons and touchables exported by RNGH) when it becomes [`ACTIVE`](../../state.md#active).
+Default value is `true`.
+
 ### `simultaneousHandlers`
 
 Accepts a react ref object or an array of refs to other handler components (refs should be created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html)). When set, the handler will be allowed to [activate](../../state.md#active) even if one or more of the handlers provided by their refs are in an [`ACTIVE`](../../state.md#active) state. It will also prevent the provided handlers from [cancelling](../../state.md#cancelled) the current handler when they [activate](../../state.md#active). Read more in the [cross handler interaction](interactions.md#simultaneous-recognition) section.
