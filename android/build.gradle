@@ -1,9 +1,19 @@
+buildscript {
+    ext.safeExtGet = { name, fallback ->
+        return rootProject.ext.has(name) ? rootProject.ext.get(name) : fallback
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlin_version', '1.5.20')}")
+    }
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-
-def safeExtGet(prop, fallback) {
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
 
 repositories {
     mavenCentral()
