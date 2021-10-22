@@ -62,7 +62,6 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
 
   override fun resetConfig() {
     super.resetConfig()
-    minDistSq = MAX_VALUE_IGNORE
     activeOffsetXStart = MIN_VALUE_IGNORE
     activeOffsetXEnd = MAX_VALUE_IGNORE
     failOffsetXStart = MAX_VALUE_IGNORE
@@ -113,7 +112,11 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   }
 
   fun setMinDist(minDist: Float) = apply {
-    minDistSq = minDist * minDist
+    minDistSq = if (minDist == MAX_VALUE_IGNORE) {
+      defaultMinDistSq
+    } else {
+      minDist * minDist
+    }
   }
 
   fun setMinPointers(minPointers: Int) = apply {
