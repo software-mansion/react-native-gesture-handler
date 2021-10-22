@@ -1,4 +1,5 @@
 buildscript {
+    ext.default_kotlin_version='1.5.20'
     ext.safeExtGet = { name, fallback ->
         return rootProject.ext.has(name) ? rootProject.ext.get(name) : fallback
     }
@@ -8,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlin_version', DEFAULT_KOTLIN_VERSION)}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlin_version', default_kotlin_version)}")
     }
 }
 
@@ -42,5 +43,5 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.core:core-ktx:1.6.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:${safeExtGet('kotlin_version', DEFAULT_KOTLIN_VERSION)}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${safeExtGet('kotlin_version', default_kotlin_version)}"
 }
