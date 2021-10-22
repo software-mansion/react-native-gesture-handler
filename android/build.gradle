@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlin_version', '1.5.20')}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlin_version', DEFAULT_KOTLIN_VERSION)}")
     }
 }
 
@@ -42,5 +42,5 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.core:core-ktx:1.6.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.20"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${safeExtGet('kotlin_version', DEFAULT_KOTLIN_VERSION)}"
 }
