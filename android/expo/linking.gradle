@@ -1,0 +1,20 @@
+def isExpoLinked = false
+rootProject.getSubprojects().forEach({ project ->
+    if (project.plugins.hasPlugin("com.android.application")) {
+        if (project.configurations.implementation.getDependencies().find { dep -> dep.name == "expo" }) {
+            isExpoLinked = true
+        }
+    }
+})
+
+if (isExpoLinked) {
+    android {
+        sourceSets {
+            main.java.srcDirs += 'expo/src/main/java'
+        }
+    }
+
+    dependencies {
+        implementation project(':expo-modules-core')
+    }
+}

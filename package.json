@@ -31,7 +31,8 @@
     "DrawerLayout/",
     "README.md",
     "jestSetup.js",
-    "RNGestureHandler.podspec"
+    "RNGestureHandler.podspec",
+    "expo-module.config.json"
   ],
   "repository": {
     "type": "git",

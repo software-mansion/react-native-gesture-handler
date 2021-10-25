@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply from: './expo/linking.gradle'
 
 def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
