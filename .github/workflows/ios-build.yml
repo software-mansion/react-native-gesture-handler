@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: macos-latest
     env:
-      WORKING_DIRECTORY: examples/Example
+      WORKING_DIRECTORY: example
     concurrency:
       group: ios-${{ github.ref }}
       cancel-in-progress: true

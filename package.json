@@ -22,6 +22,7 @@
     "!**/__fixtures__",
     "!**/__mocks__",
     "android/build.gradle",
+    "android/gradle.properties",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
     "android/lib/build.gradle",

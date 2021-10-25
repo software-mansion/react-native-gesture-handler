@@ -156,7 +156,7 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   companion object {
     private const val MAX_VALUE_IGNORE = Float.MIN_VALUE
     private const val DEFAULT_MAX_DURATION_MS: Long = 500
-    private const val DEFAULT_MAX_DELAY_MS: Long = 500
+    private const val DEFAULT_MAX_DELAY_MS: Long = 200
     private const val DEFAULT_NUMBER_OF_TAPS = 1
     private const val DEFAULT_MIN_NUMBER_OF_POINTERS = 1
   }
