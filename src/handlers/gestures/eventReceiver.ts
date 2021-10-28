@@ -10,6 +10,8 @@ import { BaseGesture } from './gesture';
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
 
+let activeHandlers: number[] = [];
+
 function isStateChangeEvent(
   event: UnwrappedGestureHandlerEvent | UnwrappedGestureHandlerStateChangeEvent
 ): event is UnwrappedGestureHandlerStateChangeEvent {
@@ -43,6 +45,22 @@ function onGestureHandlerEvent(
         event.state === State.CANCELLED
       ) {
         handler.handlers.onEnd?.(event, false);
+      }
+
+      if (
+        (event.state === State.BEGAN || event.state === State.ACTIVE) &&
+        !activeHandlers.includes(event.handlerTag)
+      ) {
+        activeHandlers.push(event.handlerTag);
+      } else if (
+        (event.state === State.CANCELLED ||
+          event.state === State.FAILED ||
+          event.state === State.END) &&
+        activeHandlers.includes(event.handlerTag)
+      ) {
+        activeHandlers = activeHandlers.filter(
+          (tag) => tag !== event.handlerTag
+        );
       }
     } else {
       handler.handlers.onUpdate?.(event);

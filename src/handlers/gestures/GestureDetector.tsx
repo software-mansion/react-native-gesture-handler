@@ -7,7 +7,12 @@ import {
   CALLBACK_TYPE,
 } from './gesture';
 import { Reanimated, SharedValue } from './reanimatedWrapper';
-import { registerHandler, unregisterHandler } from '../handlersRegistry';
+import {
+  dropComposedGestureCallbacks,
+  registerHandler,
+  setComposedGestureCallbacks,
+  unregisterHandler,
+} from '../handlersRegistry';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import {
   baseGestureHandlerWithMonitorProps,
@@ -25,7 +30,10 @@ import {
 } from '../PanGestureHandler';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
-import { ComposedGesture } from './gestureComposition';
+import {
+  ComposedGesture,
+  ComposedGestureConfiguration,
+} from './gestureComposition';
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -45,6 +53,7 @@ export type GestureConfigReference = {
   > | null;
   firstExecution: boolean;
   useAnimated: boolean;
+  composedGestureCallbacks: SharedValue<ComposedGestureConfiguration[]> | null;
 };
 
 function convertToHandlerTag(ref: GestureRef): number {
@@ -63,12 +72,53 @@ function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
   );
 }
 
-function dropHandlers(preparedGesture: GestureConfigReference) {
+function dropHandlers(
+  preparedGesture: GestureConfigReference,
+  gestureConfig: ComposedGesture | GestureType | undefined
+) {
   for (const handler of preparedGesture.config) {
     RNGestureHandlerModule.dropGestureHandler(handler.handlerTag);
 
     unregisterHandler(handler.handlerTag);
   }
+
+  if (gestureConfig instanceof ComposedGesture) {
+    const config = extractComposedGestureConfigurations(gestureConfig);
+    if (!preparedGesture.composedGestureCallbacks) {
+      dropComposedGestureCallbacks(config);
+    }
+  }
+}
+
+function extractComposedGestureConfigurations(gestureConfig: ComposedGesture) {
+  const gestureStack: ComposedGesture[] = [gestureConfig];
+  const configurations: ComposedGestureConfiguration[] = [];
+
+  while (gestureStack.length > 0) {
+    const gesture = gestureStack.pop();
+    if (gesture === undefined) {
+      continue;
+    }
+
+    const callbacks = gesture?.callbacks;
+
+    if (callbacks) {
+      configurations.push({
+        callbacks: callbacks,
+        requiredHandlers: gesture
+          .toGestureArray()
+          .map((gesture) => gesture.handlerTag),
+      });
+    }
+
+    for (const innerGesture of gesture?.gestures) {
+      if (innerGesture instanceof ComposedGesture) {
+        gestureStack.push(innerGesture);
+      }
+    }
+  }
+
+  return configurations;
 }
 
 interface AttachHandlersConfig {
@@ -146,6 +196,15 @@ function attachHandlers({
       (g) => g.handlers
     ) as unknown) as HandlerCallbacks<Record<string, unknown>>[];
   }
+
+  if (gestureConfig instanceof ComposedGesture) {
+    const config = extractComposedGestureConfigurations(gestureConfig);
+    if (preparedGesture.composedGestureCallbacks) {
+      preparedGesture.composedGestureCallbacks.value = config;
+    } else {
+      setComposedGestureCallbacks(config);
+    }
+  }
 }
 
 function updateHandlers(
@@ -196,6 +255,15 @@ function updateHandlers(
       preparedGesture.animatedHandlers.value = (preparedGesture.config.map(
         (g) => g.handlers
       ) as unknown) as HandlerCallbacks<Record<string, unknown>>[];
+    }
+
+    if (gestureConfig instanceof ComposedGesture) {
+      const config = extractComposedGestureConfigurations(gestureConfig);
+      if (preparedGesture.composedGestureCallbacks) {
+        preparedGesture.composedGestureCallbacks.value = config;
+      } else {
+        setComposedGestureCallbacks(config);
+      }
     }
   });
 }
@@ -272,6 +340,12 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   const sharedHandlersCallbacks = Reanimated.useSharedValue<
     HandlerCallbacks<Record<string, unknown>>[] | null
   >(null);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const composedGestureCallbacks = Reanimated.useSharedValue<
+    ComposedGestureConfiguration[]
+  >([]);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const workingHandlers = Reanimated.useSharedValue<number[]>([]);
 
   const callback = (
     event:
@@ -315,6 +389,25 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
           ) {
             runWorklet(CALLBACK_TYPE.END, gesture, event, false);
           }
+
+          if (
+            (event.state === State.BEGAN || event.state === State.ACTIVE) &&
+            !workingHandlers.value.includes(event.handlerTag)
+          ) {
+            workingHandlers.value = [
+              ...workingHandlers.value,
+              event.handlerTag,
+            ];
+          } else if (
+            (event.state === State.CANCELLED ||
+              event.state === State.FAILED ||
+              event.state === State.END) &&
+            workingHandlers.value.includes(event.handlerTag)
+          ) {
+            workingHandlers.value = workingHandlers.value.filter(
+              (tag) => tag !== event.handlerTag
+            );
+          }
         } else {
           runWorklet(CALLBACK_TYPE.UPDATE, gesture, event);
         }
@@ -331,6 +424,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
 
   preparedGesture.animatedEventHandler = event;
   preparedGesture.animatedHandlers = sharedHandlersCallbacks;
+  preparedGesture.composedGestureCallbacks = composedGestureCallbacks;
 }
 
 interface GestureDetectorProps {
@@ -354,6 +448,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     animatedHandlers: null,
     firstExecution: true,
     useAnimated: useAnimated,
+    composedGestureCallbacks: null,
   }).current;
 
   if (useAnimated !== preparedGesture.useAnimated) {
@@ -385,7 +480,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     });
 
     return () => {
-      dropHandlers(preparedGesture);
+      dropHandlers(preparedGesture, gestureConfig);
     };
   }, []);
 
@@ -394,7 +489,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       const viewTag = findNodeHandle(viewRef.current) as number;
 
       if (needsToReattach(preparedGesture, gesture)) {
-        dropHandlers(preparedGesture);
+        dropHandlers(preparedGesture, gestureConfig);
         attachHandlers({
           preparedGesture,
           gestureConfig,

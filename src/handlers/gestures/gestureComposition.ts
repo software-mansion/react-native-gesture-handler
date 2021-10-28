@@ -11,10 +11,20 @@ function extendRelation(
   }
 }
 
+export interface ComposedGestureCallbacks {
+  onEnd?: () => void;
+}
+
+export interface ComposedGestureConfiguration {
+  callbacks: ComposedGestureCallbacks;
+  requiredHandlers: number[];
+}
+
 export class ComposedGesture extends Gesture {
-  protected gestures: Gesture[] = [];
+  public gestures: Gesture[] = [];
   protected simultaneousGestures: GestureType[] = [];
   protected requireGesturesToFail: GestureType[] = [];
+  public callbacks: ComposedGestureCallbacks = {};
 
   constructor(...gestures: Gesture[]) {
     super();
