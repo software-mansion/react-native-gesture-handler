@@ -73,7 +73,9 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler reset];
+  if ([self numberOfTouches] == 0) {
+    [_gestureHandler reset];
+  }
 #if !TARGET_OS_TV
   if (_hasCustomActivationCriteria) {
     // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
@@ -286,4 +288,3 @@
 }
 
 @end
-
