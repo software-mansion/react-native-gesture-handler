@@ -392,18 +392,31 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   ) {
     'worklet';
     if (
-      (event.state === State.BEGAN || event.state === State.ACTIVE) &&
+      event.state === State.BEGAN &&
       !workingHandlers.value.includes(event.handlerTag)
     ) {
       workingHandlers.value = [...workingHandlers.value, event.handlerTag];
+    } else if (event.state === State.ACTIVE) {
+      // if the handler is active store its tag as negative number to allow for
+      // discrening between active handlers 'began' handlers
+      if (workingHandlers.value.includes(event.handlerTag)) {
+        workingHandlers.value = workingHandlers.value.filter(
+          (tag) => tag !== event.handlerTag
+        );
+      }
+
+      if (!workingHandlers.value.includes(-event.handlerTag)) {
+        workingHandlers.value = [...workingHandlers.value, -event.handlerTag];
+      }
     } else if (
       (event.state === State.CANCELLED ||
         event.state === State.FAILED ||
         event.state === State.END) &&
-      workingHandlers.value.includes(event.handlerTag)
+      (workingHandlers.value.includes(event.handlerTag) ||
+        workingHandlers.value.includes(-event.handlerTag))
     ) {
       workingHandlers.value = workingHandlers.value.filter(
-        (tag) => tag !== event.handlerTag
+        (tag) => tag !== event.handlerTag && tag !== -event.handlerTag
       );
     }
   }
@@ -415,9 +428,6 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     'worklet';
     let handler = undefined;
     switch (type) {
-      case CALLBACK_TYPE.BEGAN:
-        handler = config.callbacks.onBegan;
-        break;
       case CALLBACK_TYPE.START:
         handler = config.callbacks.onStart;
         break;
@@ -450,6 +460,9 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
         if (
           workingHandlers.value.find((element) =>
             callbacksForEvent[j].requiredHandlers.includes(element)
+          ) === undefined &&
+          workingHandlers.value.find((element) =>
+            callbacksForEvent[j].requiredHandlers.includes(-element)
           ) === undefined
         ) {
           runComposedCallback(CALLBACK_TYPE.END, callbacksForEvent[j]);
@@ -458,28 +471,29 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     }
   }
 
-  function tryBeginningOrActivatingComposedGesture(
+  function tryActivatingComposedGesture(
     event: UnwrappedGestureHandlerStateChangeEvent,
     callbacksForEvent: ComposedGestureConfiguration[]
   ) {
     'worklet';
-    if (event.state === State.BEGAN) {
+    if (event.state === State.ACTIVE) {
       // same as above
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let j = 0; j < callbacksForEvent.length; j++) {
-        if (
-          workingHandlers.value.find((element) =>
-            callbacksForEvent[j].requiredHandlers.includes(element)
-          ) === undefined
-        ) {
-          runComposedCallback(CALLBACK_TYPE.BEGAN, callbacksForEvent[j]);
+        const callbacks = callbacksForEvent[j];
+        let dispachEvent = true;
+
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        for (let i = 0; i < callbacks.requiredHandlers.length; i++) {
+          if (workingHandlers.value.includes(-callbacks.requiredHandlers[i])) {
+            dispachEvent = false;
+            break;
+          }
         }
-      }
-    } else if (event.state === State.ACTIVE) {
-      // same as above
-      // eslint-disable-next-line @typescript-eslint/prefer-for-of
-      for (let j = 0; j < callbacksForEvent.length; j++) {
-        runComposedCallback(CALLBACK_TYPE.START, callbacksForEvent[j]);
+
+        if (dispachEvent) {
+          runComposedCallback(CALLBACK_TYPE.START, callbacks);
+        }
       }
     }
   }
@@ -506,7 +520,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
           dispachStateChange(event, gesture);
 
           const callbacks = getComposedCallbacksForHandler(event.handlerTag);
-          tryBeginningOrActivatingComposedGesture(event, callbacks);
+          tryActivatingComposedGesture(event, callbacks);
           updateActiveHandlers(event);
           tryEndingComposedGestures(event, callbacks);
         } else {

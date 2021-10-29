@@ -34,7 +34,7 @@ function onGestureHandlerEvent(
       dispachStateChange(event, handler);
 
       const callbacks = getComposedCallbacksForHandler(event.handlerTag);
-      tryBeginningOrActivatingComposedGesture(event, callbacks);
+      tryActivatingComposedGesture(event, callbacks);
       updateActiveHandlers(event);
       tryEndingComposedGestures(event, callbacks);
     } else {
@@ -63,17 +63,28 @@ function dispachStateChange(
 
 function updateActiveHandlers(event: UnwrappedGestureHandlerStateChangeEvent) {
   if (
-    (event.state === State.BEGAN || event.state === State.ACTIVE) &&
+    event.state === State.BEGAN &&
     !activeHandlers.includes(event.handlerTag)
   ) {
     activeHandlers.push(event.handlerTag);
+  } else if (event.state === State.ACTIVE) {
+    if (activeHandlers.includes(event.handlerTag)) {
+      activeHandlers = activeHandlers.filter((tag) => tag !== event.handlerTag);
+    }
+
+    if (!activeHandlers.includes(-event.handlerTag)) {
+      activeHandlers.push(-event.handlerTag);
+    }
   } else if (
     (event.state === State.CANCELLED ||
       event.state === State.FAILED ||
       event.state === State.END) &&
-    activeHandlers.includes(event.handlerTag)
+    (activeHandlers.includes(event.handlerTag) ||
+      activeHandlers.includes(-event.handlerTag))
   ) {
-    activeHandlers = activeHandlers.filter((tag) => tag !== event.handlerTag);
+    activeHandlers = activeHandlers.filter(
+      (tag) => tag !== event.handlerTag && tag !== -event.handlerTag
+    );
   }
 }
 
@@ -90,6 +101,9 @@ function tryEndingComposedGestures(
       if (
         activeHandlers.find((element) =>
           callbacks.requiredHandlers.includes(element)
+        ) === undefined &&
+        activeHandlers.find((element) =>
+          callbacks.requiredHandlers.includes(-element)
         ) === undefined
       ) {
         callbacks.callbacks.onEnd?.();
@@ -98,23 +112,24 @@ function tryEndingComposedGestures(
   }
 }
 
-function tryBeginningOrActivatingComposedGesture(
+function tryActivatingComposedGesture(
   event: UnwrappedGestureHandlerStateChangeEvent,
   callbacksForEvent: ComposedGestureConfiguration[]
 ) {
-  if (event.state === State.BEGAN) {
+  if (event.state === State.ACTIVE) {
     for (const callbacks of callbacksForEvent) {
-      if (
-        activeHandlers.find((element) =>
-          callbacks.requiredHandlers.includes(element)
-        ) === undefined
-      ) {
-        callbacks.callbacks.onBegan?.();
+      let dispachEvent = true;
+
+      for (const tag of callbacks.requiredHandlers) {
+        if (activeHandlers.includes(-tag)) {
+          dispachEvent = false;
+          break;
+        }
       }
-    }
-  } else if (event.state === State.ACTIVE) {
-    for (const callbacks of callbacksForEvent) {
-      callbacks.callbacks.onStart?.();
+
+      if (dispachEvent) {
+        callbacks.callbacks.onStart?.();
+      }
     }
   }
 }

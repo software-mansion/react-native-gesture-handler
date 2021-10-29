@@ -18,7 +18,6 @@ function extendRelation(
 }
 
 export interface ComposedGestureCallbacks {
-  onBegan?: () => void;
   onStart?: () => void;
   onEnd?: () => void;
   isWorklet: boolean[];
@@ -40,12 +39,6 @@ export class ComposedGesture extends Gesture {
   constructor(...gestures: Gesture[]) {
     super();
     this.gestures = gestures;
-  }
-
-  onBegan(callback: () => void) {
-    this.callbacks.onBegan = callback;
-    this.callbacks.isWorklet[CALLBACK_TYPE.BEGAN] = this.isWorklet(callback);
-    return this;
   }
 
   onStart(callback: () => void) {
