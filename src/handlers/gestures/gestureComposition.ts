@@ -1,4 +1,10 @@
-import { BaseGesture, Gesture, GestureRef, GestureType } from './gesture';
+import {
+  BaseGesture,
+  CALLBACK_TYPE,
+  Gesture,
+  GestureRef,
+  GestureType,
+} from './gesture';
 
 function extendRelation(
   currentRelation: GestureRef[] | undefined,
@@ -12,7 +18,10 @@ function extendRelation(
 }
 
 export interface ComposedGestureCallbacks {
+  onBegan?: () => void;
+  onStart?: () => void;
   onEnd?: () => void;
+  isWorklet: boolean[];
 }
 
 export interface ComposedGestureConfiguration {
@@ -24,11 +33,31 @@ export class ComposedGesture extends Gesture {
   public gestures: Gesture[] = [];
   protected simultaneousGestures: GestureType[] = [];
   protected requireGesturesToFail: GestureType[] = [];
-  public callbacks: ComposedGestureCallbacks = {};
+  public callbacks: ComposedGestureCallbacks = {
+    isWorklet: [false, false, false, false],
+  };
 
   constructor(...gestures: Gesture[]) {
     super();
     this.gestures = gestures;
+  }
+
+  onBegan(callback: () => void) {
+    this.callbacks.onBegan = callback;
+    this.callbacks.isWorklet[CALLBACK_TYPE.BEGAN] = this.isWorklet(callback);
+    return this;
+  }
+
+  onStart(callback: () => void) {
+    this.callbacks.onStart = callback;
+    this.callbacks.isWorklet[CALLBACK_TYPE.START] = this.isWorklet(callback);
+    return this;
+  }
+
+  onEnd(callback: () => void) {
+    this.callbacks.onEnd = callback;
+    this.callbacks.isWorklet[CALLBACK_TYPE.END] = this.isWorklet(callback);
+    return this;
   }
 
   protected prepareSingleGesture(

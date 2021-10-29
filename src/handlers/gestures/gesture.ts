@@ -79,6 +79,13 @@ export abstract class Gesture {
    * updating the handler on the native side.
    */
   abstract prepare(): void;
+
+  // The only thing done with the argument is a check whether it has a __workletHash property
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  protected isWorklet(callback: Function) {
+    // @ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    return callback.__workletHash !== undefined;
+  }
 }
 
 export abstract class BaseGesture<
@@ -105,17 +112,6 @@ export abstract class BaseGesture<
   withRef(ref: React.MutableRefObject<GestureType>) {
     this.config.ref = ref;
     return this;
-  }
-
-  protected isWorklet(
-    callback:
-      | ((event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void)
-      | ((
-          event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
-        ) => void)
-  ) {
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    return callback.__workletHash !== undefined;
   }
 
   onBegan(

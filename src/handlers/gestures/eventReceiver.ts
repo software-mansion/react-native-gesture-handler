@@ -4,8 +4,12 @@ import {
   UnwrappedGestureHandlerEvent,
   UnwrappedGestureHandlerStateChangeEvent,
 } from '../gestureHandlerCommon';
-import { findHandler } from '../handlersRegistry';
+import {
+  findHandler,
+  getComposedCallbacksForHandler,
+} from '../handlersRegistry';
 import { BaseGesture } from './gesture';
+import { ComposedGestureConfiguration } from './gestureComposition';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
@@ -27,43 +31,90 @@ function onGestureHandlerEvent(
 
   if (handler) {
     if (isStateChangeEvent(event)) {
-      if (
-        event.oldState === State.UNDETERMINED &&
-        event.state === State.BEGAN
-      ) {
-        handler.handlers.onBegan?.(event);
-      } else if (
-        (event.oldState === State.BEGAN ||
-          event.oldState === State.UNDETERMINED) &&
-        event.state === State.ACTIVE
-      ) {
-        handler.handlers.onStart?.(event);
-      } else if (event.oldState === State.ACTIVE && event.state === State.END) {
-        handler.handlers.onEnd?.(event, true);
-      } else if (
-        event.state === State.FAILED ||
-        event.state === State.CANCELLED
-      ) {
-        handler.handlers.onEnd?.(event, false);
-      }
+      dispachStateChange(event, handler);
 
-      if (
-        (event.state === State.BEGAN || event.state === State.ACTIVE) &&
-        !activeHandlers.includes(event.handlerTag)
-      ) {
-        activeHandlers.push(event.handlerTag);
-      } else if (
-        (event.state === State.CANCELLED ||
-          event.state === State.FAILED ||
-          event.state === State.END) &&
-        activeHandlers.includes(event.handlerTag)
-      ) {
-        activeHandlers = activeHandlers.filter(
-          (tag) => tag !== event.handlerTag
-        );
-      }
+      const callbacks = getComposedCallbacksForHandler(event.handlerTag);
+      tryBeginningOrActivatingComposedGesture(event, callbacks);
+      updateActiveHandlers(event);
+      tryEndingComposedGestures(event, callbacks);
     } else {
       handler.handlers.onUpdate?.(event);
+    }
+  }
+}
+
+function dispachStateChange(
+  event: UnwrappedGestureHandlerStateChangeEvent,
+  handler: BaseGesture<Record<string, unknown>>
+) {
+  if (event.oldState === State.UNDETERMINED && event.state === State.BEGAN) {
+    handler.handlers.onBegan?.(event);
+  } else if (
+    (event.oldState === State.BEGAN || event.oldState === State.UNDETERMINED) &&
+    event.state === State.ACTIVE
+  ) {
+    handler.handlers.onStart?.(event);
+  } else if (event.oldState === State.ACTIVE && event.state === State.END) {
+    handler.handlers.onEnd?.(event, true);
+  } else if (event.state === State.FAILED || event.state === State.CANCELLED) {
+    handler.handlers.onEnd?.(event, false);
+  }
+}
+
+function updateActiveHandlers(event: UnwrappedGestureHandlerStateChangeEvent) {
+  if (
+    (event.state === State.BEGAN || event.state === State.ACTIVE) &&
+    !activeHandlers.includes(event.handlerTag)
+  ) {
+    activeHandlers.push(event.handlerTag);
+  } else if (
+    (event.state === State.CANCELLED ||
+      event.state === State.FAILED ||
+      event.state === State.END) &&
+    activeHandlers.includes(event.handlerTag)
+  ) {
+    activeHandlers = activeHandlers.filter((tag) => tag !== event.handlerTag);
+  }
+}
+
+function tryEndingComposedGestures(
+  event: UnwrappedGestureHandlerStateChangeEvent,
+  callbacksForEvent: ComposedGestureConfiguration[]
+) {
+  if (
+    event.state === State.CANCELLED ||
+    event.state === State.FAILED ||
+    event.state === State.END
+  ) {
+    for (const callbacks of callbacksForEvent) {
+      if (
+        activeHandlers.find((element) =>
+          callbacks.requiredHandlers.includes(element)
+        ) === undefined
+      ) {
+        callbacks.callbacks.onEnd?.();
+      }
+    }
+  }
+}
+
+function tryBeginningOrActivatingComposedGesture(
+  event: UnwrappedGestureHandlerStateChangeEvent,
+  callbacksForEvent: ComposedGestureConfiguration[]
+) {
+  if (event.state === State.BEGAN) {
+    for (const callbacks of callbacksForEvent) {
+      if (
+        activeHandlers.find((element) =>
+          callbacks.requiredHandlers.includes(element)
+        ) === undefined
+      ) {
+        callbacks.callbacks.onBegan?.();
+      }
+    }
+  } else if (event.state === State.ACTIVE) {
+    for (const callbacks of callbacksForEvent) {
+      callbacks.callbacks.onStart?.();
     }
   }
 }

@@ -334,6 +334,29 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     }
   }
 
+  function dispachStateChange(
+    event: UnwrappedGestureHandlerStateChangeEvent,
+    gesture: HandlerCallbacks<Record<string, unknown>>
+  ) {
+    'worklet';
+    if (event.oldState === State.UNDETERMINED && event.state === State.BEGAN) {
+      runWorklet(CALLBACK_TYPE.BEGAN, gesture, event);
+    } else if (
+      (event.oldState === State.BEGAN ||
+        event.oldState === State.UNDETERMINED) &&
+      event.state === State.ACTIVE
+    ) {
+      runWorklet(CALLBACK_TYPE.START, gesture, event);
+    } else if (event.oldState === State.ACTIVE && event.state === State.END) {
+      runWorklet(CALLBACK_TYPE.END, gesture, event, true);
+    } else if (
+      event.state === State.FAILED ||
+      event.state === State.CANCELLED
+    ) {
+      runWorklet(CALLBACK_TYPE.END, gesture, event, false);
+    }
+  }
+
   // Hooks are called conditionally, but the condition is whether the
   // react-native-reanimated is installed, which shouldn't change while running
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -347,6 +370,120 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const workingHandlers = Reanimated.useSharedValue<number[]>([]);
 
+  function getComposedCallbacksForHandler(tag: number) {
+    'worklet';
+    const result = [];
+
+    // Using for-of loop here causes crash, because worklets do not support it,
+    // consider changing this in future when support for it is added
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for (let i = 0; i < composedGestureCallbacks.value.length; i++) {
+      const config = composedGestureCallbacks.value[i];
+      if (config.requiredHandlers.includes(tag)) {
+        result.push(config);
+      }
+    }
+
+    return result;
+  }
+
+  function updateActiveHandlers(
+    event: UnwrappedGestureHandlerStateChangeEvent
+  ) {
+    'worklet';
+    if (
+      (event.state === State.BEGAN || event.state === State.ACTIVE) &&
+      !workingHandlers.value.includes(event.handlerTag)
+    ) {
+      workingHandlers.value = [...workingHandlers.value, event.handlerTag];
+    } else if (
+      (event.state === State.CANCELLED ||
+        event.state === State.FAILED ||
+        event.state === State.END) &&
+      workingHandlers.value.includes(event.handlerTag)
+    ) {
+      workingHandlers.value = workingHandlers.value.filter(
+        (tag) => tag !== event.handlerTag
+      );
+    }
+  }
+
+  function runComposedCallback(
+    type: CALLBACK_TYPE,
+    config: ComposedGestureConfiguration
+  ) {
+    'worklet';
+    let handler = undefined;
+    switch (type) {
+      case CALLBACK_TYPE.BEGAN:
+        handler = config.callbacks.onBegan;
+        break;
+      case CALLBACK_TYPE.START:
+        handler = config.callbacks.onStart;
+        break;
+      case CALLBACK_TYPE.END:
+        handler = config.callbacks.onEnd;
+        break;
+    }
+    if (config.callbacks.isWorklet[type]) {
+      // @ts-ignore Logic below makes sure the correct event is send to the
+      // correct handler.
+      handler?.();
+    } else if (handler) {
+      console.warn('Animated gesture callback must be a worklet');
+    }
+  }
+
+  function tryEndingComposedGestures(
+    event: UnwrappedGestureHandlerStateChangeEvent,
+    callbacksForEvent: ComposedGestureConfiguration[]
+  ) {
+    'worklet';
+    if (
+      event.state === State.CANCELLED ||
+      event.state === State.FAILED ||
+      event.state === State.END
+    ) {
+      // same as above
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
+      for (let j = 0; j < callbacksForEvent.length; j++) {
+        if (
+          workingHandlers.value.find((element) =>
+            callbacksForEvent[j].requiredHandlers.includes(element)
+          ) === undefined
+        ) {
+          runComposedCallback(CALLBACK_TYPE.END, callbacksForEvent[j]);
+        }
+      }
+    }
+  }
+
+  function tryBeginningOrActivatingComposedGesture(
+    event: UnwrappedGestureHandlerStateChangeEvent,
+    callbacksForEvent: ComposedGestureConfiguration[]
+  ) {
+    'worklet';
+    if (event.state === State.BEGAN) {
+      // same as above
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
+      for (let j = 0; j < callbacksForEvent.length; j++) {
+        if (
+          workingHandlers.value.find((element) =>
+            callbacksForEvent[j].requiredHandlers.includes(element)
+          ) === undefined
+        ) {
+          runComposedCallback(CALLBACK_TYPE.BEGAN, callbacksForEvent[j]);
+        }
+      }
+    } else if (event.state === State.ACTIVE) {
+      // same as above
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
+      for (let j = 0; j < callbacksForEvent.length; j++) {
+        runComposedCallback(CALLBACK_TYPE.START, callbacksForEvent[j]);
+      }
+    }
+  }
+
   const callback = (
     event:
       | UnwrappedGestureHandlerStateChangeEvent
@@ -359,55 +496,19 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
       return;
     }
 
-    //Using for-of loop here causes crash, because worklets do not support it,
-    //consider changing this in future when support for it is added
-    //eslint-disable-next-line @typescript-eslint/prefer-for-of
+    // same as above
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < currentCallback.length; i++) {
       const gesture = currentCallback[i];
 
       if (event.handlerTag === gesture.handlerTag) {
         if (isStateChangeEvent(event)) {
-          if (
-            event.oldState === State.UNDETERMINED &&
-            event.state === State.BEGAN
-          ) {
-            runWorklet(CALLBACK_TYPE.BEGAN, gesture, event);
-          } else if (
-            (event.oldState === State.BEGAN ||
-              event.oldState === State.UNDETERMINED) &&
-            event.state === State.ACTIVE
-          ) {
-            runWorklet(CALLBACK_TYPE.START, gesture, event);
-          } else if (
-            event.oldState === State.ACTIVE &&
-            event.state === State.END
-          ) {
-            runWorklet(CALLBACK_TYPE.END, gesture, event, true);
-          } else if (
-            event.state === State.FAILED ||
-            event.state === State.CANCELLED
-          ) {
-            runWorklet(CALLBACK_TYPE.END, gesture, event, false);
-          }
+          dispachStateChange(event, gesture);
 
-          if (
-            (event.state === State.BEGAN || event.state === State.ACTIVE) &&
-            !workingHandlers.value.includes(event.handlerTag)
-          ) {
-            workingHandlers.value = [
-              ...workingHandlers.value,
-              event.handlerTag,
-            ];
-          } else if (
-            (event.state === State.CANCELLED ||
-              event.state === State.FAILED ||
-              event.state === State.END) &&
-            workingHandlers.value.includes(event.handlerTag)
-          ) {
-            workingHandlers.value = workingHandlers.value.filter(
-              (tag) => tag !== event.handlerTag
-            );
-          }
+          const callbacks = getComposedCallbacksForHandler(event.handlerTag);
+          tryBeginningOrActivatingComposedGesture(event, callbacks);
+          updateActiveHandlers(event);
+          tryEndingComposedGestures(event, callbacks);
         } else {
           runWorklet(CALLBACK_TYPE.UPDATE, gesture, event);
         }
