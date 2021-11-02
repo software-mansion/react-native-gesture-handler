@@ -19,7 +19,6 @@
     "@react-navigation/native": "^5.8.10",
     "@react-navigation/stack": "^5.12.8",
     "expo": "^40.0.0",
-    "fbjs": "^3.0.0",
     "hoist-non-react-statics": "^3.3.2",
     "invariant": "^2.2.4",
     "react": "17.0.2",
