@@ -1,7 +1,7 @@
 module.exports = {
   docs: {
     Basics: [
-      'getting-started',
+      'introduction',
       'quickstart/quickstart',
       'example',
     ],

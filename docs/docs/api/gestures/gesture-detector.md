@@ -16,4 +16,4 @@ A gesture object containing the configuration and callbacks. Can be any of the b
 GestureDetector will decide whether to use Reanimated to process provided gestures based on callbacks they have. If any of the callbacks is a worklet, toold provided by the Reanimated will be utilized bringing ability to handle gestures synchrously.
 :::
 
-<!-- TODO: Add information about which version of Reanimated provides state management -->
+<!-- TODO: Add information about which version of Reanimated provides state management, link composition -->
