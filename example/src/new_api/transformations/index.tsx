@@ -15,6 +15,7 @@ function Photo() {
   const scale = useSharedValue(1);
   const savedRotation = useSharedValue(0);
   const rotation = useSharedValue(0);
+  const isTransforming = useSharedValue(false);
 
   const style = useAnimatedStyle(() => {
     return {
@@ -24,6 +25,7 @@ function Photo() {
         { scale: scale.value },
         { rotateZ: `${rotation.value}rad` },
       ],
+      backgroundColor: isTransforming.value ? 'red' : 'green',
     };
   });
 
@@ -74,7 +76,15 @@ function Photo() {
     scaleGesture,
     panGesture,
     doubleTapGesture
-  );
+  )
+    .onStart(() => {
+      'worklet';
+      isTransforming.value = true;
+    })
+    .onEnd(() => {
+      'worklet';
+      isTransforming.value = false;
+    });
 
   return (
     <GestureDetector gesture={gesture}>
