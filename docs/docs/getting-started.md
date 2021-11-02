@@ -15,7 +15,10 @@ In a nutshell, the library provides:
 - A way to use a platform's native touch handling system for recognizing pinch, rotation and pan (besides a few other gestures).
 - The ability to define relations between gesture handlers, e.g. when you have a pan handler in `ScrollView` you can make that `ScrollView` wait until it knows pan won't recognize.
 - Mechanisms to use touchables that run in native thread and follow platform default behavior; e.g. in the event they are in a scrollable component, turning into pressed state is slightly delayed to prevent it from highlighting when you fling.
-- The possibility to implement smooth gesture interactions thanks to Animated Native Driver &mdash; interactions will be responsive even when the JS thread is overloaded.
+
+:::info
+It is recommended to use Reanimated 2 for animations when using React Native Gesture Handler as its more advanced features rely heavily on the worklets provided by Reanimated.
+:::
 
 ## Installation
 
@@ -89,50 +92,6 @@ react-native link react-native-gesture-handler
 
 ### Android
 
-Follow the steps below:
-
-If you use one of the _native navigation libraries_ (e.g.
-[wix/react-native-navigation](https://github.com/wix/react-native-navigation)),
-you should follow [this separate guide](#with-wixreact-native-navigation) to get
-gesture handler library set up on Android. Ignore the rest of this step – it
-only applies to RN apps that use a standard Android project layout.
-
-#### Updating `MainActivity.java`
-
-:::caution
-From version 2.0.0 this step isn't needed. You should use
-`<GestureHandlerRootView />` component instead.
-:::
-
-Update your `MainActivity.java` file (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating `ReactRootView` instance and then use the root view wrapper provided by this library. Do not forget to import `ReactActivityDelegate`, `ReactRootView`, and `RNGestureHandlerEnabledRootView`:
-
-```diff
-package com.swmansion.gesturehandler.react.example;
-
-import com.facebook.react.ReactActivity;
-+ import com.facebook.react.ReactActivityDelegate;
-+ import com.facebook.react.ReactRootView;
-+ import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
-
-public class MainActivity extends ReactActivity {
-
-  @Override
-  protected String getMainComponentName() {
-    return "Example";
-  }
-
-+  @Override
-+  protected ReactActivityDelegate createReactActivityDelegate() {
-+    return new ReactActivityDelegate(this, getMainComponentName()) {
-+      @Override
-+      protected ReactRootView createRootView() {
-+       return new RNGestureHandlerEnabledRootView(MainActivity.this);
-+      }
-+    };
-+  }
-}
-```
-
 #### Usage with modals on Android
 
 On Android RNGH does not work by default because modals are not located under React Native Root view in native hierarchy.
@@ -173,44 +132,6 @@ For React Native 0.61 or greater, add the library as the first import in your in
 ```js
 import 'react-native-gesture-handler';
 ```
-
-### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
-
-If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to follow a different setup for your Android app to work properly. The reason is that both native navigation libraries and Gesture Handler library need to use their own special subclasses of `ReactRootView`.
-
-Instead of changing Java code you will need to wrap every screen component using `gestureHandlerRootHOC` on the JS side. This can be done for example at the stage when you register your screens. Here's an example:
-
-```js
-import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { Navigation } from 'react-native-navigation';
-
-import FirstTabScreen from './FirstTabScreen';
-import SecondTabScreen from './SecondTabScreen';
-import PushedScreen from './PushedScreen';
-
-// register all screens of the app (including internal ones)
-export function registerScreens() {
-  Navigation.registerComponent(
-    'example.FirstTabScreen',
-    () => gestureHandlerRootHOC(FirstTabScreen),
-    () => FirstTabScreen
-  );
-  Navigation.registerComponent(
-    'example.SecondTabScreen',
-    () => gestureHandlerRootHOC(SecondTabScreen),
-    () => SecondTabScreen
-  );
-  Navigation.registerComponent(
-    'example.PushedScreen',
-    () => gestureHandlerRootHOC(PushedScreen),
-    () => PushedScreen
-  );
-}
-```
-
-You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
-
-Remember that you need to wrap each screen that you use in your app with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
 
 ### Testing
 
