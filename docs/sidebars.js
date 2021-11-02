@@ -2,10 +2,14 @@ module.exports = {
   docs: {
     Basics: [
       'getting-started',
+      'quickstart/quickstart',
       'example',
     ],
     'API reference': [
       {
+        Gestures: [
+          'api/gestures/gesture-detector',
+        ],
         Components: [
           'api/components/buttons',
           'api/components/swipeable',
