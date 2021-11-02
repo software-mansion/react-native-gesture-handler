@@ -11,15 +11,15 @@ The fingers involved in these gestures must not move significantly from their in
 The required number of taps and allowed distance from initial position may be configured.
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
-In order for a handler to [activate](../../state.md#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDurationMs, and maxDelayMs (explained below) must be met. Immediately after the handler [activates](../../state.md#active), it will [END](../../state.md#end).
+In order for a handler to [activate](../basics/state.md#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDurationMs, and maxDelayMs (explained below) must be met. Immediately after the handler [activates](../basics/state.md#active), it will [END](../basics/state.md#end).
 
 ## Properties
 
-See [set of properties inherited from base handler class](common-gh#properties). Below is a list of properties specific to the `TapGestureHandler` component:
+See [set of properties inherited from base handler class](./common-gh.md#properties). Below is a list of properties specific to the `TapGestureHandler` component:
 
 ### `minPointers`
 
-Minimum number of pointers (fingers) required to be placed before the handler [activates](../../state.md#active). Should be a positive integer. The default value is 1.
+Minimum number of pointers (fingers) required to be placed before the handler [activates](../basics/state.md#active). Should be a positive integer. The default value is 1.
 
 ### `maxDurationMs`
 
@@ -31,23 +31,23 @@ Maximum time, expressed in milliseconds, that can pass before the next tap — i
 
 ### `numberOfTaps`
 
-Number of tap gestures required to [activate](../../state.md#active) the handler. The default value is 1.
+Number of tap gestures required to [activate](../basics/state.md#active) the handler. The default value is 1.
 
 ### `maxDeltaX`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the X axis during a tap gesture. If the finger travels further than the defined distance along the X axis and the handler hasn't yet [activated](../../state.md#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the X axis during a tap gesture. If the finger travels further than the defined distance along the X axis and the handler hasn't yet [activated](../basics/state.md#active), it will fail to recognize the gesture.
 
 ### `maxDeltaY`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the Y axis during a tap gesture. If the finger travels further than the defined distance along the Y axis and the handler hasn't yet [activated](../../state.md#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the Y axis during a tap gesture. If the finger travels further than the defined distance along the Y axis and the handler hasn't yet [activated](../basics/state.md#active), it will fail to recognize the gesture.
 
 ### `maxDist`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the handler hasn't yet [activated](../../state.md#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the handler hasn't yet [activated](../basics/state.md#active), it will fail to recognize the gesture.
 
 ## Event data
 
-See [set of event attributes from base handler class](common-gh#event-data). Below is a list of gesture event attributes specific to the `TapGestureHandler` component:
+See [set of event attributes from base handler class](./common-gh.md#event-data). Below is a list of gesture event attributes specific to the `TapGestureHandler` component:
 
 ### `x`
 
@@ -67,7 +67,7 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 
 ## Example
 
-See the [multitap example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/src/multitap/index.tsx) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [multitap example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/example/src/basic/multitap/index.tsx) from [GestureHandler Example App](../../example.md).
 
 ```js
 export class PressBox extends Component {

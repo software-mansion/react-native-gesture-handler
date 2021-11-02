@@ -6,7 +6,7 @@ sidebar_label: Rotation
 
 A continuous gesture handler that can recognize a rotation gesture and track its movement.
 
-The handler [activates](state.md#active) when fingers are placed on the screen and change position in a proper way.
+The handler [activates](../basics/state.md#active) when fingers are placed on the screen and change position in a proper way.
 
 Gesture callback can be used for continuous tracking of the rotation gesture. It provides information about the gesture such as the amount rotated, the focal point of the rotation (anchor), and its instantaneous velocity.
 
@@ -14,11 +14,11 @@ The handler is implemented using [UIRotationGestureRecognizer](https://developer
 
 ## Properties
 
-Properties provided to `RotationGestureHandler` do not extend [common set of properties from base handler class](common-gh#properties).
+Properties provided to `RotationGestureHandler` do not extend [common set of properties from base handler class](./common-gh.md#properties).
 
 ## Event data
 
-See [set of event attributes from base handler class](common-gh#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
+See [set of event attributes from base handler class](./common-gh.md#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
 
 ### `rotation`
 
@@ -38,7 +38,7 @@ Y coordinate, expressed in points, of the gesture's central focal point (anchor)
 
 ## Example
 
-See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/src/scaleAndRotate/index.tsx) from [GestureHandler Example App](../../example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/example/src/recipes/scaleAndRotate/index.tsx) from [GestureHandler Example App](../../example).
 
 ```js
 class RotableBox extends React.Component {

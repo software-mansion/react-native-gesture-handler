@@ -15,7 +15,7 @@ The component we want to wrap.
 
 ### config
 
-Config is an object with properties that can be used on [`NativeViewGestureHandler`](nativeview-gh.md)
+Config is an object with properties that can be used on [`NativeViewGestureHandler`](./nativeview-gh.md)
 
 ## Returns
 
