@@ -18,6 +18,10 @@ module.exports = {
         ],
       },
     ],
+    'Under the hood': [
+      'under-the-hood/states-events',
+      'under-the-hood/how-does-it-work',
+    ],
     'Gesture handlers': [
       {
         Basics: [
