@@ -4,6 +4,7 @@ module.exports = {
       'introduction',
       'quickstart/quickstart',
       'gesture-composition',
+      'whats-new',
       'example',
     ],
     'API reference': [
