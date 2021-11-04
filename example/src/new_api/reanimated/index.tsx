@@ -10,6 +10,7 @@ import Animated, {
 function Ball() {
   const isPressed = useSharedValue(false);
   const offset = useSharedValue({ x: 0, y: 0 });
+  const start = useSharedValue({ x: 0, y: 0 });
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -22,7 +23,6 @@ function Ball() {
     };
   });
 
-  const start = useSharedValue({ x: 0, y: 0 });
   const gesture = Gesture.Pan()
     .onBegan(() => {
       'worklet';
