@@ -110,23 +110,17 @@ function Example() {
             <View style={styles.header} />
           </GestureDetector>
           <GestureDetector
-            gesture={Gesture.Simultaneous(
-              panGesture,
-              blockScrollUntilAtTheTop
-            )}>
-            <GestureDetector
-              gesture={Gesture.Simultaneous(panGesture, scrollViewGesture)}>
-              <Animated.ScrollView
-                bounces={false}
-                scrollEventThrottle={1}
-                onScrollBeginDrag={(e) => {
-                  scrollOffset.value = e.nativeEvent.contentOffset.y;
-                }}>
-                <LoremIpsum />
-                <LoremIpsum />
-                <LoremIpsum />
-              </Animated.ScrollView>
-            </GestureDetector>
+            gesture={Gesture.Simultaneous(panGesture, scrollViewGesture)}>
+            <Animated.ScrollView
+              bounces={false}
+              scrollEventThrottle={1}
+              onScrollBeginDrag={(e) => {
+                scrollOffset.value = e.nativeEvent.contentOffset.y;
+              }}>
+              <LoremIpsum />
+              <LoremIpsum />
+              <LoremIpsum />
+            </Animated.ScrollView>
           </GestureDetector>
         </Animated.View>
       </GestureDetector>
