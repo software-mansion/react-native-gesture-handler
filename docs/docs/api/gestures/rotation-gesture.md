@@ -9,6 +9,7 @@ import BaseEventConfig from './base-gesture-config.md';
 import BaseContinousEventConfig from './base-continous-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
 import BaseContinousEventCallbacks from './base-continous-gesture-callbacks.md';
+import PointerEventData from './pointer-event-data.md';
 
 A continuous gesture that can recognize a rotation gesture and track its movement.
 
@@ -47,6 +48,8 @@ X coordinate, expressed in points, of the gesture's central focal point (anchor)
 Y coordinate, expressed in points, of the gesture's central focal point (anchor).
 
 <BaseEventData />
+
+<PointerEventData />
 
 ## Example
 

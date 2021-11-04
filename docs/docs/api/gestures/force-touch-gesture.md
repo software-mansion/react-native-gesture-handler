@@ -9,6 +9,7 @@ import BaseEventConfig from './base-gesture-config.md';
 import BaseContinousEventConfig from './base-continous-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
 import BaseContinousEventCallbacks from './base-continous-gesture-callbacks.md';
+import PointerEventData from './pointer-event-data.md';
 
 A continuous gesture that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.
 The gesture [activates](../../under-the-hood/states-events.md#active) when pressure of touch if greater or equal than `minForce`. It fails if pressure is greater than `maxForce`
@@ -52,3 +53,5 @@ Value defining if haptic feedback has to be performed on activation.
 The pressure of a touch.
 
 <BaseEventData />
+
+<PointerEventData />

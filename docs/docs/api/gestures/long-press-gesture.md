@@ -7,6 +7,7 @@ sidebar_label: Long press gesture
 import BaseEventData from './base-gesture-event-data.md';
 import BaseEventConfig from './base-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
+import PointerEventData from './pointer-event-data.md';
 
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture's state will turn into [END](../../under-the-hood/states-events.md#end) immediately after the finger is released.
@@ -55,6 +56,8 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 Duration of the long press (time since the start of the gesture), expressed in milliseconds.
 
 <BaseEventData />
+
+<PointerEventData />
 
 ## Example
 

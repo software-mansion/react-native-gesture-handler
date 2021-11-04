@@ -7,6 +7,7 @@ sidebar_label: Tap gesture
 import BaseEventData from './base-gesture-event-data.md';
 import BaseEventConfig from './base-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
+import PointerEventData from './pointer-event-data.md';
 
 A discrete gesture that recognizes one or many taps.
 
@@ -76,6 +77,8 @@ X coordinate, expressed in points, of the current position of the pointer (finge
 Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](./gesture-detector.md) can be transformed as an effect of the gesture.
 
 <BaseEventData />
+
+<PointerEventData />
 
 ## Example
 

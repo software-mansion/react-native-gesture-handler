@@ -8,6 +8,7 @@ import BaseEventData from './base-gesture-event-data.md';
 import BaseEventConfig from './base-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
 import BaseContinousEventCallbacks from './base-continous-gesture-callbacks.md';
+import PointerEventData from './pointer-event-data.md';
 
 A gesture that allows other touch handling components to participate in RNGH's gesture system. When used, the other component should be the direct child of a `GestureDetector`.
 
@@ -38,3 +39,5 @@ When `true`, cancels all other gesture handlers when this `NativeViewGestureHand
 True if gesture was performed inside of containing view, false otherwise.
 
 <BaseEventData />
+
+<PointerEventData />
