@@ -12,7 +12,7 @@ Configurations such as a minimum initial distance, specific vertical or horizont
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
 
-The handler is implemented using [UIPanGestureRecognizer](https://developer.apple.com/documentation/uikit/uipangesturerecognizer) on iOS and [PanGestureHandler](https://github.com/software-mansion/react-native-gesture-handler/blob/master/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.java) on Android.
+The handler is implemented using [UIPanGestureRecognizer](https://developer.apple.com/documentation/uikit/uipangesturerecognizer) on iOS and [PanGestureHandler](https://github.com/software-mansion/react-native-gesture-handler/blob/master/android/lib/src/main/java/com/swmansion/gesturehandler/PanGestureHandler.kt) on Android.
 
 ## Custom activation criteria
 
@@ -159,7 +159,7 @@ Y coordinate of the current position of the pointer (finger or a leading pointer
 
 ## Example
 
-See the [draggable example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/src/draggable/index.tsx) from [GestureHandler Example App](../../example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [draggable example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/example/src/basic/draggable/index.tsx) from [GestureHandler Example App](../../example) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 const circleRadius = 30;
