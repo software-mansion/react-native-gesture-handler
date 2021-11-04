@@ -6,6 +6,7 @@ sidebar_label: Force touch gesture
 
 import BaseEventData from './base-gesture-event-data.md';
 import BaseEventConfig from './base-gesture-config.md';
+import BaseContinousEventConfig from './base-continous-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
 import BaseContinousEventCallbacks from './base-continous-gesture-callbacks.md';
 
@@ -35,6 +36,7 @@ A maximal pressure that could be applied for gesture. If the pressure is greater
 Value defining if haptic feedback has to be performed on activation.
 
 <BaseEventConfig />
+<BaseContinousEventConfig />
 
 ## Callbacks
 

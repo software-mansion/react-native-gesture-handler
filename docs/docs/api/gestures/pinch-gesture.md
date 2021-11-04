@@ -6,6 +6,7 @@ sidebar_label: Pinch gesture
 
 import BaseEventData from './base-gesture-event-data.md';
 import BaseEventConfig from './base-gesture-config.md';
+import BaseContinousEventConfig from './base-continous-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
 import BaseContinousEventCallbacks from './base-continous-gesture-callbacks.md';
 
@@ -21,6 +22,7 @@ For example, map views use pinch gestures to change the zoom level of the map.
 ## Config
 
 <BaseEventConfig />
+<BaseContinousEventConfig />
 
 ## Callbacks
 

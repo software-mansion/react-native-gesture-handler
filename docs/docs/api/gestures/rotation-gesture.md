@@ -6,6 +6,7 @@ sidebar_label: Rotation gesture
 
 import BaseEventData from './base-gesture-event-data.md';
 import BaseEventConfig from './base-gesture-config.md';
+import BaseContinousEventConfig from './base-continous-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
 import BaseContinousEventCallbacks from './base-continous-gesture-callbacks.md';
 
@@ -18,6 +19,7 @@ Gesture callback can be used for continuous tracking of the rotation gesture. It
 ## Config
 
 <BaseEventConfig />
+<BaseContinousEventConfig />
 
 ## Callbacks
 

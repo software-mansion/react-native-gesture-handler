@@ -6,6 +6,7 @@ sidebar_label: Pan gesture
 
 import BaseEventData from './base-gesture-event-data.md';
 import BaseEventConfig from './base-gesture-config.md';
+import BaseContinousEventConfig from './base-continous-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
 import BaseContinousEventCallbacks from './base-continous-gesture-callbacks.md';
 
@@ -80,6 +81,7 @@ If only one number `p` is given a range of `(-inf, p)` will be used if `p` is hi
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
 
 <BaseEventConfig />
+<BaseContinousEventConfig />
 
 ## Callbacks
 

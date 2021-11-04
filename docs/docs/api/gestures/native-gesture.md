@@ -28,7 +28,6 @@ When `true`, cancels all other gesture handlers when this `NativeViewGestureHand
 ## Callbacks
 
 <BaseEventCallbacks />
-<BaseContinousEventCallbacks />
 
 ## Event data
 
