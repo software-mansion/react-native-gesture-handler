@@ -19,7 +19,9 @@ module.exports = {
           'api/gestures/fling-gesture',
           'api/gestures/force-touch-gesture',
           'api/gestures/native-gesture',
+          'api/gestures/custom-gesture',
           'api/gestures/composed-gestures',
+          'api/gestures/state-manager',
         ],
         Components: [
           'api/components/buttons',

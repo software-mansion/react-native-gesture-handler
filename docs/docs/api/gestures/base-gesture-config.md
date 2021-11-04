@@ -1,5 +1,10 @@
 ### Properties common to all gestures:
 
+### `manualActivation(value: boolead)`
+
+> Only available on continuous gestures: `Pan`, `Pinch`, `Rotation` and `ForceTouch`.
+> When `true` the handler will not activate by itself even if its activation criteria are met. Instead you can manipulate its state using [state manager](./state-manager.md).
+
 ### `enabled(value: boolean)`
 
 Indicates whether the given handler should be analyzing stream of touch events or not.
