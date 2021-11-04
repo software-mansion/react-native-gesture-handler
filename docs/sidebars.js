@@ -3,6 +3,7 @@ module.exports = {
     Basics: [
       'introduction',
       'quickstart/quickstart',
+      'gesture-composition',
       'example',
     ],
     'API reference': [
@@ -18,6 +19,7 @@ module.exports = {
           'api/gestures/fling-gesture',
           'api/gestures/force-touch-gesture',
           'api/gestures/native-gesture',
+          'api/gestures/composed-gestures',
         ],
         Components: [
           'api/components/buttons',
