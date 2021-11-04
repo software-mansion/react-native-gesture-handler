@@ -40,12 +40,10 @@ Sets a ref to the gesture object, allowing for interoperability with the old API
 
 Adds a gesture that should be recognized simultaneously with this one.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without composing them. [`GestureDetector`](gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](../../gesture-composition). [`GestureDetector`](gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
 
 ### `requireExternalGestureToFail(otherGesture1, otherGesture2, ...)`
 
 Adds a relation requiring another gesture to fail, before this one can activate.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without composing them. [`GestureDetector`](gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
-
-<!-- TODO: link composition -->
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](../../gesture-composition).[`GestureDetector`](gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.

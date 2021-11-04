@@ -1,9 +1,10 @@
 module.exports = {
   docs: {
-    Basics: [
+    Guides: [
       'introduction',
       'quickstart/quickstart',
       'gesture-composition',
+      'custom-gestures/custom-gestures',
       'whats-new',
       'example',
     ],
