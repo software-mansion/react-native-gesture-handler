@@ -73,8 +73,11 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [super touchesBegan:touches withEvent:event];
   if (_tapsSoFar == 0) {
+    // this recognizer sends UNDETERMINED -> BEGAN state change event before gestureRecognizerShouldBegin
+    // is called (it resets the gesture handler), making it send whatever the last known state as oldState
+    // in the event. If we reset it here it correctly sends UNDETERMINED as oldState.
     [_gestureHandler reset];
-    _initPosition = [self locationInView:self.view];
+    _initPosition = [self locationInView:self.view.window];
   }
   _tapsSoFar++;
   if (_tapsSoFar) {
@@ -115,7 +118,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 }
 
 - (CGPoint)translationInView {
-  CGPoint currentPosition = [self locationInView:self.view];
+  CGPoint currentPosition = [self locationInView:self.view.window];
   return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
 }
 
@@ -225,7 +228,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   }
 }
 
-- (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer{
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
+{
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         return _lastData;
     }
@@ -241,10 +245,10 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   // went from UNDETERMINED to BEGAN and then from UNDETERMINED to ACTIVE.
   // This way we preserve _lastState between events and keep correct state flow.
   RNGestureHandlerState savedState = _lastState;
-  BOOL originalResult = [super gestureRecognizerShouldBegin:gestureRecognizer];
+  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
   _lastState = savedState;
-
-  return originalResult;
+  
+  return shouldBegin;
 }
 
 @end

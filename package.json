@@ -22,6 +22,7 @@
     "!**/__fixtures__",
     "!**/__mocks__",
     "android/build.gradle",
+    "android/gradle.properties",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
     "android/lib/build.gradle",
@@ -91,6 +92,7 @@
     "react-dom": "^16.12.0",
     "react-native": "^0.64.0",
     "react-native-builder-bob": "^0.17.1",
+    "react-native-reanimated": "^2.0.0",
     "react-native-web": "^0.11.7",
     "react-test-renderer": "16.8.6",
     "release-it": "^13.6.5",
@@ -120,8 +122,5 @@
   "eslintIgnore": [
     "node_modules/",
     "lib/"
-  ],
-  "optionalDependencies": {
-    "react-native-reanimated": "^2.0.0"
-  }
+  ]
 }

@@ -66,8 +66,28 @@ export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPaylo
     return this;
   }
 
+  maxPointers(maxPointers: number) {
+    this.config.maxPointers = maxPointers;
+    return this;
+  }
+
   minDistance(distance: number) {
     this.config.minDist = distance;
+    return this;
+  }
+
+  minVelocity(velocity: number) {
+    this.config.minVelocity = velocity;
+    return this;
+  }
+
+  minVelocityX(velocity: number) {
+    this.config.minVelocityX = velocity;
+    return this;
+  }
+
+  minVelocityY(velocity: number) {
+    this.config.minVelocityY = velocity;
     return this;
   }
 
@@ -81,3 +101,5 @@ export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPaylo
     return this;
   }
 }
+
+export type PanGestureType = InstanceType<typeof PanGesture>;

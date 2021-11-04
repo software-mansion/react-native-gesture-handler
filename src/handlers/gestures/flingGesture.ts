@@ -23,3 +23,5 @@ export class FlingGesture extends BaseGesture<FlingGestureHandlerEventPayload> {
     return this;
   }
 }
+
+export type FlingGestureType = InstanceType<typeof FlingGesture>;

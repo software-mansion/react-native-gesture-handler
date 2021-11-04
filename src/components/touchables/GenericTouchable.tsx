@@ -71,6 +71,7 @@ export default class GenericTouchable extends Component<
     delayLongPress: 600,
     extraButtonProps: {
       rippleColor: 'transparent',
+      exclusive: true,
     },
   };
 

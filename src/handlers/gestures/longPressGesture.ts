@@ -23,3 +23,5 @@ export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPa
     return this;
   }
 }
+
+export type LongPressGestureType = InstanceType<typeof LongPressGesture>;

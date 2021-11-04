@@ -21,7 +21,7 @@ Currently Gesture handler library exposes three components that render native to
 
 On top of that all the buttons are wrapped with `NativeViewGestureHandler` and therefore allow for all the [common gesture handler properties](#common-gesturehandler-properties) and `NativeViewGestureHandler`'s [extra properties](#nativeviewgesturehandler-extra-properties) to be applied to them.
 
-**IMPORTANT**: In order to make buttons accessible, you have to wrap your children in a `View` with `accessible` prop.
+**IMPORTANT**: In order to make buttons accessible, you have to wrap your children in a `View` with `accessible` and `accessibilityRole="button"` props.
 Example:
 
 ```javascript
@@ -34,7 +34,7 @@ const NotAccessibleButton = () => (
 // Accessible:
 const AccessibleButton = () => (
   <RectButton onPress={this._onPress}>
-    <View accessible>
+    <View accessible accessibilityRole="button">
       <Text>Bar</Text>
     </View>
   </RectButton>
@@ -61,7 +61,7 @@ function that gets triggered when the button gets pressed (analogous to `onPress
 
 defines color of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation used since API level 21.
 
-### `exclusive` (**iOS only**)
+### `exclusive`
 
 defines if more than one button could be pressed simultaneously. By default set `true`.
 
