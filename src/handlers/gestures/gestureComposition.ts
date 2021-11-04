@@ -1,7 +1,3 @@
-/* eslint-disable no-useless-constructor */
-/* eslint-disable @typescript-eslint/no-useless-constructor */
-// eslint is convinced that constructor limiting the number of arguments an
-// inheriting class can accept is useless
 import { BaseGesture, Gesture, GestureRef, GestureType } from './gesture';
 
 function extendRelation(
@@ -72,44 +68,42 @@ export class ComposedGesture extends Gesture {
 }
 
 export class SimultaneousGesture extends ComposedGesture {
-  constructor(first: Gesture, second: Gesture) {
-    super(first, second);
-  }
-
   prepare() {
-    const leftSide = this.gestures[0].toGestureArray();
-    const rightSide = this.gestures[1].toGestureArray();
+    const simultaneousArray = this.gestures
+      .flatMap((gesture) => gesture.toGestureArray())
+      .concat(this.simultaneousGestures);
 
-    this.prepareSingleGesture(
-      this.gestures[0],
-      this.simultaneousGestures.concat(rightSide),
-      this.requireGesturesToFail
-    );
-    this.prepareSingleGesture(
-      this.gestures[1],
-      this.simultaneousGestures.concat(leftSide),
-      this.requireGesturesToFail
-    );
+    for (const gesture of this.gestures) {
+      this.prepareSingleGesture(
+        gesture,
+        simultaneousArray,
+        this.requireGesturesToFail
+      );
+    }
   }
 }
 
 export class ExclusiveGesture extends ComposedGesture {
-  constructor(first: Gesture, second: Gesture) {
-    super(first, second);
-  }
-
   prepare() {
-    const leftSide = this.gestures[0].toGestureArray();
+    const gestureArrays = this.gestures.map((gesture) =>
+      gesture.toGestureArray()
+    );
 
-    this.prepareSingleGesture(
-      this.gestures[0],
-      this.simultaneousGestures,
-      this.requireGesturesToFail
-    );
-    this.prepareSingleGesture(
-      this.gestures[1],
-      this.simultaneousGestures,
-      this.requireGesturesToFail.concat(leftSide)
-    );
+    let requireToFail: GestureType[] = [];
+
+    for (let i = 0; i < this.gestures.length; i++) {
+      this.prepareSingleGesture(
+        this.gestures[i],
+        this.simultaneousGestures,
+        this.requireGesturesToFail.concat(requireToFail)
+      );
+
+      requireToFail = requireToFail.concat(gestureArrays[i]);
+    }
   }
 }
+
+export type ComposedGestureType = InstanceType<typeof ComposedGesture>;
+export type RaceGestureType = ComposedGestureType;
+export type SimultaneousGestureType = InstanceType<typeof SimultaneousGesture>;
+export type ExclusiveGestureType = InstanceType<typeof ExclusiveGesture>;

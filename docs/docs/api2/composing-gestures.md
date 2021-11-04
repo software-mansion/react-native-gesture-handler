@@ -75,8 +75,8 @@ return (
 
 ## Simultaneous
 
-It accepts 2 arguments and both of the provided gestures can activate at the same time. Activation of one will not cancel the other.
-It is the equivalent to having two gesture handlers, each with `simultaneousHandlers` prop set to the other handler.
+It accepts variable number of arguments and all of the provided gestures can activate at the same time. Activation of one will not cancel the others.
+It is the equivalent to having some gesture handlers, each with `simultaneousHandlers` prop set to other handlers.
 
 For example, if you want to make a gallery app, you might want user to be able to zoom, rotate and pan around photos. You can do it with `Simultaneous`:
 
@@ -136,10 +136,7 @@ const rotateGesture = Gesture.Rotation()
     savedRotation.value = rotation.value;
   });
 
-const composed = Gesture.Simultaneous(
-  dragGesture,
-  Gesture.Simultaneous(zoomGesture, rotateGesture)
-);
+const composed = Gesture.Simultaneous(dragGesture, zoomGesture, rotateGesture);
 
 return (
   <Animated.View>

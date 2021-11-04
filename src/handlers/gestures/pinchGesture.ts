@@ -8,3 +8,5 @@ export class PinchGesture extends ContinousBaseGesture<PinchGestureHandlerEventP
     this.handlerName = 'PinchGestureHandler';
   }
 }
+
+export type PinchGestureType = InstanceType<typeof PinchGesture>;

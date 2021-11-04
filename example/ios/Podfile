@@ -1,0 +1,45 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+platform :ios, '10.0'
+
+target 'Example' do
+  config = use_native_modules!
+
+  use_react_native!(:path => config["reactNativePath"])
+
+  pod 'RNGestureHandler', :path => '../..'
+
+  target 'ExampleTests' do
+    inherit! :complete
+    # Pods for testing
+  end
+
+  # Enables Flipper.
+  #
+  # Note that if you have use_frameworks! enabled, Flipper will not work and
+  # you should disable these next few lines.
+  use_flipper!({ 'Flipper-Folly' => '2.5.3', 'Flipper' => '0.87.0', 'Flipper-RSocket' => '1.3.1' })
+  post_install do |installer|
+    flipper_post_install(installer)
+
+    # Fixes "The iOS Simulator deployment target 'IPHONEOS_DEPLOYMENT_TARGET' 
+    # is set to 8.0, but the range of supported deployment target versions is 9.0 to 14.5.99." errors
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        if Gem::Version.new('9.0') > Gem::Version.new(config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'])
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+        end
+      end
+    end
+  end
+end
+
+target 'Example-tvOS' do
+  # Pods for Example-tvOS
+
+  target 'Example-tvOSTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+end

@@ -8,8 +8,8 @@ export const nativeViewGestureHandlerProps = [
   'shouldActivateOnStart',
   'disallowInterruption',
 ] as const;
-export interface NativeViewGestureHandlerProps
-  extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload> {
+
+export interface NativeViewGestureConfig {
   /**
    * Android only.
    *
@@ -24,6 +24,10 @@ export interface NativeViewGestureHandlerProps
    */
   disallowInterruption?: boolean;
 }
+
+export interface NativeViewGestureHandlerProps
+  extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload>,
+    NativeViewGestureConfig {}
 
 export type NativeViewGestureHandlerPayload = {
   /**
