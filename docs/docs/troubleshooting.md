@@ -30,3 +30,10 @@ To make it easier for us to understand your issue and to be able to approach it 
 - Isolate your issue from other dependencies you might be using and make the repro app as minimal as possible.
 - If you have spent some time figuring out the root cause of the problem you can leave a note about your findings so far.
 - **Do not comment on closed issues**. It is very unlikely that we are going to notice your comment in such a case. If the issue has been closed, but the proposed solution doesn't work for you, please open a new one providing all the information necessary and linking to the solution you have tried.
+
+## It's not a bug, it's a feature
+
+- Changing `enabled` prop during a gesture has no effect, only when a gesture starts (that is a finger touches the screen) the `enabled` prop is taken into consideration to decide whether to extract (or not) the gesture and provide it with stream of events to analyze.
+- `Native` gesture may not conform to the standard state flow due to platform specific workarounds to incorporate native views into RNGH.
+- Keep in mind that `Touchables` from RNGH are rendering two additional views that may need to be styled separately to achieve desired effect (`style` and `containerStyle` props).
+- In order for the gesture composition to work, all composed gestures must be attached to the same `GestureHandlerRootView`.
