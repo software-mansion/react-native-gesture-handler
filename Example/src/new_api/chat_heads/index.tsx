@@ -75,6 +75,7 @@ function clampToValues({
   bottom: number;
   top: number;
 }) {
+  'worklet';
   return Math.max(bottom, Math.min(value, top));
 }
 
@@ -97,6 +98,7 @@ const Example = () => {
       panOffset.y.value = mainChatHeadPosition.y.value + translationY;
     })
     .onEnd(({ absoluteX, absoluteY, velocityX, velocityY }) => {
+      'worklet';
       const { height, width } = dimensions;
 
       const velocityDragX = clampToValues({
