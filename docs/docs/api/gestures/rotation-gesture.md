@@ -15,8 +15,6 @@ The gesture [activates](../../under-the-hood/states-events.md#active) when finge
 
 Gesture callback can be used for continuous tracking of the rotation gesture. It provides information about the gesture such as the amount rotated, the focal point of the rotation (anchor), and its instantaneous velocity.
 
-The gesture is implemented using [UIRotationGestureRecognizer](https://developer.apple.com/documentation/uikit/uirotationgesturerecognizer) on iOS and from scratch on Android.
-
 ## Config
 
 <BaseEventConfig />

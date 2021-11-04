@@ -12,8 +12,6 @@ A discrete gesture that activates when the corresponding view is pressed for a s
 This gesture's state will turn into [END](../../under-the-hood/states-events.md#end) immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#mindurationms) or if the finger is moved further than the [allowable distance](#maxdist).
 
-The gesture is implemented using [UILongPressGestureRecognizer](https://developer.apple.com/documentation/uikit/uilongpressgesturerecognizer) on iOS and [LongPressGestureHandler](https://github.com/software-mansion/react-native-gesture-handler/blob/master/android/lib/src/main/java/com/swmansion/gesturehandler/LongPressGestureHandler.java) on Android.
-
 ## Config
 
 ### Properties specific to `LongPressGesture`:

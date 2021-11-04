@@ -18,8 +18,6 @@ Similarly, the scale factor decreases as the distance between the fingers decrea
 Pinch gestures are used most commonly to change the size of objects or content onscreen.
 For example, map views use pinch gestures to change the zoom level of the map.
 
-The gesture is implemented using [UIPinchGestureRecognizer](https://developer.apple.com/documentation/uikit/uipinchgesturerecognizer) on iOS and from scratch on Android.
-
 ## Config
 
 <BaseEventConfig />
