@@ -175,3 +175,7 @@ return (
   </GestureDetector>
 );
 ```
+
+## Composition vs `simultaneousWithExternalGesture` and `requireExternalGestureToFail`
+
+You may have noticed that gesture composition described above requires you to mount all of the composed gestures under a single `GestureDetector`, effectively attaching them to the same underlying component. If you want to make a relation between gestures that are attached to separate `GestureDetectors`, we have a separate mechanism for that: `simultaneousWithExternalGesture` and `requireExternalGestureToFail` methods that are available on every base gesture. They work exactly the same way as `simultaneousHandlers` and `waitFor` on gesture handlers, that is they just mark the relation between the gestures without joining them into single object.

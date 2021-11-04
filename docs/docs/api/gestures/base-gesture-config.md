@@ -36,16 +36,16 @@ Specifying `width` or `height` is useful if we only want the gesture to activate
 
 Sets a ref to the gesture object, allowing for interoperability with the old API.
 
-### `simultaneousWithExternalGesture(otherGesture)`
+### `simultaneousWithExternalGesture(otherGesture1, otherGesture2, ...)`
 
 Adds a gesture that should be recognized simultaneously with this one.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without composing them. [`GestureDetector`](gesture-detector) will not recognize the `otherGesture` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without composing them. [`GestureDetector`](gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
 
-### `requireExternalGestureToFail(otherGesture)`
+### `requireExternalGestureToFail(otherGesture1, otherGesture2, ...)`
 
 Adds a relation requiring another gesture to fail, before this one can activate.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without composing them. [`GestureDetector`](gesture-detector) will not recognize the `otherGesture` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without composing them. [`GestureDetector`](gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
 
 <!-- TODO: link composition -->
