@@ -9,6 +9,15 @@ module.exports = {
       {
         Gestures: [
           'api/gestures/gesture-detector',
+          'api/gestures/gesture',
+          'api/gestures/pan-gesture',
+          'api/gestures/tap-gesture',
+          'api/gestures/long-press-gesture',
+          'api/gestures/rotation-gesture',
+          'api/gestures/pinch-gesture',
+          'api/gestures/fling-gesture',
+          'api/gestures/force-touch-gesture',
+          'api/gestures/native-gesture',
         ],
         Components: [
           'api/components/buttons',
