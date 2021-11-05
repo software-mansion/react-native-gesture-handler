@@ -118,6 +118,23 @@ export default function Example() {
 }
 ```
 
+#### Kotlin
+
+Since version `2.0.0` RNGH has been rewritten with Kotlin. The default version of the Kotlin plugin used in this library is `1.5.20`.
+
+If you need to use a different Kotlin version, set the `kotlinVersion` ext property in `android/build.gradle` file and RNGH will use that version:
+
+```
+buildscript {
+    ext {
+        ...
+        kotlinVersion = "1.5.20"
+    }
+}
+```
+
+The minimal version of the Kotlin plugin supported by RNGH is `1.4.10`.
+
 ### iOS
 
 There is no additional configuration required on iOS except what follows in the next steps.
