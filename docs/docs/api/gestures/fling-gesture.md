@@ -7,7 +7,6 @@ sidebar_label: Fling gesture
 import BaseEventData from './base-gesture-event-data.md';
 import BaseEventConfig from './base-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
-import PointerEventData from './pointer-event-data.md';
 
 A discrete gesture that activates when the movement is sufficiently long and fast.
 Gesture gets [ACTIVE](../../under-the-hood/states-events.md#active) when movement is sufficiently long and it does not take too much time.
@@ -63,8 +62,6 @@ X coordinate of the current position of the pointer (finger or a leading pointer
 Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. The value is expressed in point units. It is recommended to use it instead of [`y`](#y) in cases when the original view can be transformed as an effect of the gesture.
 
 <BaseEventData />
-
-<PointerEventData />
 
 ## Example
 

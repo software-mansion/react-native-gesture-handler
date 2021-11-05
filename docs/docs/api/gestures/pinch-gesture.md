@@ -9,7 +9,6 @@ import BaseEventConfig from './base-gesture-config.md';
 import BaseContinousEventConfig from './base-continous-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
 import BaseContinousEventCallbacks from './base-continous-gesture-callbacks.md';
-import PointerEventData from './pointer-event-data.md';
 
 A continuous gesture that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
 The gesture [activates](../../under-the-hood/states-events.md#active) when fingers are placed on the screen and change their position.
@@ -51,8 +50,6 @@ Position expressed in points along X axis of center anchor point of gesture
 Position expressed in points along Y axis of center anchor point of gesture
 
 <BaseEventData />
-
-<PointerEventData />
 
 ## Example
 

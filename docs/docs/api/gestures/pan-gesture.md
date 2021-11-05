@@ -9,7 +9,6 @@ import BaseEventConfig from './base-gesture-config.md';
 import BaseContinousEventConfig from './base-continous-gesture-config.md';
 import BaseEventCallbacks from './base-gesture-callbacks.md';
 import BaseContinousEventCallbacks from './base-continous-gesture-callbacks.md';
-import PointerEventData from './pointer-event-data.md';
 
 A continuous gesture that can recognize a panning (dragging) gesture and track its movement.
 
@@ -126,8 +125,6 @@ X coordinate of the current position of the pointer (finger or a leading pointer
 Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the root view. The value is expressed in point units. It is recommended to use it instead of [`y`](#y) in cases when the original view can be transformed as an effect of the gesture.
 
 <BaseEventData />
-
-<PointerEventData />
 
 ## Example
 
