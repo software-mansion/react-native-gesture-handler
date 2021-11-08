@@ -366,7 +366,8 @@ class GestureHandlerOrchestrator(
     // been extracted (pointer might be in a child, but may be outside parent)
     // the other case is when one of the ancestors has a handler attached to it and has pointer-events
     // prop set to box-none, in which case its children can become target of the touch
-    if (extractAncestorHandlers(view, coords, pointerId)) {
+    if (coords[0] in 0f..view.width.toFloat() && coords[1] in 0f..view.height.toFloat() &&
+      extractAncestorHandlers(view, coords, pointerId)) {
         found = true
     }
 
