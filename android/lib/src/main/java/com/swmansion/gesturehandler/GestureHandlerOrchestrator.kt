@@ -322,19 +322,6 @@ class GestureHandlerOrchestrator(
     handler.prepare(view, this)
   }
 
-  private fun isViewOverflowingParent(view: View): Boolean {
-    val parent = view.parent as? ViewGroup ?: return false
-    val matrix = view.matrix
-    val localXY = matrixTransformCoords
-    localXY[0] = 0f
-    localXY[1] = 0f
-    matrix.mapPoints(localXY)
-    val left = localXY[0] + view.left
-    val top = localXY[1] + view.top
-
-    return left < 0f || left + view.width > parent.width || top < 0f || top + view.height > parent.height
-  }
-
   private fun extractAncestorHandlers(view: View, coords: FloatArray, pointerId: Int): Boolean {
     var found = false
     var parent = view.parent
@@ -374,10 +361,12 @@ class GestureHandlerOrchestrator(
       }
     }
 
-    // if the pointer is inside the view but it overflows its parent, handlers attached to the parent
-    // might not have been extracted (pointer might be in a child, but may be outside parent)
-    if (coords[0] in 0f..view.width.toFloat() && coords[1] in 0f..view.height.toFloat()
-      && isViewOverflowingParent(view) && extractAncestorHandlers(view, coords, pointerId)) {
+    // we also need to extract handlers attached to ancestors of this view because if the pointer is
+    // inside the view but it overflows its parent, handlers attached to the parent might not have
+    // been extracted (pointer might be in a child, but may be outside parent)
+    // the other case is when one of the ancestors has a handler attached to it and has pointer-events
+    // prop set to box-none, in which case its children can become target of the touch
+    if (extractAncestorHandlers(view, coords, pointerId)) {
         found = true
     }
 
