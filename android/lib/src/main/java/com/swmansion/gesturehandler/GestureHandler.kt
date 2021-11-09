@@ -331,14 +331,15 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
       for (i in 0 until event.pointerCount) {
         val pointerId = event.getPointerId(i)
+        val pointer = trackedPointers[pointerId] ?: continue
 
-        if (trackedPointers[pointerId]?.x != event.getX(i) || trackedPointers[pointerId]?.y != event.getY(i)) {
-          trackedPointers[pointerId]?.x = event.getX(i)
-          trackedPointers[pointerId]?.y = event.getY(i)
-          trackedPointers[pointerId]?.absoluteX = event.getX(i) + offsetX
-          trackedPointers[pointerId]?.absoluteY = event.getY(i) + offsetY
+        if (pointer.x != event.getX(i) || pointer.y != event.getY(i)) {
+          pointer.x = event.getX(i)
+          pointer.y = event.getY(i)
+          pointer.absoluteX = event.getX(i) + offsetX
+          pointer.absoluteY = event.getY(i) + offsetY
 
-          addPointerData(trackedPointers[pointerId]!!)
+          addPointerData(pointer)
         }
       }
     }
