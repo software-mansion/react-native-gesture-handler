@@ -23,8 +23,8 @@
     "hoist-non-react-statics": "^3.3.2",
     "invariant": "^2.2.4",
     "react": "17.0.2",
-    "react-native": "0.64.1",
-    "react-native-reanimated": "^2.0.0",
+    "react-native": "facebook/react-native#6025611bd0ae615bc6e9ca5f2ca9cfe9803e21b6",
+    "react-native-reanimated": "software-mansion/react-native-reanimated#8e1fd458b14b3f5f979fdd0ac6583a37109dca5c",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.15.0"
   },

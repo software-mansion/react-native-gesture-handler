@@ -1,4 +1,6 @@
-import { AppRegistry } from 'react-native';
-import App from './src/App';
+import 'react-native-gesture-handler';
 
-AppRegistry.registerComponent('Example', () => App);
+import App from './src/App';
+import { AppRegistry } from 'react-native';
+
+AppRegistry.registerComponent('RNTesterApp', () => App);
