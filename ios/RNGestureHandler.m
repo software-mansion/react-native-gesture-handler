@@ -62,6 +62,8 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 @implementation RNGestureHandler {
+    RNGestureHandlerPointerTracker *_pointerTracker;
+    RNGestureHandlerState _state;
     RNManualActivationRecognizer *_manualActivationRecognizer;
     NSArray<NSNumber *> *_handlersToWaitFor;
     NSArray<NSNumber *> *_simultaneousHandlers;
@@ -72,9 +74,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super init])) {
+        _pointerTracker = [[RNGestureHandlerPointerTracker alloc] initWithGestureHandler:self];
         _tag = tag;
         _lastState = RNGestureHandlerStateUndetermined;
         _hitSlop = RNGHHitSlopEmpty;
+        _state = RNGestureHandlerStateBegan;
         _manualActivationRecognizer = nil;
 
         static dispatch_once_t onceToken;
@@ -94,6 +98,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _handlersToWaitFor = nil;
   _simultaneousHandlers = nil;
   _hitSlop = RNGHHitSlopEmpty;
+  _needsPointerData = NO;
   
   self.manualActivation = NO;
 }
@@ -114,6 +119,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
     }
   
+    prop = config[@"needsPointerData"];
+    if (prop != nil) {
+        _needsPointerData = [RCTConvert BOOL:prop];
+    }
+    
     prop = config[@"manualActivation"];
     if (prop != nil) {
         self.manualActivation = [RCTConvert BOOL:prop];
@@ -179,6 +189,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
+    _state = [self recognizerState];
     RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
     [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
 }
@@ -232,7 +243,22 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     }
 }
 
-- (RNGestureHandlerState)state
+- (void)sendPointerEventInState:(RNGestureHandlerState)state
+                 forViewWithTag:(NSNumber *)reactTag
+{
+  id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
+                                              withPointerData:_pointerTracker.pointerData
+                                          withNumberOfTouches:_pointerTracker.trackedPointersCount];
+  id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag handlerTag:_tag state:state extraData:extraData coalescingKey:[_tag intValue]];
+  
+  if (self.usesDeviceEvents) {
+      [self.emitter sendStateChangeDeviceEvent:event];
+  } else {
+      [self.emitter sendStateChangeEvent:event];
+  }
+}
+
+- (RNGestureHandlerState)recognizerState
 {
     switch (_recognizer.state) {
         case UIGestureRecognizerStateBegan:
@@ -248,6 +274,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             return RNGestureHandlerStateActive;
     }
     return RNGestureHandlerStateUndetermined;
+}
+
+- (RNGestureHandlerState)state
+{
+    // instead of mapping state of the recognizer directly, use value mapped when handleGesture was
+    // called, making it correct while awaiting for another handler failure
+    return _state;
 }
 
 #pragma mark Manual activation
@@ -366,7 +399,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)reset
 {
-    _lastState = RNGestureHandlerStateUndetermined;
+    // do not reset states while gesture is tracking pointers, as gestureRecognizerShouldBegin
+    // might be called after some pointers are down, and after state manipulation by the user.
+    // Pointer tracker calls this method when it resets, and in that case it no longer tracks
+    // any pointers, thus entering this if
+    if (!_needsPointerData || _pointerTracker.trackedPointersCount == 0) {
+        _lastState = RNGestureHandlerStateUndetermined;
+        _state = RNGestureHandlerStateBegan;
+    }
 }
 
  - (BOOL)containsPointInView
