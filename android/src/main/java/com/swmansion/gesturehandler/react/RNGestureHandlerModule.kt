@@ -30,6 +30,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config)
       }
+      if (config.hasKey(KEY_NEEDS_POINTER_DATA)) {
+        handler.needsPointerData = config.getBoolean(KEY_NEEDS_POINTER_DATA)
+      }
       if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
         handler.setManualActivation(config.getBoolean(KEY_MANUAL_ACTIVATION))
       }
@@ -305,6 +308,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     override fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
       this@RNGestureHandlerModule.onStateChange(handler, newState, oldState)
     }
+
+    override fun <T : GestureHandler<T>> onPointerEvent(handler: T) {
+      this@RNGestureHandlerModule.onPointerEvent(handler)
+    }
   }
   private val handlerFactories = arrayOf<HandlerFactory<*>>(
     NativeViewGestureHandlerFactory(),
@@ -557,10 +564,35 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     }
   }
 
+  private fun <T : GestureHandler<T>> onPointerEvent(handler: T) {
+    if (handler.tag < 0) {
+      // root containers use negative tags, we don't need to dispatch events for them to the JS
+      return
+    }
+    if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE
+        || handler.state == GestureHandler.STATE_UNDETERMINED || handler.view != null) {
+      if (handler.usesDeviceEvents) {
+        val data = RNGestureHandlerPointerEvent.createEventData(handler)
+
+        reactApplicationContext
+            .deviceEventEmitter
+            .emit(RNGestureHandlerPointerEvent.EVENT_NAME, data)
+      } else {
+        reactApplicationContext
+            .UIManager
+            .eventDispatcher.let {
+              val event = RNGestureHandlerPointerEvent.obtain(handler)
+              it.dispatchEvent(event)
+            }
+      }
+    }
+  }
+
   companion object {
     const val MODULE_NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
+    private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
     private const val KEY_MANUAL_ACTIVATION = "manualActivation"
     private const val KEY_HIT_SLOP = "hitSlop"
     private const val KEY_HIT_SLOP_LEFT = "left"
