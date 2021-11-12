@@ -95,7 +95,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _simultaneousHandlers = nil;
   _hitSlop = RNGHHitSlopEmpty;
   
-  [self resetManualActivation];
+  self.manualActivation = NO;
 }
 
 - (void)configure:(NSDictionary *)config
@@ -116,11 +116,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   
     prop = config[@"manualActivation"];
       if (prop != nil) {
-        if ([RCTConvert BOOL:prop]) {
-            [self setManualActivation];
-        } else {
-            [self resetManualActivation];
-        }
+        self.manualActivation = [RCTConvert BOOL:prop];
     }
 
     prop = config[@"hitSlop"];
@@ -263,20 +259,17 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 }
 
-- (void)setManualActivation
+- (void)setManualActivation:(BOOL)manualActivation
 {
-  _requireManualActivation = YES;
-  _manualActivationRecognizer = [[RNManualActivationRecognizer alloc] initWithGestureHandler:self];
+  _manualActivation = manualActivation;
+  
+  if (manualActivation) {
+    _manualActivationRecognizer = [[RNManualActivationRecognizer alloc] initWithGestureHandler:self];
 
-  if (_recognizer.view != nil) {
-    [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
-  }
-}
-
-- (void)resetManualActivation
-{
-  _requireManualActivation = NO;
-  if (_manualActivationRecognizer != nil) {
+    if (_recognizer.view != nil) {
+      [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
+    }
+  } else if (_manualActivationRecognizer != nil) {
     [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
     _manualActivationRecognizer = nil;
   }
