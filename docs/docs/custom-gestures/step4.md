@@ -1,12 +1,12 @@
 ```jsx {2-15}
 const gesture = Gesture.Custom()
-    .onPointerDown((e, manager) => {
+    .onTouchesDown((e, manager) => {
       'worklet';
-      for (const pointer of e.pointerData) {
-        trackedPointers[pointer.pointerId].value = {
+      for (const touch of e.touchesData) {
+        trackedPointers[touch.touchId].value = {
           visible: true,
-          x: pointer.x,
-          y: pointer.y,
+          x: touch.x,
+          y: touch.y,
         };
       }
 

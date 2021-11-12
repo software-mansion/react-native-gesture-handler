@@ -12,22 +12,22 @@ Set the `onStart` callback.
 
 Set the `onEnd` callback.
 
-### `onPointerDown(event, stateManager)`
+### `onTouchesDown(event, stateManager)`
 
-Set the `onPointerDown` callback which is called every time a pointer is placed on the screen.
+Set the `onTouchesDown` callback which is called every time a finger is placed on the screen.
 
-### `onPointerMove(event, stateManager)`
+### `onTouchesMove(event, stateManager)`
 
-Set the `onPointerMove` callback which is called every time a pointer is moved.
+Set the `onTouchesMove` callback which is called every time a finger is moved on the screen.
 
-### `onPointerUp(event, stateManager)`
+### `onTouchesUp(event, stateManager)`
 
-Set the `onPointerUp` callback which is called every time a pointer is lifted from the screen.
+Set the `onTouchesUp` callback which is called every time a finger is lifted from the screen.
 
-### `onPointerCancelled(event, stateManager)`
+### `onTouchesCancelled(event, stateManager)`
 
-Set the `onPointerCancelled` callback which is called every time a pointer stops being tracked, for example when the gesture finishes.
+Set the `onTouchesCancelled` callback which is called every time a finger stops being tracked, for example when the gesture finishes.
 
-### `onPointerChange(event, stateManager)`
+### `onTouchesChange(event, stateManager)`
 
-Set the `onPointerChange` callback which is called for every pointer event.
+Set the `onTouchesChange` callback which is called for every touch event.

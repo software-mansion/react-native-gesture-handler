@@ -23,7 +23,7 @@ module.exports = {
           'api/gestures/native-gesture',
           'api/gestures/custom-gesture',
           'api/gestures/composed-gestures',
-          'api/gestures/pointer-events',
+          'api/gestures/touch-events',
           'api/gestures/state-manager',
         ],
         Components: [

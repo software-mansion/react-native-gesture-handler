@@ -1,13 +1,13 @@
 ```jsx {3-16}
 const gesture = Gesture.Custom()
     ...
-    .onPointerUp((e, manager) => {
+    .onTouchesUp((e, manager) => {
       'worklet';
-      for (const pointer of e.pointerData) {
-        trackedPointers[pointer.pointerId].value = {
+      for (const touch of e.touchesData) {
+        trackedPointers[touch.touchId].value = {
           visible: false,
-          x: pointer.x,
-          y: pointer.y,
+          x: touch.x,
+          y: touch.y,
         };
       }
 

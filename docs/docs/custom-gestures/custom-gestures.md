@@ -13,7 +13,7 @@ import Step5 from './step5.md';
 import Step6 from './step6.md';
 import Step7 from './step7.md';
 
-RNGH2 finally brings one of the most requested features: custom gestures and pointer events. To demonstrate how to make a custom gesture we will make a simple one that tracks all pointers on the screen.
+RNGH2 finally brings one of the most requested features: custom gestures and touch events. To demonstrate how to make a custom gesture we will make a simple one that tracks all pointers on the screen.
 
 <Divider />
 
@@ -33,31 +33,30 @@ RNGH2 finally brings one of the most requested features: custom gestures and poi
 <Divider />
 
 <Step title="Step 3">
-    Now we have to make a component that will handle the gesture and draw all the pointer indicators. We will store data about pointers in an array of size 12 as stat is the maximum number of pointer that RNGH will track, and render them inside an Animated.View.
+    Now we have to make a component that will handle the gesture and draw all the pointer indicators. We will store data about pointers in an array of size 12 as that is the maximum number of touches that RNGH will track, and render them inside an Animated.View.
     <Step3 />
 </Step>
 
 <Divider />
 
 <Step title="Step 4">
-    We have our components set up and we can finally get to making the gesture! We will start with on PointerDown where we need to set position of the pointers and make them visible. We can get this information from the pointerData property of the event. In this case we will also check how many pointers are on the screen and activate the gesture if there are at least two.
+    We have our components set up and we can finally get to making the gesture! We will start with onTouchesDown where we need to set position of the pointers and make them visible. We can get this information from the touchesData property of the event. In this case we will also check how many pointers are on the screen and activate the gesture if there are at least two.
     <Step4 />
 </Step>
 
 <Divider />
 
 <Step title="Step 5">
-    Next, we will handle pointer movement. In onPointerMove we will simply update the position of moved pointers.
+    Next, we will handle pointer movement. In onTouchesMove we will simply update the position of moved pointers.
     <Step5 />
 </Step>
 
 <Divider />
 
 <Step title="Step 6">
-    We also need to handle lifting fingers from the screen, which corresponds to onPointerUp. Here we will just hide the pointers that were lifted and end the gesture if there are no more pointers on the screen.
-    Note that we are not handling onPointerCancelled as in this very basic case we don't expect it to happen, however you should clear data about cancelled pointers (most of the time all active ones) when it is called.
+    We also need to handle lifting fingers from the screen, which corresponds to onTouchesUp. Here we will just hide the pointers that were lifted and end the gesture if there are no more pointers on the screen.
+    Note that we are not handling onTouchesCancelled as in this very basic case we don't expect it to happen, however you should clear data about cancelled pointers (most of the time all active ones) when it is called.
     <Step6 />
-
 </Step>
 
 <Divider />
@@ -73,6 +72,6 @@ And that's all! As you can see using custom gestures is really easy but as you c
 
 ## Modifying existing gestures
 
-While custom gestures open great possibilities we are aware that reimplementing pinch or rotation from scratch just because you need to activate in specific circumstances or require position of the fingers would be a waste of time, because those gestures are already there. Because of that you can use pointer events with every gesture so that you can extract more informations about gesture than is sent to you in events. We also added a `manualActivation` modifier on all continous gestures, which prevents the gesture it is applied to from activating by itself thus giving you full control of its behavior.
+While custom gestures open great possibilities we are aware that reimplementing pinch or rotation from scratch just because you need to activate in specific circumstances or require position of the fingers, would be a waste of time as those gestures are already there. Because of that you can use touch events with every gesture so that you can extract more informations about gesture than is sent to you in events. We also added a `manualActivation` modifier on all continous gestures, which prevents the gesture it is applied to from activating by itself thus giving you full control of its behavior.
 
 This functionality makes another highly requested feature possible: drag after long press. Simply set `manualActivation` to `true` on a `PanGesture` and use `StateManager` to fail the gesture if the user attempts to drag the component sooner than the duration of the long press.
