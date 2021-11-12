@@ -115,7 +115,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     }
   
     prop = config[@"manualActivation"];
-      if (prop != nil) {
+    if (prop != nil) {
         self.manualActivation = [RCTConvert BOOL:prop];
     }
 

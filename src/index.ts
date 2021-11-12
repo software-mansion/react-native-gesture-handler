@@ -11,6 +11,9 @@ export type {
   // event payloads types
   GestureEventPayload,
   HandlerStateChangeEventPayload,
+  // pointer events
+  GesturePointerEvent,
+  PointerData,
 } from './handlers/gestureHandlerCommon';
 export type {
   TapGestureHandlerEventPayload,
@@ -68,6 +71,7 @@ export {
   SimultaneousGestureType as SimultaneousGesture,
   ExclusiveGestureType as ExclusiveGesture,
 } from './handlers/gestures/gestureComposition';
+export { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
   RawButtonProps,
