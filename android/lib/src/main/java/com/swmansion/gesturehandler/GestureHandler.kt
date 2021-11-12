@@ -81,7 +81,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   open fun dispatchPointerEvent() {
-    onTouchEventListener?.onPointerEvent(self())
+    if (pointerEventPayload != null) {
+      onTouchEventListener?.onPointerEvent(self())
+    }
   }
 
   open fun resetConfig() {
@@ -293,59 +295,86 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  fun updatePointerData(event: MotionEvent) {
+  private fun dispatchPointerDownEvent(event: MotionEvent) {
     pointerEventPayload = null
-
+    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_DOWN
+    val pointerId = event.getPointerId(event.actionIndex)
     val offsetX = event.rawX - event.x
     val offsetY = event.rawY - event.y
 
-    if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
-      pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_DOWN
-      val pointerId = event.getPointerId(event.actionIndex)
+    trackedPointers[pointerId] = PointerData(
+        pointerId,
+        event.getX(event.actionIndex),
+        event.getY(event.actionIndex),
+        event.getX(event.actionIndex) + offsetX,
+        event.getY(event.actionIndex) + offsetY,
+    )
+    trackedPointersCount++
+    addPointerData(trackedPointers[pointerId]!!)
 
-      trackedPointers[pointerId] = PointerData(
-          pointerId,
-          event.getX(event.actionIndex),
-          event.getY(event.actionIndex),
-          event.getX(event.actionIndex) + offsetX,
-          event.getY(event.actionIndex) + offsetY,
-      )
-      trackedPointersCount++
-      addPointerData(trackedPointers[pointerId]!!)
-    } else if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
-      pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_UP
-      val pointerId = event.getPointerId(event.actionIndex)
+    dispatchPointerEvent()
+  }
 
-      trackedPointers[pointerId] = PointerData(
-          pointerId,
-          event.getX(event.actionIndex),
-          event.getY(event.actionIndex),
-          event.getX(event.actionIndex) + offsetX,
-          event.getY(event.actionIndex) + offsetY,
-      )
-      addPointerData(trackedPointers[pointerId]!!)
-      trackedPointers[pointerId] = null
-      trackedPointersCount--
-    } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-      pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_MOVE
+  private fun dispatchPointerUpEvent(event: MotionEvent) {
+    pointerEventPayload = null
+    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_UP
+    val pointerId = event.getPointerId(event.actionIndex)
+    val offsetX = event.rawX - event.x
+    val offsetY = event.rawY - event.y
 
-      for (i in 0 until event.pointerCount) {
-        val pointerId = event.getPointerId(i)
-        val pointer = trackedPointers[pointerId] ?: continue
+    trackedPointers[pointerId] = PointerData(
+        pointerId,
+        event.getX(event.actionIndex),
+        event.getY(event.actionIndex),
+        event.getX(event.actionIndex) + offsetX,
+        event.getY(event.actionIndex) + offsetY,
+    )
+    addPointerData(trackedPointers[pointerId]!!)
+    trackedPointers[pointerId] = null
+    trackedPointersCount--
 
-        if (pointer.x != event.getX(i) || pointer.y != event.getY(i)) {
-          pointer.x = event.getX(i)
-          pointer.y = event.getY(i)
-          pointer.absoluteX = event.getX(i) + offsetX
-          pointer.absoluteY = event.getY(i) + offsetY
+    dispatchPointerEvent()
+  }
 
-          addPointerData(pointer)
-        }
+  private fun dispatchPointerMoveEvent(event: MotionEvent) {
+    pointerEventPayload = null
+    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_MOVE
+    val offsetX = event.rawX - event.x
+    val offsetY = event.rawY - event.y
+    var pointersAdded = 0
+
+    for (i in 0 until event.pointerCount) {
+      val pointerId = event.getPointerId(i)
+      val pointer = trackedPointers[pointerId] ?: continue
+
+      if (pointer.x != event.getX(i) || pointer.y != event.getY(i)) {
+        pointer.x = event.getX(i)
+        pointer.y = event.getY(i)
+        pointer.absoluteX = event.getX(i) + offsetX
+        pointer.absoluteY = event.getY(i) + offsetY
+
+        addPointerData(pointer)
+        pointersAdded++
       }
     }
 
-    if (pointerEventPayload != null) {
+    // only data about pointers that have changed their position is sent, it makes no sense to send
+    // an empty move event (especially when this method is called during down/up event and there is
+    // only info about one pointer)
+    if (pointersAdded > 0) {
       dispatchPointerEvent()
+    }
+  }
+
+  fun updatePointerData(event: MotionEvent) {
+    if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+      dispatchPointerDownEvent(event)
+      dispatchPointerMoveEvent(event)
+    } else if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+      dispatchPointerMoveEvent(event)
+      dispatchPointerUpEvent(event)
+    } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+      dispatchPointerMoveEvent(event)
     }
   }
 
