@@ -58,9 +58,10 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     }
   }
 
-  override fun beforeActivation() {
+  override fun activate() {
     rotation = 0.0
     velocity = 0.0
+    super.activate()
   }
 
   override fun onReset() {

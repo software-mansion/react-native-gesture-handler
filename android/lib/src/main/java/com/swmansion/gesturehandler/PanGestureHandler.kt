@@ -249,10 +249,11 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     }
   }
 
-  override fun beforeActivation() {
+  override fun activate() {
     // reset starting point
     startX = lastX
     startY = lastY
+    super.activate()
   }
 
   override fun onReset() {

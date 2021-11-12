@@ -386,11 +386,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  fun activate() {
+  open fun activate() {
     if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
-      beforeActivation()
       moveToState(STATE_ACTIVE)
-      afterActivation()
     }
   }
 
@@ -413,8 +411,6 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected open fun onStateChange(newState: Int, previousState: Int) {}
   protected open fun onReset() {}
   protected open fun onCancel() {}
-  protected open fun beforeActivation() {}
-  protected open fun afterActivation() {}
   fun reset() {
     view = null
     orchestrator = null

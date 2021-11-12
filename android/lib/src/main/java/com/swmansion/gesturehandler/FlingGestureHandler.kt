@@ -51,7 +51,8 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     false
   }
 
-  override fun afterActivation() {
+  override fun activate() {
+    super.activate()
     end()
   }
 

@@ -71,9 +71,10 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     }
   }
 
-  override fun beforeActivation() {
+  override fun activate() {
     velocity = 0.0
     scale = 1.0
+    super.activate()
   }
 
   override fun onReset() {
