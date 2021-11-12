@@ -62,7 +62,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 @implementation RNGestureHandler {
-    RNGestureHandlerPointerTracker *_pointerTracker;
+    RNGestureHandlerTouchTracker *_touchTracker;
     RNGestureHandlerState _state;
     RNManualActivationRecognizer *_manualActivationRecognizer;
     NSArray<NSNumber *> *_handlersToWaitFor;
@@ -74,7 +74,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super init])) {
-        _pointerTracker = [[RNGestureHandlerPointerTracker alloc] initWithGestureHandler:self];
+        _touchTracker = [[RNGestureHandlerTouchTracker alloc] initWithGestureHandler:self];
         _tag = tag;
         _lastState = RNGestureHandlerStateUndetermined;
         _hitSlop = RNGHHitSlopEmpty;
@@ -98,7 +98,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _handlersToWaitFor = nil;
   _simultaneousHandlers = nil;
   _hitSlop = RNGHHitSlopEmpty;
-  _needsPointerData = NO;
+  _needsTouchData = NO;
   
   self.manualActivation = NO;
 }
@@ -119,9 +119,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
     }
   
-    prop = config[@"needsPointerData"];
+    prop = config[@"needsTouchData"];
     if (prop != nil) {
-        _needsPointerData = [RCTConvert BOOL:prop];
+        _needsTouchData = [RCTConvert BOOL:prop];
     }
     
     prop = config[@"manualActivation"];
@@ -243,12 +243,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     }
 }
 
-- (void)sendPointerEventInState:(RNGestureHandlerState)state
+- (void)sendTouchEventInState:(RNGestureHandlerState)state
                  forViewWithTag:(NSNumber *)reactTag
 {
-  id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
-                                              withPointerData:_pointerTracker.pointerData
-                                          withNumberOfTouches:_pointerTracker.trackedPointersCount];
+  id extraData = [RNGestureHandlerEventExtraData forEventType:_touchTracker.eventType
+                                              withTouchData:_touchTracker.touchesData
+                                          withNumberOfTouches:_touchTracker.trackedTouchesCount];
   id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag handlerTag:_tag state:state extraData:extraData coalescingKey:[_tag intValue]];
   
   if (self.usesDeviceEvents) {
@@ -403,7 +403,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     // might be called after some pointers are down, and after state manipulation by the user.
     // Pointer tracker calls this method when it resets, and in that case it no longer tracks
     // any pointers, thus entering this if
-    if (!_needsPointerData || _pointerTracker.trackedPointersCount == 0) {
+    if (!_needsTouchData || _touchTracker.trackedTouchesCount == 0) {
         _lastState = RNGestureHandlerStateUndetermined;
         _state = RNGestureHandlerStateBegan;
     }

@@ -30,8 +30,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config)
       }
-      if (config.hasKey(KEY_NEEDS_POINTER_DATA)) {
-        handler.needsPointerData = config.getBoolean(KEY_NEEDS_POINTER_DATA)
+      if (config.hasKey(KEY_NEEDS_TOUCH_DATA)) {
+        handler.needsTouchData = config.getBoolean(KEY_NEEDS_TOUCH_DATA)
       }
       if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
         handler.setManualActivation(config.getBoolean(KEY_MANUAL_ACTIVATION))
@@ -301,7 +301,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private val eventListener = object : OnTouchEventListener {
-    override fun <T : GestureHandler<T>> onTouchEvent(handler: T, event: MotionEvent) {
+    override fun <T : GestureHandler<T>> onHandlerEvent(handler: T, event: MotionEvent) {
       this@RNGestureHandlerModule.onTouchEvent(handler, event)
     }
 
@@ -309,7 +309,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       this@RNGestureHandlerModule.onStateChange(handler, newState, oldState)
     }
 
-    override fun <T : GestureHandler<T>> onPointerEvent(handler: T) {
+    override fun <T : GestureHandler<T>> onTouchEvent(handler: T) {
       this@RNGestureHandlerModule.onPointerEvent(handler)
     }
   }
@@ -572,16 +572,16 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE
         || handler.state == GestureHandler.STATE_UNDETERMINED || handler.view != null) {
       if (handler.usesDeviceEvents) {
-        val data = RNGestureHandlerPointerEvent.createEventData(handler)
+        val data = RNGestureHandlerTouchEvent.createEventData(handler)
 
         reactApplicationContext
             .deviceEventEmitter
-            .emit(RNGestureHandlerPointerEvent.EVENT_NAME, data)
+            .emit(RNGestureHandlerTouchEvent.EVENT_NAME, data)
       } else {
         reactApplicationContext
             .UIManager
             .eventDispatcher.let {
-              val event = RNGestureHandlerPointerEvent.obtain(handler)
+              val event = RNGestureHandlerTouchEvent.obtain(handler)
               it.dispatchEvent(event)
             }
       }
@@ -592,7 +592,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     const val MODULE_NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
-    private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
+    private const val KEY_NEEDS_TOUCH_DATA = "needsTouchData"
     private const val KEY_MANUAL_ACTIVATION = "manualActivation"
     private const val KEY_HIT_SLOP = "hitSlop"
     private const val KEY_HIT_SLOP_LEFT = "left"

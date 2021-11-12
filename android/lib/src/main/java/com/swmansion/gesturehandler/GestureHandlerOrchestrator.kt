@@ -242,8 +242,8 @@ class GestureHandlerOrchestrator(
     // approach when we want to use pointer coordinates to calculate velocity or distance
     // for pinch so I don't know yet if we should transform or not...
     event.setLocation(coords[0], coords[1])
-    if (handler.needsPointerData) {
-      handler.updatePointerData(event)
+    if (handler.needsTouchData) {
+      handler.updateTouchData(event)
     }
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {

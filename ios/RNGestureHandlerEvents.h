@@ -4,7 +4,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RNGestureHandlerState.h"
-#import "RNPointerEventType.h"
+#import "RNTouchEventType.h"
 
 @interface RNGestureHandlerEventExtraData : NSObject
 
@@ -36,8 +36,8 @@
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
                             withNumberOfTouches:(NSUInteger)numberOfTouches;
-+ (RNGestureHandlerEventExtraData *)forEventType:(RNPointerEventType)eventType
-                                 withPointerData:(NSArray<NSDictionary *> *)data
++ (RNGestureHandlerEventExtraData *)forEventType:(RNTouchEventType)eventType
+                                 withTouchData:(NSArray<NSDictionary *> *)data
                              withNumberOfTouches:(NSUInteger)numberOfTouches;
 + (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside;
 @end

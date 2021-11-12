@@ -11,9 +11,9 @@ export type {
   // event payloads types
   GestureEventPayload,
   HandlerStateChangeEventPayload,
-  // pointer events
-  GesturePointerEvent,
-  PointerData,
+  // touch events
+  GestureTouchEvent,
+  TouchData,
 } from './handlers/gestureHandlerCommon';
 export type {
   TapGestureHandlerEventPayload,

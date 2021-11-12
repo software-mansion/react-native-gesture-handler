@@ -30,31 +30,31 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+    [_gestureHandler.touchTracker touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+    [_gestureHandler.touchTracker touchesMoved:touches withEvent:event];
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+    [_gestureHandler.touchTracker touchesEnded:touches withEvent:event];
     self.state = UIGestureRecognizerStateFailed;
     [self reset];
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+    [_gestureHandler.touchTracker touchesCancelled:touches withEvent:event];
     self.state = UIGestureRecognizerStateCancelled;
     [self reset];
 }
 
 -(void)reset
 {
-  [_gestureHandler.pointerTracker reset];
+  [_gestureHandler.touchTracker reset];
   [super reset];
 }
 

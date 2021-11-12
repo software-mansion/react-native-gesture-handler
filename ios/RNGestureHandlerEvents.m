@@ -103,19 +103,19 @@
                            @"numberOfPointers": @(numberOfTouches)}];
 }
 
-+ (RNGestureHandlerEventExtraData *)forEventType:(RNPointerEventType)eventType
-                                 withPointerData:(NSArray<NSDictionary *> *)data
++ (RNGestureHandlerEventExtraData *)forEventType:(RNTouchEventType)eventType
+                                 withTouchData:(NSArray<NSDictionary *> *)data
                              withNumberOfTouches:(NSUInteger)numberOfTouches
 {
     if (data != nil) {
       return [[RNGestureHandlerEventExtraData alloc]
               initWithData:@{@"eventType": @(eventType),
-                             @"pointerData": data,
+                             @"touchesData": data,
                              @"numberOfPointers": @(numberOfTouches)}];
     } else {
       return [[RNGestureHandlerEventExtraData alloc]
-              initWithData:@{@"eventType": @(RNPointerEventTypeUndetermined),
-                             @"pointerData": @{},
+              initWithData:@{@"eventType": @(RNTouchEventTypeUndetermined),
+                             @"touchesData": @{},
                              @"numberOfPointers": @(numberOfTouches)}];
     }
 }

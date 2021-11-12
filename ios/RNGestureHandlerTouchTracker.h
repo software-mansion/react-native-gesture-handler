@@ -1,16 +1,16 @@
 #import <Foundation/Foundation.h>
 
-#import "RNPointerEventType.h"
+#import "RNTouchEventType.h"
 
-#define MAX_POINTERS_COUNT 12
+#define MAX_TOUCHES_COUNT 12
 
 @class RNGestureHandler;
 
-@interface RNGestureHandlerPointerTracker : NSObject
+@interface RNGestureHandlerTouchTracker : NSObject
 
-@property (nonatomic) RNPointerEventType eventType;
-@property (nonatomic) NSArray<NSDictionary *> *pointerData;
-@property (nonatomic) int trackedPointersCount;
+@property (nonatomic) RNTouchEventType eventType;
+@property (nonatomic) NSArray<NSDictionary *> *touchesData;
+@property (nonatomic) int trackedTouchesCount;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
@@ -19,6 +19,6 @@
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event;
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event;
 - (void)reset;
-- (void)cancelPointers;
+- (void)cancelTouches;
 
 @end

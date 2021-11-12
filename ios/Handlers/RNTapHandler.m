@@ -72,7 +72,7 @@ static const NSTimeInterval defaultMaxDuration = NAN;
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+  [_gestureHandler.touchTracker touchesBegan:touches withEvent:event];
   
   if (_tapsSoFar == 0) {
     _initPosition = [self locationInView:self.view];
@@ -95,7 +95,7 @@ static const NSTimeInterval defaultMaxDuration = NAN;
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+  [_gestureHandler.touchTracker touchesMoved:touches withEvent:event];
   
   NSInteger numberOfTouches = [touches count];
   if (numberOfTouches > _maxNumberOfTouches) {
@@ -146,7 +146,7 @@ static const NSTimeInterval defaultMaxDuration = NAN;
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+  [_gestureHandler.touchTracker touchesEnded:touches withEvent:event];
   
   if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
     self.state = UIGestureRecognizerStateEnded;
@@ -159,7 +159,7 @@ static const NSTimeInterval defaultMaxDuration = NAN;
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+  [_gestureHandler.touchTracker touchesCancelled:touches withEvent:event];
   
   self.state = UIGestureRecognizerStateCancelled;
   [self reset];
@@ -167,7 +167,7 @@ static const NSTimeInterval defaultMaxDuration = NAN;
 
 - (void)reset
 {
-  [_gestureHandler.pointerTracker reset];
+  [_gestureHandler.touchTracker reset];
   
   if (self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];

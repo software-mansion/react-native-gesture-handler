@@ -163,7 +163,7 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
   
   // if the gesture was set to finish, cancel all pointers it was tracking
   if (state == 1 || state == 3 || state == 5) {
-    [handler.pointerTracker cancelPointers];
+    [handler.touchTracker cancelTouches];
   }
   
   // do not send state change event when activating because it bypasses
