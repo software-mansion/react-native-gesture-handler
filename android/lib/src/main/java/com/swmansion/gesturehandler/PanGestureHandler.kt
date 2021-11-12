@@ -244,7 +244,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       if (shouldFail()) {
         fail()
       } else if (shouldActivate()) {
-        activate()
+        activateIfNotManual()
       }
     }
   }
