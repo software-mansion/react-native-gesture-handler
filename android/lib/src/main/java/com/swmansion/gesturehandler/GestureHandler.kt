@@ -4,13 +4,17 @@ import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.WritableArray
+import com.facebook.react.uimanager.PixelUtil
+import com.swmansion.gesturehandler.react.RNGestureHandlerPointerEvent
 import java.lang.IllegalStateException
 import java.util.*
 
 open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
   private val trackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
-  private var trackedPointersCount = 0
+  private var trackedPointersIDsCount = 0
   var tag = 0
   var view: View? = null
     private set
@@ -26,6 +30,16 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var usesDeviceEvents = false
 
+  var pointerEventPayload: WritableArray? = null
+    private set
+  var pointerEventType = RNGestureHandlerPointerEvent.EVENT_UNDETERMINED
+    private set
+  var trackedPointersCount = 0
+    private set
+  private val trackedPointers: Array<PointerData?> = Array(MAX_POINTERS_COUNT) { null }
+  var needsPointerData = false
+
+
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
     private set
@@ -33,6 +47,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var lastAbsolutePositionY = 0f
     private set
+
+  private var manualActivation = false
 
   private var lastEventOffsetX = 0f
   private var lastEventOffsetY = 0f
@@ -66,7 +82,15 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     onTouchEventListener?.onTouchEvent(self(), event)
   }
 
+  open fun dispatchPointerEvent() {
+    if (pointerEventPayload != null) {
+      onTouchEventListener?.onPointerEvent(self())
+    }
+  }
+
   open fun resetConfig() {
+    needsPointerData = false
+    manualActivation = false
     shouldCancelWhenOutside = false
     isEnabled = true
     hitSlop = null
@@ -92,6 +116,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
     isEnabled = enabled
   }
+
+  fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT =
+      applySelf { this.manualActivation = manualActivation }
 
   fun setHitSlop(
     leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float,
@@ -122,7 +149,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
     check(!(this.view != null || this.orchestrator != null)) { "Already prepared or hasn't been reset" }
     Arrays.fill(trackedPointerIDs, -1)
-    trackedPointersCount = 0
+    trackedPointersIDsCount = 0
     state = STATE_UNDETERMINED
     this.view = view
     this.orchestrator = orchestrator
@@ -130,7 +157,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   private fun findNextLocalPointerId(): Int {
     var localPointerId = 0
-    while (localPointerId < trackedPointersCount) {
+    while (localPointerId < trackedPointersIDsCount) {
       var i = 0
       while (i < trackedPointerIDs.size) {
         if (trackedPointerIDs[i] == localPointerId) {
@@ -149,19 +176,19 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   fun startTrackingPointer(pointerId: Int) {
     if (trackedPointerIDs[pointerId] == -1) {
       trackedPointerIDs[pointerId] = findNextLocalPointerId()
-      trackedPointersCount++
+      trackedPointersIDsCount++
     }
   }
 
   fun stopTrackingPointer(pointerId: Int) {
     if (trackedPointerIDs[pointerId] != -1) {
       trackedPointerIDs[pointerId] = -1
-      trackedPointersCount--
+      trackedPointersIDsCount--
     }
   }
 
   private fun needAdapt(event: MotionEvent): Boolean {
-    if (event.pointerCount != trackedPointersCount) {
+    if (event.pointerCount != trackedPointersIDsCount) {
       return true
     }
 
@@ -184,7 +211,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       actionIndex = event.actionIndex
       val actionPointer = event.getPointerId(actionIndex)
       action = if (trackedPointerIDs[actionPointer] != -1) {
-        if (trackedPointersCount == 1) MotionEvent.ACTION_DOWN else MotionEvent.ACTION_POINTER_DOWN
+        if (trackedPointersIDsCount == 1) MotionEvent.ACTION_DOWN else MotionEvent.ACTION_POINTER_DOWN
       } else {
         MotionEvent.ACTION_MOVE
       }
@@ -192,12 +219,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       actionIndex = event.actionIndex
       val actionPointer = event.getPointerId(actionIndex)
       action = if (trackedPointerIDs[actionPointer] != -1) {
-        if (trackedPointersCount == 1) MotionEvent.ACTION_UP else MotionEvent.ACTION_POINTER_UP
+        if (trackedPointersIDsCount == 1) MotionEvent.ACTION_UP else MotionEvent.ACTION_POINTER_UP
       } else {
         MotionEvent.ACTION_MOVE
       }
     }
-    initPointerProps(trackedPointersCount)
+    initPointerProps(trackedPointersIDsCount)
     var count = 0
     val oldX = event.x
     val oldY = event.y
@@ -248,7 +275,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       || state == STATE_CANCELLED
       || state == STATE_FAILED
       || state == STATE_END
-      || trackedPointersCount < 1) {
+      || trackedPointersIDsCount < 1) {
       return
     }
     val event = adaptEvent(origEvent)
@@ -274,11 +301,136 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
+  private fun dispatchPointerDownEvent(event: MotionEvent) {
+    pointerEventPayload = null
+    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_DOWN
+    val pointerId = event.getPointerId(event.actionIndex)
+    val offsetX = event.rawX - event.x
+    val offsetY = event.rawY - event.y
+
+    trackedPointers[pointerId] = PointerData(
+        pointerId,
+        event.getX(event.actionIndex),
+        event.getY(event.actionIndex),
+        event.getX(event.actionIndex) + offsetX,
+        event.getY(event.actionIndex) + offsetY,
+    )
+    trackedPointersCount++
+    addPointerData(trackedPointers[pointerId]!!)
+
+    dispatchPointerEvent()
+  }
+
+  private fun dispatchPointerUpEvent(event: MotionEvent) {
+    pointerEventPayload = null
+    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_UP
+    val pointerId = event.getPointerId(event.actionIndex)
+    val offsetX = event.rawX - event.x
+    val offsetY = event.rawY - event.y
+
+    trackedPointers[pointerId] = PointerData(
+        pointerId,
+        event.getX(event.actionIndex),
+        event.getY(event.actionIndex),
+        event.getX(event.actionIndex) + offsetX,
+        event.getY(event.actionIndex) + offsetY,
+    )
+    addPointerData(trackedPointers[pointerId]!!)
+    trackedPointers[pointerId] = null
+    trackedPointersCount--
+
+    dispatchPointerEvent()
+  }
+
+  private fun dispatchPointerMoveEvent(event: MotionEvent) {
+    pointerEventPayload = null
+    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_MOVE
+    val offsetX = event.rawX - event.x
+    val offsetY = event.rawY - event.y
+    var pointersAdded = 0
+
+    for (i in 0 until event.pointerCount) {
+      val pointerId = event.getPointerId(i)
+      val pointer = trackedPointers[pointerId] ?: continue
+
+      if (pointer.x != event.getX(i) || pointer.y != event.getY(i)) {
+        pointer.x = event.getX(i)
+        pointer.y = event.getY(i)
+        pointer.absoluteX = event.getX(i) + offsetX
+        pointer.absoluteY = event.getY(i) + offsetY
+
+        addPointerData(pointer)
+        pointersAdded++
+      }
+    }
+
+    // only data about pointers that have changed their position is sent, it makes no sense to send
+    // an empty move event (especially when this method is called during down/up event and there is
+    // only info about one pointer)
+    if (pointersAdded > 0) {
+      dispatchPointerEvent()
+    }
+  }
+
+  fun updatePointerData(event: MotionEvent) {
+    if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+      dispatchPointerDownEvent(event)
+      dispatchPointerMoveEvent(event)
+    } else if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+      dispatchPointerMoveEvent(event)
+      dispatchPointerUpEvent(event)
+    } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+      dispatchPointerMoveEvent(event)
+    }
+  }
+
+  private fun cancelPointers() {
+    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_CANCELLED
+    pointerEventPayload = null
+
+    for (pointer in trackedPointers) {
+      pointer?.let {
+        addPointerData(it)
+      }
+    }
+
+    trackedPointersCount = 0
+    trackedPointers.fill(null)
+
+    dispatchPointerEvent()
+  }
+
+  private fun addPointerData(pointerData: PointerData) {
+    if (pointerEventPayload == null) {
+      pointerEventPayload = Arguments.createArray()
+    }
+
+    pointerEventPayload?.pushMap(Arguments.createMap().apply {
+      putInt("pointerId", pointerData.pointerId)
+      putDouble("x", PixelUtil.toDIPFromPixel(pointerData.x).toDouble())
+      putDouble("y", PixelUtil.toDIPFromPixel(pointerData.y).toDouble())
+      putDouble("absoluteX", PixelUtil.toDIPFromPixel(pointerData.absoluteX).toDouble())
+      putDouble("absoluteY", PixelUtil.toDIPFromPixel(pointerData.absoluteY).toDouble())
+    })
+  }
+
+  fun consumeEventPayload(): WritableArray? {
+    val result = pointerEventPayload
+    pointerEventPayload = null
+    return result
+  }
+
   private fun moveToState(newState: Int) {
     UiThreadUtil.assertOnUiThread()
     if (state == newState) {
       return
     }
+
+    // if there are tracked pointers and the gesture is about to end, send event cancelling all pointers
+    if (trackedPointersCount > 0 && (newState == STATE_END || newState == STATE_CANCELLED || newState == STATE_FAILED)) {
+      cancelPointers()
+    }
+
     val oldState = state
     state = newState
     if (state == STATE_ACTIVE) {
@@ -296,7 +448,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       && state != STATE_FAILED
       && state != STATE_CANCELLED
       && state != STATE_END
-      && trackedPointersCount > 0
+      && trackedPointersIDsCount > 0
   }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
@@ -386,9 +538,15 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  fun activate() {
+  open fun activate() {
     if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       moveToState(STATE_ACTIVE)
+    }
+  }
+
+  fun activateIfNotManual() {
+    if (!manualActivation) {
+      activate()
     }
   }
 
@@ -415,7 +573,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     view = null
     orchestrator = null
     Arrays.fill(trackedPointerIDs, -1)
+    trackedPointersIDsCount = 0
+
     trackedPointersCount = 0
+    trackedPointers.fill(null)
+    pointerEventType = RNGestureHandlerPointerEvent.EVENT_UNDETERMINED
     onReset()
   }
 
@@ -485,4 +647,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       return null
     }
   }
+
+  private data class PointerData(
+    val pointerId: Int,
+    var x: Float,
+    var y: Float,
+    var absoluteX: Float,
+    var absoluteY: Float
+  )
 }
