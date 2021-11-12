@@ -538,15 +538,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  open fun activate() {
-    if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
-      moveToState(STATE_ACTIVE)
-    }
-  }
+  fun activate() = activate(force = false)
 
-  fun activateIfNotManual() {
-    if (!manualActivation) {
-      activate()
+  open fun activate(force: Boolean) {
+    if ((!manualActivation || force) && (state == STATE_UNDETERMINED || state == STATE_BEGAN)) {
+      moveToState(STATE_ACTIVE)
     }
   }
 
