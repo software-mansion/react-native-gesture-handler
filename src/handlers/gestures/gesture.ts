@@ -18,6 +18,7 @@ import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
+  | BaseGesture<Record<string, never>>
   | BaseGesture<TapGestureHandlerEventPayload>
   | BaseGesture<PanGestureHandlerEventPayload>
   | BaseGesture<LongPressGestureHandlerEventPayload>
