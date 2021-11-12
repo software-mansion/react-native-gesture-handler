@@ -8,11 +8,13 @@ import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
+import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
 import java.util.*
 
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
-class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
+class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
+  : ReactContextBaseJavaModule(reactContext), GestureHandlerStateManager {
   private abstract class HandlerFactory<T : GestureHandler<T>> : RNGestureHandlerEventDataExtractor<T> {
     abstract val type: Class<T>
     abstract val name: String
@@ -30,6 +32,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       }
       if (config.hasKey(KEY_NEEDS_POINTER_DATA)) {
         handler.needsPointerData = config.getBoolean(KEY_NEEDS_POINTER_DATA)
+      }
+      if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
+        handler.setManualActivation(config.getBoolean(KEY_MANUAL_ACTIVATION))
       }
     }
 
@@ -385,6 +390,18 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   fun handleClearJSResponder() {
   }
 
+  override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
+    registry.getHandler(handlerTag)?.let { handler ->
+      when (newState) {
+        GestureHandler.STATE_ACTIVE -> handler.activate()
+        GestureHandler.STATE_BEGAN -> handler.begin()
+        GestureHandler.STATE_END -> handler.end()
+        GestureHandler.STATE_FAILED -> handler.fail()
+        GestureHandler.STATE_CANCELLED -> handler.cancel()
+      }
+    }
+  }
+
   override fun getConstants(): Map<String, Any> {
     return mapOf(
       "State" to mapOf(
@@ -576,6 +593,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
     private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
+    private const val KEY_MANUAL_ACTIVATION = "manualActivation"
     private const val KEY_HIT_SLOP = "hitSlop"
     private const val KEY_HIT_SLOP_LEFT = "left"
     private const val KEY_HIT_SLOP_TOP = "top"

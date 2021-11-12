@@ -137,6 +137,12 @@
     // ignore...
 }
 
+- (id)handlerWithTag:(NSNumber *)handlerTag
+{
+  return [_registry handlerWithTag:handlerTag];
+}
+
+
 #pragma mark Root Views Management
 
 - (void)registerViewWithGestureRecognizerAttachedIfNeeded:(UIView *)childView
