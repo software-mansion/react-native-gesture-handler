@@ -29,7 +29,7 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
         velocity = (rotation - prevRotation) / delta
       }
       if (abs(rotation) >= ROTATION_RECOGNITION_THRESHOLD && state == STATE_BEGAN) {
-        activateIfNotManual()
+        activate()
       }
       return true
     }

@@ -29,7 +29,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       }
       if (abs(startingSpan - detector.currentSpan) >= spanSlop
         && state == STATE_BEGAN) {
-        activateIfNotManual()
+        activate()
       }
       return true
     }

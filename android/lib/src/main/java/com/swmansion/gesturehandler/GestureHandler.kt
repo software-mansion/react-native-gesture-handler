@@ -539,14 +539,20 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   open fun activate() {
-    if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
+    if (!manualActivation && (state == STATE_UNDETERMINED || state == STATE_BEGAN)) {
       moveToState(STATE_ACTIVE)
     }
   }
 
-  fun activateIfNotManual() {
-    if (!manualActivation) {
+  fun activateManually() {
+    if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
+      // we have to call activate here as it may contain some gesture-specific logic
       activate()
+
+      // only call if the manualActivation is true, otherwise the state would be changed in activate
+      if (manualActivation) {
+        moveToState(STATE_ACTIVE)
+      }
     }
   }
 
