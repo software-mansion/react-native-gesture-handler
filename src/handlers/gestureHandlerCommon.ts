@@ -35,6 +35,7 @@ export const baseGestureHandlerProps = [
 export const baseGestureHandlerWithMonitorProps = [
   ...commonProps,
   'needsPointerData',
+  'manualActivation',
 ];
 
 export interface GestureEventPayload {

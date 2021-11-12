@@ -35,6 +35,7 @@ export interface BaseGestureConfig
   requireToFail?: GestureRef[];
   simultaneousWith?: GestureRef[];
   needsPointerData?: boolean;
+  manualActivation?: boolean;
 }
 
 type PointerEventHandlerType = (
@@ -274,6 +275,11 @@ export abstract class ContinousBaseGesture<
   ) {
     this.handlers.onUpdate = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] = this.isWorklet(callback);
+    return this;
+  }
+
+  manualActivation(manualActivation: boolean) {
+    this.config.manualActivation = manualActivation;
     return this;
   }
 }
