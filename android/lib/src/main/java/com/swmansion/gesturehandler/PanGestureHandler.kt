@@ -244,12 +244,16 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       if (shouldFail()) {
         fail()
       } else if (shouldActivate()) {
-        // reset starting point
-        startX = lastX
-        startY = lastY
-        activate()
+        activateIfNotManual()
       }
     }
+  }
+
+  override fun activate() {
+    // reset starting point
+    startX = lastX
+    startY = lastY
+    super.activate()
   }
 
   override fun onReset() {

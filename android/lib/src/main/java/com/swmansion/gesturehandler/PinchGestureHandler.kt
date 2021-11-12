@@ -29,7 +29,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       }
       if (abs(startingSpan - detector.currentSpan) >= spanSlop
         && state == STATE_BEGAN) {
-        activate()
+        activateIfNotManual()
       }
       return true
     }
@@ -69,6 +69,12 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     } else if (event.actionMasked == MotionEvent.ACTION_UP) {
       fail()
     }
+  }
+
+  override fun activate() {
+    velocity = 0.0
+    scale = 1.0
+    super.activate()
   }
 
   override fun onReset() {

@@ -1,4 +1,5 @@
 #import "RNGestureHandler.h"
+#import "RNManualActivationRecognizer.h"
 
 #import "Handlers/RNNativeViewHandler.h"
 
@@ -61,6 +62,7 @@ CGRect RNGHHitSlopInsetRect(CGRect rect, RNGHHitSlop hitSlop) {
 static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 @implementation RNGestureHandler {
+    RNManualActivationRecognizer *_manualActivationRecognizer;
     NSArray<NSNumber *> *_handlersToWaitFor;
     NSArray<NSNumber *> *_simultaneousHandlers;
     RNGHHitSlop _hitSlop;
@@ -73,6 +75,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
         _tag = tag;
         _lastState = RNGestureHandlerStateUndetermined;
         _hitSlop = RNGHHitSlopEmpty;
+        _manualActivationRecognizer = nil;
 
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -91,6 +94,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _handlersToWaitFor = nil;
   _simultaneousHandlers = nil;
   _hitSlop = RNGHHitSlopEmpty;
+  
+  self.manualActivation = NO;
 }
 
 - (void)configure:(NSDictionary *)config
@@ -107,6 +112,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     prop = config[@"shouldCancelWhenOutside"];
     if (prop != nil) {
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
+    }
+  
+    prop = config[@"manualActivation"];
+      if (prop != nil) {
+        self.manualActivation = [RCTConvert BOOL:prop];
     }
 
     prop = config[@"hitSlop"];
@@ -147,12 +157,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     view.userInteractionEnabled = YES;
     self.recognizer.delegate = self;
     [view addGestureRecognizer:self.recognizer];
+  
+  [self bindManualActivationToView:view];
 }
 
 - (void)unbindFromView
 {
     [self.recognizer.view removeGestureRecognizer:self.recognizer];
     self.recognizer.delegate = nil;
+  
+    [self unbindManualActivation];
 }
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
@@ -234,6 +248,45 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             return RNGestureHandlerStateActive;
     }
     return RNGestureHandlerStateUndetermined;
+}
+
+#pragma mark Manual activation
+
+- (void)stopActivationBlocker
+{
+  if (_manualActivationRecognizer != nil) {
+    [_manualActivationRecognizer fail];
+  }
+}
+
+- (void)setManualActivation:(BOOL)manualActivation
+{
+  _manualActivation = manualActivation;
+  
+  if (manualActivation) {
+    _manualActivationRecognizer = [[RNManualActivationRecognizer alloc] initWithGestureHandler:self];
+
+    if (_recognizer.view != nil) {
+      [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
+    }
+  } else if (_manualActivationRecognizer != nil) {
+    [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
+    _manualActivationRecognizer = nil;
+  }
+}
+
+- (void)bindManualActivationToView:(UIView *)view
+{
+  if (_manualActivationRecognizer != nil) {
+    [view addGestureRecognizer:_manualActivationRecognizer];
+  }
+}
+
+- (void)unbindManualActivation
+{
+  if (_manualActivationRecognizer != nil) {
+    [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
+  }
 }
 
 #pragma mark UIGestureRecognizerDelegate
