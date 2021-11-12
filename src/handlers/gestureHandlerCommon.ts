@@ -31,7 +31,10 @@ export const baseGestureHandlerProps = [
   'onHandlerStateChange',
 ] as const;
 
-export const baseGestureHandlerWithMonitorProps = commonProps;
+export const baseGestureHandlerWithMonitorProps = [
+  ...commonProps,
+  'manualActivation',
+];
 
 export interface GestureEventPayload {
   handlerTag: number;

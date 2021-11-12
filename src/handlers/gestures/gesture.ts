@@ -32,6 +32,7 @@ export interface BaseGestureConfig
   ref?: React.MutableRefObject<GestureType>;
   requireToFail?: GestureRef[];
   simultaneousWith?: GestureRef[];
+  manualActivation?: boolean;
 }
 
 export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
@@ -204,6 +205,11 @@ export abstract class ContinousBaseGesture<
   ) {
     this.handlers.onUpdate = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] = this.isWorklet(callback);
+    return this;
+  }
+
+  manualActivation(manualActivation: boolean) {
+    this.config.manualActivation = manualActivation;
     return this;
   }
 }
