@@ -301,8 +301,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private val eventListener = object : OnTouchEventListener {
-    override fun <T : GestureHandler<T>> onTouchEvent(handler: T, event: MotionEvent) {
-      this@RNGestureHandlerModule.onTouchEvent(handler, event)
+    override fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, event: MotionEvent) {
+      this@RNGestureHandlerModule.onHandlerUpdate(handler, event)
     }
 
     override fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
@@ -510,7 +510,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? =
     handlerFactories.firstOrNull { it.type == handler.javaClass } as HandlerFactory<T>?
 
-  private fun <T : GestureHandler<T>> onTouchEvent(handler: T, motionEvent: MotionEvent) {
+  private fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, motionEvent: MotionEvent) {
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return

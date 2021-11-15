@@ -249,7 +249,7 @@ class GestureHandlerOrchestrator(
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
       handler.handle(event)
       if (handler.isActive) {
-        handler.dispatchTouchEvent(event)
+        handler.dispatchHandlerUpdate(event)
       }
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that
