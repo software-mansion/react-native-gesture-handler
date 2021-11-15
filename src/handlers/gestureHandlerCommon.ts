@@ -75,17 +75,17 @@ export interface HandlerStateChangeEvent<
   nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
 }
 
-export type PointerData = {
-  pointerId: number;
+export type TouchData = {
+  id: number;
   x: number;
   y: number;
   absoluteX: number;
   absoluteY: number;
 };
 
-export type GesturePointerEvent = GestureEventPayload & {
+export type GestureTouchEvent = GestureEventPayload & {
   eventType: EventType;
-  pointerData: PointerData[];
+  touches: TouchData[];
 };
 
 export type UnwrappedGestureHandlerEvent<

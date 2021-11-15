@@ -80,7 +80,7 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
 - (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event;
-- (void)sendPointerEventInState:(RNGestureHandlerState)state
+- (void)sendTouchEventInState:(RNGestureHandlerState)state
                  forViewWithTag:(nonnull NSNumber *)reactTag;
 
 @end

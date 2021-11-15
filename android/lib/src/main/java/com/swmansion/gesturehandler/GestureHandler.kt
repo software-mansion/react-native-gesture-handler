@@ -8,7 +8,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
-import com.swmansion.gesturehandler.react.RNGestureHandlerPointerEvent
+import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -30,9 +30,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var usesDeviceEvents = false
 
-  var pointerEventPayload: WritableArray? = null
+  var touchEventPayload: WritableArray? = null
     private set
-  var pointerEventType = RNGestureHandlerPointerEvent.EVENT_UNDETERMINED
+  var touchEventType = RNGestureHandlerTouchEvent.EVENT_UNDETERMINED
     private set
   var trackedPointersCount = 0
     private set
@@ -82,9 +82,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     onTouchEventListener?.onHandlerUpdate(self(), event)
   }
 
-  open fun dispatchPointerEvent() {
-    if (pointerEventPayload != null) {
-      onTouchEventListener?.onPointerEvent(self())
+  open fun dispatchTouchEvent() {
+    if (touchEventPayload != null) {
+      onTouchEventListener?.onTouchEvent(self())
     }
   }
 
@@ -301,9 +301,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  private fun dispatchPointerDownEvent(event: MotionEvent) {
-    pointerEventPayload = null
-    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_DOWN
+  private fun dispatchTouchDownEvent(event: MotionEvent) {
+    touchEventPayload = null
+    touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_DOWN
     val pointerId = event.getPointerId(event.actionIndex)
     val offsetX = event.rawX - event.x
     val offsetY = event.rawY - event.y
@@ -318,12 +318,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointersCount++
     addPointerData(trackedPointers[pointerId]!!)
 
-    dispatchPointerEvent()
+    dispatchTouchEvent()
   }
 
-  private fun dispatchPointerUpEvent(event: MotionEvent) {
-    pointerEventPayload = null
-    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_UP
+  private fun dispatchTouchUpEvent(event: MotionEvent) {
+    touchEventPayload = null
+    touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_UP
     val pointerId = event.getPointerId(event.actionIndex)
     val offsetX = event.rawX - event.x
     val offsetY = event.rawY - event.y
@@ -339,12 +339,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointers[pointerId] = null
     trackedPointersCount--
 
-    dispatchPointerEvent()
+    dispatchTouchEvent()
   }
 
-  private fun dispatchPointerMoveEvent(event: MotionEvent) {
-    pointerEventPayload = null
-    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_MOVE
+  private fun dispatchTouchMoveEvent(event: MotionEvent) {
+    touchEventPayload = null
+    touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_MOVE
     val offsetX = event.rawX - event.x
     val offsetY = event.rawY - event.y
     var pointersAdded = 0
@@ -368,25 +368,25 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     // an empty move event (especially when this method is called during down/up event and there is
     // only info about one pointer)
     if (pointersAdded > 0) {
-      dispatchPointerEvent()
+      dispatchTouchEvent()
     }
   }
 
   fun updatePointerData(event: MotionEvent) {
     if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
-      dispatchPointerDownEvent(event)
-      dispatchPointerMoveEvent(event)
+      dispatchTouchDownEvent(event)
+      dispatchTouchMoveEvent(event)
     } else if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
-      dispatchPointerMoveEvent(event)
-      dispatchPointerUpEvent(event)
+      dispatchTouchMoveEvent(event)
+      dispatchTouchUpEvent(event)
     } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-      dispatchPointerMoveEvent(event)
+      dispatchTouchMoveEvent(event)
     }
   }
 
   private fun cancelPointers() {
-    pointerEventType = RNGestureHandlerPointerEvent.EVENT_POINTER_CANCELLED
-    pointerEventPayload = null
+    touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_CANCELLED
+    touchEventPayload = null
 
     for (pointer in trackedPointers) {
       pointer?.let {
@@ -397,16 +397,16 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointersCount = 0
     trackedPointers.fill(null)
 
-    dispatchPointerEvent()
+    dispatchTouchEvent()
   }
 
   private fun addPointerData(pointerData: PointerData) {
-    if (pointerEventPayload == null) {
-      pointerEventPayload = Arguments.createArray()
+    if (touchEventPayload == null) {
+      touchEventPayload = Arguments.createArray()
     }
 
-    pointerEventPayload?.pushMap(Arguments.createMap().apply {
-      putInt("pointerId", pointerData.pointerId)
+    touchEventPayload?.pushMap(Arguments.createMap().apply {
+      putInt("id", pointerData.pointerId)
       putDouble("x", PixelUtil.toDIPFromPixel(pointerData.x).toDouble())
       putDouble("y", PixelUtil.toDIPFromPixel(pointerData.y).toDouble())
       putDouble("absoluteX", PixelUtil.toDIPFromPixel(pointerData.absoluteX).toDouble())
@@ -414,9 +414,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     })
   }
 
-  fun consumeEventPayload(): WritableArray? {
-    val result = pointerEventPayload
-    pointerEventPayload = null
+  fun consumeTouchEventPayload(): WritableArray? {
+    val result = touchEventPayload
+    touchEventPayload = null
     return result
   }
 
@@ -577,7 +577,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
     trackedPointersCount = 0
     trackedPointers.fill(null)
-    pointerEventType = RNGestureHandlerPointerEvent.EVENT_UNDETERMINED
+    touchEventType = RNGestureHandlerTouchEvent.EVENT_UNDETERMINED
     onReset()
   }
 

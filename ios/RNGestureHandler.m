@@ -243,7 +243,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     }
 }
 
-- (void)sendPointerEventInState:(RNGestureHandlerState)state
+- (void)sendTouchEventInState:(RNGestureHandlerState)state
                  forViewWithTag:(NSNumber *)reactTag
 {
   id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
