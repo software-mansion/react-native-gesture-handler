@@ -73,7 +73,7 @@
   CGPoint relativePos = [touch locationInView:_gestureHandler.recognizer.view];
   CGPoint absolutePos = [touch locationInView:_gestureHandler.recognizer.view.window];
   
-  return @{@"pointerId": @(index),
+  return @{@"id": @(index),
               @"x": @(relativePos.x),
               @"y": @(relativePos.y),
               @"absoluteX": @(absolutePos.x),
@@ -86,7 +86,7 @@
     return;
   }
   
-  _eventType = RNPointerEventTypePointerDown;
+  _eventType = RNTouchEventTypePointerDown;
   
   NSDictionary *data[touches.count];
   
@@ -110,7 +110,7 @@
     return;
   }
   
-  _eventType = RNPointerEventTypePointerMove;
+  _eventType = RNTouchEventTypePointerMove;
   
   NSDictionary *data[touches.count];
   
@@ -130,7 +130,7 @@
     return;
   }
   
-  _eventType = RNPointerEventTypePointerUp;
+  _eventType = RNTouchEventTypePointerUp;
   
   NSDictionary *data[touches.count];
   
@@ -165,7 +165,7 @@
   
   if (_trackedPointersCount == 0) {
     // gesture has finished because all pointers were lifted, reset event type to send state change event
-    _eventType = RNPointerEventTypeUndetermined;
+    _eventType = RNTouchEventTypeUndetermined;
   } else {
     // turns out that the gesture may be made to fail without calling touchesCancelled in that case there
     // are still tracked pointers but the recognizer state is already set to UIGestureRecognizerStateFailed
@@ -192,7 +192,7 @@
       }
     }
     
-    _eventType = RNPointerEventTypeCancelled;
+    _eventType = RNTouchEventTypeCancelled;
     _pointerData = [[NSArray alloc] initWithObjects:data count:registeredTouches];
     [self sendEvent];
     _trackedPointersCount = 0;
@@ -205,7 +205,7 @@
     return;
   }
   
-  [_gestureHandler sendPointerEventInState:[_gestureHandler state] forViewWithTag:_gestureHandler.recognizer.view.reactTag];
+  [_gestureHandler sendTouchEventInState:[_gestureHandler state] forViewWithTag:_gestureHandler.recognizer.view.reactTag];
 }
 
 @end
