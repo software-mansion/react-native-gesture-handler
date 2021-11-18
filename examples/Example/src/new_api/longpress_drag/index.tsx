@@ -41,32 +41,28 @@ function Ball() {
   const start = useSharedValue({ x: 0, y: 0 });
   const gesture = Gesture.Pan()
     .manualActivation(true)
-    .onPointerChange((e) => {
+    .onTouchesDown((e, state) => {
       'worklet';
-      console.log(e);
-    })
-    .onPointerDown((e, state) => {
-      'worklet';
-      downPosition.value = { x: e.pointerData[0].x, y: e.pointerData[0].y };
+      downPosition.value = { x: e.touches[0].x, y: e.touches[0].y };
       state.begin();
     })
-    .onPointerUp((_e, state) => {
+    .onTouchesUp((_e, state) => {
       'worklet';
       state.end();
     })
-    .onPointerCancelled((_e, state) => {
+    .onTouchesCancelled((_e, state) => {
       'worklet';
       state.end();
     })
-    .onPointerMove((e, state) => {
+    .onTouchesMove((e, state) => {
       'worklet';
       if (Date.now() - startTime.value > 500) {
         state.activate();
       } else if (
-        Math.abs(e.pointerData[0].x - downPosition.value.x) > 2 ||
-        Math.abs(e.pointerData[0].y - downPosition.value.y) > 2
+        Math.abs(e.touches[0].x - downPosition.value.x) > 2 ||
+        Math.abs(e.touches[0].y - downPosition.value.y) > 2
       ) {
-        console.log(e.pointerData[0]);
+        console.log(e.touches[0]);
         console.log(downPosition.value);
         state.fail();
       }

@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import {
   GestureDetector,
   Gesture,
-  GesturePointerEvent,
+  GestureTouchEvent,
   GestureStateManager,
 } from 'react-native-gesture-handler';
 import Animated, {
@@ -15,9 +15,9 @@ export default function Example() {
   const state = useSharedValue(0);
   const active = useSharedValue(false);
 
-  const pointerEnd = (e: GesturePointerEvent, manager: GestureStateManager) => {
+  const touchEnd = (e: GestureTouchEvent, manager: GestureStateManager) => {
     'worklet';
-    if (e.pointerData.find((e) => e.pointerId === 0)) {
+    if (e.touches.find((e) => e.id === 0)) {
       if (e.state === 4) {
         manager.end();
       } else {
@@ -27,25 +27,21 @@ export default function Example() {
   };
 
   const gesture = Gesture.Custom()
-    .onPointerDown((e, manager) => {
+    .onTouchesDown((e, manager) => {
       'worklet';
-      if (e.pointerData.find((e) => e.pointerId === 0) !== undefined) {
+      if (e.touches.find((e) => e.id === 0) !== undefined) {
         state.value = 0;
         manager.begin();
       }
     })
-    .onPointerChange((e) => {
-      'worklet';
-      console.log(e);
-    })
-    .onPointerUp(pointerEnd)
-    .onPointerCancelled(pointerEnd)
-    .onPointerMove((e, manager) => {
+    .onTouchesUp(touchEnd)
+    .onTouchesCancelled(touchEnd)
+    .onTouchesMove((e, manager) => {
       'worklet';
       if (e.state === 4) {
         return;
       }
-      const pointer = e.pointerData.find((e) => e.pointerId === 0)!;
+      const pointer = e.touches.find((e) => e.id === 0)!;
       switch (state.value) {
         case 0:
           if (pointer?.x > 50 || pointer.y > 300) {

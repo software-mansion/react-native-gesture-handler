@@ -4,7 +4,7 @@ import {
   GestureDetector,
   Gesture,
   GestureStateManager,
-  GesturePointerEvent,
+  GestureTouchEvent,
 } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -50,13 +50,13 @@ export default function Example() {
     });
   }
 
-  const pointerEnd = (e: GesturePointerEvent, manager: GestureStateManager) => {
+  const touchEnd = (e: GestureTouchEvent, manager: GestureStateManager) => {
     'worklet';
-    for (const pointer of e.pointerData) {
-      trackedPointers[pointer.pointerId].value = {
+    for (const touch of e.touches) {
+      trackedPointers[touch.id].value = {
         visible: false,
-        x: pointer.x,
-        y: pointer.y,
+        x: touch.x,
+        y: touch.y,
       };
     }
 
@@ -66,13 +66,13 @@ export default function Example() {
   };
 
   const gesture = Gesture.Custom()
-    .onPointerDown((e, manager) => {
+    .onTouchesDown((e, manager) => {
       'worklet';
-      for (const pointer of e.pointerData) {
-        trackedPointers[pointer.pointerId].value = {
+      for (const touch of e.touches) {
+        trackedPointers[touch.id].value = {
           visible: true,
-          x: pointer.x,
-          y: pointer.y,
+          x: touch.x,
+          y: touch.y,
         };
       }
 
@@ -80,18 +80,18 @@ export default function Example() {
         manager.activate();
       }
     })
-    .onPointerMove((e, _manager) => {
+    .onTouchesMove((e, _manager) => {
       'worklet';
-      for (const pointer of e.pointerData) {
-        trackedPointers[pointer.pointerId].value = {
+      for (const touch of e.touches) {
+        trackedPointers[touch.id].value = {
           visible: true,
-          x: pointer.x,
-          y: pointer.y,
+          x: touch.x,
+          y: touch.y,
         };
       }
     })
-    .onPointerUp(pointerEnd)
-    .onPointerCancelled(pointerEnd)
+    .onTouchesUp(touchEnd)
+    .onTouchesCancelled(touchEnd)
     .onStart(() => {
       'worklet';
       active.value = true;
