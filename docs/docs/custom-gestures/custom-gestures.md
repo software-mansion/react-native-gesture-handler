@@ -40,7 +40,7 @@ RNGH2 finally brings one of the most requested features: custom gestures and tou
 <Divider />
 
 <Step title="Step 4">
-    We have our components set up and we can finally get to making the gesture! We will start with onTouchesDown where we need to set position of the pointers and make them visible. We can get this information from the touchesData property of the event. In this case we will also check how many pointers are on the screen and activate the gesture if there are at least two.
+    We have our components set up and we can finally get to making the gesture! We will start with onTouchesDown where we need to set position of the pointers and make them visible. We can get this information from the touches property of the event. In this case we will also check how many pointers are on the screen and activate the gesture if there are at least two.
     <Step4 />
 </Step>
 

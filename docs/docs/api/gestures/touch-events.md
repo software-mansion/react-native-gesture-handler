@@ -10,19 +10,19 @@ sidebar_label: Touch events
 
 Type of the current event - whether the finger was placed on the screen, moved, lifted or cancelled.
 
-### `touchesData`
+### `touches`
 
 An array of objects where every object represents a single touch. Keep in mind that only the data about touches that have changed state is passed. For example, if there are 3 fingers placed on the screen and one of them moves, only information about the one that moved will be send.
 
 Remember that events may be batched so you might receive information about more that one touch in the same event.
 
 :::caution
-Don't rely on the order of items in the `touchesData` as it may change during the gesture, instead use the `touchId` attribute to track individual touches across events.
+Don't rely on the order of items in the `touches` as it may change during the gesture, instead use the `id` attribute to track individual touches across events.
 :::
 
 ### PointerData attributes:
 
-### `touchId`
+### `id`
 
 A number representing id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
 
