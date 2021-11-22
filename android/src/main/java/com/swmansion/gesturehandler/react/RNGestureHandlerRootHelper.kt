@@ -5,11 +5,11 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.view.ViewParent
-import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.views.modal.RNGHModalUtils
+import com.facebook.react.uimanager.RootView
+import com.facebook.react.views.modal.ReactModalHostView
 import com.swmansion.gesturehandler.GestureHandler
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator
 
@@ -71,10 +71,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
         action = MotionEvent.ACTION_CANCEL
       }
-      if (rootView is ReactRootView) {
+      if (rootView is RootView) {
         rootView.onChildStartedNativeGesture(event)
-      } else {
-        RNGHModalUtils.dialogRootViewGroupOnChildStartedNativeGesture(rootView, event)
       }
     }
   }
@@ -122,7 +120,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     private fun findRootViewTag(viewGroup: ViewGroup): ViewGroup {
       UiThreadUtil.assertOnUiThread()
       var parent: ViewParent? = viewGroup
-      while (parent != null && parent !is ReactRootView && !RNGHModalUtils.isDialogRootViewGroup(parent)) {
+      while (parent != null && parent !is RootView) {
         parent = parent.parent
       }
       checkNotNull(parent) {

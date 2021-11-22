@@ -99,7 +99,7 @@ function hasUnresolvedRefs<T extends Record<string, unknown>>(
 
 const stateToPropMappings = {
   [State.UNDETERMINED]: undefined,
-  [State.BEGAN]: 'onBegin',
+  [State.BEGAN]: 'onBegan',
   [State.FAILED]: 'onFailed',
   [State.CANCELLED]: 'onCancelled',
   [State.ACTIVE]: 'onActivated',

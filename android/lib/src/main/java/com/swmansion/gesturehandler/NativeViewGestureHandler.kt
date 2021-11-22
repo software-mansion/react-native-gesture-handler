@@ -4,6 +4,7 @@ import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var shouldActivateOnStart = false
@@ -59,6 +60,22 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     return !disallowInterruption
   }
 
+  private fun canStart(): Boolean {
+    val view = view
+    if (view is StateChangeHook) {
+      return view.canStart()
+    }
+
+    return true
+  }
+
+  private fun afterGestureEnd() {
+    val view = view
+    if (view is StateChangeHook) {
+      view.afterGestureEnd()
+    }
+  }
+
   override fun onHandle(event: MotionEvent) {
     val view = view!!
     if (event.actionMasked == MotionEvent.ACTION_UP) {
@@ -67,6 +84,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         activate()
       }
       end()
+      afterGestureEnd()
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       when {
         shouldActivateOnStart -> {
@@ -79,7 +97,11 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
           activate()
         }
         state != STATE_BEGAN -> {
-          begin()
+          if (canStart()) {
+            begin()
+          } else {
+            cancel()
+          }
         }
       }
     } else if (state == STATE_ACTIVE) {
@@ -98,5 +120,10 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   companion object {
     private fun tryIntercept(view: View, event: MotionEvent) =
       view is ViewGroup && view.onInterceptTouchEvent(event)
+  }
+
+  interface StateChangeHook {
+    fun canStart(): Boolean
+    fun afterGestureEnd()
   }
 }

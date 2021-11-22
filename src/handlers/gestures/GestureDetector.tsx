@@ -335,14 +335,16 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
 
 interface GestureDetectorProps {
   gesture?: ComposedGesture | GestureType;
-  animatedGesture?: ComposedGesture | GestureType;
 }
 export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   props
 ) => {
-  const useAnimated = props.animatedGesture != null;
-  const gestureConfig = props.animatedGesture ?? props.gesture;
+  const gestureConfig = props.gesture;
   const gesture = gestureConfig?.toGestureArray?.() ?? [];
+  const useAnimated =
+    gesture.find((gesture) =>
+      gesture.handlers.isWorklet.reduce((prev, current) => prev || current)
+    ) != null;
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
 
@@ -408,7 +410,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     }
   }, [props]);
 
-  if (props.animatedGesture) {
+  if (useAnimated) {
     return (
       <AnimatedWrap
         ref={viewRef}

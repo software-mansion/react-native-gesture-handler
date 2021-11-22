@@ -134,6 +134,7 @@ export type {
 } from './handlers/gestureHandlerTypesCompat';
 
 export { default as Swipeable } from './components/Swipeable';
+export type { SwipeableProps } from './components/Swipeable';
 export {
   DrawerLayout as BetterDrawerLayout,
   DrawerLayoutController,
