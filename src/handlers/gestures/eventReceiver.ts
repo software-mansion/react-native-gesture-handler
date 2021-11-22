@@ -29,7 +29,7 @@ function onGestureHandlerEvent(
         event.oldState === State.UNDETERMINED &&
         event.state === State.BEGAN
       ) {
-        handler.handlers.onBegan?.(event);
+        handler.handlers.onBegin?.(event);
       } else if (
         (event.oldState === State.BEGAN ||
           event.oldState === State.UNDETERMINED) &&

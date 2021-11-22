@@ -24,7 +24,7 @@ function Ball() {
   });
 
   const gesture = Gesture.Pan()
-    .onBegan(() => {
+    .onBegin(() => {
       'worklet';
       isPressed.value = true;
     })

@@ -8,9 +8,9 @@ All gesture objects extend the `BaseGesture` class, therefore they share some of
 
 ## Callbacks
 
-### `onBegan(callback)`
+### `onBegin(callback)`
 
-Set the [`onBegan`](./events.md#onbegan) callback.
+Set the [`onBegin`](./events.md#onbegin) callback.
 
 ### `onStart(callback)`
 
