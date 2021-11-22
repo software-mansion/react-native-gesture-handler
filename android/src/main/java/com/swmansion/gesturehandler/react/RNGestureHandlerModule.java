@@ -574,8 +574,7 @@ public class RNGestureHandlerModule extends ReactContextBaseJavaModule {
     UIManagerModule uiManager = getReactApplicationContext().getNativeModule(UIManagerModule.class);
     final int rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag);
     if (rootViewTag < 1) {
-      throw new JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag "
-              + ancestorViewTag);
+        return;
     }
     synchronized (mRoots) {
       for (int i = 0; i < mRoots.size(); i++) {
