@@ -34,10 +34,12 @@ try {
   Reanimated = require('react-native-reanimated');
 
   if (!Reanimated.setGestureState) {
-    Reanimated.setGestureState = () =>
+    Reanimated.setGestureState = () => {
+      'worklet';
       console.warn(
         'Please use newer version of react-native-reanimated in order to control state of the gestures.'
       );
+    };
   }
   // When 'react-native-reanimated' is not available we want to
   // quietly continue
