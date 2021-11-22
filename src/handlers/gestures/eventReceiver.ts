@@ -87,8 +87,6 @@ function onGestureHandlerEvent(
         handler.handlers.onEnd?.(event, false);
       }
     } else if (isTouchEvent(event)) {
-      handler.handlers?.onTouchesChange?.(event, dummyStateManager);
-
       switch (event.eventType) {
         case EventType.TOUCHES_DOWN:
           handler.handlers?.onTouchesDown?.(event, dummyStateManager);

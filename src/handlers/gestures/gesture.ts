@@ -60,7 +60,6 @@ export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
   onTouchesMove?: TouchEventHandlerType;
   onTouchesUp?: TouchEventHandlerType;
   onTouchesCancelled?: TouchEventHandlerType;
-  onTouchesChange?: TouchEventHandlerType;
   isWorklet: boolean[];
 };
 
@@ -74,7 +73,6 @@ export const CALLBACK_TYPE = {
   TOUCHES_MOVE: 6,
   TOUCHES_UP: 7,
   TOUCHES_CANCELLED: 8,
-  TOUCHES_CHANGE: 9,
 } as const;
 
 // Allow using CALLBACK_TYPE as object and type
@@ -205,16 +203,6 @@ export abstract class BaseGesture<
     this.config.needsPointerData = true;
     this.handlers.onTouchesCancelled = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_CANCELLED] = this.isWorklet(
-      callback
-    );
-
-    return this;
-  }
-
-  onTouchesChange(callback: TouchEventHandlerType) {
-    this.config.needsPointerData = true;
-    this.handlers.onTouchesChange = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_CHANGE] = this.isWorklet(
       callback
     );
 
