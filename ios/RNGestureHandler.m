@@ -247,7 +247,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                  forViewWithTag:(NSNumber *)reactTag
 {
   id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
-                                              withPointerData:_pointerTracker.pointerData
+                                          withChangedPointers:_pointerTracker.changedPointersData
+                                              withAllPointers:_pointerTracker.allPointersData
                                           withNumberOfTouches:_pointerTracker.trackedPointersCount];
   id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag handlerTag:_tag state:state extraData:extraData coalescingKey:[_tag intValue]];
   

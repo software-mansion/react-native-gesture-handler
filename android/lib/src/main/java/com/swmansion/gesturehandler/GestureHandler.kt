@@ -30,7 +30,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var usesDeviceEvents = false
 
-  var touchEventPayload: WritableArray? = null
+  var changedTouchesPayload: WritableArray? = null
+    private set
+  var allTouchesPayload: WritableArray? = null
     private set
   var touchEventType = RNGestureHandlerTouchEvent.EVENT_UNDETERMINED
     private set
@@ -83,7 +85,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   open fun dispatchTouchEvent() {
-    if (touchEventPayload != null) {
+    if (changedTouchesPayload != null) {
       onTouchEventListener?.onTouchEvent(self())
     }
   }
@@ -302,7 +304,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   private fun dispatchTouchDownEvent(event: MotionEvent) {
-    touchEventPayload = null
+    changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_DOWN
     val pointerId = event.getPointerId(event.actionIndex)
     val offsetX = event.rawX - event.x
@@ -316,13 +318,15 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         event.getY(event.actionIndex) + offsetY,
     )
     trackedPointersCount++
-    addPointerData(trackedPointers[pointerId]!!)
+    addChangedPointer(trackedPointers[pointerId]!!)
+    extractAllPointersData()
 
     dispatchTouchEvent()
   }
 
   private fun dispatchTouchUpEvent(event: MotionEvent) {
-    touchEventPayload = null
+    extractAllPointersData()
+    changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_UP
     val pointerId = event.getPointerId(event.actionIndex)
     val offsetX = event.rawX - event.x
@@ -335,7 +339,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         event.getX(event.actionIndex) + offsetX,
         event.getY(event.actionIndex) + offsetY,
     )
-    addPointerData(trackedPointers[pointerId]!!)
+    addChangedPointer(trackedPointers[pointerId]!!)
     trackedPointers[pointerId] = null
     trackedPointersCount--
 
@@ -343,7 +347,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   private fun dispatchTouchMoveEvent(event: MotionEvent) {
-    touchEventPayload = null
+    changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_MOVE
     val offsetX = event.rawX - event.x
     val offsetY = event.rawY - event.y
@@ -359,7 +363,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         pointer.absoluteX = event.getX(i) + offsetX
         pointer.absoluteY = event.getY(i) + offsetY
 
-        addPointerData(pointer)
+        addChangedPointer(pointer)
         pointersAdded++
       }
     }
@@ -368,6 +372,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     // an empty move event (especially when this method is called during down/up event and there is
     // only info about one pointer)
     if (pointersAdded > 0) {
+      extractAllPointersData()
       dispatchTouchEvent()
     }
   }
@@ -384,13 +389,24 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
+  private fun extractAllPointersData() {
+    allTouchesPayload = null
+
+    for (pointerData in trackedPointers) {
+      if (pointerData != null) {
+        addPointerToAll(pointerData)
+      }
+    }
+  }
+
   private fun cancelPointers() {
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_CANCELLED
-    touchEventPayload = null
+    changedTouchesPayload = null
+    extractAllPointersData()
 
     for (pointer in trackedPointers) {
       pointer?.let {
-        addPointerData(it)
+        addChangedPointer(it)
       }
     }
 
@@ -400,23 +416,39 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     dispatchTouchEvent()
   }
 
-  private fun addPointerData(pointerData: PointerData) {
-    if (touchEventPayload == null) {
-      touchEventPayload = Arguments.createArray()
+  private fun addChangedPointer(pointerData: PointerData) {
+    if (changedTouchesPayload == null) {
+      changedTouchesPayload = Arguments.createArray()
     }
 
-    touchEventPayload?.pushMap(Arguments.createMap().apply {
-      putInt("id", pointerData.pointerId)
-      putDouble("x", PixelUtil.toDIPFromPixel(pointerData.x).toDouble())
-      putDouble("y", PixelUtil.toDIPFromPixel(pointerData.y).toDouble())
-      putDouble("absoluteX", PixelUtil.toDIPFromPixel(pointerData.absoluteX).toDouble())
-      putDouble("absoluteY", PixelUtil.toDIPFromPixel(pointerData.absoluteY).toDouble())
-    })
+    changedTouchesPayload?.pushMap(createPointerData(pointerData))
   }
 
-  fun consumeTouchEventPayload(): WritableArray? {
-    val result = touchEventPayload
-    touchEventPayload = null
+  private fun addPointerToAll(pointerData: PointerData) {
+    if (allTouchesPayload == null) {
+      allTouchesPayload = Arguments.createArray()
+    }
+
+    allTouchesPayload?.pushMap(createPointerData(pointerData))
+  }
+
+  private fun createPointerData(pointerData: PointerData) = Arguments.createMap().apply {
+    putInt("id", pointerData.pointerId)
+    putDouble("x", PixelUtil.toDIPFromPixel(pointerData.x).toDouble())
+    putDouble("y", PixelUtil.toDIPFromPixel(pointerData.y).toDouble())
+    putDouble("absoluteX", PixelUtil.toDIPFromPixel(pointerData.absoluteX).toDouble())
+    putDouble("absoluteY", PixelUtil.toDIPFromPixel(pointerData.absoluteY).toDouble())
+  }
+
+  fun consumeChangedTouchesPayload(): WritableArray? {
+    val result = changedTouchesPayload
+    changedTouchesPayload = null
+    return result
+  }
+
+  fun consumeAllTouchesPayload(): WritableArray? {
+    val result = allTouchesPayload
+    allTouchesPayload = null
     return result
   }
 

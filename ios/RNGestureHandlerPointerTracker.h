@@ -9,7 +9,8 @@
 @interface RNGestureHandlerPointerTracker : NSObject
 
 @property (nonatomic) RNTouchEventType eventType;
-@property (nonatomic) NSArray<NSDictionary *> *pointerData;
+@property (nonatomic) NSArray<NSDictionary *> *changedPointersData;
+@property (nonatomic) NSArray<NSDictionary *> *allPointersData;
 @property (nonatomic) int trackedPointersCount;
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;

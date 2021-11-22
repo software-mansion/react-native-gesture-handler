@@ -13,7 +13,8 @@
 {
   _gestureHandler = gestureHandler;
   _trackedPointersCount = 0;
-  _pointerData = nil;
+  _changedPointersData = nil;
+  _allPointersData = nil;
   
   for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
     _trackedPointers[i] = nil;
@@ -80,6 +81,22 @@
               @"absoluteY": @(absolutePos.y)};
 }
 
+- (void)extractAllTouches {
+  int registeredTouches = [self registeredTouchesCount];
+
+  NSDictionary *data[registeredTouches];
+  int nextIndex = 0;
+  
+  for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
+    UITouch *touch = _trackedPointers[i];
+    if (touch != nil) {
+      data[nextIndex++] = [self extractPointerData:i forTouch:touch];
+    }
+  }
+  
+  _allPointersData = [[NSArray alloc] initWithObjects:data count:registeredTouches];
+}
+
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (!_gestureHandler.needsPointerData) {
@@ -100,7 +117,9 @@
     data[i] = [self extractPointerData:index forTouch:touch];
   }
   
-  _pointerData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  // extract all touches lasr to include the ones that were just added
+  [self extractAllTouches];
   [self sendEvent];
 }
 
@@ -120,7 +139,8 @@
     data[i] = [self extractPointerData:index forTouch:touch];
   }
   
-  _pointerData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  [self extractAllTouches];
   [self sendEvent];
 }
 
@@ -129,6 +149,9 @@
   if (!_gestureHandler.needsPointerData) {
     return;
   }
+  
+  // extract all touches first to include the ones that were just lifted
+  [self extractAllTouches];
   
   _eventType = RNTouchEventTypePointerUp;
   
@@ -144,7 +167,7 @@
     data[i] = [self extractPointerData:index forTouch:touch];
   }
   
-  _pointerData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
   [self sendEvent];
 }
 
@@ -178,6 +201,9 @@
 
 - (void)cancelPointers
 {
+  // extract all touches first to include the ones that were just cancelled
+  [self extractAllTouches];
+  
   int registeredTouches = [self registeredTouchesCount];
   
   if (registeredTouches > 0) {
@@ -193,7 +219,7 @@
     }
     
     _eventType = RNTouchEventTypeCancelled;
-    _pointerData = [[NSArray alloc] initWithObjects:data count:registeredTouches];
+    _changedPointersData = [[NSArray alloc] initWithObjects:data count:registeredTouches];
     [self sendEvent];
     _trackedPointersCount = 0;
   }
