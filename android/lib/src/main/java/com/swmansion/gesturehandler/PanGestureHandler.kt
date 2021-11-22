@@ -112,11 +112,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   }
 
   fun setMinDist(minDist: Float) = apply {
-    minDistSq = if (minDist == MAX_VALUE_IGNORE) {
-      defaultMinDistSq
-    } else {
-      minDist * minDist
-    }
+    minDistSq = minDist * minDist
   }
 
   fun setMinPointers(minPointers: Int) = apply {

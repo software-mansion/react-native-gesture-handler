@@ -146,65 +146,51 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     override fun configure(handler: PanGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
       var hasCustomActivationCriteria = false
-      var minDistFromActivationCriteria = 0f
-      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_START)) {
-        handler.setFailOffsetXStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_X_START)))
-        hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MIN_VALUE
-      }
-      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_END)) {
-        handler.setFailOffsetXEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_X_END)))
-        hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MIN_VALUE
-      }
-      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)) {
-        handler.setFailOffsetYStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)))
-        hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MIN_VALUE
-      }
-      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)) {
-        handler.setFailOffsetYEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)))
-        hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MIN_VALUE
-      }
-
       if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_X_START)) {
         handler.setActiveOffsetXStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_X_START)))
         hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MAX_VALUE
       }
       if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_X_END)) {
         handler.setActiveOffsetXEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_X_END)))
         hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MAX_VALUE
+      }
+      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_START)) {
+        handler.setFailOffsetXStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_X_START)))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_END)) {
+        handler.setFailOffsetXEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_X_END)))
+        hasCustomActivationCriteria = true
       }
       if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_Y_START)) {
         handler.setActiveOffsetYStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_Y_START)))
         hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MAX_VALUE
       }
       if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_Y_END)) {
         handler.setActiveOffsetYEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_Y_END)))
         hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MAX_VALUE
       }
-
+      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)) {
+        handler.setFailOffsetYStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)) {
+        handler.setFailOffsetYEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)))
+        hasCustomActivationCriteria = true
+      }
       if (config.hasKey(KEY_PAN_MIN_VELOCITY)) {
         // This value is actually in DPs/ms, but we can use the same function as for converting
         // from DPs to pixels as the unit we're converting is in the numerator
         handler.setMinVelocity(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY)))
         hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MAX_VALUE
       }
       if (config.hasKey(KEY_PAN_MIN_VELOCITY_X)) {
         handler.setMinVelocityX(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY_X)))
         hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MAX_VALUE
       }
       if (config.hasKey(KEY_PAN_MIN_VELOCITY_Y)) {
         handler.setMinVelocityY(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY_Y)))
         hasCustomActivationCriteria = true
-        minDistFromActivationCriteria = Float.MAX_VALUE
       }
 
       // PanGestureHandler sets minDist by default, if there are custom criteria specified we want
@@ -212,7 +198,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       if (config.hasKey(KEY_PAN_MIN_DIST)) {
         handler.setMinDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DIST)))
       } else if (hasCustomActivationCriteria) {
-        handler.setMinDist(minDistFromActivationCriteria)
+        handler.setMinDist(Float.MAX_VALUE)
       }
       if (config.hasKey(KEY_PAN_MIN_POINTERS)) {
         handler.setMinPointers(config.getInt(KEY_PAN_MIN_POINTERS))
