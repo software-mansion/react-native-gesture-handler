@@ -40,16 +40,19 @@
 {
     RNGestureHandlerRegistry *_registry;
     RCTUIManager *_uiManager;
+    id _reanimatedModule;
     NSHashTable<RNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
     RCTEventDispatcher *_eventDispatcher;
 }
 
 - (instancetype)initWithUIManager:(RCTUIManager *)uiManager
                   eventDispatcher:(RCTEventDispatcher *)eventDispatcher
+                 reanimatedModule:(id)reanimatedModule
 {
     if ((self = [super init])) {
         _uiManager = uiManager;
         _eventDispatcher = eventDispatcher;
+        _reanimatedModule = reanimatedModule;
         _registry = [RNGestureHandlerRegistry new];
         _rootViewGestureRecognizers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
     }
@@ -190,12 +193,12 @@
 
 - (void)sendTouchEvent:(RNGestureHandlerEvent *)event
 {
-    [_eventDispatcher sendEvent:event];
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event];
 }
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
 {
-    [_eventDispatcher sendEvent:event];
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event];
 }
 
 - (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event

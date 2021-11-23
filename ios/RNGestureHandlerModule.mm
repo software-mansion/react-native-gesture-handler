@@ -88,9 +88,12 @@ RCT_EXPORT_MODULE()
 {
     [super setBridge:bridge];
 
+    id reanimatedModule = [bridge moduleForName:@"ReanimatedModule"];
+
     _manager = [[RNGestureHandlerManager alloc]
                 initWithUIManager:bridge.uiManager
-                eventDispatcher:bridge.eventDispatcher];
+                eventDispatcher:bridge.eventDispatcher
+                reanimatedModule:reanimatedModule];
     _operations = [NSMutableArray new];
     [bridge.uiManager.observerCoordinator addObserver:self];
 }
@@ -108,7 +111,7 @@ RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWith
         if (useDeviceEvents) {
             [manager attachGestureHandlerForDeviceEvents:handlerTag toViewWithTag:viewTag];
         } else {
-            [manager attachGestureHandler:handlerTag toViewWithTag:viewTag];
+            [manager attachGestureHandler:handlerTag toViewWithTag:viewTag]; // RNReanimated
         }
     }];
 }
