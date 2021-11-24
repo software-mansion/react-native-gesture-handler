@@ -5,14 +5,14 @@ import React from 'react';
 
 export default function FabricCallbacksExample() {
   const gesture = Gesture.Pan()
-    .onBegan(() => {
-      console.log(_WORKLET, 'onBegan');
+    .onBegan((e) => {
+      console.log(_WORKLET, 'onBegan', e.target);
     })
-    .onUpdate(() => {
-      console.log(_WORKLET, 'onUpdate');
+    .onUpdate((e) => {
+      console.log(_WORKLET, 'onUpdate', e.target);
     })
-    .onEnd(() => {
-      console.log(_WORKLET, 'onEnd');
+    .onEnd((e) => {
+      console.log(_WORKLET, 'onEnd', e.target);
     });
 
   return (

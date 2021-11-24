@@ -5,17 +5,17 @@ import React from 'react';
 
 export default function FabricWorkletsExample() {
   const gesture = Gesture.Pan()
-    .onBegan(() => {
+    .onBegan((e) => {
       'worklet';
-      console.log(_WORKLET, 'onBegan');
+      console.log(_WORKLET, 'onBegan', e.target);
     })
-    .onUpdate(() => {
+    .onUpdate((e) => {
       'worklet';
-      console.log(_WORKLET, 'onUpdate');
+      console.log(_WORKLET, 'onUpdate', e.target);
     })
-    .onEnd(() => {
+    .onEnd((e) => {
       'worklet';
-      console.log(_WORKLET, 'onEnd');
+      console.log(_WORKLET, 'onEnd', e.target);
     });
 
   return (
