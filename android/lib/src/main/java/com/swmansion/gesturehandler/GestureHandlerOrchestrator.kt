@@ -327,13 +327,19 @@ class GestureHandlerOrchestrator(
     handler.prepare(view, this)
   }
 
-  private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int): Boolean {
+  private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int, isIntersectingChildren: Boolean): Boolean {
     var found = false
     handlerRegistry.getHandlersForView(view)?.let {
       val size = it.size
       for (i in 0 until size) {
         val handler = it[i]
-        if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
+        // When pointerEvents is set to AUTO we want to trigger handler even when it is outside of the main
+        // view bounds given the touch is intersecting some of the view's children. The reason is that the
+        // children may overflow in which case we should be able to interact with the handler. In case
+        // the view has hitSlop property that crops out possible view areas this will be detected in GestureHandler#handle
+        // method anyways. This makes is possible to limit this behavior if we want the handler to only interact
+        // with touches that are within the main view's bounds.
+        if (handler.isEnabled && (isIntersectingChildren || handler.isWithinBounds(view, coords[0], coords[1]))) {
           recordHandlerIfNotPresent(handler, view)
           handler.startTrackingPointer(pointerId)
           found = true
@@ -387,7 +393,7 @@ class GestureHandlerOrchestrator(
       }
       PointerEventsConfig.BOX_ONLY -> {
         // This view is the target, its children don't matter
-        (recordViewHandlersForPointer(view, coords, pointerId)
+        (recordViewHandlersForPointer(view, coords, pointerId, false)
           || shouldHandlerlessViewBecomeTouchTarget(view, coords))
       }
       PointerEventsConfig.BOX_NONE -> {
@@ -402,7 +408,7 @@ class GestureHandlerOrchestrator(
           extractGestureHandlers(view, coords, pointerId)
         } else false
 
-        (recordViewHandlersForPointer(view, coords, pointerId)
+        (recordViewHandlersForPointer(view, coords, pointerId, found)
           || found || shouldHandlerlessViewBecomeTouchTarget(view, coords))
       }
     }

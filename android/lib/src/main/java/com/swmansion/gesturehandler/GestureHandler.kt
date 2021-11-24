@@ -283,6 +283,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     y = event.y
     numberOfPointers = event.pointerCount
     isWithinBounds = isWithinBounds(view, x, y)
+    if (state == STATE_UNDETERMINED && hitSlop != null && !isWithinBounds) {
+      // if handler has hitSlop set we need to respect this setting and only allow touches that
+      // that are within the view's bounds. Otherwise it is possible for handler to respond to touches
+      // outside of its bounds if it has children that overflows
+      cancel()
+    }
     if (shouldCancelWhenOutside && !isWithinBounds) {
       if (state == STATE_ACTIVE) {
         cancel()
