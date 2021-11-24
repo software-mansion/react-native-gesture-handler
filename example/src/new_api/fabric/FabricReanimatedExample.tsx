@@ -30,12 +30,12 @@ function Figure({ borderRadius, color }: FigureProps) {
 
   const gesture = Gesture.Pan()
     .onBegan(() => {
-      'worklet';
+      // 'worklet';
       console.log(_WORKLET, 'onBegan');
       isPressed.value = true;
     })
     .onUpdate((e) => {
-      'worklet';
+      // 'worklet';
       console.log(_WORKLET, 'onUpdate');
       offset.value = {
         x: e.translationX + start.value.x,
@@ -43,7 +43,7 @@ function Figure({ borderRadius, color }: FigureProps) {
       };
     })
     .onEnd(() => {
-      'worklet';
+      // 'worklet';
       console.log(_WORKLET, 'onEnd');
       start.value = {
         x: offset.value.x,

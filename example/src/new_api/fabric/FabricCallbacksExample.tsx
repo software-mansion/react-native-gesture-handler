@@ -6,12 +6,15 @@ import React from 'react';
 export default function FabricCallbacksExample() {
   const gesture = Gesture.Pan()
     .onBegan((e) => {
+      // 'worklet';
       console.log(_WORKLET, 'onBegan', e.target);
     })
     .onUpdate((e) => {
+      // 'worklet';
       console.log(_WORKLET, 'onUpdate', e.target);
     })
     .onEnd((e) => {
+      // 'worklet';
       console.log(_WORKLET, 'onEnd', e.target);
     });
 
