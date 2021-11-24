@@ -97,6 +97,7 @@
                toViewWithTag:(nonnull NSNumber *)viewTag
 {
     UIView *view = [_uiManager viewForReactTag:viewTag];
+    view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent")
 
     [_registry attachHandlerWithTag:handlerTag toView:view];
 
@@ -108,6 +109,7 @@
                               toViewWithTag:(nonnull NSNumber *)viewTag
 {
     UIView *view = [_uiManager viewForReactTag:viewTag];
+    view.reactTag = @9999; // not necessary but cannot be nil
 
     [_registry attachHandlerWithTagForDeviceEvents:handlerTag toView:view];
 

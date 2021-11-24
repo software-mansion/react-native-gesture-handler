@@ -65,8 +65,8 @@ export default function FabricReanimatedExample() {
   return (
     <View style={styles.container}>
       <Figure borderRadius={0} color="red" />
-      {/* <Figure borderRadius={25} color="lime" /> */}
-      {/* <Figure borderRadius={50} color="blue" /> */}
+      <Figure borderRadius={25} color="lime" />
+      <Figure borderRadius={50} color="blue" />
     </View>
   );
 }
