@@ -1,8 +1,8 @@
 import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
 import { State } from '../../State';
 import {
-  UnwrappedGestureHandlerEvent,
-  UnwrappedGestureHandlerStateChangeEvent,
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
 import { findHandler } from '../handlersRegistry';
 import { BaseGesture } from './gesture';
@@ -11,13 +11,13 @@ let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
 
 function isStateChangeEvent(
-  event: UnwrappedGestureHandlerEvent | UnwrappedGestureHandlerStateChangeEvent
-): event is UnwrappedGestureHandlerStateChangeEvent {
+  event: GestureUpdateEvent | GestureStateChangeEvent
+): event is GestureStateChangeEvent {
   return event.oldState != null;
 }
 
 function onGestureHandlerEvent(
-  event: UnwrappedGestureHandlerEvent | UnwrappedGestureHandlerStateChangeEvent
+  event: GestureUpdateEvent | GestureStateChangeEvent
 ) {
   const handler = findHandler(event.handlerTag) as BaseGesture<
     Record<string, unknown>

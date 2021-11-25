@@ -1,7 +1,7 @@
 import { ComponentClass } from 'react';
 import {
-  UnwrappedGestureHandlerEvent,
-  UnwrappedGestureHandlerStateChangeEvent,
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
 
 export interface SharedValue<T> {
@@ -18,11 +18,7 @@ let Reanimated: {
     ): ComponentClass<P>;
   };
   useEvent: (
-    callback: (
-      event:
-        | UnwrappedGestureHandlerEvent
-        | UnwrappedGestureHandlerStateChangeEvent
-    ) => void,
+    callback: (event: GestureUpdateEvent | GestureStateChangeEvent) => void,
     events: string[],
     rebuild: boolean
   ) => unknown;
