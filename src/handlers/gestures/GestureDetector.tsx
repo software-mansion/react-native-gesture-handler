@@ -270,8 +270,6 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
         return gesture.onTouchesUp;
       case CALLBACK_TYPE.TOUCHES_CANCELLED:
         return gesture.onTouchesCancelled;
-      case CALLBACK_TYPE.TOUCHES_CHANGE:
-        return gesture.onTouchesChange;
     }
   }
 
@@ -366,13 +364,6 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
           }
 
           if (event.eventType !== EventType.UNDETERMINED) {
-            runWorklet(
-              CALLBACK_TYPE.TOUCHES_CHANGE,
-              gesture,
-              event,
-              stateControllers[i]
-            );
-
             runWorklet(
               touchEventTypeToCallbackType(event.eventType),
               gesture,
