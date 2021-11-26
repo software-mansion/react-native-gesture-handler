@@ -11,7 +11,11 @@ import deepEqual from 'fbjs/lib/areEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
-import { handlerIDToTag, getNextHandlerTag } from './handlersRegistry';
+import {
+  handlerIDToTag,
+  getNextHandlerTag,
+  registerHandler,
+} from './handlersRegistry';
 
 import {
   BaseGestureHandlerProps,
@@ -224,7 +228,9 @@ export default function createHandler<
 
     private onGestureHandlerEvent = (event: GestureEvent<U>) => {
       if (event.nativeEvent.handlerTag === this.handlerTag) {
-        this.props.onGestureEvent?.(event);
+        if (typeof this.props.onGestureEvent === 'function') {
+          this.props.onGestureEvent?.(event);
+        }
       } else {
         this.props.onGestureHandlerEvent?.(event);
       }
@@ -235,7 +241,9 @@ export default function createHandler<
       event: HandlerStateChangeEvent<U>
     ) => {
       if (event.nativeEvent.handlerTag === this.handlerTag) {
-        this.props.onHandlerStateChange?.(event);
+        if (typeof this.props.onHandlerStateChange === 'function') {
+          this.props.onHandlerStateChange?.(event);
+        }
 
         const state: ValueOf<typeof State> = event.nativeEvent.state;
         const stateEventName = stateToPropMappings[state];
@@ -287,6 +295,12 @@ export default function createHandler<
           this.propsRef
         );
       } else {
+        registerHandler(this.handlerTag, {
+          onGestureEvent: this.onGestureHandlerEvent,
+          onGestureStateChange: this.onGestureHandlerStateChange,
+          old: true,
+        });
+
         RNGestureHandlerModule.attachGestureHandler(
           this.handlerTag,
           newViewTag,

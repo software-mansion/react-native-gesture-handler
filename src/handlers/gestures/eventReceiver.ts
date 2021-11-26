@@ -24,6 +24,16 @@ function onGestureHandlerEvent(
   >;
 
   if (handler) {
+    if (handler.old) {
+      const event2 = { nativeEvent: event };
+      if (isStateChangeEvent(event)) {
+        handler.onGestureStateChange(event2);
+      } else {
+        handler.onGestureEvent(event2);
+      }
+      return;
+    }
+
     if (isStateChangeEvent(event)) {
       if (
         event.oldState === State.UNDETERMINED &&

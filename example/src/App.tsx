@@ -8,7 +8,7 @@ import Rows from './release_tests/rows'; // doesn't work (Unimplemented componen
 import NestedTouchables from './release_tests/nestedTouchables'; // doesn't work (Unimplemented component: RNGestureHandlerButton)
 import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal'; // doesn't work (Unimplemented component: RNGestureHandlerButton)
 import { PinchableBox } from './recipes/scaleAndRotate'; // doesn't work (Animated)
-import PanAndScroll from './recipes/panAndScroll'; // doesn't work (Animated)
+import PanAndScroll from './recipes/panAndScroll'; // OK
 import { BottomSheet } from './showcase/bottomSheet'; // doesn't work (Animated)
 import Swipeables from './showcase/swipeable'; // doesn't work (Unimplemented component: RNGestureHandlerButton)
 import ChatHeads from './showcase/chatHeads'; // doesn't work (Animated)
@@ -35,6 +35,7 @@ import DragNDrop from './new_api/drag_n_drop'; // doesn't work (weird positions)
 // new examples for new api
 import FabricReanimatedExample from './new_api/fabric/FabricReanimatedExample'; // OK
 import FabricCallbacksExample from './new_api/fabric/FabricCallbacksExample'; // OK
+import FabricPanGestureHandlerExample from './new_api/fabric/FabricPanGestureHandlerExample';
 
 // current example
-export default FabricReanimatedExample;
+export default BouncingBox;

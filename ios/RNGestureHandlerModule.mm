@@ -111,7 +111,7 @@ RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWith
         if (useDeviceEvents) {
             [manager attachGestureHandlerForDeviceEvents:handlerTag toViewWithTag:viewTag];
         } else {
-            [manager attachGestureHandler:handlerTag toViewWithTag:viewTag]; // RNReanimated
+            [manager attachGestureHandler:handlerTag toViewWithTag:viewTag]; // Animated, RNReanimated
         }
     }];
 }

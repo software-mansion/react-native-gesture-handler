@@ -7,6 +7,7 @@
 #import <React/RCTTouchHandler.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTEventDispatcher.h>
+// #import <React/RCTBridge+Private.h>
 
 #if __has_include(<React/RCTRootContentView.h>)
 #import <React/RCTRootContentView.h>
@@ -96,7 +97,7 @@
 - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
                toViewWithTag:(nonnull NSNumber *)viewTag
 {
-    UIView *view = [_uiManager viewForReactTag:viewTag];
+    UIView *view = [_uiManager viewForReactTag:viewTag]; // TODO: pass ShadowNode from JS and get UIView* from it
     view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), will be returned as e.target
 
     [_registry attachHandlerWithTag:handlerTag toView:view];
@@ -195,12 +196,28 @@
 
 - (void)sendTouchEvent:(RNGestureHandlerEvent *)event
 {
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event];
+    // TODO: detect if Animated or Reanimated
+    
+    [_eventDispatcher sendEvent:event]; // Animated
+    // [[RCTBridge currentBridge].eventDispatcher sendEvent:event]; // Animated
+    
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated
+    
+//    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
+//    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerEvent" body:body];
 }
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
 {
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event];
+    // TODO: detect if Animated or Reanimated
+    
+    [_eventDispatcher sendEvent:event]; // Animated
+    // [[RCTBridge currentBridge].eventDispatcher sendEvent:event]; // Animated
+    
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated
+    
+    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
+    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }
 
 - (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event
