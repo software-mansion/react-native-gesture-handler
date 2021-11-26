@@ -3,7 +3,7 @@ const gesture = Gesture.Custom()
     ...
     .onTouchesUp((e, manager) => {
       'worklet';
-      for (const touch of e.touches) {
+      for (const touch of e.changedTouches) {
         trackedPointers[touch.id].value = {
           visible: false,
           x: touch.x,
@@ -11,7 +11,7 @@ const gesture = Gesture.Custom()
         };
       }
 
-      if (e.numberOfPointers === 0) {
+      if (e.numberOfTouches === 0) {
         manager.end();
       }
     })
