@@ -3,10 +3,12 @@ import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandle
 import {
   HitSlop,
   CommonGestureConfig,
+  GestureTouchEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
+import { GestureStateManagerType } from './gestureStateManager';
 import { LongPressGestureHandlerEventPayload } from '../LongPressGestureHandler';
 import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
 import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
@@ -16,6 +18,7 @@ import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
+  | BaseGesture<Record<string, never>>
   | BaseGesture<TapGestureHandlerEventPayload>
   | BaseGesture<PanGestureHandlerEventPayload>
   | BaseGesture<LongPressGestureHandlerEventPayload>
@@ -36,7 +39,14 @@ export interface BaseGestureConfig
   ref?: React.MutableRefObject<GestureType | undefined>;
   requireToFail?: GestureRef[];
   simultaneousWith?: GestureRef[];
+  needsPointerData?: boolean;
+  manualActivation?: boolean;
 }
+
+type TouchEventHandlerType = (
+  event: GestureTouchEvent,
+  stateManager: GestureStateManagerType
+) => void;
 
 export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
   handlerTag: number;
@@ -47,14 +57,23 @@ export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
     success: boolean
   ) => void;
   onUpdate?: (event: GestureUpdateEvent<EventPayloadT>) => void;
+  onTouchesDown?: TouchEventHandlerType;
+  onTouchesMove?: TouchEventHandlerType;
+  onTouchesUp?: TouchEventHandlerType;
+  onTouchesCancelled?: TouchEventHandlerType;
   isWorklet: boolean[];
 };
 
 export const CALLBACK_TYPE = {
+  UNDEFINED: 0,
   BEGAN: 1,
   START: 2,
   UPDATE: 3,
   END: 4,
+  TOUCHES_DOWN: 5,
+  TOUCHES_MOVE: 6,
+  TOUCHES_UP: 7,
+  TOUCHES_CANCELLED: 8,
 } as const;
 
 // Allow using CALLBACK_TYPE as object and type
@@ -109,6 +128,7 @@ export abstract class BaseGesture<
 
   protected isWorklet(
     callback:
+      | TouchEventHandlerType
       | ((event: GestureUpdateEvent<EventPayloadT>) => void)
       | ((event: GestureStateChangeEvent<EventPayloadT>) => void)
   ) {
@@ -137,6 +157,46 @@ export abstract class BaseGesture<
     this.handlers.onEnd = callback;
     //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     this.handlers.isWorklet[CALLBACK_TYPE.END] = this.isWorklet(callback);
+    return this;
+  }
+
+  onTouchesDown(callback: TouchEventHandlerType) {
+    this.config.needsPointerData = true;
+    this.handlers.onTouchesDown = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_DOWN] = this.isWorklet(
+      callback
+    );
+
+    return this;
+  }
+
+  onTouchesMove(callback: TouchEventHandlerType) {
+    this.config.needsPointerData = true;
+    this.handlers.onTouchesMove = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_MOVE] = this.isWorklet(
+      callback
+    );
+
+    return this;
+  }
+
+  onTouchesUp(callback: TouchEventHandlerType) {
+    this.config.needsPointerData = true;
+    this.handlers.onTouchesUp = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_UP] = this.isWorklet(
+      callback
+    );
+
+    return this;
+  }
+
+  onTouchesCancelled(callback: TouchEventHandlerType) {
+    this.config.needsPointerData = true;
+    this.handlers.onTouchesCancelled = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_CANCELLED] = this.isWorklet(
+      callback
+    );
+
     return this;
   }
 
@@ -192,6 +252,11 @@ export abstract class ContinousBaseGesture<
   onUpdate(callback: (event: GestureUpdateEvent<EventPayloadT>) => void) {
     this.handlers.onUpdate = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] = this.isWorklet(callback);
+    return this;
+  }
+
+  manualActivation(manualActivation: boolean) {
+    this.config.manualActivation = manualActivation;
     return this;
   }
 }

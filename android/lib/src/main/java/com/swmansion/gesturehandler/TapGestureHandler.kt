@@ -85,7 +85,6 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     }
     if (++tapsSoFar == numberOfTaps && currentMaxNumberOfPointers >= minNumberOfPointers) {
       activate()
-      end()
     } else {
       handler!!.postDelayed(failDelayed, maxDelayMs)
     }
@@ -141,6 +140,11 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
         startTap()
       }
     }
+  }
+
+  override fun activate(force: Boolean) {
+    super.activate(force)
+    end()
   }
 
   override fun onCancel() {

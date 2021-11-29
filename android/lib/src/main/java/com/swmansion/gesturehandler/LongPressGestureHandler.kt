@@ -85,9 +85,9 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     super.dispatchStateChange(newState, prevState)
   }
 
-  override fun dispatchTouchEvent(event: MotionEvent) {
+  override fun dispatchHandlerUpdate(event: MotionEvent) {
     previousTime = SystemClock.uptimeMillis()
-    super.dispatchTouchEvent(event)
+    super.dispatchHandlerUpdate(event)
   }
 
   companion object {

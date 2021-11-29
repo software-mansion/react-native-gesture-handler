@@ -1,44 +1,34 @@
-//
-//  RNRotationHandler.m
-//  RNGestureHandler
-//
-//  Created by Krzysztof Magiera on 12/10/2017.
-//  Copyright © 2017 Software Mansion. All rights reserved.
-//
+#import "RNManualHandler.h"
 
-#import "RNRotationHandler.h"
-
-@interface RNBetterRotationRecognizer : UIRotationGestureRecognizer
+@interface RNManualRecognizer : UIGestureRecognizer
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
 @end
 
-@implementation RNBetterRotationRecognizer {
+@implementation RNManualRecognizer {
   __weak RNGestureHandler *_gestureHandler;
+  BOOL _shouldSendBeginEvent;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
+    _shouldSendBeginEvent = YES;
   }
   return self;
 }
-
-- (void)handleGesture:(UIGestureRecognizer *)recognizer
-{
-  if (self.state == UIGestureRecognizerStateBegan) {
-    self.rotation = 0;
-  }
-  [_gestureHandler handleGesture:recognizer];
-}
-
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+  
+  if (_shouldSendBeginEvent) {
+    [_gestureHandler handleGesture:self];
+    _shouldSendBeginEvent = NO;
+  }
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -63,32 +53,21 @@
 {
   [_gestureHandler.pointerTracker reset];
   [super reset];
+  
+  _shouldSendBeginEvent = YES;
 }
 
 @end
 
-@implementation RNRotationGestureHandler
+@implementation RNManualGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super initWithTag:tag])) {
-        #if !TARGET_OS_TV
-        _recognizer = [[RNBetterRotationRecognizer alloc] initWithGestureHandler:self];
-        #endif
+        _recognizer = [[RNManualRecognizer alloc] initWithGestureHandler:self];
+
     }
     return self;
 }
 
-#if !TARGET_OS_TV
-- (RNGestureHandlerEventExtraData *)eventExtraData:(UIRotationGestureRecognizer *)recognizer
-{
-    return [RNGestureHandlerEventExtraData
-            forRotation:recognizer.rotation
-            withAnchorPoint:[recognizer locationInView:recognizer.view]
-            withVelocity:recognizer.velocity
-            withNumberOfTouches:recognizer.numberOfTouches];
-}
-#endif
-
 @end
-

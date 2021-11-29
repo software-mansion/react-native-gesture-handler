@@ -11,6 +11,9 @@ export type {
   // event payloads types
   GestureEventPayload,
   HandlerStateChangeEventPayload,
+  // pointer events
+  GestureTouchEvent,
+  TouchData,
   // new api event types
   GestureUpdateEvent,
   GestureStateChangeEvent,
@@ -66,12 +69,14 @@ export { PinchGestureType as PinchGesture } from './handlers/gestures/pinchGestu
 export { RotationGestureType as RotationGesture } from './handlers/gestures/rotationGesture';
 export { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
 export { NativeGestureType as NativeGesture } from './handlers/gestures/nativeGesture';
+export { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
 export {
   ComposedGestureType as ComposedGesture,
   RaceGestureType as RaceGesture,
   SimultaneousGestureType as SimultaneousGesture,
   ExclusiveGestureType as ExclusiveGesture,
 } from './handlers/gestures/gestureComposition';
+export { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
   RawButtonProps,

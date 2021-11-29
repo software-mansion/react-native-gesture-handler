@@ -72,6 +72,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+  
   if (_tapsSoFar == 0) {
     // this recognizer sends UNDETERMINED -> BEGAN state change event before gestureRecognizerShouldBegin
     // is called (it resets the gesture handler), making it send whatever the last known state as oldState
@@ -97,6 +99,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+  
   NSInteger numberOfTouches = [touches count];
   if (numberOfTouches > _maxNumberOfTouches) {
     _maxNumberOfTouches = numberOfTouches;
@@ -146,6 +150,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+  
   if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
     self.state = UIGestureRecognizerStateEnded;
     [self reset];
@@ -157,12 +163,16 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+  
   self.state = UIGestureRecognizerStateCancelled;
   [self reset];
 }
 
 - (void)reset
 {
+  [_gestureHandler.pointerTracker reset];
+  
   if (self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
