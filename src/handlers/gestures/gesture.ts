@@ -5,7 +5,7 @@ import {
   CommonGestureConfig,
   UnwrappedGestureHandlerStateChangeEvent,
   UnwrappedGestureHandlerEvent,
-  GesturePointerEvent,
+  GestureTouchEvent,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
 import { GestureStateManagerType } from './gestureStateManager';
@@ -39,8 +39,8 @@ export interface BaseGestureConfig
   manualActivation?: boolean;
 }
 
-type PointerEventHandlerType = (
-  event: GesturePointerEvent,
+type TouchEventHandlerType = (
+  event: GestureTouchEvent,
   stateManager: GestureStateManagerType
 ) => void;
 
@@ -57,11 +57,10 @@ export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
     success: boolean
   ) => void;
   onUpdate?: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void;
-  onPointerDown?: PointerEventHandlerType;
-  onPointerMove?: PointerEventHandlerType;
-  onPointerUp?: PointerEventHandlerType;
-  onPointerCancelled?: PointerEventHandlerType;
-  onPointerChange?: PointerEventHandlerType;
+  onTouchesDown?: TouchEventHandlerType;
+  onTouchesMove?: TouchEventHandlerType;
+  onTouchesUp?: TouchEventHandlerType;
+  onTouchesCancelled?: TouchEventHandlerType;
   isWorklet: boolean[];
 };
 
@@ -71,11 +70,10 @@ export const CALLBACK_TYPE = {
   START: 2,
   UPDATE: 3,
   END: 4,
-  POINTER_DOWN: 5,
-  POINTER_MOVE: 6,
-  POINTER_UP: 7,
-  POINTER_CANCELLED: 8,
-  POINTER_CHANGE: 9,
+  TOUCHES_DOWN: 5,
+  TOUCHES_MOVE: 6,
+  TOUCHES_UP: 7,
+  TOUCHES_CANCELLED: 8,
 } as const;
 
 // Allow using CALLBACK_TYPE as object and type
@@ -130,7 +128,7 @@ export abstract class BaseGesture<
 
   protected isWorklet(
     callback:
-      | PointerEventHandlerType
+      | TouchEventHandlerType
       | ((event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void)
       | ((
           event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
@@ -172,50 +170,40 @@ export abstract class BaseGesture<
     return this;
   }
 
-  onPointerDown(callback: PointerEventHandlerType) {
+  onTouchesDown(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
-    this.handlers.onPointerDown = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.POINTER_DOWN] = this.isWorklet(
+    this.handlers.onTouchesDown = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_DOWN] = this.isWorklet(
       callback
     );
 
     return this;
   }
 
-  onPointerMove(callback: PointerEventHandlerType) {
+  onTouchesMove(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
-    this.handlers.onPointerMove = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.POINTER_MOVE] = this.isWorklet(
+    this.handlers.onTouchesMove = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_MOVE] = this.isWorklet(
       callback
     );
 
     return this;
   }
 
-  onPointerUp(callback: PointerEventHandlerType) {
+  onTouchesUp(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
-    this.handlers.onPointerUp = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.POINTER_UP] = this.isWorklet(
+    this.handlers.onTouchesUp = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_UP] = this.isWorklet(
       callback
     );
 
     return this;
   }
 
-  onPointerCancelled(callback: PointerEventHandlerType) {
+  onTouchesCancelled(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
-    this.handlers.onPointerCancelled = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.POINTER_CANCELLED] = this.isWorklet(
-      callback
-    );
-
-    return this;
-  }
-
-  onPointerChange(callback: PointerEventHandlerType) {
-    this.config.needsPointerData = true;
-    this.handlers.onPointerChange = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.POINTER_CHANGE] = this.isWorklet(
+    this.handlers.onTouchesCancelled = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_CANCELLED] = this.isWorklet(
       callback
     );
 

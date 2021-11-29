@@ -4,7 +4,7 @@ import { EventType } from '../../EventType';
 import {
   UnwrappedGestureHandlerEvent,
   UnwrappedGestureHandlerStateChangeEvent,
-  GesturePointerEvent,
+  GestureTouchEvent,
 } from '../gestureHandlerCommon';
 import { GestureStateManagerType } from './gestureStateManager';
 import { findHandler } from '../handlersRegistry';
@@ -40,18 +40,18 @@ function isStateChangeEvent(
   event:
     | UnwrappedGestureHandlerEvent
     | UnwrappedGestureHandlerStateChangeEvent
-    | GesturePointerEvent
+    | GestureTouchEvent
 ): event is UnwrappedGestureHandlerStateChangeEvent {
-  // @ts-ignore oldState doesn't exist on UnwrappedGestureHandlerPointerEvent and that's the point
+  // @ts-ignore oldState doesn't exist on GestureTouchEvent and that's the point
   return event.oldState != null;
 }
 
-function isPointerEvent(
+function isTouchEvent(
   event:
     | UnwrappedGestureHandlerEvent
     | UnwrappedGestureHandlerStateChangeEvent
-    | GesturePointerEvent
-): event is GesturePointerEvent {
+    | GestureTouchEvent
+): event is GestureTouchEvent {
   return event.eventType != null;
 }
 
@@ -59,7 +59,7 @@ function onGestureHandlerEvent(
   event:
     | UnwrappedGestureHandlerEvent
     | UnwrappedGestureHandlerStateChangeEvent
-    | GesturePointerEvent
+    | GestureTouchEvent
 ) {
   const handler = findHandler(event.handlerTag) as BaseGesture<
     Record<string, unknown>
@@ -86,21 +86,19 @@ function onGestureHandlerEvent(
       ) {
         handler.handlers.onEnd?.(event, false);
       }
-    } else if (isPointerEvent(event)) {
-      handler.handlers?.onPointerChange?.(event, dummyStateManager);
-
+    } else if (isTouchEvent(event)) {
       switch (event.eventType) {
-        case EventType.POINTER_DOWN:
-          handler.handlers?.onPointerDown?.(event, dummyStateManager);
+        case EventType.TOUCHES_DOWN:
+          handler.handlers?.onTouchesDown?.(event, dummyStateManager);
           break;
-        case EventType.POINTER_MOVE:
-          handler.handlers?.onPointerMove?.(event, dummyStateManager);
+        case EventType.TOUCHES_MOVE:
+          handler.handlers?.onTouchesMove?.(event, dummyStateManager);
           break;
-        case EventType.POINTER_UP:
-          handler.handlers?.onPointerUp?.(event, dummyStateManager);
+        case EventType.TOUCHES_UP:
+          handler.handlers?.onTouchesUp?.(event, dummyStateManager);
           break;
-        case EventType.POINTER_CANCELLED:
-          handler.handlers?.onPointerCancelled?.(event, dummyStateManager);
+        case EventType.TOUCHES_CANCELLED:
+          handler.handlers?.onTouchesCancelled?.(event, dummyStateManager);
           break;
       }
     } else {

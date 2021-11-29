@@ -15,7 +15,7 @@ import {
   findNodeHandle,
   UnwrappedGestureHandlerEvent,
   UnwrappedGestureHandlerStateChangeEvent,
-  GesturePointerEvent,
+  GestureTouchEvent,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -231,20 +231,19 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     event:
       | UnwrappedGestureHandlerEvent
       | UnwrappedGestureHandlerStateChangeEvent
-      | GesturePointerEvent
+      | GestureTouchEvent
   ): event is UnwrappedGestureHandlerStateChangeEvent {
     'worklet';
-    // @ts-ignore Yes, the oldState prop is missing on UnwrappedGestureHandlerPointerEvent,
-    // that's the point
+    // @ts-ignore Yes, the oldState prop is missing on GestureTouchEvent, that's the point
     return event.oldState != null;
   }
 
-  function isPointerEvent(
+  function isTouchEvent(
     event:
       | UnwrappedGestureHandlerEvent
       | UnwrappedGestureHandlerStateChangeEvent
-      | GesturePointerEvent
-  ): event is GesturePointerEvent {
+      | GestureTouchEvent
+  ): event is GestureTouchEvent {
     'worklet';
     return event.eventType != null;
   }
@@ -263,30 +262,28 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
         return gesture.onUpdate;
       case CALLBACK_TYPE.END:
         return gesture.onEnd;
-      case CALLBACK_TYPE.POINTER_DOWN:
-        return gesture.onPointerDown;
-      case CALLBACK_TYPE.POINTER_MOVE:
-        return gesture.onPointerMove;
-      case CALLBACK_TYPE.POINTER_UP:
-        return gesture.onPointerUp;
-      case CALLBACK_TYPE.POINTER_CANCELLED:
-        return gesture.onPointerCancelled;
-      case CALLBACK_TYPE.POINTER_CHANGE:
-        return gesture.onPointerChange;
+      case CALLBACK_TYPE.TOUCHES_DOWN:
+        return gesture.onTouchesDown;
+      case CALLBACK_TYPE.TOUCHES_MOVE:
+        return gesture.onTouchesMove;
+      case CALLBACK_TYPE.TOUCHES_UP:
+        return gesture.onTouchesUp;
+      case CALLBACK_TYPE.TOUCHES_CANCELLED:
+        return gesture.onTouchesCancelled;
     }
   }
 
-  function pointerEventTypeToCallbackType(eventType: EventType): CALLBACK_TYPE {
+  function touchEventTypeToCallbackType(eventType: EventType): CALLBACK_TYPE {
     'worklet';
     switch (eventType) {
-      case EventType.POINTER_DOWN:
-        return CALLBACK_TYPE.POINTER_DOWN;
-      case EventType.POINTER_MOVE:
-        return CALLBACK_TYPE.POINTER_MOVE;
-      case EventType.POINTER_UP:
-        return CALLBACK_TYPE.POINTER_UP;
-      case EventType.POINTER_CANCELLED:
-        return CALLBACK_TYPE.POINTER_CANCELLED;
+      case EventType.TOUCHES_DOWN:
+        return CALLBACK_TYPE.TOUCHES_DOWN;
+      case EventType.TOUCHES_MOVE:
+        return CALLBACK_TYPE.TOUCHES_MOVE;
+      case EventType.TOUCHES_UP:
+        return CALLBACK_TYPE.TOUCHES_UP;
+      case EventType.TOUCHES_CANCELLED:
+        return CALLBACK_TYPE.TOUCHES_CANCELLED;
     }
     return CALLBACK_TYPE.UNDEFINED;
   }
@@ -297,7 +294,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     event:
       | UnwrappedGestureHandlerStateChangeEvent
       | UnwrappedGestureHandlerEvent
-      | GesturePointerEvent,
+      | GestureTouchEvent,
     ...args: any[]
   ) {
     'worklet';
@@ -325,7 +322,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     event:
       | UnwrappedGestureHandlerStateChangeEvent
       | UnwrappedGestureHandlerEvent
-      | GesturePointerEvent
+      | GestureTouchEvent
   ) => {
     'worklet';
 
@@ -361,21 +358,14 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
           ) {
             runWorklet(CALLBACK_TYPE.END, gesture, event, false);
           }
-        } else if (isPointerEvent(event)) {
+        } else if (isTouchEvent(event)) {
           if (!stateControllers[i]) {
             stateControllers[i] = GestureStateManager.create(event.handlerTag);
           }
 
           if (event.eventType !== EventType.UNDETERMINED) {
             runWorklet(
-              CALLBACK_TYPE.POINTER_CHANGE,
-              gesture,
-              event,
-              stateControllers[i]
-            );
-
-            runWorklet(
-              pointerEventTypeToCallbackType(event.eventType),
+              touchEventTypeToCallbackType(event.eventType),
               gesture,
               event,
               stateControllers[i]

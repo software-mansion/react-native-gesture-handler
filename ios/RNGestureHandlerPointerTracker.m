@@ -13,7 +13,8 @@
 {
   _gestureHandler = gestureHandler;
   _trackedPointersCount = 0;
-  _pointerData = nil;
+  _changedPointersData = nil;
+  _allPointersData = nil;
   
   for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
     _trackedPointers[i] = nil;
@@ -73,11 +74,27 @@
   CGPoint relativePos = [touch locationInView:_gestureHandler.recognizer.view];
   CGPoint absolutePos = [touch locationInView:_gestureHandler.recognizer.view.window];
   
-  return @{@"pointerId": @(index),
+  return @{@"id": @(index),
               @"x": @(relativePos.x),
               @"y": @(relativePos.y),
               @"absoluteX": @(absolutePos.x),
               @"absoluteY": @(absolutePos.y)};
+}
+
+- (void)extractAllTouches {
+  int registeredTouches = [self registeredTouchesCount];
+
+  NSDictionary *data[registeredTouches];
+  int nextIndex = 0;
+  
+  for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
+    UITouch *touch = _trackedPointers[i];
+    if (touch != nil) {
+      data[nextIndex++] = [self extractPointerData:i forTouch:touch];
+    }
+  }
+  
+  _allPointersData = [[NSArray alloc] initWithObjects:data count:registeredTouches];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -86,7 +103,7 @@
     return;
   }
   
-  _eventType = RNPointerEventTypePointerDown;
+  _eventType = RNTouchEventTypePointerDown;
   
   NSDictionary *data[touches.count];
   
@@ -100,7 +117,9 @@
     data[i] = [self extractPointerData:index forTouch:touch];
   }
   
-  _pointerData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  // extract all touches last to include the ones that were just added
+  [self extractAllTouches];
   [self sendEvent];
 }
 
@@ -110,7 +129,7 @@
     return;
   }
   
-  _eventType = RNPointerEventTypePointerMove;
+  _eventType = RNTouchEventTypePointerMove;
   
   NSDictionary *data[touches.count];
   
@@ -120,7 +139,8 @@
     data[i] = [self extractPointerData:index forTouch:touch];
   }
   
-  _pointerData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  [self extractAllTouches];
   [self sendEvent];
 }
 
@@ -130,7 +150,10 @@
     return;
   }
   
-  _eventType = RNPointerEventTypePointerUp;
+  // extract all touches first to include the ones that were just lifted
+  [self extractAllTouches];
+  
+  _eventType = RNTouchEventTypePointerUp;
   
   NSDictionary *data[touches.count];
   
@@ -144,7 +167,7 @@
     data[i] = [self extractPointerData:index forTouch:touch];
   }
   
-  _pointerData = [[NSArray alloc] initWithObjects:data count:[touches count]];
+  _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
   [self sendEvent];
 }
 
@@ -165,7 +188,7 @@
   
   if (_trackedPointersCount == 0) {
     // gesture has finished because all pointers were lifted, reset event type to send state change event
-    _eventType = RNPointerEventTypeUndetermined;
+    _eventType = RNTouchEventTypeUndetermined;
   } else {
     // turns out that the gesture may be made to fail without calling touchesCancelled in that case there
     // are still tracked pointers but the recognizer state is already set to UIGestureRecognizerStateFailed
@@ -178,6 +201,9 @@
 
 - (void)cancelPointers
 {
+  // extract all touches first to include the ones that were just cancelled
+  [self extractAllTouches];
+  
   int registeredTouches = [self registeredTouchesCount];
   
   if (registeredTouches > 0) {
@@ -192,8 +218,8 @@
       }
     }
     
-    _eventType = RNPointerEventTypeCancelled;
-    _pointerData = [[NSArray alloc] initWithObjects:data count:registeredTouches];
+    _eventType = RNTouchEventTypeCancelled;
+    _changedPointersData = [[NSArray alloc] initWithObjects:data count:registeredTouches];
     [self sendEvent];
     _trackedPointersCount = 0;
   }
@@ -205,7 +231,7 @@
     return;
   }
   
-  [_gestureHandler sendPointerEventInState:[_gestureHandler state] forViewWithTag:_gestureHandler.recognizer.view.reactTag];
+  [_gestureHandler sendTouchEventInState:[_gestureHandler state] forViewWithTag:_gestureHandler.recognizer.view.reactTag];
 }
 
 @end

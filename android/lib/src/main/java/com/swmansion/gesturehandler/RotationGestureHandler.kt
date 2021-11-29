@@ -29,7 +29,7 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
         velocity = (rotation - prevRotation) / delta
       }
       if (abs(rotation) >= ROTATION_RECOGNITION_THRESHOLD && state == STATE_BEGAN) {
-        activateIfNotManual()
+        activate()
       }
       return true
     }
@@ -58,10 +58,13 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     }
   }
 
-  override fun activate() {
-    rotation = 0.0
-    velocity = 0.0
-    super.activate()
+  override fun activate(force: Boolean) {
+    // reset rotation if the handler has not yet activated
+    if (state != STATE_ACTIVE) {
+      rotation = 0.0
+      velocity = 0.0
+    }
+    super.activate(force)
   }
 
   override fun onReset() {

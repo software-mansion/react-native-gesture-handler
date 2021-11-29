@@ -142,8 +142,8 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     }
   }
 
-  override fun activate() {
-    super.activate()
+  override fun activate(force: Boolean) {
+    super.activate(force)
     end()
   }
 
