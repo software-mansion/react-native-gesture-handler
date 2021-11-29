@@ -300,6 +300,15 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     }
   }
 
+  private class ManualGestureHandlerFactory : HandlerFactory<ManualGestureHandler>() {
+    override val type = ManualGestureHandler::class.java
+    override val name = "ManualGestureHandler"
+
+    override fun create(context: Context?): ManualGestureHandler {
+      return ManualGestureHandler()
+    }
+  }
+
   private val eventListener = object : OnTouchEventListener {
     override fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, event: MotionEvent) {
       this@RNGestureHandlerModule.onHandlerUpdate(handler, event)
@@ -320,7 +329,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     PanGestureHandlerFactory(),
     PinchGestureHandlerFactory(),
     RotationGestureHandlerFactory(),
-    FlingGestureHandlerFactory()
+    FlingGestureHandlerFactory(),
+    ManualGestureHandlerFactory(),
   )
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val interactionManager = RNGestureHandlerInteractionManager()
