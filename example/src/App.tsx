@@ -26,7 +26,6 @@ import { DraggableBox } from './basic/draggable';
 import MultiTap from './basic/multitap';
 import BouncingBox from './basic/bouncing';
 import PanResponder from './basic/panResponder';
-import BetterHorizontalDrawer from './basic/betterHorizontalDrawer';
 import HorizontalDrawer from './basic/horizontalDrawer';
 import PagerAndDrawer from './basic/pagerAndDrawer';
 import ForceTouch from './basic/forcetouch';
@@ -40,6 +39,7 @@ import Calculator from './new_api/calculator';
 import BottomSheetNewApi from './new_api/bottom_sheet';
 import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
+import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
 
 interface Example {
   name: string;
@@ -59,10 +59,6 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Bouncing box', component: BouncingBox },
       { name: 'Pan responder', component: PanResponder },
       { name: 'Horizontal drawer', component: HorizontalDrawer },
-      {
-        name: 'Horizontal drawer (Reanimated 2 & RNGH 2)',
-        component: BetterHorizontalDrawer,
-      },
       { name: 'Pager & drawer', component: PagerAndDrawer },
       { name: 'Force touch', component: ForceTouch },
     ],
@@ -119,6 +115,10 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Bottom Sheet', component: BottomSheetNewApi },
       { name: 'Chat Heads', component: ChatHeadsNewApi },
       { name: 'Drag and drop', component: DragNDrop },
+      {
+        name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
+        component: BetterHorizontalDrawer,
+      },
     ],
   },
 ];
