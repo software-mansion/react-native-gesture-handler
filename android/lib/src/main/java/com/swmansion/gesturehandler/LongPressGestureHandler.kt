@@ -91,7 +91,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   }
 
   companion object {
-    private const val DEFAULT_MIN_DURATION_MS: Long = 500 // 1 sec
-    private const val DEFAULT_MAX_DIST_DP = 10f // 20dp
+    private const val DEFAULT_MIN_DURATION_MS: Long = 500
+    private const val DEFAULT_MAX_DIST_DP = 10f
   }
 }

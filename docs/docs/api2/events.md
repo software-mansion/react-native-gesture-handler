@@ -8,7 +8,7 @@ There are two types of events in RNGH2: `StateChangeEvent` and `GestureEvent`. T
 
 ## Callbacks
 
-### `onBegan(event)`
+### `onBegin(event)`
 
 Is called when a gesture transitions to the [`BEGAN`](../state.md#began) state.
 
