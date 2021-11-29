@@ -118,7 +118,7 @@
   }
   
   _changedPointersData = [[NSArray alloc] initWithObjects:data count:[touches count]];
-  // extract all touches lasr to include the ones that were just added
+  // extract all touches last to include the ones that were just added
   [self extractAllTouches];
   [self sendEvent];
 }
