@@ -83,9 +83,13 @@ export type TouchData = {
   absoluteY: number;
 };
 
-export type GestureTouchEvent = GestureEventPayload & {
+export type GestureTouchEvent = {
+  handlerTag: number;
+  numberOfTouches: number;
+  state: ValueOf<typeof State>;
   eventType: EventType;
-  touches: TouchData[];
+  allTouches: TouchData[];
+  changedTouches: TouchData[];
 };
 
 export type UnwrappedGestureHandlerEvent<

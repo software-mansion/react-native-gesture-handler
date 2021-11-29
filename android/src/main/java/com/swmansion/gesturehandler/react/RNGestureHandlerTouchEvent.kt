@@ -50,15 +50,19 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     fun <T: GestureHandler<T>> createEventData(handler: T,): WritableMap = Arguments.createMap().apply {
       putInt("handlerTag", handler.tag)
       putInt("state", handler.state)
-      putInt("numberOfPointers", handler.trackedPointersCount)
+      putInt("numberOfTouches", handler.trackedPointersCount)
       putInt("eventType", handler.touchEventType)
 
-      handler.touchEventPayload?.let {
-        putArray("touches", it)
+      handler.consumeChangedTouchesPayload()?.let {
+        putArray("changedTouches", it)
+      }
 
-        if (handler.isAwaiting && handler.state == GestureHandler.STATE_ACTIVE) {
-          putInt("state", GestureHandler.STATE_BEGAN)
-        }
+      handler.consumeAllTouchesPayload()?.let {
+        putArray("allTouches", it)
+      }
+
+      if (handler.isAwaiting && handler.state == GestureHandler.STATE_ACTIVE) {
+        putInt("state", GestureHandler.STATE_BEGAN)
       }
     }
   }
