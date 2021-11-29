@@ -53,6 +53,8 @@ function convertToHandlerTag(ref: GestureRef): number {
   } else if (ref instanceof BaseGesture) {
     return ref.handlerTag;
   } else {
+    // @ts-ignore in this case it should be a ref either to gesture object or
+    // a gesture handler component, in both cases handlerTag property exists
     return ref.current?.handlerTag ?? -1;
   }
 }
