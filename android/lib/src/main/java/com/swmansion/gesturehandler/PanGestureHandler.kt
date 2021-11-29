@@ -62,7 +62,6 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
 
   override fun resetConfig() {
     super.resetConfig()
-    minDistSq = MAX_VALUE_IGNORE
     activeOffsetXStart = MIN_VALUE_IGNORE
     activeOffsetXEnd = MAX_VALUE_IGNORE
     failOffsetXStart = MAX_VALUE_IGNORE
