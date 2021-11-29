@@ -39,6 +39,7 @@ import Calculator from './new_api/calculator';
 import BottomSheetNewApi from './new_api/bottom_sheet';
 import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
+import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
 
 interface Example {
   name: string;
@@ -114,6 +115,10 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Bottom Sheet', component: BottomSheetNewApi },
       { name: 'Chat Heads', component: ChatHeadsNewApi },
       { name: 'Drag and drop', component: DragNDrop },
+      {
+        name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
+        component: BetterHorizontalDrawer,
+      },
     ],
   },
 ];
