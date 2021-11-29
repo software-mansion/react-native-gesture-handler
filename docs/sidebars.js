@@ -4,7 +4,7 @@ module.exports = {
       'introduction',
       'quickstart/quickstart',
       'gesture-composition',
-      'custom-gestures/custom-gestures',
+      'manual-gestures/manual-gestures',
       'whats-new',
       'example',
     ],

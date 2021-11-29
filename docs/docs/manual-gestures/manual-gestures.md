@@ -1,7 +1,7 @@
 ---
-id: custom-gestures
-title: Custom gestures
-sidebar_label: Custom gestures
+id: manual-gestures
+title: Manual gestures
+sidebar_label: Manual gestures
 ---
 
 import Step, { Divider } from '@site/src/theme/Step';
@@ -13,7 +13,7 @@ import Step5 from './step5.md';
 import Step6 from './step6.md';
 import Step7 from './step7.md';
 
-RNGH2 finally brings one of the most requested features: custom gestures and touch events. To demonstrate how to make a custom gesture we will make a simple one that tracks all pointers on the screen.
+RNGH2 finally brings one of the most requested features: manual gestures and touch events. To demonstrate how to make a manual gesture we will make a simple one that tracks all pointers on the screen.
 
 <Divider />
 
@@ -68,10 +68,10 @@ RNGH2 finally brings one of the most requested features: custom gestures and tou
 
 <Divider />
 
-And that's all! As you can see using custom gestures is really easy but as you can imagine, custom gestures are a powerful tool that makes it possible to accomplish things that were previously impossible with RNGH.
+And that's all! As you can see using manual gestures is really easy but as you can imagine, manual gestures are a powerful tool that makes it possible to accomplish things that were previously impossible with RNGH.
 
 ## Modifying existing gestures
 
-While custom gestures open great possibilities we are aware that reimplementing pinch or rotation from scratch just because you need to activate in specific circumstances or require position of the fingers, would be a waste of time as those gestures are already there. Because of that you can use touch events with every gesture so that you can extract more informations about gesture than is sent to you in events. We also added a `manualActivation` modifier on all continous gestures, which prevents the gesture it is applied to from activating by itself thus giving you full control of its behavior.
+While manual gestures open great possibilities we are aware that reimplementing pinch or rotation from scratch just because you need to activate in specific circumstances or require position of the fingers, would be a waste of time as those gestures are already there. Because of that you can use touch events with every gesture so that you can extract more informations about gesture than is sent to you in events. We also added a `manualActivation` modifier on all continous gestures, which prevents the gesture it is applied to from activating by itself thus giving you full control of its behavior.
 
 This functionality makes another highly requested feature possible: drag after long press. Simply set `manualActivation` to `true` on a `PanGesture` and use `StateManager` to fail the gesture if the user attempts to drag the component sooner than the duration of the long press.

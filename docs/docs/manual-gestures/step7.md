@@ -1,5 +1,5 @@
 ```jsx {3-10}
-const gesture = Gesture.Custom()
+const gesture = Gesture.Manual()
   ...
   .onStart(() => {
     'worklet';

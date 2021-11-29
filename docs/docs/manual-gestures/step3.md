@@ -11,7 +11,7 @@ export default function Example() {
     });
   }
 
-  const gesture = Gesture.Custom();
+  const gesture = Gesture.Manual();
 
   return (
     <GestureDetector animatedGesture={gesture}>
