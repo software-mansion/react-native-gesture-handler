@@ -11,7 +11,11 @@ export type {
   // event payloads types
   GestureEventPayload,
   HandlerStateChangeEventPayload,
+  // new api event types
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from './handlers/gestureHandlerCommon';
+export type { GestureType } from './handlers/gestures/gesture';
 export type {
   TapGestureHandlerEventPayload,
   TapGestureHandlerProps,

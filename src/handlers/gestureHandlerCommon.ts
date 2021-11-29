@@ -70,11 +70,11 @@ export interface HandlerStateChangeEvent<
   nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
 }
 
-export type UnwrappedGestureHandlerEvent<
+export type GestureUpdateEvent<
   GestureEventPayloadT = Record<string, unknown>
 > = GestureEventPayload & GestureEventPayloadT;
 
-export type UnwrappedGestureHandlerStateChangeEvent<
+export type GestureStateChangeEvent<
   GestureStateChangeEventPayloadT = Record<string, unknown>
 > = HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT;
 

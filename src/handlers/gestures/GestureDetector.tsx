@@ -13,8 +13,8 @@ import {
   baseGestureHandlerWithMonitorProps,
   filterConfig,
   findNodeHandle,
-  UnwrappedGestureHandlerEvent,
-  UnwrappedGestureHandlerStateChangeEvent,
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
 import { flingGestureHandlerProps } from '../FlingGestureHandler';
 import { forceTouchGestureHandlerProps } from '../ForceTouchGestureHandler';
@@ -53,6 +53,8 @@ function convertToHandlerTag(ref: GestureRef): number {
   } else if (ref instanceof BaseGesture) {
     return ref.handlerTag;
   } else {
+    // @ts-ignore in this case it should be a ref either to gesture object or
+    // a gesture handler component, in both cases handlerTag property exists
     return ref.current?.handlerTag ?? -1;
   }
 }
@@ -222,10 +224,8 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   }
 
   function isStateChangeEvent(
-    event:
-      | UnwrappedGestureHandlerEvent
-      | UnwrappedGestureHandlerStateChangeEvent
-  ): event is UnwrappedGestureHandlerStateChangeEvent {
+    event: GestureUpdateEvent | GestureStateChangeEvent
+  ): event is GestureStateChangeEvent {
     'worklet';
     return event.oldState != null;
   }
@@ -250,9 +250,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   function runWorklet(
     type: CALLBACK_TYPE,
     gesture: HandlerCallbacks<Record<string, unknown>>,
-    event:
-      | UnwrappedGestureHandlerStateChangeEvent
-      | UnwrappedGestureHandlerEvent,
+    event: GestureStateChangeEvent | GestureUpdateEvent,
     success?: boolean
   ) {
     'worklet';
@@ -273,11 +271,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     HandlerCallbacks<Record<string, unknown>>[] | null
   >(null);
 
-  const callback = (
-    event:
-      | UnwrappedGestureHandlerStateChangeEvent
-      | UnwrappedGestureHandlerEvent
-  ) => {
+  const callback = (event: GestureStateChangeEvent | GestureUpdateEvent) => {
     'worklet';
 
     const currentCallback = sharedHandlersCallbacks.value;
