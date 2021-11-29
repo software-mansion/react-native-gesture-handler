@@ -6,7 +6,7 @@ import {
   GestureHandlerRootView,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
-import { DraggableBox } from '../basic/draggable';
+import { DraggableBox } from '../../basic/draggable';
 
 export default function App() {
   const [isModalVisible, setIsModalVisible] = useState(false);

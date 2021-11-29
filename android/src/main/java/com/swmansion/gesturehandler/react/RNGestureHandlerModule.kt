@@ -205,7 +205,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       if (config.hasKey(KEY_PAN_MIN_DIST)) {
         handler.setMinDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DIST)))
       } else if (hasCustomActivationCriteria) {
-        handler.setMinDist(Float.MIN_VALUE)
+        handler.setMinDist(Float.MAX_VALUE)
       }
       if (config.hasKey(KEY_PAN_MIN_POINTERS)) {
         handler.setMinPointers(config.getInt(KEY_PAN_MIN_POINTERS))

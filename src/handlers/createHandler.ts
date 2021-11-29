@@ -7,7 +7,7 @@ import {
   EmitterSubscription,
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
-import deepEqual from 'fbjs/lib/areEqual';
+import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
