@@ -12,7 +12,7 @@ import { PinchGesture } from './pinchGesture';
 import { RotationGesture } from './rotationGesture';
 import { TapGesture } from './tapGesture';
 import { NativeGesture } from './nativeGesture';
-import { CustomGesture } from './customGesture';
+import { ManualGesture } from './manualGesture';
 
 export const GestureObjects = {
   Tap: () => {
@@ -47,8 +47,8 @@ export const GestureObjects = {
     return new NativeGesture();
   },
 
-  Custom: () => {
-    return new CustomGesture();
+  Manual: () => {
+    return new ManualGesture();
   },
 
   /**

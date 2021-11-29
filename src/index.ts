@@ -65,6 +65,7 @@ export { PinchGestureType as PinchGesture } from './handlers/gestures/pinchGestu
 export { RotationGestureType as RotationGesture } from './handlers/gestures/rotationGesture';
 export { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
 export { NativeGestureType as NativeGesture } from './handlers/gestures/nativeGesture';
+export { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
 export {
   ComposedGestureType as ComposedGesture,
   RaceGestureType as RaceGesture,

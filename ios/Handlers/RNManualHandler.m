@@ -1,12 +1,12 @@
-#import "RNCustomHandler.h"
+#import "RNManualHandler.h"
 
-@interface RNCustomRecognizer : UIGestureRecognizer
+@interface RNManualRecognizer : UIGestureRecognizer
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
 @end
 
-@implementation RNCustomRecognizer {
+@implementation RNManualRecognizer {
   __weak RNGestureHandler *_gestureHandler;
   BOOL _shouldSendBeginEvent;
 }
@@ -59,12 +59,12 @@
 
 @end
 
-@implementation RNCustomGestureHandler
+@implementation RNManualGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super initWithTag:tag])) {
-        _recognizer = [[RNCustomRecognizer alloc] initWithGestureHandler:self];
+        _recognizer = [[RNManualRecognizer alloc] initWithGestureHandler:self];
 
     }
     return self;

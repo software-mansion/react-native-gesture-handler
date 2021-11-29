@@ -27,7 +27,7 @@
 #import "Handlers/RNPinchHandler.h"
 #import "Handlers/RNRotationHandler.h"
 #import "Handlers/RNForceTouchHandler.h"
-#import "Handlers/RNCustomHandler.h"
+#import "Handlers/RNManualHandler.h"
 
 // We use the method below instead of RCTLog because we log out messages after the bridge gets
 // turned down in some cases. Which normally with RCTLog would cause a crash in DEBUG mode
@@ -73,7 +73,7 @@
                 @"PinchGestureHandler": [RNPinchGestureHandler class],
                 @"RotationGestureHandler": [RNRotationGestureHandler class],
                 @"ForceTouchGestureHandler": [RNForceTouchHandler class],
-                @"CustomGestureHandler": [RNCustomGestureHandler class],
+                @"ManualGestureHandler": [RNManualGestureHandler class],
                 };
     });
     

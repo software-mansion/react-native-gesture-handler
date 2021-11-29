@@ -300,12 +300,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     }
   }
 
-  private class CustomGestureHandlerFactory : HandlerFactory<CustomGestureHandler>() {
-    override val type = CustomGestureHandler::class.java
-    override val name = "CustomGestureHandler"
+  private class ManualGestureHandlerFactory : HandlerFactory<ManualGestureHandler>() {
+    override val type = ManualGestureHandler::class.java
+    override val name = "ManualGestureHandler"
 
-    override fun create(context: Context?): CustomGestureHandler {
-      return CustomGestureHandler()
+    override fun create(context: Context?): ManualGestureHandler {
+      return ManualGestureHandler()
     }
   }
 
@@ -330,7 +330,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     PinchGestureHandlerFactory(),
     RotationGestureHandlerFactory(),
     FlingGestureHandlerFactory(),
-    CustomGestureHandlerFactory(),
+    ManualGestureHandlerFactory(),
   )
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val interactionManager = RNGestureHandlerInteractionManager()
