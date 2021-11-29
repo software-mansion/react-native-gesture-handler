@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Animated, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Animated, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import {
   PanGestureHandler,
   State,
   PanGestureHandlerStateChangeEvent,
   PanGestureHandlerGestureEvent,
+  ScrollView,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../../config';
@@ -75,11 +76,11 @@ export class DraggableBox extends Component<DraggableBoxProps> {
 export default class Example extends Component {
   render() {
     return (
-      <View style={styles.scrollView}>
+      <ScrollView style={styles.scrollView}>
         <LoremIpsum words={40} />
         <DraggableBox />
         <LoremIpsum />
-      </View>
+      </ScrollView>
     );
   }
 }
