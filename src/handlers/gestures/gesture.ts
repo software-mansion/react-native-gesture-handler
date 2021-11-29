@@ -29,7 +29,7 @@ export type GestureRef =
   | number
   | GestureType
   | React.RefObject<GestureType | undefined>
-  | React.RefObject<any>; // allow adding a ref to a gesture handler
+  | React.RefObject<React.ComponentType | undefined>; // allow adding a ref to a gesture handler
 export interface BaseGestureConfig
   extends CommonGestureConfig,
     Record<string, unknown> {
