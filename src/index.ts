@@ -14,7 +14,11 @@ export type {
   // pointer events
   GestureTouchEvent,
   TouchData,
+  // new api event types
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from './handlers/gestureHandlerCommon';
+export type { GestureType } from './handlers/gestures/gesture';
 export type {
   TapGestureHandlerEventPayload,
   TapGestureHandlerProps,
@@ -139,10 +143,6 @@ export type {
 } from './handlers/gestureHandlerTypesCompat';
 
 export { default as Swipeable } from './components/Swipeable';
-export {
-  DrawerLayout as BetterDrawerLayout,
-  DrawerLayoutController,
-} from './components/BetterDrawerLayout';
 export type {
   DrawerLayoutProps,
   DrawerPosition,

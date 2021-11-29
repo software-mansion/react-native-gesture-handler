@@ -3,9 +3,9 @@ import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandle
 import {
   HitSlop,
   CommonGestureConfig,
-  UnwrappedGestureHandlerStateChangeEvent,
-  UnwrappedGestureHandlerEvent,
   GestureTouchEvent,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
 import { GestureStateManagerType } from './gestureStateManager';
@@ -28,11 +28,15 @@ export type GestureType =
   | BaseGesture<ForceTouchGestureHandlerEventPayload>
   | BaseGesture<NativeViewGestureHandlerPayload>;
 
-export type GestureRef = number | GestureType | React.RefObject<GestureType>;
+export type GestureRef =
+  | number
+  | GestureType
+  | React.RefObject<GestureType | undefined>
+  | React.RefObject<React.ComponentType | undefined>; // allow adding a ref to a gesture handler
 export interface BaseGestureConfig
   extends CommonGestureConfig,
     Record<string, unknown> {
-  ref?: React.MutableRefObject<GestureType>;
+  ref?: React.MutableRefObject<GestureType | undefined>;
   requireToFail?: GestureRef[];
   simultaneousWith?: GestureRef[];
   needsPointerData?: boolean;
@@ -46,17 +50,13 @@ type TouchEventHandlerType = (
 
 export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
   handlerTag: number;
-  onBegan?: (
-    event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
-  ) => void;
-  onStart?: (
-    event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
-  ) => void;
+  onBegin?: (event: GestureStateChangeEvent<EventPayloadT>) => void;
+  onStart?: (event: GestureStateChangeEvent<EventPayloadT>) => void;
   onEnd?: (
-    event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>,
+    event: GestureStateChangeEvent<EventPayloadT>,
     success: boolean
   ) => void;
-  onUpdate?: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void;
+  onUpdate?: (event: GestureUpdateEvent<EventPayloadT>) => void;
   onTouchesDown?: TouchEventHandlerType;
   onTouchesMove?: TouchEventHandlerType;
   onTouchesUp?: TouchEventHandlerType;
@@ -121,7 +121,7 @@ export abstract class BaseGesture<
       : [gesture];
   }
 
-  withRef(ref: React.MutableRefObject<GestureType>) {
+  withRef(ref: React.MutableRefObject<GestureType | undefined>) {
     this.config.ref = ref;
     return this;
   }
@@ -129,30 +129,20 @@ export abstract class BaseGesture<
   protected isWorklet(
     callback:
       | TouchEventHandlerType
-      | ((event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void)
-      | ((
-          event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
-        ) => void)
+      | ((event: GestureUpdateEvent<EventPayloadT>) => void)
+      | ((event: GestureStateChangeEvent<EventPayloadT>) => void)
   ) {
     //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     return callback.__workletHash !== undefined;
   }
 
-  onBegan(
-    callback: (
-      event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
-    ) => void
-  ) {
-    this.handlers.onBegan = callback;
+  onBegin(callback: (event: GestureStateChangeEvent<EventPayloadT>) => void) {
+    this.handlers.onBegin = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.BEGAN] = this.isWorklet(callback);
     return this;
   }
 
-  onStart(
-    callback: (
-      event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>
-    ) => void
-  ) {
+  onStart(callback: (event: GestureStateChangeEvent<EventPayloadT>) => void) {
     this.handlers.onStart = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.START] = this.isWorklet(callback);
     return this;
@@ -160,7 +150,7 @@ export abstract class BaseGesture<
 
   onEnd(
     callback: (
-      event: UnwrappedGestureHandlerStateChangeEvent<EventPayloadT>,
+      event: GestureStateChangeEvent<EventPayloadT>,
       success: boolean
     ) => void
   ) {
@@ -259,9 +249,7 @@ export abstract class BaseGesture<
 export abstract class ContinousBaseGesture<
   EventPayloadT extends Record<string, unknown>
 > extends BaseGesture<EventPayloadT> {
-  onUpdate(
-    callback: (event: UnwrappedGestureHandlerEvent<EventPayloadT>) => void
-  ) {
+  onUpdate(callback: (event: GestureUpdateEvent<EventPayloadT>) => void) {
     this.handlers.onUpdate = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] = this.isWorklet(callback);
     return this;

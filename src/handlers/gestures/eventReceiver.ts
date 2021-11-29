@@ -2,9 +2,9 @@ import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
 import { State } from '../../State';
 import { EventType } from '../../EventType';
 import {
-  UnwrappedGestureHandlerEvent,
-  UnwrappedGestureHandlerStateChangeEvent,
   GestureTouchEvent,
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
 import { GestureStateManagerType } from './gestureStateManager';
 import { findHandler } from '../handlersRegistry';
@@ -37,29 +37,20 @@ const dummyStateManager: GestureStateManagerType = {
 };
 
 function isStateChangeEvent(
-  event:
-    | UnwrappedGestureHandlerEvent
-    | UnwrappedGestureHandlerStateChangeEvent
-    | GestureTouchEvent
-): event is UnwrappedGestureHandlerStateChangeEvent {
+  event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+): event is GestureStateChangeEvent {
   // @ts-ignore oldState doesn't exist on GestureTouchEvent and that's the point
   return event.oldState != null;
 }
 
 function isTouchEvent(
-  event:
-    | UnwrappedGestureHandlerEvent
-    | UnwrappedGestureHandlerStateChangeEvent
-    | GestureTouchEvent
+  event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
 ): event is GestureTouchEvent {
   return event.eventType != null;
 }
 
 function onGestureHandlerEvent(
-  event:
-    | UnwrappedGestureHandlerEvent
-    | UnwrappedGestureHandlerStateChangeEvent
-    | GestureTouchEvent
+  event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
 ) {
   const handler = findHandler(event.handlerTag) as BaseGesture<
     Record<string, unknown>
@@ -71,7 +62,7 @@ function onGestureHandlerEvent(
         event.oldState === State.UNDETERMINED &&
         event.state === State.BEGAN
       ) {
-        handler.handlers.onBegan?.(event);
+        handler.handlers.onBegin?.(event);
       } else if (
         (event.oldState === State.BEGAN ||
           event.oldState === State.UNDETERMINED) &&

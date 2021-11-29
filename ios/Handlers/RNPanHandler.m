@@ -61,6 +61,11 @@
   return self;
 }
 
+- (void)triggerAction
+{
+  [_gestureHandler handleGesture:self];
+}
+
 - (void)setMinimumNumberOfTouches:(NSUInteger)minimumNumberOfTouches
 {
   _realMinimumNumberOfTouches = minimumNumberOfTouches;
@@ -68,6 +73,9 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  if ([self numberOfTouches] == 0) {
+    [_gestureHandler reset];
+  }
 #if !TARGET_OS_TV
   if (_hasCustomActivationCriteria) {
     // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
@@ -79,6 +87,7 @@
   }
 #endif
   [super touchesBegan:touches withEvent:event];
+  [self triggerAction];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
@@ -130,6 +139,7 @@
 - (void)reset
 {
   [_gestureHandler.pointerTracker reset];
+  [self triggerAction];
   self.enabled = YES;
   [super reset];
 }
@@ -144,7 +154,7 @@
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
-  CGPoint trans = [self translationInView:self.view];
+  CGPoint trans = [self translationInView:self.view.window];
   if (!isnan(_failOffsetXStart) && trans.x < _failOffsetXStart) {
     return YES;
   }
@@ -162,7 +172,7 @@
 
 - (BOOL)shouldActivateUnderCustomCriteria
 {
-  CGPoint trans = [self translationInView:self.view];
+  CGPoint trans = [self translationInView:self.view.window];
   if (!isnan(_activeOffsetXStart) && trans.x < _activeOffsetXStart) {
     return YES;
   }
@@ -274,15 +284,23 @@
   [recognizer updateHasCustomActivationCriteria];
 }
 
+- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  RNGestureHandlerState savedState = _lastState;
+  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
+  _lastState = savedState;
+  
+  return shouldBegin;
+}
+
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData
           forPan:[recognizer locationInView:recognizer.view]
           withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-          withTranslation:[recognizer translationInView:recognizer.view]
+          withTranslation:[recognizer translationInView:recognizer.view.window]
           withVelocity:[recognizer velocityInView:recognizer.view.window]
           withNumberOfTouches:recognizer.numberOfTouches];
 }
 
 @end
-

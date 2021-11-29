@@ -12,14 +12,17 @@ import android.graphics.drawable.RippleDrawable
 import android.os.Build
 import android.util.TypedValue
 import android.view.MotionEvent
+import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import androidx.core.view.children
 import com.facebook.react.bridge.SoftAssertions
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
+import com.swmansion.gesturehandler.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
@@ -58,11 +61,17 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
     view.rippleRadius = rippleRadius
   }
 
+  @ReactProp(name = "exclusive")
+  fun setExclusive(view: ButtonViewGroup, exclusive: Boolean = true) {
+    view.exclusive = exclusive
+  }
+
   override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
     view.updateBackground()
   }
 
-  class ButtonViewGroup(context: Context?) : ViewGroup(context) {
+  class ButtonViewGroup(context: Context?) : ViewGroup(context),
+    NativeViewGestureHandler.StateChangeHook {
     // Using object because of handling null representing no value set.
     var rippleColor: Int? = null
       set(color) = withBackgroundUpdate {
@@ -82,11 +91,14 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       set(radius) = withBackgroundUpdate {
         field = radius * resources.displayMetrics.density
       }
+    var exclusive = true
 
     private var _backgroundColor = Color.TRANSPARENT
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
+
+    var isTouched = false
 
     init {
       // we attach empty click listener to trigger tap sounds (see View#performClick())
@@ -230,14 +242,63 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
       }
     }
 
-    override fun setPressed(pressed: Boolean) {
-      if (pressed && responder == null) {
-        // first button to be pressed grabs button responder
-        responder = this
+    override fun canStart(): Boolean {
+      val isResponder = tryGrabbingResponder()
+      if (isResponder) {
+        isTouched = true
       }
-      if (!pressed || responder === this) {
-        // we set pressed state only for current responder
+      return isResponder
+    }
+
+    override fun afterGestureEnd() {
+      tryFreeingResponder()
+      isTouched = false
+    }
+
+    private fun tryGrabbingResponder(): Boolean {
+      if (isChildTouched()) {
+        return false
+      }
+
+      if (responder == null) {
+        responder = this
+        return true
+      }
+      return if (exclusive) {
+        responder === this
+      } else {
+        !(responder?.exclusive ?: false)
+      }
+    }
+
+    private fun tryFreeingResponder() {
+      if (responder === this) {
+        responder = null
+      }
+    }
+
+    private fun isChildTouched(children: Sequence<View> = this.children): Boolean {
+      for (child in children) {
+        if (child is ButtonViewGroup && (child.isTouched || child.isPressed)) {
+          return true
+        } else if (child is ViewGroup) {
+          return isChildTouched(child.children)
+        }
+      }
+
+      return false
+    }
+
+    override fun setPressed(pressed: Boolean) {
+      // button can be pressed alongside other button if both are non-exclusive and it doesn't have
+      // any pressed children (to prevent pressing the parent when children is pressed).
+      val canBePressedAlongsideOther = !exclusive && responder?.exclusive != true && !isChildTouched()
+
+      if (!pressed || responder === this || canBePressedAlongsideOther) {
+        // we set pressed state only for current responder or any non-exclusive button when responder
+        // is null or non-exclusive, assuming it doesn't have pressed children
         super.setPressed(pressed)
+        isTouched = pressed
       }
       if (!pressed && responder === this) {
         // if the responder is no longer pressed we release button responder

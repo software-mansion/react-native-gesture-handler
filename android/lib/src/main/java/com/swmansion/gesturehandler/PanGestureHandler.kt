@@ -213,6 +213,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       startY = lastY
       offsetX = 0f
       offsetY = 0f
+      velocityX = 0f
+      velocityY = 0f
       velocityTracker = VelocityTracker.obtain()
       addVelocityMovement(velocityTracker, event)
       begin()

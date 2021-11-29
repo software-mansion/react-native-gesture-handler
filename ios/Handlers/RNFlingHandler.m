@@ -1,13 +1,13 @@
 #import "RNFlingHandler.h"
 
-@interface RNBetterSwipeRecognizer : UISwipeGestureRecognizer
+@interface RNBetterSwipeGestureRecognizer : UISwipeGestureRecognizer
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
 @end
 
-@implementation RNBetterSwipeRecognizer {
-  __weak RNGestureHandler *_gestureHandler;
+@implementation RNBetterSwipeGestureRecognizer {
+  __weak RNGestureHandler* _gestureHandler;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
@@ -20,6 +20,8 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler reset];
+  [self triggerAction];
   [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
@@ -42,24 +44,28 @@
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
 }
 
+- (void)triggerAction
+{
+  [_gestureHandler handleGesture:self];
+}
+
 - (void)reset
 {
   [_gestureHandler.pointerTracker reset];
+  [self triggerAction];
   [super reset];
 }
 
 @end
 
-
 @implementation RNFlingGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-    if ((self = [super initWithTag:tag])) {
-        _recognizer = [[RNBetterSwipeRecognizer alloc] initWithGestureHandler:self];
-        
-    }
-    return self;
+  if ((self = [super initWithTag:tag])) {
+    _recognizer = [[RNBetterSwipeGestureRecognizer alloc] initWithGestureHandler:self];
+  }
+  return self;
 }
 - (void)resetConfig
 {
@@ -85,6 +91,15 @@
         recognizer.numberOfTouchesRequired = [RCTConvert NSInteger:prop];
     }
 #endif
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    RNGestureHandlerState savedState = _lastState;
+    BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
+    _lastState = savedState;
+    
+    return shouldBegin;
 }
 
 @end

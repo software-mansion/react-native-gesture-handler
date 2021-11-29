@@ -327,6 +327,44 @@ class GestureHandlerOrchestrator(
     handler.prepare(view, this)
   }
 
+  private fun isViewOverflowingParent(view: View): Boolean {
+    val parent = view.parent as? ViewGroup ?: return false
+    val matrix = view.matrix
+    val localXY = matrixTransformCoords
+    localXY[0] = 0f
+    localXY[1] = 0f
+    matrix.mapPoints(localXY)
+    val left = localXY[0] + view.left
+    val top = localXY[1] + view.top
+
+    return left < 0f || left + view.width > parent.width || top < 0f || top + view.height > parent.height
+  }
+
+  private fun extractAncestorHandlers(view: View, coords: FloatArray, pointerId: Int): Boolean {
+    var found = false
+    var parent = view.parent
+
+    while (parent != null) {
+      if (parent is ViewGroup) {
+        val parentViewGroup: ViewGroup = parent
+
+        handlerRegistry.getHandlersForView(parent)?.let {
+          for (handler in it) {
+            if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
+              found = true
+              recordHandlerIfNotPresent(handler, parentViewGroup)
+              handler.startTrackingPointer(pointerId)
+            }
+          }
+        }
+      }
+
+      parent = parent.parent
+    }
+
+    return found
+  }
+
   private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int): Boolean {
     var found = false
     handlerRegistry.getHandlersForView(view)?.let {
@@ -340,6 +378,14 @@ class GestureHandlerOrchestrator(
         }
       }
     }
+
+    // if the pointer is inside the view but it overflows its parent, handlers attached to the parent
+    // might not have been extracted (pointer might be in a child, but may be outside parent)
+    if (coords[0] in 0f..view.width.toFloat() && coords[1] in 0f..view.height.toFloat()
+      && isViewOverflowingParent(view) && extractAncestorHandlers(view, coords, pointerId)) {
+        found = true
+    }
+
     return found
   }
 

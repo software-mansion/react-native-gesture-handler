@@ -13,9 +13,9 @@ import {
   baseGestureHandlerWithMonitorProps,
   filterConfig,
   findNodeHandle,
-  UnwrappedGestureHandlerEvent,
-  UnwrappedGestureHandlerStateChangeEvent,
   GestureTouchEvent,
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -59,6 +59,8 @@ function convertToHandlerTag(ref: GestureRef): number {
   } else if (ref instanceof BaseGesture) {
     return ref.handlerTag;
   } else {
+    // @ts-ignore in this case it should be a ref either to gesture object or
+    // a gesture handler component, in both cases handlerTag property exists
     return ref.current?.handlerTag ?? -1;
   }
 }
@@ -228,21 +230,15 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   }
 
   function isStateChangeEvent(
-    event:
-      | UnwrappedGestureHandlerEvent
-      | UnwrappedGestureHandlerStateChangeEvent
-      | GestureTouchEvent
-  ): event is UnwrappedGestureHandlerStateChangeEvent {
+    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+  ): event is GestureStateChangeEvent {
     'worklet';
     // @ts-ignore Yes, the oldState prop is missing on GestureTouchEvent, that's the point
     return event.oldState != null;
   }
 
   function isTouchEvent(
-    event:
-      | UnwrappedGestureHandlerEvent
-      | UnwrappedGestureHandlerStateChangeEvent
-      | GestureTouchEvent
+    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
   ): event is GestureTouchEvent {
     'worklet';
     return event.eventType != null;
@@ -255,7 +251,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     'worklet';
     switch (type) {
       case CALLBACK_TYPE.BEGAN:
-        return gesture.onBegan;
+        return gesture.onBegin;
       case CALLBACK_TYPE.START:
         return gesture.onStart;
       case CALLBACK_TYPE.UPDATE:
@@ -291,10 +287,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   function runWorklet(
     type: CALLBACK_TYPE,
     gesture: HandlerCallbacks<Record<string, unknown>>,
-    event:
-      | UnwrappedGestureHandlerStateChangeEvent
-      | UnwrappedGestureHandlerEvent
-      | GestureTouchEvent,
+    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
     ...args: any[]
   ) {
     'worklet';
@@ -319,10 +312,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   const stateControllers: GestureStateManagerType[] = [];
 
   const callback = (
-    event:
-      | UnwrappedGestureHandlerStateChangeEvent
-      | UnwrappedGestureHandlerEvent
-      | GestureTouchEvent
+    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent
   ) => {
     'worklet';
 
@@ -391,14 +381,16 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
 
 interface GestureDetectorProps {
   gesture?: ComposedGesture | GestureType;
-  animatedGesture?: ComposedGesture | GestureType;
 }
 export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   props
 ) => {
-  const useAnimated = props.animatedGesture != null;
-  const gestureConfig = props.animatedGesture ?? props.gesture;
+  const gestureConfig = props.gesture;
   const gesture = gestureConfig?.toGestureArray?.() ?? [];
+  const useAnimated =
+    gesture.find((gesture) =>
+      gesture.handlers.isWorklet.reduce((prev, current) => prev || current)
+    ) != null;
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
 
@@ -464,7 +456,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     }
   }, [props]);
 
-  if (props.animatedGesture) {
+  if (useAnimated) {
     return (
       <AnimatedWrap
         ref={viewRef}
