@@ -421,7 +421,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       changedTouchesPayload = Arguments.createArray()
     }
 
-    changedTouchesPayload?.pushMap(createPointerData(pointerData))
+    changedTouchesPayload!!.pushMap(createPointerData(pointerData))
   }
 
   private fun addPointerToAll(pointerData: PointerData) {
@@ -429,7 +429,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       allTouchesPayload = Arguments.createArray()
     }
 
-    allTouchesPayload?.pushMap(createPointerData(pointerData))
+    allTouchesPayload!!.pushMap(createPointerData(pointerData))
   }
 
   private fun createPointerData(pointerData: PointerData) = Arguments.createMap().apply {
