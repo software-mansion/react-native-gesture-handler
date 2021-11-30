@@ -12,7 +12,7 @@ import PanAndScroll from './recipes/panAndScroll'; // OK
 import { BottomSheet } from './showcase/bottomSheet'; // doesn't work (Animated)
 import Swipeables from './showcase/swipeable'; // doesn't work (Unimplemented component: RNGestureHandlerButton)
 import ChatHeads from './showcase/chatHeads'; // doesn't work (Animated)
-import { DraggableBox } from './basic/draggable'; // doesn't work (Animated)
+import { DraggableBox } from './basic/draggable'; // OK
 import MultiTap from './basic/multitap'; // doesn't work (Animated)
 import BouncingBox from './basic/bouncing'; // OK
 import PanResponder from './basic/panResponder'; // doesn't work ("setNativeProps is not currently supported") // TODO: migrate setNativeProps
@@ -38,4 +38,4 @@ import FabricCallbacksExample from './new_api/fabric/FabricCallbacksExample'; //
 import FabricPanGestureHandlerExample from './new_api/fabric/FabricPanGestureHandlerExample';
 
 // current example
-export default BouncingBox;
+export default DraggableBox;
