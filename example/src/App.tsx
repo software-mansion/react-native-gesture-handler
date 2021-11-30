@@ -14,7 +14,7 @@ import Swipeables from './showcase/swipeable'; // doesn't work (Unimplemented co
 import ChatHeads from './showcase/chatHeads'; // doesn't work (Animated)
 import { DraggableBox } from './basic/draggable'; // doesn't work (Animated)
 import MultiTap from './basic/multitap'; // doesn't work (Animated)
-import BouncingBox from './basic/bouncing'; // doesn't work (Animated)
+import BouncingBox from './basic/bouncing'; // OK
 import PanResponder from './basic/panResponder'; // doesn't work ("setNativeProps is not currently supported") // TODO: migrate setNativeProps
 import BetterHorizontalDrawer from './basic/betterHorizontalDrawer'; // doesn't work (Unimplemented component: RNGestureHandlerButton)
 import HorizontalDrawer from './basic/horizontalDrawer'; // doesn't work (Unimplemented component: RNGestureHandlerButton)

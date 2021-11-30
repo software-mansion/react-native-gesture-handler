@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -117,7 +117,11 @@ export default class Example extends Component {
       <View style={styles.container}>
         <Snappable>
           <Twistable>
-            <View style={styles.box} />
+            <View style={styles.box}>
+              <Text>
+                USE_NATIVE_DRIVER: {USE_NATIVE_DRIVER ? 'true' : 'false'}
+              </Text>
+            </View>
           </Twistable>
         </Snappable>
       </View>
@@ -139,7 +143,9 @@ const styles = StyleSheet.create({
     height: BOX_SIZE,
     borderColor: '#F5FCFF',
     alignSelf: 'center',
-    backgroundColor: 'plum',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: USE_NATIVE_DRIVER ? 'lime' : 'cyan',
     margin: BOX_SIZE / 2,
   },
 });
