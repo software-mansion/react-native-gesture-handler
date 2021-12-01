@@ -135,7 +135,6 @@ const position = useSharedValue(0);
 
 const panGesture = Gesture.Pan()
   .onUpdate((e) => {
-    'worklet';
     if (onLeft.value) {
       position.value = e.translationX;
     } else {
@@ -143,7 +142,6 @@ const panGesture = Gesture.Pan()
     }
   })
   .onEnd((e) => {
-    'worklet';
     if (position.value > END_POSITION / 2) {
       position.value = withTiming(END_POSITION, { duration: 100 });
       onLeft.value = false;
@@ -158,7 +156,7 @@ const animatedStyle = useAnimatedStyle(() => ({
 }));
 
 return (
-  <GestureDetector animatedGesture={panGesture}>
+  <GestureDetector gesture={panGesture}>
     <Animated.View style={[styles.box, animatedStyle]} />
   </GestureDetector>
 );

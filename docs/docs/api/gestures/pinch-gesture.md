@@ -59,11 +59,9 @@ const savedScale = useSharedValue(1);
 
 const pinchGesture = Gesture.Pinch()
   .onUpdate((e) => {
-    'worklet';
     scale.value = savedScale.value * e.scale;
   })
   .onEnd(() => {
-    'worklet';
     savedScale.value = scale.value;
   });
 
@@ -72,7 +70,7 @@ const animatedStyle = useAnimatedStyle(() => ({
 }));
 
 return (
-  <GestureDetector animatedGesture={pinchGesture}>
+  <GestureDetector gesture={pinchGesture}>
     <Animated.View style={[styles.box, animatedStyle]} />
   </GestureDetector>
 );

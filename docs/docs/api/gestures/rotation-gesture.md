@@ -56,11 +56,9 @@ const savedRotation = useSharedValue(1);
 
 const rotationGesture = Gesture.Rotation()
   .onUpdate((e) => {
-    'worklet';
     rotation.value = savedRotation.value + e.rotation;
   })
   .onEnd(() => {
-    'worklet';
     savedRotation.value = rotation.value;
   });
 
@@ -69,7 +67,7 @@ const animatedStyle = useAnimatedStyle(() => ({
 }));
 
 return (
-  <GestureDetector animatedGesture={rotationGesture}>
+  <GestureDetector gesture={rotationGesture}>
     <Animated.View style={[styles.box, animatedStyle]} />
   </GestureDetector>
 );

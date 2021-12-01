@@ -71,7 +71,6 @@ const position = useSharedValue(0);
 const flingGesture = Gesture.Fling()
   .direction(Directions.RIGHT)
   .onStart((e) => {
-    'worklet';
     position.value = withTiming(position.value + 10, { duration: 100 });
   });
 
@@ -80,7 +79,7 @@ const animatedStyle = useAnimatedStyle(() => ({
 }));
 
 return (
-  <GestureDetector animatedGesture={flingGesture}>
+  <GestureDetector gesture={flingGesture}>
     <Animated.View style={[styles.box, animatedStyle]} />
   </GestureDetector>
 );

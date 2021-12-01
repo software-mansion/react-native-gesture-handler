@@ -63,6 +63,5 @@ To demonstrate how you would use the new API, let's make a simple app where you 
 <Divider />
 
 Note the `start` shared value. We need it to store the position of the ball at the moment we grab it to be able to correctly position it later, because we only have access to translation relative to the starting point of the gesture.
-In this example all callbacks are marked as [`worklet`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/worklets) because we are using `react-native-reanimated`, but you don't have to. RNGH2 works just as well simply with state, just remember to pass the gesture config to the `gesture` prop of the `GestureDetector` instead of `animatedGesture`.
 
 Now you can just add `Ball` component to some view in the app and see the results! (Or you can just check the code [here](https://github.com/software-mansion/react-native-gesture-handler/blob/new-api/example/src/new_api/reanimated/index.tsx) and see it in action in the Example app.)

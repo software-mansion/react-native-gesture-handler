@@ -2,7 +2,6 @@
 const gesture = Gesture.Manual()
     ...
     .onTouchesUp((e, manager) => {
-      'worklet';
       for (const touch of e.changedTouches) {
         trackedPointers[touch.id].value = {
           visible: false,
