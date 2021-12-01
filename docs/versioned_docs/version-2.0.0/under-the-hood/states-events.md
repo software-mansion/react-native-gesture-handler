@@ -53,7 +53,7 @@ At last, when a handler does properly recognize the gesture but then is interrup
 
 There are three types of events in RNGH2: `StateChangeEvent`, `GestureEvent` and `PointerEvent`. The `StateChangeEvent` is send every time a gesture moves to a different state, while `GestureEvent` is send every time a gesture is updated. The first two carry a gesture-specific data and a `state` property, indicating the current state of the gesture. `StateChangeEvent` also carries a `oldState` property indicating the previous state of the gesture. `PointerEvent` carries information about raw touch events, like touching the screen or moving the finger. These events are handled internally before they are passed along to the correct callbacks:
 
-### `onBegan`
+### `onBegin`
 
 Is called when a gesture transitions to the [`BEGAN`](#began) state.
 
