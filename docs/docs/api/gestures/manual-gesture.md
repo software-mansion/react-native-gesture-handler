@@ -1,7 +1,7 @@
 ---
-id: custom-gesture
-title: Custom gesture
-sidebar_label: Custom gesture
+id: manual-gesture
+title: Manual gesture
+sidebar_label: Manual gesture
 ---
 
 import BaseEventData from './base-gesture-event-data.md';

@@ -21,7 +21,7 @@ module.exports = {
           'api/gestures/fling-gesture',
           'api/gestures/force-touch-gesture',
           'api/gestures/native-gesture',
-          'api/gestures/custom-gesture',
+          'api/gestures/manual-gesture',
           'api/gestures/composed-gestures',
           'api/gestures/touch-events',
           'api/gestures/state-manager',

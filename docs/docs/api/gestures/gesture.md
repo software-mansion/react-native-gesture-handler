@@ -34,9 +34,9 @@ Creates a new instance of [`RotationGesture`](./rotation-gesture.md) with its de
 
 Creates a new instance of [`ForceTouchGesture`](./force-touch-gesture.md) with its default config and no callbacks.
 
-### Gesture.Custom()
+### Gesture.Manual()
 
-Creates a new instance of [`CustomGesture`](./custom-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`ManualGesture`](./manual-gesture.md) with its default config and no callbacks.
 
 ### Gesture.Native()
 
