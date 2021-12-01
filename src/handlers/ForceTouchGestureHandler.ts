@@ -36,8 +36,7 @@ export type ForceTouchGestureHandlerEventPayload = {
   force: number;
 };
 
-export interface ForceTouchGestureHandlerProps
-  extends BaseGestureHandlerProps<ForceTouchGestureHandlerEventPayload> {
+export interface ForceTouchGestureConfig {
   /**
    *
    * A minimal pressure that is required before handler can activate. Should be a
@@ -57,6 +56,10 @@ export interface ForceTouchGestureHandlerProps
    */
   feedbackOnActivation?: boolean;
 }
+
+export interface ForceTouchGestureHandlerProps
+  extends BaseGestureHandlerProps<ForceTouchGestureHandlerEventPayload>,
+    ForceTouchGestureConfig {}
 
 export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
   forceTouchAvailable: boolean;

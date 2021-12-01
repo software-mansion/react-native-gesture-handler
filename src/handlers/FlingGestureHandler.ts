@@ -15,9 +15,7 @@ export type FlingGestureHandlerEventPayload = {
   absoluteX: number;
   absoluteY: number;
 };
-
-export interface FlingGestureHandlerProps
-  extends BaseGestureHandlerProps<FlingGestureHandlerEventPayload> {
+export interface FlingGestureConfig {
   /**
    * Expressed allowed direction of movement. It's possible to pass one or many
    * directions in one parameter:
@@ -39,6 +37,10 @@ export interface FlingGestureHandlerProps
    */
   numberOfPointers?: number;
 }
+
+export interface FlingGestureHandlerProps
+  extends BaseGestureHandlerProps<FlingGestureHandlerEventPayload>,
+    FlingGestureConfig {}
 
 export type FlingGestureHandler = typeof FlingGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file

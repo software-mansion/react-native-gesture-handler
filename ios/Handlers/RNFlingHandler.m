@@ -7,34 +7,53 @@
 @end
 
 @implementation RNBetterSwipeGestureRecognizer {
-    __weak RNGestureHandler* _gestureHandler;
+  __weak RNGestureHandler* _gestureHandler;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-    if (self == [super initWithTarget:gestureHandler action:@selector(handleGesture:)]) {
-        _gestureHandler = gestureHandler;
-    }
-    
-    return self;
-}
-
-- (void)triggerAction
-{
-    [_gestureHandler handleGesture:self];
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+    _gestureHandler = gestureHandler;
+  }
+  return self;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    [_gestureHandler reset];
-    [self triggerAction];
-    [super touchesBegan:touches withEvent:event];
+  [_gestureHandler reset];
+  [self triggerAction];
+  [super touchesBegan:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesMoved:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesEnded:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesCancelled:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+}
+
+- (void)triggerAction
+{
+  [_gestureHandler handleGesture:self];
 }
 
 - (void)reset
 {
-    [self triggerAction];
-    [super reset];
+  [_gestureHandler.pointerTracker reset];
+  [self triggerAction];
+  [super reset];
 }
 
 @end
@@ -43,11 +62,10 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-    if ((self = [super initWithTag:tag])) {
-        _recognizer = [[RNBetterSwipeGestureRecognizer alloc] initWithGestureHandler:self];
-        
-    }
-    return self;
+  if ((self = [super initWithTag:tag])) {
+    _recognizer = [[RNBetterSwipeGestureRecognizer alloc] initWithGestureHandler:self];
+  }
+  return self;
 }
 - (void)resetConfig
 {
