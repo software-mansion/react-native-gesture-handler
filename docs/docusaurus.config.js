@@ -140,6 +140,10 @@ module.exports = {
         //   ],
         // },
         {
+          type: 'docsVersionDropdown',
+          position: 'left',
+        },
+        {
           href:
             'https://github.com/software-mansion/react-native-gesture-handler',
           position: 'right',

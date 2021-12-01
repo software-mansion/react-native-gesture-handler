@@ -99,11 +99,6 @@ only applies to RN apps that use a standard Android project layout.
 
 #### Updating `MainActivity.java`
 
-:::caution
-From version 2.0.0 this step isn't needed. You should use
-`<GestureHandlerRootView />` component instead.
-:::
-
 Update your `MainActivity.java` file (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating `ReactRootView` instance and then use the root view wrapper provided by this library. Do not forget to import `ReactActivityDelegate`, `ReactRootView`, and `RNGestureHandlerEnabledRootView`:
 
 ```diff

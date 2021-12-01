@@ -1,0 +1,78 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+}
+
+.divider {
+  flex: 1;
+  height: 1px;
+  border: 1px #dcdfeb;
+  border-style: none none solid none;
+  margin-bottom: 40px;
+  margin-left: 2%;
+  margin-right: 2%;
+}
+
+@media only screen and (max-width: 1200px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .roundedStep {
+    position: static !important;
+  }
+
+  .description {
+    justify-content: center;
+  }
+}
+.description {
+  flex: 1;
+  display: flex;
+  margin-bottom: 20px;
+  height: fit-content;
+  max-width: 450px;
+  width: 100%;
+}
+
+.roundedStep {
+  flex: 1;
+  border-radius: 10px;
+  height: fit-content;
+  position: relative;
+  top: 30px;
+  padding: 10px;
+  background-color: #dcdfeb;
+  border-left: 6px solid #dcdfeb;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: -0.2px;
+  margin-right: 20px;
+}
+
+.stepTitle {
+  font-size: 12px;
+  line-height: 1.33;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  margin-bottom: 10px;
+}
+
+.code {
+  flex: 1;
+  flex-direction: column;
+  flex-wrap: wrap;
+  background-color: 'red';
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  max-width: 100%;
+}
+
+.code div {
+  align-self: stretch;
+  flex: 1;
+}
