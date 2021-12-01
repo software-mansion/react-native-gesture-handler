@@ -91,7 +91,7 @@ function Hero() {
                   'button button--primary button--lg',
                   styles.getStarted
                 )}
-                to={useBaseUrl('docs/api2/quickstart')}>
+                to={useBaseUrl('docs/')}>
                 View Docs
               </Link>
             </div>
