@@ -79,42 +79,6 @@ When the finger moves outside this range (in points) along X axis and handler ha
 If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
-### `maxDeltaX`
-
-> This method is deprecated but supported for backward compatibility. Instead of using `maxDeltaX={N}` you can do `failOffsetX={[-N, N]}`.
-
-When the finger travels the given distance expressed in points along X axis and handler hasn't yet [activated](../../state.md#active) it will fail recognizing the gesture.
-
-### `maxDeltaY`
-
-> This method is deprecated but supported for backward compatibility. Instead of using `maxDeltaY={N}` you can do `failOffsetY={[-N, N]}`.
-
-When the finger travels the given distance expressed in points along Y axis and handler hasn't yet [activated](../../state.md#active) it will fail recognizing the gesture.
-
-### `minOffsetX`
-
-> This method is deprecated but supported for backward compatibility. Instead of using `minOffsetX={N}` you can do `activeOffsetX={N}`.
-
-Minimum distance along X (in points) axis the finger (or multiple finger) need to travel before the handler [activates](../../state.md#active). If set to a lower or equal to 0 value we expect the finger to travel "left" by the given distance. When set to a higher or equal to 0 number the handler will activate on a movement to the "right". If you wish for the movement direction to be ignored use [`minDeltaX`](#mindeltax) instead.
-
-### `minOffsetY`
-
-> This method is deprecated but supported for backward compatibility. Instead of using `minOffsetY={N}` you can do `activeOffsetY={N}`.
-
-Minimum distance along Y (in points) axis the finger (or multiple finger) need to travel before the handler [activates](../../state.md#active). If set to a lower or equal to 0 value we expect the finger to travel "up" by the given distance. When set to a higher or equal to 0 number the handler will activate on a movement to the "bottom". If you wish for the movement direction to be ignored use [`minDeltaY`](#mindeltay) instead.
-
-### `minDeltaX`
-
-> This method is deprecated but supported for backward compatibility. Instead of using `minDeltaX={N}` you can do `activeOffsetX={[-N, N]}`.
-
-Minimum distance along X (in points) axis the finger (or multiple finger) need to travel (left or right) before the handler [activates](../../state.md#active). Unlike [`minoffsetx`](#minoffsetx) this parameter accepts only non-lower or equal to 0 numbers that represents the distance in point units. If you want for the handler to [activate](../../state.md#active) for the movement in one particular direction use [`minOffsetX`](#minoffsetx) instead.
-
-### `minDeltaY`
-
-> This method is deprecated but supported for backward compatibility. Instead of using `minDeltaY={N}` you can do `activeOffsetY={[-N, N]}`.
-
-Minimum distance along Y (in points) axis the finger (or multiple finger) need to travel (top or bottom) before the handler [activates](../../state.md#active). Unlike [`minOffsetY`](#minoffsety) this parameter accepts only non-lower or equal to 0 numbers that represents the distance in point units. If you want for the handler to [activate](../../state.md#active) for the movement in one particular direction use [`minOffsetY`](#minoffsety) instead.
-
 ### `avgTouches` (Android only)
 
 ### `enableTrackpadTwoFingerGesture` (iOS only)

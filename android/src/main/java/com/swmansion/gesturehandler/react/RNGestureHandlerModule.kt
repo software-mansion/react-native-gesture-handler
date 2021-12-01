@@ -8,12 +8,13 @@ import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
-import com.facebook.react.uimanager.UIManagerModule
+import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
 import java.util.*
 
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
-class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
+class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
+  : ReactContextBaseJavaModule(reactContext), GestureHandlerStateManager {
   private abstract class HandlerFactory<T : GestureHandler<T>> : RNGestureHandlerEventDataExtractor<T> {
     abstract val type: Class<T>
     abstract val name: String
@@ -28,6 +29,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       }
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config)
+      }
+      if (config.hasKey(KEY_NEEDS_POINTER_DATA)) {
+        handler.needsPointerData = config.getBoolean(KEY_NEEDS_POINTER_DATA)
+      }
+      if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
+        handler.setManualActivation(config.getBoolean(KEY_MANUAL_ACTIVATION))
       }
     }
 
@@ -293,13 +300,26 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     }
   }
 
+  private class ManualGestureHandlerFactory : HandlerFactory<ManualGestureHandler>() {
+    override val type = ManualGestureHandler::class.java
+    override val name = "ManualGestureHandler"
+
+    override fun create(context: Context?): ManualGestureHandler {
+      return ManualGestureHandler()
+    }
+  }
+
   private val eventListener = object : OnTouchEventListener {
-    override fun <T : GestureHandler<T>> onTouchEvent(handler: T, event: MotionEvent) {
-      this@RNGestureHandlerModule.onTouchEvent(handler, event)
+    override fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, event: MotionEvent) {
+      this@RNGestureHandlerModule.onHandlerUpdate(handler, event)
     }
 
     override fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
       this@RNGestureHandlerModule.onStateChange(handler, newState, oldState)
+    }
+
+    override fun <T : GestureHandler<T>> onTouchEvent(handler: T) {
+      this@RNGestureHandlerModule.onTouchEvent(handler)
     }
   }
   private val handlerFactories = arrayOf<HandlerFactory<*>>(
@@ -309,7 +329,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
     PanGestureHandlerFactory(),
     PinchGestureHandlerFactory(),
     RotationGestureHandlerFactory(),
-    FlingGestureHandlerFactory()
+    FlingGestureHandlerFactory(),
+    ManualGestureHandlerFactory(),
   )
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val interactionManager = RNGestureHandlerInteractionManager()
@@ -338,9 +359,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   @ReactMethod
-  fun attachGestureHandler(handlerTag: Int, viewTag: Int) {
+  fun attachGestureHandler(handlerTag: Int, viewTag: Int, useDeviceEvents: Boolean) {
     tryInitializeHandlerForReactRootView(viewTag)
-    if (!registry.attachHandlerToView(handlerTag, viewTag)) {
+
+    if (!registry.attachHandlerToView(handlerTag, viewTag, useDeviceEvents)) {
       throw JSApplicationIllegalArgumentException("Handler with tag $handlerTag does not exists")
     }
   }
@@ -373,6 +395,18 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
 
   @ReactMethod
   fun handleClearJSResponder() {
+  }
+
+  override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
+    registry.getHandler(handlerTag)?.let { handler ->
+      when (newState) {
+        GestureHandler.STATE_ACTIVE -> handler.activate(force = true)
+        GestureHandler.STATE_BEGAN -> handler.begin()
+        GestureHandler.STATE_END -> handler.end()
+        GestureHandler.STATE_FAILED -> handler.fail()
+        GestureHandler.STATE_CANCELLED -> handler.cancel()
+      }
+    }
   }
 
   override fun getConstants(): Map<String, Any> {
@@ -416,8 +450,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private fun tryInitializeHandlerForReactRootView(ancestorViewTag: Int) {
-    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)
-    val rootViewTag = uiManager!!.resolveRootTagFromReactTag(ancestorViewTag)
+    val uiManager = reactApplicationContext.UIManager
+    val rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag)
     if (rootViewTag < 1) {
       throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
     }
@@ -467,7 +501,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   }
 
   private fun findRootHelperForViewAncestor(viewTag: Int): RNGestureHandlerRootHelper? {
-    val uiManager = reactApplicationContext.getNativeModule(UIManagerModule::class.java)!!
+    val uiManager = reactApplicationContext.UIManager
     val rootViewTag = uiManager.resolveRootTagFromReactTag(viewTag)
     if (rootViewTag < 1) {
       return null
@@ -483,19 +517,28 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
   private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? =
     handlerFactories.firstOrNull { it.type == handler.javaClass } as HandlerFactory<T>?
 
-  private fun <T : GestureHandler<T>> onTouchEvent(handler: T, motionEvent: MotionEvent) {
+  private fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, motionEvent: MotionEvent) {
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
     if (handler.state == GestureHandler.STATE_ACTIVE) {
-      reactApplicationContext
-        .getNativeModule(UIManagerModule::class.java)!!
-        .eventDispatcher.let {
-          val handlerFactory = findFactoryForHandler(handler)
-          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
-          it.dispatchEvent(event)
-        }
+      val handlerFactory = findFactoryForHandler(handler)
+
+      if (handler.usesDeviceEvents) {
+        val data = RNGestureHandlerEvent.createEventData(handler, handlerFactory)
+
+        reactApplicationContext
+          .deviceEventEmitter
+          .emit(RNGestureHandlerEvent.EVENT_NAME, data)
+      } else {
+        reactApplicationContext
+          .UIManager
+          .eventDispatcher.let {
+            val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+            it.dispatchEvent(event)
+          }
+      }
     }
   }
 
@@ -504,19 +547,60 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) : ReactCont
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
-    reactApplicationContext
-      .getNativeModule(UIManagerModule::class.java)!!
-      .eventDispatcher.let {
-        val handlerFactory = findFactoryForHandler(handler)
-        val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
-        it.dispatchEvent(event)
+    val handlerFactory = findFactoryForHandler(handler)
+
+    if (handler.usesDeviceEvents) {
+      val data = RNGestureHandlerStateChangeEvent.createEventData(
+        handler,
+        handlerFactory,
+        newState,
+        oldState,
+      )
+
+      reactApplicationContext
+        .deviceEventEmitter
+        .emit(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
+    } else {
+      reactApplicationContext
+        .UIManager
+        .eventDispatcher.let {
+          val event =
+            RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
+          it.dispatchEvent(event)
+        }
+    }
+  }
+
+  private fun <T : GestureHandler<T>> onTouchEvent(handler: T) {
+    if (handler.tag < 0) {
+      // root containers use negative tags, we don't need to dispatch events for them to the JS
+      return
+    }
+    if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE
+        || handler.state == GestureHandler.STATE_UNDETERMINED || handler.view != null) {
+      if (handler.usesDeviceEvents) {
+        val data = RNGestureHandlerTouchEvent.createEventData(handler)
+
+        reactApplicationContext
+            .deviceEventEmitter
+            .emit(RNGestureHandlerTouchEvent.EVENT_NAME, data)
+      } else {
+        reactApplicationContext
+            .UIManager
+            .eventDispatcher.let {
+              val event = RNGestureHandlerTouchEvent.obtain(handler)
+              it.dispatchEvent(event)
+            }
       }
+    }
   }
 
   companion object {
     const val MODULE_NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
+    private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
+    private const val KEY_MANUAL_ACTIVATION = "manualActivation"
     private const val KEY_HIT_SLOP = "hitSlop"
     private const val KEY_HIT_SLOP_LEFT = "left"
     private const val KEY_HIT_SLOP_TOP = "top"

@@ -49,8 +49,7 @@ export type LongPressGestureHandlerEventPayload = {
   duration: number;
 };
 
-export interface LongPressGestureHandlerProps
-  extends BaseGestureHandlerProps<LongPressGestureHandlerEventPayload> {
+export interface LongPressGestureConfig {
   /**
    * Minimum time, expressed in milliseconds, that a finger must remain pressed on
    * the corresponding view. The default value is 500.
@@ -65,6 +64,10 @@ export interface LongPressGestureHandlerProps
    */
   maxDist?: number;
 }
+
+export interface LongPressGestureHandlerProps
+  extends BaseGestureHandlerProps<LongPressGestureHandlerEventPayload>,
+    LongPressGestureConfig {}
 
 export type LongPressGestureHandler = typeof LongPressGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file

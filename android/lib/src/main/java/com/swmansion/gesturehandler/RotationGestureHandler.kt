@@ -58,6 +58,15 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     }
   }
 
+  override fun activate(force: Boolean) {
+    // reset rotation if the handler has not yet activated
+    if (state != STATE_ACTIVE) {
+      rotation = 0.0
+      velocity = 0.0
+    }
+    super.activate(force)
+  }
+
   override fun onReset() {
     rotationGestureDetector = null
     velocity = 0.0

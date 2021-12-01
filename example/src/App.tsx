@@ -31,6 +31,17 @@ import HorizontalDrawer from './basic/horizontalDrawer';
 import PagerAndDrawer from './basic/pagerAndDrawer';
 import ForceTouch from './basic/forcetouch';
 
+import ReanimatedSimple from './new_api/reanimated';
+import Camera from './new_api/camera';
+import Transformations from './new_api/transformations';
+import OverlapParents from './new_api/overlap_parent';
+import OverlapSiblings from './new_api/overlap_siblings';
+import Calculator from './new_api/calculator';
+import BottomSheetNewApi from './new_api/bottom_sheet';
+import ChatHeadsNewApi from './new_api/chat_heads';
+import DragNDrop from './new_api/drag_n_drop';
+import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
+
 interface Example {
   name: string;
   component: React.ComponentType;
@@ -89,6 +100,27 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Fling', component: Fling },
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
+    ],
+  },
+  {
+    sectionTitle: 'New api',
+    data: [
+      {
+        name: 'Simple interaction with Reanimated',
+        component: ReanimatedSimple,
+      },
+      { name: 'Camera', component: Camera },
+      { name: 'Transformations', component: Transformations },
+      { name: 'Overlap parents', component: OverlapParents },
+      { name: 'Overlap siblings', component: OverlapSiblings },
+      { name: 'Calculator', component: Calculator },
+      { name: 'Bottom Sheet', component: BottomSheetNewApi },
+      { name: 'Chat Heads', component: ChatHeadsNewApi },
+      { name: 'Drag and drop', component: DragNDrop },
+      {
+        name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
+        component: BetterHorizontalDrawer,
+      },
     ],
   },
 ];

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  findNodeHandle as findNodeHandleRN,
   Platform,
   Touchable,
   UIManager,
@@ -16,19 +15,14 @@ import { handlerIDToTag, getNextHandlerTag } from './handlersRegistry';
 
 import {
   BaseGestureHandlerProps,
+  filterConfig,
   GestureEvent,
   HandlerStateChangeEvent,
+  findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
 
 const UIManagerAny = UIManager as any;
-
-function findNodeHandle(
-  node: null | number | React.Component<any, any> | React.ComponentClass<any>
-): null | number | React.Component<any, any> | React.ComponentClass<any> {
-  if (Platform.OS === 'web') return node;
-  return findNodeHandleRN(node);
-}
 
 const customGHEventsConfig = {
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
@@ -85,59 +79,6 @@ if (DEV_ON_ANDROID) {
   DeviceEventEmitter.addListener('toggleElementInspector', () => {
     allowTouches = !allowTouches;
   });
-}
-function isConfigParam(param: unknown, name: string) {
-  // param !== Object(param) returns false if `param` is a function
-  // or an object and returns true if `param` is null
-  return (
-    param !== undefined &&
-    (param !== Object(param) ||
-      !('__isNative' in (param as Record<string, unknown>))) &&
-    name !== 'onHandlerStateChange' &&
-    name !== 'onGestureEvent'
-  );
-}
-
-function filterConfig(
-  props: Record<string, unknown>,
-  validProps: string[],
-  defaults: Record<string, unknown> = {}
-) {
-  const res = { ...defaults };
-  validProps.forEach((key) => {
-    const value = props[key];
-    if (isConfigParam(value, key)) {
-      let value = props[key];
-      if (key === 'simultaneousHandlers' || key === 'waitFor') {
-        value = transformIntoHandlerTags(props[key]);
-      } else if (key === 'hitSlop') {
-        if (typeof value !== 'object') {
-          value = { top: value, left: value, bottom: value, right: value };
-        }
-      }
-      res[key] = value;
-    }
-  });
-  return res;
-}
-
-function transformIntoHandlerTags(handlerIDs: any) {
-  if (!Array.isArray(handlerIDs)) {
-    handlerIDs = [handlerIDs];
-  }
-
-  if (Platform.OS === 'web') {
-    return handlerIDs
-      .map(({ current }: { current: any }) => current)
-      .filter((handle: any) => handle);
-  }
-  // converts handler string IDs into their numeric tags
-  return handlerIDs
-    .map(
-      (handlerID: any) =>
-        handlerIDToTag[handlerID] || handlerID.current?.handlerTag || -1
-    )
-    .filter((handlerTag: number) => handlerTag > 0);
 }
 
 type HandlerProps<T extends Record<string, unknown>> = Readonly<
@@ -342,12 +283,14 @@ export default function createHandler<
         (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
           this.handlerTag,
           newViewTag,
+          false,
           this.propsRef
         );
       } else {
         RNGestureHandlerModule.attachGestureHandler(
           this.handlerTag,
-          newViewTag
+          newViewTag,
+          false
         );
       }
     };

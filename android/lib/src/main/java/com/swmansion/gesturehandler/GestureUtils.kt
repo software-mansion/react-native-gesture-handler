@@ -3,7 +3,6 @@ package com.swmansion.gesturehandler
 import android.view.MotionEvent
 
 object GestureUtils {
-  @JvmStatic
   fun getLastPointerX(event: MotionEvent, averageTouches: Boolean): Float {
     val offset = event.rawX - event.x
     val excludeIndex = if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) event.actionIndex else -1
@@ -26,7 +25,6 @@ object GestureUtils {
     }
   }
 
-  @JvmStatic
   fun getLastPointerY(event: MotionEvent, averageTouches: Boolean): Float {
     val offset = event.rawY - event.y
     val excludeIndex = if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) event.actionIndex else -1
