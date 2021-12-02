@@ -8,7 +8,7 @@ Composing gestures is much simpler in RNGH2, you don't need to create a ref for 
 
 ## Race
 
-Only one of the provided gestures can become active at the same time. The fist gesture to become active will cancel the rest of the gestures. It accepts variable number of arguments.
+Only one of the provided gestures can become active at the same time. The first gesture to become active will cancel the rest of the gestures. It accepts variable number of arguments.
 It is the equivalent to having more than one gesture handler without defining `simultaneousHandlers` and `waitFor` props.
 
 For example, lets say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `Race`:
