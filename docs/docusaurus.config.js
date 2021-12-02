@@ -19,7 +19,6 @@ module.exports = {
   baseUrl,
   url: 'https://docs.swmansion.com',
   favicon: 'img/SWM_Fav_192x192.png',
-  onBrokenLinks: 'warn',
   presets: [
     [
       '@docusaurus/preset-classic',
