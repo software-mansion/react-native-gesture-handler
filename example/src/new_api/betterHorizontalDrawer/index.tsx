@@ -2,12 +2,11 @@ import React, { useRef, useState } from 'react';
 
 import { StyleSheet, Text, View, TextInput } from 'react-native';
 
+import { DrawerType, RectButton } from 'react-native-gesture-handler';
 import {
   DrawerLayoutController,
-  DrawerType,
-  RectButton,
-  BetterDrawerLayout,
-} from 'react-native-gesture-handler';
+  DrawerLayout,
+} from './BetterHorizonatalDrawer';
 import Animated, {
   useAnimatedStyle,
   interpolate,
@@ -88,7 +87,7 @@ export default function Example() {
 
   return (
     <View style={styles.container}>
-      <BetterDrawerLayout
+      <DrawerLayout
         drawerPosition={onLeft ? 'left' : 'right'}
         drawerType={TYPES[type]}
         renderNavigationView={(offset) => {
@@ -111,7 +110,7 @@ export default function Example() {
             controller.current?.open();
           }}
         />
-      </BetterDrawerLayout>
+      </DrawerLayout>
     </View>
   );
 }

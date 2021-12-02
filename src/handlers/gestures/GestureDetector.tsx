@@ -13,9 +13,14 @@ import {
   baseGestureHandlerWithMonitorProps,
   filterConfig,
   findNodeHandle,
-  UnwrappedGestureHandlerEvent,
-  UnwrappedGestureHandlerStateChangeEvent,
+  GestureTouchEvent,
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
+import {
+  GestureStateManager,
+  GestureStateManagerType,
+} from './gestureStateManager';
 import { flingGestureHandlerProps } from '../FlingGestureHandler';
 import { forceTouchGestureHandlerProps } from '../ForceTouchGestureHandler';
 import { longPressGestureHandlerProps } from '../LongPressGestureHandler';
@@ -25,6 +30,7 @@ import {
 } from '../PanGestureHandler';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
+import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
 
 const ALLOWED_PROPS = [
@@ -53,6 +59,8 @@ function convertToHandlerTag(ref: GestureRef): number {
   } else if (ref instanceof BaseGesture) {
     return ref.handlerTag;
   } else {
+    // @ts-ignore in this case it should be a ref either to gesture object or
+    // a gesture handler component, in both cases handlerTag property exists
     return ref.current?.handlerTag ?? -1;
   }
 }
@@ -222,12 +230,18 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   }
 
   function isStateChangeEvent(
-    event:
-      | UnwrappedGestureHandlerEvent
-      | UnwrappedGestureHandlerStateChangeEvent
-  ): event is UnwrappedGestureHandlerStateChangeEvent {
+    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+  ): event is GestureStateChangeEvent {
     'worklet';
+    // @ts-ignore Yes, the oldState prop is missing on GestureTouchEvent, that's the point
     return event.oldState != null;
+  }
+
+  function isTouchEvent(
+    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+  ): event is GestureTouchEvent {
+    'worklet';
+    return event.eventType != null;
   }
 
   function getHandler(
@@ -237,30 +251,51 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     'worklet';
     switch (type) {
       case CALLBACK_TYPE.BEGAN:
-        return gesture.onBegan;
+        return gesture.onBegin;
       case CALLBACK_TYPE.START:
         return gesture.onStart;
       case CALLBACK_TYPE.UPDATE:
         return gesture.onUpdate;
       case CALLBACK_TYPE.END:
         return gesture.onEnd;
+      case CALLBACK_TYPE.TOUCHES_DOWN:
+        return gesture.onTouchesDown;
+      case CALLBACK_TYPE.TOUCHES_MOVE:
+        return gesture.onTouchesMove;
+      case CALLBACK_TYPE.TOUCHES_UP:
+        return gesture.onTouchesUp;
+      case CALLBACK_TYPE.TOUCHES_CANCELLED:
+        return gesture.onTouchesCancelled;
     }
+  }
+
+  function touchEventTypeToCallbackType(eventType: EventType): CALLBACK_TYPE {
+    'worklet';
+    switch (eventType) {
+      case EventType.TOUCHES_DOWN:
+        return CALLBACK_TYPE.TOUCHES_DOWN;
+      case EventType.TOUCHES_MOVE:
+        return CALLBACK_TYPE.TOUCHES_MOVE;
+      case EventType.TOUCHES_UP:
+        return CALLBACK_TYPE.TOUCHES_UP;
+      case EventType.TOUCHES_CANCELLED:
+        return CALLBACK_TYPE.TOUCHES_CANCELLED;
+    }
+    return CALLBACK_TYPE.UNDEFINED;
   }
 
   function runWorklet(
     type: CALLBACK_TYPE,
     gesture: HandlerCallbacks<Record<string, unknown>>,
-    event:
-      | UnwrappedGestureHandlerStateChangeEvent
-      | UnwrappedGestureHandlerEvent,
-    success?: boolean
+    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
+    ...args: any[]
   ) {
     'worklet';
     const handler = getHandler(type, gesture);
     if (gesture.isWorklet[type]) {
       // @ts-ignore Logic below makes sure the correct event is send to the
       // correct handler.
-      handler?.(event, success);
+      handler?.(event, ...args);
     } else if (handler) {
       console.warn('Animated gesture callback must be a worklet');
     }
@@ -273,10 +308,11 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     HandlerCallbacks<Record<string, unknown>>[] | null
   >(null);
 
+  // not every gesture needs a state controller, init them lazily
+  const stateControllers: GestureStateManagerType[] = [];
+
   const callback = (
-    event:
-      | UnwrappedGestureHandlerStateChangeEvent
-      | UnwrappedGestureHandlerEvent
+    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent
   ) => {
     'worklet';
 
@@ -285,9 +321,6 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
       return;
     }
 
-    //Using for-of loop here causes crash, because worklets do not support it,
-    //consider changing this in future when support for it is added
-    //eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < currentCallback.length; i++) {
       const gesture = currentCallback[i];
 
@@ -305,15 +338,28 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
           ) {
             runWorklet(CALLBACK_TYPE.START, gesture, event);
           } else if (
-            event.oldState === State.ACTIVE &&
+            event.oldState !== event.state &&
             event.state === State.END
           ) {
             runWorklet(CALLBACK_TYPE.END, gesture, event, true);
           } else if (
-            event.state === State.FAILED ||
-            event.state === State.CANCELLED
+            (event.state === State.FAILED || event.state === State.CANCELLED) &&
+            event.state !== event.oldState
           ) {
             runWorklet(CALLBACK_TYPE.END, gesture, event, false);
+          }
+        } else if (isTouchEvent(event)) {
+          if (!stateControllers[i]) {
+            stateControllers[i] = GestureStateManager.create(event.handlerTag);
+          }
+
+          if (event.eventType !== EventType.UNDETERMINED) {
+            runWorklet(
+              touchEventTypeToCallbackType(event.eventType),
+              gesture,
+              event,
+              stateControllers[i]
+            );
           }
         } else {
           runWorklet(CALLBACK_TYPE.UPDATE, gesture, event);

@@ -6,6 +6,7 @@ import * as React from 'react';
 import { Platform, findNodeHandle as findNodeHandleRN } from 'react-native';
 
 import { State } from '../State';
+import { EventType } from '../EventType';
 import { ValueOf } from '../typeUtils';
 import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
@@ -31,7 +32,11 @@ export const baseGestureHandlerProps = [
   'onHandlerStateChange',
 ] as const;
 
-export const baseGestureHandlerWithMonitorProps = commonProps;
+export const baseGestureHandlerWithMonitorProps = [
+  ...commonProps,
+  'needsPointerData',
+  'manualActivation',
+];
 
 export interface GestureEventPayload {
   handlerTag: number;
@@ -70,11 +75,28 @@ export interface HandlerStateChangeEvent<
   nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
 }
 
-export type UnwrappedGestureHandlerEvent<
+export type TouchData = {
+  id: number;
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+};
+
+export type GestureTouchEvent = {
+  handlerTag: number;
+  numberOfTouches: number;
+  state: ValueOf<typeof State>;
+  eventType: EventType;
+  allTouches: TouchData[];
+  changedTouches: TouchData[];
+};
+
+export type GestureUpdateEvent<
   GestureEventPayloadT = Record<string, unknown>
 > = GestureEventPayload & GestureEventPayloadT;
 
-export type UnwrappedGestureHandlerStateChangeEvent<
+export type GestureStateChangeEvent<
   GestureStateChangeEventPayloadT = Record<string, unknown>
 > = HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT;
 

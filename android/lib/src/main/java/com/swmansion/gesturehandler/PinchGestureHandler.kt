@@ -71,6 +71,15 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     }
   }
 
+  override fun activate(force: Boolean) {
+    // reset scale if the handler has not yet activated
+    if (state != STATE_ACTIVE) {
+      velocity = 0.0
+      scale = 1.0
+    }
+    super.activate(force)
+  }
+
   override fun onReset() {
     scaleGestureDetector = null
     velocity = 0.0

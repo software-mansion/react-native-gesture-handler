@@ -330,7 +330,7 @@ function Button({ text, append }: ButtonProps) {
         runOnJS(append)(text);
       }
     })
-    .onBegan((_e) => {
+    .onBegin((_e) => {
       'worklet';
       alpha.value = withTiming(0.75, { duration: TAP_ANIMATION_DURATION });
     });

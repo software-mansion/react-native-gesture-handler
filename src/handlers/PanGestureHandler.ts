@@ -233,6 +233,18 @@ function validatePanGestureHandlerProps(props: PanGestureHandlerProps) {
       `First element of failOffsetY should be negative, a the second one should be positive`
     );
   }
+
+  if (props.minDist && (props.failOffsetX || props.failOffsetY)) {
+    throw new Error(
+      `It is not supported to use minDist with failOffsetX or failOffsetY, use activeOffsetX and activeOffsetY instead`
+    );
+  }
+
+  if (props.minDist && (props.activeOffsetX || props.activeOffsetY)) {
+    throw new Error(
+      `It is not supported to use minDist with activeOffsetX or activeOffsetY`
+    );
+  }
 }
 
 function transformPanGestureHandlerProps(props: PanGestureHandlerProps) {

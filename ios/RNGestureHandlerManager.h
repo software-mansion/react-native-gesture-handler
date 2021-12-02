@@ -2,6 +2,8 @@
 
 #import <React/RCTBridgeModule.h>
 
+#import "RNGestureHandler.h"
+
 @class RCTUIManager;
 @class RCTEventDispatcher;
 
@@ -29,5 +31,7 @@
         blockNativeResponder:(nonnull NSNumber *)blockNativeResponder;
 
 - (void)handleClearJSResponder;
+
+- (nullable RNGestureHandler *)handlerWithTag:(nonnull NSNumber *)handlerTag;
 
 @end

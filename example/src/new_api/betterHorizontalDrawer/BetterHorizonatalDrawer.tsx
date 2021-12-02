@@ -14,9 +14,9 @@ import {
   DrawerLockMode,
   DrawerPosition,
   DrawerType,
-} from './DrawerLayout';
-import { GestureDetector } from '../handlers/gestures/GestureDetector';
-import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
+  GestureDetector,
+  Gesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
   useAnimatedStyle,

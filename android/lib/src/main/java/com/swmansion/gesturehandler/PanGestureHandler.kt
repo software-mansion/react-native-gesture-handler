@@ -62,7 +62,6 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
 
   override fun resetConfig() {
     super.resetConfig()
-    minDistSq = MAX_VALUE_IGNORE
     activeOffsetXStart = MIN_VALUE_IGNORE
     activeOffsetXEnd = MAX_VALUE_IGNORE
     failOffsetXStart = MAX_VALUE_IGNORE
@@ -246,12 +245,18 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       if (shouldFail()) {
         fail()
       } else if (shouldActivate()) {
-        // reset starting point
-        startX = lastX
-        startY = lastY
         activate()
       }
     }
+  }
+
+  override fun activate(force: Boolean) {
+    // reset starting point if the handler has not yet activated
+    if (state != STATE_ACTIVE) {
+      startX = lastX
+      startY = lastY
+    }
+    super.activate(force)
   }
 
   override fun onReset() {

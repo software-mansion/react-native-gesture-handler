@@ -17,7 +17,7 @@ Check out our dedicated documentation page for info about this library, API refe
 
 ## Examples
 
-If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `examples/Example/` folder and run:
+If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `example` folder and run:
 
 ```bash
   yarn install
@@ -27,7 +27,7 @@ If you are running on ios, run `pod install` in the ios folder
 
 Run `yarn start` to start the metro bundler
 
-Run `react-native run-android` or `react-native run-ios` (depending on which platform you want to run the example app on).
+Run `yarn android` or `yarn ios` (depending on which platform you want to run the example app on).
 
 You will need to have an Android or iOS device or emulator connected as well as `react-native-cli` package installed globally.
 
