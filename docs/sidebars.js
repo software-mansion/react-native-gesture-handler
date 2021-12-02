@@ -1,25 +1,30 @@
 module.exports = {
   docs: {
-    Basics: [
-      'getting-started',
-      'about-handlers',
-      'state',
-      'interactions',
+    Guides: [
+      'introduction',
+      'quickstart/quickstart',
+      'gesture-composition',
+      'manual-gestures/manual-gestures',
+      'whats-new',
       'example',
     ],
     'API reference': [
       {
-        'Gesture handlers': [
-          'api/gesture-handlers/common-gh',
-          'api/gesture-handlers/pan-gh',
-          'api/gesture-handlers/tap-gh',
-          'api/gesture-handlers/longpress-gh',
-          'api/gesture-handlers/rotation-gh',
-          'api/gesture-handlers/fling-gh',
-          'api/gesture-handlers/pinch-gh',
-          'api/gesture-handlers/force-gh',
-          'api/gesture-handlers/nativeview-gh',
-          'api/gesture-handlers/create-native-wrapper'
+        Gestures: [
+          'api/gestures/gesture-detector',
+          'api/gestures/gesture',
+          'api/gestures/pan-gesture',
+          'api/gestures/tap-gesture',
+          'api/gestures/long-press-gesture',
+          'api/gestures/rotation-gesture',
+          'api/gestures/pinch-gesture',
+          'api/gestures/fling-gesture',
+          'api/gestures/force-touch-gesture',
+          'api/gestures/native-gesture',
+          'api/gestures/manual-gesture',
+          'api/gestures/composed-gestures',
+          'api/gestures/touch-events',
+          'api/gestures/state-manager',
         ],
         Components: [
           'api/components/buttons',
@@ -43,6 +48,31 @@ module.exports = {
           'api2/force-touch-gesture',
         ],
       },
+    ],
+    'Under the hood': [
+      'under-the-hood/states-events',
+      'under-the-hood/how-does-it-work',
+    ],
+    'Gesture handlers': [
+      {
+        Basics: [
+          'gesture-handlers/basics/about-handlers',
+          'gesture-handlers/basics/state',
+          'gesture-handlers/basics/interactions',
+        ],
+        'API reference': [
+          'gesture-handlers/api/common-gh',
+          'gesture-handlers/api/pan-gh',
+          'gesture-handlers/api/tap-gh',
+          'gesture-handlers/api/longpress-gh',
+          'gesture-handlers/api/rotation-gh',
+          'gesture-handlers/api/fling-gh',
+          'gesture-handlers/api/pinch-gh',
+          'gesture-handlers/api/force-gh',
+          'gesture-handlers/api/nativeview-gh',
+          'gesture-handlers/api/create-native-wrapper'
+        ],
+      }
     ],
     Other: ['contributing', 'troubleshooting', 'resources', 'credits'],
   },
