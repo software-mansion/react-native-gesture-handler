@@ -38,4 +38,4 @@ import FabricCallbacksExample from './new_api/fabric/FabricCallbacksExample'; //
 import FabricPanGestureHandlerExample from './new_api/fabric/FabricPanGestureHandlerExample'; // OK
 
 // current example
-export default FabricPanGestureHandlerExample;
+export default FabricReanimatedExample;
