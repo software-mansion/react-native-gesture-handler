@@ -5,9 +5,9 @@ import React from 'react';
 
 export default function FabricCallbacksExample() {
   const gesture = Gesture.Pan()
-    .onBegan((e) => {
+    .onBegin((e) => {
       // 'worklet';
-      console.log(_WORKLET, 'onBegan', e.target);
+      console.log(_WORKLET, 'onBegin', e.target);
     })
     .onUpdate((e) => {
       // 'worklet';

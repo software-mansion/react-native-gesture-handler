@@ -29,9 +29,9 @@ function Figure({ borderRadius, color }: FigureProps) {
   });
 
   const gesture = Gesture.Pan()
-    .onBegan(() => {
+    .onBegin(() => {
       // 'worklet';
-      console.log(_WORKLET, 'onBegan');
+      console.log(_WORKLET, 'onBegin');
       isPressed.value = true;
     })
     .onUpdate((e) => {
