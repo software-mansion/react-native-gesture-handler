@@ -56,6 +56,10 @@ export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
     event: GestureStateChangeEvent<EventPayloadT>,
     success: boolean
   ) => void;
+  onFinalize?: (
+    event: GestureStateChangeEvent<EventPayloadT>,
+    success: boolean
+  ) => void;
   onUpdate?: (event: GestureUpdateEvent<EventPayloadT>) => void;
   onTouchesDown?: TouchEventHandlerType;
   onTouchesMove?: TouchEventHandlerType;
@@ -70,10 +74,11 @@ export const CALLBACK_TYPE = {
   START: 2,
   UPDATE: 3,
   END: 4,
-  TOUCHES_DOWN: 5,
-  TOUCHES_MOVE: 6,
-  TOUCHES_UP: 7,
-  TOUCHES_CANCELLED: 8,
+  FINALIZE: 5,
+  TOUCHES_DOWN: 6,
+  TOUCHES_MOVE: 7,
+  TOUCHES_UP: 8,
+  TOUCHES_CANCELLED: 9,
 } as const;
 
 // Allow using CALLBACK_TYPE as object and type
@@ -157,6 +162,18 @@ export abstract class BaseGesture<
     this.handlers.onEnd = callback;
     //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     this.handlers.isWorklet[CALLBACK_TYPE.END] = this.isWorklet(callback);
+    return this;
+  }
+
+  onFinalize(
+    callback: (
+      event: GestureStateChangeEvent<EventPayloadT>,
+      success: boolean
+    ) => void
+  ) {
+    this.handlers.onFinalize = callback;
+    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    this.handlers.isWorklet[CALLBACK_TYPE.FINALIZE] = this.isWorklet(callback);
     return this;
   }
 
