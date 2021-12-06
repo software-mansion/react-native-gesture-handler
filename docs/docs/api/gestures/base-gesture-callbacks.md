@@ -1,6 +1,6 @@
 ### Callbacks common to all gestures:
 
-### `onBegan(callback)`
+### `onBegin(callback)`
 
 Set the callback that is being called when given gesture handler starts receiving touches. At the moment of this callback the handler is not yet in an active state and we don't know yet if it will recognize the gesture at all.
 

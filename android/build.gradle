@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
 
@@ -15,6 +17,19 @@ apply plugin: 'kotlin-android'
 
 def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+// Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
+def shouldUseCommonInterfaceFromReanimated() {
+    if (rootProject.subprojects.find { it.name == 'react-native-reanimated' } != null) {
+        def inputFile = new File(rootProject.projectDir, '../node_modules/react-native-reanimated/package.json')
+        def json = new JsonSlurper().parseText(inputFile.text)
+        def reanimatedVersion = json.version as String
+        def (major, minor, patch) = reanimatedVersion.tokenize('.')
+        return Integer.parseInt(minor) >= 3
+    } else {
+        return false
+    }
 }
 
 repositories {
@@ -36,6 +51,12 @@ android {
     // standalone gradle module just to be used in AndroidNativeExample
     sourceSets {
         main.java.srcDirs += 'lib/src/main/java'
+
+        // Include "common/" only when it's not provided by Reanimated to mitigate
+        // multiple definitions of the same class preventing build
+        if (!shouldUseCommonInterfaceFromReanimated()) {
+            main.java.srcDirs += 'common/src/main/java'
+        }
     }
 }
 
@@ -43,6 +64,10 @@ def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlin
 
 dependencies {
     //noinspection GradleDynamicVersion
+    if (shouldUseCommonInterfaceFromReanimated()) {
+        // Include Reanimated as dependency to load the common interface
+        implementation project(':react-native-reanimated')
+    }
     implementation 'com.facebook.react:react-native:+'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.core:core-ktx:1.6.0"
