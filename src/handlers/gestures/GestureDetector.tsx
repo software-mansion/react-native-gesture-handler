@@ -258,6 +258,8 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
         return gesture.onUpdate;
       case CALLBACK_TYPE.END:
         return gesture.onEnd;
+      case CALLBACK_TYPE.FINALIZE:
+        return gesture.onFinalize;
       case CALLBACK_TYPE.TOUCHES_DOWN:
         return gesture.onTouchesDown;
       case CALLBACK_TYPE.TOUCHES_MOVE:
@@ -341,12 +343,18 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
             event.oldState !== event.state &&
             event.state === State.END
           ) {
-            runWorklet(CALLBACK_TYPE.END, gesture, event, true);
+            if (event.oldState === State.ACTIVE) {
+              runWorklet(CALLBACK_TYPE.END, gesture, event, true);
+            }
+            runWorklet(CALLBACK_TYPE.FINALIZE, gesture, event, true);
           } else if (
             (event.state === State.FAILED || event.state === State.CANCELLED) &&
             event.state !== event.oldState
           ) {
-            runWorklet(CALLBACK_TYPE.END, gesture, event, false);
+            if (event.oldState === State.ACTIVE) {
+              runWorklet(CALLBACK_TYPE.END, gesture, event, false);
+            }
+            runWorklet(CALLBACK_TYPE.FINALIZE, gesture, event, false);
           }
         } else if (isTouchEvent(event)) {
           if (!stateControllers[i]) {

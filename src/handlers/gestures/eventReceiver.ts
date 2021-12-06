@@ -70,12 +70,18 @@ function onGestureHandlerEvent(
       ) {
         handler.handlers.onStart?.(event);
       } else if (event.oldState !== event.state && event.state === State.END) {
-        handler.handlers.onEnd?.(event, true);
+        if (event.oldState === State.ACTIVE) {
+          handler.handlers.onEnd?.(event, true);
+        }
+        handler.handlers.onFinalize?.(event, true);
       } else if (
         (event.state === State.FAILED || event.state === State.CANCELLED) &&
         event.oldState !== event.state
       ) {
-        handler.handlers.onEnd?.(event, false);
+        if (event.oldState === State.ACTIVE) {
+          handler.handlers.onEnd?.(event, false);
+        }
+        handler.handlers.onFinalize?.(event, false);
       }
     } else if (isTouchEvent(event)) {
       switch (event.eventType) {
