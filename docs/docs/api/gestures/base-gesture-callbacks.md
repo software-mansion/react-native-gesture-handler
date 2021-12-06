@@ -12,6 +12,10 @@ Set the `onStart` callback.
 
 Set the `onEnd` callback.
 
+### `onFinalize(callback)`
+
+Set the `onFinalize` callback.
+
 ### `onTouchesDown(event, stateManager)`
 
 Set the `onTouchesDown` callback which is called every time a finger is placed on the screen.

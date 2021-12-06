@@ -63,7 +63,11 @@ Is called when a gesture transitions to the [`ACTIVE`](#active) state.
 
 ### `onEnd`
 
-Is called when a gesture transitions to the [`END`](#end), [`FAILED`](#failed), or [`CANCELLED`](#cancelled) state. If the gesture transitions to the [`END`](#end) state, the `success` argument is set to `true` otherwise it is set to `false`.
+Is called when a gesture transitions from the [`ACTIVE`](#active) state to the [`END`](#end), [`FAILED`](#failed), or [`CANCELLED`](#cancelled) state. If the gesture transitions to the [`END`](#end) state, the `success` argument is set to `true` otherwise it is set to `false`.
+
+### `onFinalize`
+
+Is called when a gesture transitions to the [`END`](#end), [`FAILED`](#failed), or [`CANCELLED`](#cancelled) state. If the gesture transitions to the [`END`](#end) state, the `success` argument is set to `true` otherwise it is set to `false`. If the gesture transitions from the [`ACTIVE`](#active) state, it will be called after `onEnd`.
 
 ### `onUpdate`
 
