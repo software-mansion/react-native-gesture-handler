@@ -27,6 +27,7 @@
     "android/src/main/java/",
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
+    "android/common/src/main/java/",
     "ios/",
     "Swipeable/",
     "DrawerLayout/",
