@@ -1,8 +1,8 @@
 ### Callbacks common to all gestures:
 
-### `onBegan(callback)`
+### `onBegin(callback)`
 
-Set the `onBegan` callback.
+Set the `onBegin` callback.
 
 ### `onStart(callback)`
 
