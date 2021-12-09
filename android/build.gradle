@@ -21,8 +21,9 @@ def safeExtGet(prop, fallback) {
 
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
 def shouldUseCommonInterfaceFromReanimated() {
-    if (rootProject.subprojects.find { it.name == 'react-native-reanimated' } != null) {
-        def inputFile = new File(rootProject.projectDir, '../node_modules/react-native-reanimated/package.json')
+    def reanimated = rootProject.subprojects.find { it.name == 'react-native-reanimated' };
+    if (reanimated != null) {
+        def inputFile = new File(reanimated.projectDir, '../package.json')
         def json = new JsonSlurper().parseText(inputFile.text)
         def reanimatedVersion = json.version as String
         def (major, minor, patch) = reanimatedVersion.tokenize('.')
