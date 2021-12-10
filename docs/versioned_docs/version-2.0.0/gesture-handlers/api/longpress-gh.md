@@ -8,7 +8,7 @@ A discrete gesture handler that activates when the corresponding view is pressed
 This handler's state will turn into [END](../basics/state.md#end) immediately after the finger is released.
 The handler will fail to recognize a touch event if the finger is lifted before the [minimum required time](#mindurationms) or if the finger is moved further than the [allowable distance](#maxdist).
 
-The handler is implemented using [UILongPressGestureRecognizer](https://developer.apple.com/documentation/uikit/uilongpressgesturerecognizer) on iOS and [LongPressGestureHandler](https://github.com/software-mansion/react-native-gesture-handler/blob/master/android/lib/src/main/java/com/swmansion/gesturehandler/LongPressGestureHandler.java) on Android.
+The handler is implemented using [UILongPressGestureRecognizer](https://developer.apple.com/documentation/uikit/uilongpressgesturerecognizer) on iOS and [LongPressGestureHandler](https://github.com/software-mansion/react-native-gesture-handler/blob/main/android/lib/src/main/java/com/swmansion/gesturehandler/LongPressGestureHandler.java) on Android.
 
 ## Properties
 
@@ -48,7 +48,7 @@ Duration of the long press (time since the start of the event), expressed in mil
 
 ## Example
 
-See the [multitap example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/example/src/basic/multitap/index.tsx) from [GestureHandler Example App](example.md).
+See the [multitap example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/basic/multitap/index.tsx) from [GestureHandler Example App](example.md).
 
 ```js
 const LongPressButton = () => (

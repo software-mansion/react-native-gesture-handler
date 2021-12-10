@@ -54,7 +54,7 @@ Y coordinate of the current position of the pointer (finger or a leading pointer
 
 ## Example
 
-See the [fling example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/example/src/release_tests/fling/index.tsx) from [GestureHandler Example App](../../example.md).
+See the [fling example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/fling/index.tsx) from [GestureHandler Example App](../../example.md).
 
 ```js
 const LongPressButton = () => (
