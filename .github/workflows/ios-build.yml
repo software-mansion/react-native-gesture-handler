@@ -5,7 +5,7 @@ on:
       - 'ios/**'
   push:
     branches:
-      - master
+      - main
 jobs:
   build:
     runs-on: macos-latest

@@ -5,7 +5,7 @@ on:
       - 'example/**'
   push:
     branches:
-      - master
+      - main
 jobs:
   check:
     runs-on: ubuntu-latest
