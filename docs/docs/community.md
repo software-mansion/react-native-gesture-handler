@@ -7,7 +7,7 @@ sidebar_label: Community
 We are very proud of the community that has been build around this package. We really appreciate all your help regardless of it is a pull request, issue report, helping others by commenting on existing issues or posting some demo or video tutorial on social media.
 If you've build something with this library you'd like to share, please contact us as we'd love to help share it with others.
 
-## Reanimated Team 🚀
+## Gesture Handler Team 🚀
 
 <div class="community-holder-container">
 
