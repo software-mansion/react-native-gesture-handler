@@ -47,8 +47,6 @@ Gesture handler library is licensed under [The MIT License](LICENSE).
 
 ## Credits
 
-## Credits
-
 This project has been build and is maintained thanks to the support from [Shopify](https://shopify.com), [Expo.io](https://expo.io) and [Software Mansion](https://swmansion.com)
 
 [![shopify](https://avatars1.githubusercontent.com/u/8085?v=3&s=100 'Shopify.com')](https://shopify.com)
