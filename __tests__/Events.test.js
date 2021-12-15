@@ -20,9 +20,17 @@ const App = (props) => {
 
   return (
     <GestureHandlerRootView>
+      {/* handlerTag: 1 */}
       <TapGestureHandler onHandlerStateChange={eventHandler}>
         <View>
           <Text>Text</Text>
+        </View>
+      </TapGestureHandler>
+
+      {/* handlerTag: 2 */}
+      <TapGestureHandler onHandlerStateChange={eventHandler}>
+        <View>
+          <Text>Text2</Text>
         </View>
       </TapGestureHandler>
     </GestureHandlerRootView>
@@ -35,8 +43,8 @@ test('test', () => {
 
   const { getByText } = render(<App begin={begin} press={press} />);
 
-  fireGestureHandlerClick(getByText('Text'));
-  fireGestureHandlerClick(getByText('Text'));
+  fireGestureHandlerClick(getByText('Text'), 1);
+  fireGestureHandlerClick(getByText('Text2'), 2);
   
   expect(begin).toHaveBeenCalledTimes(2);
   expect(press).toHaveBeenCalledTimes(2);
