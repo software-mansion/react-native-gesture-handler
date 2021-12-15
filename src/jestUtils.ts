@@ -1,11 +1,6 @@
 import { fireEvent } from '@testing-library/react-native';
 
-export const fireGestureHandlerClick = (component) => {
-  jest.mock('react-native/Libraries/Utilities/Platform', () => ({
-    OS: 'web',
-    select: () => null,
-  }));
-
+export const fireGestureHandlerClick = (component: any) => {
   // simulate undetermined -> begin state change
   fireEvent(component, 'gestureHandlerStateChange', {
     nativeEvent: {
@@ -32,5 +27,4 @@ export const fireGestureHandlerClick = (component) => {
       state: 5,
     },
   });
-  // jest.unmock('react-native/Libraries/Utilities/Platform');
 };

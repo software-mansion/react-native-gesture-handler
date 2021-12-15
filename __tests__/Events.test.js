@@ -31,12 +31,7 @@ const App = (props) => {
   );
 };
 
-test('test', () => {
-  jest.mock('react-native/Libraries/Utilities/Platform', () => ({
-    OS: 'web',
-    select: () => null,
-  }));
-  
+test('test', () => {  
   const begin = jest.fn();
   const press = jest.fn();
 
