@@ -77,6 +77,24 @@ const sendEndEvent = (component: any, eventData?: Record<string, any>) => {
   });
 };
 
+const runEventsSequence = (
+  component: any,
+  eventData?: Record<string, any>,
+  configBegin?: Record<string, any>,
+  configProgress?: Record<string, any> | Array<Record<string, any>>,
+  configEnd?: Record<string, any>
+) => {
+  sendBeginEvent(component, { ...eventData, ...configBegin });
+  if (Array.isArray(configProgress)) {
+    for (const item of configProgress) {
+      sendProgressEvent(component, { ...eventData, ...item });
+    }
+  } else {
+    sendProgressEvent(component, { ...eventData, ...configProgress });
+  }
+  sendEndEvent(component, { ...eventData, ...configEnd });
+};
+
 export const fireGestureHandlerTap = (
   component: any,
   handlerTag: number,
@@ -100,7 +118,7 @@ export const fireGestureHandlerPan = (
   component: any,
   handlerTag: number,
   configBegin?: PanConfig,
-  configProgress?: PanConfig,
+  configProgress?: PanConfig | Array<PanConfig>,
   configEnd?: PanConfig
 ) => {
   const eventData: Required<PanConfig> | { handlerTag: number } = {
@@ -114,17 +132,20 @@ export const fireGestureHandlerPan = (
     velocityX: 0,
     velocityY: 0,
   };
-
-  sendBeginEvent(component, { ...eventData, ...configBegin });
-  sendProgressEvent(component, { ...eventData, ...configProgress });
-  sendEndEvent(component, { ...eventData, ...configEnd });
+  runEventsSequence(
+    component,
+    eventData,
+    configBegin,
+    configProgress,
+    configEnd
+  );
 };
 
 export const fireGestureHandlerLongPress = (
   component: any,
   handlerTag: number,
   configBegin?: LongPressConfig,
-  configProgress?: LongPressConfig,
+  configProgress?: LongPressConfig | Array<LongPressConfig>,
   configEnd?: LongPressConfig
 ) => {
   const eventData: Required<LongPressConfig> | { handlerTag: number } = {
@@ -135,17 +156,20 @@ export const fireGestureHandlerLongPress = (
     absoluteY: 0,
     duration: 0,
   };
-
-  sendBeginEvent(component, { ...eventData, ...configBegin });
-  sendProgressEvent(component, { ...eventData, ...configProgress });
-  sendEndEvent(component, { ...eventData, ...configEnd });
+  runEventsSequence(
+    component,
+    eventData,
+    configBegin,
+    configProgress,
+    configEnd
+  );
 };
 
 export const fireGestureHandlerRotation = (
   component: any,
   handlerTag: number,
   configBegin?: RotationConfig,
-  configProgress?: RotationConfig,
+  configProgress?: RotationConfig | Array<RotationConfig>,
   configEnd?: RotationConfig
 ) => {
   const eventData: Required<RotationConfig> | { handlerTag: number } = {
@@ -155,17 +179,20 @@ export const fireGestureHandlerRotation = (
     anchorX: 0,
     anchorY: 0,
   };
-
-  sendBeginEvent(component, { ...eventData, ...configBegin });
-  sendProgressEvent(component, { ...eventData, ...configProgress });
-  sendEndEvent(component, { ...eventData, ...configEnd });
+  runEventsSequence(
+    component,
+    eventData,
+    configBegin,
+    configProgress,
+    configEnd
+  );
 };
 
 export const fireGestureHandlerFling = (
   component: any,
   handlerTag: number,
   configBegin?: TapConfig,
-  configProgress?: TapConfig,
+  configProgress?: TapConfig | Array<TapConfig>,
   configEnd?: TapConfig
 ) => {
   const eventData: Required<TapConfig> | { handlerTag: number } = {
@@ -175,17 +202,20 @@ export const fireGestureHandlerFling = (
     absoluteX: 0,
     absoluteY: 0,
   };
-
-  sendBeginEvent(component, { ...eventData, ...configBegin });
-  sendProgressEvent(component, { ...eventData, ...configProgress });
-  sendEndEvent(component, { ...eventData, ...configEnd });
+  runEventsSequence(
+    component,
+    eventData,
+    configBegin,
+    configProgress,
+    configEnd
+  );
 };
 
 export const fireGestureHandlerPinch = (
   component: any,
   handlerTag: number,
   configBegin?: PinchConfig,
-  configProgress?: PinchConfig,
+  configProgress?: PinchConfig | Array<PinchConfig>,
   configEnd?: PinchConfig
 ) => {
   const eventData: Required<PinchConfig> | { handlerTag: number } = {
@@ -195,25 +225,31 @@ export const fireGestureHandlerPinch = (
     focalX: 0,
     focalY: 0,
   };
-
-  sendBeginEvent(component, { ...eventData, ...configBegin });
-  sendProgressEvent(component, { ...eventData, ...configProgress });
-  sendEndEvent(component, { ...eventData, ...configEnd });
+  runEventsSequence(
+    component,
+    eventData,
+    configBegin,
+    configProgress,
+    configEnd
+  );
 };
 
 export const fireGestureHandlerForceTouch = (
   component: any,
   handlerTag: number,
   configBegin?: ForceTouchConfig,
-  configProgress?: ForceTouchConfig,
+  configProgress?: ForceTouchConfig | Array<ForceTouchConfig>,
   configEnd?: ForceTouchConfig
 ) => {
   const eventData: Required<ForceTouchConfig> | { handlerTag: number } = {
     handlerTag: handlerTag,
     force: 0,
   };
-
-  sendBeginEvent(component, { ...eventData, ...configBegin });
-  sendProgressEvent(component, { ...eventData, ...configProgress });
-  sendEndEvent(component, { ...eventData, ...configEnd });
+  runEventsSequence(
+    component,
+    eventData,
+    configBegin,
+    configProgress,
+    configEnd
+  );
 };
