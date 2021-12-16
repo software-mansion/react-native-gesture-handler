@@ -77,7 +77,7 @@ const runEventsSequence = (
   component: any,
   eventData?: Record<string, any>,
   configBegin?: Record<string, any>,
-  configProgress?: Record<string, any> | Array<Record<string, any>>,
+  configProgress?: Record<string, any> | Record<string, any>[],
   configEnd?: Record<string, any>
 ) => {
   sendBeginEvent(component, { ...eventData, ...configBegin });
@@ -127,7 +127,7 @@ export const fireGestureHandlerTap = (
 export const fireGestureHandlerPan = (
   component: any,
   configBegin?: PanConfig,
-  configProgress?: PanConfig | Array<PanConfig>,
+  configProgress?: PanConfig | PanConfig[],
   configEnd?: PanConfig,
   userHandlerTag?: number
 ) => {
@@ -155,7 +155,7 @@ export const fireGestureHandlerPan = (
 export const fireGestureHandlerLongPress = (
   component: any,
   configBegin?: LongPressConfig,
-  configProgress?: LongPressConfig | Array<LongPressConfig>,
+  configProgress?: LongPressConfig | LongPressConfig[],
   configEnd?: LongPressConfig,
   userHandlerTag?: number
 ) => {
@@ -180,7 +180,7 @@ export const fireGestureHandlerLongPress = (
 export const fireGestureHandlerRotation = (
   component: any,
   configBegin?: RotationConfig,
-  configProgress?: RotationConfig | Array<RotationConfig>,
+  configProgress?: RotationConfig | RotationConfig[],
   configEnd?: RotationConfig,
   userHandlerTag?: number
 ) => {
@@ -204,7 +204,7 @@ export const fireGestureHandlerRotation = (
 export const fireGestureHandlerFling = (
   component: any,
   configBegin?: TapConfig,
-  configProgress?: TapConfig | Array<TapConfig>,
+  configProgress?: TapConfig | TapConfig[],
   configEnd?: TapConfig,
   userHandlerTag?: number
 ) => {
@@ -228,7 +228,7 @@ export const fireGestureHandlerFling = (
 export const fireGestureHandlerPinch = (
   component: any,
   configBegin?: PinchConfig,
-  configProgress?: PinchConfig | Array<PinchConfig>,
+  configProgress?: PinchConfig | PinchConfig[],
   configEnd?: PinchConfig,
   userHandlerTag?: number
 ) => {
