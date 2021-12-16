@@ -263,7 +263,7 @@ export const decorateChildrenWithTag = (component: any, tag: number) => {
   }
 };
 
-export const gestureHandlerTagEventMacro = () => ({
+export const ghTagEventMacro = () => ({
   ghTagContainer: {
     tag: 0,
   },

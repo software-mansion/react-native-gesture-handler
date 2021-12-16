@@ -17,7 +17,7 @@ import {
   fireGestureHandlerRotation,
   fireGestureHandlerFling,
   fireGestureHandlerPinch,
-  gestureHandlerTagEventMacro
+  ghTagEventMacro
 } from '../src/jestUtils'
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
 
@@ -45,27 +45,27 @@ const App = (props) => {
   return (
     <GestureHandlerRootView>
       <TapGestureHandler onHandlerStateChange={eventHandler}>
-        <Text {...gestureHandlerTagEventMacro()}>TapGestureHandlerTest</Text>
+        <Text {...ghTagEventMacro()}>TapGestureHandlerTest</Text>
       </TapGestureHandler>
 
       <PanGestureHandler onHandlerStateChange={eventHandler}>
-        <Text {...gestureHandlerTagEventMacro()}>PanGestureHandlerTest</Text>
+        <Text {...ghTagEventMacro()}>PanGestureHandlerTest</Text>
       </PanGestureHandler>
 
       <LongPressGestureHandler onHandlerStateChange={eventHandler}>
-        <Text {...gestureHandlerTagEventMacro()}>LongPressGestureHandlerTest</Text>
+        <Text {...ghTagEventMacro()}>LongPressGestureHandlerTest</Text>
       </LongPressGestureHandler>
       
       <RotationGestureHandler onHandlerStateChange={eventHandler}>
-        <Text {...gestureHandlerTagEventMacro()}>RotationGestureHandlerTest</Text>
+        <Text {...ghTagEventMacro()}>RotationGestureHandlerTest</Text>
       </RotationGestureHandler>
 
       <FlingGestureHandler onHandlerStateChange={eventHandler}>
-        <Text {...gestureHandlerTagEventMacro()}>FlingGestureHandlerTest</Text>
+        <Text {...ghTagEventMacro()}>FlingGestureHandlerTest</Text>
       </FlingGestureHandler>
 
       <PinchGestureHandler onHandlerStateChange={eventHandler}>
-        <Text {...gestureHandlerTagEventMacro()}>PinchGestureHandlerTest</Text>
+        <Text {...ghTagEventMacro()}>PinchGestureHandlerTest</Text>
       </PinchGestureHandler>
     </GestureHandlerRootView>
   );
