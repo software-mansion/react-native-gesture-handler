@@ -44,6 +44,12 @@ export interface ForceTouchConfig {
   force?: number;
 }
 
+const sendBeginEvent = (component: any, config?: Record<string, any>) => {};
+
+const sendProgressEvent = (component: any, config?: Record<string, any>) => {};
+
+const sendEndEvent = (component: any, config?: Record<string, any>) => {};
+
 export const fireGestureHandlerTap = (
   component: any,
   handlerTag: number,
@@ -135,7 +141,9 @@ export const fireGestureHandlerPan = (
 export const fireGestureHandlerLongPress = (
   component: any,
   handlerTag: number,
-  config?: LongPressConfig
+  configBegin?: LongPressConfig,
+  configProgress?: LongPressConfig,
+  configEnd?: LongPressConfig
 ) => {
   const eventData: Required<LongPressConfig> | { handlerTag: number } = {
     handlerTag: handlerTag,
@@ -144,32 +152,191 @@ export const fireGestureHandlerLongPress = (
     absoluteX: 0,
     absoluteY: 0,
     duration: 0,
-    ...config,
   };
-  // simulate undetermined -> begin state change
+
   fireEvent(component, 'gestureHandlerStateChange', {
     nativeEvent: {
       oldState: 0,
       state: 2,
       ...eventData,
+      ...configBegin,
     },
   });
 
-  // simulate begin -> active state change
   fireEvent(component, 'gestureHandlerStateChange', {
     nativeEvent: {
       oldState: 2,
       state: 4,
       ...eventData,
+      ...configProgress,
     },
   });
 
-  // simulate active -> end state change
   fireEvent(component, 'gestureHandlerStateChange', {
     nativeEvent: {
       oldState: 4,
       state: 5,
-      ...eventdata,
+      ...eventData,
+      ...configEnd,
+    },
+  });
+};
+
+export const fireGestureHandlerRotation = (
+  component: any,
+  handlerTag: number,
+  configBegin?: RotationConfig,
+  configProgress?: RotationConfig,
+  configEnd?: RotationConfig
+) => {
+  const eventData: Required<RotationConfig> | { handlerTag: number } = {
+    handlerTag: handlerTag,
+    rotation: 0,
+    velocity: 0,
+    anchorX: 0,
+    anchorY: 0,
+  };
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 0,
+      state: 2,
+      ...eventData,
+      ...configBegin,
+    },
+  });
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 2,
+      state: 4,
+      ...eventData,
+      ...configProgress,
+    },
+  });
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 4,
+      state: 5,
+      ...eventData,
+      ...configEnd,
+    },
+  });
+};
+
+export const fireGestureHandlerFling = (
+  component: any,
+  handlerTag: number,
+  configBegin?: TapConfig,
+  configEnd?: TapConfig
+) => {
+  const eventData: Required<TapConfig> | { handlerTag: number } = {
+    handlerTag: handlerTag,
+    x: 0,
+    y: 0,
+    absoluteX: 0,
+    absoluteY: 0,
+  };
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 0,
+      state: 2,
+      ...eventData,
+      ...configBegin,
+    },
+  });
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 4,
+      state: 5,
+      ...eventData,
+      ...configEnd,
+    },
+  });
+};
+
+export const fireGestureHandlerPinch = (
+  component: any,
+  handlerTag: number,
+  configBegin?: PinchConfig,
+  configProgress?: PinchConfig,
+  configEnd?: PinchConfig
+) => {
+  const eventData: Required<PinchConfig> | { handlerTag: number } = {
+    handlerTag: handlerTag,
+    scale: 0,
+    velocity: 0,
+    focalX: 0,
+    focalY: 0,
+  };
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 0,
+      state: 2,
+      ...eventData,
+      ...configBegin,
+    },
+  });
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 2,
+      state: 4,
+      ...eventData,
+      ...configProgress,
+    },
+  });
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 4,
+      state: 5,
+      ...eventData,
+      ...configEnd,
+    },
+  });
+};
+
+export const fireGestureHandlerForceTouch = (
+  component: any,
+  handlerTag: number,
+  configBegin?: ForceTouchConfig,
+  configProgress?: ForceTouchConfig,
+  configEnd?: ForceTouchConfig
+) => {
+  const eventData: Required<ForceTouchConfig> | { handlerTag: number } = {
+    handlerTag: handlerTag,
+    force: 0,
+  };
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 0,
+      state: 2,
+      ...eventData,
+      ...configBegin,
+    },
+  });
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 2,
+      state: 4,
+      ...eventData,
+      ...configProgress,
+    },
+  });
+
+  fireEvent(component, 'gestureHandlerStateChange', {
+    nativeEvent: {
+      oldState: 4,
+      state: 5,
+      ...eventData,
+      ...configEnd,
     },
   });
 };
