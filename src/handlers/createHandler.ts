@@ -21,6 +21,7 @@ import {
   findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
+import { decorateChildrenWithTag } from '../jestUtils';
 
 const UIManagerAny = UIManager as any;
 
@@ -161,6 +162,11 @@ export default function createHandler<
           throw new Error(`Handler with ID "${props.id}" already registered`);
         }
         handlerIDToTag[props.id] = this.handlerTag;
+      }
+      // @ts-ignore
+      if (!!process.env.JEST_WORKER_ID) {
+        // @ts-ignore
+        decorateChildrenWithTag(props.children, this.handlerTag);
       }
     }
 

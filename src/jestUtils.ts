@@ -40,10 +40,6 @@ export interface PinchConfig {
   focalY?: number;
 }
 
-export interface ForceTouchConfig {
-  force?: number;
-}
-
 const sendBeginEvent = (component: any, eventData?: Record<string, any>) => {
   // simulate undetermined -> begin state change
   fireEvent(component, 'gestureHandlerStateChange', {
@@ -95,11 +91,26 @@ const runEventsSequence = (
   sendEndEvent(component, { ...eventData, ...configEnd });
 };
 
+const resolveGestureHandlerTag = (
+  component: any,
+  userHandlerTag?: number
+): number => {
+  if (userHandlerTag !== undefined) return userHandlerTag;
+  const tag = component?._fiber?.stateNode?.props?.ghTagContainer?.tag;
+  if (!!tag) {
+    return tag;
+  }
+  throw Error(
+    'Unable to resolve gesture handler tag, you need to provide it manually'
+  );
+};
+
 export const fireGestureHandlerTap = (
   component: any,
-  handlerTag: number,
-  config?: TapConfig
+  config?: TapConfig,
+  userHandlerTag?: number
 ) => {
+  const handlerTag = resolveGestureHandlerTag(component, userHandlerTag);
   const eventData: Required<TapConfig> | { handlerTag: number } = {
     handlerTag: handlerTag,
     x: 0,
@@ -108,7 +119,6 @@ export const fireGestureHandlerTap = (
     absoluteY: 0,
     ...config,
   };
-
   sendBeginEvent(component, eventData);
   sendProgressEvent(component, eventData);
   sendEndEvent(component, eventData);
@@ -116,11 +126,12 @@ export const fireGestureHandlerTap = (
 
 export const fireGestureHandlerPan = (
   component: any,
-  handlerTag: number,
   configBegin?: PanConfig,
   configProgress?: PanConfig | Array<PanConfig>,
-  configEnd?: PanConfig
+  configEnd?: PanConfig,
+  userHandlerTag?: number
 ) => {
+  const handlerTag = resolveGestureHandlerTag(component, userHandlerTag);
   const eventData: Required<PanConfig> | { handlerTag: number } = {
     handlerTag: handlerTag,
     x: 0,
@@ -143,11 +154,12 @@ export const fireGestureHandlerPan = (
 
 export const fireGestureHandlerLongPress = (
   component: any,
-  handlerTag: number,
   configBegin?: LongPressConfig,
   configProgress?: LongPressConfig | Array<LongPressConfig>,
-  configEnd?: LongPressConfig
+  configEnd?: LongPressConfig,
+  userHandlerTag?: number
 ) => {
+  const handlerTag = resolveGestureHandlerTag(component, userHandlerTag);
   const eventData: Required<LongPressConfig> | { handlerTag: number } = {
     handlerTag: handlerTag,
     x: 0,
@@ -167,11 +179,12 @@ export const fireGestureHandlerLongPress = (
 
 export const fireGestureHandlerRotation = (
   component: any,
-  handlerTag: number,
   configBegin?: RotationConfig,
   configProgress?: RotationConfig | Array<RotationConfig>,
-  configEnd?: RotationConfig
+  configEnd?: RotationConfig,
+  userHandlerTag?: number
 ) => {
+  const handlerTag = resolveGestureHandlerTag(component, userHandlerTag);
   const eventData: Required<RotationConfig> | { handlerTag: number } = {
     handlerTag: handlerTag,
     rotation: 0,
@@ -190,11 +203,12 @@ export const fireGestureHandlerRotation = (
 
 export const fireGestureHandlerFling = (
   component: any,
-  handlerTag: number,
   configBegin?: TapConfig,
   configProgress?: TapConfig | Array<TapConfig>,
-  configEnd?: TapConfig
+  configEnd?: TapConfig,
+  userHandlerTag?: number
 ) => {
+  const handlerTag = resolveGestureHandlerTag(component, userHandlerTag);
   const eventData: Required<TapConfig> | { handlerTag: number } = {
     handlerTag: handlerTag,
     x: 0,
@@ -213,11 +227,12 @@ export const fireGestureHandlerFling = (
 
 export const fireGestureHandlerPinch = (
   component: any,
-  handlerTag: number,
   configBegin?: PinchConfig,
   configProgress?: PinchConfig | Array<PinchConfig>,
-  configEnd?: PinchConfig
+  configEnd?: PinchConfig,
+  userHandlerTag?: number
 ) => {
+  const handlerTag = resolveGestureHandlerTag(component, userHandlerTag);
   const eventData: Required<PinchConfig> | { handlerTag: number } = {
     handlerTag: handlerTag,
     scale: 0,
@@ -234,22 +249,22 @@ export const fireGestureHandlerPinch = (
   );
 };
 
-export const fireGestureHandlerForceTouch = (
-  component: any,
-  handlerTag: number,
-  configBegin?: ForceTouchConfig,
-  configProgress?: ForceTouchConfig | Array<ForceTouchConfig>,
-  configEnd?: ForceTouchConfig
-) => {
-  const eventData: Required<ForceTouchConfig> | { handlerTag: number } = {
-    handlerTag: handlerTag,
-    force: 0,
-  };
-  runEventsSequence(
-    component,
-    eventData,
-    configBegin,
-    configProgress,
-    configEnd
-  );
+export const decorateChildrenWithTag = (component: any, tag: number) => {
+  if (!component) return;
+  if (component.props.ghTagContainer !== undefined) {
+    component.props.ghTagContainer.tag = tag;
+  }
+  if (Array.isArray(component.props.children)) {
+    for (const child of component.props.children) {
+      decorateChildrenWithTag(child, tag);
+    }
+  } else if (typeof component.props.children === 'object') {
+    decorateChildrenWithTag(component.props.children, tag);
+  }
 };
+
+export const gestureHandlerTagEventMacro = () => ({
+  ghTagContainer: {
+    tag: 0,
+  },
+});
