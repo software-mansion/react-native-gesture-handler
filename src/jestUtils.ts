@@ -97,7 +97,7 @@ const resolveGestureHandlerTag = (
 ): number => {
   if (userHandlerTag !== undefined) return userHandlerTag;
   const tag = component?._fiber?.stateNode?.props?.ghTagContainer?.tag;
-  if (!!tag) {
+  if (tag) {
     return tag;
   }
   throw Error(
