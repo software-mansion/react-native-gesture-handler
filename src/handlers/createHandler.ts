@@ -21,6 +21,7 @@ import {
   findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
+import { isJest } from '../utils';
 
 const UIManagerAny = UIManager as any;
 
@@ -152,7 +153,10 @@ export default function createHandler<
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
-      this.handlerTag = getNextHandlerTag();
+      this.handlerTag =
+        isJest() && props.testHandlerTag
+          ? props.testHandlerTag
+          : getNextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
       this.state = { allowTouches };
