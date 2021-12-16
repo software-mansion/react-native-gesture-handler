@@ -163,9 +163,9 @@ export default function createHandler<
         }
         handlerIDToTag[props.id] = this.handlerTag;
       }
-      // @ts-ignore
-      if (!!process.env.JEST_WORKER_ID) {
-        // @ts-ignore
+      // @ts-ignore @typescript-eslint/ban-ts-comment
+      if (process.env.JEST_WORKER_ID) {
+        // @ts-ignore @typescript-eslint/ban-ts-comment
         decorateChildrenWithTag(props.children, this.handlerTag);
       }
     }
