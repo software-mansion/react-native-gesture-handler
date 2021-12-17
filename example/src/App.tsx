@@ -36,6 +36,6 @@ import DragNDrop from './new_api/drag_n_drop'; // doesn't work (weird positions)
 import FabricReanimatedExample from './new_api/fabric/FabricReanimatedExample'; // OK
 import FabricCallbacksExample from './new_api/fabric/FabricCallbacksExample'; // OK
 import FabricPanGestureHandlerExample from './new_api/fabric/FabricPanGestureHandlerExample'; // OK
+import FabricEmptyExample from './new_api/fabric/FabricEmptyExample';
 
-// current example
-export default FabricReanimatedExample;
+export default DraggableBox;

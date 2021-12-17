@@ -43,7 +43,7 @@ def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlin
 
 dependencies {
     //noinspection GradleDynamicVersion
-    implementation 'com.facebook.react:react-native:+'
+    implementation project(':ReactAndroid') // implementation 'com.facebook.react:react-native:+'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.core:core-ktx:1.6.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

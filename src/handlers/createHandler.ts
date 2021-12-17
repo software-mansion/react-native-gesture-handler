@@ -33,6 +33,19 @@ const customGHEventsConfig = {
   onGestureHandlerStateChange: {
     registrationName: 'onGestureHandlerStateChange',
   },
+
+  // When using React Native Gesture Handler for Animated.event with useNativeDriver: true
+  // the native part still sends the native events to JS but prefixed with "top".
+  // We cannot simply rename the events above so they are prefixed with "top" instead of "on"
+  // because in such case Animated.events would not be registered.
+  // That's why we need to register another pair of event names.
+  // The incoming events will be queued but never handled.
+  // Without this piece of code below, you'll get the following JS error:
+  // Unsupported top level event type "topOnGestureHandlerEvent" dispatched
+  topOnGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+  topOnGestureHandlerStateChange: {
+    registrationName: 'onGestureHandlerStateChange',
+  },
 };
 
 // Add gesture specific events to genericDirectEventTypes object exported from UIManager

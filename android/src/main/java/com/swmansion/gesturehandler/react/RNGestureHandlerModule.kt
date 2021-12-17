@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler.react
 
 import android.content.Context
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import com.facebook.react.ReactRootView
@@ -8,6 +9,7 @@ import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
+import com.facebook.react.uimanager.UIManagerHelper
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
 import java.util.*
@@ -450,11 +452,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private fun tryInitializeHandlerForReactRootView(ancestorViewTag: Int) {
-    val uiManager = reactApplicationContext.UIManager
-    val rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag)
-    if (rootViewTag < 1) {
-      throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
-    }
+//    val uiManager = reactApplicationContext.UIManager
+//    val rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag)
+//    if (rootViewTag < 1) {
+//      throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
+//    }
+    val rootViewTag = 1;
     synchronized(roots) {
       for (root in roots) {
         val rootView: ViewGroup = root.rootView
@@ -474,15 +477,17 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     }
     // root helper for a given root tag has not been found, we may wat to check if the root view is
     // an instance of RNGestureHandlerEnabledRootView and then initialize gesture handler with it
-    uiManager.addUIBlock(UIBlock { nativeViewHierarchyManager ->
-      val view = nativeViewHierarchyManager.resolveView(rootViewTag)
-      if (view is RNGestureHandlerEnabledRootView) {
-        view.initialize()
-      } else {
-        // Seems like the root view is something else than RNGestureHandlerEnabledRootView, this
-        // is fine though as long as gestureHandlerRootHOC is used in JS
-        // FIXME: check and warn about gestureHandlerRootHOC
-      }
+    // uiManager.addUIBlock(UIBlock { nativeViewHierarchyManager ->
+    //   val view = nativeViewHierarchyManager.resolveView(rootViewTag)
+    //   if (view is RNGestureHandlerEnabledRootView) {
+    //     view.initialize()
+    //   } else {
+    //     // Seems like the root view is something else than RNGestureHandlerEnabledRootView, this
+    //     // is fine though as long as gestureHandlerRootHOC is used in JS
+    //     // FIXME: check and warn about gestureHandlerRootHOC
+    //   }
+    UiThreadUtil.runOnUiThread({
+      rngherv.initialize()
       synchronized(enqueuedRootViewInit) { enqueuedRootViewInit.remove(rootViewTag) }
     })
   }
@@ -525,31 +530,49 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     if (handler.state == GestureHandler.STATE_ACTIVE) {
       val handlerFactory = findFactoryForHandler(handler)
 
-      if (handler.usesDeviceEvents) {
+      if (true || handler.usesDeviceEvents) {
         val data = RNGestureHandlerEvent.createEventData(handler, handlerFactory)
 
-        reactApplicationContext
-          .deviceEventEmitter
-          .emit(RNGestureHandlerEvent.EVENT_NAME, data)
+         // works only with USE_NATIVE_DRIVER: false
+         reactApplicationContext
+           .deviceEventEmitter
+           .emit(RNGestureHandlerEvent.EVENT_NAME, data)
+
+//         reactApplicationContext
+//          .UIManager
+//          .eventDispatcher.let {
+//            val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+//            it.dispatchEvent(event)
+//          }
+
+        if (reactApplicationContext.hasActiveReactInstance()) {
+          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+//          val surfaceId: Int = UIManagerHelper.getSurfaceId(reactApplicationContext)
+          UIManagerHelper.getEventDispatcherForReactTag(reactApplicationContext, 8)?.dispatchEvent(event)
+        }
+
+        // TODO: fix Cannot find EventEmitter for receiveEvent: SurfaceId[-1] ReactTag[8] UIManagerType[2]
       } else {
-        reactApplicationContext
-          .UIManager
-          .eventDispatcher.let {
-            val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
-            it.dispatchEvent(event)
-          }
+//        reactApplicationContext
+//          .UIManager
+//          .eventDispatcher.let {
+//            val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+//            it.dispatchEvent(event)
+//          }
       }
     }
   }
 
   private fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
+    // called on start, on activation and on end
+
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
     val handlerFactory = findFactoryForHandler(handler)
 
-    if (handler.usesDeviceEvents) {
+    if (true || handler.usesDeviceEvents) {
       val data = RNGestureHandlerStateChangeEvent.createEventData(
         handler,
         handlerFactory,
@@ -572,18 +595,21 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private fun <T : GestureHandler<T>> onTouchEvent(handler: T) {
+    // nie wiem w jakim przypadku to sie odpali
+
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
     if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE
         || handler.state == GestureHandler.STATE_UNDETERMINED || handler.view != null) {
-      if (handler.usesDeviceEvents) {
+      if (true || handler.usesDeviceEvents) {
         val data = RNGestureHandlerTouchEvent.createEventData(handler)
 
         reactApplicationContext
             .deviceEventEmitter
             .emit(RNGestureHandlerTouchEvent.EVENT_NAME, data)
+
       } else {
         reactApplicationContext
             .UIManager
@@ -596,6 +622,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   companion object {
+    lateinit var rngherv: RNGestureHandlerEnabledRootView
+
     const val MODULE_NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
