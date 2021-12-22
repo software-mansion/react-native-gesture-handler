@@ -154,9 +154,7 @@ export default function createHandler<
     constructor(props: T & InternalEventHandlers) {
       super(props);
       this.handlerTag =
-        isJest() && props.testHandlerTag
-          ? props.testHandlerTag
-          : getNextHandlerTag();
+        isJest() && props.testId ? props.testId : getNextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
       this.state = { allowTouches };
