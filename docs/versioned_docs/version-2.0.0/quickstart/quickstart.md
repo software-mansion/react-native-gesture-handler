@@ -18,7 +18,7 @@ To demonstrate how you would use the new API, let's make a simple app where you 
 <Divider />
 
 <Step title="Step 1">
-  <div>First let's define styles we will ned to make the app:</div>
+  <div>First let's define styles we will need to make the app:</div>
   <Step1 />
 </Step>
 
