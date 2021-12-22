@@ -11,7 +11,12 @@ import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
-import { handlerIDToTag, getNextHandlerTag } from './handlersRegistry';
+import {
+  handlerIDToTag,
+  getNextHandlerTag,
+  unregisterJestHandler,
+  registerJestHandler,
+} from './handlersRegistry';
 
 import {
   BaseGestureHandlerProps,
@@ -222,6 +227,10 @@ export default function createHandler<
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete handlerIDToTag[handlerID];
       }
+
+      if (isJest()) {
+        unregisterJestHandler(this.handlerTag);
+      }
     }
 
     private onGestureHandlerEvent = (event: GestureEvent<U>) => {
@@ -295,6 +304,10 @@ export default function createHandler<
           false
         );
       }
+
+      if (isJest()) {
+        registerJestHandler(this.handlerTag, this);
+      }
     };
 
     private updateGestureHandler = (
@@ -303,6 +316,10 @@ export default function createHandler<
       this.config = newConfig;
 
       RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
+
+      if (isJest()) {
+        registerJestHandler(this.handlerTag, this);
+      }
     };
 
     private update() {
