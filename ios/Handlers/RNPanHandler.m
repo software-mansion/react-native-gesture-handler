@@ -25,6 +25,9 @@
 @property (nonatomic) CGFloat failOffsetYStart;
 @property (nonatomic) CGFloat failOffsetYEnd;
 
+@property (nonatomic) CGFloat changeX;
+@property (nonatomic) CGFloat changeY;
+
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
@@ -35,11 +38,13 @@
   __weak RNGestureHandler *_gestureHandler;
   NSUInteger _realMinimumNumberOfTouches;
   BOOL _hasCustomActivationCriteria;
+  CGPoint _memoizedChange;
+  CGPoint _previousTranslation;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     _minDistSq = NAN;
     _minVelocityX = NAN;
@@ -54,11 +59,36 @@
     _failOffsetYStart = NAN;
     _failOffsetYEnd = NAN;
     _hasCustomActivationCriteria = NO;
+    _changeX = 0;
+    _changeY = 0;
 #if !TARGET_OS_TV
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
 #endif
   }
+  _previousTranslation = CGPointZero;
+  _memoizedChange = CGPointZero;
   return self;
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+{
+  CGPoint translation = [self translationInView:self.view.window];
+  
+  _changeX = translation.x - _previousTranslation.x + _memoizedChange.x;
+  _changeY = translation.y - _previousTranslation.y + _memoizedChange.y;
+  
+  [_gestureHandler handleGesture:recognizer];
+  
+  _previousTranslation = translation;
+  // Memoize current change if the state is UIGestureRecognizerStateBegan because
+  // GestureHandler maps it to the BEGAN state but the recognizer is already active
+  // at this point. handleGesture methods in GestureHandler sends events in the same
+  // state only if that state is ACTIVE, making this event (sent in BEGAN state) ignored.
+  // Saved change will be sent in the next event, at which point the recognizer will
+  // move to the UIGestureRecognizerStateChanged which is mapped to ACTIVE.
+  _memoizedChange = (self.state == UIGestureRecognizerStateBegan)
+    ? CGPointMake(_changeX, _changeY)
+    : CGPointZero;
 }
 
 - (void)triggerAction
@@ -141,6 +171,8 @@
   [self triggerAction];
   [_gestureHandler.pointerTracker reset];
   self.enabled = YES;
+  _previousTranslation = CGPointZero;
+  _memoizedChange = CGPointZero;
   [super reset];
 }
 
@@ -293,13 +325,14 @@
   return shouldBegin;
 }
 
-- (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
+- (RNGestureHandlerEventExtraData *)eventExtraData:(RNBetterPanGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData
           forPan:[recognizer locationInView:recognizer.view]
           withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
           withTranslation:[recognizer translationInView:recognizer.view.window]
           withVelocity:[recognizer velocityInView:recognizer.view.window]
+          withTranslationChange:CGPointMake(recognizer.changeX, recognizer.changeY)
           withNumberOfTouches:recognizer.numberOfTouches];
 }
 

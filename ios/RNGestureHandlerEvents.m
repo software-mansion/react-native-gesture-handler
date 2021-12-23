@@ -45,6 +45,7 @@
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation
                               withVelocity:(CGPoint)velocity
+                     withTranslationChange:(CGPoint)change
                        withNumberOfTouches:(NSUInteger)numberOfTouches
 {
     return [[RNGestureHandlerEventExtraData alloc]
@@ -57,6 +58,8 @@
                            @"translationY": @(translation.y),
                            @"velocityX": SAFE_VELOCITY(velocity.x),
                            @"velocityY": SAFE_VELOCITY(velocity.y),
+                           @"changeX": @(change.x),
+                           @"changeY": @(change.y),
                            @"numberOfPointers": @(numberOfTouches)}];
 }
 

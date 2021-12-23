@@ -16,6 +16,10 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     get() = lastX - startX + offsetX
   val translationY: Float
     get() = lastY - startY + offsetY
+  var changeX = 0f
+    private set
+  var changeY = 0f
+    private set
 
   private val defaultMinDistSq: Float
   private var minDistSq = MAX_VALUE_IGNORE
@@ -204,8 +208,14 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       startX = lastX
       startY = lastY
     } else {
+      val previousTranslationX = translationX
+      val previousTranslationY = translationY
+
       lastX = getLastPointerX(event, averageTouches)
       lastY = getLastPointerY(event, averageTouches)
+
+      changeX = translationX - previousTranslationX
+      changeY = translationY - previousTranslationY
     }
     if (state == STATE_UNDETERMINED && event.pointerCount >= minPointers) {
       startX = lastX
@@ -214,6 +224,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       offsetY = 0f
       velocityX = 0f
       velocityY = 0f
+      changeX = 0f
+      changeY = 0f
       velocityTracker = VelocityTracker.obtain()
       addVelocityMovement(velocityTracker, event)
       begin()
@@ -255,6 +267,9 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     if (state != STATE_ACTIVE) {
       startX = lastX
       startY = lastY
+
+      changeX = 0f
+      changeY = 0f
     }
     super.activate(force)
   }

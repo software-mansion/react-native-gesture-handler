@@ -10,7 +10,6 @@ import Animated, {
 function Ball() {
   const isPressed = useSharedValue(false);
   const offset = useSharedValue({ x: 0, y: 0 });
-  const start = useSharedValue({ x: 0, y: 0 });
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -31,15 +30,8 @@ function Ball() {
     .onUpdate((e) => {
       'worklet';
       offset.value = {
-        x: e.translationX + start.value.x,
-        y: e.translationY + start.value.y,
-      };
-    })
-    .onEnd(() => {
-      'worklet';
-      start.value = {
-        x: offset.value.x,
-        y: offset.value.y,
+        x: offset.value.x + e.changeX,
+        y: offset.value.y + e.changeY,
       };
     })
     .onFinalize(() => {

@@ -133,6 +133,14 @@ Translation of the pan gesture along X axis accumulated over the time of the ges
 
 Translation of the pan gesture along Y axis accumulated over the time of the gesture. The value is expressed in the point units.
 
+### `changeX`
+
+Change of the translation along X axis since the previous event. The value is expressed in the point units.
+
+### `changeY`
+
+Change of the translation along Y axis since the previous event. The value is expressed in the point units.
+
 ### `velocityX`
 
 Velocity of the pan gesture along the X axis in the current moment. The value is expressed in point units per second.

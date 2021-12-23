@@ -229,6 +229,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
         putDouble("translationY", PixelUtil.toDIPFromPixel(handler.translationY).toDouble())
         putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.velocityX).toDouble())
         putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.velocityY).toDouble())
+        putDouble("changeX", PixelUtil.toDIPFromPixel(handler.changeX).toDouble())
+        putDouble("changeY", PixelUtil.toDIPFromPixel(handler.changeY).toDouble())
       }
     }
   }

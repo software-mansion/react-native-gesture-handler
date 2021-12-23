@@ -76,6 +76,18 @@ export type PanGestureHandlerEventPayload = {
   translationY: number;
 
   /**
+   * Change of the translation along X axis since the previous event.
+   * The value is expressed in the point units.
+   */
+  changeX: number;
+
+  /**
+   * Change of the translation along Y axis since the previous event.
+   * The value is expressed in the point units.
+   */
+  changeY: number;
+
+  /**
    * Velocity of the pan gesture along the X axis in the current moment. The
    * value is expressed in point units per second.
    */
