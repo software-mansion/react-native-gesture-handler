@@ -7,6 +7,5 @@ export function toArray<T>(object: T | T[]): T[] {
 }
 
 export function isJest(): boolean {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return !!process.env.JEST_WORKER_ID;
 }
