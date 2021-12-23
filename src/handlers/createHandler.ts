@@ -165,8 +165,14 @@ export default function createHandler<
       }
       // @ts-ignore @typescript-eslint/ban-ts-comment
       if (process.env.JEST_WORKER_ID) {
+        const handlerProperties = {
+          handlerType: name,
+          handlerTag: this.handlerTag,
+          onGestureEvent: props.onGestureEvent,
+          onHandlerStateChange: props.onHandlerStateChange,
+        };
         // @ts-ignore @typescript-eslint/ban-ts-comment
-        decorateChildrenWithTag(props.children, this.handlerTag);
+        decorateChildrenWithTag({ props }, handlerProperties);
       }
     }
 
