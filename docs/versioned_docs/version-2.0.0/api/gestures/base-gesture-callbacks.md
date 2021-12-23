@@ -16,22 +16,18 @@ Set the callback that is being called when the gesture that was recognized by th
 
 Set the callback that is being called when the handler finalizes handling gesture - the gesture was recognized and has finished or it failed to recognize.
 
-### `onTouchesDown(event, stateManager)`
+### `onTouchesDown(callback)`
 
 Set the `onTouchesDown` callback which is called every time a finger is placed on the screen.
 
-### `onTouchesMove(event, stateManager)`
+### `onTouchesMove(callback)`
 
 Set the `onTouchesMove` callback which is called every time a finger is moved on the screen.
 
-### `onTouchesUp(event, stateManager)`
+### `onTouchesUp(callback)`
 
 Set the `onTouchesUp` callback which is called every time a finger is lifted from the screen.
 
-### `onTouchesCancelled(event, stateManager)`
+### `onTouchesCancelled(callback)`
 
 Set the `onTouchesCancelled` callback which is called every time a finger stops being tracked, for example when the gesture finishes.
-
-### `onTouchesChange(event, stateManager)`
-
-Set the `onTouchesChange` callback which is called for every touch event.
