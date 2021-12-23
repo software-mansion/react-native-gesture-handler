@@ -11,12 +11,12 @@ import {
   PinchGestureHandler
 } from 'react-native-gesture-handler';
 import { 
-  fireGestureHandlerTap,
-  fireGestureHandlerPan,
-  fireGestureHandlerLongPress,
-  fireGestureHandlerRotation,
-  fireGestureHandlerFling,
-  fireGestureHandlerPinch,
+  fireTapGestureHandler,
+  firePanGestureHandler,
+  fireLongPressGestureHandler,
+  fireRotationGestureHandler,
+  fireFlingGestureHandler,
+  firePinchGestureHandler,
   ghTagEventMacro
 } from '../src/jestUtils'
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
@@ -71,17 +71,17 @@ const App = (props) => {
   );
 };
 
-test('test fireGestureHandlerTap', () => {
+test('test fireTapGestureHandler', () => {
   const eventFunctions = mockEventFunctions();
   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-  fireGestureHandlerTap(getByText('TapGestureHandlerTest'));
+  fireTapGestureHandler(getByText('TapGestureHandlerTest'));
   assertEventCalls(eventFunctions);
 });
 
-test('test fireGestureHandlerPan', () => {
+test('test firePanGestureHandler', () => {
   const eventFunctions = mockEventFunctions();
   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-  fireGestureHandlerPan(
+  firePanGestureHandler(
     getByText('PanGestureHandlerTest'),
     { x: 1, y: 1 },
     [{ x: 2, y: 2 }, { x: 3, y: 3 }],
@@ -90,20 +90,20 @@ test('test fireGestureHandlerPan', () => {
   assertEventCalls(eventFunctions, 2);
 });
 
-test('test fireGestureHandlerLongPress', () => {
+test('test fireLongPressGestureHandler', () => {
   const eventFunctions = mockEventFunctions();
   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-  fireGestureHandlerLongPress(
+  fireLongPressGestureHandler(
     getByText('LongPressGestureHandlerTest'),
     { x: 1, y: 1 },
   );
   assertEventCalls(eventFunctions);
 });
 
-test('test fireGestureHandlerRotation', () => {
+test('test fireRotationGestureHandler', () => {
   const eventFunctions = mockEventFunctions();
   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-  fireGestureHandlerRotation(
+  fireRotationGestureHandler(
     getByText('RotationGestureHandlerTest'),
     { 
       rotation: 0,
@@ -127,20 +127,20 @@ test('test fireGestureHandlerRotation', () => {
   assertEventCalls(eventFunctions);
 });
 
-test('test fireGestureHandlerFling', () => {
+test('test fireFlingGestureHandler', () => {
   const eventFunctions = mockEventFunctions();
   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-  fireGestureHandlerFling(
+  fireFlingGestureHandler(
     getByText('FlingGestureHandlerTest'),
     { x: 1, y: 1 },
   );
   assertEventCalls(eventFunctions);
 });
 
-test('test fireGestureHandlerPinch', () => {
+test('test firePinchGestureHandler', () => {
   const eventFunctions = mockEventFunctions();
   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-  fireGestureHandlerPinch(
+  firePinchGestureHandler(
     getByText('PinchGestureHandlerTest'),
     { x: 1, y: 1 },
   );

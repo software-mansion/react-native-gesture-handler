@@ -105,7 +105,7 @@ const resolveGestureHandlerTag = (
   );
 };
 
-export const fireGestureHandlerTap = (
+export const fireTapGestureHandler = (
   component: any,
   config?: TapConfig,
   userHandlerTag?: number
@@ -124,7 +124,7 @@ export const fireGestureHandlerTap = (
   sendEndEvent(component, eventData);
 };
 
-export const fireGestureHandlerPan = (
+export const firePanGestureHandler = (
   component: any,
   configBegin?: PanConfig,
   configProgress?: PanConfig | PanConfig[],
@@ -152,7 +152,7 @@ export const fireGestureHandlerPan = (
   );
 };
 
-export const fireGestureHandlerLongPress = (
+export const fireLongPressGestureHandler = (
   component: any,
   configBegin?: LongPressConfig,
   configProgress?: LongPressConfig | LongPressConfig[],
@@ -177,7 +177,7 @@ export const fireGestureHandlerLongPress = (
   );
 };
 
-export const fireGestureHandlerRotation = (
+export const fireRotationGestureHandler = (
   component: any,
   configBegin?: RotationConfig,
   configProgress?: RotationConfig | RotationConfig[],
@@ -201,7 +201,7 @@ export const fireGestureHandlerRotation = (
   );
 };
 
-export const fireGestureHandlerFling = (
+export const fireFlingGestureHandler = (
   component: any,
   configBegin?: TapConfig,
   configProgress?: TapConfig | TapConfig[],
@@ -225,7 +225,7 @@ export const fireGestureHandlerFling = (
   );
 };
 
-export const fireGestureHandlerPinch = (
+export const firePinchGestureHandler = (
   component: any,
   configBegin?: PinchConfig,
   configProgress?: PinchConfig | PinchConfig[],
