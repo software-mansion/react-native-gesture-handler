@@ -206,130 +206,100 @@ export const fireTapGestureHandler = (
   );
 };
 
-// export const firePanGestureHandler = (
-//   component: any,
-//   configBegin?: PanConfig,
-//   configProgress?: PanConfig | PanConfig[],
-//   configEnd?: PanConfig,
-//   userHandlerTag?: number
-// ) => {
-//   const handlerTag = resolveGestureHandlerTag(GestureHandlerType.PAN, component, userHandlerTag);
-//   const eventData: Required<PanConfig> | { handlerTag: number } = {
-//     handlerTag: handlerTag,
-//     x: 0,
-//     y: 0,
-//     absoluteX: 0,
-//     absoluteY: 0,
-//     translationX: 0,
-//     translationY: 0,
-//     velocityX: 0,
-//     velocityY: 0,
-//   };
-//   runEventsSequence(
-//     component,
-//     eventData,
-//     configBegin,
-//     configProgress,
-//     configEnd
-//   );
-// };
+export const firePanGestureHandler = (
+  component: any,
+  eventData?: FireGestureHandlerConfig<PanConfig>
+) => {
+  const baseEventData: Required<PanConfig> = {
+    x: 0,
+    y: 0,
+    absoluteX: 0,
+    absoluteY: 0,
+    translationX: 0,
+    translationY: 0,
+    velocityX: 0,
+    velocityY: 0,
+  };
+  runEventsSequence(
+    component,
+    GestureHandlerType.PAN,
+    baseEventData,
+    eventData
+  );
+};
 
-// export const fireLongPressGestureHandler = (
-//   component: any,
-//   configBegin?: LongPressConfig,
-//   configProgress?: LongPressConfig | LongPressConfig[],
-//   configEnd?: LongPressConfig,
-//   userHandlerTag?: number
-// ) => {
-//   const handlerTag = resolveGestureHandlerTag(GestureHandlerType.LONG_PRESS, component, userHandlerTag);
-//   const eventData: Required<LongPressConfig> | { handlerTag: number } = {
-//     handlerTag: handlerTag,
-//     x: 0,
-//     y: 0,
-//     absoluteX: 0,
-//     absoluteY: 0,
-//     duration: 0,
-//   };
-//   runEventsSequence(
-//     component,
-//     eventData,
-//     configBegin,
-//     configProgress,
-//     configEnd
-//   );
-// };
+export const fireLongPressGestureHandler = (
+  component: any,
+  eventData?: FireGestureHandlerConfig<LongPressConfig>
+) => {
+  const baseEventData: Required<LongPressConfig> = {
+    x: 0,
+    y: 0,
+    absoluteX: 0,
+    absoluteY: 0,
+    duration: 0,
+  };
+  runEventsSequence(
+    component,
+    GestureHandlerType.LONG_PRESS,
+    baseEventData,
+    eventData
+  );
+};
 
-// export const fireRotationGestureHandler = (
-//   component: any,
-//   configBegin?: RotationConfig,
-//   configProgress?: RotationConfig | RotationConfig[],
-//   configEnd?: RotationConfig,
-//   userHandlerTag?: number
-// ) => {
-//   const handlerTag = resolveGestureHandlerTag(GestureHandlerType.ROTATION, component, userHandlerTag);
-//   const eventData: Required<RotationConfig> | { handlerTag: number } = {
-//     handlerTag: handlerTag,
-//     rotation: 0,
-//     velocity: 0,
-//     anchorX: 0,
-//     anchorY: 0,
-//   };
-//   runEventsSequence(
-//     component,
-//     eventData,
-//     configBegin,
-//     configProgress,
-//     configEnd
-//   );
-// };
+export const fireRotationGestureHandler = (
+  component: any,
+  eventData?: FireGestureHandlerConfig<RotationConfig>
+) => {
+  const baseEventData: Required<RotationConfig> = {
+    rotation: 0,
+    velocity: 0,
+    anchorX: 0,
+    anchorY: 0,
+  };
+  runEventsSequence(
+    component,
+    GestureHandlerType.ROTATION,
+    baseEventData,
+    eventData
+  );
+};
 
-// export const fireFlingGestureHandler = (
-//   component: any,
-//   configBegin?: TapConfig,
-//   configProgress?: TapConfig | TapConfig[],
-//   configEnd?: TapConfig,
-//   userHandlerTag?: number
-// ) => {
-//   const handlerTag = resolveGestureHandlerTag(GestureHandlerType.FLING, component, userHandlerTag);
-//   const eventData: Required<TapConfig> | { handlerTag: number } = {
-//     handlerTag: handlerTag,
-//     x: 0,
-//     y: 0,
-//     absoluteX: 0,
-//     absoluteY: 0,
-//   };
-//   runEventsSequence(
-//     component,
-//     eventData,
-//     configBegin,
-//     configProgress,
-//     configEnd
-//   );
-// };
+export const fireFlingGestureHandler = (
+  component: any,
+  eventData?: FireGestureHandlerConfig<RotationConfig>
+) => {
+  const baseEventData: Required<TapConfig> = {
+    x: 0,
+    y: 0,
+    absoluteX: 0,
+    absoluteY: 0,
+  };
+  runEventsSequence(
+    component,
+    GestureHandlerType.FLING,
+    baseEventData,
+    eventData
+  );
+};
 
-// export const firePinchGestureHandler = (
-//   component: any,
-//   configBegin?: PinchConfig,
-//   configProgress?: PinchConfig | PinchConfig[],
-//   configEnd?: PinchConfig,
-//   userHandlerTag?: number
-// ) => {
-//   const handlerTag = resolveGestureHandlerTag(GestureHandlerType.PINCH, component, userHandlerTag);
-//   const eventData: Required<PinchConfig> | { handlerTag: number } = {
-//     handlerTag: handlerTag,
-//     scale: 0,
-//     velocity: 0,
-//     focalX: 0,
-//     focalY: 0,
-//   };
-//   runEventsSequence(
-//     component,
-//     eventData,
-//     configBegin,
-//     configProgress,
-//     configEnd
-//   );
-// };
+export const firePinchGestureHandler = (
+  component: any,
+  eventData?: FireGestureHandlerConfig<RotationConfig>
+) => {
+  const baseEventData: Required<PinchConfig> = {
+    scale: 0,
+    velocity: 0,
+    focalX: 0,
+    focalY: 0,
+  };
+  runEventsSequence(
+    component,
+    GestureHandlerType.PINCH,
+    baseEventData,
+    eventData
+  );
+};
 
 export const decorateChildrenWithTag = (
   component: any,
