@@ -20,7 +20,6 @@ import {
   ghTagEventMacro
 } from '../src/jestUtils'
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
-import { fireEvent } from '@testing-library/react-native';
 
 const mockEventFunctions = () => {
   return {
@@ -55,7 +54,7 @@ const App = (props) => {
         <Text {...ghTagEventMacro()}>TapGestureHandlerTest</Text>
       </TapGestureHandler>
 
-      <PanGestureHandler onHandlerStateChange={eventHandler}>
+      <PanGestureHandler onHandlerStateChange={eventHandler} onGestureEvent={eventHandler}>
         <Text {...ghTagEventMacro()}>PanGestureHandlerTest</Text>
       </PanGestureHandler>
 

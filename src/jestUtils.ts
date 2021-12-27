@@ -71,13 +71,35 @@ type SendEventWrapper = (
   eventData?: Record<string, any>
 ) => void;
 
-const sendEvent = (
+const sendStateChangeEvent = (
   handler: HandlerProperties,
   stateConfig: { oldState: number; state: number },
   baseEventData: Record<string, any>,
   eventData?: Record<string, any>
 ) => {
+  if (typeof handler?.onHandlerStateChange !== 'function') {
+    return;
+  }
   handler.onHandlerStateChange({
+    nativeEvent: {
+      ...stateConfig,
+      ...baseEventData,
+      ...eventData,
+      handlerTag: handler.tag,
+    },
+  });
+};
+
+const sendEvent = (
+  handler: HandlerProperties,
+  stateConfig: { state: number },
+  baseEventData: Record<string, any>,
+  eventData?: Record<string, any>
+) => {
+  if (typeof handler?.onGestureEvent !== 'function') {
+    return;
+  }
+  handler.onGestureEvent({
     nativeEvent: {
       ...stateConfig,
       ...baseEventData,
@@ -92,7 +114,25 @@ const sendBeginEvent: SendEventWrapper = (
   baseEventData,
   eventData
 ) => {
-  sendEvent(handler, { oldState: 0, state: 2 }, baseEventData, eventData);
+  sendStateChangeEvent(
+    handler,
+    { oldState: 0, state: 2 },
+    baseEventData,
+    eventData
+  );
+};
+
+const sendProgressEventFirst: SendEventWrapper = (
+  handler,
+  baseEventData,
+  eventData
+) => {
+  sendStateChangeEvent(
+    handler,
+    { oldState: 2, state: 4 },
+    baseEventData,
+    eventData
+  );
 };
 
 const sendProgressEvent: SendEventWrapper = (
@@ -100,15 +140,25 @@ const sendProgressEvent: SendEventWrapper = (
   baseEventData,
   eventData
 ) => {
-  sendEvent(handler, { oldState: 2, state: 4 }, baseEventData, eventData);
+  sendEvent(handler, { state: 4 }, baseEventData, eventData);
 };
 
 const sendEndEvent: SendEventWrapper = (handler, baseEventData, eventData) => {
-  sendEvent(handler, { oldState: 4, state: 5 }, baseEventData, eventData);
+  sendStateChangeEvent(
+    handler,
+    { oldState: 4, state: 5 },
+    baseEventData,
+    eventData
+  );
 };
 
 const sendFailEvent: SendEventWrapper = (handler, baseEventData, eventData) => {
-  sendEvent(handler, { oldState: 2, state: 1 }, baseEventData, eventData);
+  sendStateChangeEvent(
+    handler,
+    { oldState: 2, state: 1 },
+    baseEventData,
+    eventData
+  );
 };
 
 const sendCancelEvent: SendEventWrapper = (
@@ -116,7 +166,12 @@ const sendCancelEvent: SendEventWrapper = (
   baseEventData,
   eventData
 ) => {
-  sendEvent(handler, { oldState: 4, state: 3 }, baseEventData, eventData);
+  sendStateChangeEvent(
+    handler,
+    { oldState: 4, state: 3 },
+    baseEventData,
+    eventData
+  );
 };
 
 const sendFinishEvent = (
@@ -132,7 +187,7 @@ const sendFinishEvent = (
   } else {
     states = { oldState: 2, state: 1 };
   }
-  sendEvent(handler, states, baseEventData, eventData?.onFinish);
+  sendStateChangeEvent(handler, states, baseEventData, eventData?.onFinish);
 };
 
 const runEventsSequence = <T>(
@@ -149,11 +204,21 @@ const runEventsSequence = <T>(
   handlers.forEach((handler) => {
     baseEventData.handlerTag = handler.tag;
     if (Array.isArray(eventData?.configProgress)) {
+      let index = 0;
       for (const item of eventData!.configProgress) {
-        sendProgressEvent(handler, baseEventData, item);
+        if (index == 0) {
+          sendProgressEventFirst(
+            handler,
+            baseEventData,
+            eventData?.configProgress
+          );
+        } else {
+          sendProgressEvent(handler, baseEventData, item);
+        }
+        index++;
       }
     } else {
-      sendProgressEvent(handler, baseEventData, eventData?.configProgress);
+      sendProgressEventFirst(handler, baseEventData, eventData?.configProgress);
     }
   });
 
