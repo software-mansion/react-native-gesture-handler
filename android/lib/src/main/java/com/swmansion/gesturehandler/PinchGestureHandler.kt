@@ -9,6 +9,8 @@ import kotlin.math.abs
 class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   var scale = 0.0
     private set
+  val change: Double
+    get() = scale / previousScaleFactor
   var velocity = 0.0
     private set
   val focalPointX: Float
@@ -16,6 +18,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   val focalPointY: Float
     get() = scaleGestureDetector?.focusY ?: Float.NaN
 
+  private var previousScaleFactor = 0.0
   private var scaleGestureDetector: ScaleGestureDetector? = null
   private var startingSpan = 0f
   private var spanSlop = 0f
@@ -54,11 +57,13 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       val context = view!!.context
       velocity = 0.0
       scale = 1.0
+      previousScaleFactor = 1.0
       scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
       val configuration = ViewConfiguration.get(context)
       spanSlop = configuration.scaledTouchSlop.toFloat()
       begin()
     }
+    previousScaleFactor = scale
     scaleGestureDetector?.onTouchEvent(event)
     var activePointers = event.pointerCount
     if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
@@ -76,6 +81,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     if (state != STATE_ACTIVE) {
       velocity = 0.0
       scale = 1.0
+      previousScaleFactor = 1.0
     }
     super.activate(force)
   }
@@ -84,5 +90,6 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     scaleGestureDetector = null
     velocity = 0.0
     scale = 1.0
+    previousScaleFactor = 1.0
   }
 }

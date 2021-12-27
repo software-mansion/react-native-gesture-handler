@@ -12,18 +12,22 @@
 
 @interface RNBetterPinchRecognizer : UIPinchGestureRecognizer
 
+@property (nonatomic, readonly) CGFloat change;
+
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
 @end
 
 @implementation RNBetterPinchRecognizer {
   __weak RNGestureHandler *_gestureHandler;
+  CGFloat _previousScale;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
   if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
+    _previousScale = 1;
   }
   return self;
 }
@@ -32,8 +36,16 @@
 {
   if (self.state == UIGestureRecognizerStateBegan) {
     self.scale = 1;
+    _previousScale = 1;
   }
   [_gestureHandler handleGesture:recognizer];
+  
+  _previousScale = self.scale;
+}
+
+- (CGFloat)change
+{
+  return self.scale / _previousScale;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -64,6 +76,7 @@
 {
   [_gestureHandler.pointerTracker reset];
   [super reset];
+  _previousScale = 1;
 }
 
 @end
@@ -81,10 +94,11 @@
 }
 
 #if !TARGET_OS_TV
-- (RNGestureHandlerEventExtraData *)eventExtraData:(UIPinchGestureRecognizer *)recognizer
+- (RNGestureHandlerEventExtraData *)eventExtraData:(RNBetterPinchRecognizer *)recognizer
 {
     return [RNGestureHandlerEventExtraData
             forPinch:recognizer.scale
+            withScaleChange:recognizer.change
             withFocalPoint:[recognizer locationInView:recognizer.view]
             withVelocity:recognizer.velocity
             withNumberOfTouches:recognizer.numberOfTouches];

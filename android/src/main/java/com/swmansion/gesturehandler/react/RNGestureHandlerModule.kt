@@ -247,6 +247,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       super.extractEventData(handler, eventData)
       with(eventData) {
         putDouble("scale", handler.scale)
+        putDouble("change", handler.change)
         putDouble("focalX", PixelUtil.toDIPFromPixel(handler.focalPointX).toDouble())
         putDouble("focalY", PixelUtil.toDIPFromPixel(handler.focalPointY).toDouble())
         putDouble("velocity", handler.velocity)

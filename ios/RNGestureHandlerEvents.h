@@ -30,6 +30,7 @@
                         withAbsolutePosition:(CGPoint)absolutePosition
                          withNumberOfTouches:(NSUInteger)numberOfTouches;
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale
+                             withScaleChange:(CGFloat)change
                               withFocalPoint:(CGPoint)focalPoint
                                 withVelocity:(CGFloat)velocity
                          withNumberOfTouches:(NSUInteger)numberOfTouches;

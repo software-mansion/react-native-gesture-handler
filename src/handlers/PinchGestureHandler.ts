@@ -12,6 +12,11 @@ export type PinchGestureHandlerEventPayload = {
   scale: number;
 
   /**
+   * Multiplicative change of the scale factor since the previous event.
+   */
+  change: number;
+
+  /**
    * Position expressed in points along X axis of center anchor point of
    * gesture.
    */

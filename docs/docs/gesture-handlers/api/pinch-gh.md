@@ -27,6 +27,10 @@ See [set of event attributes from base handler class](./common-gh.md#event-data)
 
 The scale factor relative to the points of the two touches in screen coordinates.
 
+### `change`
+
+Multiplicative change of the scale factor since the previous event.
+
 ### `velocity`
 
 Velocity of the pan gesture the current moment. The value is expressed in point units per second.

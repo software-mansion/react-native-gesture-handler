@@ -7,11 +7,8 @@ import Animated, {
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 function Photo() {
-  const offsetX = useSharedValue(0);
-  const offsetY = useSharedValue(0);
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
-  const savedScale = useSharedValue(1);
   const scale = useSharedValue(1);
   const savedRotation = useSharedValue(0);
   const rotation = useSharedValue(0);
@@ -37,27 +34,17 @@ function Photo() {
       savedRotation.value = rotation.value;
     });
 
-  const scaleGesture = Gesture.Pinch()
-    .onUpdate((e) => {
-      'worklet';
-      scale.value = savedScale.value * e.scale;
-    })
-    .onEnd(() => {
-      'worklet';
-      savedScale.value = scale.value;
-    });
+  const scaleGesture = Gesture.Pinch().onUpdate((e) => {
+    'worklet';
+    scale.value = scale.value * e.change;
+  });
 
   const panGesture = Gesture.Pan()
     .averageTouches(true)
     .onUpdate((e) => {
       'worklet';
-      translationX.value = offsetX.value + e.translationX;
-      translationY.value = offsetY.value + e.translationY;
-    })
-    .onEnd(() => {
-      'worklet';
-      offsetX.value = translationX.value;
-      offsetY.value = translationY.value;
+      translationX.value = translationX.value + e.changeX;
+      translationY.value = translationY.value + e.changeY;
     });
 
   const doubleTapGesture = Gesture.Tap()

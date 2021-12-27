@@ -80,6 +80,7 @@
 }
 
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale
+                             withScaleChange:(CGFloat)change
                               withFocalPoint:(CGPoint)focalPoint
                                 withVelocity:(CGFloat)velocity
                          withNumberOfTouches:(NSUInteger)numberOfTouches
@@ -87,6 +88,7 @@
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{
                            @"scale": @(scale),
+                           @"change": @(change),
                            @"focalX": @(focalPoint.x),
                            @"focalY": @(focalPoint.y),
                            @"velocity": SAFE_VELOCITY(velocity),
