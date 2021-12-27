@@ -25,20 +25,20 @@ function Photo() {
 
   const rotationGesture = Gesture.Rotation().onUpdate((e) => {
     'worklet';
-    rotation.value = rotation.value + e.change;
+    rotation.value += e.change;
   });
 
   const scaleGesture = Gesture.Pinch().onUpdate((e) => {
     'worklet';
-    scale.value = scale.value * e.change;
+    scale.value *= e.change;
   });
 
   const panGesture = Gesture.Pan()
     .averageTouches(true)
     .onUpdate((e) => {
       'worklet';
-      translationX.value = translationX.value + e.changeX;
-      translationY.value = translationY.value + e.changeY;
+      translationX.value += e.changeX;
+      translationY.value += e.changeY;
     });
 
   const doubleTapGesture = Gesture.Tap()
