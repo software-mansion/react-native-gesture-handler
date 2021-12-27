@@ -255,6 +255,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       throw IllegalStateException("pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}")
     }
 
+    if (count == 0) {
+      return event
+    }
+
     val result: MotionEvent
     try {
       result = MotionEvent.obtain(
