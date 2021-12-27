@@ -24,6 +24,17 @@ let Reanimated: {
   ) => unknown;
   useSharedValue: <T>(value: T) => SharedValue<T>;
   setGestureState: (handlerTag: number, newState: number) => void;
+  useAnimatedGestureHandler: (
+    handlers: {
+      onStart?: (event: any, context: any) => void;
+      onActive?: (event: any, context: any) => void;
+      onEnd?: (event: any, context: any) => void;
+      onFail?: (event: any, context: any) => void;
+      onCancel?: (event: any, context: any) => void;
+      onFinish?: (event: any, context: any) => void;
+    },
+    dependencies?: any
+  ) => void;
 };
 
 try {

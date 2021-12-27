@@ -206,7 +206,7 @@ const runEventsSequence = <T>(
     if (Array.isArray(eventData?.configProgress)) {
       let index = 0;
       for (const item of eventData!.configProgress) {
-        if (index == 0) {
+        if (index === 0) {
           sendProgressEventFirst(
             handler,
             baseEventData,
@@ -246,7 +246,7 @@ const getGestureHandlers = (
   const config: HandlerProperties[] =
     component?._fiber?.stateNode?.props?.ghTagContainer;
   if (config) {
-    return config.filter((handler) => handler.handlerType == handlerType);
+    return config.filter((handler) => handler.handlerType === handlerType);
   }
   throw Error(
     'Unable to resolve gesture handler tag, are you sure that you added {...ghTagEventMacro()} to your component?'
