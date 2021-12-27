@@ -10,7 +10,6 @@ function Photo() {
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
   const scale = useSharedValue(1);
-  const savedRotation = useSharedValue(0);
   const rotation = useSharedValue(0);
 
   const style = useAnimatedStyle(() => {
@@ -24,15 +23,10 @@ function Photo() {
     };
   });
 
-  const rotationGesture = Gesture.Rotation()
-    .onUpdate((e) => {
-      'worklet';
-      rotation.value = savedRotation.value + e.rotation;
-    })
-    .onEnd(() => {
-      'worklet';
-      savedRotation.value = rotation.value;
-    });
+  const rotationGesture = Gesture.Rotation().onUpdate((e) => {
+    'worklet';
+    rotation.value = rotation.value + e.change;
+  });
 
   const scaleGesture = Gesture.Pinch().onUpdate((e) => {
     'worklet';

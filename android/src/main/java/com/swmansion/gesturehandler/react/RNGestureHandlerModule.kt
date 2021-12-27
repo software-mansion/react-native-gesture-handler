@@ -296,6 +296,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       super.extractEventData(handler, eventData)
       with(eventData) {
         putDouble("rotation", handler.rotation)
+        putDouble("change", handler.change)
         putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.anchorX).toDouble())
         putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.anchorY).toDouble())
         putDouble("velocity", handler.velocity)

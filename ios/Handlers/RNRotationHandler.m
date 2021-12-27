@@ -10,18 +10,22 @@
 
 @interface RNBetterRotationRecognizer : UIRotationGestureRecognizer
 
+@property (nonatomic, readonly) CGFloat change;
+
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
 
 @end
 
 @implementation RNBetterRotationRecognizer {
   __weak RNGestureHandler *_gestureHandler;
+  CGFloat _previousRotation;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
   if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
+    _previousRotation = 0;
   }
   return self;
 }
@@ -30,10 +34,17 @@
 {
   if (self.state == UIGestureRecognizerStateBegan) {
     self.rotation = 0;
+    _previousRotation = 0;
   }
   [_gestureHandler handleGesture:recognizer];
+  
+  _previousRotation = self.rotation;
 }
 
+- (CGFloat)change
+{
+  return self.rotation - _previousRotation;
+}
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
@@ -63,6 +74,7 @@
 {
   [_gestureHandler.pointerTracker reset];
   [super reset];
+  _previousRotation = 0;
 }
 
 @end
@@ -80,10 +92,11 @@
 }
 
 #if !TARGET_OS_TV
-- (RNGestureHandlerEventExtraData *)eventExtraData:(UIRotationGestureRecognizer *)recognizer
+- (RNGestureHandlerEventExtraData *)eventExtraData:(RNBetterRotationRecognizer *)recognizer
 {
     return [RNGestureHandlerEventExtraData
             forRotation:recognizer.rotation
+            withRotationChange:recognizer.change
             withAnchorPoint:[recognizer locationInView:recognizer.view]
             withVelocity:recognizer.velocity
             withNumberOfTouches:recognizer.numberOfTouches];

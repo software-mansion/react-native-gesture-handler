@@ -12,6 +12,12 @@ export type RotationGestureHandlerEventPayload = {
   rotation: number;
 
   /**
+   * Additive change of the rotation since the previous event, expressed
+   * in radians.
+   */
+  change: number;
+
+  /**
    * X coordinate, expressed in points, of the gesture's central focal point
    * (anchor).
    */

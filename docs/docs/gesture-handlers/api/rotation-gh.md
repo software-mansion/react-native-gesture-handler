@@ -24,6 +24,10 @@ See [set of event attributes from base handler class](./common-gh.md#event-data)
 
 Amount rotated, expressed in radians, from the gesture's focal point (anchor).
 
+### `change`
+
+Additive change of the rotation since the previous event, expressed in radians.
+
 ### `velocity`
 
 Instantaneous velocity, expressed in point units per second, of the gesture.

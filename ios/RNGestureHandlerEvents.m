@@ -96,12 +96,14 @@
 }
 
 + (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation
+                             withRotationChange:(CGFloat)change
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
                             withNumberOfTouches:(NSUInteger)numberOfTouches
 {
     return [[RNGestureHandlerEventExtraData alloc]
             initWithData:@{@"rotation": @(rotation),
+                           @"change":@(change),
                            @"anchorX": @(anchorPoint.x),
                            @"anchorY": @(anchorPoint.y),
                            @"velocity": SAFE_VELOCITY(velocity),

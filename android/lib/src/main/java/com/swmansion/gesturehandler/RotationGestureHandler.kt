@@ -6,10 +6,14 @@ import kotlin.math.abs
 
 class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   private var rotationGestureDetector: RotationGestureDetector? = null
+  private var previousRotation = 0.0
+
   var rotation = 0.0
     private set
   var velocity = 0.0
     private set
+  val change: Double
+    get() = rotation - previousRotation
 
   val anchorX: Float
     get() = rotationGestureDetector?.anchorX ?: Float.NaN
@@ -45,9 +49,11 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     if (state == STATE_UNDETERMINED) {
       velocity = 0.0
       rotation = 0.0
+      previousRotation = 0.0
       rotationGestureDetector = RotationGestureDetector(gestureListener)
       begin()
     }
+    previousRotation = rotation
     rotationGestureDetector?.onTouchEvent(event)
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
@@ -63,6 +69,7 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     if (state != STATE_ACTIVE) {
       rotation = 0.0
       velocity = 0.0
+      previousRotation = 0.0
     }
     super.activate(force)
   }
@@ -71,6 +78,7 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     rotationGestureDetector = null
     velocity = 0.0
     rotation = 0.0
+    previousRotation = 0.0
   }
 
   companion object {

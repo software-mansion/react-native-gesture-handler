@@ -35,6 +35,7 @@
                                 withVelocity:(CGFloat)velocity
                          withNumberOfTouches:(NSUInteger)numberOfTouches;
 + (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation
+                             withRotationChange:(CGFloat)change
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
                             withNumberOfTouches:(NSUInteger)numberOfTouches;
