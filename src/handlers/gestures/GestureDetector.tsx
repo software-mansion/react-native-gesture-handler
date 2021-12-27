@@ -421,7 +421,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   if (process.env.JEST_WORKER_ID) {
     for (const handler of gesture) {
       const handlers = handler.handlers;
-      // @ts-ignore react-hooks/rules-of-hooks
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const reaGestureHandler = Reanimated.useAnimatedGestureHandler({
         onStart: handlers.onBegin,
         onActive: handlers.onUpdate,
