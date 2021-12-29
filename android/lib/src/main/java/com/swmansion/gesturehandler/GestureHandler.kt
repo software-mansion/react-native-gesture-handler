@@ -67,14 +67,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT =
     self().apply { block() }
 
-  // set and accessed only by the orchestrator
+  // properties set and accessed only by the orchestrator
   var activationIndex = 0
-
-  // set and accessed only by the orchestrator
   var isActive = false
-
-  // set and accessed only by the orchestrator
   var isAwaiting = false
+  var shouldResetProgress = false
 
   open fun dispatchStateChange(newState: Int, prevState: Int) {
     onTouchEventListener?.onStateChange(self(), newState, prevState)
@@ -616,6 +613,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       moveToState(STATE_END)
     }
   }
+
+  // responsible for resetting the state of handler upon activation (may be called more than once
+  // if the handler is waiting for failure of other one)
+  open fun resetProgress() {}
 
   protected open fun onHandle(event: MotionEvent) {
     moveToState(STATE_FAILED)

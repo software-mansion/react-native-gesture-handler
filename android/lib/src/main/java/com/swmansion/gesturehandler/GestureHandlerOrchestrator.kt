@@ -155,6 +155,7 @@ class GestureHandlerOrchestrator(
     with(handler) {
       isAwaiting = false
       isActive = true
+      shouldResetProgress = true
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++
     }
     var toCancelCount = 0
@@ -249,6 +250,17 @@ class GestureHandlerOrchestrator(
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
       handler.handle(event)
       if (handler.isActive) {
+        // After handler is done waiting for other one to fail its progress should be
+        // reset, otherwise there may be a visible jump in values sent by the handler.
+        // When handler is waiting it's already activated but the `isAwaiting` flag
+        // prevents it from receiving touch stream. When the flag is changed, the
+        // difference between this event and the last one may be large enough to be
+        // visible in interactions based on this gesture. This makes it consistent with
+        // the behavior on iOS.
+        if (handler.shouldResetProgress) {
+          handler.shouldResetProgress = false
+          handler.resetProgress()
+        }
         handler.dispatchHandlerUpdate(event)
       }
 
