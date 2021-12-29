@@ -25,11 +25,11 @@ In order for a gesture to [activate](../../under-the-hood/states-events.md#activ
 
 Minimum number of pointers (fingers) required to be placed before the gesture [activates](../../under-the-hood/states-events.md#active). Should be a positive integer. The default value is 1.
 
-### `maxDurationMs(value: number)`
+### `maxDuration(value: number)`
 
 Maximum time, expressed in milliseconds, that defines how fast a finger must be released after a touch. The default value is 500.
 
-### `maxDelayMs(value: number)`
+### `maxDelay(value: number)`
 
 Maximum time, expressed in milliseconds, that can pass before the next tap — if many taps are required. The default value is 500.
 
@@ -45,7 +45,7 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 
 Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the Y axis during a tap gesture. If the finger travels further than the defined distance along the Y axis and the gesture hasn't yet [activated](../../under-the-hood/states-events.md#active), it will fail to recognize the gesture.
 
-### `maxDist(value: number)`
+### `maxDistance(value: number)`
 
 Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](../../under-the-hood/states-events.md#active), it will fail to recognize the gesture.
 
