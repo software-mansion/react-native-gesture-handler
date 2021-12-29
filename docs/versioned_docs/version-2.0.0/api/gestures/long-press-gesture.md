@@ -16,11 +16,11 @@ The gesture will fail to recognize a touch event if the finger is lifted before 
 
 ### Properties specific to `LongPressGesture`:
 
-### `minDurationMs(value: number)`
+### `minDuration(value: number)`
 
 Minimum time, expressed in milliseconds, that a finger must remain pressed on the corresponding view. The default value is 500.
 
-### `maxDist(value: number)`
+### `maxDistance(value: number)`
 
 Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](../../under-the-hood/states-events.md#active), it will fail to recognize the gesture. The default value is 10.
 
