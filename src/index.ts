@@ -61,22 +61,22 @@ export type {
 } from './handlers/NativeViewGestureHandler';
 export { GestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
-export { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
-export { PanGestureType as PanGesture } from './handlers/gestures/panGesture';
-export { FlingGestureType as FlingGesture } from './handlers/gestures/flingGesture';
-export { LongPressGestureType as LongPressGesture } from './handlers/gestures/longPressGesture';
-export { PinchGestureType as PinchGesture } from './handlers/gestures/pinchGesture';
-export { RotationGestureType as RotationGesture } from './handlers/gestures/rotationGesture';
-export { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
-export { NativeGestureType as NativeGesture } from './handlers/gestures/nativeGesture';
-export { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
-export {
+export type { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
+export type { PanGestureType as PanGesture } from './handlers/gestures/panGesture';
+export type { FlingGestureType as FlingGesture } from './handlers/gestures/flingGesture';
+export type { LongPressGestureType as LongPressGesture } from './handlers/gestures/longPressGesture';
+export type { PinchGestureType as PinchGesture } from './handlers/gestures/pinchGesture';
+export type { RotationGestureType as RotationGesture } from './handlers/gestures/rotationGesture';
+export type { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
+export type { NativeGestureType as NativeGesture } from './handlers/gestures/nativeGesture';
+export type { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
+export type {
   ComposedGestureType as ComposedGesture,
   RaceGestureType as RaceGesture,
   SimultaneousGestureType as SimultaneousGesture,
   ExclusiveGestureType as ExclusiveGesture,
 } from './handlers/gestures/gestureComposition';
-export { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
+export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
   RawButtonProps,
