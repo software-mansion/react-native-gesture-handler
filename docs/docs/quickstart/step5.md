@@ -15,6 +15,8 @@ const gesture = Gesture.Pan()
       x: offset.value.x,
       y: offset.value.y,
     };
+  })
+  .onFinalize(() => {
     isPressed.value = false;
   });
 ```
