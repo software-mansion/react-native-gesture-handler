@@ -67,7 +67,9 @@ dependencies {
     //noinspection GradleDynamicVersion
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
-        implementation project(':react-native-reanimated')
+        implementation (project(':react-native-reanimated')) {
+            exclude group:'com.facebook.fbjni' // resolves "Duplicate class com.facebook.jni.CppException"
+        }
     }
     implementation project(':ReactAndroid') // implementation 'com.facebook.react:react-native:+'
     implementation 'androidx.appcompat:appcompat:1.2.0'
