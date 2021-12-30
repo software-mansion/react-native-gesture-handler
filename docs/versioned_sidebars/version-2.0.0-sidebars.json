@@ -213,27 +213,20 @@
       ]
     },
     {
-      "collapsed": true,
-      "type": "category",
-      "label": "Other",
-      "items": [
-        {
-          "type": "doc",
-          "id": "version-2.0.0/contributing"
-        },
-        {
-          "type": "doc",
-          "id": "version-2.0.0/troubleshooting"
-        },
-        {
-          "type": "doc",
-          "id": "version-2.0.0/resources"
-        },
-        {
-          "type": "doc",
-          "id": "version-2.0.0/credits"
-        }
-      ]
+      "type": "doc",
+      "id": "version-2.0.0/contributing"
+    },
+    {
+      "type": "doc",
+      "id": "version-2.0.0/troubleshooting"
+    },
+    {
+      "type": "doc",
+      "id": "version-2.0.0/resources"
+    },
+    {
+      "type": "doc",
+      "id": "version-2.0.0/community"
     }
   ]
 }

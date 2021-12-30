@@ -41,6 +41,9 @@ function Ball() {
         x: offset.value.x,
         y: offset.value.y,
       };
+    })
+    .onFinalize(() => {
+      'worklet';
       isPressed.value = false;
     });
 

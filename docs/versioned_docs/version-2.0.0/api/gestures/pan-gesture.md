@@ -38,7 +38,7 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 
 ### Properties specific to `PanGesture`:
 
-### `minDist(value: number)`
+### `minDistance(value: number)`
 
 Minimum distance the finger (or multiple finger) need to travel before the gesture [activates](../../under-the-hood/states-events.md#active). Expressed in points.
 
@@ -74,7 +74,7 @@ When the finger moves outside this range (in points) along X axis and gesture ha
 If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
-### `avgTouches(value: boolean)` (Android only)
+### `averageTouches(value: boolean)` (Android only)
 
 ### `enableTrackpadTwoFingerGesture(value: boolean)` (iOS only)
 
