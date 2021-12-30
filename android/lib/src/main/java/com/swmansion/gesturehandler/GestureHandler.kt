@@ -8,6 +8,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.RootViewUtil
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import java.lang.IllegalStateException
 import java.util.*
@@ -15,6 +16,7 @@ import java.util.*
 open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
   private val trackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
   private var trackedPointersIDsCount = 0
+  private val rootViewOffset = IntArray(2) { 0 }
   var tag = 0
   var view: View? = null
     private set
@@ -158,6 +160,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     state = STATE_UNDETERMINED
     this.view = view
     this.orchestrator = orchestrator
+
+    val rootView = RootViewUtil.getRootView(view) as? View
+    if (rootView != null) {
+      rootView.getLocationOnScreen(rootViewOffset)
+    } else {
+      rootViewOffset[0] = 0
+      rootViewOffset[1] = 0
+    }
   }
 
   private fun findNextLocalPointerId(): Int {
@@ -341,8 +351,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         pointerId,
         event.getX(event.actionIndex),
         event.getY(event.actionIndex),
-        event.getX(event.actionIndex) + offsetX,
-        event.getY(event.actionIndex) + offsetY,
+        event.getX(event.actionIndex) + offsetX - rootViewOffset[0],
+        event.getY(event.actionIndex) + offsetY - rootViewOffset[1],
     )
     trackedPointersCount++
     addChangedPointer(trackedPointers[pointerId]!!)
@@ -363,8 +373,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         pointerId,
         event.getX(event.actionIndex),
         event.getY(event.actionIndex),
-        event.getX(event.actionIndex) + offsetX,
-        event.getY(event.actionIndex) + offsetY,
+        event.getX(event.actionIndex) + offsetX - rootViewOffset[0],
+        event.getY(event.actionIndex) + offsetY - rootViewOffset[1],
     )
     addChangedPointer(trackedPointers[pointerId]!!)
     trackedPointers[pointerId] = null
@@ -387,8 +397,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       if (pointer.x != event.getX(i) || pointer.y != event.getY(i)) {
         pointer.x = event.getX(i)
         pointer.y = event.getY(i)
-        pointer.absoluteX = event.getX(i) + offsetX
-        pointer.absoluteY = event.getY(i) + offsetY
+        pointer.absoluteX = event.getX(i) + offsetX - rootViewOffset[0]
+        pointer.absoluteY = event.getY(i) + offsetY - rootViewOffset[1]
 
         addChangedPointer(pointer)
         pointersAdded++
@@ -650,6 +660,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     get() = lastAbsolutePositionX - lastEventOffsetX
   val lastRelativePositionY: Float
     get() = lastAbsolutePositionY - lastEventOffsetY
+
+  val lastPositionInWindowX: Float
+    get() = lastAbsolutePositionX - rootViewOffset[0]
+  val lastPositionInWindowY: Float
+    get() = lastAbsolutePositionY - rootViewOffset[1]
 
   companion object {
     const val STATE_UNDETERMINED = 0
