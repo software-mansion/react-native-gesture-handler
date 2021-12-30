@@ -143,7 +143,11 @@ class GestureHandlerOrchestrator(
       if (handler.isActive) {
         handler.dispatchStateChange(newState, prevState)
       }
-    } else {
+    } else if (prevState != GestureHandler.STATE_UNDETERMINED || newState != GestureHandler.STATE_CANCELLED) {
+      // If handler is changing state from UNDETERMINED to CANCELLED, the state change event shouldn't
+      // be sent. Handler hasn't yet began so it may not be initialized which results in crashes.
+      // If it doesn't crash, there may be some weird behavior on JS side, as `onFinalize` will be
+      // called without calling `onBegin` first.
       handler.dispatchStateChange(newState, prevState)
     }
     handlingChangeSemaphore -= 1
