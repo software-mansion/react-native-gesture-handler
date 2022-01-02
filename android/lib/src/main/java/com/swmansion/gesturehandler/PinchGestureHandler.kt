@@ -57,14 +57,13 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
       val configuration = ViewConfiguration.get(context)
       spanSlop = configuration.scaledTouchSlop.toFloat()
-      begin()
     }
-    scaleGestureDetector?.onTouchEvent(event)
-    var activePointers = event.pointerCount
-    if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
-      activePointers -= 1
+    
+    if(event.actionMasked != MotionEvent.ACTION_POINTER_UP){
+      scaleGestureDetector?.onTouchEvent(event)
     }
-    if (state == STATE_ACTIVE && activePointers < 2) {
+
+    if (state == STATE_ACTIVE && event.actionMasked == MotionEvent.ACTION_UP) {
       end()
     } else if (event.actionMasked == MotionEvent.ACTION_UP) {
       fail()
