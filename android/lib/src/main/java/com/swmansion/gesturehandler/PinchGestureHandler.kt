@@ -57,9 +57,10 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
       val configuration = ViewConfiguration.get(context)
       spanSlop = configuration.scaledTouchSlop.toFloat()
+      begin()
     }
-    
-    if(event.actionMasked != MotionEvent.ACTION_POINTER_UP){
+  
+  if(event.actionMasked != MotionEvent.ACTION_POINTER_UP){
       scaleGestureDetector?.onTouchEvent(event)
     }
 
