@@ -61,10 +61,15 @@ export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
     success: boolean
   ) => void;
   onUpdate?: (event: GestureUpdateEvent<EventPayloadT>) => void;
+  onChange?: (event: any) => void;
   onTouchesDown?: TouchEventHandlerType;
   onTouchesMove?: TouchEventHandlerType;
   onTouchesUp?: TouchEventHandlerType;
   onTouchesCancelled?: TouchEventHandlerType;
+  changeEventCalculator?: (
+    current: GestureUpdateEvent<Record<string, unknown>>,
+    previous?: GestureUpdateEvent<Record<string, unknown>>
+  ) => GestureUpdateEvent<Record<string, unknown>>;
   isWorklet: boolean[];
 };
 
@@ -73,12 +78,13 @@ export const CALLBACK_TYPE = {
   BEGAN: 1,
   START: 2,
   UPDATE: 3,
-  END: 4,
-  FINALIZE: 5,
-  TOUCHES_DOWN: 6,
-  TOUCHES_MOVE: 7,
-  TOUCHES_UP: 8,
-  TOUCHES_CANCELLED: 9,
+  CHANGE: 4,
+  END: 5,
+  FINALIZE: 6,
+  TOUCHES_DOWN: 7,
+  TOUCHES_MOVE: 8,
+  TOUCHES_UP: 9,
+  TOUCHES_CANCELLED: 10,
 } as const;
 
 // Allow using CALLBACK_TYPE as object and type
@@ -131,12 +137,8 @@ export abstract class BaseGesture<
     return this;
   }
 
-  protected isWorklet(
-    callback:
-      | TouchEventHandlerType
-      | ((event: GestureUpdateEvent<EventPayloadT>) => void)
-      | ((event: GestureStateChangeEvent<EventPayloadT>) => void)
-  ) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  protected isWorklet(callback: Function) {
     //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     return callback.__workletHash !== undefined;
   }
@@ -264,11 +266,22 @@ export abstract class BaseGesture<
 }
 
 export abstract class ContinousBaseGesture<
-  EventPayloadT extends Record<string, unknown>
+  EventPayloadT extends Record<string, unknown>,
+  EventChangePayloadT extends Record<string, unknown>
 > extends BaseGesture<EventPayloadT> {
   onUpdate(callback: (event: GestureUpdateEvent<EventPayloadT>) => void) {
     this.handlers.onUpdate = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] = this.isWorklet(callback);
+    return this;
+  }
+
+  onChange(
+    callback: (
+      event: GestureUpdateEvent<EventPayloadT & EventChangePayloadT>
+    ) => void
+  ) {
+    this.handlers.onChange = callback;
+    this.handlers.isWorklet[CALLBACK_TYPE.CHANGE] = this.isWorklet(callback);
     return this;
   }
 
