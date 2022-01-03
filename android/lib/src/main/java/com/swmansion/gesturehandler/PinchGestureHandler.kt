@@ -62,7 +62,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       begin()
     }
     scaleGestureDetector?.onTouchEvent(event)
-    activePointers = event.pointerCount;
+    activePointers = event.pointerCount
     if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       activePointers -= 1
     }
