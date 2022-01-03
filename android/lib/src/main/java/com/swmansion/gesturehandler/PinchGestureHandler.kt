@@ -61,15 +61,11 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       spanSlop = configuration.scaledTouchSlop.toFloat()
       begin()
     }
-
-    activePointers = event.pointerCount;
-
     scaleGestureDetector?.onTouchEvent(event)
-
+    activePointers = event.pointerCount;
     if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       activePointers -= 1
     }
-
     if (state == STATE_ACTIVE && event.actionMasked == MotionEvent.ACTION_UP) {
       end()
     } else if (event.actionMasked == MotionEvent.ACTION_UP) {
