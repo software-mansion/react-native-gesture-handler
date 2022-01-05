@@ -36,6 +36,8 @@ const dummyStateManager: GestureStateManagerType = {
   },
 };
 
+const lastUpdateEvent: GestureUpdateEvent[] = [];
+
 function isStateChangeEvent(
   event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
 ): event is GestureStateChangeEvent {
@@ -69,6 +71,7 @@ function onGestureHandlerEvent(
         event.state === State.ACTIVE
       ) {
         handler.handlers.onStart?.(event);
+        lastUpdateEvent[handler.handlers.handlerTag] = event;
       } else if (event.oldState !== event.state && event.state === State.END) {
         if (event.oldState === State.ACTIVE) {
           handler.handlers.onEnd?.(event, true);
@@ -100,6 +103,17 @@ function onGestureHandlerEvent(
       }
     } else {
       handler.handlers.onUpdate?.(event);
+
+      if (handler.handlers.onChange && handler.handlers.changeEventCalculator) {
+        handler.handlers.onChange?.(
+          handler.handlers.changeEventCalculator?.(
+            event,
+            lastUpdateEvent[handler.handlers.handlerTag]
+          )
+        );
+
+        lastUpdateEvent[handler.handlers.handlerTag] = event;
+      }
     }
   }
 }
