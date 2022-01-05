@@ -256,6 +256,8 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
         return gesture.onStart;
       case CALLBACK_TYPE.UPDATE:
         return gesture.onUpdate;
+      case CALLBACK_TYPE.CHANGE:
+        return gesture.onChange;
       case CALLBACK_TYPE.END:
         return gesture.onEnd;
       case CALLBACK_TYPE.FINALIZE:
@@ -310,6 +312,11 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
     HandlerCallbacks<Record<string, unknown>>[] | null
   >(null);
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const lastUpdateEvent = Reanimated.useSharedValue<
+    (GestureUpdateEvent | undefined)[]
+  >([]);
+
   // not every gesture needs a state controller, init them lazily
   const stateControllers: GestureStateManagerType[] = [];
 
@@ -339,6 +346,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
             event.state === State.ACTIVE
           ) {
             runWorklet(CALLBACK_TYPE.START, gesture, event);
+            lastUpdateEvent.value[gesture.handlerTag] = undefined;
           } else if (
             event.oldState !== event.state &&
             event.state === State.END
@@ -371,6 +379,19 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
           }
         } else {
           runWorklet(CALLBACK_TYPE.UPDATE, gesture, event);
+
+          if (gesture.onChange && gesture.changeEventCalculator) {
+            runWorklet(
+              CALLBACK_TYPE.CHANGE,
+              gesture,
+              gesture.changeEventCalculator?.(
+                event,
+                lastUpdateEvent.value[gesture.handlerTag]
+              )
+            );
+
+            lastUpdateEvent.value[gesture.handlerTag] = event;
+          }
         }
       }
     }

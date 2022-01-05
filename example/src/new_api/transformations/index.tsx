@@ -7,13 +7,9 @@ import Animated, {
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 function Photo() {
-  const offsetX = useSharedValue(0);
-  const offsetY = useSharedValue(0);
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
-  const savedScale = useSharedValue(1);
   const scale = useSharedValue(1);
-  const savedRotation = useSharedValue(0);
   const rotation = useSharedValue(0);
 
   const style = useAnimatedStyle(() => {
@@ -27,37 +23,22 @@ function Photo() {
     };
   });
 
-  const rotationGesture = Gesture.Rotation()
-    .onUpdate((e) => {
-      'worklet';
-      rotation.value = savedRotation.value + e.rotation;
-    })
-    .onEnd(() => {
-      'worklet';
-      savedRotation.value = rotation.value;
-    });
+  const rotationGesture = Gesture.Rotation().onChange((e) => {
+    'worklet';
+    rotation.value += e.rotationChange;
+  });
 
-  const scaleGesture = Gesture.Pinch()
-    .onUpdate((e) => {
-      'worklet';
-      scale.value = savedScale.value * e.scale;
-    })
-    .onEnd(() => {
-      'worklet';
-      savedScale.value = scale.value;
-    });
+  const scaleGesture = Gesture.Pinch().onChange((e) => {
+    'worklet';
+    scale.value *= e.scaleChange;
+  });
 
   const panGesture = Gesture.Pan()
     .averageTouches(true)
-    .onUpdate((e) => {
+    .onChange((e) => {
       'worklet';
-      translationX.value = offsetX.value + e.translationX;
-      translationY.value = offsetY.value + e.translationY;
-    })
-    .onEnd(() => {
-      'worklet';
-      offsetX.value = translationX.value;
-      offsetY.value = translationY.value;
+      translationX.value += e.changeX;
+      translationY.value += e.changeY;
     });
 
   const doubleTapGesture = Gesture.Tap()
