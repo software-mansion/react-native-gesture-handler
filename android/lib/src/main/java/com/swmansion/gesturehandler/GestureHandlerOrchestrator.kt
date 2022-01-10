@@ -142,6 +142,10 @@ class GestureHandlerOrchestrator(
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
       if (handler.isActive) {
         handler.dispatchStateChange(newState, prevState)
+      } else if (prevState == GestureHandler.STATE_ACTIVE) {
+        // handle edge case where handler awaiting for another one tries to activate but finishes
+        // before the other would not send state change event upon ending
+        handler.dispatchStateChange(newState, GestureHandler.STATE_BEGAN)
       }
     } else if (prevState != GestureHandler.STATE_UNDETERMINED || newState != GestureHandler.STATE_CANCELLED) {
       // If handler is changing state from UNDETERMINED to CANCELLED, the state change event shouldn't
