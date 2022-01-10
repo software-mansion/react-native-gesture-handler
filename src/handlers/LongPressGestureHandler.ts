@@ -27,7 +27,7 @@ export type LongPressGestureHandlerEventPayload = {
   /**
    * X coordinate, expressed in points, of the current position of the pointer
    * (finger or a leading pointer when there are multiple fingers placed)
-   * relative to the root view. It is recommended to use `absoluteX` instead of
+   * relative to the window. It is recommended to use `absoluteX` instead of
    * `x` in cases when the view attached to the handler can be transformed as an
    * effect of the gesture.
    */
@@ -36,7 +36,7 @@ export type LongPressGestureHandlerEventPayload = {
   /**
    * Y coordinate, expressed in points, of the current position of the pointer
    * (finger or a leading pointer when there are multiple fingers placed)
-   * relative to the root view. It is recommended to use `absoluteY` instead of
+   * relative to the window. It is recommended to use `absoluteY` instead of
    * `y` in cases when the view attached to the handler can be transformed as an
    * effect of the gesture.
    */
