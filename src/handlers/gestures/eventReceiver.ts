@@ -36,6 +36,8 @@ const dummyStateManager: GestureStateManagerType = {
   },
 };
 
+const lastUpdateEvent: (GestureUpdateEvent | undefined)[] = [];
+
 function isStateChangeEvent(
   event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
 ): event is GestureStateChangeEvent {
@@ -69,11 +71,13 @@ function onGestureHandlerEvent(
         event.state === State.ACTIVE
       ) {
         handler.handlers.onStart?.(event);
+        lastUpdateEvent[handler.handlers.handlerTag] = event;
       } else if (event.oldState !== event.state && event.state === State.END) {
         if (event.oldState === State.ACTIVE) {
           handler.handlers.onEnd?.(event, true);
         }
         handler.handlers.onFinalize?.(event, true);
+        lastUpdateEvent[handler.handlers.handlerTag] = undefined;
       } else if (
         (event.state === State.FAILED || event.state === State.CANCELLED) &&
         event.oldState !== event.state
@@ -82,6 +86,7 @@ function onGestureHandlerEvent(
           handler.handlers.onEnd?.(event, false);
         }
         handler.handlers.onFinalize?.(event, false);
+        lastUpdateEvent[handler.handlers.handlerTag] = undefined;
       }
     } else if (isTouchEvent(event)) {
       switch (event.eventType) {
@@ -100,6 +105,17 @@ function onGestureHandlerEvent(
       }
     } else {
       handler.handlers.onUpdate?.(event);
+
+      if (handler.handlers.onChange && handler.handlers.changeEventCalculator) {
+        handler.handlers.onChange?.(
+          handler.handlers.changeEventCalculator?.(
+            event,
+            lastUpdateEvent[handler.handlers.handlerTag]
+          )
+        );
+
+        lastUpdateEvent[handler.handlers.handlerTag] = event;
+      }
     }
   }
 }
