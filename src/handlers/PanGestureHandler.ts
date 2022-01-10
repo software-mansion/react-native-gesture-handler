@@ -47,7 +47,7 @@ export type PanGestureHandlerEventPayload = {
 
   /**
    * X coordinate of the current position of the pointer (finger or a leading
-   * pointer when there are multiple fingers placed) relative to the root view.
+   * pointer when there are multiple fingers placed) relative to the window.
    * The value is expressed in point units. It is recommended to use it instead
    * of `x` in cases when the original view can be transformed as an effect of
    * the gesture.
@@ -56,7 +56,7 @@ export type PanGestureHandlerEventPayload = {
 
   /**
    * Y coordinate of the current position of the pointer (finger or a leading
-   * pointer when there are multiple fingers placed) relative to the root view.
+   * pointer when there are multiple fingers placed) relative to the window.
    * The value is expressed in point units. It is recommended to use it instead
    * of `y` in cases when the original view can be transformed as an
    * effect of the gesture.
