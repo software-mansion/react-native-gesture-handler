@@ -1,14 +1,18 @@
 package com.swmansion.gesturehandler
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
+import android.view.Window
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.RootViewUtil
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import java.lang.IllegalStateException
 import java.util.*
@@ -16,7 +20,7 @@ import java.util.*
 open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
   private val trackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
   private var trackedPointersIDsCount = 0
-  private val rootViewOffset = IntArray(2) { 0 }
+  private val windowOffset = IntArray(2) { 0 }
   var tag = 0
   var view: View? = null
     private set
@@ -161,13 +165,24 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     this.view = view
     this.orchestrator = orchestrator
 
-    val rootView = RootViewUtil.getRootView(view) as? View
-    if (rootView != null) {
-      rootView.getLocationOnScreen(rootViewOffset)
+    val decorView = getWindow(view?.context)?.decorView
+    if (decorView != null) {
+      val frame = Rect()
+      decorView.getWindowVisibleDisplayFrame(frame)
+      windowOffset[0] = frame.left
+      windowOffset[1] = frame.top
     } else {
-      rootViewOffset[0] = 0
-      rootViewOffset[1] = 0
+      windowOffset[0] = 0
+      windowOffset[1] = 0
     }
+  }
+
+  private fun getWindow(context: Context?): Window? {
+    if (context == null) return null
+    if (context is Activity) return context.window
+    if (context is ContextWrapper) return getWindow(context.baseContext)
+
+    return null
   }
 
   private fun findNextLocalPointerId(): Int {
@@ -351,8 +366,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         pointerId,
         event.getX(event.actionIndex),
         event.getY(event.actionIndex),
-        event.getX(event.actionIndex) + offsetX - rootViewOffset[0],
-        event.getY(event.actionIndex) + offsetY - rootViewOffset[1],
+        event.getX(event.actionIndex) + offsetX - windowOffset[0],
+        event.getY(event.actionIndex) + offsetY - windowOffset[1],
     )
     trackedPointersCount++
     addChangedPointer(trackedPointers[pointerId]!!)
@@ -373,8 +388,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         pointerId,
         event.getX(event.actionIndex),
         event.getY(event.actionIndex),
-        event.getX(event.actionIndex) + offsetX - rootViewOffset[0],
-        event.getY(event.actionIndex) + offsetY - rootViewOffset[1],
+        event.getX(event.actionIndex) + offsetX - windowOffset[0],
+        event.getY(event.actionIndex) + offsetY - windowOffset[1],
     )
     addChangedPointer(trackedPointers[pointerId]!!)
     trackedPointers[pointerId] = null
@@ -397,8 +412,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       if (pointer.x != event.getX(i) || pointer.y != event.getY(i)) {
         pointer.x = event.getX(i)
         pointer.y = event.getY(i)
-        pointer.absoluteX = event.getX(i) + offsetX - rootViewOffset[0]
-        pointer.absoluteY = event.getY(i) + offsetY - rootViewOffset[1]
+        pointer.absoluteX = event.getX(i) + offsetX - windowOffset[0]
+        pointer.absoluteY = event.getY(i) + offsetY - windowOffset[1]
 
         addChangedPointer(pointer)
         pointersAdded++
@@ -662,9 +677,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     get() = lastAbsolutePositionY - lastEventOffsetY
 
   val lastPositionInWindowX: Float
-    get() = lastAbsolutePositionX - rootViewOffset[0]
+    get() = lastAbsolutePositionX - windowOffset[0]
   val lastPositionInWindowY: Float
-    get() = lastAbsolutePositionY - rootViewOffset[1]
+    get() = lastAbsolutePositionY - windowOffset[1]
 
   companion object {
     const val STATE_UNDETERMINED = 0
