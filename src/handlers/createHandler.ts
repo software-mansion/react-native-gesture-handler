@@ -124,13 +124,11 @@ type InternalEventHandlers = {
 
 let showedRngh2Notice = false;
 function showRngh2NoticeIfNeeded() {
-  if (__DEV__) {
-    if (!showedRngh2Notice) {
-      console.warn(
-        "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"
-      );
-      showedRngh2Notice = true;
-    }
+  if (!showedRngh2Notice) {
+    console.warn(
+      "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"
+    );
+    showedRngh2Notice = true;
   }
 }
 
@@ -174,7 +172,9 @@ export default function createHandler<
         }
         handlerIDToTag[props.id] = this.handlerTag;
       }
-      showRngh2NoticeIfNeeded();
+      if (__DEV__) {
+        showRngh2NoticeIfNeeded();
+      }
     }
 
     componentDidMount() {
