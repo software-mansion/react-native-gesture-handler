@@ -122,6 +122,16 @@ type InternalEventHandlers = {
   onGestureHandlerStateChange?: (event: any) => void;
 };
 
+let showedRngh2Notice = false;
+function showRngh2NoticeIfNeeded() {
+  if (!showedRngh2Notice) {
+    console.warn(
+      "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"
+    );
+    showedRngh2Notice = true;
+  }
+}
+
 // TODO(TS) - make sure that BaseGestureHandlerProps doesn't need other generic parameter to work with custom properties.
 export default function createHandler<
   T extends BaseGestureHandlerProps<U>,
@@ -161,6 +171,9 @@ export default function createHandler<
           throw new Error(`Handler with ID "${props.id}" already registered`);
         }
         handlerIDToTag[props.id] = this.handlerTag;
+      }
+      if (__DEV__) {
+        showRngh2NoticeIfNeeded();
       }
     }
 
