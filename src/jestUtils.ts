@@ -254,6 +254,7 @@ const getGestureHandlers = (
 };
 
 export const fireTapGestureHandler = (
+  testId: number,
   component: any,
   eventData?: FireGestureHandlerConfig<TapConfig>
 ) => {

@@ -11,7 +11,12 @@ import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
-import { handlerIDToTag, getNextHandlerTag } from './handlersRegistry';
+import {
+  handlerIDToTag,
+  getNextHandlerTag,
+  unregisterJestHandler,
+  registerJestHandler,
+} from './handlersRegistry';
 
 import {
   BaseGestureHandlerProps,
@@ -22,6 +27,7 @@ import {
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
 import { decorateChildrenWithTag } from '../jestUtils';
+import { isJest } from '../utils';
 
 const UIManagerAny = UIManager as any;
 
@@ -153,7 +159,8 @@ export default function createHandler<
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
-      this.handlerTag = getNextHandlerTag();
+      this.handlerTag =
+        isJest() && props.testId ? props.testId : getNextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
       this.state = { allowTouches };
@@ -232,6 +239,10 @@ export default function createHandler<
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete handlerIDToTag[handlerID];
       }
+
+      if (isJest()) {
+        unregisterJestHandler(this.handlerTag);
+      }
     }
 
     private onGestureHandlerEvent = (event: GestureEvent<U>) => {
@@ -305,6 +316,10 @@ export default function createHandler<
           false
         );
       }
+
+      if (isJest()) {
+        registerJestHandler(this.handlerTag, this);
+      }
     };
 
     private updateGestureHandler = (
@@ -313,6 +328,10 @@ export default function createHandler<
       this.config = newConfig;
 
       RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
+
+      if (isJest()) {
+        registerJestHandler(this.handlerTag, this);
+      }
     };
 
     private update() {

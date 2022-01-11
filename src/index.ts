@@ -1,5 +1,7 @@
 import { initialize } from './init';
 
+export { findJestHandler } from './handlers/handlersRegistry';
+
 export { Directions } from './Directions';
 export { State } from './State';
 export { default as gestureHandlerRootHOC } from './gestureHandlerRootHOC';

@@ -7,7 +7,12 @@ import {
   CALLBACK_TYPE,
 } from './gesture';
 import { Reanimated, SharedValue } from './reanimatedWrapper';
-import { registerHandler, unregisterHandler } from '../handlersRegistry';
+import {
+  registerHandler,
+  registerJestHandler,
+  unregisterHandler,
+  unregisterJestHandler,
+} from '../handlersRegistry';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import {
   baseGestureHandlerWithMonitorProps,
@@ -33,6 +38,7 @@ import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
 import { decorateChildrenWithTag } from '../../jestUtils';
+import { isJest } from '../../utils';
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -77,6 +83,10 @@ function dropHandlers(preparedGesture: GestureConfigReference) {
     RNGestureHandlerModule.dropGestureHandler(handler.handlerTag);
 
     unregisterHandler(handler.handlerTag);
+
+    if (isJest()) {
+      unregisterJestHandler(handler.handlerTag);
+    }
   }
 }
 
@@ -148,6 +158,10 @@ function attachHandlers({
       viewTag,
       !useAnimated // send direct events when using animatedGesture, device events otherwise
     );
+
+    if (isJest()) {
+      registerJestHandler(gesture.handlerTag, gesture);
+    }
   }
 
   if (preparedGesture.animatedHandlers) {
@@ -199,6 +213,10 @@ function updateHandlers(
       );
 
       registerHandler(handler.handlerTag, handler);
+
+      if (isJest()) {
+        registerJestHandler(handler.handlerTag, handler);
+      }
     }
 
     if (preparedGesture.animatedHandlers) {

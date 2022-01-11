@@ -15,6 +15,7 @@ import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
 import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
+import { isJest } from '../../utils';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
@@ -41,6 +42,7 @@ export interface BaseGestureConfig
   simultaneousWith?: GestureRef[];
   needsPointerData?: boolean;
   manualActivation?: boolean;
+  testId?: number;
 }
 
 type TouchEventHandlerType = (
@@ -246,8 +248,15 @@ export abstract class BaseGesture<
     return this;
   }
 
+  withTestId(id: number) {
+    this.config.testId = id;
+    return this;
+  }
+
   initialize() {
-    this.handlerTag = getNextHandlerTag();
+    this.handlerTag =
+      isJest() && this.config.testId ? this.config.testId : getNextHandlerTag();
+
     this.handlers = { ...this.handlers, handlerTag: this.handlerTag };
 
     if (this.config.ref) {
