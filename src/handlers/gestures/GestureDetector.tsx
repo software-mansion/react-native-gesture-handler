@@ -37,8 +37,7 @@ import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
-import { decorateChildrenWithTag } from '../../jestUtils';
-import { isJest } from '../../utils';
+import { isJest } from '../../jestUtils';
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -437,24 +436,12 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
 
   // @ts-ignore @typescript-eslint/ban-ts-comment
   if (process.env.JEST_WORKER_ID) {
-    for (const handler of gesture) {
-      const handlers = handler.handlers;
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const reaGestureHandler = Reanimated.useAnimatedGestureHandler({
-        onStart: handlers.onBegin,
-        onActive: handlers.onUpdate,
-        onEnd: handlers.onEnd,
-        onFinish: handlers.onFinalize,
-      });
-      const handlerProperties = {
-        handlerType: handler.handlerName,
-        handlerTag: handler.handlerTag,
-        onGestureEvent: reaGestureHandler,
-        onHandlerStateChange: reaGestureHandler,
-      };
-      // @ts-ignore @typescript-eslint/ban-ts-comment
-      decorateChildrenWithTag({ props }, handlerProperties);
-    }
+    (global as {
+      JestGestureHandlerRegistry?: any;
+    }).JestGestureHandlerRegistry.add({
+      type: 'v2',
+      gesture: gesture,
+    });
   }
 
   if (preparedGesture.firstExecution) {

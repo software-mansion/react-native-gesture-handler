@@ -8,7 +8,23 @@ export const fireGestureHandlerEvent = (
   fireEvent(component, name, config);
 };
 
-export interface TapConfig {
+export enum EventDataTypeV1 {
+  onStart = 0,
+  onActive = 1,
+  onEnd = 2,
+  onFail = 3,
+  onCancel = 4,
+  onFinish = 5,
+}
+
+// todo: EventDataTypeV2
+
+export interface BaseConfig {
+  type?: EventDataTypeV1;
+}
+
+export interface TapConfig extends BaseConfig {
+  type?: EventDataTypeV1;
   x?: number;
   y?: number;
   absoluteX?: number;
@@ -38,15 +54,6 @@ export interface PinchConfig {
   velocity?: number;
   focalX?: number;
   focalY?: number;
-}
-
-export enum GestureHandlerType {
-  TAP = 'TapGestureHandler',
-  PAN = 'PanGestureHandler',
-  LONG_PRESS = 'LongPressGestureHandler',
-  ROTATION = 'RotationGestureHandler',
-  FLING = 'FlingGestureHandler',
-  PINCH = 'PinchGestureHandler',
 }
 
 interface HandlerProperties {
@@ -152,238 +159,207 @@ const sendEndEvent: SendEventWrapper = (handler, baseEventData, eventData) => {
   );
 };
 
-const sendFailEvent: SendEventWrapper = (handler, baseEventData, eventData) => {
-  sendStateChangeEvent(
-    handler,
-    { oldState: 2, state: 1 },
-    baseEventData,
-    eventData
-  );
-};
+// const sendFailEvent: SendEventWrapper = (handler, baseEventData, eventData) => {
+//   sendStateChangeEvent(
+//     handler,
+//     { oldState: 2, state: 1 },
+//     baseEventData,
+//     eventData
+//   );
+// };
 
-const sendCancelEvent: SendEventWrapper = (
-  handler,
-  baseEventData,
-  eventData
-) => {
-  sendStateChangeEvent(
-    handler,
-    { oldState: 4, state: 3 },
-    baseEventData,
-    eventData
-  );
-};
+// const sendCancelEvent: SendEventWrapper = (
+//   handler,
+//   baseEventData,
+//   eventData
+// ) => {
+//   sendStateChangeEvent(
+//     handler,
+//     { oldState: 4, state: 3 },
+//     baseEventData,
+//     eventData
+//   );
+// };
 
-const sendFinishEvent = (
-  handler: HandlerProperties,
+// const sendFinishEvent = (
+//   handler: HandlerProperties,
+//   baseEventData: Record<string, any>,
+//   eventData?: FireGestureHandlerConfig<any>
+// ) => {
+//   let states = { oldState: -1, state: -1 };
+//   if (eventData?.onFail) {
+//     states = { oldState: 2, state: 1 };
+//   } else if (eventData?.onCancel) {
+//     states = { oldState: 2, state: 2 };
+//   } else {
+//     states = { oldState: 2, state: 1 };
+//   }
+//   sendStateChangeEvent(handler, states, baseEventData, eventData?.onFinish);
+// };
+
+const runEventsSequence = <T extends TapConfig | RotationConfig>(
+  testId: number,
   baseEventData: Record<string, any>,
-  eventData?: FireGestureHandlerConfig<any>
+  eventDataStream?: Partial<T>[]
 ) => {
-  let states = { oldState: -1, state: -1 };
-  if (eventData?.onFail) {
-    states = { oldState: 2, state: 1 };
-  } else if (eventData?.onCancel) {
-    states = { oldState: 2, state: 2 };
-  } else {
-    states = { oldState: 2, state: 1 };
+  // todo: EventDataTypeV1
+  const handler = getGestureHandler(testId);
+  const streamLenght = Array.isArray(eventDataStream)
+    ? eventDataStream.length
+    : 0;
+  const beginEventData = streamLenght > 0 ? eventDataStream![0] : {};
+  const progressEventDataFirst = streamLenght > 2 ? eventDataStream![1] : {};
+  const progressEventsData = streamLenght > 2 ? [eventDataStream![1]] : [{}];
+  const endEventData =
+    streamLenght > 0 ? eventDataStream![streamLenght - 1] : {};
+
+  // for (const item in eventDataStream) {
+  // todo: onFail, onCancel, onFinish
+  // }
+
+  for (let i = 2; i < streamLenght - 1; i++) {
+    progressEventsData.push(eventDataStream![i]);
   }
-  sendStateChangeEvent(handler, states, baseEventData, eventData?.onFinish);
+  sendBeginEvent(handler, baseEventData, beginEventData);
+  sendProgressEventFirst(handler, baseEventData, progressEventDataFirst);
+  for (const eventData of progressEventsData) {
+    sendProgressEvent(handler, baseEventData, eventData);
+  }
+  sendEndEvent(handler, baseEventData, endEventData);
 };
 
-const runEventsSequence = <T>(
-  component: any,
-  eventType: GestureHandlerType,
-  baseEventData: Record<string, any>,
-  eventData?: FireGestureHandlerConfig<T>
-) => {
-  const handlers = getGestureHandlers(eventType, component);
-  handlers.forEach((handler) => {
-    sendBeginEvent(handler, baseEventData, eventData?.configBegin);
-  });
-
-  handlers.forEach((handler) => {
-    baseEventData.handlerTag = handler.tag;
-    if (Array.isArray(eventData?.configProgress)) {
-      let index = 0;
-      for (const item of eventData!.configProgress) {
-        if (index === 0) {
-          sendProgressEventFirst(
-            handler,
-            baseEventData,
-            eventData?.configProgress
-          );
-        } else {
-          sendProgressEvent(handler, baseEventData, item);
-        }
-        index++;
-      }
-    } else {
-      sendProgressEventFirst(handler, baseEventData, eventData?.configProgress);
-    }
-  });
-
-  handlers.forEach((handler) => {
-    sendEndEvent(handler, baseEventData, eventData?.configEnd);
-  });
-
-  handlers.forEach((handler) => {
-    sendFailEvent(handler, baseEventData, eventData?.onFail);
-  });
-
-  handlers.forEach((handler) => {
-    sendCancelEvent(handler, baseEventData, eventData?.onCancel);
-  });
-
-  handlers.forEach((handler) => {
-    sendFinishEvent(handler, baseEventData, eventData);
-  });
-};
-
-const getGestureHandlers = (
-  handlerType: GestureHandlerType,
-  component: any
-): HandlerProperties[] => {
-  const config: HandlerProperties[] =
-    component?._fiber?.stateNode?.props?.ghTagContainer;
-  if (config) {
-    return config.filter((handler) => handler.handlerType === handlerType);
+const getGestureHandler = (testId: number): any => {
+  // todo: any
+  const registry = (global as { JestGestureHandlerRegistry?: any })
+    .JestGestureHandlerRegistry; // todo: any
+  const handler = registry.get(testId);
+  if (handler) {
+    return handler;
   }
   throw Error(
-    'Unable to resolve gesture handler tag, are you sure that you added {...ghTagEventMacro()} to your component?'
+    'Unable to resolve gesture handler tag, are you sure that you added prop testId to your gesture hndler?'
   );
 };
 
 export const fireTapGestureHandler = (
   testId: number,
-  component: any,
-  eventData?: FireGestureHandlerConfig<TapConfig>
+  eventDataStream?: TapConfig[]
 ) => {
-  const baseEventData: Required<TapConfig> = {
-    x: 0,
-    y: 0,
-    absoluteX: 0,
-    absoluteY: 0,
-  };
-  runEventsSequence(
-    component,
-    GestureHandlerType.TAP,
-    baseEventData,
-    eventData
+  runEventsSequence<Required<TapConfig>>(
+    testId,
+    {
+      x: 0,
+      y: 0,
+      absoluteX: 0,
+      absoluteY: 0,
+    },
+    eventDataStream
   );
 };
 
 export const firePanGestureHandler = (
-  component: any,
-  eventData?: FireGestureHandlerConfig<PanConfig>
+  testId: number,
+  eventDataStream?: PanConfig[]
 ) => {
-  const baseEventData: Required<PanConfig> = {
-    x: 0,
-    y: 0,
-    absoluteX: 0,
-    absoluteY: 0,
-    translationX: 0,
-    translationY: 0,
-    velocityX: 0,
-    velocityY: 0,
-  };
-  runEventsSequence(
-    component,
-    GestureHandlerType.PAN,
-    baseEventData,
-    eventData
+  runEventsSequence<Required<PanConfig>>(
+    testId,
+    {
+      x: 0,
+      y: 0,
+      absoluteX: 0,
+      absoluteY: 0,
+      translationX: 0,
+      translationY: 0,
+      velocityX: 0,
+      velocityY: 0,
+    },
+    eventDataStream
   );
 };
 
 export const fireLongPressGestureHandler = (
-  component: any,
-  eventData?: FireGestureHandlerConfig<LongPressConfig>
+  testId: number,
+  eventDataStream?: LongPressConfig[]
 ) => {
-  const baseEventData: Required<LongPressConfig> = {
-    x: 0,
-    y: 0,
-    absoluteX: 0,
-    absoluteY: 0,
-    duration: 0,
-  };
-  runEventsSequence(
-    component,
-    GestureHandlerType.LONG_PRESS,
-    baseEventData,
-    eventData
+  runEventsSequence<Required<LongPressConfig>>(
+    testId,
+    {
+      x: 0,
+      y: 0,
+      absoluteX: 0,
+      absoluteY: 0,
+      duration: 0,
+    },
+    eventDataStream
   );
 };
 
 export const fireRotationGestureHandler = (
-  component: any,
-  eventData?: FireGestureHandlerConfig<RotationConfig>
+  testId: number,
+  eventDataStream?: RotationConfig[]
 ) => {
-  const baseEventData: Required<RotationConfig> = {
-    rotation: 0,
-    velocity: 0,
-    anchorX: 0,
-    anchorY: 0,
-  };
-  runEventsSequence(
-    component,
-    GestureHandlerType.ROTATION,
-    baseEventData,
-    eventData
+  runEventsSequence<Required<RotationConfig>>(
+    testId,
+    {
+      rotation: 0,
+      velocity: 0,
+      anchorX: 0,
+      anchorY: 0,
+    },
+    eventDataStream
   );
 };
 
 export const fireFlingGestureHandler = (
-  component: any,
-  eventData?: FireGestureHandlerConfig<RotationConfig>
+  testId: number,
+  eventDataStream?: TapConfig[]
 ) => {
-  const baseEventData: Required<TapConfig> = {
-    x: 0,
-    y: 0,
-    absoluteX: 0,
-    absoluteY: 0,
-  };
-  runEventsSequence(
-    component,
-    GestureHandlerType.FLING,
-    baseEventData,
-    eventData
+  runEventsSequence<Required<TapConfig>>(
+    testId,
+    {
+      x: 0,
+      y: 0,
+      absoluteX: 0,
+      absoluteY: 0,
+    },
+    eventDataStream
   );
 };
 
 export const firePinchGestureHandler = (
-  component: any,
-  eventData?: FireGestureHandlerConfig<RotationConfig>
+  testId: number,
+  eventDataStream?: PinchConfig[]
 ) => {
-  const baseEventData: Required<PinchConfig> = {
-    scale: 0,
-    velocity: 0,
-    focalX: 0,
-    focalY: 0,
-  };
-  runEventsSequence(
-    component,
-    GestureHandlerType.PINCH,
-    baseEventData,
-    eventData
+  runEventsSequence<Required<PinchConfig>>(
+    testId,
+    {
+      scale: 0,
+      velocity: 0,
+      focalX: 0,
+      focalY: 0,
+    },
+    eventDataStream
   );
 };
 
-export const decorateChildrenWithTag = (
-  component: any,
-  handlerProperties: HandlerProperties
-) => {
-  if (!component) return;
-  if (component.props.ghTagContainer !== undefined) {
-    component.props.ghTagContainer.push(handlerProperties);
-  }
-  if (Array.isArray(component.props.children)) {
-    for (const child of component.props.children) {
-      decorateChildrenWithTag(child, handlerProperties);
-    }
-  } else if (typeof component.props.children === 'object') {
-    decorateChildrenWithTag(component.props.children, handlerProperties);
-  }
+export function isJest(): boolean {
+  return !!process.env.JEST_WORKER_ID;
+}
+
+export type JestGestureHandlerRegistryType = {
+  add: (config: any) => void;
+  remove: (_: any) => void;
+  get: (testId: number) => void;
 };
 
-export const ghTagEventMacro = () => ({
-  ghTagContainer: [],
-});
+const registry: any = {};
+
+export const JestGestureHandlerRegistry: JestGestureHandlerRegistryType = {
+  add: (config: any) => {
+    registry[config.handlerTag] = config;
+  },
+  remove: (_: any) => {},
+  get: (testId: any) => {
+    return registry[testId];
+  },
+};

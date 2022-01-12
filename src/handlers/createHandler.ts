@@ -26,8 +26,7 @@ import {
   findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
-import { decorateChildrenWithTag } from '../jestUtils';
-import { isJest } from '../utils';
+import { isJest } from '../jestUtils';
 
 const UIManagerAny = UIManager as any;
 
@@ -172,14 +171,15 @@ export default function createHandler<
       }
       // @ts-ignore @typescript-eslint/ban-ts-comment
       if (process.env.JEST_WORKER_ID) {
-        const handlerProperties = {
+        (global as {
+          JestGestureHandlerRegistry?: any;
+        }).JestGestureHandlerRegistry.add({
+          type: 'v1',
           handlerType: name,
           handlerTag: this.handlerTag,
           onGestureEvent: props.onGestureEvent,
           onHandlerStateChange: props.onHandlerStateChange,
-        };
-        // @ts-ignore @typescript-eslint/ban-ts-comment
-        decorateChildrenWithTag({ props }, handlerProperties);
+        });
       }
     }
 

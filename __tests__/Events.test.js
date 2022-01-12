@@ -9,8 +9,6 @@ import {
   FlingGestureHandler,
   RotationGestureHandler,
   PinchGestureHandler,
-  Gesture,
-  GestureDetector
 } from 'react-native-gesture-handler';
 import { 
   fireTapGestureHandler,
@@ -19,7 +17,7 @@ import {
   fireRotationGestureHandler,
   fireFlingGestureHandler,
   firePinchGestureHandler,
-  ghTagEventMacro
+  EventDataTypeV1
 } from '../src/jestUtils'
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
 
@@ -36,13 +34,13 @@ const mockEventFunctions = () => {
 
 const assertEventCalls = (eventFunctions, counts) => {
   expect(eventFunctions.begin).toHaveBeenCalledTimes(
-    counts?.begin ? counts.begin : 1
+    counts?.begin !== undefined ? counts.begin : 1
   );
   expect(eventFunctions.progress).toHaveBeenCalledTimes(
-    counts?.progress ? counts.progress : 1
+    counts?.progress !== undefined ? counts.progress : 1
   );
   expect(eventFunctions.end).toHaveBeenCalledTimes(
-    counts?.end ? counts.end : 1
+    counts?.end !== undefined ? counts.end : 1
   );
 }
 
@@ -59,34 +57,34 @@ const App = (props) => {
         <Text>TapGestureHandlerTest</Text>
       </TapGestureHandler>
 
-      {/* <PanGestureHandler onHandlerStateChange={eventHandler} onGestureEvent={eventHandler}>
-        <Text {...ghTagEventMacro()}>PanGestureHandlerTest</Text>
+      <PanGestureHandler testId={2} onHandlerStateChange={eventHandler} onGestureEvent={eventHandler}>
+        <Text>PanGestureHandlerTest</Text>
       </PanGestureHandler>
 
-      <LongPressGestureHandler onHandlerStateChange={eventHandler}>
-        <Text {...ghTagEventMacro()}>LongPressGestureHandlerTest</Text>
+      <LongPressGestureHandler testId={3} onHandlerStateChange={eventHandler}>
+        <Text>LongPressGestureHandlerTest</Text>
       </LongPressGestureHandler>
       
-      <RotationGestureHandler onHandlerStateChange={eventHandler}>
-        <Text {...ghTagEventMacro()}>RotationGestureHandlerTest</Text>
+      <RotationGestureHandler testId={4} onHandlerStateChange={eventHandler}>
+        <Text>RotationGestureHandlerTest</Text>
       </RotationGestureHandler>
 
-      <FlingGestureHandler onHandlerStateChange={eventHandler}>
-        <Text {...ghTagEventMacro()}>FlingGestureHandlerTest</Text>
+      <FlingGestureHandler testId={5} onHandlerStateChange={eventHandler}>
+        <Text>FlingGestureHandlerTest</Text>
       </FlingGestureHandler>
 
-      <PinchGestureHandler onHandlerStateChange={eventHandler}>
-        <Text {...ghTagEventMacro()}>PinchGestureHandlerTest</Text>
+      <PinchGestureHandler testId={6} onHandlerStateChange={eventHandler}>
+        <Text>PinchGestureHandlerTest</Text>
       </PinchGestureHandler>
 
-      <PanGestureHandler onHandlerStateChange={eventHandler}>
+      <PanGestureHandler testId={7} onHandlerStateChange={eventHandler}>
         <View>
-          <Text {...ghTagEventMacro()}>NestedGestureHandlerTest1</Text>
-          <TapGestureHandler onHandlerStateChange={eventHandler}>
-            <Text {...ghTagEventMacro()}>NestedGestureHandlerTest2</Text>
+          <Text>NestedGestureHandlerTest1</Text>
+          <TapGestureHandler testId={8} onHandlerStateChange={eventHandler}>
+            <Text>NestedGestureHandlerTest2</Text>
           </TapGestureHandler>
         </View>
-      </PanGestureHandler> */}
+      </PanGestureHandler>
 
     </GestureHandlerRootView>
   );
@@ -94,92 +92,62 @@ const App = (props) => {
 
 test('test fireTapGestureHandler', () => {
   const eventFunctions = mockEventFunctions();
-  const { getByText } = render(<App eventFunctions={eventFunctions} />);
-  fireTapGestureHandler(1, getByText('TapGestureHandlerTest'));
+  render(<App eventFunctions={eventFunctions} />);
+  fireTapGestureHandler(1, 
+    [
+      {x: 1, y: 1}, 
+      {x: 2, y: 2},
+      {x: 4, y: 4, type: EventDataTypeV1.onCancel}
+    ]
+  );
   assertEventCalls(eventFunctions);
 });
 
-// test('test firePanGestureHandler', () => {
-//   const eventFunctions = mockEventFunctions();
-//   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-//   firePanGestureHandler(
-//     getByText('PanGestureHandlerTest'),
-//     { 
-//       configBegin: { x: 1, y: 1 },
-//       configProgress: [{ x: 2, y: 2 }, { x: 3, y: 3 }],
-//       configEnd: { x: 4, y: 4 }
-//     },
-//   );
-//   assertEventCalls(eventFunctions, { progress: 2 });
-// });
+test('test firePanGestureHandler', () => {
+  const eventFunctions = mockEventFunctions();
+  render(<App eventFunctions={eventFunctions} />);
+  firePanGestureHandler(2,
+    [{ x: 1, y: 1 }, { x: 2, y: 2 }, { x: 3, y: 3 }, { x: 4, y: 4 }]
+  );
+  assertEventCalls(eventFunctions, { progress: 3 });
+});
 
-// test('test fireLongPressGestureHandler', () => {
-//   const eventFunctions = mockEventFunctions();
-//   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-//   fireLongPressGestureHandler(
-//     getByText('LongPressGestureHandlerTest'),
-//     { configBegin: { x: 1, y: 1 } },
-//   );
-//   assertEventCalls(eventFunctions);
-// });
+test('test fireLongPressGestureHandler', () => {
+  const eventFunctions = mockEventFunctions();
+  render(<App eventFunctions={eventFunctions} />);
+  fireLongPressGestureHandler(3);
+  assertEventCalls(eventFunctions);
+});
 
-// test('test fireRotationGestureHandler', () => {
-//   const eventFunctions = mockEventFunctions();
-//   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-//   fireRotationGestureHandler(
-//     getByText('RotationGestureHandlerTest'),
-//     {
-//       configBegin: { 
-//         rotation: 0,
-//         velocity: 0,
-//         anchorX: 0,
-//         anchorY: 0, 
-//       },
-//       configProgress: { 
-//         rotation: 5,
-//         velocity: 5,
-//         anchorX: 5,
-//         anchorY: 5,
-//       },
-//       configEnd: { 
-//         rotation: 0,
-//         velocity: 0,
-//         anchorX: 0,
-//         anchorY: 0,
-//       },
-//     }
-//   );
-//   assertEventCalls(eventFunctions);
-// });
+test('test fireRotationGestureHandler', () => {
+  const eventFunctions = mockEventFunctions();
+  render(<App eventFunctions={eventFunctions} />);
+  fireRotationGestureHandler(4);
+  assertEventCalls(eventFunctions);
+});
 
-// test('test fireFlingGestureHandler', () => {
-//   const eventFunctions = mockEventFunctions();
-//   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-//   fireFlingGestureHandler(
-//     getByText('FlingGestureHandlerTest'),
-//     { configBegin: { x: 1, y: 1 } },
-//   );
-//   assertEventCalls(eventFunctions);
-// });
+test('test fireFlingGestureHandler', () => {
+  const eventFunctions = mockEventFunctions();
+  render(<App eventFunctions={eventFunctions} />);
+  fireFlingGestureHandler(5);
+  assertEventCalls(eventFunctions);
+});
 
-// test('test firePinchGestureHandler', () => {
-//   const eventFunctions = mockEventFunctions();
-//   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-//   firePinchGestureHandler(
-//     getByText('PinchGestureHandlerTest'),
-//     { configBegin: { x: 1, y: 1 } },
-//   );
-//   assertEventCalls(eventFunctions);
-// });
+test('test firePinchGestureHandler', () => {
+  const eventFunctions = mockEventFunctions();
+  render(<App eventFunctions={eventFunctions} />);
+  firePinchGestureHandler(6);
+  assertEventCalls(eventFunctions);
+});
 
-// test('test nestedGestureHandler', () => {
-//   const eventFunctions = mockEventFunctions();
-//   const { getByText } = render(<App eventFunctions={eventFunctions} />);
-//   firePanGestureHandler(getByText('NestedGestureHandlerTest1'));
-//   firePanGestureHandler(getByText('NestedGestureHandlerTest2'));
-//   fireTapGestureHandler(getByText('NestedGestureHandlerTest2'));
-//   assertEventCalls(eventFunctions, { begin: 3, progress: 3, end: 3 });
-// });
+test('test nestedGestureHandler', () => {
+  const eventFunctions = mockEventFunctions();
+  render(<App eventFunctions={eventFunctions} />);
+  firePanGestureHandler(7);
+  firePanGestureHandler(7);
+  fireTapGestureHandler(8);
+  assertEventCalls(eventFunctions, { begin: 3, progress: 3, end: 3 });
+});
 
 // const AppAPIv2 = props => {
 //   const tap = Gesture.Tap()
