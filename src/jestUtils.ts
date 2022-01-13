@@ -309,35 +309,41 @@ const runEventsSequenceV2 = <T extends TapConfig | RotationConfig>(
   eventDataStream: Partial<T>[] = []
 ) => {
   // const [withType, filteredStream] = filterEventData(eventDataStream);
-  baseEventData;
-  eventDataStream;
+
   // let onBeginData = {};
   // let onStartData = {};
   // let onEndData = {};
   // let onFinalizeData = {};
+  // let onTouchesDownData = {};
+  // let onTouchesMoveData = {};
+  // let onTouchesUpData = {};
+  // let onTouchesCancelledData = {};
+
   if (config.handlers.onBegin) {
-    config.handlers.onBegin({});
+    config.handlers.onBegin({ ...baseEventData }, {});
   }
   if (config.handlers.onStart) {
-    config.handlers.onStart({});
+    config.handlers.onStart({ ...baseEventData }, {});
   }
-  if (config.handlers.onEnd) {
-    config.handlers.onEnd({});
-  }
-  if (config.handlers.onFinalize) {
-    config.handlers.onFinalize({});
-  }
+
   if (config.handlers.onTouchesDown) {
-    config.handlers.onTouchesDown({});
+    config.handlers.onTouchesDown({ ...baseEventData }, {});
   }
   if (config.handlers.onTouchesMove) {
-    config.handlers.onTouchesMove({});
+    config.handlers.onTouchesMove({ ...baseEventData }, {});
   }
   if (config.handlers.onTouchesUp) {
-    config.handlers.onTouchesUp({});
+    config.handlers.onTouchesUp({ ...baseEventData }, {});
   }
   if (config.handlers.onTouchesCancelled) {
-    config.handlers.onTouchesCancelled({});
+    config.handlers.onTouchesCancelled({ ...baseEventData }, {});
+  }
+
+  if (config.handlers.onEnd) {
+    config.handlers.onEnd({ ...baseEventData }, {});
+  }
+  if (config.handlers.onFinalize) {
+    config.handlers.onFinalize({ ...baseEventData }, {});
   }
 };
 
