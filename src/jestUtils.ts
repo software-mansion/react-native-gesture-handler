@@ -9,12 +9,12 @@ export const fireGestureHandlerEvent = (
 };
 
 export enum EventDataTypeV1 {
-  onStart = 0,
-  onActive = 1,
-  onEnd = 2,
-  onFail = 3,
-  onCancel = 4,
-  onFinish = 5,
+  onStart = 'onStart',
+  onActive = 'onActive',
+  onEnd = 'onEnd',
+  onFail = 'onFail',
+  onCancel = 'onCancel',
+  onFinish = 'onFinish',
 }
 
 // todo: EventDataTypeV2
@@ -42,14 +42,14 @@ export interface LongPressConfig extends TapConfig {
   duration?: number;
 }
 
-export interface RotationConfig {
+export interface RotationConfig extends BaseConfig {
   rotation?: number;
   velocity?: number;
   anchorX?: number;
   anchorY?: number;
 }
 
-export interface PinchConfig {
+export interface PinchConfig extends BaseConfig {
   scale?: number;
   velocity?: number;
   focalX?: number;
@@ -159,73 +159,124 @@ const sendEndEvent: SendEventWrapper = (handler, baseEventData, eventData) => {
   );
 };
 
-// const sendFailEvent: SendEventWrapper = (handler, baseEventData, eventData) => {
-//   sendStateChangeEvent(
-//     handler,
-//     { oldState: 2, state: 1 },
-//     baseEventData,
-//     eventData
-//   );
-// };
+const sendFailEvent: SendEventWrapper = (handler, baseEventData, eventData) => {
+  sendStateChangeEvent(
+    handler,
+    { oldState: 2, state: 1 },
+    baseEventData,
+    eventData
+  );
+};
 
-// const sendCancelEvent: SendEventWrapper = (
-//   handler,
-//   baseEventData,
-//   eventData
-// ) => {
-//   sendStateChangeEvent(
-//     handler,
-//     { oldState: 4, state: 3 },
-//     baseEventData,
-//     eventData
-//   );
-// };
+const sendCancelEvent: SendEventWrapper = (
+  handler,
+  baseEventData,
+  eventData
+) => {
+  sendStateChangeEvent(
+    handler,
+    { oldState: 4, state: 3 },
+    baseEventData,
+    eventData
+  );
+};
 
-// const sendFinishEvent = (
-//   handler: HandlerProperties,
-//   baseEventData: Record<string, any>,
-//   eventData?: FireGestureHandlerConfig<any>
-// ) => {
-//   let states = { oldState: -1, state: -1 };
-//   if (eventData?.onFail) {
-//     states = { oldState: 2, state: 1 };
-//   } else if (eventData?.onCancel) {
-//     states = { oldState: 2, state: 2 };
-//   } else {
-//     states = { oldState: 2, state: 1 };
-//   }
-//   sendStateChangeEvent(handler, states, baseEventData, eventData?.onFinish);
-// };
+const sendFinishEvent: SendEventWrapper = (
+  handler,
+  baseEventData,
+  eventData
+) => {
+  sendStateChangeEvent(
+    handler,
+    { oldState: 2, state: 1 },
+    baseEventData,
+    eventData
+  );
+};
 
 const runEventsSequence = <T extends TapConfig | RotationConfig>(
   testId: number,
   baseEventData: Record<string, any>,
-  eventDataStream?: Partial<T>[]
+  eventDataStream: Partial<T>[] = []
 ) => {
-  // todo: EventDataTypeV1
+  // todo: EventDataTypeV2
   const handler = getGestureHandler(testId);
-  const streamLenght = Array.isArray(eventDataStream)
-    ? eventDataStream.length
-    : 0;
-  const beginEventData = streamLenght > 0 ? eventDataStream![0] : {};
-  const progressEventDataFirst = streamLenght > 2 ? eventDataStream![1] : {};
-  const progressEventsData = streamLenght > 2 ? [eventDataStream![1]] : [{}];
-  const endEventData =
-    streamLenght > 0 ? eventDataStream![streamLenght - 1] : {};
 
-  // for (const item in eventDataStream) {
-  // todo: onFail, onCancel, onFinish
-  // }
-
-  for (let i = 2; i < streamLenght - 1; i++) {
-    progressEventsData.push(eventDataStream![i]);
+  const filteredStream: Partial<T>[] = [];
+  const withTypeV1: Partial<T>[] = [];
+  for (const item of eventDataStream) {
+    if (item.type) {
+      withTypeV1.push(item);
+    } else {
+      filteredStream.push(item);
+    }
   }
+
+  const streamLenght = filteredStream.length;
+
+  let beginEventData = streamLenght > 0 ? filteredStream![0] : {};
+  let progressEventDataFirst = streamLenght > 2 ? filteredStream![1] : {};
+  let progressEventsData = streamLenght > 2 ? [filteredStream![1]] : [{}];
+  for (let i = 2; i < streamLenght - 1; i++) {
+    progressEventsData.push(filteredStream![i]);
+  }
+  let endEventData = streamLenght > 0 ? filteredStream![streamLenght - 1] : {};
+  let cancelEventData = null;
+  let failEventData = null;
+  let finishEventData = null;
+
+  let isFirstOnActive = true;
+  for (const item of withTypeV1) {
+    if (item.type == EventDataTypeV1.onActive) {
+      if (streamLenght <= 2 && isFirstOnActive) {
+        progressEventDataFirst = item;
+        if (progressEventsData.length == 1) {
+          progressEventsData = [];
+        }
+      }
+      progressEventsData.push(item);
+      isFirstOnActive = false;
+    }
+    if (item.type == EventDataTypeV1.onStart) {
+      beginEventData = item;
+    }
+    if (item.type == EventDataTypeV1.onEnd) {
+      endEventData = item;
+    }
+    if (item.type == EventDataTypeV1.onCancel) {
+      cancelEventData = item;
+    }
+    if (item.type == EventDataTypeV1.onFail) {
+      failEventData = item;
+    }
+    if (item.type == EventDataTypeV1.onFinish) {
+      finishEventData = item;
+    }
+  }
+
   sendBeginEvent(handler, baseEventData, beginEventData);
   sendProgressEventFirst(handler, baseEventData, progressEventDataFirst);
   for (const eventData of progressEventsData) {
     sendProgressEvent(handler, baseEventData, eventData);
   }
-  sendEndEvent(handler, baseEventData, endEventData);
+
+  if (cancelEventData) {
+    sendCancelEvent(handler, baseEventData, cancelEventData);
+  }
+  if (failEventData) {
+    sendFailEvent(handler, baseEventData, failEventData);
+  }
+  if (finishEventData || cancelEventData || failEventData) {
+    sendFinishEvent(
+      handler,
+      baseEventData,
+      finishEventData ? finishEventData : {}
+    );
+  }
+
+  if (!(cancelEventData && failEventData && finishEventData)) {
+    sendEndEvent(handler, baseEventData, endEventData);
+  }
 };
 
 const getGestureHandler = (testId: number): any => {
