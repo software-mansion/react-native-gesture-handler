@@ -9,6 +9,8 @@ import {
   FlingGestureHandler,
   RotationGestureHandler,
   PinchGestureHandler,
+  Gesture,
+  GestureDetector
 } from 'react-native-gesture-handler';
 import { 
   fireTapGestureHandler,
@@ -17,9 +19,14 @@ import {
   fireRotationGestureHandler,
   fireFlingGestureHandler,
   firePinchGestureHandler,
-  EventDataTypeV1
+  EventDataTypeV1,
+  resetGestureHandlerRegistry
 } from '../src/jestUtils'
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
+
+beforeEach(() => {
+  resetGestureHandlerRegistry();
+})
 
 const mockEventFunctions = () => {
   return {
@@ -149,39 +156,41 @@ test('test nestedGestureHandler', () => {
   assertEventCalls(eventFunctions, { begin: 3, progress: 3, end: 3 });
 });
 
-// const AppAPIv2 = props => {
-//   const tap = Gesture.Tap()
-//     .onBegin(() => {
-//       props.eventFunctions.begin()
-//     })
-//     .onEnd(() => {
-//       props.eventFunctions.progress()
-//     });
+const AppAPIv2 = props => {
+  const tap = Gesture.Tap()
+    .onBegin(() => {
+      props.eventFunctions.begin()
+    })
+    .onEnd(() => {
+      props.eventFunctions.progress()
+    })
+    .withTestId(1);
 
-//   const pan = Gesture.Pan()
-//     .onBegin(() => {
-//       props.eventFunctions.begin()
-//     })
-//     .onEnd(() => {
-//       props.eventFunctions.progress()
-//     });
+  const pan = Gesture.Pan()
+    .onBegin(() => {
+      props.eventFunctions.begin()
+    })
+    .onEnd(() => {
+      props.eventFunctions.progress()
+    })
+    .withTestId(2);
 
-//   return (
-//     <GestureHandlerRootView>
-//       <GestureDetector gesture={Gesture.Race(tap, pan)}>
-//         <View>
-//           <Text {...ghTagEventMacro()}>Text</Text>
-//         </View>
-//       </GestureDetector>
-//     </GestureHandlerRootView>
-//   );
-// };
+  return (
+    <GestureHandlerRootView>
+      <GestureDetector gesture={Gesture.Race(tap, pan)}>
+        <View>
+          <Text>Text</Text>
+        </View>
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+};
 
-// test('test API v2', () => {
-//   const eventFunctions = mockEventFunctions();
-//   const {getByText} = render(<AppAPIv2 eventFunctions={eventFunctions} />);
-//   fireTapGestureHandler(getByText('Text'));
-//   firePanGestureHandler(getByText('Text'));
-//   expect(eventFunctions.begin).toHaveBeenCalledTimes(2);
-//   expect(eventFunctions.progress).toHaveBeenCalledTimes(2);
-// });
+test('test API v2', () => {
+  const eventFunctions = mockEventFunctions();
+  render(<AppAPIv2 eventFunctions={eventFunctions} />);
+  fireTapGestureHandler(1);
+  firePanGestureHandler(2);
+  expect(eventFunctions.begin).toHaveBeenCalledTimes(2);
+  expect(eventFunctions.progress).toHaveBeenCalledTimes(2);
+});

@@ -436,12 +436,14 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
 
   // @ts-ignore @typescript-eslint/ban-ts-comment
   if (process.env.JEST_WORKER_ID) {
-    (global as {
-      JestGestureHandlerRegistry?: any;
-    }).JestGestureHandlerRegistry.add({
-      type: 'v2',
-      gesture: gesture,
-    });
+    for (const config of gesture) {
+      (global as {
+        JestGestureHandlerRegistry?: any;
+      }).JestGestureHandlerRegistry.add({
+        type: 'v2',
+        ...config,
+      });
+    }
   }
 
   if (preparedGesture.firstExecution) {

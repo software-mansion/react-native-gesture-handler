@@ -17,14 +17,22 @@ export enum EventDataTypeV1 {
   onFinish = 'onFinish',
 }
 
-// todo: EventDataTypeV2
+export enum EventDataTypeV2 {
+  onBegin = 'onBegin',
+  onStart = 'onStart',
+  onEnd = 'onEnd',
+  onFinalize = 'onFinalize',
+  onTouchesDown = 'onTouchesDown',
+  onTouchesMove = 'onTouchesMove',
+  onTouchesUp = 'onTouchesUp',
+  onTouchesCancelled = 'onTouchesCancelled',
+}
 
 export interface BaseConfig {
-  type?: EventDataTypeV1;
+  type?: EventDataTypeV1 | EventDataTypeV2;
 }
 
 export interface TapConfig extends BaseConfig {
-  type?: EventDataTypeV1;
   x?: number;
   y?: number;
   absoluteX?: number;
@@ -199,19 +207,35 @@ const runEventsSequence = <T extends TapConfig | RotationConfig>(
   baseEventData: Record<string, any>,
   eventDataStream: Partial<T>[] = []
 ) => {
-  // todo: EventDataTypeV2
   const handler = getGestureHandler(testId);
+  if ((handler as GHHandler).type === 'v1') {
+    runEventsSequenceV1(handler, baseEventData, eventDataStream);
+  } else {
+    runEventsSequenceV2(handler, baseEventData, eventDataStream);
+  }
+};
 
+const filterEventData = <T extends TapConfig | RotationConfig>(
+  eventDataStream: Partial<T>[] = []
+) => {
   const filteredStream: Partial<T>[] = [];
-  const withTypeV1: Partial<T>[] = [];
+  const withType: Partial<T>[] = [];
   for (const item of eventDataStream) {
     if (item.type) {
-      withTypeV1.push(item);
+      withType.push(item);
     } else {
       filteredStream.push(item);
     }
   }
+  return [withType, filteredStream];
+};
 
+const runEventsSequenceV1 = <T extends TapConfig | RotationConfig>(
+  handler: any, // todo: any
+  baseEventData: Record<string, any>,
+  eventDataStream: Partial<T>[] = []
+) => {
+  const [withTypeV1, filteredStream] = filterEventData(eventDataStream);
   const streamLenght = filteredStream.length;
 
   let beginEventData = streamLenght > 0 ? filteredStream![0] : {};
@@ -276,6 +300,44 @@ const runEventsSequence = <T extends TapConfig | RotationConfig>(
 
   if (!(cancelEventData && failEventData && finishEventData)) {
     sendEndEvent(handler, baseEventData, endEventData);
+  }
+};
+
+const runEventsSequenceV2 = <T extends TapConfig | RotationConfig>(
+  config: any, // todo: any
+  baseEventData: Record<string, any>,
+  eventDataStream: Partial<T>[] = []
+) => {
+  // const [withType, filteredStream] = filterEventData(eventDataStream);
+  baseEventData;
+  eventDataStream;
+  // let onBeginData = {};
+  // let onStartData = {};
+  // let onEndData = {};
+  // let onFinalizeData = {};
+  if (config.handlers.onBegin) {
+    config.handlers.onBegin({});
+  }
+  if (config.handlers.onStart) {
+    config.handlers.onStart({});
+  }
+  if (config.handlers.onEnd) {
+    config.handlers.onEnd({});
+  }
+  if (config.handlers.onFinalize) {
+    config.handlers.onFinalize({});
+  }
+  if (config.handlers.onTouchesDown) {
+    config.handlers.onTouchesDown({});
+  }
+  if (config.handlers.onTouchesMove) {
+    config.handlers.onTouchesMove({});
+  }
+  if (config.handlers.onTouchesUp) {
+    config.handlers.onTouchesUp({});
+  }
+  if (config.handlers.onTouchesCancelled) {
+    config.handlers.onTouchesCancelled({});
   }
 };
 
@@ -397,20 +459,38 @@ export function isJest(): boolean {
   return !!process.env.JEST_WORKER_ID;
 }
 
-export type JestGestureHandlerRegistryType = {
-  add: (config: any) => void;
-  remove: (_: any) => void;
-  get: (testId: number) => void;
+interface GHHandler {
+  type: string;
+  // todo
+}
+
+type JestGestureHandlerRegistryType = {
+  add: (config: GHHandler) => void;
+  get: (testId: number) => any;
 };
 
-const registry: any = {};
+let registry: Record<string, GHHandler> = {};
 
 export const JestGestureHandlerRegistry: JestGestureHandlerRegistryType = {
-  add: (config: any) => {
-    registry[config.handlerTag] = config;
+  add: (config: GHHandler) => {
+    let testId = 0;
+    if (config.type === 'v1') {
+      testId = (config as any).handlerTag;
+    } else {
+      testId = (config as any).config.testId;
+    }
+    if (registry[testId]) {
+      throw Error(
+        '[gesture-handler] duplicate of testId, make you sure that you use "resetGestureHandlerRegistry()" before test'
+      );
+    }
+    registry[testId] = config; // todo: any
   },
-  remove: (_: any) => {},
-  get: (testId: any) => {
+  get: (testId: any): any => {
     return registry[testId];
   },
+};
+
+export const resetGestureHandlerRegistry = (): void => {
+  registry = {};
 };
