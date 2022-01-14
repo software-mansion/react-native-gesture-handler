@@ -18,6 +18,10 @@
   "plugins": ["jest"],
   "ignorePatterns": ["lib/**/*"],
   "rules": {
+    "jest/expect-expect": [
+      "warn",
+      { "assertFunctionNames": ["expect*", "assert*"] }
+    ],
     // temporary, remove after we type internals better
     "@typescript-eslint/restrict-template-expressions": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
