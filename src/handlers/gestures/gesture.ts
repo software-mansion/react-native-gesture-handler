@@ -42,7 +42,7 @@ export interface BaseGestureConfig
   simultaneousWith?: GestureRef[];
   needsPointerData?: boolean;
   manualActivation?: boolean;
-  testId?: number;
+  testId?: string;
 }
 
 type TouchEventHandlerType = (
@@ -248,14 +248,13 @@ export abstract class BaseGesture<
     return this;
   }
 
-  withTestId(id: number) {
+  withTestId(id: string) {
     this.config.testId = id;
     return this;
   }
 
   initialize() {
-    this.handlerTag =
-      isJest() && this.config.testId ? this.config.testId : getNextHandlerTag();
+    this.handlerTag = getNextHandlerTag();
 
     this.handlers = { ...this.handlers, handlerTag: this.handlerTag };
 

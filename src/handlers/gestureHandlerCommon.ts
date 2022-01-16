@@ -114,7 +114,7 @@ export type BaseGestureHandlerProps<
   id?: string;
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
   simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
-  testId?: number;
+  testID?: string;
   // TODO(TS) - fix event types
   onBegan?: (event: HandlerStateChangeEvent) => void;
   onFailed?: (event: HandlerStateChangeEvent) => void;

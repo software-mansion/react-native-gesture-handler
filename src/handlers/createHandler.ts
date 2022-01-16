@@ -158,8 +158,7 @@ export default function createHandler<
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
-      this.handlerTag =
-        isJest() && props.testId ? props.testId : getNextHandlerTag();
+      this.handlerTag = getNextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
       this.state = { allowTouches };
@@ -168,18 +167,6 @@ export default function createHandler<
           throw new Error(`Handler with ID "${props.id}" already registered`);
         }
         handlerIDToTag[props.id] = this.handlerTag;
-      }
-      // @ts-ignore @typescript-eslint/ban-ts-comment
-      if (process.env.JEST_WORKER_ID) {
-        (global as {
-          JestGestureHandlerRegistry?: any;
-        }).JestGestureHandlerRegistry.add({
-          type: 'v1',
-          handlerType: name,
-          handlerTag: this.handlerTag,
-          onGestureEvent: props.onGestureEvent,
-          onHandlerStateChange: props.onHandlerStateChange,
-        });
       }
     }
 
@@ -246,7 +233,11 @@ export default function createHandler<
     }
 
     private onGestureHandlerEvent = (event: GestureEvent<U>) => {
-      if (event.nativeEvent.handlerTag === this.handlerTag) {
+      const isMatchingComponentInTest = isJest(); // && event.target.testID === this.testID;
+      if (
+        isMatchingComponentInTest ||
+        event.nativeEvent.handlerTag === this.handlerTag
+      ) {
         this.props.onGestureEvent?.(event);
       } else {
         this.props.onGestureHandlerEvent?.(event);
@@ -451,6 +442,7 @@ export default function createHandler<
         {
           ref: this.refHandler,
           collapsable: false,
+          testID: this.props.testID,
           ...events,
         },
         grandChildren
