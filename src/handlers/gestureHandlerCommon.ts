@@ -44,10 +44,7 @@ export interface GestureEventPayload {
   state: ValueOf<typeof State>;
 }
 
-export interface HandlerStateChangeEventPayload {
-  handlerTag: number;
-  numberOfPointers: number;
-  state: ValueOf<typeof State>;
+export interface HandlerStateChangeEventPayload extends GestureEventPayload {
   oldState: ValueOf<typeof State>;
 }
 
