@@ -112,22 +112,20 @@ const V2Api = ({ eventHandlers }: V1ApiProps) => {
   );
 };
 
-describe('Using Reanimated 2', () => {
+describe('Using base RNGH', () => {
   function SingleHandler({ eventHandlers }: V1ApiProps) {
-    const eventHandler = useAnimatedGestureHandler({
-      onStart: eventHandlers.begin,
-      onFinish: eventHandlers.finish,
-      onActive: eventHandlers.active,
-      onEnd: eventHandlers.end,
-      onCancel: eventHandlers.cancel,
-      onFail: eventHandlers.fail,
-    });
+    const handlers = {
+      onBegan: eventHandlers.begin,
+      onActivated: eventHandlers.active,
+      onEnded: eventHandlers.end,
+      onCancelled: eventHandlers.cancel,
+      onFailed: eventHandlers.fail,
+      onGestureEvent: eventHandlers.active,
+    };
+
     return (
       <GestureHandlerRootView>
-        <PanGestureHandler
-          testID="pan"
-          onHandlerStateChange={eventHandler}
-          onGestureEvent={eventHandler}>
+        <PanGestureHandler testID="pan" {...handlers}>
           <Text>Pan handler</Text>
         </PanGestureHandler>
       </GestureHandlerRootView>
@@ -135,26 +133,21 @@ describe('Using Reanimated 2', () => {
   }
 
   function TwoHandlers({ eventHandlers }: V1ApiProps) {
-    const eventHandler = useAnimatedGestureHandler({
-      onStart: eventHandlers.begin,
-      onFinish: eventHandlers.finish,
-      onActive: eventHandlers.active,
-      onEnd: eventHandlers.end,
-      onCancel: eventHandlers.cancel,
-      onFail: eventHandlers.fail,
-    });
+    const handlers = {
+      onBegan: eventHandlers.begin,
+      onActivated: eventHandlers.active,
+      onEnded: eventHandlers.end,
+      onCancelled: eventHandlers.cancel,
+      onFailed: eventHandlers.fail,
+      onGestureEvent: eventHandlers.active,
+    };
     return (
       <GestureHandlerRootView>
-        <PanGestureHandler
-          testID="pan"
-          onHandlerStateChange={eventHandler}
-          onGestureEvent={eventHandler}>
+        <PanGestureHandler testID="pan" {...handlers}>
           <Text>Pan handler</Text>
         </PanGestureHandler>
 
-        <RotationGestureHandler
-          testID="rotation"
-          onHandlerStateChange={eventHandler}>
+        <RotationGestureHandler testID="rotation" {...handlers}>
           <Text>Rotation handler</Text>
         </RotationGestureHandler>
       </GestureHandlerRootView>
@@ -173,7 +166,6 @@ describe('Using Reanimated 2', () => {
     expect(handlers.begin).toBeCalled();
     expect(handlers.active).toBeCalled();
     expect(handlers.end).toBeCalled();
-    expect(handlers.finish).toBeCalled();
     expect(handlers.cancel).not.toBeCalled();
     expect(handlers.fail).not.toBeCalled();
   });
@@ -197,26 +189,26 @@ describe('Using Reanimated 2', () => {
     ]);
 
     // gesture state change
-    expect(handlers.begin).lastCalledWith(
-      expect.objectContaining({
+    expect(handlers.begin).lastCalledWith({
+      nativeEvent: expect.objectContaining({
         ...COMMON_EVENT_DATA,
         oldState: State.UNDETERMINED,
         state: State.BEGAN,
-      }),
-      expect.anything()
-    );
+      }) as Record<string, unknown>,
+    });
 
-    // gesture event, without `oldState`
-    expect(handlers.active).lastCalledWith(
-      expect.objectContaining({ ...COMMON_EVENT_DATA, state: State.ACTIVE }),
-      expect.anything()
-    );
-    expect(handlers.active).lastCalledWith(
-      expect.not.objectContaining({
+    // last ACTIVE gesture event, without `oldState`
+    expect(handlers.active).lastCalledWith({
+      nativeEvent: expect.objectContaining({
+        ...COMMON_EVENT_DATA,
+        state: State.ACTIVE,
+      }) as Record<string, unknown>,
+    });
+    expect(handlers.active).lastCalledWith({
+      nativeEvent: expect.not.objectContaining({
         oldState: expect.any(Number) as number,
-      }),
-      expect.anything()
-    );
+      }) as Record<string, unknown>,
+    });
   });
 
   it.each([
@@ -261,13 +253,12 @@ describe('Using Reanimated 2', () => {
         },
       ]);
 
-      expect(handlers.begin).lastCalledWith(
-        expect.objectContaining({
+      expect(handlers.begin).lastCalledWith({
+        nativeEvent: expect.objectContaining({
           ...additionalEventData,
           ...defaultEventData,
-        }),
-        expect.anything()
-      );
+        }) as Record<string, unknown>,
+      });
     }
   );
 });
