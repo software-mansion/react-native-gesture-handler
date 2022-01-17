@@ -11,7 +11,7 @@ Thanks for giving this library a try! We are sorry that you might have encounter
 
 2. When sure your problem hasn't been reported or was reported but the proposed solution doesn't work for you please follow [our issue reporting guidelines](#reporting-issues).
 
-3. You can try seeking help on [Expo Developers Discord](https://chat.expo.dev//) where we often hang out.
+3. You can try seeking help on [Expo Developers Discord](https://chat.expo.dev/) where we often hang out.
 
 4. If you feel like reading the source code I highly recommend it, as this is by far the best resource and gives you the most up to date insights into how the library works and what might be causing the bug.
 
