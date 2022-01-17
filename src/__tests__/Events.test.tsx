@@ -12,8 +12,10 @@ import {
   Gesture,
   GestureDetector,
   State,
+  PanGestureHandlerEventPayload,
+  HandlerStateChangeEventPayload,
 } from '../index';
-import { useAnimatedGestureHandler } from 'react-native-reanimated';
+import { not, useAnimatedGestureHandler } from 'react-native-reanimated';
 import { fireGestureHandlerEvent } from '../jestUtils';
 
 const mockedEventHandlers = () => {
@@ -110,22 +112,166 @@ const V2Api = ({ eventHandlers }: V1ApiProps) => {
   );
 };
 
-it('receives events', () => {
-  const handlers = mockedEventHandlers();
-  const { getByTestId } = render(<V1Api eventHandlers={handlers} />);
-  fireGestureHandlerEvent(getByTestId('tap'), [
-    { oldState: State.UNDETERMINED, state: State.BEGAN },
-    { oldState: State.BEGAN, state: State.ACTIVE },
-    { oldState: State.ACTIVE, state: State.ACTIVE },
-    { oldState: State.ACTIVE, state: State.END },
-  ]);
-  expect(handlers.begin).toBeCalled();
-  expect(handlers.active).toBeCalled();
-  expect(handlers.end).toBeCalled();
-  expect(handlers.finish).toBeCalled();
-  expect(handlers.cancel).not.toBeCalled();
-  expect(handlers.fail).not.toBeCalled();
+describe('Using Reanimated 2', () => {
+  function SingleHandler({ eventHandlers }: V1ApiProps) {
+    const eventHandler = useAnimatedGestureHandler({
+      onStart: eventHandlers.begin,
+      onFinish: eventHandlers.finish,
+      onActive: eventHandlers.active,
+      onEnd: eventHandlers.end,
+      onCancel: eventHandlers.cancel,
+      onFail: eventHandlers.fail,
+    });
+    return (
+      <GestureHandlerRootView>
+        <PanGestureHandler
+          testID="pan"
+          onHandlerStateChange={eventHandler}
+          onGestureEvent={eventHandler}>
+          <Text>Pan handler</Text>
+        </PanGestureHandler>
+      </GestureHandlerRootView>
+    );
+  }
+
+  function TwoHandlers({ eventHandlers }: V1ApiProps) {
+    const eventHandler = useAnimatedGestureHandler({
+      onStart: eventHandlers.begin,
+      onFinish: eventHandlers.finish,
+      onActive: eventHandlers.active,
+      onEnd: eventHandlers.end,
+      onCancel: eventHandlers.cancel,
+      onFail: eventHandlers.fail,
+    });
+    return (
+      <GestureHandlerRootView>
+        <PanGestureHandler
+          testID="pan"
+          onHandlerStateChange={eventHandler}
+          onGestureEvent={eventHandler}>
+          <Text>Pan handler</Text>
+        </PanGestureHandler>
+
+        <RotationGestureHandler
+          testID="rotation"
+          onHandlerStateChange={eventHandler}>
+          <Text>Rotation handler</Text>
+        </RotationGestureHandler>
+      </GestureHandlerRootView>
+    );
+  }
+
+  it('receives events', () => {
+    const handlers = mockedEventHandlers();
+    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
+    fireGestureHandlerEvent(getByTestId('pan'), [
+      { oldState: State.UNDETERMINED, state: State.BEGAN },
+      { oldState: State.BEGAN, state: State.ACTIVE },
+      { oldState: State.ACTIVE, state: State.ACTIVE },
+      { oldState: State.ACTIVE, state: State.END },
+    ]);
+    expect(handlers.begin).toBeCalled();
+    expect(handlers.active).toBeCalled();
+    expect(handlers.end).toBeCalled();
+    expect(handlers.finish).toBeCalled();
+    expect(handlers.cancel).not.toBeCalled();
+    expect(handlers.fail).not.toBeCalled();
+  });
+
+  it('receives events with correct base fields (state, oldState, numberOfPointers, handlerTag)', () => {
+    const handlers = mockedEventHandlers();
+    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
+
+    const COMMON_EVENT_DATA = {
+      numberOfPointers: 3,
+      handlerTag: 5,
+    };
+    fireGestureHandlerEvent(getByTestId('pan'), [
+      {
+        ...COMMON_EVENT_DATA,
+        oldState: State.UNDETERMINED,
+        state: State.BEGAN,
+      }, // BEGIN - state change
+      { ...COMMON_EVENT_DATA, oldState: State.BEGAN, state: State.ACTIVE }, // ACTIVE - state change
+      { ...COMMON_EVENT_DATA, state: State.ACTIVE }, // ACTIVE - gesture event
+    ]);
+
+    // gesture state change
+    expect(handlers.begin).lastCalledWith(
+      expect.objectContaining({
+        ...COMMON_EVENT_DATA,
+        oldState: State.UNDETERMINED,
+        state: State.BEGAN,
+      }),
+      expect.anything()
+    );
+
+    // gesture event, without `oldState`
+    expect(handlers.active).lastCalledWith(
+      expect.objectContaining({ ...COMMON_EVENT_DATA, state: State.ACTIVE }),
+      expect.anything()
+    );
+    expect(handlers.active).lastCalledWith(
+      expect.not.objectContaining({
+        oldState: expect.any(Number) as number,
+      }),
+      expect.anything()
+    );
+  });
+
+  it.each([
+    [
+      'pan',
+      {
+        translationY: 800,
+        velocityY: 2,
+      },
+    ],
+    [
+      'rotation',
+      {
+        anchorY: 0,
+        rotation: 3.14,
+      },
+    ],
+  ])(
+    'receives additional properties depending on handler type ("%s")',
+    (handlerName: string, additionalEventData: Record<string, unknown>) => {
+      const handlers = mockedEventHandlers();
+      const { getByTestId } = render(<TwoHandlers eventHandlers={handlers} />);
+
+      fireGestureHandlerEvent(getByTestId(handlerName), [
+        {
+          ...additionalEventData,
+          oldState: State.UNDETERMINED,
+          state: State.BEGAN,
+        },
+        {
+          ...additionalEventData,
+          oldState: State.BEGAN,
+          state: State.ACTIVE,
+        },
+      ]);
+
+      expect(handlers.begin).lastCalledWith(
+        expect.objectContaining({
+          ...additionalEventData,
+        }),
+        expect.anything()
+      );
+    }
+  );
 });
+
+//   x: 5,
+//       y: 10,
+//       absoluteX: 500,
+//       absoluteY: 1000,
+// translationX: 600,
+// translationY: 800,
+// velocityX:1,
+// velocityY: 2,
+// numberOfPointers:3,
 
 // TODO
 
