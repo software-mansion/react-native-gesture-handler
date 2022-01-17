@@ -226,6 +226,9 @@ describe('Using Reanimated 2', () => {
         translationY: 800,
         velocityY: 2,
       },
+      {
+        translationX: 100,
+      },
     ],
     [
       'rotation',
@@ -233,10 +236,15 @@ describe('Using Reanimated 2', () => {
         anchorY: 0,
         rotation: 3.14,
       },
+      { numberOfPointers: 2 },
     ],
   ])(
     'receives additional properties depending on handler type ("%s")',
-    (handlerName: string, additionalEventData: Record<string, unknown>) => {
+    (
+      handlerName: string,
+      additionalEventData: Record<string, unknown>,
+      defaultEventData: Record<string, unknown>
+    ) => {
       const handlers = mockedEventHandlers();
       const { getByTestId } = render(<TwoHandlers eventHandlers={handlers} />);
 
@@ -256,22 +264,13 @@ describe('Using Reanimated 2', () => {
       expect(handlers.begin).lastCalledWith(
         expect.objectContaining({
           ...additionalEventData,
+          ...defaultEventData,
         }),
         expect.anything()
       );
     }
   );
 });
-
-//   x: 5,
-//       y: 10,
-//       absoluteX: 500,
-//       absoluteY: 1000,
-// translationX: 600,
-// translationY: 800,
-// velocityX:1,
-// velocityY: 2,
-// numberOfPointers:3,
 
 // TODO
 
