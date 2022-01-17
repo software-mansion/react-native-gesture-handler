@@ -43,7 +43,6 @@ export interface GestureEventPayload {
   numberOfPointers: number;
   state: ValueOf<typeof State>;
 }
-
 export interface HandlerStateChangeEventPayload extends GestureEventPayload {
   oldState: ValueOf<typeof State>;
 }

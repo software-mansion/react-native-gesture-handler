@@ -11,13 +11,15 @@ import {
   PinchGestureHandler,
   Gesture,
   GestureDetector,
+  State,
 } from '../index';
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
+import { fireGestureHandlerEvent } from '../jestUtils';
 
-const mockEventFunctions = () => {
+const mockedEventHandlers = () => {
   return {
     begin: jest.fn(),
-    progress: jest.fn(),
+    active: jest.fn(),
     end: jest.fn(),
     fail: jest.fn(),
     cancel: jest.fn(),
@@ -26,18 +28,17 @@ const mockEventFunctions = () => {
 };
 
 interface V1ApiProps {
-  eventFunctions: {
-    begin: () => void;
-    progress: () => void;
-    end: () => void;
-  };
+  eventHandlers: ReturnType<typeof mockedEventHandlers>;
 }
 
-function V1Api({ eventFunctions: { begin, progress, end } }: V1ApiProps) {
+function V1Api({ eventHandlers }: V1ApiProps) {
   const eventHandler = useAnimatedGestureHandler({
-    onStart: begin,
-    onActive: progress,
-    onEnd: end,
+    onStart: eventHandlers.begin,
+    onFinish: eventHandlers.finish,
+    onActive: eventHandlers.active,
+    onEnd: eventHandlers.end,
+    onCancel: eventHandlers.cancel,
+    onFail: eventHandlers.fail,
   });
   return (
     <GestureHandlerRootView>
@@ -88,13 +89,16 @@ function V1Api({ eventFunctions: { begin, progress, end } }: V1ApiProps) {
   );
 }
 
-const V2Api = ({ eventFunctions: { begin, progress, end } }: AppProps) => {
-  const tap = Gesture.Tap().onBegin(begin).onEnd(end).withTestId('tap');
+const V2Api = ({ eventHandlers }: V1ApiProps) => {
+  const tap = Gesture.Tap()
+    .onBegin(eventHandlers.begin)
+    .onEnd(eventHandlers.end)
+    .withTestId('tap');
 
   const pan = Gesture.Pan()
-    .onBegin(begin)
-    .onUpdate(progress)
-    .onEnd(end)
+    .onBegin(eventHandlers.begin)
+    .onUpdate(eventHandlers.active)
+    .onEnd(eventHandlers.end)
     .withTestId('pan');
 
   return (
@@ -106,11 +110,21 @@ const V2Api = ({ eventFunctions: { begin, progress, end } }: AppProps) => {
   );
 };
 
-// eslint-disable-next-line jest/expect-expect
 it('receives events', () => {
-  const events = mockEventFunctions();
-  const { getByTestId } = render(<V1Api eventFunctions={events} />);
-  fireEvent(getByTestId('tap'), 'onGestureHandlerEvent', {});
+  const handlers = mockedEventHandlers();
+  const { getByTestId } = render(<V1Api eventHandlers={handlers} />);
+  fireGestureHandlerEvent(getByTestId('tap'), [
+    { oldState: State.UNDETERMINED, state: State.BEGAN },
+    { oldState: State.BEGAN, state: State.ACTIVE },
+    { oldState: State.ACTIVE, state: State.ACTIVE },
+    { oldState: State.ACTIVE, state: State.END },
+  ]);
+  expect(handlers.begin).toBeCalled();
+  expect(handlers.active).toBeCalled();
+  expect(handlers.end).toBeCalled();
+  expect(handlers.finish).toBeCalled();
+  expect(handlers.cancel).not.toBeCalled();
+  expect(handlers.fail).not.toBeCalled();
 });
 
 // TODO

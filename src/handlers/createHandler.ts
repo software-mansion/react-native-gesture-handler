@@ -233,9 +233,9 @@ export default function createHandler<
     }
 
     private onGestureHandlerEvent = (event: GestureEvent<U>) => {
-      const isMatchingComponentInTest = isJest(); // && event.target.testID === this.testID;
+      const sendDirectlyToHandlerInTest = isJest();
       if (
-        isMatchingComponentInTest ||
+        sendDirectlyToHandlerInTest ||
         event.nativeEvent.handlerTag === this.handlerTag
       ) {
         this.props.onGestureEvent?.(event);
@@ -248,7 +248,11 @@ export default function createHandler<
     private onGestureHandlerStateChange = (
       event: HandlerStateChangeEvent<U>
     ) => {
-      if (event.nativeEvent.handlerTag === this.handlerTag) {
+      const sendDirectlyToHandlerInTest = isJest();
+      if (
+        sendDirectlyToHandlerInTest ||
+        event.nativeEvent.handlerTag === this.handlerTag
+      ) {
         this.props.onHandlerStateChange?.(event);
 
         const state: ValueOf<typeof State> = event.nativeEvent.state;
@@ -442,6 +446,11 @@ export default function createHandler<
         {
           ref: this.refHandler,
           collapsable: false,
+          ...(isJest()
+            ? {
+                handlerType: name,
+              }
+            : {}),
           testID: this.props.testID,
           ...events,
         },
