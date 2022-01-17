@@ -5,5 +5,6 @@ module.exports = {
   transformIgnorePatterns: [
     "node_modules/?!(react-native-reanimated)",
     "node_modules/?!(react-native)"
-  ]
+  ],
+  roots: ["<rootDir>/src/"]
 };
