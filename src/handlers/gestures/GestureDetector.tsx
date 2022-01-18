@@ -7,12 +7,7 @@ import {
   CALLBACK_TYPE,
 } from './gesture';
 import { Reanimated, SharedValue } from './reanimatedWrapper';
-import {
-  registerHandler,
-  registerJestHandler,
-  unregisterHandler,
-  unregisterJestHandler,
-} from '../handlersRegistry';
+import { registerHandler, unregisterHandler } from '../handlersRegistry';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import {
   baseGestureHandlerWithMonitorProps,
@@ -37,7 +32,6 @@ import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
-import { isJest } from '../../jestUtils';
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -82,10 +76,6 @@ function dropHandlers(preparedGesture: GestureConfigReference) {
     RNGestureHandlerModule.dropGestureHandler(handler.handlerTag);
 
     unregisterHandler(handler.handlerTag);
-
-    if (isJest()) {
-      unregisterJestHandler(handler.handlerTag);
-    }
   }
 }
 
@@ -157,10 +147,6 @@ function attachHandlers({
       viewTag,
       !useAnimated // send direct events when using animatedGesture, device events otherwise
     );
-
-    if (isJest()) {
-      registerJestHandler(gesture.handlerTag, gesture);
-    }
   }
 
   if (preparedGesture.animatedHandlers) {
@@ -212,10 +198,6 @@ function updateHandlers(
       );
 
       registerHandler(handler.handlerTag, handler);
-
-      if (isJest()) {
-        registerJestHandler(handler.handlerTag, handler);
-      }
     }
 
     if (preparedGesture.animatedHandlers) {
@@ -453,18 +435,6 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     throw new Error(
       'You cannot change whether you are using gesture or animatedGesture while the app is running'
     );
-  }
-
-  // @ts-ignore @typescript-eslint/ban-ts-comment
-  if (process.env.JEST_WORKER_ID) {
-    for (const config of gesture) {
-      (global as {
-        JestGestureHandlerRegistry?: any;
-      }).JestGestureHandlerRegistry.add({
-        type: 'v2',
-        ...config,
-      });
-    }
   }
 
   if (preparedGesture.firstExecution) {

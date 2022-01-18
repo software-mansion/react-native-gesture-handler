@@ -20,18 +20,3 @@ export function unregisterHandler(handlerTag: number) {
 export function findHandler(handlerTag: number) {
   return handlers.get(handlerTag);
 }
-
-// store all gestures and handlers for Jest
-const jestHandlers = new Map<number, any>();
-
-export function registerJestHandler(handlerTag: number, handler: any) {
-  jestHandlers.set(handlerTag, handler);
-}
-
-export function unregisterJestHandler(handlerTag: number) {
-  jestHandlers.delete(handlerTag);
-}
-
-export function findJestHandler(handlerTag: number) {
-  return jestHandlers.get(handlerTag);
-}
