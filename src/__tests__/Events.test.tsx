@@ -112,7 +112,7 @@ const V2Api = ({ eventHandlers }: V1ApiProps) => {
   );
 };
 
-describe('Using base RNGH', () => {
+describe('Using base RNGH v1 API', () => {
   function SingleHandler({ eventHandlers }: V1ApiProps) {
     const handlers = {
       onBegan: eventHandlers.begin,
@@ -132,7 +132,7 @@ describe('Using base RNGH', () => {
     );
   }
 
-  function TwoHandlers({ eventHandlers }: V1ApiProps) {
+  function NestedHandlers({ eventHandlers }: V1ApiProps) {
     const handlers = {
       onBegan: eventHandlers.begin,
       onActivated: eventHandlers.active,
@@ -144,12 +144,13 @@ describe('Using base RNGH', () => {
     return (
       <GestureHandlerRootView>
         <PanGestureHandler testID="pan" {...handlers}>
-          <Text>Pan handler</Text>
+          <View>
+            <Text>Pan handler</Text>
+            <RotationGestureHandler testID="rotation" {...handlers}>
+              <Text>Rotation handler</Text>
+            </RotationGestureHandler>
+          </View>
         </PanGestureHandler>
-
-        <RotationGestureHandler testID="rotation" {...handlers}>
-          <Text>Rotation handler</Text>
-        </RotationGestureHandler>
       </GestureHandlerRootView>
     );
   }
@@ -238,7 +239,9 @@ describe('Using base RNGH', () => {
       defaultEventData: Record<string, unknown>
     ) => {
       const handlers = mockedEventHandlers();
-      const { getByTestId } = render(<TwoHandlers eventHandlers={handlers} />);
+      const { getByTestId } = render(
+        <NestedHandlers eventHandlers={handlers} />
+      );
 
       fireGestureHandlerEvent(getByTestId(handlerName), [
         {
