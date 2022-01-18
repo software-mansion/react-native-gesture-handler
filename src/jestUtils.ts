@@ -37,6 +37,7 @@ import {
   TapGestureHandlerEventPayload,
   tapHandlerName,
 } from './handlers/TapGestureHandler';
+import { State } from './State';
 
 type GestureHandlerTestEvent = (
   | GestureEvent
@@ -141,33 +142,41 @@ export function fireGestureHandlerEvent(
     };
   }
 
-  // function fillStateChanges(
-  //   previousEvent: GestureHandlerTestEvent | null,
-  //   currentEvent: Omit<GestureHandlerTestEvent, 'state' | 'oldState'>
-  // ): GestureHandlerTestEvent {
-  //   const isFirstEvent = previousEvent === null;
-  //   if (isFirstEvent) {
-  //     const z: GestureHandlerTestEvent = {};
-  //     const y: Pick<
-  //       GestureHandlerTestEvent,
-  //       'handlerTag' | 'numberOfPointers'
-  //     > = {};
-  //     const x: Omit<GestureHandlerTestEvent, 'state' | 'oldState'> = {};
-  //     return { ...currentEvent, state: State.BEGAN };
-  //   }
+  function fillOldStateChanges(
+    previousEvent: GestureHandlerTestEvent | null,
+    currentEvent: Omit<GestureHandlerTestEvent, 'state' | 'oldState'>
+  ): GestureHandlerTestEvent {
+    const isFirstEvent = previousEvent === null;
+    if (isFirstEvent) {
+      return {
+        oldState: State.UNDETERMINED,
+        ...currentEvent,
+      } as GestureHandlerTestEvent;
+    }
 
-  //   const isGestureStateEvent = !!previousEvent['oldState'];
-  //   if (isGestureStateEvent) {
-  //     return { ...currentEvent, oldState: previousEvent.state };
-  //   } else {
-  //   }
-  // }
+    const isGestureStateEvent = previousEvent.state !== currentEvent.state;
+    if (isGestureStateEvent) {
+      return {
+        oldState: previousEvent.state,
+        ...currentEvent,
+      } as GestureHandlerTestEvent;
+    } else {
+      return currentEvent as GestureHandlerTestEvent;
+    }
+  }
 
   function wrapWithNativeEvent(event: GestureHandlerTestEvent) {
     return { nativeEvent: event };
   }
 
-  const events = eventList.map(fillMissingDefaults).map(wrapWithNativeEvent);
+  const events = eventList
+    .map(fillMissingDefaults)
+    .map((currentEvent, i, events) => {
+      const previousEvent =
+        i > 0 ? (events[i - 1] as GestureHandlerTestEvent) : null;
+      return fillOldStateChanges(previousEvent, currentEvent);
+    })
+    .map(wrapWithNativeEvent);
 
   const firstEvent = events.shift();
   invariant(

@@ -281,6 +281,31 @@ describe('Using base RNGH v1 API', () => {
       });
     }
   );
+
+  it('fills oldState if not passed', () => {
+    const handlers = mockedEventHandlers();
+    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
+    fireGestureHandlerEvent(getByTestId('pan'), [
+      { state: State.BEGAN }, // state change
+      { state: State.ACTIVE }, // state change
+      { state: State.ACTIVE }, // gesture event
+      { state: State.ACTIVE }, // gesture event
+      { state: State.END }, // state change
+    ]);
+
+    expect(handlers.begin).toBeCalledWith({
+      nativeEvent: expect.objectContaining({ oldState: State.UNDETERMINED }),
+    });
+    expect(handlers.active).nthCalledWith(1, {
+      nativeEvent: expect.objectContaining({ oldState: State.BEGAN }),
+    });
+    expect(handlers.active).lastCalledWith({
+      nativeEvent: expect.not.objectContaining({ oldState: expect.anything() }),
+    });
+    expect(handlers.end).toBeCalledWith({
+      nativeEvent: expect.objectContaining({ oldState: State.ACTIVE }),
+    });
+  });
 });
 
 // TODO
