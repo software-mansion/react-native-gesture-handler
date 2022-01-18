@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+// Disabling lint for assymetric matchers, check proposal below
+// https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/56937
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 import { Text, View } from 'react-native';
 import {
   GestureHandlerRootView,
@@ -12,8 +15,6 @@ import {
   Gesture,
   GestureDetector,
   State,
-  PanGestureHandlerEventPayload,
-  HandlerStateChangeEventPayload,
 } from '../index';
 import { not, useAnimatedGestureHandler } from 'react-native-reanimated';
 import { fireGestureHandlerEvent } from '../jestUtils';
@@ -211,7 +212,7 @@ describe('Using base RNGH v1 API', () => {
         ...COMMON_EVENT_DATA,
         oldState: State.UNDETERMINED,
         state: State.BEGAN,
-      }) as Record<string, unknown>,
+      }),
     });
 
     // last ACTIVE gesture event, without `oldState`
@@ -219,12 +220,12 @@ describe('Using base RNGH v1 API', () => {
       nativeEvent: expect.objectContaining({
         ...COMMON_EVENT_DATA,
         state: State.ACTIVE,
-      }) as Record<string, unknown>,
+      }),
     });
     expect(handlers.active).lastCalledWith({
       nativeEvent: expect.not.objectContaining({
-        oldState: expect.any(Number) as number,
-      }) as Record<string, unknown>,
+        oldState: expect.any(Number),
+      }),
     });
   });
 
@@ -276,7 +277,7 @@ describe('Using base RNGH v1 API', () => {
         nativeEvent: expect.objectContaining({
           ...additionalEventData,
           ...defaultEventData,
-        }) as Record<string, unknown>,
+        }),
       });
     }
   );
