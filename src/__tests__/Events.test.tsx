@@ -310,32 +310,8 @@ describe('Using base RNGH v1 API', () => {
 
 // TODO
 
-// v1
 // v2
 
-// Tap
-// Pan
-// Long press
-// Rotation
-// Fling
-// Pinch
-// Nested
-
-// begin: () => void;
-// progress: () => void;
-// end: () => void;
-// fail: () => void;
-// cancel: () => void;
-// finish: () => void;
-
-// .toHaveBeenCalledTimes(number)
-// .toHaveBeenCalledWith(arg1, arg2, ...)
-
-it.todo('calls begin callback only once');
-it.todo(
-  'calls active callback times that correspond to event data list length - 1'
-);
-it.todo('calls callback that was specified in `type` param');
 it.todo("can't call fail and end simultaneously");
 
 // test('API v2', () => {
