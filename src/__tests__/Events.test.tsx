@@ -34,64 +34,6 @@ interface V1ApiProps {
   eventHandlers: ReturnType<typeof mockedEventHandlers>;
 }
 
-function V1Api({ eventHandlers }: V1ApiProps) {
-  const eventHandler = useAnimatedGestureHandler({
-    onStart: eventHandlers.begin,
-    onFinish: eventHandlers.finish,
-    onActive: eventHandlers.active,
-    onEnd: eventHandlers.end,
-    onCancel: eventHandlers.cancel,
-    onFail: eventHandlers.fail,
-  });
-  return (
-    <GestureHandlerRootView>
-      <TapGestureHandler testID="tap" onHandlerStateChange={eventHandler}>
-        <Text>Tap handler</Text>
-      </TapGestureHandler>
-
-      <PanGestureHandler
-        testID="pan"
-        onHandlerStateChange={eventHandler}
-        onGestureEvent={eventHandler}>
-        <Text>Pan handler</Text>
-      </PanGestureHandler>
-
-      <LongPressGestureHandler
-        testID="longPress"
-        onHandlerStateChange={eventHandler}>
-        <Text>Long press handler</Text>
-      </LongPressGestureHandler>
-
-      <RotationGestureHandler
-        testID="rotation"
-        onHandlerStateChange={eventHandler}>
-        <Text>Rotation handler</Text>
-      </RotationGestureHandler>
-
-      <FlingGestureHandler testID="fling" onHandlerStateChange={eventHandler}>
-        <Text>Fling handler</Text>
-      </FlingGestureHandler>
-
-      <PinchGestureHandler testID="pinch" onHandlerStateChange={eventHandler}>
-        <Text>Pinch handler</Text>
-      </PinchGestureHandler>
-
-      <PanGestureHandler
-        testID="pan-nested"
-        onHandlerStateChange={eventHandler}>
-        <View>
-          <Text>Nested gesture handlers - outside</Text>
-          <TapGestureHandler
-            testID="tap-nested"
-            onHandlerStateChange={eventHandler}>
-            <Text>Nested gesture handlers - inside</Text>
-          </TapGestureHandler>
-        </View>
-      </PanGestureHandler>
-    </GestureHandlerRootView>
-  );
-}
-
 const V2Api = ({ eventHandlers }: V1ApiProps) => {
   const tap = Gesture.Tap()
     .onBegin(eventHandlers.begin)
@@ -308,7 +250,38 @@ describe('Using RNGH v1 base API', () => {
   });
 });
 
-describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {});
+describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
+  function UseAnimatedGestureHandler({ eventHandlers }: V1ApiProps) {
+    const eventHandler = useAnimatedGestureHandler({
+      onStart: eventHandlers.begin,
+    });
+    return (
+      <LongPressGestureHandler
+        testID="longPress"
+        onHandlerStateChange={eventHandler}>
+        <Text>Long press handler</Text>
+      </LongPressGestureHandler>
+    );
+  }
+
+  it('calls callback with (event data, context)', () => {
+    const handlers = mockedEventHandlers();
+    const { getByTestId } = render(
+      <UseAnimatedGestureHandler eventHandlers={handlers} />
+    );
+
+    fireGestureHandlerEvent(getByTestId('longPress'), [
+      { state: State.BEGAN }, // state change
+      { state: State.ACTIVE }, // state change
+      { state: State.END }, // state change
+    ]);
+
+    expect(handlers.begin).toBeCalledWith(
+      expect.objectContaining({ state: State.BEGAN }),
+      expect.any(Object)
+    );
+  });
+});
 
 describe('Using RNGH v2 gesture API', () => {});
 
