@@ -113,7 +113,7 @@ const V2Api = ({ eventHandlers }: V1ApiProps) => {
   );
 };
 
-describe('Using base RNGH v1 API', () => {
+describe('Using RNGH v1 base API', () => {
   function SingleHandler({ eventHandlers }: V1ApiProps) {
     const handlers = {
       onBegan: eventHandlers.begin,
@@ -307,6 +307,10 @@ describe('Using base RNGH v1 API', () => {
     });
   });
 });
+
+describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {});
+
+describe('Using RNGH v2 gesture API', () => {});
 
 // TODO
 
