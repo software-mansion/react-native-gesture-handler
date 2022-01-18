@@ -183,8 +183,9 @@ export function fireGestureHandlerEvent(
 
     if (hasChangedState) {
       fireEvent(component, 'onGestureHandlerStateChange', event);
+    } else {
+      fireEvent(component, 'onGestureHandlerEvent', event);
     }
-    fireEvent(component, 'onGestureHandlerEvent', event);
     lastSentEvent = event;
   }
 }

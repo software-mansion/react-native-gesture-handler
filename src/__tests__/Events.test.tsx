@@ -171,6 +171,22 @@ describe('Using base RNGH v1 API', () => {
     expect(handlers.fail).not.toBeCalled();
   });
 
+  it('receives events correct number of times', () => {
+    const handlers = mockedEventHandlers();
+    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
+    fireGestureHandlerEvent(getByTestId('pan'), [
+      { oldState: State.UNDETERMINED, state: State.BEGAN }, // state change
+      { oldState: State.BEGAN, state: State.ACTIVE }, // state change
+      { oldState: State.ACTIVE, state: State.ACTIVE }, // gesture event
+      { oldState: State.ACTIVE, state: State.END }, // state change
+    ]);
+    expect(handlers.begin).toBeCalledTimes(1);
+    expect(handlers.active).toBeCalledTimes(2);
+    expect(handlers.end).toBeCalledTimes(1);
+    expect(handlers.cancel).not.toBeCalled();
+    expect(handlers.fail).not.toBeCalled();
+  });
+
   it('receives events with correct base fields (state, oldState, numberOfPointers, handlerTag)', () => {
     const handlers = mockedEventHandlers();
     const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
