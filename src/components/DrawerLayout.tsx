@@ -490,7 +490,8 @@ export default class DrawerLayout extends Component<
       // TODO: decide if it should be null or undefined is the proper value
       undefined,
       this.props.drawerWidth!,
-      options.velocity ? options.velocity : 0
+      options.velocity ? options.velocity : 0,
+      options.speed
     );
 
     // We need to force the update, otherwise the overlay is not rerendered and
@@ -500,7 +501,12 @@ export default class DrawerLayout extends Component<
 
   closeDrawer = (options: DrawerMovementOption = {}) => {
     // TODO: decide if it should be null or undefined is the proper value
-    this.animateDrawer(undefined, 0, options.velocity ? options.velocity : 0);
+    this.animateDrawer(
+      undefined,
+      0,
+      options.velocity ? options.velocity : 0,
+      options.speed
+    );
 
     // We need to force the update, otherwise the overlay is not rerendered and
     // it would be still clickable
