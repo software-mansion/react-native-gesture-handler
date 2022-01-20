@@ -30,7 +30,12 @@ export function OldAPIAnimatedEventExample({
   const onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.BEGAN) {
       if (useNativeDriver) {
-        viewRef.current?.setNativeProps({ backgroundColor: 'black' });
+        // @ts-ignore: Fabric
+        if (viewRef.current?._internalInstanceHandle) {
+          // setNativeProps is not currently supported in Fabric
+        } else {
+          viewRef.current?.setNativeProps({ backgroundColor: 'black' });
+        }
       } else {
         isPressed.current.setValue(1);
       }
@@ -43,7 +48,12 @@ export function OldAPIAnimatedEventExample({
         useNativeDriver,
       }).start();
       if (useNativeDriver) {
-        viewRef.current?.setNativeProps({ backgroundColor: color });
+        // @ts-ignore: Fabric
+        if (viewRef.current?._internalInstanceHandle) {
+          // setNativeProps is not currently supported in Fabric
+        } else {
+          viewRef.current?.setNativeProps({ backgroundColor: color });
+        }
       } else {
         isPressed.current.setValue(0);
       }
