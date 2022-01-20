@@ -142,8 +142,16 @@ class GestureHandlerOrchestrator(
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
       if (handler.isActive) {
         handler.dispatchStateChange(newState, prevState)
+      } else if (prevState == GestureHandler.STATE_ACTIVE) {
+        // handle edge case where handler awaiting for another one tries to activate but finishes
+        // before the other would not send state change event upon ending
+        handler.dispatchStateChange(newState, GestureHandler.STATE_BEGAN)
       }
-    } else {
+    } else if (prevState != GestureHandler.STATE_UNDETERMINED || newState != GestureHandler.STATE_CANCELLED) {
+      // If handler is changing state from UNDETERMINED to CANCELLED, the state change event shouldn't
+      // be sent. Handler hasn't yet began so it may not be initialized which results in crashes.
+      // If it doesn't crash, there may be some weird behavior on JS side, as `onFinalize` will be
+      // called without calling `onBegin` first.
       handler.dispatchStateChange(newState, prevState)
     }
     handlingChangeSemaphore -= 1
@@ -155,6 +163,7 @@ class GestureHandlerOrchestrator(
     with(handler) {
       isAwaiting = false
       isActive = true
+      shouldResetProgress = true
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++
     }
     var toCancelCount = 0
@@ -242,14 +251,39 @@ class GestureHandlerOrchestrator(
     // approach when we want to use pointer coordinates to calculate velocity or distance
     // for pinch so I don't know yet if we should transform or not...
     event.setLocation(coords[0], coords[1])
-    if (handler.needsPointerData) {
+    
+    // Touch events are sent before the handler itself has a chance to process them,
+    // mainly because `onTouchesUp` shoul be send befor gesture finishes. This means that
+    // the first `onTouchesDown` event is sent before a gesture begins, activation in 
+    // callback for this event causes problems because the handler doesn't have a chance
+    // to initialize itself with starting values of pointer (in pan this causes translation
+    // to be equal to the coordinates of the pointer). The simplest solution is to send
+    // the first `onTouchesDown` event after the handler processes it and changes state
+    // to `BEGAN`.
+    if (handler.needsPointerData && handler.state != 0) {
       handler.updatePointerData(event)
     }
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
+      val isFirstEvent = handler.state == 0
       handler.handle(event)
       if (handler.isActive) {
+        // After handler is done waiting for other one to fail its progress should be
+        // reset, otherwise there may be a visible jump in values sent by the handler.
+        // When handler is waiting it's already activated but the `isAwaiting` flag
+        // prevents it from receiving touch stream. When the flag is changed, the
+        // difference between this event and the last one may be large enough to be
+        // visible in interactions based on this gesture. This makes it consistent with
+        // the behavior on iOS.
+        if (handler.shouldResetProgress) {
+          handler.shouldResetProgress = false
+          handler.resetProgress()
+        }
         handler.dispatchHandlerUpdate(event)
+      }
+
+      if (handler.needsPointerData && isFirstEvent) {
+        handler.updatePointerData(event)
       }
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that

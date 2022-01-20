@@ -108,8 +108,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       with(eventData) {
         putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
         putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
       }
     }
   }
@@ -137,8 +137,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       with(eventData) {
         putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
         putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
         putInt("duration", handler.duration)
       }
     }
@@ -225,8 +225,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       with(eventData) {
         putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
         putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
         putDouble("translationX", PixelUtil.toDIPFromPixel(handler.translationX).toDouble())
         putDouble("translationY", PixelUtil.toDIPFromPixel(handler.translationY).toDouble())
         putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.velocityX).toDouble())
@@ -277,8 +277,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       with(eventData) {
         putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
         putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionX).toDouble())
-        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastAbsolutePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
       }
     }
   }

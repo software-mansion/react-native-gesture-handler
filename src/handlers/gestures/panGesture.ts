@@ -1,10 +1,40 @@
 import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
+import { GestureUpdateEvent } from '../gestureHandlerCommon';
 import {
   PanGestureConfig,
   PanGestureHandlerEventPayload,
 } from '../PanGestureHandler';
 
-export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPayload> {
+type PanGestureChangeEventPayload = {
+  changeX: number;
+  changeY: number;
+};
+
+function changeEventCalculator(
+  current: GestureUpdateEvent<PanGestureHandlerEventPayload>,
+  previous?: GestureUpdateEvent<PanGestureHandlerEventPayload>
+) {
+  'worklet';
+  let changePayload: PanGestureChangeEventPayload;
+  if (previous === undefined) {
+    changePayload = {
+      changeX: current.translationX,
+      changeY: current.translationY,
+    };
+  } else {
+    changePayload = {
+      changeX: current.translationX - previous.translationX,
+      changeY: current.translationY - previous.translationY,
+    };
+  }
+
+  return { ...current, ...changePayload };
+}
+
+export class PanGesture extends ContinousBaseGesture<
+  PanGestureHandlerEventPayload,
+  PanGestureChangeEventPayload
+> {
   public config: BaseGestureConfig & PanGestureConfig = {};
 
   constructor() {
@@ -99,6 +129,18 @@ export class PanGesture extends ContinousBaseGesture<PanGestureHandlerEventPaylo
   enableTrackpadTwoFingerGesture(value: boolean) {
     this.config.enableTrackpadTwoFingerGesture = value;
     return this;
+  }
+
+  onChange(
+    callback: (
+      event: GestureUpdateEvent<
+        PanGestureHandlerEventPayload & PanGestureChangeEventPayload
+      >
+    ) => void
+  ) {
+    // @ts-ignore TS being overprotective, PanGestureHandlerEventPayload is Record
+    this.handlers.changeEventCalculator = changeEventCalculator;
+    return super.onChange(callback);
   }
 }
 

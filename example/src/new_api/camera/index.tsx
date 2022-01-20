@@ -17,7 +17,6 @@ export default function Home() {
   const filter = useSharedValue(0);
   const filterOffset = useSharedValue(0);
   const zoom = useSharedValue(1);
-  const [scale, setScale] = useState(1);
   const [selectedFilter, setSelectedFilter] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [remainingTimeMs, setRemainingTimeMs] = useState(MAX_VIDEO_DURATION_MS);
@@ -79,15 +78,10 @@ export default function Home() {
       }
     });
 
-  const previewPinchGesture = Gesture.Pinch()
-    .onStart(() => {
-      'worklet';
-      runOnJS(setScale)(zoom.value);
-    })
-    .onUpdate((e) => {
-      'worklet';
-      zoom.value = scale * e.scale;
-    });
+  const previewPinchGesture = Gesture.Pinch().onChange((e) => {
+    'worklet';
+    zoom.value *= e.scaleChange;
+  });
 
   const buttonGesture = Gesture.Simultaneous(
     buttonLongPressGesture,
