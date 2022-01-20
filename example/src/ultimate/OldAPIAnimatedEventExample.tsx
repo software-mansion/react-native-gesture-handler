@@ -39,7 +39,11 @@ export function OldAPIAnimatedEventExample({
       } else {
         isPressed.current.setValue(1);
       }
-    } else if (event.nativeEvent.state === State.END) {
+    } else if (
+      event.nativeEvent.state === State.FAILED ||
+      event.nativeEvent.state === State.CANCELLED ||
+      event.nativeEvent.state === State.END
+    ) {
       Animated.spring(drag.current, {
         velocity: event.nativeEvent.velocityX,
         tension: 10,
