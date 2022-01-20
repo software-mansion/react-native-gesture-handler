@@ -173,7 +173,7 @@ export default function createHandler<
         }
         handlerIDToTag[props.id] = this.handlerTag;
       }
-      if (__DEV__) {
+      if (__DEV__ && !isJest()) {
         showRngh2NoticeIfNeeded();
       }
     }
