@@ -49,6 +49,8 @@ import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
 import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
 
+import UltimateExample from './ultimate/UltimateExample';
+
 LogBox.ignoreLogs([
   "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
 ]);
@@ -63,6 +65,10 @@ interface ExamplesSection {
 }
 
 const EXAMPLES: ExamplesSection[] = [
+  {
+    sectionTitle: 'Ultimate example',
+    data: [{ name: 'Ultimate example', component: UltimateExample }],
+  },
   {
     sectionTitle: 'Basic examples',
     data: [
