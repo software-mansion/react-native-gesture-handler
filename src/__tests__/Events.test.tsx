@@ -16,8 +16,11 @@ import {
   GestureDetector,
   State,
 } from '../index';
-import { not, useAnimatedGestureHandler } from 'react-native-reanimated';
-import { fireGestureHandlerEvent } from '../jestUtils';
+import { useAnimatedGestureHandler } from 'react-native-reanimated';
+import { fireGestureHandlerEvent, getByHandlerId } from '../jestUtils';
+import { cleanup } from '@testing-library/react-native';
+
+beforeEach(cleanup);
 
 const mockedEventHandlers = () => {
   return {
@@ -33,27 +36,6 @@ const mockedEventHandlers = () => {
 interface V1ApiProps {
   eventHandlers: ReturnType<typeof mockedEventHandlers>;
 }
-
-const V2Api = ({ eventHandlers }: V1ApiProps) => {
-  const tap = Gesture.Tap()
-    .onBegin(eventHandlers.begin)
-    .onEnd(eventHandlers.end)
-    .withTestId('tap');
-
-  const pan = Gesture.Pan()
-    .onBegin(eventHandlers.begin)
-    .onUpdate(eventHandlers.active)
-    .onEnd(eventHandlers.end)
-    .withTestId('pan');
-
-  return (
-    <GestureHandlerRootView>
-      <GestureDetector gesture={Gesture.Race(tap, pan)}>
-        <Text>v2 API test</Text>
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-};
 
 describe('Using RNGH v1 base API', () => {
   function SingleHandler({ eventHandlers }: V1ApiProps) {
