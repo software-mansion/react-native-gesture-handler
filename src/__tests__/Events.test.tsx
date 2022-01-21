@@ -277,6 +277,7 @@ describe('Using RNGH v2 gesture API', () => {
       .onBegin(panHandlers.begin)
       .onUpdate(panHandlers.active)
       .onEnd(panHandlers.end)
+      .onFinalize(panHandlers.finish)
       .withTestId('pan');
 
     return (
@@ -303,8 +304,7 @@ describe('Using RNGH v2 gesture API', () => {
     expect(panHandlers.begin).toBeCalledWith(
       expect.objectContaining({ state: State.BEGAN })
     );
+    expect(panHandlers.finish).toBeCalled();
     expect(tapHandlers.begin).not.toBeCalled();
   });
 });
-
-it.todo("can't call fail and end simultaneously");
