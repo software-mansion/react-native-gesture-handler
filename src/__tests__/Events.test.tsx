@@ -6,12 +6,9 @@ import { render } from '@testing-library/react-native';
 import { Text, View } from 'react-native';
 import {
   GestureHandlerRootView,
-  TapGestureHandler,
   PanGestureHandler,
   LongPressGestureHandler,
-  FlingGestureHandler,
   RotationGestureHandler,
-  PinchGestureHandler,
   Gesture,
   GestureDetector,
   State,
@@ -100,10 +97,10 @@ describe('Using RNGH v1 base API', () => {
     const handlers = mockedEventHandlers();
     const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
     fireGestureHandlerEvent(getByTestId('pan'), [
-      { oldState: State.UNDETERMINED, state: State.BEGAN }, // state change
-      { oldState: State.BEGAN, state: State.ACTIVE }, // state change
+      { oldState: State.UNDETERMINED, state: State.BEGAN },
+      { oldState: State.BEGAN, state: State.ACTIVE },
       { oldState: State.ACTIVE, state: State.ACTIVE }, // gesture event
-      { oldState: State.ACTIVE, state: State.END }, // state change
+      { oldState: State.ACTIVE, state: State.END },
     ]);
     expect(handlers.begin).toBeCalledTimes(1);
     expect(handlers.active).toBeCalledTimes(2);
@@ -127,8 +124,8 @@ describe('Using RNGH v1 base API', () => {
         oldState: State.UNDETERMINED,
         state: State.BEGAN,
       }, // BEGIN - state change
-      { ...COMMON_EVENT_DATA, oldState: State.BEGAN, state: State.ACTIVE }, // ACTIVE - state change
-      { ...COMMON_EVENT_DATA, state: State.ACTIVE }, // ACTIVE - gesture event
+      { ...COMMON_EVENT_DATA, oldState: State.BEGAN, state: State.ACTIVE },
+      { ...COMMON_EVENT_DATA, state: State.ACTIVE }, // gesture event
     ]);
 
     // gesture state change
@@ -211,11 +208,11 @@ describe('Using RNGH v1 base API', () => {
     const handlers = mockedEventHandlers();
     const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
     fireGestureHandlerEvent(getByTestId('pan'), [
-      { state: State.BEGAN }, // state change
-      { state: State.ACTIVE }, // state change
-      { state: State.ACTIVE }, // gesture event
-      { state: State.ACTIVE }, // gesture event
-      { state: State.END }, // state change
+      { state: State.BEGAN },
+      { state: State.ACTIVE },
+      { state: State.ACTIVE },
+      { state: State.ACTIVE },
+      { state: State.END },
     ]);
 
     expect(handlers.begin).toBeCalledWith({
@@ -254,9 +251,9 @@ describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
     );
 
     fireGestureHandlerEvent(getByTestId('longPress'), [
-      { state: State.BEGAN }, // state change
-      { state: State.ACTIVE }, // state change
-      { state: State.END }, // state change
+      { state: State.BEGAN },
+      { state: State.ACTIVE },
+      { state: State.END },
     ]);
 
     expect(handlers.begin).toBeCalledWith(
@@ -297,9 +294,9 @@ describe('Using RNGH v2 gesture API', () => {
     );
 
     fireGestureHandlerEvent(getByHandlerId('pan'), [
-      { state: State.BEGAN }, // state change
-      { state: State.ACTIVE }, // state change
-      { state: State.END }, // state change
+      { state: State.BEGAN },
+      { state: State.ACTIVE },
+      { state: State.END },
     ]);
     expect(panHandlers.begin).toBeCalledWith(
       expect.objectContaining({ state: State.BEGAN })
