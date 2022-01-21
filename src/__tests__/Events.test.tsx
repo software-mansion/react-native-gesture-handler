@@ -307,15 +307,4 @@ describe('Using RNGH v2 gesture API', () => {
   });
 });
 
-// v2
-
 it.todo("can't call fail and end simultaneously");
-
-// test('API v2', () => {
-//   const eventFunctions = mockEventFunctions();
-//   render(<AppAPIv2 eventFunctions={eventFunctions} />);
-//   fireTapGestureHandler(1);
-//   firePanGestureHandler(2);
-//   expect(eventFunctions.begin).toHaveBeenCalledTimes(2);
-//   expect(eventFunctions.progress).toHaveBeenCalledTimes(2);
-// });

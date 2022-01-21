@@ -227,26 +227,6 @@ export function fireGestureHandlerEvent(
   }
 }
 
-// export enum EventTypeV1 {
-//   onStart = 'onStart',
-//   onActive = 'onActive',
-//   onEnd = 'onEnd',
-//   onFail = 'onFail',
-//   onCancel = 'onCancel',
-//   onFinish = 'onFinish',
-// }
-
-// export enum EventTypeV2 {
-//   onBegin = 'onBegin',
-//   onStart = 'onStart',
-//   onEnd = 'onEnd',
-//   onFinalize = 'onFinalize',
-//   onTouchesDown = 'onTouchesDown',
-//   onTouchesMove = 'onTouchesMove',
-//   onTouchesUp = 'onTouchesUp',
-//   onTouchesCancelled = 'onTouchesCancelled',
-// }
-
 export const getByHandlerId = findHandlerByTestID;
 
 export function isJest(): boolean {
