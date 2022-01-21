@@ -7,10 +7,9 @@ import { NewAPIJSCallbackUpdateSharedValueExample } from './NewAPIJSCallbackUpda
 import { NewAPIReanimatedWorkletUpdateSharedValueExample } from './NewAPIReanimatedWorkletUpdateSharedValueExample';
 import { OldAPIJSCallbackConsoleLogExample } from './OldAPIJSCallbackConsoleLogExample';
 import { OldAPIReanimatedWorkletConsoleLogExample } from './OldAPIReanimatedWorkletConsoleLogExample';
-import { OldAPIAnimatedEventExampleUseNativeDriverTrue } from './OldAPIAnimatedEventExampleUseNativeDriverTrue';
-import { OldAPIAnimatedEventExampleUseNativeDriverFalse } from './OldAPIAnimatedEventExampleUseNativeDriverFalse';
 import { OldAPIJSCallbackUpdateSharedValueExample } from './OldAPIJSCallbackUpdateSharedValueExample';
 import { OldAPIReanimatedWorkletUpdateSharedValueExample } from './OldAPIReanimatedWorkletUpdateSharedValueExample';
+import { OldAPIAnimatedEventExample } from './OldAPIAnimatedEventExample';
 
 export default function UltimateExample() {
   return (
@@ -19,25 +18,21 @@ export default function UltimateExample() {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-      <Text style={{ marginVertical: 10 }}>
+      <Text style={{ marginVertical: 7 }}>
         The purpose of this example is to demonstrate all possible interactions
         between Gesture Handler and JS callbacks, Animated.event, Reanimated
         worklets etc.
       </Text>
-      <NewAPIJSCallbackConsoleLogExample />
-      <NewAPIReanimatedWorkletConsoleLogExample />
-      <NewAPIJSCallbackUpdateSharedValueExample />
-      <NewAPIReanimatedWorkletUpdateSharedValueExample />
-      <OldAPIJSCallbackConsoleLogExample />
-      <OldAPIReanimatedWorkletConsoleLogExample />
-      <OldAPIJSCallbackUpdateSharedValueExample />
-      <OldAPIReanimatedWorkletUpdateSharedValueExample />
-      <OldAPIAnimatedEventExampleUseNativeDriverTrue />
-      <OldAPIAnimatedEventExampleUseNativeDriverFalse />
+      <NewAPIJSCallbackConsoleLogExample color="red" />
+      <NewAPIReanimatedWorkletConsoleLogExample color="darkorange" />
+      <NewAPIJSCallbackUpdateSharedValueExample color="gold" />
+      <NewAPIReanimatedWorkletUpdateSharedValueExample color="lime" />
+      <OldAPIJSCallbackConsoleLogExample color="cyan" />
+      <OldAPIReanimatedWorkletConsoleLogExample color="deepskyblue" />
+      <OldAPIJSCallbackUpdateSharedValueExample color="darkviolet" />
+      <OldAPIReanimatedWorkletUpdateSharedValueExample color="violet" />
+      <OldAPIAnimatedEventExample useNativeDriver color="lightgray" />
+      <OldAPIAnimatedEventExample useNativeDriver={false} color="gray" />
     </View>
   );
 }
-
-LogBox.ignoreLogs([
-  "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
-]);

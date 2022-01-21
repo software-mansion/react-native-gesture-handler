@@ -4,7 +4,11 @@ import React from 'react';
 
 declare const _WORKLET: boolean; // from react-native-reanimated
 
-export function NewAPIJSCallbackConsoleLogExample() {
+type Props = {
+  color: string;
+};
+
+export function NewAPIJSCallbackConsoleLogExample({ color }: Props) {
   const gesture = Gesture.Pan()
     .onBegin(() => {
       console.log(_WORKLET, 'onBegin');
@@ -26,13 +30,13 @@ export function NewAPIJSCallbackConsoleLogExample() {
     <View>
       <Text>New API / JS callback / console.log</Text>
       <View
-        style={{ height: 60, alignItems: 'center', justifyContent: 'center' }}>
+        style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
         <GestureDetector gesture={gesture}>
           <View
             style={{
-              width: 50,
-              height: 50,
-              backgroundColor: 'red',
+              width: 45,
+              height: 45,
+              backgroundColor: color,
             }}
           />
         </GestureDetector>

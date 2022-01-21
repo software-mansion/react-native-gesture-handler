@@ -11,7 +11,13 @@ import Animated, {
 
 declare const _WORKLET: boolean; // from react-native-reanimated
 
-export function OldAPIReanimatedWorkletUpdateSharedValueExample() {
+type Props = {
+  color: string;
+};
+
+export function OldAPIReanimatedWorkletUpdateSharedValueExample({
+  color,
+}: Props) {
   const drag = useSharedValue(0);
   const isPressed = useSharedValue(false);
 
@@ -49,7 +55,7 @@ export function OldAPIReanimatedWorkletUpdateSharedValueExample() {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: drag.value }],
-      backgroundColor: isPressed.value ? 'black' : 'gray',
+      backgroundColor: isPressed.value ? 'black' : color,
     };
   });
 
@@ -57,13 +63,13 @@ export function OldAPIReanimatedWorkletUpdateSharedValueExample() {
     <View>
       <Text>Old API / Reanimated worklet / update shared value</Text>
       <View
-        style={{ height: 60, alignItems: 'center', justifyContent: 'center' }}>
+        style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
         <PanGestureHandler maxPointers={1} onGestureEvent={eventHandler}>
           <Animated.View
             style={[
               {
-                width: 50,
-                height: 50,
+                width: 45,
+                height: 45,
                 backgroundColor: 'red',
                 alignItems: 'center',
                 justifyContent: 'center',

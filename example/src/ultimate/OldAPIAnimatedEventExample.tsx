@@ -1,21 +1,18 @@
 import { Animated, Text, View } from 'react-native';
 
-import React, { ReactNode } from 'react';
+import React from 'react';
 import {
   PanGestureHandler,
   PanGestureHandlerStateChangeEvent,
   State,
 } from 'react-native-gesture-handler';
 
-type OldAPIAnimatedEventExampleProps = {
+type Props = {
   useNativeDriver: boolean;
   color: string;
 };
 
-export function OldAPIAnimatedEventExample({
-  useNativeDriver,
-  color,
-}: OldAPIAnimatedEventExampleProps) {
+export function OldAPIAnimatedEventExample({ useNativeDriver, color }: Props) {
   const drag = React.useRef(new Animated.Value(0));
   const isPressed = React.useRef(new Animated.Value(0));
   const viewRef = React.useRef<View>();
@@ -79,15 +76,15 @@ export function OldAPIAnimatedEventExample({
         {useNativeDriver ? 'true' : 'false'}
       </Text>
       <View
-        style={{ height: 60, alignItems: 'center', justifyContent: 'center' }}>
+        style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
         <PanGestureHandler
           maxPointers={1}
           onGestureEvent={onGestureEvent}
           onHandlerStateChange={onHandlerStateChange}>
           <Animated.View
             style={{
-              width: 50,
-              height: 50,
+              width: 45,
+              height: 45,
               backgroundColor,
               alignItems: 'center',
               justifyContent: 'center',
