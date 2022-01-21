@@ -9,6 +9,8 @@ import { OldAPIJSCallbackConsoleLogExample } from './OldAPIJSCallbackConsoleLogE
 import { OldAPIReanimatedWorkletConsoleLogExample } from './OldAPIReanimatedWorkletConsoleLogExample';
 import { OldAPIAnimatedEventExampleUseNativeDriverTrue } from './OldAPIAnimatedEventExampleUseNativeDriverTrue';
 import { OldAPIAnimatedEventExampleUseNativeDriverFalse } from './OldAPIAnimatedEventExampleUseNativeDriverFalse';
+import { OldAPIJSCallbackUpdateSharedValueExample } from './OldAPIJSCallbackUpdateSharedValueExample';
+import { OldAPIReanimatedWorkletUpdateSharedValueExample } from './OldAPIReanimatedWorkletUpdateSharedValueExample';
 
 export default function UltimateExample() {
   return (
@@ -28,6 +30,8 @@ export default function UltimateExample() {
       <NewAPIReanimatedWorkletUpdateSharedValueExample />
       <OldAPIJSCallbackConsoleLogExample />
       <OldAPIReanimatedWorkletConsoleLogExample />
+      <OldAPIJSCallbackUpdateSharedValueExample />
+      <OldAPIReanimatedWorkletUpdateSharedValueExample />
       <OldAPIAnimatedEventExampleUseNativeDriverTrue />
       <OldAPIAnimatedEventExampleUseNativeDriverFalse />
     </View>
