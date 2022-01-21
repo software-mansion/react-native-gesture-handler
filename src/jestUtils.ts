@@ -42,6 +42,7 @@ import {
   tapHandlerName,
 } from './handlers/TapGestureHandler';
 import { State } from './State';
+import { withPrevAndCurrent } from './utils';
 
 type GestureHandlerTestEvent = (
   | GestureEvent
@@ -159,6 +160,11 @@ function fillOldStateChanges(
   }
 }
 
+function fillMissingStateField(
+  previousEvent: GestureHandlerTestEvent | null,
+  currentEvent: Omit<GestureHandlerTestEvent, 'state' | 'oldState'>
+) {}
+
 interface HandlerInfo {
   handlerType: HandlerNames;
   handlerTag: number;
@@ -210,15 +216,6 @@ function getHandlerData(
   };
 }
 
-function withPrevAndCurrent<T>(
-  transformFn: (previous: T | null, current: T) => T
-) {
-  return (currentElement: T, i: number, events: T[]) => {
-    const previousElement = i > 0 ? events[i - 1] : null;
-    return transformFn(previousElement, currentElement);
-  };
-}
-
 export function fireGestureHandlerEvent(
   componentOrGesture: ReactTestInstance | GestureType,
   eventList: Partial<GestureHandlerTestEvent>[]
@@ -229,6 +226,7 @@ export function fireGestureHandlerEvent(
 
   const events = eventList
     .map(fillMissingDefaultsFor({ handlerTag, handlerType }))
+    .map(withPrevAndCurrent(fillMissingStateField))
     .map(withPrevAndCurrent(fillOldStateChanges))
     .map(wrapWithNativeEvent);
 
