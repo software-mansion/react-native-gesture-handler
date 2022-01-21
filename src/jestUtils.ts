@@ -132,78 +132,104 @@ function isGesture(
   return componentOrGesture instanceof BaseGesture;
 }
 
-export function fireGestureHandlerEvent(
-  componentOrGesture: ReactTestInstance | GestureType,
-  eventList: Partial<GestureHandlerTestEvent>[]
-): void {
-  type EventEmitter = (
-    eventName: string,
-    args: { nativeEvent: GestureHandlerTestEvent }
-  ) => void;
-  let emitEvent: EventEmitter;
-  let handlerType: HandlerNames;
-  let handlerTag: number;
+function wrapWithNativeEvent(event: GestureHandlerTestEvent) {
+  return { nativeEvent: event };
+}
 
-  if (isGesture(componentOrGesture)) {
-    emitEvent = (eventName, args) => {
-      DeviceEventEmitter.emit(eventName, args.nativeEvent);
-    };
-    handlerType = componentOrGesture.handlerName as HandlerNames;
-    handlerTag = componentOrGesture.handlerTag;
-  } else {
-    // TODO improvement: traverse components and find nearest gesture handler
-    // instead of relying that handler is passed directly as component
-    emitEvent = (eventName, args) => {
-      fireEvent(componentOrGesture, eventName, args);
-    };
-    handlerType = componentOrGesture.props.handlerType as HandlerNames;
-    handlerTag = componentOrGesture.props.handlerTag as number;
+function fillOldStateChanges(
+  previousEvent: GestureHandlerTestEvent | null,
+  currentEvent: Omit<GestureHandlerTestEvent, 'state' | 'oldState'>
+): GestureHandlerTestEvent {
+  const isFirstEvent = previousEvent === null;
+  if (isFirstEvent) {
+    return {
+      oldState: State.UNDETERMINED,
+      ...currentEvent,
+    } as GestureHandlerTestEvent;
   }
 
-  function fillMissingDefaults(
-    event: Partial<GestureHandlerTestEvent>
-  ): Omit<GestureHandlerTestEvent, 'state' | 'oldState'> {
+  const isGestureStateEvent = previousEvent.state !== currentEvent.state;
+  if (isGestureStateEvent) {
+    return {
+      oldState: previousEvent.state,
+      ...currentEvent,
+    } as GestureHandlerTestEvent;
+  } else {
+    return currentEvent as GestureHandlerTestEvent;
+  }
+}
+
+interface HandlerInfo {
+  handlerType: HandlerNames;
+  handlerTag: number;
+}
+function fillMissingDefaultsFor({
+  handlerType,
+  handlerTag,
+}: HandlerInfo): (
+  event: Partial<GestureHandlerTestEvent>
+) => Omit<GestureHandlerTestEvent, 'state' | 'oldState'> {
+  return (event) => {
     return {
       ...handlersDefaultEvents[handlerType],
       ...event,
       handlerTag,
     };
-  }
+  };
+}
 
-  function fillOldStateChanges(
-    previousEvent: GestureHandlerTestEvent | null,
-    currentEvent: Omit<GestureHandlerTestEvent, 'state' | 'oldState'>
-  ): GestureHandlerTestEvent {
-    const isFirstEvent = previousEvent === null;
-    if (isFirstEvent) {
-      return {
-        oldState: State.UNDETERMINED,
-        ...currentEvent,
-      } as GestureHandlerTestEvent;
-    }
-
-    const isGestureStateEvent = previousEvent.state !== currentEvent.state;
-    if (isGestureStateEvent) {
-      return {
-        oldState: previousEvent.state,
-        ...currentEvent,
-      } as GestureHandlerTestEvent;
-    } else {
-      return currentEvent as GestureHandlerTestEvent;
-    }
+type EventEmitter = (
+  eventName: string,
+  args: { nativeEvent: GestureHandlerTestEvent }
+) => void;
+interface HandlerData {
+  emitEvent: EventEmitter;
+  handlerType: HandlerNames;
+  handlerTag: number;
+}
+function getHandlerData(
+  componentOrGesture: ReactTestInstance | GestureType
+): HandlerData {
+  if (isGesture(componentOrGesture)) {
+    const gesture = componentOrGesture;
+    return {
+      emitEvent: (eventName, args) => {
+        DeviceEventEmitter.emit(eventName, args.nativeEvent);
+      },
+      handlerType: gesture.handlerName as HandlerNames,
+      handlerTag: gesture.handlerTag,
+    };
   }
+  const gestureHandlerComponent = componentOrGesture;
+  return {
+    emitEvent: (eventName, args) => {
+      fireEvent(gestureHandlerComponent, eventName, args);
+    },
+    handlerType: gestureHandlerComponent.props.handlerType as HandlerNames,
+    handlerTag: gestureHandlerComponent.props.handlerTag as number,
+  };
+}
 
-  function wrapWithNativeEvent(event: GestureHandlerTestEvent) {
-    return { nativeEvent: event };
-  }
+function withPrevAndCurrent<T>(
+  transformFn: (previous: T | null, current: T) => T
+) {
+  return (currentElement: T, i: number, events: T[]) => {
+    const previousElement = i > 0 ? events[i - 1] : null;
+    return transformFn(previousElement, currentElement);
+  };
+}
+
+export function fireGestureHandlerEvent(
+  componentOrGesture: ReactTestInstance | GestureType,
+  eventList: Partial<GestureHandlerTestEvent>[]
+): void {
+  const { emitEvent, handlerType, handlerTag } = getHandlerData(
+    componentOrGesture
+  );
 
   const events = eventList
-    .map(fillMissingDefaults)
-    .map((currentEvent, i, events) => {
-      const previousEvent =
-        i > 0 ? (events[i - 1] as GestureHandlerTestEvent) : null;
-      return fillOldStateChanges(previousEvent, currentEvent);
-    })
+    .map(fillMissingDefaultsFor({ handlerTag, handlerType }))
+    .map(withPrevAndCurrent(fillOldStateChanges))
     .map(wrapWithNativeEvent);
 
   const firstEvent = events.shift();
