@@ -266,9 +266,46 @@ describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
   });
 });
 
-describe('Using RNGH v2 gesture API', () => {});
+describe('Using RNGH v2 gesture API', () => {
+  const RacingHandlers = ({ tapHandlers, panHandlers }: any /*TODO*/) => {
+    const tap = Gesture.Tap()
+      .onBegin(tapHandlers.begin)
+      .onEnd(tapHandlers.end)
+      .withTestId('tap');
 
-// TODO
+    const pan = Gesture.Pan()
+      .onBegin(panHandlers.begin)
+      .onUpdate(panHandlers.active)
+      .onEnd(panHandlers.end)
+      .withTestId('pan');
+
+    return (
+      <GestureHandlerRootView>
+        <GestureDetector gesture={Gesture.Race(tap, pan)}>
+          <Text>v2 API test</Text>
+        </GestureDetector>
+      </GestureHandlerRootView>
+    );
+  };
+
+  it('sends events to handlers', () => {
+    const tapHandlers = mockedEventHandlers();
+    const panHandlers = mockedEventHandlers();
+    render(
+      <RacingHandlers tapHandlers={tapHandlers} panHandlers={panHandlers} />
+    );
+
+    fireGestureHandlerEvent(getByHandlerId('pan'), [
+      { state: State.BEGAN }, // state change
+      { state: State.ACTIVE }, // state change
+      { state: State.END }, // state change
+    ]);
+    expect(panHandlers.begin).toBeCalledWith(
+      expect.objectContaining({ state: State.BEGAN })
+    );
+    expect(tapHandlers.begin).not.toBeCalled();
+  });
+});
 
 // v2
 

@@ -1,5 +1,7 @@
-import { fireEvent } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import invariant from 'invariant';
+import React from 'react';
+import { DeviceEventEmitter, View } from 'react-native';
 import { ReactTestInstance } from 'react-test-renderer';
 import {
   FlingGestureHandlerEventPayload,
@@ -13,6 +15,8 @@ import {
   GestureEvent,
   HandlerStateChangeEvent,
 } from './handlers/gestureHandlerCommon';
+import { BaseGesture, GestureType } from './handlers/gestures/gesture';
+import { findHandlerByTestID } from './handlers/handlersRegistry';
 import {
   LongPressGestureHandlerEventPayload,
   longPressHandlerName,
@@ -122,16 +126,39 @@ const handlersDefaultEvents: DefaultEventsMapping = {
   },
 };
 
+function isGesture(
+  componentOrGesture: ReactTestInstance | GestureType
+): componentOrGesture is GestureType {
+  return componentOrGesture instanceof BaseGesture;
+}
+
 export function fireGestureHandlerEvent(
-  component: ReactTestInstance,
+  componentOrGesture: ReactTestInstance | GestureType,
   eventList: Partial<GestureHandlerTestEvent>[]
 ): void {
-  // TODO improvement: traverse components and find nearest gesture handler
-  // instead of relying that handler is passed directly as component
+  type EventEmitter = (
+    eventName: string,
+    args: { nativeEvent: GestureHandlerTestEvent }
+  ) => void;
+  let emitEvent: EventEmitter;
+  let handlerType: HandlerNames;
+  let handlerTag: number;
 
-  // ReactTestInstance is typed with any
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const handlerType: HandlerNames = component.props.handlerType;
+  if (isGesture(componentOrGesture)) {
+    emitEvent = (eventName, args) => {
+      DeviceEventEmitter.emit(eventName, args.nativeEvent);
+    };
+    handlerType = componentOrGesture.handlerName as HandlerNames;
+    handlerTag = componentOrGesture.handlerTag;
+  } else {
+    // TODO improvement: traverse components and find nearest gesture handler
+    // instead of relying that handler is passed directly as component
+    emitEvent = (eventName, args) => {
+      fireEvent(componentOrGesture, eventName, args);
+    };
+    handlerType = componentOrGesture.props.handlerType as HandlerNames;
+    handlerTag = componentOrGesture.props.handlerTag as number;
+  }
 
   function fillMissingDefaults(
     event: Partial<GestureHandlerTestEvent>
@@ -139,6 +166,7 @@ export function fireGestureHandlerEvent(
     return {
       ...handlersDefaultEvents[handlerType],
       ...event,
+      handlerTag,
     };
   }
 
@@ -184,16 +212,16 @@ export function fireGestureHandlerEvent(
     'Events list must contain at least two events.'
   ); // TODO: provide defaults
 
-  fireEvent(component, 'onGestureHandlerStateChange', firstEvent);
+  emitEvent('onGestureHandlerStateChange', firstEvent);
   let lastSentEvent = firstEvent;
   for (const event of events) {
     const hasChangedState =
       lastSentEvent.nativeEvent.state !== event.nativeEvent.state;
 
     if (hasChangedState) {
-      fireEvent(component, 'onGestureHandlerStateChange', event);
+      emitEvent('onGestureHandlerStateChange', event);
     } else {
-      fireEvent(component, 'onGestureHandlerEvent', event);
+      emitEvent('onGestureHandlerEvent', event);
     }
     lastSentEvent = event;
   }
@@ -218,6 +246,8 @@ export function fireGestureHandlerEvent(
 //   onTouchesUp = 'onTouchesUp',
 //   onTouchesCancelled = 'onTouchesCancelled',
 // }
+
+export const getByHandlerId = findHandlerByTestID;
 
 export function isJest(): boolean {
   return !!process.env.JEST_WORKER_ID;
