@@ -445,6 +445,7 @@ export default function createHandler<
           ...(isJest()
             ? {
                 handlerType: name,
+                handlerTag: this.handlerTag,
               }
             : {}),
           testID: this.props.testID,

@@ -115,12 +115,13 @@ describe('Using RNGH v1 base API', () => {
   it('receives events with correct base fields (state, oldState, numberOfPointers, handlerTag)', () => {
     const handlers = mockedEventHandlers();
     const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
+    const component = getByTestId('pan');
 
     const COMMON_EVENT_DATA = {
       numberOfPointers: 3,
-      handlerTag: 5,
+      handlerTag: component.props.handlerTag as number,
     };
-    fireGestureHandlerEvent(getByTestId('pan'), [
+    fireGestureHandlerEvent(component, [
       {
         ...COMMON_EVENT_DATA,
         oldState: State.UNDETERMINED,
