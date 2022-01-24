@@ -125,7 +125,7 @@ type InternalEventHandlers = {
 let showedRngh2Notice = false;
 function showRngh2NoticeIfNeeded() {
   if (!showedRngh2Notice) {
-    console.warn(
+    console.info(
       "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"
     );
     showedRngh2Notice = true;
