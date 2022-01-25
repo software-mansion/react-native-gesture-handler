@@ -324,6 +324,23 @@ describe('Using RNGH v2 gesture API', () => {
     expect(tapHandlers.begin).not.toBeCalled();
   });
 
+  it('sends events with additional data to handlers', () => {
+    const panHandlers = mockedEventHandlers();
+    render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
+    fireGestureHandlerEvent(getByHandlerId('pan'), [
+      { state: State.BEGAN, translationX: 0 },
+      { state: State.ACTIVE, translationX: 10 },
+      { translationX: 20 },
+      { translationX: 20 },
+      { state: State.END, translationX: 30 },
+    ]);
+
+    expect(panHandlers.active).toBeCalledTimes(3);
+    expect(panHandlers.active).toHaveBeenLastCalledWith(
+      expect.objectContaining({ translationX: 20 })
+    );
+  });
+
   it("uses last state if next event doesn't specify it and state transition is valid", () => {
     const panHandlers = mockedEventHandlers();
     render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
