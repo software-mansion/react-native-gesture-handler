@@ -1,7 +1,6 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent } from '@testing-library/react-native';
 import invariant from 'invariant';
-import React from 'react';
-import { DeviceEventEmitter, View } from 'react-native';
+import { DeviceEventEmitter } from 'react-native';
 import { ReactTestInstance } from 'react-test-renderer';
 import {
   FlingGestureHandlerEventPayload,
@@ -42,7 +41,11 @@ import {
   tapHandlerName,
 } from './handlers/TapGestureHandler';
 import { State } from './State';
-import { withPrevAndCurrent } from './utils';
+import {
+  hasProperty,
+  withPrevAndCurrent,
+  withPrevAndCurrentMapFn,
+} from './utils';
 
 type GestureHandlerTestEvent = (
   | GestureEvent
@@ -139,7 +142,7 @@ function wrapWithNativeEvent(event: GestureHandlerTestEvent) {
 
 function fillOldStateChanges(
   previousEvent: GestureHandlerTestEvent | null,
-  currentEvent: Omit<GestureHandlerTestEvent, 'state' | 'oldState'>
+  currentEvent: Omit<GestureHandlerTestEvent, 'oldState'>
 ): GestureHandlerTestEvent {
   const isFirstEvent = previousEvent === null;
   if (isFirstEvent) {
@@ -280,6 +283,21 @@ function getHandlerData(
     handlerTag: gestureHandlerComponent.props.handlerTag as number,
   };
 }
+declare global {
+  interface Array<T> {
+    withPrevAndCurrent: <Transformed>(
+      mapFn: withPrevAndCurrentMapFn<T, Transformed>
+    ) => Transformed[];
+  }
+}
+
+function extendArrayProto(propertyName: string, f: unknown) {
+  // eslint-disable-next-line no-extend-native
+  Object.defineProperty(Array.prototype, propertyName, {
+    configurable: true,
+    value: f,
+  });
+}
 
 export function fireGestureHandlerEvent(
   componentOrGesture: ReactTestInstance | GestureType,
@@ -289,11 +307,23 @@ export function fireGestureHandlerEvent(
     componentOrGesture
   );
 
+  extendArrayProto('withPrevAndCurrent', function (mapFn: any) {
+    /* eslint-disable babel/no-invalid-this */
+    // @ts-ignore afesfa
+    return withPrevAndCurrent(this, mapFn);
+    /* eslint-enable */
+  });
+
   const events = eventList
     .map(fillMissingDefaultsFor({ handlerTag, handlerType }))
-    .map(withPrevAndCurrent(fillMissingStateField))
-    .map(withPrevAndCurrent(fillOldStateChanges))
+    .withPrevAndCurrent(fillMissingActiveStateFields)
+    .withPrevAndCurrent(fillOldStateChanges)
+    .withPrevAndCurrent(validateStateTransitions)
+    // @ts-ignore TODO
     .map(wrapWithNativeEvent);
+
+  // @ts-ignore defined few lines above
+  delete Array.prototype.withPrevAndCurrent;
 
   const firstEvent = events.shift();
   invariant(
