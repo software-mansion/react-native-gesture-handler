@@ -160,10 +160,75 @@ function fillOldStateChanges(
   }
 }
 
-function fillMissingStateField(
-  previousEvent: GestureHandlerTestEvent | null,
+function fillMissingActiveStateFields(
+  previousEvent: Omit<GestureHandlerTestEvent, 'oldState'> | null,
   currentEvent: Omit<GestureHandlerTestEvent, 'state' | 'oldState'>
-) {}
+) {
+  const isFirstEvent = previousEvent === null;
+  if (isFirstEvent) {
+    return currentEvent;
+  }
+  if (previousEvent.state === State.ACTIVE && !currentEvent['state']) {
+    return {
+      state: State.ACTIVE,
+      ...currentEvent,
+    };
+  }
+  return currentEvent;
+}
+
+type EventWithStates = Partial<
+  Pick<GestureHandlerTestEvent, 'oldState' | 'state'>
+>;
+function validateStateTransitions(
+  previousEvent: EventWithStates | null,
+  currentEvent: EventWithStates
+) {
+  function stringify(event: Record<string, unknown> | null) {
+    return JSON.stringify(event, null, 2);
+  }
+  function errorMsgWithBothEvents(description: string) {
+    return `${description}, invalid event: ${stringify(
+      currentEvent
+    )}, previous event: ${stringify(previousEvent)}`;
+  }
+
+  function errorMsgWithCurrentEvent(description: string) {
+    return `${description}, invalid event: ${stringify(currentEvent)}`;
+  }
+
+  invariant(
+    hasProperty(currentEvent, 'state'),
+    errorMsgWithCurrentEvent('every event must have state')
+  );
+
+  const isFirstEvent = previousEvent === null;
+  if (isFirstEvent) {
+    invariant(
+      currentEvent.state === State.BEGAN,
+      errorMsgWithCurrentEvent('first event must have BEGAN state')
+    );
+  }
+
+  if (previousEvent !== null) {
+    if (previousEvent.state !== currentEvent.state) {
+      invariant(
+        hasProperty(currentEvent, 'oldState'),
+        errorMsgWithCurrentEvent(
+          'when state changes, oldState field should be present'
+        )
+      );
+      invariant(
+        currentEvent.oldState === previousEvent.state,
+        errorMsgWithBothEvents(
+          "when state changes, oldState should be the same as previous event' state"
+        )
+      );
+    }
+  }
+
+  return currentEvent;
+}
 
 interface HandlerInfo {
   handlerType: HandlerNames;
