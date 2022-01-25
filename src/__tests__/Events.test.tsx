@@ -22,6 +22,7 @@ beforeEach(cleanup);
 const mockedEventHandlers = () => {
   return {
     begin: jest.fn(),
+    start: jest.fn(),
     active: jest.fn(),
     end: jest.fn(),
     fail: jest.fn(),
@@ -264,7 +265,25 @@ describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
 });
 
 describe('Using RNGH v2 gesture API', () => {
-  const RacingHandlers = ({ tapHandlers, panHandlers }: any /*TODO*/) => {
+  function SingleHandler({ handlers }: any) {
+    const pan = Gesture.Pan()
+      .onBegin(handlers.begin)
+      .onStart(handlers.start)
+      .onUpdate(handlers.active)
+      .onEnd(handlers.end)
+      .onFinalize(handlers.finish)
+      .withTestId('pan');
+
+    return (
+      <GestureHandlerRootView>
+        <GestureDetector gesture={pan}>
+          <Text>v2 API test</Text>
+        </GestureDetector>
+      </GestureHandlerRootView>
+    );
+  }
+
+  function RacingHandlers({ tapHandlers, panHandlers }: any /*TODO*/) {
     const tap = Gesture.Tap()
       .onBegin(tapHandlers.begin)
       .onEnd(tapHandlers.end)
@@ -284,7 +303,7 @@ describe('Using RNGH v2 gesture API', () => {
         </GestureDetector>
       </GestureHandlerRootView>
     );
-  };
+  }
 
   it('sends events to handlers', () => {
     const tapHandlers = mockedEventHandlers();
