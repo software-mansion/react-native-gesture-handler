@@ -299,7 +299,7 @@ function extendArrayProto(propertyName: string, f: unknown) {
   });
 }
 
-export function fireGestureHandlerEvent(
+export function fireGestureHandler(
   componentOrGesture: ReactTestInstance | GestureType,
   eventList: Partial<GestureHandlerTestEvent>[]
 ): void {

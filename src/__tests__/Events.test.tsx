@@ -14,7 +14,7 @@ import {
   State,
 } from '../index';
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
-import { fireGestureHandlerEvent, getByHandlerId } from '../jestUtils';
+import { fireGestureHandler, getByHandlerId } from '../jestUtils';
 import { cleanup } from '@testing-library/react-native';
 
 beforeEach(cleanup);
@@ -81,7 +81,7 @@ describe('Using RNGH v1 base API', () => {
   it('receives events', () => {
     const handlers = mockedEventHandlers();
     const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
-    fireGestureHandlerEvent(getByTestId('pan'), [
+    fireGestureHandler(getByTestId('pan'), [
       { oldState: State.UNDETERMINED, state: State.BEGAN },
       { oldState: State.BEGAN, state: State.ACTIVE },
       { oldState: State.ACTIVE, state: State.ACTIVE },
@@ -97,7 +97,7 @@ describe('Using RNGH v1 base API', () => {
   it('receives events correct number of times', () => {
     const handlers = mockedEventHandlers();
     const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
-    fireGestureHandlerEvent(getByTestId('pan'), [
+    fireGestureHandler(getByTestId('pan'), [
       { oldState: State.UNDETERMINED, state: State.BEGAN },
       { oldState: State.BEGAN, state: State.ACTIVE },
       { oldState: State.ACTIVE, state: State.ACTIVE }, // gesture event
@@ -119,7 +119,7 @@ describe('Using RNGH v1 base API', () => {
       numberOfPointers: 3,
       handlerTag: component.props.handlerTag as number,
     };
-    fireGestureHandlerEvent(component, [
+    fireGestureHandler(component, [
       {
         ...COMMON_EVENT_DATA,
         oldState: State.UNDETERMINED,
@@ -183,7 +183,7 @@ describe('Using RNGH v1 base API', () => {
         <NestedHandlers eventHandlers={handlers} />
       );
 
-      fireGestureHandlerEvent(getByTestId(handlerName), [
+      fireGestureHandler(getByTestId(handlerName), [
         {
           ...additionalEventData,
           oldState: State.UNDETERMINED,
@@ -208,7 +208,7 @@ describe('Using RNGH v1 base API', () => {
   it('fills oldState if not passed', () => {
     const handlers = mockedEventHandlers();
     const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
-    fireGestureHandlerEvent(getByTestId('pan'), [
+    fireGestureHandler(getByTestId('pan'), [
       { state: State.BEGAN },
       { state: State.ACTIVE },
       { state: State.ACTIVE },
@@ -251,7 +251,7 @@ describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
       <UseAnimatedGestureHandler eventHandlers={handlers} />
     );
 
-    fireGestureHandlerEvent(getByTestId('longPress'), [
+    fireGestureHandler(getByTestId('longPress'), [
       { state: State.BEGAN },
       { state: State.ACTIVE },
       { state: State.END },
@@ -312,7 +312,7 @@ describe('Using RNGH v2 gesture API', () => {
       <RacingHandlers tapHandlers={tapHandlers} panHandlers={panHandlers} />
     );
 
-    fireGestureHandlerEvent(getByHandlerId('pan'), [
+    fireGestureHandler(getByHandlerId('pan'), [
       { state: State.BEGAN },
       { state: State.ACTIVE },
       { state: State.END },
@@ -327,7 +327,7 @@ describe('Using RNGH v2 gesture API', () => {
   it('sends events with additional data to handlers', () => {
     const panHandlers = mockedEventHandlers();
     render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
-    fireGestureHandlerEvent(getByHandlerId('pan'), [
+    fireGestureHandler(getByHandlerId('pan'), [
       { state: State.BEGAN, translationX: 0 },
       { state: State.ACTIVE, translationX: 10 },
       { translationX: 20 },
@@ -344,7 +344,7 @@ describe('Using RNGH v2 gesture API', () => {
   it("uses last state if next event doesn't specify it and state transition is valid", () => {
     const panHandlers = mockedEventHandlers();
     render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
-    fireGestureHandlerEvent(getByHandlerId('pan'), [
+    fireGestureHandler(getByHandlerId('pan'), [
       { state: State.BEGAN, x: 0, y: 10 },
       { state: State.ACTIVE, x: 1, y: 11 },
       { x: 2, y: 12 },
@@ -362,7 +362,7 @@ describe('Using RNGH v2 gesture API', () => {
     const panHandlers = mockedEventHandlers();
     render(<SingleHandler handlers={panHandlers} />);
     expect(() => {
-      fireGestureHandlerEvent(getByHandlerId('pan'), [
+      fireGestureHandler(getByHandlerId('pan'), [
         { oldState: State.UNDETERMINED, state: State.BEGAN, x: 0, y: 10 },
         { oldState: State.UNDETERMINED, state: State.ACTIVE, x: 1, y: 11 },
       ]);
@@ -376,7 +376,7 @@ describe('Using RNGH v2 gesture API', () => {
     render(<SingleHandler handlers={panHandlers} />);
 
     expect(() => {
-      fireGestureHandlerEvent(getByHandlerId('pan'), [
+      fireGestureHandler(getByHandlerId('pan'), [
         { state: State.ACTIVE, x: 0, y: 10 },
         { state: State.ACTIVE, x: 1, y: 11 },
       ]);
