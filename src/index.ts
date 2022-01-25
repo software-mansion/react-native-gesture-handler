@@ -1,9 +1,8 @@
 import { initialize } from './init';
 
-export { findJestHandler } from './handlers/handlersRegistry';
-
 export { Directions } from './Directions';
 export { State } from './State';
+export { getByHandlerId, fireGestureHandlerEvent } from './jestUtils';
 export { default as gestureHandlerRootHOC } from './gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './GestureHandlerRootView';
 export type {
