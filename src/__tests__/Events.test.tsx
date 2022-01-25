@@ -349,7 +349,9 @@ describe('Using RNGH v2 gesture API', () => {
         { oldState: State.UNDETERMINED, state: State.BEGAN, x: 0, y: 10 },
         { oldState: State.UNDETERMINED, state: State.ACTIVE, x: 1, y: 11 },
       ]);
-    }).toThrow();
+    }).toThrow(
+      "when state changes, oldState should be the same as previous event' state"
+    );
   });
 
   it("throws error when first state isn't the BEGIN event", () => {
@@ -361,6 +363,6 @@ describe('Using RNGH v2 gesture API', () => {
         { state: State.ACTIVE, x: 0, y: 10 },
         { state: State.ACTIVE, x: 1, y: 11 },
       ]);
-    }).toThrow();
+    }).toThrow('first event must have BEGAN state');
   });
 });
