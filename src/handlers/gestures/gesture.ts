@@ -15,7 +15,6 @@ import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
 import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
-import { isJest } from '../../jestUtils';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
