@@ -265,10 +265,10 @@ describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
 });
 
 describe('Using RNGH v2 gesture API', () => {
-  function SingleHandler({ handlers }: any) {
+  function SingleHandler({ handlers, treatStartAsUpdate }: any) {
     const pan = Gesture.Pan()
       .onBegin(handlers.begin)
-      .onStart(handlers.start)
+      .onStart(treatStartAsUpdate ? handlers.active : handlers.start)
       .onUpdate(handlers.active)
       .onEnd(handlers.end)
       .onFinalize(handlers.finish)
@@ -322,5 +322,45 @@ describe('Using RNGH v2 gesture API', () => {
     );
     expect(panHandlers.finish).toBeCalled();
     expect(tapHandlers.begin).not.toBeCalled();
+  });
+
+  it("uses last state if next event doesn't specify it and state transition is valid", () => {
+    const panHandlers = mockedEventHandlers();
+    render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
+    fireGestureHandlerEvent(getByHandlerId('pan'), [
+      { state: State.BEGAN, x: 0, y: 10 },
+      { state: State.ACTIVE, x: 1, y: 11 },
+      { x: 2, y: 12 },
+      { x: 3, y: 13 },
+      { state: State.END, x: 4, y: 14 },
+    ]);
+
+    expect(panHandlers.active).toBeCalledTimes(3);
+    expect(panHandlers.active).toHaveBeenLastCalledWith(
+      expect.objectContaining({ x: 3, y: 13 })
+    );
+  });
+
+  it("throws error when oldState doesn't correspond to previous event's state", () => {
+    const panHandlers = mockedEventHandlers();
+    render(<SingleHandler handlers={panHandlers} />);
+    expect(() => {
+      fireGestureHandlerEvent(getByHandlerId('pan'), [
+        { oldState: State.UNDETERMINED, state: State.BEGAN, x: 0, y: 10 },
+        { oldState: State.UNDETERMINED, state: State.ACTIVE, x: 1, y: 11 },
+      ]);
+    }).toThrow();
+  });
+
+  it("throws error when first state isn't the BEGIN event", () => {
+    const panHandlers = mockedEventHandlers();
+    render(<SingleHandler handlers={panHandlers} />);
+
+    expect(() => {
+      fireGestureHandlerEvent(getByHandlerId('pan'), [
+        { state: State.ACTIVE, x: 0, y: 10 },
+        { state: State.ACTIVE, x: 1, y: 11 },
+      ]);
+    }).toThrow();
   });
 });
