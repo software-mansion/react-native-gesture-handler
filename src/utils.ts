@@ -6,12 +6,6 @@ export function toArray<T>(object: T | T[]): T[] {
   return object;
 }
 
-/**
- * Used with reduce on lists, without initialValue specified
- * @param mapFn function returning next element based on previous and current one
- * @returns list of transformed elements
- */
-
 export type withPrevAndCurrentMapFn<T, Transformed> = (
   previous: Transformed | null,
   current: T
