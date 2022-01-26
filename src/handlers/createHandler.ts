@@ -237,11 +237,7 @@ export default function createHandler<
     }
 
     private onGestureHandlerEvent = (event: GestureEvent<U>) => {
-      const sendDirectlyToHandlerInTest = isJest();
-      if (
-        sendDirectlyToHandlerInTest ||
-        event.nativeEvent.handlerTag === this.handlerTag
-      ) {
+      if (event.nativeEvent.handlerTag === this.handlerTag) {
         this.props.onGestureEvent?.(event);
       } else {
         this.props.onGestureHandlerEvent?.(event);
@@ -252,11 +248,7 @@ export default function createHandler<
     private onGestureHandlerStateChange = (
       event: HandlerStateChangeEvent<U>
     ) => {
-      const sendDirectlyToHandlerInTest = isJest();
-      if (
-        sendDirectlyToHandlerInTest ||
-        event.nativeEvent.handlerTag === this.handlerTag
-      ) {
+      if (event.nativeEvent.handlerTag === this.handlerTag) {
         this.props.onHandlerStateChange?.(event);
 
         const state: ValueOf<typeof State> = event.nativeEvent.state;
