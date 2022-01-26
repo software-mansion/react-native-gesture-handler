@@ -346,7 +346,13 @@ export function fireGestureHandler(
   }
 }
 
-export const getByHandlerId = findHandlerByTestID;
+export function getByHandlerId(testID: string) {
+  const handler = findHandlerByTestID(testID);
+  if (handler === null) {
+    throw new Error(`Handler with id: '${testID}' cannot be found`);
+  }
+  return handler;
+}
 
 export function isJest(): boolean {
   return !!process.env.JEST_WORKER_ID;
