@@ -2,7 +2,7 @@
 // Disabling lint for assymetric matchers, check proposal below
 // https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/56937
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, cleanup } from '@testing-library/react-native';
 import { Text, View } from 'react-native';
 import {
   GestureHandlerRootView,
@@ -15,7 +15,6 @@ import {
 } from '../index';
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
 import { fireGestureHandler, getByHandlerId } from '../jestUtils';
-import { cleanup } from '@testing-library/react-native';
 
 beforeEach(cleanup);
 
