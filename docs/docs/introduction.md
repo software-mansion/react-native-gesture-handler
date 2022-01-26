@@ -20,151 +20,96 @@ In a nutshell, the library provides:
 It is recommended to use Reanimated 2 for animations when using React Native Gesture Handler as its more advanced features rely heavily on the worklets provided by Reanimated.
 :::
 
-## Installation
+## RNGH 2.0
 
-### Requirements
+RNGH2 introduces a new way of creating gestures. Instead of creating a gesture handler component for every gesture you want to create, you just need to create a `GestureDetector` component and assign to it all the gestures you want it to recognize. It is also designed to work seamlessly with `Reanimated 2` and it will automatically detect if it is installed, and start using it if it is.
+You can create gestures using the `Gesture` object and methods it provides, and configure them in the builder-like pattern. If you want to specify behavior between the gestures instead of using `waitFor` and `simultaneousGestures` you can use the new system of [gesture composition](./gesture-composition).
+Along the new API, version 2.0 brings one of the most requested features: [pointer events and manual gestures](./manual-gestures/manual-gestures). Thanks to great work done by the Reanimated team, we were able to provide synchronous communication between gestures and their native implementation using worklets. This allows to manage gesture state from the JS without risking race-conditions.
 
-| version   | `react-native` version |
-| --------- | ---------------------- |
-| 1.4.0+    | 0.60.0+                |
-| 1.1.0+    | 0.57.2+                |
-| &lt;1.1.0 | 0.50.0+                |
+### Interoperability with gesture handlers
 
-It may be possible to use newer versions of react-native-gesture-handler on React Native with version <= 0.59 by reverse Jetifying.
-Read more on that here https://github.com/mikehardy/jetifier#to-reverse-jetify--convert-node_modules-dependencies-to-support-libraries
+The new API with gestures is somewhat compatible with the old gesture handlers. Unfortunately you cannot use the new gesture composing with gesture handlers, however you can still mark relations using refs. If you want to make a gesture handler wait for (or simultaneous with) a gesture, simply use withRef method on the gesture to set the ref object and pass it to the appropriate property on the gesture handler.
 
-Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](./gesture-handlers/basics/interactions.md) you need to use v16.3 of [React](https://reactjs.org/)
+Similarly, if you want to make a gesture simultaneous with (or wait for failure of) a gesture handler, set the ref prop of the gesture handler and pass the same ref to the simultaneousWithExternalGesture or requireExternalGestureToFail method on the gesture object.
 
-In order to fully utilize the [touch events](./api/gestures/touch-events.md) you also need to use `react-native-reanimated` 2.3.0-beta.4 or newer.
+This should allow you to migrate your codebase from the gesture handlers to gestures smoothly and at your own pace. Just keep in mind that the gesture handlers cannot have the GestureDetector as their direct child, as it's a functional component.
 
-### Expo
+## Learning resources
 
-#### Managed [Expo](https://expo.io)
+### Apps
 
-To use the version of react-native-gesture-handler that is compatible with your managed Expo project, run `expo install react-native-gesture-handler`.
+[Gesture Handler Example App](https://github.com/software-mansion/react-native-gesture-handler/blob/main/Example) – official gesture handler "showcase" app.
 
-The Expo SDK incorporates the latest version of react-native-gesture-handler available at the time of each SDK release, so managed Expo apps might not always support all our latest features as soon as they are available.
+[Gesture Handler Example on Expo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo) – the official app you can install and play with using [Expo](https://expo.io).
 
-#### Bare [React Native](http://facebook.github.io/react-native/)
+### Talks and workshops
 
-Since the library uses native support for handling gestures, it requires an extended installation to the norm. If you are starting a new project, you may want to initialize it with [expo-cli](https://docs.expo.io/versions/latest/workflow/expo-cli/) and use a bare template, they come pre-installed with react-native-gesture-handler.
+[Declarative future of gestures and animations in React Native](https://www.youtube.com/watch?v=kdq4z2708VM) by [Krzysztof Magiera](https://twitter.com/kzzzf) - talk that explains motivation behind creating gesture handler library. It also presents [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) and how and when it can be used with gesture handler.
 
-### JS
+[React Native workshop with Expo team @ReactEurope 2018](https://youtu.be/JSIoE_ReeDk?t=41m49s) by [Brent Vetne](https://twitter.com/notbrent) – great workshop explaining gesture handler in details and presenting a few exercises that will help get you started.
 
-First, install the library using `yarn`:
+[Living in an async world of React Native](https://www.youtube.com/watch?v=-Izgons3mec) by [Krzysztof Magiera](https://twitter.com/kzzzf) – talk which highlights some issue with the React Native's touch system Gesture Handler aims to address. Also the motivation for building this library is explained.
 
-```bash
-yarn add react-native-gesture-handler
-```
+[React Native Touch & Gesture](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) - talk explaining JS responder system limitations and points out some of the core features of Gesture Handler.
 
-or with `npm` if you prefer:
+## Contributing
 
-```bash
-npm install --save react-native-gesture-handler
-```
+If you are interested in the project and want to contribute or support it in other ways don't hesitate to contact [me on Twitter](https://twitter.com/kzzzf)!
 
-After installation, wrap your entry point with `<GestureHandlerRootView>` or
-`gestureHandlerRootHOC`.
+All PRs are welcome, but talk to us before you start working on something big.
 
-For example:
+The easiest way to get started with contributing code is by:
 
-```js
-export default function App() {
-  return <GestureHandlerRootView>{/* content */}</GestureHandlerRootView>;
-}
-```
+- Reviewing the list of [open issues](https://github.com/software-mansion/react-native-gesture-handler/issues) and trying to solve the one that seem approachable to you.
+- Updating the [documentation](https://github.com/software-mansion/react-native-gesture-handler/blob/main/docs) whenever you see some information is unclear, missing or out of date.
 
-:::info
-If you use props such as `shouldCancelWhenOutside`, `simultaneousHandlers`, `waitFor` etc. with gesture handlers, the handlers need to be mounted under a single `GestureHandlerRootView`. So it's important to keep the `GestureHandlerRootView` as close to the actual root view as possible.
+Code is only one way how you can contribute. You may want to consider [replying on issues](https://github.com/software-mansion/react-native-gesture-handler/issues) if you know how to help.
 
-Note that `GestureHandlerRootView` acts like a normal `View`. So if you want it to fill the screen, you will need to pass `{ flex: 1 }` like you'll need to do with a normal `View`. By default, it'll take the size of the content nested inside.
-:::
+## Community
 
-:::tip
-If you're using gesture handler in your component library, you may want to wrap your library's code in the GestureHandlerRootView component. This will avoid extra configuration for the user.
-:::
+We are very proud of the community that has been build around this package. We really appreciate all your help regardless of it is a pull request, issue report, helping others by commenting on existing issues or posting some demo or video tutorial on social media.
+If you've build something with this library you'd like to share, please contact us as we'd love to help share it with others.
 
-#### Linking
+### Gesture Handler Team 🚀
 
-> **Important**: You only need to do this step if you're using React Native 0.59 or lower. Since v0.60, linking happens automatically.
+<div class="community-holder-container">
 
-```bash
-react-native link react-native-gesture-handler
-```
+  <div class="community-holder-container-item">
+    <img class="community-imageHolder" src="https://ca.slack-edge.com/T03Q9AMJJ-U02700KC6J1-0c9e18c89e71-512" />
+    <div>Jakub Piasecki</div>
+  </div>
 
-### Android
+  <div class="community-holder-container-item">
+    <img class="community-imageHolder" src="https://ca.slack-edge.com/T03Q9AMJJ-UK2KQ52CA-1ee569e1258f-512" />
+    <div>Jakub Gonet</div>
+  </div>
 
-#### Usage with modals on Android
+  <div class="community-holder-container-item">
+    <img class="community-imageHolder" src="https://ca.slack-edge.com/T03Q9AMJJ-U0F40CATS-d0a2e7559a1b-512" />
+    <div>Krzysztof Magiera</div>
+    <a href="https://twitter.com/kzzzf">@kzzzf</a>
+  </div>
 
-On Android RNGH does not work by default because modals are not located under React Native Root view in native hierarchy.
-To fix that, components need to be wrapped with `gestureHandlerRootHOC` (it's no-op on iOS and web).
+</div>
 
-For example:
+### Sponsors
 
-```js
-const ExampleWithHoc = gestureHandlerRootHOC(() => (
-    <View>
-      <DraggableBox />
-    </View>
-  );
-);
+We really appreciate our sponsors! Thanks to them we can develop our library and make the react-native world a better place. Special thanks for:
 
-export default function Example() {
-  return (
-    <Modal>
-      <ExampleWithHoc />
-    </Modal>
-  );
-}
-```
+<div class="community-holder-container">
 
-#### Kotlin
+  <div class="community-holder-container-item">
+    <a href="https://www.shopify.com/">
+      <img class="community-imageHolder" src="https://avatars1.githubusercontent.com/u/8085?v=3&s=100" />
+      <div>Shopify</div>
+    </a>
+  </div>
 
-Since version `2.0.0` RNGH has been rewritten with Kotlin. The default version of the Kotlin plugin used in this library is `1.5.20`.
+  <div class="community-holder-container-item">
+    <a href="https://expo.dev">
+    <img class="community-imageHolder" src="https://avatars2.githubusercontent.com/u/12504344?v=3&s=100" />
+    <div>Expo</div>
+    </a>
+  </div>
 
-If you need to use a different Kotlin version, set the `kotlinVersion` ext property in `android/build.gradle` file and RNGH will use that version:
-
-```
-buildscript {
-    ext {
-        ...
-        kotlinVersion = "1.5.20"
-    }
-}
-```
-
-The minimal version of the Kotlin plugin supported by RNGH is `1.4.10`.
-
-### iOS
-
-There is no additional configuration required on iOS except what follows in the next steps.
-
-If you're in a CocoaPods project (the default setup since React Native 0.60),
-make sure to install pods before you run your app:
-
-```bash
-cd ios && pod install
-```
-
-For React Native 0.61 or greater, add the library as the first import in your index.js file:
-
-```js
-import 'react-native-gesture-handler';
-```
-
-### Testing
-
-In order to load mocks provided by the library add following to your jest config in `package.json`:
-
-```json
-"setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
-```
-
-Example:
-
-```json
-"jest": {
-  "preset": "react-native",
-  "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
-}
-```
+</div>

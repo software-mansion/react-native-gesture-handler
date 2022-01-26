@@ -26,7 +26,7 @@ In this case we would use a [`PinchGestureHandler`](../api/pinch-gh.md), [`Rotat
 
 ### Example
 
-See the ["Scale, rotate & tilt" example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/recipes/scaleAndRotate/index.tsx) from the [GestureHandler Example App](../../example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the ["Scale, rotate & tilt" example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/recipes/scaleAndRotate/index.tsx) from the GestureHandler Example App or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 class PinchableBox extends React.Component {
@@ -74,7 +74,7 @@ Otherwise if we try to perform a double tap the single tap handler will fire jus
 
 ### Example
 
-See the ["Multitap" example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/basic/multitap/index.tsx) from [GestureHandler Example App](../../example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the ["Multitap" example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/basic/multitap/index.tsx) from GestureHandler Example App or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 const doubleTap = React.createRef();
