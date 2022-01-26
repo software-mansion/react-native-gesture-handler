@@ -5,7 +5,7 @@
   "scripts": {
     "prepare": "bob build",
     "test": "jest",
-    "build": "yarn tsc",
+    "build": "yarn tsc -p tsconfig.build.json",
     "precommit": "lint-staged",
     "release": "npm login && release-it",
     "ts-check": "yarn tsc --noEmit",
@@ -119,7 +119,12 @@
     "targets": [
       "commonjs",
       "module",
-      "typescript"
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
     ]
   },
   "eslintIgnore": [

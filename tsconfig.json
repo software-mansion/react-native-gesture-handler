@@ -22,5 +22,4 @@
     "noUnusedLocals": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"],
-  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
 }
