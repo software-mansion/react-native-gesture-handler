@@ -35,6 +35,7 @@ export type {
   PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
 } from './handlers/PanGestureHandler';
+export type { PanGestureChangeEventPayload } from './handlers/gestures/panGesture';
 export type {
   PinchGestureHandlerEventPayload,
   PinchGestureHandlerProps,
