@@ -29,6 +29,7 @@
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "import/named": "off",
     "react/sort-comp": "off",
+    "react/no-unused-prop-types": "warn",
     "prefer-const": [
       "error",
       {
