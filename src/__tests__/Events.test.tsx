@@ -264,7 +264,12 @@ describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
 });
 
 describe('Using RNGH v2 gesture API', () => {
-  function SingleHandler({ handlers, treatStartAsUpdate }: any) {
+  interface SingleHandlerProps {
+    handlers: ReturnType<typeof mockedEventHandlers>;
+    treatStartAsUpdate?: boolean;
+  }
+
+  function SingleHandler({ handlers, treatStartAsUpdate }: SingleHandlerProps) {
     const pan = Gesture.Pan()
       .onBegin(handlers.begin)
       .onStart(treatStartAsUpdate ? handlers.active : handlers.start)
@@ -282,7 +287,12 @@ describe('Using RNGH v2 gesture API', () => {
     );
   }
 
-  function RacingHandlers({ tapHandlers, panHandlers }: any /*TODO*/) {
+  interface RacingHandlersProps {
+    tapHandlers: ReturnType<typeof mockedEventHandlers>;
+    panHandlers: ReturnType<typeof mockedEventHandlers>;
+  }
+
+  function RacingHandlers({ tapHandlers, panHandlers }: RacingHandlersProps) {
     const tap = Gesture.Tap()
       .onBegin(tapHandlers.begin)
       .onEnd(tapHandlers.end)
