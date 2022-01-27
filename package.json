@@ -51,8 +51,6 @@
   "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
   "dependencies": {
     "@egjs/hammerjs": "^2.0.17",
-    "eslint-import-resolver-babel-module": "^5.2.0",
-    "eslint-plugin-jest": "^26.0.0",
     "hoist-non-react-statics": "^3.3.0",
     "invariant": "^2.2.4",
     "lodash": "^4.17.21",
@@ -81,7 +79,9 @@
     "babel-jest": "^26.6.3",
     "eslint": "^7.15.0",
     "eslint-config-satya164": "^3.1.8",
+    "eslint-import-resolver-babel-module": "^5.2.0",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^26.0.0",
     "expo": "^35.0.1",
     "husky": "^0.14.3",
     "jest": "^24.7.1",
