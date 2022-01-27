@@ -391,4 +391,23 @@ describe('Using RNGH v2 gesture API', () => {
       ]);
     }).toThrow('first event must have BEGAN state');
   });
+
+  it.each([[State.END], [State.FAILED], [State.CANCELLED]])(
+    'correctly handles events ending with state %s',
+    (lastState) => {
+      const panHandlers = mockedEventHandlers();
+      render(<SingleHandler handlers={panHandlers} />);
+      fireGestureHandler(getByHandlerId('pan'), [
+        { state: State.BEGAN },
+        { state: State.ACTIVE },
+        { state: lastState },
+      ]);
+
+      if (lastState === State.END) {
+        expect(panHandlers.end).toBeCalled();
+      } else {
+        expect(panHandlers.finish).toBeCalledWith(expect.any(Object), false);
+      }
+    }
+  );
 });
