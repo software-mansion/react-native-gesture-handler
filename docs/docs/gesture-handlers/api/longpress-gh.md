@@ -4,6 +4,11 @@ title: LongPressGestureHandler
 sidebar_label: Long press
 ---
 
+:::info
+We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
+section in Introduction](../../introduction.md#rngh-20) for more information.
+:::
+
 A discrete gesture handler that activates when the corresponding view is pressed for a sufficiently long time.
 This handler's state will turn into [END](../basics/state.md#end) immediately after the finger is released.
 The handler will fail to recognize a touch event if the finger is lifted before the [minimum required time](#mindurationms) or if the finger is moved further than the [allowable distance](#maxdist).

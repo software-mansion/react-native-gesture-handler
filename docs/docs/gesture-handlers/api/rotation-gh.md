@@ -4,6 +4,11 @@ title: RotationGestureHandler
 sidebar_label: Rotation
 ---
 
+:::info
+We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
+section in Introduction](../../introduction.md#rngh-20) for more information.
+:::
+
 A continuous gesture handler that can recognize a rotation gesture and track its movement.
 
 The handler [activates](../basics/state.md#active) when fingers are placed on the screen and change position in a proper way.

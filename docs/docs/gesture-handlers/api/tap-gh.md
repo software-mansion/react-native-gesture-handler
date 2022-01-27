@@ -4,6 +4,11 @@ title: TapGestureHandler
 sidebar_label: Tap
 ---
 
+:::info
+We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
+section in Introduction](../../introduction.md#rngh-20) for more information.
+:::
+
 A discrete gesture handler that recognizes one or many taps.
 
 Tap gestures detect one or more fingers briefly touching the screen.
