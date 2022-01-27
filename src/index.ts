@@ -27,6 +27,7 @@ export type {
   ForceTouchGestureHandlerEventPayload,
   ForceTouchGestureHandlerProps,
 } from './handlers/ForceTouchGestureHandler';
+export type { ForceTouchGestureChangeEventPayload } from './handlers/gestures/forceTouchGesture';
 export type {
   LongPressGestureHandlerEventPayload,
   LongPressGestureHandlerProps,
@@ -40,6 +41,7 @@ export type {
   PinchGestureHandlerEventPayload,
   PinchGestureHandlerProps,
 } from './handlers/PinchGestureHandler';
+export type { PinchGestureChangeEventPayload } from './handlers/gestures/pinchGesture';
 export type {
   RotationGestureHandlerEventPayload,
   RotationGestureHandlerProps,
