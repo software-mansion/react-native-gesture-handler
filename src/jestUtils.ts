@@ -356,7 +356,3 @@ export function getByHandlerId(testID: string) {
   }
   return handler;
 }
-
-export function isJest(): boolean {
-  return !!process.env.JEST_WORKER_ID;
-}

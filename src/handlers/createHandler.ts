@@ -21,7 +21,7 @@ import {
   findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
-import { isJest } from '../jestUtils';
+import { isJestEnv } from '../utils';
 
 const UIManagerAny = UIManager as any;
 
@@ -173,7 +173,7 @@ export default function createHandler<
         }
         handlerIDToTag[props.id] = this.handlerTag;
       }
-      if (__DEV__ && !isJest()) {
+      if (__DEV__ && !isJestEnv()) {
         showRngh2NoticeIfNeeded();
       }
     }
@@ -434,7 +434,7 @@ export default function createHandler<
         {
           ref: this.refHandler,
           collapsable: false,
-          ...(isJest()
+          ...(isJestEnv()
             ? {
                 handlerType: name,
                 handlerTag: this.handlerTag,

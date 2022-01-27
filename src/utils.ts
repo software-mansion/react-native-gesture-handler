@@ -29,3 +29,7 @@ export function withPrevAndCurrent<T, Transformed>(
 export function hasProperty(object: Record<string, unknown>, key: string) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
+
+export function isJestEnv(): boolean {
+  return !!process.env.JEST_WORKER_ID;
+}

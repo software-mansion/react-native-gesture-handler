@@ -1,4 +1,4 @@
-import { isJest } from '../jestUtils';
+import { isJestEnv } from '../utils';
 import { GestureType } from './gestures/gesture';
 
 export const handlerIDToTag: Record<string, number> = {};
@@ -17,14 +17,14 @@ export function registerHandler(
   testID?: string
 ) {
   handlers.set(handlerTag, handler);
-  if (isJest() && testID) {
+  if (isJestEnv() && testID) {
     testIDs.set(testID, handlerTag);
   }
 }
 
 export function unregisterHandler(handlerTag: number, testID?: string) {
   handlers.delete(handlerTag);
-  if (isJest() && testID) {
+  if (isJestEnv() && testID) {
     testIDs.delete(testID);
   }
 }
