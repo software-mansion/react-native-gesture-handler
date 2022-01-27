@@ -171,7 +171,10 @@ function fillMissingActiveStateFields(
   if (isFirstEvent) {
     return currentEvent;
   }
-  if (previousEvent.state === State.ACTIVE && !currentEvent['state']) {
+  if (
+    previousEvent.state === State.ACTIVE &&
+    !hasProperty(currentEvent, 'state')
+  ) {
     return {
       state: State.ACTIVE,
       ...currentEvent,
