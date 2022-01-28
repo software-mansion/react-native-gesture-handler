@@ -4,6 +4,11 @@ title: FlingGestureHandler
 sidebar_label: Fling
 ---
 
+:::info
+We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
+section in Introduction](../../introduction.md#rngh-20) for more information.
+:::
+
 A discrete gesture handler that activates when the movement is sufficiently long and fast.
 Handler gets [ACTIVE](../basics/state#active) when movement is sufficiently long and it does not take too much time.
 When handler gets activated it will turn into [END](../basics/state#end) state when finger is released.
@@ -54,7 +59,7 @@ Y coordinate of the current position of the pointer (finger or a leading pointer
 
 ## Example
 
-See the [fling example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/fling/index.tsx) from [GestureHandler Example App](../../example.md).
+See the [fling example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/fling/index.tsx) from GestureHandler Example App.
 
 ```js
 const LongPressButton = () => (
