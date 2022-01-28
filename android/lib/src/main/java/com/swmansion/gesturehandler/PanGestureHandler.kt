@@ -219,8 +219,13 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     } else if (velocityTracker != null) {
       addVelocityMovement(velocityTracker, event)
       velocityTracker!!.computeCurrentVelocity(1000)
-      velocityX = velocityTracker!!.xVelocity
-      velocityY = velocityTracker!!.yVelocity
+
+      if (velocityTracker!!.xVelocity.isFinite()) {
+        velocityX = velocityTracker!!.xVelocity
+      }
+      if (velocityTracker!!.yVelocity.isFinite()) {
+        velocityY = velocityTracker!!.yVelocity
+      }
     }
     if (action == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
