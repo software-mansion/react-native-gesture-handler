@@ -379,7 +379,7 @@ export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
   }
 }
 
-export function getByHandlerId(testID: string) {
+export function getByGestureId(testID: string) {
   const handler = findHandlerByTestID(testID);
   if (handler === null) {
     throw new Error(`Handler with id: '${testID}' cannot be found`);

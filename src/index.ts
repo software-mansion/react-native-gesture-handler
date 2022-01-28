@@ -2,7 +2,7 @@ import { initialize } from './init';
 
 export { Directions } from './Directions';
 export { State } from './State';
-export { getByHandlerId, fireGestureHandler } from './jestUtils';
+export { getByGestureId, fireGestureHandler } from './jestUtils';
 export { default as gestureHandlerRootHOC } from './gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './GestureHandlerRootView';
 export type {
