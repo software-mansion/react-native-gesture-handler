@@ -31,12 +31,12 @@ const mockedEventHandlers = () => {
   };
 };
 
-interface V1ApiProps {
+interface EventHandlersProps {
   eventHandlers: ReturnType<typeof mockedEventHandlers>;
 }
 
 describe('Using RNGH v1 base API', () => {
-  function SingleHandler({ eventHandlers }: V1ApiProps) {
+  function SingleHandler({ eventHandlers }: EventHandlersProps) {
     const handlers = {
       onBegan: eventHandlers.begin,
       onActivated: eventHandlers.active,
@@ -55,7 +55,7 @@ describe('Using RNGH v1 base API', () => {
     );
   }
 
-  function NestedHandlers({ eventHandlers }: V1ApiProps) {
+  function NestedHandlers({ eventHandlers }: EventHandlersProps) {
     const handlers = {
       onBegan: eventHandlers.begin,
       onActivated: eventHandlers.active,
@@ -232,7 +232,7 @@ describe('Using RNGH v1 base API', () => {
 });
 
 describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
-  function UseAnimatedGestureHandler({ eventHandlers }: V1ApiProps) {
+  function UseAnimatedGestureHandler({ eventHandlers }: EventHandlersProps) {
     const eventHandler = useAnimatedGestureHandler({
       onStart: eventHandlers.begin,
     });
