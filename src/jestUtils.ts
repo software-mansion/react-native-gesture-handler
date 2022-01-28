@@ -136,7 +136,12 @@ function isGesture(
   return componentOrGesture instanceof BaseGesture;
 }
 
-function wrapWithNativeEvent(event: GestureHandlerTestEvent) {
+interface WrappedGestureHandlerTestEvent {
+  nativeEvent: GestureHandlerTestEvent;
+}
+function wrapWithNativeEvent(
+  event: GestureHandlerTestEvent
+): WrappedGestureHandlerTestEvent {
   return { nativeEvent: event };
 }
 
@@ -286,21 +291,6 @@ function getHandlerData(
     handlerTag: gestureHandlerComponent.props.handlerTag as number,
   };
 }
-declare global {
-  interface Array<T> {
-    withPrevAndCurrent: <Transformed>(
-      mapFn: withPrevAndCurrentMapFn<T, Transformed>
-    ) => Transformed[];
-  }
-}
-
-function extendArrayProto(propertyName: string, f: unknown) {
-  // eslint-disable-next-line no-extend-native
-  Object.defineProperty(Array.prototype, propertyName, {
-    configurable: true,
-    value: f,
-  });
-}
 
 export function fireGestureHandler(
   componentOrGesture: ReactTestInstance | GestureType,
@@ -310,23 +300,14 @@ export function fireGestureHandler(
     componentOrGesture
   );
 
-  extendArrayProto('withPrevAndCurrent', function (mapFn: any) {
-    /* eslint-disable babel/no-invalid-this */
-    // @ts-ignore afesfa
-    return withPrevAndCurrent(this, mapFn);
-    /* eslint-enable */
-  });
+  let _ = eventList.map(fillMissingDefaultsFor({ handlerTag, handlerType }));
+  _ = withPrevAndCurrent(_, fillMissingActiveStateFields);
+  _ = withPrevAndCurrent(_, fillOldStateChanges);
+  _ = withPrevAndCurrent(_, validateStateTransitions);
+  // @ts-ignore TODO
+  _ = _.map(wrapWithNativeEvent);
 
-  const events = eventList
-    .map(fillMissingDefaultsFor({ handlerTag, handlerType }))
-    .withPrevAndCurrent(fillMissingActiveStateFields)
-    .withPrevAndCurrent(fillOldStateChanges)
-    .withPrevAndCurrent(validateStateTransitions)
-    // @ts-ignore TODO
-    .map(wrapWithNativeEvent);
-
-  // @ts-ignore defined few lines above
-  delete Array.prototype.withPrevAndCurrent;
+  const events = (_ as unknown) as WrappedGestureHandlerTestEvent[];
 
   const firstEvent = events.shift();
   invariant(
