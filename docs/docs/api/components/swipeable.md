@@ -57,11 +57,13 @@ method that is called when right action panel gets open.
 
 ### `onSwipeableOpen`
 
-method that is called when action panel gets open (either right or left).
+method that is called when action panel gets open (either right or left). Takes swipe direction as
+an argument.
 
 ### `onSwipeableClose`
 
-method that is called when action panel is closed.
+method that is called when action panel is closed. Takes swipe direction as
+an argument.
 
 ### `onSwipeableLeftWillOpen`
 
@@ -73,11 +75,13 @@ method that is called when right action panel starts animating on open.
 
 ### `onSwipeableWillOpen`
 
-method that is called when action panel starts animating on open (either right or left).
+method that is called when action panel starts animating on open (either right or left). Takes swipe direction as
+an argument.
 
 ### `onSwipeableWillClose`
 
-method that is called when action panel starts animating on close.
+method that is called when action panel starts animating on close. Takes swipe direction as
+an argument.
 
 ### `renderLeftActions`
 
