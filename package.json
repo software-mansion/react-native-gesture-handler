@@ -1,6 +1,6 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "1.10.3",
+  "version": "2.2.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "prepare": "bob build",
@@ -22,10 +22,12 @@
     "!**/__fixtures__",
     "!**/__mocks__",
     "android/build.gradle",
+    "android/gradle.properties",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
+    "android/common/src/main/java/",
     "ios/",
     "Swipeable/",
     "DrawerLayout/",
@@ -49,13 +51,13 @@
   "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
   "dependencies": {
     "@egjs/hammerjs": "^2.0.17",
-    "fbjs": "^3.0.0",
     "hoist-non-react-statics": "^3.3.0",
     "invariant": "^2.2.4",
+    "lodash": "^4.17.21",
     "prop-types": "^15.7.2"
   },
   "jest": {
-    "preset": "jest-react-native",
+    "preset": "react-native",
     "modulePathIgnorePatterns": [
       "<rootDir>/lib/"
     ]
@@ -66,9 +68,9 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-typescript": "^7.12.7",
     "@babel/runtime": "^7.12.5",
+    "@types/hammerjs": "^2.0.38",
     "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^26.0.19",
-    "@types/hammerjs": "^2.0.38",
     "@types/react": "^17.0.0",
     "@types/react-native": "^0.64.2",
     "@types/react-test-renderer": "^17.0.0",
@@ -79,11 +81,10 @@
     "eslint-config-satya164": "^3.1.8",
     "eslint-import-resolver-babel-module": "^5.2.0",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^26.0.0",
     "expo": "^35.0.1",
-    "flow-bin": "^0.98.0",
     "husky": "^0.14.3",
     "jest": "^24.7.1",
-    "jest-react-native": "16.0.0",
     "lint-staged": "^10.2.11",
     "metro-react-native-babel-preset": "^0.64.0",
     "prettier": "^2.2.1",
@@ -91,6 +92,7 @@
     "react-dom": "^16.12.0",
     "react-native": "^0.64.0",
     "react-native-builder-bob": "^0.17.1",
+    "react-native-reanimated": "^2.0.0",
     "react-native-web": "^0.11.7",
     "react-test-renderer": "16.8.6",
     "release-it": "^13.6.5",

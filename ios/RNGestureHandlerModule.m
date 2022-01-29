@@ -13,8 +13,9 @@
 #import "RNGestureHandlerManager.h"
 
 #import "RNGestureHandlerButton.h"
+#import "RNGestureHandlerStateManager.h"
 
-@interface RNGestureHandlerModule () <RCTUIManagerObserver>
+@interface RNGestureHandlerModule () <RCTUIManagerObserver, RNGestureHandlerStateManager>
 
 @end
 
@@ -102,10 +103,14 @@ RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSString *)handlerName tag:(nonn
     }];
 }
 
-RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWithTag:(nonnull NSNumber *)viewTag)
+RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWithTag:(nonnull NSNumber *)viewTag useDeviceEvents: (BOOL)useDeviceEvents)
 {
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-        [manager attachGestureHandler:handlerTag toViewWithTag:viewTag];
+        if (useDeviceEvents) {
+            [manager attachGestureHandlerForDeviceEvents:handlerTag toViewWithTag:viewTag];
+        } else {
+            [manager attachGestureHandler:handlerTag toViewWithTag:viewTag];
+        }
     }];
 }
 
@@ -135,6 +140,37 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
         [manager handleClearJSResponder];
     }];
+}
+
+- (void)setGestureState:(int)state forHandler:(int)handlerTag
+{
+  RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];
+
+  if (handler != nil) {
+    if (state == 1) { // FAILED
+      handler.recognizer.state = UIGestureRecognizerStateFailed;
+    } else if (state == 2) { // BEGAN
+      handler.recognizer.state = UIGestureRecognizerStatePossible;
+    } else if (state == 3) { // CANCELLED
+      handler.recognizer.state = UIGestureRecognizerStateCancelled;
+    } else if (state == 4) { // ACTIVE
+      [handler stopActivationBlocker];
+      handler.recognizer.state = UIGestureRecognizerStateBegan;
+    } else if (state == 5) { // ENDED
+      handler.recognizer.state = UIGestureRecognizerStateEnded;
+    }
+  }
+  
+  // if the gesture was set to finish, cancel all pointers it was tracking
+  if (state == 1 || state == 3 || state == 5) {
+    [handler.pointerTracker cancelPointers];
+  }
+  
+  // do not send state change event when activating because it bypasses
+  // shouldRequireFailureOfGestureRecognizer
+  if (state != 4) {
+    [handler handleGesture:handler.recognizer];
+  }
 }
 
 #pragma mark -- Batch handling

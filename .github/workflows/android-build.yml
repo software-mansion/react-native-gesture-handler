@@ -5,12 +5,12 @@ on:
       - 'android/**'
   push:
     branches:
-      - master
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      WORKING_DIRECTORY: examples/Example
+      WORKING_DIRECTORY: example
     concurrency:
       group: android-${{ github.ref }}
       cancel-in-progress: true

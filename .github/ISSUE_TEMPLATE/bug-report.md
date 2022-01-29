@@ -17,6 +17,12 @@ https://github.com/software-mansion/react-native-gesture-handler/discussions
 Tell us what's happening here.
 -->
 
+### Platforms
+
+- [ ] iOS
+- [ ] Android
+- [ ] Web
+
 ### Screenshots
 
 ## Steps To Reproduce
@@ -46,3 +52,4 @@ List other libraries if relevant.
 - React:
 - React Native:
 - React Native Gesture Handler:
+- React Native Reanimated:

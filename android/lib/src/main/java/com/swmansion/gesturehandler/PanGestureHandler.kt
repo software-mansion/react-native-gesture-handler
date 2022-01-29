@@ -62,7 +62,6 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
 
   override fun resetConfig() {
     super.resetConfig()
-    minDistSq = MAX_VALUE_IGNORE
     activeOffsetXStart = MIN_VALUE_IGNORE
     activeOffsetXEnd = MAX_VALUE_IGNORE
     failOffsetXStart = MAX_VALUE_IGNORE
@@ -209,10 +208,11 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       lastY = getLastPointerY(event, averageTouches)
     }
     if (state == STATE_UNDETERMINED && event.pointerCount >= minPointers) {
-      startX = lastX
-      startY = lastY
+      resetProgress()
       offsetX = 0f
       offsetY = 0f
+      velocityX = 0f
+      velocityY = 0f
       velocityTracker = VelocityTracker.obtain()
       addVelocityMovement(velocityTracker, event)
       begin()
@@ -244,12 +244,17 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       if (shouldFail()) {
         fail()
       } else if (shouldActivate()) {
-        // reset starting point
-        startX = lastX
-        startY = lastY
         activate()
       }
     }
+  }
+
+  override fun activate(force: Boolean) {
+    // reset starting point if the handler has not yet activated
+    if (state != STATE_ACTIVE) {
+      resetProgress()
+    }
+    super.activate(force)
   }
 
   override fun onReset() {
@@ -257,6 +262,11 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       it.recycle()
       velocityTracker = null
     }
+  }
+
+  override fun resetProgress() {
+    startX = lastX
+    startY = lastY
   }
 
   companion object {

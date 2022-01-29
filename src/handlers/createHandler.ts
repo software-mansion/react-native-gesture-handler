@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  findNodeHandle as findNodeHandleRN,
   Platform,
   Touchable,
   UIManager,
@@ -8,7 +7,7 @@ import {
   EmitterSubscription,
 } from 'react-native';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
-import deepEqual from 'fbjs/lib/areEqual';
+import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
@@ -16,19 +15,14 @@ import { handlerIDToTag, getNextHandlerTag } from './handlersRegistry';
 
 import {
   BaseGestureHandlerProps,
+  filterConfig,
   GestureEvent,
   HandlerStateChangeEvent,
+  findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
 
 const UIManagerAny = UIManager as any;
-
-function findNodeHandle(
-  node: null | number | React.Component<any, any> | React.ComponentClass<any>
-): null | number | React.Component<any, any> | React.ComponentClass<any> {
-  if (Platform.OS === 'web') return node;
-  return findNodeHandleRN(node);
-}
 
 const customGHEventsConfig = {
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
@@ -86,59 +80,6 @@ if (DEV_ON_ANDROID) {
     allowTouches = !allowTouches;
   });
 }
-function isConfigParam(param: unknown, name: string) {
-  // param !== Object(param) returns false if `param` is a function
-  // or an object and returns true if `param` is null
-  return (
-    param !== undefined &&
-    (param !== Object(param) ||
-      !('__isNative' in (param as Record<string, unknown>))) &&
-    name !== 'onHandlerStateChange' &&
-    name !== 'onGestureEvent'
-  );
-}
-
-function filterConfig(
-  props: Record<string, unknown>,
-  validProps: string[],
-  defaults: Record<string, unknown> = {}
-) {
-  const res = { ...defaults };
-  validProps.forEach((key) => {
-    const value = props[key];
-    if (isConfigParam(value, key)) {
-      let value = props[key];
-      if (key === 'simultaneousHandlers' || key === 'waitFor') {
-        value = transformIntoHandlerTags(props[key]);
-      } else if (key === 'hitSlop') {
-        if (typeof value !== 'object') {
-          value = { top: value, left: value, bottom: value, right: value };
-        }
-      }
-      res[key] = value;
-    }
-  });
-  return res;
-}
-
-function transformIntoHandlerTags(handlerIDs: any) {
-  if (!Array.isArray(handlerIDs)) {
-    handlerIDs = [handlerIDs];
-  }
-
-  if (Platform.OS === 'web') {
-    return handlerIDs
-      .map(({ current }: { current: any }) => current)
-      .filter((handle: any) => handle);
-  }
-  // converts handler string IDs into their numeric tags
-  return handlerIDs
-    .map(
-      (handlerID: any) =>
-        handlerIDToTag[handlerID] || handlerID.current?.handlerTag || -1
-    )
-    .filter((handlerTag: number) => handlerTag > 0);
-}
 
 type HandlerProps<T extends Record<string, unknown>> = Readonly<
   React.PropsWithChildren<BaseGestureHandlerProps<T>>
@@ -181,6 +122,16 @@ type InternalEventHandlers = {
   onGestureHandlerStateChange?: (event: any) => void;
 };
 
+let showedRngh2Notice = false;
+function showRngh2NoticeIfNeeded() {
+  if (!showedRngh2Notice) {
+    console.warn(
+      "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"
+    );
+    showedRngh2Notice = true;
+  }
+}
+
 // TODO(TS) - make sure that BaseGestureHandlerProps doesn't need other generic parameter to work with custom properties.
 export default function createHandler<
   T extends BaseGestureHandlerProps<U>,
@@ -220,6 +171,9 @@ export default function createHandler<
           throw new Error(`Handler with ID "${props.id}" already registered`);
         }
         handlerIDToTag[props.id] = this.handlerTag;
+      }
+      if (__DEV__) {
+        showRngh2NoticeIfNeeded();
       }
     }
 
@@ -342,12 +296,14 @@ export default function createHandler<
         (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
           this.handlerTag,
           newViewTag,
+          false,
           this.propsRef
         );
       } else {
         RNGestureHandlerModule.attachGestureHandler(
           this.handlerTag,
-          newViewTag
+          newViewTag,
+          false
         );
       }
     };

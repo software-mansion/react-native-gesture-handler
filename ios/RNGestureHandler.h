@@ -1,6 +1,7 @@
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerEvents.h"
+#import "RNGestureHandlerPointerTracker.h"
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -28,6 +29,10 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 
 - (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event;
 
+- (void)sendTouchDeviceEvent:(nonnull RNGestureHandlerEvent *)event;
+
+- (void)sendStateChangeDeviceEvent:(nonnull RNGestureHandlerStateChange *)event;
+
 @end
 
 
@@ -53,8 +58,12 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 @property (nonatomic, readonly, nonnull) NSNumber *tag;
 @property (nonatomic, weak, nullable) id<RNGestureHandlerEventEmitter> emitter;
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
+@property (nonatomic, readonly, nullable) RNGestureHandlerPointerTracker *pointerTracker;
 @property (nonatomic) BOOL enabled;
-@property(nonatomic) BOOL shouldCancelWhenOutside;
+@property (nonatomic) BOOL usesDeviceEvents;
+@property (nonatomic) BOOL shouldCancelWhenOutside;
+@property (nonatomic) BOOL needsPointerData;
+@property (nonatomic) BOOL manualActivation;
 
 - (void)bindToView:(nonnull UIView *)view;
 - (void)unbindFromView;
@@ -65,10 +74,14 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
 
+- (void)stopActivationBlocker;
 - (void)reset;
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
+- (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event;
+- (void)sendTouchEventInState:(RNGestureHandlerState)state
+                 forViewWithTag:(nonnull NSNumber *)reactTag;
 
 @end
 

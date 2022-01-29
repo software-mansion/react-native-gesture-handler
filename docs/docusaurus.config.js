@@ -28,7 +28,7 @@ module.exports = {
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/software-mansion/react-native-gesture-handler/tree/master/docs',
+            'https://github.com/software-mansion/react-native-gesture-handler/tree/main/docs',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -139,6 +139,10 @@ module.exports = {
         //     })),
         //   ],
         // },
+        {
+          type: 'docsVersionDropdown',
+          position: 'left',
+        },
         {
           href:
             'https://github.com/software-mansion/react-native-gesture-handler',

@@ -12,7 +12,7 @@
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": ["./tsconfig.json", "./examples/Example/tsconfig.json"]
+    "project": ["./tsconfig.json", "./example/tsconfig.json"]
   },
   "env": { "browser": true, "node": true, "jest/globals": true },
   "plugins": ["jest"],
@@ -29,6 +29,7 @@
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "import/named": "off",
     "react/sort-comp": "off",
+    "react/no-unused-prop-types": "warn",
     "prefer-const": [
       "error",
       {

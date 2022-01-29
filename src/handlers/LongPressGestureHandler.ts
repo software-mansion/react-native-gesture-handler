@@ -27,7 +27,7 @@ export type LongPressGestureHandlerEventPayload = {
   /**
    * X coordinate, expressed in points, of the current position of the pointer
    * (finger or a leading pointer when there are multiple fingers placed)
-   * relative to the root view. It is recommended to use `absoluteX` instead of
+   * relative to the window. It is recommended to use `absoluteX` instead of
    * `x` in cases when the view attached to the handler can be transformed as an
    * effect of the gesture.
    */
@@ -36,7 +36,7 @@ export type LongPressGestureHandlerEventPayload = {
   /**
    * Y coordinate, expressed in points, of the current position of the pointer
    * (finger or a leading pointer when there are multiple fingers placed)
-   * relative to the root view. It is recommended to use `absoluteY` instead of
+   * relative to the window. It is recommended to use `absoluteY` instead of
    * `y` in cases when the view attached to the handler can be transformed as an
    * effect of the gesture.
    */
@@ -49,8 +49,7 @@ export type LongPressGestureHandlerEventPayload = {
   duration: number;
 };
 
-export interface LongPressGestureHandlerProps
-  extends BaseGestureHandlerProps<LongPressGestureHandlerEventPayload> {
+export interface LongPressGestureConfig {
   /**
    * Minimum time, expressed in milliseconds, that a finger must remain pressed on
    * the corresponding view. The default value is 500.
@@ -65,6 +64,10 @@ export interface LongPressGestureHandlerProps
    */
   maxDist?: number;
 }
+
+export interface LongPressGestureHandlerProps
+  extends BaseGestureHandlerProps<LongPressGestureHandlerEventPayload>,
+    LongPressGestureConfig {}
 
 export type LongPressGestureHandler = typeof LongPressGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
