@@ -9,7 +9,9 @@ type Props = {
 };
 
 export function NewAPIJSCallbackConsoleLogExample({ color }: Props) {
-  const gesture = Gesture.Pan()
+  const gesture = Gesture.Pan();
+  // this syntax ensures that callbacks are not auto-workletized
+  gesture
     .onBegin(() => {
       console.log(_WORKLET, 'onBegin');
     })

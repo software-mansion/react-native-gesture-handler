@@ -18,7 +18,9 @@ export function NewAPIJSCallbackUpdateSharedValueExample({ color }: Props) {
   const drag = useSharedValue(0);
   const isPressed = useSharedValue(false);
 
-  const gesture = Gesture.Pan()
+  const gesture = Gesture.Pan();
+  // this syntax ensures that callbacks are not auto-workletized
+  gesture
     .onBegin(() => {
       isPressed.value = true;
       console.log(_WORKLET, 'onBegin');
