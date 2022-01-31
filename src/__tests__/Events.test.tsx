@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 // Disabling lint for assymetric matchers, check proposal below
 // https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/56937
@@ -204,31 +206,6 @@ describe('Using RNGH v1 base API', () => {
       });
     }
   );
-
-  it('fills oldState if not passed', () => {
-    const handlers = mockedEventHandlers();
-    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
-    fireGestureHandler<PanGestureHandler>(getByTestId('pan'), [
-      { state: State.BEGAN },
-      { state: State.ACTIVE },
-      { state: State.ACTIVE },
-      { state: State.ACTIVE },
-      { state: State.END },
-    ]);
-
-    expect(handlers.begin).toBeCalledWith({
-      nativeEvent: expect.objectContaining({ oldState: State.UNDETERMINED }),
-    });
-    expect(handlers.active).nthCalledWith(1, {
-      nativeEvent: expect.objectContaining({ oldState: State.BEGAN }),
-    });
-    expect(handlers.active).lastCalledWith({
-      nativeEvent: expect.not.objectContaining({ oldState: expect.anything() }),
-    });
-    expect(handlers.end).toBeCalledWith({
-      nativeEvent: expect.objectContaining({ oldState: State.ACTIVE }),
-    });
-  });
 });
 
 describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
@@ -350,23 +327,31 @@ describe('Using RNGH v2 gesture API', () => {
       expect.objectContaining({ translationX: 20 })
     );
   });
+});
 
-  it("uses last state if next event doesn't specify it and state transition is valid", () => {
-    const panHandlers = mockedEventHandlers();
-    render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
-    fireGestureHandler<PanGesture>(getByGestureId('pan'), [
-      { state: State.BEGAN, x: 0, y: 10 },
-      { state: State.ACTIVE, x: 1, y: 11 },
-      { x: 2, y: 12 },
-      { x: 3, y: 13 },
-      { state: State.END, x: 4, y: 14 },
-    ]);
+describe('Event list validation', () => {
+  interface SingleHandlerProps {
+    handlers: ReturnType<typeof mockedEventHandlers>;
+    treatStartAsUpdate?: boolean;
+  }
 
-    expect(panHandlers.active).toBeCalledTimes(3);
-    expect(panHandlers.active).toHaveBeenLastCalledWith(
-      expect.objectContaining({ x: 3, y: 13 })
+  function SingleHandler({ handlers, treatStartAsUpdate }: SingleHandlerProps) {
+    const pan = Gesture.Pan()
+      .onBegin(handlers.begin)
+      .onStart(treatStartAsUpdate ? handlers.active : handlers.start)
+      .onUpdate(handlers.active)
+      .onEnd(handlers.end)
+      .onFinalize(handlers.finish)
+      .withTestId('pan');
+
+    return (
+      <GestureHandlerRootView>
+        <GestureDetector gesture={pan}>
+          <Text>v2 API test</Text>
+        </GestureDetector>
+      </GestureHandlerRootView>
     );
-  });
+  }
 
   it("throws error when oldState doesn't correspond to previous event's state", () => {
     const panHandlers = mockedEventHandlers();
@@ -411,4 +396,73 @@ describe('Using RNGH v2 gesture API', () => {
       }
     }
   );
+});
+
+describe('Filling event list with defaults', () => {
+  interface SingleHandlerProps {
+    handlers: ReturnType<typeof mockedEventHandlers>;
+    treatStartAsUpdate?: boolean;
+  }
+
+  function SingleHandler({ handlers, treatStartAsUpdate }: SingleHandlerProps) {
+    const pan = Gesture.Pan()
+      .onBegin(handlers.begin)
+      .onStart(treatStartAsUpdate ? handlers.active : handlers.start)
+      .onUpdate(handlers.active)
+      .onEnd(handlers.end)
+      .onFinalize(handlers.finish)
+      .withTestId('pan');
+
+    return (
+      <GestureHandlerRootView>
+        <GestureDetector gesture={pan}>
+          <Text>v2 API test</Text>
+        </GestureDetector>
+      </GestureHandlerRootView>
+    );
+  }
+
+  it('fills oldState if not passed', () => {
+    const handlers = mockedEventHandlers();
+    render(<SingleHandler handlers={handlers} treatStartAsUpdate />);
+    fireGestureHandler<PanGestureHandler>(getByGestureId('pan'), [
+      { state: State.BEGAN },
+      { state: State.ACTIVE },
+      { state: State.ACTIVE },
+      { state: State.ACTIVE },
+      { state: State.END },
+    ]);
+
+    expect(handlers.begin).toBeCalledWith(
+      expect.objectContaining({ oldState: State.UNDETERMINED })
+    );
+    expect(handlers.active).nthCalledWith(
+      1,
+      expect.objectContaining({ oldState: State.BEGAN })
+    );
+    expect(handlers.active).lastCalledWith(
+      expect.not.objectContaining({ oldState: expect.anything() })
+    );
+    expect(handlers.end).toBeCalledWith(
+      expect.objectContaining({ oldState: State.ACTIVE }),
+      true
+    );
+  });
+
+  it('fills missing ACTIVE states', () => {
+    const panHandlers = mockedEventHandlers();
+    render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
+    fireGestureHandler<PanGesture>(getByGestureId('pan'), [
+      { state: State.BEGAN, x: 0, y: 10 },
+      { state: State.ACTIVE, x: 1, y: 11 },
+      { x: 2, y: 12 },
+      { x: 3, y: 13 },
+      { state: State.END, x: 4, y: 14 },
+    ]);
+
+    expect(panHandlers.active).toBeCalledTimes(3);
+    expect(panHandlers.active).toHaveBeenLastCalledWith(
+      expect.objectContaining({ x: 3, y: 13 })
+    );
+  });
 });
