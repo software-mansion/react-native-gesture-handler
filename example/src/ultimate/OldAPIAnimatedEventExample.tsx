@@ -19,9 +19,7 @@ export function OldAPIAnimatedEventExample({ useNativeDriver, color }: Props) {
 
   const onGestureEvent = Animated.event(
     [{ nativeEvent: { translationX: drag.current } }],
-    {
-      useNativeDriver: false,
-    }
+    { useNativeDriver }
   );
 
   const onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
