@@ -13,6 +13,7 @@ module.exports = {
         'under-the-hood/states-events',
         'gesture-handlers/basics/about-handlers',
         'gesture-handlers/basics/interactions',
+        'guides/testing',
       ],
     },
     {
@@ -65,6 +66,7 @@ module.exports = {
             'gesture-handlers/api/create-native-wrapper',
           ],
         },
+        { type: 'doc', id: 'api/test-api' },
       ],
     },
     {
