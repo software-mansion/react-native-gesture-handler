@@ -1,8 +1,9 @@
 import { Text, View } from 'react-native';
 
 import React from 'react';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
+  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -14,30 +15,42 @@ type Props = {
   color: string;
 };
 
-export function NewAPIJSCallbackUpdateSharedValueExample({ color }: Props) {
+export function OldAPIReanimatedWorkletUpdateSharedValueExample({
+  color,
+}: Props) {
   const drag = useSharedValue(0);
   const isPressed = useSharedValue(false);
 
-  const gesture = Gesture.Pan()
-    .onBegin(() => {
+  const eventHandler = useAnimatedGestureHandler({
+    onStart: () => {
+      'worklet';
       isPressed.value = true;
-      console.log(_WORKLET, 'onBegin');
-    })
-    .onStart(() => {
       console.log(_WORKLET, 'onStart');
-    })
-    .onChange((e) => {
-      drag.value = e.changeX + drag.value;
-      console.log(_WORKLET, 'onChange');
-    })
-    .onEnd((e) => {
-      drag.value = withSpring(0, { velocity: e.velocityX });
+    },
+    onActive: (e) => {
+      'worklet';
+      drag.value = e.translationX;
+      console.log(_WORKLET, 'onActive');
+    },
+    onEnd: () => {
+      'worklet';
       console.log(_WORKLET, 'onEnd');
-    })
-    .onFinalize(() => {
+    },
+    onFail: () => {
+      'worklet';
+      console.log(_WORKLET, 'onFail');
+    },
+    onCancel: () => {
+      'worklet';
+      console.log(_WORKLET, 'onCancel');
+    },
+    onFinish: (e) => {
+      'worklet';
+      drag.value = withSpring(0, { velocity: e.velocityX });
       isPressed.value = false;
-      console.log(_WORKLET, 'onFinalize');
-    });
+      console.log(_WORKLET, 'onFinish');
+    },
+  });
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -48,22 +61,23 @@ export function NewAPIJSCallbackUpdateSharedValueExample({ color }: Props) {
 
   return (
     <View>
-      <Text>New API / JS callback / update shared value</Text>
+      <Text>Old API / Reanimated worklet / update shared value</Text>
       <View
         style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
-        <GestureDetector gesture={gesture}>
+        <PanGestureHandler maxPointers={1} onGestureEvent={eventHandler}>
           <Animated.View
             style={[
               {
                 width: 45,
                 height: 45,
+                backgroundColor: 'red',
                 alignItems: 'center',
                 justifyContent: 'center',
               },
               animatedStyle,
             ]}
           />
-        </GestureDetector>
+        </PanGestureHandler>
       </View>
     </View>
   );

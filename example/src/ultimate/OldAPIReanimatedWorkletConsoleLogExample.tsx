@@ -6,7 +6,11 @@ import Animated, { useAnimatedGestureHandler } from 'react-native-reanimated';
 
 declare const _WORKLET: boolean; // from react-native-reanimated
 
-export function OldAPIReanimatedWorkletConsoleLogExample() {
+type Props = {
+  color: string;
+};
+
+export function OldAPIReanimatedWorkletConsoleLogExample({ color }: Props) {
   const eventHandler = useAnimatedGestureHandler({
     onActive: () => {
       'worklet';
@@ -38,13 +42,13 @@ export function OldAPIReanimatedWorkletConsoleLogExample() {
     <View>
       <Text>Old API / Reanimated worklet / console.log</Text>
       <View
-        style={{ height: 60, alignItems: 'center', justifyContent: 'center' }}>
+        style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
         <PanGestureHandler maxPointers={1} onGestureEvent={eventHandler}>
           <Animated.View
             style={{
-              width: 50,
-              height: 50,
-              backgroundColor: 'blue',
+              width: 45,
+              height: 45,
+              backgroundColor: color,
               alignItems: 'center',
               justifyContent: 'center',
             }}

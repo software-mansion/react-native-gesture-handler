@@ -5,7 +5,11 @@ import { PanGestureHandler } from 'react-native-gesture-handler';
 
 declare const _WORKLET: boolean; // from react-native-reanimated
 
-export function OldAPIJSCallbackConsoleLogExample() {
+type Props = {
+  color: string;
+};
+
+export function OldAPIJSCallbackConsoleLogExample({ color }: Props) {
   const onGestureEvent = () => {
     console.log(_WORKLET, 'onGestureEvent');
   };
@@ -18,16 +22,16 @@ export function OldAPIJSCallbackConsoleLogExample() {
     <View>
       <Text>Old API / JS callback / console.log</Text>
       <View
-        style={{ height: 60, alignItems: 'center', justifyContent: 'center' }}>
+        style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
         <PanGestureHandler
           maxPointers={1}
           onGestureEvent={onGestureEvent}
           onHandlerStateChange={onHandlerStateChange}>
           <View
             style={{
-              width: 50,
-              height: 50,
-              backgroundColor: 'cyan',
+              width: 45,
+              height: 45,
+              backgroundColor: color,
               alignItems: 'center',
               justifyContent: 'center',
             }}
