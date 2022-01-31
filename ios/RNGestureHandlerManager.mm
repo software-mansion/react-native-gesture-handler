@@ -204,40 +204,29 @@
 
 - (void)sendTouchEvent:(RNGestureHandlerEvent *)event
 {
-    // TODO: detect if Animated or Reanimated
+    [_eventDispatcher sendEvent:event]; // Animated with useNativeDriver: true
     
-    [_eventDispatcher sendEvent:event]; // Animated
-    // [[RCTBridge currentBridge].eventDispatcher sendEvent:event]; // Animated
-    
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated
-    
-//    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
-//    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerEvent" body:body];
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated with old API
 }
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
 {
-    // TODO: detect if Animated or Reanimated
-    
-    [_eventDispatcher sendEvent:event]; // Animated
-    // [[RCTBridge currentBridge].eventDispatcher sendEvent:event]; // Animated
-    
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated
+    [_eventDispatcher sendEvent:event]; // Animated with useNativeDriver: true
     
     NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
-    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
+    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body]; // JS callback, Animated with useNativeDriver: false
+    
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated with old API
 }
 
 - (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event
 {
-    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
-    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerEvent" body:body];
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated with new API
 }
 
 - (void)sendStateChangeDeviceEvent:(RNGestureHandlerStateChange *)event
 {
-    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
-    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated with new API
 }
 
 @end
