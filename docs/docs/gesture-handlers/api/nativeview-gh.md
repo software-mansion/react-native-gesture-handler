@@ -4,6 +4,11 @@ title: NativeViewGestureHandler
 sidebar_label: NativeView
 ---
 
+:::info
+We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
+section in Introduction](../../introduction.md#rngh-20) for more information.
+:::
+
 A gesture handler that allows other touch handling components to participate in
 RNGH's gesture system.
 

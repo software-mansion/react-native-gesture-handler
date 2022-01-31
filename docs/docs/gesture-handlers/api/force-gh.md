@@ -4,6 +4,11 @@ title: ForceTouchGestureHandler (iOS only)
 sidebar_label: Force touch
 ---
 
+:::info
+We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
+section in Introduction](../../introduction.md#rngh-20) for more information.
+:::
+
 A continuous gesture handler that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.
 The handler [activates](../basics/state.md#active) when pressure of touch if greater or equal than `minForce`. It fails if pressure is greater than `maxForce`
 Gesture callback can be used for continuous tracking of the touch pressure. It provides information for one finger (the first one).
@@ -45,7 +50,7 @@ You may check if it's possible to use `ForceTouchGestureHandler` with `ForceTouc
 
 ## Example
 
-See the [force touch handler example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/basic/forcetouch/index.tsx) from [GestureHandler Example App](../../example).
+See the [force touch handler example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/basic/forcetouch/index.tsx) from Gesture Handler Example App.
 
 ```js
 <ForceTouchGestureHandler

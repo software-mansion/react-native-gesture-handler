@@ -4,6 +4,11 @@ title: PanGestureHandler
 sidebar_label: Pan
 ---
 
+:::info
+We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
+section in Introduction](../../introduction.md#rngh-20) for more information.
+:::
+
 A continuous gesture handler that can recognize a panning (dragging) gesture and track its movement.
 
 The handler [activates](../basics/state.md#active) when a finger is placed on the screen and moved some initial distance.
@@ -159,7 +164,7 @@ Y coordinate of the current position of the pointer (finger or a leading pointer
 
 ## Example
 
-See the [draggable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/basic/draggable/index.tsx) from [GestureHandler Example App](../../example).
+See the [draggable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/basic/draggable/index.tsx) from Gesture Handler Example App.
 
 ```js
 const circleRadius = 30;
