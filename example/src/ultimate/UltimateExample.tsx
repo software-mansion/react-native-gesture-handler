@@ -15,6 +15,7 @@ export default function UltimateExample() {
   return (
     <View
       style={{
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
       }}>

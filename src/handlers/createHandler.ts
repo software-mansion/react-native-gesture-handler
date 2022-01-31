@@ -327,10 +327,16 @@ export default function createHandler<
           old: true,
         });
 
+        const isUseAnimatedGestureHandler =
+          'current' in this.props.onGestureEvent;
+        // true for Reanimated, false for JS callback or Animated.event
+
+        // TODO: find out why it sometimes the above crashes due to cloning object from different runtime
+
         RNGestureHandlerModule.attachGestureHandler(
           this.handlerTag,
           newViewTag,
-          false
+          isUseAnimatedGestureHandler
         );
       }
     };

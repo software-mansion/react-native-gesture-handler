@@ -205,8 +205,6 @@
 - (void)sendTouchEvent:(RNGestureHandlerEvent *)event
 {
     [_eventDispatcher sendEvent:event]; // Animated with useNativeDriver: true
-    
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated with old API
 }
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
@@ -215,18 +213,16 @@
     
     NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
     [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body]; // JS callback, Animated with useNativeDriver: false
-    
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated with old API
 }
 
 - (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event
 {
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated with new API
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated
 }
 
 - (void)sendStateChangeDeviceEvent:(RNGestureHandlerStateChange *)event
 {
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated with new API
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated
 }
 
 @end

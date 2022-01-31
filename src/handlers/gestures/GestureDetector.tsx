@@ -428,7 +428,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     animatedEventHandler: null,
     animatedHandlers: null,
     firstExecution: true,
-    useAnimated: useAnimated,
+    useAnimated,
   }).current;
 
   if (useAnimated !== preparedGesture.useAnimated) {
