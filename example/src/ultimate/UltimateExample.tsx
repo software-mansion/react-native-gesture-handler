@@ -12,6 +12,15 @@ import { OldAPIReanimatedWorkletUpdateSharedValueExample } from './OldAPIReanima
 import { OldAPIAnimatedEventExample } from './OldAPIAnimatedEventExample';
 
 export default function UltimateExample() {
+  // React.useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     for (let i = 0; i < 300000000; i++) {
+  //       /* nothing */
+  //     }
+  //   }, 100);
+  //   return () => clearInterval(interval);
+  // }, []);
+
   return (
     <View
       style={{
@@ -33,7 +42,10 @@ export default function UltimateExample() {
       <OldAPIJSCallbackUpdateSharedValueExample color="darkviolet" />
       <OldAPIReanimatedWorkletUpdateSharedValueExample color="violet" />
       <OldAPIAnimatedEventExample useNativeDriver color="lightgray" />
-      <OldAPIAnimatedEventExample useNativeDriver={false} color="gray" />
+      <View>
+        {/* prevents "Style property 'backgroundColor' is not supported by native animated module" error on fast refresh */}
+        <OldAPIAnimatedEventExample useNativeDriver={false} color="gray" />
+      </View>
     </View>
   );
 }
