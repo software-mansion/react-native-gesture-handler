@@ -204,25 +204,29 @@
 
 - (void)sendTouchEvent:(RNGestureHandlerEvent *)event
 {
-    [_eventDispatcher sendEvent:event]; // Animated with useNativeDriver: true
+    // never used
 }
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
 {
-    [_eventDispatcher sendEvent:event]; // Animated with useNativeDriver: true
-    
+    // JS callback, Animated with useNativeDriver: false
     NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
-    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body]; // JS callback, Animated with useNativeDriver: false
+    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
+
+    // Animated with useNativeDriver: true
+    [_eventDispatcher sendEvent:event];
+    // TODO: call [self->_nodesManager handleAnimatedEvent:event] directly without RCTExecuteOnMainQueue?
 }
 
 - (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event
 {
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated worklet
+    // never used
 }
 
 - (void)sendStateChangeDeviceEvent:(RNGestureHandlerStateChange *)event
 {
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated worklet
+    // Reanimated worklet
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event];
 }
 
 @end
