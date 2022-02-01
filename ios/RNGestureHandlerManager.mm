@@ -217,12 +217,12 @@
 
 - (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event
 {
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated worklet
 }
 
 - (void)sendStateChangeDeviceEvent:(RNGestureHandlerStateChange *)event
 {
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event]; // Reanimated worklet
 }
 
 @end
