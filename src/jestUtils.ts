@@ -270,9 +270,7 @@ function fillMissingStatesTransitions(
   type Event = EventWithoutStates | null;
   const _events = [...events];
   function fillEventsForCurrentState(
-    shouldUseEvent: (
-      event: Event
-    ) => readonly [shouldUse: boolean, shouldConsume: boolean],
+    shouldUseEvent: (event: Event) => boolean,
     shouldTransitionToNextState: (nextEvent: Event) => boolean
   ) {
     function peekCurrentEvent(): Event {
@@ -289,15 +287,10 @@ function fillMissingStatesTransitions(
     const currentRequiredState = REQUIRED_EVENTS[currentStateIdx];
 
     let eventData = {};
-    const [shouldUseEventData, shouldConsumeEvent] = shouldUseEvent(
-      currentEvent
-    );
-    if (shouldUseEventData) {
+    const shouldConsumeEvent = shouldUseEvent(currentEvent);
+    if (shouldConsumeEvent) {
       eventData = currentEvent!;
-
-      if (shouldConsumeEvent) {
-        consumeCurrentEvent();
-      }
+      consumeCurrentEvent();
     }
     transformedEvents.push({ state: currentRequiredState, ...eventData });
     if (shouldTransitionToNextState(nextEvent)) {
@@ -321,16 +314,13 @@ function fillMissingStatesTransitions(
     const nextRequiredState = REQUIRED_EVENTS[currentStateIdx];
     if (nextRequiredState === State.BEGAN) {
       const shouldConsumeEvent = (e: Event) =>
-        [
-          isWithoutState(e) || hasState(State.BEGAN)(e),
-          isDiscreteHandler || hasState(State.BEGAN)(e),
-        ] as const;
+        (isWithoutState(e) && isDiscreteHandler) || hasState(State.BEGAN)(e);
       const shouldTransition = () => true;
 
       fillEventsForCurrentState(shouldConsumeEvent, shouldTransition);
     } else if (nextRequiredState === State.ACTIVE) {
       const shouldConsumeEvent = (e: Event) =>
-        [isWithoutState(e) || hasState(State.ACTIVE)(e), true] as const;
+        isWithoutState(e) || hasState(State.ACTIVE)(e);
       const shouldTransition = (nextEvent: Event) =>
         noEventsLeft(nextEvent) ||
         hasState(State.END)(nextEvent) ||
@@ -339,7 +329,7 @@ function fillMissingStatesTransitions(
 
       fillEventsForCurrentState(shouldConsumeEvent, shouldTransition);
     } else if (nextRequiredState === State.END) {
-      const shouldConsumeEvent = () => [true, true] as const;
+      const shouldConsumeEvent = () => true as const;
       const shouldTransition = () => true;
 
       fillEventsForCurrentState(shouldConsumeEvent, shouldTransition);
