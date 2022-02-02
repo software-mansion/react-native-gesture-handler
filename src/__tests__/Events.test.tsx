@@ -15,6 +15,7 @@ import {
   GestureDetector,
   State,
   PanGesture,
+  TapGesture,
 } from '../index';
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
 import { fireGestureHandler, getByGestureId } from '../jestUtils';
@@ -366,18 +367,6 @@ describe('Event list validation', () => {
     );
   });
 
-  it("throws error when first state isn't the BEGIN event", () => {
-    const panHandlers = mockedEventHandlers();
-    render(<SingleHandler handlers={panHandlers} />);
-
-    expect(() => {
-      fireGestureHandler<PanGesture>(getByGestureId('pan'), [
-        { state: State.ACTIVE, x: 0, y: 10 },
-        { state: State.ACTIVE, x: 1, y: 11 },
-      ]);
-    }).toThrow('first event must have BEGAN state');
-  });
-
   it.each([[State.END], [State.FAILED], [State.CANCELLED]])(
     'correctly handles events ending with state %s',
     (lastState) => {
@@ -399,12 +388,20 @@ describe('Event list validation', () => {
 });
 
 describe('Filling event list with defaults', () => {
-  interface SingleHandlerProps {
+  interface RacingTapAndPanProps {
     handlers: ReturnType<typeof mockedEventHandlers>;
     treatStartAsUpdate?: boolean;
   }
 
-  function SingleHandler({ handlers, treatStartAsUpdate }: SingleHandlerProps) {
+  function RacingTapAndPan({
+    handlers,
+    treatStartAsUpdate,
+  }: RacingTapAndPanProps) {
+    const tap = Gesture.Tap()
+      .onBegin(handlers.begin)
+      .onEnd(handlers.end)
+      .withTestId('tap');
+
     const pan = Gesture.Pan()
       .onBegin(handlers.begin)
       .onStart(treatStartAsUpdate ? handlers.active : handlers.start)
@@ -415,7 +412,7 @@ describe('Filling event list with defaults', () => {
 
     return (
       <GestureHandlerRootView>
-        <GestureDetector gesture={pan}>
+        <GestureDetector gesture={Gesture.Exclusive(pan, tap)}>
           <Text>v2 API test</Text>
         </GestureDetector>
       </GestureHandlerRootView>
@@ -424,7 +421,7 @@ describe('Filling event list with defaults', () => {
 
   it('fills oldState if not passed', () => {
     const handlers = mockedEventHandlers();
-    render(<SingleHandler handlers={handlers} treatStartAsUpdate />);
+    render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
     fireGestureHandler<PanGestureHandler>(getByGestureId('pan'), [
       { state: State.BEGAN },
       { state: State.ACTIVE },
@@ -451,7 +448,7 @@ describe('Filling event list with defaults', () => {
 
   it('fills missing ACTIVE states', () => {
     const panHandlers = mockedEventHandlers();
-    render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
+    render(<RacingTapAndPan handlers={panHandlers} treatStartAsUpdate />);
     fireGestureHandler<PanGesture>(getByGestureId('pan'), [
       { state: State.BEGAN, x: 0, y: 10 },
       { state: State.ACTIVE, x: 1, y: 11 },
@@ -465,4 +462,52 @@ describe('Filling event list with defaults', () => {
       expect.objectContaining({ x: 3, y: 13 })
     );
   });
+
+  it('fills BEGIN and END events for discrete handlers', () => {
+    const handlers = mockedEventHandlers();
+    render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
+    fireGestureHandler(getByGestureId('tap'), [{ x: 5 }]);
+    expect(handlers.begin).toBeCalledTimes(1);
+    expect(handlers.end).toBeCalledTimes(1);
+  });
+
+  it('with FAILED event, fills BEGIN event for discrete handlers', () => {
+    const handlers = mockedEventHandlers();
+    render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
+    fireGestureHandler(getByGestureId('tap'), [{ state: State.FAILED }]);
+    expect(handlers.begin).toBeCalledTimes(1);
+    expect(handlers.end).toBeCalledTimes(1);
+    expect(handlers.end).toBeCalledWith(expect.anything(), false);
+  });
+
+  it.skip('uses event data from first event in filled BEGIN, ACTIVE events', () => {
+    const handlers = mockedEventHandlers();
+    render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
+    fireGestureHandler<TapGesture>(getByGestureId('pan'), [{ x: 120 }]);
+    expect(handlers.begin).toBeCalledWith(expect.objectContaining({ x: 120 }));
+    expect(handlers.active).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ x: 120 })
+    );
+  });
+  it.skip('uses event data from last event in filled END events', () => {
+    const handlers = mockedEventHandlers();
+    render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
+    fireGestureHandler<TapGesture>(getByGestureId('pan'), [{ x: 120 }]);
+    expect(handlers.end).toHaveBeenNthCalledWith(
+      expect.objectContaining({ x: 120 })
+    );
+  });
+  it.todo(
+    "treats first event as BEGIN in discrete handlers if it doesn't have state field"
+  );
+  it.todo(
+    "treats first event as ACTIVE in continous handlers if it doesn't have state field"
+  );
+  it.todo(
+    "fills BEGIN and END events when they're not present, for discrete handlers"
+  );
+  it.todo(
+    "fills BEGIN, ACTIVE and END events when they're not present, for continuous handlers"
+  );
 });

@@ -183,26 +183,6 @@ function fillOldStateChanges(
   }
 }
 
-function fillMissingActiveStateFields(
-  previousEvent: Omit<GestureHandlerTestEvent, 'oldState'> | null,
-  currentEvent: Omit<GestureHandlerTestEvent, 'state' | 'oldState'>
-) {
-  const isFirstEvent = previousEvent === null;
-  if (isFirstEvent) {
-    return currentEvent;
-  }
-  if (
-    previousEvent.state === State.ACTIVE &&
-    !hasProperty(currentEvent, 'state')
-  ) {
-    return {
-      state: State.ACTIVE,
-      ...currentEvent,
-    };
-  }
-  return currentEvent;
-}
-
 type EventWithStates = Partial<
   Pick<GestureHandlerTestEvent, 'oldState' | 'state'>
 >;
@@ -256,6 +236,7 @@ function validateStateTransitions(
   return currentEvent;
 }
 
+type EventWithoutStates = Omit<GestureHandlerTestEvent, 'oldState' | 'state'>;
 interface HandlerInfo {
   handlerType: HandlerNames;
   handlerTag: number;
@@ -265,7 +246,7 @@ function fillMissingDefaultsFor({
   handlerTag,
 }: HandlerInfo): (
   event: Partial<GestureHandlerTestEvent>
-) => Omit<GestureHandlerTestEvent, 'state' | 'oldState'> {
+) => EventWithoutStates {
   return (event) => {
     return {
       ...handlersDefaultEvents[handlerType],
@@ -273,6 +254,104 @@ function fillMissingDefaultsFor({
       handlerTag,
     };
   };
+}
+
+function isDiscreteHandler(handlerType: HandlerNames) {
+  return (
+    handlerType === 'TapGestureHandler' ||
+    handlerType === 'LongPressGestureHandler'
+  );
+}
+
+function fillMissingStatesTransitions(
+  events: EventWithoutStates[],
+  isDiscreteHandler: boolean
+): EventWithoutStates[] {
+  type Event = EventWithoutStates | null;
+  const _events = [...events];
+  function fillEventsForCurrentState(
+    shouldUseEvent: (
+      event: Event
+    ) => readonly [shouldUse: boolean, shouldConsume: boolean],
+    shouldTransitionToNextState: (nextEvent: Event) => boolean
+  ) {
+    function peekCurrentEvent(): Event {
+      return _events[0] ?? null;
+    }
+    function peekNextEvent(): Event {
+      return _events[1] ?? null;
+    }
+    function consumeCurrentEvent() {
+      _events.shift();
+    }
+    const currentEvent = peekCurrentEvent();
+    const nextEvent = peekNextEvent();
+    const currentRequiredState = REQUIRED_EVENTS[currentStateIdx];
+
+    let eventData = {};
+    const [shouldUseEventData, shouldConsumeEvent] = shouldUseEvent(
+      currentEvent
+    );
+    if (shouldUseEventData) {
+      eventData = currentEvent!;
+
+      if (shouldConsumeEvent) {
+        consumeCurrentEvent();
+      }
+    }
+    transformedEvents.push({ state: currentRequiredState, ...eventData });
+    if (shouldTransitionToNextState(nextEvent)) {
+      currentStateIdx++;
+    }
+  }
+
+  const isWithoutState = (event: Event) =>
+    event !== null && !hasProperty(event, 'state');
+  const hasState = (state: State) => (event: Event) =>
+    event !== null && event.state === state;
+  const noEventsLeft = (event: Event) => event === null;
+
+  const REQUIRED_EVENTS = [State.BEGAN, State.ACTIVE, State.END];
+
+  let currentStateIdx = 0;
+  const transformedEvents: EventWithoutStates[] = [];
+  let hasAllStates;
+  let iterations = 0;
+  do {
+    const nextRequiredState = REQUIRED_EVENTS[currentStateIdx];
+    if (nextRequiredState === State.BEGAN) {
+      const shouldConsumeEvent = (e: Event) =>
+        [
+          isWithoutState(e) || hasState(State.BEGAN)(e),
+          isDiscreteHandler || hasState(State.BEGAN)(e),
+        ] as const;
+      const shouldTransition = () => true;
+
+      fillEventsForCurrentState(shouldConsumeEvent, shouldTransition);
+    } else if (nextRequiredState === State.ACTIVE) {
+      const shouldConsumeEvent = (e: Event) =>
+        [isWithoutState(e) || hasState(State.ACTIVE)(e), true] as const;
+      const shouldTransition = (nextEvent: Event) =>
+        noEventsLeft(nextEvent) ||
+        hasState(State.END)(nextEvent) ||
+        hasState(State.FAILED)(nextEvent) ||
+        hasState(State.CANCELLED)(nextEvent);
+
+      fillEventsForCurrentState(shouldConsumeEvent, shouldTransition);
+    } else if (nextRequiredState === State.END) {
+      const shouldConsumeEvent = () => [true, true] as const;
+      const shouldTransition = () => true;
+
+      fillEventsForCurrentState(shouldConsumeEvent, shouldTransition);
+    }
+    hasAllStates = currentStateIdx === REQUIRED_EVENTS.length;
+
+    invariant(
+      iterations++ <= 500,
+      'exceeded max number of iterations, please report a bug in RNGH repository including your test case'
+    );
+  } while (!hasAllStates);
+  return transformedEvents;
 }
 
 type EventEmitter = (
@@ -343,14 +422,17 @@ type ExtractConfig<T> = T extends BaseGesture<infer TGesturePayload>
 
 export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
   componentOrGesture: ReactTestInstance | GestureType,
-  eventList: Partial<GestureHandlerTestEvent<ExtractConfig<THandler>>>[]
+  eventList: Partial<GestureHandlerTestEvent<ExtractConfig<THandler>>>[] = []
 ): void {
   const { emitEvent, handlerType, handlerTag } = getHandlerData(
     componentOrGesture
   );
 
-  let _ = eventList.map(fillMissingDefaultsFor({ handlerTag, handlerType }));
-  _ = withPrevAndCurrent(_, fillMissingActiveStateFields);
+  let _ = fillMissingStatesTransitions(
+    eventList,
+    isDiscreteHandler(handlerType)
+  );
+  _ = _.map(fillMissingDefaultsFor({ handlerTag, handlerType }));
   _ = withPrevAndCurrent(_, fillOldStateChanges);
   _ = withPrevAndCurrent(_, validateStateTransitions);
   // @ts-ignore TODO
@@ -358,11 +440,7 @@ export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
 
   const events = (_ as unknown) as WrappedGestureHandlerTestEvent[];
 
-  const firstEvent = events.shift();
-  invariant(
-    firstEvent !== undefined && events.length !== 0,
-    'Events list must contain at least two events.'
-  ); // TODO: provide defaults
+  const firstEvent = events.shift()!;
 
   emitEvent('onGestureHandlerStateChange', firstEvent);
   let lastSentEvent = firstEvent;
