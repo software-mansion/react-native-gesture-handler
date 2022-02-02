@@ -24,4 +24,5 @@ Example:
 
 RNGH provides an API for triggering selected handlers:
 
-TODO(jgonet) - link to API, write guide with common assertions, gotchas, and usage
+- [`fireGestureHandler(gestureOrHandler, eventList)`](../api/test-api#firegesturehandlergestureorhandler-eventlist)
+- [`getByGestureTestId(testID)`](../api/test-api#getbygesturetestidtestid)
