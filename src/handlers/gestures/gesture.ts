@@ -41,6 +41,7 @@ export interface BaseGestureConfig
   simultaneousWith?: GestureRef[];
   needsPointerData?: boolean;
   manualActivation?: boolean;
+  runOnJS?: boolean;
 }
 
 type TouchEventHandlerType = (
@@ -119,7 +120,7 @@ export abstract class BaseGesture<
   public config: BaseGestureConfig = {};
   public handlers: HandlerCallbacks<EventPayloadT> = {
     handlerTag: -1,
-    isWorklet: [false, false, false, false],
+    isWorklet: [],
   };
 
   private addDependency(
@@ -234,6 +235,11 @@ export abstract class BaseGesture<
     return this;
   }
 
+  runOnJS(runOnJS: boolean) {
+    this.config.runOnJS = runOnJS;
+    return this;
+  }
+
   simultaneousWithExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
       this.addDependency('simultaneousWith', gesture);
@@ -263,6 +269,20 @@ export abstract class BaseGesture<
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prepare() {}
+
+  get shouldUseReanimated(): boolean {
+    // use Reanimated when runOnJS isn't set explicitly and all defined callbacks are worklets
+    return (
+      this.config.runOnJS !== true &&
+      this.handlers.isWorklet.reduce((prev, current) => {
+        if (current !== undefined) {
+          return prev && current;
+        } else {
+          return prev;
+        }
+      }, true)
+    );
+  }
 }
 
 export abstract class ContinousBaseGesture<

@@ -50,7 +50,7 @@ export type GestureConfigReference = {
     HandlerCallbacks<Record<string, unknown>>[] | null
   > | null;
   firstExecution: boolean;
-  useAnimated: boolean;
+  useReanimatedHook: boolean;
 };
 
 function convertToHandlerTag(ref: GestureRef): number {
@@ -79,12 +79,35 @@ function dropHandlers(preparedGesture: GestureConfigReference) {
   }
 }
 
+function checkGestureCallbacksForWorklets(gesture: GestureType) {
+  // if a gesture is explicitly marked to run on the JS thread there is no need to check
+  // if callbacks are worklets as the user is aware they will be ran on the JS thread
+  if (gesture.config.runOnJS) {
+    return;
+  }
+
+  const areAllWorklets = gesture.handlers.isWorklet.reduce(
+    (prev, current) => prev && (current === undefined || current === true),
+    true
+  );
+
+  const areAllNotWorklets = gesture.handlers.isWorklet.reduce(
+    (prev, current) => prev && (current === undefined || current === false),
+    true
+  );
+
+  if (!areAllWorklets && !areAllNotWorklets) {
+    console.error(
+      `[RNGestureHandler] Some of the callbacks in a gesture are worklets and some are not. Either make sure that all calbacks are marked ad 'worklet' if you wish to run them on the UI thread or use 'runOnJS(true)' modifier on a gesture explicitly to run all callbacks on the JS thread`
+    );
+  }
+}
+
 interface AttachHandlersConfig {
   preparedGesture: GestureConfigReference;
   gestureConfig: ComposedGesture | GestureType | undefined;
   gesture: GestureType[];
   viewTag: number;
-  useAnimated: boolean;
 }
 
 function attachHandlers({
@@ -92,7 +115,6 @@ function attachHandlers({
   gestureConfig,
   gesture,
   viewTag,
-  useAnimated,
 }: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
     gestureConfig?.initialize();
@@ -107,6 +129,8 @@ function attachHandlers({
   });
 
   for (const handler of gesture) {
+    checkGestureCallbacksForWorklets(handler);
+
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
       handler.handlerTag,
@@ -145,14 +169,16 @@ function attachHandlers({
     RNGestureHandlerModule.attachGestureHandler(
       gesture.handlerTag,
       viewTag,
-      !useAnimated // send direct events when using animatedGesture, device events otherwise
+      !gesture.shouldUseReanimated // send direct events when using animatedGesture, device events otherwise
     );
   }
 
   if (preparedGesture.animatedHandlers) {
-    preparedGesture.animatedHandlers.value = (gesture.map(
-      (g) => g.handlers
-    ) as unknown) as HandlerCallbacks<Record<string, unknown>>[];
+    preparedGesture.animatedHandlers.value = (gesture
+      .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
+      .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+      Record<string, unknown>
+    >[];
   }
 }
 
@@ -165,6 +191,7 @@ function updateHandlers(
 
   for (let i = 0; i < gesture.length; i++) {
     const handler = preparedGesture.config[i];
+    checkGestureCallbacksForWorklets(handler);
 
     // only update handlerTag when it's actually different, it may be the same
     // if gesture config object is wrapped with useMemo
@@ -204,9 +231,11 @@ function updateHandlers(
     }
 
     if (preparedGesture.animatedHandlers) {
-      preparedGesture.animatedHandlers.value = (preparedGesture.config.map(
-        (g) => g.handlers
-      ) as unknown) as HandlerCallbacks<Record<string, unknown>>[];
+      preparedGesture.animatedHandlers.value = (preparedGesture.config
+        .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
+        .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+        Record<string, unknown>
+      >[];
     }
   });
 }
@@ -219,7 +248,11 @@ function needsToReattach(
     return true;
   }
   for (let i = 0; i < gesture.length; i++) {
-    if (gesture[i].handlerName !== preparedGesture.config[i].handlerName) {
+    if (
+      gesture[i].handlerName !== preparedGesture.config[i].handlerName ||
+      gesture[i].shouldUseReanimated !==
+        preparedGesture.config[i].shouldUseReanimated
+    ) {
       return true;
     }
   }
@@ -307,7 +340,9 @@ function useAnimatedGesture(
       // correct handler.
       handler?.(event, ...args);
     } else if (handler) {
-      console.warn('Animated gesture callback must be a worklet');
+      console.warn(
+        '[RNGestureHandler] Animated gesture callback must be a worklet'
+      );
     }
   }
 
@@ -422,10 +457,10 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
 ) => {
   const gestureConfig = props.gesture;
   const gesture = gestureConfig?.toGestureArray?.() ?? [];
-  const useAnimated =
-    gesture.find((gesture) =>
-      gesture.handlers.isWorklet.reduce((prev, current) => prev || current)
-    ) != null;
+  const useReanimatedHook = gesture.reduce(
+    (prev, current) => prev || current.shouldUseReanimated,
+    false
+  );
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
 
@@ -434,12 +469,12 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     animatedEventHandler: null,
     animatedHandlers: null,
     firstExecution: true,
-    useAnimated: useAnimated,
+    useReanimatedHook: useReanimatedHook,
   }).current;
 
-  if (useAnimated !== preparedGesture.useAnimated) {
+  if (useReanimatedHook !== preparedGesture.useReanimatedHook) {
     throw new Error(
-      'You cannot change whether you are using gesture or animatedGesture while the app is running'
+      '[RNGestureHandler] You cannot change the thread the callbacks are ran on while the app is running'
     );
   }
 
@@ -452,9 +487,8 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     gestureConfig?.initialize?.();
   }
 
-  if (useAnimated) {
-    // Whether animatedGesture or gesture is used shouldn't change
-    // during while an app is running
+  if (useReanimatedHook) {
+    // Whether animatedGesture or gesture is used shouldn't change while the app is running
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
   }
@@ -467,7 +501,6 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       gestureConfig,
       gesture,
       viewTag,
-      useAnimated,
     });
 
     return () => {
@@ -486,7 +519,6 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
           gestureConfig,
           gesture,
           viewTag,
-          useAnimated,
         });
       } else {
         updateHandlers(preparedGesture, gestureConfig, gesture);
@@ -496,7 +528,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     }
   }, [props]);
 
-  if (useAnimated) {
+  if (useReanimatedHook) {
     return (
       <AnimatedWrap
         ref={viewRef}
