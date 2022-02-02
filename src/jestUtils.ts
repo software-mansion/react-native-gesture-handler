@@ -276,7 +276,7 @@ function fillMissingStatesTransitions(
     !isDiscreteHandler && !hasState(State.BEGAN)(firstEvent);
   if (shouldDuplicateFirstEvent) {
     const duplicated = { ...firstEvent, state: State.BEGAN };
-    // @ts-ignore badly typed, property may exist
+    // @ts-ignore badly typed, property may exist and we don't want to copy it
     delete duplicated.oldState;
     _events.unshift(duplicated);
   }
@@ -288,7 +288,7 @@ function fillMissingStatesTransitions(
 
   if (shouldDuplicateLastEvent) {
     const duplicated = { ...lastEvent, state: State.END };
-    // @ts-ignore badly typed, property may exist
+    // @ts-ignore badly typed, property may exist and we don't want to copy it
     delete duplicated.oldState;
     _events.push(duplicated);
   }
@@ -302,10 +302,18 @@ function fillMissingStatesTransitions(
   function noEventsLeft(event: Event) {
     return event === null;
   }
-  function fillEventsForCurrentState(
-    shouldUseEvent: (event: Event) => boolean,
-    shouldTransitionToNextState: (nextEvent: Event) => boolean
-  ) {
+
+  function trueFn() {
+    return true;
+  }
+  interface Args {
+    shouldConsumeEvent?: (event: Event) => boolean;
+    shouldTransitionToNextState?: (nextEvent: Event) => boolean;
+  }
+  function fillEventsForCurrentState({
+    shouldConsumeEvent = trueFn,
+    shouldTransitionToNextState = trueFn,
+  }: Args) {
     function peekCurrentEvent(): Event {
       return _events[0] ?? null;
     }
@@ -320,8 +328,8 @@ function fillMissingStatesTransitions(
     const currentRequiredState = REQUIRED_EVENTS[currentStateIdx];
 
     let eventData = {};
-    const shouldConsumeEvent = shouldUseEvent(currentEvent);
-    if (shouldConsumeEvent) {
+    const shouldUseEvent = shouldConsumeEvent(currentEvent);
+    if (shouldUseEvent) {
       eventData = currentEvent!;
       consumeCurrentEvent();
     }
@@ -340,26 +348,25 @@ function fillMissingStatesTransitions(
   do {
     const nextRequiredState = REQUIRED_EVENTS[currentStateIdx];
     if (nextRequiredState === State.BEGAN) {
-      const shouldConsumeEvent = (e: Event) =>
-        isWithoutState(e) || hasState(State.BEGAN)(e);
-      const shouldTransition = () => true;
-
-      fillEventsForCurrentState(shouldConsumeEvent, shouldTransition);
+      fillEventsForCurrentState({
+        shouldConsumeEvent: (e: Event) =>
+          isWithoutState(e) || hasState(State.BEGAN)(e),
+      });
     } else if (nextRequiredState === State.ACTIVE) {
       const shouldConsumeEvent = (e: Event) =>
         isWithoutState(e) || hasState(State.ACTIVE)(e);
-      const shouldTransition = (nextEvent: Event) =>
+      const shouldTransitionToNextState = (nextEvent: Event) =>
         noEventsLeft(nextEvent) ||
         hasState(State.END)(nextEvent) ||
         hasState(State.FAILED)(nextEvent) ||
         hasState(State.CANCELLED)(nextEvent);
 
-      fillEventsForCurrentState(shouldConsumeEvent, shouldTransition);
+      fillEventsForCurrentState({
+        shouldConsumeEvent,
+        shouldTransitionToNextState,
+      });
     } else if (nextRequiredState === State.END) {
-      const shouldConsumeEvent = () => true as const;
-      const shouldTransition = () => true;
-
-      fillEventsForCurrentState(shouldConsumeEvent, shouldTransition);
+      fillEventsForCurrentState({});
     }
     hasAllStates = currentStateIdx === REQUIRED_EVENTS.length;
 

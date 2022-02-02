@@ -500,10 +500,20 @@ describe('Filling event list with defaults', () => {
     );
   });
 
-  it.todo(
-    "fills BEGIN, ACTIVE and END events when they're not present, for discrete handlers"
-  );
-  it.todo(
-    "fills BEGIN, ACTIVE and END events when they're not present, for continuous handlers"
-  );
+  it("fills BEGIN and END events when they're not present, for discrete handlers", () => {
+    const handlers = mockedEventHandlers();
+    render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
+    fireGestureHandler<TapGesture>(getByGestureId('tap'));
+    expect(handlers.begin).toBeCalledTimes(1);
+    expect(handlers.end).toHaveBeenCalledTimes(1);
+  });
+
+  it("fills BEGIN, ACTIVE and END events when they're not present, for continuous handlers", () => {
+    const handlers = mockedEventHandlers();
+    render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
+    fireGestureHandler<TapGesture>(getByGestureId('pan'));
+    expect(handlers.begin).toBeCalledTimes(1);
+    expect(handlers.active).toBeCalledTimes(1);
+    expect(handlers.end).toHaveBeenCalledTimes(1);
+  });
 });
