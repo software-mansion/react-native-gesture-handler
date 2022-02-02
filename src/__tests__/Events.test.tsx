@@ -16,7 +16,7 @@ import {
   TapGesture,
 } from '../index';
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
-import { fireGestureHandler, getByGestureId } from '../jestUtils';
+import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 
 beforeEach(cleanup);
 
@@ -298,7 +298,7 @@ describe('Using RNGH v2 gesture API', () => {
       <RacingHandlers tapHandlers={tapHandlers} panHandlers={panHandlers} />
     );
 
-    fireGestureHandler<PanGesture>(getByGestureId('pan'), [
+    fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
       { state: State.BEGAN },
       { state: State.ACTIVE },
       { state: State.END },
@@ -313,7 +313,7 @@ describe('Using RNGH v2 gesture API', () => {
   it('sends events with additional data to handlers', () => {
     const panHandlers = mockedEventHandlers();
     render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
-    fireGestureHandler<PanGesture>(getByGestureId('pan'), [
+    fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
       { state: State.BEGAN, translationX: 0 },
       { state: State.ACTIVE, translationX: 10 },
       { translationX: 20 },
@@ -356,7 +356,7 @@ describe('Event list validation', () => {
     const panHandlers = mockedEventHandlers();
     render(<SingleHandler handlers={panHandlers} />);
     expect(() => {
-      fireGestureHandler<PanGesture>(getByGestureId('pan'), [
+      fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
         { oldState: State.UNDETERMINED, state: State.BEGAN, x: 0, y: 10 },
         { oldState: State.UNDETERMINED, state: State.ACTIVE, x: 1, y: 11 },
       ]);
@@ -370,7 +370,7 @@ describe('Event list validation', () => {
     (lastState) => {
       const panHandlers = mockedEventHandlers();
       render(<SingleHandler handlers={panHandlers} />);
-      fireGestureHandler<PanGesture>(getByGestureId('pan'), [
+      fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
         { state: State.BEGAN },
         { state: State.ACTIVE },
         { state: lastState },
@@ -420,7 +420,7 @@ describe('Filling event list with defaults', () => {
   it('fills oldState if not passed', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<PanGestureHandler>(getByGestureId('pan'), [
+    fireGestureHandler<PanGestureHandler>(getByGestureTestId('pan'), [
       { state: State.BEGAN },
       { state: State.ACTIVE },
       { state: State.ACTIVE },
@@ -447,7 +447,7 @@ describe('Filling event list with defaults', () => {
   it('fills missing ACTIVE states', () => {
     const panHandlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={panHandlers} treatStartAsUpdate />);
-    fireGestureHandler<PanGesture>(getByGestureId('pan'), [
+    fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
       { state: State.BEGAN, x: 0, y: 10 },
       { state: State.ACTIVE, x: 1, y: 11 },
       { x: 2, y: 12 },
@@ -464,7 +464,7 @@ describe('Filling event list with defaults', () => {
   it('fills BEGIN and END events for discrete handlers', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler(getByGestureId('tap'), [{ x: 5 }]);
+    fireGestureHandler(getByGestureTestId('tap'), [{ x: 5 }]);
     expect(handlers.begin).toBeCalledTimes(1);
     expect(handlers.end).toBeCalledTimes(1);
   });
@@ -472,7 +472,7 @@ describe('Filling event list with defaults', () => {
   it('with FAILED event, fills BEGIN event for discrete handlers', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler(getByGestureId('tap'), [{ state: State.FAILED }]);
+    fireGestureHandler(getByGestureTestId('tap'), [{ state: State.FAILED }]);
     expect(handlers.begin).toBeCalledTimes(1);
     expect(handlers.end).toBeCalledTimes(1);
     expect(handlers.end).toBeCalledWith(expect.anything(), false);
@@ -481,7 +481,7 @@ describe('Filling event list with defaults', () => {
   it('uses event data from first event in filled BEGIN, ACTIVE events', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<TapGesture>(getByGestureId('pan'), [{ x: 120 }]);
+    fireGestureHandler<TapGesture>(getByGestureTestId('pan'), [{ x: 120 }]);
     expect(handlers.begin).toBeCalledWith(expect.objectContaining({ x: 120 }));
     expect(handlers.active).toHaveBeenNthCalledWith(
       1,
@@ -492,7 +492,7 @@ describe('Filling event list with defaults', () => {
   it('uses event data from last event in filled END events', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<TapGesture>(getByGestureId('pan'), [
+    fireGestureHandler<TapGesture>(getByGestureTestId('pan'), [
       { x: 120, state: State.FAILED },
     ]);
     expect(handlers.begin).toBeCalledTimes(1);
@@ -506,7 +506,7 @@ describe('Filling event list with defaults', () => {
   it('uses event data filled events', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<TapGesture>(getByGestureId('pan'), [
+    fireGestureHandler<TapGesture>(getByGestureTestId('pan'), [
       { x: 5, y: 15 },
       { x: 6, y: 16 },
       { x: 7, y: 17 },
@@ -524,7 +524,7 @@ describe('Filling event list with defaults', () => {
   it("fills BEGIN and END events when they're not present, for discrete handlers", () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<TapGesture>(getByGestureId('tap'));
+    fireGestureHandler<TapGesture>(getByGestureTestId('tap'));
     expect(handlers.begin).toBeCalledTimes(1);
     expect(handlers.end).toHaveBeenCalledTimes(1);
   });
@@ -532,7 +532,7 @@ describe('Filling event list with defaults', () => {
   it("fills BEGIN, ACTIVE and END events when they're not present, for continuous handlers", () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<TapGesture>(getByGestureId('pan'));
+    fireGestureHandler<TapGesture>(getByGestureTestId('pan'));
     expect(handlers.begin).toBeCalledTimes(1);
     expect(handlers.active).toBeCalledTimes(1);
     expect(handlers.end).toHaveBeenCalledTimes(1);
