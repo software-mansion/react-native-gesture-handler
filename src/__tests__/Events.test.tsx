@@ -480,7 +480,7 @@ describe('Filling event list with defaults', () => {
     expect(handlers.end).toBeCalledWith(expect.anything(), false);
   });
 
-  it.skip('uses event data from first event in filled BEGIN, ACTIVE events', () => {
+  it('uses event data from first event in filled BEGIN, ACTIVE events', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
     fireGestureHandler<TapGesture>(getByGestureId('pan'), [{ x: 120 }]);
@@ -490,22 +490,18 @@ describe('Filling event list with defaults', () => {
       expect.objectContaining({ x: 120 })
     );
   });
-  it.skip('uses event data from last event in filled END events', () => {
+  it('uses event data from last event in filled END events', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
     fireGestureHandler<TapGesture>(getByGestureId('pan'), [{ x: 120 }]);
-    expect(handlers.end).toHaveBeenNthCalledWith(
-      expect.objectContaining({ x: 120 })
+    expect(handlers.end).toBeCalledWith(
+      expect.objectContaining({ x: 120 }),
+      true
     );
   });
+
   it.todo(
-    "treats first event as BEGIN in discrete handlers if it doesn't have state field"
-  );
-  it.todo(
-    "treats first event as ACTIVE in continous handlers if it doesn't have state field"
-  );
-  it.todo(
-    "fills BEGIN and END events when they're not present, for discrete handlers"
+    "fills BEGIN, ACTIVE and END events when they're not present, for discrete handlers"
   );
   it.todo(
     "fills BEGIN, ACTIVE and END events when they're not present, for continuous handlers"

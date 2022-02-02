@@ -269,6 +269,39 @@ function fillMissingStatesTransitions(
 ): EventWithoutStates[] {
   type Event = EventWithoutStates | null;
   const _events = [...events];
+  const lastEvent = _events[_events.length - 1] ?? null;
+  const firstEvent = _events[0] ?? null;
+
+  const shouldDuplicateFirstEvent =
+    !isDiscreteHandler && !hasState(State.BEGAN)(firstEvent);
+  if (shouldDuplicateFirstEvent) {
+    const duplicated = { ...firstEvent, state: State.BEGAN };
+    // @ts-ignore badly typed, property may exist
+    delete duplicated.oldState;
+    _events.unshift(duplicated);
+  }
+
+  const shouldDuplicateLastEvent =
+    !hasState(State.END)(lastEvent) ||
+    !hasState(State.FAILED)(lastEvent) ||
+    !hasState(State.CANCELLED)(lastEvent);
+
+  if (shouldDuplicateLastEvent) {
+    const duplicated = { ...lastEvent, state: State.END };
+    // @ts-ignore badly typed, property may exist
+    delete duplicated.oldState;
+    _events.push(duplicated);
+  }
+
+  function isWithoutState(event: Event) {
+    return event !== null && !hasProperty(event, 'state');
+  }
+  function hasState(state: State) {
+    return (event: Event) => event !== null && event.state === state;
+  }
+  function noEventsLeft(event: Event) {
+    return event === null;
+  }
   function fillEventsForCurrentState(
     shouldUseEvent: (event: Event) => boolean,
     shouldTransitionToNextState: (nextEvent: Event) => boolean
@@ -298,12 +331,6 @@ function fillMissingStatesTransitions(
     }
   }
 
-  const isWithoutState = (event: Event) =>
-    event !== null && !hasProperty(event, 'state');
-  const hasState = (state: State) => (event: Event) =>
-    event !== null && event.state === state;
-  const noEventsLeft = (event: Event) => event === null;
-
   const REQUIRED_EVENTS = [State.BEGAN, State.ACTIVE, State.END];
 
   let currentStateIdx = 0;
@@ -314,7 +341,7 @@ function fillMissingStatesTransitions(
     const nextRequiredState = REQUIRED_EVENTS[currentStateIdx];
     if (nextRequiredState === State.BEGAN) {
       const shouldConsumeEvent = (e: Event) =>
-        (isWithoutState(e) && isDiscreteHandler) || hasState(State.BEGAN)(e);
+        isWithoutState(e) || hasState(State.BEGAN)(e);
       const shouldTransition = () => true;
 
       fillEventsForCurrentState(shouldConsumeEvent, shouldTransition);
@@ -338,9 +365,10 @@ function fillMissingStatesTransitions(
 
     invariant(
       iterations++ <= 500,
-      'exceeded max number of iterations, please report a bug in RNGH repository including your test case'
+      'exceeded max number of iterations, please report a bug in RNGH repository with your test case'
     );
   } while (!hasAllStates);
+
   return transformedEvents;
 }
 
