@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 // Disabling lint for assymetric matchers, check proposal below
 // https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/56937
@@ -490,12 +488,35 @@ describe('Filling event list with defaults', () => {
       expect.objectContaining({ x: 120 })
     );
   });
+
   it('uses event data from last event in filled END events', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<TapGesture>(getByGestureId('pan'), [{ x: 120 }]);
+    fireGestureHandler<TapGesture>(getByGestureId('pan'), [
+      { x: 120, state: State.FAILED },
+    ]);
+    expect(handlers.begin).toBeCalledTimes(1);
+    expect(handlers.active).toBeCalledTimes(1);
     expect(handlers.end).toBeCalledWith(
       expect.objectContaining({ x: 120 }),
+      false
+    );
+  });
+
+  it('uses event data filled events', () => {
+    const handlers = mockedEventHandlers();
+    render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
+    fireGestureHandler<TapGesture>(getByGestureId('pan'), [
+      { x: 5, y: 15 },
+      { x: 6, y: 16 },
+      { x: 7, y: 17 },
+    ]);
+    expect(handlers.begin).toBeCalledWith(
+      expect.objectContaining({ x: 5, y: 15 })
+    );
+    expect(handlers.active).toBeCalledTimes(3);
+    expect(handlers.end).toBeCalledWith(
+      expect.objectContaining({ x: 7, y: 17 }),
       true
     );
   });
