@@ -166,8 +166,12 @@ function updateHandlers(
   for (let i = 0; i < gesture.length; i++) {
     const handler = preparedGesture.config[i];
 
-    gesture[i].handlerTag = handler.handlerTag;
-    gesture[i].handlers.handlerTag = handler.handlerTag;
+    // only update handlerTag when it's actually different, it may be the same
+    // if gesture config object is wrapped with useMemo
+    if (gesture[i].handlerTag !== handler.handlerTag) {
+      gesture[i].handlerTag = handler.handlerTag;
+      gesture[i].handlers.handlerTag = handler.handlerTag;
+    }
   }
 
   // use setImmediate to extract handlerTags, because when it's ran, all refs should be updated
@@ -179,7 +183,6 @@ function updateHandlers(
 
       handler.config = gesture[i].config;
       handler.handlers = gesture[i].handlers;
-      handler.handlers.handlerTag = handler.handlerTag;
 
       const requireToFail = extractValidHandlerTags(
         handler.config.requireToFail
@@ -224,7 +227,10 @@ function needsToReattach(
   return false;
 }
 
-function useAnimatedGesture(preparedGesture: GestureConfigReference) {
+function useAnimatedGesture(
+  preparedGesture: GestureConfigReference,
+  needsRebuild: boolean
+) {
   if (!Reanimated) {
     return;
   }
@@ -401,7 +407,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   const event = Reanimated.useEvent(
     callback,
     ['onGestureHandlerStateChange', 'onGestureHandlerEvent'],
-    true
+    needsRebuild
   );
 
   preparedGesture.animatedEventHandler = event;
@@ -437,6 +443,11 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     );
   }
 
+  // Reanimated event should be rebuilt only when gestures are reattached, otherwise
+  // config update will be enough as all necessary items are stored in shared values anyway
+  const needsToRebuildReanimatedEvent =
+    preparedGesture.firstExecution || needsToReattach(preparedGesture, gesture);
+
   if (preparedGesture.firstExecution) {
     gestureConfig?.initialize?.();
   }
@@ -445,7 +456,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     // Whether animatedGesture or gesture is used shouldn't change
     // during while an app is running
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    useAnimatedGesture(preparedGesture);
+    useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
   }
 
   useEffect(() => {
