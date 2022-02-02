@@ -1,17 +1,19 @@
 package com.swmansion.gesturehandler.react
 
 import android.content.Context
-import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.*
+import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.common.UIManagerType.FABRIC
+import com.facebook.react.uimanager.common.ViewUtil
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
+import com.swmansion.reanimated.ReanimatedModule
 import java.util.*
 
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
@@ -361,10 +363,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   @ReactMethod
-  fun attachGestureHandler(handlerTag: Int, viewTag: Int, useDeviceEvents: Boolean) {
+  fun attachGestureHandler(handlerTag: Int, viewTag: Int, actionType: Int) {
     tryInitializeHandlerForReactRootView(viewTag)
 
-    if (!registry.attachHandlerToView(handlerTag, viewTag, useDeviceEvents)) {
+    if (!registry.attachHandlerToView(handlerTag, viewTag, actionType)) {
       throw JSApplicationIllegalArgumentException("Handler with tag $handlerTag does not exists")
     }
   }
@@ -523,6 +525,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     handlerFactories.firstOrNull { it.type == handler.javaClass } as HandlerFactory<T>?
 
   private fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, motionEvent: MotionEvent) {
+    // onUpdate
+
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
@@ -530,41 +534,26 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     if (handler.state == GestureHandler.STATE_ACTIVE) {
       val handlerFactory = findFactoryForHandler(handler)
 
-      if (true || handler.usesDeviceEvents) {
+      if (handler.actionType == 1) {
+        // Reanimated worklet
+        val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+        val animatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)!!
+        animatedModule.nodesManager.onEventDispatch(event)
+      } else if (handler.actionType == 2) {
+        // Animated with useNativeDriver: true
+        val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+        val fuim = UIManagerHelper.getUIManager(reactApplicationContext, FABRIC) as FabricUIManager
+        fuim.eventDispatcher.dispatchEvent(event)
+      } else if (handler.actionType == 3) {
+        // JS function, Animated.event with useNativeDriver: false
         val data = RNGestureHandlerEvent.createEventData(handler, handlerFactory)
-
-         // works only with USE_NATIVE_DRIVER: false
-         reactApplicationContext
-           .deviceEventEmitter
-           .emit(RNGestureHandlerEvent.EVENT_NAME, data)
-
-//         reactApplicationContext
-//          .UIManager
-//          .eventDispatcher.let {
-//            val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
-//            it.dispatchEvent(event)
-//          }
-
-        if (reactApplicationContext.hasActiveReactInstance()) {
-          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
-//          val surfaceId: Int = UIManagerHelper.getSurfaceId(reactApplicationContext)
-          UIManagerHelper.getEventDispatcherForReactTag(reactApplicationContext, 8)?.dispatchEvent(event)
-        }
-
-        // TODO: fix Cannot find EventEmitter for receiveEvent: SurfaceId[-1] ReactTag[8] UIManagerType[2]
-      } else {
-//        reactApplicationContext
-//          .UIManager
-//          .eventDispatcher.let {
-//            val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
-//            it.dispatchEvent(event)
-//          }
+        reactApplicationContext.deviceEventEmitter.emit(RNGestureHandlerEvent.EVENT_NAME, data)
       }
     }
   }
 
   private fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
-    // called on start, on activation and on end
+    // onBegin, onStart, onEnd, onFinalize
 
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
@@ -572,53 +561,20 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     }
     val handlerFactory = findFactoryForHandler(handler)
 
-    if (true || handler.usesDeviceEvents) {
-      val data = RNGestureHandlerStateChangeEvent.createEventData(
-        handler,
-        handlerFactory,
-        newState,
-        oldState,
-      )
-
-      reactApplicationContext
-        .deviceEventEmitter
-        .emit(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
-    } else {
-      reactApplicationContext
-        .UIManager
-        .eventDispatcher.let {
-          val event =
-            RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
-          it.dispatchEvent(event)
-        }
+    if (handler.actionType == 1) {
+      // Reanimated worklet
+      val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
+      val animatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)!!
+      animatedModule.nodesManager.onEventDispatch(event)
+    } else if (handler.actionType == 2 || handler.actionType == 3) {
+      // JS function or Animated.event with useNativeDriver: false
+      val data = RNGestureHandlerStateChangeEvent.createEventData(handler, handlerFactory, newState, oldState)
+      reactApplicationContext.deviceEventEmitter.emit(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
     }
   }
 
   private fun <T : GestureHandler<T>> onTouchEvent(handler: T) {
-    // nie wiem w jakim przypadku to sie odpali
-
-    if (handler.tag < 0) {
-      // root containers use negative tags, we don't need to dispatch events for them to the JS
-      return
-    }
-    if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE
-        || handler.state == GestureHandler.STATE_UNDETERMINED || handler.view != null) {
-      if (true || handler.usesDeviceEvents) {
-        val data = RNGestureHandlerTouchEvent.createEventData(handler)
-
-        reactApplicationContext
-            .deviceEventEmitter
-            .emit(RNGestureHandlerTouchEvent.EVENT_NAME, data)
-
-      } else {
-        reactApplicationContext
-            .UIManager
-            .eventDispatcher.let {
-              val event = RNGestureHandlerTouchEvent.obtain(handler)
-              it.dispatchEvent(event)
-            }
-      }
-    }
+    // never used?
   }
 
   companion object {

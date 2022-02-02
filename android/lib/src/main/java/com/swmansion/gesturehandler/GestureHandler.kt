@@ -34,7 +34,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var isEnabled = true
     private set
-  var usesDeviceEvents = false
+  var actionType = 0
 
   var changedTouchesPayload: WritableArray? = null
     private set
