@@ -10,7 +10,7 @@ import com.facebook.react.uimanager.ViewGroupManager
  * to be provided.
  */
 @ReactModule(name = RNGestureHandlerRootViewManager.REACT_CLASS)
-class RNGestureHandlerRootViewManager : ViewGroupManager<RNGestureHandlerRootView>() {
+open class RNGestureHandlerRootViewManager : ViewGroupManager<RNGestureHandlerRootView>() {
   override fun getName() = REACT_CLASS
   override fun createViewInstance(reactContext: ThemedReactContext) = RNGestureHandlerRootView(reactContext)
 

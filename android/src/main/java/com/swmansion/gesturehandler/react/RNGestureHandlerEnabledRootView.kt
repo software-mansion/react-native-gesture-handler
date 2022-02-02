@@ -8,7 +8,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 
 @Deprecated(message = "Use <GestureHandlerRootView /> component instead. Check gesture handler installation instructions in documentation for more information.")
-class RNGestureHandlerEnabledRootView : ReactRootView {
+open class RNGestureHandlerEnabledRootView : ReactRootView {
   private lateinit var _reactInstanceManager: ReactInstanceManager
   private var gestureRootHelper: RNGestureHandlerRootHelper? = null
 

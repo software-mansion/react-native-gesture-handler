@@ -67,7 +67,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
-        implementation project(':react-native-reanimated')
+        implementation project(':react:react-native-reanimated')
     }
     implementation 'com.facebook.react:react-native:+'
     implementation 'androidx.appcompat:appcompat:1.2.0'
