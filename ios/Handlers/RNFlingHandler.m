@@ -72,7 +72,9 @@
   [super resetConfig];
   UISwipeGestureRecognizer *recognizer = (UISwipeGestureRecognizer *)_recognizer;
   recognizer.direction = UISwipeGestureRecognizerDirectionRight;
+#if !TARGET_OS_TV
   recognizer.numberOfTouchesRequired = 1;
+#endif
 }
 
 - (void)configure:(NSDictionary *)config

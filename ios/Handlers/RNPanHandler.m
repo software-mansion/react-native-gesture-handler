@@ -236,8 +236,10 @@
     recognizer.allowedScrollTypesMask = 0;
   }
 #endif
+#if !TARGET_OS_TV
   recognizer.minimumNumberOfTouches = 1;
   recognizer.maximumNumberOfTouches = NSUIntegerMax;
+#endif
   recognizer.minDistSq = NAN;
   recognizer.minVelocitySq = NAN;
 }
