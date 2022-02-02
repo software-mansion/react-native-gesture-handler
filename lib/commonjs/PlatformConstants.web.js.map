@@ -1,0 +1,1 @@
+{"version":3,"sources":["PlatformConstants.web.ts"],"names":["forceTouchAvailable"],"mappings":";;;;;;eAAe;AACb,MAAIA,mBAAJ,GAA0B;AACxB,WAAO,KAAP;AACD;;AAHY,C","sourcesContent":["export default {\n  get forceTouchAvailable() {\n    return false;\n  },\n};\n"]}

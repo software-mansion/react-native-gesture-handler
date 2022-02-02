@@ -1,0 +1,1 @@
+{"version":3,"sources":["init.ts"],"names":["initialize"],"mappings":";;;;;;;AAAA;;AAEO,SAASA,UAAT,GAAsB;AAC3B;AACD","sourcesContent":["import { startListening } from './handlers/gestures/eventReceiver';\n\nexport function initialize() {\n  startListening();\n}\n"]}
