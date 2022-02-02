@@ -237,11 +237,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
 {
-    if (self.usesDeviceEvents) {
-        [self.emitter sendStateChangeDeviceEvent:event];
-    } else {
-        [self.emitter sendStateChangeEvent:event];
-    }
+    [self.emitter sendStateChangeEvent:event withActionType:self.actionType];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state
@@ -253,11 +249,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                           withNumberOfTouches:_pointerTracker.trackedPointersCount];
   id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag handlerTag:_tag state:state extraData:extraData coalescingKey:[_tag intValue]];
   
-  if (self.usesDeviceEvents) {
-      [self.emitter sendStateChangeDeviceEvent:event];
-  } else {
-      [self.emitter sendStateChangeEvent:event];
-  }
+  [self.emitter sendStateChangeEvent:event withActionType:self.actionType];
 }
 
 - (RNGestureHandlerState)recognizerState

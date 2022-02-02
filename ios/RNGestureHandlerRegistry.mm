@@ -32,21 +32,12 @@
     _handlers[gestureHandler.tag] = gestureHandler;
 }
 
-- (void)attachHandlerWithTag:(NSNumber *)handlerTag toView:(UIView *)view
+- (void)attachHandlerWithTag:(NSNumber *)handlerTag toView:(UIView *)view withActionType:(NSNumber *)actionType
 {
     RNGestureHandler *handler = _handlers[handlerTag];
     RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
     [handler unbindFromView];
-    handler.usesDeviceEvents = NO;
-    [handler bindToView:view];
-}
-
-- (void)attachHandlerWithTagForDeviceEvents:(NSNumber *)handlerTag toView:(UIView *)view
-{
-    RNGestureHandler *handler = _handlers[handlerTag];
-    RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
-    [handler unbindFromView];
-    handler.usesDeviceEvents = YES;
+    handler.actionType = actionType;
     [handler bindToView:view];
 }
 

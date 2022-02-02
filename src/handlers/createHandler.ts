@@ -327,16 +327,22 @@ export default function createHandler<
           old: true,
         });
 
-        const isUseAnimatedGestureHandler =
-          'current' in this.props.onGestureEvent;
-        // true for Reanimated, false for JS callback or Animated.event
+        const actionType = (() => {
+          if ('current' in this.props.onGestureEvent) {
+            return 1; // Reanimated worklet
+          } else if ('__isNative' in this.props.onGestureEvent) {
+            return 2; // Animated.event with useNativeDriver: true
+          } else {
+            return 3; // JS callback or Animated.event with useNativeDriver: false
+          }
+        })();
 
         // TODO: find out why it sometimes the above crashes due to cloning object from different runtime
 
         RNGestureHandlerModule.attachGestureHandler(
           this.handlerTag,
           newViewTag,
-          isUseAnimatedGestureHandler
+          actionType
         );
       }
     };

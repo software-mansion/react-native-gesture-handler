@@ -145,7 +145,7 @@ function attachHandlers({
     RNGestureHandlerModule.attachGestureHandler(
       gesture.handlerTag,
       viewTag,
-      useAnimated // send direct events when using animatedGesture, device events otherwise
+      /* actionType */ useAnimated ? 1 : 3
     );
   }
 

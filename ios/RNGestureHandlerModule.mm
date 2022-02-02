@@ -106,14 +106,10 @@ RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSString *)handlerName tag:(nonn
     }];
 }
 
-RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWithTag:(nonnull NSNumber *)viewTag useDeviceEvents: (BOOL)useDeviceEvents)
+RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWithTag:(nonnull NSNumber *)viewTag actionType: (nonnull NSNumber *)actionType)
 {
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-        if (useDeviceEvents) {
-            [manager attachGestureHandlerForDeviceEvents:handlerTag toViewWithTag:viewTag]; // RNReanimated
-        } else {
-            [manager attachGestureHandler:handlerTag toViewWithTag:viewTag]; // Animated, JS callback
-        }
+        [manager attachGestureHandler:handlerTag toViewWithTag:viewTag withActionType:actionType];
     }];
 }
 

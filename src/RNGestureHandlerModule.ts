@@ -23,7 +23,7 @@ export type RNGestureHandlerModuleProps = {
   attachGestureHandler: (
     handlerTag: number,
     newView: number,
-    usingDeviceEvents: boolean
+    actionType: number
   ) => void;
   updateGestureHandler: (
     handlerTag: number,

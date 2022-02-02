@@ -98,23 +98,12 @@
 
 - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
                toViewWithTag:(nonnull NSNumber *)viewTag
+              withActionType:(nonnull NSNumber *)actionType
 {
     UIView *view = [_uiManager viewForReactTag:viewTag]; // TODO: pass ShadowNode from JS and get UIView* from it
     view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), will be returned as e.target
 
-    [_registry attachHandlerWithTag:handlerTag toView:view];
-
-    // register view if not already there
-    [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
-}
-
-- (void)attachGestureHandlerForDeviceEvents:(nonnull NSNumber *)handlerTag
-                              toViewWithTag:(nonnull NSNumber *)viewTag
-{
-    UIView *view = [_uiManager viewForReactTag:viewTag];
-    view.reactTag = viewTag; // not necessary but cannot be nil, will be returned as e.target, @9999 also works
-
-    [_registry attachHandlerWithTagForDeviceEvents:handlerTag toView:view];
+    [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
 
     // register view if not already there
     [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
@@ -207,26 +196,61 @@
     // never used?
 }
 
-- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
-{
-    // JS callback, Animated with useNativeDriver: false
-    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
-    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
-
-    // Animated with useNativeDriver: true
-    [_eventDispatcher sendEvent:event];
-    // TODO: call [self->_nodesManager handleAnimatedEvent:event] directly without RCTExecuteOnMainQueue?
-}
-
 - (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event
 {
     // never used
 }
 
-- (void)sendStateChangeDeviceEvent:(RNGestureHandlerStateChange *)event
+- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event withActionType:(nonnull NSNumber *)actionType
 {
-    // Reanimated worklet
+    if ([actionType integerValue] == 1) {
+        
+        // Reanimated worklet
+        [self sendStateChangeEventForReanimated:event];
+        
+    } else if ([actionType integerValue] == 2) {
+        
+        // Animated.event with useNativeDriver: true
+        if ([event.eventName isEqualToString:@"onGestureHandlerEvent"]) {
+            [self sendStateChangeEventForNativeAnimatedEvent:event];
+        } else if ([actionType integerValue] == 2 || [actionType integerValue] == 3) {
+            // in case when onGestureEvent prop is an Animated.event with useNativeDriver: true,
+            // onHandlerStateChange prop is still a regular JS function
+            [self sendStateChangeEventForDeviceEvent:event];
+        }
+        
+    } else if ([actionType integerValue] == 3) {
+        
+        // JS function or Animated.event with useNativeDriver: false
+        [self sendStateChangeEventForDeviceEvent:event];
+        
+    }
+}
+
+- (void)sendStateChangeEventForReanimated:(RNGestureHandlerStateChange *)event
+{
+    // delivers the event to Reanimated
+    // to be used when:
+    // - gesture callback from new API is a Reanimated worklet
+    // - onGestureEvent prop from old API is an useAnimatedGestureHandler object
     [_reanimatedModule eventDispatcherWillDispatchEvent:event];
+}
+
+- (void)sendStateChangeEventForNativeAnimatedEvent:(RNGestureHandlerStateChange *)event
+{
+    // delivers the event to NativeAnimatedModule
+    // to be used when onGestureEvent prop from old API is an Animated.event with useNativeDriver: true (only for onGestureHandlerEvent)
+    [_eventDispatcher sendEvent:event];
+    // TODO: call [self->_nodesManager handleAnimatedEvent:event] directly without RCTExecuteOnMainQueue?
+}
+
+- (void)sendStateChangeEventForDeviceEvent:(RNGestureHandlerStateChange *)event
+{
+    // delivers the event to JS as a device event
+    // to be used when gesture callback from new API or onGestureEvent/onHandlerStateChange from old API
+    // is a regular JS function (which is also true for Animated.event with useNativeDriver: false)
+    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
+    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }
 
 @end
