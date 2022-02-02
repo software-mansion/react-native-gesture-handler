@@ -49,9 +49,17 @@ a number that specifies how much the visual interaction will be delayed compared
 
 ### `onSwipeableLeftOpen`
 
+:::caution
+This callback is deprecated and will be removed in the next version. Please use `onSwipeableOpen(direction)`
+:::
+
 method that is called when left action panel gets open.
 
 ### `onSwipeableRightOpen`
+
+:::caution
+This callback is deprecated and will be removed in the next version. Please use `onSwipeableOpen(direction)`
+:::
 
 method that is called when right action panel gets open.
 
@@ -67,9 +75,17 @@ an argument.
 
 ### `onSwipeableLeftWillOpen`
 
+:::caution
+This callback is deprecated and will be removed in the next version. Please use `onSwipeableWillOpen(direction)`
+:::
+
 method that is called when left action panel starts animating on open.
 
 ### `onSwipeableRightWillOpen`
+
+:::caution
+This callback is deprecated and will be removed in the next version. Please use `onSwipeableWillOpen(direction)`
+:::
 
 method that is called when right action panel starts animating on open.
 

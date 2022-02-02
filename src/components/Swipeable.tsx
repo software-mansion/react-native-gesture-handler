@@ -90,11 +90,15 @@ export interface SwipeableProps
   overshootFriction?: number;
 
   /**
+   * @deprecated Use `direction` argument of onSwipeableOpen()
+   *
    * Called when left action panel gets open.
    */
   onSwipeableLeftOpen?: () => void;
 
   /**
+   * @deprecated Use `direction` argument of onSwipeableOpen()
+   *
    * Called when right action panel gets open.
    */
   onSwipeableRightOpen?: () => void;
@@ -110,11 +114,15 @@ export interface SwipeableProps
   onSwipeableClose?: (direction: 'left' | 'right') => void;
 
   /**
+   * @deprecated Use `direction` argument of onSwipeableWillOpen()
+   *
    * Called when left action panel starts animating on open.
    */
   onSwipeableLeftWillOpen?: () => void;
 
   /**
+   * @deprecated Use `direction` argument of onSwipeableWillOpen()
+   *
    * Called when right action panel starts animating on open.
    */
   onSwipeableRightWillOpen?: () => void;
