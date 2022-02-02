@@ -86,15 +86,8 @@ function checkGestureCallbacksForWorklets(gesture: GestureType) {
     return;
   }
 
-  const areAllWorklets = gesture.handlers.isWorklet.reduce(
-    (prev, current) => prev && (current === undefined || current === true),
-    true
-  );
-
-  const areAllNotWorklets = gesture.handlers.isWorklet.reduce(
-    (prev, current) => prev && (current === undefined || current === false),
-    true
-  );
+  const areAllWorklets = !gesture.handlers.isWorklet.includes(false);
+  const areAllNotWorklets = !gesture.handlers.isWorklet.includes(true);
 
   if (!areAllWorklets && !areAllNotWorklets) {
     console.error(
