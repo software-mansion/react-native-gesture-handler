@@ -273,14 +273,7 @@ export abstract class BaseGesture<
   get shouldUseReanimated(): boolean {
     // use Reanimated when runOnJS isn't set explicitly and all defined callbacks are worklets
     return (
-      this.config.runOnJS !== true &&
-      this.handlers.isWorklet.reduce((prev, current) => {
-        if (current !== undefined) {
-          return prev && current;
-        } else {
-          return prev;
-        }
-      }, true)
+      this.config.runOnJS !== true && !this.handlers.isWorklet.includes(false)
     );
   }
 }
