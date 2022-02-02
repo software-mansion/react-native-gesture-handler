@@ -204,7 +204,7 @@
 
 - (void)sendTouchEvent:(RNGestureHandlerEvent *)event
 {
-    // never used
+    // never used?
 }
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event

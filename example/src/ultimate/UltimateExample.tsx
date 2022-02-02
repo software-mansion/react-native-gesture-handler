@@ -44,6 +44,7 @@ export default function UltimateExample() {
       <OldAPIAnimatedEventExample useNativeDriver color="lightgray" />
       <View>
         {/* prevents "Style property 'backgroundColor' is not supported by native animated module" error on fast refresh */}
+        {/* this is probably a bug in React Native core */}
         <OldAPIAnimatedEventExample useNativeDriver={false} color="gray" />
       </View>
     </View>
