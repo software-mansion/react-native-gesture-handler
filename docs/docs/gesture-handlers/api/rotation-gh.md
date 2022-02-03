@@ -4,6 +4,11 @@ title: RotationGestureHandler
 sidebar_label: Rotation
 ---
 
+:::info
+We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
+section in Introduction](../../introduction.md#rngh-20) for more information.
+:::
+
 A continuous gesture handler that can recognize a rotation gesture and track its movement.
 
 The handler [activates](../basics/state.md#active) when fingers are placed on the screen and change position in a proper way.
@@ -38,7 +43,7 @@ Y coordinate, expressed in points, of the gesture's central focal point (anchor)
 
 ## Example
 
-See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/recipes/scaleAndRotate/index.tsx) from [GestureHandler Example App](../../example).
+See the [scale and rotation example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/recipes/scaleAndRotate/index.tsx) from Gesture Handler Example App.
 
 ```js
 class RotableBox extends React.Component {

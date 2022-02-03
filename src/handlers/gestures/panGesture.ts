@@ -5,7 +5,7 @@ import {
   PanGestureHandlerEventPayload,
 } from '../PanGestureHandler';
 
-type PanGestureChangeEventPayload = {
+export type PanGestureChangeEventPayload = {
   changeX: number;
   changeY: number;
 };

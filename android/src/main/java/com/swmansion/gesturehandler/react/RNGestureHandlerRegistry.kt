@@ -43,7 +43,9 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
       listToAdd.add(handler)
       handlersForView.put(viewTag, listToAdd)
     } else {
-      listToAdd.add(handler)
+      synchronized(listToAdd) {
+        listToAdd.add(handler)
+      }
     }
   }
 
@@ -54,7 +56,10 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
       attachedTo.remove(handler.tag)
       val attachedHandlers = handlersForView[attachedToView]
       if (attachedHandlers != null) {
-        attachedHandlers.remove(handler)
+        synchronized(attachedHandlers) {
+          attachedHandlers.remove(handler)
+        }
+
         if (attachedHandlers.size == 0) {
           handlersForView.remove(attachedToView)
         }

@@ -43,11 +43,7 @@ export interface GestureEventPayload {
   numberOfPointers: number;
   state: ValueOf<typeof State>;
 }
-
-export interface HandlerStateChangeEventPayload {
-  handlerTag: number;
-  numberOfPointers: number;
-  state: ValueOf<typeof State>;
+export interface HandlerStateChangeEventPayload extends GestureEventPayload {
   oldState: ValueOf<typeof State>;
 }
 
@@ -114,6 +110,7 @@ export type BaseGestureHandlerProps<
   id?: string;
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
   simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
+  testID?: string;
   // TODO(TS) - fix event types
   onBegan?: (event: HandlerStateChangeEvent) => void;
   onFailed?: (event: HandlerStateChangeEvent) => void;

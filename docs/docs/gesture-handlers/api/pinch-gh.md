@@ -4,6 +4,11 @@ title: PinchGestureHandler
 sidebar_label: Pinch
 ---
 
+:::info
+We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
+section in Introduction](../../introduction.md#rngh-20) for more information.
+:::
+
 A continuous gesture handler that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
 The handler [activates](../basics/state.md#active) when fingers are placed on the screen and change their position.
 Gesture callback can be used for continuous tracking of the pinch gesture. It provides information about velocity, anchor (focal) point of gesture and scale.
@@ -41,7 +46,7 @@ Position expressed in points along Y axis of center anchor point of gesture
 
 ## Example
 
-See the [scale and rotation example](hhttps://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/recipes/scaleAndRotate/index.tsx) from [GestureHandler Example App](../../example).
+See the [scale and rotation example](hhttps://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/recipes/scaleAndRotate/index.tsx) from Gesture Handler Example App.
 
 ```js
 export class PinchableBox extends React.Component {

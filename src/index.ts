@@ -2,6 +2,7 @@ import { initialize } from './init';
 
 export { Directions } from './Directions';
 export { State } from './State';
+export { getByGestureTestId, fireGestureHandler } from './jestUtils';
 export { default as gestureHandlerRootHOC } from './gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './GestureHandlerRootView';
 export type {
@@ -27,6 +28,7 @@ export type {
   ForceTouchGestureHandlerEventPayload,
   ForceTouchGestureHandlerProps,
 } from './handlers/ForceTouchGestureHandler';
+export type { ForceTouchGestureChangeEventPayload } from './handlers/gestures/forceTouchGesture';
 export type {
   LongPressGestureHandlerEventPayload,
   LongPressGestureHandlerProps,
@@ -35,10 +37,12 @@ export type {
   PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
 } from './handlers/PanGestureHandler';
+export type { PanGestureChangeEventPayload } from './handlers/gestures/panGesture';
 export type {
   PinchGestureHandlerEventPayload,
   PinchGestureHandlerProps,
 } from './handlers/PinchGestureHandler';
+export type { PinchGestureChangeEventPayload } from './handlers/gestures/pinchGesture';
 export type {
   RotationGestureHandlerEventPayload,
   RotationGestureHandlerProps,

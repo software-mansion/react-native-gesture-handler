@@ -1,15 +1,19 @@
 module.exports = {
   docs: [
+    { type: 'doc', id: 'introduction' },
+    { type: 'doc', id: 'installation' },
+    { type: 'doc', id: 'troubleshooting' },
     {
       type: 'category',
       label: 'Guides',
       items: [
-        'introduction',
         'quickstart/quickstart',
         'gesture-composition',
         'manual-gestures/manual-gestures',
-        'whats-new',
-        'example',
+        'under-the-hood/states-events',
+        'gesture-handlers/basics/about-handlers',
+        'gesture-handlers/basics/interactions',
+        'guides/testing',
       ],
     },
     {
@@ -17,7 +21,9 @@ module.exports = {
       label: 'API reference',
       items: [
         {
-          Gestures: [
+          type: 'category',
+          label: 'Gestures',
+          items: [
             'api/gestures/gesture-detector',
             'api/gestures/gesture',
             'api/gestures/pan-gesture',
@@ -33,34 +39,21 @@ module.exports = {
             'api/gestures/touch-events',
             'api/gestures/state-manager',
           ],
-          Components: [
+        },
+        {
+          type: 'category',
+          label: 'Components',
+          items: [
             'api/components/buttons',
             'api/components/swipeable',
             'api/components/touchables',
             'api/components/drawer-layout',
           ],
         },
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Under the hood',
-      items: [
-        'under-the-hood/states-events',
-        'under-the-hood/how-does-it-work',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Gesture handlers',
-      items: [
         {
-          Basics: [
-            'gesture-handlers/basics/about-handlers',
-            'gesture-handlers/basics/state',
-            'gesture-handlers/basics/interactions',
-          ],
-          'API reference': [
+          type: 'category',
+          label: 'Gesture Handlers',
+          items: [
             'gesture-handlers/api/common-gh',
             'gesture-handlers/api/pan-gh',
             'gesture-handlers/api/tap-gh',
@@ -73,11 +66,13 @@ module.exports = {
             'gesture-handlers/api/create-native-wrapper',
           ],
         },
+        { type: 'doc', id: 'api/test-api' },
       ],
     },
-    { type: 'doc', id: 'contributing' },
-    { type: 'doc', id: 'troubleshooting' },
-    { type: 'doc', id: 'resources' },
-    { type: 'doc', id: 'community' },
+    {
+      type: 'category',
+      label: 'Under the hood',
+      items: ['under-the-hood/how-does-it-work'],
+    },
   ],
 };

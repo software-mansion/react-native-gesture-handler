@@ -5,7 +5,7 @@ import {
 } from '../ForceTouchGestureHandler';
 import { GestureUpdateEvent } from '../gestureHandlerCommon';
 
-type ForceTouchGestureChangeEventPayload = {
+export type ForceTouchGestureChangeEventPayload = {
   forceChange: number;
 };
 
