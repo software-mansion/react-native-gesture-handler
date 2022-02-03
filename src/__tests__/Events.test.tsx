@@ -472,7 +472,9 @@ describe('Filling event list with defaults', () => {
   it('with FAILED event, fills BEGIN event for discrete handlers', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<TapGesture>(getByGestureTestId('tap'), [{ state: State.FAILED }]);
+    fireGestureHandler<TapGesture>(getByGestureTestId('tap'), [
+      { state: State.FAILED },
+    ]);
     expect(handlers.begin).toBeCalledTimes(1);
     expect(handlers.end).toBeCalledTimes(1);
     expect(handlers.end).toBeCalledWith(expect.anything(), false);
