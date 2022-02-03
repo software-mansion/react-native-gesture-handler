@@ -21,6 +21,7 @@ import {
   findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
+import { isJestEnv } from '../utils';
 
 const UIManagerAny = UIManager as any;
 
@@ -172,7 +173,7 @@ export default function createHandler<
         }
         handlerIDToTag[props.id] = this.handlerTag;
       }
-      if (__DEV__) {
+      if (__DEV__ && !isJestEnv()) {
         showRngh2NoticeIfNeeded();
       }
     }
@@ -433,6 +434,13 @@ export default function createHandler<
         {
           ref: this.refHandler,
           collapsable: false,
+          ...(isJestEnv()
+            ? {
+                handlerType: name,
+                handlerTag: this.handlerTag,
+              }
+            : {}),
+          testID: this.props.testID,
           ...events,
         },
         grandChildren

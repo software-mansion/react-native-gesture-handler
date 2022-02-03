@@ -64,13 +64,16 @@ export interface ForceTouchGestureHandlerProps
 export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
   forceTouchAvailable: boolean;
 };
+
+export const forceTouchHandlerName = 'ForceTouchGestureHandler';
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
   ? createHandler<
       ForceTouchGestureHandlerProps,
       ForceTouchGestureHandlerEventPayload
     >({
-      name: 'ForceTouchGestureHandler',
+      name: forceTouchHandlerName,
       allowedProps: [
         ...baseGestureHandlerProps,
         ...forceTouchGestureHandlerProps,

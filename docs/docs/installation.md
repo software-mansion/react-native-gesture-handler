@@ -132,20 +132,3 @@ For React Native 0.61 or greater, add the library as the first import in your in
 ```js
 import 'react-native-gesture-handler';
 ```
-
-## Testing
-
-In order to load mocks provided by the library add following to your jest config in `package.json`:
-
-```json
-"setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
-```
-
-Example:
-
-```json
-"jest": {
-  "preset": "react-native",
-  "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
-}
-```
