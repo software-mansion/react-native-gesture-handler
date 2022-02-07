@@ -574,7 +574,25 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private fun <T : GestureHandler<T>> onTouchEvent(handler: T) {
-    // never used?
+    // onTouchesDown, onTouchesMove, onTouchesUp
+    
+    if (handler.tag < 0) {
+      // root containers use negative tags, we don't need to dispatch events for them to the JS
+      return
+    }
+    if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE
+      || handler.state == GestureHandler.STATE_UNDETERMINED || handler.view != null) {
+      if (handler.actionType == 1) {
+        // Reanimated worklet
+        val event = RNGestureHandlerTouchEvent.obtain(handler)
+        val animatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)!!
+        animatedModule.nodesManager.onEventDispatch(event)
+      } else if (handler.actionType == 3) {
+        // JS function, Animated.event with useNativeDriver: false
+        val data = RNGestureHandlerTouchEvent.createEventData(handler)
+        reactApplicationContext.deviceEventEmitter.emit(RNGestureHandlerEvent.EVENT_NAME, data)
+      }
+    }
   }
 
   companion object {
