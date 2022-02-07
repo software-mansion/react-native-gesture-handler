@@ -70,8 +70,7 @@ export function OldAPIAnimatedEventExample({ useNativeDriver, color }: Props) {
   return (
     <View>
       <Text>
-        Old API / Animated.event / useNativeDriver:{' '}
-        {useNativeDriver ? 'true' : 'false'}
+        Old API / Animated.event / useNativeDriver: {useNativeDriver.toString()}
       </Text>
       <View
         style={{ height: 50, alignItems: 'center', justifyContent: 'center' }}>
