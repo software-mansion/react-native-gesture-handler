@@ -38,6 +38,7 @@ import FabricCallbacksExample from './new_api/fabric/FabricCallbacksExample'; //
 import FabricPanGestureHandlerExample from './new_api/fabric/FabricPanGestureHandlerExample'; // OK
 import FabricEmptyExample from './new_api/fabric/FabricEmptyExample';
 import UltimateExample from './ultimate/UltimateExample';
+import ManualGestureExample from './new_api/manual';
 
 // other stuff
 import { LogBox } from 'react-native';
@@ -46,4 +47,4 @@ LogBox.ignoreLogs([
   "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
 ]);
 
-export default UltimateExample;
+export default ManualGestureExample;
