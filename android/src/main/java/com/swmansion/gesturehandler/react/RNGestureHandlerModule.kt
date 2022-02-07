@@ -11,6 +11,7 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.common.UIManagerType.FABRIC
 import com.facebook.react.uimanager.common.ViewUtil
+import com.facebook.react.uimanager.events.Event
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
 import com.swmansion.reanimated.ReanimatedModule
@@ -537,17 +538,15 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       if (handler.actionType == 1) {
         // Reanimated worklet
         val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
-        val animatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)!!
-        animatedModule.nodesManager.onEventDispatch(event)
+        sendEventForReanimated(event)
       } else if (handler.actionType == 2) {
         // Animated with useNativeDriver: true
         val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
-        val fuim = UIManagerHelper.getUIManager(reactApplicationContext, FABRIC) as FabricUIManager
-        fuim.eventDispatcher.dispatchEvent(event)
+        sendEventForNativeAnimatedEvent(event)
       } else if (handler.actionType == 3) {
         // JS function, Animated.event with useNativeDriver: false
         val data = RNGestureHandlerEvent.createEventData(handler, handlerFactory)
-        reactApplicationContext.deviceEventEmitter.emit(RNGestureHandlerEvent.EVENT_NAME, data)
+        sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
     }
   }
@@ -564,12 +563,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     if (handler.actionType == 1) {
       // Reanimated worklet
       val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
-      val animatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)!!
-      animatedModule.nodesManager.onEventDispatch(event)
+      sendEventForReanimated(event)
     } else if (handler.actionType == 2 || handler.actionType == 3) {
       // JS function or Animated.event with useNativeDriver: false
       val data = RNGestureHandlerStateChangeEvent.createEventData(handler, handlerFactory, newState, oldState)
-      reactApplicationContext.deviceEventEmitter.emit(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
+      sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
     }
   }
 
@@ -585,14 +583,29 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       if (handler.actionType == 1) {
         // Reanimated worklet
         val event = RNGestureHandlerTouchEvent.obtain(handler)
-        val animatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)!!
-        animatedModule.nodesManager.onEventDispatch(event)
+        sendEventForReanimated(event)
       } else if (handler.actionType == 3) {
         // JS function, Animated.event with useNativeDriver: false
         val data = RNGestureHandlerTouchEvent.createEventData(handler)
-        reactApplicationContext.deviceEventEmitter.emit(RNGestureHandlerEvent.EVENT_NAME, data)
+        sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
     }
+  }
+
+  private fun <T : Event<T>>sendEventForReanimated(event: T) {
+    // TODO: store animatedModule in private field
+    val animatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)!!
+    animatedModule.nodesManager.onEventDispatch(event)
+  }
+
+  private fun sendEventForNativeAnimatedEvent(event: RNGestureHandlerEvent) {
+    // TODO: store fuim in private field
+    val fuim = UIManagerHelper.getUIManager(reactApplicationContext, FABRIC) as FabricUIManager
+    fuim.eventDispatcher.dispatchEvent(event)
+  }
+
+  private fun sendEventForDeviceEvent(eventName: String, data: WritableMap) {
+    reactApplicationContext.deviceEventEmitter.emit(eventName, data)
   }
 
   companion object {
