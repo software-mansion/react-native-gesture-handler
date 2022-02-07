@@ -25,10 +25,6 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 
 @protocol RNGestureHandlerEventEmitter
 
-- (void)sendTouchEvent:(nonnull RNGestureHandlerEvent *)event;
-
-- (void)sendTouchDeviceEvent:(nonnull RNGestureHandlerEvent *)event;
-
 - (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event withActionType:(nonnull NSNumber *)actionType;
 
 @end

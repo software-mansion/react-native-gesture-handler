@@ -191,16 +191,6 @@
 
 #pragma mark Events
 
-- (void)sendTouchEvent:(RNGestureHandlerEvent *)event
-{
-    // never used?
-}
-
-- (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event
-{
-    // never used
-}
-
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event withActionType:(nonnull NSNumber *)actionType
 {
     if ([actionType integerValue] == 1) {
