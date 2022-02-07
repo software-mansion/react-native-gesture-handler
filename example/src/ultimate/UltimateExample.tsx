@@ -1,20 +1,21 @@
-import { LogBox, View, Text } from 'react-native';
+import { Text, View } from 'react-native';
 
-import React from 'react';
 import { NewAPIJSCallbackConsoleLogExample } from './NewAPIJSCallbackConsoleLogExample';
-import { NewAPIReanimatedWorkletConsoleLogExample } from './NewAPIReanimatedWorkletConsoleLogExample';
 import { NewAPIJSCallbackUpdateSharedValueExample } from './NewAPIJSCallbackUpdateSharedValueExample';
+import { NewAPIReanimatedWorkletConsoleLogExample } from './NewAPIReanimatedWorkletConsoleLogExample';
 import { NewAPIReanimatedWorkletUpdateSharedValueExample } from './NewAPIReanimatedWorkletUpdateSharedValueExample';
-import { OldAPIJSCallbackConsoleLogExample } from './OldAPIJSCallbackConsoleLogExample';
-import { OldAPIReanimatedWorkletConsoleLogExample } from './OldAPIReanimatedWorkletConsoleLogExample';
-import { OldAPIJSCallbackUpdateSharedValueExample } from './OldAPIJSCallbackUpdateSharedValueExample';
-import { OldAPIReanimatedWorkletUpdateSharedValueExample } from './OldAPIReanimatedWorkletUpdateSharedValueExample';
 import { OldAPIAnimatedEventExample } from './OldAPIAnimatedEventExample';
+import { OldAPIJSCallbackConsoleLogExample } from './OldAPIJSCallbackConsoleLogExample';
+import { OldAPIJSCallbackUpdateSharedValueExample } from './OldAPIJSCallbackUpdateSharedValueExample';
+import { OldAPIReanimatedWorkletConsoleLogExample } from './OldAPIReanimatedWorkletConsoleLogExample';
+import { OldAPIReanimatedWorkletUpdateSharedValueExample } from './OldAPIReanimatedWorkletUpdateSharedValueExample';
+import React from 'react';
 
 export default function UltimateExample() {
   return (
     <View
       style={{
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
       }}>
@@ -32,7 +33,11 @@ export default function UltimateExample() {
       <OldAPIJSCallbackUpdateSharedValueExample color="darkviolet" />
       <OldAPIReanimatedWorkletUpdateSharedValueExample color="violet" />
       <OldAPIAnimatedEventExample useNativeDriver color="lightgray" />
-      <OldAPIAnimatedEventExample useNativeDriver={false} color="gray" />
+      <View>
+        {/* prevents "Style property 'backgroundColor' is not supported by native animated module" error on fast refresh */}
+        {/* this is probably a bug in React Native core */}
+        <OldAPIAnimatedEventExample useNativeDriver={false} color="gray" />
+      </View>
     </View>
   );
 }

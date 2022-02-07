@@ -66,10 +66,6 @@ interface ExamplesSection {
 
 const EXAMPLES: ExamplesSection[] = [
   {
-    sectionTitle: 'Ultimate example',
-    data: [{ name: 'Ultimate example', component: UltimateExample }],
-  },
-  {
     sectionTitle: 'Basic examples',
     data: [
       { name: 'Draggable', component: Draggable },
@@ -139,6 +135,10 @@ const EXAMPLES: ExamplesSection[] = [
         component: BetterHorizontalDrawer,
       },
     ],
+  },
+  {
+    sectionTitle: 'Ultimate example',
+    data: [{ name: 'Ultimate example', component: UltimateExample }],
   },
 ];
 
