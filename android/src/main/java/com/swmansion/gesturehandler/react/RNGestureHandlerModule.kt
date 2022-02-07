@@ -593,15 +593,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private fun <T : Event<T>>sendEventForReanimated(event: T) {
-    // TODO: store animatedModule in private field
-    val animatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)!!
-    animatedModule.nodesManager.onEventDispatch(event)
+    val reanimatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)
+    reanimatedModule?.nodesManager?.onEventDispatch(event)
   }
 
   private fun sendEventForNativeAnimatedEvent(event: RNGestureHandlerEvent) {
-    // TODO: store fuim in private field
-    val fuim = UIManagerHelper.getUIManager(reactApplicationContext, FABRIC) as FabricUIManager
-    fuim.eventDispatcher.dispatchEvent(event)
+    val fabricUIManager = UIManagerHelper.getUIManager(reactApplicationContext, FABRIC) as FabricUIManager
+    fabricUIManager.eventDispatcher.dispatchEvent(event)
   }
 
   private fun sendEventForDeviceEvent(eventName: String, data: WritableMap) {
