@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: "com.facebook.react"
 
 import com.android.build.OutputFile
 
@@ -78,7 +79,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    enableHermes: false,  // clean and rebuild if changing
+    enableHermes: true,  // clean and rebuild if changing
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -241,11 +242,13 @@ dependencies {
     // If new architecture is enabled, we let you build RN from source
     // Otherwise we fallback to a prebuilt .aar bundled in the NPM package.
     if (isNewArchitectureEnabled()) {
-        implementation project(":ReactAndroid")
+        implementation project(":ReactAndroid")  // From node_modules
     } else {
         //noinspection GradleDynamicVersion
         implementation "com.facebook.react:react-native:+"  // From node_modules
     }
+
+    // implementation project(":react-native-gesture-handler")
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
@@ -286,4 +289,12 @@ def isNewArchitectureEnabled() {
     // - Invoke gradle with `-newArchEnabled=true`
     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
+react {
+    reactRoot = rootProject.file("../node_modules/react-native/")
+    codegenDir = rootProject.file("../node_modules/react-native-codegen/")
+    jsRootDir = rootProject.file("../")
+    libraryName = "gesturehandler_fabric_app"
+    codegenJavaPackageName = "com.fabricexample"
 }

@@ -19,6 +19,7 @@
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerRegistry.h"
 #import "RNRootViewGestureRecognizer.h"
+#import "RNGestureHandlerButtonComponentView.h"
 
 #import "Handlers/RNPanHandler.h"
 #import "Handlers/RNTapHandler.h"
@@ -101,7 +102,14 @@
               withActionType:(nonnull NSNumber *)actionType
 {
     UIView *view = [_uiManager viewForReactTag:viewTag]; // TODO: pass ShadowNode from JS and get UIView* from it
+                
     view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), will be returned as e.target
+    
+    if ([view isKindOfClass:[RNGestureHandlerButtonComponentView class]]) {
+        RNGestureHandlerButtonComponentView *componentView = (RNGestureHandlerButtonComponentView *)view;
+        UIView *view2 = (UIView *)componentView.button;
+        view2.reactTag = viewTag;
+    }
 
     [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
 

@@ -1,18 +1,19 @@
 import * as React from 'react';
-import { requireNativeComponent } from 'react-native';
-import { GestureHandlerRootViewProps } from './GestureHandlerRootView';
+import { PropsWithChildren } from 'react';
+import { View, ViewProps } from 'react-native';
+// import GestureHandlerRootViewNativeComponent from './fabric/RNGestureHandlerRootViewNativeComponent';
 
-const GestureHandlerRootViewNative = requireNativeComponent(
-  'GestureHandlerRootView'
-);
+export interface GestureHandlerRootViewProps
+  extends PropsWithChildren<ViewProps> {}
 
 export default function GestureHandlerRootView({
   children,
   ...rest
 }: GestureHandlerRootViewProps) {
-  return (
-    <GestureHandlerRootViewNative {...rest}>
-      {children}
-    </GestureHandlerRootViewNative>
-  );
+  // return (
+  //   <GestureHandlerRootViewNativeComponent {...rest}>
+  //     {children}
+  //   </GestureHandlerRootViewNativeComponent>
+  // );
+  return <View {...rest}>{children}</View>;
 }

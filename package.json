@@ -54,7 +54,8 @@
     "hoist-non-react-statics": "^3.3.0",
     "invariant": "^2.2.4",
     "lodash": "^4.17.21",
-    "prop-types": "^15.7.2"
+    "prop-types": "^15.7.2",
+    "react-native-codegen": "^0.0.13"
   },
   "jest": {
     "preset": "react-native",
@@ -100,6 +101,10 @@
     "release-it": "^13.6.5",
     "typescript": "^4.5.5"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "lint-staged": {
     "*.{ts,tsx}": [
       "prettier --write"
@@ -129,5 +134,14 @@
   "eslintIgnore": [
     "node_modules/",
     "lib/"
-  ]
+  ],
+  "codegenConfig": {
+    "libraries": [
+      {
+        "name": "rngesturehandler",
+        "type": "components",
+        "jsSrcsDir": "./src/fabric"
+      }
+    ]
+  }
 }

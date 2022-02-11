@@ -68,7 +68,7 @@ export default function createNativeWrapper<P>(
     );
   });
 
-  ComponentWrapper.displayName = Component.displayName || 'ComponentWrapper';
+  ComponentWrapper.displayName = Component?.displayName || 'ComponentWrapper';
 
   return ComponentWrapper;
 }

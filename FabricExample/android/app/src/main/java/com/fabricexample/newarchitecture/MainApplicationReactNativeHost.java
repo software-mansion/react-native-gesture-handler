@@ -22,6 +22,8 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.fabricexample.BuildConfig;
 import com.fabricexample.newarchitecture.components.MainComponentsRegistry;
 import com.fabricexample.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+// import com.swmansion.gesturehandler.react.RNGestureHandlerComponentsRegistry;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,6 +97,7 @@ public class MainApplicationReactNativeHost extends ReactNativeHost {
                 // The one that is generated with the template contains no components
                 // and just provides you the one from React Native core.
                 MainComponentsRegistry.register(componentFactory);
+                // RNGestureHandlerComponentsRegistry.register(componentFactory);
 
                 final ReactInstanceManager reactInstanceManager = getReactInstanceManager();
 

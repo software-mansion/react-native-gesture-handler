@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
-import com.swmansion.reanimated.ReanimatedModule
+//import com.swmansion.reanimated.ReanimatedModule
 import java.util.*
 
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
@@ -489,10 +489,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     //     // is fine though as long as gestureHandlerRootHOC is used in JS
     //     // FIXME: check and warn about gestureHandlerRootHOC
     //   }
-    UiThreadUtil.runOnUiThread({
-      rngherv.initialize()
-      synchronized(enqueuedRootViewInit) { enqueuedRootViewInit.remove(rootViewTag) }
-    })
+//    UiThreadUtil.runOnUiThread({
+//      rngherv.initialize()
+//      synchronized(enqueuedRootViewInit) { enqueuedRootViewInit.remove(rootViewTag) }
+//    })
   }
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
@@ -593,8 +593,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private fun <T : Event<T>>sendEventForReanimated(event: T) {
-    val reanimatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)
-    reanimatedModule?.nodesManager?.onEventDispatch(event)
+//    val reanimatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)
+//    reanimatedModule?.nodesManager?.onEventDispatch(event)
   }
 
   private fun sendEventForNativeAnimatedEvent(event: RNGestureHandlerEvent) {
@@ -607,8 +607,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   companion object {
-    lateinit var rngherv: RNGestureHandlerEnabledRootView
-
     const val MODULE_NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"

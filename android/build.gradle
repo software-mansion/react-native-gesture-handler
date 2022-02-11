@@ -12,6 +12,17 @@ buildscript {
     }
 }
 
+def isNewArchitectureEnabled() {
+    // To opt-in for the New Architecture, you can either:
+    // - Set `newArchEnabled` to true inside the `gradle.properties` file
+    // - Invoke gradle with `-newArchEnabled=true`
+    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
+    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
+if (isNewArchitectureEnabled()) {
+    apply plugin: 'com.facebook.react'
+}
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
@@ -65,14 +76,31 @@ def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlin
 
 dependencies {
     //noinspection GradleDynamicVersion
-    if (shouldUseCommonInterfaceFromReanimated()) {
-        // Include Reanimated as dependency to load the common interface
-        implementation (project(':react-native-reanimated')) {
-            exclude group:'com.facebook.fbjni' // resolves "Duplicate class com.facebook.jni.CppException"
-        }
+    if (isNewArchitectureEnabled()) {
+        implementation project(':ReactAndroid')
+    } else {
+        // implementation 'com.facebook.react:react-native:+'
+        implementation project(':ReactAndroid') // for RNTester
     }
-    implementation project(':ReactAndroid') // implementation 'com.facebook.react:react-native:+'
+
+    // if (shouldUseCommonInterfaceFromReanimated()) {
+    //     // Include Reanimated as dependency to load the common interface
+    //     implementation (project(':react-native-reanimated')) {
+    //         exclude group:'com.facebook.fbjni' // resolves "Duplicate class com.facebook.jni.CppException"
+    //     }
+    // }
+
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.core:core-ktx:1.6.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+if (isNewArchitectureEnabled()) {
+    react {
+        reactRoot = rootProject.file("../node_modules/react-native/")
+        jsRootDir = file("../src/fabric/")
+        codegenDir = rootProject.file("../node_modules/react-native-codegen/")
+        libraryName = "rngesturehandler"
+        codegenJavaPackageName = "com.swmansion.gesturehandler.react"
+    }
 }

@@ -10,8 +10,11 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native/babel-plugin-codegen": "^0.0.6",
     "react": "17.0.2",
-    "react-native": "0.0.0-20220206-2010-113f8257c"
+    "react-native": "0.0.0-20220206-2010-113f8257c",
+    "react-native-codegen": "^0.0.13",
+    "react-native-gesture-handler": "link:../"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
