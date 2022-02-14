@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
-import { View, ViewProps } from 'react-native';
-// import GestureHandlerRootViewNativeComponent from './fabric/RNGestureHandlerRootViewNativeComponent';
+import { ViewProps } from 'react-native';
+import GestureHandlerRootViewNativeComponent from './fabric/RNGestureHandlerRootViewNativeComponent';
 
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<ViewProps> {}
@@ -10,10 +10,9 @@ export default function GestureHandlerRootView({
   children,
   ...rest
 }: GestureHandlerRootViewProps) {
-  // return (
-  //   <GestureHandlerRootViewNativeComponent {...rest}>
-  //     {children}
-  //   </GestureHandlerRootViewNativeComponent>
-  // );
-  return <View {...rest}>{children}</View>;
+  return (
+    <GestureHandlerRootViewNativeComponent {...rest}>
+      {children}
+    </GestureHandlerRootViewNativeComponent>
+  );
 }
