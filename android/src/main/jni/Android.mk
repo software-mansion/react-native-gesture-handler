@@ -1,7 +1,6 @@
 GESTURE_HANDLER_MAIN_THIS_DIR := $(call my-dir)
 
 include $(GESTURE_HANDLER_MAIN_THIS_DIR)/../../../build/generated/source/codegen/jni/Android.mk
-include $(GESTURE_HANDLER_MAIN_THIS_DIR)/../../../../common/cpp/Android.mk
 
 include $(CLEAR_VARS)
 
@@ -33,8 +32,7 @@ LOCAL_SHARED_LIBRARIES := libjsi \
     libruntimeexecutor \
     libreact_render_mapbuffer \
     libreact_codegen_rncore \
-    libreact_codegen_rngesturehandler \
-    librngesturehandler_common
+    libreact_codegen_rngesturehandler
 
 LOCAL_CFLAGS := \
     -DLOG_TAG=\"ReactNative\"

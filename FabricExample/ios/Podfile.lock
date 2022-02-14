@@ -702,15 +702,6 @@ PODS:
     - React-Codegen
     - React-RCTFabric
     - ReactCommon/turbomodule/core
-    - RNGestureHandler/common (= 2.2.0)
-  - RNGestureHandler/common (2.2.0):
-    - RCT-Folly (= 2021.06.28.00-v2)
-    - RCTRequired
-    - RCTTypeSafety
-    - React
-    - React-Codegen
-    - React-RCTFabric
-    - ReactCommon/turbomodule/core
   - SocketRocket (0.6.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
@@ -928,7 +919,7 @@ SPEC CHECKSUMS:
   React-rncore: e3fde6a0c08ff9a9a4d1b7b6478c27e81cf9a153
   React-runtimeexecutor: 8de23ebb52d07d1b19e4105378def31dfc5811f4
   ReactCommon: e68ef3a6cd7ba8d050deb94f7e6594e3323c330b
-  RNGestureHandler: d779e80108d2cbc0e60bef83cd928e3796319642
+  RNGestureHandler: 1ddb6aa364f1747de920c4096bac88b034e2eeda
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: b005d88f55873ea7a051802d4b6f262a6631aa30
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

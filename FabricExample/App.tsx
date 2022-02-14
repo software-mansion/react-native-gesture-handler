@@ -1,11 +1,13 @@
-import {LogBox, StyleSheet, Text, View} from 'react-native';
 import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
   PanGestureHandler,
+  TouchableNativeFeedback,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
+import {LogBox, StyleSheet, Text, View} from 'react-native';
+
 import React from 'react';
 
 declare const _WORKLET: boolean; // from react-native-reanimated
@@ -35,7 +37,7 @@ export default function App() {
     });
 
   const onGestureEvent = () => {
-    console.log(global.WORKLET, 'onGestureEvent');
+    console.log(global._WORKLET, 'onGestureEvent');
   };
 
   const onHandlerStateChange = () => {
@@ -82,6 +84,15 @@ export default function App() {
       >
         <View style={styles.box3} />
       </TouchableOpacity>
+      <Text>TouchableNativeFeedback</Text>
+      <TouchableNativeFeedback
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onPress={onPress}
+        onLongPress={onLongPress}
+      >
+        <View style={styles.box4} />
+      </TouchableNativeFeedback>
     </GestureHandlerRootView>
   );
 }
@@ -95,18 +106,23 @@ const styles = StyleSheet.create({
   box1: {
     width: 50,
     height: 50,
-    backgroundColor: 'red',
+    backgroundColor: 'cyan',
     marginBottom: 10,
   },
   box2: {
     width: 50,
     height: 50,
-    backgroundColor: 'lime',
+    backgroundColor: 'magenta',
     marginBottom: 10,
   },
   box3: {
     width: 50,
     height: 50,
-    backgroundColor: 'blue',
+    backgroundColor: 'gold',
+  },
+  box4: {
+    width: 50,
+    height: 50,
+    backgroundColor: 'gray',
   },
 });
