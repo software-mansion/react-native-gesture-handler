@@ -4,8 +4,7 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
-#include <react/renderer/components/samplelibrary/ComponentDescriptors.h>
-#include <RNGestureHandler/RNGestureHandlerRootViewComponentDescriptor.h>
+#include <react/renderer/components/rngesturehandler/ComponentDescriptors.h>
 
 namespace facebook {
 namespace react {
@@ -19,7 +18,8 @@ RNGestureHandlerComponentsRegistry::sharedProviderRegistry() {
   auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
 
   // Gesture Handler
-  providerRegistry->add(concreteComponentDescriptorProvider<RNGestureHandlerRootView>());
+  providerRegistry->add(concreteComponentDescriptorProvider<RNGestureHandlerRootViewComponentDescriptor>());
+  // TODO: RNGestureHandlerButton
 
   return providerRegistry;
 }

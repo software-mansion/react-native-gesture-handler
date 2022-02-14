@@ -22,7 +22,7 @@
     "hoist-non-react-statics": "^3.3.2",
     "invariant": "^2.2.4",
     "react": "17.0.2",
-    "react-native": "software-mansion-labs/rea-fabric#reanimated",
+    "react-native": "facebook/react-native",
     "react-native-reanimated": "software-mansion/react-native-reanimated#@szymon/fabric",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.15.0"
