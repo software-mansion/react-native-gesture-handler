@@ -7,7 +7,6 @@
 //
 
 #import "RNNativeViewHandler.h"
-#import "RNGestureHandlerButtonComponentView.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
@@ -87,9 +86,8 @@
 {
     // For UIControl based views (UIButton, UISwitch) we provide special handling that would allow
     // for properties like `disallowInterruption` to work.
-    if ([view isKindOfClass:[RNGestureHandlerButtonComponentView class]]) {
-        RNGestureHandlerButtonComponentView *componentView = (RNGestureHandlerButtonComponentView *)view;
-        UIControl *control = (UIControl *)componentView.button;
+    if ([view isKindOfClass:[UIControl class]]) {
+        UIControl *control = (UIControl *)view;
         [control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
         [control addTarget:self action:@selector(handleTouchUpOutside:forEvent:) forControlEvents:UIControlEventTouchUpOutside];
         [control addTarget:self action:@selector(handleTouchUpInside:forEvent:) forControlEvents:UIControlEventTouchUpInside];

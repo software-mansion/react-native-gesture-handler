@@ -101,16 +101,15 @@
                toViewWithTag:(nonnull NSNumber *)viewTag
               withActionType:(nonnull NSNumber *)actionType
 {
-    UIView *view = [_uiManager viewForReactTag:viewTag]; // TODO: pass ShadowNode from JS and get UIView* from it
-                
-    view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), will be returned as e.target
+    UIView *view = [_uiManager viewForReactTag:viewTag];
     
     if ([view isKindOfClass:[RNGestureHandlerButtonComponentView class]]) {
-        RNGestureHandlerButtonComponentView *componentView = (RNGestureHandlerButtonComponentView *)view;
-        UIView *view2 = (UIView *)componentView.button;
-        view2.reactTag = viewTag;
+        RNGestureHandlerButtonComponentView *buttonComponentView = (RNGestureHandlerButtonComponentView *)view;
+        view = (UIView *)buttonComponentView.contentView;
     }
-
+    
+    view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be returned as event.target
+    
     [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
 
     // register view if not already there

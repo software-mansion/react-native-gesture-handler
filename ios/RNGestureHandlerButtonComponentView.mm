@@ -22,8 +22,8 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const RNGestureHandlerButtonProps>();
     _props = defaultProps;
-    _button = [[RNGestureHandlerButton alloc] initWithFrame:self.bounds];
-    self.contentView = _button;
+    
+    self.contentView = [[RNGestureHandlerButton alloc] initWithFrame:self.bounds];
   }
 
   return self;
