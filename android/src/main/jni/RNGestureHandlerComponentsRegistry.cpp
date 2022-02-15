@@ -19,7 +19,7 @@ RNGestureHandlerComponentsRegistry::sharedProviderRegistry() {
 
   // Gesture Handler
   providerRegistry->add(concreteComponentDescriptorProvider<RNGestureHandlerRootViewComponentDescriptor>());
-  // TODO: RNGestureHandlerButton
+  providerRegistry->add(concreteComponentDescriptorProvider<RNGestureHandlerButtonComponentDescriptor>());
 
   return providerRegistry;
 }

@@ -17,32 +17,39 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.core.view.children
 import com.facebook.react.bridge.SoftAssertions
-import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.ThemedReactContext
-import com.facebook.react.uimanager.ViewGroupManager
-import com.facebook.react.uimanager.ViewProps
+import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uimanager.*
 import com.facebook.react.uimanager.annotations.ReactProp
+import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
+import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
 import com.swmansion.gesturehandler.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
-class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
-  override fun getName() = "RNGestureHandlerButton"
+@ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
+class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), RNGestureHandlerButtonManagerInterface<ButtonViewGroup> {
+  private val mDelegate: ViewManagerDelegate<ButtonViewGroup>;
+
+  init {
+      mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
+  }
+
+  override fun getName() = REACT_CLASS
 
   public override fun createViewInstance(context: ThemedReactContext) = ButtonViewGroup(context)
 
   @TargetApi(Build.VERSION_CODES.M)
   @ReactProp(name = "foreground")
-  fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
+  override fun setForeground(view: ButtonViewGroup, useDrawableOnForeground: Boolean) {
     view.useDrawableOnForeground = useDrawableOnForeground
   }
 
   @ReactProp(name = "borderless")
-  fun setBorderless(view: ButtonViewGroup, useBorderlessDrawable: Boolean) {
+  override fun setBorderless(view: ButtonViewGroup, useBorderlessDrawable: Boolean) {
     view.useBorderlessDrawable = useBorderlessDrawable
   }
 
   @ReactProp(name = "enabled")
-  fun setEnabled(view: ButtonViewGroup, enabled: Boolean) {
+  override fun setEnabled(view: ButtonViewGroup, enabled: Boolean) {
     view.isEnabled = enabled
   }
 
@@ -52,22 +59,26 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
   }
 
   @ReactProp(name = "rippleColor")
-  fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
+  override fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
     view.rippleColor = rippleColor
   }
 
   @ReactProp(name = "rippleRadius")
-  fun setRippleRadius(view: ButtonViewGroup, rippleRadius: Int?) {
+  override fun setRippleRadius(view: ButtonViewGroup, rippleRadius: Int) {
     view.rippleRadius = rippleRadius
   }
 
   @ReactProp(name = "exclusive")
-  fun setExclusive(view: ButtonViewGroup, exclusive: Boolean = true) {
+  override fun setExclusive(view: ButtonViewGroup, exclusive: Boolean) {
     view.exclusive = exclusive
   }
 
   override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
     view.updateBackground()
+  }
+
+  override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? {
+    return mDelegate
   }
 
   class ButtonViewGroup(context: Context?) : ViewGroup(context),
@@ -344,5 +355,9 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
         }
       }
     }
+  }
+
+  companion object {
+    const val REACT_CLASS = "RNGestureHandlerButton"
   }
 }

@@ -75,15 +75,6 @@ export default function App() {
         <View style={styles.box2} />
       </PanGestureHandler>
       {/* <Button onPress={() => setCount(c => c + 1)} title={count.toString()} /> */}
-      <Text>TouchableOpacity</Text>
-      <TouchableOpacity
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        onPress={onPress}
-        onLongPress={onLongPress}
-      >
-        <View style={styles.box3} />
-      </TouchableOpacity>
       <Text>TouchableNativeFeedback</Text>
       <TouchableNativeFeedback
         onPressIn={onPressIn}
@@ -93,6 +84,16 @@ export default function App() {
       >
         <View style={styles.box4} />
       </TouchableNativeFeedback>
+
+      <Text>TouchableOpacity</Text>
+      <TouchableOpacity
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onPress={onPress}
+        onLongPress={onLongPress}
+      >
+        <View style={styles.box3} />
+      </TouchableOpacity>
     </GestureHandlerRootView>
   );
 }
