@@ -21,8 +21,7 @@ class RNGestureHandlerComponentsRegistry
  private:
   friend HybridBase;
 
-  static std::shared_ptr<ComponentDescriptorProviderRegistry const>
-  sharedProviderRegistry();
+  static std::shared_ptr<ComponentDescriptorProviderRegistry const> sharedProviderRegistry();
 
   const ComponentFactory *delegate_;
 

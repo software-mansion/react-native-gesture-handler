@@ -1,5 +1,7 @@
 GESTURE_HANDLER_MAIN_THIS_DIR := $(call my-dir)
 
+include $(REACT_ANDROID_DIR)/Android-prebuilt.mk
+
 include $(GESTURE_HANDLER_MAIN_THIS_DIR)/../../../build/generated/source/codegen/jni/Android.mk
 
 include $(CLEAR_VARS)
