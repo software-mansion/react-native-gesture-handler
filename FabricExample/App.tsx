@@ -6,7 +6,7 @@ import {
   TouchableNativeFeedback,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
-import {LogBox, StyleSheet, Text, View} from 'react-native';
+import {LogBox, StyleSheet, Switch, Text, View} from 'react-native';
 
 import React from 'react';
 
@@ -17,9 +17,31 @@ LogBox.ignoreLogs([
 ]);
 
 export default function App() {
-  const gesture = Gesture.Pan();
+  const [value1, setValue1] = React.useState(false);
+  const [value2, setValue2] = React.useState(false);
+
+  const gesture1 = Gesture.Pan();
   // this syntax ensures that callbacks are not auto-workletized
-  gesture
+  gesture1
+    .onBegin(() => {
+      console.log(global._WORKLET, 'onBegin');
+    })
+    .onStart(() => {
+      console.log(global._WORKLET, 'onStart');
+    })
+    .onUpdate(() => {
+      console.log(global._WORKLET, 'onUpdate');
+    })
+    .onEnd(() => {
+      console.log(global._WORKLET, 'onEnd');
+    })
+    .onFinalize(() => {
+      console.log(global._WORKLET, 'onFinalize');
+    });
+
+  const gesture2 = Gesture.Pan();
+  // this syntax ensures that callbacks are not auto-workletized
+  gesture2
     .onBegin(() => {
       console.log(global._WORKLET, 'onBegin');
     })
@@ -62,17 +84,29 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <Text>GestureDetector</Text>
-      <GestureDetector gesture={gesture}>
+      <Text>View + GestureDetector</Text>
+      <GestureDetector gesture={gesture1}>
         <View style={styles.box1} />
       </GestureDetector>
-      <Text>PanGestureHandler</Text>
+      <Text>View + PanGestureHandler</Text>
       <PanGestureHandler
         maxPointers={1}
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
       >
         <View style={styles.box2} />
+      </PanGestureHandler>
+      <Text>Switch + GestureDetector</Text>
+      <GestureDetector gesture={gesture2}>
+        <Switch value={value1} onValueChange={setValue1} />
+      </GestureDetector>
+      <Text>Switch + PanGestureHandler</Text>
+      <PanGestureHandler
+        maxPointers={1}
+        onGestureEvent={onGestureEvent}
+        onHandlerStateChange={onHandlerStateChange}
+      >
+        <Switch value={value2} onValueChange={setValue2} />
       </PanGestureHandler>
       {/* <Button onPress={() => setCount(c => c + 1)} title={count.toString()} /> */}
       <Text>TouchableNativeFeedback</Text>
