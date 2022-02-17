@@ -1,6 +1,9 @@
 package com.swmansion.gesturehandler.react
 
+//import com.swmansion.reanimated.ReanimatedModule
+
 import android.content.Context
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import com.facebook.react.ReactRootView
@@ -10,11 +13,9 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.common.UIManagerType.FABRIC
-import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
-//import com.swmansion.reanimated.ReanimatedModule
 import java.util.*
 
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
@@ -413,6 +414,21 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       }
     }
   }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  fun install(): Boolean {
+    return try {
+      System.loadLibrary("rngesturehandler_modules")
+      val jsContext = reactApplicationContext.javaScriptContextHolder
+      decorateRuntime(jsContext.get())
+      true
+    } catch (exception: Exception) {
+      Log.w("[RNGestureHandler]", "Could not install JSI bindings.")
+      false
+    }
+  }
+
+  private external fun decorateRuntime(jsiPtr: Long)
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(

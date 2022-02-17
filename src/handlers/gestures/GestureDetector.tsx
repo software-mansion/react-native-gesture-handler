@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
 import {
   GestureType,
   HandlerCallbacks,
@@ -32,6 +33,7 @@ import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
+import { default as RNRenderer } from 'react-native/Libraries/Renderer/shims/ReactNative';
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -416,6 +418,7 @@ function useAnimatedGesture(
 
 interface GestureDetectorProps {
   gesture?: ComposedGesture | GestureType;
+  autowrapWithNonCollapsable?: boolean;
 }
 export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   props
@@ -428,6 +431,10 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     ) != null;
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
+  const viewTagRef = useRef(-1);
+  const [wrapWithNonCollapsableView, setWrapWithNonCollapsableView] = useState(
+    props.autowrapWithNonCollapsable ?? false
+  );
 
   const preparedGesture = React.useRef<GestureConfigReference>({
     config: gesture,
@@ -469,6 +476,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       viewTag,
       useAnimated,
     });
+    viewTagRef.current = viewTag;
 
     return () => {
       dropHandlers(preparedGesture);
@@ -479,7 +487,10 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     if (!firstRenderRef.current) {
       const viewTag = findNodeHandle(viewRef.current) as number;
 
-      if (needsToReattach(preparedGesture, gesture)) {
+      if (
+        needsToReattach(preparedGesture, gesture) ||
+        viewTag !== viewTagRef.current
+      ) {
         dropHandlers(preparedGesture);
         attachHandlers({
           preparedGesture,
@@ -488,28 +499,63 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
           viewTag,
           useAnimated,
         });
+
+        viewTagRef.current = viewTag;
       } else {
         updateHandlers(preparedGesture, gestureConfig, gesture);
       }
     } else {
       firstRenderRef.current = false;
     }
-  }, [props]);
+  }, [props, wrapWithNonCollapsableView]);
+
+  const refFunction = (ref: unknown) => {
+    if (ref !== null) {
+      //@ts-ignore Just setting the ref
+      viewRef.current = ref;
+      const node = RNRenderer.findHostInstance_DEPRECATED(ref)
+        ._internalInstanceHandle.stateNode.node;
+
+      if (
+        !wrapWithNonCollapsableView &&
+        global.isFormsStackingContext(node) === false
+      ) {
+        setWrapWithNonCollapsableView(true);
+
+        console.warn(
+          'react-native-gesture-handler] GestureDetector has received a child that may get view-flattened. ' +
+            '\n\nAs a workaround it was wrapped with a `<View collapsable={false}>`. If it looks and behaves as ' +
+            'intended you can add `autowrapWithNonCollapsable` prop to GestureDetector to get rid of this warning. ' +
+            'If it breaks the layout you need to resolve it manually by wrapping it with a non-collapsable view and styling it.'
+        );
+      }
+    }
+  };
 
   if (useAnimated) {
     return (
       <AnimatedWrap
-        ref={viewRef}
-        onGestureHandlerEvent={preparedGesture.animatedEventHandler}>
+        ref={refFunction}
+        onGestureHandlerEvent={preparedGesture.animatedEventHandler}
+        wrapWithNotCollapsable={wrapWithNonCollapsableView}>
         {props.children}
       </AnimatedWrap>
     );
   } else {
-    return <Wrap ref={viewRef}>{props.children}</Wrap>;
+    return (
+      <Wrap
+        ref={refFunction}
+        wrapWithNotCollapsable={wrapWithNonCollapsableView}>
+        {props.children}
+      </Wrap>
+    );
   }
 };
 
-class Wrap extends React.Component<{ onGestureHandlerEvent?: unknown }> {
+class Wrap extends React.Component<{
+  onGestureHandlerEvent?: unknown;
+  wrapWithNotCollapsable: boolean;
+}> {
   render() {
     // I don't think that fighting with types over such a simple function is worth it
     // The only thing it does is add 'collapsable: false' to the child component
@@ -517,13 +563,18 @@ class Wrap extends React.Component<{ onGestureHandlerEvent?: unknown }> {
     // correct viewTag to attach to.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const child: any = React.Children.only(this.props.children);
-
-    return React.cloneElement(
+    const clonedElement = React.cloneElement(
       child,
-      { collapsable: false },
+      { collapsable: false, test: 'a' },
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       child.props.children
     );
+
+    if (this.props.wrapWithNotCollapsable) {
+      return <View collapsable={false}>{clonedElement}</View>;
+    } else {
+      return clonedElement;
+    }
   }
 }
 

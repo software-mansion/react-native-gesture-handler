@@ -2,6 +2,15 @@ GESTURE_HANDLER_MAIN_THIS_DIR := $(call my-dir)
 
 include $(REACT_ANDROID_DIR)/Android-prebuilt.mk
 
+# libreact_render_uimanager
+include $(CLEAR_VARS)
+LOCAL_MODULE := libreact_render_uimanager
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_render_uimanager.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_COMMON_DIR)/react/renderer/uimanager
+include $(PREBUILT_SHARED_LIBRARY)
+# end libreact_render_uimanager
+
 include $(GESTURE_HANDLER_MAIN_THIS_DIR)/../../../build/generated/source/codegen/jni/Android.mk
 
 include $(CLEAR_VARS)
@@ -33,6 +42,7 @@ LOCAL_SHARED_LIBRARIES := libjsi \
     libreact_render_debug \
     libruntimeexecutor \
     libreact_render_mapbuffer \
+    libreact_render_uimanager \
     libreact_codegen_rncore \
     libreact_codegen_rngesturehandler
 

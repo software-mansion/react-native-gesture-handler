@@ -7,6 +7,14 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
+#import <React/RCTBridge.h>
+#import <ReactCommon/RCTTurboModule.h>
+#import <React/RCTBridge+Private.h>
+#import <ReactCommon/CallInvoker.h>
+#import <React/RCTUtils.h>
+
+#import <react/renderer/uimanager/primitives.h>
+
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandler.h"
@@ -53,6 +61,30 @@ RCT_EXPORT_MODULE()
     return RCTGetUIManagerQueue();
 }
 
+static void decorateRuntime(jsi::Runtime* jsiRuntime)
+{
+    auto& runtime = *jsiRuntime;
+    auto isFormsStackingContext = jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "isFormsStackingContext"),
+            1,
+            [](jsi::Runtime &runtime,
+               const jsi::Value &thisValue,
+               const jsi::Value *arguments,
+               size_t count) -> jsi::Value
+            {
+                if (!arguments[0].isObject()) {
+                    return jsi::Value::null();
+                }
+
+                auto shadowNode = arguments[0].asObject(runtime).getHostObject<facebook::react::ShadowNodeWrapper>(runtime)->shadowNode;
+                bool isFormsStackingContext = shadowNode->getTraits().check(facebook::react::ShadowNodeTraits::FormsStackingContext);
+
+                return jsi::Value(isFormsStackingContext);
+            });
+    runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
     [super setBridge:bridge];
@@ -65,6 +97,13 @@ RCT_EXPORT_MODULE()
                 reanimatedModule:reanimatedModule];
     _operations = [NSMutableArray new];
     [bridge.uiManager.observerCoordinator addObserver:self];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
+    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+    decorateRuntime((jsi::Runtime *)cxxBridge.runtime);
+    
+    return @true;
 }
 
 RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSString *)handlerName tag:(nonnull NSNumber *)handlerTag config:(NSDictionary *)config)
