@@ -523,7 +523,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
         setWrapWithNonCollapsableView(true);
 
         console.warn(
-          'react-native-gesture-handler] GestureDetector has received a child that may get view-flattened. ' +
+          '[react-native-gesture-handler] GestureDetector has received a child that may get view-flattened. ' +
             '\n\nAs a workaround it was wrapped with a `<View collapsable={false}>`. If it looks and behaves as ' +
             'intended you can add `autowrapWithNonCollapsable` prop to GestureDetector to get rid of this warning. ' +
             'If it breaks the layout you need to resolve it manually by wrapping it with a non-collapsable view and styling it.'
