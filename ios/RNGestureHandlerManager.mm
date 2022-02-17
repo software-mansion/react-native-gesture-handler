@@ -103,6 +103,12 @@
 {
     UIView *view = [_uiManager viewForReactTag:viewTag];
     
+    if (view == nil) {
+        // Happens when the view with given tag has been flattened.
+        // We cannot attach gesture handler to a non-existent view.
+        return;
+    }
+    
     if ([view isKindOfClass:[RNGestureHandlerButtonComponentView class]]) {
         RNGestureHandlerButtonComponentView *buttonComponentView = (RNGestureHandlerButtonComponentView *)view;
         view = (UIView *)buttonComponentView.contentView;
