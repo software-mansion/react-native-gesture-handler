@@ -318,7 +318,7 @@ export default function createHandler<
         (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
           this.handlerTag,
           newViewTag,
-          false,
+          3, // don't ask
           this.propsRef
         );
       } else {
@@ -329,9 +329,15 @@ export default function createHandler<
         });
 
         const actionType = (() => {
-          if ('current' in this.props.onGestureEvent) {
+          if (
+            this.props?.onGestureEvent &&
+            'current' in this.props.onGestureEvent
+          ) {
             return 1; // Reanimated worklet
-          } else if ('__isNative' in this.props.onGestureEvent) {
+          } else if (
+            this.props?.onGestureEvent &&
+            '__isNative' in this.props.onGestureEvent
+          ) {
             return 2; // Animated.event with useNativeDriver: true
           } else {
             return 3; // JS callback or Animated.event with useNativeDriver: false

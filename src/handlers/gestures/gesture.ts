@@ -117,6 +117,7 @@ export abstract class BaseGesture<
 > extends Gesture {
   public handlerTag = -1;
   public handlerName = '';
+  public old = false; // true for old API (FooGestureHandler), false for new API (Gesture.Foo)
   public config: BaseGestureConfig = {};
   public handlers: HandlerCallbacks<EventPayloadT> = {
     handlerTag: -1,

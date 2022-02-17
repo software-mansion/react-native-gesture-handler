@@ -33,7 +33,13 @@ import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
-import { default as RNRenderer } from 'react-native/Libraries/Renderer/shims/ReactNative';
+
+// @ts-ignore RNRenderer is JavaScript
+import { findHostInstance_DEPRECATED } from 'react-native/Libraries/Renderer/shims/ReactFabric';
+
+declare global {
+  function isFormsStackingContext(node: unknown): boolean | null; // JSI function
+}
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -513,8 +519,8 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     if (ref !== null) {
       //@ts-ignore Just setting the ref
       viewRef.current = ref;
-      const node = RNRenderer.findHostInstance_DEPRECATED(ref)
-        ._internalInstanceHandle.stateNode.node;
+      const node = findHostInstance_DEPRECATED(ref)._internalInstanceHandle
+        .stateNode.node;
 
       if (
         !wrapWithNonCollapsableView &&
@@ -565,7 +571,7 @@ class Wrap extends React.Component<{
     const child: any = React.Children.only(this.props.children);
     const clonedElement = React.cloneElement(
       child,
-      { collapsable: false, test: 'a' },
+      { collapsable: false },
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       child.props.children
     );
