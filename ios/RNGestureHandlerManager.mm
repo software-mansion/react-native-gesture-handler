@@ -109,9 +109,11 @@
         return;
     }
     
-    if ([view isKindOfClass:[RNGestureHandlerButtonComponentView class]]) {
-        RNGestureHandlerButtonComponentView *buttonComponentView = (RNGestureHandlerButtonComponentView *)view;
-        view = (UIView *)buttonComponentView.contentView;
+    if ([view isKindOfClass:[RCTViewComponentView class]]) {
+        RCTViewComponentView *componentView = (RCTViewComponentView *)view;
+        if (componentView.contentView != nil) {
+            view = componentView.contentView;
+        }
     }
     
     view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be returned as event.target
