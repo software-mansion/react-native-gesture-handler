@@ -20,7 +20,10 @@ export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [remainingTimeMs, setRemainingTimeMs] = useState(MAX_VIDEO_DURATION_MS);
-  const [recordingIntervalHandle, setRecordingIntervalHandle] = useState(-1);
+  const [
+    recordingIntervalHandle,
+    setRecordingIntervalHandle,
+  ] = useState<NodeJS.Timeout | null>(null);
 
   const filtersPanGesture = Gesture.Pan()
     .onUpdate((e) => {
@@ -125,7 +128,7 @@ export default function Home() {
 
   function finishRecording() {
     setIsRecording(false);
-    clearInterval(recordingIntervalHandle);
+    clearInterval(recordingIntervalHandle!);
     setRemainingTimeMs(MAX_VIDEO_DURATION_MS);
 
     Alert.alert(
