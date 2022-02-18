@@ -109,6 +109,8 @@
         return;
     }
     
+    // I think it should be moved to RNNativeViewHandler, but that would require
+    // additional logic for setting contentView.reactTag, this works for now
     if ([view isKindOfClass:[RCTViewComponentView class]]) {
         RCTViewComponentView *componentView = (RCTViewComponentView *)view;
         if (componentView.contentView != nil) {
