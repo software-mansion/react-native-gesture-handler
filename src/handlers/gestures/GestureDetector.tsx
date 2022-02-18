@@ -75,7 +75,7 @@ function dropHandlers(preparedGesture: GestureConfigReference) {
   for (const handler of preparedGesture.config) {
     RNGestureHandlerModule.dropGestureHandler(handler.handlerTag);
 
-    unregisterHandler(handler.handlerTag);
+    unregisterHandler(handler.handlerTag, handler.config.testId);
   }
 }
 
@@ -132,7 +132,7 @@ function attachHandlers({
       filterConfig(handler.config, ALLOWED_PROPS)
     );
 
-    registerHandler(handler.handlerTag, handler);
+    registerHandler(handler.handlerTag, handler, handler.config.testId);
 
     // use setImmediate to extract handlerTags, because all refs should be initialized
     // when it's ran
@@ -224,7 +224,7 @@ function updateHandlers(
         })
       );
 
-      registerHandler(handler.handlerTag, handler);
+      registerHandler(handler.handlerTag, handler, handler.config.testId);
     }
 
     if (preparedGesture.animatedHandlers) {

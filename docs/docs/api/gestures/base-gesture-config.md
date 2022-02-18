@@ -29,7 +29,12 @@ Specifying `width` or `height` is useful if we only want the gesture to activate
 
 ### `withRef(ref)`
 
-Sets a ref to the gesture object, allowing for interoperability with the old API.
+Sets a ref to the gesture object, allowing for interoperability with the old
+API.
+
+### `withTestId(testID)`
+
+Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
 ### `simultaneousWithExternalGesture(otherGesture1, otherGesture2, ...)`
 
