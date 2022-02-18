@@ -368,6 +368,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   fun attachGestureHandler(handlerTag: Int, viewTag: Int, actionType: Int) {
     tryInitializeHandlerForReactRootView(viewTag)
 
+    // We don't have to handle view flattening in any special way since handlers are stored as
+    // a map: viewTag -> [handler]. If the view with attached handlers was to be flattened
+    // then that viewTag simply wouldn't be visited when traversing the view hierarchy in the
+    // Orchestrator effectively ignoring all handlers attached to flattened views.
     if (!registry.attachHandlerToView(handlerTag, viewTag, actionType)) {
       throw JSApplicationIllegalArgumentException("Handler with tag $handlerTag does not exists")
     }
