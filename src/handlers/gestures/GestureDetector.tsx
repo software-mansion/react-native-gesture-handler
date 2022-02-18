@@ -86,12 +86,14 @@ function checkGestureCallbacksForWorklets(gesture: GestureType) {
     return;
   }
 
-  const areAllWorklets = !gesture.handlers.isWorklet.includes(false);
-  const areAllNotWorklets = !gesture.handlers.isWorklet.includes(true);
+  const areSomeNotWorklets = gesture.handlers.isWorklet.includes(false);
+  const areSomeWorklets = gesture.handlers.isWorklet.includes(true);
 
-  if (!areAllWorklets && !areAllNotWorklets) {
+  // if some of the callbacks are worklets and some are not, and the gesture is not
+  // explicitly marked with `.runOnJS(true)` show an error
+  if (areSomeNotWorklets && areSomeWorklets) {
     console.error(
-      `[RNGestureHandler] Some of the callbacks in the gesture are worklets and some are not. Either make sure that all calbacks are marked as 'worklet' if you wish to run them on the UI thread or use '.runOnJS(true)' modifier on the gesture explicitly to run all callbacks on the JS thread.`
+      `[react-native-gesture-handler] Some of the callbacks in the gesture are worklets and some are not. Either make sure that all calbacks are marked as 'worklet' if you wish to run them on the UI thread or use '.runOnJS(true)' modifier on the gesture explicitly to run all callbacks on the JS thread.`
     );
   }
 }
@@ -167,8 +169,10 @@ function attachHandlers({
   }
 
   if (preparedGesture.animatedHandlers) {
+    const isAnimatedGesture = (g: GestureType) => g.shouldUseReanimated;
+
     preparedGesture.animatedHandlers.value = (gesture
-      .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
+      .filter(isAnimatedGesture)
       .map((g) => g.handlers) as unknown) as HandlerCallbacks<
       Record<string, unknown>
     >[];
@@ -450,10 +454,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
 ) => {
   const gestureConfig = props.gesture;
   const gesture = gestureConfig?.toGestureArray?.() ?? [];
-  const useReanimatedHook = gesture.reduce(
-    (prev, current) => prev || current.shouldUseReanimated,
-    false
-  );
+  const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
 
@@ -467,7 +468,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
 
   if (useReanimatedHook !== preparedGesture.useReanimatedHook) {
     throw new Error(
-      '[RNGestureHandler] You cannot change the thread the callbacks are ran on while the app is running'
+      '[react-native-gesture-handler] You cannot change the thread the callbacks are ran on while the app is running'
     );
   }
 
