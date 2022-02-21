@@ -4,18 +4,13 @@ import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.MotionEvent
-import androidx.annotation.UiThread
-import com.facebook.infer.annotation.ThreadConfined
-import com.facebook.infer.annotation.ThreadConfined.UI
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
-import com.facebook.react.bridge.UiThreadUtil
 
 @Deprecated(message = "Use <GestureHandlerRootView /> component instead. Check gesture handler installation instructions in documentation for more information.")
 class RNGestureHandlerEnabledRootView : ReactRootView {
   private lateinit var _reactInstanceManager: ReactInstanceManager
   private var gestureRootHelper: RNGestureHandlerRootHelper? = null
-  private var initialized: Boolean = false
 
   constructor(context: Context?) : super(context) {}
   constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
@@ -38,14 +33,7 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
    * to its superclass. Thus in the "disabled" state all touch related events will fallback to
    * default RN behavior.
    */
-  @UiThread // TODO: is this necessary?
-  @ThreadConfined(UI) // TODO: is this necessary?
   fun initialize() {
-    UiThreadUtil.assertOnUiThread() // TODO: is this necessary?
-    if (initialized) {
-      return;
-    }
-    initialized = true;
     check(gestureRootHelper == null) { "GestureHandler already initialized for root view $this" }
     gestureRootHelper = RNGestureHandlerRootHelper(
       _reactInstanceManager.currentReactContext!!, this)

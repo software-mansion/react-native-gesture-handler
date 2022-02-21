@@ -11,6 +11,7 @@ import com.facebook.react.bridge.*
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.common.UIManagerType.FABRIC
 import com.facebook.react.uimanager.events.Event
@@ -366,7 +367,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun attachGestureHandler(handlerTag: Int, viewTag: Int, actionType: Int) {
-    tryInitializeHandlerForReactRootView(viewTag)
+    // tryInitializeHandlerForReactRootView(viewTag) // TODO: call it only on Paper
 
     // We don't have to handle view flattening in any special way since handlers are stored as
     // a map: viewTag -> [handler]. If the view with attached handlers was to be flattened
@@ -475,12 +476,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private fun tryInitializeHandlerForReactRootView(ancestorViewTag: Int) {
-//    val uiManager = reactApplicationContext.UIManager
-//    val rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag)
-//    if (rootViewTag < 1) {
-//      throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
-//    }
-    val rootViewTag = 1;
+    val uiManager = reactApplicationContext.UIManager
+    val rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag)
+    if (rootViewTag < 1) {
+      throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
+    }
     synchronized(roots) {
       for (root in roots) {
         val rootView: ViewGroup = root.rootView
@@ -500,19 +500,17 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     }
     // root helper for a given root tag has not been found, we may wat to check if the root view is
     // an instance of RNGestureHandlerEnabledRootView and then initialize gesture handler with it
-    // uiManager.addUIBlock(UIBlock { nativeViewHierarchyManager ->
-    //   val view = nativeViewHierarchyManager.resolveView(rootViewTag)
-    //   if (view is RNGestureHandlerEnabledRootView) {
-    //     view.initialize()
-    //   } else {
-    //     // Seems like the root view is something else than RNGestureHandlerEnabledRootView, this
-    //     // is fine though as long as gestureHandlerRootHOC is used in JS
-    //     // FIXME: check and warn about gestureHandlerRootHOC
-    //   }
-//    UiThreadUtil.runOnUiThread({
-//      rngherv.initialize()
-//      synchronized(enqueuedRootViewInit) { enqueuedRootViewInit.remove(rootViewTag) }
-//    })
+    uiManager.addUIBlock(UIBlock { nativeViewHierarchyManager ->
+      val view = nativeViewHierarchyManager.resolveView(rootViewTag)
+      if (view is RNGestureHandlerEnabledRootView) {
+        view.initialize()
+      } else {
+        // Seems like the root view is something else than RNGestureHandlerEnabledRootView, this
+        // is fine though as long as gestureHandlerRootHOC is used in JS
+        // FIXME: check and warn about gestureHandlerRootHOC
+      }
+      synchronized(enqueuedRootViewInit) { enqueuedRootViewInit.remove(rootViewTag) }
+    })
   }
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
