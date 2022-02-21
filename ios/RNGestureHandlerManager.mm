@@ -212,7 +212,6 @@
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event withActionType:(nonnull NSNumber *)actionType
 {
-#ifdef RN_FABRIC_ENABLED
     switch ([actionType integerValue]) {
         // Reanimated worklet
         case RNGestureHandlerActionTypeReanimatedWorklet:
@@ -235,9 +234,6 @@
             [self sendStateChangeEventForDeviceEvent:event];
             break;
     }
-#else
-    #error "TODO"
-#endif // RN_FABRIC_ENABLED
 }
 
 - (void)sendStateChangeEventForReanimated:(RNGestureHandlerStateChange *)event
@@ -246,7 +242,12 @@
     // to be used when:
     // - gesture callback from new API is a Reanimated worklet
     // - onGestureEvent prop from old API is an useAnimatedGestureHandler object
+#ifdef RN_FABRIC_ENABLED
+    // TODO: send event directly to Reanimated
     // [_reanimatedModule eventDispatcherWillDispatchEvent:event];
+#else
+    [_eventDispatcher sendEvent:event];
+#endif // RN_FABRIC_ENABLED
 }
 
 - (void)sendStateChangeEventForNativeAnimatedEvent:(RNGestureHandlerStateChange *)event
@@ -254,7 +255,7 @@
     // delivers the event to NativeAnimatedModule
     // to be used when onGestureEvent prop from old API is an Animated.event with useNativeDriver: true (only for onGestureHandlerEvent)
     [_eventDispatcher sendEvent:event];
-    // TODO: call [self->_nodesManager handleAnimatedEvent:event] directly without RCTExecuteOnMainQueue?
+    // TODO: send event directly to NativeAnimated[Turbo]Module
 }
 
 - (void)sendStateChangeEventForDeviceEvent:(RNGestureHandlerStateChange *)event
