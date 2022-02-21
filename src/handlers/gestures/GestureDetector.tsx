@@ -35,6 +35,7 @@ import { ComposedGesture } from './gestureComposition';
 
 // @ts-ignore RNRenderer is JavaScript
 import { findHostInstance_DEPRECATED } from 'react-native/Libraries/Renderer/shims/ReactFabric';
+import { ActionType } from '../../ActionType';
 
 declare global {
   function isFormsStackingContext(node: unknown): boolean | null; // JSI function
@@ -168,10 +169,14 @@ function attachHandlers({
   preparedGesture.config = gesture;
 
   for (const gesture of preparedGesture.config) {
+    const actionType = gesture.shouldUseReanimated
+      ? ActionType.REANIMATED_WORKLET
+      : ActionType.JS_FUNCTION;
+
     RNGestureHandlerModule.attachGestureHandler(
       gesture.handlerTag,
       viewTag,
-      /* actionType */ gesture.shouldUseReanimated ? 1 : 3
+      actionType
     );
   }
 

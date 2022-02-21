@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import { ActionType } from './ActionType';
 const { RNGestureHandlerModule } = NativeModules;
 
 if (RNGestureHandlerModule == null) {
@@ -23,7 +24,7 @@ export type RNGestureHandlerModuleProps = {
   attachGestureHandler: (
     handlerTag: number,
     newView: number,
-    actionType: number
+    actionType: ActionType
   ) => void;
   updateGestureHandler: (
     handlerTag: number,

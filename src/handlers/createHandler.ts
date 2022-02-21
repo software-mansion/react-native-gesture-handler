@@ -26,6 +26,7 @@ import {
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
 import { isJestEnv } from '../utils';
+import { ActionType } from '../ActionType';
 
 const UIManagerAny = UIManager as any;
 
@@ -318,7 +319,7 @@ export default function createHandler<
         (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
           this.handlerTag,
           newViewTag,
-          3, // don't ask
+          ActionType.JS_FUNCTION, // ignored on web
           this.propsRef
         );
       } else {
@@ -332,14 +333,17 @@ export default function createHandler<
             this.props?.onGestureEvent &&
             'current' in this.props.onGestureEvent
           ) {
-            return 1; // Reanimated worklet
+            // Reanimated worklet
+            return ActionType.REANIMATED_WORKLET;
           } else if (
             this.props?.onGestureEvent &&
             '__isNative' in this.props.onGestureEvent
           ) {
-            return 2; // Animated.event with useNativeDriver: true
+            // Animated.event with useNativeDriver: true
+            return ActionType.NATIVE_ANIMATED_EVENT;
           } else {
-            return 3; // JS callback or Animated.event with useNativeDriver: false
+            // JS callback or Animated.event with useNativeDriver: false
+            return ActionType.JS_FUNCTION;
           }
         })();
 

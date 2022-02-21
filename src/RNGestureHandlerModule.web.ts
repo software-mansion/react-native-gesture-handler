@@ -1,3 +1,4 @@
+import { ActionType } from './ActionType';
 import { Direction } from './web/constants';
 import FlingGestureHandler from './web/FlingGestureHandler';
 import LongPressGestureHandler from './web/LongPressGestureHandler';
@@ -44,7 +45,7 @@ export default {
   attachGestureHandler(
     handlerTag: number,
     newView: number,
-    _actionType: number,
+    _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
     NodeManager.getHandler(handlerTag).setView(newView, propsRef);
