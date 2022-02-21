@@ -347,8 +347,6 @@ export default function createHandler<
           }
         })();
 
-        // TODO: find out why it sometimes the above crashes due to cloning object from different runtime
-
         RNGestureHandlerModule.attachGestureHandler(
           this.handlerTag,
           newViewTag,

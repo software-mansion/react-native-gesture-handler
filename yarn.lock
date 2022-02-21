@@ -9334,9 +9334,10 @@ react-native-codegen@^0.0.13:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-reanimated@software-mansion/react-native-reanimated#@szymon/fabric:
-  version "2.3.1"
-  resolved "https://codeload.github.com/software-mansion/react-native-reanimated/tar.gz/6ee46e3bb4178505d9d9ddb04948cd27ad53d599"
+react-native-reanimated@^2.3.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.4.1.tgz#4e33876fba525ce60ac13ab3c81fc3a9f8b132fe"
+  integrity sha512-kvf7ylGlwa5hxMQ+wpPFjQrI2c6eexf53/xRo+dvXBNefGmSYaYR5sFtD0XMMzIPQlkCB9tJ0Pu9+2WCQUY7Cg==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     "@types/invariant" "^2.2.35"

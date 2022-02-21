@@ -1,3 +1,5 @@
+#ifdef RN_FABRIC_ENABLED
+
 #import "RCTFabricComponentsPlugins.h"
 
 Class<RCTComponentViewProtocol> RNGestureHandlerRootViewCls(void)
@@ -15,3 +17,5 @@ Class<RCTComponentViewProtocol> RNGestureHandlerRootViewCls(void)
   // TODO: remove this file once `excludedPlatforms` option properly disables generating ShadowNode
   return nil;
 }
+
+#endif // RN_FABRIC_ENABLED

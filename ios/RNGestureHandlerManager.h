@@ -10,8 +10,7 @@
 @interface RNGestureHandlerManager : NSObject
 
 - (nonnull instancetype)initWithUIManager:(nonnull RCTUIManager *)uiManager
-                          eventDispatcher:(nonnull RCTEventDispatcher *)eventDispatcher
-                         reanimatedModule:(id)reanimatedModule;
+                          eventDispatcher:(nonnull RCTEventDispatcher *)eventDispatcher;
 
 - (void)createGestureHandler:(nonnull NSString *)handlerName
                          tag:(nonnull NSNumber *)handlerTag

@@ -192,7 +192,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _state = [self recognizerState];
     RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
     [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
-    // TODO: eliminate viewTag
 }
 
 - (void)sendEventsInState:(RNGestureHandlerState)state

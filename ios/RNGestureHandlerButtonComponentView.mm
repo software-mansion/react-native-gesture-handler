@@ -1,3 +1,5 @@
+#ifdef RN_FABRIC_ENABLED
+
 #import "RNGestureHandlerButtonComponentView.h"
 
 #import <React/RCTConversions.h>
@@ -42,3 +44,5 @@ Class<RCTComponentViewProtocol> RNGestureHandlerButtonCls(void)
 {
   return RNGestureHandlerButtonComponentView.class;
 }
+
+#endif // RN_FABRIC_ENABLED

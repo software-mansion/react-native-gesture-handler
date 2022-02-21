@@ -7,7 +7,6 @@
 #import <React/RCTTouchHandler.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTEventDispatcher.h>
-// #import <React/RCTBridge+Private.h>
 
 #if __has_include(<React/RCTRootContentView.h>)
 #import <React/RCTRootContentView.h>
@@ -20,7 +19,10 @@
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerRegistry.h"
 #import "RNRootViewGestureRecognizer.h"
-#import "RNGestureHandlerButtonComponentView.h"
+
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTViewComponentView.h>
+#endif // RN_FABRIC_ENABLED
 
 #import "Handlers/RNPanHandler.h"
 #import "Handlers/RNTapHandler.h"
@@ -44,19 +46,16 @@
 {
     RNGestureHandlerRegistry *_registry;
     RCTUIManager *_uiManager;
-    id _reanimatedModule;
     NSHashTable<RNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
     RCTEventDispatcher *_eventDispatcher;
 }
 
 - (instancetype)initWithUIManager:(RCTUIManager *)uiManager
                   eventDispatcher:(RCTEventDispatcher *)eventDispatcher
-                 reanimatedModule:(id)reanimatedModule
 {
     if ((self = [super init])) {
         _uiManager = uiManager;
         _eventDispatcher = eventDispatcher;
-        _reanimatedModule = reanimatedModule;
         _registry = [RNGestureHandlerRegistry new];
         _rootViewGestureRecognizers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
     }
@@ -104,6 +103,7 @@
 {
     UIView *view = [_uiManager viewForReactTag:viewTag];
     
+#ifdef RN_FABRIC_ENABLED
     if (view == nil) {
         // Happens when the view with given tag has been flattened.
         // We cannot attach gesture handler to a non-existent view.
@@ -119,8 +119,9 @@
         }
     }
     
-    view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be returned as event.target
-    
+    view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be returned as event.target  
+#endif // RN_FABRIC_ENABLED
+
     [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
 
     // register view if not already there
@@ -211,6 +212,7 @@
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event withActionType:(nonnull NSNumber *)actionType
 {
+#ifdef RN_FABRIC_ENABLED
     switch ([actionType integerValue]) {
         // Reanimated worklet
         case RNGestureHandlerActionTypeReanimatedWorklet:
@@ -233,6 +235,9 @@
             [self sendStateChangeEventForDeviceEvent:event];
             break;
     }
+#else
+    #error "TODO"
+#endif // RN_FABRIC_ENABLED
 }
 
 - (void)sendStateChangeEventForReanimated:(RNGestureHandlerStateChange *)event
@@ -241,7 +246,7 @@
     // to be used when:
     // - gesture callback from new API is a Reanimated worklet
     // - onGestureEvent prop from old API is an useAnimatedGestureHandler object
-    [_reanimatedModule eventDispatcherWillDispatchEvent:event];
+    // [_reanimatedModule eventDispatcherWillDispatchEvent:event];
 }
 
 - (void)sendStateChangeEventForNativeAnimatedEvent:(RNGestureHandlerStateChange *)event

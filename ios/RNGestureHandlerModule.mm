@@ -7,6 +7,7 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
+#ifdef RN_FABRIC_ENABLED
 #import <React/RCTBridge.h>
 #import <ReactCommon/RCTTurboModule.h>
 #import <React/RCTBridge+Private.h>
@@ -14,6 +15,7 @@
 #import <React/RCTUtils.h>
 
 #import <react/renderer/uimanager/primitives.h>
+#endif // RN_FABRIC_ENABLED
 
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandlerDirection.h"
@@ -61,6 +63,7 @@ RCT_EXPORT_MODULE()
     return RCTGetUIManagerQueue();
 }
 
+#ifdef RN_FABRIC_ENABLED
 static void decorateRuntime(jsi::Runtime* jsiRuntime)
 {
     auto& runtime = *jsiRuntime;
@@ -84,27 +87,27 @@ static void decorateRuntime(jsi::Runtime* jsiRuntime)
             });
     runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
 }
+#endif // RN_FABRIC_ENABLED
 
 - (void)setBridge:(RCTBridge *)bridge
 {
     [super setBridge:bridge];
 
-    id reanimatedModule = [bridge moduleForName:@"ReanimatedModule"];
-
     _manager = [[RNGestureHandlerManager alloc]
                 initWithUIManager:bridge.uiManager
-                eventDispatcher:bridge.eventDispatcher
-                reanimatedModule:reanimatedModule];
+                eventDispatcher:bridge.eventDispatcher];
     _operations = [NSMutableArray new];
     [bridge.uiManager.observerCoordinator addObserver:self];
 }
 
+#ifdef RN_FABRIC_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
     RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
     decorateRuntime((jsi::Runtime *)cxxBridge.runtime);
     
     return @true;
 }
+#endif // RN_FABRIC_ENABLED
 
 RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSString *)handlerName tag:(nonnull NSNumber *)handlerTag config:(NSDictionary *)config)
 {

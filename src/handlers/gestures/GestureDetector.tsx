@@ -33,9 +33,8 @@ import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
 
-// @ts-ignore RNRenderer is JavaScript
-import { findHostInstance_DEPRECATED } from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import { ActionType } from '../../ActionType';
+import { ENABLE_FABRIC, getShadowNodeFromRef } from '../../utils';
 
 declare global {
   function isFormsStackingContext(node: unknown): boolean | null; // JSI function
@@ -545,14 +544,15 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     if (ref !== null) {
       //@ts-ignore Just setting the ref
       viewRef.current = ref;
-      const node = findHostInstance_DEPRECATED(ref)._internalInstanceHandle
-        .stateNode.node;
 
-      if (global.isFormsStackingContext(node) === false) {
-        console.error(
-          '[react-native-gesture-handler] GestureDetector has received a child that may get view-flattened. ' +
-            '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
-        );
+      if (ENABLE_FABRIC) {
+        const node = getShadowNodeFromRef(ref);
+        if (global.isFormsStackingContext(node) === false) {
+          console.error(
+            '[react-native-gesture-handler] GestureDetector has received a child that may get view-flattened. ' +
+              '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
+          );
+        }
       }
     }
   };

@@ -37,7 +37,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     jsGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
     with(registry) {
       registerHandler(jsGestureHandler)
-      attachHandlerToView(jsGestureHandler.tag, wrappedViewTag, 3)
+      attachHandlerToView(jsGestureHandler.tag, wrappedViewTag, GestureHandler.ACTION_TYPE_JS_FUNCTION)
     }
     module.registerRootHelper(this)
   }
