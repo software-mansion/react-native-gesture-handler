@@ -7,7 +7,7 @@ import {
   GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
 import { GestureStateManagerType } from './gestureStateManager';
-import { findHandler } from '../handlersRegistry';
+import { findHandler, findOldGestureHandler } from '../handlersRegistry';
 import { BaseGesture } from './gesture';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
@@ -59,16 +59,6 @@ function onGestureHandlerEvent(
   >;
 
   if (handler) {
-    if (handler.old) {
-      const event2 = { nativeEvent: event };
-      if (isStateChangeEvent(event)) {
-        handler.onGestureStateChange(event2);
-      } else {
-        handler.onGestureEvent(event2);
-      }
-      return;
-    }
-
     if (isStateChangeEvent(event)) {
       if (
         event.oldState === State.UNDETERMINED &&
@@ -126,6 +116,17 @@ function onGestureHandlerEvent(
 
         lastUpdateEvent[handler.handlers.handlerTag] = event;
       }
+    }
+  } else {
+    const oldHandler = findOldGestureHandler(event.handlerTag);
+    if (oldHandler) {
+      const nativeEvent = { nativeEvent: event };
+      if (isStateChangeEvent(event)) {
+        oldHandler.onGestureStateChange(nativeEvent);
+      } else {
+        oldHandler.onGestureEvent(nativeEvent);
+      }
+      return;
     }
   }
 }

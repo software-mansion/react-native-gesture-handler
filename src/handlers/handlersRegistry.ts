@@ -1,8 +1,10 @@
 import { isJestEnv } from '../utils';
 import { GestureType } from './gestures/gesture';
+import { GestureEvent, HandlerStateChangeEvent } from './gestureHandlerCommon';
 
 export const handlerIDToTag: Record<string, number> = {};
-const handlers = new Map<number, GestureType>();
+const gestures = new Map<number, GestureType>();
+const oldHandlers = new Map<number, GestureHandlerCallbacks>();
 const testIDs = new Map<string, number>();
 
 let handlerTag = 1;
@@ -16,21 +18,32 @@ export function registerHandler(
   handler: GestureType,
   testID?: string
 ) {
-  handlers.set(handlerTag, handler);
+  gestures.set(handlerTag, handler);
   if (isJestEnv() && testID) {
     testIDs.set(testID, handlerTag);
   }
 }
 
+export function registerOldGestureHandler(
+  handlerTag: number,
+  handler: GestureHandlerCallbacks
+) {
+  oldHandlers.set(handlerTag, handler);
+}
+
 export function unregisterHandler(handlerTag: number, testID?: string) {
-  handlers.delete(handlerTag);
+  gestures.delete(handlerTag);
   if (isJestEnv() && testID) {
     testIDs.delete(testID);
   }
 }
 
 export function findHandler(handlerTag: number) {
-  return handlers.get(handlerTag);
+  return gestures.get(handlerTag);
+}
+
+export function findOldGestureHandler(handlerTag: number) {
+  return oldHandlers.get(handlerTag);
 }
 
 export function findHandlerByTestID(testID: string) {
@@ -39,4 +52,9 @@ export function findHandlerByTestID(testID: string) {
     return findHandler(handlerTag) ?? null;
   }
   return null;
+}
+
+export interface GestureHandlerCallbacks {
+  onGestureEvent: (event: GestureEvent<any>) => void;
+  onGestureStateChange: (event: HandlerStateChangeEvent<any>) => void;
 }

@@ -14,7 +14,7 @@ import { State } from '../State';
 import {
   handlerIDToTag,
   getNextHandlerTag,
-  registerHandler,
+  registerOldGestureHandler,
 } from './handlersRegistry';
 
 import {
@@ -322,10 +322,9 @@ export default function createHandler<
           this.propsRef
         );
       } else {
-        registerHandler(this.handlerTag, {
+        registerOldGestureHandler(this.handlerTag, {
           onGestureEvent: this.onGestureHandlerEvent,
           onGestureStateChange: this.onGestureHandlerStateChange,
-          old: true,
         });
 
         const actionType = (() => {
