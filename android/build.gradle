@@ -113,8 +113,7 @@ dependencies {
     if (isNewArchitectureEnabled()) {
         implementation project(':ReactAndroid')
     } else {
-        // implementation 'com.facebook.react:react-native:+'
-        implementation project(':ReactAndroid') // for RNTester
+        implementation 'com.facebook.react:react-native:+'
     }
 
     // if (shouldUseCommonInterfaceFromReanimated()) {
