@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
 import {
   GestureType,
   HandlerCallbacks,
