@@ -1,5 +1,5 @@
 import * as React from 'react';
-
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
@@ -12,16 +12,18 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen name="OverviewExample" component={OverviewExample} />
-        <Stack.Screen name="UltimateExample" component={UltimateExample} />
-        <Stack.Screen
-          name="ViewFlatteningExample"
-          component={ViewFlatteningExample}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="OverviewExample" component={OverviewExample} />
+          <Stack.Screen name="UltimateExample" component={UltimateExample} />
+          <Stack.Screen
+            name="ViewFlatteningExample"
+            component={ViewFlatteningExample}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }

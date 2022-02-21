@@ -1,7 +1,6 @@
 import {
   Gesture,
   GestureDetector,
-  GestureHandlerRootView,
   PanGestureHandler,
   TouchableNativeFeedback,
   TouchableOpacity,
@@ -76,7 +75,7 @@ export default function OverviewExample() {
   };
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <Text>View + GestureDetector</Text>
       <GestureDetector gesture={gesture1}>
         <View style={styles.box1} />
@@ -121,7 +120,7 @@ export default function OverviewExample() {
       >
         <View style={styles.box3} />
       </TouchableOpacity>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 

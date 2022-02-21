@@ -1,8 +1,4 @@
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {StyleSheet, Text, View, Animated} from 'react-native';
 
 import React, {useState} from 'react';
@@ -19,7 +15,7 @@ export default function ViewFlatteningExample() {
   const tap4 = Gesture.Tap().onStart(() => console.log('tap!'));
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <Text>Parent view flattened</Text>
       <View style={styles.borderedBox}>
         <GestureDetector gesture={tap1} autowrapWithNonCollapsable>
@@ -53,7 +49,7 @@ export default function ViewFlatteningExample() {
           <ParentAnimatedView />
         </GestureDetector>
       </View>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 
