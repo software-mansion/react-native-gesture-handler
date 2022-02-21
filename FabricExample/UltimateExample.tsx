@@ -35,7 +35,7 @@ export default function UltimateExample() {
       console.log(global._WORKLET, 'onFinalize');
     });
 
-  const gesture2 = Gesture.Pan();
+  const gesture2 = Gesture.Native();
   // this syntax ensures that callbacks are not auto-workletized
   gesture2
     .onBegin(() => {
@@ -43,9 +43,6 @@ export default function UltimateExample() {
     })
     .onStart(() => {
       console.log(global._WORKLET, 'onStart');
-    })
-    .onUpdate(() => {
-      console.log(global._WORKLET, 'onUpdate');
     })
     .onEnd(() => {
       console.log(global._WORKLET, 'onEnd');

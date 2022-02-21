@@ -22,7 +22,7 @@ export default function ViewFlatteningExample() {
     <GestureHandlerRootView style={styles.container}>
       <Text>Parent view flattened</Text>
       <View style={styles.borderedBox}>
-        <GestureDetector gesture={tap1}>
+        <GestureDetector gesture={tap1} autowrapWithNonCollapsable>
           <FlattenedParent />
         </GestureDetector>
       </View>
@@ -33,7 +33,7 @@ export default function ViewFlatteningExample() {
       </Text>
 
       <View style={styles.borderedBox}>
-        <GestureDetector gesture={tap2}>
+        <GestureDetector gesture={tap2} autowrapWithNonCollapsable>
           <NotFlattenedParentCollapsable state={state} />
         </GestureDetector>
       </View>
