@@ -553,15 +553,15 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     if (handler.state == GestureHandler.STATE_ACTIVE) {
       val handlerFactory = findFactoryForHandler(handler)
 
-      if (handler.actionType == 1) {
+      if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
         // Reanimated worklet
         val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
         sendEventForReanimated(event)
-      } else if (handler.actionType == 2) {
+      } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT) {
         // Animated with useNativeDriver: true
         val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
         sendEventForNativeAnimatedEvent(event)
-      } else if (handler.actionType == 3) {
+      } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION) {
         // JS function, Animated.event with useNativeDriver: false
         val data = RNGestureHandlerEvent.createEventData(handler, handlerFactory)
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
@@ -578,11 +578,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     }
     val handlerFactory = findFactoryForHandler(handler)
 
-    if (handler.actionType == 1) {
+    if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
       // Reanimated worklet
       val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
       sendEventForReanimated(event)
-    } else if (handler.actionType == 2 || handler.actionType == 3) {
+    } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
+            || handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION) {
       // JS function or Animated.event with useNativeDriver: false
       val data = RNGestureHandlerStateChangeEvent.createEventData(handler, handlerFactory, newState, oldState)
       sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)

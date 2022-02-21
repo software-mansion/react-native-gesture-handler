@@ -700,6 +700,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     const val DIRECTION_LEFT = 2
     const val DIRECTION_UP = 4
     const val DIRECTION_DOWN = 8
+    const val ACTION_TYPE_REANIMATED_WORKLET = 1
+    const val ACTION_TYPE_NATIVE_ANIMATED_EVENT = 2
+    const val ACTION_TYPE_JS_FUNCTION = 3
     private const val MAX_POINTERS_COUNT = 12
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
