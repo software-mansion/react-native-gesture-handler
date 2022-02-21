@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  ImageStyle,
-  LayoutChangeEvent,
-  SafeAreaView,
-} from 'react-native';
+import { StyleSheet, ImageStyle, LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -12,6 +7,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useHeaderHeight } from '@react-navigation/stack';
 
 const CHAT_HEADS = [
   { imageUrl: 'https://avatars0.githubusercontent.com/u/379606?v=4&s=460' },
@@ -87,7 +84,7 @@ const Example = () => {
   const panOffset = useOffsetAnimatedValue();
   const mainChatHeadPosition = useOffsetAnimatedValue();
   const chatHeadsOffsets = CHAT_HEADS.map(useOffsetAnimatedValue);
-  const headerHeight = 100;
+  const headerHeight = useHeaderHeight();
 
   const onLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     const { width, height } = nativeEvent.layout;

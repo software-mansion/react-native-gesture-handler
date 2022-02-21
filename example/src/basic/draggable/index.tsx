@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
+import { Animated, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -66,9 +66,8 @@ export class DraggableBox extends Component<DraggableBoxProps> {
               ],
             },
             this.props.boxStyle,
-          ]}>
-          <Text>USE_NATIVE_DRIVER: {USE_NATIVE_DRIVER ? 'true' : 'false'}</Text>
-        </Animated.View>
+          ]}
+        />
       </PanGestureHandler>
     );
   }
@@ -94,9 +93,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: USE_NATIVE_DRIVER ? 'lime' : 'cyan',
+    backgroundColor: 'plum',
     margin: 10,
     zIndex: 200,
   },
