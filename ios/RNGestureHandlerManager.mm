@@ -15,6 +15,7 @@
 #import "RCTRootContentView.h"
 #endif
 
+#import "RNGestureHandlerActionType.h"
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerRegistry.h"
@@ -210,27 +211,27 @@
 
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event withActionType:(nonnull NSNumber *)actionType
 {
-    if ([actionType integerValue] == 1) {
-        
+    switch ([actionType integerValue]) {
         // Reanimated worklet
-        [self sendStateChangeEventForReanimated:event];
-        
-    } else if ([actionType integerValue] == 2) {
-        
+        case RNGestureHandlerActionTypeReanimatedWorklet:
+            [self sendStateChangeEventForReanimated:event];
+            break;
+            
         // Animated.event with useNativeDriver: true
-        if ([event.eventName isEqualToString:@"onGestureHandlerEvent"]) {
-            [self sendStateChangeEventForNativeAnimatedEvent:event];
-        } else if ([actionType integerValue] == 2 || [actionType integerValue] == 3) {
-            // in case when onGestureEvent prop is an Animated.event with useNativeDriver: true,
-            // onHandlerStateChange prop is still a regular JS function
-            [self sendStateChangeEventForDeviceEvent:event];
-        }
-        
-    } else if ([actionType integerValue] == 3) {
-        
+        case RNGestureHandlerActionTypeNativeAnimatedEvent:
+            if ([event.eventName isEqualToString:@"onGestureHandlerEvent"]) {
+                [self sendStateChangeEventForNativeAnimatedEvent:event];
+            } else {
+                // in case when onGestureEvent prop is an Animated.event with useNativeDriver: true,
+                // onHandlerStateChange prop is still a regular JS function
+                [self sendStateChangeEventForDeviceEvent:event];
+            }
+            break;
+            
         // JS function or Animated.event with useNativeDriver: false
-        [self sendStateChangeEventForDeviceEvent:event];
-        
+        case RNGestureHandlerActionTypeJSFunction:
+            [self sendStateChangeEventForDeviceEvent:event];
+            break;
     }
 }
 
