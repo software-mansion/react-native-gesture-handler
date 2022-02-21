@@ -455,7 +455,6 @@ function useAnimatedGesture(
 
 interface GestureDetectorProps {
   gesture?: ComposedGesture | GestureType;
-  autowrapWithNonCollapsable?: boolean;
 }
 export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   props
