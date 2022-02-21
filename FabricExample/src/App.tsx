@@ -7,6 +7,7 @@ import HomeScreen from './HomeScreen';
 import OverviewExample from './examples/OverviewExample';
 import UltimateExample from './examples/ultimate/UltimateExample';
 import ViewFlatteningExample from './examples/ViewFlatteningExample';
+import ComponentsExample from './examples/ComponentsExample';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,10 @@ export default function App() {
           <Stack.Screen
             name="ViewFlatteningExample"
             component={ViewFlatteningExample}
+          />
+          <Stack.Screen
+            name="ComponentsExample"
+            component={ComponentsExample}
           />
         </Stack.Navigator>
       </NavigationContainer>

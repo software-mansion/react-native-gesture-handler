@@ -16,6 +16,10 @@ export default function HomeScreen({navigation}) {
         onPress={() => navigation.navigate('ViewFlatteningExample')}
         title="View flattening example"
       />
+      <Button
+        onPress={() => navigation.navigate('ComponentsExample')}
+        title="Components example"
+      />
     </View>
   );
 }
