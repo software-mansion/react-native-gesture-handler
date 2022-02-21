@@ -467,9 +467,6 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
   const viewTagRef = useRef(-1);
-  const [wrapWithNonCollapsableView, setWrapWithNonCollapsableView] = useState(
-    props.autowrapWithNonCollapsable ?? false
-  );
 
   const preparedGesture = React.useRef<GestureConfigReference>({
     config: gesture,
@@ -539,7 +536,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     } else {
       firstRenderRef.current = false;
     }
-  }, [props, wrapWithNonCollapsableView]);
+  }, [props]);
 
   const refFunction = (ref: unknown) => {
     if (ref !== null) {
@@ -548,17 +545,10 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       const node = findHostInstance_DEPRECATED(ref)._internalInstanceHandle
         .stateNode.node;
 
-      if (
-        !wrapWithNonCollapsableView &&
-        global.isFormsStackingContext(node) === false
-      ) {
-        setWrapWithNonCollapsableView(true);
-
-        console.warn(
+      if (global.isFormsStackingContext(node) === false) {
+        console.error(
           '[react-native-gesture-handler] GestureDetector has received a child that may get view-flattened. ' +
-            '\n\nAs a workaround it was wrapped with a `<View collapsable={false}>`. If it looks and behaves as ' +
-            'intended you can add `autowrapWithNonCollapsable` prop to GestureDetector to get rid of this warning. ' +
-            'If it breaks the layout you need to resolve it manually by wrapping it with a non-collapsable view and styling it.'
+            '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
         );
       }
     }
@@ -568,25 +558,17 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     return (
       <AnimatedWrap
         ref={refFunction}
-        onGestureHandlerEvent={preparedGesture.animatedEventHandler}
-        wrapWithNotCollapsable={wrapWithNonCollapsableView}>
+        onGestureHandlerEvent={preparedGesture.animatedEventHandler}>
         {props.children}
       </AnimatedWrap>
     );
   } else {
-    return (
-      <Wrap
-        ref={refFunction}
-        wrapWithNotCollapsable={wrapWithNonCollapsableView}>
-        {props.children}
-      </Wrap>
-    );
+    return <Wrap ref={refFunction}>{props.children}</Wrap>;
   }
 };
 
 class Wrap extends React.Component<{
   onGestureHandlerEvent?: unknown;
-  wrapWithNotCollapsable: boolean;
 }> {
   render() {
     // I don't think that fighting with types over such a simple function is worth it
@@ -602,11 +584,7 @@ class Wrap extends React.Component<{
       child.props.children
     );
 
-    if (this.props.wrapWithNotCollapsable) {
-      return <View collapsable={false}>{clonedElement}</View>;
-    } else {
-      return clonedElement;
-    }
+    return clonedElement;
   }
 }
 
