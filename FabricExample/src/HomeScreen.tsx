@@ -5,6 +5,10 @@ export default function HomeScreen({navigation}) {
   return (
     <View style={styles.container}>
       <Button
+        onPress={() => navigation.navigate('OverviewExample')}
+        title="Overview example"
+      />
+      <Button
         onPress={() => navigation.navigate('UltimateExample')}
         title="Ultimate example"
       />

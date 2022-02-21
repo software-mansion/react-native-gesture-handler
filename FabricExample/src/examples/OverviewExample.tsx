@@ -12,7 +12,7 @@ import React from 'react';
 
 declare const _WORKLET: boolean; // from react-native-reanimated
 
-export default function UltimateExample() {
+export default function OverviewExample() {
   const [value1, setValue1] = React.useState(false);
   const [value2, setValue2] = React.useState(false);
 

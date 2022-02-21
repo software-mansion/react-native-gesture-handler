@@ -1,10 +1,12 @@
-import {LogBox} from 'react-native';
 import * as React from 'react';
-import UltimateExample from './UltimateExample';
-import ViewFlatteningExample from './ViewFlatteningExample';
-import HomeScreen from './HomeScreen';
+
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+
+import HomeScreen from './HomeScreen';
+import OverviewExample from './examples/OverviewExample';
+import UltimateExample from './examples/ultimate/UltimateExample';
+import ViewFlatteningExample from './examples/ViewFlatteningExample';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +15,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="OverviewExample" component={OverviewExample} />
         <Stack.Screen name="UltimateExample" component={UltimateExample} />
         <Stack.Screen
           name="ViewFlatteningExample"
@@ -22,9 +25,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-LogBox.ignoreLogs([
-  "Seems like you're using an old API with gesture components", // react-native-gesture-handler
-  'GestureDetector has received a child that may get view-flattened.', // react-native-gesture-handler
-  'Function components cannot be given refs.', // react-native-screens
-]);
