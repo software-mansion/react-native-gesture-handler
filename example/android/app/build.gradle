@@ -187,11 +187,6 @@ android {
 
         }
     }
-
-    packagingOptions {
-        // TODO: temporary
-        pickFirst "**/*.so"
-    }
 }
 
 dependencies {
