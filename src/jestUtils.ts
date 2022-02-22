@@ -172,9 +172,7 @@ function fillOldStateChanges(
     } as GestureHandlerTestEvent;
   }
 
-  // At this point previousEvent is not null, but for some reason it breaks CI
-  // optional chaining used only to fix it
-  const isGestureStateEvent = previousEvent?.state !== currentEvent?.state;
+  const isGestureStateEvent = previousEvent.state !== currentEvent.state;
   if (isGestureStateEvent) {
     return {
       oldState: previousEvent?.state,
