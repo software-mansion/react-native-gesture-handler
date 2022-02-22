@@ -319,7 +319,7 @@ export default function createHandler<
         (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
           this.handlerTag,
           newViewTag,
-          ActionType.JS_FUNCTION, // ignored on web
+          ActionType.JS_FUNCTION_OLD_API, // ignored on web
           this.propsRef
         );
       } else {
@@ -343,7 +343,7 @@ export default function createHandler<
             return ActionType.NATIVE_ANIMATED_EVENT;
           } else {
             // JS callback or Animated.event with useNativeDriver: false
-            return ActionType.JS_FUNCTION;
+            return ActionType.JS_FUNCTION_OLD_API;
           }
         })();
 

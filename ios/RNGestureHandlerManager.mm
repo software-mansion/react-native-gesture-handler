@@ -213,56 +213,78 @@
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event withActionType:(nonnull NSNumber *)actionType
 {
     switch ([actionType integerValue]) {
-        // Reanimated worklet
         case RNGestureHandlerActionTypeReanimatedWorklet:
             [self sendStateChangeEventForReanimated:event];
             break;
             
-        // Animated.event with useNativeDriver: true
         case RNGestureHandlerActionTypeNativeAnimatedEvent:
             if ([event.eventName isEqualToString:@"onGestureHandlerEvent"]) {
                 [self sendStateChangeEventForNativeAnimatedEvent:event];
             } else {
-                // in case when onGestureEvent prop is an Animated.event with useNativeDriver: true,
-                // onHandlerStateChange prop is still a regular JS function
-                [self sendStateChangeEventForDeviceEvent:event];
+                // Although onGestureEvent prop is an Animated.event with useNativeDriver: true,
+                // onHandlerStateChange prop is still a regular JS function.
+                // Also, Animated.event is only supported with old API.
+                [self sendStateChangeEventForJSFunctionOldAPI:event];
             }
             break;
+
+        case RNGestureHandlerActionTypeJSFunctionOldAPI:
+            [self sendStateChangeEventForJSFunctionOldAPI:event];
+            break;
             
-        // JS function or Animated.event with useNativeDriver: false
-        case RNGestureHandlerActionTypeJSFunction:
-            [self sendStateChangeEventForDeviceEvent:event];
+        case RNGestureHandlerActionTypeJSFunctionNewAPI:
+            [self sendStateChangeEventForJSFunctionNewAPI:event];
             break;
     }
 }
 
 - (void)sendStateChangeEventForReanimated:(RNGestureHandlerStateChange *)event
 {
-    // delivers the event to Reanimated
-    // to be used when:
-    // - gesture callback from new API is a Reanimated worklet
-    // - onGestureEvent prop from old API is an useAnimatedGestureHandler object
+    // Delivers the event to Reanimated.
 #ifdef RN_FABRIC_ENABLED
     // TODO: send event directly to Reanimated
+    // This is already supported in Reanimated with Fabric but let's wait until the official release.
     // [_reanimatedModule eventDispatcherWillDispatchEvent:event];
 #else
-    [_eventDispatcher sendEvent:event];
+    // In the old architecture, Reanimated overwrites RCTUIManager with REAUIManager.
+    [self sendStateChangeEventForDirectEvent:event];
 #endif // RN_FABRIC_ENABLED
 }
 
 - (void)sendStateChangeEventForNativeAnimatedEvent:(RNGestureHandlerStateChange *)event
 {
-    // delivers the event to NativeAnimatedModule
-    // to be used when onGestureEvent prop from old API is an Animated.event with useNativeDriver: true (only for onGestureHandlerEvent)
-    [_eventDispatcher sendEvent:event];
+    // Delivers the event to NativeAnimatedModule.
+    // Currently, NativeAnimated[Turbo]Module is RCTEventDispatcherObserver so we can
+    // simply send a direct event which is handled by the observer but ignored on JS side.
     // TODO: send event directly to NativeAnimated[Turbo]Module
+    [self sendStateChangeEventForDirectEvent:event];
+}
+
+- (void)sendStateChangeEventForJSFunctionOldAPI:(RNGestureHandlerStateChange *)event
+{
+    // Delivers the event to JS (old RNGH API).
+#ifdef RN_FABRIC_ENABLED
+    [self sendStateChangeEventForDirectEvent:event];
+#else
+    [self sendStateChangeEventForDeviceEvent:event];
+#endif // RN_FABRIC_ENABLED
+}
+
+- (void)sendStateChangeEventForJSFunctionNewAPI:(RNGestureHandlerStateChange *)event
+{
+    // Delivers the event to JS (new RNGH API).
+    [self sendStateChangeEventForDeviceEvent:event];
+}
+
+- (void)sendStateChangeEventForDirectEvent:(RNGestureHandlerStateChange *)event
+{
+    // Delivers the event to JS as a direct event.
+    [_eventDispatcher sendEvent:event];
 }
 
 - (void)sendStateChangeEventForDeviceEvent:(RNGestureHandlerStateChange *)event
 {
-    // delivers the event to JS as a device event
-    // to be used when gesture callback from new API or onGestureEvent/onHandlerStateChange from old API
-    // is a regular JS function (which is also true for Animated.event with useNativeDriver: false)
+    // Delivers the event to JS as a device event.
     NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
     [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }

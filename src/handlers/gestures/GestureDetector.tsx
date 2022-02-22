@@ -170,7 +170,7 @@ function attachHandlers({
   for (const gesture of preparedGesture.config) {
     const actionType = gesture.shouldUseReanimated
       ? ActionType.REANIMATED_WORKLET
-      : ActionType.JS_FUNCTION;
+      : ActionType.JS_FUNCTION_NEW_API;
 
     RNGestureHandlerModule.attachGestureHandler(
       gesture.handlerTag,
