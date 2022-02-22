@@ -245,7 +245,7 @@ dependencies {
         implementation project(":ReactAndroid")
     } else {
         //noinspection GradleDynamicVersion
-        implementation "com.facebook.react:react-native:+"
+        implementation "com.facebook.react:react-native:+" // From node_modules
     }
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
