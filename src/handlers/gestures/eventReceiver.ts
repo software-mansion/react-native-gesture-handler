@@ -9,30 +9,27 @@ import {
 import { GestureStateManagerType } from './gestureStateManager';
 import { findHandler } from '../handlersRegistry';
 import { BaseGesture } from './gesture';
+import { tagMessage } from '../../utils';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
 
+const warningMessage = tagMessage(
+  'You have to use react-native-reanimated in order to control the state of the gesture.'
+);
+
 const dummyStateManager: GestureStateManagerType = {
   begin: () => {
-    console.warn(
-      'You have to use react-native-reanimated in order to control the state of the gesture.'
-    );
+    console.warn(warningMessage);
   },
   activate: () => {
-    console.warn(
-      'You have to use react-native-reanimated in order to control the state of the gesture.'
-    );
+    console.warn(warningMessage);
   },
   end: () => {
-    console.warn(
-      'You have to use react-native-reanimated in order to control the state of the gesture.'
-    );
+    console.warn(warningMessage);
   },
   fail: () => {
-    console.warn(
-      'You have to use react-native-reanimated in order to control the state of the gesture.'
-    );
+    console.warn(warningMessage);
   },
 };
 

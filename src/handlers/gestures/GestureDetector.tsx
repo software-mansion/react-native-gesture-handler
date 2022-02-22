@@ -32,6 +32,7 @@ import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
+import { tagMessage } from '../../utils';
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -337,9 +338,7 @@ function useAnimatedGesture(
       // correct handler.
       handler?.(event, ...args);
     } else if (handler) {
-      console.warn(
-        '[RNGestureHandler] Animated gesture callback must be a worklet'
-      );
+      console.warn(tagMessage('Animated gesture callback must be a worklet'));
     }
   }
 
