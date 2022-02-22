@@ -246,7 +246,7 @@
     // This is already supported in Reanimated with Fabric but let's wait until the official release.
     // [_reanimatedModule eventDispatcherWillDispatchEvent:event];
 #else
-    // In the old architecture, Reanimated overwrites RCTUIManager with REAUIManager.
+    // In the old architecture, Reanimated overwrites RCTEventDispatcher with REAEventDispatcher and intercepts all events.
     [self sendStateChangeEventForDirectEvent:event];
 #endif // RN_FABRIC_ENABLED
 }
