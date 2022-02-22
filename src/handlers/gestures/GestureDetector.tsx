@@ -94,7 +94,9 @@ function checkGestureCallbacksForWorklets(gesture: GestureType) {
   // explicitly marked with `.runOnJS(true)` show an error
   if (areSomeNotWorklets && areSomeWorklets) {
     console.error(
-      `[react-native-gesture-handler] Some of the callbacks in the gesture are worklets and some are not. Either make sure that all calbacks are marked as 'worklet' if you wish to run them on the UI thread or use '.runOnJS(true)' modifier on the gesture explicitly to run all callbacks on the JS thread.`
+      tagMessage(
+        `Some of the callbacks in the gesture are worklets and some are not. Either make sure that all calbacks are marked as 'worklet' if you wish to run them on the UI thread or use '.runOnJS(true)' modifier on the gesture explicitly to run all callbacks on the JS thread.`
+      )
     );
   }
 }
