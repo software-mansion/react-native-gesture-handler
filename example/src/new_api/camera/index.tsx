@@ -23,7 +23,7 @@ export default function Home() {
   const [
     recordingIntervalHandle,
     setRecordingIntervalHandle,
-  ] = useState<NodeJS.Timeout | null>(null);
+  ] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   const filtersPanGesture = Gesture.Pan()
     .onUpdate((e) => {
