@@ -136,16 +136,12 @@ export function startListening() {
 
 export function stopListening() {
   if (gestureHandlerEventSubscription) {
-    DeviceEventEmitter.removeSubscription(gestureHandlerEventSubscription);
-
+    gestureHandlerEventSubscription.remove();
     gestureHandlerEventSubscription = null;
   }
 
   if (gestureHandlerStateChangeEventSubscription) {
-    DeviceEventEmitter.removeSubscription(
-      gestureHandlerStateChangeEventSubscription
-    );
-
+    gestureHandlerStateChangeEventSubscription.remove();
     gestureHandlerStateChangeEventSubscription = null;
   }
 }
