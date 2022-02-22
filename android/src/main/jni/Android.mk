@@ -12,6 +12,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 # end libreact_render_uimanager
 
 include $(GESTURE_HANDLER_MAIN_THIS_DIR)/../../../build/generated/source/codegen/jni/Android.mk
+include $(GESTURE_HANDLER_MAIN_THIS_DIR)/../../../../common/cpp/Android.mk
 
 include $(CLEAR_VARS)
 
