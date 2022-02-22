@@ -264,9 +264,9 @@
 {
     // Delivers the event to JS (old RNGH API).
 #ifdef RN_FABRIC_ENABLED
-    [self sendStateChangeEventForDirectEvent:event];
-#else
     [self sendStateChangeEventForDeviceEvent:event];
+#else
+    [self sendStateChangeEventForDirectEvent:event];
 #endif // RN_FABRIC_ENABLED
 }
 
