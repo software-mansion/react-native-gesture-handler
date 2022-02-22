@@ -3,6 +3,7 @@ import {
   GestureUpdateEvent,
   GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
+import { tagMessage } from '../../utils';
 
 export interface SharedValue<T> {
   value: T;
@@ -33,7 +34,9 @@ try {
     Reanimated.setGestureState = () => {
       'worklet';
       console.warn(
-        'Please use newer version of react-native-reanimated in order to control state of the gestures.'
+        tagMessage(
+          'Please use newer version of react-native-reanimated in order to control state of the gestures.'
+        )
       );
     };
   }
