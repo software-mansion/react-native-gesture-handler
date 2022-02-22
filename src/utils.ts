@@ -33,3 +33,7 @@ export function hasProperty(object: Record<string, unknown>, key: string) {
 export function isJestEnv(): boolean {
   return !!process.env.JEST_WORKER_ID;
 }
+
+export function tagMessage(msg: string) {
+  return `[react-native-gesture-handler] ${msg}`;
+}
