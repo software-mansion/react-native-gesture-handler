@@ -22,7 +22,6 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.fabricexample.BuildConfig;
 import com.fabricexample.newarchitecture.components.MainComponentsRegistry;
 import com.fabricexample.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
-
 import java.util.ArrayList;
 import java.util.List;
 

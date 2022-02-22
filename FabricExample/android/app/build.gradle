@@ -242,10 +242,10 @@ dependencies {
     // If new architecture is enabled, we let you build RN from source
     // Otherwise we fallback to a prebuilt .aar bundled in the NPM package.
     if (isNewArchitectureEnabled()) {
-        implementation project(":ReactAndroid")  // From node_modules
+        implementation project(":ReactAndroid")
     } else {
         //noinspection GradleDynamicVersion
-        implementation "com.facebook.react:react-native:+"  // From node_modules
+        implementation "com.facebook.react:react-native:+"
     }
 
     // implementation project(":react-native-gesture-handler")
