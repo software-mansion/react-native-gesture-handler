@@ -28,6 +28,7 @@
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "android/common/src/main/java/",
+    "android/build/generated/source/codegen/java/",
     "ios/",
     "Swipeable/",
     "DrawerLayout/",

@@ -1,7 +1,9 @@
-import { HostComponent } from 'react-native';
+import { HostComponent, requireNativeComponent } from 'react-native';
 import { RawButtonProps } from './GestureButtons';
+import { ENABLE_FABRIC } from '../utils';
 
-// @ts-ignore react-native-codegen does not support TypeScript yet
-import RNGestureHandlerButtonNativeComponent from '../fabric/RNGestureHandlerButtonNativeComponent';
+const RNGestureHandlerButtonNativeComponent = ENABLE_FABRIC
+  ? require('../fabric/RNGestureHandlerButtonNativeComponent')
+  : requireNativeComponent('RNGestureHandlerButton');
 
 export default RNGestureHandlerButtonNativeComponent as HostComponent<RawButtonProps>;

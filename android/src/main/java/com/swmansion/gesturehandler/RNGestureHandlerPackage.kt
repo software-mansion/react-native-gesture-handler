@@ -5,7 +5,7 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
-import com.swmansion.gesturehandler.react.BuildConfig
+import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager

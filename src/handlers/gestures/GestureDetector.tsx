@@ -469,7 +469,6 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
-  const viewTagRef = useRef(-1);
 
   const preparedGesture = React.useRef<GestureConfigReference>({
     config: gesture,
@@ -509,7 +508,6 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       gesture,
       viewTag,
     });
-    viewTagRef.current = viewTag;
 
     return () => {
       dropHandlers(preparedGesture);
@@ -520,10 +518,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     if (!firstRenderRef.current) {
       const viewTag = findNodeHandle(viewRef.current) as number;
 
-      if (
-        needsToReattach(preparedGesture, gesture) ||
-        viewTag !== viewTagRef.current
-      ) {
+      if (needsToReattach(preparedGesture, gesture)) {
         dropHandlers(preparedGesture);
         attachHandlers({
           preparedGesture,
@@ -531,8 +526,6 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
           gesture,
           viewTag,
         });
-
-        viewTagRef.current = viewTag;
       } else {
         updateHandlers(preparedGesture, gestureConfig, gesture);
       }

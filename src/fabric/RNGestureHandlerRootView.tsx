@@ -1,11 +1,9 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
-import { requireNativeComponent, ViewProps } from 'react-native';
-import { ENABLE_FABRIC } from './utils';
+import { ViewProps } from 'react-native';
 
-const GestureHandlerRootViewNativeComponent = ENABLE_FABRIC
-  ? require('./fabric/RNGestureHandlerRootViewNativeComponent')
-  : requireNativeComponent('RNGestureHandlerRootView');
+// @ts-ignore react-native-codegen does not support TypeScript yet
+import GestureHandlerRootViewNativeComponent from './RNGestureHandlerRootViewNativeComponent';
 
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<ViewProps> {}

@@ -27,7 +27,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.Butt
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), RNGestureHandlerButtonManagerInterface<ButtonViewGroup> {
-  private val mDelegate: ViewManagerDelegate<ButtonViewGroup>;
+  private val mDelegate: ViewManagerDelegate<ButtonViewGroup>
 
   init {
       mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
@@ -344,10 +344,10 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         SoftAssertions.assertNotNull(attr)
         return when (attr) {
           SELECTABLE_ITEM_BACKGROUND -> {
-            R.attr.selectableItemBackground
+            android.R.attr.selectableItemBackground
           }
           SELECTABLE_ITEM_BACKGROUND_BORDERLESS -> {
-            R.attr.selectableItemBackgroundBorderless
+            android.R.attr.selectableItemBackgroundBorderless
           }
           else -> {
             context.resources.getIdentifier(attr, "attr", "android")
