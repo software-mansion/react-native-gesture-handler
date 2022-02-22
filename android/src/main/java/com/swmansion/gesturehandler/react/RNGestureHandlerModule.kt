@@ -8,12 +8,9 @@ import android.view.MotionEvent
 import android.view.ViewGroup
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.*
-import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
-import com.facebook.react.uimanager.UIManagerHelper
-import com.facebook.react.uimanager.common.UIManagerType.FABRIC
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
@@ -529,6 +526,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private fun findRootHelperForViewAncestor(viewTag: Int): RNGestureHandlerRootHelper? {
+    // TODO: remove resolveRootTagFromReactTag as it's deprecated and unavailable on FabricUIManager
     val uiManager = reactApplicationContext.UIManager
     val rootViewTag = uiManager.resolveRootTagFromReactTag(viewTag)
     if (rootViewTag < 1) {
@@ -647,13 +645,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   private fun sendEventForNativeAnimatedEvent(event: RNGestureHandlerEvent) {
     // Delivers the event to NativeAnimatedModule.
     // TODO: send event directly to NativeAnimated[Turbo]Module
-    val fabricUIManager = UIManagerHelper.getUIManager(reactApplicationContext, FABRIC) as FabricUIManager
-    fabricUIManager.eventDispatcher.dispatchEvent(event)
+    // ReactContext.dispatchEvent is an extension function, depending on the architecture it will
+    // dispatch event using UIManagerModule or FabricUIManager.
+    reactApplicationContext.dispatchEvent(event)
   }
 
   private fun <T : Event<T>>sendEventForDirectEvent(event: T) {
-    // Delivers the event to JS as a direct event. Works only on Paper.
-    reactApplicationContext.UIManager.eventDispatcher.dispatchEvent(event)
+    // Delivers the event to JS as a direct event. This method is called only on Paper.
+    reactApplicationContext.dispatchEvent(event)
   }
 
   private fun sendEventForDeviceEvent(eventName: String, data: WritableMap) {
