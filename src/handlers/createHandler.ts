@@ -25,7 +25,7 @@ import {
   findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
-import { isJestEnv } from '../utils';
+import { isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
 
 const UIManagerAny = UIManager as any;
@@ -145,7 +145,9 @@ let showedRngh2Notice = false;
 function showRngh2NoticeIfNeeded() {
   if (!showedRngh2Notice) {
     console.warn(
-      "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"
+      tagMessage(
+        "Seems like you're using an old API with gesture components, check out new Gestures system!"
+      )
     );
     showedRngh2Notice = true;
   }

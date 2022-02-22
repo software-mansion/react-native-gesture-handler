@@ -34,6 +34,10 @@ export function isJestEnv(): boolean {
   return !!process.env.JEST_WORKER_ID;
 }
 
+export function tagMessage(msg: string) {
+  return `[react-native-gesture-handler] ${msg}`;
+}
+
 // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
 export const ENABLE_FABRIC = !!global?.nativeFabricUIManager;
 

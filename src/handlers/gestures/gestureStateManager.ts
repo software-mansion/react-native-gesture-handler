@@ -1,5 +1,6 @@
 import { Reanimated } from './reanimatedWrapper';
 import { State } from '../../State';
+import { tagMessage } from '../../utils';
 
 export interface GestureStateManagerType {
   begin: () => void;
@@ -7,6 +8,10 @@ export interface GestureStateManagerType {
   fail: () => void;
   end: () => void;
 }
+
+const warningMessage = tagMessage(
+  'react-native-reanimated is required in order to use synchronous state management'
+);
 
 export const GestureStateManager = {
   create(handlerTag: number): GestureStateManagerType {
@@ -17,9 +22,7 @@ export const GestureStateManager = {
         if (Reanimated) {
           Reanimated.setGestureState(handlerTag, State.BEGAN);
         } else {
-          console.warn(
-            'react-native-reanimated is required in order to use synchronous state management'
-          );
+          console.warn(warningMessage);
         }
       },
 
@@ -28,9 +31,7 @@ export const GestureStateManager = {
         if (Reanimated) {
           Reanimated.setGestureState(handlerTag, State.ACTIVE);
         } else {
-          console.warn(
-            'react-native-reanimated is required in order to use synchronous state management'
-          );
+          console.warn(warningMessage);
         }
       },
 
@@ -39,9 +40,7 @@ export const GestureStateManager = {
         if (Reanimated) {
           Reanimated.setGestureState(handlerTag, State.FAILED);
         } else {
-          console.warn(
-            'react-native-reanimated is required in order to use synchronous state management'
-          );
+          console.warn(warningMessage);
         }
       },
 
@@ -50,9 +49,7 @@ export const GestureStateManager = {
         if (Reanimated) {
           Reanimated.setGestureState(handlerTag, State.END);
         } else {
-          console.warn(
-            'react-native-reanimated is required in order to use synchronous state management'
-          );
+          console.warn(warningMessage);
         }
       },
     };
