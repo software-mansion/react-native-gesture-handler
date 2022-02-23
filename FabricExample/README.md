@@ -1,9 +1,19 @@
-# React Native Gesture Handler – Fabric version
+# React Native Gesture Handler example app with Fabric
 
-To use this library with your Fabric application, you have to:
+## Installing & running application
 
-1. Add `react-native-gesture-handler@^2.3.0`
-2. on iOS
-   - Install pods using `RCT_NEW_ARCH_ENABLED=1 pod install` – this is the same command you run to prepare a Fabric build but you also need to run it after a new native library gets added.
-3. on Android
-   - There are no additional steps required so long as your app is configured to build with Fabric – this is typically configured by setting `newArchEnabled=true` in `gradle.properties` file in your project.
+Before running application you need to install all dependencies. To do that:
+- In project's root directory run `yarn install`
+- In FabricExample directory run `yarn install`
+
+### Android
+
+To run this application on Android you need to have Java 11 active on your computer. You can check which version you are using by running `javac --version`. You can change it by changing `JAVA_HOME` environment variable or in Android Studio settings.
+
+Then you can run this application by `yarn android` or from Android Studio.
+
+### iOS
+
+To run on iOS first go to `FabricExample/ios` and run `pod install`. This will install pods for Fabric architecture.
+
+Then in `FabricExample` run `yarn ios` or run application from Xcode.
