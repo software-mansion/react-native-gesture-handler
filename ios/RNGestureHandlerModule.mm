@@ -25,6 +25,11 @@
 #import "RNGestureHandlerButton.h"
 #import "RNGestureHandlerStateManager.h"
 
+#ifdef RN_FABRIC_ENABLED
+using namespace facebook;
+using namespace react;
+#endif // RN_FABRIC_ENABLED
+
 @interface RNGestureHandlerModule () <RCTUIManagerObserver, RNGestureHandlerStateManager>
 
 @end
@@ -64,28 +69,28 @@ RCT_EXPORT_MODULE()
 }
 
 #ifdef RN_FABRIC_ENABLED
-static void decorateRuntime(jsi::Runtime* jsiRuntime)
+void decorateRuntime(jsi::Runtime &runtime)
 {
-    auto& runtime = *jsiRuntime;
-    auto isFormsStackingContext = jsi::Function::createFromHostFunction(
-            runtime,
-            jsi::PropNameID::forAscii(runtime, "isFormsStackingContext"),
-            1,
-            [](jsi::Runtime &runtime,
-               const jsi::Value &thisValue,
-               const jsi::Value *arguments,
-               size_t count) -> jsi::Value
-            {
-                if (!arguments[0].isObject()) {
-                    return jsi::Value::null();
-                }
+  auto isFormsStackingContext = jsi::Function::createFromHostFunction(
+      runtime,
+      jsi::PropNameID::forAscii(runtime, "isFormsStackingContext"),
+      1,
+      [](jsi::Runtime &runtime,
+         const jsi::Value &thisValue,
+         const jsi::Value *arguments,
+         size_t count) -> jsi::Value
+      {
+        if (!arguments[0].isObject())
+        {
+          return jsi::Value::null();
+        }
 
-                auto shadowNode = arguments[0].asObject(runtime).getHostObject<facebook::react::ShadowNodeWrapper>(runtime)->shadowNode;
-                bool isFormsStackingContext = shadowNode->getTraits().check(facebook::react::ShadowNodeTraits::FormsStackingContext);
+        auto shadowNode = arguments[0].asObject(runtime).getHostObject<ShadowNodeWrapper>(runtime)->shadowNode;
+        bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
 
-                return jsi::Value(isFormsStackingContext);
-            });
-    runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
+        return jsi::Value(isFormsStackingContext);
+      });
+  runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
 }
 #endif // RN_FABRIC_ENABLED
 
@@ -103,8 +108,8 @@ static void decorateRuntime(jsi::Runtime* jsiRuntime)
 #ifdef RN_FABRIC_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
     RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
-    decorateRuntime((jsi::Runtime *)cxxBridge.runtime);
-    
+    auto runtime = (jsi::Runtime *)cxxBridge.runtime;
+    decorateRuntime(*runtime);
     return @true;
 }
 #endif // RN_FABRIC_ENABLED
