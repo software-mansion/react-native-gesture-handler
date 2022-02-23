@@ -1,9 +1,11 @@
 #import "AppDelegate.h"
+#import "MBFingerTipWindow.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import "MBFingerTipWindow.h"
+
 
 
 #import <React/RCTAppSetupUtils.h>
