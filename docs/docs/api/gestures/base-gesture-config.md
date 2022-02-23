@@ -36,6 +36,11 @@ API.
 
 Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
+### `cancelsToucesInView(value)` (**iOS only**)
+Accepts a boolean value.
+When `true`, the gesture will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes [`ACTIVE`](../../state.md#active).
+Default value is `true`.
+
 ### `simultaneousWithExternalGesture(otherGesture1, otherGesture2, ...)`
 
 Adds a gesture that should be recognized simultaneously with this one.

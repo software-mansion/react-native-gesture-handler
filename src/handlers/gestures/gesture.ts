@@ -43,6 +43,7 @@ export interface BaseGestureConfig
   manualActivation?: boolean;
   runOnJS?: boolean;
   testId?: string;
+  cancelsTouchesInView?: boolean;
 }
 
 type TouchEventHandlerType = (
@@ -257,6 +258,11 @@ export abstract class BaseGesture<
 
   withTestId(id: string) {
     this.config.testId = id;
+    return this;
+  }
+
+  cancelsTouchesInView(value: boolean) {
+    this.config.cancelsTouchesInView = value;
     return this;
   }
 
