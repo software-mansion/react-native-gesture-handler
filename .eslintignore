@@ -1,2 +1,0 @@
-# Codegen doesn't support TypeScript yet, ignore it for now
-/src/fabric/*NativeComponent.js
