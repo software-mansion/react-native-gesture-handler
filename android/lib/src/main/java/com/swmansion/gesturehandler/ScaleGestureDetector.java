@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package android.view;
+package com.swmansion.gesturehandler;
 
-import android.compat.annotation.UnsupportedAppUsage;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewConfiguration;
 
 /**
  * Detects scaling transformation gestures using the supplied {@link MotionEvent}s.
@@ -123,7 +126,6 @@ public class ScaleGestureDetector {
     }
 
     private final Context mContext;
-    @UnsupportedAppUsage
     private final OnScaleGestureListener mListener;
 
     private float mFocusX;
@@ -142,9 +144,7 @@ public class ScaleGestureDetector {
     private long mCurrTime;
     private long mPrevTime;
     private boolean mInProgress;
-    @UnsupportedAppUsage(maxTargetSdk = Build.VERSION_CODES.P, trackingBug = 123768938)
     private int mSpanSlop;
-    @UnsupportedAppUsage(maxTargetSdk = Build.VERSION_CODES.P, trackingBug = 123768938)
     private int mMinSpan;
 
     private final Handler mHandler;
@@ -160,12 +160,6 @@ public class ScaleGestureDetector {
     private static final int ANCHORED_SCALE_MODE_STYLUS = 2;
 
 
-    /**
-     * Consistency verifier for debugging purposes.
-     */
-    private final InputEventConsistencyVerifier mInputEventConsistencyVerifier =
-            InputEventConsistencyVerifier.isInstrumentationEnabled() ?
-                    new InputEventConsistencyVerifier(this, 0) : null;
     private GestureDetector mGestureDetector;
 
     private boolean mEventBeforeOrAboveStartingGestureEvent;
@@ -201,7 +195,7 @@ public class ScaleGestureDetector {
         mListener = listener;
         final ViewConfiguration viewConfiguration = ViewConfiguration.get(context);
         mSpanSlop = viewConfiguration.getScaledTouchSlop() * 2;
-        mMinSpan = viewConfiguration.getScaledMinimumScalingSpan();
+        mMinSpan = 0; // set to zero, to allow for scaling when distance between fingers is small
         mHandler = handler;
         // Quick scale is enabled by default after JB_MR2
         final int targetSdkVersion = context.getApplicationInfo().targetSdkVersion;
@@ -227,10 +221,6 @@ public class ScaleGestureDetector {
      *         rest of the MotionEvents in this event stream.
      */
     public boolean onTouchEvent(MotionEvent event) {
-        if (mInputEventConsistencyVerifier != null) {
-            mInputEventConsistencyVerifier.onTouchEvent(event, 0);
-        }
-
         mCurrTime = event.getEventTime();
 
         final int action = event.getActionMasked();
