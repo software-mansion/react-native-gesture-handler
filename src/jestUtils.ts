@@ -190,7 +190,7 @@ function fillOldStateChanges(
   const isGestureStateEvent = previousEvent.state !== currentEvent.state;
   if (isGestureStateEvent) {
     return {
-      oldState: previousEvent.state,
+      oldState: previousEvent?.state,
       ...currentEvent,
     } as GestureHandlerTestEvent;
   } else {
