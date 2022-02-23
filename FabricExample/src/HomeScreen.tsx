@@ -1,25 +1,176 @@
-import {Button, StyleSheet, View} from 'react-native';
 import * as React from 'react';
 
-export default function HomeScreen({navigation}) {
+import {Animated, StyleSheet, Text, View} from 'react-native';
+import {
+  Gesture,
+  GestureDetector,
+  PanGestureHandler,
+  PanGestureHandlerStateChangeEvent,
+  State,
+} from 'react-native-gesture-handler';
+
+import {COLORS} from './colors';
+
+function isFabric(): boolean {
+  // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
+  return !!global?.nativeFabricUIManager;
+}
+
+interface GestureDetectorDemoProps {
+  color: string;
+}
+
+export function GestureDetectorDemo({color}: GestureDetectorDemoProps) {
+  const gesture = Gesture.Pan()
+    .onBegin(() => {
+      console.log(window.performance.now(), 'onBegin');
+    })
+    .onStart(() => {
+      console.log(window.performance.now(), 'onStart');
+    })
+    .onUpdate(() => {
+      console.log(window.performance.now(), 'onUpdate');
+    })
+    .onEnd(() => {
+      console.log(window.performance.now(), 'onEnd');
+    })
+    .onFinalize(() => {
+      console.log(window.performance.now(), 'onFinalize');
+    });
+
+  return (
+    <View style={styles.demo}>
+      <Text style={styles.text}>Gesture.Pan</Text>
+      <GestureDetector gesture={gesture}>
+        <View style={[styles.box, {backgroundColor: color}]} />
+      </GestureDetector>
+    </View>
+  );
+}
+
+interface ManualGestureDemoProps {
+  color: string;
+}
+
+export function ManualGestureDemo({color}: ManualGestureDemoProps) {
+  const gesture = Gesture.Manual()
+    .onTouchesDown(() => {
+      console.log(window.performance.now(), 'onTouchesDown');
+    })
+    .onTouchesMove(() => {
+      console.log(window.performance.now(), 'onTouchesMove');
+    })
+    .onTouchesUp(() => {
+      console.log(window.performance.now(), 'onTouchesUp');
+    });
+
+  return (
+    <View style={styles.demo}>
+      <Text style={styles.text}>Gesture.Manual</Text>
+      <GestureDetector gesture={gesture}>
+        <View style={[styles.box, {backgroundColor: color}]} />
+      </GestureDetector>
+    </View>
+  );
+}
+
+interface PanGestureHandlerDemoProps {
+  color: string;
+}
+
+export function PanGestureHandlerDemo({color}: PanGestureHandlerDemoProps) {
+  const onGestureEvent = () => {
+    console.log(window.performance.now(), 'onGestureEvent');
+  };
+
+  const onHandlerStateChange = () => {
+    console.log(window.performance.now(), 'onHandlerStateChange');
+  };
+
+  return (
+    <View style={styles.demo}>
+      <Text style={styles.text}>PanGestureHandler</Text>
+      <PanGestureHandler
+        maxPointers={1}
+        onGestureEvent={onGestureEvent}
+        onHandlerStateChange={onHandlerStateChange}
+      >
+        <View style={[styles.box, {backgroundColor: color}]} />
+      </PanGestureHandler>
+    </View>
+  );
+}
+
+type AnimatedEventDemoProps = {
+  useNativeDriver: boolean;
+  color: string;
+};
+
+export function AnimatedEventDemo({
+  useNativeDriver,
+  color,
+}: AnimatedEventDemoProps) {
+  const drag = React.useRef(new Animated.Value(0));
+
+  const onGestureEvent = Animated.event(
+    [{nativeEvent: {translationX: drag.current}}],
+    {useNativeDriver},
+  );
+
+  const onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+    if (
+      event.nativeEvent.state === State.FAILED ||
+      event.nativeEvent.state === State.CANCELLED ||
+      event.nativeEvent.state === State.END
+    ) {
+      Animated.spring(drag.current, {
+        velocity: event.nativeEvent.velocityX,
+        tension: 10,
+        friction: 2,
+        toValue: 0,
+        useNativeDriver,
+      }).start();
+    }
+  };
+
+  return (
+    <View style={styles.demo}>
+      <Text style={styles.text}>
+        Animated.event useNativeDriver: {useNativeDriver.toString()}
+      </Text>
+      <PanGestureHandler
+        maxPointers={1}
+        onGestureEvent={onGestureEvent}
+        onHandlerStateChange={onHandlerStateChange}
+      >
+        <Animated.View
+          style={[
+            styles.box,
+            {
+              transform: [{translateX: drag.current}],
+              backgroundColor: color,
+            },
+          ]}
+        />
+      </PanGestureHandler>
+    </View>
+  );
+}
+
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Button
-        onPress={() => navigation.navigate('OverviewExample')}
-        title="Overview example"
-      />
-      <Button
-        onPress={() => navigation.navigate('UltimateExample')}
-        title="Ultimate example"
-      />
-      <Button
-        onPress={() => navigation.navigate('ViewFlatteningExample')}
-        title="View flattening example"
-      />
-      <Button
-        onPress={() => navigation.navigate('ComponentsExample')}
-        title="Components example"
-      />
+      <Text style={styles.bold}>Hello from React Native Gesture Handler!</Text>
+      {isFabric() && (
+        <Text style={styles.bold}>
+          This example app runs with Fabric enabled.
+        </Text>
+      )}
+      <GestureDetectorDemo color={COLORS.NAVY} />
+      <ManualGestureDemo color={COLORS.KINDA_RED} />
+      <PanGestureHandlerDemo color={COLORS.YELLOW} />
+      <AnimatedEventDemo color={COLORS.KINDA_GREEN} useNativeDriver={true} />
+      <AnimatedEventDemo color={COLORS.KINDA_BLUE} useNativeDriver={false} />
     </View>
   );
 }
@@ -29,5 +180,19 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  text: {
+    marginVertical: 3,
+  },
+  demo: {
+    marginVertical: 3,
+    alignItems: 'center',
+  },
+  box: {
+    width: 50,
+    height: 50,
   },
 });

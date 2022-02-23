@@ -1,34 +1,74 @@
 import * as React from 'react';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
+import {Button, StyleSheet} from 'react-native';
+
+import ComponentsScreen from './ComponentsScreen';
+import FinalScreen from './FinalScreen';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import HomeScreen from './HomeScreen';
-import OverviewExample from './examples/OverviewExample';
-import UltimateExample from './examples/ultimate/UltimateExample';
-import ViewFlatteningExample from './examples/ViewFlatteningExample';
-import ComponentsExample from './examples/ComponentsExample';
+import {NavigationContainer} from '@react-navigation/native';
+import ViewFlatteningScreen from './ViewFlatteningScreen';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
+    <GestureHandlerRootView style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="HomeScreen" component={HomeScreen} />
-          <Stack.Screen name="OverviewExample" component={OverviewExample} />
-          <Stack.Screen name="UltimateExample" component={UltimateExample} />
           <Stack.Screen
-            name="ViewFlatteningExample"
-            component={ViewFlatteningExample}
+            name="HomeScreen"
+            component={HomeScreen}
+            options={({navigation}) => ({
+              title: 'RNGH FabricExample',
+              headerRight: () => (
+                <Button
+                  onPress={() => navigation.navigate('ComponentsScreen')}
+                  title="Next"
+                />
+              ),
+            })}
           />
           <Stack.Screen
-            name="ComponentsExample"
-            component={ComponentsExample}
+            name="ComponentsScreen"
+            component={ComponentsScreen}
+            options={({navigation}) => ({
+              title: 'RNGH Components',
+              headerRight: () => (
+                <Button
+                  onPress={() => navigation.navigate('ViewFlatteningScreen')}
+                  title="Next"
+                />
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="ViewFlatteningScreen"
+            component={ViewFlatteningScreen}
+            options={({navigation}) => ({
+              title: 'View Flattening',
+              headerRight: () => (
+                <Button
+                  onPress={() => navigation.navigate('FinalScreen')}
+                  title="Next"
+                />
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="FinalScreen"
+            component={FinalScreen}
+            options={{title: "That's all, folks!"}}
           />
         </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
