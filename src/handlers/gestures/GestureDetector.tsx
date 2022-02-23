@@ -32,10 +32,9 @@ import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
-import { tagMessage } from '../../utils';
 
 import { ActionType } from '../../ActionType';
-import { ENABLE_FABRIC, getShadowNodeFromRef } from '../../utils';
+import { ENABLE_FABRIC, getShadowNodeFromRef, tagMessage } from '../../utils';
 
 declare global {
   function isFormsStackingContext(node: unknown): boolean | null; // JSI function
