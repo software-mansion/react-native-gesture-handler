@@ -4,6 +4,7 @@
 #include <react/renderer/uimanager/primitives.h>
 
 using namespace facebook;
+using namespace react;
 
 void decorateRuntime(jsi::Runtime &runtime)
 {
@@ -21,8 +22,8 @@ void decorateRuntime(jsi::Runtime &runtime)
           return jsi::Value::null();
         }
 
-        auto shadowNode = arguments[0].asObject(runtime).getHostObject<facebook::react::ShadowNodeWrapper>(runtime)->shadowNode;
-        bool isFormsStackingContext = shadowNode->getTraits().check(facebook::react::ShadowNodeTraits::FormsStackingContext);
+        auto shadowNode = arguments[0].asObject(runtime).getHostObject<ShadowNodeWrapper>(runtime)->shadowNode;
+        bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
 
         return jsi::Value(isFormsStackingContext);
       });
