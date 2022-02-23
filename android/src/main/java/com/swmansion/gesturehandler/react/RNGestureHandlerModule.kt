@@ -1,7 +1,5 @@
 package com.swmansion.gesturehandler.react
 
-//import com.swmansion.reanimated.ReanimatedModule
-
 import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
