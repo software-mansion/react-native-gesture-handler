@@ -40,6 +40,8 @@ export function tagMessage(msg: string) {
 
 // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
 export const ENABLE_FABRIC = !!global?.nativeFabricUIManager;
+// TODO: convert to isFabric() function as sometimes top-level JS bundle code
+// may be executed before nativeFabricUIManager is injected!
 
 let findHostInstance_DEPRECATED = (_ref: any) => null;
 
