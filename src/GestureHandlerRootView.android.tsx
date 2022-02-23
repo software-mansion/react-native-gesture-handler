@@ -2,9 +2,9 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { requireNativeComponent, ViewProps } from 'react-native';
-import { ENABLE_FABRIC } from './utils';
+import { isFabric } from './utils';
 
-const GestureHandlerRootViewNativeComponent = ENABLE_FABRIC
+const GestureHandlerRootViewNativeComponent = isFabric()
   ? require('./fabric/RNGestureHandlerRootViewNativeComponent').default
   : requireNativeComponent('RNGestureHandlerRootView');
 

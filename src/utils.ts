@@ -38,10 +38,10 @@ export function tagMessage(msg: string) {
   return `[react-native-gesture-handler] ${msg}`;
 }
 
-// @ts-expect-error nativeFabricUIManager is not yet included in the RN types
-export const ENABLE_FABRIC = !!global?.nativeFabricUIManager;
-// TODO: convert to isFabric() function as sometimes top-level JS bundle code
-// may be executed before nativeFabricUIManager is injected!
+export function isFabric(): boolean {
+  // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
+  return !!global?.nativeFabricUIManager;
+}
 
 let findHostInstance_DEPRECATED = (_ref: any) => null;
 

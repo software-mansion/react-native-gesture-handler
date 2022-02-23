@@ -34,7 +34,7 @@ import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
 
 import { ActionType } from '../../ActionType';
-import { ENABLE_FABRIC, getShadowNodeFromRef, tagMessage } from '../../utils';
+import { isFabric, getShadowNodeFromRef, tagMessage } from '../../utils';
 
 declare global {
   function isFormsStackingContext(node: unknown): boolean | null; // JSI function
@@ -538,7 +538,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       //@ts-ignore Just setting the ref
       viewRef.current = ref;
 
-      if (ENABLE_FABRIC) {
+      if (isFabric()) {
         const node = getShadowNodeFromRef(ref);
         if (global.isFormsStackingContext(node) === false) {
           console.error(

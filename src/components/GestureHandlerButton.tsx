@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { HostComponent, requireNativeComponent } from 'react-native';
 import { RawButtonProps } from './GestureButtons';
-import { ENABLE_FABRIC } from '../utils';
+import { isFabric } from '../utils';
 
-const RNGestureHandlerButtonNativeComponent = ENABLE_FABRIC
+const RNGestureHandlerButtonNativeComponent = isFabric()
   ? require('../fabric/RNGestureHandlerButtonNativeComponent').default
   : requireNativeComponent('RNGestureHandlerButton');
 

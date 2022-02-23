@@ -1,11 +1,11 @@
 import { startListening } from './handlers/gestures/eventReceiver';
 import RNGestureHandlerModule from './RNGestureHandlerModule';
-import { ENABLE_FABRIC } from './utils';
+import { isFabric } from './utils';
 
 export function initialize() {
   startListening();
 
-  if (ENABLE_FABRIC) {
+  if (isFabric()) {
     RNGestureHandlerModule.install();
   }
 }
