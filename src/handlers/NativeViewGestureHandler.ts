@@ -8,8 +8,8 @@ export const nativeViewGestureHandlerProps = [
   'shouldActivateOnStart',
   'disallowInterruption',
 ] as const;
-export interface NativeViewGestureHandlerProps
-  extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload> {
+
+export interface NativeViewGestureConfig {
   /**
    * Android only.
    *
@@ -25,6 +25,10 @@ export interface NativeViewGestureHandlerProps
   disallowInterruption?: boolean;
 }
 
+export interface NativeViewGestureHandlerProps
+  extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload>,
+    NativeViewGestureConfig {}
+
 export type NativeViewGestureHandlerPayload = {
   /**
    * True if gesture was performed inside of containing view, false otherwise.
@@ -37,13 +41,15 @@ export const nativeViewProps = [
   ...nativeViewGestureHandlerProps,
 ] as const;
 
+export const nativeViewHandlerName = 'NativeViewGestureHandler';
+
 export type NativeViewGestureHandler = typeof NativeViewGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const NativeViewGestureHandler = createHandler<
   NativeViewGestureHandlerProps,
   NativeViewGestureHandlerPayload
 >({
-  name: 'NativeViewGestureHandler',
+  name: nativeViewHandlerName,
   allowedProps: nativeViewProps,
   config: {},
 });

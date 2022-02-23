@@ -1,14 +1,17 @@
 import { NativeModules } from 'react-native';
+import { tagMessage } from './utils';
 const { RNGestureHandlerModule } = NativeModules;
 
 if (RNGestureHandlerModule == null) {
   console.error(
-    `react-native-gesture-handler module was not found. Make sure you're running your app on the native platform and your code is linked properly (cd ios && pod install && cd ..).
+    tagMessage(
+      `react-native-gesture-handler module was not found. Make sure you're running your app on the native platform and your code is linked properly (cd ios && pod install && cd ..).
 
-    For installation instructions, please refer to https://docs.swmansion.com/react-native-gesture-handler/docs/#installation`
-      .split('\n')
-      .map((line) => line.trim())
-      .join('\n')
+      For installation instructions, please refer to https://docs.swmansion.com/react-native-gesture-handler/docs/#installation`
+        .split('\n')
+        .map((line) => line.trim())
+        .join('\n')
+    )
   );
 }
 
@@ -20,7 +23,11 @@ export type RNGestureHandlerModuleProps = {
     handlerTag: number,
     config: Readonly<Record<string, unknown>>
   ) => void;
-  attachGestureHandler: (handlerTag: number, newView: number) => void;
+  attachGestureHandler: (
+    handlerTag: number,
+    newView: number,
+    usingDeviceEvents: boolean
+  ) => void;
   updateGestureHandler: (
     handlerTag: number,
     newConfig: Readonly<Record<string, unknown>>

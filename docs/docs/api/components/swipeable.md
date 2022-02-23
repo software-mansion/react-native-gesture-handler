@@ -49,35 +49,55 @@ a number that specifies how much the visual interaction will be delayed compared
 
 ### `onSwipeableLeftOpen`
 
+:::caution
+This callback is deprecated and will be removed in the next version. Please use `onSwipeableOpen(direction)`
+:::
+
 method that is called when left action panel gets open.
 
 ### `onSwipeableRightOpen`
+
+:::caution
+This callback is deprecated and will be removed in the next version. Please use `onSwipeableOpen(direction)`
+:::
 
 method that is called when right action panel gets open.
 
 ### `onSwipeableOpen`
 
-method that is called when action panel gets open (either right or left).
+method that is called when action panel gets open (either right or left). Takes swipe direction as
+an argument.
 
 ### `onSwipeableClose`
 
-method that is called when action panel is closed.
+method that is called when action panel is closed. Takes swipe direction as
+an argument.
 
 ### `onSwipeableLeftWillOpen`
+
+:::caution
+This callback is deprecated and will be removed in the next version. Please use `onSwipeableWillOpen(direction)`
+:::
 
 method that is called when left action panel starts animating on open.
 
 ### `onSwipeableRightWillOpen`
 
+:::caution
+This callback is deprecated and will be removed in the next version. Please use `onSwipeableWillOpen(direction)`
+:::
+
 method that is called when right action panel starts animating on open.
 
 ### `onSwipeableWillOpen`
 
-method that is called when action panel starts animating on open (either right or left).
+method that is called when action panel starts animating on open (either right or left). Takes swipe direction as
+an argument.
 
 ### `onSwipeableWillClose`
 
-method that is called when action panel starts animating on close.
+method that is called when action panel starts animating on close. Takes swipe direction as
+an argument.
 
 ### `renderLeftActions`
 
@@ -131,7 +151,7 @@ method that opens component on right side.
 
 ### Example:
 
-See the [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/master/examples/Example/src/swipeable/index.tsx) from [GestureHandler Example App](example.md) or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/showcase/swipeable/index.tsx) from GestureHandler Example App or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
 
 ```js
 import React, { Component } from 'react';

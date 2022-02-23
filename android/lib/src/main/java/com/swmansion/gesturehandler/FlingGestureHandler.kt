@@ -46,12 +46,15 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
       event.rawY - startY > minAcceptableDelta)) {
     handler!!.removeCallbacksAndMessages(null)
     activate()
-    end()
     true
   } else {
     false
   }
 
+  override fun activate(force: Boolean) {
+    super.activate(force)
+    end()
+  }
 
   private fun endFling(event: MotionEvent) {
     if (!tryEndFling(event)) {

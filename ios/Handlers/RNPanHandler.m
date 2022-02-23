@@ -73,7 +73,9 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler reset];
+  if ([self numberOfTouches] == 0) {
+    [_gestureHandler reset];
+  }
 #if !TARGET_OS_TV
   if (_hasCustomActivationCriteria) {
     // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
@@ -86,11 +88,14 @@
 #endif
   [super touchesBegan:touches withEvent:event];
   [self triggerAction];
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+  
   if (self.state == UIGestureRecognizerStatePossible && [self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
     return;
@@ -119,9 +124,22 @@
   }
 }
 
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesEnded:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesCancelled:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+}
+
 - (void)reset
 {
   [self triggerAction];
+  [_gestureHandler.pointerTracker reset];
   self.enabled = YES;
   [super reset];
 }
@@ -218,8 +236,10 @@
     recognizer.allowedScrollTypesMask = 0;
   }
 #endif
+#if !TARGET_OS_TV
   recognizer.minimumNumberOfTouches = 1;
   recognizer.maximumNumberOfTouches = NSUIntegerMax;
+#endif
   recognizer.minDistSq = NAN;
   recognizer.minVelocitySq = NAN;
 }
@@ -286,4 +306,3 @@
 }
 
 @end
-

@@ -27,6 +27,7 @@
 #import "Handlers/RNPinchHandler.h"
 #import "Handlers/RNRotationHandler.h"
 #import "Handlers/RNForceTouchHandler.h"
+#import "Handlers/RNManualHandler.h"
 
 // We use the method below instead of RCTLog because we log out messages after the bridge gets
 // turned down in some cases. Which normally with RCTLog would cause a crash in DEBUG mode
@@ -72,6 +73,7 @@
                 @"PinchGestureHandler": [RNPinchGestureHandler class],
                 @"RotationGestureHandler": [RNRotationGestureHandler class],
                 @"ForceTouchGestureHandler": [RNForceTouchHandler class],
+                @"ManualGestureHandler": [RNManualGestureHandler class],
                 };
     });
     
@@ -101,6 +103,17 @@
     [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
 }
 
+- (void)attachGestureHandlerForDeviceEvents:(nonnull NSNumber *)handlerTag
+                              toViewWithTag:(nonnull NSNumber *)viewTag
+{
+    UIView *view = [_uiManager viewForReactTag:viewTag];
+
+    [_registry attachHandlerWithTagForDeviceEvents:handlerTag toView:view];
+
+    // register view if not already there
+    [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
+}
+
 - (void)updateGestureHandler:(NSNumber *)handlerTag config:(NSDictionary *)config
 {
     RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
@@ -125,6 +138,12 @@
 {
     // ignore...
 }
+
+- (id)handlerWithTag:(NSNumber *)handlerTag
+{
+  return [_registry handlerWithTag:handlerTag];
+}
+
 
 #pragma mark Root Views Management
 
@@ -185,6 +204,18 @@
 - (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
 {
     [_eventDispatcher sendEvent:event];
+}
+
+- (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event
+{
+    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
+    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerEvent" body:body];
+}
+
+- (void)sendStateChangeDeviceEvent:(RNGestureHandlerStateChange *)event
+{
+    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
+    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }
 
 @end

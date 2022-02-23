@@ -17,7 +17,7 @@ Check out our dedicated documentation page for info about this library, API refe
 
 ## Examples
 
-If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `examples/Example/` folder and run:
+If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `example` folder and run:
 
 ```bash
   yarn install
@@ -27,7 +27,7 @@ If you are running on ios, run `pod install` in the ios folder
 
 Run `yarn start` to start the metro bundler
 
-Run `react-native run-android` or `react-native run-ios` (depending on which platform you want to run the example app on).
+Run `yarn android` or `yarn ios` (depending on which platform you want to run the example app on).
 
 You will need to have an Android or iOS device or emulator connected as well as `react-native-cli` package installed globally.
 
@@ -47,7 +47,8 @@ Gesture handler library is licensed under [The MIT License](LICENSE).
 
 ## Credits
 
-This project is supported by amazing people from [Expo.io](https://expo.io) and [Software Mansion](https://swmansion.com)
+This project has been build and is maintained thanks to the support from [Shopify](https://shopify.com), [Expo.io](https://expo.io) and [Software Mansion](https://swmansion.com)
 
+[![shopify](https://avatars1.githubusercontent.com/u/8085?v=3&s=100 'Shopify.com')](https://shopify.com)
 [![expo](https://avatars2.githubusercontent.com/u/12504344?v=3&s=100 'Expo.io')](https://expo.io)
-[![swm](https://logo.swmansion.com/logo?color=white&variant=desktop&width=150&tag=react-native-gesture-handler-github 'Software Mansion')](https://swmansion.com)
+[![swm](https://logo.swmansion.com/logo?color=white&variant=desktop&width=150&tag=react-native-reanimated-github 'Software Mansion')](https://swmansion.com)

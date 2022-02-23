@@ -5,8 +5,8 @@ import { View, ViewProps } from 'react-native';
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<ViewProps> {}
 
-export default function GestureHandlerRootView({
-  ...rest
-}: GestureHandlerRootViewProps) {
-  return <View {...rest} />;
+export default function GestureHandlerRootView(
+  props: GestureHandlerRootViewProps
+) {
+  return <View {...props} />;
 }

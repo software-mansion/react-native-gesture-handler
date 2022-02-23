@@ -49,7 +49,8 @@
   [self handleGesture:self];
 }
 
-- (CGPoint)translationInView {
+- (CGPoint)translationInView
+{
   CGPoint currentPosition = [self locationInView:self.view];
   return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
 }
@@ -57,6 +58,7 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   _initPosition = [self locationInView:self.view];
   startTime = mach_absolute_time();
@@ -67,7 +69,8 @@
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
-
+  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+  
   CGPoint trans = [self translationInView];
   if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView])
       || (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x + trans.x), self.allowableMovement * self.allowableMovement))) {
@@ -76,11 +79,25 @@
   }
 }
 
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesEnded:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesCancelled:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+}
+
 - (void)reset
 {
   if (self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
+  
+  [_gestureHandler.pointerTracker reset];
   
   [super reset];
 }

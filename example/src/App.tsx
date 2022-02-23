@@ -1,5 +1,12 @@
 import React from 'react';
-import { Text, View, StyleSheet, SectionList, Platform } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  SectionList,
+  Platform,
+  LogBox,
+} from 'react-native';
 import {
   createStackNavigator,
   StackScreenProps,
@@ -15,6 +22,7 @@ import DoubleDraggable from './release_tests/doubleDraggable';
 import { ComboWithGHScroll } from './release_tests/combo';
 import { TouchablesIndex, TouchableExample } from './release_tests/touchables';
 import Rows from './release_tests/rows';
+import Fling from './release_tests/fling';
 import NestedTouchables from './release_tests/nestedTouchables';
 import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
 import { PinchableBox } from './recipes/scaleAndRotate';
@@ -22,13 +30,28 @@ import PanAndScroll from './recipes/panAndScroll';
 import { BottomSheet } from './showcase/bottomSheet';
 import Swipeables from './showcase/swipeable';
 import ChatHeads from './showcase/chatHeads';
-import { DraggableBox } from './basic/draggable';
+import Draggable from './basic/draggable';
 import MultiTap from './basic/multitap';
 import BouncingBox from './basic/bouncing';
 import PanResponder from './basic/panResponder';
 import HorizontalDrawer from './basic/horizontalDrawer';
 import PagerAndDrawer from './basic/pagerAndDrawer';
 import ForceTouch from './basic/forcetouch';
+
+import ReanimatedSimple from './new_api/reanimated';
+import Camera from './new_api/camera';
+import Transformations from './new_api/transformations';
+import OverlapParents from './new_api/overlap_parent';
+import OverlapSiblings from './new_api/overlap_siblings';
+import Calculator from './new_api/calculator';
+import BottomSheetNewApi from './new_api/bottom_sheet';
+import ChatHeadsNewApi from './new_api/chat_heads';
+import DragNDrop from './new_api/drag_n_drop';
+import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
+
+LogBox.ignoreLogs([
+  "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
+]);
 
 interface Example {
   name: string;
@@ -43,7 +66,7 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Basic examples',
     data: [
-      { name: 'Draggable', component: DraggableBox },
+      { name: 'Draggable', component: Draggable },
       { name: 'Multitap', component: MultiTap },
       { name: 'Bouncing box', component: BouncingBox },
       { name: 'Pan responder', component: PanResponder },
@@ -85,8 +108,30 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
       { name: 'Rows', component: Rows },
+      { name: 'Fling', component: Fling },
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
+    ],
+  },
+  {
+    sectionTitle: 'New api',
+    data: [
+      {
+        name: 'Simple interaction with Reanimated',
+        component: ReanimatedSimple,
+      },
+      { name: 'Camera', component: Camera },
+      { name: 'Transformations', component: Transformations },
+      { name: 'Overlap parents', component: OverlapParents },
+      { name: 'Overlap siblings', component: OverlapSiblings },
+      { name: 'Calculator', component: Calculator },
+      { name: 'Bottom Sheet', component: BottomSheetNewApi },
+      { name: 'Chat Heads', component: ChatHeadsNewApi },
+      { name: 'Drag and drop', component: DragNDrop },
+      {
+        name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
+        component: BetterHorizontalDrawer,
+      },
     ],
   },
 ];

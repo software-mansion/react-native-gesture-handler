@@ -20,9 +20,7 @@ export type TapGestureHandlerEventPayload = {
   absoluteX: number;
   absoluteY: number;
 };
-
-export interface TapGestureHandlerProps
-  extends BaseGestureHandlerProps<TapGestureHandlerEventPayload> {
+export interface TapGestureConfig {
   /**
    * Minimum number of pointers (fingers) required to be placed before the
    * handler activates. Should be a positive integer.
@@ -73,13 +71,19 @@ export interface TapGestureHandlerProps
   maxDist?: number;
 }
 
+export interface TapGestureHandlerProps
+  extends BaseGestureHandlerProps<TapGestureHandlerEventPayload>,
+    TapGestureConfig {}
+
+export const tapHandlerName = 'TapGestureHandler';
+
 export type TapGestureHandler = typeof TapGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const TapGestureHandler = createHandler<
   TapGestureHandlerProps,
   TapGestureHandlerEventPayload
 >({
-  name: 'TapGestureHandler',
+  name: tapHandlerName,
   allowedProps: [
     ...baseGestureHandlerProps,
     ...tapGestureHandlerProps,

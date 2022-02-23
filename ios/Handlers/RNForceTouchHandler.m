@@ -44,6 +44,8 @@ static const BOOL defaultFeedbackOnActivation = NO;
     return;
   }
   [super touchesBegan:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+  
   _firstTouch = [touches anyObject];
   [self handleForceWithTouches:touches];
   self.state = UIGestureRecognizerStatePossible;
@@ -56,6 +58,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
     return;
   }
   [super touchesMoved:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
   
   [self handleForceWithTouches:touches];
   
@@ -96,6 +99,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
     return;
   }
   [super touchesEnded:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
   if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
     self.state = UIGestureRecognizerStateEnded;
   } else {
@@ -103,11 +107,18 @@ static const BOOL defaultFeedbackOnActivation = NO;
   }
 }
 
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesCancelled:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+}
+
 - (void)handleForceWithTouches:(NSSet<UITouch *> *)touches {
   _force = _firstTouch.force / _firstTouch.maximumPossibleForce;
 }
 
 - (void)reset {
+  [_gestureHandler.pointerTracker reset];
   [super reset];
   _force = 0;
   _firstTouch = NULL;
