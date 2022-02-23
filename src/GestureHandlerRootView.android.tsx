@@ -11,13 +11,8 @@ const GestureHandlerRootViewNativeComponent = ENABLE_FABRIC
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<ViewProps> {}
 
-export default function GestureHandlerRootView({
-  children,
-  ...rest
-}: GestureHandlerRootViewProps) {
-  return (
-    <GestureHandlerRootViewNativeComponent {...rest}>
-      {children}
-    </GestureHandlerRootViewNativeComponent>
-  );
+export default function GestureHandlerRootView(
+  props: GestureHandlerRootViewProps
+) {
+  return <GestureHandlerRootViewNativeComponent {...props} />;
 }
