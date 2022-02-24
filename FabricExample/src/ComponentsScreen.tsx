@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   FlatList,
   Gesture,
@@ -11,7 +12,6 @@ import {
 import { StyleSheet, Text, View } from 'react-native';
 
 import { COLORS } from './colors';
-import React from 'react';
 
 function SwitchDemo() {
   const [value, setValue] = React.useState(false);

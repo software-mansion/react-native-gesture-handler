@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import {
   Gesture,
@@ -8,8 +7,8 @@ import {
   PanGestureHandlerStateChangeEvent,
   State,
 } from 'react-native-gesture-handler';
-import { isFabric, isHermes } from './utils';
 
+import { isFabric, isHermes } from './utils';
 import { COLORS } from './colors';
 
 interface GestureDetectorDemoProps {

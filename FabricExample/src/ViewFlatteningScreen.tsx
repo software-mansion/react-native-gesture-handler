@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import React, { useState } from 'react';
 
 import { COLORS } from './colors';
 

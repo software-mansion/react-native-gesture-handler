@@ -1,8 +1,8 @@
+import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 
 import { COLORS } from './colors';
-import React from 'react';
-import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 
 const SOFTWARE_MANSION_LOGO_URL =
   'https://pbs.twimg.com/profile_images/1243176655172009986/Jgdl2m15_400x400.jpg';

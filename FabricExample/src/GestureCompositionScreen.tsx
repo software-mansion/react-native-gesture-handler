@@ -1,8 +1,8 @@
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import { COLORS } from './colors';
-import React from 'react';
 
 function RaceDemo() {
   const pan = Gesture.Pan()
