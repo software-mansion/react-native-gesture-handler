@@ -13,7 +13,7 @@ Check [getting started](https://docs.swmansion.com/react-native-gesture-handler/
 
 ## Fabric
 
-To learn about how to use `react-native-gesture-handler` with Fabric architecture, head over to [Fabric README](README-Fabric.md). Instructions on how to run Fabric Example within this repo can be found in the [FabricExample README](FabricExample/README.md).
+To learn how to use `react-native-gesture-handler` with Fabric architecture, head over to [Fabric README](README-Fabric.md). Instructions on how to run Fabric Example within this repo can be found in the [FabricExample README](FabricExample/README.md).
 
 ## Documentation
 
