@@ -1,6 +1,6 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
-import {COLORS} from './colors';
+import { COLORS } from './colors';
 import React from 'react';
 import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 
@@ -22,7 +22,10 @@ export default function FinalScreen() {
         Follow us on Twitter and stay tuned! @swmansion
       </Text>
       <View onTouchStart={() => openURLInBrowser(SOFTWARE_MANSION_TWITTER_URL)}>
-        <Image source={{uri: SOFTWARE_MANSION_LOGO_URL}} style={styles.logo} />
+        <Image
+          source={{ uri: SOFTWARE_MANSION_LOGO_URL }}
+          style={styles.logo}
+        />
       </View>
     </View>
   );

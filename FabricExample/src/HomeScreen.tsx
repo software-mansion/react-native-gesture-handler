@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {Animated, StyleSheet, Text, View} from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -9,7 +9,7 @@ import {
   State,
 } from 'react-native-gesture-handler';
 
-import {COLORS} from './colors';
+import { COLORS } from './colors';
 
 function isFabric(): boolean {
   // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
@@ -20,7 +20,7 @@ interface GestureDetectorDemoProps {
   color: string;
 }
 
-export function GestureDetectorDemo({color}: GestureDetectorDemoProps) {
+export function GestureDetectorDemo({ color }: GestureDetectorDemoProps) {
   const gesture = Gesture.Pan()
     .onBegin(() => {
       console.log(window.performance.now(), 'onBegin');
@@ -42,7 +42,7 @@ export function GestureDetectorDemo({color}: GestureDetectorDemoProps) {
     <View style={styles.demo}>
       <Text style={styles.text}>Gesture.Pan</Text>
       <GestureDetector gesture={gesture}>
-        <View style={[styles.box, {backgroundColor: color}]} />
+        <View style={[styles.box, { backgroundColor: color }]} />
       </GestureDetector>
     </View>
   );
@@ -52,7 +52,7 @@ interface ManualGestureDemoProps {
   color: string;
 }
 
-export function ManualGestureDemo({color}: ManualGestureDemoProps) {
+export function ManualGestureDemo({ color }: ManualGestureDemoProps) {
   const gesture = Gesture.Manual()
     .onTouchesDown(() => {
       console.log(window.performance.now(), 'onTouchesDown');
@@ -68,7 +68,7 @@ export function ManualGestureDemo({color}: ManualGestureDemoProps) {
     <View style={styles.demo}>
       <Text style={styles.text}>Gesture.Manual</Text>
       <GestureDetector gesture={gesture}>
-        <View style={[styles.box, {backgroundColor: color}]} />
+        <View style={[styles.box, { backgroundColor: color }]} />
       </GestureDetector>
     </View>
   );
@@ -78,7 +78,7 @@ interface PanGestureHandlerDemoProps {
   color: string;
 }
 
-export function PanGestureHandlerDemo({color}: PanGestureHandlerDemoProps) {
+export function PanGestureHandlerDemo({ color }: PanGestureHandlerDemoProps) {
   const onGestureEvent = () => {
     console.log(window.performance.now(), 'onGestureEvent');
   };
@@ -93,9 +93,8 @@ export function PanGestureHandlerDemo({color}: PanGestureHandlerDemoProps) {
       <PanGestureHandler
         maxPointers={1}
         onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-      >
-        <View style={[styles.box, {backgroundColor: color}]} />
+        onHandlerStateChange={onHandlerStateChange}>
+        <View style={[styles.box, { backgroundColor: color }]} />
       </PanGestureHandler>
     </View>
   );
@@ -113,8 +112,8 @@ export function AnimatedEventDemo({
   const drag = React.useRef(new Animated.Value(0));
 
   const onGestureEvent = Animated.event(
-    [{nativeEvent: {translationX: drag.current}}],
-    {useNativeDriver},
+    [{ nativeEvent: { translationX: drag.current } }],
+    { useNativeDriver }
   );
 
   const onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
@@ -141,13 +140,12 @@ export function AnimatedEventDemo({
       <PanGestureHandler
         maxPointers={1}
         onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-      >
+        onHandlerStateChange={onHandlerStateChange}>
         <Animated.View
           style={[
             styles.box,
             {
-              transform: [{translateX: drag.current}],
+              transform: [{ translateX: drag.current }],
               backgroundColor: color,
             },
           ]}

@@ -8,9 +8,9 @@ import {
   TouchableNativeFeedback,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
-import {StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import {COLORS} from './colors';
+import { COLORS } from './colors';
 import React from 'react';
 
 function SwitchDemo() {
@@ -60,9 +60,10 @@ function TouchableNativeFeedbackDemo() {
       <TouchableNativeFeedback
         onPressIn={() => console.log('onPressIn')}
         onPressOut={() => console.log('onPressOut')}
-        onLongPress={() => console.log('onLongPress')}
-      >
-        <View style={[styles.smallBox, {backgroundColor: COLORS.KINDA_BLUE}]} />
+        onLongPress={() => console.log('onLongPress')}>
+        <View
+          style={[styles.smallBox, { backgroundColor: COLORS.KINDA_BLUE }]}
+        />
       </TouchableNativeFeedback>
     </View>
   );
@@ -75,26 +76,27 @@ function TouchableOpacityDemo() {
       <TouchableOpacity
         onPressIn={() => console.log('onPressIn')}
         onPressOut={() => console.log('onPressOut')}
-        onLongPress={() => console.log('onLongPress')}
-      >
-        <View style={[styles.smallBox, {backgroundColor: COLORS.KINDA_BLUE}]} />
+        onLongPress={() => console.log('onLongPress')}>
+        <View
+          style={[styles.smallBox, { backgroundColor: COLORS.KINDA_BLUE }]}
+        />
       </TouchableOpacity>
     </View>
   );
 }
 
 function ScrollViewDemo() {
-  const pan = Gesture.Pan().onUpdate(e => console.log('onUpdate', e.x, e.y));
+  const pan = Gesture.Pan().onUpdate((e) => console.log('onUpdate', e.x, e.y));
 
   return (
     <View style={styles.demo}>
       <Text style={styles.text}>RNGH ScrollView</Text>
       <View style={styles.largeBox}>
         <ScrollView style={styles.largeBox}>
-          {Object.values(COLORS).map(color => (
+          {Object.values(COLORS).map((color) => (
             <View
               key={color}
-              style={[styles.largeBox, {backgroundColor: color}]}
+              style={[styles.largeBox, { backgroundColor: color }]}
             />
           ))}
           <GestureDetector gesture={pan}>
@@ -117,19 +119,19 @@ function FlatListDemo() {
       <View style={styles.largeBox}>
         <FlatList
           data={Object.values(COLORS)}
-          renderItem={e => (
+          renderItem={(e) => (
             <TouchableOpacity>
-              <View style={[styles.largeBox, {backgroundColor: e.item}]} />
+              <View style={[styles.largeBox, { backgroundColor: e.item }]} />
             </TouchableOpacity>
           )}
-          keyExtractor={e => e}
+          keyExtractor={(e) => e}
         />
       </View>
     </View>
   );
 }
 
-export default function ComponentsScreen({navigation}) {
+export default function ComponentsScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.bold}>

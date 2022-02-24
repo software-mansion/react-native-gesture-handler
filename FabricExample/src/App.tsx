@@ -1,14 +1,14 @@
 import * as React from 'react';
 
-import {Button, StyleSheet} from 'react-native';
+import { Button, StyleSheet } from 'react-native';
 
 import ComponentsScreen from './ComponentsScreen';
 import FinalScreen from './FinalScreen';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import HomeScreen from './HomeScreen';
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import ViewFlatteningScreen from './ViewFlatteningScreen';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,7 +20,7 @@ export default function App() {
           <Stack.Screen
             name="HomeScreen"
             component={HomeScreen}
-            options={({navigation}) => ({
+            options={({ navigation }) => ({
               title: 'RNGH FabricExample',
               headerRight: () => (
                 <Button
@@ -33,7 +33,7 @@ export default function App() {
           <Stack.Screen
             name="ComponentsScreen"
             component={ComponentsScreen}
-            options={({navigation}) => ({
+            options={({ navigation }) => ({
               title: 'RNGH Components',
               headerRight: () => (
                 <Button
@@ -46,7 +46,7 @@ export default function App() {
           <Stack.Screen
             name="ViewFlatteningScreen"
             component={ViewFlatteningScreen}
-            options={({navigation}) => ({
+            options={({ navigation }) => ({
               title: 'View Flattening',
               headerRight: () => (
                 <Button
@@ -59,7 +59,7 @@ export default function App() {
           <Stack.Screen
             name="FinalScreen"
             component={FinalScreen}
-            options={{title: "That's all, folks!"}}
+            options={{ title: "That's all, folks!" }}
           />
         </Stack.Navigator>
       </NavigationContainer>

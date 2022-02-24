@@ -1,12 +1,12 @@
-import {Animated, StyleSheet, Text, View} from 'react-native';
-import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import React, {useState} from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import React, { useState } from 'react';
 
-import {COLORS} from './colors';
+import { COLORS } from './colors';
 
 function ParentViewFlattenedDemo() {
   const tap = Gesture.Tap().onStart(() =>
-    console.log(window.performance.now(), 'tap!'),
+    console.log(window.performance.now(), 'tap!')
   );
 
   return (
@@ -25,7 +25,7 @@ function InnerFlattenedParent() {
   return (
     <View style={[styles.boxWrapper]}>
       {/* parent view will be collapsed */}
-      <View style={[styles.box, {backgroundColor: COLORS.NAVY}]} />
+      <View style={[styles.box, { backgroundColor: COLORS.NAVY }]} />
     </View>
   );
 }
@@ -51,10 +51,10 @@ function ParentViewNotFlattenedCollapsableTrueDemo() {
   );
 }
 
-function InnerNotFlattenedParentCollapsable({count}) {
+function InnerNotFlattenedParentCollapsable({ count }) {
   return (
-    <View style={[styles.boxWrapper, {backgroundColor: COLORS.KINDA_BLUE}]}>
-      <View style={[styles.box, {backgroundColor: COLORS.NAVY}]}>
+    <View style={[styles.boxWrapper, { backgroundColor: COLORS.KINDA_BLUE }]}>
+      <View style={[styles.box, { backgroundColor: COLORS.NAVY }]}>
         <Text>{count}</Text>
       </View>
     </View>
@@ -63,7 +63,7 @@ function InnerNotFlattenedParentCollapsable({count}) {
 
 function ParentViewNotFlattenedCollapsableFalseDemo() {
   const tap = Gesture.Tap().onStart(() =>
-    console.log(window.performance.now(), 'tap!'),
+    console.log(window.performance.now(), 'tap!')
   );
 
   return (
@@ -82,17 +82,16 @@ function ParentViewNotFlattenedCollapsableFalseDemo() {
 function InnerNotFlattenedParentNotCollapsable() {
   return (
     <View
-      style={[styles.boxWrapper, {backgroundColor: COLORS.KINDA_BLUE}]}
-      collapsable={false}
-    >
-      <View style={[styles.box, {backgroundColor: COLORS.NAVY}]} />
+      style={[styles.boxWrapper, { backgroundColor: COLORS.KINDA_BLUE }]}
+      collapsable={false}>
+      <View style={[styles.box, { backgroundColor: COLORS.NAVY }]} />
     </View>
   );
 }
 
 function ParentAnimatedViewDemo() {
   const tap = Gesture.Tap().onStart(() =>
-    console.log(window.performance.now(), 'tap!'),
+    console.log(window.performance.now(), 'tap!')
   );
 
   return (
@@ -110,7 +109,7 @@ function ParentAnimatedViewDemo() {
 function InnerParentAnimatedView() {
   return (
     <Animated.View style={[styles.boxWrapper]}>
-      <View style={[styles.box, {backgroundColor: COLORS.NAVY}]} />
+      <View style={[styles.box, { backgroundColor: COLORS.NAVY }]} />
     </Animated.View>
   );
 }
