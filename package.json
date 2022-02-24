@@ -25,6 +25,7 @@
     "android/gradle.properties",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
+    "android/src/main/jni/",
     "android/src/fabric/java",
     "android/src/paper/java",
     "android/lib/build.gradle",
