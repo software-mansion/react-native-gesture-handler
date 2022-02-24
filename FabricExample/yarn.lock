@@ -5492,15 +5492,14 @@ react-native-gradle-plugin@^0.0.4:
   dependencies:
     react-native-codegen "*"
 
-react-native-safe-area-context@^4.0.1-rc.5:
-  version "4.0.1-rc.5"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.0.1-rc.5.tgz#2e2092eedbff63444c1739ecdc43c25e9a17c859"
-  integrity sha512-x/wRZE7STwJt5FmmVcdnhB60NEP9YCppFiyajiXHPY5KfCp2dsfozxdVVdF94n2rmB+Phd9agE3cHOfdyE7K/A==
+react-native-safe-area-context@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.0.1.tgz#b8413ad703088d8c36d2e56202a28b17aa0df79b"
+  integrity sha512-N8xvlDrcdQ8FBtS/jIvsxm7Wwb5ZRnYjQpoQR2CfFTN1AwIHG80ZACteeLFQ8ErGBRTPBgXNBPoFCppCDHbnyg==
 
-react-native-screens@^3.12.0:
+react-native-screens@software-mansion/react-native-screens#fdbefc6cc076a2186bd33fcdd6f4174ca1570ac2:
   version "3.12.0"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.12.0.tgz#e8927f0bc4f555f7597c870bebba3f044e4a0de6"
-  integrity sha512-EB1H5GrYtCTG8gC4v8OeJLL1MHlWQBeh6oEu6kH02QllVEy5QI9p8YKtTp4l8w+FMXOXxEvNxKANc75RMtwriw==
+  resolved "https://codeload.github.com/software-mansion/react-native-screens/tar.gz/fdbefc6cc076a2186bd33fcdd6f4174ca1570ac2"
   dependencies:
     react-freeze "^1.0.0"
     react-native-gradle-plugin "^0.0.3"

@@ -623,21 +623,21 @@ PODS:
   - React-jsinspector (0.68.0-rc.1)
   - React-logger (0.68.0-rc.1):
     - glog
-  - react-native-safe-area-context (4.0.1-rc.5):
+  - react-native-safe-area-context (4.0.1):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
     - React
-    - react-native-safe-area-context/common (= 4.0.1-rc.5)
-    - react-native-safe-area-context/fabric (= 4.0.1-rc.5)
+    - react-native-safe-area-context/common (= 4.0.1)
+    - react-native-safe-area-context/fabric (= 4.0.1)
     - ReactCommon/turbomodule/core
-  - react-native-safe-area-context/common (4.0.1-rc.5):
+  - react-native-safe-area-context/common (4.0.1):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
     - React
     - ReactCommon/turbomodule/core
-  - react-native-safe-area-context/fabric (4.0.1-rc.5):
+  - react-native-safe-area-context/fabric (4.0.1):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -717,7 +717,7 @@ PODS:
     - React-jsi (= 0.68.0-rc.1)
     - React-logger (= 0.68.0-rc.1)
     - React-perflogger (= 0.68.0-rc.1)
-  - RNGestureHandler (2.2.0):
+  - RNGestureHandler (2.3.0):
     - RCT-Folly (= 2021.06.28.00-v2)
     - RCTRequired
     - RCTTypeSafety
@@ -951,7 +951,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: b95fc3494e76e7a5832c4386978c3ada3d1e2bed
   React-jsinspector: dc394b84375f124b823720b59e322113d85f23b4
   React-logger: c208f7a035008b696c43c94dde8b4c53b30534af
-  react-native-safe-area-context: 3d2f30128de6b8afe6300d1b7e1ce40e83286c67
+  react-native-safe-area-context: 8fbc95874c160b6e830cb7fada0c4d7622e8d331
   React-perflogger: 93144f240a4f95e1698dc054a1ef8b18ca80a64f
   React-RCTActionSheet: e63525d962fdc663ddca3a2b83012a905055e777
   React-RCTAnimation: 3b827fbfad9a873f66ca80542e036ca42f92f578
@@ -966,7 +966,7 @@ SPEC CHECKSUMS:
   React-rncore: dae6c573edcf6c05fe55461017b4f91e25b0e2d2
   React-runtimeexecutor: 10cda3a396b14a764a5f86088e7e3810b9c66cec
   ReactCommon: 73a01eb83f22c84a6b09dfb60f3463888ebd4975
-  RNGestureHandler: 737bf5acf5d2f40e4633a51a57c57d451080f2af
+  RNGestureHandler: f66bf5b902499ba3687b706a98be1e5ad6d907db
   RNScreens: c0fe0b1f5f2744fe7999df43d66db91c48bd1623
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: d29dba374c1a582b40cfb736647b5e1b5ed35dba
