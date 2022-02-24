@@ -17,7 +17,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{ animation: 'slide_from_right' }}>
           <Stack.Screen
             name="HomeScreen"
             component={HomeScreen}
