@@ -4,12 +4,12 @@ import { Button, StyleSheet } from 'react-native';
 
 import ComponentsScreen from './ComponentsScreen';
 import FinalScreen from './FinalScreen';
+import GestureCompositionScreen from './GestureCompositionScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import HomeScreen from './HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import ViewFlatteningScreen from './ViewFlatteningScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import GestureCompositionScreen from './GestureCompositionScreen';
 
 const Stack = createNativeStackNavigator();
 

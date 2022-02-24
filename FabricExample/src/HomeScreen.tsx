@@ -8,13 +8,9 @@ import {
   PanGestureHandlerStateChangeEvent,
   State,
 } from 'react-native-gesture-handler';
+import { isFabric, isHermes } from './utils';
 
 import { COLORS } from './colors';
-
-function isFabric(): boolean {
-  // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
-  return !!global?.nativeFabricUIManager;
-}
 
 interface GestureDetectorDemoProps {
   color: string;
@@ -159,11 +155,10 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.bold}>Hello from React Native Gesture Handler!</Text>
-      {isFabric() && (
-        <Text style={styles.bold}>
-          This example app runs with Fabric enabled.
-        </Text>
-      )}
+      <Text style={styles.bold}>
+        This example app runs on {isHermes() ? 'Hermes' : 'JSC'} with Fabric{' '}
+        {isFabric() ? 'enabled' : 'disabled'}.
+      </Text>
       <GestureDetectorDemo color={COLORS.NAVY} />
       <ManualGestureDemo color={COLORS.KINDA_RED} />
       <PanGestureHandlerDemo color={COLORS.YELLOW} />
