@@ -1,3 +1,7 @@
+// Used by GestureDetector (unsupported on web at the moment) to check whether the
+// attached view may get flattened on Fabric. This implementation causes errors
+// on web due to the static resolution of `require` statements by webpack breaking
+// the conditional importing. Solved by making .web file.
 let findHostInstance_DEPRECATED = (_ref: any) => null;
 
 try {
