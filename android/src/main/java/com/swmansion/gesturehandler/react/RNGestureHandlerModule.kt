@@ -635,7 +635,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       // val reanimatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)
       // reanimatedModule?.nodesManager?.onEventDispatch(event)
     } else {
-      // In the old architecture, Reanimated subscribes for specific events.
+      // In the old architecture, Reanimated subscribes for specific direct events.
       sendEventForDirectEvent(event)
     }
   }
