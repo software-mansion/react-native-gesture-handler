@@ -26,13 +26,12 @@ export function withPrevAndCurrent<T, Transformed>(
   return transformedArr;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function hasProperty(object: object, key: string) {
+export function hasProperty(object: Record<string, unknown>, key: string) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
 export function isJestEnv(): boolean {
-  return hasProperty(global, 'process') && !!process.env.JEST_WORKER_ID;
+  return !!process.env.JEST_WORKER_ID;
 }
 
 export function tagMessage(msg: string) {
