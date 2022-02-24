@@ -33,7 +33,8 @@ import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
-import { isFabric, getShadowNodeFromRef, tagMessage } from '../../utils';
+import { isFabric, tagMessage } from '../../utils';
+import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 
 declare global {
   function isFormsStackingContext(node: unknown): boolean | null; // JSI function

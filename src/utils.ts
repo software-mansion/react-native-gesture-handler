@@ -26,12 +26,13 @@ export function withPrevAndCurrent<T, Transformed>(
   return transformedArr;
 }
 
-export function hasProperty(object: Record<string, unknown>, key: string) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function hasProperty(object: object, key: string) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
 export function isJestEnv(): boolean {
-  return !!process.env.JEST_WORKER_ID;
+  return hasProperty(global, 'process') && !!process.env.JEST_WORKER_ID;
 }
 
 export function tagMessage(msg: string) {
@@ -41,20 +42,4 @@ export function tagMessage(msg: string) {
 export function isFabric(): boolean {
   // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
   return !!global?.nativeFabricUIManager;
-}
-
-let findHostInstance_DEPRECATED = (_ref: any) => null;
-
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  findHostInstance_DEPRECATED = require('react-native/Libraries/Renderer/shims/ReactFabric')
-    .findHostInstance_DEPRECATED;
-} catch (e) {
-  // do nothing
-}
-
-export function getShadowNodeFromRef(ref: any) {
-  // @ts-ignore Fabric
-  return findHostInstance_DEPRECATED(ref)._internalInstanceHandle.stateNode
-    .node;
 }
