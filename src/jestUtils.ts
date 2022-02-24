@@ -1,4 +1,3 @@
-import { fireEvent } from '@testing-library/react-native';
 import invariant from 'invariant';
 import { DeviceEventEmitter } from 'react-native';
 import { ReactTestInstance } from 'react-test-renderer';
@@ -59,6 +58,22 @@ import {
 } from './handlers/TapGestureHandler';
 import { State } from './State';
 import { hasProperty, withPrevAndCurrent } from './utils';
+
+// load fireEvent conditionally, so RNGH may be used in setups without testing-library
+let fireEvent = (
+  _element: ReactTestInstance,
+  _name: string,
+  ..._data: any[]
+) => {
+  // NOOP
+};
+
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  fireEvent = require('@testing-library/react-native').fireEvent;
+} catch (_e) {
+  // do nothing if not available
+}
 
 type GestureHandlerTestEvent<
   TEventPayload extends Record<string, unknown> = Record<string, unknown>
