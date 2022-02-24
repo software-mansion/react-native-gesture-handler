@@ -9,6 +9,7 @@ import HomeScreen from './HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import ViewFlatteningScreen from './ViewFlatteningScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import GestureCompositionScreen from './GestureCompositionScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,21 @@ export default function App() {
             component={HomeScreen}
             options={({ navigation }) => ({
               title: 'RNGH FabricExample',
+              headerRight: () => (
+                <Button
+                  onPress={() =>
+                    navigation.navigate('GestureCompositionScreen')
+                  }
+                  title="Next"
+                />
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="GestureCompositionScreen"
+            component={GestureCompositionScreen}
+            options={({ navigation }) => ({
+              title: 'Gesture Composition',
               headerRight: () => (
                 <Button
                   onPress={() => navigation.navigate('ComponentsScreen')}
