@@ -32,7 +32,6 @@ import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
-
 import { ActionType } from '../../ActionType';
 import { isFabric, getShadowNodeFromRef, tagMessage } from '../../utils';
 
@@ -563,9 +562,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   }
 };
 
-class Wrap extends React.Component<{
-  onGestureHandlerEvent?: unknown;
-}> {
+class Wrap extends React.Component<{ onGestureHandlerEvent?: unknown }> {
   render() {
     // I don't think that fighting with types over such a simple function is worth it
     // The only thing it does is add 'collapsable: false' to the child component
@@ -573,14 +570,12 @@ class Wrap extends React.Component<{
     // correct viewTag to attach to.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const child: any = React.Children.only(this.props.children);
-    const clonedElement = React.cloneElement(
+    return React.cloneElement(
       child,
       { collapsable: false },
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       child.props.children
     );
-
-    return clonedElement;
   }
 }
 
