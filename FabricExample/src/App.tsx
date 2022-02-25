@@ -49,7 +49,7 @@ export default function App() {
             name="ComponentsScreen"
             component={ComponentsScreen}
             options={({ navigation }) => ({
-              title: 'RNGH Components',
+              title: 'Components',
               headerRight: () => (
                 <Button
                   onPress={() => navigation.navigate('ViewFlatteningScreen')}
