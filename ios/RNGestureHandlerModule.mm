@@ -13,6 +13,7 @@
 #import <React/RCTBridge+Private.h>
 #import <ReactCommon/CallInvoker.h>
 #import <React/RCTUtils.h>
+#import <React/RCTSurfacePresenter.h>
 
 #import <react/renderer/uimanager/primitives.h>
 #endif // RN_FABRIC_ENABLED
@@ -30,9 +31,15 @@ using namespace facebook;
 using namespace react;
 #endif // RN_FABRIC_ENABLED
 
+#ifdef RN_FABRIC_ENABLED
+@interface RNGestureHandlerModule () <RCTSurfacePresenterObserver, RNGestureHandlerStateManager>
+
+@end
+#else
 @interface RNGestureHandlerModule () <RCTUIManagerObserver, RNGestureHandlerStateManager>
 
 @end
+#endif // RN_FABRIC_ENABLED
 
 typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
@@ -53,8 +60,15 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+    [super invalidate];
+
     _manager = nil;
+    
+#ifdef RN_FABRIC_ENABLED
+    [self.bridge.surfacePresenter removeObserver:self];
+#else
     [self.bridge.uiManager.observerCoordinator removeObserver:self];
+#endif // RN_FABRIC_ENABLED
 }
 
 - (dispatch_queue_t)methodQueue
@@ -102,7 +116,12 @@ void decorateRuntime(jsi::Runtime &runtime)
                 initWithUIManager:bridge.uiManager
                 eventDispatcher:bridge.eventDispatcher];
     _operations = [NSMutableArray new];
+
+#ifdef RN_FABRIC_ENABLED
+    [bridge.surfacePresenter addObserver:self];
+#else
     [bridge.uiManager.observerCoordinator addObserver:self];
+#endif // RN_FABRIC_ENABLED
 }
 
 #ifdef RN_FABRIC_ENABLED
@@ -194,6 +213,28 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
     [_operations addObject:operation];
 }
 
+#pragma mark - RCTSurfacePresenterObserver
+
+#ifdef RN_FABRIC_ENABLED
+
+- (void)didMountComponentsWithRootTag:(NSInteger)rootTag
+{
+    RCTAssertMainQueue();
+    
+    if (_operations.count == 0) {
+        return;
+    }
+
+    NSArray<GestureHandlerOperation> *operations = _operations;
+    _operations = [NSMutableArray new];
+
+    for (GestureHandlerOperation operation in operations) {
+        operation(self->_manager);
+    }
+}
+
+#else
+
 #pragma mark - RCTUIManagerObserver
 
 - (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)uiManager
@@ -216,6 +257,8 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
         }
     }];
 }
+
+#endif // RN_FABRIC_ENABLED
 
 #pragma mark Events
 
