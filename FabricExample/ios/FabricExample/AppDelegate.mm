@@ -1,10 +1,8 @@
 #import "AppDelegate.h"
-#import "MBFingerTipWindow.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-
 
 #import <React/RCTAppSetupUtils.h>
 
@@ -51,9 +49,7 @@
     rootView.backgroundColor = [UIColor whiteColor];
   }
 
-  MBFingerTipWindow *window = [[MBFingerTipWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  window.alwaysShowTouches = YES;
-  self.window = window;
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
