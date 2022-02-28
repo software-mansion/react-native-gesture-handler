@@ -31,10 +31,7 @@ function InnerFlattenedParent() {
 }
 
 function ParentViewNotFlattenedCollapsableTrueDemo() {
-  const [count, setCount] = useState(0); // this is just to force render
-
   const tap = Gesture.Tap().onStart(() => {
-    setCount(count + 1);
     console.log(window.performance.now(), 'tap!');
   });
 
@@ -44,19 +41,17 @@ function ParentViewNotFlattenedCollapsableTrueDemo() {
       <Text>(child moved to the same level as parent)</Text>
       <View style={styles.borderedBox}>
         <GestureDetector gesture={tap}>
-          <InnerNotFlattenedParentCollapsable count={count} />
+          <InnerNotFlattenedParentCollapsable />
         </GestureDetector>
       </View>
     </>
   );
 }
 
-function InnerNotFlattenedParentCollapsable({ count }) {
+function InnerNotFlattenedParentCollapsable() {
   return (
     <View style={[styles.boxWrapper, { backgroundColor: COLORS.KINDA_BLUE }]}>
-      <View style={[styles.box, { backgroundColor: COLORS.NAVY }]}>
-        <Text>{count}</Text>
-      </View>
+      <View style={[styles.box, { backgroundColor: COLORS.NAVY }]} />
     </View>
   );
 }
