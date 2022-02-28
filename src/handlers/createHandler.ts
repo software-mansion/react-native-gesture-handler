@@ -25,10 +25,17 @@ import {
   findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
-import { isJestEnv, tagMessage } from '../utils';
+import { isFabric, isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
 
 const UIManagerAny = UIManager as any;
+
+const customGHEventsConfigFabricAndroid = {
+  topOnGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+  topOnGestureHandlerStateChange: {
+    registrationName: 'onGestureHandlerStateChange',
+  },
+};
 
 const customGHEventsConfig = {
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
@@ -37,18 +44,20 @@ const customGHEventsConfig = {
   },
 
   // When using React Native Gesture Handler for Animated.event with useNativeDriver: true
-  // the native part still sends the native events to JS but prefixed with "top".
-  // We cannot simply rename the events above so they are prefixed with "top" instead of "on"
-  // because in such case Animated.events would not be registered.
+  // on Android with Fabric enabled, the native part still sends the native events to JS
+  // but prefixed with "top". We cannot simply rename the events above so they are prefixed
+  // with "top" instead of "on" because in such case Animated.events would not be registered.
   // That's why we need to register another pair of event names.
   // The incoming events will be queued but never handled.
   // Without this piece of code below, you'll get the following JS error:
   // Unsupported top level event type "topOnGestureHandlerEvent" dispatched
-  topOnGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
-  topOnGestureHandlerStateChange: {
-    registrationName: 'onGestureHandlerStateChange',
-  },
+  ...(isFabric() &&
+    Platform.OS === 'android' &&
+    customGHEventsConfigFabricAndroid),
 };
+
+console.log(isFabric());
+console.log(Platform.OS === 'android');
 
 // Add gesture specific events to genericDirectEventTypes object exported from UIManager
 // native module.
