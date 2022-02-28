@@ -18,7 +18,7 @@
 
 - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
                toViewWithTag:(nonnull NSNumber *)viewTag
-              withActionType:(nonnull NSNumber *)actionType;
+              withActionType:(RNGestureHandlerActionType)actionType;
 
 - (void)updateGestureHandler:(nonnull NSNumber *)handlerTag config:(nonnull NSDictionary *)config;
 

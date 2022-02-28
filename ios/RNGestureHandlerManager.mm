@@ -99,7 +99,7 @@
 
 - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
                toViewWithTag:(nonnull NSNumber *)viewTag
-              withActionType:(nonnull NSNumber *)actionType
+              withActionType:(RNGestureHandlerActionType)actionType
 {
     UIView *view = [_uiManager viewForReactTag:viewTag];
     
@@ -210,9 +210,9 @@
 
 #pragma mark Events
 
-- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event withActionType:(nonnull NSNumber *)actionType
+- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType
 {
-    switch ([actionType integerValue]) {
+    switch (actionType) {
         case RNGestureHandlerActionTypeReanimatedWorklet:
             [self sendStateChangeEventForReanimated:event];
             break;

@@ -32,7 +32,7 @@
     _handlers[gestureHandler.tag] = gestureHandler;
 }
 
-- (void)attachHandlerWithTag:(NSNumber *)handlerTag toView:(UIView *)view withActionType:(NSNumber *)actionType
+- (void)attachHandlerWithTag:(NSNumber *)handlerTag toView:(UIView *)view withActionType:(RNGestureHandlerActionType)actionType
 {
     RNGestureHandler *handler = _handlers[handlerTag];
     RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);

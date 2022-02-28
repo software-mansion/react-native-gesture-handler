@@ -1,3 +1,4 @@
+#import "RNGestureHandlerActionType.h"
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerEvents.h"
@@ -25,7 +26,7 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 
 @protocol RNGestureHandlerEventEmitter
 
-- (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event withActionType:(nonnull NSNumber *)actionType;
+- (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType;
 
 @end
 
@@ -54,7 +55,7 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
 @property (nonatomic, readonly, nullable) RNGestureHandlerPointerTracker *pointerTracker;
 @property (nonatomic) BOOL enabled;
-@property (nonatomic, nonnull) NSNumber *actionType;
+@property (nonatomic) RNGestureHandlerActionType actionType;
 @property (nonatomic) BOOL shouldCancelWhenOutside;
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
