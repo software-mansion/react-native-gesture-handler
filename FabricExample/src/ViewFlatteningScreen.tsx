@@ -120,7 +120,7 @@ export default function ViewFlatteningScreen() {
       <Text style={styles.bold}>
         Fabric comes with a brand new advanced view flattening mechanism. Not
         only some of the views may gets collapsed but also the structure of
-        native views hierarchy may differ from than React component tree.
+        native views hierarchy may differ from the React component tree.
       </Text>
       <ParentViewFlattenedDemo />
       <ParentViewNotFlattenedCollapsableTrueDemo />
