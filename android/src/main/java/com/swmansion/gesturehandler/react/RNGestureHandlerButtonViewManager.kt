@@ -27,6 +27,7 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
 import com.swmansion.gesturehandler.NativeViewGestureHandler
+import com.swmansion.gesturehandler.R
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
@@ -348,10 +349,10 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         SoftAssertions.assertNotNull(attr)
         return when (attr) {
           SELECTABLE_ITEM_BACKGROUND -> {
-            android.R.attr.selectableItemBackground
+            R.attr.selectableItemBackground
           }
           SELECTABLE_ITEM_BACKGROUND_BORDERLESS -> {
-            android.R.attr.selectableItemBackgroundBorderless
+            R.attr.selectableItemBackgroundBorderless
           }
           else -> {
             context.resources.getIdentifier(attr, "attr", "android")
