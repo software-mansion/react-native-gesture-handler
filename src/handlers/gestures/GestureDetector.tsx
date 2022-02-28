@@ -541,10 +541,15 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       if (isFabric()) {
         const node = getShadowNodeFromRef(ref);
         if (global.isFormsStackingContext(node) === false) {
-          console.error(
-            '[react-native-gesture-handler] GestureDetector has received a child that may get view-flattened. ' +
-              '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
-          );
+          setImmediate(() => {
+            // For some weird reason, console.error on iOS delays
+            // the execution of RNGestureHandlerModule.attachGestureHandler,
+            // so that's why we use setImmediate here.
+            console.error(
+              '[react-native-gesture-handler] GestureDetector has received a child that may get view-flattened. ' +
+                '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
+            );
+          });
         }
       }
     }
