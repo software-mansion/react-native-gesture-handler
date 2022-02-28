@@ -38,7 +38,7 @@ Sets a `testID` property for gesture object, allowing for querying for it in tes
 
 ### `runOnJS(value: boolean)`
 
-When `react-native-reanimated` is available, the callbacks passed to the gestures are automatically workletized and ran on the UI thread when called. This option allows for changing this behavior - when `true`, all the callbacks will be ran on the JS thread instead of the UI thread, regardless of whether they are worklets or not.
+When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called. This option allows for changing this behavior: when `true`, all the callbacks will be run on the JS thread instead of the UI thread, regardless of whether they are worklets or not.
 Defaults to `false`.
 
 ### `simultaneousWithExternalGesture(otherGesture1, otherGesture2, ...)`
