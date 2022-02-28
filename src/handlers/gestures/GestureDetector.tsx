@@ -479,7 +479,9 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
 
   if (useReanimatedHook !== preparedGesture.useReanimatedHook) {
     throw new Error(
-      '[react-native-gesture-handler] You cannot change the thread the callbacks are ran on while the app is running'
+      tagMessage(
+        'You cannot change the thread the callbacks are ran on while the app is running'
+      )
     );
   }
 
@@ -546,8 +548,10 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
             // the execution of RNGestureHandlerModule.attachGestureHandler,
             // so that's why we use setImmediate here.
             console.error(
-              '[react-native-gesture-handler] GestureDetector has received a child that may get view-flattened. ' +
-                '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
+              tagMessage(
+                'GestureDetector has received a child that may get view-flattened. ' +
+                  '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
+              )
             );
           });
         }
