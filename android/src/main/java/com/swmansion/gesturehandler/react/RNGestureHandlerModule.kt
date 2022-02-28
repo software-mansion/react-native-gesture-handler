@@ -542,7 +542,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     handlerFactories.firstOrNull { it.type == handler.javaClass } as HandlerFactory<T>?
 
   private fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, motionEvent: MotionEvent) {
-    // onUpdate
+    // triggers onUpdate and onChange callbacks on the JS side
 
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
@@ -577,7 +577,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
-    // onBegin, onStart, onEnd, onFinalize
+    // triggers onBegin, onStart, onEnd, onFinalize callbacks on the JS side
 
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
@@ -607,7 +607,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   private fun <T : GestureHandler<T>> onTouchEvent(handler: T) {
-    // onTouchesDown, onTouchesMove, onTouchesUp
+    // triggers onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled callbacks on the JS side
     
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
