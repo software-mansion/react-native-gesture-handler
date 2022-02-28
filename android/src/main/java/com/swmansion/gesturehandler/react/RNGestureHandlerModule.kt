@@ -10,6 +10,7 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.events.Event
+import com.facebook.soloader.SoLoader
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
 import java.util.*
@@ -420,7 +421,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   @ReactMethod(isBlockingSynchronousMethod = true)
   fun install(): Boolean {
     return try {
-      System.loadLibrary("rngesturehandler_modules")
+      SoLoader.loadLibrary("rngesturehandler_modules")
       val jsContext = reactApplicationContext.javaScriptContextHolder
       decorateRuntime(jsContext.get())
       true
