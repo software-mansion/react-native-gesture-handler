@@ -75,7 +75,7 @@ function SimultaneousDemo() {
   );
 }
 
-export default function ComponentsScreen({ _navigation }) {
+export default function ComponentsScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.bold}>
