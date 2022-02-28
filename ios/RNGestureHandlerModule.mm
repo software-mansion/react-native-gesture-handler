@@ -60,8 +60,6 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-    [super invalidate];
-
     _manager = nil;
     
 #ifdef RN_FABRIC_ENABLED
