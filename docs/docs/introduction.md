@@ -38,7 +38,7 @@ This should allow you to migrate your codebase from the gesture handlers to gest
 
 ### Apps
 
-[Gesture Handler Example App](https://github.com/software-mansion/react-native-gesture-handler/blob/main/Example) – official gesture handler "showcase" app.
+[Gesture Handler Example App](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example) – official gesture handler "showcase" app.
 
 [Gesture Handler Example on Expo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo) – the official app you can install and play with using [Expo](https://expo.io).
 
