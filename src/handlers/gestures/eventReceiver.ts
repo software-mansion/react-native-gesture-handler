@@ -7,7 +7,7 @@ import {
   GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
 import { GestureStateManagerType } from './gestureStateManager';
-import { findHandler } from '../handlersRegistry';
+import { findHandler, findOldGestureHandler } from '../handlersRegistry';
 import { BaseGesture } from './gesture';
 import { tagMessage } from '../../utils';
 
@@ -113,6 +113,17 @@ function onGestureHandlerEvent(
 
         lastUpdateEvent[handler.handlers.handlerTag] = event;
       }
+    }
+  } else {
+    const oldHandler = findOldGestureHandler(event.handlerTag);
+    if (oldHandler) {
+      const nativeEvent = { nativeEvent: event };
+      if (isStateChangeEvent(event)) {
+        oldHandler.onGestureStateChange(nativeEvent);
+      } else {
+        oldHandler.onGestureEvent(nativeEvent);
+      }
+      return;
     }
   }
 }

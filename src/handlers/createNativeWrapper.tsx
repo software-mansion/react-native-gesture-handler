@@ -68,7 +68,13 @@ export default function createNativeWrapper<P>(
     );
   });
 
-  ComponentWrapper.displayName = Component.displayName || 'ComponentWrapper';
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  ComponentWrapper.displayName =
+    Component?.displayName ||
+    // @ts-ignore if render doesn't exist it will return undefined and go further
+    Component?.render?.name ||
+    (typeof Component === 'string' && Component) ||
+    'ComponentWrapper';
 
   return ComponentWrapper;
 }

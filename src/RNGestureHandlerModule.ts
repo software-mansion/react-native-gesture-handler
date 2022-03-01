@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import { ActionType } from './ActionType';
 import { tagMessage } from './utils';
 const { RNGestureHandlerModule } = NativeModules;
 
@@ -26,13 +27,14 @@ export type RNGestureHandlerModuleProps = {
   attachGestureHandler: (
     handlerTag: number,
     newView: number,
-    usingDeviceEvents: boolean
+    actionType: ActionType
   ) => void;
   updateGestureHandler: (
     handlerTag: number,
     newConfig: Readonly<Record<string, unknown>>
   ) => void;
   dropGestureHandler: (handlerTag: number) => void;
+  install: () => void;
 };
 
 export default RNGestureHandlerModule as RNGestureHandlerModuleProps;

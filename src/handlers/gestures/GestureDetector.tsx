@@ -32,7 +32,13 @@ import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
-import { tagMessage } from '../../utils';
+import { ActionType } from '../../ActionType';
+import { isFabric, tagMessage } from '../../utils';
+import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
+
+declare global {
+  function isFormsStackingContext(node: unknown): boolean | null; // JSI function
+}
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -164,10 +170,14 @@ function attachHandlers({
   preparedGesture.config = gesture;
 
   for (const gesture of preparedGesture.config) {
+    const actionType = gesture.shouldUseReanimated
+      ? ActionType.REANIMATED_WORKLET
+      : ActionType.JS_FUNCTION_NEW_API;
+
     RNGestureHandlerModule.attachGestureHandler(
       gesture.handlerTag,
       viewTag,
-      !gesture.shouldUseReanimated // send direct events when using animatedGesture, device events otherwise
+      actionType
     );
   }
 
@@ -469,7 +479,9 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
 
   if (useReanimatedHook !== preparedGesture.useReanimatedHook) {
     throw new Error(
-      '[react-native-gesture-handler] You cannot change the thread the callbacks are ran on while the app is running'
+      tagMessage(
+        'You cannot change the thread the callbacks are ran on while the app is running'
+      )
     );
   }
 
@@ -523,16 +535,40 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     }
   }, [props]);
 
+  const refFunction = (ref: unknown) => {
+    if (ref !== null) {
+      //@ts-ignore Just setting the ref
+      viewRef.current = ref;
+
+      if (isFabric()) {
+        const node = getShadowNodeFromRef(ref);
+        if (global.isFormsStackingContext(node) === false) {
+          setImmediate(() => {
+            // For some weird reason, console.error on iOS delays
+            // the execution of RNGestureHandlerModule.attachGestureHandler,
+            // so that's why we use setImmediate here.
+            console.error(
+              tagMessage(
+                'GestureDetector has received a child that may get view-flattened. ' +
+                  '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
+              )
+            );
+          });
+        }
+      }
+    }
+  };
+
   if (useReanimatedHook) {
     return (
       <AnimatedWrap
-        ref={viewRef}
+        ref={refFunction}
         onGestureHandlerEvent={preparedGesture.animatedEventHandler}>
         {props.children}
       </AnimatedWrap>
     );
   } else {
-    return <Wrap ref={viewRef}>{props.children}</Wrap>;
+    return <Wrap ref={refFunction}>{props.children}</Wrap>;
   }
 };
 
@@ -544,7 +580,6 @@ class Wrap extends React.Component<{ onGestureHandlerEvent?: unknown }> {
     // correct viewTag to attach to.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const child: any = React.Children.only(this.props.children);
-
     return React.cloneElement(
       child,
       { collapsable: false },

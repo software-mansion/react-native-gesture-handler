@@ -11,7 +11,11 @@ import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
-import { handlerIDToTag, getNextHandlerTag } from './handlersRegistry';
+import {
+  handlerIDToTag,
+  getNextHandlerTag,
+  registerOldGestureHandler,
+} from './handlersRegistry';
 
 import {
   BaseGestureHandlerProps,
@@ -21,15 +25,35 @@ import {
   findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
-import { isJestEnv, tagMessage } from '../utils';
+import { isFabric, isJestEnv, tagMessage } from '../utils';
+import { ActionType } from '../ActionType';
 
 const UIManagerAny = UIManager as any;
+
+const customGHEventsConfigFabricAndroid = {
+  topOnGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+  topOnGestureHandlerStateChange: {
+    registrationName: 'onGestureHandlerStateChange',
+  },
+};
 
 const customGHEventsConfig = {
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
   onGestureHandlerStateChange: {
     registrationName: 'onGestureHandlerStateChange',
   },
+
+  // When using React Native Gesture Handler for Animated.event with useNativeDriver: true
+  // on Android with Fabric enabled, the native part still sends the native events to JS
+  // but prefixed with "top". We cannot simply rename the events above so they are prefixed
+  // with "top" instead of "on" because in such case Animated.events would not be registered.
+  // That's why we need to register another pair of event names.
+  // The incoming events will be queued but never handled.
+  // Without this piece of code below, you'll get the following JS error:
+  // Unsupported top level event type "topOnGestureHandlerEvent" dispatched
+  ...(isFabric() &&
+    Platform.OS === 'android' &&
+    customGHEventsConfigFabricAndroid),
 };
 
 // Add gesture specific events to genericDirectEventTypes object exported from UIManager
@@ -240,7 +264,9 @@ export default function createHandler<
 
     private onGestureHandlerEvent = (event: GestureEvent<U>) => {
       if (event.nativeEvent.handlerTag === this.handlerTag) {
-        this.props.onGestureEvent?.(event);
+        if (typeof this.props.onGestureEvent === 'function') {
+          this.props.onGestureEvent?.(event);
+        }
       } else {
         this.props.onGestureHandlerEvent?.(event);
       }
@@ -251,7 +277,9 @@ export default function createHandler<
       event: HandlerStateChangeEvent<U>
     ) => {
       if (event.nativeEvent.handlerTag === this.handlerTag) {
-        this.props.onHandlerStateChange?.(event);
+        if (typeof this.props.onHandlerStateChange === 'function') {
+          this.props.onHandlerStateChange?.(event);
+        }
 
         const state: ValueOf<typeof State> = event.nativeEvent.state;
         const stateEventName = stateToPropMappings[state];
@@ -299,14 +327,38 @@ export default function createHandler<
         (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
           this.handlerTag,
           newViewTag,
-          false,
+          ActionType.JS_FUNCTION_OLD_API, // ignored on web
           this.propsRef
         );
       } else {
+        registerOldGestureHandler(this.handlerTag, {
+          onGestureEvent: this.onGestureHandlerEvent,
+          onGestureStateChange: this.onGestureHandlerStateChange,
+        });
+
+        const actionType = (() => {
+          if (
+            this.props?.onGestureEvent &&
+            'current' in this.props.onGestureEvent
+          ) {
+            // Reanimated worklet
+            return ActionType.REANIMATED_WORKLET;
+          } else if (
+            this.props?.onGestureEvent &&
+            '__isNative' in this.props.onGestureEvent
+          ) {
+            // Animated.event with useNativeDriver: true
+            return ActionType.NATIVE_ANIMATED_EVENT;
+          } else {
+            // JS callback or Animated.event with useNativeDriver: false
+            return ActionType.JS_FUNCTION_OLD_API;
+          }
+        })();
+
         RNGestureHandlerModule.attachGestureHandler(
           this.handlerTag,
           newViewTag,
-          false
+          actionType
         );
       }
     };

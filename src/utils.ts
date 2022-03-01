@@ -38,3 +38,8 @@ export function isJestEnv(): boolean {
 export function tagMessage(msg: string) {
   return `[react-native-gesture-handler] ${msg}`;
 }
+
+export function isFabric(): boolean {
+  // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
+  return !!global?.nativeFabricUIManager;
+}
