@@ -56,9 +56,6 @@ const customGHEventsConfig = {
     customGHEventsConfigFabricAndroid),
 };
 
-console.log(isFabric());
-console.log(Platform.OS === 'android');
-
 // Add gesture specific events to genericDirectEventTypes object exported from UIManager
 // native module.
 // Once new event types are registered with react it is possible to dispatch these
