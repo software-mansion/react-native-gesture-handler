@@ -30,7 +30,7 @@ import {
 } from '../PanGestureHandler';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
-import { EventType } from '../../EventType';
+import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
 import { isFabric, tagMessage } from '../../utils';
@@ -322,16 +322,18 @@ function useAnimatedGesture(
     }
   }
 
-  function touchEventTypeToCallbackType(eventType: EventType): CALLBACK_TYPE {
+  function touchEventTypeToCallbackType(
+    eventType: TouchEventType
+  ): CALLBACK_TYPE {
     'worklet';
     switch (eventType) {
-      case EventType.TOUCHES_DOWN:
+      case TouchEventType.TOUCHES_DOWN:
         return CALLBACK_TYPE.TOUCHES_DOWN;
-      case EventType.TOUCHES_MOVE:
+      case TouchEventType.TOUCHES_MOVE:
         return CALLBACK_TYPE.TOUCHES_MOVE;
-      case EventType.TOUCHES_UP:
+      case TouchEventType.TOUCHES_UP:
         return CALLBACK_TYPE.TOUCHES_UP;
-      case EventType.TOUCHES_CANCELLED:
+      case TouchEventType.TOUCHES_CANCELLED:
         return CALLBACK_TYPE.TOUCHES_CANCELLED;
     }
     return CALLBACK_TYPE.UNDEFINED;
@@ -418,7 +420,7 @@ function useAnimatedGesture(
             stateControllers[i] = GestureStateManager.create(event.handlerTag);
           }
 
-          if (event.eventType !== EventType.UNDETERMINED) {
+          if (event.eventType !== TouchEventType.UNDETERMINED) {
             runWorklet(
               touchEventTypeToCallbackType(event.eventType),
               gesture,
