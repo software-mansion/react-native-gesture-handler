@@ -126,7 +126,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>() {
           ColorStateList(states, colors)
         } else {
           // if rippleColor is null, reapply the default color
-          context.theme.resolveAttribute(R.attr.colorControlHighlight, resolveOutValue, true)
+          context.theme.resolveAttribute(android.R.attr.colorControlHighlight, resolveOutValue, true)
           val colors = intArrayOf(resolveOutValue.data)
           ColorStateList(states, colors)
         }
