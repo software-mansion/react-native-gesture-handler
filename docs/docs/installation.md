@@ -51,7 +51,7 @@ For example:
 
 ```js
 export default function App() {
-  return <GestureHandlerRootView>{/* content */}</GestureHandlerRootView>;
+  return <GestureHandlerRootView style={{ flex: 1 }}>{/* content */}</GestureHandlerRootView>;
 }
 ```
 
