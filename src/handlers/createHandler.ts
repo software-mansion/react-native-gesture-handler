@@ -494,7 +494,7 @@ export default function createHandler<
                 handlerTag: this.handlerTag,
               }
             : {}),
-          ...(this.props.testID ? { testID: this.props.testID } : {}),
+          testID: this.props.testID ?? child.props.testID,
           ...events,
         },
         grandChildren
