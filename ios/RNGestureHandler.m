@@ -80,6 +80,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
         _hitSlop = RNGHHitSlopEmpty;
         _state = RNGestureHandlerStateBegan;
         _manualActivationRecognizer = nil;
+        _endedManually = NO;
 
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -94,13 +95,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)resetConfig
 {
   self.enabled = YES;
+  self.manualActivation = NO;
   _shouldCancelWhenOutside = NO;
   _handlersToWaitFor = nil;
   _simultaneousHandlers = nil;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
-  
-  self.manualActivation = NO;
+  _endedManually = NO;
 }
 
 - (void)configure:(NSDictionary *)config
@@ -198,6 +199,25 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(RNGestureHandlerEventExtraData *)extraData
 {
+    if (state == RNGestureHandlerStateBegan && _lastState != RNGestureHandlerStateUndetermined) {
+        // Transition to BEGAN state should only be possible from UNDETERMINED. This particular case
+        // is responsible for weird behavior when ending some gestures (from the JS) in the onTouchesUp
+        // callback if they weren't active - it would go through the state cycle twice, but the second
+        // time starting from the state that the first one finished, i.e.: 0->2->5->2->5.
+        // This condition makes it impossible to happen.
+        return;
+    }
+    
+    if (_manualActivation && state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && state != _lastState && !_endedManually) {
+        // When manual activation is active on a gesture and it transitions to END state from other state than
+        // ACTIVE, it means that user didn't activate it. In that case we want to override the new state to
+        // FAILED to reflect that in the JS.
+        // We also check if the new state is different from the last one because for some reason `handleGesture`
+        // may get called more than once for the same state.
+        // In case the state transition was done by the user, we don't want to override it.
+        state = RNGestureHandlerStateFailed;
+    }
+    
     if (state != _lastState) {
         if (state == RNGestureHandlerStateActive) {
             // Generate a unique coalescing-key each time the gesture-handler becomes active. All events will have
@@ -206,7 +226,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             static uint16_t nextEventCoalescingKey = 0;
             self->_eventCoalescingKey = nextEventCoalescingKey++;
 
-        } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
+        } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && !_endedManually) {
+            // We check for manualActivation because in case it's enabled, we don't want to fill in transition
+            // to the ACTIVE state. It may cause unwanted behavior where onStart callback would be called on
+            // JS, without user explicitly activating the gesture.
             id event = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                                   handlerTag:_tag
                                                                        state:RNGestureHandlerStateActive

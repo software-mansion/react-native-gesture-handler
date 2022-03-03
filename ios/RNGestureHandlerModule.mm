@@ -188,6 +188,7 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
       [handler stopActivationBlocker];
       handler.recognizer.state = UIGestureRecognizerStateBegan;
     } else if (state == 5) { // ENDED
+      handler.endedManually = YES;
       handler.recognizer.state = UIGestureRecognizerStateEnded;
     }
   }
