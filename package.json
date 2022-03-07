@@ -33,6 +33,7 @@
     "android/common/src/main/java/",
     "ios/",
     "Swipeable/",
+    "jest-utils/",
     "DrawerLayout/",
     "README.md",
     "jestSetup.js",
