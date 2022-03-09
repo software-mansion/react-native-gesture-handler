@@ -14,10 +14,15 @@
 #import "RCTRootContentView.h"
 #endif
 
+#import "RNGestureHandlerActionType.h"
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerRegistry.h"
 #import "RNRootViewGestureRecognizer.h"
+
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTViewComponentView.h>
+#endif // RN_FABRIC_ENABLED
 
 #import "Handlers/RNPanHandler.h"
 #import "Handlers/RNTapHandler.h"
@@ -94,21 +99,30 @@
 
 - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
                toViewWithTag:(nonnull NSNumber *)viewTag
+              withActionType:(RNGestureHandlerActionType)actionType
 {
     UIView *view = [_uiManager viewForReactTag:viewTag];
+    
+#ifdef RN_FABRIC_ENABLED
+    if (view == nil) {
+        // Happens when the view with given tag has been flattened.
+        // We cannot attach gesture handler to a non-existent view.
+        return;
+    }
+    
+    // I think it should be moved to RNNativeViewHandler, but that would require
+    // additional logic for setting contentView.reactTag, this works for now
+    if ([view isKindOfClass:[RCTViewComponentView class]]) {
+        RCTViewComponentView *componentView = (RCTViewComponentView *)view;
+        if (componentView.contentView != nil) {
+            view = componentView.contentView;
+        }
+    }
+    
+    view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be returned as event.target  
+#endif // RN_FABRIC_ENABLED
 
-    [_registry attachHandlerWithTag:handlerTag toView:view];
-
-    // register view if not already there
-    [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
-}
-
-- (void)attachGestureHandlerForDeviceEvents:(nonnull NSNumber *)handlerTag
-                              toViewWithTag:(nonnull NSNumber *)viewTag
-{
-    UIView *view = [_uiManager viewForReactTag:viewTag];
-
-    [_registry attachHandlerWithTagForDeviceEvents:handlerTag toView:view];
+    [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
 
     // register view if not already there
     [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
@@ -196,24 +210,82 @@
 
 #pragma mark Events
 
-- (void)sendTouchEvent:(RNGestureHandlerEvent *)event
+- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType
 {
+    switch (actionType) {
+        case RNGestureHandlerActionTypeReanimatedWorklet:
+            [self sendStateChangeEventForReanimated:event];
+            break;
+            
+        case RNGestureHandlerActionTypeNativeAnimatedEvent:
+            if ([event.eventName isEqualToString:@"onGestureHandlerEvent"]) {
+                [self sendStateChangeEventForNativeAnimatedEvent:event];
+            } else {
+                // Although onGestureEvent prop is an Animated.event with useNativeDriver: true,
+                // onHandlerStateChange prop is still a regular JS function.
+                // Also, Animated.event is only supported with old API.
+                [self sendStateChangeEventForJSFunctionOldAPI:event];
+            }
+            break;
+
+        case RNGestureHandlerActionTypeJSFunctionOldAPI:
+            [self sendStateChangeEventForJSFunctionOldAPI:event];
+            break;
+            
+        case RNGestureHandlerActionTypeJSFunctionNewAPI:
+            [self sendStateChangeEventForJSFunctionNewAPI:event];
+            break;
+    }
+}
+
+- (void)sendStateChangeEventForReanimated:(RNGestureHandlerStateChange *)event
+{
+    // Delivers the event to Reanimated.
+#ifdef RN_FABRIC_ENABLED
+    // TODO: send event directly to Reanimated
+    // This is already supported in Reanimated with Fabric but let's wait until the official release.
+    // [_reanimatedModule eventDispatcherWillDispatchEvent:event];
+#else
+    // In the old architecture, Reanimated overwrites RCTEventDispatcher
+    // with REAEventDispatcher and intercepts all direct events.
+    [self sendStateChangeEventForDirectEvent:event];
+#endif // RN_FABRIC_ENABLED
+}
+
+- (void)sendStateChangeEventForNativeAnimatedEvent:(RNGestureHandlerStateChange *)event
+{
+    // Delivers the event to NativeAnimatedModule.
+    // Currently, NativeAnimated[Turbo]Module is RCTEventDispatcherObserver so we can
+    // simply send a direct event which is handled by the observer but ignored on JS side.
+    // TODO: send event directly to NativeAnimated[Turbo]Module
+    [self sendStateChangeEventForDirectEvent:event];
+}
+
+- (void)sendStateChangeEventForJSFunctionOldAPI:(RNGestureHandlerStateChange *)event
+{
+    // Delivers the event to JS (old RNGH API).
+#ifdef RN_FABRIC_ENABLED
+    [self sendStateChangeEventForDeviceEvent:event];
+#else
+    [self sendStateChangeEventForDirectEvent:event];
+#endif // RN_FABRIC_ENABLED
+}
+
+- (void)sendStateChangeEventForJSFunctionNewAPI:(RNGestureHandlerStateChange *)event
+{
+    // Delivers the event to JS (new RNGH API).
+    [self sendStateChangeEventForDeviceEvent:event];
+}
+
+- (void)sendStateChangeEventForDirectEvent:(RNGestureHandlerStateChange *)event
+{
+    // Delivers the event to JS as a direct event.
     [_eventDispatcher sendEvent:event];
 }
 
-- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
+- (void)sendStateChangeEventForDeviceEvent:(RNGestureHandlerStateChange *)event
 {
-    [_eventDispatcher sendEvent:event];
-}
-
-- (void)sendTouchDeviceEvent:(RNGestureHandlerEvent *)event
-{
-    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
-    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerEvent" body:body];
-}
-
-- (void)sendStateChangeDeviceEvent:(RNGestureHandlerStateChange *)event
-{
+    // Delivers the event to JS as a device event.
     NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
     [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }

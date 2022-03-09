@@ -1,4 +1,5 @@
 import React from 'react';
+import { tagMessage } from '../utils';
 import PlatformConstants from '../PlatformConstants';
 import createHandler from './createHandler';
 import {
@@ -16,7 +17,9 @@ class ForceTouchFallback extends React.Component {
   static forceTouchAvailable = false;
   componentDidMount() {
     console.warn(
-      'ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase'
+      tagMessage(
+        'ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase'
+      )
     );
   }
   render() {

@@ -1,6 +1,6 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "2.2.0",
+  "version": "2.3.1",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "prepare": "bob build",
@@ -25,6 +25,9 @@
     "android/gradle.properties",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
+    "android/src/main/jni/",
+    "android/src/fabric/java",
+    "android/src/paper/java",
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "android/common/src/main/java/",
@@ -100,6 +103,10 @@
     "release-it": "^13.6.5",
     "typescript": "^4.5.5"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "lint-staged": {
     "*.{ts,tsx}": [
       "prettier --write"
@@ -128,6 +135,16 @@
   },
   "eslintIgnore": [
     "node_modules/",
-    "lib/"
-  ]
+    "lib/",
+    "src/fabric/*NativeComponent.js"
+  ],
+  "codegenConfig": {
+    "libraries": [
+      {
+        "name": "rngesturehandler",
+        "type": "components",
+        "jsSrcsDir": "./src/fabric"
+      }
+    ]
+  }
 }

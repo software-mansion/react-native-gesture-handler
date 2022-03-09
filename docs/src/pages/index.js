@@ -199,8 +199,8 @@ function Home() {
                   <a href="https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo">
                     get it here using Expo
                   </a>
-                  . Or just{' '}
-                  <Link to={useBaseUrl('docs/example/')}>go to this page</Link>{' '}
+                  . Or {' '}
+                  <Link to={useBaseUrl('docs/#learning-resources')}>check out the learning resources</Link>{' '}
                   to see how you can run it locally with React Native on both
                   Android and iOS.
                 </p>

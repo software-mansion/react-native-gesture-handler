@@ -34,7 +34,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var isEnabled = true
     private set
-  var usesDeviceEvents = false
+  var actionType = 0
 
   var changedTouchesPayload: WritableArray? = null
     private set
@@ -700,6 +700,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     const val DIRECTION_LEFT = 2
     const val DIRECTION_UP = 4
     const val DIRECTION_DOWN = 8
+    const val ACTION_TYPE_REANIMATED_WORKLET = 1
+    const val ACTION_TYPE_NATIVE_ANIMATED_EVENT = 2
+    const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
+    const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
     private const val MAX_POINTERS_COUNT = 12
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>

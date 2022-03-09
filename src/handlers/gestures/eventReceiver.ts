@@ -7,32 +7,29 @@ import {
   GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
 import { GestureStateManagerType } from './gestureStateManager';
-import { findHandler } from '../handlersRegistry';
+import { findHandler, findOldGestureHandler } from '../handlersRegistry';
 import { BaseGesture } from './gesture';
+import { tagMessage } from '../../utils';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
 
+const warningMessage = tagMessage(
+  'You have to use react-native-reanimated in order to control the state of the gesture.'
+);
+
 const dummyStateManager: GestureStateManagerType = {
   begin: () => {
-    console.warn(
-      'You have to use react-native-reanimated in order to control the state of the gesture.'
-    );
+    console.warn(warningMessage);
   },
   activate: () => {
-    console.warn(
-      'You have to use react-native-reanimated in order to control the state of the gesture.'
-    );
+    console.warn(warningMessage);
   },
   end: () => {
-    console.warn(
-      'You have to use react-native-reanimated in order to control the state of the gesture.'
-    );
+    console.warn(warningMessage);
   },
   fail: () => {
-    console.warn(
-      'You have to use react-native-reanimated in order to control the state of the gesture.'
-    );
+    console.warn(warningMessage);
   },
 };
 
@@ -117,6 +114,17 @@ function onGestureHandlerEvent(
         lastUpdateEvent[handler.handlers.handlerTag] = event;
       }
     }
+  } else {
+    const oldHandler = findOldGestureHandler(event.handlerTag);
+    if (oldHandler) {
+      const nativeEvent = { nativeEvent: event };
+      if (isStateChangeEvent(event)) {
+        oldHandler.onGestureStateChange(nativeEvent);
+      } else {
+        oldHandler.onGestureEvent(nativeEvent);
+      }
+      return;
+    }
   }
 }
 
@@ -136,16 +144,12 @@ export function startListening() {
 
 export function stopListening() {
   if (gestureHandlerEventSubscription) {
-    DeviceEventEmitter.removeSubscription(gestureHandlerEventSubscription);
-
+    gestureHandlerEventSubscription.remove();
     gestureHandlerEventSubscription = null;
   }
 
   if (gestureHandlerStateChangeEventSubscription) {
-    DeviceEventEmitter.removeSubscription(
-      gestureHandlerStateChangeEventSubscription
-    );
-
+    gestureHandlerStateChangeEventSubscription.remove();
     gestureHandlerStateChangeEventSubscription = null;
   }
 }
