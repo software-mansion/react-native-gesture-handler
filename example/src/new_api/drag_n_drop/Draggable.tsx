@@ -7,7 +7,7 @@ import {
   PanGesture,
   TapGesture,
 } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle } from 'react-native-reanimated';
 
 type AnimatedPostion = {
   x: Animated.SharedValue<number>;
@@ -43,7 +43,7 @@ const Draggable: FunctionComponent<DraggableProps> = ({
 }) => {
   const tapGesture = Gesture.LongPress()
     .minDuration(300)
-    .onStart(() => onLongPress(id))
+    .onStart(() => runOnJS(onLongPress)(id))
     .simultaneousWithExternalGesture(dragGesture)
     .simultaneousWithExternalGesture(tapEndGesture);
 
