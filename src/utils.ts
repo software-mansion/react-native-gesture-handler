@@ -43,3 +43,14 @@ export function isFabric(): boolean {
   // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
   return !!global?.nativeFabricUIManager;
 }
+
+export function isRemoteDebuggingEnabled(): boolean {
+  return (
+    // @ts-ignore WorkerGlobalScope available only when remote debugging
+    'undefined' !== typeof WorkerGlobalScope &&
+    // @ts-ignore importScripts available only when remote debugging
+    'function' === typeof importScripts &&
+    // @ts-ignore WorkerNavigator available only when remote debugging
+    navigator instanceof WorkerNavigator
+  );
+}
