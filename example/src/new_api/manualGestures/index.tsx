@@ -90,7 +90,7 @@ export default function Example() {
   return (
     <View style={styles.home}>
       <Text style={styles.title}>
-        A simple one that tracks all pointers on the screen, Trigger method:{' '}
+        A simple one that tracks all pointers on the screen, Trigger method:
       </Text>
       <Text style={styles.desc}>
         - Emulator: option + tap (iOS) or command + tap (Android)
