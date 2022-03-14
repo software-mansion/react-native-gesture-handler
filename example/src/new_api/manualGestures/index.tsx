@@ -92,7 +92,9 @@ export default function Example() {
       <Text style={styles.title}>
         A simple one that tracks all pointers on the screen, Trigger method:{' '}
       </Text>
-      <Text style={styles.desc}>- Emulator: option + tap</Text>
+      <Text style={styles.desc}>
+        - Emulator: option + tap (iOS) or command + tap (Android)
+      </Text>
       <Text style={styles.desc}>- Device: multiple finger taps</Text>
       <GestureDetector gesture={gesture}>
         <Animated.View style={{ flex: 1 }}>
