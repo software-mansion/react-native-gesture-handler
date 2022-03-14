@@ -10,6 +10,9 @@
       ],
       "react-native-gesture-handler/DrawerLayout": [
         "../src/components/DrawerLayout.tsx"
+      ],
+      "react-native-gesture-handler/jest-utils": [
+        "../src/jestUtils/index.ts"
       ]
     }
   },

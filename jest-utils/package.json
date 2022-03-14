@@ -1,0 +1,6 @@
+{
+  "main": "../lib/commonjs/jestUtils/index",
+  "module": "../lib/module/jestUtils/index",
+  "react-native": "../src/jestUtils/index",
+  "types": "../lib/typescript/jestUtils/index.d.ts"
+}

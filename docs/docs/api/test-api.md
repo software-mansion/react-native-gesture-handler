@@ -3,6 +3,10 @@ id: test-api
 title: Testing
 ---
 
+:::info
+If you want to use `fireGestureHandler` and `getByGestureTestId`, you need to import them from `react-native-gesture-handler/jest-utils` package.
+:::
+
 ## fireGestureHandler(gestureOrHandler, eventList)
 
 Simulates one event stream (i.e. event sequence starting with `BEGIN` state and ending
