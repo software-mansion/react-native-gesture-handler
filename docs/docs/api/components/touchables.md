@@ -23,6 +23,10 @@ follows native apps' behavior.
 Our intention was to make switch for these touchables as simple as possible. In order to use RNGH's touchables the only thing you need to do is to change library from which you import touchable components.
 need only to change imports of touchables.
 
+:::info
+Gesture Handler's TouchableOpacity uses native driver for animations by default. If this causes problems for you, you can set `useNativeAnimations` prop to false.
+:::
+
 ### Example:
 
 ```javascript
