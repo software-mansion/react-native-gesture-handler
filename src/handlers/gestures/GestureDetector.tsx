@@ -16,6 +16,7 @@ import {
   GestureTouchEvent,
   GestureUpdateEvent,
   GestureStateChangeEvent,
+  HandlerStateChangeEvent,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -35,6 +36,9 @@ import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
 import { isFabric, tagMessage } from '../../utils';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
+import { Platform } from 'react-native';
+import RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
+import { onGestureHandlerEvent } from './eventReceiver';
 
 declare global {
   function isFormsStackingContext(node: unknown): boolean | null; // JSI function
@@ -107,11 +111,16 @@ function checkGestureCallbacksForWorklets(gesture: GestureType) {
   }
 }
 
+interface WebEventHandler {
+  onGestureHandlerEvent: (event: HandlerStateChangeEvent<unknown>) => void;
+}
+
 interface AttachHandlersConfig {
   preparedGesture: GestureConfigReference;
   gestureConfig: ComposedGesture | GestureType | undefined;
   gesture: GestureType[];
   viewTag: number;
+  webEventHandlersRef: React.RefObject<WebEventHandler>;
 }
 
 function attachHandlers({
@@ -119,6 +128,7 @@ function attachHandlers({
   gestureConfig,
   gesture,
   viewTag,
+  webEventHandlersRef,
 }: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
     gestureConfig?.initialize();
@@ -174,11 +184,20 @@ function attachHandlers({
       ? ActionType.REANIMATED_WORKLET
       : ActionType.JS_FUNCTION_NEW_API;
 
-    RNGestureHandlerModule.attachGestureHandler(
-      gesture.handlerTag,
-      viewTag,
-      actionType
-    );
+    if (Platform.OS === 'web') {
+      (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
+        gesture.handlerTag,
+        viewTag,
+        ActionType.JS_FUNCTION_OLD_API, // ignored on web
+        webEventHandlersRef
+      );
+    } else {
+      RNGestureHandlerModule.attachGestureHandler(
+        gesture.handlerTag,
+        viewTag,
+        actionType
+      );
+    }
   }
 
   if (preparedGesture.animatedHandlers) {
@@ -468,6 +487,11 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
+  const webEventHandlersRef = useRef<WebEventHandler>({
+    onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
+      onGestureHandlerEvent(e.nativeEvent);
+    },
+  });
 
   const preparedGesture = React.useRef<GestureConfigReference>({
     config: gesture,
@@ -508,6 +532,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       gestureConfig,
       gesture,
       viewTag,
+      webEventHandlersRef,
     });
 
     return () => {
@@ -526,6 +551,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
           gestureConfig,
           gesture,
           viewTag,
+          webEventHandlersRef,
         });
       } else {
         updateHandlers(preparedGesture, gestureConfig, gesture);
