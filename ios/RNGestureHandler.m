@@ -212,7 +212,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                        state:RNGestureHandlerStateActive
                                                                    prevState:_lastState
                                                                    extraData:extraData];
-            [self sendStateChangeEvent:event];
+            [self sendEvent:event];
             _lastState = RNGestureHandlerStateActive;
         }
         id stateEvent = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
@@ -220,7 +220,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                         state:state
                                                                     prevState:_lastState
                                                                     extraData:extraData];
-        [self sendStateChangeEvent:stateEvent];
+        [self sendEvent:stateEvent];
         _lastState = state;
     }
 
@@ -230,13 +230,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                   state:state
                                                               extraData:extraData
                                                           coalescingKey:self->_eventCoalescingKey];
-        [self sendStateChangeEvent:touchEvent];
+        [self sendEvent:touchEvent];
     }
 }
 
-- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
+- (void)sendEvent:(RNGestureHandlerStateChange *)event
 {
-    [self.emitter sendStateChangeEvent:event withActionType:self.actionType];
+    [self.emitter sendEvent:event withActionType:self.actionType];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state
@@ -248,7 +248,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                           withNumberOfTouches:_pointerTracker.trackedPointersCount];
   id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag handlerTag:_tag state:state extraData:extraData coalescingKey:[_tag intValue]];
   
-  [self.emitter sendStateChangeEvent:event withActionType:self.actionType];
+  [self.emitter sendEvent:event withActionType:self.actionType];
 }
 
 - (RNGestureHandlerState)recognizerState
