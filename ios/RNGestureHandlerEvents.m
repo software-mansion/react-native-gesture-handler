@@ -103,7 +103,7 @@
                            @"numberOfPointers": @(numberOfTouches)}];
 }
 
-+ (RNGestureHandlerEventExtraData *)forEventType:(RNTouchEventType)eventType
++ (RNGestureHandlerEventExtraData *)forEventType:(RNGHTouchEventType)eventType
                              withChangedPointers:(NSArray<NSDictionary *> *)changedPointers
                                  withAllPointers:(NSArray<NSDictionary *> *)allPointers
                              withNumberOfTouches:(NSUInteger)numberOfTouches
