@@ -363,7 +363,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun attachGestureHandler(handlerTag: Int, viewTag: Int, actionType: Int) {
-    if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+    // Since RNGestureHandlerEnabledRootView is deprecated and <GestureHandlerRootView /> doesn't
+    // require native initialization, we can skip this method. Main reason for this, is the fact
+    // that it causes crashes when using codepush.
+    if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && RNGestureHandlerEnabledRootView.IS_BEING_USED) {
       tryInitializeHandlerForReactRootView(viewTag)
     }
 

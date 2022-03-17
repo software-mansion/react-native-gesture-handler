@@ -15,6 +15,10 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
   constructor(context: Context?) : super(context) {}
   constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
 
+  init {
+      IS_BEING_USED = true
+  }
+
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
     gestureRootHelper?.requestDisallowInterceptTouchEvent(disallowIntercept)
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
@@ -53,5 +57,9 @@ class RNGestureHandlerEnabledRootView : ReactRootView {
   ) {
     super.startReactApplication(reactInstanceManager, moduleName, initialProperties)
     _reactInstanceManager = reactInstanceManager
+  }
+
+  companion object {
+    var IS_BEING_USED = false
   }
 }
