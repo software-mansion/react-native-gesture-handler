@@ -17,6 +17,7 @@ export const panGestureHandlerProps = [
   'maxPointers',
   'avgTouches',
   'enableTrackpadTwoFingerGesture',
+  'activateAfterLongPress',
 ] as const;
 
 export const panGestureHandlerCustomNativeProps = [
@@ -124,6 +125,7 @@ interface CommonPanProperties {
   minVelocity?: number;
   minVelocityX?: number;
   minVelocityY?: number;
+  activateAfterLongPress?: number;
 }
 
 export interface PanGestureConfig extends CommonPanProperties {

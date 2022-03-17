@@ -50,6 +50,10 @@ A number of fingers that is required to be placed before gesture can [activate](
 
 When the given number of fingers is placed on the screen and gesture hasn't yet [activated](../../under-the-hood/states-events.md#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
 
+### `activateAfterLongPress(duration: number)`
+
+Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to [activate](../../under-the-hood/states-events.md#active). If the finger is moved during that period, the gesture will [fail](../../under-the-hood/states-events.md#failed). Should be a higher or equal to 0 integer. Default value is 0, meaning no `LongPress` is required to [activate](../../under-the-hood/states-events.md#active) the `Pan`.
+
 ### `activeOffsetX(value: number | number[])`
 
 Range along X axis (in points) where fingers travels without activation of gesture. Moving outside of this range implies activation of gesture. Range can be given as an array or a single number.

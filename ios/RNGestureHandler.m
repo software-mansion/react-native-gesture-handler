@@ -190,6 +190,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
     _state = [self recognizerState];
+    [self handleGesture:recognizer inState:_state];
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer inState:(RNGestureHandlerState)state
+{
+    _state = state;
     RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
     [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
 }
