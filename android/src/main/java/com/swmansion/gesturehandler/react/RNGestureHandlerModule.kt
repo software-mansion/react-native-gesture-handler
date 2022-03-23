@@ -363,13 +363,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun attachGestureHandler(handlerTag: Int, viewTag: Int, actionType: Int) {
-    // Since RNGestureHandlerEnabledRootView is deprecated and <GestureHandlerRootView /> doesn't
-    // require native initialization, we can skip this method. Main reason for this, is the fact
-    // that it causes crashes when using codepush.
-    if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && RNGestureHandlerEnabledRootView.IS_BEING_USED) {
-      tryInitializeHandlerForReactRootView(viewTag)
-    }
-
     // We don't have to handle view flattening in any special way since handlers are stored as
     // a map: viewTag -> [handler]. If the view with attached handlers was to be flattened
     // then that viewTag simply wouldn't be visited when traversing the view hierarchy in the
@@ -462,56 +455,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       while (roots.isNotEmpty()) {
         val sizeBefore: Int = roots.size
         val root: RNGestureHandlerRootHelper = roots[0]
-        val reactRootView: ViewGroup = root.rootView
-        if (reactRootView is RNGestureHandlerEnabledRootView) {
-          reactRootView.tearDown()
-        } else {
-          root.tearDown()
-        }
+        root.tearDown()
         if (roots.size >= sizeBefore) {
           throw IllegalStateException("Expected root helper to get unregistered while tearing down")
         }
       }
     }
     super.onCatalystInstanceDestroy()
-  }
-
-  private fun tryInitializeHandlerForReactRootView(ancestorViewTag: Int) {
-    val uiManager = reactApplicationContext.UIManager
-    val rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag)
-    if (rootViewTag < 1) {
-      throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
-    }
-    synchronized(roots) {
-      for (root in roots) {
-        val rootView: ViewGroup = root.rootView
-        if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
-          // we have found root helper registered for a given react root, we don't need to
-          // initialize a new one then
-          return
-        }
-      }
-    }
-    synchronized(enqueuedRootViewInit) {
-      if (rootViewTag in enqueuedRootViewInit) {
-        // root view initialization already enqueued -> we skip
-        return
-      }
-      enqueuedRootViewInit.add(rootViewTag)
-    }
-    // root helper for a given root tag has not been found, we may wat to check if the root view is
-    // an instance of RNGestureHandlerEnabledRootView and then initialize gesture handler with it
-    uiManager.addUIBlock(UIBlock { nativeViewHierarchyManager ->
-      val view = nativeViewHierarchyManager.resolveView(rootViewTag)
-      if (view is RNGestureHandlerEnabledRootView) {
-        view.initialize()
-      } else {
-        // Seems like the root view is something else than RNGestureHandlerEnabledRootView, this
-        // is fine though as long as gestureHandlerRootHOC is used in JS
-        // FIXME: check and warn about gestureHandlerRootHOC
-      }
-      synchronized(enqueuedRootViewInit) { enqueuedRootViewInit.remove(rootViewTag) }
-    })
   }
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
