@@ -37,7 +37,7 @@ import { ActionType } from '../../ActionType';
 import { isFabric, tagMessage } from '../../utils';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
-import RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
+import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
 
 declare global {
