@@ -6,6 +6,7 @@ import type { ViewProps, HostComponent } from 'react-native';
 // @ts-ignore TS being TS
 import type { ColorValue } from 'react-native/Libraries/StyleSheet/StyleSheet';
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const codegenNativeComponent = codegenNativeComponentUntyped as <T extends {}>(
   name: string
 ) => HostComponent<T>;
