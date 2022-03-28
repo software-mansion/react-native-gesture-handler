@@ -36,9 +36,9 @@ import { ActionType } from '../../ActionType';
 import { isFabric, tagMessage } from '../../utils';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 
-declare global {
-  function isFormsStackingContext(node: unknown): boolean | null; // JSI function
-}
+declare const global: {
+  isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
+};
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
