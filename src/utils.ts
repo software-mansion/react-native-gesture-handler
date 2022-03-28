@@ -45,5 +45,6 @@ export function isFabric(): boolean {
 }
 
 export function isRemoteDebuggingEnabled(): boolean {
+  // react-native-reanimated checks if in remote debugging in the same way
   return !(global as any).nativeCallSyncHook || (global as any).__REMOTEDEV__;
 }
