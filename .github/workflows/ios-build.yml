@@ -9,8 +9,9 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-    env:
-      WORKING_DIRECTORY: example
+    strategy:
+      matrix:
+        working-directory: [example, FabricExample]
     concurrency:
       group: ios-${{ github.ref }}
       cancel-in-progress: true
@@ -23,11 +24,11 @@ jobs:
           node-version: 14
           cache: 'yarn'
       - name: Install node dependencies
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: ${{ matrix.working-directory }}
         run: yarn
       - name: Install pods
-        working-directory: ${{ env.WORKING_DIRECTORY }}/ios
+        working-directory: ${{ matrix.working-directory }}/ios
         run: pod install
       - name: Build app
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: ${{ matrix.working-directory }}
         run: yarn ios
