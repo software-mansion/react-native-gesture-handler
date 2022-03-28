@@ -111,7 +111,7 @@
     if (changedPointers == nil || allPointers == nil) {
         changedPointers = @[];
         allPointers = @[];
-        eventType = RNTouchEventTypeUndetermined;
+        eventType = RNGHTouchEventTypeUndetermined;
     }
   
     return [[RNGestureHandlerEventExtraData alloc]
