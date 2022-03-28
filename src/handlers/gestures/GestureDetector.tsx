@@ -16,6 +16,7 @@ import {
   GestureTouchEvent,
   GestureUpdateEvent,
   GestureStateChangeEvent,
+  HandlerStateChangeEvent,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -32,6 +33,9 @@ import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
 import { EventType } from '../../EventType';
 import { ComposedGesture } from './gestureComposition';
+import { Platform } from 'react-native';
+import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
+import { onGestureHandlerEvent } from './eventReceiver';
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -79,12 +83,17 @@ function dropHandlers(preparedGesture: GestureConfigReference) {
   }
 }
 
+interface WebEventHandler {
+  onGestureHandlerEvent: (event: HandlerStateChangeEvent<unknown>) => void;
+}
+
 interface AttachHandlersConfig {
   preparedGesture: GestureConfigReference;
   gestureConfig: ComposedGesture | GestureType | undefined;
   gesture: GestureType[];
   viewTag: number;
   useAnimated: boolean;
+  webEventHandlersRef: React.RefObject<WebEventHandler>;
 }
 
 function attachHandlers({
@@ -93,6 +102,7 @@ function attachHandlers({
   gesture,
   viewTag,
   useAnimated,
+  webEventHandlersRef,
 }: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
     gestureConfig?.initialize();
@@ -142,11 +152,20 @@ function attachHandlers({
   preparedGesture.config = gesture;
 
   for (const gesture of preparedGesture.config) {
-    RNGestureHandlerModule.attachGestureHandler(
-      gesture.handlerTag,
-      viewTag,
-      !useAnimated // send direct events when using animatedGesture, device events otherwise
-    );
+    if (Platform.OS === 'web') {
+      (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
+        gesture.handlerTag,
+        viewTag,
+        !useAnimated, // send direct events when using animatedGesture, device events otherwise
+        webEventHandlersRef
+      );
+    } else {
+      RNGestureHandlerModule.attachGestureHandler(
+        gesture.handlerTag,
+        viewTag,
+        !useAnimated // send direct events when using animatedGesture, device events otherwise
+      );
+    }
   }
 
   if (preparedGesture.animatedHandlers) {
@@ -428,6 +447,11 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     ) != null;
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
+  const webEventHandlersRef = useRef<WebEventHandler>({
+    onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
+      onGestureHandlerEvent(e.nativeEvent);
+    },
+  });
 
   const preparedGesture = React.useRef<GestureConfigReference>({
     config: gesture,
@@ -468,6 +492,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       gesture,
       viewTag,
       useAnimated,
+      webEventHandlersRef,
     });
 
     return () => {
@@ -487,6 +512,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
           gesture,
           viewTag,
           useAnimated,
+          webEventHandlersRef,
         });
       } else {
         updateHandlers(preparedGesture, gestureConfig, gesture);
