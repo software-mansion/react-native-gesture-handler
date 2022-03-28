@@ -25,7 +25,7 @@ import {
   findNodeHandle,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
-import { isFabric, isJestEnv, tagMessage } from '../utils';
+import { isFabric, isJestEnv } from '../utils';
 import { ActionType } from '../ActionType';
 
 const UIManagerAny = UIManager as any;
