@@ -7,7 +7,9 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "ts-check": "yarn tsc --noEmit",
+    "lint-check": "yarn eslint src/ && yarn prettier --check src/"
   },
   "dependencies": {
     "@react-native/babel-plugin-codegen": "^0.0.6",
