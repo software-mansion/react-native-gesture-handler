@@ -40,9 +40,9 @@ import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
 
-declare global {
-  function isFormsStackingContext(node: unknown): boolean | null; // JSI function
-}
+declare const global: {
+  isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
+};
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
