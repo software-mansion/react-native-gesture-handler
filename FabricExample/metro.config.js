@@ -1,5 +1,3 @@
-/* eslint-disable import/no-commonjs */
-
 const path = require('path');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
 const escape = require('escape-string-regexp');
@@ -18,8 +16,9 @@ module.exports = {
   resolver: {
     blacklistRE: exclusionList(
       modules.map(
-        m => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`),
-      ),
+        (m) =>
+          new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`)
+      )
     ),
 
     extraNodeModules: modules.reduce((acc, name) => {
