@@ -1,9 +1,9 @@
-// @ts-ignore TS being TS
+// @ts-ignore TODO: remove once there is a .d.ts file with definitions
 import codegenNativeComponentUntyped from 'react-native/Libraries/Utilities/codegenNativeComponent';
-// @ts-ignore TS being TS
+// @ts-ignore TODO: remove once there is a .d.ts file with definitions
 import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 import type { ViewProps, HostComponent } from 'react-native';
-// @ts-ignore TS being TS
+// @ts-ignore TODO: remove once there is a .d.ts file with definitions
 import type { ColorValue } from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
