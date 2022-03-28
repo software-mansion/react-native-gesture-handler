@@ -9,8 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      WORKING_DIRECTORY: example
+    strategy:
+      matrix:
+        working-directory: [example, FabricExample]
     concurrency:
       group: android-${{ github.ref }}
       cancel-in-progress: true
@@ -23,8 +24,8 @@ jobs:
           node-version: 14
           cache: 'yarn'
       - name: Install node dependencies
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: ${{ matrix.working-directory }}
         run: yarn
       - name: Build app
-        working-directory: ${{ env.WORKING_DIRECTORY }}/android
+        working-directory: ${{ matrix.working-directory }}/android
         run: ./gradlew assembleDebug --console=plain
