@@ -48,7 +48,7 @@ function isTouchEvent(
   return event.eventType != null;
 }
 
-function onGestureHandlerEvent(
+export function onGestureHandlerEvent(
   event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
 ) {
   const handler = findHandler(event.handlerTag) as BaseGesture<
