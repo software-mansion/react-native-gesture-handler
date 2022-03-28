@@ -78,7 +78,8 @@ function InnerNotFlattenedParentNotCollapsable() {
   return (
     <View
       style={[styles.boxWrapper, { backgroundColor: COLORS.KINDA_BLUE }]}
-      collapsable={false}>
+      collapsable={false}
+    >
       <View style={[styles.box, { backgroundColor: COLORS.NAVY }]} />
     </View>
   );

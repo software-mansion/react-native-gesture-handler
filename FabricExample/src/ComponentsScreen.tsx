@@ -60,7 +60,8 @@ function TouchableNativeFeedbackDemo() {
       <TouchableNativeFeedback
         onPressIn={() => console.log('onPressIn')}
         onPressOut={() => console.log('onPressOut')}
-        onLongPress={() => console.log('onLongPress')}>
+        onLongPress={() => console.log('onLongPress')}
+      >
         <View
           style={[styles.smallBox, { backgroundColor: COLORS.KINDA_BLUE }]}
         />
@@ -76,7 +77,8 @@ function TouchableOpacityDemo() {
       <TouchableOpacity
         onPressIn={() => console.log('onPressIn')}
         onPressOut={() => console.log('onPressOut')}
-        onLongPress={() => console.log('onLongPress')}>
+        onLongPress={() => console.log('onLongPress')}
+      >
         <View
           style={[styles.smallBox, { backgroundColor: COLORS.KINDA_BLUE }]}
         />
