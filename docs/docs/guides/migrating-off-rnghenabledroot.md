@@ -26,6 +26,10 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
+## Check if your app works correctly
+
+Some libraries (for example React Navigation) already use `GestureHandlerRootView` as a wrapper to enable gesture interactions. In that case you don't have to add one yourself. If gestures in your app work as expected after removing `RNGestureHandlerEnabledRootView` you can skip the next step.
+
 ## Update your JS code
 
 Instead of using `RNGestureHandlerEnabledRootView` wrap your entry point with `<GestureHandlerRootView>` or `gestureHandlerRootHOC`, for example:
