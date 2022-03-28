@@ -45,12 +45,5 @@ export function isFabric(): boolean {
 }
 
 export function isRemoteDebuggingEnabled(): boolean {
-  return (
-    // @ts-ignore WorkerGlobalScope available only when remote debugging
-    'undefined' !== typeof WorkerGlobalScope &&
-    // @ts-ignore importScripts available only when remote debugging
-    'function' === typeof importScripts &&
-    // @ts-ignore WorkerNavigator available only when remote debugging
-    navigator instanceof WorkerNavigator
-  );
+  return !(global as any).nativeCallSyncHook || (global as any).__REMOTEDEV__;
 }
