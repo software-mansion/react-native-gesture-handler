@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'example/**'
+      - 'FabricExample/**'
   push:
     branches:
       - main
@@ -25,7 +26,7 @@ jobs:
           cache: 'yarn'
       - name: Install root node dependencies
         run: yarn
-      - name: Install example app node dependencies
+      - name: Install ${{ matrix.working-directory }} app node dependencies
         working-directory: ${{ matrix.working-directory }}
         run: yarn
       - name: Check types
