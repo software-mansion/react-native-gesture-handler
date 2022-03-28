@@ -211,7 +211,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             static uint16_t nextEventCoalescingKey = 0;
             self->_eventCoalescingKey = nextEventCoalescingKey++;
 
-        } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
+        } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && !_manualActivation) {
             id event = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                                   handlerTag:_tag
                                                                        state:RNGestureHandlerStateActive
