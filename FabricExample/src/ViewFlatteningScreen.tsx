@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
