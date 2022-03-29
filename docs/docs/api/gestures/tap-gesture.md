@@ -81,13 +81,13 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 
 ```jsx
 const singleTap = Gesture.Tap()
-  .maxDurationMs(250)
+  .maxDuration(250)
   .onStart(() => {
     Alert.alert('Single tap!');
   });
 
 const doubleTap = Gesture.Tap()
-  .maxDurationMs(250)
+  .maxDuration(250)
   .onStart(() => {
     Alert.alert('Double tap!');
   });
