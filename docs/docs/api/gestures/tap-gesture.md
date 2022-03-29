@@ -15,7 +15,7 @@ The fingers involved in these gestures must not move significantly from their in
 The required number of taps and allowed distance from initial position may be configured.
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
-In order for a gesture to [activate](../../under-the-hood/states-events.md#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDurationMs, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](../../under-the-hood/states-events.md#active), it will [end](../../under-the-hood/states-events.md#end).
+In order for a gesture to [activate](../../under-the-hood/states-events.md#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](../../under-the-hood/states-events.md#active), it will [end](../../under-the-hood/states-events.md#end).
 
 ## Config
 
