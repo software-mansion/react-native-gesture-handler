@@ -88,8 +88,7 @@ export function PanGestureHandlerDemo({ color }: PanGestureHandlerDemoProps) {
       <PanGestureHandler
         maxPointers={1}
         onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-      >
+        onHandlerStateChange={onHandlerStateChange}>
         <View style={[styles.box, { backgroundColor: color }]} />
       </PanGestureHandler>
     </View>
@@ -136,8 +135,7 @@ export function AnimatedEventDemo({
       <PanGestureHandler
         maxPointers={1}
         onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-      >
+        onHandlerStateChange={onHandlerStateChange}>
         <Animated.View
           style={[
             styles.box,
@@ -163,7 +161,7 @@ export default function HomeScreen() {
       <GestureDetectorDemo color={COLORS.NAVY} />
       <ManualGestureDemo color={COLORS.KINDA_RED} />
       <PanGestureHandlerDemo color={COLORS.YELLOW} />
-      <AnimatedEventDemo color={COLORS.KINDA_GREEN} useNativeDriver={true} />
+      <AnimatedEventDemo color={COLORS.KINDA_GREEN} useNativeDriver />
       <AnimatedEventDemo color={COLORS.KINDA_BLUE} useNativeDriver={false} />
     </View>
   );

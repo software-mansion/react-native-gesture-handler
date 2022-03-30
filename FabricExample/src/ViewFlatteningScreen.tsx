@@ -64,7 +64,7 @@ function ParentViewNotFlattenedCollapsableFalseDemo() {
   return (
     <>
       <Text>Parent view not flattened, collapsable=false</Text>
-      <Text>(structure doesn't change)</Text>
+      <Text>(structure doesn&apos;t change)</Text>
       <View style={styles.borderedBox}>
         <GestureDetector gesture={tap}>
           <InnerNotFlattenedParentNotCollapsable />
@@ -78,8 +78,7 @@ function InnerNotFlattenedParentNotCollapsable() {
   return (
     <View
       style={[styles.boxWrapper, { backgroundColor: COLORS.KINDA_BLUE }]}
-      collapsable={false}
-    >
+      collapsable={false}>
       <View style={[styles.box, { backgroundColor: COLORS.NAVY }]} />
     </View>
   );
