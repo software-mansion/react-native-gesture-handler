@@ -1,25 +1,25 @@
-import React, { Component } from 'react';
-import { StackScreenProps } from '@react-navigation/stack';
-
 import {
-  TouchableHighlight as RNTouchableHighlight,
-  TouchableOpacity as RNTouchableOpacity,
-  TouchableNativeFeedback as RNTouchableNativeFeedback,
-  TouchableWithoutFeedback as RNTouchableWithoutFeedback,
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
   BackgroundPropType,
+  FlatList,
+  TouchableHighlight as RNTouchableHighlight,
+  TouchableNativeFeedback as RNTouchableNativeFeedback,
+  TouchableOpacity as RNTouchableOpacity,
+  TouchableWithoutFeedback as RNTouchableWithoutFeedback,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
+import React, { Component } from 'react';
 import {
   RectButton,
+  ScrollView,
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  ScrollView,
 } from 'react-native-gesture-handler';
+
+import { StackScreenProps } from '@react-navigation/stack';
 
 const BOX_SIZE = 80;
 
@@ -53,7 +53,7 @@ type Touchables = {
   type: React.ComponentType<any>;
   props?: Record<string, unknown>;
   color?: string;
-  renderChild: (() => null) | ((color?: string) => JSX.Element);
+  renderChild: (() => null) | ((color?: string) => React.ReactNode);
   text: string;
   background?: (A: typeof TouchableNativeFeedback) => BackgroundPropType;
 };
