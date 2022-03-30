@@ -14,7 +14,12 @@ import com.facebook.soloader.SoLoader
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
 import java.util.*
+// NativeModule.onCatalystInstanceDestroy() was deprecated in favor of NativeModule.invalidate()
+// ref: https://github.com/facebook/react-native/commit/18c8417290823e67e211bde241ae9dde27b72f17
 
+// UIManagerModule.resolveRootTagFromReactTag() was deprecated and will be removed in the next RN release
+// ref: https://github.com/facebook/react-native/commit/acbf9e18ea666b07c1224a324602a41d0a66985e
+@Suppress("DEPRECATION")
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   : ReactContextBaseJavaModule(reactContext), GestureHandlerStateManager {
@@ -314,7 +319,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
 
   private val eventListener = object : OnTouchEventListener {
     override fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, event: MotionEvent) {
-      this@RNGestureHandlerModule.onHandlerUpdate(handler, event)
+      this@RNGestureHandlerModule.onHandlerUpdate(handler)
     }
 
     override fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
@@ -460,6 +465,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
         val sizeBefore: Int = roots.size
         val root: RNGestureHandlerRootHelper = roots[0]
         val reactRootView: ViewGroup = root.rootView
+        // our own deprecated root view
+        @Suppress("DEPRECATION")
         if (reactRootView is RNGestureHandlerEnabledRootView) {
           reactRootView.tearDown()
         } else {
@@ -542,7 +549,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? =
     handlerFactories.firstOrNull { it.type == handler.javaClass } as HandlerFactory<T>?
 
-  private fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, motionEvent: MotionEvent) {
+  private fun <T : GestureHandler<T>> onHandlerUpdate(handler: T) {
     // triggers onUpdate and onChange callbacks on the JS side
 
     if (handler.tag < 0) {
