@@ -4,7 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import { COLORS } from './colors';
 
-declare var performance: {
+declare const performance: {
   now: () => number;
 };
 

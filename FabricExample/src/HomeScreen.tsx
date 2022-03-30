@@ -11,7 +11,7 @@ import {
 import { isFabric, isHermes } from './utils';
 import { COLORS } from './colors';
 
-declare var performance: {
+declare const performance: {
   now: () => number;
 };
 
