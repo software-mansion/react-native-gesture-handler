@@ -725,7 +725,7 @@ PODS:
     - React-Codegen
     - React-RCTFabric
     - ReactCommon/turbomodule/core
-  - RNScreens (3.13.1):
+  - RNScreens (3.13.0):
     - RCT-Folly (= 2021.06.28.00-v2)
     - RCTRequired
     - RCTTypeSafety
@@ -733,8 +733,8 @@ PODS:
     - React-Codegen
     - React-RCTFabric
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 3.13.1)
-  - RNScreens/common (3.13.1):
+    - RNScreens/common (= 3.13.0)
+  - RNScreens/common (3.13.0):
     - RCT-Folly (= 2021.06.28.00-v2)
     - RCTRequired
     - RCTTypeSafety

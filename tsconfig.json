@@ -4,7 +4,7 @@
     "esModuleInterop": true,
     "jsx": "react-native",
     "lib": ["esnext"],
-    "types": ["node", "jest"],
+    "types": ["jest"],
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,

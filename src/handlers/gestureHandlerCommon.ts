@@ -6,7 +6,7 @@ import * as React from 'react';
 import { Platform, findNodeHandle as findNodeHandleRN } from 'react-native';
 
 import { State } from '../State';
-import { EventType } from '../EventType';
+import { TouchEventType } from '../TouchEventType';
 import { ValueOf } from '../typeUtils';
 import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
@@ -83,7 +83,7 @@ export type GestureTouchEvent = {
   handlerTag: number;
   numberOfTouches: number;
   state: ValueOf<typeof State>;
-  eventType: EventType;
+  eventType: TouchEventType;
   allTouches: TouchData[];
   changedTouches: TouchData[];
 };
