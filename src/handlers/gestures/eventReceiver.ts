@@ -1,6 +1,6 @@
 import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
 import { State } from '../../State';
-import { EventType } from '../../EventType';
+import { TouchEventType } from '../../TouchEventType';
 import {
   GestureTouchEvent,
   GestureUpdateEvent,
@@ -48,7 +48,7 @@ function isTouchEvent(
   return event.eventType != null;
 }
 
-function onGestureHandlerEvent(
+export function onGestureHandlerEvent(
   event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
 ) {
   const handler = findHandler(event.handlerTag) as BaseGesture<
@@ -87,16 +87,16 @@ function onGestureHandlerEvent(
       }
     } else if (isTouchEvent(event)) {
       switch (event.eventType) {
-        case EventType.TOUCHES_DOWN:
+        case TouchEventType.TOUCHES_DOWN:
           handler.handlers?.onTouchesDown?.(event, dummyStateManager);
           break;
-        case EventType.TOUCHES_MOVE:
+        case TouchEventType.TOUCHES_MOVE:
           handler.handlers?.onTouchesMove?.(event, dummyStateManager);
           break;
-        case EventType.TOUCHES_UP:
+        case TouchEventType.TOUCHES_UP:
           handler.handlers?.onTouchesUp?.(event, dummyStateManager);
           break;
-        case EventType.TOUCHES_CANCELLED:
+        case TouchEventType.TOUCHES_CANCELLED:
           handler.handlers?.onTouchesCancelled?.(event, dummyStateManager);
           break;
       }

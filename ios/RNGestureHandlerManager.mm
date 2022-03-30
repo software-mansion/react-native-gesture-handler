@@ -210,35 +210,35 @@
 
 #pragma mark Events
 
-- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType
+- (void)sendEvent:(RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType
 {
     switch (actionType) {
         case RNGestureHandlerActionTypeReanimatedWorklet:
-            [self sendStateChangeEventForReanimated:event];
+            [self sendEventForReanimated:event];
             break;
             
         case RNGestureHandlerActionTypeNativeAnimatedEvent:
             if ([event.eventName isEqualToString:@"onGestureHandlerEvent"]) {
-                [self sendStateChangeEventForNativeAnimatedEvent:event];
+                [self sendEventForNativeAnimatedEvent:event];
             } else {
                 // Although onGestureEvent prop is an Animated.event with useNativeDriver: true,
                 // onHandlerStateChange prop is still a regular JS function.
                 // Also, Animated.event is only supported with old API.
-                [self sendStateChangeEventForJSFunctionOldAPI:event];
+                [self sendEventForJSFunctionOldAPI:event];
             }
             break;
 
         case RNGestureHandlerActionTypeJSFunctionOldAPI:
-            [self sendStateChangeEventForJSFunctionOldAPI:event];
+            [self sendEventForJSFunctionOldAPI:event];
             break;
             
         case RNGestureHandlerActionTypeJSFunctionNewAPI:
-            [self sendStateChangeEventForJSFunctionNewAPI:event];
+            [self sendEventForJSFunctionNewAPI:event];
             break;
     }
 }
 
-- (void)sendStateChangeEventForReanimated:(RNGestureHandlerStateChange *)event
+- (void)sendEventForReanimated:(RNGestureHandlerStateChange *)event
 {
     // Delivers the event to Reanimated.
 #ifdef RN_FABRIC_ENABLED
@@ -248,42 +248,42 @@
 #else
     // In the old architecture, Reanimated overwrites RCTEventDispatcher
     // with REAEventDispatcher and intercepts all direct events.
-    [self sendStateChangeEventForDirectEvent:event];
+    [self sendEventForDirectEvent:event];
 #endif // RN_FABRIC_ENABLED
 }
 
-- (void)sendStateChangeEventForNativeAnimatedEvent:(RNGestureHandlerStateChange *)event
+- (void)sendEventForNativeAnimatedEvent:(RNGestureHandlerStateChange *)event
 {
     // Delivers the event to NativeAnimatedModule.
     // Currently, NativeAnimated[Turbo]Module is RCTEventDispatcherObserver so we can
     // simply send a direct event which is handled by the observer but ignored on JS side.
     // TODO: send event directly to NativeAnimated[Turbo]Module
-    [self sendStateChangeEventForDirectEvent:event];
+    [self sendEventForDirectEvent:event];
 }
 
-- (void)sendStateChangeEventForJSFunctionOldAPI:(RNGestureHandlerStateChange *)event
+- (void)sendEventForJSFunctionOldAPI:(RNGestureHandlerStateChange *)event
 {
     // Delivers the event to JS (old RNGH API).
 #ifdef RN_FABRIC_ENABLED
-    [self sendStateChangeEventForDeviceEvent:event];
+    [self sendEventForDeviceEvent:event];
 #else
-    [self sendStateChangeEventForDirectEvent:event];
+    [self sendEventForDirectEvent:event];
 #endif // RN_FABRIC_ENABLED
 }
 
-- (void)sendStateChangeEventForJSFunctionNewAPI:(RNGestureHandlerStateChange *)event
+- (void)sendEventForJSFunctionNewAPI:(RNGestureHandlerStateChange *)event
 {
     // Delivers the event to JS (new RNGH API).
-    [self sendStateChangeEventForDeviceEvent:event];
+    [self sendEventForDeviceEvent:event];
 }
 
-- (void)sendStateChangeEventForDirectEvent:(RNGestureHandlerStateChange *)event
+- (void)sendEventForDirectEvent:(RNGestureHandlerStateChange *)event
 {
     // Delivers the event to JS as a direct event.
     [_eventDispatcher sendEvent:event];
 }
 
-- (void)sendStateChangeEventForDeviceEvent:(RNGestureHandlerStateChange *)event
+- (void)sendEventForDeviceEvent:(RNGestureHandlerStateChange *)event
 {
     // Delivers the event to JS as a device event.
     NSMutableDictionary *body = [[event arguments] objectAtIndex:2];

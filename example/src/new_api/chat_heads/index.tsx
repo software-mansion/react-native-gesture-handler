@@ -8,7 +8,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useHeaderHeight } from '@react-navigation/stack';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 const CHAT_HEADS = [
   { imageUrl: 'https://avatars0.githubusercontent.com/u/379606?v=4&s=460' },
