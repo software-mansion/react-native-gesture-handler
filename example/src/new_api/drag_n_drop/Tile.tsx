@@ -54,6 +54,7 @@ function Tile({ data, draggingActive, tileSize, isActive }: TileProps) {
       animateOnDraggingDisabled();
     }
     draggingActivePrevious.current = draggingActive;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draggingActive]);
 
   const tileAnimatedStyle = useAnimatedStyle(() => {

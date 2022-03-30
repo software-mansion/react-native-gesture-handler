@@ -185,6 +185,7 @@ function DragAndDrop<T extends { id: string }>({
     // react to activeElement change
     setActiveElementPositionFromIndex();
     setPlaceholderIndex(getActiveElementIndex());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeElementId]);
 
   const onPositionUpdate = (e: PanGestureHandlerEventPayload) => {
@@ -244,7 +245,8 @@ function DragAndDrop<T extends { id: string }>({
         position={{
           x: activeElementInitialPosition.x - TILE_SIZE / 2,
           y: activeElementInitialPosition.y - TILE_SIZE / 2,
-        }}>
+        }}
+      >
         {renderItem({
           data: item,
           isActive,
@@ -261,7 +263,8 @@ function DragAndDrop<T extends { id: string }>({
         style={[
           styles.container,
           { paddingHorizontal: columnGap / 2, paddingVertical: rowGap / 2 },
-        ]}>
+        ]}
+      >
         {_renderItems()}
       </View>
     </GestureDetector>

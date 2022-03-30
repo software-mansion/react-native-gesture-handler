@@ -144,7 +144,8 @@ export default function Home() {
     <Animated.View style={styles.container}>
       <GestureDetector gesture={previewPinchGesture}>
         <Animated.View
-          style={[styles.home, { backgroundColor: filters[selectedFilter] }]}>
+          style={[styles.home, { backgroundColor: filters[selectedFilter] }]}
+        >
           <Animated.View style={[styles.box, zoomStyle]} />
         </Animated.View>
       </GestureDetector>

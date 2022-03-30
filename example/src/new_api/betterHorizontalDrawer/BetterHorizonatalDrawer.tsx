@@ -249,6 +249,7 @@ export const DrawerLayout = React.forwardRef<
       drawerSavedOffset.value = 0;
 
       setDrawerVisible(false);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [drawerWidth, drawerPosition, drawerType]);
 
     // measure the container
@@ -575,7 +576,8 @@ export const DrawerLayout = React.forwardRef<
                 : styles.containerInFront,
               contentContainerStyle,
               containerStyle,
-            ]}>
+            ]}
+          >
             {children}
             <Overlay
               drawerType={drawerType}
@@ -592,7 +594,8 @@ export const DrawerLayout = React.forwardRef<
               drawerContainerStyle,
               dynamicDrawerStyles,
               drawerStyle,
-            ]}>
+            ]}
+          >
             {renderNavigationView(openingProgress)}
           </Animated.View>
         </Animated.View>

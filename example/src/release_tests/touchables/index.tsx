@@ -34,10 +34,18 @@ const renderSampleBox = (color?: string) => (
 );
 
 const toReactNativeTouchable = (touchable: React.ComponentType<unknown>) => {
-  if (touchable === TouchableOpacity) return RNTouchableOpacity;
-  if (touchable === TouchableWithoutFeedback) return RNTouchableWithoutFeedback;
-  if (touchable === TouchableHighlight) return RNTouchableHighlight;
-  if (touchable === TouchableNativeFeedback) return RNTouchableNativeFeedback;
+  if (touchable === TouchableOpacity) {
+    return RNTouchableOpacity;
+  }
+  if (touchable === TouchableWithoutFeedback) {
+    return RNTouchableWithoutFeedback;
+  }
+  if (touchable === TouchableHighlight) {
+    return RNTouchableHighlight;
+  }
+  if (touchable === TouchableNativeFeedback) {
+    return RNTouchableNativeFeedback;
+  }
   return RNTouchableOpacity;
 };
 
@@ -364,15 +372,18 @@ export class TouchableExample extends Component<
             justifyContent: 'space-between',
             flexDirection: 'row',
             margin: 20,
-          }}>
+          }}
+        >
           <RNTouchable
             {...props}
-            background={background?.(RNTouchableNativeFeedback)}>
+            background={background?.(RNTouchableNativeFeedback)}
+          >
             {renderChild(color)}
           </RNTouchable>
           <GHTouchable
             {...props}
-            background={background?.(TouchableNativeFeedback)}>
+            background={background?.(TouchableNativeFeedback)}
+          >
             {renderChild(color)}
           </GHTouchable>
         </View>
