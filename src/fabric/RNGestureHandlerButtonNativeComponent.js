@@ -7,7 +7,10 @@ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNati
 import type { HostComponent } from 'react-native';
 import type { ColorValue } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type { Int32, WithDefault } from 'react-native/Libraries/Types/CodegenTypes';
+import type {
+  Int32,
+  WithDefault,
+} from 'react-native/Libraries/Types/CodegenTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps, // This is required.
