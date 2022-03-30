@@ -935,7 +935,7 @@ SPEC CHECKSUMS:
   hermes-engine: 84e3af1ea01dd7351ac5d8689cbbea1f9903ffc3
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
+  RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: bdc86d9a4c19dcbef4e2b4c52410e1b159407efc
   RCTTypeSafety: c035c4f361193f3392fc184592356428895aa753
   React: 0c1dd040f86b0fbd6043cfe4ac31b16f7952d7c6
