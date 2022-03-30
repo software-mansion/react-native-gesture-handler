@@ -189,6 +189,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
+    // it may happen that the gesture recognizer is reset after it's been unbound from the view,
+    // it that recognizer tried to send event, the app would crash because the target of the event
+    // would be nil.
+    if (recognizer.view.reactTag == nil) {
+      return;
+    }
+    
     _state = [self recognizerState];
     RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
     [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
@@ -212,7 +219,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                        state:RNGestureHandlerStateActive
                                                                    prevState:_lastState
                                                                    extraData:extraData];
-            [self sendStateChangeEvent:event];
+            [self sendEvent:event];
             _lastState = RNGestureHandlerStateActive;
         }
         id stateEvent = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
@@ -220,7 +227,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                         state:state
                                                                     prevState:_lastState
                                                                     extraData:extraData];
-        [self sendStateChangeEvent:stateEvent];
+        [self sendEvent:stateEvent];
         _lastState = state;
     }
 
@@ -230,13 +237,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                                   state:state
                                                               extraData:extraData
                                                           coalescingKey:self->_eventCoalescingKey];
-        [self sendStateChangeEvent:touchEvent];
+        [self sendEvent:touchEvent];
     }
 }
 
-- (void)sendStateChangeEvent:(RNGestureHandlerStateChange *)event
+- (void)sendEvent:(RNGestureHandlerStateChange *)event
 {
-    [self.emitter sendStateChangeEvent:event withActionType:self.actionType];
+    [self.emitter sendEvent:event withActionType:self.actionType];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state
@@ -248,7 +255,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                           withNumberOfTouches:_pointerTracker.trackedPointersCount];
   id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag handlerTag:_tag state:state extraData:extraData coalescingKey:[_tag intValue]];
   
-  [self.emitter sendStateChangeEvent:event withActionType:self.actionType];
+  [self.emitter sendEvent:event withActionType:self.actionType];
 }
 
 - (RNGestureHandlerState)recognizerState
