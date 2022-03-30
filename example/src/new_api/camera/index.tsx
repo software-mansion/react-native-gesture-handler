@@ -20,10 +20,8 @@ export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [remainingTimeMs, setRemainingTimeMs] = useState(MAX_VIDEO_DURATION_MS);
-  const [
-    recordingIntervalHandle,
-    setRecordingIntervalHandle,
-  ] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [recordingIntervalHandle, setRecordingIntervalHandle] =
+    useState<ReturnType<typeof setTimeout> | null>(null);
 
   const filtersPanGesture = Gesture.Pan()
     .onUpdate((e) => {
@@ -144,8 +142,7 @@ export default function Home() {
     <Animated.View style={styles.container}>
       <GestureDetector gesture={previewPinchGesture}>
         <Animated.View
-          style={[styles.home, { backgroundColor: filters[selectedFilter] }]}
-        >
+          style={[styles.home, { backgroundColor: filters[selectedFilter] }]}>
           <Animated.View style={[styles.box, zoomStyle]} />
         </Animated.View>
       </GestureDetector>

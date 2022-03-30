@@ -576,8 +576,7 @@ export const DrawerLayout = React.forwardRef<
                 : styles.containerInFront,
               contentContainerStyle,
               containerStyle,
-            ]}
-          >
+            ]}>
             {children}
             <Overlay
               drawerType={drawerType}
@@ -594,8 +593,7 @@ export const DrawerLayout = React.forwardRef<
               drawerContainerStyle,
               dynamicDrawerStyles,
               drawerStyle,
-            ]}
-          >
+            ]}>
             {renderNavigationView(openingProgress)}
           </Animated.View>
         </Animated.View>

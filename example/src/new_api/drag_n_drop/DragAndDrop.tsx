@@ -68,13 +68,11 @@ function DragAndDrop<T extends { id: string }>({
   // used to calculate position of currently dragged element in relation to drag start position
   // we are using dragged element center as calculations point - then we just add translationX/Y from gesture
   // this way we can easily calculate proper index based of current gesture position
-  const [
-    activeElementInitialPosition,
-    setActiveElementInitialPosition,
-  ] = useState({
-    x: 0,
-    y: 0,
-  });
+  const [activeElementInitialPosition, setActiveElementInitialPosition] =
+    useState({
+      x: 0,
+      y: 0,
+    });
 
   const updateDataOnDragEnd = () => {
     const newData = [...data];
@@ -245,8 +243,7 @@ function DragAndDrop<T extends { id: string }>({
         position={{
           x: activeElementInitialPosition.x - TILE_SIZE / 2,
           y: activeElementInitialPosition.y - TILE_SIZE / 2,
-        }}
-      >
+        }}>
         {renderItem({
           data: item,
           isActive,
@@ -263,8 +260,7 @@ function DragAndDrop<T extends { id: string }>({
         style={[
           styles.container,
           { paddingHorizontal: columnGap / 2, paddingVertical: rowGap / 2 },
-        ]}
-      >
+        ]}>
         {_renderItems()}
       </View>
     </GestureDetector>

@@ -148,8 +148,7 @@ const TOUCHABLES: Touchables[] = [
     },
     color: 'forestgreen',
     renderChild: renderSampleBox,
-    text:
-      'TouchableHighlight with callbacks (without longPress), currently GH component differs in the events sent from the RN one',
+    text: 'TouchableHighlight with callbacks (without longPress), currently GH component differs in the events sent from the RN one',
   },
   {
     type: TouchableOpacity,
@@ -186,8 +185,7 @@ const TOUCHABLES: Touchables[] = [
     },
     color: 'lightpink',
     renderChild: renderSampleBox,
-    text:
-      'TouchableOpacity with callbacks and delayed pressOut and pressIn (1000 ms)',
+    text: 'TouchableOpacity with callbacks and delayed pressOut and pressIn (1000 ms)',
   },
   {
     type: TouchableOpacity,
@@ -372,18 +370,15 @@ export class TouchableExample extends Component<
             justifyContent: 'space-between',
             flexDirection: 'row',
             margin: 20,
-          }}
-        >
+          }}>
           <RNTouchable
             {...props}
-            background={background?.(RNTouchableNativeFeedback)}
-          >
+            background={background?.(RNTouchableNativeFeedback)}>
             {renderChild(color)}
           </RNTouchable>
           <GHTouchable
             {...props}
-            background={background?.(TouchableNativeFeedback)}
-          >
+            background={background?.(TouchableNativeFeedback)}>
             {renderChild(color)}
           </GHTouchable>
         </View>
