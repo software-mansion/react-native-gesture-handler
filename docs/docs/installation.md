@@ -126,9 +126,7 @@ The minimal version of the Kotlin plugin supported by RNGH is `1.4.10`.
 
 ### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
 
-If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to follow a different setup for your Android app to work properly. The reason is that both native navigation libraries and Gesture Handler library need to use their own special subclasses of `ReactRootView`.
-
-Instead of changing Java code you will need to wrap every screen component using `gestureHandlerRootHOC` on the JS side. This can be done for example at the stage when you register your screens. Here's an example:
+If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to make sure that every screen is wrapped with `GestureHandlerRootView` (you can do this using `gestureHandlerRootHOC` function). This can be done for example at the stage when you register your screens. Here's an example:
 
 ```js
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
