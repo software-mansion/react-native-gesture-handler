@@ -44,3 +44,9 @@ export function isFabric(): boolean {
   // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
   return !!global?.nativeFabricUIManager;
 }
+
+export function isRemoteDebuggingEnabled(): boolean {
+  // react-native-reanimated checks if in remote debugging in the same way
+  // @ts-ignore global is available but node types are not included
+  return !(global as any).nativeCallSyncHook || (global as any).__REMOTEDEV__;
+}
