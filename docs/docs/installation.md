@@ -153,7 +153,7 @@ export function registerScreens() {
 
 You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
 
-Remember that you need to wrap each screen that you use in your app with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
+Remember that you need to wrap each screen that you use in your app with `GestureHandlerRootView` (you can do this using `gestureHandlerRootHOC` function) as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
 
 ## iOS
 
