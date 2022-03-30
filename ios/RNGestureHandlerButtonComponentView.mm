@@ -42,7 +42,7 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<RNGestureHandlerButtonComponentDescriptor>();
 }
 
-- (void)updateProps:(const facebook::react::Props::Shared &)props oldProps:(const facebook::react::Props::Shared &)oldProps
+- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
     const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
