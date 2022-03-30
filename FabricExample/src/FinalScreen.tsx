@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+// @ts-ignore TODO: remove once there is a .d.ts file with definitions
 import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 
 import { COLORS } from './colors';

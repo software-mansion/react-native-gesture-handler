@@ -4,9 +4,13 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import { COLORS } from './colors';
 
+declare var performance: {
+  now: () => number;
+};
+
 function ParentViewFlattenedDemo() {
   const tap = Gesture.Tap().onStart(() =>
-    console.log(window.performance.now(), 'tap!')
+    console.log(performance.now(), 'tap!')
   );
 
   return (
@@ -32,7 +36,7 @@ function InnerFlattenedParent() {
 
 function ParentViewNotFlattenedCollapsableTrueDemo() {
   const tap = Gesture.Tap().onStart(() => {
-    console.log(window.performance.now(), 'tap!');
+    console.log(performance.now(), 'tap!');
   });
 
   return (
@@ -58,7 +62,7 @@ function InnerNotFlattenedParentCollapsable() {
 
 function ParentViewNotFlattenedCollapsableFalseDemo() {
   const tap = Gesture.Tap().onStart(() =>
-    console.log(window.performance.now(), 'tap!')
+    console.log(performance.now(), 'tap!')
   );
 
   return (
@@ -86,7 +90,7 @@ function InnerNotFlattenedParentNotCollapsable() {
 
 function ParentAnimatedViewDemo() {
   const tap = Gesture.Tap().onStart(() =>
-    console.log(window.performance.now(), 'tap!')
+    console.log(performance.now(), 'tap!')
   );
 
   return (
