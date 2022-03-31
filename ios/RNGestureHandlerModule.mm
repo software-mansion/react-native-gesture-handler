@@ -173,6 +173,22 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
     }];
 }
 
+RCT_EXPORT_METHOD(flushQueuedHandlers)
+{
+    if (_operations.count == 0) {
+        return;
+    }
+
+    NSArray<GestureHandlerOperation> *operations = _operations;
+    _operations = [NSMutableArray new];
+
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        for (GestureHandlerOperation operation in operations) {
+            operation(self->_manager);
+        }
+    }];
+}
+
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
 {
   RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];

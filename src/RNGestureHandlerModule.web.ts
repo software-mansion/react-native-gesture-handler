@@ -59,4 +59,5 @@ export default {
   dropGestureHandler(handlerTag: number) {
     NodeManager.dropGestureHandler(handlerTag);
   },
+  flushQueuedHandlers() {},
 };

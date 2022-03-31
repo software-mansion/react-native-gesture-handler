@@ -88,6 +88,10 @@ function dropHandlers(preparedGesture: GestureConfigReference) {
 
     unregisterHandler(handler.handlerTag, handler.config.testId);
   }
+
+  requestAnimationFrame(() => {
+    RNGestureHandlerModule.flushQueuedHandlers();
+  });
 }
 
 function checkGestureCallbacksForWorklets(gesture: GestureType) {
@@ -152,10 +156,12 @@ function attachHandlers({
     );
 
     registerHandler(handler.handlerTag, handler, handler.config.testId);
+  }
 
-    // use setImmediate to extract handlerTags, because all refs should be initialized
-    // when it's ran
-    setImmediate(() => {
+  // use setImmediate to extract handlerTags, because all refs should be initialized
+  // when it's ran
+  setImmediate(() => {
+    for (const handler of gesture) {
       let requireToFail: number[] = [];
       if (handler.config.requireToFail) {
         requireToFail = extractValidHandlerTags(handler.config.requireToFail);
@@ -175,8 +181,13 @@ function attachHandlers({
           waitFor: requireToFail,
         })
       );
+    }
+
+    requestAnimationFrame(() => {
+      RNGestureHandlerModule.flushQueuedHandlers();
     });
-  }
+  });
+
   preparedGesture.config = gesture;
 
   for (const gesture of preparedGesture.config) {
@@ -266,6 +277,10 @@ function updateHandlers(
         Record<string, unknown>
       >[];
     }
+
+    requestAnimationFrame(() => {
+      RNGestureHandlerModule.flushQueuedHandlers();
+    });
   });
 }
 
@@ -571,17 +586,12 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       if (isFabric()) {
         const node = getShadowNodeFromRef(ref);
         if (global.isFormsStackingContext(node) === false) {
-          setImmediate(() => {
-            // For some weird reason, console.error on iOS delays
-            // the execution of RNGestureHandlerModule.attachGestureHandler,
-            // so that's why we use setImmediate here.
-            console.error(
-              tagMessage(
-                'GestureDetector has received a child that may get view-flattened. ' +
-                  '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
-              )
-            );
-          });
+          console.error(
+            tagMessage(
+              'GestureDetector has received a child that may get view-flattened. ' +
+                '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
+            )
+          );
         }
       }
     }

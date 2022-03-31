@@ -236,6 +236,9 @@ export default function createHandler<
     componentWillUnmount() {
       this.inspectorToggleListener?.remove();
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
+      requestAnimationFrame(() => {
+        RNGestureHandlerModule.flushQueuedHandlers();
+      });
       if (this.updateEnqueued) {
         clearImmediate(this.updateEnqueued);
       }
@@ -346,6 +349,10 @@ export default function createHandler<
           actionType
         );
       }
+
+      requestAnimationFrame(() => {
+        RNGestureHandlerModule.flushQueuedHandlers();
+      });
     };
 
     private updateGestureHandler = (
@@ -354,6 +361,9 @@ export default function createHandler<
       this.config = newConfig;
 
       RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
+      requestAnimationFrame(() => {
+        RNGestureHandlerModule.flushQueuedHandlers();
+      });
     };
 
     private update() {

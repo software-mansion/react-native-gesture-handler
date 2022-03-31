@@ -35,6 +35,7 @@ export type RNGestureHandlerModuleProps = {
   ) => void;
   dropGestureHandler: (handlerTag: number) => void;
   install: () => void;
+  flushQueuedHandlers: () => void;
 };
 
 export default RNGestureHandlerModule as RNGestureHandlerModuleProps;

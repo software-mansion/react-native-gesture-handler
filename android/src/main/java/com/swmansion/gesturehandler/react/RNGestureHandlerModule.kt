@@ -407,6 +407,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   fun handleClearJSResponder() {
   }
 
+  @ReactMethod
+  fun flushQueuedHandlers() {
+  }
+
   override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
     registry.getHandler(handlerTag)?.let { handler ->
       when (newState) {
