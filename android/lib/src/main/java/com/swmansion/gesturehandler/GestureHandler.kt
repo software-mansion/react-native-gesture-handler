@@ -316,7 +316,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     isEnabled: ${handler.isEnabled}
     isActive: ${handler.isActive}
     isAwaiting: ${handler.isAwaiting}
-    trackedPointersCount: ${handler.trackedPointersCount}
+    trackedPointersCount: ${handler.trackedPointersIDsCount}
     trackedPointers: ${handler.trackedPointerIDs.joinToString(separator = ", ")}
     while handling event: $event
   """.trimIndent(), e) {}
