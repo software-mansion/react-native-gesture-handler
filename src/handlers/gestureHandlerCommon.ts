@@ -10,6 +10,7 @@ import { TouchEventType } from '../TouchEventType';
 import { ValueOf } from '../typeUtils';
 import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
+import RNGestureHandlerModule from '../RNGestureHandlerModule';
 
 const commonProps = [
   'id',
@@ -179,4 +180,18 @@ export function findNodeHandle(
 ): null | number | React.Component<any, any> | React.ComponentClass<any> {
   if (Platform.OS === 'web') return node;
   return findNodeHandleRN(node);
+}
+
+let scheduledHandlersQueueFlush:
+  | ReturnType<typeof requestAnimationFrame>
+  | undefined = undefined;
+
+export function scheduleHandlersQueueFlush() {
+  if (scheduledHandlersQueueFlush === undefined) {
+    scheduledHandlersQueueFlush = requestAnimationFrame(() => {
+      RNGestureHandlerModule.flushQueuedHandlers();
+
+      scheduledHandlersQueueFlush = undefined;
+    });
+  }
 }
