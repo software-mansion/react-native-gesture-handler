@@ -59,4 +59,6 @@ export default {
   dropGestureHandler(handlerTag: number) {
     NodeManager.dropGestureHandler(handlerTag);
   },
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  flushOperations() {},
 };

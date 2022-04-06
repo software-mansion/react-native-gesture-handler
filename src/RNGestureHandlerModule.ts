@@ -16,6 +16,12 @@ if (RNGestureHandlerModule == null) {
   );
 }
 
+if (RNGestureHandlerModule.flushOperations === undefined) {
+  RNGestureHandlerModule.flushOperations = () => {
+    // NO-OP if not defined
+  };
+}
+
 export type RNGestureHandlerModuleProps = {
   handleSetJSResponder: (tag: number, blockNativeResponder: boolean) => void;
   handleClearJSResponder: () => void;
@@ -35,6 +41,7 @@ export type RNGestureHandlerModuleProps = {
   ) => void;
   dropGestureHandler: (handlerTag: number) => void;
   install: () => void;
+  flushOperations: () => void;
 };
 
 export default RNGestureHandlerModule as RNGestureHandlerModuleProps;

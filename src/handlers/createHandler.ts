@@ -23,6 +23,7 @@ import {
   GestureEvent,
   HandlerStateChangeEvent,
   findNodeHandle,
+  scheduleFlushOperations,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
 import { isFabric, isJestEnv } from '../utils';
@@ -236,6 +237,7 @@ export default function createHandler<
     componentWillUnmount() {
       this.inspectorToggleListener?.remove();
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
+      scheduleFlushOperations();
       if (this.updateEnqueued) {
         clearImmediate(this.updateEnqueued);
       }
@@ -346,6 +348,8 @@ export default function createHandler<
           actionType
         );
       }
+
+      scheduleFlushOperations();
     };
 
     private updateGestureHandler = (
@@ -354,6 +358,7 @@ export default function createHandler<
       this.config = newConfig;
 
       RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
+      scheduleFlushOperations();
     };
 
     private update() {
