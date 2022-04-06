@@ -25,4 +25,5 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn
       - name: Generate docs
+        working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn build:baseUrl
