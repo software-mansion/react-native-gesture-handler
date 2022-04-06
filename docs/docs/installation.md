@@ -51,7 +51,7 @@ For example:
 
 ```js
 export default function App() {
-  return <GestureHandlerRootView>{/* content */}</GestureHandlerRootView>;
+  return <GestureHandlerRootView style={{ flex: 1 }}>{/* content */}</GestureHandlerRootView>;
 }
 ```
 
@@ -72,6 +72,44 @@ If you're using gesture handler in your component library, you may want to wrap 
 ```bash
 react-native link react-native-gesture-handler
 ```
+
+## Fabric
+Starting with version 2.3.0, Gesture Handler now supports [Fabric](https://reactnative.dev/docs/fabric-renderer)!. To use Gesture Handler in your Fabric application you have to:
+#### on iOS:
+Install pods using `RCT_NEW_ARCH_ENABLED=1 pod install` – this is the same command you run to prepare a Fabric build but you also need to run it after a new native library gets added.
+#### on Android:
+There are no additional steps required so long as your app is configured to build with Fabric – this is typically configured by setting `newArchEnabled=true` in `gradle.properties` file in your project.
+
+### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
+
+If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to make sure that every screen is wrapped with `GestureHandlerRootView` (you can do this using `gestureHandlerRootHOC` function). This can be done for example at the stage when you register your screens. Here's an example:
+
+```js
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import { Navigation } from 'react-native-navigation';
+import FirstTabScreen from './FirstTabScreen';
+import SecondTabScreen from './SecondTabScreen';
+import PushedScreen from './PushedScreen';
+// register all screens of the app (including internal ones)
+export function registerScreens() {
+  Navigation.registerComponent('example.FirstTabScreen', 
+    () => gestureHandlerRootHOC(FirstTabScreen),
+    () => FirstTabScreen
+  );
+  Navigation.registerComponent('example.SecondTabScreen', 
+    () => gestureHandlerRootHOC(SecondTabScreen),
+    () => SecondTabScreen
+  );
+  Navigation.registerComponent('example.PushedScreen', 
+    () => gestureHandlerRootHOC(PushedScreen),
+    () => PushedScreen
+  );
+}
+```
+
+You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
+
+Remember that you need to wrap each screen that you use in your app with `GestureHandlerRootView` (you can do this using `gestureHandlerRootHOC` function) as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
 
 ## Android
 

@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import { ActionType } from './ActionType';
 import { tagMessage } from './utils';
 const { RNGestureHandlerModule } = NativeModules;
 
@@ -15,6 +16,12 @@ if (RNGestureHandlerModule == null) {
   );
 }
 
+if (RNGestureHandlerModule.flushOperations === undefined) {
+  RNGestureHandlerModule.flushOperations = () => {
+    // NO-OP if not defined
+  };
+}
+
 export type RNGestureHandlerModuleProps = {
   handleSetJSResponder: (tag: number, blockNativeResponder: boolean) => void;
   handleClearJSResponder: () => void;
@@ -26,13 +33,15 @@ export type RNGestureHandlerModuleProps = {
   attachGestureHandler: (
     handlerTag: number,
     newView: number,
-    usingDeviceEvents: boolean
+    actionType: ActionType
   ) => void;
   updateGestureHandler: (
     handlerTag: number,
     newConfig: Readonly<Record<string, unknown>>
   ) => void;
   dropGestureHandler: (handlerTag: number) => void;
+  install: () => void;
+  flushOperations: () => void;
 };
 
 export default RNGestureHandlerModule as RNGestureHandlerModuleProps;

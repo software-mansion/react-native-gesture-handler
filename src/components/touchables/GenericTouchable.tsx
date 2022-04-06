@@ -258,6 +258,8 @@ export default class GenericTouchable extends Component<
       // TODO: check if changed to no 's' correctly, also removed 2 props that are no longer available: `accessibilityComponentType` and `accessibilityTraits`,
       // would be good to check if it is ok for sure, see: https://github.com/facebook/react-native/issues/24016
       accessibilityState: this.props.accessibilityState,
+      accessibilityActions: this.props.accessibilityActions,
+      onAccessibilityAction: this.props.onAccessibilityAction,
       nativeID: this.props.nativeID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,

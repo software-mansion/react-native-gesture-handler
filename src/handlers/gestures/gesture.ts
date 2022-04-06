@@ -15,6 +15,7 @@ import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
 import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
+import { isRemoteDebuggingEnabled } from '../../utils';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
@@ -284,9 +285,13 @@ export abstract class BaseGesture<
   prepare() {}
 
   get shouldUseReanimated(): boolean {
-    // use Reanimated when runOnJS isn't set explicitly and all defined callbacks are worklets
+    // use Reanimated when runOnJS isn't set explicitly,
+    // and all defined callbacks are worklets,
+    // and remote debugging is disabled
     return (
-      this.config.runOnJS !== true && !this.handlers.isWorklet.includes(false)
+      this.config.runOnJS !== true &&
+      !this.handlers.isWorklet.includes(false) &&
+      !isRemoteDebuggingEnabled()
     );
   }
 }

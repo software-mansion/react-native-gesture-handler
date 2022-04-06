@@ -34,7 +34,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var isEnabled = true
     private set
-  var usesDeviceEvents = false
+  var actionType = 0
 
   var changedTouchesPayload: WritableArray? = null
     private set
@@ -316,7 +316,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     isEnabled: ${handler.isEnabled}
     isActive: ${handler.isActive}
     isAwaiting: ${handler.isAwaiting}
-    trackedPointersCount: ${handler.trackedPointersCount}
+    trackedPointersCount: ${handler.trackedPointersIDsCount}
     trackedPointers: ${handler.trackedPointerIDs.joinToString(separator = ", ")}
     while handling event: $event
   """.trimIndent(), e) {}
@@ -329,7 +329,19 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       || trackedPointersIDsCount < 1) {
       return
     }
-    val event = adaptEvent(origEvent)
+
+    // a workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/1188
+    val event = if (BuildConfig.DEBUG) {
+      adaptEvent(origEvent)
+    } else {
+      try {
+        adaptEvent(origEvent)
+      } catch (e: AdaptEventException) {
+        fail()
+        return
+      }
+    }
+
     x = event.x
     y = event.y
     numberOfPointers = event.pointerCount
@@ -700,6 +712,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     const val DIRECTION_LEFT = 2
     const val DIRECTION_UP = 4
     const val DIRECTION_DOWN = 8
+    const val ACTION_TYPE_REANIMATED_WORKLET = 1
+    const val ACTION_TYPE_NATIVE_ANIMATED_EVENT = 2
+    const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
+    const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
     private const val MAX_POINTERS_COUNT = 12
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>

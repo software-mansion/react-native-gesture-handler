@@ -6,6 +6,7 @@ import {
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -27,7 +28,11 @@ function Example() {
   const scrollOffset = useSharedValue(0);
   const bottomSheetTranslateY = useSharedValue(CLOSED_SNAP_POINT);
 
+  const onHandlerEndOnJS = (point: number) => {
+    setSnapPoint(point);
+  };
   const onHandlerEnd = ({ velocityY }: PanGestureHandlerEventPayload) => {
+    'worklet';
     const dragToss = 0.05;
     const endOffsetY =
       bottomSheetTranslateY.value + translationY.value + velocityY * dragToss;
@@ -57,10 +62,8 @@ function Example() {
     bottomSheetTranslateY.value = withSpring(destSnapPoint, {
       mass: 0.5,
     });
-
-    setSnapPoint(destSnapPoint);
+    runOnJS(onHandlerEndOnJS)(destSnapPoint);
   };
-
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
       // when bottom sheet is not fully opened scroll offset should not influence

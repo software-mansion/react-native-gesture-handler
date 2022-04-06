@@ -26,14 +26,27 @@ export function withPrevAndCurrent<T, Transformed>(
   return transformedArr;
 }
 
-export function hasProperty(object: Record<string, unknown>, key: string) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function hasProperty(object: object, key: string) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
 export function isJestEnv(): boolean {
-  return !!process.env.JEST_WORKER_ID;
+  // @ts-ignore Do not use `@types/node` because it will prioritise Node types over RN types which breaks the types (ex. setTimeout) in React Native projects.
+  return hasProperty(global, 'process') && !!process.env.JEST_WORKER_ID;
 }
 
 export function tagMessage(msg: string) {
   return `[react-native-gesture-handler] ${msg}`;
+}
+
+export function isFabric(): boolean {
+  // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
+  return !!global?.nativeFabricUIManager;
+}
+
+export function isRemoteDebuggingEnabled(): boolean {
+  // react-native-reanimated checks if in remote debugging in the same way
+  // @ts-ignore global is available but node types are not included
+  return !(global as any).nativeCallSyncHook || (global as any).__REMOTEDEV__;
 }

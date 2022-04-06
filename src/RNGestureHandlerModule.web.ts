@@ -1,3 +1,4 @@
+import { ActionType } from './ActionType';
 import { Direction } from './web/constants';
 import FlingGestureHandler from './web/FlingGestureHandler';
 import LongPressGestureHandler from './web/LongPressGestureHandler';
@@ -44,7 +45,7 @@ export default {
   attachGestureHandler(
     handlerTag: number,
     newView: number,
-    _usingDeviceEvents: boolean,
+    _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
     NodeManager.getHandler(handlerTag).setView(newView, propsRef);
@@ -58,4 +59,6 @@ export default {
   dropGestureHandler(handlerTag: number) {
     NodeManager.dropGestureHandler(handlerTag);
   },
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  flushOperations() {},
 };

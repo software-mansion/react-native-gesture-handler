@@ -12,6 +12,17 @@ buildscript {
     }
 }
 
+def isNewArchitectureEnabled() {
+    // To opt-in for the New Architecture, you can either:
+    // - Set `newArchEnabled` to true inside the `gradle.properties` file
+    // - Invoke gradle with `-newArchEnabled=true`
+    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
+    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
+if (isNewArchitectureEnabled()) {
+    apply plugin: 'com.facebook.react'
+}
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
@@ -45,18 +56,67 @@ android {
         targetSdkVersion safeExtGet('targetSdkVersion', 28)
         versionCode 1
         versionName "1.0"
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        if (isNewArchitectureEnabled()) {
+            var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
+            externalNativeBuild {
+                ndkBuild {
+                    arguments "APP_PLATFORM=android-21",
+                            "APP_STL=c++_shared",
+                            "NDK_TOOLCHAIN_VERSION=clang",
+                            "GENERATED_SRC_DIR=${appProject.buildDir}/generated/source",
+                            "PROJECT_BUILD_DIR=${appProject.buildDir}",
+                            "REACT_ANDROID_DIR=${appProject.rootDir}/../node_modules/react-native/ReactAndroid",
+                            "REACT_ANDROID_BUILD_DIR=${appProject.rootDir}/../node_modules/react-native/ReactAndroid/build"
+                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
+                    cppFlags "-std=c++17"
+                    targets "rngesturehandler_modules"
+                }
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    if (isNewArchitectureEnabled()) {
+        externalNativeBuild {
+            ndkBuild {
+                path "src/main/jni/Android.mk"
+            }
+        }
+    }
+
+    packagingOptions {
+        // For some reason gradle only complains about the duplicated version of libreact_render libraries
+        // while there are more libraries copied in intermediates folder of the lib build directory, we exclude
+        // only the ones that make the build fail (ideally we should only include librngesturehandler_modules but we
+        // are only allowed to specify exclude patterns)
+        exclude "**/libreact_render*.so"
     }
 
     // Include "lib/" as sources, unfortunately react-native link can't handle
     // setting up alternative gradle modules. We still have "lib" defined as a
     // standalone gradle module just to be used in AndroidNativeExample
-    sourceSets {
-        main.java.srcDirs += 'lib/src/main/java'
+    sourceSets.main {
+        java {
+            srcDirs += 'lib/src/main/java'
 
-        // Include "common/" only when it's not provided by Reanimated to mitigate
-        // multiple definitions of the same class preventing build
-        if (!shouldUseCommonInterfaceFromReanimated()) {
-            main.java.srcDirs += 'common/src/main/java'
+            // Include "common/" only when it's not provided by Reanimated to mitigate
+            // multiple definitions of the same class preventing build
+            if (!shouldUseCommonInterfaceFromReanimated()) {
+                srcDirs += 'common/src/main/java'
+            }
+
+            if (isNewArchitectureEnabled()) {
+                srcDirs += 'src/fabric/java'
+            } else {
+                // this folder also includes files from codegen so the library can compile with
+                // codegen turned off
+                srcDirs += 'src/paper/java'
+            }
         }
     }
 }
@@ -65,12 +125,30 @@ def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlin
 
 dependencies {
     //noinspection GradleDynamicVersion
+    if (isNewArchitectureEnabled()) {
+        implementation project(':ReactAndroid')
+    } else {
+        implementation 'com.facebook.react:react-native:+'
+    }
+
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
-        implementation project(':react-native-reanimated')
+        implementation (project(':react-native-reanimated')) {
+            exclude group:'com.facebook.fbjni' // resolves "Duplicate class com.facebook.jni.CppException"
+        }
     }
-    implementation 'com.facebook.react:react-native:+'
+
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.core:core-ktx:1.6.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+if (isNewArchitectureEnabled()) {
+    react {
+        reactRoot = rootProject.file("../node_modules/react-native/")
+        jsRootDir = file("../src/fabric/")
+        codegenDir = rootProject.file("../node_modules/react-native-codegen/")
+        libraryName = "rngesturehandler"
+        codegenJavaPackageName = "com.swmansion.gesturehandler"
+    }
 }
