@@ -38,7 +38,7 @@ Sets a `testID` property for gesture object, allowing for querying for it in tes
 
 ### `cancelsToucesInView(value)` (**iOS only**)
 Accepts a boolean value.
-When `true`, the gesture will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes [`ACTIVE`](../../state.md#active).
+When `true`, the gesture will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes [`ACTIVE`](../../under-the-hood/states-events.md#active).
 Default value is `true`.
 
 ### `runOnJS(value: boolean)`
