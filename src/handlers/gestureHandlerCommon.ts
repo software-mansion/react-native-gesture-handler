@@ -17,6 +17,7 @@ const commonProps = [
   'enabled',
   'shouldCancelWhenOutside',
   'hitSlop',
+  'cancelsTouchesInView',
 ] as const;
 
 const componentInteractionProps = ['waitFor', 'simultaneousHandlers'] as const;
@@ -112,6 +113,7 @@ export type BaseGestureHandlerProps<
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
   simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
   testID?: string;
+  cancelsTouchesInView?: boolean;
   // TODO(TS) - fix event types
   onBegan?: (event: HandlerStateChangeEvent) => void;
   onFailed?: (event: HandlerStateChangeEvent) => void;

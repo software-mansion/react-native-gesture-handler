@@ -94,13 +94,14 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)resetConfig
 {
   self.enabled = YES;
+  self.manualActivation = NO;
   _shouldCancelWhenOutside = NO;
   _handlersToWaitFor = nil;
   _simultaneousHandlers = nil;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
-  
-  self.manualActivation = NO;
+
+  _recognizer.cancelsTouchesInView = YES;
 }
 
 - (void)configure:(NSDictionary *)config
@@ -119,6 +120,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
     }
   
+    prop = config[@"cancelsTouchesInView"];
+    if (prop != nil) {
+        _recognizer.cancelsTouchesInView = [RCTConvert BOOL:prop];
+    }
+    
     prop = config[@"needsPointerData"];
     if (prop != nil) {
         _needsPointerData = [RCTConvert BOOL:prop];

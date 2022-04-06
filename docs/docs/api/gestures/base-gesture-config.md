@@ -36,6 +36,11 @@ API.
 
 Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
+### `cancelsToucesInView(value)` (**iOS only**)
+Accepts a boolean value.
+When `true`, the gesture will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes [`ACTIVE`](../../state.md#active).
+Default value is `true`.
+
 ### `runOnJS(value: boolean)`
 
 When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called. This option allows for changing this behavior: when `true`, all the callbacks will be run on the JS thread instead of the UI thread, regardless of whether they are worklets or not.
