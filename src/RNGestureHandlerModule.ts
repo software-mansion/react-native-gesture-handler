@@ -16,8 +16,8 @@ if (RNGestureHandlerModule == null) {
   );
 }
 
-if (RNGestureHandlerModule.flushQueuedHandlers === undefined) {
-  RNGestureHandlerModule.flushQueuedHandlers = () => {
+if (RNGestureHandlerModule.flushOperations === undefined) {
+  RNGestureHandlerModule.flushOperations = () => {
     // NO-OP if not defined
   };
 }
@@ -41,7 +41,7 @@ export type RNGestureHandlerModuleProps = {
   ) => void;
   dropGestureHandler: (handlerTag: number) => void;
   install: () => void;
-  flushQueuedHandlers: () => void;
+  flushOperations: () => void;
 };
 
 export default RNGestureHandlerModule as RNGestureHandlerModuleProps;

@@ -182,16 +182,16 @@ export function findNodeHandle(
   return findNodeHandleRN(node);
 }
 
-let scheduledHandlersQueueFlush:
+let scheduledFlushOperationsId:
   | ReturnType<typeof requestAnimationFrame>
   | undefined = undefined;
 
-export function scheduleHandlersQueueFlush() {
-  if (scheduledHandlersQueueFlush === undefined) {
-    scheduledHandlersQueueFlush = requestAnimationFrame(() => {
-      RNGestureHandlerModule.flushQueuedHandlers();
+export function scheduleFlushOperationsQueue() {
+  if (scheduledFlushOperationsId === undefined) {
+    scheduledFlushOperationsId = requestAnimationFrame(() => {
+      RNGestureHandlerModule.flushOperations();
 
-      scheduledHandlersQueueFlush = undefined;
+      scheduledFlushOperationsId = undefined;
     });
   }
 }

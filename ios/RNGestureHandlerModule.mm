@@ -173,7 +173,7 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
     }];
 }
 
-RCT_EXPORT_METHOD(flushQueuedHandlers)
+RCT_EXPORT_METHOD(flushOperations)
 {
     if (_operations.count == 0) {
         return;
