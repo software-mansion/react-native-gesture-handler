@@ -60,6 +60,8 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+    [_manager dropAllGestureHandlers];
+    
     _manager = nil;
     
 #ifdef RN_FABRIC_ENABLED

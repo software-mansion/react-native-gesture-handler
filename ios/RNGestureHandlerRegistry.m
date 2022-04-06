@@ -48,4 +48,14 @@
     [_handlers removeObjectForKey:handlerTag];
 }
 
+- (void)dropAllHandlers
+{
+    for (NSNumber* tag in _handlers) {
+        RNGestureHandler *handler = _handlers[tag];
+        [handler unbindFromView];
+    }
+    
+    [_handlers removeAllObjects];
+}
+
 @end
