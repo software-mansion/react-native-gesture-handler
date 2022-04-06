@@ -136,7 +136,6 @@ class ControlledSwitch extends React.Component<
 
 type ComboProps = {
   // TODO(TS) what this type can be?
-
   ScrollViewComponent: React.ComponentType<any>;
 };
 class Combo extends Component<ComboProps> {
