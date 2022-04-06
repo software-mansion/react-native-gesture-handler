@@ -3,7 +3,7 @@ import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { requireNativeComponent, ViewProps } from 'react-native';
 import { isFabric } from './utils';
-import { tryInitializeFabric } from './init';
+import { maybeInitializeFabric } from './init';
 
 const GestureHandlerRootViewNativeComponent = isFabric()
   ? require('./fabric/RNGestureHandlerRootViewNativeComponent').default
@@ -18,7 +18,7 @@ export default function GestureHandlerRootView(
   // try initialize fabric on the first render, at this point we can
   // reliably check if fabric is enabled (the function contains a flag
   // to make sure it's called only once)
-  tryInitializeFabric();
+  maybeInitializeFabric();
 
   return <GestureHandlerRootViewNativeComponent {...props} />;
 }
