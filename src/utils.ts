@@ -49,7 +49,7 @@ export function isFabric(): boolean {
   return !!global?.nativeFabricUIManager;
 }
 
-export function shouldUseCodegen(): boolean {
+export function shouldUseCodegenNativeComponent(): boolean {
   const [majorStr, minorStr] = rnVersion.split('.');
   const major = Number.parseInt(majorStr);
   const minor = Number.parseInt(minorStr);

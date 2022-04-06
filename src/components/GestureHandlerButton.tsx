@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { HostComponent, requireNativeComponent } from 'react-native';
 import { RawButtonProps } from './GestureButtons';
-import { shouldUseCodegen } from '../utils';
+import { shouldUseCodegenNativeComponent } from '../utils';
 
-const RNGestureHandlerButtonNativeComponent = shouldUseCodegen()
+const RNGestureHandlerButtonNativeComponent = shouldUseCodegenNativeComponent()
   ? require('../fabric/RNGestureHandlerButtonNativeComponent').default
   : requireNativeComponent('RNGestureHandlerButton');
 

@@ -3,9 +3,9 @@ import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { requireNativeComponent, ViewProps } from 'react-native';
 import { maybeInitializeFabric } from './init';
-import { shouldUseCodegen } from './utils';
+import { shouldUseCodegenNativeComponent } from './utils';
 
-const GestureHandlerRootViewNativeComponent = shouldUseCodegen()
+const GestureHandlerRootViewNativeComponent = shouldUseCodegenNativeComponent()
   ? require('./fabric/RNGestureHandlerRootViewNativeComponent').default
   : requireNativeComponent('RNGestureHandlerRootView');
 
