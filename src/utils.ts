@@ -1,3 +1,5 @@
+import { version as rnVersion } from 'react-native/package.json';
+
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];
@@ -44,4 +46,13 @@ export function tagMessage(msg: string) {
 export function isFabric(): boolean {
   // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
   return !!global?.nativeFabricUIManager;
+}
+
+export function shouldUseCodegen(): boolean {
+  const [majorStr, minorStr] = rnVersion.split('.');
+  const major = Number.parseInt(majorStr);
+  const minor = Number.parseInt(minorStr);
+
+  // use codegen starting with RN 0.68
+  return minor >= 68 || major > 0;
 }
