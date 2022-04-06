@@ -16,6 +16,12 @@ if (RNGestureHandlerModule == null) {
   );
 }
 
+if (RNGestureHandlerModule.flushQueuedHandlers === undefined) {
+  RNGestureHandlerModule.flushQueuedHandlers = () => {
+    // NO-OP if not defined
+  };
+}
+
 export type RNGestureHandlerModuleProps = {
   handleSetJSResponder: (tag: number, blockNativeResponder: boolean) => void;
   handleClearJSResponder: () => void;
