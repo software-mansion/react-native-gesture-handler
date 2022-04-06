@@ -31,6 +31,8 @@
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "android/common/src/main/java/",
+    "android/reanimated/src/main/java/",
+    "android/noreanimated/src/main/java/",
     "ios/",
     "Swipeable/",
     "jest-utils/",
