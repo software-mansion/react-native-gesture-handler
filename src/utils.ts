@@ -54,7 +54,7 @@ export function shouldUseCodegenNativeComponent(): boolean {
   const major = Number.parseInt(majorStr);
   const minor = Number.parseInt(minorStr);
 
-  // use codegen starting with RN 0.68
+  // use codegenNativeComponent starting with RN 0.68
   return minor >= 68 || major > 0;
 }
 
