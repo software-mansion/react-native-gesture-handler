@@ -39,7 +39,7 @@ Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for
 ### `cancelsTouchesInView` (**iOS only**)
 
 Accepts a boolean value.
-When `true`, the handler will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes [`ACTIVE`](../../state.md#active).
+When `true`, the handler will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes [`ACTIVE`](../basics/state.md#active).
 Default value is `true`.
 
 ### `simultaneousHandlers`
