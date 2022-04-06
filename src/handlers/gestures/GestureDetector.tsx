@@ -17,7 +17,7 @@ import {
   GestureUpdateEvent,
   GestureStateChangeEvent,
   HandlerStateChangeEvent,
-  scheduleFlushOperationsQueue,
+  scheduleFlushOperations,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -90,7 +90,7 @@ function dropHandlers(preparedGesture: GestureConfigReference) {
     unregisterHandler(handler.handlerTag, handler.config.testId);
   }
 
-  scheduleFlushOperationsQueue();
+  scheduleFlushOperations();
 }
 
 function checkGestureCallbacksForWorklets(gesture: GestureType) {
@@ -182,7 +182,7 @@ function attachHandlers({
       );
     }
 
-    scheduleFlushOperationsQueue();
+    scheduleFlushOperations();
   });
 
   preparedGesture.config = gesture;
@@ -275,7 +275,7 @@ function updateHandlers(
       >[];
     }
 
-    scheduleFlushOperationsQueue();
+    scheduleFlushOperations();
   });
 }
 

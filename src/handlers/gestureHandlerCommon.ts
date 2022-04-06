@@ -186,7 +186,7 @@ let scheduledFlushOperationsId: ReturnType<
   typeof requestAnimationFrame
 > | null = null;
 
-export function scheduleFlushOperationsQueue() {
+export function scheduleFlushOperations() {
   if (scheduledFlushOperationsId === null) {
     scheduledFlushOperationsId = requestAnimationFrame(() => {
       RNGestureHandlerModule.flushOperations();
