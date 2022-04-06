@@ -109,7 +109,7 @@
     "react-native": "*"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "./src/*.{ts,tsx}": [
       "prettier --write"
     ]
   },

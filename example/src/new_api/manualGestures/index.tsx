@@ -99,7 +99,6 @@ export default function Example() {
       <GestureDetector gesture={gesture}>
         <Animated.View style={{ flex: 1 }}>
           {trackedPointers.map((pointer, index) => (
-            // eslint-disable-next-line react/no-array-index-key
             <PointerElement pointer={pointer} active={active} key={index} />
           ))}
         </Animated.View>

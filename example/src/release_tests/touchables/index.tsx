@@ -1,25 +1,25 @@
-import React, { Component } from 'react';
-import { StackScreenProps } from '@react-navigation/stack';
-
 import {
-  TouchableHighlight as RNTouchableHighlight,
-  TouchableOpacity as RNTouchableOpacity,
-  TouchableNativeFeedback as RNTouchableNativeFeedback,
-  TouchableWithoutFeedback as RNTouchableWithoutFeedback,
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
   BackgroundPropType,
+  FlatList,
+  TouchableHighlight as RNTouchableHighlight,
+  TouchableNativeFeedback as RNTouchableNativeFeedback,
+  TouchableOpacity as RNTouchableOpacity,
+  TouchableWithoutFeedback as RNTouchableWithoutFeedback,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
+import React, { Component } from 'react';
 import {
   RectButton,
+  ScrollView,
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  ScrollView,
 } from 'react-native-gesture-handler';
+
+import { StackScreenProps } from '@react-navigation/stack';
 
 const BOX_SIZE = 80;
 
@@ -34,10 +34,18 @@ const renderSampleBox = (color?: string) => (
 );
 
 const toReactNativeTouchable = (touchable: React.ComponentType<unknown>) => {
-  if (touchable === TouchableOpacity) return RNTouchableOpacity;
-  if (touchable === TouchableWithoutFeedback) return RNTouchableWithoutFeedback;
-  if (touchable === TouchableHighlight) return RNTouchableHighlight;
-  if (touchable === TouchableNativeFeedback) return RNTouchableNativeFeedback;
+  if (touchable === TouchableOpacity) {
+    return RNTouchableOpacity;
+  }
+  if (touchable === TouchableWithoutFeedback) {
+    return RNTouchableWithoutFeedback;
+  }
+  if (touchable === TouchableHighlight) {
+    return RNTouchableHighlight;
+  }
+  if (touchable === TouchableNativeFeedback) {
+    return RNTouchableNativeFeedback;
+  }
   return RNTouchableOpacity;
 };
 
@@ -45,7 +53,7 @@ type Touchables = {
   type: React.ComponentType<any>;
   props?: Record<string, unknown>;
   color?: string;
-  renderChild: (() => null) | ((color?: string) => JSX.Element);
+  renderChild: (() => null) | ((color?: string) => React.ReactNode);
   text: string;
   background?: (A: typeof TouchableNativeFeedback) => BackgroundPropType;
 };
@@ -140,8 +148,7 @@ const TOUCHABLES: Touchables[] = [
     },
     color: 'forestgreen',
     renderChild: renderSampleBox,
-    text:
-      'TouchableHighlight with callbacks (without longPress), currently GH component differs in the events sent from the RN one',
+    text: 'TouchableHighlight with callbacks (without longPress), currently GH component differs in the events sent from the RN one',
   },
   {
     type: TouchableOpacity,
@@ -178,8 +185,7 @@ const TOUCHABLES: Touchables[] = [
     },
     color: 'lightpink',
     renderChild: renderSampleBox,
-    text:
-      'TouchableOpacity with callbacks and delayed pressOut and pressIn (1000 ms)',
+    text: 'TouchableOpacity with callbacks and delayed pressOut and pressIn (1000 ms)',
   },
   {
     type: TouchableOpacity,

@@ -11,6 +11,10 @@ import {
 import { isFabric, isHermes } from './utils';
 import { COLORS } from './colors';
 
+declare const performance: {
+  now: () => number;
+};
+
 interface GestureDetectorDemoProps {
   color: string;
 }
@@ -18,19 +22,19 @@ interface GestureDetectorDemoProps {
 export function GestureDetectorDemo({ color }: GestureDetectorDemoProps) {
   const gesture = Gesture.Pan()
     .onBegin(() => {
-      console.log(window.performance.now(), 'onBegin');
+      console.log(performance.now(), 'onBegin');
     })
     .onStart(() => {
-      console.log(window.performance.now(), 'onStart');
+      console.log(performance.now(), 'onStart');
     })
     .onUpdate(() => {
-      console.log(window.performance.now(), 'onUpdate');
+      console.log(performance.now(), 'onUpdate');
     })
     .onEnd(() => {
-      console.log(window.performance.now(), 'onEnd');
+      console.log(performance.now(), 'onEnd');
     })
     .onFinalize(() => {
-      console.log(window.performance.now(), 'onFinalize');
+      console.log(performance.now(), 'onFinalize');
     });
 
   return (
@@ -50,13 +54,13 @@ interface ManualGestureDemoProps {
 export function ManualGestureDemo({ color }: ManualGestureDemoProps) {
   const gesture = Gesture.Manual()
     .onTouchesDown(() => {
-      console.log(window.performance.now(), 'onTouchesDown');
+      console.log(performance.now(), 'onTouchesDown');
     })
     .onTouchesMove(() => {
-      console.log(window.performance.now(), 'onTouchesMove');
+      console.log(performance.now(), 'onTouchesMove');
     })
     .onTouchesUp(() => {
-      console.log(window.performance.now(), 'onTouchesUp');
+      console.log(performance.now(), 'onTouchesUp');
     });
 
   return (
@@ -75,11 +79,11 @@ interface PanGestureHandlerDemoProps {
 
 export function PanGestureHandlerDemo({ color }: PanGestureHandlerDemoProps) {
   const onGestureEvent = () => {
-    console.log(window.performance.now(), 'onGestureEvent');
+    console.log(performance.now(), 'onGestureEvent');
   };
 
   const onHandlerStateChange = () => {
-    console.log(window.performance.now(), 'onHandlerStateChange');
+    console.log(performance.now(), 'onHandlerStateChange');
   };
 
   return (
@@ -161,7 +165,7 @@ export default function HomeScreen() {
       <GestureDetectorDemo color={COLORS.NAVY} />
       <ManualGestureDemo color={COLORS.KINDA_RED} />
       <PanGestureHandlerDemo color={COLORS.YELLOW} />
-      <AnimatedEventDemo color={COLORS.KINDA_GREEN} useNativeDriver={true} />
+      <AnimatedEventDemo color={COLORS.KINDA_GREEN} useNativeDriver />
       <AnimatedEventDemo color={COLORS.KINDA_BLUE} useNativeDriver={false} />
     </View>
   );
