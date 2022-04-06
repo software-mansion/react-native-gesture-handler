@@ -242,9 +242,9 @@
 {
     // Delivers the event to Reanimated.
 #ifdef RN_FABRIC_ENABLED
-    // TODO: send event directly to Reanimated
-    // This is already supported in Reanimated with Fabric but let's wait until the official release.
-    // [_reanimatedModule eventDispatcherWillDispatchEvent:event];
+    // Send event directly to Reanimated
+    id _reanimatedModule = [_uiManager.bridge moduleForName:@"ReanimatedModule"];
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event];
 #else
     // In the old architecture, Reanimated overwrites RCTEventDispatcher
     // with REAEventDispatcher and intercepts all direct events.
