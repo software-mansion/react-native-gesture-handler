@@ -14,7 +14,12 @@ import com.facebook.soloader.SoLoader
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.*
 import java.util.*
+// NativeModule.onCatalystInstanceDestroy() was deprecated in favor of NativeModule.invalidate()
+// ref: https://github.com/facebook/react-native/commit/18c8417290823e67e211bde241ae9dde27b72f17
 
+// UIManagerModule.resolveRootTagFromReactTag() was deprecated and will be removed in the next RN release
+// ref: https://github.com/facebook/react-native/commit/acbf9e18ea666b07c1224a324602a41d0a66985e
+@Suppress("DEPRECATION")
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   : ReactContextBaseJavaModule(reactContext), GestureHandlerStateManager {
@@ -314,7 +319,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
 
   private val eventListener = object : OnTouchEventListener {
     override fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, event: MotionEvent) {
-      this@RNGestureHandlerModule.onHandlerUpdate(handler, event)
+      this@RNGestureHandlerModule.onHandlerUpdate(handler)
     }
 
     override fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
@@ -363,10 +368,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun attachGestureHandler(handlerTag: Int, viewTag: Int, actionType: Int) {
-    if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      tryInitializeHandlerForReactRootView(viewTag)
-    }
-
     // We don't have to handle view flattening in any special way since handlers are stored as
     // a map: viewTag -> [handler]. If the view with attached handlers was to be flattened
     // then that viewTag simply wouldn't be visited when traversing the view hierarchy in the
@@ -459,56 +460,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       while (roots.isNotEmpty()) {
         val sizeBefore: Int = roots.size
         val root: RNGestureHandlerRootHelper = roots[0]
-        val reactRootView: ViewGroup = root.rootView
-        if (reactRootView is RNGestureHandlerEnabledRootView) {
-          reactRootView.tearDown()
-        } else {
-          root.tearDown()
-        }
+        root.tearDown()
         if (roots.size >= sizeBefore) {
           throw IllegalStateException("Expected root helper to get unregistered while tearing down")
         }
       }
     }
     super.onCatalystInstanceDestroy()
-  }
-
-  private fun tryInitializeHandlerForReactRootView(ancestorViewTag: Int) {
-    val uiManager = reactApplicationContext.UIManager
-    val rootViewTag = uiManager.resolveRootTagFromReactTag(ancestorViewTag)
-    if (rootViewTag < 1) {
-      throw JSApplicationIllegalArgumentException("Could find root view for a given ancestor with tag $ancestorViewTag")
-    }
-    synchronized(roots) {
-      for (root in roots) {
-        val rootView: ViewGroup = root.rootView
-        if (rootView is ReactRootView && rootView.rootViewTag == rootViewTag) {
-          // we have found root helper registered for a given react root, we don't need to
-          // initialize a new one then
-          return
-        }
-      }
-    }
-    synchronized(enqueuedRootViewInit) {
-      if (rootViewTag in enqueuedRootViewInit) {
-        // root view initialization already enqueued -> we skip
-        return
-      }
-      enqueuedRootViewInit.add(rootViewTag)
-    }
-    // root helper for a given root tag has not been found, we may wat to check if the root view is
-    // an instance of RNGestureHandlerEnabledRootView and then initialize gesture handler with it
-    uiManager.addUIBlock(UIBlock { nativeViewHierarchyManager ->
-      val view = nativeViewHierarchyManager.resolveView(rootViewTag)
-      if (view is RNGestureHandlerEnabledRootView) {
-        view.initialize()
-      } else {
-        // Seems like the root view is something else than RNGestureHandlerEnabledRootView, this
-        // is fine though as long as gestureHandlerRootHOC is used in JS
-        // FIXME: check and warn about gestureHandlerRootHOC
-      }
-      synchronized(enqueuedRootViewInit) { enqueuedRootViewInit.remove(rootViewTag) }
-    })
   }
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
@@ -542,7 +500,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? =
     handlerFactories.firstOrNull { it.type == handler.javaClass } as HandlerFactory<T>?
 
-  private fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, motionEvent: MotionEvent) {
+  private fun <T : GestureHandler<T>> onHandlerUpdate(handler: T) {
     // triggers onUpdate and onChange callbacks on the JS side
 
     if (handler.tag < 0) {

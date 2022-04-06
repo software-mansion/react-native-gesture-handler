@@ -5,59 +5,59 @@ import {
   FlingGestureHandler,
   FlingGestureHandlerEventPayload,
   flingHandlerName,
-} from './handlers/FlingGestureHandler';
+} from '../handlers/FlingGestureHandler';
 import {
   ForceTouchGestureHandler,
   ForceTouchGestureHandlerEventPayload,
   forceTouchHandlerName,
-} from './handlers/ForceTouchGestureHandler';
+} from '../handlers/ForceTouchGestureHandler';
 import {
   BaseGestureHandlerProps,
   GestureEvent,
   HandlerStateChangeEvent,
-} from './handlers/gestureHandlerCommon';
-import { FlingGesture } from './handlers/gestures/flingGesture';
-import { ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
-import { BaseGesture, GestureType } from './handlers/gestures/gesture';
-import { LongPressGesture } from './handlers/gestures/longPressGesture';
-import { NativeGesture } from './handlers/gestures/nativeGesture';
-import { PanGesture } from './handlers/gestures/panGesture';
-import { PinchGesture } from './handlers/gestures/pinchGesture';
-import { RotationGesture } from './handlers/gestures/rotationGesture';
-import { TapGesture } from './handlers/gestures/tapGesture';
-import { findHandlerByTestID } from './handlers/handlersRegistry';
+} from '../handlers/gestureHandlerCommon';
+import { FlingGesture } from '../handlers/gestures/flingGesture';
+import { ForceTouchGesture } from '../handlers/gestures/forceTouchGesture';
+import { BaseGesture, GestureType } from '../handlers/gestures/gesture';
+import { LongPressGesture } from '../handlers/gestures/longPressGesture';
+import { NativeGesture } from '../handlers/gestures/nativeGesture';
+import { PanGesture } from '../handlers/gestures/panGesture';
+import { PinchGesture } from '../handlers/gestures/pinchGesture';
+import { RotationGesture } from '../handlers/gestures/rotationGesture';
+import { TapGesture } from '../handlers/gestures/tapGesture';
+import { findHandlerByTestID } from '../handlers/handlersRegistry';
 import {
   LongPressGestureHandler,
   LongPressGestureHandlerEventPayload,
   longPressHandlerName,
-} from './handlers/LongPressGestureHandler';
+} from '../handlers/LongPressGestureHandler';
 import {
   NativeViewGestureHandler,
   NativeViewGestureHandlerPayload,
   nativeViewHandlerName,
-} from './handlers/NativeViewGestureHandler';
+} from '../handlers/NativeViewGestureHandler';
 import {
   PanGestureHandler,
   PanGestureHandlerEventPayload,
   panHandlerName,
-} from './handlers/PanGestureHandler';
+} from '../handlers/PanGestureHandler';
 import {
   PinchGestureHandler,
   PinchGestureHandlerEventPayload,
   pinchHandlerName,
-} from './handlers/PinchGestureHandler';
+} from '../handlers/PinchGestureHandler';
 import {
   RotationGestureHandler,
   RotationGestureHandlerEventPayload,
   rotationHandlerName,
-} from './handlers/RotationGestureHandler';
+} from '../handlers/RotationGestureHandler';
 import {
   TapGestureHandler,
   TapGestureHandlerEventPayload,
   tapHandlerName,
-} from './handlers/TapGestureHandler';
-import { State } from './State';
-import { hasProperty, withPrevAndCurrent } from './utils';
+} from '../handlers/TapGestureHandler';
+import { State } from '../State';
+import { hasProperty, withPrevAndCurrent } from '../utils';
 
 // load fireEvent conditionally, so RNGH may be used in setups without testing-library
 let fireEvent = (

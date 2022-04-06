@@ -18,7 +18,7 @@ target 'FabricExample' do
     :hermes_enabled => flags[:hermes_enabled],
     :fabric_enabled => flags[:fabric_enabled],
     # An abosolute path to your application root.
-    :app_path => "#{Dir.pwd}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
   target 'FabricExampleTests' do

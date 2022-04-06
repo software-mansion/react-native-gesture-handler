@@ -34,6 +34,7 @@ export function hasProperty(object: object, key: string) {
 }
 
 export function isJestEnv(): boolean {
+  // @ts-ignore Do not use `@types/node` because it will prioritise Node types over RN types which breaks the types (ex. setTimeout) in React Native projects.
   return hasProperty(global, 'process') && !!process.env.JEST_WORKER_ID;
 }
 
@@ -55,4 +56,10 @@ export function shouldUseCodegen(): boolean {
 
   // use codegen starting with RN 0.68
   return minor >= 68 || major > 0;
+}
+
+export function isRemoteDebuggingEnabled(): boolean {
+  // react-native-reanimated checks if in remote debugging in the same way
+  // @ts-ignore global is available but node types are not included
+  return !(global as any).nativeCallSyncHook || (global as any).__REMOTEDEV__;
 }

@@ -182,7 +182,13 @@ abstract class GestureHandler {
         // onHandlerStateChange only
         handlerTag: this.handlerTag,
         target: this.ref,
-        oldState: this.oldState,
+        // send oldState only when the state was changed, or is different than ACTIVE
+        // GestureDetector relies on the presence of `oldState` to differentiate between
+        // update events and state change events
+        oldState:
+          state !== this.previousState || state != 4
+            ? this.oldState
+            : undefined,
       },
       timeStamp: Date.now(),
     };

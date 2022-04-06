@@ -316,7 +316,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     isEnabled: ${handler.isEnabled}
     isActive: ${handler.isActive}
     isAwaiting: ${handler.isAwaiting}
-    trackedPointersCount: ${handler.trackedPointersCount}
+    trackedPointersCount: ${handler.trackedPointersIDsCount}
     trackedPointers: ${handler.trackedPointerIDs.joinToString(separator = ", ")}
     while handling event: $event
   """.trimIndent(), e) {}
@@ -329,7 +329,19 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       || trackedPointersIDsCount < 1) {
       return
     }
-    val event = adaptEvent(origEvent)
+
+    // a workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/1188
+    val event = if (BuildConfig.DEBUG) {
+      adaptEvent(origEvent)
+    } else {
+      try {
+        adaptEvent(origEvent)
+      } catch (e: AdaptEventException) {
+        fail()
+        return
+      }
+    }
+
     x = event.x
     y = event.y
     numberOfPointers = event.pointerCount
