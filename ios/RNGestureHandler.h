@@ -26,7 +26,7 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 
 @protocol RNGestureHandlerEventEmitter
 
-- (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType;
+- (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType;
 
 @end
 
@@ -74,7 +74,7 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
-- (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event;
+- (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state
                  forViewWithTag:(nonnull NSNumber *)reactTag;
 

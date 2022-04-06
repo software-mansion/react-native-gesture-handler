@@ -35,6 +35,27 @@ export interface RawButtonProps extends NativeViewGestureHandlerProps {
    * Defines color of native ripple animation used since API level 21.
    */
   rippleColor?: any; // it was present in BaseButtonProps before but is used here in code
+
+  /**
+   * Android only.
+   *
+   * Defines radius of native ripple animation used since API level 21.
+   */
+  rippleRadius?: number | null;
+
+  /**
+   * Android only.
+   *
+   * Set this to true if you want the ripple animation to render outside the view bounds.
+   */
+  borderless?: boolean;
+
+  /**
+   * Android only.
+   *
+   * Defines whether the ripple animation should be drawn on the foreground of the view.
+   */
+  foreground?: boolean;
 }
 
 export interface BaseButtonProps extends RawButtonProps {
@@ -69,13 +90,6 @@ export interface RectButtonProps extends BaseButtonProps {
 }
 
 export interface BorderlessButtonProps extends BaseButtonProps {
-  /**
-   * Android only.
-   *
-   * Set this to false if you want the ripple animation to render only within view bounds.
-   */
-  borderless?: boolean;
-
   /**
    * iOS only.
    *
