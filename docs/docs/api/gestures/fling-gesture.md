@@ -12,7 +12,7 @@ A discrete gesture that activates when the movement is sufficiently long and fas
 Gesture gets [ACTIVE](../../under-the-hood/states-events.md#active) when movement is sufficiently long and it does not take too much time.
 When gesture gets activated it will turn into [END](../../under-the-hood/states-events.md#end) state when finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
-
+aaa
 ## Config
 
 ### Properties specific to `FlingGesture`:
