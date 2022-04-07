@@ -5,7 +5,10 @@
 
 RCT_EXPORT_MODULE(RNGestureHandlerButton)
 
-RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
+RCT_CUSTOM_VIEW_PROPERTY(enabled, BOOL, RNGestureHandlerButton)
+{
+    view.userEnabled = json == nil ? YES : [RCTConvert BOOL: json];
+}
 #if !TARGET_OS_TV
 RCT_CUSTOM_VIEW_PROPERTY(exclusive, BOOL, RNGestureHandlerButton)
 {
