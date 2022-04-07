@@ -1,3 +1,5 @@
+import { version as rnVersion } from 'react-native/package.json';
+
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];
@@ -40,9 +42,20 @@ export function tagMessage(msg: string) {
   return `[react-native-gesture-handler] ${msg}`;
 }
 
+// helper method to check whether Fabric is enabled, however global.nativeFabricUIManager
+// may not be initialized before the first render
 export function isFabric(): boolean {
   // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
   return !!global?.nativeFabricUIManager;
+}
+
+export function shouldUseCodegenNativeComponent(): boolean {
+  const [majorStr, minorStr] = rnVersion.split('.');
+  const major = Number.parseInt(majorStr);
+  const minor = Number.parseInt(minorStr);
+
+  // use codegenNativeComponent starting with RN 0.68
+  return minor >= 68 || major > 0;
 }
 
 export function isRemoteDebuggingEnabled(): boolean {
