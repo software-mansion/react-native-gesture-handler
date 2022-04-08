@@ -589,7 +589,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   private fun <T : Event<T>>sendEventForReanimated(event: T) {
     // Delivers the event to Reanimated.
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      // This is already supported in Reanimated with Fabric but let's wait until the official release.
+      // Send event directly to Reanimated
       ReanimatedEventDispatcher.sendEvent(event, reactApplicationContext)
     } else {
       // In the old architecture, Reanimated subscribes for specific direct events.
