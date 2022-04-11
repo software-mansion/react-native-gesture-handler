@@ -48,6 +48,7 @@
     RCTUIManager *_uiManager;
     NSHashTable<RNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
     RCTEventDispatcher *_eventDispatcher;
+    id _reanimatedModule;
 }
 
 - (instancetype)initWithUIManager:(RCTUIManager *)uiManager
@@ -58,6 +59,7 @@
         _eventDispatcher = eventDispatcher;
         _registry = [RNGestureHandlerRegistry new];
         _rootViewGestureRecognizers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
+        _reanimatedModule = nil;
     }
     return self;
 }
@@ -243,7 +245,10 @@
     // Delivers the event to Reanimated.
 #ifdef RN_FABRIC_ENABLED
     // Send event directly to Reanimated
-    id _reanimatedModule = [_uiManager.bridge moduleForName:@"ReanimatedModule"];
+    if (_reanimatedModule == nil) {
+      _reanimatedModule = [_uiManager.bridge moduleForName:@"ReanimatedModule"];
+    }
+    
     [_reanimatedModule eventDispatcherWillDispatchEvent:event];
 #else
     // In the old architecture, Reanimated overwrites RCTEventDispatcher
