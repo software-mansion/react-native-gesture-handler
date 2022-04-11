@@ -68,8 +68,7 @@
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     UIView *inner = [super hitTest:point withEvent:event];
-    while (inner && ![self shouldHandleTouch:inner])
-    {
+    while (inner && ![self shouldHandleTouch:inner]) {
         inner = inner.superview;
     }
     return inner;
