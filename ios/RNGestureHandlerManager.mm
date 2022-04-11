@@ -139,6 +139,11 @@
     [_registry dropHandlerWithTag:handlerTag];
 }
 
+- (void)dropAllGestureHandlers
+{
+    [_registry dropAllHandlers];
+}
+
 - (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder
 {
     if ([blockNativeResponder boolValue]) {
