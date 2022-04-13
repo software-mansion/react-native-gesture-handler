@@ -38,7 +38,7 @@ def shouldUseCommonInterfaceFromReanimated() {
         def json = new JsonSlurper().parseText(inputFile.text)
         def reanimatedVersion = json.version as String
         def (major, minor, patch) = reanimatedVersion.tokenize('.')
-        return Integer.parseInt(major) == 2 && Integer.parseInt(minor) >= 3
+        return (Integer.parseInt(major) == 2 && Integer.parseInt(minor) >= 3) || Integer.parseInt(major) == 3
     } else {
         return false
     }
@@ -106,8 +106,11 @@ android {
 
             // Include "common/" only when it's not provided by Reanimated to mitigate
             // multiple definitions of the same class preventing build
-            if (!shouldUseCommonInterfaceFromReanimated()) {
+            if (shouldUseCommonInterfaceFromReanimated()) {
+                srcDirs += 'reanimated/src/main/java'
+            } else {
                 srcDirs += 'common/src/main/java'
+                srcDirs += 'noreanimated/src/main/java'
             }
 
             if (isNewArchitectureEnabled()) {
