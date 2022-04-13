@@ -46,7 +46,7 @@ using namespace facebook::react;
 {
     const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
-    _buttonView.enabled = newProps.enabled;
+    _buttonView.userEnabled = newProps.enabled;
     _buttonView.exclusiveTouch = newProps.exclusive;
 
     [super updateProps:props oldProps:oldProps];
