@@ -155,6 +155,8 @@ export type DrawerLayoutState = {
   touchX: Animated.Value;
   drawerTranslation: Animated.Value;
   containerWidth: number;
+  drawerState: DrawerState;
+  drawerOpened: boolean;
 };
 
 export type DrawerMovementOption = {
@@ -189,6 +191,8 @@ export default class DrawerLayout extends Component<
       touchX,
       drawerTranslation,
       containerWidth: 0,
+      drawerState: IDLE,
+      drawerOpened: false,
     };
 
     this.updateAnimatedEvent(props, this.state);
@@ -349,6 +353,7 @@ export default class DrawerLayout extends Component<
       this.handleRelease({ nativeEvent });
     } else if (nativeEvent.state === State.ACTIVE) {
       this.emitStateChanged(DRAGGING, false);
+      this.setState({ drawerState: DRAGGING });
       if (this.props.keyboardDismissMode === 'on-drag') {
         Keyboard.dismiss();
       }
@@ -464,6 +469,7 @@ export default class DrawerLayout extends Component<
     const willShow = toValue !== 0;
     this.updateShowing(willShow);
     this.emitStateChanged(SETTLING, willShow);
+    this.setState({ drawerState: SETTLING });
     if (this.props.hideStatusBar) {
       StatusBar.setHidden(willShow, this.props.statusBarAnimation || 'slide');
     }
@@ -476,6 +482,12 @@ export default class DrawerLayout extends Component<
     }).start(({ finished }) => {
       if (finished) {
         this.emitStateChanged(IDLE, willShow);
+        this.setState({ drawerOpened: willShow });
+        if (this.state.drawerState !== DRAGGING) {
+          // it's possilbe that user started drag while the drawer
+          // was settling, don't override state in this case
+          this.setState({ drawerState: IDLE });
+        }
         if (willShow) {
           this.props.onDrawerOpen?.();
         } else {
@@ -516,11 +528,14 @@ export default class DrawerLayout extends Component<
   private renderOverlay = () => {
     /* Overlay styles */
     invariant(this.openValue, 'should be set');
-    const overlayOpacity = this.openValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-      extrapolate: 'clamp',
-    });
+    let overlayOpacity;
+
+    if (this.state.drawerState !== IDLE) {
+      overlayOpacity = this.openValue;
+    } else {
+      overlayOpacity = this.state.drawerOpened ? 1 : 0;
+    }
+
     const dynamicOverlayStyles = {
       opacity: overlayOpacity,
       backgroundColor: this.props.overlayColor,
@@ -579,11 +594,15 @@ export default class DrawerLayout extends Component<
     let drawerTranslateX: number | Animated.AnimatedInterpolation = 0;
     if (drawerSlide) {
       const closedDrawerOffset = fromLeft ? -drawerWidth! : drawerWidth!;
-      drawerTranslateX = openValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: [closedDrawerOffset, 0],
-        extrapolate: 'clamp',
-      });
+      if (this.state.drawerState !== IDLE) {
+        drawerTranslateX = openValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [closedDrawerOffset, 0],
+          extrapolate: 'clamp',
+        });
+      } else {
+        drawerTranslateX = this.state.drawerOpened ? 0 : closedDrawerOffset;
+      }
     }
     const drawerStyles: {
       transform: { translateX: number | Animated.AnimatedInterpolation }[];
