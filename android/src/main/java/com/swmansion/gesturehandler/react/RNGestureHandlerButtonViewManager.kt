@@ -10,6 +10,7 @@ import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.PaintDrawable
 import android.graphics.drawable.RippleDrawable
 import android.os.Build
+import android.os.SystemClock
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -34,7 +35,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   private val mDelegate: ViewManagerDelegate<ButtonViewGroup>
 
   init {
-      mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
+    mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
   }
 
   override fun getName() = REACT_CLASS
@@ -86,7 +87,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   }
 
   class ButtonViewGroup(context: Context?) : ViewGroup(context),
-    NativeViewGestureHandler.StateChangeHook {
+          NativeViewGestureHandler.StateChangeHook {
     // Using object because of handling null representing no value set.
     var rippleColor: Int? = null
       set(color) = withBackgroundUpdate {
@@ -112,6 +113,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
+    private var attachTime = -1L
 
     var isTouched = false
 
@@ -230,7 +232,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
           // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
           colorDrawable.setCornerRadius(borderRadius)
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-            && selectable is RippleDrawable) {
+                  && selectable is RippleDrawable) {
             val mask = PaintDrawable(Color.WHITE)
             mask.setCornerRadius(borderRadius)
             selectable.setDrawableByLayerId(android.R.id.mask, mask)
@@ -257,6 +259,27 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
       // No-op
+    }
+
+    override fun onAttachedToWindow() {
+      super.onAttachedToWindow()
+      val time = SystemClock.uptimeMillis()
+      this.attachTime = time
+
+      for (button in attachedButtons) {
+        if (time - button.attachTime > 100 && time - button.lastEventTime > 100) {
+          button.needBackgroundUpdate = true
+          button.updateBackground()
+        }
+      }
+
+      attachedButtons.add(this)
+    }
+
+    override fun onDetachedFromWindow() {
+      super.onDetachedFromWindow()
+
+      attachedButtons.remove(this)
     }
 
     override fun drawableHotspotChanged(x: Float, y: Float) {
@@ -347,6 +370,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       const val SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground"
       const val SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless"
 
+      val attachedButtons = mutableSetOf<ButtonViewGroup>()
       var resolveOutValue = TypedValue()
       var responder: ButtonViewGroup? = null
       var dummyClickListener = OnClickListener { }
