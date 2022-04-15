@@ -111,7 +111,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
-    private var attachTime = -1L
 
     var isTouched = false
 
@@ -130,30 +129,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     override fun setBackgroundColor(color: Int) = withBackgroundUpdate {
       _backgroundColor = color
-    }
-
-    private fun applyRippleEffectWhenNeeded(selectable: Drawable): Drawable {
-      val rippleColor = rippleColor
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && selectable is RippleDrawable) {
-        val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
-        val colorStateList = if (rippleColor != null) {
-          val colors = intArrayOf(rippleColor)
-          ColorStateList(states, colors)
-        } else {
-          // if rippleColor is null, reapply the default color
-          context.theme.resolveAttribute(android.R.attr.colorControlHighlight, resolveOutValue, true)
-          val colors = intArrayOf(resolveOutValue.data)
-          ColorStateList(states, colors)
-        }
-
-        selectable.setColor(colorStateList)
-      }
-
-      val rippleRadius = rippleRadius
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && rippleRadius != null && selectable is RippleDrawable) {
-        selectable.radius = PixelUtil.toPixelFromDIP(rippleRadius.toFloat()).toInt()
-      }
-      return selectable
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
@@ -210,33 +185,38 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         // reset foreground
         foreground = null
       }
+
+      val selectable = createSelectableDrawable()
+
+      if (borderRadius != 0f) {
+        // Radius-connected lines below ought to be considered
+        // as a temporary solution. It do not allow to set
+        // different radius on each corner. However, I suppose it's fairly
+        // fine for button-related use cases.
+        // Therefore it might be used as long as:
+        // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
+        // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
+        if (selectable is RippleDrawable) {
+          val mask = PaintDrawable(Color.WHITE)
+          mask.setCornerRadius(borderRadius)
+          selectable.setDrawableByLayerId(android.R.id.mask, mask)
+        }
+      }
+
       if (useDrawableOnForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        foreground = applyRippleEffectWhenNeeded(createSelectableDrawable())
+        foreground = selectable
         if (_backgroundColor != Color.TRANSPARENT) {
           setBackgroundColor(_backgroundColor)
         }
       } else if (_backgroundColor == Color.TRANSPARENT && rippleColor == null) {
-        background = createSelectableDrawable()
+        background = selectable
       } else {
         val colorDrawable = PaintDrawable(_backgroundColor)
-        val selectable = createSelectableDrawable()
+
         if (borderRadius != 0f) {
-          // Radius-connected lines below ought to be considered
-          // as a temporary solution. It do not allow to set
-          // different radius on each corner. However, I suppose it's fairly
-          // fine for button-related use cases.
-          // Therefore it might be used as long as:
-          // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
-          // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
           colorDrawable.setCornerRadius(borderRadius)
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-            && selectable is RippleDrawable) {
-            val mask = PaintDrawable(Color.WHITE)
-            mask.setCornerRadius(borderRadius)
-            selectable.setDrawableByLayerId(android.R.id.mask, mask)
-          }
         }
-        applyRippleEffectWhenNeeded(selectable)
+
         val layerDrawable = LayerDrawable(arrayOf(colorDrawable, selectable))
         background = layerDrawable
       }
@@ -244,6 +224,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     private fun createSelectableDrawable(): Drawable {
       val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
+      val rippleRadius = rippleRadius
       val colorStateList = if (rippleColor != null) {
         val colors = intArrayOf(rippleColor!!)
         ColorStateList(states, colors)
@@ -254,42 +235,15 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         ColorStateList(states, colors)
       }
 
-      return RippleDrawable(colorStateList, null, if (useBorderlessDrawable) null else ShapeDrawable(RectShape()))
-//      val version = Build.VERSION.SDK_INT
-//      val identifier = if (useBorderlessDrawable && version >= 21) SELECTABLE_ITEM_BACKGROUND_BORDERLESS else SELECTABLE_ITEM_BACKGROUND
-//      val attrID = getAttrId(context, identifier)
-//      context.theme.resolveAttribute(attrID, resolveOutValue, true)
-//      return if (version >= 21) {
-//        resources.getDrawable(resolveOutValue.resourceId, context.theme)
-//      } else {
-//        @Suppress("Deprecation")
-//        resources.getDrawable(resolveOutValue.resourceId)
-//      }
+      return RippleDrawable(colorStateList, null, if (useBorderlessDrawable) null else ShapeDrawable(RectShape())).also {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && rippleRadius != null) {
+          it.radius = PixelUtil.toPixelFromDIP(rippleRadius.toFloat()).toInt()
+        }
+      }
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
       // No-op
-    }
-
-    override fun onAttachedToWindow() {
-      super.onAttachedToWindow()
-      val time = SystemClock.uptimeMillis()
-      this.attachTime = time
-
-      for (button in attachedButtons) {
-        if (time - button.attachTime > 100 && time - button.lastEventTime > 100) {
-          button.needBackgroundUpdate = true
-          button.updateBackground()
-        }
-      }
-
-      attachedButtons.add(this)
-    }
-
-    override fun onDetachedFromWindow() {
-      super.onDetachedFromWindow()
-
-      attachedButtons.remove(this)
     }
 
     override fun drawableHotspotChanged(x: Float, y: Float) {
@@ -377,29 +331,9 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     }
 
     companion object {
-      const val SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground"
-      const val SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless"
-
-      val attachedButtons = mutableSetOf<ButtonViewGroup>()
       var resolveOutValue = TypedValue()
       var responder: ButtonViewGroup? = null
       var dummyClickListener = OnClickListener { }
-
-      @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-      private fun getAttrId(context: Context, attr: String): Int {
-        SoftAssertions.assertNotNull(attr)
-        return when (attr) {
-          SELECTABLE_ITEM_BACKGROUND -> {
-            android.R.attr.selectableItemBackground
-          }
-          SELECTABLE_ITEM_BACKGROUND_BORDERLESS -> {
-            android.R.attr.selectableItemBackgroundBorderless
-          }
-          else -> {
-            context.resources.getIdentifier(attr, "attr", "android")
-          }
-        }
-      }
     }
   }
 
