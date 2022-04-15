@@ -5,10 +5,8 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.LayerDrawable
-import android.graphics.drawable.PaintDrawable
-import android.graphics.drawable.RippleDrawable
+import android.graphics.drawable.*
+import android.graphics.drawable.shapes.RectShape
 import android.os.Build
 import android.os.SystemClock
 import android.util.TypedValue
@@ -35,7 +33,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   private val mDelegate: ViewManagerDelegate<ButtonViewGroup>
 
   init {
-    mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
+      mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
   }
 
   override fun getName() = REACT_CLASS
@@ -87,7 +85,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   }
 
   class ButtonViewGroup(context: Context?) : ViewGroup(context),
-          NativeViewGestureHandler.StateChangeHook {
+    NativeViewGestureHandler.StateChangeHook {
     // Using object because of handling null representing no value set.
     var rippleColor: Int? = null
       set(color) = withBackgroundUpdate {
@@ -232,7 +230,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
           // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
           colorDrawable.setCornerRadius(borderRadius)
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                  && selectable is RippleDrawable) {
+            && selectable is RippleDrawable) {
             val mask = PaintDrawable(Color.WHITE)
             mask.setCornerRadius(borderRadius)
             selectable.setDrawableByLayerId(android.R.id.mask, mask)
@@ -245,16 +243,28 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     }
 
     private fun createSelectableDrawable(): Drawable {
-      val version = Build.VERSION.SDK_INT
-      val identifier = if (useBorderlessDrawable && version >= 21) SELECTABLE_ITEM_BACKGROUND_BORDERLESS else SELECTABLE_ITEM_BACKGROUND
-      val attrID = getAttrId(context, identifier)
-      context.theme.resolveAttribute(attrID, resolveOutValue, true)
-      return if (version >= 21) {
-        resources.getDrawable(resolveOutValue.resourceId, context.theme)
+      val states = arrayOf(intArrayOf(android.R.attr.state_enabled))
+      val colorStateList = if (rippleColor != null) {
+        val colors = intArrayOf(rippleColor!!)
+        ColorStateList(states, colors)
       } else {
-        @Suppress("Deprecation")
-        resources.getDrawable(resolveOutValue.resourceId)
+        // if rippleColor is null, reapply the default color
+        context.theme.resolveAttribute(android.R.attr.colorControlHighlight, resolveOutValue, true)
+        val colors = intArrayOf(resolveOutValue.data)
+        ColorStateList(states, colors)
       }
+
+      return RippleDrawable(colorStateList, null, if (useBorderlessDrawable) null else ShapeDrawable(RectShape()))
+//      val version = Build.VERSION.SDK_INT
+//      val identifier = if (useBorderlessDrawable && version >= 21) SELECTABLE_ITEM_BACKGROUND_BORDERLESS else SELECTABLE_ITEM_BACKGROUND
+//      val attrID = getAttrId(context, identifier)
+//      context.theme.resolveAttribute(attrID, resolveOutValue, true)
+//      return if (version >= 21) {
+//        resources.getDrawable(resolveOutValue.resourceId, context.theme)
+//      } else {
+//        @Suppress("Deprecation")
+//        resources.getDrawable(resolveOutValue.resourceId)
+//      }
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
