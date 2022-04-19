@@ -172,7 +172,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       windowOffset[0] = 0
       windowOffset[1] = 0
     }
+
+    onPrepare()
   }
+
+  protected open fun onPrepare() {}
 
   private fun getWindow(context: Context?): Window? {
     if (context == null) return null
