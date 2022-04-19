@@ -235,11 +235,17 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         ColorStateList(states, colors)
       }
 
-      return RippleDrawable(colorStateList, null, if (useBorderlessDrawable) null else ShapeDrawable(RectShape())).also {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && rippleRadius != null) {
-          it.radius = PixelUtil.toPixelFromDIP(rippleRadius.toFloat()).toInt()
-        }
+      val drawable = RippleDrawable(
+              colorStateList,
+              null,
+              if (useBorderlessDrawable) null else ShapeDrawable(RectShape())
+      )
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && rippleRadius != null) {
+        drawable.radius = PixelUtil.toPixelFromDIP(rippleRadius.toFloat()).toInt()
       }
+
+      return drawable
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
