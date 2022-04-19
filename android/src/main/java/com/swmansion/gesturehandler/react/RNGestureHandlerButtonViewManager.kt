@@ -86,7 +86,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   }
 
   class ButtonViewGroup(context: Context?) : ViewGroup(context),
-    NativeViewGestureHandler.StateChangeHook {
+    NativeViewGestureHandler.NativeViewGestureHandlerHook {
     // Using object because of handling null representing no value set.
     var rippleColor: Int? = null
       set(color) = withBackgroundUpdate {
@@ -265,7 +265,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
     }
 
-    override fun canStart(): Boolean {
+    override fun canBegin(): Boolean {
       val isResponder = tryGrabbingResponder()
       if (isResponder) {
         isTouched = true
