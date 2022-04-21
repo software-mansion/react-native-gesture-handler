@@ -20,9 +20,10 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  // TODO: BEGAN event has the same coordinates as ACTIVE and END
   [_gestureHandler reset];
-  [self triggerAction];
   [super touchesBegan:touches withEvent:event];
+  [self triggerAction];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
@@ -51,6 +52,7 @@
 
 - (void)reset
 {
+  // TODO: When gesture fails, sending FAILED event in reset causes the coordinates to be wrong, absolute position is (0, 0) and relative position is negative absolute position of the view
   [self triggerAction];
   [_gestureHandler.pointerTracker reset];
   [super reset];
@@ -102,6 +104,24 @@
     _lastState = savedState;
     
     return shouldBegin;
+}
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(id)_recognizer
+{
+    // For some weird reason [recognizer locationInView:recognizer.view.window] returns (0, 0).
+    // To calculate the correct absolute position, first calculate the absolute position of the
+    // view inside the root view controller (https://stackoverflow.com/a/7448573) and then
+    // add the relative touch position to it.
+    
+    UISwipeGestureRecognizer *recognizer = (UISwipeGestureRecognizer *)_recognizer;
+    
+    CGPoint viewAbsolutePosition = [recognizer.view convertPoint:recognizer.view.bounds.origin toView:[UIApplication sharedApplication].keyWindow.rootViewController.view];
+    CGPoint locationInView = [recognizer locationInView:recognizer.view];
+    
+    return [RNGestureHandlerEventExtraData
+            forPosition:locationInView
+            withAbsolutePosition:CGPointMake(viewAbsolutePosition.x + locationInView.x, viewAbsolutePosition.y + locationInView.y)
+            withNumberOfTouches:recognizer.numberOfTouches];
 }
 
 @end
