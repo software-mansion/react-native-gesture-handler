@@ -490,10 +490,9 @@ function useAnimatedGesture(
 
 interface GestureDetectorProps {
   gesture?: ComposedGesture | GestureType;
+  children?: React.ReactNode;
 }
-export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
-  props
-) => {
+export const GestureDetector = (props: GestureDetectorProps) => {
   const gestureConfig = props.gesture;
   const gesture = gestureConfig?.toGestureArray?.() ?? [];
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
