@@ -60,7 +60,10 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-    [_manager dropAllGestureHandlers];
+    RNGestureHandlerManager *handlerManager = _manager;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [handlerManager dropAllGestureHandlers];
+    });
     
     _manager = nil;
     
