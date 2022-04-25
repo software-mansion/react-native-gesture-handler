@@ -289,11 +289,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return _state;
 }
 
-- (NSArray<NSNumber *> *)getSimultaneousHandlers
-{
-    return _simultaneousHandlers;
-}
-
 #pragma mark Manual activation
 
 - (void)stopActivationBlocker
@@ -404,8 +399,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                     return YES;
                 }
             }
-        } else if ([handler getSimultaneousHandlers]) {
-            for (NSNumber *handlerTag in [handler getSimultaneousHandlers]) {
+        } else if (handler->_simultaneousHandlers) {
+            for (NSNumber *handlerTag in handler->_simultaneousHandlers) {
                 if ([self.tag isEqual:handlerTag]) {
                     return YES;
                 }
