@@ -148,6 +148,11 @@ export interface DrawerLayoutProps {
   onDrawerSlide?: (position: number) => void;
 
   onGestureRef?: (ref: PanGestureHandler) => void;
+
+  // implicit `children` prop has been removed in @types/react^18.0.0
+  children?:
+    | React.ReactNode
+    | ((openValue?: Animated.AnimatedInterpolation) => React.ReactNode);
 }
 
 export type DrawerLayoutState = {

@@ -604,7 +604,11 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   }
 };
 
-class Wrap extends React.Component<{ onGestureHandlerEvent?: unknown }> {
+class Wrap extends React.Component<{
+  onGestureHandlerEvent?: unknown;
+  // implicit `children` prop has been removed in @types/react^18.0.0
+  children?: React.ReactNode;
+}> {
   render() {
     // I don't think that fighting with types over such a simple function is worth it
     // The only thing it does is add 'collapsable: false' to the child component
