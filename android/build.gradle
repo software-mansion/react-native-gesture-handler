@@ -1,4 +1,5 @@
 import groovy.json.JsonSlurper
+import java.nio.file.Paths
 
 buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
@@ -20,6 +21,20 @@ def isNewArchitectureEnabled() {
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
 
+def findNodeModulePath(baseDir, packageName) {
+    def basePath = baseDir.toPath().normalize()
+    // Node's module resolution algorithm searches up to the root directory,
+    // after which the base path will be null
+    while (basePath) {
+        def candidatePath = Paths.get(basePath.toString(), "node_modules", packageName)
+        if (candidatePath.toFile().exists()) {
+            return candidatePath.toString()
+        }
+        basePath = basePath.getParent()
+    }
+    return null
+}
+
 if (isNewArchitectureEnabled()) {
     apply plugin: 'com.facebook.react'
 }
@@ -38,7 +53,7 @@ def shouldUseCommonInterfaceFromReanimated() {
         def json = new JsonSlurper().parseText(inputFile.text)
         def reanimatedVersion = json.version as String
         def (major, minor, patch) = reanimatedVersion.tokenize('.')
-        return Integer.parseInt(major) == 2 && Integer.parseInt(minor) >= 3
+        return (Integer.parseInt(major) == 2 && Integer.parseInt(minor) >= 3) || Integer.parseInt(major) == 3
     } else {
         return false
     }
@@ -50,6 +65,15 @@ repositories {
 
 android {
     compileSdkVersion safeExtGet("compileSdkVersion", 28)
+
+    // Used to override the NDK path/version on internal CI or by allowing
+    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
+    }
 
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 16)
@@ -66,8 +90,8 @@ android {
                             "NDK_TOOLCHAIN_VERSION=clang",
                             "GENERATED_SRC_DIR=${appProject.buildDir}/generated/source",
                             "PROJECT_BUILD_DIR=${appProject.buildDir}",
-                            "REACT_ANDROID_DIR=${appProject.rootDir}/../node_modules/react-native/ReactAndroid",
-                            "REACT_ANDROID_BUILD_DIR=${appProject.rootDir}/../node_modules/react-native/ReactAndroid/build"
+                            "REACT_ANDROID_DIR=${findNodeModulePath(appProject.rootDir, "react-native") ?: "../node_modules/react-native/"}/ReactAndroid",
+                            "REACT_ANDROID_BUILD_DIR=${findNodeModulePath(appProject.rootDir, "react-native") ?: "../node_modules/react-native/"}/ReactAndroid/build"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
                     cppFlags "-std=c++17"
                     targets "rngesturehandler_modules"
@@ -106,8 +130,11 @@ android {
 
             // Include "common/" only when it's not provided by Reanimated to mitigate
             // multiple definitions of the same class preventing build
-            if (!shouldUseCommonInterfaceFromReanimated()) {
+            if (shouldUseCommonInterfaceFromReanimated()) {
+                srcDirs += 'reanimated/src/main/java'
+            } else {
                 srcDirs += 'common/src/main/java'
+                srcDirs += 'noreanimated/src/main/java'
             }
 
             if (isNewArchitectureEnabled()) {
@@ -145,9 +172,9 @@ dependencies {
 
 if (isNewArchitectureEnabled()) {
     react {
-        reactRoot = rootProject.file("../node_modules/react-native/")
+        reactNativeDir = rootProject.file(findNodeModulePath(rootProject.rootDir, "react-native") ?: "../node_modules/react-native/")
         jsRootDir = file("../src/fabric/")
-        codegenDir = rootProject.file("../node_modules/react-native-codegen/")
+        codegenDir = rootProject.file(findNodeModulePath(rootProject.rootDir, "react-native-codegen") ?: "../node_modules/react-native-codegen/")
         libraryName = "rngesturehandler"
         codegenJavaPackageName = "com.swmansion.gesturehandler"
     }

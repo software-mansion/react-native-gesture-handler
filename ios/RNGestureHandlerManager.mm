@@ -48,6 +48,7 @@
     RCTUIManager *_uiManager;
     NSHashTable<RNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
     RCTEventDispatcher *_eventDispatcher;
+    id _reanimatedModule;
 }
 
 - (instancetype)initWithUIManager:(RCTUIManager *)uiManager
@@ -58,6 +59,7 @@
         _eventDispatcher = eventDispatcher;
         _registry = [RNGestureHandlerRegistry new];
         _rootViewGestureRecognizers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
+        _reanimatedModule = nil;
     }
     return self;
 }
@@ -137,6 +139,11 @@
 - (void)dropGestureHandler:(NSNumber *)handlerTag
 {
     [_registry dropHandlerWithTag:handlerTag];
+}
+
+- (void)dropAllGestureHandlers
+{
+    [_registry dropAllHandlers];
 }
 
 - (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder
@@ -242,9 +249,12 @@
 {
     // Delivers the event to Reanimated.
 #ifdef RN_FABRIC_ENABLED
-    // TODO: send event directly to Reanimated
-    // This is already supported in Reanimated with Fabric but let's wait until the official release.
-    // [_reanimatedModule eventDispatcherWillDispatchEvent:event];
+    // Send event directly to Reanimated
+    if (_reanimatedModule == nil) {
+      _reanimatedModule = [_uiManager.bridge moduleForName:@"ReanimatedModule"];
+    }
+    
+    [_reanimatedModule eventDispatcherWillDispatchEvent:event];
 #else
     // In the old architecture, Reanimated overwrites RCTEventDispatcher
     // with REAEventDispatcher and intercepts all direct events.

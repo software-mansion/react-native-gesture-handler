@@ -24,6 +24,8 @@
 
 - (void)dropGestureHandler:(nonnull NSNumber *)handlerTag;
 
+- (void)dropAllGestureHandlers;
+
 - (void)handleSetJSResponder:(nonnull NSNumber *)viewTag
         blockNativeResponder:(nonnull NSNumber *)blockNativeResponder;
 
