@@ -1,4 +1,6 @@
-import { version as rnVersion } from 'react-native/package.json';
+import pack from 'react-native/package.json';
+
+const rnVersion = pack.version;
 
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
