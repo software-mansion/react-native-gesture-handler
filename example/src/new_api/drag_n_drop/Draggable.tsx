@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import {
   PanGestureHandlerEventPayload,
@@ -27,9 +27,10 @@ interface DraggableProps {
   tileSize: number;
   rowGap: number;
   columnGap: number;
+  children?: React.ReactNode;
 }
 
-const Draggable: FunctionComponent<DraggableProps> = ({
+const Draggable = ({
   id,
   children,
   onLongPress,
@@ -40,7 +41,7 @@ const Draggable: FunctionComponent<DraggableProps> = ({
   columnGap,
   rowGap,
   position,
-}) => {
+}: DraggableProps) => {
   const tapGesture = Gesture.LongPress()
     .minDuration(300)
     .onStart(() => runOnJS(onLongPress)(id))

@@ -490,10 +490,9 @@ function useAnimatedGesture(
 
 interface GestureDetectorProps {
   gesture?: ComposedGesture | GestureType;
+  children?: React.ReactNode;
 }
-export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
-  props
-) => {
+export const GestureDetector = (props: GestureDetectorProps) => {
   const gestureConfig = props.gesture;
   const gesture = gestureConfig?.toGestureArray?.() ?? [];
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
@@ -605,7 +604,11 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
   }
 };
 
-class Wrap extends React.Component<{ onGestureHandlerEvent?: unknown }> {
+class Wrap extends React.Component<{
+  onGestureHandlerEvent?: unknown;
+  // implicit `children` prop has been removed in @types/react^18.0.0
+  children?: React.ReactNode;
+}> {
   render() {
     // I don't think that fighting with types over such a simple function is worth it
     // The only thing it does is add 'collapsable: false' to the child component
