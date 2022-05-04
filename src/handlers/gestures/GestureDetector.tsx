@@ -268,11 +268,34 @@ function updateHandlers(
     }
 
     if (preparedGesture.animatedHandlers) {
-      preparedGesture.animatedHandlers.value = (preparedGesture.config
+      const previousHandlersValue =
+        preparedGesture.animatedHandlers.value ?? [];
+      const newHandlersValue = (preparedGesture.config
         .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
         .map((g) => g.handlers) as unknown) as HandlerCallbacks<
         Record<string, unknown>
       >[];
+
+      // if amount of gesture configs changes, we need to update the callbacks in shared value
+      let shouldUpdateSharedValue =
+        previousHandlersValue.length !== newHandlersValue.length;
+
+      if (!shouldUpdateSharedValue) {
+        // if the amount is the same, we need to check if any of the configs inside has changed
+        for (let i = 0; i < newHandlersValue.length; i++) {
+          if (
+            // we can use the `gestureId` prop as it's unique for every config instance
+            newHandlersValue[i].gestureId !== previousHandlersValue[i].gestureId
+          ) {
+            shouldUpdateSharedValue = true;
+            break;
+          }
+        }
+      }
+
+      if (shouldUpdateSharedValue) {
+        preparedGesture.animatedHandlers.value = newHandlersValue;
+      }
     }
 
     scheduleFlushOperations();
