@@ -53,6 +53,7 @@ type TouchEventHandlerType = (
 ) => void;
 
 export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
+  gestureId: number;
   handlerTag: number;
   onBegin?: (event: GestureStateChangeEvent<EventPayloadT>) => void;
   onStart?: (event: GestureStateChangeEvent<EventPayloadT>) => void;
@@ -115,16 +116,31 @@ export abstract class Gesture {
   abstract prepare(): void;
 }
 
+let nextGestureId = 0;
 export abstract class BaseGesture<
   EventPayloadT extends Record<string, unknown>
 > extends Gesture {
+  private gestureId = -1;
   public handlerTag = -1;
   public handlerName = '';
   public config: BaseGestureConfig = {};
   public handlers: HandlerCallbacks<EventPayloadT> = {
+    gestureId: -1,
     handlerTag: -1,
     isWorklet: [],
   };
+
+  constructor() {
+    super();
+
+    // Used to check whether the gesture config has been updated when wrapping it
+    // with `useMemo`. Since every config will have a unique id, when the dependencies
+    // don't change, the config won't be recreated and the id will stay the same.
+    // If the id is different, it means that the config has changed and the gesture
+    // needs to be updated.
+    this.gestureId = nextGestureId++;
+    this.handlers.gestureId = this.gestureId;
+  }
 
   private addDependency(
     key: 'simultaneousWith' | 'requireToFail',
