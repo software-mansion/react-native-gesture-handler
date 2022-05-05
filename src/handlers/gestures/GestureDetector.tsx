@@ -322,90 +322,90 @@ function needsToReattach(
   return false;
 }
 
+function isStateChangeEvent(
+  event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+): event is GestureStateChangeEvent {
+  'worklet';
+  // @ts-ignore Yes, the oldState prop is missing on GestureTouchEvent, that's the point
+  return event.oldState != null;
+}
+
+function isTouchEvent(
+  event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+): event is GestureTouchEvent {
+  'worklet';
+  return event.eventType != null;
+}
+
+function getHandler(
+  type: CALLBACK_TYPE,
+  gesture: HandlerCallbacks<Record<string, unknown>>
+) {
+  'worklet';
+  switch (type) {
+    case CALLBACK_TYPE.BEGAN:
+      return gesture.onBegin;
+    case CALLBACK_TYPE.START:
+      return gesture.onStart;
+    case CALLBACK_TYPE.UPDATE:
+      return gesture.onUpdate;
+    case CALLBACK_TYPE.CHANGE:
+      return gesture.onChange;
+    case CALLBACK_TYPE.END:
+      return gesture.onEnd;
+    case CALLBACK_TYPE.FINALIZE:
+      return gesture.onFinalize;
+    case CALLBACK_TYPE.TOUCHES_DOWN:
+      return gesture.onTouchesDown;
+    case CALLBACK_TYPE.TOUCHES_MOVE:
+      return gesture.onTouchesMove;
+    case CALLBACK_TYPE.TOUCHES_UP:
+      return gesture.onTouchesUp;
+    case CALLBACK_TYPE.TOUCHES_CANCELLED:
+      return gesture.onTouchesCancelled;
+  }
+}
+
+function touchEventTypeToCallbackType(
+  eventType: TouchEventType
+): CALLBACK_TYPE {
+  'worklet';
+  switch (eventType) {
+    case TouchEventType.TOUCHES_DOWN:
+      return CALLBACK_TYPE.TOUCHES_DOWN;
+    case TouchEventType.TOUCHES_MOVE:
+      return CALLBACK_TYPE.TOUCHES_MOVE;
+    case TouchEventType.TOUCHES_UP:
+      return CALLBACK_TYPE.TOUCHES_UP;
+    case TouchEventType.TOUCHES_CANCELLED:
+      return CALLBACK_TYPE.TOUCHES_CANCELLED;
+  }
+  return CALLBACK_TYPE.UNDEFINED;
+}
+
+function runWorklet(
+  type: CALLBACK_TYPE,
+  gesture: HandlerCallbacks<Record<string, unknown>>,
+  event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
+  ...args: any[]
+) {
+  'worklet';
+  const handler = getHandler(type, gesture);
+  if (gesture.isWorklet[type]) {
+    // @ts-ignore Logic below makes sure the correct event is send to the
+    // correct handler.
+    handler?.(event, ...args);
+  } else if (handler) {
+    console.warn(tagMessage('Animated gesture callback must be a worklet'));
+  }
+}
+
 function useAnimatedGesture(
   preparedGesture: GestureConfigReference,
   needsRebuild: boolean
 ) {
   if (!Reanimated) {
     return;
-  }
-
-  function isStateChangeEvent(
-    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
-  ): event is GestureStateChangeEvent {
-    'worklet';
-    // @ts-ignore Yes, the oldState prop is missing on GestureTouchEvent, that's the point
-    return event.oldState != null;
-  }
-
-  function isTouchEvent(
-    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
-  ): event is GestureTouchEvent {
-    'worklet';
-    return event.eventType != null;
-  }
-
-  function getHandler(
-    type: CALLBACK_TYPE,
-    gesture: HandlerCallbacks<Record<string, unknown>>
-  ) {
-    'worklet';
-    switch (type) {
-      case CALLBACK_TYPE.BEGAN:
-        return gesture.onBegin;
-      case CALLBACK_TYPE.START:
-        return gesture.onStart;
-      case CALLBACK_TYPE.UPDATE:
-        return gesture.onUpdate;
-      case CALLBACK_TYPE.CHANGE:
-        return gesture.onChange;
-      case CALLBACK_TYPE.END:
-        return gesture.onEnd;
-      case CALLBACK_TYPE.FINALIZE:
-        return gesture.onFinalize;
-      case CALLBACK_TYPE.TOUCHES_DOWN:
-        return gesture.onTouchesDown;
-      case CALLBACK_TYPE.TOUCHES_MOVE:
-        return gesture.onTouchesMove;
-      case CALLBACK_TYPE.TOUCHES_UP:
-        return gesture.onTouchesUp;
-      case CALLBACK_TYPE.TOUCHES_CANCELLED:
-        return gesture.onTouchesCancelled;
-    }
-  }
-
-  function touchEventTypeToCallbackType(
-    eventType: TouchEventType
-  ): CALLBACK_TYPE {
-    'worklet';
-    switch (eventType) {
-      case TouchEventType.TOUCHES_DOWN:
-        return CALLBACK_TYPE.TOUCHES_DOWN;
-      case TouchEventType.TOUCHES_MOVE:
-        return CALLBACK_TYPE.TOUCHES_MOVE;
-      case TouchEventType.TOUCHES_UP:
-        return CALLBACK_TYPE.TOUCHES_UP;
-      case TouchEventType.TOUCHES_CANCELLED:
-        return CALLBACK_TYPE.TOUCHES_CANCELLED;
-    }
-    return CALLBACK_TYPE.UNDEFINED;
-  }
-
-  function runWorklet(
-    type: CALLBACK_TYPE,
-    gesture: HandlerCallbacks<Record<string, unknown>>,
-    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
-    ...args: any[]
-  ) {
-    'worklet';
-    const handler = getHandler(type, gesture);
-    if (gesture.isWorklet[type]) {
-      // @ts-ignore Logic below makes sure the correct event is send to the
-      // correct handler.
-      handler?.(event, ...args);
-    } else if (handler) {
-      console.warn(tagMessage('Animated gesture callback must be a worklet'));
-    }
   }
 
   // Hooks are called conditionally, but the condition is whether the
