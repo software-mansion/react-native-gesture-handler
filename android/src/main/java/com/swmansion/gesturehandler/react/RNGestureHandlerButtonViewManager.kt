@@ -77,6 +77,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.exclusive = exclusive
   }
 
+  @ReactProp(name = "touchSoundDisabled")
+  override fun setTouchSoundDisabled(view: ButtonViewGroup, touchSoundDisabled: Boolean) {
+    view.isSoundEffectsEnabled = !touchSoundDisabled
+  }
+
   override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
     view.updateBackground()
   }

@@ -56,6 +56,13 @@ export interface RawButtonProps extends NativeViewGestureHandlerProps {
    * Defines whether the ripple animation should be drawn on the foreground of the view.
    */
   foreground?: boolean;
+
+  /**
+   * Android only.
+   *
+   * Set this to true if you don't want the system to play sound when the button is pressed.
+   */
+  touchSoundDisabled?: boolean;
 }
 
 export interface BaseButtonProps extends RawButtonProps {
