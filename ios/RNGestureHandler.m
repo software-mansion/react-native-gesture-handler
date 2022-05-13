@@ -390,11 +390,18 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (_recognizer.state == UIGestureRecognizerStateBegan && _recognizer.state == UIGestureRecognizerStatePossible) {
         return YES;
     }
-    if ([_simultaneousHandlers count]) {
-        RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
-        if (handler != nil) {
+    
+    RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
+    if (handler != nil) {
+        if ([_simultaneousHandlers count]) {
             for (NSNumber *handlerTag in _simultaneousHandlers) {
                 if ([handler.tag isEqual:handlerTag]) {
+                    return YES;
+                }
+            }
+        } else if (handler->_simultaneousHandlers) {
+            for (NSNumber *handlerTag in handler->_simultaneousHandlers) {
+                if ([self.tag isEqual:handlerTag]) {
                     return YES;
                 }
             }
