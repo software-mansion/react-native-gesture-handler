@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "ts-check": "yarn tsc --noEmit",
     "lint-check": "yarn eslint src/ && yarn prettier --check src/",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package && echo f909be47e36c73f109fb530f33fc7be9f00ee2cf > ./node_modules/react-native/sdks/.hermesversion"
   },
   "dependencies": {
     "@react-native/babel-plugin-codegen": "^0.0.6",
@@ -35,7 +35,8 @@
     "metro-react-native-babel-preset": "^0.70.3",
     "prettier": "^2.6.1",
     "react-test-renderer": "^18.0.0",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "mkdirp": "^1.0.4"
   },
   "resolutions": {
     "@typescript-eslint/eslint-plugin": "^5.17.0",
