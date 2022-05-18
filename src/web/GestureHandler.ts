@@ -511,9 +511,13 @@ function ensureConfig(config: Config): Required<Config> {
   }
   if ('waitFor' in config) {
     props.waitFor = asArray(config.waitFor)
-      .map(({ handlerTag }: { handlerTag: number }) =>
-        NodeManager.getHandler(handlerTag)
-      )
+      .map((handler: number | GestureHandler) => {
+        if (typeof handler === 'number') {
+          NodeManager.getHandler(handler)
+        } else {
+          return NodeManager.getHandler(handler.handlerTag);
+        }
+      })
       .filter((v) => v);
   } else {
     props.waitFor = null;
