@@ -168,7 +168,9 @@ abstract class GestureHandler {
 
     // TODO(TS) Remove cast after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50966 is merged.
     const state = this.getState(eventType as 1 | 2 | 4 | 8);
-    if (state !== this.previousState) {
+    const hasStateChanged = state !== this.previousState;
+    
+    if (hasStateChanged) {
       this.oldState = this.previousState;
       this.previousState = state;
     }
@@ -186,7 +188,7 @@ abstract class GestureHandler {
         // GestureDetector relies on the presence of `oldState` to differentiate between
         // update events and state change events
         oldState:
-          state !== this.previousState || state != 4
+          hasStateChanged || state != 4
             ? this.oldState
             : undefined,
       },
