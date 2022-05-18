@@ -169,7 +169,7 @@ abstract class GestureHandler {
     // TODO(TS) Remove cast after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50966 is merged.
     const state = this.getState(eventType as 1 | 2 | 4 | 8);
     const hasStateChanged = state !== this.previousState;
-    
+
     if (hasStateChanged) {
       this.oldState = this.previousState;
       this.previousState = state;
@@ -187,10 +187,7 @@ abstract class GestureHandler {
         // send oldState only when the state was changed, or is different than ACTIVE
         // GestureDetector relies on the presence of `oldState` to differentiate between
         // update events and state change events
-        oldState:
-          hasStateChanged || state != 4
-            ? this.oldState
-            : undefined,
+        oldState: hasStateChanged || state != 4 ? this.oldState : undefined,
       },
       timeStamp: Date.now(),
     };
@@ -515,7 +512,7 @@ function ensureConfig(config: Config): Required<Config> {
     props.waitFor = asArray(config.waitFor)
       .map((handler: number | GestureHandler) => {
         if (typeof handler === 'number') {
-          NodeManager.getHandler(handler)
+          NodeManager.getHandler(handler);
         } else {
           return NodeManager.getHandler(handler.handlerTag);
         }
