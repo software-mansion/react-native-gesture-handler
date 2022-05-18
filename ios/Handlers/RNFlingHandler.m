@@ -8,39 +8,54 @@
 
 @implementation RNBetterSwipeGestureRecognizer {
   __weak RNGestureHandler* _gestureHandler;
+  CGPoint _lastPoint; // location of the most recently updated touch, relative to the view
+  bool _hasBegan; // whether the `BEGAN` event has been sent
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
+    _lastPoint = CGPointZero;
+    _hasBegan = NO;
   }
   return self;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  // TODO: BEGAN event has the same coordinates as ACTIVE and END
+  _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [_gestureHandler reset];
   [super touchesBegan:touches withEvent:event];
-  [self triggerAction];
+
+  // self.numberOfTouches doesn't work for this because in case than one finger is required,
+  // when holding one finger on the screen and tapping with the second one, numberOfTouches is equal
+  // to 2 only for the first tap but 1 for all the following ones
+  if (!_hasBegan) {
+    [self triggerAction];
+    _hasBegan = YES;
+  }
+
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesMoved:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesEnded:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
 }
@@ -52,10 +67,17 @@
 
 - (void)reset
 {
-  // TODO: When gesture fails, sending FAILED event in reset causes the coordinates to be wrong, absolute position is (0, 0) and relative position is negative absolute position of the view
   [self triggerAction];
   [_gestureHandler.pointerTracker reset];
+  _hasBegan = NO;
   [super reset];
+}
+
+- (CGPoint)getLastLocation {
+  // I think keeping the location of only one touch is enough since it would be used to determine the direction
+  // of the movement, and if it's wrong the recognizer fails anyway.
+  // In case the location of all touches is required, touch events are the way to go
+  return _lastPoint;
 }
 
 @end
@@ -113,10 +135,10 @@
     // view inside the root view controller (https://stackoverflow.com/a/7448573) and then
     // add the relative touch position to it.
     
-    UISwipeGestureRecognizer *recognizer = (UISwipeGestureRecognizer *)_recognizer;
+    RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
     
     CGPoint viewAbsolutePosition = [recognizer.view convertPoint:recognizer.view.bounds.origin toView:[UIApplication sharedApplication].keyWindow.rootViewController.view];
-    CGPoint locationInView = [recognizer locationInView:recognizer.view];
+    CGPoint locationInView = [recognizer getLastLocation];
     
     return [RNGestureHandlerEventExtraData
             forPosition:locationInView
