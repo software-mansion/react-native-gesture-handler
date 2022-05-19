@@ -7,7 +7,7 @@ import { isnan } from './utils';
 class TapGestureHandler extends DiscreteGestureHandler {
   private _shouldFireEndEvent: HammerInputExt | null = null;
   private _timer: any;
-  private _multiTapTimer: any; // TODO unused?
+  private _multiTapTimer: any;
   get name() {
     return 'tap';
   }
