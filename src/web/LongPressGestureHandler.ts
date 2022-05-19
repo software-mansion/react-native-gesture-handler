@@ -5,10 +5,12 @@ import Hammer from '@egjs/hammerjs';
 import { State } from '../State';
 import PressGestureHandler from './PressGestureHandler';
 import { isnan, isValidNumber } from './utils';
-import { Config } from './GestureHandler';
+import { Config, HammerInputExt } from './GestureHandler';
 import { HammerInputNames } from './constants';
 
 class LongPressGestureHandler extends PressGestureHandler {
+  private gestureStartTimeStamp: number = 0;
+
   get minDurationMs(): number {
     // @ts-ignore FIXNE(TS)
     return isnan(this.config.minDurationMs) ? 251 : this.config.minDurationMs;
@@ -46,12 +48,23 @@ class LongPressGestureHandler extends PressGestureHandler {
   onRawEvent(ev: HammerInput) {
     super.onRawEvent(ev);
 
+    if (ev.eventType === Hammer.INPUT_START) {
+      this.gestureStartTimeStamp = ev.timeStamp;
+    }
+
     if (!this.isGestureRunning) {
       if (ev.eventType === Hammer.INPUT_START) {
         this.sendEvent(ev);
       } else if (ev.isFinal && this.previousState === State.BEGAN) {
         this.sendEvent({ ...ev, eventType: Hammer.INPUT_CANCEL });
       }
+    }
+  }
+
+  transformNativeEvent(ev: HammerInputExt) {
+    return {
+      ...super.transformNativeEvent(ev),
+      duration: ev.timeStamp - this.gestureStartTimeStamp,
     }
   }
 

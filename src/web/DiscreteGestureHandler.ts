@@ -1,6 +1,6 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
-import GestureHandler from './GestureHandler';
+import GestureHandler, { HammerInputExt } from './GestureHandler';
 import { TEST_MAX_IF_NOT_NAN } from './utils';
 
 abstract class DiscreteGestureHandler extends GestureHandler {
@@ -31,15 +31,15 @@ abstract class DiscreteGestureHandler extends GestureHandler {
     );
   }
 
-  transformNativeEvent({ center: { x, y } }: any) {
+  transformNativeEvent(event: HammerInputExt) {
     // @ts-ignore FIXME(TS)
     const rect = this.view!.getBoundingClientRect();
 
     return {
-      absoluteX: x,
-      absoluteY: y,
-      x: x - rect.left,
-      y: y - rect.top,
+      absoluteX: event.center.x,
+      absoluteY: event.center.y,
+      x: event.center.x - rect.left,
+      y: event.center.y - rect.top,
     };
   }
 
