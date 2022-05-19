@@ -171,6 +171,11 @@ abstract class GestureHandler {
     const hasStateChanged = state !== this.previousState;
 
     if (hasStateChanged) {
+      // gestures should transition to BEGAN state only from UNDETERMINED
+      if (state === State.BEGAN) {
+        this.previousState = State.UNDETERMINED;
+      }
+
       this.oldState = this.previousState;
       this.previousState = state;
     }
@@ -187,7 +192,8 @@ abstract class GestureHandler {
         // send oldState only when the state was changed, or is different than ACTIVE
         // GestureDetector relies on the presence of `oldState` to differentiate between
         // update events and state change events
-        oldState: hasStateChanged || state != 4 ? this.oldState : undefined,
+        oldState:
+          hasStateChanged || state != State.ACTIVE ? this.oldState : undefined,
       },
       timeStamp: Date.now(),
     };

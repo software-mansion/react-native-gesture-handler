@@ -43,9 +43,21 @@ class LongPressGestureHandler extends PressGestureHandler {
     };
   }
 
+  onRawEvent(ev: HammerInput) {
+    super.onRawEvent(ev);
+
+    if (!this.isGestureRunning) {
+      if (ev.eventType === Hammer.INPUT_START) {
+        this.sendEvent(ev);
+      } else if (ev.isFinal && this.previousState === State.BEGAN) {
+        this.sendEvent({ ...ev, eventType: Hammer.INPUT_CANCEL });
+      }
+    }
+  }
+
   getState(type: keyof typeof HammerInputNames) {
     return {
-      [Hammer.INPUT_START]: State.ACTIVE,
+      [Hammer.INPUT_START]: State.BEGAN,
       [Hammer.INPUT_MOVE]: State.ACTIVE,
       [Hammer.INPUT_END]: State.END,
       [Hammer.INPUT_CANCEL]: State.FAILED,
