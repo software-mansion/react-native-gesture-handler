@@ -171,11 +171,6 @@ abstract class GestureHandler {
     const hasStateChanged = state !== this.previousState;
 
     if (hasStateChanged) {
-      // gestures should transition to BEGAN state only from UNDETERMINED
-      if (state === State.BEGAN) {
-        this.previousState = State.UNDETERMINED;
-      }
-
       this.oldState = this.previousState;
       this.previousState = state;
     }
