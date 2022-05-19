@@ -65,7 +65,7 @@ class LongPressGestureHandler extends PressGestureHandler {
     return {
       ...super.transformNativeEvent(ev),
       duration: ev.timeStamp - this.gestureStartTimeStamp,
-    }
+    };
   }
 
   getState(type: keyof typeof HammerInputNames) {
