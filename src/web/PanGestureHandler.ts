@@ -1,7 +1,6 @@
 import Hammer from '@egjs/hammerjs';
 
 import {
-  EventMap,
   MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD,
   MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD,
 } from './constants';
@@ -25,18 +24,6 @@ class PanGestureHandler extends DraggingGestureHandler {
       direction: this.getDirection(),
       threshold: this.config.minDist,
     };
-  }
-
-  getState(type: keyof typeof EventMap) {
-    const nextState = super.getState(type);
-    // Ensure that the first state sent is `BEGAN` and not `ACTIVE`
-    if (
-      this.previousState === State.UNDETERMINED &&
-      nextState === State.ACTIVE
-    ) {
-      return State.BEGAN;
-    }
-    return nextState;
   }
 
   getDirection() {
@@ -215,6 +202,31 @@ class PanGestureHandler extends DraggingGestureHandler {
       return { success: true };
     }
     return { success: false };
+  }
+
+  onRawEvent(ev: HammerInputExt) {
+    super.onRawEvent(ev);
+
+    // when gesture finishes, its state is not reset, so when the next gesture starts,
+    // the previousState is kept from the previous one (i.e. it's either UNDETERMINED, FAILED or END)
+    // we want to send BEGAN event in case we haven't sent it already and we haven't started sending
+    // ACTIVE events yet
+    if (
+      ev.eventType === Hammer.INPUT_START &&
+      this.previousState !== State.BEGAN &&
+      this.previousState !== State.ACTIVE
+    ) {
+      // BEGAN gesture should have UNDETERMINED as the oldState event property
+      this.previousState = State.UNDETERMINED;
+      this.sendEvent(ev);
+    } else if (
+      ev.eventType === Hammer.INPUT_END &&
+      ev.isFinal &&
+      this.previousState === State.BEGAN
+    ) {
+      // if the gesture finished without activating, send FAILED event
+      this.sendEvent({ ...ev, eventType: Hammer.INPUT_CANCEL });
+    }
   }
 }
 
