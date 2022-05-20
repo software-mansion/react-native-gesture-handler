@@ -18,11 +18,15 @@ class PanGestureHandler extends DraggingGestureHandler {
     return Hammer.Pan;
   }
 
+  get minDist() {
+    return isnan(this.config.minDist) ? 10 : this.config.minDist;
+  }
+
   getHammerConfig() {
     return {
       ...super.getHammerConfig(),
       direction: this.getDirection(),
-      threshold: this.config.minDist,
+      threshold: this.minDist,
     };
   }
 
