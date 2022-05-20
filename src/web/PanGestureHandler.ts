@@ -23,6 +23,7 @@ class PanGestureHandler extends DraggingGestureHandler {
     return {
       ...super.getHammerConfig(),
       direction: this.getDirection(),
+      threshold: this.config.minDist,
     };
   }
 
