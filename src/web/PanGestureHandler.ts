@@ -220,8 +220,8 @@ class PanGestureHandler extends DraggingGestureHandler {
       this.previousState !== State.BEGAN &&
       this.previousState !== State.ACTIVE
     ) {
-      // BEGAN gesture should have UNDETERMINED as the oldState event property
-      this.previousState = State.UNDETERMINED;
+      // reset gesture state
+      this.onStart(ev);
       this.sendEvent(ev);
     } else if (
       ev.eventType === Hammer.INPUT_END &&
