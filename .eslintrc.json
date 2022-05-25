@@ -12,12 +12,20 @@
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": ["./tsconfig.json", "./example/tsconfig.json"]
+    "project": ["./tsconfig.json", "./example/tsconfig.json", "./FabricExample/tsconfig.json"]
   },
   "env": { "browser": true, "node": true, "jest/globals": true },
   "plugins": ["jest"],
   "ignorePatterns": ["lib/**/*"],
   "rules": {
+    // removed in new jest-eslint-plugin, referenced in satya config
+    "jest/no-truthy-falsy": "off",
+    "jest/valid-describe": "off",
+
+    "jest/expect-expect": [
+      "warn",
+      { "assertFunctionNames": ["expect*", "assert*"] }
+    ],
     // temporary, remove after we type internals better
     "@typescript-eslint/restrict-template-expressions": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",

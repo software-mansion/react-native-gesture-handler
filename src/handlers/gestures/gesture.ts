@@ -15,6 +15,7 @@ import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
 import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
 import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
+import { isRemoteDebuggingEnabled } from '../../utils';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
@@ -41,6 +42,9 @@ export interface BaseGestureConfig
   simultaneousWith?: GestureRef[];
   needsPointerData?: boolean;
   manualActivation?: boolean;
+  runOnJS?: boolean;
+  testId?: string;
+  cancelsTouchesInView?: boolean;
 }
 
 type TouchEventHandlerType = (
@@ -49,6 +53,7 @@ type TouchEventHandlerType = (
 ) => void;
 
 export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
+  gestureId: number;
   handlerTag: number;
   onBegin?: (event: GestureStateChangeEvent<EventPayloadT>) => void;
   onStart?: (event: GestureStateChangeEvent<EventPayloadT>) => void;
@@ -111,16 +116,31 @@ export abstract class Gesture {
   abstract prepare(): void;
 }
 
+let nextGestureId = 0;
 export abstract class BaseGesture<
   EventPayloadT extends Record<string, unknown>
 > extends Gesture {
+  private gestureId = -1;
   public handlerTag = -1;
   public handlerName = '';
   public config: BaseGestureConfig = {};
   public handlers: HandlerCallbacks<EventPayloadT> = {
+    gestureId: -1,
     handlerTag: -1,
-    isWorklet: [false, false, false, false],
+    isWorklet: [],
   };
+
+  constructor() {
+    super();
+
+    // Used to check whether the gesture config has been updated when wrapping it
+    // with `useMemo`. Since every config will have a unique id, when the dependencies
+    // don't change, the config won't be recreated and the id will stay the same.
+    // If the id is different, it means that the config has changed and the gesture
+    // needs to be updated.
+    this.gestureId = nextGestureId++;
+    this.handlers.gestureId = this.gestureId;
+  }
 
   private addDependency(
     key: 'simultaneousWith' | 'requireToFail',
@@ -234,6 +254,11 @@ export abstract class BaseGesture<
     return this;
   }
 
+  runOnJS(runOnJS: boolean) {
+    this.config.runOnJS = runOnJS;
+    return this;
+  }
+
   simultaneousWithExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
       this.addDependency('simultaneousWith', gesture);
@@ -248,8 +273,19 @@ export abstract class BaseGesture<
     return this;
   }
 
+  withTestId(id: string) {
+    this.config.testId = id;
+    return this;
+  }
+
+  cancelsTouchesInView(value: boolean) {
+    this.config.cancelsTouchesInView = value;
+    return this;
+  }
+
   initialize() {
     this.handlerTag = getNextHandlerTag();
+
     this.handlers = { ...this.handlers, handlerTag: this.handlerTag };
 
     if (this.config.ref) {
@@ -263,6 +299,17 @@ export abstract class BaseGesture<
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prepare() {}
+
+  get shouldUseReanimated(): boolean {
+    // use Reanimated when runOnJS isn't set explicitly,
+    // and all defined callbacks are worklets,
+    // and remote debugging is disabled
+    return (
+      this.config.runOnJS !== true &&
+      !this.handlers.isWorklet.includes(false) &&
+      !isRemoteDebuggingEnabled()
+    );
+  }
 }
 
 export abstract class ContinousBaseGesture<

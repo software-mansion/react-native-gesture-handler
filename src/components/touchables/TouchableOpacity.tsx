@@ -12,11 +12,15 @@ import GenericTouchable, {
 import * as React from 'react';
 import { Component } from 'react';
 
+interface GHTouchableOpacityProps {
+  useNativeAnimations?: boolean;
+}
+
 /**
  * TouchableOpacity bases on timing animation which has been used in RN's core
  */
 export default class TouchableOpacity extends Component<
-  TouchableOpacityProps & GenericTouchableProps
+  TouchableOpacityProps & GenericTouchableProps & GHTouchableOpacityProps
 > {
   static defaultProps = {
     ...GenericTouchable.defaultProps,
@@ -36,7 +40,7 @@ export default class TouchableOpacity extends Component<
       toValue: value,
       duration: duration,
       easing: Easing.inOut(Easing.quad),
-      useNativeDriver: false,
+      useNativeDriver: this.props.useNativeAnimations ?? true,
     }).start();
   };
 

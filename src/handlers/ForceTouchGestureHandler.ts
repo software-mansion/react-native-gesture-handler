@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
+import { tagMessage } from '../utils';
 import PlatformConstants from '../PlatformConstants';
 import createHandler from './createHandler';
 import {
@@ -12,11 +13,14 @@ export const forceTouchGestureHandlerProps = [
   'feedbackOnActivation',
 ] as const;
 
-class ForceTouchFallback extends React.Component {
+// implicit `children` prop has been removed in @types/react^18.0.0
+class ForceTouchFallback extends React.Component<PropsWithChildren<unknown>> {
   static forceTouchAvailable = false;
   componentDidMount() {
     console.warn(
-      'ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase'
+      tagMessage(
+        'ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase'
+      )
     );
   }
   render() {
@@ -64,13 +68,16 @@ export interface ForceTouchGestureHandlerProps
 export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
   forceTouchAvailable: boolean;
 };
+
+export const forceTouchHandlerName = 'ForceTouchGestureHandler';
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
   ? createHandler<
       ForceTouchGestureHandlerProps,
       ForceTouchGestureHandlerEventPayload
     >({
-      name: 'ForceTouchGestureHandler',
+      name: forceTouchHandlerName,
       allowedProps: [
         ...baseGestureHandlerProps,
         ...forceTouchGestureHandlerProps,

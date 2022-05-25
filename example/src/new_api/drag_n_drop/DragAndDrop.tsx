@@ -68,13 +68,11 @@ function DragAndDrop<T extends { id: string }>({
   // used to calculate position of currently dragged element in relation to drag start position
   // we are using dragged element center as calculations point - then we just add translationX/Y from gesture
   // this way we can easily calculate proper index based of current gesture position
-  const [
-    activeElementInitialPosition,
-    setActiveElementInitialPosition,
-  ] = useState({
-    x: 0,
-    y: 0,
-  });
+  const [activeElementInitialPosition, setActiveElementInitialPosition] =
+    useState({
+      x: 0,
+      y: 0,
+    });
 
   const updateDataOnDragEnd = () => {
     const newData = [...data];
@@ -185,6 +183,7 @@ function DragAndDrop<T extends { id: string }>({
     // react to activeElement change
     setActiveElementPositionFromIndex();
     setPlaceholderIndex(getActiveElementIndex());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeElementId]);
 
   const onPositionUpdate = (e: PanGestureHandlerEventPayload) => {

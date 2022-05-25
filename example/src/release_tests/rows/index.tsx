@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropsWithChildren } from 'react';
 import {
   Animated,
   StyleSheet,
@@ -29,7 +29,7 @@ type Props = {
   enableTrackpadTwoFingerGesture: boolean;
 };
 
-export class Swipeable extends Component<Props> {
+export class Swipeable extends Component<PropsWithChildren<Props>> {
   private width: number;
   private dragX: Animated.Value;
   private transX: Animated.AnimatedInterpolation;

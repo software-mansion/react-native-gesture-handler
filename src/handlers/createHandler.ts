@@ -11,7 +11,11 @@ import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
-import { handlerIDToTag, getNextHandlerTag } from './handlersRegistry';
+import {
+  handlerIDToTag,
+  getNextHandlerTag,
+  registerOldGestureHandler,
+} from './handlersRegistry';
 
 import {
   BaseGestureHandlerProps,
@@ -19,16 +23,38 @@ import {
   GestureEvent,
   HandlerStateChangeEvent,
   findNodeHandle,
+  scheduleFlushOperations,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
+import { isFabric, isJestEnv } from '../utils';
+import { ActionType } from '../ActionType';
 
 const UIManagerAny = UIManager as any;
+
+const customGHEventsConfigFabricAndroid = {
+  topOnGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
+  topOnGestureHandlerStateChange: {
+    registrationName: 'onGestureHandlerStateChange',
+  },
+};
 
 const customGHEventsConfig = {
   onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
   onGestureHandlerStateChange: {
     registrationName: 'onGestureHandlerStateChange',
   },
+
+  // When using React Native Gesture Handler for Animated.event with useNativeDriver: true
+  // on Android with Fabric enabled, the native part still sends the native events to JS
+  // but prefixed with "top". We cannot simply rename the events above so they are prefixed
+  // with "top" instead of "on" because in such case Animated.events would not be registered.
+  // That's why we need to register another pair of event names.
+  // The incoming events will be queued but never handled.
+  // Without this piece of code below, you'll get the following JS error:
+  // Unsupported top level event type "topOnGestureHandlerEvent" dispatched
+  ...(isFabric() &&
+    Platform.OS === 'android' &&
+    customGHEventsConfigFabricAndroid),
 };
 
 // Add gesture specific events to genericDirectEventTypes object exported from UIManager
@@ -122,15 +148,7 @@ type InternalEventHandlers = {
   onGestureHandlerStateChange?: (event: any) => void;
 };
 
-let showedRngh2Notice = false;
-function showRngh2NoticeIfNeeded() {
-  if (!showedRngh2Notice) {
-    console.warn(
-      "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!"
-    );
-    showedRngh2Notice = true;
-  }
-}
+const UNRESOLVED_REFS_RETRY_LIMIT = 1;
 
 // TODO(TS) - make sure that BaseGestureHandlerProps doesn't need other generic parameter to work with custom properties.
 export default function createHandler<
@@ -172,9 +190,6 @@ export default function createHandler<
         }
         handlerIDToTag[props.id] = this.handlerTag;
       }
-      if (__DEV__) {
-        showRngh2NoticeIfNeeded();
-      }
     }
 
     componentDidMount() {
@@ -185,7 +200,7 @@ export default function createHandler<
           'toggleElementInspector',
           () => {
             this.setState((_) => ({ allowTouches }));
-            this.update();
+            this.update(UNRESOLVED_REFS_RETRY_LIMIT);
           }
         );
       }
@@ -198,7 +213,7 @@ export default function createHandler<
         // be resolved by then.
         this.updateEnqueued = setImmediate(() => {
           this.updateEnqueued = null;
-          this.update();
+          this.update(UNRESOLVED_REFS_RETRY_LIMIT);
         });
       }
 
@@ -218,12 +233,13 @@ export default function createHandler<
       if (this.viewTag !== viewTag) {
         this.attachGestureHandler(viewTag as number); // TODO(TS) - check interaction between _viewTag & findNodeHandle
       }
-      this.update();
+      this.update(UNRESOLVED_REFS_RETRY_LIMIT);
     }
 
     componentWillUnmount() {
       this.inspectorToggleListener?.remove();
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
+      scheduleFlushOperations();
       if (this.updateEnqueued) {
         clearImmediate(this.updateEnqueued);
       }
@@ -237,7 +253,9 @@ export default function createHandler<
 
     private onGestureHandlerEvent = (event: GestureEvent<U>) => {
       if (event.nativeEvent.handlerTag === this.handlerTag) {
-        this.props.onGestureEvent?.(event);
+        if (typeof this.props.onGestureEvent === 'function') {
+          this.props.onGestureEvent?.(event);
+        }
       } else {
         this.props.onGestureHandlerEvent?.(event);
       }
@@ -248,7 +266,9 @@ export default function createHandler<
       event: HandlerStateChangeEvent<U>
     ) => {
       if (event.nativeEvent.handlerTag === this.handlerTag) {
-        this.props.onHandlerStateChange?.(event);
+        if (typeof this.props.onHandlerStateChange === 'function') {
+          this.props.onHandlerStateChange?.(event);
+        }
 
         const state: ValueOf<typeof State> = event.nativeEvent.state;
         const stateEventName = stateToPropMappings[state];
@@ -296,16 +316,42 @@ export default function createHandler<
         (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
           this.handlerTag,
           newViewTag,
-          false,
+          ActionType.JS_FUNCTION_OLD_API, // ignored on web
           this.propsRef
         );
       } else {
+        registerOldGestureHandler(this.handlerTag, {
+          onGestureEvent: this.onGestureHandlerEvent,
+          onGestureStateChange: this.onGestureHandlerStateChange,
+        });
+
+        const actionType = (() => {
+          if (
+            this.props?.onGestureEvent &&
+            'current' in this.props.onGestureEvent
+          ) {
+            // Reanimated worklet
+            return ActionType.REANIMATED_WORKLET;
+          } else if (
+            this.props?.onGestureEvent &&
+            '__isNative' in this.props.onGestureEvent
+          ) {
+            // Animated.event with useNativeDriver: true
+            return ActionType.NATIVE_ANIMATED_EVENT;
+          } else {
+            // JS callback or Animated.event with useNativeDriver: false
+            return ActionType.JS_FUNCTION_OLD_API;
+          }
+        })();
+
         RNGestureHandlerModule.attachGestureHandler(
           this.handlerTag,
           newViewTag,
-          false
+          actionType
         );
       }
+
+      scheduleFlushOperations();
     };
 
     private updateGestureHandler = (
@@ -314,16 +360,29 @@ export default function createHandler<
       this.config = newConfig;
 
       RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
+      scheduleFlushOperations();
     };
 
-    private update() {
-      const newConfig = filterConfig(
-        transformProps ? transformProps(this.props) : this.props,
-        [...allowedProps, ...customNativeProps],
-        config
-      );
-      if (!deepEqual(this.config, newConfig)) {
-        this.updateGestureHandler(newConfig);
+    private update(remainingTries: number) {
+      const props: HandlerProps<U> = this.props;
+
+      // When ref is set via a function i.e. `ref={(r) => refObject.current = r}` instead of
+      // `ref={refObject}` it's possible that it won't be resolved in time. Seems like trying
+      // again is easy enough fix.
+      if (hasUnresolvedRefs(props) && remainingTries > 0) {
+        this.updateEnqueued = setImmediate(() => {
+          this.updateEnqueued = null;
+          this.update(remainingTries - 1);
+        });
+      } else {
+        const newConfig = filterConfig(
+          transformProps ? transformProps(this.props) : this.props,
+          [...allowedProps, ...customNativeProps],
+          config
+        );
+        if (!deepEqual(this.config, newConfig)) {
+          this.updateGestureHandler(newConfig);
+        }
       }
     }
 
@@ -433,6 +492,13 @@ export default function createHandler<
         {
           ref: this.refHandler,
           collapsable: false,
+          ...(isJestEnv()
+            ? {
+                handlerType: name,
+                handlerTag: this.handlerTag,
+              }
+            : {}),
+          testID: this.props.testID ?? child.props.testID,
           ...events,
         },
         grandChildren

@@ -1,18 +1,24 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import * as React from 'react';
-import { requireNativeComponent } from 'react-native';
-import { GestureHandlerRootViewProps } from './GestureHandlerRootView';
+import { PropsWithChildren } from 'react';
+import { requireNativeComponent, ViewProps } from 'react-native';
+import { maybeInitializeFabric } from './init';
+import { shouldUseCodegenNativeComponent } from './utils';
 
-const GestureHandlerRootViewNative = requireNativeComponent(
-  'GestureHandlerRootView'
-);
+const GestureHandlerRootViewNativeComponent = shouldUseCodegenNativeComponent()
+  ? require('./fabric/RNGestureHandlerRootViewNativeComponent').default
+  : requireNativeComponent('RNGestureHandlerRootView');
 
-export default function GestureHandlerRootView({
-  children,
-  ...rest
-}: GestureHandlerRootViewProps) {
-  return (
-    <GestureHandlerRootViewNative {...rest}>
-      {children}
-    </GestureHandlerRootViewNative>
-  );
+export interface GestureHandlerRootViewProps
+  extends PropsWithChildren<ViewProps> {}
+
+export default function GestureHandlerRootView(
+  props: GestureHandlerRootViewProps
+) {
+  // try initialize fabric on the first render, at this point we can
+  // reliably check if fabric is enabled (the function contains a flag
+  // to make sure it's called only once)
+  maybeInitializeFabric();
+
+  return <GestureHandlerRootViewNativeComponent {...props} />;
 }

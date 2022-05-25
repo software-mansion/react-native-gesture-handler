@@ -6,6 +6,20 @@ sidebar_label: Gesture
 
 `Gesture` is the object that allows you to create and compose gestures.
 
+:::tip
+Consider wrapping your gesture configurations with `useMemo`, as it will reduce the amount of work Gesture Handler has to do under the hood when updating gestures. For example:
+```jsx
+const gesture = useMemo(
+  () =>
+    Gesture.Tap().onStart(() => {
+      console.log('Number of taps:', tapNumber + 1);
+      setTapNumber((value) => value + 1);
+    }),
+  [tapNumber, setTapNumber]
+);
+```
+:::
+
 ### Gesture.Tap()
 
 Creates a new instance of [`TapGesture`](./tap-gesture.md) with its default config and no callbacks.

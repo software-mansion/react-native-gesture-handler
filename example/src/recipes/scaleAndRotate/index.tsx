@@ -135,7 +135,6 @@ export class PinchableBox extends React.Component {
                         ],
                       },
                     ]}
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     source={require('./swmansion.png')}
                   />
                 </Animated.View>

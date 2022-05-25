@@ -20,5 +20,5 @@ export function fireAfterInterval(
     method();
     return null;
   }
-  return setTimeout(() => method(), interval);
+  return setTimeout(() => method(), interval as number);
 }

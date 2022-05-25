@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  SectionList,
-  Platform,
-  LogBox,
-} from 'react-native';
+import { Text, View, StyleSheet, SectionList, Platform } from 'react-native';
 import {
   createStackNavigator,
   StackScreenProps,
@@ -48,10 +41,7 @@ import BottomSheetNewApi from './new_api/bottom_sheet';
 import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
 import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
-
-LogBox.ignoreLogs([
-  "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
-]);
+import ManualGestures from './new_api/manualGestures/index';
 
 interface Example {
   name: string;
@@ -131,6 +121,10 @@ const EXAMPLES: ExamplesSection[] = [
       {
         name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
         component: BetterHorizontalDrawer,
+      },
+      {
+        name: 'Manual gestures',
+        component: ManualGestures,
       },
     ],
   },

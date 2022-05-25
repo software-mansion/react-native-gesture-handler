@@ -13,6 +13,8 @@ module.exports = {
         'under-the-hood/states-events',
         'gesture-handlers/basics/about-handlers',
         'gesture-handlers/basics/interactions',
+        'guides/testing',
+        'guides/migrating-off-rnghenabledroot',
       ],
     },
     {
@@ -65,6 +67,7 @@ module.exports = {
             'gesture-handlers/api/create-native-wrapper',
           ],
         },
+        { type: 'doc', id: 'api/test-api' },
       ],
     },
     {

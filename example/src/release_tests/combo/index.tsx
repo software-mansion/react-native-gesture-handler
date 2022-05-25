@@ -66,7 +66,7 @@ class TouchableHighlight extends Component<
       this.setState({ gestureHandlerState: nextGestureHandlerState }, () => {
         const pressed = nextGestureHandlerState === State.BEGAN;
         // @ts-ignore old API
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, react/no-string-refs
+        // eslint-disable-next-line react/no-string-refs
         this.refs[CHILD_REF].setNativeProps({
           style: pressed
             ? { opacity: this.props.activeOpacity }
@@ -136,7 +136,6 @@ class ControlledSwitch extends React.Component<
 
 type ComboProps = {
   // TODO(TS) what this type can be?
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ScrollViewComponent: React.ComponentType<any>;
 };
 class Combo extends Component<ComboProps> {

@@ -75,13 +75,15 @@ export interface TapGestureHandlerProps
   extends BaseGestureHandlerProps<TapGestureHandlerEventPayload>,
     TapGestureConfig {}
 
+export const tapHandlerName = 'TapGestureHandler';
+
 export type TapGestureHandler = typeof TapGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const TapGestureHandler = createHandler<
   TapGestureHandlerProps,
   TapGestureHandlerEventPayload
 >({
-  name: 'TapGestureHandler',
+  name: tapHandlerName,
   allowedProps: [
     ...baseGestureHandlerProps,
     ...tapGestureHandlerProps,

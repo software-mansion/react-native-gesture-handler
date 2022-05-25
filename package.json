@@ -1,11 +1,11 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "2.2.0",
+  "version": "2.4.2",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "prepare": "bob build",
     "test": "jest",
-    "build": "yarn tsc",
+    "build": "yarn tsc -p tsconfig.build.json",
     "precommit": "lint-staged",
     "release": "npm login && release-it",
     "ts-check": "yarn tsc --noEmit",
@@ -25,11 +25,17 @@
     "android/gradle.properties",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
+    "android/src/main/jni/",
+    "android/src/fabric/java",
+    "android/src/paper/java",
     "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "android/common/src/main/java/",
+    "android/reanimated/src/main/java/",
+    "android/noreanimated/src/main/java/",
     "ios/",
     "Swipeable/",
+    "jest-utils/",
     "DrawerLayout/",
     "README.md",
     "jestSetup.js",
@@ -68,14 +74,16 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-typescript": "^7.12.7",
     "@babel/runtime": "^7.12.5",
+    "@testing-library/jest-native": "^4.0.4",
+    "@testing-library/react-native": "^9.0.0",
     "@types/hammerjs": "^2.0.38",
     "@types/hoist-non-react-statics": "^3.3.1",
-    "@types/jest": "^26.0.19",
+    "@types/jest": "^27.0.3",
     "@types/react": "^17.0.0",
     "@types/react-native": "^0.64.2",
     "@types/react-test-renderer": "^17.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.10.0",
-    "@typescript-eslint/parser": "^4.10.0",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "babel-jest": "^26.6.3",
     "eslint": "^7.15.0",
     "eslint-config-satya164": "^3.1.8",
@@ -84,22 +92,26 @@
     "eslint-plugin-jest": "^26.0.0",
     "expo": "^35.0.1",
     "husky": "^0.14.3",
-    "jest": "^24.7.1",
-    "lint-staged": "^10.2.11",
+    "jest": "^26.6.3",
+    "lint-staged": "^12.3.2",
     "metro-react-native-babel-preset": "^0.64.0",
     "prettier": "^2.2.1",
     "react": "^16.8.6",
     "react-dom": "^16.12.0",
     "react-native": "^0.64.0",
     "react-native-builder-bob": "^0.17.1",
-    "react-native-reanimated": "^2.0.0",
+    "react-native-reanimated": "^2.3.1",
     "react-native-web": "^0.11.7",
-    "react-test-renderer": "16.8.6",
+    "react-test-renderer": "17.0.2",
     "release-it": "^13.6.5",
-    "typescript": "^4.1.2"
+    "typescript": "^4.5.5"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "./src/*.{ts,tsx}": [
       "prettier --write"
     ]
   },
@@ -116,11 +128,26 @@
     "targets": [
       "commonjs",
       "module",
-      "typescript"
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
     ]
   },
   "eslintIgnore": [
     "node_modules/",
-    "lib/"
-  ]
+    "lib/",
+    "src/fabric/*NativeComponent.js"
+  ],
+  "codegenConfig": {
+    "libraries": [
+      {
+        "name": "rngesturehandler",
+        "type": "components",
+        "jsSrcsDir": "./src/fabric"
+      }
+    ]
+  }
 }

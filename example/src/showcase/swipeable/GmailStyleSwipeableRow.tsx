@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropsWithChildren } from 'react';
 import { Animated, StyleSheet, I18nManager, View } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
@@ -7,7 +7,9 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
-export default class GmailStyleSwipeableRow extends Component {
+export default class GmailStyleSwipeableRow extends Component<
+  PropsWithChildren<unknown>
+> {
   private renderLeftActions = (
     _progress: Animated.AnimatedInterpolation,
     dragX: Animated.AnimatedInterpolation

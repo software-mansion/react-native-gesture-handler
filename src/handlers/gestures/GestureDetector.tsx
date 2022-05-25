@@ -16,6 +16,8 @@ import {
   GestureTouchEvent,
   GestureUpdateEvent,
   GestureStateChangeEvent,
+  HandlerStateChangeEvent,
+  scheduleFlushOperations,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -30,8 +32,18 @@ import {
 } from '../PanGestureHandler';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
 import { State } from '../../State';
-import { EventType } from '../../EventType';
+import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
+import { ActionType } from '../../ActionType';
+import { isFabric, tagMessage } from '../../utils';
+import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
+import { Platform } from 'react-native';
+import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
+import { onGestureHandlerEvent } from './eventReceiver';
+
+declare const global: {
+  isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
+};
 
 const ALLOWED_PROPS = [
   ...baseGestureHandlerWithMonitorProps,
@@ -50,7 +62,7 @@ export type GestureConfigReference = {
     HandlerCallbacks<Record<string, unknown>>[] | null
   > | null;
   firstExecution: boolean;
-  useAnimated: boolean;
+  useReanimatedHook: boolean;
 };
 
 function convertToHandlerTag(ref: GestureRef): number {
@@ -75,8 +87,35 @@ function dropHandlers(preparedGesture: GestureConfigReference) {
   for (const handler of preparedGesture.config) {
     RNGestureHandlerModule.dropGestureHandler(handler.handlerTag);
 
-    unregisterHandler(handler.handlerTag);
+    unregisterHandler(handler.handlerTag, handler.config.testId);
   }
+
+  scheduleFlushOperations();
+}
+
+function checkGestureCallbacksForWorklets(gesture: GestureType) {
+  // if a gesture is explicitly marked to run on the JS thread there is no need to check
+  // if callbacks are worklets as the user is aware they will be ran on the JS thread
+  if (gesture.config.runOnJS) {
+    return;
+  }
+
+  const areSomeNotWorklets = gesture.handlers.isWorklet.includes(false);
+  const areSomeWorklets = gesture.handlers.isWorklet.includes(true);
+
+  // if some of the callbacks are worklets and some are not, and the gesture is not
+  // explicitly marked with `.runOnJS(true)` show an error
+  if (areSomeNotWorklets && areSomeWorklets) {
+    console.error(
+      tagMessage(
+        `Some of the callbacks in the gesture are worklets and some are not. Either make sure that all calbacks are marked as 'worklet' if you wish to run them on the UI thread or use '.runOnJS(true)' modifier on the gesture explicitly to run all callbacks on the JS thread.`
+      )
+    );
+  }
+}
+
+interface WebEventHandler {
+  onGestureHandlerEvent: (event: HandlerStateChangeEvent<unknown>) => void;
 }
 
 interface AttachHandlersConfig {
@@ -84,7 +123,7 @@ interface AttachHandlersConfig {
   gestureConfig: ComposedGesture | GestureType | undefined;
   gesture: GestureType[];
   viewTag: number;
-  useAnimated: boolean;
+  webEventHandlersRef: React.RefObject<WebEventHandler>;
 }
 
 function attachHandlers({
@@ -92,7 +131,7 @@ function attachHandlers({
   gestureConfig,
   gesture,
   viewTag,
-  useAnimated,
+  webEventHandlersRef,
 }: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
     gestureConfig?.initialize();
@@ -107,17 +146,21 @@ function attachHandlers({
   });
 
   for (const handler of gesture) {
+    checkGestureCallbacksForWorklets(handler);
+
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
       handler.handlerTag,
       filterConfig(handler.config, ALLOWED_PROPS)
     );
 
-    registerHandler(handler.handlerTag, handler);
+    registerHandler(handler.handlerTag, handler, handler.config.testId);
+  }
 
-    // use setImmediate to extract handlerTags, because all refs should be initialized
-    // when it's ran
-    setImmediate(() => {
+  // use setImmediate to extract handlerTags, because all refs should be initialized
+  // when it's ran
+  setImmediate(() => {
+    for (const handler of gesture) {
       let requireToFail: number[] = [];
       if (handler.config.requireToFail) {
         requireToFail = extractValidHandlerTags(handler.config.requireToFail);
@@ -137,22 +180,42 @@ function attachHandlers({
           waitFor: requireToFail,
         })
       );
-    });
-  }
+    }
+
+    scheduleFlushOperations();
+  });
+
   preparedGesture.config = gesture;
 
   for (const gesture of preparedGesture.config) {
-    RNGestureHandlerModule.attachGestureHandler(
-      gesture.handlerTag,
-      viewTag,
-      !useAnimated // send direct events when using animatedGesture, device events otherwise
-    );
+    const actionType = gesture.shouldUseReanimated
+      ? ActionType.REANIMATED_WORKLET
+      : ActionType.JS_FUNCTION_NEW_API;
+
+    if (Platform.OS === 'web') {
+      (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
+        gesture.handlerTag,
+        viewTag,
+        ActionType.JS_FUNCTION_OLD_API, // ignored on web
+        webEventHandlersRef
+      );
+    } else {
+      RNGestureHandlerModule.attachGestureHandler(
+        gesture.handlerTag,
+        viewTag,
+        actionType
+      );
+    }
   }
 
   if (preparedGesture.animatedHandlers) {
-    preparedGesture.animatedHandlers.value = (gesture.map(
-      (g) => g.handlers
-    ) as unknown) as HandlerCallbacks<Record<string, unknown>>[];
+    const isAnimatedGesture = (g: GestureType) => g.shouldUseReanimated;
+
+    preparedGesture.animatedHandlers.value = (gesture
+      .filter(isAnimatedGesture)
+      .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+      Record<string, unknown>
+    >[];
   }
 }
 
@@ -165,9 +228,14 @@ function updateHandlers(
 
   for (let i = 0; i < gesture.length; i++) {
     const handler = preparedGesture.config[i];
+    checkGestureCallbacksForWorklets(handler);
 
-    gesture[i].handlerTag = handler.handlerTag;
-    gesture[i].handlers.handlerTag = handler.handlerTag;
+    // only update handlerTag when it's actually different, it may be the same
+    // if gesture config object is wrapped with useMemo
+    if (gesture[i].handlerTag !== handler.handlerTag) {
+      gesture[i].handlerTag = handler.handlerTag;
+      gesture[i].handlers.handlerTag = handler.handlerTag;
+    }
   }
 
   // use setImmediate to extract handlerTags, because when it's ran, all refs should be updated
@@ -179,7 +247,6 @@ function updateHandlers(
 
       handler.config = gesture[i].config;
       handler.handlers = gesture[i].handlers;
-      handler.handlers.handlerTag = handler.handlerTag;
 
       const requireToFail = extractValidHandlerTags(
         handler.config.requireToFail
@@ -197,14 +264,41 @@ function updateHandlers(
         })
       );
 
-      registerHandler(handler.handlerTag, handler);
+      registerHandler(handler.handlerTag, handler, handler.config.testId);
     }
 
     if (preparedGesture.animatedHandlers) {
-      preparedGesture.animatedHandlers.value = (preparedGesture.config.map(
-        (g) => g.handlers
-      ) as unknown) as HandlerCallbacks<Record<string, unknown>>[];
+      const previousHandlersValue =
+        preparedGesture.animatedHandlers.value ?? [];
+      const newHandlersValue = (preparedGesture.config
+        .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
+        .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+        Record<string, unknown>
+      >[];
+
+      // if amount of gesture configs changes, we need to update the callbacks in shared value
+      let shouldUpdateSharedValue =
+        previousHandlersValue.length !== newHandlersValue.length;
+
+      if (!shouldUpdateSharedValue) {
+        // if the amount is the same, we need to check if any of the configs inside has changed
+        for (let i = 0; i < newHandlersValue.length; i++) {
+          if (
+            // we can use the `gestureId` prop as it's unique for every config instance
+            newHandlersValue[i].gestureId !== previousHandlersValue[i].gestureId
+          ) {
+            shouldUpdateSharedValue = true;
+            break;
+          }
+        }
+      }
+
+      if (shouldUpdateSharedValue) {
+        preparedGesture.animatedHandlers.value = newHandlersValue;
+      }
     }
+
+    scheduleFlushOperations();
   });
 }
 
@@ -216,7 +310,11 @@ function needsToReattach(
     return true;
   }
   for (let i = 0; i < gesture.length; i++) {
-    if (gesture[i].handlerName !== preparedGesture.config[i].handlerName) {
+    if (
+      gesture[i].handlerName !== preparedGesture.config[i].handlerName ||
+      gesture[i].shouldUseReanimated !==
+        preparedGesture.config[i].shouldUseReanimated
+    ) {
       return true;
     }
   }
@@ -224,85 +322,90 @@ function needsToReattach(
   return false;
 }
 
-function useAnimatedGesture(preparedGesture: GestureConfigReference) {
+function isStateChangeEvent(
+  event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+): event is GestureStateChangeEvent {
+  'worklet';
+  // @ts-ignore Yes, the oldState prop is missing on GestureTouchEvent, that's the point
+  return event.oldState != null;
+}
+
+function isTouchEvent(
+  event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+): event is GestureTouchEvent {
+  'worklet';
+  return event.eventType != null;
+}
+
+function getHandler(
+  type: CALLBACK_TYPE,
+  gesture: HandlerCallbacks<Record<string, unknown>>
+) {
+  'worklet';
+  switch (type) {
+    case CALLBACK_TYPE.BEGAN:
+      return gesture.onBegin;
+    case CALLBACK_TYPE.START:
+      return gesture.onStart;
+    case CALLBACK_TYPE.UPDATE:
+      return gesture.onUpdate;
+    case CALLBACK_TYPE.CHANGE:
+      return gesture.onChange;
+    case CALLBACK_TYPE.END:
+      return gesture.onEnd;
+    case CALLBACK_TYPE.FINALIZE:
+      return gesture.onFinalize;
+    case CALLBACK_TYPE.TOUCHES_DOWN:
+      return gesture.onTouchesDown;
+    case CALLBACK_TYPE.TOUCHES_MOVE:
+      return gesture.onTouchesMove;
+    case CALLBACK_TYPE.TOUCHES_UP:
+      return gesture.onTouchesUp;
+    case CALLBACK_TYPE.TOUCHES_CANCELLED:
+      return gesture.onTouchesCancelled;
+  }
+}
+
+function touchEventTypeToCallbackType(
+  eventType: TouchEventType
+): CALLBACK_TYPE {
+  'worklet';
+  switch (eventType) {
+    case TouchEventType.TOUCHES_DOWN:
+      return CALLBACK_TYPE.TOUCHES_DOWN;
+    case TouchEventType.TOUCHES_MOVE:
+      return CALLBACK_TYPE.TOUCHES_MOVE;
+    case TouchEventType.TOUCHES_UP:
+      return CALLBACK_TYPE.TOUCHES_UP;
+    case TouchEventType.TOUCHES_CANCELLED:
+      return CALLBACK_TYPE.TOUCHES_CANCELLED;
+  }
+  return CALLBACK_TYPE.UNDEFINED;
+}
+
+function runWorklet(
+  type: CALLBACK_TYPE,
+  gesture: HandlerCallbacks<Record<string, unknown>>,
+  event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
+  ...args: any[]
+) {
+  'worklet';
+  const handler = getHandler(type, gesture);
+  if (gesture.isWorklet[type]) {
+    // @ts-ignore Logic below makes sure the correct event is send to the
+    // correct handler.
+    handler?.(event, ...args);
+  } else if (handler) {
+    console.warn(tagMessage('Animated gesture callback must be a worklet'));
+  }
+}
+
+function useAnimatedGesture(
+  preparedGesture: GestureConfigReference,
+  needsRebuild: boolean
+) {
   if (!Reanimated) {
     return;
-  }
-
-  function isStateChangeEvent(
-    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
-  ): event is GestureStateChangeEvent {
-    'worklet';
-    // @ts-ignore Yes, the oldState prop is missing on GestureTouchEvent, that's the point
-    return event.oldState != null;
-  }
-
-  function isTouchEvent(
-    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
-  ): event is GestureTouchEvent {
-    'worklet';
-    return event.eventType != null;
-  }
-
-  function getHandler(
-    type: CALLBACK_TYPE,
-    gesture: HandlerCallbacks<Record<string, unknown>>
-  ) {
-    'worklet';
-    switch (type) {
-      case CALLBACK_TYPE.BEGAN:
-        return gesture.onBegin;
-      case CALLBACK_TYPE.START:
-        return gesture.onStart;
-      case CALLBACK_TYPE.UPDATE:
-        return gesture.onUpdate;
-      case CALLBACK_TYPE.CHANGE:
-        return gesture.onChange;
-      case CALLBACK_TYPE.END:
-        return gesture.onEnd;
-      case CALLBACK_TYPE.FINALIZE:
-        return gesture.onFinalize;
-      case CALLBACK_TYPE.TOUCHES_DOWN:
-        return gesture.onTouchesDown;
-      case CALLBACK_TYPE.TOUCHES_MOVE:
-        return gesture.onTouchesMove;
-      case CALLBACK_TYPE.TOUCHES_UP:
-        return gesture.onTouchesUp;
-      case CALLBACK_TYPE.TOUCHES_CANCELLED:
-        return gesture.onTouchesCancelled;
-    }
-  }
-
-  function touchEventTypeToCallbackType(eventType: EventType): CALLBACK_TYPE {
-    'worklet';
-    switch (eventType) {
-      case EventType.TOUCHES_DOWN:
-        return CALLBACK_TYPE.TOUCHES_DOWN;
-      case EventType.TOUCHES_MOVE:
-        return CALLBACK_TYPE.TOUCHES_MOVE;
-      case EventType.TOUCHES_UP:
-        return CALLBACK_TYPE.TOUCHES_UP;
-      case EventType.TOUCHES_CANCELLED:
-        return CALLBACK_TYPE.TOUCHES_CANCELLED;
-    }
-    return CALLBACK_TYPE.UNDEFINED;
-  }
-
-  function runWorklet(
-    type: CALLBACK_TYPE,
-    gesture: HandlerCallbacks<Record<string, unknown>>,
-    event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
-    ...args: any[]
-  ) {
-    'worklet';
-    const handler = getHandler(type, gesture);
-    if (gesture.isWorklet[type]) {
-      // @ts-ignore Logic below makes sure the correct event is send to the
-      // correct handler.
-      handler?.(event, ...args);
-    } else if (handler) {
-      console.warn('Animated gesture callback must be a worklet');
-    }
   }
 
   // Hooks are called conditionally, but the condition is whether the
@@ -369,7 +472,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
             stateControllers[i] = GestureStateManager.create(event.handlerTag);
           }
 
-          if (event.eventType !== EventType.UNDETERMINED) {
+          if (event.eventType !== TouchEventType.UNDETERMINED) {
             runWorklet(
               touchEventTypeToCallbackType(event.eventType),
               gesture,
@@ -401,7 +504,7 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
   const event = Reanimated.useEvent(
     callback,
     ['onGestureHandlerStateChange', 'onGestureHandlerEvent'],
-    true
+    needsRebuild
   );
 
   preparedGesture.animatedEventHandler = event;
@@ -410,42 +513,49 @@ function useAnimatedGesture(preparedGesture: GestureConfigReference) {
 
 interface GestureDetectorProps {
   gesture?: ComposedGesture | GestureType;
+  children?: React.ReactNode;
 }
-export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
-  props
-) => {
+export const GestureDetector = (props: GestureDetectorProps) => {
   const gestureConfig = props.gesture;
   const gesture = gestureConfig?.toGestureArray?.() ?? [];
-  const useAnimated =
-    gesture.find((gesture) =>
-      gesture.handlers.isWorklet.reduce((prev, current) => prev || current)
-    ) != null;
+  const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
+  const webEventHandlersRef = useRef<WebEventHandler>({
+    onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
+      onGestureHandlerEvent(e.nativeEvent);
+    },
+  });
 
   const preparedGesture = React.useRef<GestureConfigReference>({
     config: gesture,
     animatedEventHandler: null,
     animatedHandlers: null,
     firstExecution: true,
-    useAnimated: useAnimated,
+    useReanimatedHook: useReanimatedHook,
   }).current;
 
-  if (useAnimated !== preparedGesture.useAnimated) {
+  if (useReanimatedHook !== preparedGesture.useReanimatedHook) {
     throw new Error(
-      'You cannot change whether you are using gesture or animatedGesture while the app is running'
+      tagMessage(
+        'You cannot change the thread the callbacks are ran on while the app is running'
+      )
     );
   }
+
+  // Reanimated event should be rebuilt only when gestures are reattached, otherwise
+  // config update will be enough as all necessary items are stored in shared values anyway
+  const needsToRebuildReanimatedEvent =
+    preparedGesture.firstExecution || needsToReattach(preparedGesture, gesture);
 
   if (preparedGesture.firstExecution) {
     gestureConfig?.initialize?.();
   }
 
-  if (useAnimated) {
-    // Whether animatedGesture or gesture is used shouldn't change
-    // during while an app is running
+  if (useReanimatedHook) {
+    // Whether animatedGesture or gesture is used shouldn't change while the app is running
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    useAnimatedGesture(preparedGesture);
+    useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
   }
 
   useEffect(() => {
@@ -456,7 +566,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
       gestureConfig,
       gesture,
       viewTag,
-      useAnimated,
+      webEventHandlersRef,
     });
 
     return () => {
@@ -475,7 +585,7 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
           gestureConfig,
           gesture,
           viewTag,
-          useAnimated,
+          webEventHandlersRef,
         });
       } else {
         updateHandlers(preparedGesture, gestureConfig, gesture);
@@ -485,20 +595,43 @@ export const GestureDetector: React.FunctionComponent<GestureDetectorProps> = (
     }
   }, [props]);
 
-  if (useAnimated) {
+  const refFunction = (ref: unknown) => {
+    if (ref !== null) {
+      //@ts-ignore Just setting the ref
+      viewRef.current = ref;
+
+      if (isFabric()) {
+        const node = getShadowNodeFromRef(ref);
+        if (global.isFormsStackingContext(node) === false) {
+          console.error(
+            tagMessage(
+              'GestureDetector has received a child that may get view-flattened. ' +
+                '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
+            )
+          );
+        }
+      }
+    }
+  };
+
+  if (useReanimatedHook) {
     return (
       <AnimatedWrap
-        ref={viewRef}
+        ref={refFunction}
         onGestureHandlerEvent={preparedGesture.animatedEventHandler}>
         {props.children}
       </AnimatedWrap>
     );
   } else {
-    return <Wrap ref={viewRef}>{props.children}</Wrap>;
+    return <Wrap ref={refFunction}>{props.children}</Wrap>;
   }
 };
 
-class Wrap extends React.Component<{ onGestureHandlerEvent?: unknown }> {
+class Wrap extends React.Component<{
+  onGestureHandlerEvent?: unknown;
+  // implicit `children` prop has been removed in @types/react^18.0.0
+  children?: React.ReactNode;
+}> {
   render() {
     // I don't think that fighting with types over such a simple function is worth it
     // The only thing it does is add 'collapsable: false' to the child component
@@ -506,7 +639,6 @@ class Wrap extends React.Component<{ onGestureHandlerEvent?: unknown }> {
     // correct viewTag to attach to.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const child: any = React.Children.only(this.props.children);
-
     return React.cloneElement(
       child,
       { collapsable: false },

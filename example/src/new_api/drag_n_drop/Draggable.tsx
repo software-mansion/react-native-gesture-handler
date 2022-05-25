@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import {
   PanGestureHandlerEventPayload,
@@ -7,7 +7,7 @@ import {
   PanGesture,
   TapGesture,
 } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle } from 'react-native-reanimated';
 
 type AnimatedPostion = {
   x: Animated.SharedValue<number>;
@@ -27,9 +27,10 @@ interface DraggableProps {
   tileSize: number;
   rowGap: number;
   columnGap: number;
+  children?: React.ReactNode;
 }
 
-const Draggable: FunctionComponent<DraggableProps> = ({
+const Draggable = ({
   id,
   children,
   onLongPress,
@@ -40,10 +41,10 @@ const Draggable: FunctionComponent<DraggableProps> = ({
   columnGap,
   rowGap,
   position,
-}) => {
+}: DraggableProps) => {
   const tapGesture = Gesture.LongPress()
     .minDuration(300)
-    .onStart(() => onLongPress(id))
+    .onStart(() => runOnJS(onLongPress)(id))
     .simultaneousWithExternalGesture(dragGesture)
     .simultaneousWithExternalGesture(tapEndGesture);
 

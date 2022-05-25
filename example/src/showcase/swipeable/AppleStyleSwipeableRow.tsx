@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropsWithChildren } from 'react';
 import {
   Animated,
   StyleSheet,
@@ -12,7 +12,9 @@ import { RectButton } from 'react-native-gesture-handler';
 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
-export default class AppleStyleSwipeableRow extends Component {
+export default class AppleStyleSwipeableRow extends Component<
+  PropsWithChildren<unknown>
+> {
   private renderLeftActions = (
     _progress: Animated.AnimatedInterpolation,
     dragX: Animated.AnimatedInterpolation
@@ -96,7 +98,13 @@ export default class AppleStyleSwipeableRow extends Component {
         leftThreshold={30}
         rightThreshold={40}
         renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}>
+        renderRightActions={this.renderRightActions}
+        onSwipeableOpen={(direction) => {
+          console.log(`Opening swipeable from the ${direction}`);
+        }}
+        onSwipeableClose={(direction) => {
+          console.log(`Closing swipeable to the ${direction}`);
+        }}>
         {children}
       </Swipeable>
     );
