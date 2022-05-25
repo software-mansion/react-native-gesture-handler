@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropsWithChildren } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
 import {
@@ -13,7 +13,7 @@ import {
 
 import { USE_NATIVE_DRIVER } from '../../config';
 
-class Snappable extends Component<Record<string, unknown>> {
+class Snappable extends Component<PropsWithChildren<Record<string, unknown>>> {
   private onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
   private transX: Animated.AnimatedInterpolation;
   private dragX: Animated.Value;
@@ -59,7 +59,7 @@ class Snappable extends Component<Record<string, unknown>> {
   }
 }
 
-class Twistable extends Component {
+class Twistable extends Component<PropsWithChildren<unknown>> {
   private gesture: Animated.Value;
   private onGestureEvent?: (event: RotationGestureHandlerGestureEvent) => void;
   private rot: Animated.AnimatedInterpolation;

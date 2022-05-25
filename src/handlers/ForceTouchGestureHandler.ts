@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { tagMessage } from '../utils';
 import PlatformConstants from '../PlatformConstants';
 import createHandler from './createHandler';
@@ -13,7 +13,8 @@ export const forceTouchGestureHandlerProps = [
   'feedbackOnActivation',
 ] as const;
 
-class ForceTouchFallback extends React.Component {
+// implicit `children` prop has been removed in @types/react^18.0.0
+class ForceTouchFallback extends React.Component<PropsWithChildren<unknown>> {
   static forceTouchAvailable = false;
   componentDidMount() {
     console.warn(

@@ -148,6 +148,8 @@ type InternalEventHandlers = {
   onGestureHandlerStateChange?: (event: any) => void;
 };
 
+const UNRESOLVED_REFS_RETRY_LIMIT = 1;
+
 // TODO(TS) - make sure that BaseGestureHandlerProps doesn't need other generic parameter to work with custom properties.
 export default function createHandler<
   T extends BaseGestureHandlerProps<U>,
@@ -198,7 +200,7 @@ export default function createHandler<
           'toggleElementInspector',
           () => {
             this.setState((_) => ({ allowTouches }));
-            this.update();
+            this.update(UNRESOLVED_REFS_RETRY_LIMIT);
           }
         );
       }
@@ -211,7 +213,7 @@ export default function createHandler<
         // be resolved by then.
         this.updateEnqueued = setImmediate(() => {
           this.updateEnqueued = null;
-          this.update();
+          this.update(UNRESOLVED_REFS_RETRY_LIMIT);
         });
       }
 
@@ -231,7 +233,7 @@ export default function createHandler<
       if (this.viewTag !== viewTag) {
         this.attachGestureHandler(viewTag as number); // TODO(TS) - check interaction between _viewTag & findNodeHandle
       }
-      this.update();
+      this.update(UNRESOLVED_REFS_RETRY_LIMIT);
     }
 
     componentWillUnmount() {
@@ -361,14 +363,26 @@ export default function createHandler<
       scheduleFlushOperations();
     };
 
-    private update() {
-      const newConfig = filterConfig(
-        transformProps ? transformProps(this.props) : this.props,
-        [...allowedProps, ...customNativeProps],
-        config
-      );
-      if (!deepEqual(this.config, newConfig)) {
-        this.updateGestureHandler(newConfig);
+    private update(remainingTries: number) {
+      const props: HandlerProps<U> = this.props;
+
+      // When ref is set via a function i.e. `ref={(r) => refObject.current = r}` instead of
+      // `ref={refObject}` it's possible that it won't be resolved in time. Seems like trying
+      // again is easy enough fix.
+      if (hasUnresolvedRefs(props) && remainingTries > 0) {
+        this.updateEnqueued = setImmediate(() => {
+          this.updateEnqueued = null;
+          this.update(remainingTries - 1);
+        });
+      } else {
+        const newConfig = filterConfig(
+          transformProps ? transformProps(this.props) : this.props,
+          [...allowedProps, ...customNativeProps],
+          config
+        );
+        if (!deepEqual(this.config, newConfig)) {
+          this.updateGestureHandler(newConfig);
+        }
       }
     }
 
