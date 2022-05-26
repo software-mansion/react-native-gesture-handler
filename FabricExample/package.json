@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "ts-check": "yarn tsc --noEmit",
     "lint-check": "yarn eslint src/ && yarn prettier --check src/",
-    "postinstall": "patch-package && echo f909be47e36c73f109fb530f33fc7be9f00ee2cf > ./node_modules/react-native/sdks/.hermesversion"
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@react-native/babel-plugin-codegen": "^0.0.6",
@@ -19,7 +19,7 @@
     "patch-package": "^6.4.7",
     "postinstall-postinstall": "^2.1.0",
     "react": "18.0.0",
-    "react-native": "0.69.0-rc.1",
+    "react-native": "0.69.0-rc.3",
     "react-native-gesture-handler": "link:../",
     "react-native-safe-area-context": "^4.2.5",
     "react-native-screens": "software-mansion/react-native-screens#568e588817538740dff23a3590748614d4c346e3"
