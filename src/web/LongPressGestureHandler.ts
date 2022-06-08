@@ -65,7 +65,10 @@ class LongPressGestureHandler extends PressGestureHandler {
       } else if (ev.isFinal && this.previousState === State.BEGAN) {
         this.sendEvent({ ...ev, eventType: Hammer.INPUT_CANCEL });
       }
-    } else if (ev.eventType === Hammer.INPUT_MOVE && ev.distance > this.maxDist) {
+    } else if (
+      ev.eventType === Hammer.INPUT_MOVE &&
+      ev.distance > this.maxDist
+    ) {
       this.sendEvent({ ...ev, eventType: Hammer.INPUT_CANCEL });
       this.onGestureEnded(ev);
     }
