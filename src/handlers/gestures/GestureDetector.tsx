@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   GestureType,
   HandlerCallbacks,
@@ -522,14 +522,20 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   // store state in ref to prevent unnecessary renders
   const state = useRef({
     firstRender: true,
-    viewTag: -1,
+    viewRef: null,
     previousViewTag: -1,
+    forceReattach: false,
   }).current;
   const webEventHandlersRef = useRef<WebEventHandler>({
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
     },
   });
+
+  const [renderState, setRenderState] = useState(false);
+  function forceRender() {
+    setRenderState(!renderState);
+  }
 
   const preparedGesture = React.useRef<GestureConfigReference>({
     config: gesture,
@@ -549,7 +555,8 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   function onHandlersUpdate(skipConfigUpdate?: boolean) {
     // if the underlying view has changed we need to reattach handlers to the new view
-    const forceReattach = state.viewTag !== state.previousViewTag;
+    const viewTag = findNodeHandle(state.viewRef) as number;
+    const forceReattach = viewTag !== state.previousViewTag;
 
     if (forceReattach || needsToReattach(preparedGesture, gesture)) {
       dropHandlers(preparedGesture);
@@ -558,10 +565,14 @@ export const GestureDetector = (props: GestureDetectorProps) => {
         gestureConfig,
         gesture,
         webEventHandlersRef,
-        viewTag: state.viewTag,
+        viewTag,
       });
 
-      state.previousViewTag = state.viewTag;
+      state.previousViewTag = viewTag;
+      state.forceReattach = forceReattach;
+      if (forceReattach) {
+        forceRender();
+      }
     } else if (!skipConfigUpdate) {
       updateHandlers(preparedGesture, gestureConfig, gesture);
     }
@@ -570,7 +581,11 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   // Reanimated event should be rebuilt only when gestures are reattached, otherwise
   // config update will be enough as all necessary items are stored in shared values anyway
   const needsToRebuildReanimatedEvent =
-    preparedGesture.firstExecution || needsToReattach(preparedGesture, gesture);
+    preparedGesture.firstExecution ||
+    needsToReattach(preparedGesture, gesture) ||
+    state.forceReattach;
+
+  state.forceReattach = false;
 
   if (preparedGesture.firstExecution) {
     gestureConfig?.initialize?.();
@@ -583,13 +598,14 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   }
 
   useEffect(() => {
+    const viewTag = findNodeHandle(state.viewRef) as number;
     state.firstRender = true;
     attachHandlers({
       preparedGesture,
       gestureConfig,
       gesture,
       webEventHandlersRef,
-      viewTag: state.viewTag,
+      viewTag,
     });
 
     return () => {
@@ -607,13 +623,12 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   const refFunction = (ref: unknown) => {
     if (ref !== null) {
-      state.previousViewTag = state.viewTag;
-      //@ts-ignore Just setting the view tag
-      state.viewTag = findNodeHandle(ref);
+      //@ts-ignore Just setting the view ref
+      state.viewRef = ref;
 
       // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
       if (state.previousViewTag === -1) {
-        state.previousViewTag = state.viewTag;
+        state.previousViewTag = findNodeHandle(state.viewRef) as number;
       }
 
       // pass true as `skipConfigUpdate`, here we only want to trigger the eventual reattaching of handlers
