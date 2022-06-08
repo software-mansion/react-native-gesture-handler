@@ -11,12 +11,6 @@ import { HammerInputNames } from './constants';
 class LongPressGestureHandler extends PressGestureHandler {
   private gestureStartTimeStamp: number = 0;
 
-  constructor() {
-    super();
-
-    this.needsToSendMoveEvents = false;
-  }
-
   get minDurationMs(): number {
     // @ts-ignore FIXNE(TS)
     return isnan(this.config.minDurationMs) ? 251 : this.config.minDurationMs;
@@ -72,6 +66,19 @@ class LongPressGestureHandler extends PressGestureHandler {
       this.sendEvent({ ...ev, eventType: Hammer.INPUT_CANCEL });
       this.onGestureEnded(ev);
     }
+  }
+
+  onGestureStart(event: HammerInputExt) {
+    super.onGestureStart(event);
+
+    // send move events only in ACTIVE state
+    this.needsToSendMoveEvents = true;
+  }
+
+  onGestureEnded(event: HammerInputExt) {
+    super.onGestureEnded(event);
+
+    this.needsToSendMoveEvents = false;
   }
 
   transformNativeEvent(ev: HammerInputExt) {
