@@ -13,6 +13,7 @@ import { fireAfterInterval, isValidNumber, isnan } from './utils';
 class PressGestureHandler extends DiscreteGestureHandler {
   private visualFeedbackTimer: any;
   private initialEvent: HammerInputExt | null = null;
+  protected needsToSendMoveEvents = true;
   get name() {
     return 'press';
   }
@@ -132,7 +133,7 @@ class PressGestureHandler extends DiscreteGestureHandler {
           // @ts-ignore -- this should explicitly support undefined
           this.onGestureEnded();
         }, timeout);
-      } else {
+      } else if (this.needsToSendMoveEvents) {
         this.sendEvent({
           ...ev,
           eventType: Hammer.INPUT_MOVE,

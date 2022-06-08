@@ -11,6 +11,12 @@ import { HammerInputNames } from './constants';
 class LongPressGestureHandler extends PressGestureHandler {
   private gestureStartTimeStamp: number = 0;
 
+  constructor() {
+    super();
+
+    this.needsToSendMoveEvents = false;
+  }
+
   get minDurationMs(): number {
     // @ts-ignore FIXNE(TS)
     return isnan(this.config.minDurationMs) ? 251 : this.config.minDurationMs;
@@ -18,7 +24,7 @@ class LongPressGestureHandler extends PressGestureHandler {
 
   get maxDist() {
     // @ts-ignore FIXNE(TS)
-    return isnan(this.config.maxDist) ? 9 : this.config.maxDist;
+    return isnan(this.config.maxDist) ? 9 : this.config.maxDist ?? 9;
   }
 
   updateHasCustomActivationCriteria({ maxDistSq }: Config) {
@@ -40,7 +46,7 @@ class LongPressGestureHandler extends PressGestureHandler {
   getHammerConfig() {
     return {
       ...super.getHammerConfig(),
-      // threshold: this.maxDist,
+      threshold: this.maxDist,
       time: this.minDurationMs,
     };
   }
@@ -59,6 +65,9 @@ class LongPressGestureHandler extends PressGestureHandler {
       } else if (ev.isFinal && this.previousState === State.BEGAN) {
         this.sendEvent({ ...ev, eventType: Hammer.INPUT_CANCEL });
       }
+    } else if (ev.eventType === Hammer.INPUT_MOVE && ev.distance > this.maxDist) {
+      this.sendEvent({ ...ev, eventType: Hammer.INPUT_CANCEL });
+      this.onGestureEnded(ev);
     }
   }
 
