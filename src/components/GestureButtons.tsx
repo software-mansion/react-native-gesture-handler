@@ -6,6 +6,7 @@ import {
   StyleSheet,
   StyleProp,
   ViewStyle,
+  View,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
@@ -20,6 +21,7 @@ import {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,
 } from '../handlers/NativeViewGestureHandler';
+import { hasOneOfProperties } from '../utils';
 
 export interface RawButtonProps extends NativeViewGestureHandlerProps {
   /**
@@ -56,6 +58,8 @@ export interface RawButtonProps extends NativeViewGestureHandlerProps {
    * Defines whether the ripple animation should be drawn on the foreground of the view.
    */
   foreground?: boolean;
+
+  style?: StyleProp<ViewStyle>;
 }
 
 export interface BaseButtonProps extends RawButtonProps {
@@ -71,7 +75,6 @@ export interface BaseButtonProps extends RawButtonProps {
    * method.
    */
   onActiveStateChange?: (active: boolean) => void;
-  style?: StyleProp<ViewStyle>;
   testID?: string;
 }
 
@@ -154,17 +157,77 @@ export class BaseButton extends React.Component<BaseButtonProps> {
   };
 
   render() {
-    const { rippleColor, ...rest } = this.props;
+    const { rippleColor, style, ...rest } = this.props;
+    const { containerStyle, buttonStyle } = transformButtonStyle(style);
 
     return (
-      <RawButton
-        rippleColor={processColor(rippleColor)}
-        {...rest}
-        onGestureEvent={this.onGestureEvent}
-        onHandlerStateChange={this.onHandlerStateChange}
-      />
+      <View style={[{ overflow: 'hidden' }, containerStyle]}>
+        <RawButton
+          rippleColor={processColor(rippleColor)}
+          style={[buttonStyle]}
+          {...rest}
+          onGestureEvent={this.onGestureEvent}
+          onHandlerStateChange={this.onHandlerStateChange}
+        />
+      </View>
     );
   }
+}
+
+function transformButtonStyle(
+  style: StyleProp<ViewStyle>
+): {
+  containerStyle: StyleProp<ViewStyle>;
+  buttonStyle: StyleProp<ViewStyle>;
+} {
+  const {
+    alignContent,
+    alignItems,
+    flexDirection,
+    flexWrap,
+    justifyContent,
+    overflow,
+    direction,
+    padding,
+    paddingBottom,
+    paddingEnd,
+    paddingHorizontal,
+    paddingLeft,
+    paddingRight,
+    paddingStart,
+    paddingTop,
+    paddingVertical,
+    ...rest
+  } = StyleSheet.flatten(style) ?? {};
+
+  const fillParent =
+    // parent has its size specified
+    hasOneOfProperties(rest, ['width', 'height', 'flex']) ||
+    // correctly handle StyleSheet.absoluteFill
+    rest.position === 'absolute';
+
+  return {
+    containerStyle: rest,
+    buttonStyle: {
+      alignContent,
+      alignItems,
+      flexDirection,
+      flexWrap,
+      justifyContent,
+      overflow,
+      direction,
+      padding,
+      paddingBottom,
+      paddingEnd,
+      paddingHorizontal,
+      paddingLeft,
+      paddingRight,
+      paddingStart,
+      paddingTop,
+      paddingVertical,
+      ...(fillParent ? StyleSheet.absoluteFillObject : {}),
+    },
+  };
 }
 
 const AnimatedBaseButton = Animated.createAnimatedComponent(BaseButton);

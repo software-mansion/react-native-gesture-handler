@@ -35,6 +35,11 @@ export function hasProperty(object: object, key: string) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function hasOneOfProperties(object: object, props: string[]) {
+  return props.some((key) => hasProperty(object, key));
+}
+
 export function isJestEnv(): boolean {
   // @ts-ignore Do not use `@types/node` because it will prioritise Node types over RN types which breaks the types (ex. setTimeout) in React Native projects.
   return hasProperty(global, 'process') && !!process.env.JEST_WORKER_ID;
