@@ -257,9 +257,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
     initPointerProps(trackedPointersIDsCount)
     var count = 0
-    val oldX = event.x
-    val oldY = event.y
-    event.setLocation(event.rawX, event.rawY)
+    val deltaX = event.rawX - event.x
+    val deltaY = event.rawY - event.y
+    event.offsetLocation(deltaX, deltaY)
     var index = 0
     val size = event.pointerCount
     while (index < size) {
@@ -302,8 +302,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     } catch (e: IllegalArgumentException) {
       throw AdaptEventException(this, event, e)
     }
-    event.setLocation(oldX, oldY)
-    result.setLocation(oldX, oldY)
+    event.offsetLocation(-deltaX, -deltaY)
+    result.offsetLocation(-deltaX, -deltaY)
     return result
   }
 
