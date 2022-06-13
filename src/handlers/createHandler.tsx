@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   Platform,
-  Touchable,
   UIManager,
   DeviceEventEmitter,
   EmitterSubscription,
@@ -28,6 +27,8 @@ import {
 import { ValueOf } from '../typeUtils';
 import { isFabric, isJestEnv } from '../utils';
 import { ActionType } from '../ActionType';
+// @ts-ignore it's not exported so we need to import it from path
+import { PressabilityDebugView } from 'react-native/Libraries/Pressability/PressabilityDebug';
 
 const UIManagerAny = UIManager as any;
 
@@ -472,7 +473,7 @@ export default function createHandler<
       const child: any = React.Children.only(this.props.children);
       let grandChildren = child.props.children;
       if (
-        Touchable.TOUCH_TARGET_DEBUG &&
+        __DEV__ &&
         child.type &&
         (child.type === 'RNGestureHandlerButton' ||
           child.type.name === 'View' ||
@@ -480,10 +481,10 @@ export default function createHandler<
       ) {
         grandChildren = React.Children.toArray(grandChildren);
         grandChildren.push(
-          Touchable.renderDebugView({
-            color: 'mediumspringgreen',
-            hitSlop: child.props.hitSlop,
-          })
+          <PressabilityDebugView
+            color="mediumspringgreen"
+            hitSlop={child.props.hitSlop}
+          />
         );
       }
 
