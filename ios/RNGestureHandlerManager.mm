@@ -4,7 +4,6 @@
 #import <React/RCTViewManager.h>
 #import <React/RCTComponent.h>
 #import <React/RCTRootView.h>
-#import <React/RCTTouchHandler.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTEventDispatcher.h>
 
@@ -22,6 +21,9 @@
 
 #ifdef RN_FABRIC_ENABLED
 #import <React/RCTViewComponentView.h>
+#import <React/RCTSurfaceTouchHandler.h>
+#else
+#import <React/RCTTouchHandler.h>
 #endif // RN_FABRIC_ENABLED
 
 #import "Handlers/RNPanHandler.h"
@@ -211,8 +213,14 @@
     // Once the upstream fix lands the line below along with this comment can be removed
     if ([gestureRecognizer.view isKindOfClass:[UIScrollView class]]) return;
 
+#ifdef RN_FABRIC_ENABLED
+    RCTSurfaceTouchHandler *touchHandler = [viewWithTouchHandler performSelector:@selector(touchHandler)];
+#else
     RCTTouchHandler *touchHandler = [viewWithTouchHandler performSelector:@selector(touchHandler)];
-    [touchHandler cancel];
+#endif
+    [touchHandler setEnabled:NO];
+    [touchHandler setEnabled:YES];
+
 }
 
 #pragma mark Events
