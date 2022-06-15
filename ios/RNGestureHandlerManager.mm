@@ -215,12 +215,12 @@
 
 #ifdef RN_FABRIC_ENABLED
     RCTSurfaceTouchHandler *touchHandler = [viewWithTouchHandler performSelector:@selector(touchHandler)];
-    [touchHandler setEnabled:NO];
-    [touchHandler setEnabled:YES];
 #else
     RCTTouchHandler *touchHandler = [viewWithTouchHandler performSelector:@selector(touchHandler)];
-    [touchHandler cancel];
 #endif
+    [touchHandler setEnabled:NO];
+    [touchHandler setEnabled:YES];
+
 }
 
 #pragma mark Events
