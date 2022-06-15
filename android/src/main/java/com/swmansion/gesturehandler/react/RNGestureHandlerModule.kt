@@ -224,6 +224,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       if (config.hasKey(KEY_PAN_AVG_TOUCHES)) {
         handler.setAverageTouches(config.getBoolean(KEY_PAN_AVG_TOUCHES))
       }
+      if (config.hasKey(KEY_PAN_ACTIVATE_AFTER_LONG_PRESS)) {
+        handler.setActivateAfterLongPress(config.getInt(KEY_PAN_ACTIVATE_AFTER_LONG_PRESS).toLong())
+      }
     }
 
     override fun extractEventData(handler: PanGestureHandler, eventData: WritableMap) {
@@ -656,6 +659,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     private const val KEY_PAN_MIN_POINTERS = "minPointers"
     private const val KEY_PAN_MAX_POINTERS = "maxPointers"
     private const val KEY_PAN_AVG_TOUCHES = "avgTouches"
+    private const val KEY_PAN_ACTIVATE_AFTER_LONG_PRESS = "activateAfterLongPress"
     private const val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
     private const val KEY_DIRECTION = "direction"
 

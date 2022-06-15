@@ -3,7 +3,9 @@ package com.swmansion.gesturehandler
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
+import com.facebook.react.views.textinput.ReactEditText
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var shouldActivateOnStart = false
@@ -68,6 +70,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   override fun onPrepare() {
     when (val view = view) {
       is NativeViewGestureHandlerHook -> this.hook = view
+      is ReactEditText -> this.hook = EditTextHook(this, view)
     }
   }
 
@@ -165,5 +168,43 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * by this one.
      */
     fun shouldCancelRootViewGestureHandlerIfNecessary() = false
+  }
+
+  private class EditTextHook(
+          private val handler: NativeViewGestureHandler,
+          private val editText: ReactEditText
+  ) : NativeViewGestureHandlerHook {
+    private var startX = 0f
+    private var startY = 0f
+    private var touchSlopSquared: Int
+
+    init {
+      val vc = ViewConfiguration.get(editText.context)
+      touchSlopSquared = vc.scaledTouchSlop * vc.scaledTouchSlop
+    }
+
+    override fun afterGestureEnd(event: MotionEvent) {
+      if ((event.x - startX) * (event.x - startX) + (event.y - startY) * (event.y - startY) < touchSlopSquared) {
+        editText.requestFocusFromJS()
+      }
+    }
+
+    // recognize alongside every handler besides RootViewGestureHandler, which is a private inner class
+    // of RNGestureHandlerRootHelper so no explicit type checks, but its tag is always negative
+    // also if other handler is NativeViewGestureHandler then don't override the default implementation
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) =
+            handler.tag > 0 && handler !is NativeViewGestureHandler
+
+    override fun wantsToHandleEventBeforeActivation() = true
+
+    override fun handleEventBeforeActivation(event: MotionEvent) {
+      handler.activate()
+      editText.onTouchEvent(event)
+
+      startX = event.x
+      startY = event.y
+    }
+
+    override fun shouldCancelRootViewGestureHandlerIfNecessary() = true
   }
 }

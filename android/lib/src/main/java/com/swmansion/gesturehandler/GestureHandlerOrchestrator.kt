@@ -475,7 +475,12 @@ class GestureHandlerOrchestrator(
       PointerEventsConfig.BOX_NONE -> {
         // This view can't be the target, but its children might
         if (view is ViewGroup) {
-          extractGestureHandlers(view, coords, pointerId)
+          extractGestureHandlers(view, coords, pointerId).also { found ->
+            // A child view is handling touch, also extract handlers attached to this view
+            if (found) {
+              recordViewHandlersForPointer(view, coords, pointerId)
+            }
+          }
         } else false
       }
       PointerEventsConfig.AUTO -> {

@@ -131,6 +131,11 @@ export class PanGesture extends ContinousBaseGesture<
     return this;
   }
 
+  activateAfterLongPress(duration: number) {
+    this.config.activateAfterLongPress = duration;
+    return this;
+  }
+
   onChange(
     callback: (
       event: GestureUpdateEvent<

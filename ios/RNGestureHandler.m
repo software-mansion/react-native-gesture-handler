@@ -203,6 +203,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     }
     
     _state = [self recognizerState];
+    [self handleGesture:recognizer inState:_state];
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer inState:(RNGestureHandlerState)state
+{
+    _state = state;
     RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
     [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
 }
@@ -212,6 +218,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             withExtraData:(RNGestureHandlerEventExtraData *)extraData
 {
     if (state != _lastState) {
+        // don't send change events from END to FAILED or CANCELLED, this may happen when gesture is ended in `onTouchesUp` callback
+        if (_lastState == RNGestureHandlerStateEnd && (state == RNGestureHandlerStateFailed || state == RNGestureHandlerStateCancelled)) {
+            return;
+        }
+        
         if (state == RNGestureHandlerStateActive) {
             // Generate a unique coalescing-key each time the gesture-handler becomes active. All events will have
             // the same coalescing-key allowing RCTEventDispatcher to coalesce RNGestureHandlerEvents when events are
@@ -219,7 +230,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             static uint16_t nextEventCoalescingKey = 0;
             self->_eventCoalescingKey = nextEventCoalescingKey++;
 
-        } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
+        } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && !_manualActivation) {
             id event = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                                   handlerTag:_tag
                                                                        state:RNGestureHandlerStateActive
@@ -390,11 +401,18 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (_recognizer.state == UIGestureRecognizerStateBegan && _recognizer.state == UIGestureRecognizerStatePossible) {
         return YES;
     }
-    if ([_simultaneousHandlers count]) {
-        RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
-        if (handler != nil) {
+    
+    RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
+    if (handler != nil) {
+        if ([_simultaneousHandlers count]) {
             for (NSNumber *handlerTag in _simultaneousHandlers) {
                 if ([handler.tag isEqual:handlerTag]) {
+                    return YES;
+                }
+            }
+        } else if (handler->_simultaneousHandlers) {
+            for (NSNumber *handlerTag in handler->_simultaneousHandlers) {
+                if ([self.tag isEqual:handlerTag]) {
                     return YES;
                 }
             }
