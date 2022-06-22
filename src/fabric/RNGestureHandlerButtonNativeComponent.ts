@@ -22,6 +22,7 @@ interface NativeProps extends ViewProps {
   enabled?: WithDefault<boolean, true>;
   rippleColor?: ColorValue;
   rippleRadius?: Int32;
+  touchSoundDisabled?: WithDefault<boolean, false>;
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');

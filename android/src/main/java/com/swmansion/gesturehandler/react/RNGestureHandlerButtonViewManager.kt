@@ -78,6 +78,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.exclusive = exclusive
   }
 
+  @ReactProp(name = "touchSoundDisabled")
+  override fun setTouchSoundDisabled(view: ButtonViewGroup, touchSoundDisabled: Boolean) {
+    view.isSoundEffectsEnabled = !touchSoundDisabled
+  }
+
   override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
     view.updateBackground()
   }
@@ -275,11 +280,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       return isResponder
     }
 
-    override fun afterGestureEnd(event: MotionEvent) {
-      tryFreeingResponder()
-      isTouched = false
-    }
-
     private fun tryGrabbingResponder(): Boolean {
       if (isChildTouched()) {
         return false
@@ -296,22 +296,28 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
     }
 
-    private fun tryFreeingResponder() {
-      if (responder === this) {
-        responder = null
-      }
-    }
-
     private fun isChildTouched(children: Sequence<View> = this.children): Boolean {
       for (child in children) {
         if (child is ButtonViewGroup && (child.isTouched || child.isPressed)) {
           return true
         } else if (child is ViewGroup) {
-          return isChildTouched(child.children)
+          if (isChildTouched(child.children)) {
+            return true
+          }
         }
       }
 
       return false
+    }
+
+    override fun performClick(): Boolean {
+      // don't preform click when a child button is pressed (mainly to prevent sound effect of
+      // a parent button from playing)
+      return if (!isChildTouched()) {
+        super.performClick()
+      } else {
+        false
+      }
     }
 
     override fun setPressed(pressed: Boolean) {
@@ -331,12 +337,13 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       if (!pressed || responder === this || canBePressedAlongsideOther) {
         // we set pressed state only for current responder or any non-exclusive button when responder
         // is null or non-exclusive, assuming it doesn't have pressed children
-        super.setPressed(pressed)
         isTouched = pressed
+        super.setPressed(pressed)
       }
       if (!pressed && responder === this) {
         // if the responder is no longer pressed we release button responder
         responder = null
+        isTouched = false
       }
     }
 
