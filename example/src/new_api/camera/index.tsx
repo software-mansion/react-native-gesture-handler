@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const filters = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
-const MAX_VIDEO_DURATION_MS = 60_000;
+const MAX_VIDEO_DURATION_MS = 60000;
 const CAPTURE_BUTTON_RADIUS = 50;
 const FILTER_BUTTON_RADIUS = 35;
 
