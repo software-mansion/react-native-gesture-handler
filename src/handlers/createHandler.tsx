@@ -27,8 +27,7 @@ import {
 import { ValueOf } from '../typeUtils';
 import { isFabric, isJestEnv } from '../utils';
 import { ActionType } from '../ActionType';
-// @ts-ignore it's not exported so we need to import it from path
-import { PressabilityDebugView } from 'react-native/Libraries/Pressability/PressabilityDebug';
+import { PressabilityDebugView } from './PressabilityDebugView';
 
 const UIManagerAny = UIManager as any;
 
@@ -482,6 +481,7 @@ export default function createHandler<
         grandChildren = React.Children.toArray(grandChildren);
         grandChildren.push(
           <PressabilityDebugView
+            key="pressabilityDebugView"
             color="mediumspringgreen"
             hitSlop={child.props.hitSlop}
           />
