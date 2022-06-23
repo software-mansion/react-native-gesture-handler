@@ -24,7 +24,7 @@ Check out our dedicated documentation page for info about this library, API refe
 If you want to play with the API but don't feel like trying it on a real app, you can run the example project. Clone the repo, go to the `example` folder and run:
 
 ```bash
-  yarn install
+yarn install
 ```
 
 If you are running on ios, run `pod install` in the ios folder
@@ -44,7 +44,8 @@ You will need to have an Android or iOS device or emulator connected as well as 
 | <1.1.0  | 0.50.0+              |
 
 It may be possible to use newer versions of react-native-gesture-handler on React Native with version <= 0.59 by reverse Jetifying.
-Read more on that here https://github.com/mikehardy/jetifier#to-reverse-jetify--convert-node_modules-dependencies-to-support-libraries
+Read more on that here <https://github.com/mikehardy/jetifier#to-reverse-jetify--convert-node_modules-dependencies-to-support-libraries>
+
 ## License
 
 Gesture handler library is licensed under [The MIT License](LICENSE).
