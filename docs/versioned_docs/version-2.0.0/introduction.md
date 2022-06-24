@@ -26,6 +26,7 @@ It is recommended to use Reanimated 2 for animations when using React Native Ges
 
 | version   | `react-native` version |
 | --------- | ---------------------- |
+| 2.0.0+    | 0.63.0+                |
 | 1.4.0+    | 0.60.0+                |
 | 1.1.0+    | 0.57.2+                |
 | &lt;1.1.0 | 0.50.0+                |
