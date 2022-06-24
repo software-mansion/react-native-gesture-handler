@@ -5,6 +5,7 @@ import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import java.util.*
 
 class GestureHandlerOrchestrator(
@@ -474,14 +475,24 @@ class GestureHandlerOrchestrator(
       }
       PointerEventsConfig.BOX_NONE -> {
         // This view can't be the target, but its children might
-        if (view is ViewGroup) {
-          extractGestureHandlers(view, coords, pointerId).also { found ->
-            // A child view is handling touch, also extract handlers attached to this view
-            if (found) {
-              recordViewHandlersForPointer(view, coords, pointerId)
+        when (view) {
+          is ViewGroup -> {
+            extractGestureHandlers(view, coords, pointerId).also { found ->
+              // A child view is handling touch, also extract handlers attached to this view
+              if (found) {
+                recordViewHandlersForPointer(view, coords, pointerId)
+              }
             }
           }
-        } else false
+          // When <TextInput> has editable set to `false` getPointerEventsConfigForView returns
+          // `BOX_NONE` as it's `isEnabled` property is false. In this case we still want to extract
+          // handlers attached to the text input, as it makes sense that gestures would work on a
+          // non-editable TextInput.
+          is EditText -> {
+            recordViewHandlersForPointer(view, coords, pointerId)
+          }
+          else -> false
+        }
       }
       PointerEventsConfig.AUTO -> {
         // Either this view or one of its children is the target
