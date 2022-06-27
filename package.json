@@ -9,7 +9,8 @@
     "precommit": "lint-staged",
     "release": "npm login && release-it",
     "ts-check": "yarn tsc --noEmit",
-    "lint-check": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check src/"
+    "lint:js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check src/",
+    "lint:kotlin": "./android/gradlew -p android spotlessCheck -q"
   },
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
