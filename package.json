@@ -28,7 +28,6 @@
     "android/src/main/jni/",
     "android/src/fabric/java",
     "android/src/paper/java",
-    "android/lib/build.gradle",
     "android/lib/src/main/java/",
     "android/common/src/main/java/",
     "android/reanimated/src/main/java/",
