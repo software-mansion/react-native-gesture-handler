@@ -4,5 +4,8 @@ spotless {
     kotlin {
         target "src/**/*.kt"
         ktlint().editorConfigOverride([indent_size: 2])
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
     }
 }
