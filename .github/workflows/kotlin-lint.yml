@@ -23,4 +23,4 @@ jobs:
       - name: Install node dependencies
         run: yarn
       - name: Lint
-        run: yarn lint:kotlin
+        run: yarn lint:android
