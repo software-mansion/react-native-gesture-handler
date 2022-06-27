@@ -3,17 +3,35 @@ package com.swmansion.gesturehandler.react
 import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
-import android.view.ViewGroup
 import com.facebook.react.ReactRootView
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.events.Event
 import com.facebook.soloader.SoLoader
 import com.swmansion.common.GestureHandlerStateManager
-import com.swmansion.gesturehandler.*
-import java.util.*
+import com.swmansion.gesturehandler.BuildConfig
+import com.swmansion.gesturehandler.FlingGestureHandler
+import com.swmansion.gesturehandler.GestureHandler
+import com.swmansion.gesturehandler.LongPressGestureHandler
+import com.swmansion.gesturehandler.ManualGestureHandler
+import com.swmansion.gesturehandler.NativeViewGestureHandler
+import com.swmansion.gesturehandler.OnTouchEventListener
+import com.swmansion.gesturehandler.PanGestureHandler
+import com.swmansion.gesturehandler.PinchGestureHandler
+import com.swmansion.gesturehandler.ReanimatedEventDispatcher
+import com.swmansion.gesturehandler.RotationGestureHandler
+import com.swmansion.gesturehandler.TapGestureHandler
+import com.swmansion.gesturehandler.UIManager
+import com.swmansion.gesturehandler.deviceEventEmitter
+import com.swmansion.gesturehandler.dispatchEvent
+
 // NativeModule.onCatalystInstanceDestroy() was deprecated in favor of NativeModule.invalidate()
 // ref: https://github.com/facebook/react-native/commit/18c8417290823e67e211bde241ae9dde27b72f17
 
@@ -21,8 +39,8 @@ import java.util.*
 // ref: https://github.com/facebook/react-native/commit/acbf9e18ea666b07c1224a324602a41d0a66985e
 @Suppress("DEPRECATION")
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
-class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
-  : ReactContextBaseJavaModule(reactContext), GestureHandlerStateManager {
+class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
+  ReactContextBaseJavaModule(reactContext), GestureHandlerStateManager {
   private abstract class HandlerFactory<T : GestureHandler<T>> : RNGestureHandlerEventDataExtractor<T> {
     abstract val type: Class<T>
     abstract val name: String
@@ -63,7 +81,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       super.configure(handler, config)
       if (config.hasKey(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)) {
         handler.setShouldActivateOnStart(
-          config.getBoolean(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START))
+          config.getBoolean(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)
+        )
       }
       if (config.hasKey(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION)) {
         handler.setDisallowInterruption(config.getBoolean(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION))
@@ -352,7 +371,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   @ReactMethod
   @Suppress("UNCHECKED_CAST")
   fun <T : GestureHandler<T>> createGestureHandler(
-    handlerName: String, handlerTag: Int, config: ReadableMap,
+    handlerName: String,
+    handlerTag: Int,
+    config: ReadableMap,
   ) {
     for (handlerFactory in handlerFactories as Array<HandlerFactory<T>>) {
       if (handlerFactory.name == handlerName) {
@@ -551,8 +572,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       // Reanimated worklet
       val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
       sendEventForReanimated(event)
-    } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
-            || handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API) {
+    } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT ||
+      handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API
+    ) {
       // JS function or Animated.event with useNativeDriver: false with old API
       if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
         val data = RNGestureHandlerStateChangeEvent.createEventData(handler, handlerFactory, newState, oldState)
@@ -570,13 +592,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
 
   private fun <T : GestureHandler<T>> onTouchEvent(handler: T) {
     // triggers onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled callbacks on the JS side
-    
+
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
-    if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE
-      || handler.state == GestureHandler.STATE_UNDETERMINED || handler.view != null) {
+    if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE ||
+      handler.state == GestureHandler.STATE_UNDETERMINED || handler.view != null
+    ) {
       if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
         // Reanimated worklet
         val event = RNGestureHandlerTouchEvent.obtain(handler)
