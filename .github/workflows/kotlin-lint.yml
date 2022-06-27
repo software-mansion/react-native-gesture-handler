@@ -2,7 +2,7 @@ name: Kotlin Lint
 on:
   pull_request:
     paths:
-      - 'android/src//**'
+      - 'android/**'
   push:
     branches:
       - main
