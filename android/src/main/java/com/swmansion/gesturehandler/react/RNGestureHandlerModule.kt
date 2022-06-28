@@ -445,7 +445,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
         // we need to check if the view is attached to a window, otherwise it's parent is always null
         // (for example, this may happen in case of a FlatList)
         if (view.isAttachedToWindow) {
-          if (RNGestureHandlerRootHelper.isAttachedUnderGHRoot(view)) {
+          if (RNGestureHandlerRootHelper.isAttachedUnderGestureHandlerRoot(view)) {
             handler.attachedUnderRoot = true
           } else {
             throw JSApplicationIllegalArgumentException(

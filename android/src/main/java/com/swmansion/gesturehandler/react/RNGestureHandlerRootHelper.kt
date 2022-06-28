@@ -130,7 +130,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       return parent as ViewGroup
     }
 
-    fun isAttachedUnderGHRoot(view: View): Boolean {
+    fun isAttachedUnderGestureHandlerRoot(view: View): Boolean {
       if (view is RNGestureHandlerRootView) return true
 
       var parent = view.parent
