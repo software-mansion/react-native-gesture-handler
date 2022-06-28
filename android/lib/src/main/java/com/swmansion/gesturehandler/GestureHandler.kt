@@ -79,6 +79,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   var isAwaiting = false
   var shouldResetProgress = false
 
+  // property set and accessed by the module while checking for root view
+  var attachedUnderRoot = false
+
   open fun dispatchStateChange(newState: Int, prevState: Int) {
     onTouchEventListener?.onStateChange(self(), newState, prevState)
   }

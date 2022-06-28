@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react
 import android.os.SystemClock
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import com.facebook.react.bridge.ReactContext
@@ -127,6 +128,21 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
         "View $viewGroup has not been mounted under ReactRootView"
       }
       return parent as ViewGroup
+    }
+
+    fun isAttachedUnderGHRoot(view: View): Boolean {
+      if (view is RNGestureHandlerRootView) return true
+
+      var parent = view.parent
+      while (parent != null) {
+        if (parent is RNGestureHandlerRootView) {
+          return true
+        }
+
+        parent = parent.parent
+      }
+
+      return false
     }
   }
 }

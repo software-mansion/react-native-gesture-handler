@@ -40,6 +40,7 @@ import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
+import { maybeInitializeFabric } from '../../init';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -602,6 +603,15 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
       if (isFabric()) {
         const node = getShadowNodeFromRef(ref);
+
+        // isFormsStackingContext may not exist if no GestureHandlerRootViews are rendered, in that case:
+        // - on Android: the native side will detect it and display error when trying to use gestures
+        // - on iOS: GestureHandlerRootView is not needed, so we can initialize Fabric here
+        // - on Web: GestureHandlerRootView is not needed and maybeInitializeFabric is a no-op
+        if (!global.isFormsStackingContext) {
+          maybeInitializeFabric();
+        }
+
         if (global.isFormsStackingContext(node) === false) {
           console.error(
             tagMessage(

@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler
 
+import android.view.View
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.Event
@@ -10,4 +11,8 @@ fun ReactContext.dispatchEvent(event: Event<*>) {
     } catch (e: NullPointerException) {
         throw Exception("Couldn't get an instance of UIManagerModule. Gesture Handler is unable to send an event.", e)
     }
+}
+
+fun ReactContext.resolveView(viewTag: Int): View {
+    return this.getNativeModule(UIManagerModule::class.java)!!.resolveView(viewTag)
 }

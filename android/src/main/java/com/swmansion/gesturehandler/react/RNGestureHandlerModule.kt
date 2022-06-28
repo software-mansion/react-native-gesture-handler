@@ -3,12 +3,11 @@ package com.swmansion.gesturehandler.react
 import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
-import android.view.ViewGroup
+import androidx.core.util.keyIterator
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.events.Event
 import com.facebook.soloader.SoLoader
 import com.swmansion.common.GestureHandlerStateManager
@@ -344,9 +343,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     ManualGestureHandlerFactory(),
   )
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
+  // flag used to remember whether any gesture has been attached to a view since the last root view check
+  private var needsToCheckForRoot = false
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
-  private val enqueuedRootViewInit: MutableList<Int> = ArrayList()
   override fun getName() = MODULE_NAME
 
   @ReactMethod
@@ -378,6 +378,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     if (!registry.attachHandlerToView(handlerTag, viewTag, actionType)) {
       throw JSApplicationIllegalArgumentException("Handler with tag $handlerTag does not exists")
     }
+
+    // set the flags responsible for optimizing checking for root view
+    registry.getHandler(handlerTag)!!.attachedUnderRoot = false
+    needsToCheckForRoot = true
   }
 
   @ReactMethod
@@ -408,6 +412,56 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun handleClearJSResponder() {
+  }
+
+  @ReactMethod
+  fun flushOperations() {
+    // `flushOperations` was originally introduced to solve race conditions on iOS as it's called on
+    // the next frame with respect to the attach, detach etc.
+    // at this point the view the gestures are attached to should exist
+    checkIfGesturesAreAttachedUnderRoot()
+  }
+
+  private fun checkIfGesturesAreAttachedUnderRoot() {
+    // only check in debug and if any gesture has been attached since the last check
+    if (!BuildConfig.DEBUG || !needsToCheckForRoot) {
+      return
+    }
+
+    val attachedHandlers = this.registry.getAttachedHandlers()
+
+    this.reactApplicationContext.runOnUiQueueThread {
+      for (handlerTag in attachedHandlers.keyIterator()) {
+        val handler = registry.getHandler(handlerTag)!!
+        if (handler.attachedUnderRoot) {
+          // this handler has already been checked, we can skip it
+          continue
+        }
+
+        val viewTag = attachedHandlers.get(handlerTag) ?: continue
+        // resolveView is an extension function with different implementations on Paper and Fabric
+        val view = this.reactApplicationContext.resolveView(viewTag)
+
+        // we need to check if the view is attached to a window, otherwise it's parent is always null
+        // (for example, this may happen in case of a FlatList)
+        if (view.isAttachedToWindow) {
+          if (RNGestureHandlerRootHelper.isAttachedUnderGHRoot(view)) {
+            handler.attachedUnderRoot = true
+          } else {
+            throw JSApplicationIllegalArgumentException(
+              """
+              It seems like you are trying to use Gesture Handler in you app. Please wrap your app (or component that relies on gesture interaction) with <GestureHandlerRootView> in order for it to work correctly, otherwise the gesture interactions will not work.
+              
+              Here's more info about it: https://docs.swmansion.com/react-native-gesture-handler/docs/installation#js
+              """.trimIndent()
+            )
+          }
+        }
+      }
+    }
+
+    // set the flag, so we don't repeat checks when they are redundant
+    needsToCheckForRoot = false
   }
 
   override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
