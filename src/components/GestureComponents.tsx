@@ -6,6 +6,7 @@ import {
   ReactElement,
 } from 'react';
 import {
+  Platform,
   ScrollView as RNScrollView,
   ScrollViewProps as RNScrollViewProps,
   Switch as RNSwitch,
@@ -16,6 +17,8 @@ import {
   DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
+  RefreshControl as RNRefreshControl,
+  RefreshControlProps as RNRefreshControlProps,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
@@ -35,6 +38,16 @@ export const ScrollView = createNativeWrapper<
 // include methods of wrapped components by creating an intersection type with the RN component instead of duplicating them.
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type ScrollView = typeof ScrollView & RNScrollView;
+
+export const RefreshControl =
+  Platform.OS === 'android'
+    ? createNativeWrapper<RNRefreshControlProps>(RNRefreshControl, {
+        disallowInterruption: true,
+        shouldCancelWhenOutside: false,
+      })
+    : RNRefreshControl;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type RefreshControl = typeof RefreshControl & RNRefreshControl;
 
 export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,

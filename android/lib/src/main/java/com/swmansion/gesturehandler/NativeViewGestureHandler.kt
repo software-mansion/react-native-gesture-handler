@@ -5,6 +5,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
+import android.widget.ScrollView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.react.views.textinput.ReactEditText
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
@@ -64,6 +66,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   override fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
+    if (hook.shouldBeCancelledBy(handler)) {
+      return true
+    }
     return !disallowInterruption
   }
 
@@ -71,6 +76,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     when (val view = view) {
       is NativeViewGestureHandlerHook -> this.hook = view
       is ReactEditText -> this.hook = EditTextHook(this, view)
+      is ScrollView -> this.hook = ScrollViewHook()
     }
   }
 
@@ -151,6 +157,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = false
 
     /**
+     * @return Boolean value signalling whether the gesture can be canceled by another handler.
+     * Returning false doesn't necessarily prevent it from happening.
+     */
+    fun shouldBeCancelledBy(handler: GestureHandler<*>) = false
+
+    /**
      * shouldActivateOnStart and tryIntercept have priority over this method
      *
      * @return Boolean value signalling if the hook wants to handle events passed to the handler
@@ -206,5 +218,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     }
 
     override fun shouldCancelRootViewGestureHandlerIfNecessary() = true
+  }
+
+  private class ScrollViewHook() : NativeViewGestureHandlerHook {
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) =
+            handler.view is SwipeRefreshLayout
+    override fun shouldBeCancelledBy(handler: GestureHandler<*>) =
+            handler.view is SwipeRefreshLayout
   }
 }
