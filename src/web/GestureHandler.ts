@@ -512,7 +512,7 @@ function ensureConfig(config: Config): Required<Config> {
     props.waitFor = asArray(config.waitFor)
       .map((handler: number | GestureHandler) => {
         if (typeof handler === 'number') {
-          NodeManager.getHandler(handler);
+          return NodeManager.getHandler(handler);
         } else {
           return NodeManager.getHandler(handler.handlerTag);
         }
