@@ -203,10 +203,7 @@ export default class DrawerLayout extends Component<
     this.updateAnimatedEvent(props, this.state);
   }
 
-  UNSAFE_componentWillUpdate(
-    props: DrawerLayoutProps,
-    state: DrawerLayoutState
-  ) {
+  shouldComponentUpdate(props: DrawerLayoutProps, state: DrawerLayoutState) {
     if (
       this.props.drawerPosition !== props.drawerPosition ||
       this.props.drawerWidth !== props.drawerWidth ||
@@ -215,6 +212,8 @@ export default class DrawerLayout extends Component<
     ) {
       this.updateAnimatedEvent(props, state);
     }
+
+    return true;
   }
 
   private openValue?: Animated.AnimatedInterpolation;

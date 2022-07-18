@@ -219,7 +219,7 @@ export default class Swipeable extends Component<
     );
   }
 
-  UNSAFE_componentWillUpdate(props: SwipeableProps, state: SwipeableState) {
+  shouldComponentUpdate(props: SwipeableProps, state: SwipeableState) {
     if (
       this.props.friction !== props.friction ||
       this.props.overshootLeft !== props.overshootLeft ||
@@ -231,6 +231,8 @@ export default class Swipeable extends Component<
     ) {
       this.updateAnimatedEvent(props, state);
     }
+
+    return true;
   }
 
   private onGestureEvent?: (

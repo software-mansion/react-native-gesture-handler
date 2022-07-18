@@ -33,7 +33,8 @@ class PanResponderExample extends Component {
   };
   private circle: React.ElementRef<typeof View> | null = null;
 
-  UNSAFE_componentWillMount() {
+  constructor(props: Record<string, unknown>) {
+    super(props);
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: this.handleStartShouldSetPanResponder,
       onMoveShouldSetPanResponder: this.handleMoveShouldSetPanResponder,
