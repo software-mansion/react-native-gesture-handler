@@ -25,7 +25,7 @@ import {
   scheduleFlushOperations,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
-import { isFabric, isJestEnv } from '../utils';
+import { isFabric, isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 
@@ -469,41 +469,49 @@ export default function createHandler<
 
       this.propsRef.current = events;
 
-      const child: any = React.Children.only(this.props.children);
-      let grandChildren = child.props.children;
-      if (
-        __DEV__ &&
-        child.type &&
-        (child.type === 'RNGestureHandlerButton' ||
-          child.type.name === 'View' ||
-          child.type.displayName === 'View')
-      ) {
-        grandChildren = React.Children.toArray(grandChildren);
-        grandChildren.push(
-          <PressabilityDebugView
-            key="pressabilityDebugView"
-            color="mediumspringgreen"
-            hitSlop={child.props.hitSlop}
-          />
+      try {
+        const child: any = React.Children.only(this.props.children);
+        let grandChildren = child.props.children;
+        if (
+          __DEV__ &&
+          child.type &&
+          (child.type === 'RNGestureHandlerButton' ||
+            child.type.name === 'View' ||
+            child.type.displayName === 'View')
+        ) {
+          grandChildren = React.Children.toArray(grandChildren);
+          grandChildren.push(
+            <PressabilityDebugView
+              key="pressabilityDebugView"
+              color="mediumspringgreen"
+              hitSlop={child.props.hitSlop}
+            />
+          );
+        }
+
+        return React.cloneElement(
+          child,
+          {
+            ref: this.refHandler,
+            collapsable: false,
+            ...(isJestEnv()
+              ? {
+                  handlerType: name,
+                  handlerTag: this.handlerTag,
+                }
+              : {}),
+            testID: this.props.testID ?? child.props.testID,
+            ...events,
+          },
+          grandChildren
+        );
+      } catch (e) {
+        throw new Error(
+          tagMessage(
+            `${name} got more than one view as a child. If you want the gesture to work on multiple views, wrap them with a common parent and attach the gesture to that view.`
+          )
         );
       }
-
-      return React.cloneElement(
-        child,
-        {
-          ref: this.refHandler,
-          collapsable: false,
-          ...(isJestEnv()
-            ? {
-                handlerType: name,
-                handlerTag: this.handlerTag,
-              }
-            : {}),
-          testID: this.props.testID ?? child.props.testID,
-          ...events,
-        },
-        grandChildren
-      );
     }
   }
   return Handler;
