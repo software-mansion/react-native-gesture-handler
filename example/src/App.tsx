@@ -138,7 +138,7 @@ type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-export default function App() {
+export function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
@@ -164,6 +164,8 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
+
+export default Draggable;
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   return (

@@ -1,27 +1,13 @@
 import { ActionType } from './ActionType';
-import { Direction } from './web/constants';
-import FlingGestureHandler from './web/FlingGestureHandler';
-import LongPressGestureHandler from './web/LongPressGestureHandler';
-import NativeViewGestureHandler from './web/NativeViewGestureHandler';
-import * as NodeManager from './web/NodeManager';
 import PanGestureHandler from './web/PanGestureHandler';
-import PinchGestureHandler from './web/PinchGestureHandler';
-import RotationGestureHandler from './web/RotationGestureHandler';
-import TapGestureHandler from './web/TapGestureHandler';
+import NodeManager from './web/NodeManager';
 
 export const Gestures = {
   PanGestureHandler,
-  RotationGestureHandler,
-  PinchGestureHandler,
-  TapGestureHandler,
-  NativeViewGestureHandler,
-  LongPressGestureHandler,
-  FlingGestureHandler,
-  // ForceTouchGestureHandler,
 };
 
 export default {
-  Direction,
+  // Direction,
   handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
     console.warn('handleSetJSResponder: ', tag, blockNativeResponder);
   },
@@ -33,22 +19,23 @@ export default {
     handlerTag: number,
     config: T
   ) {
-    //TODO(TS) extends config
-    if (!(handlerName in Gestures))
-      throw new Error(
-        `react-native-gesture-handler: ${handlerName} is not supported on web.`
-      );
+    if (!(handlerName in Gestures)) return;
+
     const GestureClass = Gestures[handlerName];
     NodeManager.createGestureHandler(handlerTag, new GestureClass());
     this.updateGestureHandler(handlerTag, config);
   },
   attachGestureHandler(
     handlerTag: number,
-    newView: number,
+    newView: number, //ref
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
-    NodeManager.getHandler(handlerTag).setView(newView, propsRef);
+    //TODO remove if
+    //This if prevents throwing error on attaching handler to ScrollView
+    if (handlerTag !== 1) {
+      NodeManager.getHandler(handlerTag).init(newView, propsRef);
+    }
   },
   updateGestureHandler(handlerTag: number, newConfig: any) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);

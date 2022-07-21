@@ -1,68 +1,104 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
-import Hammer from '@egjs/hammerjs';
-import { findNodeHandle } from 'react-native';
-
+import { findNodeHandle } from '../handlers/gestureHandlerCommon';
 import { State } from '../State';
-import { EventMap } from './constants';
-import * as NodeManager from './NodeManager';
+import EventManager, { GHEvent } from './EventManager';
+import GestureHandlerOrchestrator from './GestureHandlerOrchestrator';
+import NodeManager from './NodeManager';
+import Tracker from './Tracker';
 
-// TODO(TS) Replace with HammerInput if https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50438/files is merged
-export type HammerInputExt = Omit<HammerInput, 'destroy' | 'handler' | 'init'>;
+export interface Config extends Record<string, any> {
+  enabled?: boolean;
+  simultaneousHandlers?: any[] | null;
+  // minPointers?: number;
+  // maxPointers?: number;
+  // minDist?: number;
+  // minDistSq?: number;
+  // minVelocity?: number;
+  // minVelocitySq?: number;
+  // maxDist?: number;
+  // maxDistSq?: number;
+  // failOffsetXStart?: number;
+  // failOffsetYStart?: number;
+  // failOffsetXEnd?: number;
+  // failOffsetYEnd?: number;
+  // activeOffsetXStart?: number;
+  // activeOffsetXEnd?: number;
+  // activeOffsetYStart?: number;
+  // activeOffsetYEnd?: number;
+  waitFor?: any[] | null;
+}
 
-export type Config = Partial<{
-  enabled: boolean;
-  minPointers: number;
-  maxPointers: number;
-  minDist: number;
-  minDistSq: number;
-  minVelocity: number;
-  minVelocitySq: number;
-  maxDist: number;
-  maxDistSq: number;
-  failOffsetXStart: number;
-  failOffsetYStart: number;
-  failOffsetXEnd: number;
-  failOffsetYEnd: number;
-  activeOffsetXStart: number;
-  activeOffsetXEnd: number;
-  activeOffsetYStart: number;
-  activeOffsetYEnd: number;
-  waitFor: any[] | null;
-}>;
+// export type Config = Partial<{
+//   enabled: boolean;
+//   minPointers: number;
+//   maxPointers: number;
+//   minDist: number;
+//   minDistSq: number;
+//   minVelocity: number;
+//   minVelocitySq: number;
+//   maxDist: number;
+//   maxDistSq: number;
+//   failOffsetXStart: number;
+//   failOffsetYStart: number;
+//   failOffsetXEnd: number;
+//   failOffsetYEnd: number;
+//   activeOffsetXStart: number;
+//   activeOffsetXEnd: number;
+//   activeOffsetYStart: number;
+//   activeOffsetYEnd: number;
+//   waitFor: any[] | null;
+// }>;
 
-type NativeEvent = ReturnType<GestureHandler['transformEventData']>;
+interface NativeEvent extends Record<string, any> {
+  numberOfPointers: number;
+  state: State;
+  pointerInside: boolean | undefined;
+  handlerTag: number;
+  target: number;
+  oldState?: State;
+}
+
+interface ResultEvent extends Record<string, any> {
+  nativeEvent: NativeEvent;
+  timeStamp: number;
+}
 
 let gestureInstances = 0;
 
 abstract class GestureHandler {
   public handlerTag: any;
-  public isGestureRunning = false;
-  public view: number | null = null;
+  // public isGestureRunning = false;
+  public view: HTMLElement | null = null;
   protected hasCustomActivationCriteria: boolean;
-  protected hasGestureFailed = false;
-  protected hammer: HammerManager | null = null;
-  protected initialRotation: number | null = null;
-  protected __initialX: any;
-  protected __initialY: any;
+  protected eventManager: EventManager | null = null;
+  // protected hasGestureFailed = false;
+  // protected initialRotation: number | null = null;
+  // protected __initialX: any;
+  // protected __initialY: any;
   protected config: Config = {};
-  protected previousState: State = State.UNDETERMINED;
+  // protected previousState: State = State.UNDETERMINED;
   private pendingGestures: Record<string, this> = {};
-  private oldState: State = State.UNDETERMINED;
+  // private oldState: State = State.UNDETERMINED;
   private lastSentState: State | null = null;
+  protected currentState: State = State.UNDETERMINED;
   private gestureInstance: number;
-  private _stillWaiting: any;
+  protected tracker: Tracker = new Tracker();
+  // private _stillWaiting: any;
   private propsRef: any;
   private ref: any;
+  private shouldCancellWhenOutside = false;
 
-  abstract get name(): string;
+  //Orchestrator properties
+  protected activationIndex = 0;
+  protected awaiting = false;
+  protected active = false;
+  protected shouldResetProgress = false;
 
-  get id() {
-    return `${this.name}${this.gestureInstance}`;
+  get name(): string {
+    return this.name;
   }
 
-  get isDiscrete() {
-    return false;
+  get id(): string {
+    return `${this.name}${this.gestureInstance}`;
   }
 
   get shouldEnableGestureOnSetup(): boolean {
@@ -78,9 +114,8 @@ abstract class GestureHandler {
     return this.config;
   }
 
-  onWaitingEnded(_gesture: this) {}
-
-  removePendingGesture(id: string) {
+  removePendingGestures(id: string) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.pendingGestures[id];
   }
 
@@ -88,466 +123,383 @@ abstract class GestureHandler {
     this.pendingGestures[gesture.id] = gesture;
   }
 
-  isGestureEnabledForEvent(
-    _config: any,
-    _recognizer: any,
-    _event: any
-  ): { failed?: boolean; success?: boolean } {
-    return { success: true };
-  }
-
-  get NativeGestureClass(): RecognizerStatic {
-    throw new Error('Must override GestureHandler.NativeGestureClass');
-  }
-
-  updateHasCustomActivationCriteria(_config: Config) {
-    return true;
-  }
-
-  clearSelfAsPending = () => {
+  clearSelfAsPending() {
     if (Array.isArray(this.config.waitFor)) {
       for (const gesture of this.config.waitFor) {
         gesture.removePendingGesture(this.id);
       }
     }
-  };
+  }
 
-  updateGestureConfig({ enabled = true, ...props }) {
+  updateGestureConfig({ enabled = true, ...props }): void {
     this.clearSelfAsPending();
 
-    this.config = ensureConfig({ enabled, ...props });
-    this.hasCustomActivationCriteria = this.updateHasCustomActivationCriteria(
-      this.config
-    );
+    this.config = this.ensureConfig({ enabled, ...props });
+    this.hasCustomActivationCriteria = true;
+
     if (Array.isArray(this.config.waitFor)) {
       for (const gesture of this.config.waitFor) {
         gesture.addPendingGesture(this);
       }
     }
-
-    if (this.hammer) {
-      this.sync();
-    }
-    return this.config;
   }
 
-  destroy = () => {
+  getState(): State {
+    return this.currentState;
+  }
+
+  protected init(ref: number, propsRef: any) {
+    this.setView(ref);
+
+    this.propsRef = propsRef;
+    this.ref = ref;
+
+    this.currentState = State.UNDETERMINED;
+
+    this.setEventManager();
+  }
+
+  private setView(ref: number) {
+    if (!ref) {
+      this.destroy();
+      this.view = null;
+      return;
+    }
+
+    this.view = (findNodeHandle(ref) as unknown) as HTMLElement;
+    this.view.style['touchAction'] = 'none';
+  }
+
+  private setEventManager(): void {
+    if (!this.view) return;
+
+    this.eventManager = new EventManager(this.view);
+    this.eventManager.setListeners();
+
+    this.eventManager.setOnDownAction(this.onDownAction.bind(this));
+    this.eventManager.setOnUpAction(this.onUpAction.bind(this));
+    this.eventManager.setOnMoveAction(this.onMoveAction.bind(this));
+    this.eventManager.setOnEnterAction(this.onEnterAction.bind(this));
+    this.eventManager.setOnOutAction(this.onOutAction.bind(this));
+    this.eventManager.setOnCancelAction(this.onCancelAction.bind(this));
+    this.eventManager.setOutOfBoundsAction(this.onOutOfBoundsAction.bind(this));
+  }
+
+  destroy() {
     this.clearSelfAsPending();
-
-    if (this.hammer) {
-      this.hammer.stop(false);
-      this.hammer.destroy();
-    }
-    this.hammer = null;
-  };
-
-  isPointInView = ({ x, y }: { x: number; y: number }) => {
-    // @ts-ignore FIXME(TS)
-    const rect = this.view!.getBoundingClientRect();
-    const pointerInside =
-      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
-    return pointerInside;
-  };
-
-  getState(type: keyof typeof EventMap): State {
-    // @ts-ignore TODO(TS) check if this is needed
-    if (type == 0) {
-      return 0;
-    }
-    return EventMap[type];
   }
 
-  transformEventData(event: HammerInputExt) {
-    const { eventType, maxPointers: numberOfPointers } = event;
-    // const direction = DirectionMap[ev.direction];
-    const changedTouch = event.changedPointers[0];
-    const pointerInside = this.isPointInView({
-      x: changedTouch.clientX,
-      y: changedTouch.clientY,
-    });
+  ensureConfig(config: Config): Required<Config> {
+    const props = { ...config };
 
-    // TODO(TS) Remove cast after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50966 is merged.
-    const state = this.getState(eventType as 1 | 2 | 4 | 8);
-    if (state !== this.previousState) {
-      this.oldState = this.previousState;
-      this.previousState = state;
+    if (config.minDist) {
+      props.minDist = config.minDist;
+      props.minDistSq = props.minDist * props.minDist;
+    }
+    if (config.minVelocity) {
+      props.minVelocity = config.minVelocity;
+      props.minVelocitySq = props.minVelocity * props.minVelocity;
+    }
+    if (config.maxDist) {
+      props.maxDist = config.maxDist;
+      props.maxDistSq = props.maxDist * props.maxDist;
+    }
+    if (config.waitFor) {
+      props.waitFor = this.asArray(config.waitFor)
+        .map(({ handlerTag }: { handlerTag: number }) =>
+          NodeManager.getHandler(handlerTag)
+        )
+        .filter((v) => v);
+    } else {
+      props.waitFor = null;
+    }
+    const configProps = [
+      'minPointers',
+      'maxPointers',
+      'minDist',
+      'maxDist',
+      'maxDistSq',
+      'minVelocitySq',
+      'minDistSq',
+      'minVelocity',
+      'failOffsetXStart',
+      'failOffsetYStart',
+      'failOffsetXEnd',
+      'failOffsetYEnd',
+      'activeOffsetXStart',
+      'activeOffsetXEnd',
+      'activeOffsetYStart',
+      'activeOffsetYEnd',
+    ] as const;
+
+    configProps.forEach((prop: typeof configProps[number]) => {
+      if (typeof props[prop] === 'undefined') {
+        props[prop] = Number.NaN;
+      }
+    });
+    return props as Required<Config>;
+  }
+
+  asArray<T>(value: T | T[]) {
+    return !value ? [] : Array.isArray(value) ? value : [value];
+  }
+
+  //Handling states changes
+  abstract resetProgress(): void;
+  abstract onCancel(): void;
+  abstract onReset(): void;
+  protected onStateChange(_newState: State, _oldState: State): void {
+    //
+  }
+
+  public reset(): void {
+    this.view = null;
+    this.tracker.resetTracker();
+    this.onReset();
+  }
+
+  public resetConfig(): void {
+    //Reset logic
+  }
+
+  public moveToState(newState: State, event: GHEvent) {
+    if (this.currentState === newState) return;
+
+    console.log(newState, this.currentState);
+
+    if (
+      this.tracker.getTrackedPointersNumber() > 0 &&
+      (newState === State.END ||
+        newState === State.CANCELLED ||
+        newState === State.FAILED)
+    ) {
+      // this.cancelPointers();
     }
 
+    const oldState = this.currentState;
+    this.currentState = newState;
+
+    //TODO eventCoalescingKey logic
+
+    GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
+      this,
+      newState,
+      oldState,
+      event
+    );
+
+    this.onStateChange(newState, oldState);
+    // console.log(this.getState());
+    if (newState === State.END || newState === State.FAILED) {
+      this.currentState = State.UNDETERMINED;
+    }
+  }
+
+  public fail(event: GHEvent): void {
+    if (this.getState() !== State.ACTIVE) this.resetProgress();
+    if (
+      this.currentState === State.ACTIVE ||
+      // this.currentState === State.UNDETERMINED ||
+      this.currentState === State.BEGAN
+    )
+      this.moveToState(State.FAILED, event);
+  }
+
+  public begin(event: GHEvent): void {
+    if (this.currentState === State.UNDETERMINED)
+      this.moveToState(State.BEGAN, event);
+  }
+
+  public cancel(event: GHEvent): void {
+    if (
+      (this.currentState === State.ACTIVE,
+      this.currentState === State.UNDETERMINED ||
+        this.currentState === State.BEGAN)
+    ) {
+      this.onCancel();
+      this.moveToState(State.CANCELLED, event);
+    }
+  }
+
+  protected activate(event: GHEvent, _force = false) {
+    if (
+      this.currentState === State.UNDETERMINED ||
+      this.currentState === State.BEGAN
+    ) {
+      this.moveToState(State.ACTIVE, event);
+    }
+  }
+
+  public end(event: GHEvent) {
+    if (this.getState() !== State.ACTIVE) this.resetProgress();
+    if (this.currentState === State.BEGAN || this.currentState === State.ACTIVE)
+      this.moveToState(State.END, event);
+  }
+
+  //Methods for orchestrator
+  public isAwaiting(): boolean {
+    return this.awaiting;
+  }
+  public setAwaiting(value: boolean): void {
+    this.awaiting = value;
+  }
+
+  public isActive(): boolean {
+    return this.active;
+  }
+  public setActive(value: boolean): void {
+    this.active = value;
+  }
+
+  public getActivationIndex(): number {
+    return this.activationIndex;
+  }
+  public setActivationIndex(value: number): void {
+    this.activationIndex = value;
+  }
+  protected onDownAction(_event: GHEvent): void {
+    // console.log(_event.eventType);
+    // console.log(this.getState());
+  }
+  //Adding another pointer to existing ones
+  protected onPointerAdd(_event: GHEvent): void {
+    //
+  }
+  protected onUpAction(_event: GHEvent): void {
+    // console.log(event.eventType);
+  }
+  protected onPointerRemove(_event: GHEvent): void {
+    //
+  }
+  // Remove one of the fingers
+
+  protected onMoveAction(event: GHEvent): void {
+    if (this.getState() === State.ACTIVE) {
+      GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
+        this,
+        this.getState(),
+        this.getState(),
+        event
+      );
+    }
+  }
+  protected onOutAction(_event: GHEvent): void {
+    //
+  }
+  protected onEnterAction(_event: GHEvent): void {
+    //
+  }
+  protected onCancelAction(_event: GHEvent): void {
+    //
+  }
+  protected onOutOfBoundsAction(event: GHEvent): void {
+    // console.log(event);
+    // console.log(this.getState());
+    if (!this.shouldCancellWhenOutside && this.getState() === State.ACTIVE) {
+      GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
+        this,
+        this.getState(),
+        this.getState(),
+        event
+      );
+    }
+  }
+
+  public sendEvent = (
+    event: GHEvent,
+    newState: State,
+    oldState: State
+  ): void => {
+    const {
+      onGestureHandlerEvent,
+      onGestureHandlerStateChange,
+    } = this.propsRef.current;
+
+    const _event: ResultEvent = this.transformEventData(
+      event,
+      newState,
+      oldState
+    );
+
+    // console.log(event, newState, oldState);
+
+    invokeNullableMethod(onGestureHandlerEvent, _event);
+    if (this.lastSentState !== newState) {
+      this.lastSentState = newState;
+      invokeNullableMethod(onGestureHandlerStateChange, _event);
+    }
+  };
+
+  private transformEventData(
+    event: GHEvent,
+    newState: State,
+    oldState: State
+  ): ResultEvent {
     return {
       nativeEvent: {
-        numberOfPointers,
-        state,
-        pointerInside,
+        numberOfPointers: this.tracker.getTrackedPointersNumber(),
+        state: this.getState(),
+        pointerInside: this.eventManager?.isPointerInBounds({
+          x: event.x,
+          y: event.y,
+        }),
         ...this.transformNativeEvent(event),
-        // onHandlerStateChange only
         handlerTag: this.handlerTag,
         target: this.ref,
-        // send oldState only when the state was changed, or is different than ACTIVE
-        // GestureDetector relies on the presence of `oldState` to differentiate between
-        // update events and state change events
         oldState:
-          state !== this.previousState || state != 4
-            ? this.oldState
+          newState !== oldState || newState === State.ACTIVE
+            ? oldState
             : undefined,
       },
       timeStamp: Date.now(),
     };
   }
 
-  transformNativeEvent(_event: HammerInputExt) {
+  protected transformNativeEvent(_event: GHEvent) {
     return {};
   }
-
-  sendEvent = (nativeEvent: HammerInputExt) => {
-    const {
-      onGestureHandlerEvent,
-      onGestureHandlerStateChange,
-    } = this.propsRef.current;
-
-    const event = this.transformEventData(nativeEvent);
-
-    invokeNullableMethod(onGestureHandlerEvent, event);
-    if (this.lastSentState !== event.nativeEvent.state) {
-      this.lastSentState = event.nativeEvent.state as State;
-      invokeNullableMethod(onGestureHandlerStateChange, event);
-    }
-  };
-
-  cancelPendingGestures(event: HammerInputExt) {
-    for (const gesture of Object.values(this.pendingGestures)) {
-      if (gesture && gesture.isGestureRunning) {
-        gesture.hasGestureFailed = true;
-        gesture.cancelEvent(event);
-      }
-    }
-  }
-
-  notifyPendingGestures() {
-    for (const gesture of Object.values(this.pendingGestures)) {
-      if (gesture) {
-        gesture.onWaitingEnded(this);
-      }
-    }
-  }
-
-  // FIXME event is undefined in runtime when firstly invoked (see Draggable example), check other functions taking event as input
-  onGestureEnded(event: HammerInputExt) {
-    this.isGestureRunning = false;
-    this.cancelPendingGestures(event);
-  }
-
-  forceInvalidate(event: HammerInputExt) {
-    if (this.isGestureRunning) {
-      this.hasGestureFailed = true;
-      this.cancelEvent(event);
-    }
-  }
-
-  cancelEvent(event: HammerInputExt) {
-    this.notifyPendingGestures();
-    this.sendEvent({
-      ...event,
-      eventType: Hammer.INPUT_CANCEL,
-      isFinal: true,
-    });
-    this.onGestureEnded(event);
-  }
-
-  onRawEvent({ isFirst }: HammerInputExt) {
-    if (isFirst) {
-      this.hasGestureFailed = false;
-    }
-  }
-
-  setView(ref: Parameters<typeof findNodeHandle>['0'], propsRef: any) {
-    if (ref == null) {
-      this.destroy();
-      this.view = null;
-      return;
-    }
-
-    this.propsRef = propsRef;
-    this.ref = ref;
-
-    this.view = findNodeHandle(ref);
-    this.hammer = new Hammer.Manager(this.view as any);
-
-    this.oldState = State.UNDETERMINED;
-    this.previousState = State.UNDETERMINED;
-    this.lastSentState = null;
-
-    const { NativeGestureClass } = this;
-    // @ts-ignore TODO(TS)
-    const gesture = new NativeGestureClass(this.getHammerConfig());
-    this.hammer.add(gesture);
-
-    this.hammer.on('hammer.input', (ev: HammerInput) => {
-      if (!this.config.enabled) {
-        this.hasGestureFailed = false;
-        this.isGestureRunning = false;
-        return;
-      }
-
-      this.onRawEvent((ev as unknown) as HammerInputExt);
-
-      // TODO: Bacon: Check against something other than null
-      // The isFirst value is not called when the first rotation is calculated.
-      if (this.initialRotation === null && ev.rotation !== 0) {
-        this.initialRotation = ev.rotation;
-      }
-      if (ev.isFinal) {
-        // in favor of a willFail otherwise the last frame of the gesture will be captured.
-        setTimeout(() => {
-          this.initialRotation = null;
-          this.hasGestureFailed = false;
-        });
-      }
-    });
-
-    this.setupEvents();
-    this.sync();
-  }
-
-  setupEvents() {
-    // TODO(TS) Hammer types aren't exactly that what we get in runtime
-    if (!this.isDiscrete) {
-      this.hammer!.on(`${this.name}start`, (event: HammerInput) =>
-        this.onStart((event as unknown) as HammerInputExt)
-      );
-      this.hammer!.on(
-        `${this.name}end ${this.name}cancel`,
-        (event: HammerInput) => {
-          this.onGestureEnded((event as unknown) as HammerInputExt);
-        }
-      );
-    }
-    this.hammer!.on(this.name, (ev: HammerInput) =>
-      this.onGestureActivated((ev as unknown) as HammerInputExt)
-    ); // TODO(TS) remove cast after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50438 is merged
-  }
-
-  onStart({ deltaX, deltaY, rotation }: HammerInputExt) {
-    // Reset the state for the next gesture
-    this.oldState = State.UNDETERMINED;
-    this.previousState = State.UNDETERMINED;
-    this.lastSentState = null;
-
-    this.isGestureRunning = true;
-    this.__initialX = deltaX;
-    this.__initialY = deltaY;
-    this.initialRotation = rotation;
-  }
-
-  onGestureActivated(ev: HammerInputExt) {
-    this.sendEvent(ev);
-  }
-
-  onSuccess() {}
-
-  _getPendingGestures() {
-    if (Array.isArray(this.config.waitFor) && this.config.waitFor.length) {
-      // Get the list of gestures that this gesture is still waiting for.
-      // Use `=== false` in case a ref that isn't a gesture handler is used.
-      const stillWaiting = this.config.waitFor.filter(
-        ({ hasGestureFailed }) => hasGestureFailed === false
-      );
-      return stillWaiting;
-    }
-    return [];
-  }
-
-  getHammerConfig() {
-    const pointers =
-      this.config.minPointers === this.config.maxPointers
-        ? this.config.minPointers
-        : 0;
-    return {
-      pointers,
-    };
-  }
-
-  sync = () => {
-    const gesture = this.hammer!.get(this.name);
-    if (!gesture) return;
-
-    const enable = (recognizer: any, inputData: any) => {
-      if (!this.config.enabled) {
-        this.isGestureRunning = false;
-        this.hasGestureFailed = false;
-        return false;
-      }
-
-      // Prevent events before the system is ready.
-      if (
-        !inputData ||
-        !recognizer.options ||
-        typeof inputData.maxPointers === 'undefined'
-      ) {
-        return this.shouldEnableGestureOnSetup;
-      }
-
-      if (this.hasGestureFailed) {
-        return false;
-      }
-
-      if (!this.isDiscrete) {
-        if (this.isGestureRunning) {
-          return true;
-        }
-        // The built-in hammer.js "waitFor" doesn't work across multiple views.
-        // Only process if there are views to wait for.
-        this._stillWaiting = this._getPendingGestures();
-        // This gesture should continue waiting.
-        if (this._stillWaiting.length) {
-          // Check to see if one of the gestures you're waiting for has started.
-          // If it has then the gesture should fail.
-          for (const gesture of this._stillWaiting) {
-            // When the target gesture has started, this gesture must force fail.
-            if (!gesture.isDiscrete && gesture.isGestureRunning) {
-              this.hasGestureFailed = true;
-              this.isGestureRunning = false;
-              return false;
-            }
-          }
-          // This gesture shouldn't start until the others have finished.
-          return false;
-        }
-      }
-
-      // Use default behaviour
-      if (!this.hasCustomActivationCriteria) {
-        return true;
-      }
-
-      const deltaRotation =
-        this.initialRotation == null
-          ? 0
-          : inputData.rotation - this.initialRotation;
-      // @ts-ignore FIXME(TS)
-      const { success, failed } = this.isGestureEnabledForEvent(
-        this.getConfig(),
-        recognizer,
-        {
-          ...inputData,
-          deltaRotation,
-        }
-      );
-
-      if (failed) {
-        this.simulateCancelEvent(inputData);
-        this.hasGestureFailed = true;
-      }
-      return success;
-    };
-
-    const params = this.getHammerConfig();
-    // @ts-ignore FIXME(TS)
-    gesture.set({ ...params, enable });
-  };
-
-  simulateCancelEvent(_inputData: any) {}
 }
 
-// TODO(TS) investigate this method
-// Used for sending data to a callback or AnimatedEvent
 function invokeNullableMethod(
   method:
-    | ((event: NativeEvent) => void)
-    | { __getHandler: () => (event: NativeEvent) => void }
-    | { __nodeConfig: { argMapping: any } },
-  event: NativeEvent
-) {
-  if (method) {
-    if (typeof method === 'function') {
-      method(event);
-    } else {
-      // For use with reanimated's AnimatedEvent
-      if (
-        '__getHandler' in method &&
-        typeof method.__getHandler === 'function'
-      ) {
-        const handler = method.__getHandler();
-        invokeNullableMethod(handler, event);
+    | ((event: ResultEvent) => void)
+    | { __getHandler: () => (event: ResultEvent) => void }
+    | { __nodeConfig: { argMapping: ResultEvent } },
+  event: ResultEvent
+): void {
+  if (!method) return;
+
+  if (typeof method === 'function') {
+    method(event);
+    return;
+  }
+
+  if ('__getHandler' in method && typeof method.__getHandler === 'function') {
+    const handler = method.__getHandler();
+    invokeNullableMethod(handler, event);
+    return;
+  }
+
+  if ('__nodeConfig' in method) {
+    const { argMapping } = method.__nodeConfig;
+    if (!Array.isArray(argMapping)) return;
+
+    for (const [index, [key, value]] of argMapping.entries()) {
+      if (!(key in event.nativeEvent)) continue;
+
+      const nativeValue = event.nativeEvent[key];
+
+      if (value?.setValue) {
+        //Reanimated API
+        value.setValue(nativeValue);
       } else {
-        if ('__nodeConfig' in method) {
-          const { argMapping } = method.__nodeConfig;
-          if (Array.isArray(argMapping)) {
-            for (const [index, [key, value]] of argMapping.entries()) {
-              if (key in event.nativeEvent) {
-                // @ts-ignore fix method type
-                const nativeValue = event.nativeEvent[key];
-                if (value && value.setValue) {
-                  // Reanimated API
-                  value.setValue(nativeValue);
-                } else {
-                  // RN Animated API
-                  method.__nodeConfig.argMapping[index] = [key, nativeValue];
-                }
-              }
-            }
-          }
-        }
+        //RN Animated API
+        method.__nodeConfig.argMapping[index] = [key, nativeValue];
       }
     }
-  }
-}
 
-// Validate the props
-function ensureConfig(config: Config): Required<Config> {
-  const props = { ...config };
-
-  // TODO(TS) We use ! to assert that if property is present then value is not empty (null, undefined)
-  if ('minDist' in config) {
-    props.minDist = config.minDist;
-    props.minDistSq = props.minDist! * props.minDist!;
+    return;
   }
-  if ('minVelocity' in config) {
-    props.minVelocity = config.minVelocity;
-    props.minVelocitySq = props.minVelocity! * props.minVelocity!;
-  }
-  if ('maxDist' in config) {
-    props.maxDist = config.maxDist;
-    props.maxDistSq = config.maxDist! * config.maxDist!;
-  }
-  if ('waitFor' in config) {
-    props.waitFor = asArray(config.waitFor)
-      .map(({ handlerTag }: { handlerTag: number }) =>
-        NodeManager.getHandler(handlerTag)
-      )
-      .filter((v) => v);
-  } else {
-    props.waitFor = null;
-  }
-
-  const configProps = [
-    'minPointers',
-    'maxPointers',
-    'minDist',
-    'maxDist',
-    'maxDistSq',
-    'minVelocitySq',
-    'minDistSq',
-    'minVelocity',
-    'failOffsetXStart',
-    'failOffsetYStart',
-    'failOffsetXEnd',
-    'failOffsetYEnd',
-    'activeOffsetXStart',
-    'activeOffsetXEnd',
-    'activeOffsetYStart',
-    'activeOffsetYEnd',
-  ] as const;
-  configProps.forEach((prop: typeof configProps[number]) => {
-    if (typeof props[prop] === 'undefined') {
-      props[prop] = Number.NaN;
-    }
-  });
-  return props as Required<Config>; // TODO(TS) how to convince TS that props are filled?
-}
-
-function asArray<T>(value: T | T[]) {
-  // TODO(TS) use config.waitFor type
-  return value == null ? [] : Array.isArray(value) ? value : [value];
 }
 
 export default GestureHandler;

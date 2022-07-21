@@ -31,6 +31,7 @@ class Fling extends Component {
     offset: number
   ) => {
     if (nativeEvent.oldState === State.ACTIVE) {
+      // console.log(nativeEvent.state);
       Animated.spring(this.touchX, {
         // @ts-ignore private property
         toValue: Animated.add(this.touchX, offset),

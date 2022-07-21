@@ -201,11 +201,13 @@ function DragAndDrop<T extends { id: string }>({
       };
 
   const dragGesture = Gesture.Pan().onUpdate(onUpdateHandler).onEnd(onDragEnd);
-  const tapEndedGesture = Gesture.Tap().onEnd((_, isFinished) => {
-    if (isFinished) {
-      updateDataOnEnd();
-    }
-  });
+  const tapEndedGesture = Gesture.Tap()
+    .onEnd((_, isFinished) => {
+      if (isFinished) {
+        updateDataOnEnd();
+      }
+    })
+    .runOnJS(true);
 
   const _renderItems = () => {
     const newData = [...data];

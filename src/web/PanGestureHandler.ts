@@ -1,219 +1,580 @@
-import Hammer from '@egjs/hammerjs';
-
-import {
-  EventMap,
-  MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD,
-  MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD,
-} from './constants';
-import DraggingGestureHandler from './DraggingGestureHandler';
-import { isValidNumber, isnan, TEST_MIN_IF_NOT_NAN, VEC_LEN_SQ } from './utils';
+import { PixelRatio } from 'react-native';
 import { State } from '../State';
+import { EventTypes, GHEvent } from './EventManager';
+import GestureHandler from './GestureHandler';
 
-import { Config, HammerInputExt } from './GestureHandler';
-class PanGestureHandler extends DraggingGestureHandler {
-  get name() {
-    return 'pan';
+// interface PanConfig extends Config {
+//   minDist?: number;
+//   maxDist?: number;
+
+//   minPointers?: number;
+//   maxPointers?: number;
+
+//   minVelocity?: number;
+
+//   activeOffsetXStart?: number;
+//   activeOffsetXEnd?: number;
+//   failOffsetXStart?: number;
+//   failOffsetXEnd?: number;
+//   activeOffsetYStart?: number;
+//   activeOffsetYEnd?: number;
+//   failOffsetYStart?: number;
+//   failOffsetYEnd?: number;
+// }
+class PanGestureHandler extends GestureHandler {
+  readonly DEFAULT_TOUCH_SLOP = 15;
+  readonly DEFAULT_MIN_POINTERS = 1;
+  readonly DEFAULT_MAX_POINTERS = 1;
+
+  //
+  public velocityX = 0;
+  public velocityY = 0;
+
+  private defaultMinDistSq: number =
+    this.DEFAULT_TOUCH_SLOP * this.DEFAULT_TOUCH_SLOP;
+
+  private enabled = false;
+
+  private minDistSq = this.defaultMinDistSq;
+
+  private activeOffsetXStart = Number.MAX_SAFE_INTEGER;
+  private activeOffsetXEnd = Number.MIN_SAFE_INTEGER;
+  private failOffsetXStart = Number.MIN_SAFE_INTEGER;
+  private failOffsetXEnd = Number.MAX_SAFE_INTEGER;
+
+  private activeOffsetYStart = Number.MAX_SAFE_INTEGER;
+  private activeOffsetYEnd = Number.MIN_SAFE_INTEGER;
+  private failOffsetYStart = Number.MIN_SAFE_INTEGER;
+  private failOffsetYEnd = Number.MAX_SAFE_INTEGER;
+
+  private minVelocityX = Number.MAX_SAFE_INTEGER;
+  private minVelocityY = Number.MAX_SAFE_INTEGER;
+  private minVelocitySq = Number.MAX_SAFE_INTEGER;
+
+  private minPointers = 3;
+  private maxPointers = 10;
+
+  private startX = 0;
+  private startY = 0;
+  private offsetX = 0;
+  private offsetY = 0;
+  private lastX = 0;
+  private lastY = 0;
+
+  private activateAfterLongPress = 0;
+
+  //
+  public init(ref: number, propsRef: any): void {
+    super.init(ref, propsRef);
+  }
+  //
+  updateGestureConfig({ ...props }): void {
+    super.updateGestureConfig({ enabled: true, ...props });
+
+    this.enabled = this.config.enabled as boolean;
+
+    if (this.config.minDist || this.config.minDist === 0) {
+      this.minDistSq = this.config.minDist * this.config.minDist;
+      this.hasCustomActivationCriteria = true;
+    }
+
+    if (this.config.minPointers || this.config.minPointers === 0) {
+      this.setMinPointers(this.config.minPointers);
+      this.hasCustomActivationCriteria = true;
+    }
+
+    if (this.config.maxPointers || this.config.maxPointers === 0) {
+      this.setMaxPointers(this.config.maxPointers);
+      this.hasCustomActivationCriteria = true;
+    }
+
+    if (this.config.minVelocity) {
+      //
+    }
+
+    if (
+      this.config.activeOffsetXStart ||
+      this.config.activeOffsetXStart === 0
+    ) {
+      this.setActiveOffsetXStart(this.config.activeOffsetXStart);
+      this.hasCustomActivationCriteria = true;
+    }
+
+    if (this.config.activeOffsetXEnd || this.config.activeOffsetXEnd === 0) {
+      this.setActiveOffsetXEnd(this.config.activeOffsetXEnd);
+      this.hasCustomActivationCriteria = true;
+    }
+
+    if (this.config.failOffsetXStart || this.config.failOffsetXStart === 0) {
+      this.setFailOffsetXStart(this.config.failOffsetXStart);
+      this.hasCustomActivationCriteria = true;
+    }
+
+    if (this.config.failOffsetXEnd || this.config.failOffsetXEnd === 0) {
+      this.setFailOffsetXEnd(this.config.failOffsetXEnd);
+      this.hasCustomActivationCriteria = true;
+    }
+
+    if (
+      this.config.activeOffsetYStart ||
+      this.config.activeOffsetYStart === 0
+    ) {
+      this.setActiveOffsetYStart(this.config.activeOffsetYStart);
+      this.hasCustomActivationCriteria = true;
+    }
+
+    if (this.config.activeOffsetYEnd || this.config.activeOffsetYEnd === 0) {
+      this.setActiveOffsetYEnd(this.config.activeOffsetYEnd);
+      this.hasCustomActivationCriteria = true;
+    }
+
+    if (this.config.failOffsetYStart || this.config.failOffsetYStart === 0) {
+      this.setFailOffsetYStart(this.config.failOffsetYStart);
+      this.hasCustomActivationCriteria = true;
+    }
+
+    if (this.config.failOffsetYEnd || this.config.failOffsetYEnd === 0) {
+      this.setFailOffsetYEnd(this.config.failOffsetYEnd);
+      this.hasCustomActivationCriteria = true;
+    }
   }
 
-  get NativeGestureClass() {
-    return Hammer.Pan;
-  }
+  transformNativeEvent(event: GHEvent): any {
+    const rect = this.view?.getBoundingClientRect();
+    const ratio = PixelRatio.get();
 
-  getHammerConfig() {
-    return {
-      ...super.getHammerConfig(),
-      direction: this.getDirection(),
+    // console.log(this.getTranslationX());
+    // console.log(this.getTranslationY());
+
+    const returnObject = {
+      translationX: this.getTranslationX(),
+      translationY: this.getTranslationY(),
+      absoluteX: event.x,
+      absoluteY: event.y,
+      velocityX: this.velocityX * ratio * 2,
+      velocityY: this.velocityY * ratio * 2,
+      x: event.x - rect!.left,
+      y: event.y - rect!.top,
     };
+
+    // console.log(event);
+    // console.log(returnObject);
+
+    return returnObject;
   }
 
-  getState(type: keyof typeof EventMap) {
-    const nextState = super.getState(type);
-    // Ensure that the first state sent is `BEGAN` and not `ACTIVE`
+  resetConfig(): void {
+    super.resetConfig();
+
+    this.activeOffsetXStart = Number.MAX_SAFE_INTEGER;
+    this.activeOffsetXEnd = Number.MIN_SAFE_INTEGER;
+    this.failOffsetXStart = Number.MIN_SAFE_INTEGER;
+    this.failOffsetXEnd = Number.MAX_SAFE_INTEGER;
+
+    this.activeOffsetYStart = Number.MAX_SAFE_INTEGER;
+    this.activeOffsetYEnd = Number.MIN_SAFE_INTEGER;
+    this.failOffsetYStart = Number.MIN_SAFE_INTEGER;
+    this.failOffsetYEnd = Number.MAX_SAFE_INTEGER;
+
+    this.minVelocityX = Number.MAX_SAFE_INTEGER;
+    this.minVelocityY = Number.MAX_SAFE_INTEGER;
+    this.minVelocitySq = Number.MAX_SAFE_INTEGER;
+
+    this.minDistSq = this.defaultMinDistSq;
+
+    this.minPointers = this.DEFAULT_MIN_POINTERS;
+    this.maxPointers = this.DEFAULT_MAX_POINTERS;
+
+    this.activateAfterLongPress = 0;
+  }
+
+  getTranslationX(): number {
+    // console.log(this.lastX, this.startX, this.offsetX);
+    return this.lastX - this.startX + this.offsetX;
+  }
+  getTranslationY(): number {
+    return this.lastY - this.startY + this.offsetY;
+  }
+
+  //Setters
+  setActiveOffsetXStart(activeOffsetXStart: number): void {
+    this.activeOffsetXStart = activeOffsetXStart;
+  }
+  setActiveOffsetXEnd(activeOffsetXEnd: number): void {
+    this.activeOffsetXEnd = activeOffsetXEnd;
+  }
+  setFailOffsetXStart(failOffsetXStart: number): void {
+    this.failOffsetXStart = failOffsetXStart;
+  }
+  setFailOffsetXEnd(failOffsetXEnd: number): void {
+    this.failOffsetXEnd = failOffsetXEnd;
+  }
+  setActiveOffsetYStart(activeOffsetYStart: number): void {
+    this.activeOffsetYStart = activeOffsetYStart;
+  }
+  setActiveOffsetYEnd(activeOffsetYEnd: number): void {
+    this.activeOffsetYEnd = activeOffsetYEnd;
+  }
+  setFailOffsetYStart(failOffsetYStart: number): void {
+    this.failOffsetYStart = failOffsetYStart;
+  }
+  setFailOffsetYEnd(failOffsetYEnd: number): void {
+    this.failOffsetYEnd = failOffsetYEnd;
+  }
+  setMinDistSq(minDist: number): void {
+    this.minDistSq = minDist * minDist;
+  }
+  setMinPointers(minPointers: number): void {
+    this.minPointers = minPointers;
+  }
+  setMaxPointers(maxPointers: number): void {
+    this.maxPointers = maxPointers;
+  }
+  setActivateAfterLongPress(time: number): void {
+    this.activateAfterLongPress = time;
+  }
+  setMinVelocitySq(minVelocity: number): void {
+    this.minVelocitySq = minVelocity * minVelocity;
+  }
+  setMinVelocityX(minVelocityX: number): void {
+    this.minVelocityX = minVelocityX;
+  }
+  setMinVelocityY(minVelocityY: number): void {
+    this.minVelocityY = minVelocityY;
+  }
+
+  //EventsHandling
+  onDownAction(event: GHEvent): void {
+    // super.onDownAction(event);
+    // this.tracker.addToTracker(event.pointerId);
+    // this.tracker.track(event);
+    // this.lastX = this.tracker.getLastAvgX();
+    // this.lastY = this.tracker.getLastAvgY();
+    // this.offsetX += this.lastX - this.startX;
+    // this.offsetY += this.lastY - this.startY;
+    // this.startX = event.x;
+    // this.startY = event.y;
+    // this.checkUndetermined(event);
+    // if (this.tracker.getTrackedPointersNumber() > 1) {
+    //   event.eventType = EventTypes.POINTER_DOWN;
+    //   this.onPointerAdd(event);
+    //   return;
+    // }
+    // this.checkBegan(event);
+
+    //NEW LOGIC
+    super.onDownAction(event);
+    this.tracker.addToTracker(event.pointerId);
+    this.tracker.track(event);
+    if (this.tracker.getTrackedPointersNumber() > 1) {
+      event.eventType = EventTypes.POINTER_DOWN;
+      this.onPointerAdd(event);
+      return;
+    }
+
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+
+    this.checkUndetermined(event);
+    this.checkBegan(event);
+  }
+  onPointerAdd(event: GHEvent): void {
+    // if (this.tracker.getTrackedPointersNumber() > this.maxPointers) {
+    //   if (this.getState() === State.ACTIVE) this.cancel(event);
+    //   else this.fail(event);
+    // } else this.checkBegan(event);
+
+    //NEW LOGIC
+    this.offsetX += this.lastX - this.startX;
+    this.offsetY += this.lastY - this.startY;
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+    this.startX = this.lastX;
+    this.startY = this.lastY;
+    this.checkUndetermined(event);
+    if (this.tracker.getTrackedPointersNumber() > this.maxPointers) {
+      if (this.getState() === State.ACTIVE) this.cancel(event);
+      else this.fail(event);
+    } else this.checkBegan(event);
+  }
+
+  onUpAction(event: GHEvent): void {
+    // super.onUpAction(event);
+    // this.lastX = this.tracker.getLastAvgX();
+    // this.lastY = this.tracker.getLastAvgY();
+    // this.offsetX += this.lastX - this.startX;
+    // this.offsetY += this.lastY - this.startY;
+    // this.startX = this.lastX;
+    // this.startY = this.lastY;
+    // this.checkUndetermined(event);
+    // this.tracker.removeFromTracker(event.pointerId);
+    // if (this.tracker.getTrackedPointersNumber() > 0) {
+    //   event.eventType = EventTypes.POINTER_UP;
+    //   this.onPointerRemove(event);
+    //   return;
+    // }
+    // this.tracker.removeFromTracker(event.pointerId);
+    // if (this.getState() === State.ACTIVE) this.end(event);
+    // else this.fail(event);
+
+    //NEW LOGIC
+    super.onUpAction(event);
+
+    console.log('UPPP');
+
+    if (this.tracker.getTrackedPointersNumber() > 1) {
+      this.tracker.removeFromTracker(event.pointerId);
+      event.eventType = EventTypes.POINTER_UP;
+      this.onPointerRemove(event);
+      return;
+    }
+    console.log(this.getState());
+    if (this.getState() === State.ACTIVE) {
+      this.lastX = this.tracker.getLastAvgX();
+      this.lastY = this.tracker.getLastAvgY();
+    }
+    this.tracker.removeFromTracker(event.pointerId);
+
+    this.checkUndetermined(event);
+
+    if (this.getState() === State.ACTIVE) this.end(event);
+    else {
+      this.resetProgress();
+      this.fail(event);
+    }
+  }
+  onPointerRemove(event: GHEvent): void {
+    // console.log('remove');
+    // this.offsetX += event.x - this.startX;
+    // this.offsetY += event.y - this.startY;
+    // this.tracker.removeFromTracker(event.pointerId);
+    // if (
+    //   this.getState() === State.ACTIVE &&
+    //   this.tracker.getTrackedPointersNumber() < this.minPointers
+    // ) {
+    //   this.fail(event);
+    // } else this.checkBegan(event);
+
+    //NEW LOGIC
+    this.offsetX += this.lastX - this.startX;
+    this.offsetY += this.lastY - this.startY;
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+    this.startX = this.lastX;
+    this.startY = this.lastY;
+    this.checkUndetermined(event);
     if (
-      this.previousState === State.UNDETERMINED &&
-      nextState === State.ACTIVE
+      this.getState() === State.ACTIVE &&
+      this.tracker.getTrackedPointersNumber() < this.minPointers
     ) {
-      return State.BEGAN;
-    }
-    return nextState;
+      this.resetProgress();
+      this.fail(event);
+    } else this.checkBegan(event);
   }
 
-  getDirection() {
-    const config = this.getConfig();
-    const {
-      activeOffsetXStart,
-      activeOffsetXEnd,
-      activeOffsetYStart,
-      activeOffsetYEnd,
-      minDist,
-    } = config;
-    let directions: number[] = [];
-    let horizontalDirections = [];
+  onMoveAction(event: GHEvent): void {
+    // this.tracker.track(event);
 
-    if (!isnan(minDist)) {
-      return Hammer.DIRECTION_ALL;
+    // this.lastX = this.tracker.getLastAvgX();
+    // this.lastY = this.tracker.getLastAvgY();
+
+    // this.checkUndetermined(event);
+    // this.checkBegan(event);
+    // super.onMoveAction(event);
+
+    //NEW LOGIC
+    this.tracker.track(event);
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+
+    this.checkUndetermined(event);
+    this.checkBegan(event);
+
+    if (this.getState() === State.ACTIVE) {
+      super.onMoveAction(event);
     }
+  }
+  onOutAction(event: GHEvent): void {
+    super.onOutAction(event);
+  }
+  onEnterAction(event: GHEvent): void {
+    super.onEnterAction(event);
+  }
+  onCancelAction(event: GHEvent): void {
+    super.onCancelAction(event);
+    this.tracker.resetTracker();
+    this.fail(event);
+  }
+  onOutOfBoundsAction(event: GHEvent): void {
+    this.tracker.track(event);
+    // const vx: number = this.tracker.getVelocityX(event.pointerId);
+    // const vy: number = this.tracker.getVelocityY(event.pointerId);
+    // if (event.pointerType === 'pen' && !(vx && vy)) return;
 
-    if (!isnan(activeOffsetXStart))
-      horizontalDirections.push(Hammer.DIRECTION_LEFT);
-    if (!isnan(activeOffsetXEnd))
-      horizontalDirections.push(Hammer.DIRECTION_RIGHT);
-    if (horizontalDirections.length === 2)
-      horizontalDirections = [Hammer.DIRECTION_HORIZONTAL];
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
 
-    directions = directions.concat(horizontalDirections);
-    let verticalDirections = [];
+    this.checkUndetermined(event);
+    this.checkBegan(event);
 
-    if (!isnan(activeOffsetYStart))
-      verticalDirections.push(Hammer.DIRECTION_UP);
-    if (!isnan(activeOffsetYEnd))
-      verticalDirections.push(Hammer.DIRECTION_DOWN);
-
-    if (verticalDirections.length === 2)
-      verticalDirections = [Hammer.DIRECTION_VERTICAL];
-
-    directions = directions.concat(verticalDirections);
-
-    if (!directions.length) {
-      return Hammer.DIRECTION_NONE;
+    if (this.getState() === State.ACTIVE) {
+      super.onOutOfBoundsAction(event);
     }
+  }
+
+  private shouldActivate(): boolean {
+    //Handling dx
+    const dx: number = this.getTranslationX();
+
     if (
-      directions[0] === Hammer.DIRECTION_HORIZONTAL &&
-      directions[1] === Hammer.DIRECTION_VERTICAL
+      this.activeOffsetXStart !== Number.MAX_SAFE_INTEGER &&
+      dx < this.activeOffsetXStart
     ) {
-      return Hammer.DIRECTION_ALL;
-    }
-    if (horizontalDirections.length && verticalDirections.length) {
-      return Hammer.DIRECTION_ALL;
-    }
-
-    return directions[0];
-  }
-
-  getConfig() {
-    if (!this.hasCustomActivationCriteria) {
-      // Default config
-      // If no params have been defined then this config should emulate the native gesture as closely as possible.
-      return {
-        minDistSq: 10,
-      };
-    }
-    return this.config;
-  }
-
-  shouldFailUnderCustomCriteria(
-    { deltaX, deltaY }: HammerInputExt,
-    criteria: any
-  ) {
-    return (
-      (!isnan(criteria.failOffsetXStart) &&
-        deltaX < criteria.failOffsetXStart) ||
-      (!isnan(criteria.failOffsetXEnd) && deltaX > criteria.failOffsetXEnd) ||
-      (!isnan(criteria.failOffsetYStart) &&
-        deltaY < criteria.failOffsetYStart) ||
-      (!isnan(criteria.failOffsetYEnd) && deltaY > criteria.failOffsetYEnd)
-    );
-  }
-
-  shouldActivateUnderCustomCriteria(
-    { deltaX, deltaY, velocity }: any,
-    criteria: any
-  ) {
-    return (
-      (!isnan(criteria.activeOffsetXStart) &&
-        deltaX < criteria.activeOffsetXStart) ||
-      (!isnan(criteria.activeOffsetXEnd) &&
-        deltaX > criteria.activeOffsetXEnd) ||
-      (!isnan(criteria.activeOffsetYStart) &&
-        deltaY < criteria.activeOffsetYStart) ||
-      (!isnan(criteria.activeOffsetYEnd) &&
-        deltaY > criteria.activeOffsetYEnd) ||
-      TEST_MIN_IF_NOT_NAN(
-        VEC_LEN_SQ({ x: deltaX, y: deltaY }),
-        criteria.minDistSq
-      ) ||
-      TEST_MIN_IF_NOT_NAN(velocity.x, criteria.minVelocityX) ||
-      TEST_MIN_IF_NOT_NAN(velocity.y, criteria.minVelocityY) ||
-      TEST_MIN_IF_NOT_NAN(VEC_LEN_SQ(velocity), criteria.minVelocitySq)
-    );
-  }
-
-  shouldMultiFingerPanFail({
-    pointerLength,
-    scale,
-    deltaRotation,
-  }: {
-    deltaRotation: number;
-    pointerLength: number;
-    scale: number;
-  }) {
-    if (pointerLength <= 1) {
-      return false;
-    }
-
-    // Test if the pan had too much pinching or rotating.
-    const deltaScale = Math.abs(scale - 1);
-    const absDeltaRotation = Math.abs(deltaRotation);
-    if (deltaScale > MULTI_FINGER_PAN_MAX_PINCH_THRESHOLD) {
-      // > If the threshold doesn't seem right.
-      // You can log the value which it failed at here:
       return true;
     }
-    if (absDeltaRotation > MULTI_FINGER_PAN_MAX_ROTATION_THRESHOLD) {
-      // > If the threshold doesn't seem right.
-      // You can log the value which it failed at here:
+
+    if (
+      this.activeOffsetXEnd !== Number.MIN_SAFE_INTEGER &&
+      dx > this.activeOffsetXEnd
+    ) {
       return true;
     }
 
-    return false;
-  }
+    //Handling dy
+    const dy: number = this.getTranslationY();
 
-  updateHasCustomActivationCriteria(
-    criteria: Config & { minVelocityX?: number; minVelocityY?: number }
-  ) {
+    if (
+      this.activeOffsetYStart !== Number.MAX_SAFE_INTEGER &&
+      dy < this.activeOffsetYStart
+    ) {
+      return true;
+    }
+
+    if (
+      this.activeOffsetYEnd !== Number.MIN_SAFE_INTEGER &&
+      dy > this.activeOffsetYEnd
+    ) {
+      return true;
+    }
+
+    //Handling squared distance
+    const distanceSq: number = dx * dx + dy * dy;
+
+    if (
+      this.minDistSq !== Number.MAX_SAFE_INTEGER &&
+      distanceSq >= this.minDistSq
+    ) {
+      return true;
+    }
+
+    //Handling velocities
+    const vx: number = this.velocityX;
+
+    if (
+      this.minVelocityX !== Number.MAX_SAFE_INTEGER &&
+      ((this.minVelocityX < 0 && vx <= this.minVelocityX) ||
+        (this.minVelocityX >= 0 && this.minVelocityX <= vx))
+    ) {
+      return true;
+    }
+
+    const vy: number = this.velocityY;
+    if (
+      this.minVelocityY !== Number.MAX_SAFE_INTEGER &&
+      ((this.minVelocityY < 0 && vy <= this.minVelocityY) ||
+        (this.minVelocityY >= 0 && this.minVelocityY <= vy))
+    ) {
+      return true;
+    }
+
+    const velocitySq: number = vx * vx + vy * vy;
+
     return (
-      isValidNumber(criteria.minDistSq) ||
-      isValidNumber(criteria.minVelocityX) ||
-      isValidNumber(criteria.minVelocityY) ||
-      isValidNumber(criteria.minVelocitySq) ||
-      isValidNumber(criteria.activeOffsetXStart) ||
-      isValidNumber(criteria.activeOffsetXEnd) ||
-      isValidNumber(criteria.activeOffsetYStart) ||
-      isValidNumber(criteria.activeOffsetYEnd)
+      this.minVelocitySq !== Number.MAX_SAFE_INTEGER &&
+      velocitySq >= this.minVelocitySq
     );
   }
 
-  isGestureEnabledForEvent(
-    props: any,
-    _recognizer: any,
-    inputData: HammerInputExt & { deltaRotation: number }
-  ) {
-    if (this.shouldFailUnderCustomCriteria(inputData, props)) {
-      return { failed: true };
+  private shouldFail(): boolean {
+    const dx: number = this.getTranslationX();
+    const dy: number = this.getTranslationY();
+    const distanceSq = dx * dx + dy * dy;
+
+    if (this.activateAfterLongPress > 0 && distanceSq > this.defaultMinDistSq) {
+      return true;
     }
 
-    const velocity = { x: inputData.velocityX, y: inputData.velocityY };
     if (
-      this.hasCustomActivationCriteria &&
-      this.shouldActivateUnderCustomCriteria(
-        { deltaX: inputData.deltaX, deltaY: inputData.deltaY, velocity },
-        props
-      )
+      this.failOffsetXStart !== Number.MIN_SAFE_INTEGER &&
+      dx < this.failOffsetXStart
     ) {
-      if (
-        this.shouldMultiFingerPanFail({
-          pointerLength: inputData.maxPointers,
-          scale: inputData.scale,
-          deltaRotation: inputData.deltaRotation,
-        })
-      ) {
-        return {
-          failed: true,
-        };
+      return true;
+    }
+
+    if (
+      this.failOffsetXEnd !== Number.MAX_SAFE_INTEGER &&
+      dx > this.failOffsetXEnd
+    ) {
+      return true;
+    }
+
+    if (
+      this.failOffsetYStart !== Number.MIN_SAFE_INTEGER &&
+      dy < this.failOffsetYStart
+    ) {
+      return true;
+    }
+
+    return (
+      this.failOffsetYEnd !== Number.MAX_SAFE_INTEGER &&
+      dy > this.failOffsetYEnd
+    );
+  }
+
+  private checkUndetermined(event: GHEvent): void {
+    if (
+      this.getState() === State.UNDETERMINED &&
+      this.tracker.getTrackedPointersNumber() >= this.minPointers
+    ) {
+      this.resetProgress();
+      this.offsetX = 0;
+      this.offsetY = 0;
+      this.velocityX = 0;
+      this.velocityY = 0;
+
+      this.begin(event);
+
+      //Long press
+    } else {
+      this.velocityX = this.tracker.getVelocityX(event.pointerId);
+      this.velocityY = this.tracker.getVelocityY(event.pointerId);
+    }
+  }
+  private checkBegan(event: GHEvent): void {
+    if (this.getState() === State.BEGAN) {
+      if (this.shouldFail()) this.fail(event);
+      else if (this.shouldActivate()) {
+        this.activate(event);
       }
-      return { success: true };
     }
-    return { success: false };
+  }
+
+  activate(event: GHEvent, force = false): void {
+    if (this.currentState !== State.ACTIVE) {
+      this.resetProgress();
+    }
+
+    super.activate(event, force);
+  }
+  onCancel(): void {
+    // throw new Error('Method not implemented.');
+  }
+  onReset(): void {
+    // throw new Error('Method not implemented.');
+  }
+  resetProgress(): void {
+    this.startX = this.lastX;
+    this.startY = this.lastY;
   }
 }
 

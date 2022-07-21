@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Animated, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -7,6 +7,7 @@ import {
   PanGestureHandlerStateChangeEvent,
   PanGestureHandlerGestureEvent,
   ScrollView,
+  GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../../config';
@@ -55,7 +56,10 @@ export class DraggableBox extends Component<DraggableBoxProps> {
         {...this.props}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}
-        minDist={this.props.minDist}>
+        minDist={this.props.minDist}
+        avgTouches={true}
+        // minPointers={2}>
+      >
         <Animated.View
           style={[
             styles.box,
@@ -76,11 +80,14 @@ export class DraggableBox extends Component<DraggableBoxProps> {
 export default class Example extends Component {
   render() {
     return (
-      <ScrollView style={styles.scrollView}>
-        <LoremIpsum words={40} />
-        <DraggableBox />
-        <LoremIpsum />
-      </ScrollView>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ScrollView style={styles.scrollView}>
+          {/* <LoremIpsum words={40} /> */}
+          <DraggableBox />
+          <DraggableBox />
+          {/* <LoremIpsum /> */}
+        </ScrollView>
+      </GestureHandlerRootView>
     );
   }
 }
@@ -90,8 +97,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   box: {
-    width: 150,
-    height: 150,
+    width: 300,
+    height: 300,
+    // width: 150,
+    // height: 150,
     alignSelf: 'center',
     backgroundColor: 'plum',
     margin: 10,
