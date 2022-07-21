@@ -244,6 +244,10 @@ abstract class GestureHandler {
     return !value ? [] : Array.isArray(value) ? value : [value];
   }
 
+  protected setShouldCancelWhenOutside(flag: boolean) {
+    this.shouldCancellWhenOutside = flag;
+  }
+
   //Handling states changes
   abstract resetProgress(): void;
   abstract onCancel(): void;
