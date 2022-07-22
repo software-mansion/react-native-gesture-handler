@@ -102,9 +102,7 @@ export default class GestureHandlerOrchestrator {
     oldState: State,
     event: GHEvent
   ): void {
-    // console.log(getKeyByValue(newState));
-    // console.log(getKeyByValue(oldState));
-    // console.log(event);
+    // console.log(oldState, newState, handler.id);
     handler.sendEvent(event, newState, oldState);
   }
 

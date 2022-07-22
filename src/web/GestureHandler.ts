@@ -1,4 +1,4 @@
-import { findNodeHandle } from '../handlers/gestureHandlerCommon';
+import { findNodeHandle } from 'react-native';
 import { State } from '../State';
 import EventManager, { GHEvent } from './EventManager';
 import GestureHandlerOrchestrator from './GestureHandlerOrchestrator';
@@ -75,6 +75,7 @@ abstract class GestureHandler {
   // protected __initialX: any;
   // protected __initialY: any;
   protected config: Config = {};
+  protected enabled = false;
   // protected previousState: State = State.UNDETERMINED;
   private pendingGestures: Record<string, this> = {};
   // private oldState: State = State.UNDETERMINED;
@@ -108,16 +109,16 @@ abstract class GestureHandler {
     this.hasCustomActivationCriteria = false;
   }
 
-  getConfig() {
+  protected getConfig() {
     return this.config;
   }
 
-  removePendingGestures(id: string) {
+  protected removePendingGestures(id: string) {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.pendingGestures[id];
   }
 
-  addPendingGesture(gesture: this) {
+  public addPendingGesture(gesture: this) {
     this.pendingGestures[gesture.id] = gesture;
   }
 
@@ -129,7 +130,7 @@ abstract class GestureHandler {
     }
   }
 
-  updateGestureConfig({ enabled = true, ...props }): void {
+  public updateGestureConfig({ enabled = true, ...props }): void {
     this.clearSelfAsPending();
 
     this.config = this.ensureConfig({ enabled, ...props });
@@ -142,7 +143,7 @@ abstract class GestureHandler {
     }
   }
 
-  getState(): State {
+  public getState(): State {
     return this.currentState;
   }
 
@@ -184,11 +185,11 @@ abstract class GestureHandler {
     this.eventManager.setOutOfBoundsAction(this.onOutOfBoundsAction.bind(this));
   }
 
-  destroy() {
+  public destroy() {
     this.clearSelfAsPending();
   }
 
-  ensureConfig(config: Config): Required<Config> {
+  private ensureConfig(config: Config): Required<Config> {
     const props = { ...config };
 
     if (config.minDist) {
@@ -239,7 +240,7 @@ abstract class GestureHandler {
     return props as Required<Config>;
   }
 
-  asArray<T>(value: T | T[]) {
+  private asArray<T>(value: T | T[]) {
     return !value ? [] : Array.isArray(value) ? value : [value];
   }
 
@@ -248,8 +249,8 @@ abstract class GestureHandler {
   }
 
   //Handling states changes
-  abstract onCancel(): void;
-  abstract onReset(): void;
+  protected abstract onCancel(): void;
+  protected abstract onReset(): void;
   protected resetProgress(): void {
     //
   }
@@ -270,7 +271,7 @@ abstract class GestureHandler {
   public moveToState(newState: State, event: GHEvent) {
     if (this.currentState === newState) return;
 
-    console.log(newState, this.currentState);
+    // console.log(`${this.currentState} -> ${newState}`);
 
     if (
       this.tracker.getTrackedPointersNumber() > 0 &&
@@ -326,7 +327,7 @@ abstract class GestureHandler {
     }
   }
 
-  protected activate(event: GHEvent, _force = false) {
+  protected activate(event: GHEvent, force = false) {
     if (
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
@@ -336,7 +337,8 @@ abstract class GestureHandler {
   }
 
   public end(event: GHEvent) {
-    if (this.getState() !== State.ACTIVE) this.resetProgress();
+    // if (this.getState() !== State.ACTIVE) this.resetProgress();
+    this.resetProgress();
     if (this.currentState === State.BEGAN || this.currentState === State.ACTIVE)
       this.moveToState(State.END, event);
   }
