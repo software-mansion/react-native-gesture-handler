@@ -30,8 +30,7 @@ export default class TapGestureHandler extends GestureHandler {
 
   private tapsSoFar = 0;
 
-  constructor() {
-    super();
+  public init(_ref: number, _propsRef: any): void {
     this.setShouldCancelWhenOutside(true);
   }
 
@@ -40,6 +39,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   public updateGestureConfig({ ...props }): void {
+    console.log(this.interactionManager);
     super.updateGestureConfig({ enabled: true, ...props });
     console.log(this.config);
     console.log(this.id);

@@ -18,7 +18,7 @@ export default class NodeManager {
       throw new Error(`Handler with tag ${handlerTag} already exists`);
 
     gestures[handlerTag] = handler;
-    gestures[handlerTag].handlerTag = handlerTag;
+    gestures[handlerTag].setTag(handlerTag);
   }
 
   static dropGestureHandler(handlerTag: number) {

@@ -2,6 +2,7 @@ import { findNodeHandle } from 'react-native';
 import { State } from '../State';
 import EventManager, { GHEvent } from './EventManager';
 import GestureHandlerOrchestrator from './GestureHandlerOrchestrator';
+import InteractionManager from './InteractionManager';
 import NodeManager from './NodeManager';
 import Tracker from './Tracker';
 
@@ -65,7 +66,7 @@ interface ResultEvent extends Record<string, any> {
 let gestureInstances = 0;
 
 abstract class GestureHandler {
-  public handlerTag: any;
+  private handlerTag: number;
   // public isGestureRunning = false;
   public view: HTMLElement | null = null;
   protected hasCustomActivationCriteria: boolean;
@@ -88,6 +89,8 @@ abstract class GestureHandler {
   private ref: any;
   private shouldCancellWhenOutside = false;
 
+  protected interactionManager: InteractionManager;
+
   //Orchestrator properties
   protected activationIndex = 0;
   protected awaiting = false;
@@ -107,6 +110,13 @@ abstract class GestureHandler {
   constructor() {
     this.gestureInstance = gestureInstances++;
     this.hasCustomActivationCriteria = false;
+  }
+
+  public getTag(): number {
+    return this.handlerTag;
+  }
+  public setTag(tag: number): void {
+    this.handlerTag = tag;
   }
 
   protected getConfig() {
@@ -183,6 +193,10 @@ abstract class GestureHandler {
     this.eventManager.setOnOutAction(this.onOutAction.bind(this));
     this.eventManager.setOnCancelAction(this.onCancelAction.bind(this));
     this.eventManager.setOutOfBoundsAction(this.onOutOfBoundsAction.bind(this));
+  }
+
+  public setInteractionManager(manager: InteractionManager): void {
+    this.interactionManager = manager;
   }
 
   public destroy() {
@@ -358,6 +372,13 @@ abstract class GestureHandler {
     this.active = value;
   }
 
+  public getShouldResetProgress(): boolean {
+    return this.shouldResetProgress;
+  }
+  public setShouldResetProgress(value: boolean): void {
+    this.shouldResetProgress = value;
+  }
+
   public getActivationIndex(): number {
     return this.activationIndex;
   }
@@ -407,6 +428,18 @@ abstract class GestureHandler {
     }
   }
 
+  public shouldWaitForHandlerFailure(handler: GestureHandler): boolean {
+    if (handler === this) return false;
+
+    return this.interactionManager.shouldWaitForHandlerFailure(this, handler);
+  }
+
+  public shouldRequireToWaitForFailure(handler: GestureHandler): boolean {
+    if (handler === this) return false;
+
+    return this.interactionManager.shouldRequireHandlerToWaitForFailure();
+  }
+
   public sendEvent = (
     event: GHEvent,
     newState: State,
@@ -444,7 +477,7 @@ abstract class GestureHandler {
           y: event.y,
         }),
         ...this.transformNativeEvent(event),
-        handlerTag: this.handlerTag as number,
+        handlerTag: this.handlerTag,
         target: this.ref as number,
         oldState:
           newState !== oldState || newState === State.ACTIVE

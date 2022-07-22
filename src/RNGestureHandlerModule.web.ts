@@ -1,4 +1,5 @@
 import { ActionType } from './ActionType';
+import InteractionManager from './web/InteractionManager';
 import NodeManager from './web/NodeManager';
 import PanGestureHandler from './web/PanGestureHandler';
 import TapGestureHandler from './web/TapGestureHandler';
@@ -7,6 +8,8 @@ export const Gestures = {
   PanGestureHandler,
   TapGestureHandler,
 };
+
+const interactionManager = new InteractionManager();
 
 export default {
   // Direction,
@@ -25,6 +28,11 @@ export default {
 
     const GestureClass = Gestures[handlerName];
     NodeManager.createGestureHandler(handlerTag, new GestureClass());
+    interactionManager.configureInteractions(
+      NodeManager.getHandler(handlerTag),
+      config
+    );
+
     this.updateGestureHandler(handlerTag, config);
   },
   attachGestureHandler(
