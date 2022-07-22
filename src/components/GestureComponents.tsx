@@ -16,6 +16,7 @@ import {
   DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
+  RefreshControl as RNRefreshControl,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
@@ -24,6 +25,8 @@ import {
   NativeViewGestureHandlerProps,
   nativeViewProps,
 } from '../handlers/NativeViewGestureHandler';
+
+import { toArray } from '../utils';
 
 export const ScrollView = createNativeWrapper<
   PropsWithChildren<RNScrollViewProps>
@@ -55,10 +58,21 @@ export const DrawerLayoutAndroid = createNativeWrapper<
 export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
   RNDrawerLayoutAndroid;
 
+export const RefreshControl = createNativeWrapper(RNRefreshControl, {
+  disallowInterruption: true,
+  shouldCancelWhenOutside: false,
+});
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type RefreshControl = typeof RefreshControl & RNRefreshControl;
+
 export const FlatList = React.forwardRef((props, ref) => {
+  const refreshControlGestureRef = React.useRef();
+
+  const { waitFor, refreshControl, ...rest } = props;
+
   const flatListProps = {};
   const scrollViewProps = {};
-  for (const [propName, value] of Object.entries(props)) {
+  for (const [propName, value] of Object.entries(rest)) {
     // https://github.com/microsoft/TypeScript/issues/26255
     if ((nativeViewProps as readonly string[]).includes(propName)) {
       // @ts-ignore - this function cannot have generic type so we have to ignore this error
@@ -70,14 +84,44 @@ export const FlatList = React.forwardRef((props, ref) => {
       flatListProps[propName] = value;
     }
   }
+
+  const refHandler = (node: any) => {
+    refreshControlGestureRef.current = node;
+
+    const { ref }: any = refreshControl;
+    if (ref !== null) {
+      if (typeof ref === 'function') {
+        ref(node);
+      } else {
+        ref.current = node;
+      }
+    }
+  };
+
   return (
     // @ts-ignore - this function cannot have generic type so we have to ignore this error
     <RNFlatList
       ref={ref}
       {...flatListProps}
       renderScrollComponent={(scrollProps) => (
-        <ScrollView {...{ ...scrollProps, ...scrollViewProps }} />
+        <ScrollView
+          {...{
+            ...scrollProps,
+            ...scrollViewProps,
+            waitFor: [
+              ...toArray(waitFor ? waitFor : []),
+              refreshControlGestureRef,
+            ],
+          }}
+        />
       )}
+      // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
+      refreshControl={
+        refreshControl
+          ? // @ts-ignore `ref` does indeed exist on the element we're cloning
+            React.cloneElement(refreshControl, { ref: refHandler })
+          : refreshControl
+      }
     />
   );
 }) as <ItemT = any>(
