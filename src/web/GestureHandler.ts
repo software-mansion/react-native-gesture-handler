@@ -249,9 +249,11 @@ abstract class GestureHandler {
   }
 
   //Handling states changes
-  abstract resetProgress(): void;
   abstract onCancel(): void;
   abstract onReset(): void;
+  protected resetProgress(): void {
+    //
+  }
   protected onStateChange(_newState: State, _oldState: State): void {
     //
   }
@@ -262,7 +264,7 @@ abstract class GestureHandler {
     this.onReset();
   }
 
-  public resetConfig(): void {
+  protected resetConfig(): void {
     //Reset logic
   }
 
@@ -362,8 +364,7 @@ abstract class GestureHandler {
     this.activationIndex = value;
   }
   protected onDownAction(_event: GHEvent): void {
-    // console.log(_event.eventType);
-    // console.log(this.getState());
+    //
   }
   //Adding another pointer to existing ones
   protected onPointerAdd(_event: GHEvent): void {
@@ -375,8 +376,6 @@ abstract class GestureHandler {
   protected onPointerRemove(_event: GHEvent): void {
     //
   }
-  // Remove one of the fingers
-
   protected onMoveAction(event: GHEvent): void {
     if (this.getState() === State.ACTIVE) {
       GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
@@ -397,8 +396,6 @@ abstract class GestureHandler {
     //
   }
   protected onOutOfBoundsAction(event: GHEvent): void {
-    // console.log(event);
-    // console.log(this.getState());
     if (!this.shouldCancellWhenOutside && this.getState() === State.ACTIVE) {
       GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
         this,
@@ -425,8 +422,6 @@ abstract class GestureHandler {
       oldState
     );
 
-    // console.log(event, newState, oldState);
-
     invokeNullableMethod(onGestureHandlerEvent, _event);
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
@@ -448,8 +443,8 @@ abstract class GestureHandler {
           y: event.y,
         }),
         ...this.transformNativeEvent(event),
-        handlerTag: this.handlerTag,
-        target: this.ref,
+        handlerTag: this.handlerTag as number,
+        target: this.ref as number,
         oldState:
           newState !== oldState || newState === State.ACTIVE
             ? oldState

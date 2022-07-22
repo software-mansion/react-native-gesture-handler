@@ -50,8 +50,6 @@ class EventManager {
       event.preventDefault();
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.DOWN);
 
-      // console.log(event);
-
       this.view.setPointerCapture(ghEvent.pointerId);
       this.addActivePointer(ghEvent.pointerId);
       this.onDownAction(ghEvent);

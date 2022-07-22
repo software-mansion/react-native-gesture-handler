@@ -8,6 +8,7 @@ import {
   PanGestureHandlerGestureEvent,
   ScrollView,
   GestureHandlerRootView,
+  TapGestureHandler,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../../config';
@@ -57,9 +58,7 @@ export class DraggableBox extends Component<DraggableBoxProps> {
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}
         minDist={this.props.minDist}
-        avgTouches={true}
-        // minPointers={2}>
-      >
+        avgTouches={true}>
         <Animated.View
           style={[
             styles.box,

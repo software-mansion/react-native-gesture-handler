@@ -71,21 +71,28 @@ class PanGestureHandler extends GestureHandler {
   updateGestureConfig({ ...props }): void {
     super.updateGestureConfig({ enabled: true, ...props });
 
+    for (const key in this.config) {
+      if (
+        !isNaN(this.config[key]) &&
+        this.config[key] !== undefined &&
+        this.config[key] !== null
+      ) {
+        this.hasCustomActivationCriteria = true;
+      }
+    }
+
     this.enabled = this.config.enabled as boolean;
 
     if (this.config.minDist || this.config.minDist === 0) {
       this.minDistSq = this.config.minDist * this.config.minDist;
-      this.hasCustomActivationCriteria = true;
     }
 
     if (this.config.minPointers || this.config.minPointers === 0) {
-      this.setMinPointers(this.config.minPointers);
-      this.hasCustomActivationCriteria = true;
+      this.minPointers = this.config.minPointers as number;
     }
 
     if (this.config.maxPointers || this.config.maxPointers === 0) {
-      this.setMaxPointers(this.config.maxPointers);
-      this.hasCustomActivationCriteria = true;
+      this.maxPointers = this.config.maxPointers as number;
     }
 
     if (this.config.minVelocity) {
@@ -96,74 +103,60 @@ class PanGestureHandler extends GestureHandler {
       this.config.activeOffsetXStart ||
       this.config.activeOffsetXStart === 0
     ) {
-      this.setActiveOffsetXStart(this.config.activeOffsetXStart);
-      this.hasCustomActivationCriteria = true;
+      this.activeOffsetXStart = this.config.activeOffsetXStart as number;
     }
 
     if (this.config.activeOffsetXEnd || this.config.activeOffsetXEnd === 0) {
-      this.setActiveOffsetXEnd(this.config.activeOffsetXEnd);
-      this.hasCustomActivationCriteria = true;
+      this.activeOffsetXEnd = this.config.activeOffsetXEnd as number;
     }
 
     if (this.config.failOffsetXStart || this.config.failOffsetXStart === 0) {
-      this.setFailOffsetXStart(this.config.failOffsetXStart);
-      this.hasCustomActivationCriteria = true;
+      this.failOffsetXStart = this.config.failOffsetXStart as number;
     }
 
     if (this.config.failOffsetXEnd || this.config.failOffsetXEnd === 0) {
-      this.setFailOffsetXEnd(this.config.failOffsetXEnd);
-      this.hasCustomActivationCriteria = true;
+      this.failOffsetXEnd = this.config.failOffsetXEnd as number;
     }
 
     if (
       this.config.activeOffsetYStart ||
       this.config.activeOffsetYStart === 0
     ) {
-      this.setActiveOffsetYStart(this.config.activeOffsetYStart);
-      this.hasCustomActivationCriteria = true;
+      this.activeOffsetYStart = this.config.activeOffsetYStart as number;
     }
 
     if (this.config.activeOffsetYEnd || this.config.activeOffsetYEnd === 0) {
-      this.setActiveOffsetYEnd(this.config.activeOffsetYEnd);
-      this.hasCustomActivationCriteria = true;
+      this.activeOffsetYEnd = this.config.activeOffsetYEnd as number;
     }
 
     if (this.config.failOffsetYStart || this.config.failOffsetYStart === 0) {
-      this.setFailOffsetYStart(this.config.failOffsetYStart);
-      this.hasCustomActivationCriteria = true;
+      this.failOffsetYStart = this.config.failOffsetYStart as number;
     }
 
     if (this.config.failOffsetYEnd || this.config.failOffsetYEnd === 0) {
-      this.setFailOffsetYEnd(this.config.failOffsetYEnd);
-      this.hasCustomActivationCriteria = true;
+      this.activeOffsetYEnd = this.config.activeOffsetYEnd as number;
     }
   }
 
   transformNativeEvent(event: GHEvent): any {
-    const rect = this.view?.getBoundingClientRect();
+    if (!this.view) return;
+
+    const rect = this.view.getBoundingClientRect();
     const ratio = PixelRatio.get();
 
-    // console.log(this.getTranslationX());
-    // console.log(this.getTranslationY());
-
-    const returnObject = {
+    return {
       translationX: this.getTranslationX(),
       translationY: this.getTranslationY(),
       absoluteX: event.x,
       absoluteY: event.y,
       velocityX: this.velocityX * ratio * 2,
       velocityY: this.velocityY * ratio * 2,
-      x: event.x - rect!.left,
-      y: event.y - rect!.top,
+      x: event.x - rect.left,
+      y: event.y - rect.top,
     };
-
-    // console.log(event);
-    // console.log(returnObject);
-
-    return returnObject;
   }
 
-  resetConfig(): void {
+  protected resetConfig(): void {
     super.resetConfig();
 
     this.activeOffsetXStart = Number.MAX_SAFE_INTEGER;
@@ -189,83 +182,19 @@ class PanGestureHandler extends GestureHandler {
   }
 
   getTranslationX(): number {
-    // console.log(this.lastX, this.startX, this.offsetX);
     return this.lastX - this.startX + this.offsetX;
   }
   getTranslationY(): number {
     return this.lastY - this.startY + this.offsetY;
   }
 
-  //Setters
-  setActiveOffsetXStart(activeOffsetXStart: number): void {
-    this.activeOffsetXStart = activeOffsetXStart;
-  }
-  setActiveOffsetXEnd(activeOffsetXEnd: number): void {
-    this.activeOffsetXEnd = activeOffsetXEnd;
-  }
-  setFailOffsetXStart(failOffsetXStart: number): void {
-    this.failOffsetXStart = failOffsetXStart;
-  }
-  setFailOffsetXEnd(failOffsetXEnd: number): void {
-    this.failOffsetXEnd = failOffsetXEnd;
-  }
-  setActiveOffsetYStart(activeOffsetYStart: number): void {
-    this.activeOffsetYStart = activeOffsetYStart;
-  }
-  setActiveOffsetYEnd(activeOffsetYEnd: number): void {
-    this.activeOffsetYEnd = activeOffsetYEnd;
-  }
-  setFailOffsetYStart(failOffsetYStart: number): void {
-    this.failOffsetYStart = failOffsetYStart;
-  }
-  setFailOffsetYEnd(failOffsetYEnd: number): void {
-    this.failOffsetYEnd = failOffsetYEnd;
-  }
-  setMinDistSq(minDist: number): void {
-    this.minDistSq = minDist * minDist;
-  }
-  setMinPointers(minPointers: number): void {
-    this.minPointers = minPointers;
-  }
-  setMaxPointers(maxPointers: number): void {
-    this.maxPointers = maxPointers;
-  }
-  setActivateAfterLongPress(time: number): void {
-    this.activateAfterLongPress = time;
-  }
-  setMinVelocitySq(minVelocity: number): void {
-    this.minVelocitySq = minVelocity * minVelocity;
-  }
-  setMinVelocityX(minVelocityX: number): void {
-    this.minVelocityX = minVelocityX;
-  }
-  setMinVelocityY(minVelocityY: number): void {
-    this.minVelocityY = minVelocityY;
-  }
-
   //EventsHandling
   onDownAction(event: GHEvent): void {
-    // super.onDownAction(event);
-    // this.tracker.addToTracker(event.pointerId);
-    // this.tracker.track(event);
-    // this.lastX = this.tracker.getLastAvgX();
-    // this.lastY = this.tracker.getLastAvgY();
-    // this.offsetX += this.lastX - this.startX;
-    // this.offsetY += this.lastY - this.startY;
-    // this.startX = event.x;
-    // this.startY = event.y;
-    // this.checkUndetermined(event);
-    // if (this.tracker.getTrackedPointersNumber() > 1) {
-    //   event.eventType = EventTypes.POINTER_DOWN;
-    //   this.onPointerAdd(event);
-    //   return;
-    // }
-    // this.checkBegan(event);
-
-    //NEW LOGIC
     super.onDownAction(event);
+
     this.tracker.addToTracker(event.pointerId);
     this.tracker.track(event);
+
     if (this.tracker.getTrackedPointersNumber() > 1) {
       event.eventType = EventTypes.POINTER_DOWN;
       this.onPointerAdd(event);
@@ -279,19 +208,17 @@ class PanGestureHandler extends GestureHandler {
     this.checkBegan(event);
   }
   onPointerAdd(event: GHEvent): void {
-    // if (this.tracker.getTrackedPointersNumber() > this.maxPointers) {
-    //   if (this.getState() === State.ACTIVE) this.cancel(event);
-    //   else this.fail(event);
-    // } else this.checkBegan(event);
-
-    //NEW LOGIC
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
+
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
+
     this.startX = this.lastX;
     this.startY = this.lastY;
+
     this.checkUndetermined(event);
+
     if (this.tracker.getTrackedPointersNumber() > this.maxPointers) {
       if (this.getState() === State.ACTIVE) this.cancel(event);
       else this.fail(event);
@@ -299,70 +226,44 @@ class PanGestureHandler extends GestureHandler {
   }
 
   onUpAction(event: GHEvent): void {
-    // super.onUpAction(event);
-    // this.lastX = this.tracker.getLastAvgX();
-    // this.lastY = this.tracker.getLastAvgY();
-    // this.offsetX += this.lastX - this.startX;
-    // this.offsetY += this.lastY - this.startY;
-    // this.startX = this.lastX;
-    // this.startY = this.lastY;
-    // this.checkUndetermined(event);
-    // this.tracker.removeFromTracker(event.pointerId);
-    // if (this.tracker.getTrackedPointersNumber() > 0) {
-    //   event.eventType = EventTypes.POINTER_UP;
-    //   this.onPointerRemove(event);
-    //   return;
-    // }
-    // this.tracker.removeFromTracker(event.pointerId);
-    // if (this.getState() === State.ACTIVE) this.end(event);
-    // else this.fail(event);
-
-    //NEW LOGIC
     super.onUpAction(event);
-
-    console.log('UPPP');
 
     if (this.tracker.getTrackedPointersNumber() > 1) {
       this.tracker.removeFromTracker(event.pointerId);
+
       event.eventType = EventTypes.POINTER_UP;
       this.onPointerRemove(event);
       return;
     }
-    console.log(this.getState());
+
     if (this.getState() === State.ACTIVE) {
       this.lastX = this.tracker.getLastAvgX();
       this.lastY = this.tracker.getLastAvgY();
     }
+
     this.tracker.removeFromTracker(event.pointerId);
 
     this.checkUndetermined(event);
 
-    if (this.getState() === State.ACTIVE) this.end(event);
-    else {
+    if (this.getState() === State.ACTIVE) {
+      this.end(event);
+    } else {
       this.resetProgress();
       this.fail(event);
     }
   }
   onPointerRemove(event: GHEvent): void {
-    // console.log('remove');
-    // this.offsetX += event.x - this.startX;
-    // this.offsetY += event.y - this.startY;
-    // this.tracker.removeFromTracker(event.pointerId);
-    // if (
-    //   this.getState() === State.ACTIVE &&
-    //   this.tracker.getTrackedPointersNumber() < this.minPointers
-    // ) {
-    //   this.fail(event);
-    // } else this.checkBegan(event);
-
-    //NEW LOGIC
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
+
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
+
     this.startX = this.lastX;
     this.startY = this.lastY;
+
     this.checkUndetermined(event);
+
     if (
       this.getState() === State.ACTIVE &&
       this.tracker.getTrackedPointersNumber() < this.minPointers
@@ -373,26 +274,15 @@ class PanGestureHandler extends GestureHandler {
   }
 
   onMoveAction(event: GHEvent): void {
-    // this.tracker.track(event);
-
-    // this.lastX = this.tracker.getLastAvgX();
-    // this.lastY = this.tracker.getLastAvgY();
-
-    // this.checkUndetermined(event);
-    // this.checkBegan(event);
-    // super.onMoveAction(event);
-
-    //NEW LOGIC
     this.tracker.track(event);
+
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
 
     this.checkUndetermined(event);
     this.checkBegan(event);
 
-    if (this.getState() === State.ACTIVE) {
-      super.onMoveAction(event);
-    }
+    if (this.getState() === State.ACTIVE) super.onMoveAction(event);
   }
   onOutAction(event: GHEvent): void {
     super.onOutAction(event);
@@ -402,14 +292,12 @@ class PanGestureHandler extends GestureHandler {
   }
   onCancelAction(event: GHEvent): void {
     super.onCancelAction(event);
+
     this.tracker.resetTracker();
     this.fail(event);
   }
   onOutOfBoundsAction(event: GHEvent): void {
     this.tracker.track(event);
-    // const vx: number = this.tracker.getVelocityX(event.pointerId);
-    // const vy: number = this.tracker.getVelocityY(event.pointerId);
-    // if (event.pointerType === 'pen' && !(vx && vy)) return;
 
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
@@ -417,13 +305,10 @@ class PanGestureHandler extends GestureHandler {
     this.checkUndetermined(event);
     this.checkBegan(event);
 
-    if (this.getState() === State.ACTIVE) {
-      super.onOutOfBoundsAction(event);
-    }
+    if (this.getState() === State.ACTIVE) super.onOutOfBoundsAction(event);
   }
 
   private shouldActivate(): boolean {
-    //Handling dx
     const dx: number = this.getTranslationX();
 
     if (
@@ -440,7 +325,6 @@ class PanGestureHandler extends GestureHandler {
       return true;
     }
 
-    //Handling dy
     const dy: number = this.getTranslationY();
 
     if (
@@ -457,7 +341,6 @@ class PanGestureHandler extends GestureHandler {
       return true;
     }
 
-    //Handling squared distance
     const distanceSq: number = dx * dx + dy * dy;
 
     if (
@@ -467,7 +350,6 @@ class PanGestureHandler extends GestureHandler {
       return true;
     }
 
-    //Handling velocities
     const vx: number = this.velocityX;
 
     if (
@@ -550,6 +432,7 @@ class PanGestureHandler extends GestureHandler {
       this.velocityY = this.tracker.getVelocityY(event.pointerId);
     }
   }
+
   private checkBegan(event: GHEvent): void {
     if (this.getState() === State.BEGAN) {
       if (this.shouldFail()) this.fail(event);
@@ -559,22 +442,24 @@ class PanGestureHandler extends GestureHandler {
     }
   }
 
-  activate(event: GHEvent, force = false): void {
+  protected activate(event: GHEvent, force = false): void {
     if (this.currentState !== State.ACTIVE) {
       this.resetProgress();
     }
 
     super.activate(event, force);
   }
-  onCancel(): void {
-    // throw new Error('Method not implemented.');
-  }
-  onReset(): void {
-    // throw new Error('Method not implemented.');
-  }
-  resetProgress(): void {
+
+  protected resetProgress(): void {
     this.startX = this.lastX;
     this.startY = this.lastY;
+  }
+
+  onCancel(): void {
+    //
+  }
+  onReset(): void {
+    //
   }
 }
 

@@ -1,3 +1,4 @@
+import { GHEvent } from './EventManager';
 import GestureHandler from './GestureHandler';
 
 export default class TapGestureHandler extends GestureHandler {
@@ -26,16 +27,36 @@ export default class TapGestureHandler extends GestureHandler {
   private tapsSoFar = 0;
 
   constructor() {
+    super();
     this.setShouldCancelWhenOutside(true);
   }
 
-  resetProgress(): void {
-    throw new Error('Method not implemented.');
+  protected resetConfig(): void {
+    super.resetConfig();
+
+    this.maxDeltaX = Number.MIN_SAFE_INTEGER;
+    this.maxDeltaY = Number.MIN_SAFE_INTEGER;
+    this.maxDistSq = Number.MIN_SAFE_INTEGER;
+    this.maxDurationMs = this.DEFAULT_MAX_DURATION_MS;
+    this.maxDelayMs = this.DEFAULT_MAX_DELAY_MS;
+    this.numberOfTaps = this.DEFAULT_NUMBER_OF_TAPS;
+    this.minNumberOfPointers = this.DEFAULT_MIN_NUMBER_OF_POINTERS;
   }
+
+  setOnDownAction(event: GHEvent): void {
+    console.log('hoho');
+  }
+
+  activate(event: GHEvent, force: boolean): void {
+    super.activate(event, force);
+    this.end(event);
+  }
+
   onCancel(): void {
-    throw new Error('Method not implemented.');
+    //
   }
   onReset(): void {
-    throw new Error('Method not implemented.');
+    this.tapsSoFar = 0;
+    this.currentMaxNumberOfPointers = 0;
   }
 }
