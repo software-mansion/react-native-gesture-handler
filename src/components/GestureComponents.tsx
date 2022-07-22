@@ -28,16 +28,53 @@ import {
 
 import { toArray } from '../utils';
 
-export const ScrollView = createNativeWrapper<
-  PropsWithChildren<RNScrollViewProps>
->(RNScrollView, {
-  disallowInterruption: true,
-  shouldCancelWhenOutside: false,
+const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
+  RNScrollView,
+  {
+    disallowInterruption: true,
+    shouldCancelWhenOutside: false,
+  }
+);
+export const ScrollView = React.forwardRef<
+  RNScrollView,
+  RNScrollViewProps & NativeViewGestureHandlerProps
+>((props, ref) => {
+  const refreshControlGestureRef = React.useRef();
+  const { refreshControl, waitFor, ...rest } = props;
+
+  const refHandler = (node: any) => {
+    refreshControlGestureRef.current = node;
+
+    const { ref }: any = refreshControl;
+    if (ref !== null) {
+      if (typeof ref === 'function') {
+        ref(node);
+      } else {
+        ref.current = node;
+      }
+    }
+  };
+
+  return (
+    <GHScrollView
+      {...rest}
+      // @ts-ignore `ref` exists on `GHScrollView`
+      ref={ref}
+      waitFor={[...toArray(waitFor ? waitFor : []), refreshControlGestureRef]}
+      // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
+      refreshControl={
+        refreshControl
+          ? // @ts-ignore `ref` does indeed exist on the element we're cloning
+            React.cloneElement(refreshControl, { ref: refHandler })
+          : refreshControl
+      }
+    />
+  );
 });
 // backward type compatibility with https://github.com/software-mansion/react-native-gesture-handler/blob/db78d3ca7d48e8ba57482d3fe9b0a15aa79d9932/react-native-gesture-handler.d.ts#L440-L457
 // include methods of wrapped components by creating an intersection type with the RN component instead of duplicating them.
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type ScrollView = typeof ScrollView & RNScrollView;
+export type ScrollView = typeof GHScrollView & RNScrollView;
 
 export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,
