@@ -165,7 +165,8 @@ export function App() {
   );
 }
 
-export default Draggable;
+// export default Draggable;
+export default MultiTap;
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   return (

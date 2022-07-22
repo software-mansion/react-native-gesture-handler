@@ -93,9 +93,7 @@ abstract class GestureHandler {
   protected active = false;
   protected shouldResetProgress = false;
 
-  get name(): string {
-    return this.name;
-  }
+  abstract get name(): string;
 
   get id(): string {
     return `${this.name}${this.gestureInstance}`;
@@ -123,10 +121,10 @@ abstract class GestureHandler {
     this.pendingGestures[gesture.id] = gesture;
   }
 
-  clearSelfAsPending() {
+  protected clearSelfAsPending() {
     if (Array.isArray(this.config.waitFor)) {
       for (const gesture of this.config.waitFor) {
-        gesture.removePendingGesture(this.id);
+        gesture.removePendingGestures(this.id);
       }
     }
   }
@@ -166,6 +164,7 @@ abstract class GestureHandler {
       return;
     }
 
+    console.log(findNodeHandle(ref));
     this.view = (findNodeHandle(ref) as unknown) as HTMLElement;
     this.view.style['touchAction'] = 'none';
   }

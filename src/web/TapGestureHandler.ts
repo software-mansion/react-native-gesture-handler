@@ -31,6 +31,10 @@ export default class TapGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(true);
   }
 
+  get name(): string {
+    return 'tap';
+  }
+
   protected resetConfig(): void {
     super.resetConfig();
 
@@ -43,9 +47,9 @@ export default class TapGestureHandler extends GestureHandler {
     this.minNumberOfPointers = this.DEFAULT_MIN_NUMBER_OF_POINTERS;
   }
 
-  setOnDownAction(event: GHEvent): void {
-    console.log('hoho');
-  }
+  removePendingGestures(id: string): void {}
+
+  setOnDownAction(event: GHEvent): void {}
 
   activate(event: GHEvent, force: boolean): void {
     super.activate(event, force);

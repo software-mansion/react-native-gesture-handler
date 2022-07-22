@@ -1,9 +1,11 @@
 import { ActionType } from './ActionType';
-import PanGestureHandler from './web/PanGestureHandler';
 import NodeManager from './web/NodeManager';
+import PanGestureHandler from './web/PanGestureHandler';
+import TapGestureHandler from './web/TapGestureHandler';
 
 export const Gestures = {
   PanGestureHandler,
+  TapGestureHandler,
 };
 
 export default {

@@ -8,7 +8,6 @@ import {
   PanGestureHandlerGestureEvent,
   ScrollView,
   GestureHandlerRootView,
-  TapGestureHandler,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../../config';

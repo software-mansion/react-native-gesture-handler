@@ -38,20 +38,20 @@ export class PressBox extends Component<PressBoxProps> {
   };
   render() {
     return (
-      <LongPressGestureHandler
-        onHandlerStateChange={this.onHandlerStateChange}
-        minDurationMs={800}>
-        <TapGestureHandler
-          onHandlerStateChange={this.onSingleTap}
-          waitFor={this.doubleTapRef}>
-          <TapGestureHandler
-            ref={this.doubleTapRef}
-            onHandlerStateChange={this.onDoubleTap}
-            numberOfTaps={2}>
-            <View style={styles.box} />
-          </TapGestureHandler>
-        </TapGestureHandler>
-      </LongPressGestureHandler>
+      // <LongPressGestureHandler
+      //   onHandlerStateChange={this.onHandlerStateChange}
+      //   minDurationMs={800}>
+      // <TapGestureHandler
+      //   onHandlerStateChange={this.onSingleTap}
+      //   waitFor={this.doubleTapRef}>
+      <TapGestureHandler
+        ref={this.doubleTapRef}
+        onHandlerStateChange={this.onDoubleTap}
+        numberOfTaps={2}>
+        <View style={styles.box} />
+      </TapGestureHandler>
+      // </TapGestureHandler>
+      // </LongPressGestureHandler>
     );
   }
 }

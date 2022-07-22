@@ -68,6 +68,11 @@ class PanGestureHandler extends GestureHandler {
     super.init(ref, propsRef);
   }
   //
+
+  get name(): string {
+    return 'pan';
+  }
+
   updateGestureConfig({ ...props }): void {
     super.updateGestureConfig({ enabled: true, ...props });
 
