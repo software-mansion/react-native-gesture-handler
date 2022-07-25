@@ -28,6 +28,13 @@ import {
 
 import { toArray } from '../utils';
 
+export const RefreshControl = createNativeWrapper(RNRefreshControl, {
+  disallowInterruption: true,
+  shouldCancelWhenOutside: false,
+});
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type RefreshControl = typeof RefreshControl & RNRefreshControl;
+
 const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
   RNScrollView,
   {
@@ -39,21 +46,8 @@ export const ScrollView = React.forwardRef<
   RNScrollView,
   RNScrollViewProps & NativeViewGestureHandlerProps
 >((props, ref) => {
-  const refreshControlGestureRef = React.useRef();
+  const refreshControlGestureRef = React.useRef<any>();
   const { refreshControl, waitFor, ...rest } = props;
-
-  const refHandler = (node: any) => {
-    refreshControlGestureRef.current = node;
-
-    const { ref }: any = refreshControl;
-    if (ref !== null) {
-      if (typeof ref === 'function') {
-        ref(node);
-      } else {
-        ref.current = node;
-      }
-    }
-  };
 
   return (
     <GHScrollView
@@ -63,10 +57,14 @@ export const ScrollView = React.forwardRef<
       waitFor={[...toArray(waitFor ? waitFor : []), refreshControlGestureRef]}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
-        refreshControl
-          ? // @ts-ignore `ref` does indeed exist on the element we're cloning
-            React.cloneElement(refreshControl, { ref: refHandler })
-          : refreshControl
+        refreshControl ? (
+          <RefreshControl
+            {...refreshControl.props}
+            ref={refreshControlGestureRef}
+          />
+        ) : (
+          refreshControl
+        )
       }
     />
   );
@@ -95,15 +93,8 @@ export const DrawerLayoutAndroid = createNativeWrapper<
 export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
   RNDrawerLayoutAndroid;
 
-export const RefreshControl = createNativeWrapper(RNRefreshControl, {
-  disallowInterruption: true,
-  shouldCancelWhenOutside: false,
-});
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type RefreshControl = typeof RefreshControl & RNRefreshControl;
-
 export const FlatList = React.forwardRef((props, ref) => {
-  const refreshControlGestureRef = React.useRef();
+  const refreshControlGestureRef = React.useRef<any>();
 
   const { waitFor, refreshControl, ...rest } = props;
 
@@ -121,19 +112,6 @@ export const FlatList = React.forwardRef((props, ref) => {
       flatListProps[propName] = value;
     }
   }
-
-  const refHandler = (node: any) => {
-    refreshControlGestureRef.current = node;
-
-    const { ref }: any = refreshControl;
-    if (ref !== null) {
-      if (typeof ref === 'function') {
-        ref(node);
-      } else {
-        ref.current = node;
-      }
-    }
-  };
 
   return (
     // @ts-ignore - this function cannot have generic type so we have to ignore this error
@@ -154,10 +132,14 @@ export const FlatList = React.forwardRef((props, ref) => {
       )}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
-        refreshControl
-          ? // @ts-ignore `ref` does indeed exist on the element we're cloning
-            React.cloneElement(refreshControl, { ref: refHandler })
-          : refreshControl
+        refreshControl ? (
+          <RefreshControl
+            {...refreshControl.props}
+            ref={refreshControlGestureRef}
+          />
+        ) : (
+          refreshControl
+        )
       }
     />
   );
