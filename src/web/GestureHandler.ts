@@ -58,7 +58,7 @@ interface NativeEvent extends Record<string, any> {
   oldState?: State;
 }
 
-interface ResultEvent extends Record<string, any> {
+export interface ResultEvent extends Record<string, any> {
   nativeEvent: NativeEvent;
   timeStamp: number;
 }
@@ -282,10 +282,12 @@ abstract class GestureHandler {
     //Reset logic
   }
 
+  //State logic
+
   public moveToState(newState: State, event: GHEvent) {
     if (this.currentState === newState) return;
 
-    // console.log(`${this.currentState} -> ${newState}`);
+    console.log(`${this.currentState} -> ${newState}`);
 
     if (
       this.tracker.getTrackedPointersNumber() > 0 &&
@@ -332,9 +334,9 @@ abstract class GestureHandler {
 
   public cancel(event: GHEvent): void {
     if (
-      (this.currentState === State.ACTIVE,
+      this.currentState === State.ACTIVE ||
       this.currentState === State.UNDETERMINED ||
-        this.currentState === State.BEGAN)
+      this.currentState === State.BEGAN
     ) {
       this.onCancel();
       this.moveToState(State.CANCELLED, event);
@@ -385,6 +387,8 @@ abstract class GestureHandler {
   public setActivationIndex(value: number): void {
     this.activationIndex = value;
   }
+
+  //Event actions
   protected onDownAction(_event: GHEvent): void {
     //
   }
@@ -399,14 +403,7 @@ abstract class GestureHandler {
     //
   }
   protected onMoveAction(event: GHEvent): void {
-    if (this.getState() === State.ACTIVE) {
-      GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
-        this,
-        this.getState(),
-        this.getState(),
-        event
-      );
-    }
+    this.pointerMove(event, false);
   }
   protected onOutAction(_event: GHEvent): void {
     //
@@ -418,13 +415,16 @@ abstract class GestureHandler {
     //
   }
   protected onOutOfBoundsAction(event: GHEvent): void {
-    if (!this.shouldCancellWhenOutside && this.getState() === State.ACTIVE) {
-      GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
-        this,
-        this.getState(),
-        this.getState(),
-        event
-      );
+    this.pointerMove(event, true);
+  }
+  private pointerMove(event: GHEvent, out: boolean): void {
+    const state = this.getState();
+
+    if (
+      state === State.ACTIVE &&
+      (!out || (out && !this.shouldCancellWhenOutside))
+    ) {
+      this.sendEvent(event, state, state);
     }
   }
 
@@ -450,16 +450,16 @@ abstract class GestureHandler {
       onGestureHandlerStateChange,
     } = this.propsRef.current;
 
-    const _event: ResultEvent = this.transformEventData(
+    const resultEvent: ResultEvent = this.transformEventData(
       event,
       newState,
       oldState
     );
 
-    invokeNullableMethod(onGestureHandlerEvent, _event);
+    invokeNullableMethod(onGestureHandlerEvent, resultEvent);
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
-      invokeNullableMethod(onGestureHandlerStateChange, _event);
+      invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
   };
 

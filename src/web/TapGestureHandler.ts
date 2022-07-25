@@ -30,7 +30,8 @@ export default class TapGestureHandler extends GestureHandler {
 
   private tapsSoFar = 0;
 
-  public init(_ref: number, _propsRef: any): void {
+  public init(ref: number, propsRef: any): void {
+    super.init(ref, propsRef);
     this.setShouldCancelWhenOutside(true);
   }
 
