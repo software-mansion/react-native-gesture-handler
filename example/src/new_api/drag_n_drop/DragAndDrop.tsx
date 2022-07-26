@@ -12,6 +12,7 @@ import {
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import {
+  runOnJS,
   useSharedValue,
   withSpring,
   withTiming,
@@ -200,10 +201,16 @@ function DragAndDrop<T extends { id: string }>({
         /* empty handler */
       };
 
-  const dragGesture = Gesture.Pan().onUpdate(onUpdateHandler).onEnd(onDragEnd);
+  const dragGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      runOnJS(onUpdateHandler)(e);
+    })
+    .onEnd(() => {
+      runOnJS(onDragEnd)();
+    });
   const tapEndedGesture = Gesture.Tap().onEnd((_, isFinished) => {
     if (isFinished) {
-      updateDataOnEnd();
+      runOnJS(updateDataOnEnd)();
     }
   });
 
