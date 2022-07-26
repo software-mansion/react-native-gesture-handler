@@ -13,14 +13,21 @@ export default class InteractionManager {
     handler.setInteractionManager(this);
 
     if (config.waitFor) {
-      this.waitForRelations.set(handler.getTag(), config.waitFor);
+      const waitFor: number[] = [];
+      config.waitFor.forEach((handler) => {
+        waitFor.push(handler.handlerTag);
+      });
+
+      this.waitForRelations.set(handler.getTag(), waitFor);
     }
 
     if (config.simultaneousHandlers) {
-      this.simultaneousRelations.set(
-        handler.getTag(),
-        config.simultaneousHandlers
-      );
+      const simultaneousHandlers: number[] = [];
+      config.simultaneousHandlers.forEach((handler) => {
+        simultaneousHandlers.push(handler.handlerTag);
+      });
+
+      this.simultaneousRelations.set(handler.getTag(), simultaneousHandlers);
     }
   }
 
@@ -28,18 +35,32 @@ export default class InteractionManager {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    this.waitForRelations.get(handler.getTag())!.forEach((tag: number) => {
-      if (tag === otherHandler.getTag()) return true;
-    });
+    const waitFor = this.waitForRelations.get(handler.getTag());
+    let ans = false;
 
+    if (waitFor) {
+      waitFor.forEach((tag: number) => {
+        if (tag === otherHandler.getTag()) {
+          ans = true;
+          return;
+        }
+      });
+    }
+
+    return ans;
+  }
+
+  public shouldRequireHandlerToWaitForFailure(
+    _handler: GestureHandler,
+    _otherHandler: GestureHandler
+  ): boolean {
     return false;
   }
 
-  public shouldRequireHandlerToWaitForFailure(): boolean {
-    return false;
-  }
-
-  public shouldHandlerBeCancelledBy(): boolean {
+  public shouldHandlerBeCancelledBy(
+    _handler: GestureHandler,
+    _otherHandler: GestureHandler
+  ): boolean {
     return false;
   }
 

@@ -1,6 +1,7 @@
 import { State } from '../State';
 import { EventTypes, GHEvent } from './EventManager';
 import GestureHandler from './GestureHandler';
+import GestureHandlerOrchestrator from './GestureHandlerOrchestrator';
 
 export default class TapGestureHandler extends GestureHandler {
   readonly DEFAULT_MAX_DURATION_MS = 500;
@@ -40,10 +41,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   public updateGestureConfig({ ...props }): void {
-    console.log(this.interactionManager);
     super.updateGestureConfig({ enabled: true, ...props });
-    console.log(this.config);
-    console.log(this.id);
 
     for (const key in this.config) {
       if (
@@ -84,8 +82,6 @@ export default class TapGestureHandler extends GestureHandler {
     if (this.config.minPointers || this.config.minPointers === 0) {
       this.minNumberOfPointers = this.config.minPointers as number;
     }
-
-    console.log(this.config.waitFor);
   }
 
   protected resetConfig(): void {
@@ -128,6 +124,10 @@ export default class TapGestureHandler extends GestureHandler {
   protected onDownAction(event: GHEvent): void {
     super.onDownAction(event);
     this.tracker.addToTracker(event);
+
+    if (this.tracker.getTrackedPointersNumber() >= this.minNumberOfPointers) {
+      GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
+    }
 
     this.checkUndetermined(event);
 
@@ -177,10 +177,10 @@ export default class TapGestureHandler extends GestureHandler {
     this.startY = this.lastY;
   }
 
-  protected onEnterAction(event: GHEvent): void {
+  protected onEnterAction(_event: GHEvent): void {
     //
   }
-  protected onOutAction(event: GHEvent): void {
+  protected onOutAction(_event: GHEvent): void {
     //
   }
   protected onMoveAction(event: GHEvent): void {
@@ -205,7 +205,6 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   private commonAction(event: GHEvent): void {
-    // console.log(this.tapsSoFar);
     if (
       this.currentMaxNumberOfPointers < this.tracker.getTrackedPointersNumber()
     ) {

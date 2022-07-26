@@ -66,20 +66,17 @@ export interface ResultEvent extends Record<string, any> {
 let gestureInstances = 0;
 
 abstract class GestureHandler {
-  private handlerTag: number;
+  private handlerTag!: number;
   // public isGestureRunning = false;
   public view: HTMLElement | null = null;
   protected hasCustomActivationCriteria: boolean;
   protected eventManager: EventManager | null = null;
   // protected hasGestureFailed = false;
   // protected initialRotation: number | null = null;
-  // protected __initialX: any;
-  // protected __initialY: any;
+
   protected config: Config = {};
   protected enabled = false;
-  // protected previousState: State = State.UNDETERMINED;
   private pendingGestures: Record<string, this> = {};
-  // private oldState: State = State.UNDETERMINED;
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
   private gestureInstance: number;
@@ -89,7 +86,7 @@ abstract class GestureHandler {
   private ref: any;
   private shouldCancellWhenOutside = false;
 
-  protected interactionManager: InteractionManager;
+  protected interactionManager!: InteractionManager;
 
   //Orchestrator properties
   protected activationIndex = 0;
@@ -175,7 +172,6 @@ abstract class GestureHandler {
       return;
     }
 
-    console.log(findNodeHandle(ref));
     this.view = (findNodeHandle(ref) as unknown) as HTMLElement;
     this.view.style['touchAction'] = 'none';
   }
@@ -286,8 +282,7 @@ abstract class GestureHandler {
 
   public moveToState(newState: State, event: GHEvent) {
     if (this.currentState === newState) return;
-
-    console.log(`${this.currentState} -> ${newState}`);
+    // console.log(`${this.currentState} -> ${newState}`);
 
     if (
       this.tracker.getTrackedPointersNumber() > 0 &&
@@ -311,8 +306,12 @@ abstract class GestureHandler {
     );
 
     this.onStateChange(newState, oldState);
-    // console.log(this.getState());
-    if (newState === State.END || newState === State.FAILED) {
+
+    if (
+      newState === State.END ||
+      newState === State.FAILED ||
+      newState === State.CANCELLED
+    ) {
       this.currentState = State.UNDETERMINED;
     }
   }
@@ -343,7 +342,7 @@ abstract class GestureHandler {
     }
   }
 
-  protected activate(event: GHEvent, force = false) {
+  protected activate(event: GHEvent, _force = false) {
     if (
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
@@ -386,6 +385,14 @@ abstract class GestureHandler {
   }
   public setActivationIndex(value: number): void {
     this.activationIndex = value;
+  }
+
+  public getTracker(): Tracker {
+    return this.tracker;
+  }
+
+  public getTrackedPointers(): number[] {
+    return this.tracker.getTrackedPointers();
   }
 
   //Event actions
@@ -437,7 +444,22 @@ abstract class GestureHandler {
   public shouldRequireToWaitForFailure(handler: GestureHandler): boolean {
     if (handler === this) return false;
 
-    return this.interactionManager.shouldRequireHandlerToWaitForFailure();
+    return this.interactionManager.shouldRequireHandlerToWaitForFailure(
+      this,
+      handler
+    );
+  }
+
+  public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
+    if (handler === this) return true;
+
+    return this.interactionManager.shouldRecognizeSimultaneously(this, handler);
+  }
+
+  public shouldBeCancelledByOther(handler: GestureHandler): boolean {
+    if (handler === this) return false;
+
+    return this.interactionManager.shouldHandlerBeCancelledBy(this, handler);
   }
 
   public sendEvent = (
@@ -471,7 +493,8 @@ abstract class GestureHandler {
     return {
       nativeEvent: {
         numberOfPointers: this.tracker.getTrackedPointersNumber(),
-        state: this.getState(),
+        // state: this.getState(),
+        state: newState,
         pointerInside: this.eventManager?.isPointerInBounds({
           x: event.x,
           y: event.y,

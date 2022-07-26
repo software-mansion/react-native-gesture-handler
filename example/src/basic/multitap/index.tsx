@@ -29,11 +29,13 @@ export class PressBox extends Component<PressBoxProps> {
   private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm touched");
+      window.alert(`I'm touched`);
     }
   };
   private onDoubleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert('Double tap, good job!');
+      window.alert('Double tap, good job!');
     }
   };
   render() {

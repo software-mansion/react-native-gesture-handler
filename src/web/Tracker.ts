@@ -80,8 +80,25 @@ class Tracker {
   public getTrackedPointersNumber(): number {
     return this.trackedPointers.size;
   }
+  public getTrackedPointers(): number[] {
+    const keys: number[] = [];
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for (const [key, value] of this.trackedPointers) {
+      keys.push(key);
+    }
+
+    return keys;
+  }
+
   public resetTracker(): void {
     this.trackedPointers.clear();
+  }
+  public static shareCommonPointers(
+    stPointers: number[],
+    ndPointers: number[]
+  ): boolean {
+    return stPointers.some((pointerId) => ndPointers.includes(pointerId));
   }
 }
 
