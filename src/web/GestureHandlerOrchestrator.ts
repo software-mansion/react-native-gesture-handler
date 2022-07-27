@@ -85,7 +85,6 @@ export default class GestureHandlerOrchestrator {
       this.addAwaitingHandler(handler);
     } else {
       this.makeActive(handler, event);
-      handler.setAwaiting(false);
     }
   }
 
@@ -111,7 +110,9 @@ export default class GestureHandlerOrchestrator {
   ): void {
     this.handlingChangeSemaphore += 1;
 
-    console.log(handler.id, `${oldState} -> ${newState}`);
+    // console.log(this.gestureHandlers);
+
+    // console.log(handler.id, `${oldState} -> ${newState}`);
 
     if (this.isFinished(newState)) {
       this.awaitingHandlers.forEach((otherHandler) => {
@@ -155,7 +156,6 @@ export default class GestureHandlerOrchestrator {
   private makeActive(handler: GestureHandler, event: GHEvent): void {
     const currentState = handler.getState();
 
-    handler.setAwaiting(false);
     handler.setActive(true);
     handler.setShouldResetProgress(true);
     handler.setActivationIndex(this.activationIndex++);
@@ -163,6 +163,7 @@ export default class GestureHandlerOrchestrator {
     this.gestureHandlers.forEach((otherHandler) => {
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
         this.handlersToCancel.push(otherHandler);
+        // console.log(this.handlersToCancel, otherHandler.id);
       }
     });
 
@@ -188,9 +189,12 @@ export default class GestureHandlerOrchestrator {
       }
     }
 
-    // if (handler.id.indexOf('tap') >= 0) {
-    //   handler.end(event);
-    // }
+    if (handler.isAwaiting()) {
+      handler.setAwaiting(false);
+      handler.end(event);
+    }
+
+    this.handlersToCancel = [];
   }
 
   private cancellAll(event: GHEvent): void {
@@ -258,22 +262,46 @@ export default class GestureHandlerOrchestrator {
     gh1: GestureHandler,
     gh2: GestureHandler
   ): boolean {
-    return gh1 === gh2;
+    return (
+      gh1 === gh2 ||
+      gh1.shouldRecognizeSimultaneously(gh2) ||
+      gh2.shouldRecognizeSimultaneously(gh1)
+    );
   }
 
   private shouldHandlerBeCancelledBy(
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
+    const handlerPointerHistory: number[] | null = handler.getPointersHistory();
+    const otherPointerHistory:
+      | number[]
+      | null = otherHandler.getPointersHistory();
+
     if (
-      !Tracker.shareCommonPointers(
-        handler.getTrackedPointers(),
-        otherHandler.getTrackedPointers()
-      )
+      handlerPointerHistory &&
+      otherPointerHistory &&
+      !Tracker.shareCommonPointers(handlerPointerHistory, otherPointerHistory)
     ) {
+      handler.clearPointerHistory();
+      otherHandler.clearPointerHistory();
       return false;
     }
+    // if (
+    //   !Tracker.shareCommonPointers(
+    //     handler.getTrackedPointers(),
+    //     otherHandler.getTrackedPointers()
+    //   )
+    // ) {
+    //   console.log(
+    //     handler.getTrackedPointers(),
+    //     otherHandler.getTrackedPointers()
+    //   );
+    //   console.log('st');
+    //   return false;
+    // }
 
+    ///
     if (this.canRunSimultaneously(handler, otherHandler)) {
       return false;
     }
@@ -284,7 +312,6 @@ export default class GestureHandlerOrchestrator {
     ) {
       return handler.shouldBeCancelledByOther(otherHandler);
     }
-
     return true;
   }
 

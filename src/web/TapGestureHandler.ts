@@ -29,10 +29,13 @@ export default class TapGestureHandler extends GestureHandler {
   private waitTimeout: number | undefined;
   private delayTimeout: number | undefined;
 
+  private pointersHistory: number[] = [];
+
   private tapsSoFar = 0;
 
   public init(ref: number, propsRef: any): void {
     super.init(ref, propsRef);
+    console.log(this.id, this.config.simultaneousHandlers);
     this.setShouldCancelWhenOutside(true);
   }
 
@@ -152,6 +155,8 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   protected onUpAction(event: GHEvent): void {
+    this.pointersHistory.push(event.pointerId);
+
     if (this.tracker.getTrackedPointersNumber() > 1) {
       this.tracker.removeFromTracker(event.pointerId);
 
@@ -160,9 +165,9 @@ export default class TapGestureHandler extends GestureHandler {
     } else {
       this.lastX = this.tracker.getLastAvgX();
       this.lastY = this.tracker.getLastAvgY();
-    }
 
-    this.tracker.removeFromTracker(event.pointerId);
+      this.tracker.removeFromTracker(event.pointerId);
+    }
 
     this.commonAction(event);
   }
@@ -269,23 +274,31 @@ export default class TapGestureHandler extends GestureHandler {
     return this.maxDistSq !== Number.MIN_SAFE_INTEGER && dist > this.maxDistSq;
   }
 
-  protected resetProgress(): void {
-    this.onReset();
-  }
-
   protected activate(event: GHEvent): void {
     super.activate(event);
-    console.log(this.awaiting);
-    this.end(event);
-    if (!this.awaiting) {
-      console.log(this.id);
+
+    if (!this.isAwaiting()) {
       this.end(event);
     }
   }
 
+  public getPointersHistory(): number[] | null {
+    return this.pointersHistory;
+  }
+
+  public clearPointerHistory(): void {
+    this.pointersHistory = [];
+  }
+
   protected onCancel(): void {
+    this.resetProgress();
+    this.clearTimeouts();
     //
   }
+  protected resetProgress(): void {
+    this.onReset();
+  }
+
   protected onReset(): void {
     this.tapsSoFar = 0;
     this.currentMaxNumberOfPointers = 0;

@@ -27,10 +27,14 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(true);
   }
 
+  protected transformNativeEvent(_event: GHEvent): any {
+    return {
+      duration: Date.now() - this.startTime,
+    };
+  }
+
   public updateGestureConfig({ ...props }): void {
     super.updateGestureConfig({ enabled: true, ...props });
-
-    console.log(this.config);
 
     for (const key in this.config) {
       if (

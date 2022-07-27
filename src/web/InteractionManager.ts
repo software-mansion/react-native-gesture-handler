@@ -35,17 +35,19 @@ export default class InteractionManager {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const waitFor = this.waitForRelations.get(handler.getTag());
+    const waitFor: number[] | undefined = this.waitForRelations.get(
+      handler.getTag()
+    );
     let ans = false;
 
-    if (waitFor) {
-      waitFor.forEach((tag: number) => {
-        if (tag === otherHandler.getTag()) {
-          ans = true;
-          return;
-        }
-      });
-    }
+    if (!waitFor) return false;
+
+    waitFor.forEach((tag: number) => {
+      if (tag === otherHandler.getTag()) {
+        ans = true;
+        return;
+      }
+    });
 
     return ans;
   }
@@ -68,11 +70,27 @@ export default class InteractionManager {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    this.simultaneousRelations.get(handler.getTag())!.forEach((tag) => {
-      if (tag === otherHandler.getTag()) return true;
+    const simultaneousHandlers:
+      | number[]
+      | undefined = this.simultaneousRelations.get(handler.getTag());
+    let ans = false;
+
+    if (!simultaneousHandlers) return false;
+
+    simultaneousHandlers.forEach((tag: number) => {
+      if (tag === otherHandler.getTag()) {
+        ans = true;
+        return;
+      }
     });
 
-    return false;
+    return ans;
+
+    // this.simultaneousRelations.get(handler.getTag())!.forEach((tag) => {
+    //   if (tag === otherHandler.getTag()) return true;
+    // });
+
+    // return false;
   }
 
   public reset() {

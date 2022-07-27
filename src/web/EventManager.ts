@@ -47,7 +47,6 @@ class EventManager {
     // this.view.oncontextmenu = () => false;
     //
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
-      event.preventDefault();
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.DOWN);
 
       this.view.setPointerCapture(ghEvent.pointerId);
@@ -56,7 +55,6 @@ class EventManager {
     });
 
     this.view.addEventListener('pointerup', (event: PointerEvent): void => {
-      event.preventDefault();
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.UP);
 
       this.onUpAction(ghEvent);

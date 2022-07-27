@@ -93,7 +93,6 @@ abstract class GestureHandler {
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
-  protected locked = false;
 
   abstract get name(): string;
 
@@ -396,6 +395,13 @@ abstract class GestureHandler {
     return this.tracker.getTrackedPointers();
   }
 
+  //Pointers history for TapGestureHandler
+  public getPointersHistory(): number[] | null {
+    return null;
+  }
+  public clearPointerHistory(): void {
+    //
+  }
   //Event actions
   protected onDownAction(_event: GHEvent): void {
     //

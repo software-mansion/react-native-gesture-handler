@@ -49,7 +49,7 @@ class PanGestureHandler extends GestureHandler {
   private minVelocityY = Number.MAX_SAFE_INTEGER;
   private minVelocitySq = Number.MAX_SAFE_INTEGER;
 
-  private minPointers = 3;
+  private minPointers = 1;
   private maxPointers = 10;
 
   private startX = 0;
