@@ -42,6 +42,12 @@ export default class GestureHandlerOrchestrator {
 
   //   return handlers.length;
   // }
+  private cleanHandler(handler: GestureHandler): void {
+    handler.reset();
+    handler.setActive(false);
+    handler.setAwaiting(false);
+    handler.setActivationIndex(Number.MAX_VALUE);
+  }
 
   private cleanupFinishedHandlers(): void {
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
@@ -51,10 +57,7 @@ export default class GestureHandlerOrchestrator {
       if (this.isFinished(handler.getState()) && handler.isAwaiting()) {
         this.gestureHandlers.splice(i, 1);
 
-        handler.reset();
-        handler.setActive(false);
-        handler.setAwaiting(false);
-        handler.setActivationIndex(Number.MAX_VALUE);
+        this.cleanHandler(handler);
       }
     }
 
@@ -86,13 +89,17 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  private cleanupAwaitingHandlers(): void {
-    // for (let i = 0; i < this.awaitingHandlers.length; ++i) {
-    //   if (this.awaitingHandlers[i].isAwaiting()) {
-    //     this.awaitingHandlers.splice(i, 1);
-    //   }
-    // }
-    this.awaitingHandlers = [];
+  private cleanupAwaitingHandlers(handler: GestureHandler): void {
+    for (let i = 0; i < this.awaitingHandlers.length; ++i) {
+      if (
+        !this.awaitingHandlers[i].isAwaiting() &&
+        this.shouldHandlerWaitForOther(this.awaitingHandlers[i], handler)
+      ) {
+        this.cleanHandler(this.awaitingHandlers[i]);
+        this.awaitingHandlers.splice(i, 1);
+      }
+    }
+    // this.awaitingHandlers = [];
   }
 
   //
@@ -103,6 +110,8 @@ export default class GestureHandlerOrchestrator {
     event: GHEvent
   ): void {
     this.handlingChangeSemaphore += 1;
+
+    console.log(handler.id, `${oldState} -> ${newState}`);
 
     if (this.isFinished(newState)) {
       this.awaitingHandlers.forEach((otherHandler) => {
@@ -115,6 +124,8 @@ export default class GestureHandlerOrchestrator {
           }
         }
       });
+
+      // this.cleanupAwaitingHandlers(handler);
     }
 
     if (newState === State.ACTIVE) {
@@ -137,7 +148,7 @@ export default class GestureHandlerOrchestrator {
     this.scheduleFinishedHandlersCleanup();
 
     if (this.awaitingHandlers.indexOf(handler) < 0) {
-      this.cleanupAwaitingHandlers();
+      this.cleanupAwaitingHandlers(handler);
     }
   }
 
@@ -166,7 +177,7 @@ export default class GestureHandlerOrchestrator {
       }
     });
 
-    this.cleanupAwaitingHandlers();
+    // this.cleanupAwaitingHandlers();
 
     handler.sendEvent(event, State.ACTIVE, State.BEGAN);
 

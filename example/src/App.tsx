@@ -8,6 +8,7 @@ import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import {
   GestureHandlerRootView,
   RectButton,
+  gestureHandlerRootHOC,
 } from 'react-native-gesture-handler';
 import OverflowParent from './release_tests/overflowParent';
 import DoublePinchRotate from './release_tests/doubleScalePinchAndRotate';
@@ -166,7 +167,7 @@ export function App() {
 }
 
 // export default Draggable;
-export default MultiTap;
+export default gestureHandlerRootHOC(MultiTap);
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   return (

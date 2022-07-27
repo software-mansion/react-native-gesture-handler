@@ -3,10 +3,12 @@ import InteractionManager from './web/InteractionManager';
 import NodeManager from './web/NodeManager';
 import PanGestureHandler from './web/PanGestureHandler';
 import TapGestureHandler from './web/TapGestureHandler';
+import LongPressGestureHandler from './web/LongPressGestureHandler';
 
 export const Gestures = {
   PanGestureHandler,
   TapGestureHandler,
+  LongPressGestureHandler,
 };
 
 const interactionManager = new InteractionManager();

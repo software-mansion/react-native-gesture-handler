@@ -275,7 +275,12 @@ export default class TapGestureHandler extends GestureHandler {
 
   protected activate(event: GHEvent): void {
     super.activate(event);
+    console.log(this.awaiting);
     this.end(event);
+    if (!this.awaiting) {
+      console.log(this.id);
+      this.end(event);
+    }
   }
 
   protected onCancel(): void {

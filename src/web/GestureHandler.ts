@@ -81,7 +81,7 @@ abstract class GestureHandler {
   protected currentState: State = State.UNDETERMINED;
   private gestureInstance: number;
   protected tracker: Tracker = new Tracker();
-  // private _stillWaiting: any;
+
   private propsRef: any;
   private ref: any;
   private shouldCancellWhenOutside = false;
@@ -93,6 +93,7 @@ abstract class GestureHandler {
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
+  protected locked = false;
 
   abstract get name(): string;
 
