@@ -721,7 +721,7 @@ PODS:
     - React-logger (= 0.69.0)
     - React-perflogger (= 0.69.0)
   - RNGestureHandler (2.5.0):
-    - RCT-Folly (= 2021.06.28.00-v2)
+    - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
     - React
@@ -729,7 +729,7 @@ PODS:
     - React-RCTFabric
     - ReactCommon/turbomodule/core
   - RNScreens (3.13.1):
-    - RCT-Folly (= 2021.06.28.00-v2)
+    - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
     - React
@@ -738,7 +738,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - RNScreens/common (= 3.13.1)
   - RNScreens/common (3.13.1):
-    - RCT-Folly (= 2021.06.28.00-v2)
+    - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
     - React
@@ -925,7 +925,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
+  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   FBLazyVector: f98dec9f199b7b51db586fe0140f509fabd5cc54
   FBReactNativeSpec: a18ce612cc55071c8b5fc186125e60d993e749bc
   Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
@@ -938,11 +938,11 @@ SPEC CHECKSUMS:
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
+  glog: 476ee3e89abb49e07f822b48323c51c57124b572
   hermes-engine: 03851318b18b534b671ea435fad2202154135c72
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
+  RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
   RCTRequired: eff60a46da0f496a6c76c8f60108c20626860d27
   RCTTypeSafety: 8cc8a45d0e2f93f1b42b5b2bbf23c4143f19935a
   React: 8a8fc19196a41141ecb5bde33c97091cdc25ccd8
@@ -974,8 +974,8 @@ SPEC CHECKSUMS:
   React-rncore: 0a5131510415ca520866410f3504832de3d6f753
   React-runtimeexecutor: 7ad268dee53d001697e13264c6bc8e95a902352e
   ReactCommon: 74a3b8ee497c6d50ce86ef57e15c4c5bf654b83d
-  RNGestureHandler: 28c0a447ceb87b96c4045c2f786f67958837f320
-  RNScreens: 592316e0744de3b640e90c335a45aad13088381a
+  RNGestureHandler: c2c12e610e4d94ea917bbd31801974edcee4dd94
+  RNScreens: 71cee3b50648a986acd9d0e4ac9c8f20f1aedbf7
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 4935173923cabaa830e195be3e8e4cac045a8f90
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
