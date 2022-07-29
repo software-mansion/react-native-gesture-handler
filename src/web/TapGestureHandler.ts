@@ -35,7 +35,6 @@ export default class TapGestureHandler extends GestureHandler {
 
   public init(ref: number, propsRef: any): void {
     super.init(ref, propsRef);
-    console.log(this.id, this.config.simultaneousHandlers);
     this.setShouldCancelWhenOutside(true);
   }
 

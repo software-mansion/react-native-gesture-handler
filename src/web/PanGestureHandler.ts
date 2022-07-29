@@ -1,5 +1,6 @@
 import { PixelRatio } from 'react-native';
 import { State } from '../State';
+import { DEFAULT_TOUCH_SLOP } from './constants';
 import { EventTypes, GHEvent } from './EventManager';
 import GestureHandler from './GestureHandler';
 
@@ -22,7 +23,6 @@ import GestureHandler from './GestureHandler';
 //   failOffsetYEnd?: number;
 // }
 class PanGestureHandler extends GestureHandler {
-  readonly DEFAULT_TOUCH_SLOP = 15;
   readonly DEFAULT_MIN_POINTERS = 1;
   readonly DEFAULT_MAX_POINTERS = 1;
 
@@ -30,8 +30,7 @@ class PanGestureHandler extends GestureHandler {
   public velocityX = 0;
   public velocityY = 0;
 
-  private defaultMinDistSq: number =
-    this.DEFAULT_TOUCH_SLOP * this.DEFAULT_TOUCH_SLOP;
+  private defaultMinDistSq: number = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
   private minDistSq = this.defaultMinDistSq;
 
@@ -100,6 +99,10 @@ class PanGestureHandler extends GestureHandler {
 
     if (this.config.minVelocity) {
       //
+    }
+
+    if (this.config.shouldCancelWhenOutside) {
+      this.setShouldCancelWhenOutside(true);
     }
 
     if (
@@ -276,6 +279,7 @@ class PanGestureHandler extends GestureHandler {
   }
 
   protected onMoveAction(event: GHEvent): void {
+    console.log('Move', Date.now());
     this.tracker.track(event);
 
     this.lastX = this.tracker.getLastAvgX();
@@ -290,6 +294,7 @@ class PanGestureHandler extends GestureHandler {
     super.onOutAction(event);
   }
   protected onEnterAction(event: GHEvent): void {
+    console.log('enter', Date.now());
     super.onEnterAction(event);
   }
   protected onCancelAction(event: GHEvent): void {
@@ -299,6 +304,8 @@ class PanGestureHandler extends GestureHandler {
     this.fail(event);
   }
   protected onOutOfBoundsAction(event: GHEvent): void {
+    if (this.getShouldCancelWhenOutside()) return;
+
     this.tracker.track(event);
 
     this.lastX = this.tracker.getLastAvgX();
@@ -453,6 +460,8 @@ class PanGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
+    if (this.getState() === State.ACTIVE) return;
+
     this.startX = this.lastX;
     this.startY = this.lastY;
   }

@@ -174,6 +174,9 @@ abstract class GestureHandler {
 
     this.view = (findNodeHandle(ref) as unknown) as HTMLElement;
     this.view.style['touchAction'] = 'none';
+    this.view.style['webkitUserSelect'] = 'none';
+    this.view.style['userSelect'] = 'none';
+    this.view.style['WebkitTouchCallout'] = 'none';
   }
 
   private setEventManager(): void {
@@ -256,6 +259,9 @@ abstract class GestureHandler {
 
   protected setShouldCancelWhenOutside(flag: boolean) {
     this.shouldCancellWhenOutside = flag;
+  }
+  protected getShouldCancelWhenOutside(): boolean {
+    return this.shouldCancellWhenOutside;
   }
 
   //Handling states changes
@@ -352,8 +358,8 @@ abstract class GestureHandler {
   }
 
   public end(event: GHEvent) {
-    // if (this.getState() !== State.ACTIVE) this.resetProgress();
     this.resetProgress();
+    // this.tracker.resetTracker();
     if (this.currentState === State.BEGAN || this.currentState === State.ACTIVE)
       this.moveToState(State.END, event);
   }
@@ -391,8 +397,8 @@ abstract class GestureHandler {
     return this.tracker;
   }
 
-  public getTrackedPointers(): number[] {
-    return this.tracker.getTrackedPointers();
+  public getTrackedPointersID(): number[] {
+    return this.tracker.getTrackedPointersID();
   }
 
   //Pointers history for TapGestureHandler

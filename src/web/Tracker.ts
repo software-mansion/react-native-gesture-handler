@@ -36,6 +36,8 @@ class Tracker {
       event.pointerId
     ) as TrackerElement;
 
+    if (!element) return;
+
     element.velocityX = Math.abs(event.x - element.lastX);
     element.velocityY = Math.abs(event.y - element.lastY);
 
@@ -59,36 +61,45 @@ class Tracker {
   public getLastY(pointerId: number): number {
     return this.trackedPointers.get(pointerId)?.lastY as number;
   }
-  public getLastAvgX(): number {
+  public getSumX(ignoredPointer?: number): number {
     let sumX = 0;
 
-    this.trackedPointers.forEach((element) => {
-      sumX += element.lastX;
+    this.trackedPointers.forEach((value, key) => {
+      if (key !== ignoredPointer) sumX += value.lastX;
     });
 
-    return sumX / this.trackedPointers.size;
+    return sumX;
   }
-  public getLastAvgY(): number {
+  public getSumY(ignoredPointer?: number): number {
     let sumY = 0;
 
-    this.trackedPointers.forEach((element) => {
-      sumY += element.lastY;
+    this.trackedPointers.forEach((value, key) => {
+      if (key !== ignoredPointer) sumY += value.lastY;
     });
 
-    return sumY / this.trackedPointers.size;
+    return sumY;
+  }
+  public getLastAvgX(): number {
+    return this.getSumX() / this.trackedPointers.size;
+  }
+  public getLastAvgY(): number {
+    return this.getSumY() / this.trackedPointers.size;
   }
   public getTrackedPointersNumber(): number {
     return this.trackedPointers.size;
   }
-  public getTrackedPointers(): number[] {
+  public getTrackedPointersID(): number[] {
     const keys: number[] = [];
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for (const [key, value] of this.trackedPointers) {
+    this.trackedPointers.forEach((_value, key) => {
       keys.push(key);
-    }
+    });
 
     return keys;
+  }
+
+  public getData(): Map<number, TrackerElement> {
+    return this.trackedPointers;
   }
 
   public resetTracker(): void {

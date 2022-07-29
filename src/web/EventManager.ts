@@ -8,6 +8,7 @@ export interface GHEvent {
   eventType: EventTypes;
   pointerType: string;
   buttons: number;
+  time: number;
 }
 
 enum Buttons {
@@ -141,6 +142,7 @@ class EventManager {
       eventType: eventType,
       pointerType: event.pointerType,
       buttons: event.buttons,
+      time: event.timeStamp, //Date.now()
     };
   }
 
