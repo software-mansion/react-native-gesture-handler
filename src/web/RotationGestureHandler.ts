@@ -57,20 +57,6 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected transformNativeEvent(event: GHEvent): any {
-    // console.log(this.getState());
-
-    // const res = {
-    //   rotation: this.rotation ? this.rotation : 0,
-    //   anchorX: this.getAnchorX(),
-    //   anchorY: this.getAnchorY(),
-    //   velocity: this.velocity ? this.velocity : 0,
-    // };
-    // const test = this.rotationGestureDetector;
-
-    // console.log(res);
-    // console.log(test);
-    // console.log(this.rotation);
-
     return {
       rotation: this.rotation ? this.rotation : 0,
       anchorX: this.getAnchorX(),
@@ -99,6 +85,8 @@ export default class RotationGestureHandler extends GestureHandler {
   protected onDownAction(event: GHEvent): void {
     this.tracker.addToTracker(event);
 
+    console.log(this.tracker);
+
     if (this.tracker.getTrackedPointersNumber() > 1) {
       event.eventType = EventTypes.POINTER_DOWN;
       this.checkUndetermined(event);
@@ -120,7 +108,14 @@ export default class RotationGestureHandler extends GestureHandler {
     super.onMoveAction(event);
   }
 
+  protected onOutOfBoundsAction(_event: GHEvent): void {}
+
   protected onUpAction(event: GHEvent): void {
+    if (!this.rotationGestureDetector) {
+      this.tracker.resetTracker();
+      return;
+    }
+
     if (this.tracker.getTrackedPointersNumber() > 1) {
       event.eventType = EventTypes.POINTER_UP;
       this.rotationGestureDetector.onTouchEvent(event, this.tracker);
@@ -139,9 +134,7 @@ export default class RotationGestureHandler extends GestureHandler {
 
   protected onCancelAction(event: GHEvent): void {
     this.end(event);
-    console.log(this.rotationGestureDetector);
     this.reset();
-    console.log(this.rotationGestureDetector);
   }
 
   protected checkUndetermined(event: GHEvent): void {

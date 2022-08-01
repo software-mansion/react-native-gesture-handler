@@ -32,7 +32,9 @@ class Snappable extends Component<PropsWithChildren<Record<string, unknown>>> {
   }
 
   private onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+    console.log(event.nativeEvent.oldState, event.nativeEvent.state);
     if (event.nativeEvent.oldState === State.ACTIVE) {
+      console.log(event.nativeEvent.velocityX, 'VelocityX');
       Animated.spring(this.dragX, {
         velocity: event.nativeEvent.velocityX,
         tension: 10,
@@ -133,13 +135,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+    borderWidth: 2,
+    borderColor: 'black',
   },
   box: {
     width: BOX_SIZE,
     height: BOX_SIZE,
-    borderColor: '#F5FCFF',
+    // borderColor: '#F5FCFF',
     alignSelf: 'center',
     backgroundColor: 'plum',
     margin: BOX_SIZE / 2,
+
+    borderWidth: 2,
+    borderColor: 'black',
   },
 });
