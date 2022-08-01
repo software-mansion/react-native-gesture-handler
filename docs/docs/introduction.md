@@ -36,7 +36,7 @@ This should allow you to migrate your codebase from the gesture handlers to gest
 
 ### Automatic workletization of gesture callbacks
 
-Reanimated's Babel plugin is setup in a way that automatically marks callbacks passed to gestures in the configuration chain as worklets, this means that as long as all your callbacks are defined in a single chain, you don't need to add a `'worklet';` directive at the beginning of the functions. Here is an example that will be automatically workletized:
+Reanimated's Babel plugin is setup in a way that automatically marks callbacks passed to gestures in the configuration chain as worklets. This means that as long as all your callbacks are defined in a single chain, you don't need to add a `'worklet';` directive at the beginning of the functions. Here is an example that will be automatically workletized:
 ```jsx
 const gesture = Gesture.Tap().onBegin(() => {
   console.log(_WORKLET);
