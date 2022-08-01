@@ -34,7 +34,6 @@ export enum EventTypes {
 }
 
 class EventManager {
-  private eventCache: GHEvent[] = [];
   private activePointers: number[] = [];
   private readonly view: HTMLElement;
 
@@ -47,6 +46,7 @@ class EventManager {
   setListeners() {
     // this.view.oncontextmenu = () => false;
     //
+    // console.log(this.view);
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.DOWN);
 

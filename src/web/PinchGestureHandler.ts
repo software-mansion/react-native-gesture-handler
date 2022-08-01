@@ -121,6 +121,10 @@ export default class PinchGestureHandler extends GestureHandler {
     this.begin(event);
   }
 
+  protected onCancelAction(_event: GHEvent): void {
+    this.reset();
+  }
+
   protected activate(event: GHEvent, force?: boolean): void {
     if (this.getState() !== State.ACTIVE) this.resetProgress();
 

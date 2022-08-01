@@ -1,3 +1,4 @@
+import { element } from 'prop-types';
 import { EventTypes, GHEvent } from './EventManager';
 import Tracker from './Tracker';
 
@@ -68,6 +69,8 @@ export default class RotationGestureDetector
     this.anchorX = (stPointerX + ndPointerX) * 0.5;
     this.anchorY = (stPointerY + ndPointerY) * 0.5;
 
+    console.log(this.anchorX, stPointerX, ndPointerX);
+
     //Angle diff should be positive when rotating in clockwise direction
     const angle: number = -Math.atan2(vectorY, vectorX);
     this.rotation = Number.isNaN(this.previousAngle)
@@ -93,6 +96,7 @@ export default class RotationGestureDetector
     if (!this.isInProgress) return;
 
     this.isInProgress = false;
+    this.keyPointers = [NaN, NaN];
     this.onRotationEnd(this, event);
   }
 
@@ -113,6 +117,7 @@ export default class RotationGestureDetector
 
       case EventTypes.POINTER_DOWN:
         if (this.isInProgress) break;
+
         this.isInProgress = true;
 
         this.previousTime = event.time;

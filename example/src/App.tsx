@@ -169,6 +169,8 @@ export function App() {
 // export default Draggable;
 // export default gestureHandlerRootHOC(MultiTap);
 export default gestureHandlerRootHOC(PinchableBox);
+// export default BouncingBox;
+// export default Fling;
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   return (

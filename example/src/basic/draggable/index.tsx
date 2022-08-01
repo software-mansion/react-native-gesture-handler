@@ -41,6 +41,9 @@ export class DraggableBox extends Component<DraggableBoxProps> {
     );
   }
   private onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
+    // console.log(
+    //   `Old state: ${event.nativeEvent.oldState}, New state: ${event.nativeEvent.state}`
+    // );
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastOffset.x += event.nativeEvent.translationX;
       this.lastOffset.y += event.nativeEvent.translationY;
@@ -96,10 +99,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   box: {
-    // width: 300,
-    // height: 300,
-    width: 150,
-    height: 150,
+    width: 300,
+    height: 300,
+    // width: 150,
+    // height: 150,
     alignSelf: 'center',
     backgroundColor: 'plum',
     margin: 10,

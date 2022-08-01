@@ -13,6 +13,9 @@ export default class RotationGestureHandler extends GestureHandler {
   private rotation = 0;
   private velocity = 0;
 
+  private cachedAnchorX = 0;
+  private cachedAnchorY = 0;
+
   private rotationGestureListener: RotationGestureListener = {
     onRotationBegin: (_detector: RotationGestureDetector): boolean => {
       return true;
@@ -40,7 +43,7 @@ export default class RotationGestureHandler extends GestureHandler {
       return true;
     },
     onRotationEnd: (
-      detector: RotationGestureDetector,
+      _detector: RotationGestureDetector,
       event: GHEvent
     ): void => {
       this.end(event);
@@ -54,28 +57,42 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected transformNativeEvent(event: GHEvent): any {
+    // console.log(this.getState());
+
+    // const res = {
+    //   rotation: this.rotation ? this.rotation : 0,
+    //   anchorX: this.getAnchorX(),
+    //   anchorY: this.getAnchorY(),
+    //   velocity: this.velocity ? this.velocity : 0,
+    // };
+    // const test = this.rotationGestureDetector;
+
+    // console.log(res);
+    // console.log(test);
+    // console.log(this.rotation);
+
     return {
-      rotation: this.rotation,
-      anchorX: this.rotationGestureDetector.getAnchorX(),
-      anchorY: this.rotationGestureDetector.getAnchorY(),
-      velocity: this.velocity,
+      rotation: this.rotation ? this.rotation : 0,
+      anchorX: this.getAnchorX(),
+      anchorY: this.getAnchorY(),
+      velocity: this.velocity ? this.velocity : 0,
     };
   }
 
   get name(): string {
-    throw new Error('Method not implemented.');
+    return 'rotation';
   }
 
   public getAnchorX(): number {
     const anchorX = this.rotationGestureDetector.getAnchorX();
 
-    return anchorX ? anchorX : NaN;
+    return anchorX ? anchorX : this.cachedAnchorX;
   }
 
   public getAnchorY(): number {
     const anchorY = this.rotationGestureDetector.getAnchorY();
 
-    return anchorY ? anchorY : NaN;
+    return anchorY ? anchorY : this.cachedAnchorY;
   }
   //
 
@@ -90,9 +107,13 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onMoveAction(event: GHEvent): void {
-    this.tracker.track(event);
+    if (this.tracker.getTrackedPointersNumber() < 2) return;
+    if (!this.rotationGestureDetector) return;
 
-    console.log('moveveee');
+    if (this.getAnchorX()) this.cachedAnchorX = this.getAnchorX();
+    if (this.getAnchorY()) this.cachedAnchorY = this.getAnchorY();
+
+    this.tracker.track(event);
 
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 
@@ -106,14 +127,21 @@ export default class RotationGestureHandler extends GestureHandler {
       this.tracker.removeFromTracker(event.pointerId);
     } else {
       this.tracker.removeFromTracker(event.pointerId);
-      if (this.getState() !== State.ACTIVE) return;
       this.rotationGestureDetector.onTouchEvent(event, this.tracker);
+      if (this.getState() !== State.ACTIVE) return;
     }
 
     if (event.eventType !== EventTypes.UP) return;
 
     if (this.getState() === State.ACTIVE) this.end(event);
     else this.fail(event);
+  }
+
+  protected onCancelAction(event: GHEvent): void {
+    this.end(event);
+    console.log(this.rotationGestureDetector);
+    this.reset();
+    console.log(this.rotationGestureDetector);
   }
 
   protected checkUndetermined(event: GHEvent): void {
@@ -144,6 +172,8 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
+    if (this.getState() === State.ACTIVE) return;
+
     this.rotation = 0;
     this.velocity = 0;
   }

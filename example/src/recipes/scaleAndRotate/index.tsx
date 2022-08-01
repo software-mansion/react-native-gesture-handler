@@ -91,7 +91,7 @@ export class PinchableBox extends React.Component {
     // console.log(this.lastScale, 'LastScale');
     // console.log(this.baseScale, 'BaseScale');
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      console.log('activeeee');
+      // console.log('activeeee');
       this.lastScale *= event.nativeEvent.scale;
       this.baseScale.setValue(this.lastScale);
       this.pinchScale.setValue(1);
@@ -100,6 +100,7 @@ export class PinchableBox extends React.Component {
   private onTiltGestureStateChange = (
     event: PanGestureHandlerStateChangeEvent
   ) => {
+    // console.log(event.nativeEvent.oldState, event.nativeEvent.state);
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastTilt += event.nativeEvent.translationY;
       this.tilt.setOffset(this.lastTilt);
@@ -108,47 +109,48 @@ export class PinchableBox extends React.Component {
   };
   render() {
     return (
-      // <PanGestureHandler
-      //   ref={this.panRef}
-      //   onGestureEvent={this.onTiltGestureEvent}
-      //   onHandlerStateChange={this.onTiltGestureStateChange}
-      //   minDist={10}
-      //   minPointers={2}
-      //   maxPointers={2}
-      //   avgTouches>
-      <Animated.View style={styles.wrapper}>
-        <RotationGestureHandler
-          ref={this.rotationRef}
-          simultaneousHandlers={this.pinchRef}
-          onGestureEvent={this.onRotateGestureEvent}
-          onHandlerStateChange={this.onRotateHandlerStateChange}>
-          <Animated.View style={styles.wrapper}>
-            <PinchGestureHandler
-              ref={this.pinchRef}
-              simultaneousHandlers={this.rotationRef}
-              onGestureEvent={this.onPinchGestureEvent}
-              onHandlerStateChange={this.onPinchHandlerStateChange}>
-              <Animated.View style={styles.container} collapsable={false}>
-                <Animated.Image
-                  style={[
-                    styles.pinchableImage,
-                    {
-                      transform: [
-                        { perspective: 200 },
-                        { scale: this.scale },
-                        { rotate: this.rotateStr },
-                        { rotateX: this.tiltStr },
-                      ],
-                    },
-                  ]}
-                  source={require('./swmansion.png')}
-                />
-              </Animated.View>
-            </PinchGestureHandler>
-          </Animated.View>
-        </RotationGestureHandler>
-      </Animated.View>
-      // </PanGestureHandler>
+      <PanGestureHandler
+        ref={this.panRef}
+        onGestureEvent={this.onTiltGestureEvent}
+        onHandlerStateChange={this.onTiltGestureStateChange}
+        minDist={10}
+        minPointers={2}
+        maxPointers={2}
+        avgTouches>
+        <Animated.View style={styles.wrapper}>
+          <RotationGestureHandler
+            ref={this.rotationRef}
+            simultaneousHandlers={this.pinchRef}
+            onGestureEvent={this.onRotateGestureEvent}
+            onHandlerStateChange={this.onRotateHandlerStateChange}>
+            <Animated.View style={styles.wrapper}>
+              <PinchGestureHandler
+                ref={this.pinchRef}
+                simultaneousHandlers={this.rotationRef}
+                onGestureEvent={this.onPinchGestureEvent}
+                onHandlerStateChange={this.onPinchHandlerStateChange}>
+                <Animated.View style={styles.container} collapsable={false}>
+                  <Animated.Image
+                    style={[
+                      styles.pinchableImage,
+                      {
+                        transform: [
+                          { perspective: 200 },
+                          { scale: this.scale },
+                          { rotate: this.rotateStr },
+                          { rotateX: this.tiltStr },
+                        ],
+                      },
+                    ]}
+                    // source={require('./swmansion.png')}
+                    source={require('./swm.svg')}
+                  />
+                </Animated.View>
+              </PinchGestureHandler>
+            </Animated.View>
+          </RotationGestureHandler>
+        </Animated.View>
+      </PanGestureHandler>
     );
   }
 }
@@ -169,10 +171,10 @@ const styles = StyleSheet.create({
     WebkitUserSelect: 'none',
   },
   pinchableImage: {
-    width: 250,
+    width: 475,
     height: 250,
-    touchAction: 'auto',
-    userSelect: 'none',
+    // width: 100,
+    // height: 100,
   },
   wrapper: {
     flex: 1,

@@ -52,7 +52,7 @@ export class PressBox extends Component<PressBoxProps> {
         minDurationMs={800}>
         <TapGestureHandler
           onHandlerStateChange={this.onSingleTap}
-          // waitFor={this.doubleTapRef}
+          waitFor={this.doubleTapRef}
           // simultaneousHandlers={this.doubleTapRef}>
         >
           <TapGestureHandler

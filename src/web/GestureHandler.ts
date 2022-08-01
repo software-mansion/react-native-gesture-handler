@@ -275,7 +275,7 @@ abstract class GestureHandler {
   }
 
   public reset(): void {
-    this.view = null;
+    // this.view = null;
     this.tracker.resetTracker();
     this.onReset();
   }
@@ -432,6 +432,7 @@ abstract class GestureHandler {
     //
   }
   protected onCancelAction(_event: GHEvent): void {
+    console.log('pointer cancel');
     //
   }
   protected onOutOfBoundsAction(event: GHEvent): void {
@@ -491,6 +492,8 @@ abstract class GestureHandler {
       oldState
     );
 
+    // console.log(this.id, oldState, newState);
+
     invokeNullableMethod(onGestureHandlerEvent, resultEvent);
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
@@ -506,7 +509,6 @@ abstract class GestureHandler {
     return {
       nativeEvent: {
         numberOfPointers: this.tracker.getTrackedPointersNumber(),
-        // state: this.getState(),
         state: newState,
         pointerInside: this.eventManager?.isPointerInBounds({
           x: event.x,
@@ -536,6 +538,7 @@ function invokeNullableMethod(
     | { __nodeConfig: { argMapping: ResultEvent } },
   event: ResultEvent
 ): void {
+  // console.log(event);
   if (!method) return;
 
   if (typeof method === 'function') {

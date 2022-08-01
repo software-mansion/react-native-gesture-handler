@@ -102,7 +102,7 @@ class PanGestureHandler extends GestureHandler {
     }
 
     if (this.config.shouldCancelWhenOutside) {
-      this.setShouldCancelWhenOutside(true);
+      this.setShouldCancelWhenOutside(false);
     }
 
     if (
@@ -279,7 +279,6 @@ class PanGestureHandler extends GestureHandler {
   }
 
   protected onMoveAction(event: GHEvent): void {
-    console.log('Move', Date.now());
     this.tracker.track(event);
 
     this.lastX = this.tracker.getLastAvgX();
@@ -288,20 +287,20 @@ class PanGestureHandler extends GestureHandler {
     this.checkUndetermined(event);
     this.checkBegan(event);
 
-    if (this.getState() === State.ACTIVE) super.onMoveAction(event);
+    super.onMoveAction(event);
   }
   protected onOutAction(event: GHEvent): void {
     super.onOutAction(event);
   }
   protected onEnterAction(event: GHEvent): void {
-    console.log('enter', Date.now());
     super.onEnterAction(event);
   }
   protected onCancelAction(event: GHEvent): void {
     super.onCancelAction(event);
 
-    this.tracker.resetTracker();
-    this.fail(event);
+    this.reset();
+    // this.tracker.resetTracker();
+    // this.fail(event);
   }
   protected onOutOfBoundsAction(event: GHEvent): void {
     if (this.getShouldCancelWhenOutside()) return;
@@ -311,7 +310,7 @@ class PanGestureHandler extends GestureHandler {
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
 
-    this.checkUndetermined(event);
+    // this.checkUndetermined(event);
     this.checkBegan(event);
 
     if (this.getState() === State.ACTIVE) super.onOutOfBoundsAction(event);

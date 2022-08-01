@@ -6,13 +6,17 @@ import TapGestureHandler from './web/TapGestureHandler';
 import LongPressGestureHandler from './web/LongPressGestureHandler';
 import PinchGestureHandler from './web/PinchGestureHandler';
 import RotationGestureHandler from './web/RotationGestureHandler';
+import FlingGestureHandler from './web/FlingGestureHandler';
+import NativeViewGestureHandler from './web/NativeViewGestureHandler';
 
 export const Gestures = {
+  NativeViewGestureHandler,
   PanGestureHandler,
   TapGestureHandler,
   LongPressGestureHandler,
   PinchGestureHandler,
   RotationGestureHandler,
+  FlingGestureHandler,
 };
 
 const interactionManager = new InteractionManager();
@@ -32,7 +36,7 @@ export default {
   ) {
     if (!(handlerName in Gestures)) return;
 
-    console.log(handlerName);
+    // console.log(handlerName);
 
     const GestureClass = Gestures[handlerName];
     NodeManager.createGestureHandler(handlerTag, new GestureClass());
@@ -49,10 +53,6 @@ export default {
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
-    //TODO remove if
-    //This if prevents throwing error on attaching handler to ScrollView
-
-    // if (handlerTag !== 1)
     NodeManager.getHandler(handlerTag).init(newView, propsRef);
   },
   updateGestureHandler(handlerTag: number, newConfig: any) {

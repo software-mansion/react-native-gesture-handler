@@ -30,8 +30,8 @@ class Fling extends Component {
     { nativeEvent }: FlingGestureHandlerStateChangeEvent,
     offset: number
   ) => {
+    // console.log(nativeEvent.state);
     if (nativeEvent.oldState === State.ACTIVE) {
-      // console.log(nativeEvent.state);
       Animated.spring(this.touchX, {
         // @ts-ignore private property
         toValue: Animated.add(this.touchX, offset),
@@ -43,6 +43,7 @@ class Fling extends Component {
   private onVerticalFlingHandlerStateChange = ({
     nativeEvent,
   }: FlingGestureHandlerStateChangeEvent) => {
+    console.log(nativeEvent.state);
     if (nativeEvent.oldState === State.ACTIVE) {
       Animated.spring(this.translateY, {
         toValue: Animated.add(this.translateY, 10) as Animated.Value,
