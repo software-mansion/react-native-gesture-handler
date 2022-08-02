@@ -63,7 +63,7 @@ abstract class GestureHandler {
   }
 
   // a simple way to check if GestureHandler is NativeViewGestureHandler, since importing it
-  // here to use instanceof woulf cause import cycle
+  // here to use instanceof would cause import cycle
   get isNative() {
     return false;
   }
