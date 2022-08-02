@@ -46,7 +46,7 @@ export const ScrollView = React.forwardRef<
   RNScrollView,
   RNScrollViewProps & NativeViewGestureHandlerProps
 >((props, ref) => {
-  const refreshControlGestureRef = React.useRef<any>();
+  const refreshControlGestureRef = React.useRef<RefreshControl>(null);
   const { refreshControl, waitFor, ...rest } = props;
 
   return (
@@ -54,7 +54,7 @@ export const ScrollView = React.forwardRef<
       {...rest}
       // @ts-ignore `ref` exists on `GHScrollView`
       ref={ref}
-      waitFor={[...toArray(waitFor ? waitFor : []), refreshControlGestureRef]}
+      waitFor={[...toArray(waitFor ?? []), refreshControlGestureRef]}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
         refreshControl ? (
@@ -94,7 +94,7 @@ export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
   RNDrawerLayoutAndroid;
 
 export const FlatList = React.forwardRef((props, ref) => {
-  const refreshControlGestureRef = React.useRef<any>();
+  const refreshControlGestureRef = React.useRef<RefreshControl>(null);
 
   const { waitFor, refreshControl, ...rest } = props;
 
@@ -123,10 +123,7 @@ export const FlatList = React.forwardRef((props, ref) => {
           {...{
             ...scrollProps,
             ...scrollViewProps,
-            waitFor: [
-              ...toArray(waitFor ? waitFor : []),
-              refreshControlGestureRef,
-            ],
+            waitFor: [...toArray(waitFor ?? []), refreshControlGestureRef],
           }}
         />
       )}
