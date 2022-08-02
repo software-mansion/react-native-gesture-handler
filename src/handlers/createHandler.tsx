@@ -469,42 +469,9 @@ export default function createHandler<
 
       this.propsRef.current = events;
 
+      let child: any = null;
       try {
-        const child: any = React.Children.only(this.props.children);
-        let grandChildren = child.props.children;
-        if (
-          __DEV__ &&
-          child.type &&
-          (child.type === 'RNGestureHandlerButton' ||
-            child.type.name === 'View' ||
-            child.type.displayName === 'View')
-        ) {
-          grandChildren = React.Children.toArray(grandChildren);
-          grandChildren.push(
-            <PressabilityDebugView
-              key="pressabilityDebugView"
-              color="mediumspringgreen"
-              hitSlop={child.props.hitSlop}
-            />
-          );
-        }
-
-        return React.cloneElement(
-          child,
-          {
-            ref: this.refHandler,
-            collapsable: false,
-            ...(isJestEnv()
-              ? {
-                  handlerType: name,
-                  handlerTag: this.handlerTag,
-                }
-              : {}),
-            testID: this.props.testID ?? child.props.testID,
-            ...events,
-          },
-          grandChildren
-        );
+        child = React.Children.only(this.props.children);
       } catch (e) {
         throw new Error(
           tagMessage(
@@ -512,6 +479,41 @@ export default function createHandler<
           )
         );
       }
+
+      let grandChildren = child.props.children;
+      if (
+        __DEV__ &&
+        child.type &&
+        (child.type === 'RNGestureHandlerButton' ||
+          child.type.name === 'View' ||
+          child.type.displayName === 'View')
+      ) {
+        grandChildren = React.Children.toArray(grandChildren);
+        grandChildren.push(
+          <PressabilityDebugView
+            key="pressabilityDebugView"
+            color="mediumspringgreen"
+            hitSlop={child.props.hitSlop}
+          />
+        );
+      }
+
+      return React.cloneElement(
+        child,
+        {
+          ref: this.refHandler,
+          collapsable: false,
+          ...(isJestEnv()
+            ? {
+                handlerType: name,
+                handlerTag: this.handlerTag,
+              }
+            : {}),
+          testID: this.props.testID ?? child.props.testID,
+          ...events,
+        },
+        grandChildren
+      );
     }
   }
   return Handler;
