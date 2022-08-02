@@ -8,8 +8,6 @@ import RotationGestureDetector, {
 const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 
 export default class RotationGestureHandler extends GestureHandler {
-  private rotationGestureDetector: RotationGestureDetector;
-
   private rotation = 0;
   private velocity = 0;
 
@@ -48,6 +46,10 @@ export default class RotationGestureHandler extends GestureHandler {
     },
   };
 
+  private rotationGestureDetector: RotationGestureDetector = new RotationGestureDetector(
+    this.rotationGestureListener
+  );
+
   public init(ref: number, propsRef: any): void {
     super.init(ref, propsRef);
 
@@ -63,7 +65,7 @@ export default class RotationGestureHandler extends GestureHandler {
     };
   }
 
-  get name(): string {
+  public get name(): string {
     return 'rotation';
   }
 
@@ -78,7 +80,6 @@ export default class RotationGestureHandler extends GestureHandler {
 
     return anchorY ? anchorY : this.cachedAnchorY;
   }
-  //
 
   protected onDownAction(event: GHEvent): void {
     this.tracker.addToTracker(event);
@@ -96,8 +97,8 @@ export default class RotationGestureHandler extends GestureHandler {
     if (this.tracker.getTrackedPointersNumber() < 2) return;
     if (!this.rotationGestureDetector) return;
 
-    if (this.getAnchorX()) this.cachedAnchorX = this.getAnchorX();
-    if (this.getAnchorY()) this.cachedAnchorY = this.getAnchorY();
+    if (this.anchorX) this.cachedAnchorX = this.anchorX;
+    if (this.anchorY) this.cachedAnchorY = this.anchorY;
 
     this.tracker.track(event);
 
@@ -141,11 +142,11 @@ export default class RotationGestureHandler extends GestureHandler {
     if (this.getState() !== State.UNDETERMINED) return;
 
     this.resetProgress();
-    if (!this.rotationGestureDetector) {
-      this.rotationGestureDetector = new RotationGestureDetector(
-        this.rotationGestureListener
-      );
-    }
+    // if (!this.rotationGestureDetector) {
+    //   this.rotationGestureDetector = new RotationGestureDetector(
+    //     this.rotationGestureListener
+    //   );
+    // }
 
     this.begin(event);
   }
@@ -160,6 +161,7 @@ export default class RotationGestureHandler extends GestureHandler {
   protected onCancel(): void {
     //throw new Error('Method not implemented.');
   }
+
   protected onReset(): void {
     this.resetProgress();
   }

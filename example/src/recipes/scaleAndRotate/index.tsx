@@ -142,8 +142,8 @@ export class PinchableBox extends React.Component {
                         ],
                       },
                     ]}
-                    // source={require('./swmansion.png')}
-                    source={require('./swm.svg')}
+                    source={require('./swmansion.png')}
+                    // source={require('./swm.svg')}
                   />
                 </Animated.View>
               </PinchGestureHandler>
@@ -171,10 +171,10 @@ const styles = StyleSheet.create({
     WebkitUserSelect: 'none',
   },
   pinchableImage: {
-    width: 475,
-    height: 250,
-    // width: 100,
-    // height: 100,
+    // width: 475,
+    // height: 250,
+    width: 200,
+    height: 200,
   },
   wrapper: {
     flex: 1,

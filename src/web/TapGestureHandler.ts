@@ -3,20 +3,20 @@ import { EventTypes, GHEvent } from './EventManager';
 import GestureHandler from './GestureHandler';
 import GestureHandlerOrchestrator from './GestureHandlerOrchestrator';
 
-export default class TapGestureHandler extends GestureHandler {
-  readonly DEFAULT_MAX_DURATION_MS = 500;
-  readonly DEFAULT_MAX_DELAY_MS = 200;
-  readonly DEFAULT_NUMBER_OF_TAPS = 1;
-  readonly DEFAULT_MIN_NUMBER_OF_POINTERS = 1;
+const DEFAULT_MAX_DURATION_MS = 500;
+const DEFAULT_MAX_DELAY_MS = 200;
+const DEFAULT_NUMBER_OF_TAPS = 1;
+const DEFAULT_MIN_NUMBER_OF_POINTERS = 1;
 
+export default class TapGestureHandler extends GestureHandler {
   private maxDeltaX = Number.MIN_SAFE_INTEGER;
   private maxDeltaY = Number.MIN_SAFE_INTEGER;
   private maxDistSq = Number.MIN_SAFE_INTEGER;
-  private maxDurationMs = this.DEFAULT_MAX_DURATION_MS;
-  private maxDelayMs = this.DEFAULT_MAX_DELAY_MS;
+  private maxDurationMs = DEFAULT_MAX_DURATION_MS;
+  private maxDelayMs = DEFAULT_MAX_DELAY_MS;
 
-  private numberOfTaps = this.DEFAULT_NUMBER_OF_TAPS;
-  private minNumberOfPointers = this.DEFAULT_MIN_NUMBER_OF_POINTERS;
+  private numberOfTaps = DEFAULT_NUMBER_OF_TAPS;
+  private minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
   private currentMaxNumberOfPointers = 1;
 
   private startX = 0;
@@ -92,10 +92,10 @@ export default class TapGestureHandler extends GestureHandler {
     this.maxDeltaX = Number.MIN_SAFE_INTEGER;
     this.maxDeltaY = Number.MIN_SAFE_INTEGER;
     this.maxDistSq = Number.MIN_SAFE_INTEGER;
-    this.maxDurationMs = this.DEFAULT_MAX_DURATION_MS;
-    this.maxDelayMs = this.DEFAULT_MAX_DELAY_MS;
-    this.numberOfTaps = this.DEFAULT_NUMBER_OF_TAPS;
-    this.minNumberOfPointers = this.DEFAULT_MIN_NUMBER_OF_POINTERS;
+    this.maxDurationMs = DEFAULT_MAX_DURATION_MS;
+    this.maxDelayMs = DEFAULT_MAX_DELAY_MS;
+    this.numberOfTaps = DEFAULT_NUMBER_OF_TAPS;
+    this.minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
   }
 
   private clearTimeouts(): void {

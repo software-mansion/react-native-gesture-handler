@@ -59,6 +59,7 @@ class EventManager {
     });
 
     this.view.addEventListener('pointerup', (event: PointerEvent): void => {
+      event.preventDefault();
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.UP);
 
       this.onUpAction(ghEvent);

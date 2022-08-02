@@ -9,45 +9,8 @@ import Tracker from './Tracker';
 export interface Config extends Record<string, any> {
   enabled?: boolean;
   simultaneousHandlers?: any[] | null;
-  // minPointers?: number;
-  // maxPointers?: number;
-  // minDist?: number;
-  // minDistSq?: number;
-  // minVelocity?: number;
-  // minVelocitySq?: number;
-  // maxDist?: number;
-  // maxDistSq?: number;
-  // failOffsetXStart?: number;
-  // failOffsetYStart?: number;
-  // failOffsetXEnd?: number;
-  // failOffsetYEnd?: number;
-  // activeOffsetXStart?: number;
-  // activeOffsetXEnd?: number;
-  // activeOffsetYStart?: number;
-  // activeOffsetYEnd?: number;
   waitFor?: any[] | null;
 }
-
-// export type Config = Partial<{
-//   enabled: boolean;
-//   minPointers: number;
-//   maxPointers: number;
-//   minDist: number;
-//   minDistSq: number;
-//   minVelocity: number;
-//   minVelocitySq: number;
-//   maxDist: number;
-//   maxDistSq: number;
-//   failOffsetXStart: number;
-//   failOffsetYStart: number;
-//   failOffsetXEnd: number;
-//   failOffsetYEnd: number;
-//   activeOffsetXStart: number;
-//   activeOffsetXEnd: number;
-//   activeOffsetYStart: number;
-//   activeOffsetYEnd: number;
-//   waitFor: any[] | null;
-// }>;
 
 interface NativeEvent extends Record<string, any> {
   numberOfPointers: number;
@@ -66,26 +29,23 @@ export interface ResultEvent extends Record<string, any> {
 let gestureInstances = 0;
 
 abstract class GestureHandler {
-  private handlerTag!: number;
-  // public isGestureRunning = false;
-  public view: HTMLElement | null = null;
-  protected hasCustomActivationCriteria: boolean;
-  protected eventManager: EventManager | null = null;
-  // protected hasGestureFailed = false;
-  // protected initialRotation: number | null = null;
-
-  protected config: Config = {};
-  protected enabled = false;
-  private pendingGestures: Record<string, this> = {};
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
+
   private gestureInstance: number;
-  protected tracker: Tracker = new Tracker();
+  private pendingGestures: Record<string, this> = {};
+  protected shouldCancellWhenOutside = false;
+  protected hasCustomActivationCriteria: boolean;
+  protected enabled = false;
 
-  private propsRef: any;
   private ref: any;
-  private shouldCancellWhenOutside = false;
+  private propsRef: any;
+  protected config: Config = {};
+  private handlerTag!: number;
+  protected view: HTMLElement | null = null;
 
+  protected eventManager: EventManager | null = null;
+  protected tracker: Tracker = new Tracker();
   protected interactionManager!: InteractionManager;
 
   //Orchestrator properties
@@ -93,6 +53,22 @@ abstract class GestureHandler {
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
+
+  public constructor() {
+    this.gestureInstance = gestureInstances++;
+    this.hasCustomActivationCriteria = false;
+  }
+
+  protected init(ref: number, propsRef: any) {
+    this.setView(ref);
+
+    this.propsRef = propsRef;
+    this.ref = ref;
+
+    this.currentState = State.UNDETERMINED;
+
+    this.setEventManager();
+  }
 
   abstract get name(): string;
 
@@ -102,11 +78,6 @@ abstract class GestureHandler {
 
   get shouldEnableGestureOnSetup(): boolean {
     throw new Error('Must override GestureHandler.shouldEnableGestureOnSetup');
-  }
-
-  constructor() {
-    this.gestureInstance = gestureInstances++;
-    this.hasCustomActivationCriteria = false;
   }
 
   public getTag(): number {
@@ -152,17 +123,6 @@ abstract class GestureHandler {
 
   public getState(): State {
     return this.currentState;
-  }
-
-  protected init(ref: number, propsRef: any) {
-    this.setView(ref);
-
-    this.propsRef = propsRef;
-    this.ref = ref;
-
-    this.currentState = State.UNDETERMINED;
-
-    this.setEventManager();
   }
 
   private setView(ref: number) {
@@ -492,7 +452,7 @@ abstract class GestureHandler {
       oldState
     );
 
-    // console.log(this.id, oldState, newState);
+    // console.error(this.lastSentState === oldState);
 
     invokeNullableMethod(onGestureHandlerEvent, resultEvent);
     if (this.lastSentState !== newState) {
