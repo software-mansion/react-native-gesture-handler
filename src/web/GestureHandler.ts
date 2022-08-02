@@ -269,8 +269,7 @@ abstract class GestureHandler {
   shouldUseTouchEvents(config: Config) {
     return (
       config.simultaneousHandlers
-        ?.map((handler) => handler.isNative)
-        ?.reduce((prev, current) => prev || current, false) ?? false
+        ?.some((handler) => handler.isNative) ?? false
     );
   }
 
