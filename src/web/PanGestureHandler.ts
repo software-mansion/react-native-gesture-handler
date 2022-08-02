@@ -58,7 +58,8 @@ class PanGestureHandler extends GestureHandler {
   private lastX = 0;
   private lastY = 0;
 
-  // private ratio: number;
+  private lastCachedX = 0;
+  private lastCachedTime = 0;
 
   private activateAfterLongPress = 0;
 
@@ -152,16 +153,13 @@ class PanGestureHandler extends GestureHandler {
     const rect = this.view.getBoundingClientRect();
     const ratio = PixelRatio.get();
 
-    // console.log(ratio);
-    // console.log(this.velocityX);
-
     return {
       translationX: this.getTranslationX(),
       translationY: this.getTranslationY(),
       absoluteX: event.x,
       absoluteY: event.y,
-      velocityX: this.velocityX * ratio * 2,
-      velocityY: this.velocityY * ratio * 2,
+      velocityX: this.velocityX * ratio * 10,
+      velocityY: this.velocityY * ratio * 10,
       x: event.x - rect.left,
       y: event.y - rect.top,
     };
@@ -226,10 +224,9 @@ class PanGestureHandler extends GestureHandler {
     this.startX = this.lastX;
     this.startY = this.lastY;
 
-    this.checkUndetermined(event);
+    // this.checkUndetermined(event);
 
     if (this.tracker.getTrackedPointersNumber() > this.maxPointers) {
-      console.log(this.getState());
       if (this.getState() === State.ACTIVE) this.cancel(event);
       else this.fail(event);
     } else this.checkBegan(event);
@@ -237,8 +234,6 @@ class PanGestureHandler extends GestureHandler {
 
   protected onUpAction(event: GHEvent): void {
     super.onUpAction(event);
-
-    console.log('ee upp');
 
     if (this.tracker.getTrackedPointersNumber() > 1) {
       this.tracker.removeFromTracker(event.pointerId);
@@ -272,8 +267,6 @@ class PanGestureHandler extends GestureHandler {
     this.startX = this.lastX;
     this.startY = this.lastY;
 
-    this.checkUndetermined(event);
-
     if (
       this.getState() === State.ACTIVE &&
       this.tracker.getTrackedPointersNumber() < this.minPointers
@@ -285,7 +278,7 @@ class PanGestureHandler extends GestureHandler {
   }
 
   protected onMoveAction(event: GHEvent): void {
-    console.log('move event');
+    this.lastCachedX = this.tracker.getLastAvgX();
     this.tracker.track(event);
 
     this.lastX = this.tracker.getLastAvgX();
@@ -298,7 +291,6 @@ class PanGestureHandler extends GestureHandler {
   }
   protected onOutAction(event: GHEvent): void {
     super.onOutAction(event);
-    console.log('out');
   }
   protected onEnterAction(event: GHEvent): void {
     super.onEnterAction(event);
@@ -309,7 +301,6 @@ class PanGestureHandler extends GestureHandler {
     this.reset();
   }
   protected onOutOfBoundsAction(event: GHEvent): void {
-    console.log('outOfBounds');
     if (this.getShouldCancelWhenOutside()) return;
 
     this.tracker.track(event);

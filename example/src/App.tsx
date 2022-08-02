@@ -166,10 +166,10 @@ export default function App() {
   );
 }
 
-// export default Draggable;
+export default Draggable;
 // export default gestureHandlerRootHOC(MultiTap);
 // export default gestureHandlerRootHOC(PinchableBox);
-export default BouncingBox;
+// export default gestureHandlerRootHOC(BouncingBox);
 // export default Fling;
 // export default HorizontalDrawer;
 

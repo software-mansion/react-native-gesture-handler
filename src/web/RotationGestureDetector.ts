@@ -1,4 +1,3 @@
-import { element } from 'prop-types';
 import { EventTypes, GHEvent } from './EventManager';
 import Tracker from './Tracker';
 

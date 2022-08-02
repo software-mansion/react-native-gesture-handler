@@ -4,6 +4,8 @@ interface TrackerElement {
   lastX: number;
   lastY: number;
 
+  timeStamp: number;
+
   velocityX: number;
   velocityY: number;
 }
@@ -20,6 +22,7 @@ class Tracker {
     const emptyElement: TrackerElement = {
       lastX: pointer.x,
       lastY: pointer.y,
+      timeStamp: pointer.time,
       velocityX: 0,
       velocityY: 0,
     };
@@ -38,8 +41,12 @@ class Tracker {
 
     if (!element) return;
 
-    element.velocityX = Math.abs(event.x - element.lastX);
-    element.velocityY = Math.abs(event.y - element.lastY);
+    const dx = event.x - element.lastX;
+    const dy = event.y - element.lastY;
+    const dt = event.time - element.timeStamp;
+
+    element.velocityX = ((dx / dt) * 1000) / 5;
+    element.velocityY = ((dy / dt) * 1000) / 5;
 
     element.lastX = event.x;
     element.lastY = event.y;

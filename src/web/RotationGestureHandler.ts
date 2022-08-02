@@ -5,9 +5,9 @@ import RotationGestureDetector, {
   RotationGestureListener,
 } from './RotationGestureDetector';
 
-export default class RotationGestureHandler extends GestureHandler {
-  private readonly ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36; // 5deg in radians
+const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 
+export default class RotationGestureHandler extends GestureHandler {
   private rotationGestureDetector: RotationGestureDetector;
 
   private rotation = 0;
@@ -17,9 +17,7 @@ export default class RotationGestureHandler extends GestureHandler {
   private cachedAnchorY = 0;
 
   private rotationGestureListener: RotationGestureListener = {
-    onRotationBegin: (_detector: RotationGestureDetector): boolean => {
-      return true;
-    },
+    onRotationBegin: (_detector: RotationGestureDetector): boolean => true,
     onRotation: (
       detector: RotationGestureDetector,
       event: GHEvent
@@ -34,7 +32,7 @@ export default class RotationGestureHandler extends GestureHandler {
       }
 
       if (
-        Math.abs(this.rotation) >= this.ROTATION_RECOGNITION_THRESHOLD &&
+        Math.abs(this.rotation) >= ROTATION_RECOGNITION_THRESHOLD &&
         this.getState() === State.BEGAN
       ) {
         this.activate(event);
@@ -56,7 +54,7 @@ export default class RotationGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(false);
   }
 
-  protected transformNativeEvent(event: GHEvent): any {
+  protected transformNativeEvent(_event: GHEvent): any {
     return {
       rotation: this.rotation ? this.rotation : 0,
       anchorX: this.getAnchorX(),
@@ -108,7 +106,9 @@ export default class RotationGestureHandler extends GestureHandler {
     super.onMoveAction(event);
   }
 
-  protected onOutOfBoundsAction(_event: GHEvent): void {}
+  protected onOutOfBoundsAction(_event: GHEvent): void {
+    //
+  }
 
   protected onUpAction(event: GHEvent): void {
     if (!this.rotationGestureDetector) {

@@ -84,10 +84,10 @@ export default class Example extends Component {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ScrollView style={styles.scrollView}>
-          {/* <LoremIpsum words={40} /> */}
+          <LoremIpsum words={400} />
           <DraggableBox />
-          <DraggableBox />
-          {/* <LoremIpsum /> */}
+          {/* <DraggableBox /> */}
+          <LoremIpsum />
         </ScrollView>
       </GestureHandlerRootView>
     );
