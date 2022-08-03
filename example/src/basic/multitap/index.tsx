@@ -25,24 +25,29 @@ export class PressBox extends Component<PressBoxProps> {
     event: LongPressGestureHandlerStateChangeEvent
   ) => {
     this.props.setDuration?.(event.nativeEvent.duration);
+    // console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'long');
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert('Long press');
       console.log('long');
-      // window.alert(`LONG`);
+      window.alert(`LONG`);
     }
   };
   private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
+    // console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'single');
+
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm touched");
       console.log('single');
-      // window.alert(`I'm touched`);
+      window.alert(`I'm touched`);
     }
   };
   private onDoubleTap = (event: TapGestureHandlerStateChangeEvent) => {
+    // console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'double');
+
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert('Double tap, good job!');
       console.log('double');
-      // window.alert('Double tap, good job!');
+      window.alert('Double tap, good job!');
     }
   };
   render() {
@@ -106,6 +111,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'plum',
     margin: 10,
     zIndex: 200,
+    borderWidth: 2,
     // userSelect: 'none',
   },
   text: {

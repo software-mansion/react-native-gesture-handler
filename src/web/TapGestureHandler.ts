@@ -36,6 +36,8 @@ export default class TapGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: any): void {
     super.init(ref, propsRef);
     this.setShouldCancelWhenOutside(true);
+
+    console.log(this.view);
   }
 
   get name(): string {

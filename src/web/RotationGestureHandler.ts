@@ -97,8 +97,8 @@ export default class RotationGestureHandler extends GestureHandler {
     if (this.tracker.getTrackedPointersNumber() < 2) return;
     if (!this.rotationGestureDetector) return;
 
-    if (this.anchorX) this.cachedAnchorX = this.anchorX;
-    if (this.anchorY) this.cachedAnchorY = this.anchorY;
+    if (this.getAnchorX()) this.cachedAnchorX = this.getAnchorX();
+    if (this.getAnchorY()) this.cachedAnchorY = this.getAnchorY();
 
     this.tracker.track(event);
 

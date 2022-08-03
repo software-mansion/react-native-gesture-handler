@@ -7,10 +7,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.setShouldCancelWhenOutside(true);
 
-    // this.view.style['touchAction'] = 'auto';
+    this.view.style['touchAction'] = 'auto';
     // this.view.style['webkitUserSelect'] = 'auto';
     // this.view.style['userSelect'] = 'auto';
-    // this.view.style['WebkitTouchCallout'] = 'auto';
+    this.view.style['WebkitTouchCallout'] = 'auto';
     console.log(this.view);
   }
 
@@ -25,6 +25,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
   protected onDownAction(event: GHEvent): void {
     super.onDownAction(event);
     this.tracker.addToTracker(event);
+
+    console.log('Native');
 
     if (this.getState() === State.UNDETERMINED) {
       this.begin(event);

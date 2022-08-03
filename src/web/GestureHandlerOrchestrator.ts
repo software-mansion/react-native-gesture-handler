@@ -1,3 +1,4 @@
+import { NativeViewGestureHandler } from '../handlers/NativeViewGestureHandler';
 import { State } from '../State';
 import { GHEvent } from './EventManager';
 import GestureHandler from './GestureHandler';
@@ -30,18 +31,6 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  // private compactHandlersIf(
-  //   handlers: GestureHandler[] | null[],
-  //   predicate: (handler: GestureHandler | null) => boolean
-  // ): number {
-  //   for (let i = 0; i < this.gestureHandlers.length; ++i) {
-  //     if (predicate(handlers[i])) {
-  //       handlers.splice(i, 1);
-  //     }
-  //   }
-
-  //   return handlers.length;
-  // }
   private cleanHandler(handler: GestureHandler): void {
     handler.reset();
     handler.setActive(false);
@@ -112,7 +101,8 @@ export default class GestureHandlerOrchestrator {
 
     // console.log(this.gestureHandlers);
 
-    // console.log(handler.id, `${oldState} -> ${newState}`);
+    // console.log(handler.getId(), `${oldState} -> ${newState}`);
+    // console.log(this.awaitingHandlers);
 
     if (this.isFinished(newState)) {
       this.awaitingHandlers.forEach((otherHandler) => {
@@ -160,23 +150,26 @@ export default class GestureHandlerOrchestrator {
     handler.setShouldResetProgress(true);
     handler.setActivationIndex(this.activationIndex++);
 
-    this.gestureHandlers.forEach((otherHandler) => {
-      if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        this.handlersToCancel.push(otherHandler);
-        // console.log(this.handlersToCancel, otherHandler.id);
-      }
-    });
+    // console.log(handler.id.indexOf('native'));
+    if (handler.getId().indexOf('native') < 0) {
+      this.gestureHandlers.forEach((otherHandler) => {
+        if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
+          this.handlersToCancel.push(otherHandler);
+          // console.log(this.handlersToCancel, otherHandler.id);
+        }
+      });
 
-    for (let i = this.handlersToCancel.length - 1; i >= 0; --i) {
-      this.handlersToCancel[i]?.cancel(event);
+      for (let i = this.handlersToCancel.length - 1; i >= 0; --i) {
+        this.handlersToCancel[i]?.cancel(event);
+      }
+
+      this.awaitingHandlers.forEach((otherHandler) => {
+        if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
+          otherHandler?.cancel(event);
+          otherHandler?.setAwaiting(true);
+        }
+      });
     }
-
-    this.awaitingHandlers.forEach((otherHandler) => {
-      if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler?.cancel(event);
-        otherHandler?.setAwaiting(true);
-      }
-    });
 
     // this.cleanupAwaitingHandlers();
 
