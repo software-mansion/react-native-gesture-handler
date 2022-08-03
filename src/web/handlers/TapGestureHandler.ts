@@ -36,8 +36,6 @@ export default class TapGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: any): void {
     super.init(ref, propsRef);
     this.setShouldCancelWhenOutside(true);
-
-    console.log(this.view);
   }
 
   get name(): string {
@@ -144,6 +142,7 @@ export default class TapGestureHandler extends GestureHandler {
     }
     this.commonAction(event);
   }
+
   protected onPointerAdd(_event: GHEvent): void {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY = this.startY;
@@ -172,6 +171,7 @@ export default class TapGestureHandler extends GestureHandler {
 
     this.commonAction(event);
   }
+
   protected onPointerRemove(_event: GHEvent): void {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY = this.startY;
@@ -205,6 +205,7 @@ export default class TapGestureHandler extends GestureHandler {
 
     this.commonAction(event);
   }
+
   protected onCancelAction(event: GHEvent): void {
     this.tracker.resetTracker();
     this.fail(event);
@@ -243,14 +244,6 @@ export default class TapGestureHandler extends GestureHandler {
     this.offsetY = 0;
     this.startX = event.x;
     this.startY = event.y;
-  }
-
-  protected removePendingGestures(_id: string): void {
-    //
-  }
-
-  protected setOnDownAction(_event: GHEvent): void {
-    //
   }
 
   private shouldFail(): boolean {
@@ -294,8 +287,8 @@ export default class TapGestureHandler extends GestureHandler {
   protected onCancel(): void {
     this.resetProgress();
     this.clearTimeouts();
-    //
   }
+
   protected resetProgress(): void {
     this.onReset();
   }

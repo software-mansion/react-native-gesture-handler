@@ -25,7 +25,7 @@ export class PressBox extends Component<PressBoxProps> {
     event: LongPressGestureHandlerStateChangeEvent
   ) => {
     this.props.setDuration?.(event.nativeEvent.duration);
-    // console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'long');
+    console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'long');
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert('Long press');
       console.log('long');

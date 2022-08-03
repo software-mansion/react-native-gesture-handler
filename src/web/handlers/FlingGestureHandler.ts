@@ -3,22 +3,23 @@ import { Direction } from '../constants';
 import { GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
+const DEFAULT_MAX_DURATION_MS = 800;
+const DEFAULT_MIN_ACCEPTABLE_DELTA = 160;
+const DEFAULT_DIRECTION = Direction.RIGHT;
+const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
+
 export default class FlingGestureHandler extends GestureHandler {
-  private readonly DEFAULT_MAX_DURATION_MS = 800;
-  private readonly DEFAULT_MIN_ACCEPTABLE_DELTA = 160;
-  private readonly DEFAULT_DIRECTION = Direction.RIGHT;
-  private readonly DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
+  private numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
+  private direction = DEFAULT_DIRECTION;
 
-  private numberOfPointersRequired = this.DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
-  private direction = this.DEFAULT_DIRECTION;
+  private maxDurationMs = DEFAULT_MAX_DURATION_MS;
+  private minAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA;
+  private delayTimeout!: number;
 
-  private maxDurationMs = this.DEFAULT_MAX_DURATION_MS;
-  private minAcceptableDelta = this.DEFAULT_MIN_ACCEPTABLE_DELTA;
   private startX = 0;
   private startY = 0;
-  private maxNumberOfPointersSimultaneously = 0;
 
-  private delayTimeout!: number;
+  private maxNumberOfPointersSimultaneously = 0;
 
   public init(ref: number, propsRef: any): void {
     super.init(ref, propsRef);
@@ -133,8 +134,8 @@ export default class FlingGestureHandler extends GestureHandler {
 
   protected resetConfig(): void {
     super.resetConfig();
-    this.numberOfPointersRequired = this.DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
-    this.direction = this.DEFAULT_DIRECTION;
+    this.numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
+    this.direction = DEFAULT_DIRECTION;
   }
 
   protected onCancel(): void {

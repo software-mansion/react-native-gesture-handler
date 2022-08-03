@@ -84,18 +84,20 @@ export default class RotationGestureHandler extends GestureHandler {
   protected onDownAction(event: GHEvent): void {
     this.tracker.addToTracker(event);
 
-    console.log(this.tracker);
+    if (this.tracker.getTrackedPointersNumber() <= 1) return;
 
-    if (this.tracker.getTrackedPointersNumber() > 1) {
-      event.eventType = EventTypes.POINTER_DOWN;
-      this.checkUndetermined(event);
-      this.rotationGestureDetector.onTouchEvent(event, this.tracker);
-    }
+    event.eventType = EventTypes.POINTER_DOWN;
+    this.checkUndetermined(event);
+    this.rotationGestureDetector.onTouchEvent(event, this.tracker);
   }
 
   protected onMoveAction(event: GHEvent): void {
-    if (this.tracker.getTrackedPointersNumber() < 2) return;
-    if (!this.rotationGestureDetector) return;
+    if (
+      this.tracker.getTrackedPointersNumber() < 2 ||
+      !this.rotationGestureDetector
+    ) {
+      return;
+    }
 
     if (this.getAnchorX()) this.cachedAnchorX = this.getAnchorX();
     if (this.getAnchorY()) this.cachedAnchorY = this.getAnchorY();
@@ -142,11 +144,6 @@ export default class RotationGestureHandler extends GestureHandler {
     if (this.getState() !== State.UNDETERMINED) return;
 
     this.resetProgress();
-    // if (!this.rotationGestureDetector) {
-    //   this.rotationGestureDetector = new RotationGestureDetector(
-    //     this.rotationGestureListener
-    //   );
-    // }
 
     this.begin(event);
   }

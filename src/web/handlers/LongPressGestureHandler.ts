@@ -2,13 +2,14 @@ import { State } from '../../State';
 import { GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
-export default class LongPressGestureHandler extends GestureHandler {
-  readonly DEFAULT_MIN_DURATION_MS = 500;
-  readonly DEFAULT_MAX_DIST_DP = 10;
-  readonly SCALING_FACTOR = 10;
+const DEFAULT_MIN_DURATION_MS = 500;
+const DEFAULT_MAX_DIST_DP = 10;
+const SCALING_FACTOR = 10;
 
-  private minDurationMs = this.DEFAULT_MIN_DURATION_MS;
-  private defaultMaxDistSq = this.DEFAULT_MAX_DIST_DP * this.SCALING_FACTOR;
+export default class LongPressGestureHandler extends GestureHandler {
+  private minDurationMs = DEFAULT_MIN_DURATION_MS;
+  private defaultMaxDistSq = DEFAULT_MAX_DIST_DP * SCALING_FACTOR;
+
   private maxDistSq = this.defaultMaxDistSq;
   private startX = 0;
   private startY = 0;
@@ -59,7 +60,7 @@ export default class LongPressGestureHandler extends GestureHandler {
 
   protected resetConfig(): void {
     super.resetConfig();
-    this.minDurationMs = this.DEFAULT_MIN_DURATION_MS;
+    this.minDurationMs = DEFAULT_MIN_DURATION_MS;
     this.maxDistSq = this.defaultMaxDistSq;
   }
 
@@ -69,7 +70,6 @@ export default class LongPressGestureHandler extends GestureHandler {
 
   protected onUpAction(event: GHEvent): void {
     super.onUpAction(event);
-    this.checkUndetermined(event);
 
     if (this.getState() === State.ACTIVE) this.end(event);
     else this.fail(event);
@@ -82,7 +82,6 @@ export default class LongPressGestureHandler extends GestureHandler {
   }
 
   protected onMoveAction(event: GHEvent): void {
-    this.checkUndetermined(event);
     this.commonAction(event);
   }
 

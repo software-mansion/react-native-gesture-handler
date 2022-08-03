@@ -13,7 +13,7 @@ export default class PinchGestureHandler extends GestureHandler {
   private startingSpan = 0;
   private spanSlop = 0;
 
-  private scaleDetectorCallbacks: ScaleGestureListener = {
+  private scaleDetectorListener: ScaleGestureListener = {
     onScaleBegin: (detector: ScaleGestureDetector): boolean => {
       this.startingSpan = detector.getCurrentSpan();
       return true;
@@ -44,7 +44,7 @@ export default class PinchGestureHandler extends GestureHandler {
   };
 
   private scaleGestureDetector: ScaleGestureDetector = new ScaleGestureDetector(
-    this.scaleDetectorCallbacks
+    this.scaleDetectorListener
   );
 
   public init(ref: number, propsRef: any) {
@@ -68,7 +68,9 @@ export default class PinchGestureHandler extends GestureHandler {
 
   protected onDownAction(event: GHEvent): void {
     super.onDownAction(event);
+
     this.tracker.addToTracker(event);
+
     if (this.tracker.getTrackedPointersNumber() < 2) return;
 
     if (this.tracker.getTrackedPointersNumber() > 1) {
@@ -110,23 +112,18 @@ export default class PinchGestureHandler extends GestureHandler {
     //
   }
 
+  protected onCancelAction(_event: GHEvent): void {
+    this.reset();
+  }
+
   private checkUndetermined(event: GHEvent): void {
     if (this.getState() !== State.UNDETERMINED) return;
 
     this.resetProgress();
-    // if (!this.scaleGestureDetector) {
-    //   this.scaleGestureDetector = new ScaleGestureDetector(
-    //     this.scaleDetectorCallbacks
-    //   );
-    // }
 
     this.spanSlop = DEFAULT_TOUCH_SLOP;
 
     this.begin(event);
-  }
-
-  protected onCancelAction(_event: GHEvent): void {
-    this.reset();
   }
 
   protected activate(event: GHEvent, force?: boolean): void {
