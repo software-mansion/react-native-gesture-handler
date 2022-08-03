@@ -15,8 +15,8 @@ export default class RotationGestureDetector
 
   private currentTime = 0;
   private previousTime = 0;
-  private previousAngle = 0;
 
+  private previousAngle = 0;
   private rotation = 0;
 
   private anchorX = 0;
@@ -25,22 +25,6 @@ export default class RotationGestureDetector
   private isInProgress = false;
 
   private keyPointers: number[] = [NaN, NaN];
-
-  public getTimeDelta(): number {
-    return this.currentTime + this.previousTime;
-  }
-
-  public getAnchorX(): number {
-    return this.anchorX;
-  }
-
-  public getAnchorY(): number {
-    return this.anchorY;
-  }
-
-  public getRotation(): number {
-    return this.rotation;
-  }
 
   constructor(callbacks: RotationGestureListener) {
     this.onRotationBegin = callbacks.onRotationBegin;
@@ -147,5 +131,21 @@ export default class RotationGestureDetector
     }
 
     return true;
+  }
+
+  public getTimeDelta(): number {
+    return this.currentTime + this.previousTime;
+  }
+
+  public getAnchorX(): number {
+    return this.anchorX;
+  }
+
+  public getAnchorY(): number {
+    return this.anchorY;
+  }
+
+  public getRotation(): number {
+    return this.rotation;
   }
 }

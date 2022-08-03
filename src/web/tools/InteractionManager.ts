@@ -4,11 +4,6 @@ export default class InteractionManager {
   private readonly waitForRelations: Map<number, number[]> = new Map();
   private readonly simultaneousRelations: Map<number, number[]> = new Map();
 
-  public dropRelationsForHandlerWithTag(handlerTag: number): void {
-    this.waitForRelations.delete(handlerTag);
-    this.simultaneousRelations.delete(handlerTag);
-  }
-
   public configureInteractions(handler: GestureHandler, config: Config) {
     handler.setInteractionManager(this);
 
@@ -38,18 +33,39 @@ export default class InteractionManager {
     const waitFor: number[] | undefined = this.waitForRelations.get(
       handler.getTag()
     );
-    let ans = false;
-
     if (!waitFor) return false;
+
+    let shouldWait = false;
 
     waitFor.forEach((tag: number) => {
       if (tag === otherHandler.getTag()) {
-        ans = true;
+        shouldWait = true;
+        return; //Returns from callback
+      }
+    });
+
+    return shouldWait;
+  }
+
+  public shouldRecognizeSimultaneously(
+    handler: GestureHandler,
+    otherHandler: GestureHandler
+  ): boolean {
+    const simultaneousHandlers:
+      | number[]
+      | undefined = this.simultaneousRelations.get(handler.getTag());
+    if (!simultaneousHandlers) return false;
+
+    let shouldRecognizeSimultaneously = false;
+
+    simultaneousHandlers.forEach((tag: number) => {
+      if (tag === otherHandler.getTag()) {
+        shouldRecognizeSimultaneously = true;
         return;
       }
     });
 
-    return ans;
+    return shouldRecognizeSimultaneously;
   }
 
   public shouldRequireHandlerToWaitForFailure(
@@ -66,31 +82,9 @@ export default class InteractionManager {
     return false;
   }
 
-  public shouldRecognizeSimultaneously(
-    handler: GestureHandler,
-    otherHandler: GestureHandler
-  ): boolean {
-    const simultaneousHandlers:
-      | number[]
-      | undefined = this.simultaneousRelations.get(handler.getTag());
-    let ans = false;
-
-    if (!simultaneousHandlers) return false;
-
-    simultaneousHandlers.forEach((tag: number) => {
-      if (tag === otherHandler.getTag()) {
-        ans = true;
-        return;
-      }
-    });
-
-    return ans;
-
-    // this.simultaneousRelations.get(handler.getTag())!.forEach((tag) => {
-    //   if (tag === otherHandler.getTag()) return true;
-    // });
-
-    // return false;
+  public dropRelationsForHandlerWithTag(handlerTag: number): void {
+    this.waitForRelations.delete(handlerTag);
+    this.simultaneousRelations.delete(handlerTag);
   }
 
   public reset() {

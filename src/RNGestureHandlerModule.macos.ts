@@ -1,63 +1,112 @@
 import { ActionType } from './ActionType';
-import { Direction } from './web/constants';
-import FlingGestureHandler from './web/handlers/FlingGestureHandler';
-import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
-import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
-// import * as NodeManager from './web/NodeManager';
-import NodeManager from './web/NodeManager';
+import { EXPERIMENTAL_IMPLEMENTATION } from './EnableExperimentalImplementation';
+
+//GestureHandlers
+import InteractionManager from './web/tools/InteractionManager';
+import NodeManager from './web/tools/NodeManager';
 import PanGestureHandler from './web/handlers/PanGestureHandler';
+import TapGestureHandler from './web/handlers/TapGestureHandler';
+import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
 import PinchGestureHandler from './web/handlers/PinchGestureHandler';
 import RotationGestureHandler from './web/handlers/RotationGestureHandler';
-import TapGestureHandler from './web/handlers/TapGestureHandler';
+import FlingGestureHandler from './web/handlers/FlingGestureHandler';
+import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
+
+//Hammer Handlers
+import * as HammerNodeManager from './web_hammer/NodeManager';
+import HammerNativeViewGestureHandler from './web_hammer/NativeViewGestureHandler';
+import HammerPanGestureHandler from './web_hammer/PanGestureHandler';
+import HammerTapGestureHandler from './web_hammer/TapGestureHandler';
+import HammerLongPressGestureHandler from './web_hammer/LongPressGestureHandler';
+import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
+import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
+import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
 
 export const Gestures = {
-  PanGestureHandler,
-  RotationGestureHandler,
-  PinchGestureHandler,
-  TapGestureHandler,
   NativeViewGestureHandler,
+  PanGestureHandler,
+  TapGestureHandler,
   LongPressGestureHandler,
+  PinchGestureHandler,
+  RotationGestureHandler,
   FlingGestureHandler,
-  // ForceTouchGestureHandler,
+};
+
+export const HammerGestures = {
+  NativeViewGestureHandler: HammerNativeViewGestureHandler,
+  PanGestureHandler: HammerPanGestureHandler,
+  TapGestureHandler: HammerTapGestureHandler,
+  LongPressGestureHandler: HammerLongPressGestureHandler,
+  PinchGestureHandler: HammerPinchGestureHandler,
+  RotationGestureHandler: HammerRotationGestureHandler,
+  FlingGestureHandler: HammerFlingGestureHandler,
 };
 
 export default {
-  Direction,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  handleSetJSResponder() {},
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  handleClearJSResponder() {},
+  // Direction,
+  handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
+    console.warn('handleSetJSResponder: ', tag, blockNativeResponder);
+  },
+  handleClearJSResponder() {
+    console.warn('handleClearJSResponder: ');
+  },
   createGestureHandler<T>(
     handlerName: keyof typeof Gestures,
     handlerTag: number,
     config: T
   ) {
-    //TODO(TS) extends config
-    if (!(handlerName in Gestures))
-      throw new Error(
-        `react-native-gesture-handler: ${handlerName} is not supported on macos.`
+    if (EXPERIMENTAL_IMPLEMENTATION) {
+      if (!(handlerName in Gestures)) return;
+
+      const interactionManager = new InteractionManager();
+
+      const GestureClass = Gestures[handlerName];
+      NodeManager.createGestureHandler(handlerTag, new GestureClass());
+      interactionManager.configureInteractions(
+        NodeManager.getHandler(handlerTag),
+        config
       );
-    const GestureClass = Gestures[handlerName];
-    NodeManager.createGestureHandler(handlerTag, new GestureClass());
+    } else {
+      if (!(handlerName in HammerGestures)) return;
+
+      const GestureClass = HammerGestures[handlerName];
+      HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
+    }
+
     this.updateGestureHandler(handlerTag, config);
   },
   attachGestureHandler(
     handlerTag: number,
-    newView: number,
+    newView: number, //ref
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
-    // NodeManager.getHandler(handlerTag).setView(newView, propsRef);
-    NodeManager.getHandler(handlerTag).init(newView, propsRef);
+    if (EXPERIMENTAL_IMPLEMENTATION) {
+      NodeManager.getHandler(handlerTag).init(newView, propsRef);
+    } else {
+      HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
+    }
   },
   updateGestureHandler(handlerTag: number, newConfig: any) {
-    NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+    if (EXPERIMENTAL_IMPLEMENTATION) {
+      NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+    } else {
+      HammerNodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+    }
   },
   getGestureHandlerNode(handlerTag: number) {
-    return NodeManager.getHandler(handlerTag);
+    if (EXPERIMENTAL_IMPLEMENTATION) {
+      return NodeManager.getHandler(handlerTag);
+    } else {
+      return HammerNodeManager.getHandler(handlerTag);
+    }
   },
   dropGestureHandler(handlerTag: number) {
-    NodeManager.dropGestureHandler(handlerTag);
+    if (EXPERIMENTAL_IMPLEMENTATION) {
+      NodeManager.dropGestureHandler(handlerTag);
+    } else {
+      HammerNodeManager.dropGestureHandler(handlerTag);
+    }
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   flushOperations() {},

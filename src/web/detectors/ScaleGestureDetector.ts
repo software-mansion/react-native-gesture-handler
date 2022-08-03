@@ -8,12 +8,12 @@ export interface ScaleGestureListener {
   onScaleEnd: (detector: ScaleGestureDetector) => void;
 }
 
-export default class ScaleGestureDetector implements ScaleGestureListener {
-  private readonly SCALE_FACTOR = 0.5;
-  private readonly ANCHORED_SCALE_MODE_NONE = 0;
-  // private readonly ANCHORED_SCALE_MODE_DOUBLE_TAP = 1;
-  private readonly ANCHORED_SCALE_MODE_STYLUS = 2;
+const SCALE_FACTOR = 0.5;
+const ANCHORED_SCALE_MODE_NONE = 0;
+// const ANCHORED_SCALE_MODE_DOUBLE_TAP = 1;
+const ANCHORED_SCALE_MODE_STYLUS = 2;
 
+export default class ScaleGestureDetector implements ScaleGestureListener {
   public onScaleBegin: (detector: ScaleGestureDetector) => boolean;
   public onScale: (detector: ScaleGestureDetector, event: GHEvent) => boolean;
   public onScaleEnd: (detector: ScaleGestureDetector) => void;
@@ -42,7 +42,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
   private anchoredScaleStartX!: number;
   private anchoredScaleStartY!: number;
-  private anchoredScaleMode = this.ANCHORED_SCALE_MODE_NONE;
+  private anchoredScaleMode = ANCHORED_SCALE_MODE_NONE;
 
   private eventBeforeOrAboveStartingGestureEvent!: boolean;
 
@@ -57,13 +57,14 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
   public onTouchEvent(event: GHEvent, tracker: Tracker): boolean {
     this.currentTime = event.time;
+
     const action: EventTypes = event.eventType;
     const numOfPointers = tracker.getTrackedPointersNumber();
 
     const isStylusButtonDown = false;
 
     const anchoredScaleCancelled: boolean =
-      this.anchoredScaleMode === this.ANCHORED_SCALE_MODE_STYLUS &&
+      this.anchoredScaleMode === ANCHORED_SCALE_MODE_STYLUS &&
       !isStylusButtonDown;
 
     const streamComplete: boolean =
@@ -77,11 +78,11 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
         this.onScaleEnd(this);
         this.inProgress = false;
         this.initialSpan = 0;
-        this.anchoredScaleMode = this.ANCHORED_SCALE_MODE_NONE;
+        this.anchoredScaleMode = ANCHORED_SCALE_MODE_NONE;
       } else if (this.inAnchoredScaleMode() && streamComplete) {
         this.inProgress = false;
         this.initialSpan = 0;
-        this.anchoredScaleMode = this.ANCHORED_SCALE_MODE_NONE;
+        this.anchoredScaleMode = ANCHORED_SCALE_MODE_NONE;
       }
       if (streamComplete) return true;
     }
@@ -202,7 +203,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   }
 
   private inAnchoredScaleMode(): boolean {
-    return this.anchoredScaleMode !== this.ANCHORED_SCALE_MODE_NONE;
+    return this.anchoredScaleMode !== ANCHORED_SCALE_MODE_NONE;
   }
 
   public setQuickScaleEnabled(_scales: boolean): void {
@@ -220,8 +221,13 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   public getFocusX(): number {
     return this.focusX;
   }
+
   public getFocusY(): number {
     return this.focusY;
+  }
+
+  public getTimeDelta(): number {
+    return this.currentTime - this.prevTime;
   }
 
   public getScaleFactor(numOfPointers: number): number {
@@ -237,16 +243,12 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
         this.currentSpan > this.prevSpan);
 
     const spanDiff =
-      Math.abs(1 - this.currentSpan / this.prevSpan) * this.SCALE_FACTOR;
+      Math.abs(1 - this.currentSpan / this.prevSpan) * SCALE_FACTOR;
 
     return this.prevSpan <= this.currentSpan
       ? 1
       : scaleUp
       ? 1 + spanDiff
       : 1 - spanDiff;
-  }
-
-  public getTimeDelta(): number {
-    return this.currentTime - this.prevTime;
   }
 }

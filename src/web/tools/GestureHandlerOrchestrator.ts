@@ -8,10 +8,8 @@ export default class GestureHandlerOrchestrator {
 
   private gestureHandlers: GestureHandler[] = [];
   private awaitingHandlers: GestureHandler[] = [];
-  // private preparedHandlers: GestureHandler[] = [];
   private handlersToCancel: GestureHandler[] = [];
 
-  private isHandlingTouch = false;
   private handlingChangeSemaphore = 0;
   private activationIndex = 0;
 
@@ -20,8 +18,7 @@ export default class GestureHandlerOrchestrator {
   private constructor() {}
 
   private scheduleFinishedHandlersCleanup(): void {
-    if (!this.isHandlingTouch && this.handlingChangeSemaphore === 0)
-      this.cleanupFinishedHandlers();
+    if (this.handlingChangeSemaphore === 0) this.cleanupFinishedHandlers();
   }
 
   private cleanHandler(handler: GestureHandler): void {
@@ -45,19 +42,19 @@ export default class GestureHandlerOrchestrator {
   }
 
   private hasOtherHandlerToWaitFor(handler: GestureHandler): boolean {
-    let ans = false;
+    let hasToWait = false;
     this.gestureHandlers.forEach((otherHandler) => {
       if (
         otherHandler &&
         !this.isFinished(otherHandler.getState()) &&
         this.shouldHandlerWaitForOther(handler, otherHandler)
       ) {
-        ans = true;
+        hasToWait = true;
         return;
       }
     });
 
-    return ans;
+    return hasToWait;
   }
 
   private tryActivate(handler: GestureHandler, event: GHEvent): void {
@@ -78,7 +75,6 @@ export default class GestureHandlerOrchestrator {
         this.awaitingHandlers.splice(i, 1);
       }
     }
-    // this.awaitingHandlers = [];
   }
 
   //
@@ -89,11 +85,6 @@ export default class GestureHandlerOrchestrator {
     event: GHEvent
   ): void {
     this.handlingChangeSemaphore += 1;
-
-    // console.log(this.gestureHandlers);
-
-    // console.log(handler.getId(), `${oldState} -> ${newState}`);
-    // console.log(this.awaitingHandlers);
 
     if (this.isFinished(newState)) {
       this.awaitingHandlers.forEach((otherHandler) => {
@@ -106,8 +97,6 @@ export default class GestureHandlerOrchestrator {
           }
         }
       });
-
-      // this.cleanupAwaitingHandlers(handler);
     }
 
     if (newState === State.ACTIVE) {
@@ -141,12 +130,10 @@ export default class GestureHandlerOrchestrator {
     handler.setShouldResetProgress(true);
     handler.setActivationIndex(this.activationIndex++);
 
-    // console.log(handler.id.indexOf('native'));
     if (handler.getId().indexOf('native') < 0) {
       this.gestureHandlers.forEach((otherHandler) => {
         if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
           this.handlersToCancel.push(otherHandler);
-          // console.log(this.handlersToCancel, otherHandler.id);
         }
       });
 
@@ -161,8 +148,6 @@ export default class GestureHandlerOrchestrator {
         }
       });
     }
-
-    // this.cleanupAwaitingHandlers();
 
     handler.sendEvent(event, State.ACTIVE, State.BEGAN);
 
@@ -181,22 +166,9 @@ export default class GestureHandlerOrchestrator {
     this.handlersToCancel = [];
   }
 
-  // private cancellAll(event: GHEvent): void {
-  //   for (let i = this.awaitingHandlers.length - 1; i >= 0; --i) {
-  //     this.awaitingHandlers[i].cancel(event);
-  //   }
-
-  //   this.gestureHandlers.forEach((handler) => {
-  //     this.preparedHandlers.push(handler);
-  //   });
-
-  //   for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
-  //     this.preparedHandlers[i].cancel(event);
-  //   }
-  // }
-
   private addAwaitingHandler(handler: GestureHandler) {
     let alreadyExists = false;
+
     this.awaitingHandlers.forEach((otherHandler) => {
       if (otherHandler === handler) {
         alreadyExists = true;
@@ -214,6 +186,7 @@ export default class GestureHandlerOrchestrator {
 
   public recordHandlerIfNotPresent(handler: GestureHandler) {
     let alreadyExists = false;
+
     this.gestureHandlers.forEach((otherHandler) => {
       if (otherHandler === handler) {
         alreadyExists = true;
@@ -271,21 +244,7 @@ export default class GestureHandlerOrchestrator {
       otherHandler.clearPointerHistory();
       return false;
     }
-    // if (
-    //   !Tracker.shareCommonPointers(
-    //     handler.getTrackedPointers(),
-    //     otherHandler.getTrackedPointers()
-    //   )
-    // ) {
-    //   console.log(
-    //     handler.getTrackedPointers(),
-    //     otherHandler.getTrackedPointers()
-    //   );
-    //   console.log('st');
-    //   return false;
-    // }
 
-    ///
     if (this.canRunSimultaneously(handler, otherHandler)) {
       return false;
     }
@@ -296,6 +255,7 @@ export default class GestureHandlerOrchestrator {
     ) {
       return handler.shouldBeCancelledByOther(otherHandler);
     }
+
     return true;
   }
 

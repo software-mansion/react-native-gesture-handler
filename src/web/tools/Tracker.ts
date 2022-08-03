@@ -1,5 +1,4 @@
 import { GHEvent } from './EventManager';
-
 interface TrackerElement {
   lastX: number;
   lastY: number;
@@ -10,24 +9,25 @@ interface TrackerElement {
   velocityY: number;
 }
 
-class Tracker {
+const VELOCITY_FACTOR = 0.2;
+export default class Tracker {
   private trackedPointers: Map<number, TrackerElement> = new Map<
     number,
     TrackerElement
   >();
 
-  public addToTracker(pointer: GHEvent): void {
-    if (this.trackedPointers.has(pointer.pointerId)) return;
+  public addToTracker(event: GHEvent): void {
+    if (this.trackedPointers.has(event.pointerId)) return;
 
-    const emptyElement: TrackerElement = {
-      lastX: pointer.x,
-      lastY: pointer.y,
-      timeStamp: pointer.time,
+    const newElement: TrackerElement = {
+      lastX: event.x,
+      lastY: event.y,
+      timeStamp: event.time,
       velocityX: 0,
       velocityY: 0,
     };
 
-    this.trackedPointers.set(pointer.pointerId, emptyElement);
+    this.trackedPointers.set(event.pointerId, newElement);
   }
 
   public removeFromTracker(pointerId: number): void {
@@ -45,15 +45,13 @@ class Tracker {
     const dy = event.y - element.lastY;
     const dt = event.time - element.timeStamp;
 
-    element.velocityX = ((dx / dt) * 1000) / 5;
-    element.velocityY = ((dy / dt) * 1000) / 5;
+    element.velocityX = (dx / dt) * 1000 * VELOCITY_FACTOR;
+    element.velocityY = (dy / dt) * 1000 * VELOCITY_FACTOR;
 
     element.lastX = event.x;
     element.lastY = event.y;
 
     this.trackedPointers.set(event.pointerId, element);
-
-    return;
   }
 
   public getVelocityX(pointerId: number): number {
@@ -67,6 +65,12 @@ class Tracker {
   }
   public getLastY(pointerId: number): number {
     return this.trackedPointers.get(pointerId)?.lastY as number;
+  }
+  public getLastAvgX(): number {
+    return this.getSumX() / this.trackedPointers.size;
+  }
+  public getLastAvgY(): number {
+    return this.getSumY() / this.trackedPointers.size;
   }
   public getSumX(ignoredPointer?: number): number {
     let sumX = 0;
@@ -85,12 +89,6 @@ class Tracker {
     });
 
     return sumY;
-  }
-  public getLastAvgX(): number {
-    return this.getSumX() / this.trackedPointers.size;
-  }
-  public getLastAvgY(): number {
-    return this.getSumY() / this.trackedPointers.size;
   }
   public getTrackedPointersNumber(): number {
     return this.trackedPointers.size;
@@ -112,6 +110,7 @@ class Tracker {
   public resetTracker(): void {
     this.trackedPointers.clear();
   }
+
   public static shareCommonPointers(
     stPointers: number[],
     ndPointers: number[]
@@ -119,5 +118,3 @@ class Tracker {
     return stPointers.some((pointerId) => ndPointers.includes(pointerId));
   }
 }
-
-export default Tracker;

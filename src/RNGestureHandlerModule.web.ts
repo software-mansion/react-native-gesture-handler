@@ -1,4 +1,5 @@
 import { ActionType } from './ActionType';
+import { EXPERIMENTAL_IMPLEMENTATION } from './EnableExperimentalImplementation';
 
 //GestureHandlers
 import InteractionManager from './web/tools/InteractionManager';
@@ -12,7 +13,7 @@ import FlingGestureHandler from './web/handlers/FlingGestureHandler';
 import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
 
 //Hammer Handlers
-// import * as HammerNodeManager from './web_hammer/NodeManager';
+import * as HammerNodeManager from './web_hammer/NodeManager';
 import HammerNativeViewGestureHandler from './web_hammer/NativeViewGestureHandler';
 import HammerPanGestureHandler from './web_hammer/PanGestureHandler';
 import HammerTapGestureHandler from './web_hammer/TapGestureHandler';
@@ -38,10 +39,8 @@ export const HammerGestures = {
   LongPressGestureHandler: HammerLongPressGestureHandler,
   PinchGestureHandler: HammerPinchGestureHandler,
   RotationGestureHandler: HammerRotationGestureHandler,
-  FlingGestureHandle: HammerFlingGestureHandler,
+  FlingGestureHandler: HammerFlingGestureHandler,
 };
-
-const interactionManager = new InteractionManager();
 
 export default {
   // Direction,
@@ -56,19 +55,23 @@ export default {
     handlerTag: number,
     config: T
   ) {
-    if (!(handlerName in Gestures)) return;
+    if (EXPERIMENTAL_IMPLEMENTATION) {
+      if (!(handlerName in Gestures)) return;
 
-    const GestureClass = Gestures[handlerName];
-    NodeManager.createGestureHandler(handlerTag, new GestureClass());
-    interactionManager.configureInteractions(
-      NodeManager.getHandler(handlerTag),
-      config
-    );
+      const interactionManager = new InteractionManager();
 
-    // if (!(handlerName in HammerGestures)) return;
+      const GestureClass = Gestures[handlerName];
+      NodeManager.createGestureHandler(handlerTag, new GestureClass());
+      interactionManager.configureInteractions(
+        NodeManager.getHandler(handlerTag),
+        config
+      );
+    } else {
+      if (!(handlerName in HammerGestures)) return;
 
-    // const GestureClass = HammerGestures[handlerName];
-    // HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
+      const GestureClass = HammerGestures[handlerName];
+      HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
+    }
 
     this.updateGestureHandler(handlerTag, config);
   },
@@ -78,18 +81,32 @@ export default {
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
-    NodeManager.getHandler(handlerTag).init(newView, propsRef);
-    // HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
+    if (EXPERIMENTAL_IMPLEMENTATION) {
+      NodeManager.getHandler(handlerTag).init(newView, propsRef);
+    } else {
+      HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
+    }
   },
   updateGestureHandler(handlerTag: number, newConfig: any) {
-    NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
-    // HammerNodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+    if (EXPERIMENTAL_IMPLEMENTATION) {
+      NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+    } else {
+      HammerNodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+    }
   },
   getGestureHandlerNode(handlerTag: number) {
-    return NodeManager.getHandler(handlerTag);
+    if (EXPERIMENTAL_IMPLEMENTATION) {
+      return NodeManager.getHandler(handlerTag);
+    } else {
+      return HammerNodeManager.getHandler(handlerTag);
+    }
   },
   dropGestureHandler(handlerTag: number) {
-    NodeManager.dropGestureHandler(handlerTag);
+    if (EXPERIMENTAL_IMPLEMENTATION) {
+      NodeManager.dropGestureHandler(handlerTag);
+    } else {
+      HammerNodeManager.dropGestureHandler(handlerTag);
+    }
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   flushOperations() {},

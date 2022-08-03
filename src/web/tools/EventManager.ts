@@ -33,22 +33,20 @@ export enum EventTypes {
   CANCEL,
 }
 
-class EventManager {
+export default class EventManager {
   private activePointers: number[] = [];
   private readonly view: HTMLElement;
 
   constructor(view: HTMLElement) {
     this.view = view;
+    // this.view.oncontextmenu = () => false;
+
+    this.setListeners();
   }
 
-  //
-
   setListeners() {
-    // this.view.oncontextmenu = () => false;
-    //
-    // console.log(this.view);
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
-      // event.preventDefault();
+      event.preventDefault();
 
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.DOWN);
       const target = event.target as HTMLElement;
@@ -59,12 +57,12 @@ class EventManager {
     });
 
     this.view.addEventListener('pointerup', (event: PointerEvent): void => {
-      // event.preventDefault();
+      event.preventDefault();
+
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.UP);
       const target = event.target as HTMLElement;
 
       this.onUpAction(ghEvent);
-
       target.releasePointerCapture(ghEvent.pointerId);
       this.removeActivePointer(ghEvent.pointerId);
     });
@@ -72,38 +70,43 @@ class EventManager {
     this.view.addEventListener('pointermove', (event: PointerEvent): void => {
       event.preventDefault();
 
-      const ghEvent: GHEvent = this.mapEvent(event, EventTypes.MOVE);
-
-      if (ghEvent.pointerType === 'mouse' && ghEvent.buttons !== Buttons.LEFT)
+      if (event.pointerType === 'mouse' && event.buttons !== Buttons.LEFT) {
         return;
+      }
 
-      // console.log('moveeee');
+      const ghEvent: GHEvent = this.mapEvent(event, EventTypes.MOVE);
 
       const inBounds: boolean = this.isPointerInBounds({
         x: ghEvent.x,
         y: ghEvent.y,
       });
+
       const pointerIndex: number = this.activePointers.indexOf(
         ghEvent.pointerId
       );
 
-      if (inBounds && pointerIndex < 0) {
-        ghEvent.eventType = EventTypes.ENTER;
-        this.onEnterAction(ghEvent);
-        this.addActivePointer(ghEvent.pointerId);
-      } else if (!inBounds && pointerIndex >= 0) {
-        ghEvent.eventType = EventTypes.OUT;
-        this.onOutAction(ghEvent);
-        this.removeActivePointer(ghEvent.pointerId);
-      } else if (inBounds && pointerIndex >= 0) {
-        this.onMoveAction(ghEvent);
-      } else if (!inBounds && pointerIndex < 0) {
-        this.onOutOfBoundsAction(ghEvent);
+      if (inBounds) {
+        if (pointerIndex < 0) {
+          ghEvent.eventType = EventTypes.ENTER;
+          this.onEnterAction(ghEvent);
+          this.addActivePointer(ghEvent.pointerId);
+        } else {
+          this.onMoveAction(ghEvent);
+        }
+      } else {
+        if (pointerIndex >= 0) {
+          ghEvent.eventType = EventTypes.OUT;
+          this.onOutAction(ghEvent);
+          this.removeActivePointer(ghEvent.pointerId);
+        } else {
+          this.onOutOfBoundsAction(ghEvent);
+        }
       }
     });
 
     this.view.addEventListener('pointercancel', (event: PointerEvent): void => {
       event.preventDefault();
+
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.CANCEL);
 
       this.onCancelAction(ghEvent);
@@ -165,7 +168,7 @@ class EventManager {
   }
 
   private addActivePointer(pointerId: number): void {
-    // if (this.activePointers.indexOf(pointerId) >= 0) return;
+    if (this.activePointers.indexOf(pointerId) >= 0) return;
 
     this.activePointers.push(pointerId);
   }
@@ -173,10 +176,8 @@ class EventManager {
   private removeActivePointer(pointerId: number): void {
     const index: number = this.activePointers.indexOf(pointerId);
 
-    // if (index < 0) return;
+    if (index < 0) return;
 
     this.activePointers.splice(index, 1);
   }
 }
-
-export default EventManager;

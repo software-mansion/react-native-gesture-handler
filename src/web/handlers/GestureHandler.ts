@@ -90,7 +90,6 @@ abstract class GestureHandler {
     if (!this.view) return;
 
     this.eventManager = new EventManager(this.view);
-    this.eventManager.setListeners();
 
     this.eventManager.setOnDownAction(this.onDownAction.bind(this));
     this.eventManager.setOnUpAction(this.onUpAction.bind(this));
@@ -274,32 +273,34 @@ abstract class GestureHandler {
   //
 
   protected onDownAction(_event: GHEvent): void {
-    //
+    // console.log('Down');
   }
   //Adding another pointer to existing ones
   protected onPointerAdd(_event: GHEvent): void {
     //
   }
   protected onUpAction(_event: GHEvent): void {
-    // console.log(event.eventType);
+    // console.log('Up');
   }
   //Removing pointer, when there is more than one pointers
   protected onPointerRemove(_event: GHEvent): void {
     //
   }
   protected onMoveAction(event: GHEvent): void {
+    // console.log('Move');
     this.pointerMove(event, false);
   }
   protected onOutAction(_event: GHEvent): void {
-    //
+    // console.log('Out');
   }
   protected onEnterAction(_event: GHEvent): void {
-    //
+    // console.log('Enter');
   }
   protected onCancelAction(_event: GHEvent): void {
-    //
+    // console.log('Cancel');
   }
   protected onOutOfBoundsAction(event: GHEvent): void {
+    // console.log('Out of bounds');
     this.pointerMove(event, true);
   }
   private pointerMove(event: GHEvent, out: boolean): void {

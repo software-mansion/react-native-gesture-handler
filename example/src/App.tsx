@@ -43,7 +43,7 @@ import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
 import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
 import ManualGestures from './new_api/manualGestures/index';
-import { enableExperimentalWebImplementation } from '../../src/EnableHammer';
+import { enableExperimentalWebImplementation } from '../../src/EnableExperimentalImplementation';
 
 interface Example {
   name: string;
