@@ -1,7 +1,7 @@
-import { State } from '../State';
-import { EventTypes, GHEvent } from './EventManager';
+import { State } from '../../State';
+import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
-import GestureHandlerOrchestrator from './GestureHandlerOrchestrator';
+import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 
 const DEFAULT_MAX_DURATION_MS = 500;
 const DEFAULT_MAX_DELAY_MS = 200;

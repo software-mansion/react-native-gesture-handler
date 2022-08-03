@@ -1,9 +1,9 @@
-import { State } from '../State';
-import { EventTypes, GHEvent } from './EventManager';
+import { State } from '../../State';
+import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
   RotationGestureListener,
-} from './RotationGestureDetector';
+} from '../detectors/RotationGestureDetector';
 
 const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 

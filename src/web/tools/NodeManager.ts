@@ -1,5 +1,5 @@
-import { ValueOf } from '../typeUtils';
-import { Gestures } from '../RNGestureHandlerModule.web';
+import { ValueOf } from '../../typeUtils';
+import { Gestures } from '../../RNGestureHandlerModule.web';
 
 const gestures: Record<number, InstanceType<ValueOf<typeof Gestures>>> = {};
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
@@ -24,7 +24,6 @@ export default class NodeManager {
   static dropGestureHandler(handlerTag: number) {
     if (!(handlerTag in gestures)) return;
 
-    this.getHandler(handlerTag).destroy();
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete gestures[handlerTag];
   }

@@ -1,10 +1,10 @@
 import { findNodeHandle } from 'react-native';
-import { State } from '../State';
-import EventManager, { GHEvent } from './EventManager';
-import GestureHandlerOrchestrator from './GestureHandlerOrchestrator';
-import InteractionManager from './InteractionManager';
-import NodeManager from './NodeManager';
-import Tracker from './Tracker';
+import { State } from '../../State';
+import EventManager, { GHEvent } from '../tools/EventManager';
+import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
+import InteractionManager from '../tools/InteractionManager';
+import NodeManager from '../tools/NodeManager';
+import Tracker from '../tools/Tracker';
 
 export interface Config extends Record<string, any> {
   enabled?: boolean;
@@ -33,7 +33,6 @@ abstract class GestureHandler {
   protected currentState: State = State.UNDETERMINED;
 
   private gestureInstance: number;
-  private pendingGestures: Record<string, this> = {};
   protected shouldCancellWhenOutside = false;
   protected hasCustomActivationCriteria: boolean;
   protected enabled = false;
@@ -76,7 +75,6 @@ abstract class GestureHandler {
 
   private setView(ref: number) {
     if (!ref) {
-      this.destroy();
       this.view = null;
       return;
     }
@@ -85,7 +83,7 @@ abstract class GestureHandler {
     this.view.style['touchAction'] = 'none';
     this.view.style['webkitUserSelect'] = 'none';
     this.view.style['userSelect'] = 'none';
-    this.view.style['WebkitTouchCallout'] = 'none';
+    // this.view.style['WebkitTouchCallout'] = 'none';
   }
 
   private setEventManager(): void {
@@ -105,31 +103,6 @@ abstract class GestureHandler {
 
   public setInteractionManager(manager: InteractionManager): void {
     this.interactionManager = manager;
-  }
-
-  //
-  // Handling pending gestures
-  //
-
-  // protected removePendingGestures(id: string) {
-  //   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-  //   delete this.pendingGestures[id];
-  // }
-
-  // protected addPendingGesture(gesture: this) {
-  //   this.pendingGestures[gesture.id] = gesture;
-  // }
-
-  // protected clearSelfAsPending() {
-  //   if (Array.isArray(this.config.waitFor)) {
-  //     for (const gesture of this.config.waitFor) {
-  //       gesture.removePendingGestures(this.id);
-  //     }
-  //   }
-  // }
-
-  public destroy() {
-    // this.clearSelfAsPending();
   }
 
   //

@@ -1,5 +1,5 @@
-import { State } from '../State';
-import { GHEvent } from './EventManager';
+import { State } from '../../State';
+import { GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
 export default class LongPressGestureHandler extends GestureHandler {

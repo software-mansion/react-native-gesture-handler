@@ -1,7 +1,7 @@
 import { PixelRatio } from 'react-native';
-import { State } from '../State';
-import { DEFAULT_TOUCH_SLOP } from './constants';
-import { EventTypes, GHEvent } from './EventManager';
+import { State } from '../../State';
+import { DEFAULT_TOUCH_SLOP } from '../constants';
+import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
 // interface PanConfig extends Config {
@@ -57,9 +57,6 @@ class PanGestureHandler extends GestureHandler {
   private offsetY = 0;
   private lastX = 0;
   private lastY = 0;
-
-  private lastCachedX = 0;
-  private lastCachedTime = 0;
 
   private activateAfterLongPress = 0;
 
@@ -278,7 +275,6 @@ class PanGestureHandler extends GestureHandler {
   }
 
   protected onMoveAction(event: GHEvent): void {
-    this.lastCachedX = this.tracker.getLastAvgX();
     this.tracker.track(event);
 
     this.lastX = this.tracker.getLastAvgX();

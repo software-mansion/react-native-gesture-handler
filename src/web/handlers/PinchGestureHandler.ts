@@ -1,10 +1,10 @@
-import { State } from '../State';
-import { DEFAULT_TOUCH_SLOP } from './constants';
-import { EventTypes, GHEvent } from './EventManager';
+import { State } from '../../State';
+import { DEFAULT_TOUCH_SLOP } from '../constants';
+import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
   ScaleGestureListener,
-} from './ScaleGestureDetector';
+} from '../detectors/ScaleGestureDetector';
 
 export default class PinchGestureHandler extends GestureHandler {
   private scale = 1;
@@ -12,8 +12,6 @@ export default class PinchGestureHandler extends GestureHandler {
 
   private startingSpan = 0;
   private spanSlop = 0;
-
-  private scaleGestureDetector: ScaleGestureDetector;
 
   private scaleDetectorCallbacks: ScaleGestureListener = {
     onScaleBegin: (detector: ScaleGestureDetector): boolean => {
@@ -44,6 +42,10 @@ export default class PinchGestureHandler extends GestureHandler {
       //
     },
   };
+
+  private scaleGestureDetector: ScaleGestureDetector = new ScaleGestureDetector(
+    this.scaleDetectorCallbacks
+  );
 
   public init(ref: number, propsRef: any) {
     super.init(ref, propsRef);
@@ -104,17 +106,19 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     super.onMoveAction(event);
   }
-  protected onOutOfBoundsAction(event: GHEvent): void {}
+  protected onOutOfBoundsAction(_event: GHEvent): void {
+    //
+  }
 
   private checkUndetermined(event: GHEvent): void {
     if (this.getState() !== State.UNDETERMINED) return;
 
     this.resetProgress();
-    if (!this.scaleGestureDetector) {
-      this.scaleGestureDetector = new ScaleGestureDetector(
-        this.scaleDetectorCallbacks
-      );
-    }
+    // if (!this.scaleGestureDetector) {
+    //   this.scaleGestureDetector = new ScaleGestureDetector(
+    //     this.scaleDetectorCallbacks
+    //   );
+    // }
 
     this.spanSlop = DEFAULT_TOUCH_SLOP;
 

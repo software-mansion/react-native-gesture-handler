@@ -1,5 +1,5 @@
-import { State } from '../State';
-import { GHEvent } from './EventManager';
+import { State } from '../../State';
+import { GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: any): void {
@@ -7,11 +7,14 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.setShouldCancelWhenOutside(true);
 
+    if (!this.view) return;
+
     this.view.style['touchAction'] = 'auto';
     // this.view.style['webkitUserSelect'] = 'auto';
     // this.view.style['userSelect'] = 'auto';
-    this.view.style['WebkitTouchCallout'] = 'auto';
-    console.log(this.view);
+    // this.view.style['WebkitTouchCallout'] = 'auto';
+
+    // console.log(this.view);
   }
 
   protected resetConfig(): void {
@@ -26,15 +29,13 @@ export default class NativeViewGestureHandler extends GestureHandler {
     super.onDownAction(event);
     this.tracker.addToTracker(event);
 
-    console.log('Native');
-
     if (this.getState() === State.UNDETERMINED) {
       this.begin(event);
       this.activate(event);
     }
   }
 
-  protected onMoveAction(event: GHEvent): void {
+  protected onMoveAction(_event: GHEvent): void {
     //
   }
 
@@ -44,8 +45,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   protected onUpAction(event: GHEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
-
-    console.log(this.tracker.getTrackedPointersNumber());
 
     if (this.tracker.getTrackedPointersNumber() === 0) this.end(event);
   }

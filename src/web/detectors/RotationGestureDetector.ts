@@ -1,5 +1,5 @@
-import { EventTypes, GHEvent } from './EventManager';
-import Tracker from './Tracker';
+import { EventTypes, GHEvent } from '../tools/EventManager';
+import Tracker from '../tools/Tracker';
 
 export interface RotationGestureListener {
   onRotationBegin: (detector: RotationGestureDetector) => boolean;

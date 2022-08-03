@@ -1,6 +1,6 @@
-import { State } from '../State';
-import { Direction } from './constants';
-import { GHEvent } from './EventManager';
+import { State } from '../../State';
+import { Direction } from '../constants';
+import { GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
 export default class FlingGestureHandler extends GestureHandler {
@@ -18,7 +18,7 @@ export default class FlingGestureHandler extends GestureHandler {
   private startY = 0;
   private maxNumberOfPointersSimultaneously = 0;
 
-  private delayTimeout: number;
+  private delayTimeout!: number;
 
   public init(ref: number, propsRef: any): void {
     super.init(ref, propsRef);

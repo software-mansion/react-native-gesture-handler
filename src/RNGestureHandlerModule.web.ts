@@ -1,18 +1,18 @@
 import { ActionType } from './ActionType';
 
 //GestureHandlers
-import InteractionManager from './web/InteractionManager';
-import NodeManager from './web/NodeManager';
-import PanGestureHandler from './web/PanGestureHandler';
-import TapGestureHandler from './web/TapGestureHandler';
-import LongPressGestureHandler from './web/LongPressGestureHandler';
-import PinchGestureHandler from './web/PinchGestureHandler';
-import RotationGestureHandler from './web/RotationGestureHandler';
-import FlingGestureHandler from './web/FlingGestureHandler';
-import NativeViewGestureHandler from './web/NativeViewGestureHandler';
+import InteractionManager from './web/tools/InteractionManager';
+import NodeManager from './web/tools/NodeManager';
+import PanGestureHandler from './web/handlers/PanGestureHandler';
+import TapGestureHandler from './web/handlers/TapGestureHandler';
+import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
+import PinchGestureHandler from './web/handlers/PinchGestureHandler';
+import RotationGestureHandler from './web/handlers/RotationGestureHandler';
+import FlingGestureHandler from './web/handlers/FlingGestureHandler';
+import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
 
 //Hammer Handlers
-import * as HammerNodeManager from './web_hammer/NodeManager';
+// import * as HammerNodeManager from './web_hammer/NodeManager';
 import HammerNativeViewGestureHandler from './web_hammer/NativeViewGestureHandler';
 import HammerPanGestureHandler from './web_hammer/PanGestureHandler';
 import HammerTapGestureHandler from './web_hammer/TapGestureHandler';
@@ -86,7 +86,7 @@ export default {
     // HammerNodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
   },
   getGestureHandlerNode(handlerTag: number) {
-    return HammerNodeManager.getHandler(handlerTag);
+    return NodeManager.getHandler(handlerTag);
   },
   dropGestureHandler(handlerTag: number) {
     NodeManager.dropGestureHandler(handlerTag);

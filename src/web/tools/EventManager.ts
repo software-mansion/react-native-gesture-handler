@@ -51,8 +51,9 @@ class EventManager {
       // event.preventDefault();
 
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.DOWN);
+      const target = event.target as HTMLElement;
 
-      event.target.setPointerCapture(ghEvent.pointerId);
+      target.setPointerCapture(ghEvent.pointerId);
       this.addActivePointer(ghEvent.pointerId);
       this.onDownAction(ghEvent);
     });
@@ -60,10 +61,11 @@ class EventManager {
     this.view.addEventListener('pointerup', (event: PointerEvent): void => {
       // event.preventDefault();
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.UP);
+      const target = event.target as HTMLElement;
 
       this.onUpAction(ghEvent);
 
-      event.target.releasePointerCapture(ghEvent.pointerId);
+      target.releasePointerCapture(ghEvent.pointerId);
       this.removeActivePointer(ghEvent.pointerId);
     });
 

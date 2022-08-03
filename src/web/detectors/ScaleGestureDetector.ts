@@ -1,6 +1,6 @@
-import { DEFAULT_TOUCH_SLOP } from './constants';
-import { EventTypes, GHEvent } from './EventManager';
-import Tracker from './Tracker';
+import { DEFAULT_TOUCH_SLOP } from '../constants';
+import { EventTypes, GHEvent } from '../tools/EventManager';
+import Tracker from '../tools/Tracker';
 
 export interface ScaleGestureListener {
   onScaleBegin: (detector: ScaleGestureDetector) => boolean;
@@ -11,40 +11,40 @@ export interface ScaleGestureListener {
 export default class ScaleGestureDetector implements ScaleGestureListener {
   private readonly SCALE_FACTOR = 0.5;
   private readonly ANCHORED_SCALE_MODE_NONE = 0;
-  private readonly ANCHORED_SCALE_MODE_DOUBLE_TAP = 1;
+  // private readonly ANCHORED_SCALE_MODE_DOUBLE_TAP = 1;
   private readonly ANCHORED_SCALE_MODE_STYLUS = 2;
 
   public onScaleBegin: (detector: ScaleGestureDetector) => boolean;
   public onScale: (detector: ScaleGestureDetector, event: GHEvent) => boolean;
   public onScaleEnd: (detector: ScaleGestureDetector) => void;
 
-  private focusX: number;
-  private focusY: number;
+  private focusX!: number;
+  private focusY!: number;
 
-  private quickScaleEnabled: boolean;
-  private stylusScaleEnabled: boolean;
+  // private quickScaleEnabled: boolean;
+  // private stylusScaleEnabled: boolean;
 
-  private currentSpan: number;
-  private prevSpan: number;
-  private initialSpan: number;
-  private currentSpanX: number;
-  private currentSpanY: number;
-  private prevSpanX: number;
-  private prevSpanY: number;
+  private currentSpan!: number;
+  private prevSpan!: number;
+  private initialSpan!: number;
+  // private currentSpanX!: number;
+  // private currentSpanY!: number;
+  // private prevSpanX: number;
+  // private prevSpanY: number;
 
-  private currentTime: number;
-  private prevTime: number;
+  private currentTime!: number;
+  private prevTime!: number;
 
   private inProgress = false;
 
   private spanSlop: number;
   private minSpan: number;
 
-  private anchoredScaleStartX: number;
-  private anchoredScaleStartY: number;
+  private anchoredScaleStartX!: number;
+  private anchoredScaleStartY!: number;
   private anchoredScaleMode = this.ANCHORED_SCALE_MODE_NONE;
 
-  private eventBeforeOrAboveStartingGestureEvent: boolean;
+  private eventBeforeOrAboveStartingGestureEvent!: boolean;
 
   public constructor(callbacks: ScaleGestureListener) {
     this.onScaleBegin = callbacks.onScaleBegin;
@@ -159,8 +159,8 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     }
 
     if (configChanged) {
-      this.prevSpanX = this.currentSpanX = spanX;
-      this.prevSpanY = this.currentSpanY = spanY;
+      // this.prevSpanX = this.currentSpanX = spanX;
+      // this.prevSpanY = this.currentSpanY = spanY;
       this.initialSpan = this.prevSpan = this.currentSpan = span;
     }
 
@@ -173,8 +173,8 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
       span >= minSpan &&
       (wasInProgress || Math.abs(span - this.initialSpan) > this.spanSlop)
     ) {
-      this.prevSpanX = this.currentSpanX = spanX;
-      this.prevSpanY = this.currentSpanY = spanY;
+      // this.prevSpanX = this.currentSpanX = spanX;
+      // this.prevSpanY = this.currentSpanY = spanY;
       this.prevSpan = this.currentSpan = span;
       this.prevTime = this.currentTime;
       this.inProgress = this.onScaleBegin(this);
@@ -183,8 +183,8 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     //Handle motion
     if (action !== EventTypes.MOVE) return true;
 
-    this.currentSpanX = spanX;
-    this.currentSpanY = spanY;
+    // this.currentSpanX = spanX;
+    // this.currentSpanY = spanY;
     this.currentSpan = span;
 
     let updatePrev = true;
@@ -193,8 +193,8 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     if (!updatePrev) return true;
 
-    this.prevSpanX = this.currentSpanX;
-    this.prevSpanY = this.currentSpanY;
+    // this.prevSpanX = this.currentSpanX;
+    // this.prevSpanY = this.currentSpanY;
     this.prevSpan = this.currentSpan;
     this.prevTime = this.currentTime;
 
@@ -205,12 +205,12 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     return this.anchoredScaleMode !== this.ANCHORED_SCALE_MODE_NONE;
   }
 
-  public setQuickScaleEnabled(scales: boolean): void {
-    this.quickScaleEnabled = scales;
+  public setQuickScaleEnabled(_scales: boolean): void {
+    // this.quickScaleEnabled = scales;
   }
 
-  public setStylusScaleEnabled(scales: boolean): void {
-    this.stylusScaleEnabled = scales;
+  public setStylusScaleEnabled(_scales: boolean): void {
+    // this.stylusScaleEnabled = scales;
   }
 
   public getCurrentSpan(): number {

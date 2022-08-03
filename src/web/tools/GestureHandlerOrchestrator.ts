@@ -1,22 +1,18 @@
-import { NativeViewGestureHandler } from '../handlers/NativeViewGestureHandler';
-import { State } from '../State';
+import { State } from '../../State';
 import { GHEvent } from './EventManager';
-import GestureHandler from './GestureHandler';
+import GestureHandler from '../handlers/GestureHandler';
 import Tracker from './Tracker';
 
 export default class GestureHandlerOrchestrator {
   private static instance: GestureHandlerOrchestrator;
 
-  private readonly DEFAULT_MIN_ALPHA = 0.1;
-
   private gestureHandlers: GestureHandler[] = [];
   private awaitingHandlers: GestureHandler[] = [];
-  private preparedHandlers: GestureHandler[] = [];
+  // private preparedHandlers: GestureHandler[] = [];
   private handlersToCancel: GestureHandler[] = [];
 
   private isHandlingTouch = false;
   private handlingChangeSemaphore = 0;
-  private finishedHandlersCleanupScheduled = false;
   private activationIndex = 0;
 
   // Private beacuse of Singleton
@@ -24,11 +20,8 @@ export default class GestureHandlerOrchestrator {
   private constructor() {}
 
   private scheduleFinishedHandlersCleanup(): void {
-    if (this.isHandlingTouch || this.handlingChangeSemaphore !== 0) {
-      this.finishedHandlersCleanupScheduled = true;
-    } else {
+    if (!this.isHandlingTouch && this.handlingChangeSemaphore === 0)
       this.cleanupFinishedHandlers();
-    }
   }
 
   private cleanHandler(handler: GestureHandler): void {
@@ -49,8 +42,6 @@ export default class GestureHandlerOrchestrator {
         this.cleanHandler(handler);
       }
     }
-
-    this.finishedHandlersCleanupScheduled = false;
   }
 
   private hasOtherHandlerToWaitFor(handler: GestureHandler): boolean {
@@ -190,19 +181,19 @@ export default class GestureHandlerOrchestrator {
     this.handlersToCancel = [];
   }
 
-  private cancellAll(event: GHEvent): void {
-    for (let i = this.awaitingHandlers.length - 1; i >= 0; --i) {
-      this.awaitingHandlers[i].cancel(event);
-    }
+  // private cancellAll(event: GHEvent): void {
+  //   for (let i = this.awaitingHandlers.length - 1; i >= 0; --i) {
+  //     this.awaitingHandlers[i].cancel(event);
+  //   }
 
-    this.gestureHandlers.forEach((handler) => {
-      this.preparedHandlers.push(handler);
-    });
+  //   this.gestureHandlers.forEach((handler) => {
+  //     this.preparedHandlers.push(handler);
+  //   });
 
-    for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
-      this.preparedHandlers[i].cancel(event);
-    }
-  }
+  //   for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
+  //     this.preparedHandlers[i].cancel(event);
+  //   }
+  // }
 
   private addAwaitingHandler(handler: GestureHandler) {
     let alreadyExists = false;

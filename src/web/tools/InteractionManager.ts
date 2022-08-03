@@ -1,4 +1,4 @@
-import GestureHandler, { Config } from './GestureHandler';
+import GestureHandler, { Config } from '../handlers/GestureHandler';
 
 export default class InteractionManager {
   private readonly waitForRelations: Map<number, number[]> = new Map();

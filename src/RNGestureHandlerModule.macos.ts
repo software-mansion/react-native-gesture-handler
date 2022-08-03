@@ -1,13 +1,14 @@
 import { ActionType } from './ActionType';
 import { Direction } from './web/constants';
-import FlingGestureHandler from './web/FlingGestureHandler';
-import LongPressGestureHandler from './web/LongPressGestureHandler';
-import NativeViewGestureHandler from './web/NativeViewGestureHandler';
-import * as NodeManager from './web/NodeManager';
-import PanGestureHandler from './web/PanGestureHandler';
-import PinchGestureHandler from './web/PinchGestureHandler';
-import RotationGestureHandler from './web/RotationGestureHandler';
-import TapGestureHandler from './web/TapGestureHandler';
+import FlingGestureHandler from './web/handlers/FlingGestureHandler';
+import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
+import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
+// import * as NodeManager from './web/NodeManager';
+import NodeManager from './web/NodeManager';
+import PanGestureHandler from './web/handlers/PanGestureHandler';
+import PinchGestureHandler from './web/handlers/PinchGestureHandler';
+import RotationGestureHandler from './web/handlers/RotationGestureHandler';
+import TapGestureHandler from './web/handlers/TapGestureHandler';
 
 export const Gestures = {
   PanGestureHandler,
@@ -46,7 +47,8 @@ export default {
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
-    NodeManager.getHandler(handlerTag).setView(newView, propsRef);
+    // NodeManager.getHandler(handlerTag).setView(newView, propsRef);
+    NodeManager.getHandler(handlerTag).init(newView, propsRef);
   },
   updateGestureHandler(handlerTag: number, newConfig: any) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
