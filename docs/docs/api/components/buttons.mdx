@@ -57,6 +57,10 @@ function that gets triggered when button changes from inactive to active and vic
 
 function that gets triggered when the button gets pressed (analogous to `onPress` in `TouchableHighlight` from RN core).
 
+### `onLongPress`
+
+function that gets triggered when the button gets pressed for at least `delayLongPress` milliseconds.
+
 ### `rippleColor` (**Android only**)
 
 defines color of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation used since API level 21.
@@ -64,6 +68,10 @@ defines color of native [ripple](https://developer.android.com/reference/android
 ### `exclusive`
 
 defines if more than one button could be pressed simultaneously. By default set `true`.
+
+### `delayLongPress`
+
+defines the delay, in milliseconds, after which the `onLongPress` callback gets called. By default set to 600.
 
 ## `RectButton`
 
