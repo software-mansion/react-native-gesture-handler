@@ -82,6 +82,8 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onDownAction(event: GHEvent): void {
+    super.onDownAction(event);
+
     this.tracker.addToTracker(event);
 
     if (this.tracker.getTrackedPointersNumber() <= 1) return;

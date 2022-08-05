@@ -16,7 +16,7 @@ type DataRow = {
 };
 
 const Row = ({ item }: { item: DataRow }) => (
-  <RectButton style={styles.rectButton} onPress={() => Alert.alert(item.from)}>
+  <RectButton style={styles.rectButton} onPress={() => window.alert(item.from)}>
     <Text style={styles.fromText}>{item.from}</Text>
     <Text numberOfLines={2} style={styles.messageText}>
       {item.message}

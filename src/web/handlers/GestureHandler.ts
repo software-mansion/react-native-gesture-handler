@@ -28,7 +28,7 @@ export interface ResultEvent extends Record<string, any> {
 
 let gestureInstances = 0;
 
-abstract class GestureHandler {
+export default abstract class GestureHandler {
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
 
@@ -98,6 +98,8 @@ abstract class GestureHandler {
     this.eventManager.setOnOutAction(this.onOutAction.bind(this));
     this.eventManager.setOnCancelAction(this.onCancelAction.bind(this));
     this.eventManager.setOutOfBoundsAction(this.onOutOfBoundsAction.bind(this));
+
+    this.eventManager.setListeners();
   }
 
   public setInteractionManager(manager: InteractionManager): void {
@@ -117,10 +119,7 @@ abstract class GestureHandler {
   public reset(): void {
     this.tracker.resetTracker();
     this.onReset();
-  }
-
-  protected resetConfig(): void {
-    //
+    this.currentState = State.UNDETERMINED;
   }
 
   //
@@ -159,7 +158,7 @@ abstract class GestureHandler {
       newState === State.FAILED ||
       newState === State.CANCELLED
     ) {
-      this.currentState = State.UNDETERMINED;
+      // this.currentState = State.UNDETERMINED;
     }
   }
 
@@ -274,6 +273,7 @@ abstract class GestureHandler {
 
   protected onDownAction(_event: GHEvent): void {
     // console.log('Down');
+    GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
   }
   //Adding another pointer to existing ones
   protected onPointerAdd(_event: GHEvent): void {
@@ -334,10 +334,16 @@ abstract class GestureHandler {
       oldState
     );
 
-    // console.error(this.lastSentState === oldState);
+    const eventOldState: State = resultEvent.oldState as State;
 
-    invokeNullableMethod(onGestureHandlerEvent, resultEvent);
+    // console.error(this.lastSentState === oldState);
+    if (this.getState() === State.ACTIVE) {
+      // console.log('send');
+      // resultEvent.oldState = undefined;
+      invokeNullableMethod(onGestureHandlerEvent, resultEvent);
+    }
     if (this.lastSentState !== newState) {
+      // resultEvent.oldState = eventOldState;
       this.lastSentState = newState;
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
@@ -360,7 +366,7 @@ abstract class GestureHandler {
         handlerTag: this.handlerTag,
         target: this.ref as number,
         oldState:
-          newState !== oldState || newState === State.ACTIVE
+          newState !== oldState //|| newState === State.ACTIVE
             ? oldState
             : undefined,
       },
@@ -377,16 +383,8 @@ abstract class GestureHandler {
   //
 
   public updateGestureConfig({ enabled = true, ...props }): void {
-    // this.clearSelfAsPending();
-
     this.config = this.ensureConfig({ enabled, ...props });
     this.hasCustomActivationCriteria = true;
-
-    // if (Array.isArray(this.config.waitFor)) {
-    //   for (const gesture of this.config.waitFor) {
-    //     gesture.addPendingGesture(this);
-    //   }
-    // }
   }
 
   private ensureConfig(config: Config): Required<Config> {
@@ -438,6 +436,22 @@ abstract class GestureHandler {
       }
     });
     return props as Required<Config>;
+  }
+
+  protected hasCustomCriteria(): void {
+    for (const key in this.config) {
+      if (
+        !isNaN(this.config[key]) &&
+        this.config[key] !== undefined &&
+        this.config[key] !== null
+      ) {
+        this.hasCustomActivationCriteria = true;
+      }
+    }
+  }
+
+  protected resetConfig(): void {
+    //
   }
 
   private asArray<T>(value: T | T[]) {
@@ -539,5 +553,3 @@ function invokeNullableMethod(
     return;
   }
 }
-
-export default GestureHandler;

@@ -40,6 +40,7 @@ import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
+import { EXPERIMENTAL_IMPLEMENTATION } from '../../EnableExperimentalImplementation';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -116,6 +117,9 @@ function checkGestureCallbacksForWorklets(gesture: GestureType) {
 
 interface WebEventHandler {
   onGestureHandlerEvent: (event: HandlerStateChangeEvent<unknown>) => void;
+  onGestureHandlerStateChange?: (
+    event: HandlerStateChangeEvent<unknown>
+  ) => void;
 }
 
 interface AttachHandlersConfig {
@@ -525,6 +529,11 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
     },
+    onGestureHandlerStateChange: EXPERIMENTAL_IMPLEMENTATION
+      ? (e: HandlerStateChangeEvent<unknown>) => {
+          onGestureHandlerEvent(e.nativeEvent);
+        }
+      : undefined,
   });
 
   const preparedGesture = React.useRef<GestureConfigReference>({

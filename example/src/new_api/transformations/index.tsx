@@ -36,7 +36,8 @@ function Photo() {
   const panGesture = Gesture.Pan()
     .averageTouches(true)
     .onChange((e) => {
-      'worklet';
+      console.log(e);
+      ('worklet');
       translationX.value += e.changeX;
       translationY.value += e.changeY;
     });

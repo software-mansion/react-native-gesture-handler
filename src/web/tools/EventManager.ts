@@ -40,13 +40,23 @@ export default class EventManager {
   constructor(view: HTMLElement) {
     this.view = view;
     // this.view.oncontextmenu = () => false;
-
-    this.setListeners();
   }
 
-  setListeners() {
+  public setListeners() {
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
       event.preventDefault();
+      // event.stopPropagation();
+
+      // console.log(event.pointerId);
+
+      if (
+        !this.isPointerInBounds({
+          x: event.clientX,
+          y: event.clientY,
+        })
+      ) {
+        return;
+      }
 
       const ghEvent: GHEvent = this.mapEvent(event, EventTypes.DOWN);
       const target = event.target as HTMLElement;

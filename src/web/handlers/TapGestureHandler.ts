@@ -1,7 +1,6 @@
 import { State } from '../../State';
 import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
-import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 
 const DEFAULT_MAX_DURATION_MS = 500;
 const DEFAULT_MAX_DELAY_MS = 200;
@@ -44,16 +43,6 @@ export default class TapGestureHandler extends GestureHandler {
 
   public updateGestureConfig({ ...props }): void {
     super.updateGestureConfig({ enabled: true, ...props });
-
-    for (const key in this.config) {
-      if (
-        !isNaN(this.config[key]) &&
-        this.config[key] !== undefined &&
-        this.config[key] !== null
-      ) {
-        this.hasCustomActivationCriteria = true;
-      }
-    }
 
     this.enabled = this.config.enabled as boolean;
 
@@ -127,9 +116,12 @@ export default class TapGestureHandler extends GestureHandler {
     super.onDownAction(event);
     this.tracker.addToTracker(event);
 
-    if (this.tracker.getTrackedPointersNumber() >= this.minNumberOfPointers) {
-      GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
-    }
+    // console.log(
+    //   this.eventManager?.isPointerInBounds({
+    //     x: event.x,
+    //     y: event.y,
+    //   })
+    // );
 
     this.checkUndetermined(event);
 
@@ -155,6 +147,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   protected onUpAction(event: GHEvent): void {
+    // console.log(this.getTag());
     this.pointersHistory.push(event.pointerId);
 
     if (this.tracker.getTrackedPointersNumber() > 1) {

@@ -28,16 +28,6 @@ export default class FlingGestureHandler extends GestureHandler {
   public updateGestureConfig({ ...props }): void {
     super.updateGestureConfig({ enabled: true, ...props });
 
-    for (const key in this.config) {
-      if (
-        !isNaN(this.config[key]) &&
-        this.config[key] !== undefined &&
-        this.config[key] !== null
-      ) {
-        this.hasCustomActivationCriteria = true;
-      }
-    }
-
     this.enabled = this.config.enabled as boolean;
 
     if (this.config.direction) {
@@ -91,6 +81,8 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   protected onDownAction(event: GHEvent): void {
+    super.onDownAction(event);
+
     this.tracker.addToTracker(event);
 
     if (this.getState() === State.UNDETERMINED) {

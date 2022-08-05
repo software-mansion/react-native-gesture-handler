@@ -4,25 +4,7 @@ import { DEFAULT_TOUCH_SLOP } from '../constants';
 import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
-// interface PanConfig extends Config {
-//   minDist?: number;
-//   maxDist?: number;
-
-//   minPointers?: number;
-//   maxPointers?: number;
-
-//   minVelocity?: number;
-
-//   activeOffsetXStart?: number;
-//   activeOffsetXEnd?: number;
-//   failOffsetXStart?: number;
-//   failOffsetXEnd?: number;
-//   activeOffsetYStart?: number;
-//   activeOffsetYEnd?: number;
-//   failOffsetYStart?: number;
-//   failOffsetYEnd?: number;
-// }
-class PanGestureHandler extends GestureHandler {
+export default class PanGestureHandler extends GestureHandler {
   readonly DEFAULT_MIN_POINTERS = 1;
   readonly DEFAULT_MAX_POINTERS = 1;
 
@@ -60,28 +42,16 @@ class PanGestureHandler extends GestureHandler {
 
   private activateAfterLongPress = 0;
 
-  //
-  public init(ref: number, propsRef: any): void {
-    super.init(ref, propsRef);
-  }
-  //
-
   get name(): string {
     return 'pan';
   }
 
+  public init(ref: number, propsRef: any): void {
+    super.init(ref, propsRef);
+  }
+
   public updateGestureConfig({ ...props }): void {
     super.updateGestureConfig({ enabled: true, ...props });
-
-    for (const key in this.config) {
-      if (
-        !isNaN(this.config[key]) &&
-        this.config[key] !== undefined &&
-        this.config[key] !== null
-      ) {
-        this.hasCustomActivationCriteria = true;
-      }
-    }
 
     this.enabled = this.config.enabled as boolean;
 
@@ -144,24 +114,6 @@ class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected transformNativeEvent(event: GHEvent): any {
-    if (!this.view) return;
-
-    const rect = this.view.getBoundingClientRect();
-    const ratio = PixelRatio.get();
-
-    return {
-      translationX: this.getTranslationX(),
-      translationY: this.getTranslationY(),
-      absoluteX: event.x,
-      absoluteY: event.y,
-      velocityX: this.velocityX * ratio * 10,
-      velocityY: this.velocityY * ratio * 10,
-      x: event.x - rect.left,
-      y: event.y - rect.top,
-    };
-  }
-
   protected resetConfig(): void {
     super.resetConfig();
 
@@ -185,6 +137,24 @@ class PanGestureHandler extends GestureHandler {
     this.maxPointers = this.DEFAULT_MAX_POINTERS;
 
     this.activateAfterLongPress = 0;
+  }
+
+  protected transformNativeEvent(event: GHEvent): any {
+    if (!this.view) return;
+
+    const rect = this.view.getBoundingClientRect();
+    const ratio = PixelRatio.get();
+
+    return {
+      translationX: this.getTranslationX(),
+      translationY: this.getTranslationY(),
+      absoluteX: event.x,
+      absoluteY: event.y,
+      velocityX: this.velocityX * ratio * 10,
+      velocityY: this.velocityY * ratio * 10,
+      x: event.x - rect.left,
+      y: event.y - rect.top,
+    };
   }
 
   private getTranslationX(): number {
@@ -220,8 +190,6 @@ class PanGestureHandler extends GestureHandler {
 
     this.startX = this.lastX;
     this.startY = this.lastY;
-
-    // this.checkUndetermined(event);
 
     if (this.tracker.getTrackedPointersNumber() > this.maxPointers) {
       if (this.getState() === State.ACTIVE) this.cancel(event);
@@ -465,5 +433,3 @@ class PanGestureHandler extends GestureHandler {
     //
   }
 }
-
-export default PanGestureHandler;

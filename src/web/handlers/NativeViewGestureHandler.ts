@@ -2,6 +2,10 @@ import { State } from '../../State';
 import { GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
+  private buttonRole!: boolean;
+
+  private disallowInterruption = false;
+
   public init(ref: number, propsRef: any): void {
     super.init(ref, propsRef);
 
@@ -14,7 +18,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
     // this.view.style['userSelect'] = 'auto';
     // this.view.style['WebkitTouchCallout'] = 'auto';
 
-    // console.log(this.view);
+    if (this.view.hasAttribute('role')) this.buttonRole = true;
+    else this.buttonRole = false;
   }
 
   protected resetConfig(): void {
@@ -31,7 +36,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     if (this.getState() === State.UNDETERMINED) {
       this.begin(event);
-      this.activate(event);
+      if (this.buttonRole) this.activate(event);
     }
   }
 
@@ -45,13 +50,49 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   protected onUpAction(event: GHEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
-
+    if (!this.buttonRole) this.activate(event);
     if (this.tracker.getTrackedPointersNumber() === 0) this.end(event);
   }
 
   protected onCancelAction(event: GHEvent): void {
     this.reset();
     this.cancel(event);
+  }
+
+  public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
+    if (super.shouldRecognizeSimultaneously(handler)) return true;
+
+    if (
+      handler instanceof NativeViewGestureHandler &&
+      handler.getState() === State.ACTIVE &&
+      handler.disallowsInterruption()
+    ) {
+      return false;
+    }
+
+    const canBeInterrupted = !this.disallowInterruption;
+
+    if (
+      this.getState() === State.ACTIVE &&
+      handler.getState() === State.ACTIVE &&
+      canBeInterrupted
+    ) {
+      return false;
+    }
+
+    return (
+      this.getState() === State.ACTIVE &&
+      canBeInterrupted &&
+      handler.getTag() > 0
+    );
+  }
+
+  public shouldBeCancelledByOther(_handler: GestureHandler): boolean {
+    return !this.disallowInterruption;
+  }
+
+  public disallowsInterruption(): boolean {
+    return this.disallowInterruption;
   }
 
   protected onCancel(): void {

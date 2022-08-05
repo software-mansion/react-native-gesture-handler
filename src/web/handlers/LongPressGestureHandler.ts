@@ -37,16 +37,6 @@ export default class LongPressGestureHandler extends GestureHandler {
   public updateGestureConfig({ ...props }): void {
     super.updateGestureConfig({ enabled: true, ...props });
 
-    for (const key in this.config) {
-      if (
-        !isNaN(this.config[key]) &&
-        this.config[key] !== undefined &&
-        this.config[key] !== null
-      ) {
-        this.hasCustomActivationCriteria = true;
-      }
-    }
-
     this.enabled = this.config.enabled as boolean;
 
     if (this.config.minDurationMs || this.config.maxDurationMs === 0) {
@@ -68,17 +58,17 @@ export default class LongPressGestureHandler extends GestureHandler {
     clearTimeout(this.activationTimeout);
   }
 
+  protected onDownAction(event: GHEvent): void {
+    super.onDownAction(event);
+    this.checkUndetermined(event);
+    this.commonAction(event);
+  }
+
   protected onUpAction(event: GHEvent): void {
     super.onUpAction(event);
 
     if (this.getState() === State.ACTIVE) this.end(event);
     else this.fail(event);
-  }
-
-  protected onDownAction(event: GHEvent): void {
-    super.onDownAction(event);
-    this.checkUndetermined(event);
-    this.commonAction(event);
   }
 
   protected onMoveAction(event: GHEvent): void {

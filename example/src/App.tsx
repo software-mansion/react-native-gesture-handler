@@ -175,6 +175,7 @@ export default function App() {
 // export default gestureHandlerRootHOC(BouncingBox);
 // export default Fling;
 // export default HorizontalDrawer;
+// export default gestureHandlerRootHOC(Transformations);
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   return (

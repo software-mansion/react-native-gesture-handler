@@ -29,11 +29,12 @@ export default class GestureHandlerOrchestrator {
   }
 
   private cleanupFinishedHandlers(): void {
+    // console.log(this.gestureHandlers);
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
       const handler = this.gestureHandlers[i];
       if (!handler) continue;
 
-      if (this.isFinished(handler.getState()) && handler.isAwaiting()) {
+      if (this.isFinished(handler.getState()) && !handler.isAwaiting()) {
         this.gestureHandlers.splice(i, 1);
 
         this.cleanHandler(handler);
@@ -86,6 +87,8 @@ export default class GestureHandlerOrchestrator {
   ): void {
     this.handlingChangeSemaphore += 1;
 
+    // console.log(handler.getId());
+
     if (this.isFinished(newState)) {
       this.awaitingHandlers.forEach((otherHandler) => {
         if (this.shouldHandlerWaitForOther(otherHandler, handler)) {
@@ -132,7 +135,12 @@ export default class GestureHandlerOrchestrator {
 
     if (handler.getId().indexOf('native') < 0) {
       this.gestureHandlers.forEach((otherHandler) => {
-        if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
+        const res = this.shouldHandlerBeCancelledBy(otherHandler, handler);
+        console.log(otherHandler.getTag(), handler.getTag(), res);
+
+        //Order of arguments is correct - we check whether current handler should cancell existing handlers
+        // if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
+        if (res) {
           this.handlersToCancel.push(otherHandler);
         }
       });
@@ -140,7 +148,6 @@ export default class GestureHandlerOrchestrator {
       for (let i = this.handlersToCancel.length - 1; i >= 0; --i) {
         this.handlersToCancel[i]?.cancel(event);
       }
-
       this.awaitingHandlers.forEach((otherHandler) => {
         if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
           otherHandler?.cancel(event);
@@ -219,6 +226,10 @@ export default class GestureHandlerOrchestrator {
     gh1: GestureHandler,
     gh2: GestureHandler
   ): boolean {
+    // console.log(gh1.getId(), gh2.getId());
+    // console.log(gh1.shouldRecognizeSimultaneously(gh2));
+    // console.log(gh2.shouldRecognizeSimultaneously(gh1));
+
     return (
       gh1 === gh2 ||
       gh1.shouldRecognizeSimultaneously(gh2) ||
@@ -235,19 +246,42 @@ export default class GestureHandlerOrchestrator {
       | number[]
       | null = otherHandler.getPointersHistory();
 
+    // console.log(handler.getTag(), otherHandler.getTag());
+
+    console.log(handler.getTrackedPointersID());
+    console.log(otherHandler.getTrackedPointersID());
+    console.log(
+      Tracker.shareCommonPointers(
+        handler.getTrackedPointersID(),
+        otherHandler.getTrackedPointersID()
+      )
+    );
+
     if (
-      handlerPointerHistory &&
-      otherPointerHistory &&
-      !Tracker.shareCommonPointers(handlerPointerHistory, otherPointerHistory)
+      (handlerPointerHistory &&
+        otherPointerHistory &&
+        !Tracker.shareCommonPointers(
+          handlerPointerHistory,
+          otherPointerHistory
+        )) ||
+      !Tracker.shareCommonPointers(
+        handler.getTrackedPointersID(),
+        otherHandler.getTrackedPointersID()
+      )
     ) {
       handler.clearPointerHistory();
       otherHandler.clearPointerHistory();
+
       return false;
     }
+
+    console.log('std');
 
     if (this.canRunSimultaneously(handler, otherHandler)) {
       return false;
     }
+
+    console.log('nd');
 
     if (
       handler !== otherHandler &&
