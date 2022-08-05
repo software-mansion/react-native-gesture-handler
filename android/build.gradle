@@ -1,5 +1,6 @@
 import groovy.json.JsonSlurper
 import java.nio.file.Paths
+import org.apache.tools.ant.taskdefs.condition.Os
 
 buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
@@ -100,6 +101,11 @@ android {
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
                     cppFlags "-std=c++17"
                     targets "rngesturehandler_modules"
+
+                    // Fix for windows limit on number of character in file paths and in command lines
+                    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                        arguments "NDK_APP_SHORT_COMMANDS=true"
+                    }
                 }
             }
         }
