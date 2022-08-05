@@ -36,7 +36,7 @@ To make it easier for us to understand your issue and to be able to approach it 
 
 ### Multiple versions of Gesture Handler were detected
 
-This error usually happens when in your project there exists more than one instance of Gesture Handler. It can occur when some of your dependency has installed Gesture Handler inside their own `node_modules` instead of using it as a peer dependency. In this case two different versions of Gesture Handler JS module try to install the same Native Module. You can resolve this problem manually by modifying your `package.json` file.
+This error usually happens when in your project there exists more than one instance of Gesture Handler. It can occur when some of your dependencies have installed Gesture Handler inside their own `node_modules` instead of using it as a peer dependency. In this case two different versions of Gesture Handler JS module try to install the same Native Module. You can resolve this problem manually by modifying your `package.json` file.
 
 You can check which libraries are using Gesture Handler, for example, with the command:
 ```bash
