@@ -57,7 +57,7 @@ If you use `npm` you should add [`overrides` property](https://docs.npmjs.com/cl
 }
 ```
 
-After that you need to run you package manager again
+After that you need to run your package manager again
 ```bash
 yarn
 ```
