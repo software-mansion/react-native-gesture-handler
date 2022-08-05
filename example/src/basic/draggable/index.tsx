@@ -41,9 +41,6 @@ export class DraggableBox extends Component<DraggableBoxProps> {
     );
   }
   private onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
-    console.log(
-      `Old state: ${event.nativeEvent.oldState}, New state: ${event.nativeEvent.state}`
-    );
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastOffset.x += event.nativeEvent.translationX;
       this.lastOffset.y += event.nativeEvent.translationY;

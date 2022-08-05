@@ -25,16 +25,12 @@ export class PressBox extends Component<PressBoxProps> {
     event: LongPressGestureHandlerStateChangeEvent
   ) => {
     this.props.setDuration?.(event.nativeEvent.duration);
-    console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'long');
     if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert('Long press');
       console.log('long');
-      // window.alert(`LONG`);
+      window.alert(`LONG`);
     }
   };
   private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
-    // console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'single');
-
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert("I'm touched");
       console.log('single');
@@ -42,8 +38,6 @@ export class PressBox extends Component<PressBoxProps> {
     }
   };
   private onDoubleTap = (event: TapGestureHandlerStateChangeEvent) => {
-    // console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'double');
-
     if (event.nativeEvent.state === State.ACTIVE) {
       Alert.alert('Double tap, good job!');
       console.log('double');
@@ -57,7 +51,7 @@ export class PressBox extends Component<PressBoxProps> {
         minDurationMs={800}>
         <TapGestureHandler
           onHandlerStateChange={this.onSingleTap}
-          waitFor={this.doubleTapRef}
+          // waitFor={this.doubleTapRef}
           // simultaneousHandlers={this.doubleTapRef}>
         >
           <TapGestureHandler

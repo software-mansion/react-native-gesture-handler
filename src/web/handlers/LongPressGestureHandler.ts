@@ -67,7 +67,7 @@ export default class LongPressGestureHandler extends GestureHandler {
   protected onUpAction(event: GHEvent): void {
     super.onUpAction(event);
 
-    if (this.getState() === State.ACTIVE) this.end(event);
+    if (this.currentState === State.ACTIVE) this.end(event);
     else this.fail(event);
   }
 
@@ -76,7 +76,7 @@ export default class LongPressGestureHandler extends GestureHandler {
   }
 
   private checkUndetermined(event: GHEvent): void {
-    if (this.getState() !== State.UNDETERMINED) return;
+    if (this.currentState !== State.UNDETERMINED) return;
 
     this.previousTime = Date.now();
     this.startTime = this.previousTime;
@@ -101,7 +101,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     const distSq = dx * dx + dy * dy;
 
     if (distSq > this.maxDistSq) {
-      if (this.getState() === State.ACTIVE) this.cancel(event);
+      if (this.currentState === State.ACTIVE) this.cancel(event);
       else this.fail(event);
     }
   }

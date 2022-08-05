@@ -43,7 +43,7 @@ export default abstract class GestureHandler {
   private handlerTag!: number;
   protected view: HTMLElement | null = null;
 
-  protected eventManager: EventManager | null = null;
+  protected eventManager!: EventManager;
   protected tracker: Tracker = new Tracker();
   protected interactionManager!: InteractionManager;
 
@@ -128,21 +128,9 @@ export default abstract class GestureHandler {
 
   public moveToState(newState: State, event: GHEvent) {
     if (this.currentState === newState) return;
-    // console.log(`${this.currentState} -> ${newState}`);
-
-    if (
-      this.tracker.getTrackedPointersNumber() > 0 &&
-      (newState === State.END ||
-        newState === State.CANCELLED ||
-        newState === State.FAILED)
-    ) {
-      // this.cancelPointers();
-    }
 
     const oldState = this.currentState;
     this.currentState = newState;
-
-    //TODO eventCoalescingKey logic
 
     GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
       this,
@@ -152,14 +140,6 @@ export default abstract class GestureHandler {
     );
 
     this.onStateChange(newState, oldState);
-
-    if (
-      newState === State.END ||
-      newState === State.FAILED ||
-      newState === State.CANCELLED
-    ) {
-      // this.currentState = State.UNDETERMINED;
-    }
   }
 
   protected onStateChange(_newState: State, _oldState: State): void {
@@ -172,12 +152,8 @@ export default abstract class GestureHandler {
   }
 
   public fail(event: GHEvent): void {
-    if (this.getState() !== State.ACTIVE) this.resetProgress();
-    if (
-      this.currentState === State.ACTIVE ||
-      // this.currentState === State.UNDETERMINED ||
-      this.currentState === State.BEGAN
-    )
+    if (this.currentState !== State.ACTIVE) this.resetProgress();
+    if (this.currentState === State.ACTIVE || this.currentState === State.BEGAN)
       this.moveToState(State.FAILED, event);
   }
 
@@ -272,7 +248,6 @@ export default abstract class GestureHandler {
   //
 
   protected onDownAction(_event: GHEvent): void {
-    // console.log('Down');
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
   }
   //Adding another pointer to existing ones
@@ -280,37 +255,33 @@ export default abstract class GestureHandler {
     //
   }
   protected onUpAction(_event: GHEvent): void {
-    // console.log('Up');
+    //
   }
   //Removing pointer, when there is more than one pointers
   protected onPointerRemove(_event: GHEvent): void {
     //
   }
   protected onMoveAction(event: GHEvent): void {
-    // console.log('Move');
     this.pointerMove(event, false);
   }
   protected onOutAction(_event: GHEvent): void {
-    // console.log('Out');
+    //
   }
   protected onEnterAction(_event: GHEvent): void {
-    // console.log('Enter');
+    //
   }
   protected onCancelAction(_event: GHEvent): void {
-    // console.log('Cancel');
+    //
   }
   protected onOutOfBoundsAction(event: GHEvent): void {
-    // console.log('Out of bounds');
     this.pointerMove(event, true);
   }
   private pointerMove(event: GHEvent, out: boolean): void {
-    const state = this.getState();
-
     if (
-      state === State.ACTIVE &&
+      this.currentState === State.ACTIVE &&
       (!out || (out && !this.shouldCancellWhenOutside))
     ) {
-      this.sendEvent(event, state, state);
+      this.sendEvent(event, this.currentState, this.currentState);
     }
   }
 
@@ -334,16 +305,10 @@ export default abstract class GestureHandler {
       oldState
     );
 
-    const eventOldState: State = resultEvent.oldState as State;
-
-    // console.error(this.lastSentState === oldState);
-    if (this.getState() === State.ACTIVE) {
-      // console.log('send');
-      // resultEvent.oldState = undefined;
+    if (this.currentState === State.ACTIVE) {
       invokeNullableMethod(onGestureHandlerEvent, resultEvent);
     }
     if (this.lastSentState !== newState) {
-      // resultEvent.oldState = eventOldState;
       this.lastSentState = newState;
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
@@ -365,10 +330,7 @@ export default abstract class GestureHandler {
         ...this.transformNativeEvent(event),
         handlerTag: this.handlerTag,
         target: this.ref as number,
-        oldState:
-          newState !== oldState //|| newState === State.ACTIVE
-            ? oldState
-            : undefined,
+        oldState: newState !== oldState ? oldState : undefined,
       },
       timeStamp: Date.now(),
     };
@@ -483,6 +445,14 @@ export default abstract class GestureHandler {
     return `${this.name}${this.gestureInstance}`;
   }
 
+  public getView(): HTMLElement | null {
+    return this.view;
+  }
+
+  public getEventManager(): EventManager {
+    return this.eventManager;
+  }
+
   public getTracker(): Tracker {
     return this.tracker;
   }
@@ -518,7 +488,6 @@ function invokeNullableMethod(
     | { __nodeConfig: { argMapping: ResultEvent } },
   event: ResultEvent
 ): void {
-  // console.log(event);
   if (!method) return;
 
   if (typeof method === 'function') {

@@ -32,9 +32,7 @@ class Snappable extends Component<PropsWithChildren<Record<string, unknown>>> {
   }
 
   private onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
-    console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'pan');
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      console.log(event.nativeEvent.velocityX, 'VelocityX');
       Animated.spring(this.dragX, {
         velocity: event.nativeEvent.velocityX,
         tension: 10,
@@ -88,8 +86,6 @@ class Twistable extends Component<PropsWithChildren<unknown>> {
   private onHandlerStateChange = (
     event: RotationGestureHandlerStateChangeEvent
   ) => {
-    console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'rot');
-
     if (event.nativeEvent.oldState === State.ACTIVE) {
       Animated.spring(this.gesture, {
         velocity: event.nativeEvent.velocity,

@@ -34,7 +34,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     super.onDownAction(event);
     this.tracker.addToTracker(event);
 
-    if (this.getState() === State.UNDETERMINED) {
+    if (this.currentState === State.UNDETERMINED) {
       this.begin(event);
       if (this.buttonRole) this.activate(event);
     }
@@ -55,8 +55,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   protected onCancelAction(event: GHEvent): void {
-    this.reset();
     this.cancel(event);
+    this.reset();
   }
 
   public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
@@ -73,7 +73,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const canBeInterrupted = !this.disallowInterruption;
 
     if (
-      this.getState() === State.ACTIVE &&
+      this.currentState === State.ACTIVE &&
       handler.getState() === State.ACTIVE &&
       canBeInterrupted
     ) {
@@ -81,7 +81,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
 
     return (
-      this.getState() === State.ACTIVE &&
+      this.currentState === State.ACTIVE &&
       canBeInterrupted &&
       handler.getTag() > 0
     );

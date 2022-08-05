@@ -29,7 +29,6 @@ export default class GestureHandlerOrchestrator {
   }
 
   private cleanupFinishedHandlers(): void {
-    // console.log(this.gestureHandlers);
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
       const handler = this.gestureHandlers[i];
       if (!handler) continue;
@@ -78,7 +77,6 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  //
   public onHandlerStateChange(
     handler: GestureHandler,
     newState: State,
@@ -86,8 +84,6 @@ export default class GestureHandlerOrchestrator {
     event: GHEvent
   ): void {
     this.handlingChangeSemaphore += 1;
-
-    // console.log(handler.getId());
 
     if (this.isFinished(newState)) {
       this.awaitingHandlers.forEach((otherHandler) => {
@@ -135,12 +131,8 @@ export default class GestureHandlerOrchestrator {
 
     if (handler.getId().indexOf('native') < 0) {
       this.gestureHandlers.forEach((otherHandler) => {
-        const res = this.shouldHandlerBeCancelledBy(otherHandler, handler);
-        console.log(otherHandler.getTag(), handler.getTag(), res);
-
         //Order of arguments is correct - we check whether current handler should cancell existing handlers
-        // if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        if (res) {
+        if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
           this.handlersToCancel.push(otherHandler);
         }
       });
@@ -226,10 +218,6 @@ export default class GestureHandlerOrchestrator {
     gh1: GestureHandler,
     gh2: GestureHandler
   ): boolean {
-    // console.log(gh1.getId(), gh2.getId());
-    // console.log(gh1.shouldRecognizeSimultaneously(gh2));
-    // console.log(gh2.shouldRecognizeSimultaneously(gh1));
-
     return (
       gh1 === gh2 ||
       gh1.shouldRecognizeSimultaneously(gh2) ||
@@ -246,51 +234,88 @@ export default class GestureHandlerOrchestrator {
       | number[]
       | null = otherHandler.getPointersHistory();
 
-    // console.log(handler.getTag(), otherHandler.getTag());
-
-    console.log(handler.getTrackedPointersID());
-    console.log(otherHandler.getTrackedPointersID());
-    console.log(
-      Tracker.shareCommonPointers(
-        handler.getTrackedPointersID(),
-        otherHandler.getTrackedPointersID()
-      )
-    );
+    const handlerPointers: number[] = handler.getTrackedPointersID();
+    const otherPointers: number[] = otherHandler.getTrackedPointersID();
 
     if (
-      (handlerPointerHistory &&
-        otherPointerHistory &&
-        !Tracker.shareCommonPointers(
-          handlerPointerHistory,
-          otherPointerHistory
-        )) ||
-      !Tracker.shareCommonPointers(
-        handler.getTrackedPointersID(),
-        otherHandler.getTrackedPointersID()
-      )
+      handlerPointerHistory &&
+      otherPointerHistory &&
+      !Tracker.shareCommonPointers(handlerPointerHistory, otherPointerHistory)
     ) {
+      //Similar to the one above, except this one uses pointer history
+      //This is used for TapGestureHandler to make double tap work properly
+
       handler.clearPointerHistory();
       otherHandler.clearPointerHistory();
 
       return false;
     }
 
-    console.log('std');
+    if (
+      !Tracker.shareCommonPointers(handlerPointers, otherPointers) &&
+      handler.getView() !== otherHandler.getView()
+    ) {
+      return this.checkOverlap(handler, otherHandler);
+    }
 
     if (this.canRunSimultaneously(handler, otherHandler)) {
       return false;
     }
 
-    console.log('nd');
-
     if (
       handler !== otherHandler &&
       (handler.isAwaiting() || handler.getState() === State.ACTIVE)
     ) {
-      return handler.shouldBeCancelledByOther(otherHandler);
+      return handler.shouldBeCancelledByOther(otherHandler); //Returns false
     }
 
     return true;
+  }
+
+  private checkOverlap(
+    handler: GestureHandler,
+    otherHandler: GestureHandler
+  ): boolean {
+    //If handlers don't have common pointers, default return value is false.
+    //However, if at least on pointer overlaps with both handlers, we return true
+    //This solves issue in overlapping parents example
+
+    const handlerPointers: number[] = handler.getTrackedPointersID();
+    const otherPointers: number[] = otherHandler.getTrackedPointersID();
+
+    let overlap = false;
+
+    handlerPointers.forEach((pointer: number) => {
+      const handlerX: number = handler.getTracker().getLastX(pointer);
+      const handlerY: number = handler.getTracker().getLastY(pointer);
+
+      if (
+        handler
+          .getEventManager()
+          .isPointerInBounds({ x: handlerX, y: handlerY }) &&
+        otherHandler
+          .getEventManager()
+          .isPointerInBounds({ x: handlerX, y: handlerY })
+      ) {
+        overlap = true;
+      }
+    });
+
+    otherPointers.forEach((pointer: number) => {
+      const otherX: number = otherHandler.getTracker().getLastX(pointer);
+      const otherY: number = otherHandler.getTracker().getLastY(pointer);
+
+      if (
+        handler.getEventManager().isPointerInBounds({ x: otherX, y: otherY }) &&
+        otherHandler
+          .getEventManager()
+          .isPointerInBounds({ x: otherX, y: otherY })
+      ) {
+        overlap = true;
+      }
+    });
+
+    return overlap;
   }
 
   private isFinished(state: State): boolean {

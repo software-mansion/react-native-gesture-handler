@@ -32,7 +32,7 @@ export default class PinchGestureHandler extends GestureHandler {
       if (
         Math.abs(this.startingSpan - detector.getCurrentSpan()) >=
           this.spanSlop &&
-        this.getState() === State.BEGAN
+        this.currentState === State.BEGAN
       ) {
         this.activate(event);
       }
@@ -86,17 +86,17 @@ export default class PinchGestureHandler extends GestureHandler {
       this.tracker.removeFromTracker(event.pointerId);
     } else {
       this.tracker.removeFromTracker(event.pointerId);
-      if (this.getState() !== State.ACTIVE) return;
+      if (this.currentState !== State.ACTIVE) return;
       this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     }
     if (
-      this.getState() === State.ACTIVE &&
+      this.currentState === State.ACTIVE &&
       this.tracker.getTrackedPointersNumber() < 2
     ) {
       this.end(event);
     } else if (
       event.eventType === EventTypes.UP &&
-      this.getState() !== State.BEGAN
+      this.currentState !== State.BEGAN
     ) {
       this.fail(event);
     }
@@ -117,7 +117,7 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   private checkUndetermined(event: GHEvent): void {
-    if (this.getState() !== State.UNDETERMINED) return;
+    if (this.currentState !== State.UNDETERMINED) return;
 
     this.resetProgress();
 
@@ -127,7 +127,7 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected activate(event: GHEvent, force?: boolean): void {
-    if (this.getState() !== State.ACTIVE) this.resetProgress();
+    if (this.currentState !== State.ACTIVE) this.resetProgress();
 
     super.activate(event, force);
   }
@@ -138,10 +138,11 @@ export default class PinchGestureHandler extends GestureHandler {
   protected onReset(): void {
     // this.getScaleGestureDetector = null;
     this.resetProgress();
+    //
   }
 
   protected resetProgress(): void {
-    if (this.getState() === State.ACTIVE) return;
+    if (this.currentState === State.ACTIVE) return;
     this.velocity = 0;
     this.scale = 1;
   }

@@ -31,7 +31,7 @@ export default class RotationGestureHandler extends GestureHandler {
 
       if (
         Math.abs(this.rotation) >= ROTATION_RECOGNITION_THRESHOLD &&
-        this.getState() === State.BEGAN
+        this.currentState === State.BEGAN
       ) {
         this.activate(event);
       }
@@ -128,12 +128,12 @@ export default class RotationGestureHandler extends GestureHandler {
     } else {
       this.tracker.removeFromTracker(event.pointerId);
       this.rotationGestureDetector.onTouchEvent(event, this.tracker);
-      if (this.getState() !== State.ACTIVE) return;
+      if (this.currentState !== State.ACTIVE) return;
     }
 
     if (event.eventType !== EventTypes.UP) return;
 
-    if (this.getState() === State.ACTIVE) this.end(event);
+    if (this.currentState === State.ACTIVE) this.end(event);
     else this.fail(event);
   }
 
@@ -143,7 +143,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected checkUndetermined(event: GHEvent): void {
-    if (this.getState() !== State.UNDETERMINED) return;
+    if (this.currentState !== State.UNDETERMINED) return;
 
     this.resetProgress();
 
@@ -152,7 +152,7 @@ export default class RotationGestureHandler extends GestureHandler {
 
   //
   protected activate(event: GHEvent, _force?: boolean): void {
-    if (this.getState() !== State.ACTIVE) this.resetProgress();
+    if (this.currentState !== State.ACTIVE) this.resetProgress();
 
     super.activate(event);
   }
@@ -166,7 +166,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
-    if (this.getState() === State.ACTIVE) return;
+    if (this.currentState === State.ACTIVE) return;
 
     this.rotation = 0;
     this.velocity = 0;

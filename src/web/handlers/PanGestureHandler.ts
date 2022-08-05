@@ -192,7 +192,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.startY = this.lastY;
 
     if (this.tracker.getTrackedPointersNumber() > this.maxPointers) {
-      if (this.getState() === State.ACTIVE) this.cancel(event);
+      if (this.currentState === State.ACTIVE) this.cancel(event);
       else this.fail(event);
     } else this.checkBegan(event);
   }
@@ -208,14 +208,14 @@ export default class PanGestureHandler extends GestureHandler {
       return;
     }
 
-    if (this.getState() === State.ACTIVE) {
+    if (this.currentState === State.ACTIVE) {
       this.lastX = this.tracker.getLastAvgX();
       this.lastY = this.tracker.getLastAvgY();
     }
 
     this.tracker.removeFromTracker(event.pointerId);
 
-    if (this.getState() === State.ACTIVE) {
+    if (this.currentState === State.ACTIVE) {
       this.end(event);
     } else {
       this.resetProgress();
@@ -233,7 +233,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.startY = this.lastY;
 
     if (
-      this.getState() === State.ACTIVE &&
+      this.currentState === State.ACTIVE &&
       this.tracker.getTrackedPointersNumber() < this.minPointers
     ) {
       this.resetProgress();
@@ -274,7 +274,7 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.checkBegan(event);
 
-    if (this.getState() === State.ACTIVE) super.onOutOfBoundsAction(event);
+    if (this.currentState === State.ACTIVE) super.onOutOfBoundsAction(event);
   }
 
   private shouldActivate(): boolean {
@@ -384,7 +384,7 @@ export default class PanGestureHandler extends GestureHandler {
 
   private checkUndetermined(event: GHEvent): void {
     if (
-      this.getState() === State.UNDETERMINED &&
+      this.currentState === State.UNDETERMINED &&
       this.tracker.getTrackedPointersNumber() >= this.minPointers
     ) {
       this.resetProgress();
@@ -403,7 +403,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   private checkBegan(event: GHEvent): void {
-    if (this.getState() === State.BEGAN) {
+    if (this.currentState === State.BEGAN) {
       if (this.shouldFail()) this.fail(event);
       else if (this.shouldActivate()) {
         this.activate(event);
@@ -420,7 +420,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
-    if (this.getState() === State.ACTIVE) return;
+    if (this.currentState === State.ACTIVE) return;
 
     this.startX = this.lastX;
     this.startY = this.lastY;

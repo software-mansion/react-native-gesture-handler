@@ -216,7 +216,7 @@ export default class TapGestureHandler extends GestureHandler {
       return;
     }
 
-    switch (this.getState()) {
+    switch (this.currentState) {
       case State.UNDETERMINED:
         if (event.eventType === EventTypes.DOWN) this.begin(event);
         this.startTap(event);
@@ -231,7 +231,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   private checkUndetermined(event: GHEvent): void {
-    if (this.getState() !== State.UNDETERMINED) return;
+    if (this.currentState !== State.UNDETERMINED) return;
 
     this.offsetX = 0;
     this.offsetY = 0;

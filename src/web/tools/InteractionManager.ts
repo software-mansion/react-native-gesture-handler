@@ -80,7 +80,6 @@ export default class InteractionManager {
     _otherHandler: GestureHandler
   ): boolean {
     return false;
-    // return true;
   }
 
   public dropRelationsForHandlerWithTag(handlerTag: number): void {
