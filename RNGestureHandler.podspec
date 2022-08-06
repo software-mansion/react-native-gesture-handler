@@ -2,6 +2,18 @@ require "json"
 
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED']
 
+libInstances = %x[find ../../ -name "package.json" | grep "/react-native-gesture-handler/"]
+libInstancesArray = libInstances.split("\n")
+if libInstancesArray.length() > 1
+  parsedLocation = ''
+  for location in libInstancesArray
+    location['../../'] = '- '
+    location['/package.json'] = ''
+    parsedLocation += location + "\n"
+  end
+  raise "[Gesture Handler] Multiple versions of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-versions-of-reanimated-were-detected \n\nConflict between: \n" + parsedLocation
+end
+
 Pod::Spec.new do |s|
   # NPM package specification
   package = JSON.parse(File.read(File.join(File.dirname(__FILE__), "package.json")))
