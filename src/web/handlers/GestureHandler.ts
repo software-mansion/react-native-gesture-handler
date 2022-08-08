@@ -63,13 +63,12 @@ export default abstract class GestureHandler {
   //
 
   protected init(ref: number, propsRef: any) {
-    this.setView(ref);
-
     this.propsRef = propsRef;
     this.ref = ref;
 
     this.currentState = State.UNDETERMINED;
 
+    this.setView(ref);
     this.setEventManager();
   }
 
@@ -83,7 +82,7 @@ export default abstract class GestureHandler {
     this.view.style['touchAction'] = 'none';
     this.view.style['webkitUserSelect'] = 'none';
     this.view.style['userSelect'] = 'none';
-    // this.view.style['WebkitTouchCallout'] = 'none';
+    this.view.style['WebkitTouchCallout'] = 'none';
   }
 
   private setEventManager(): void {
@@ -366,13 +365,32 @@ export default abstract class GestureHandler {
     }
     if (config.waitFor) {
       props.waitFor = this.asArray(config.waitFor)
-        .map(({ handlerTag }: { handlerTag: number }) =>
-          NodeManager.getHandler(handlerTag)
-        )
+        .map((handler: number | GestureHandler) => {
+          if (typeof handler === 'number') {
+            return NodeManager.getHandler(handler);
+          } else {
+            return NodeManager.getHandler(handler.handlerTag);
+          }
+        })
         .filter((v) => v);
     } else {
       props.waitFor = null;
     }
+
+    if (config.simultaneousHandlers) {
+      props.simultaneousHandlers = this.asArray(config.simultaneousHandlers)
+        .map((handler: number | GestureHandler) => {
+          if (typeof handler === 'number') {
+            return NodeManager.getHandler(handler);
+          } else {
+            return NodeManager.getHandler(handler.handlerTag);
+          }
+        })
+        .filter((v) => v);
+    } else {
+      props.simultaneousHandlers = null;
+    }
+
     const configProps = [
       'minPointers',
       'maxPointers',
@@ -470,14 +488,6 @@ export default abstract class GestureHandler {
   }
   protected getShouldCancelWhenOutside(): boolean {
     return this.shouldCancellWhenOutside;
-  }
-
-  //Pointers history for TapGestureHandler
-  public getPointersHistory(): number[] | null {
-    return null;
-  }
-  public clearPointerHistory(): void {
-    //
   }
 }
 

@@ -371,7 +371,6 @@ export default class DrawerLayout extends Component<
   private onTapHandlerStateChange = ({
     nativeEvent,
   }: HandlerStateChangeEvent<TapGestureHandlerEventPayload>) => {
-    console.log(nativeEvent.oldState, nativeEvent.state);
     if (
       this.drawerShown &&
       nativeEvent.oldState === State.ACTIVE &&

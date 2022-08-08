@@ -5,12 +5,13 @@ export default class InteractionManager {
   private readonly simultaneousRelations: Map<number, number[]> = new Map();
 
   public configureInteractions(handler: GestureHandler, config: Config) {
-    handler.setInteractionManager(this);
+    this.dropRelationsForHandlerWithTag(handler.getTag());
 
     if (config.waitFor) {
       const waitFor: number[] = [];
-      config.waitFor.forEach((handler) => {
-        waitFor.push(handler.handlerTag);
+      config.waitFor.forEach((handler: any) => {
+        if (typeof handler === 'number') waitFor.push(handler);
+        else waitFor.push(handler.handlerTag);
       });
 
       this.waitForRelations.set(handler.getTag(), waitFor);
@@ -19,11 +20,16 @@ export default class InteractionManager {
     if (config.simultaneousHandlers) {
       const simultaneousHandlers: number[] = [];
       config.simultaneousHandlers.forEach((handler) => {
-        simultaneousHandlers.push(handler.handlerTag);
+        if (typeof handler === 'number') {
+          simultaneousHandlers.push(handler);
+        } else {
+          simultaneousHandlers.push(handler.handlerTag);
+        }
       });
 
       this.simultaneousRelations.set(handler.getTag(), simultaneousHandlers);
     }
+    handler.setInteractionManager(this);
   }
 
   public shouldWaitForHandlerFailure(

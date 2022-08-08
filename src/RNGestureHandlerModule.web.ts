@@ -42,6 +42,8 @@ export const HammerGestures = {
   FlingGestureHandler: HammerFlingGestureHandler,
 };
 
+const interactionManager = new InteractionManager();
+
 export default {
   // Direction,
   handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
@@ -57,8 +59,6 @@ export default {
   ) {
     if (EXPERIMENTAL_IMPLEMENTATION) {
       if (!(handlerName in Gestures)) return;
-
-      const interactionManager = new InteractionManager();
 
       const GestureClass = Gestures[handlerName];
       NodeManager.createGestureHandler(handlerTag, new GestureClass());
@@ -90,6 +90,11 @@ export default {
   updateGestureHandler(handlerTag: number, newConfig: any) {
     if (EXPERIMENTAL_IMPLEMENTATION) {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+
+      interactionManager.configureInteractions(
+        NodeManager.getHandler(handlerTag),
+        newConfig
+      );
     } else {
       HammerNodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
     }

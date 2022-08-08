@@ -28,13 +28,13 @@ export default class TapGestureHandler extends GestureHandler {
   private waitTimeout: number | undefined;
   private delayTimeout: number | undefined;
 
-  private pointersHistory: number[] = [];
-
   private tapsSoFar = 0;
 
   public init(ref: number, propsRef: any): void {
     super.init(ref, propsRef);
     this.setShouldCancelWhenOutside(true);
+
+    console.log();
   }
 
   get name(): string {
@@ -116,13 +116,6 @@ export default class TapGestureHandler extends GestureHandler {
     super.onDownAction(event);
     this.tracker.addToTracker(event);
 
-    // console.log(
-    //   this.eventManager?.isPointerInBounds({
-    //     x: event.x,
-    //     y: event.y,
-    //   })
-    // );
-
     this.checkUndetermined(event);
 
     if (this.tracker.getTrackedPointersNumber() > 1) {
@@ -147,9 +140,6 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   protected onUpAction(event: GHEvent): void {
-    // console.log(this.getTag());
-    this.pointersHistory.push(event.pointerId);
-
     if (this.tracker.getTrackedPointersNumber() > 1) {
       this.tracker.removeFromTracker(event.pointerId);
 
@@ -267,14 +257,6 @@ export default class TapGestureHandler extends GestureHandler {
     if (!this.isAwaiting()) {
       this.end(event);
     }
-  }
-
-  public getPointersHistory(): number[] | null {
-    return this.pointersHistory;
-  }
-
-  public clearPointerHistory(): void {
-    this.pointersHistory = [];
   }
 
   protected onCancel(): void {

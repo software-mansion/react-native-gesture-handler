@@ -85,13 +85,7 @@ export class PinchableBox extends React.Component {
   private onPinchHandlerStateChange = (
     event: PinchGestureHandlerStateChangeEvent
   ) => {
-    // console.error(event.nativeEvent.oldState, event.nativeEvent.state);
-    // // console.log(event);
-    // console.log(this.pinchScale, 'PinchScale');
-    // console.log(this.lastScale, 'LastScale');
-    // console.log(this.baseScale, 'BaseScale');
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      // console.log('activeeee');
       this.lastScale *= event.nativeEvent.scale;
       this.baseScale.setValue(this.lastScale);
       this.pinchScale.setValue(1);
@@ -100,7 +94,7 @@ export class PinchableBox extends React.Component {
   private onTiltGestureStateChange = (
     event: PanGestureHandlerStateChangeEvent
   ) => {
-    // console.log(event.nativeEvent.oldState, event.nativeEvent.state);
+    console.log(event.nativeEvent.oldState, event.nativeEvent.state);
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastTilt += event.nativeEvent.translationY;
       this.tilt.setOffset(this.lastTilt);

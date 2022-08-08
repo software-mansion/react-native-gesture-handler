@@ -129,24 +129,22 @@ export default class GestureHandlerOrchestrator {
     handler.setShouldResetProgress(true);
     handler.setActivationIndex(this.activationIndex++);
 
-    if (handler.getId().indexOf('native') < 0) {
-      this.gestureHandlers.forEach((otherHandler) => {
-        //Order of arguments is correct - we check whether current handler should cancell existing handlers
-        if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-          this.handlersToCancel.push(otherHandler);
-        }
-      });
-
-      for (let i = this.handlersToCancel.length - 1; i >= 0; --i) {
-        this.handlersToCancel[i]?.cancel(event);
+    this.gestureHandlers.forEach((otherHandler) => {
+      //Order of arguments is correct - we check whether current handler should cancell existing handlers
+      if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
+        this.handlersToCancel.push(otherHandler);
       }
-      this.awaitingHandlers.forEach((otherHandler) => {
-        if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-          otherHandler?.cancel(event);
-          otherHandler?.setAwaiting(true);
-        }
-      });
+    });
+
+    for (let i = this.handlersToCancel.length - 1; i >= 0; --i) {
+      this.handlersToCancel[i]?.cancel(event);
     }
+    this.awaitingHandlers.forEach((otherHandler) => {
+      if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
+        otherHandler?.cancel(event);
+        otherHandler?.setAwaiting(true);
+      }
+    });
 
     handler.sendEvent(event, State.ACTIVE, State.BEGAN);
 
@@ -165,7 +163,7 @@ export default class GestureHandlerOrchestrator {
     this.handlersToCancel = [];
   }
 
-  private addAwaitingHandler(handler: GestureHandler) {
+  private addAwaitingHandler(handler: GestureHandler): void {
     let alreadyExists = false;
 
     this.awaitingHandlers.forEach((otherHandler) => {
@@ -183,7 +181,7 @@ export default class GestureHandlerOrchestrator {
     handler.setActivationIndex(this.activationIndex++);
   }
 
-  public recordHandlerIfNotPresent(handler: GestureHandler) {
+  public recordHandlerIfNotPresent(handler: GestureHandler): void {
     let alreadyExists = false;
 
     this.gestureHandlers.forEach((otherHandler) => {
@@ -202,7 +200,6 @@ export default class GestureHandlerOrchestrator {
     handler.setActivationIndex(Number.MAX_SAFE_INTEGER);
   }
 
-  //
   private shouldHandlerWaitForOther(
     handler: GestureHandler,
     otherHandler: GestureHandler
@@ -229,27 +226,8 @@ export default class GestureHandlerOrchestrator {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const handlerPointerHistory: number[] | null = handler.getPointersHistory();
-    const otherPointerHistory:
-      | number[]
-      | null = otherHandler.getPointersHistory();
-
     const handlerPointers: number[] = handler.getTrackedPointersID();
     const otherPointers: number[] = otherHandler.getTrackedPointersID();
-
-    if (
-      handlerPointerHistory &&
-      otherPointerHistory &&
-      !Tracker.shareCommonPointers(handlerPointerHistory, otherPointerHistory)
-    ) {
-      //Similar to the one above, except this one uses pointer history
-      //This is used for TapGestureHandler to make double tap work properly
-
-      handler.clearPointerHistory();
-      otherHandler.clearPointerHistory();
-
-      return false;
-    }
 
     if (
       !Tracker.shareCommonPointers(handlerPointers, otherPointers) &&
@@ -266,7 +244,8 @@ export default class GestureHandlerOrchestrator {
       handler !== otherHandler &&
       (handler.isAwaiting() || handler.getState() === State.ACTIVE)
     ) {
-      return handler.shouldBeCancelledByOther(otherHandler); //Returns false
+      //For now it always returns false
+      return handler.shouldBeCancelledByOther(otherHandler);
     }
 
     return true;
@@ -324,7 +303,7 @@ export default class GestureHandlerOrchestrator {
     );
   }
 
-  public static getInstance() {
+  public static getInstance(): GestureHandlerOrchestrator {
     if (!GestureHandlerOrchestrator.instance)
       GestureHandlerOrchestrator.instance = new GestureHandlerOrchestrator();
 

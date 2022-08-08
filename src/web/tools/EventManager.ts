@@ -45,9 +45,6 @@ export default class EventManager {
   public setListeners() {
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
       event.preventDefault();
-      // event.stopPropagation();
-
-      // console.log(event.pointerId);
 
       if (
         !this.isPointerInBounds({

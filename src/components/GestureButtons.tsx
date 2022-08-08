@@ -147,7 +147,6 @@ export class BaseButton extends React.Component<BaseButtonProps> {
   private onHandlerStateChange = (
     e: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
   ) => {
-    // console.log(e.nativeEvent.oldState, e.nativeEvent.state);
     this.props.onHandlerStateChange?.(e);
     this.handleEvent(e);
   };

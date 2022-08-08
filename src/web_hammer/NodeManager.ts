@@ -7,8 +7,6 @@ const gestures: Record<
 > = {};
 
 export function getHandler(tag: number) {
-  console.log(tag);
-  console.log(gestures);
   if (tag in gestures) return gestures[tag];
 
   throw new Error(`No handler for tag ${tag}`);
