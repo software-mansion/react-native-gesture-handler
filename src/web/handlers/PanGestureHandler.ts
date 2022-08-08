@@ -182,6 +182,8 @@ export default class PanGestureHandler extends GestureHandler {
     this.checkBegan(event);
   }
   protected onPointerAdd(event: GHEvent): void {
+    this.checkUndetermined(event);
+
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
@@ -232,14 +234,23 @@ export default class PanGestureHandler extends GestureHandler {
     this.startX = this.lastX;
     this.startY = this.lastY;
 
+    // if (
+    //   this.currentState === State.ACTIVE &&
+    //   this.tracker.getTrackedPointersNumber() < this.minPointers
+    // ) {
+    //   // this.resetProgress();
+    //   // this.fail(event);
+    //   // this.end(event);
+    // } else this.checkBegan(event);
+
     if (
-      this.currentState === State.ACTIVE &&
-      this.tracker.getTrackedPointersNumber() < this.minPointers
+      !(
+        this.currentState === State.ACTIVE &&
+        this.tracker.getTrackedPointersNumber() < this.minPointers
+      )
     ) {
-      this.resetProgress();
-      this.fail(event);
-      // this.end(event);
-    } else this.checkBegan(event);
+      this.checkBegan(event);
+    }
   }
 
   protected onMoveAction(event: GHEvent): void {
@@ -248,7 +259,6 @@ export default class PanGestureHandler extends GestureHandler {
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
 
-    this.checkUndetermined(event);
     this.checkBegan(event);
 
     super.onMoveAction(event);

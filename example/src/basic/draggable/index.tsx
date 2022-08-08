@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Animated, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -81,7 +81,7 @@ export default class Example extends Component {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ScrollView style={styles.scrollView}>
-          <LoremIpsum words={400} />
+          <LoremIpsum words={40} />
           <DraggableBox />
           {/* <DraggableBox /> */}
           <LoremIpsum />

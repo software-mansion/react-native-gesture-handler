@@ -127,6 +127,7 @@ export default function Home() {
 
   function finishRecording() {
     setIsRecording(false);
+    console.log(recordingIntervalHandle);
     clearInterval(recordingIntervalHandle!);
     setRemainingTimeMs(MAX_VIDEO_DURATION_MS);
 

@@ -1,4 +1,4 @@
-import { findNodeHandle } from 'react-native';
+import { Dimensions, findNodeHandle } from 'react-native';
 import { State } from '../../State';
 import EventManager, { GHEvent } from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
@@ -146,6 +146,8 @@ export default abstract class GestureHandler {
   }
 
   public begin(event: GHEvent): void {
+    if (!this.checkHitSlopTest(event)) return;
+
     if (this.currentState === State.UNDETERMINED)
       this.moveToState(State.BEGAN, event);
   }
@@ -178,7 +180,6 @@ export default abstract class GestureHandler {
 
   public end(event: GHEvent) {
     this.resetProgress();
-    // this.tracker.resetTracker();
     if (this.currentState === State.BEGAN || this.currentState === State.ACTIVE)
       this.moveToState(State.END, event);
   }
@@ -344,78 +345,9 @@ export default abstract class GestureHandler {
   //
 
   public updateGestureConfig({ enabled = true, ...props }): void {
-    this.config = this.ensureConfig({ enabled, ...props });
+    this.config = { enabled, ...props };
+    this.validateHitSlops();
     this.hasCustomActivationCriteria = true;
-  }
-
-  private ensureConfig(config: Config): Required<Config> {
-    const props = { ...config };
-
-    if (config.minDist) {
-      props.minDist = config.minDist;
-      props.minDistSq = props.minDist * props.minDist;
-    }
-    if (config.minVelocity) {
-      props.minVelocity = config.minVelocity;
-      props.minVelocitySq = props.minVelocity * props.minVelocity;
-    }
-    if (config.maxDist) {
-      props.maxDist = config.maxDist;
-      props.maxDistSq = props.maxDist * props.maxDist;
-    }
-    if (config.waitFor) {
-      props.waitFor = this.asArray(config.waitFor)
-        .map((handler: number | GestureHandler) => {
-          if (typeof handler === 'number') {
-            return NodeManager.getHandler(handler);
-          } else {
-            return NodeManager.getHandler(handler.handlerTag);
-          }
-        })
-        .filter((v) => v);
-    } else {
-      props.waitFor = null;
-    }
-
-    if (config.simultaneousHandlers) {
-      props.simultaneousHandlers = this.asArray(config.simultaneousHandlers)
-        .map((handler: number | GestureHandler) => {
-          if (typeof handler === 'number') {
-            return NodeManager.getHandler(handler);
-          } else {
-            return NodeManager.getHandler(handler.handlerTag);
-          }
-        })
-        .filter((v) => v);
-    } else {
-      props.simultaneousHandlers = null;
-    }
-
-    const configProps = [
-      'minPointers',
-      'maxPointers',
-      'minDist',
-      'maxDist',
-      'maxDistSq',
-      'minVelocitySq',
-      'minDistSq',
-      'minVelocity',
-      'failOffsetXStart',
-      'failOffsetYStart',
-      'failOffsetXEnd',
-      'failOffsetYEnd',
-      'activeOffsetXStart',
-      'activeOffsetXEnd',
-      'activeOffsetYStart',
-      'activeOffsetYEnd',
-    ] as const;
-
-    configProps.forEach((prop: typeof configProps[number]) => {
-      if (typeof props[prop] === 'undefined') {
-        props[prop] = Number.NaN;
-      }
-    });
-    return props as Required<Config>;
   }
 
   protected hasCustomCriteria(): void {
@@ -430,12 +362,120 @@ export default abstract class GestureHandler {
     }
   }
 
-  protected resetConfig(): void {
-    //
+  private validateHitSlops(): void {
+    if (!this.config.hitSlop) return;
+
+    console.log(this.config.hitSlop);
+
+    if (
+      this.config.hitSlop.left !== undefined &&
+      this.config.hitSlop.right !== undefined &&
+      this.config.hitSlop.width !== undefined
+    ) {
+      throw new Error(
+        'HitSlop Error: Cannot define left, right and width at the same time'
+      );
+    }
+
+    if (
+      this.config.hitSlop.width !== undefined &&
+      this.config.hitSlop.left === undefined &&
+      this.config.hitSlop.right === undefined
+    ) {
+      throw new Error(
+        'HitSlop Error: When width is defined, either left or right has to be defined'
+      );
+    }
+
+    if (
+      this.config.hitSlop.height !== undefined &&
+      this.config.hitSlop.top !== undefined &&
+      this.config.hitSlop.bottom !== undefined
+    ) {
+      throw new Error(
+        'HitSlop Error: Cannot define top, bottom and height at the same time'
+      );
+    }
+
+    if (
+      this.config.hitSlop.height !== undefined &&
+      this.config.hitSlop.top === undefined &&
+      this.config.hitSlop.bottom === undefined
+    ) {
+      throw new Error(
+        'HitSlop Error: When height is defined, either top or bottom has to be defined'
+      );
+    }
   }
 
-  private asArray<T>(value: T | T[]) {
-    return !value ? [] : Array.isArray(value) ? value : [value];
+  private checkHitSlopTest(event: GHEvent): boolean {
+    if (!this.config.hitSlop) return true;
+
+    console.log(this.view);
+
+    const width = this.view!.getBoundingClientRect().width;
+    const height = this.view!.getBoundingClientRect().height;
+
+    let left = 0;
+    let top = 0;
+    let right: number = width;
+    let bottom: number = height;
+
+    if (this.config.hitSlop.horizontal !== undefined) {
+      left -= this.config.hitSlop.horizontal;
+      right += this.config.hitSlop.horizontal;
+    }
+
+    if (this.config.hitSlop.vertical !== undefined) {
+      top -= this.config.hitSlop.vertical;
+      bottom += this.config.hitSlop.vertical;
+    }
+
+    if (this.config.hitSlop.left !== undefined) {
+      left = -this.config.hitSlop.left;
+    }
+
+    if (this.config.hitSlop.right !== undefined) {
+      right = width + this.config.hitSlop.right;
+    }
+
+    if (this.config.hitSlop.top !== undefined) {
+      top = -this.config.hitSlop.top;
+    }
+
+    if (this.config.hitSlop.bottom !== undefined) {
+      bottom = width + this.config.hitSlop.bottom;
+    }
+    if (this.config.hitSlop.width !== undefined) {
+      if (this.config.hitSlop.left !== undefined) {
+        right = left + this.config.hitSlop.width;
+      } else if (this.config.hitSlop.right !== undefined) {
+        left = right - this.config.hitSlop.width;
+      }
+    }
+
+    if (this.config.hitSlop.height !== undefined) {
+      if (this.config.hitSlop.top !== undefined) {
+        bottom = top + this.config.hitSlop.height;
+      } else if (this.config.hitSlop.bottom !== undefined) {
+        top = bottom - this.config.hitSlop.height;
+      }
+    }
+
+    console.log(left, right, '|', event.offsetX);
+
+    if (
+      event.offsetX >= left &&
+      event.offsetX <= right &&
+      event.offsetY >= top &&
+      event.offsetY <= bottom
+    )
+      return true;
+    else return false;
+  }
+
+  protected resetConfig(): void {
+    //
   }
 
   //
