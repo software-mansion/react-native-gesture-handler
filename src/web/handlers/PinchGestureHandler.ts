@@ -5,6 +5,7 @@ import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
   ScaleGestureListener,
 } from '../detectors/ScaleGestureDetector';
+import { PropsRef } from '../interfaces';
 
 export default class PinchGestureHandler extends GestureHandler {
   private scale = 1;
@@ -47,13 +48,13 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleDetectorListener
   );
 
-  public init(ref: number, propsRef: any) {
+  public init(ref: number, propsRef: React.RefObject<PropsRef>) {
     super.init(ref, propsRef);
 
     this.setShouldCancelWhenOutside(false);
   }
 
-  protected transformNativeEvent(_event: GHEvent): any {
+  protected transformNativeEvent(_event: GHEvent) {
     return {
       focalX: this.scaleGestureDetector.getFocusX(),
       focalY: this.scaleGestureDetector.getFocusY(),

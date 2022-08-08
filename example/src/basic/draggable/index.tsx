@@ -80,12 +80,12 @@ export default class Example extends Component {
   render() {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ScrollView style={styles.scrollView}>
-          <LoremIpsum words={40} />
-          <DraggableBox />
-          {/* <DraggableBox /> */}
-          <LoremIpsum />
-        </ScrollView>
+        {/* <ScrollView style={styles.scrollView}> */}
+        <LoremIpsum words={40} />
+        <DraggableBox />
+        {/* <DraggableBox /> */}
+        <LoremIpsum />
+        {/* </ScrollView> */}
       </GestureHandlerRootView>
     );
   }

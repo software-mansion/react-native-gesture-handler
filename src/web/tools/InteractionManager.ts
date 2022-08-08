@@ -1,4 +1,5 @@
-import GestureHandler, { Config } from '../handlers/GestureHandler';
+import GestureHandler from '../handlers/GestureHandler';
+import { Config } from '../interfaces';
 
 export default class InteractionManager {
   private readonly waitForRelations: Map<number, number[]> = new Map();
@@ -10,6 +11,7 @@ export default class InteractionManager {
     if (config.waitFor) {
       const waitFor: number[] = [];
       config.waitFor.forEach((handler: any) => {
+        console.log(handler);
         if (typeof handler === 'number') waitFor.push(handler);
         else waitFor.push(handler.handlerTag);
       });

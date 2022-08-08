@@ -21,6 +21,7 @@ import HammerLongPressGestureHandler from './web_hammer/LongPressGestureHandler'
 import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
 import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
 import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
+import { PropsRef } from './web/interfaces';
 
 export const Gestures = {
   NativeViewGestureHandler,
@@ -57,6 +58,7 @@ export default {
     handlerTag: number,
     config: T
   ) {
+    console.log();
     if (EXPERIMENTAL_IMPLEMENTATION) {
       if (!(handlerName in Gestures)) return;
 
@@ -79,7 +81,7 @@ export default {
     handlerTag: number,
     newView: number, //ref
     _actionType: ActionType,
-    propsRef: React.RefObject<unknown>
+    propsRef: React.RefObject<PropsRef>
   ) {
     if (EXPERIMENTAL_IMPLEMENTATION) {
       NodeManager.getHandler(handlerTag).init(newView, propsRef);

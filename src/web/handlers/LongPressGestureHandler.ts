@@ -1,4 +1,5 @@
 import { State } from '../../State';
+import { PropsRef } from '../interfaces';
 import { GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
@@ -23,12 +24,12 @@ export default class LongPressGestureHandler extends GestureHandler {
     return 'long';
   }
 
-  public init(ref: number, propsRef: any) {
+  public init(ref: number, propsRef: React.RefObject<PropsRef>) {
     super.init(ref, propsRef);
     this.setShouldCancelWhenOutside(true);
   }
 
-  protected transformNativeEvent(_event: GHEvent): any {
+  protected transformNativeEvent(_event: GHEvent) {
     return {
       duration: Date.now() - this.startTime,
     };

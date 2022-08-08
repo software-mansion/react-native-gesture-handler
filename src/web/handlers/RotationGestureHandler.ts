@@ -4,6 +4,7 @@ import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
   RotationGestureListener,
 } from '../detectors/RotationGestureDetector';
+import { PropsRef } from '../interfaces';
 
 const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 
@@ -50,13 +51,13 @@ export default class RotationGestureHandler extends GestureHandler {
     this.rotationGestureListener
   );
 
-  public init(ref: number, propsRef: any): void {
+  public init(ref: number, propsRef: React.RefObject<PropsRef>): void {
     super.init(ref, propsRef);
 
     this.setShouldCancelWhenOutside(false);
   }
 
-  protected transformNativeEvent(_event: GHEvent): any {
+  protected transformNativeEvent(_event: GHEvent) {
     return {
       rotation: this.rotation ? this.rotation : 0,
       anchorX: this.getAnchorX(),

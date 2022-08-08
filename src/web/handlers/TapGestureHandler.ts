@@ -1,4 +1,5 @@
 import { State } from '../../State';
+import { PropsRef } from '../interfaces';
 import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
@@ -30,7 +31,7 @@ export default class TapGestureHandler extends GestureHandler {
 
   private tapsSoFar = 0;
 
-  public init(ref: number, propsRef: any): void {
+  public init(ref: number, propsRef: React.RefObject<PropsRef>): void {
     super.init(ref, propsRef);
     this.setShouldCancelWhenOutside(true);
 

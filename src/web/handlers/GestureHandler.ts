@@ -1,30 +1,10 @@
-import { Dimensions, findNodeHandle } from 'react-native';
+import { findNodeHandle } from 'react-native';
 import { State } from '../../State';
+import { Config, PropsRef, ResultEvent } from '../interfaces';
 import EventManager, { GHEvent } from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
-import NodeManager from '../tools/NodeManager';
 import Tracker from '../tools/Tracker';
-
-export interface Config extends Record<string, any> {
-  enabled?: boolean;
-  simultaneousHandlers?: any[] | null;
-  waitFor?: any[] | null;
-}
-
-interface NativeEvent extends Record<string, any> {
-  numberOfPointers: number;
-  state: State;
-  pointerInside: boolean | undefined;
-  handlerTag: number;
-  target: number;
-  oldState?: State;
-}
-
-export interface ResultEvent extends Record<string, any> {
-  nativeEvent: NativeEvent;
-  timeStamp: number;
-}
 
 let gestureInstances = 0;
 
@@ -37,8 +17,8 @@ export default abstract class GestureHandler {
   protected hasCustomActivationCriteria: boolean;
   protected enabled = false;
 
-  private ref: any;
-  private propsRef: any;
+  private ref!: number;
+  private propsRef!: React.RefObject<PropsRef>;
   protected config: Config = {};
   private handlerTag!: number;
   protected view: HTMLElement | null = null;
@@ -62,7 +42,7 @@ export default abstract class GestureHandler {
   //Initializing handler
   //
 
-  protected init(ref: number, propsRef: any) {
+  protected init(ref: number, propsRef: React.RefObject<PropsRef>) {
     this.propsRef = propsRef;
     this.ref = ref;
 
@@ -297,7 +277,7 @@ export default abstract class GestureHandler {
     const {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
-    } = this.propsRef.current;
+    }: PropsRef = this.propsRef.current as PropsRef;
 
     const resultEvent: ResultEvent = this.transformEventData(
       event,
@@ -329,7 +309,7 @@ export default abstract class GestureHandler {
         }),
         ...this.transformNativeEvent(event),
         handlerTag: this.handlerTag,
-        target: this.ref as number,
+        target: this.ref,
         oldState: newState !== oldState ? oldState : undefined,
       },
       timeStamp: Date.now(),
@@ -364,8 +344,6 @@ export default abstract class GestureHandler {
 
   private validateHitSlops(): void {
     if (!this.config.hitSlop) return;
-
-    console.log(this.config.hitSlop);
 
     if (
       this.config.hitSlop.left !== undefined &&
@@ -409,12 +387,12 @@ export default abstract class GestureHandler {
   }
 
   private checkHitSlopTest(event: GHEvent): boolean {
-    if (!this.config.hitSlop) return true;
+    if (!this.config.hitSlop || !this.view) return true;
 
     console.log(this.view);
 
-    const width = this.view!.getBoundingClientRect().width;
-    const height = this.view!.getBoundingClientRect().height;
+    const width = this.view.getBoundingClientRect().width;
+    const height = this.view.getBoundingClientRect().height;
 
     let left = 0;
     let top = 0;
@@ -461,8 +439,6 @@ export default abstract class GestureHandler {
         top = bottom - this.config.hitSlop.height;
       }
     }
-
-    console.log(left, right, '|', event.offsetX);
 
     if (
       event.offsetX >= left &&
@@ -535,7 +511,7 @@ function invokeNullableMethod(
   method:
     | ((event: ResultEvent) => void)
     | { __getHandler: () => (event: ResultEvent) => void }
-    | { __nodeConfig: { argMapping: ResultEvent } },
+    | { __nodeConfig: { argMapping: any[] } },
   event: ResultEvent
 ): void {
   if (!method) return;

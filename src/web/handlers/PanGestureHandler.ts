@@ -1,6 +1,7 @@
 import { PixelRatio } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
+import { PropsRef } from '../interfaces';
 import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
@@ -46,7 +47,7 @@ export default class PanGestureHandler extends GestureHandler {
     return 'pan';
   }
 
-  public init(ref: number, propsRef: any): void {
+  public init(ref: number, propsRef: React.RefObject<PropsRef>): void {
     super.init(ref, propsRef);
   }
 
@@ -139,10 +140,8 @@ export default class PanGestureHandler extends GestureHandler {
     this.activateAfterLongPress = 0;
   }
 
-  protected transformNativeEvent(event: GHEvent): any {
-    if (!this.view) return;
-
-    const rect = this.view.getBoundingClientRect();
+  protected transformNativeEvent(event: GHEvent) {
+    const rect = this.view!.getBoundingClientRect();
     const ratio = PixelRatio.get();
 
     return {

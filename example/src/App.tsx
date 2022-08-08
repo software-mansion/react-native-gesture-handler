@@ -8,7 +8,6 @@ import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import {
   GestureHandlerRootView,
   RectButton,
-  gestureHandlerRootHOC,
 } from 'react-native-gesture-handler';
 import OverflowParent from './release_tests/overflowParent';
 import DoublePinchRotate from './release_tests/doubleScalePinchAndRotate';
@@ -144,7 +143,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.root}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -211,6 +210,9 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   sectionTitle: {
     ...Platform.select({
       ios: {
