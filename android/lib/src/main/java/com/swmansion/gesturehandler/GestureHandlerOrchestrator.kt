@@ -2,10 +2,14 @@ package com.swmansion.gesturehandler
 
 import android.graphics.Matrix
 import android.graphics.PointF
+import android.os.Build
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.annotation.RequiresApi
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import java.util.*
 
 class GestureHandlerOrchestrator(
@@ -145,6 +149,7 @@ class GestureHandlerOrchestrator(
       }
       cleanupAwaitingHandlers()
     }
+    Log.w("rngh", "$handler $prevState $newState")
     if (newState == GestureHandler.STATE_ACTIVE) {
       tryActivate(handler)
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
@@ -223,7 +228,7 @@ class GestureHandlerOrchestrator(
     // should be tested)
     preparedHandlers.sortWith(handlersComparator, 0, handlersCount)
     for (i in 0 until handlersCount) {
-      deliverEventToGestureHandler(preparedHandlers[i]!!, event)
+      deliverEventToGestureHandler(preparedHandlers[i]!!, MotionEvent.obtain(event))
     }
   }
 
@@ -242,7 +247,31 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun deliverEventToGestureHandler(handler: GestureHandler<*>, event: MotionEvent) {
+  private fun transformEvent(view: View?, event: MotionEvent): MotionEvent {
+    if (view == null) {
+      return event
+    }
+
+    val parent = view.parent as? ViewGroup
+    // TODO: find a better way to stop traversing the view hierarchy at relevant moment, this breaks when
+    // there are more root views
+    val newEvent = if (parent is RNGestureHandlerRootView) event else transformEvent(parent, event)
+
+    if (parent != null) {
+      val localX = event.x + parent.scrollX - view.left
+      val localY = event.y + parent.scrollY - view.top
+      newEvent.setLocation(localX, localY)
+    }
+
+    if (!view.matrix.isIdentity) {
+      view.matrix.invert(inverseMatrix)
+      newEvent.transform(inverseMatrix)
+    }
+
+    return newEvent
+  }
+
+  private fun deliverEventToGestureHandler(handler: GestureHandler<*>, originalEvent: MotionEvent) {
     if (!isViewAttachedUnderWrapper(handler.view)) {
       handler.cancel()
       return
@@ -250,18 +279,9 @@ class GestureHandlerOrchestrator(
     if (!handler.wantEvents()) {
       return
     }
-    val action = event.actionMasked
-    val coords = tempCoords
-    extractCoordsForView(handler.view, event, coords)
-    val oldX = event.x
-    val oldY = event.y
-    // TODO: we may consider scaling events if necessary using MotionEvent.transform
-    // for now the events are only offset to the top left corner of the view but if
-    // view or any ot the parents is scaled the other pointers position will not reflect
-    // their actual place in the view. On the other hand not scaling seems like a better
-    // approach when we want to use pointer coordinates to calculate velocity or distance
-    // for pinch so I don't know yet if we should transform or not...
-    event.setLocation(coords[0], coords[1])
+    // TODO: recycle event created here and above
+    val action = originalEvent.actionMasked
+    val event = transformEvent(handler.view, MotionEvent.obtain(originalEvent))
     
     // Touch events are sent before the handler itself has a chance to process them,
     // mainly because `onTouchesUp` shoul be send befor gesture finishes. This means that
@@ -277,7 +297,7 @@ class GestureHandlerOrchestrator(
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
       val isFirstEvent = handler.state == 0
-      handler.handle(event)
+      handler.handle(event, originalEvent)
       if (handler.isActive) {
         // After handler is done waiting for other one to fail its progress should be
         // reset, otherwise there may be a visible jump in values sent by the handler.
@@ -305,7 +325,7 @@ class GestureHandlerOrchestrator(
       }
     }
 
-    event.setLocation(oldX, oldY)
+//    event.setLocation(oldX, oldY)
   }
 
   /**
@@ -551,6 +571,33 @@ class GestureHandlerOrchestrator(
       } else {
         0 // both A and B are inactive, stable order matters
       }
+    }
+
+    fun transformPoint(view: View?, point: PointF): PointF {
+      if (view == null) {
+        return point
+      }
+
+      val parent = view.parent as? ViewGroup
+      // TODO: find a better way to stop traversing the view hierarchy at relevant moment, this breaks when
+      // there are more root views
+      val newPoint = if (parent is RNGestureHandlerRootView) point else transformPoint(parent, point)
+
+      if (parent != null) {
+        newPoint.x += parent.scrollX - view.left
+        newPoint.y += parent.scrollY - view.top
+      }
+
+      if (!view.matrix.isIdentity) {
+        view.matrix.invert(inverseMatrix)
+        tempCoords[0] = newPoint.x
+        tempCoords[1] = newPoint.y
+        inverseMatrix.mapPoints(tempCoords)
+        newPoint.x = tempCoords[0]
+        newPoint.y = tempCoords[1]
+      }
+
+      return newPoint
     }
 
     private fun shouldHandlerlessViewBecomeTouchTarget(view: View, coords: FloatArray): Boolean {

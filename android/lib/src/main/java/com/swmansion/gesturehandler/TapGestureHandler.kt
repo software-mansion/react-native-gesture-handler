@@ -103,7 +103,7 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     return maxDistSq != MAX_VALUE_IGNORE && dist > maxDistSq
   }
 
-  override fun onHandle(event: MotionEvent) {
+  override fun onHandle(event: MotionEvent, originalEvent: MotionEvent) {
     val state = state
     val action = event.actionMasked
     if (state == STATE_UNDETERMINED) {

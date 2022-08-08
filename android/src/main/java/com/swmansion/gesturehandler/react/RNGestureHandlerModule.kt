@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler.react
 
 import android.content.Context
+import android.graphics.PointF
 import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
@@ -255,9 +256,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     override fun extractEventData(handler: PinchGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
       with(eventData) {
+        // TODO: there is a better way to do this
+        val point = GestureHandlerOrchestrator.transformPoint(handler.view, PointF(handler.focalPointX, handler.focalPointY))
         putDouble("scale", handler.scale)
-        putDouble("focalX", PixelUtil.toDIPFromPixel(handler.focalPointX).toDouble())
-        putDouble("focalY", PixelUtil.toDIPFromPixel(handler.focalPointY).toDouble())
+        putDouble("focalX", PixelUtil.toDIPFromPixel(point.x).toDouble())
+        putDouble("focalY", PixelUtil.toDIPFromPixel(point.y).toDouble())
         putDouble("velocity", handler.velocity)
       }
     }

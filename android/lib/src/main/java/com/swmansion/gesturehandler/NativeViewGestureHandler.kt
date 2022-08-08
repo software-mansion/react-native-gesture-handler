@@ -75,7 +75,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     }
   }
 
-  override fun onHandle(event: MotionEvent) {
+  override fun onHandle(event: MotionEvent, originalEvent: MotionEvent) {
     val view = view!!
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       view.onTouchEvent(event)

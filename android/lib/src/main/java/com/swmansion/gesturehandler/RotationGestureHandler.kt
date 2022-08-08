@@ -41,14 +41,14 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     }
   }
 
-  override fun onHandle(event: MotionEvent) {
+  override fun onHandle(event: MotionEvent, originalEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       resetProgress()
       rotationGestureDetector = RotationGestureDetector(gestureListener)
       begin()
     }
-    rotationGestureDetector?.onTouchEvent(event)
-    if (event.actionMasked == MotionEvent.ACTION_UP) {
+    rotationGestureDetector?.onTouchEvent(originalEvent)
+    if (originalEvent.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
         end()
       } else {
