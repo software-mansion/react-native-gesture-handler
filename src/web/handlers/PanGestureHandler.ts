@@ -5,19 +5,30 @@ import { PropsRef } from '../interfaces';
 import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
-export default class PanGestureHandler extends GestureHandler {
-  readonly DEFAULT_MIN_POINTERS = 1;
-  readonly DEFAULT_MAX_POINTERS = 1;
+const DEFAULT_MIN_POINTERS = 1;
+const DEFAULT_MAX_POINTERS = 10;
+const DEFAULT_MIN_DIST_SQ = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
-  //
+export default class PanGestureHandler extends GestureHandler {
+  private readonly customActivationProperties: string[] = [
+    'activeOffsetXStart',
+    'activeOffsetXEnd',
+    'failOffsetXStart',
+    'failOffsetXEnd',
+    'activeOffsetYStart',
+    'activeOffsetYEnd',
+    'failOffsetYStart',
+    'failOffsetYEnd',
+    'minVelocityX',
+    'minVelocityY',
+  ];
+
   public velocityX = 0;
   public velocityY = 0;
 
-  private defaultMinDistSq: number = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
+  private minDistSq = DEFAULT_MIN_DIST_SQ;
 
-  private minDistSq = this.defaultMinDistSq;
-
-  private activeOffsetXStart = Number.MAX_SAFE_INTEGER;
+  private activeOffsetXStart = -Number.MAX_SAFE_INTEGER;
   private activeOffsetXEnd = Number.MIN_SAFE_INTEGER;
   private failOffsetXStart = Number.MIN_SAFE_INTEGER;
   private failOffsetXEnd = Number.MAX_SAFE_INTEGER;
@@ -52,20 +63,25 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   public updateGestureConfig({ ...props }): void {
+    this.resetConfig();
+
     super.updateGestureConfig({ enabled: true, ...props });
+    this.checkCustomActivationCriteria(this.customActivationProperties);
 
-    this.enabled = this.config.enabled as boolean;
+    this.enabled = true;
 
-    if (this.config.minDist || this.config.minDist === 0) {
+    if (this.config.minDist !== undefined) {
       this.minDistSq = this.config.minDist * this.config.minDist;
+    } else if (this.hasCustomActivationCriteria) {
+      this.minDistSq = Number.MAX_SAFE_INTEGER;
     }
 
-    if (this.config.minPointers || this.config.minPointers === 0) {
-      this.minPointers = this.config.minPointers as number;
+    if (this.config.minPointers !== undefined) {
+      this.minPointers = this.config.minPointers;
     }
 
-    if (this.config.maxPointers || this.config.maxPointers === 0) {
-      this.maxPointers = this.config.maxPointers as number;
+    if (this.config.maxPointers !== undefined) {
+      this.maxPointers = this.config.maxPointers;
     }
 
     if (this.config.minVelocity) {
@@ -76,49 +92,75 @@ export default class PanGestureHandler extends GestureHandler {
       this.setShouldCancelWhenOutside(false);
     }
 
-    if (
-      this.config.activeOffsetXStart ||
-      this.config.activeOffsetXStart === 0
-    ) {
-      this.activeOffsetXStart = this.config.activeOffsetXStart as number;
+    if (this.config.activeOffsetXStart !== undefined) {
+      this.activeOffsetXStart = this.config.activeOffsetXStart;
+
+      if (this.config.activeOffsetXEnd === undefined) {
+        this.activeOffsetXEnd = Number.MAX_SAFE_INTEGER;
+      }
     }
 
-    if (this.config.activeOffsetXEnd || this.config.activeOffsetXEnd === 0) {
-      this.activeOffsetXEnd = this.config.activeOffsetXEnd as number;
+    if (this.config.activeOffsetXEnd !== undefined) {
+      this.activeOffsetXEnd = this.config.activeOffsetXEnd;
+
+      if (this.config.activeOffsetXStart === undefined) {
+        this.activeOffsetXStart = Number.MIN_SAFE_INTEGER;
+      }
     }
 
-    if (this.config.failOffsetXStart || this.config.failOffsetXStart === 0) {
-      this.failOffsetXStart = this.config.failOffsetXStart as number;
+    if (this.config.failOffsetXStart !== undefined) {
+      this.failOffsetXStart = this.config.failOffsetXStart;
+
+      if (this.config.failOffsetXEnd === undefined) {
+        this.failOffsetXEnd = Number.MAX_SAFE_INTEGER;
+      }
     }
 
-    if (this.config.failOffsetXEnd || this.config.failOffsetXEnd === 0) {
-      this.failOffsetXEnd = this.config.failOffsetXEnd as number;
+    if (this.config.failOffsetXEnd !== undefined) {
+      this.failOffsetXEnd = this.config.failOffsetXEnd;
+
+      if (this.config.failOffsetXStart === undefined) {
+        this.failOffsetXStart = Number.MIN_SAFE_INTEGER;
+      }
     }
 
-    if (
-      this.config.activeOffsetYStart ||
-      this.config.activeOffsetYStart === 0
-    ) {
-      this.activeOffsetYStart = this.config.activeOffsetYStart as number;
+    if (this.config.activeOffsetYStart !== undefined) {
+      this.activeOffsetYStart = this.config.activeOffsetYStart;
+
+      if (this.config.activeOffsetYEnd === undefined) {
+        this.activeOffsetYEnd = Number.MAX_SAFE_INTEGER;
+      }
     }
 
-    if (this.config.activeOffsetYEnd || this.config.activeOffsetYEnd === 0) {
-      this.activeOffsetYEnd = this.config.activeOffsetYEnd as number;
+    if (this.config.activeOffsetYEnd !== undefined) {
+      this.activeOffsetYEnd = this.config.activeOffsetYEnd;
+
+      if (this.config.activeOffsetYStart === undefined) {
+        this.activeOffsetYStart = Number.MIN_SAFE_INTEGER;
+      }
     }
 
-    if (this.config.failOffsetYStart || this.config.failOffsetYStart === 0) {
-      this.failOffsetYStart = this.config.failOffsetYStart as number;
+    if (this.config.failOffsetYStart !== undefined) {
+      this.failOffsetYStart = this.config.failOffsetYStart;
+
+      if (this.config.failOffsetYEnd === undefined) {
+        this.failOffsetYEnd = Number.MAX_SAFE_INTEGER;
+      }
     }
 
-    if (this.config.failOffsetYEnd || this.config.failOffsetYEnd === 0) {
-      this.activeOffsetYEnd = this.config.activeOffsetYEnd as number;
+    if (this.config.failOffsetYEnd !== undefined) {
+      this.failOffsetYEnd = this.config.failOffsetYEnd;
+
+      if (this.config.failOffsetYStart === undefined) {
+        this.failOffsetYStart = Number.MIN_SAFE_INTEGER;
+      }
     }
   }
 
   protected resetConfig(): void {
     super.resetConfig();
 
-    this.activeOffsetXStart = Number.MAX_SAFE_INTEGER;
+    this.activeOffsetXStart = -Number.MAX_SAFE_INTEGER;
     this.activeOffsetXEnd = Number.MIN_SAFE_INTEGER;
     this.failOffsetXStart = Number.MIN_SAFE_INTEGER;
     this.failOffsetXEnd = Number.MAX_SAFE_INTEGER;
@@ -132,16 +174,18 @@ export default class PanGestureHandler extends GestureHandler {
     this.minVelocityY = Number.MAX_SAFE_INTEGER;
     this.minVelocitySq = Number.MAX_SAFE_INTEGER;
 
-    this.minDistSq = this.defaultMinDistSq;
+    this.minDistSq = DEFAULT_MIN_DIST_SQ;
 
-    this.minPointers = this.DEFAULT_MIN_POINTERS;
-    this.maxPointers = this.DEFAULT_MAX_POINTERS;
+    this.minPointers = DEFAULT_MIN_POINTERS;
+    this.maxPointers = DEFAULT_MAX_POINTERS;
 
     this.activateAfterLongPress = 0;
   }
 
   protected transformNativeEvent(event: GHEvent) {
-    const rect = this.view!.getBoundingClientRect();
+    if (!this.view) return {};
+
+    const rect = this.view.getBoundingClientRect();
     const ratio = PixelRatio.get();
 
     return {
@@ -233,15 +277,6 @@ export default class PanGestureHandler extends GestureHandler {
     this.startX = this.lastX;
     this.startY = this.lastY;
 
-    // if (
-    //   this.currentState === State.ACTIVE &&
-    //   this.tracker.getTrackedPointersNumber() < this.minPointers
-    // ) {
-    //   // this.resetProgress();
-    //   // this.fail(event);
-    //   // this.end(event);
-    // } else this.checkBegan(event);
-
     if (
       !(
         this.currentState === State.ACTIVE &&
@@ -257,6 +292,10 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
+    this.velocityX = this.tracker.getVelocityX(event.pointerId);
+    this.velocityY = this.tracker.getVelocityY(event.pointerId);
+
+    console.log(this.velocityX, this.velocityY);
 
     this.checkBegan(event);
 
@@ -280,6 +319,8 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
+    this.velocityX = this.tracker.getVelocityX(event.pointerId);
+    this.velocityY = this.tracker.getVelocityY(event.pointerId);
 
     this.checkBegan(event);
 
@@ -360,7 +401,7 @@ export default class PanGestureHandler extends GestureHandler {
     const dy: number = this.getTranslationY();
     const distanceSq = dx * dx + dy * dy;
 
-    if (this.activateAfterLongPress > 0 && distanceSq > this.defaultMinDistSq) {
+    if (this.activateAfterLongPress > 0 && distanceSq > DEFAULT_MIN_DIST_SQ) {
       return true;
     }
 
