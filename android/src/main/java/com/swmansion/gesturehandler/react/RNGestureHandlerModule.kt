@@ -257,10 +257,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
       super.extractEventData(handler, eventData)
       with(eventData) {
         // TODO: there is a better way to do this
-        val point = GestureHandlerOrchestrator.transformPoint(handler.view, PointF(handler.focalPointX, handler.focalPointY))
         putDouble("scale", handler.scale)
-        putDouble("focalX", PixelUtil.toDIPFromPixel(point.x).toDouble())
-        putDouble("focalY", PixelUtil.toDIPFromPixel(point.y).toDouble())
+        putDouble("focalX", PixelUtil.toDIPFromPixel(handler.focalPointX).toDouble())
+        putDouble("focalY", PixelUtil.toDIPFromPixel(handler.focalPointY).toDouble())
         putDouble("velocity", handler.velocity)
       }
     }

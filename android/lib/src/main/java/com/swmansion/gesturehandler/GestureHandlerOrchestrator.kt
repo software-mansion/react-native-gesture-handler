@@ -2,13 +2,10 @@ package com.swmansion.gesturehandler
 
 import android.graphics.Matrix
 import android.graphics.PointF
-import android.os.Build
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.annotation.RequiresApi
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import java.util.*
 
@@ -149,7 +146,6 @@ class GestureHandlerOrchestrator(
       }
       cleanupAwaitingHandlers()
     }
-    Log.w("rngh", "$handler $prevState $newState")
     if (newState == GestureHandler.STATE_ACTIVE) {
       tryActivate(handler)
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
@@ -247,30 +243,6 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun transformEvent(view: View?, event: MotionEvent): MotionEvent {
-    if (view == null) {
-      return event
-    }
-
-    val parent = view.parent as? ViewGroup
-    // TODO: find a better way to stop traversing the view hierarchy at relevant moment, this breaks when
-    // there are more root views
-    val newEvent = if (parent is RNGestureHandlerRootView) event else transformEvent(parent, event)
-
-    if (parent != null) {
-      val localX = event.x + parent.scrollX - view.left
-      val localY = event.y + parent.scrollY - view.top
-      newEvent.setLocation(localX, localY)
-    }
-
-    if (!view.matrix.isIdentity) {
-      view.matrix.invert(inverseMatrix)
-      newEvent.transform(inverseMatrix)
-    }
-
-    return newEvent
-  }
-
   private fun deliverEventToGestureHandler(handler: GestureHandler<*>, originalEvent: MotionEvent) {
     if (!isViewAttachedUnderWrapper(handler.view)) {
       handler.cancel()
@@ -281,7 +253,7 @@ class GestureHandlerOrchestrator(
     }
     // TODO: recycle event created here and above
     val action = originalEvent.actionMasked
-    val event = transformEvent(handler.view, MotionEvent.obtain(originalEvent))
+    val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(originalEvent))
     
     // Touch events are sent before the handler itself has a chance to process them,
     // mainly because `onTouchesUp` shoul be send befor gesture finishes. This means that
@@ -324,8 +296,6 @@ class GestureHandlerOrchestrator(
         handler.stopTrackingPointer(pointerId)
       }
     }
-
-//    event.setLocation(oldX, oldY)
   }
 
   /**
@@ -349,19 +319,71 @@ class GestureHandlerOrchestrator(
     return parent === wrapperView
   }
 
-  private fun extractCoordsForView(view: View?, event: MotionEvent, outputCoords: FloatArray) {
-    if (view === wrapperView) {
-      outputCoords[0] = event.x
-      outputCoords[1] = event.y
-      return
+  /**
+   * Transforms an event in the coordinates of wrapperView into the coordinate space of the received view.
+   *
+   * This modifies and returns the same event as it receives
+   *
+   * @param view - view to which coordinate space the event should be transformed
+   * @param event - event to transform
+   */
+  fun transformEventToViewCoords(view: View?, event: MotionEvent): MotionEvent {
+    if (view == null) {
+      return event
     }
-    require(!(view == null || view.parent !is ViewGroup)) { "Parent is null? View is no longer in the tree" }
-    val parent = view.parent as ViewGroup
-    extractCoordsForView(parent, event, outputCoords)
-    val childPoint = tempPoint
-    transformTouchPointToViewCoords(outputCoords[0], outputCoords[1], parent, view, childPoint)
-    outputCoords[0] = childPoint.x
-    outputCoords[1] = childPoint.y
+
+    val parent = view.parent as? ViewGroup
+    // Events are passed down to the orchestrator by the wrapperView, so they are already in the
+    // relevant coordinate space. We want to stop traversing the tree when we reach it.
+    val newEvent = if (parent == wrapperView) event else transformEventToViewCoords(parent, event)
+
+    if (parent != null) {
+      val localX = event.x + parent.scrollX - view.left
+      val localY = event.y + parent.scrollY - view.top
+      newEvent.setLocation(localX, localY)
+    }
+
+    if (!view.matrix.isIdentity) {
+      view.matrix.invert(inverseMatrix)
+      newEvent.transform(inverseMatrix)
+    }
+
+    return newEvent
+  }
+
+  /**
+   * Transforms a point in the coordinates of wrapperView into the coordinate space of the received view.
+   *
+   * This modifies and returns the same point as it receives
+   *
+   * @param view - view to which coordinate space the point should be transformed
+   * @param point - point to transform
+   */
+  fun transformPointToViewCoords(view: View?, point: PointF): PointF {
+    if (view == null) {
+      return point
+    }
+
+    val parent = view.parent as? ViewGroup
+    // Events are passed down to the orchestrator by the wrapperView, so they are already in the
+    // relevant coordinate space. We want to stop traversing the tree when we reach it.
+    val newPoint = if (parent == wrapperView) point else transformPointToViewCoords(parent, point)
+
+    if (parent != null) {
+      newPoint.x += parent.scrollX - view.left
+      newPoint.y += parent.scrollY - view.top
+    }
+
+    if (!view.matrix.isIdentity) {
+      view.matrix.invert(inverseMatrix)
+      tempCoords[0] = newPoint.x
+      tempCoords[1] = newPoint.y
+      inverseMatrix.mapPoints(tempCoords)
+      newPoint.x = tempCoords[0]
+      newPoint.y = tempCoords[1]
+    }
+
+    return newPoint
   }
 
   private fun addAwaitingHandler(handler: GestureHandler<*>) {
@@ -471,7 +493,7 @@ class GestureHandlerOrchestrator(
       val child = viewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i)
       if (canReceiveEvents(child)) {
         val childPoint = tempPoint
-        transformTouchPointToViewCoords(coords[0], coords[1], viewGroup, child, childPoint)
+        transformPointToChildViewCoords(coords[0], coords[1], viewGroup, child, childPoint)
         val restoreX = coords[0]
         val restoreY = coords[1]
         coords[0] = childPoint.x
@@ -573,33 +595,6 @@ class GestureHandlerOrchestrator(
       }
     }
 
-    fun transformPoint(view: View?, point: PointF): PointF {
-      if (view == null) {
-        return point
-      }
-
-      val parent = view.parent as? ViewGroup
-      // TODO: find a better way to stop traversing the view hierarchy at relevant moment, this breaks when
-      // there are more root views
-      val newPoint = if (parent is RNGestureHandlerRootView) point else transformPoint(parent, point)
-
-      if (parent != null) {
-        newPoint.x += parent.scrollX - view.left
-        newPoint.y += parent.scrollY - view.top
-      }
-
-      if (!view.matrix.isIdentity) {
-        view.matrix.invert(inverseMatrix)
-        tempCoords[0] = newPoint.x
-        tempCoords[1] = newPoint.y
-        inverseMatrix.mapPoints(tempCoords)
-        newPoint.x = tempCoords[0]
-        newPoint.y = tempCoords[1]
-      }
-
-      return newPoint
-    }
-
     private fun shouldHandlerlessViewBecomeTouchTarget(view: View, coords: FloatArray): Boolean {
       // The following code is to match the iOS behavior where transparent parts of the views can
       // pass touch events through them allowing sibling nodes to handle them.
@@ -611,7 +606,7 @@ class GestureHandlerOrchestrator(
       return isLeafOrTransparent && isTransformedTouchPointInView(coords[0], coords[1], view)
     }
 
-    private fun transformTouchPointToViewCoords(
+    private fun transformPointToChildViewCoords(
       x: Float,
       y: Float,
       parent: ViewGroup,

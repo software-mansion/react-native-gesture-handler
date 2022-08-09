@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler
 
+import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import kotlin.math.abs
@@ -9,10 +10,10 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     private set
   var velocity = 0.0
     private set
-  val focalPointX: Float
-    get() = scaleGestureDetector?.focusX ?: Float.NaN
-  val focalPointY: Float
-    get() = scaleGestureDetector?.focusY ?: Float.NaN
+  var focalPointX: Float = Float.NaN
+    private set
+  var focalPointY: Float = Float.NaN
+    private set
 
   private var scaleGestureDetector: ScaleGestureDetector? = null
   private var startingSpan = 0f
@@ -57,6 +58,11 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       begin()
     }
     scaleGestureDetector?.onTouchEvent(originalEvent)
+    scaleGestureDetector?.let {
+      val point = transformPoint(PointF(it.focusX, it.focusY))
+      this.focalPointX = point.x
+      this.focalPointY = point.y
+    }
     var activePointers = originalEvent.pointerCount
     if (originalEvent.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       activePointers -= 1
@@ -78,6 +84,8 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
 
   override fun onReset() {
     scaleGestureDetector = null
+    focalPointX = Float.NaN
+    focalPointY = Float.NaN
     resetProgress()
   }
 

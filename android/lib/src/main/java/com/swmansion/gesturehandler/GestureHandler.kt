@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.graphics.PointF
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
@@ -669,6 +670,22 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected open fun onStateChange(newState: Int, previousState: Int) {}
   protected open fun onReset() {}
   protected open fun onCancel() {}
+
+  /**
+   * Transforms a point in the coordinate space of the wrapperView (GestureHandlerRootView) to
+   * coordinate space of the view the gesture is attached to.
+   *
+   * If the gesture handler is not currently attached to a view, it will return (NaN, NaN).
+   *
+   * This method modifies and transforms the received point.
+   */
+  protected fun transformPoint(point: PointF): PointF {
+    return orchestrator?.transformPointToViewCoords(this.view, point) ?: run {
+      point.x = Float.NaN
+      point.y = Float.NaN
+      point
+    }
+  }
   fun reset() {
     view = null
     orchestrator = null
