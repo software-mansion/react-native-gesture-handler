@@ -94,7 +94,6 @@ export class PinchableBox extends React.Component {
   private onTiltGestureStateChange = (
     event: PanGestureHandlerStateChangeEvent
   ) => {
-    console.log(event.nativeEvent.oldState, event.nativeEvent.state);
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastTilt += event.nativeEvent.translationY;
       this.tilt.setOffset(this.lastTilt);
@@ -137,7 +136,6 @@ export class PinchableBox extends React.Component {
                       },
                     ]}
                     source={require('./swmansion.png')}
-                    // source={require('./swm.svg')}
                   />
                 </Animated.View>
               </PinchGestureHandler>
@@ -159,16 +157,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    touchAction: 'none',
-    userSelect: 'none',
-    WebkitTouchCallout: 'none',
-    WebkitUserSelect: 'none',
   },
   pinchableImage: {
-    // width: 475,
-    // height: 250,
-    width: 200,
-    height: 200,
+    width: 250,
+    height: 250,
   },
   wrapper: {
     flex: 1,

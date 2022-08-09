@@ -42,7 +42,10 @@ import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
 import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
 import ManualGestures from './new_api/manualGestures/index';
+
 import { enableExperimentalWebImplementation } from '../../src/EnableExperimentalImplementation';
+
+enableExperimentalWebImplementation();
 
 interface Example {
   name: string;
@@ -52,8 +55,6 @@ interface ExamplesSection {
   sectionTitle: string;
   data: Example[];
 }
-
-enableExperimentalWebImplementation();
 
 const EXAMPLES: ExamplesSection[] = [
   {
@@ -143,7 +144,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={styles.root}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -167,14 +168,6 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
-
-// export default Draggable;
-// export default gestureHandlerRootHOC(MultiTap);
-// export default gestureHandlerRootHOC(PinchableBox);
-// export default gestureHandlerRootHOC(BouncingBox);
-// export default Fling;
-// export default HorizontalDrawer;
-// export default gestureHandlerRootHOC(Transformations);
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   return (
@@ -210,9 +203,6 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
   sectionTitle: {
     ...Platform.select({
       ios: {

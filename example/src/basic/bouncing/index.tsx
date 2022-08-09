@@ -48,7 +48,7 @@ class Snappable extends Component<PropsWithChildren<Record<string, unknown>>> {
     return (
       <PanGestureHandler
         {...this.props}
-        maxPointers={10}
+        maxPointers={1}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}>
         <Animated.View style={{ transform: [{ translateX: this.transX }] }}>
@@ -133,18 +133,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
-    borderWidth: 2,
-    borderColor: 'black',
   },
   box: {
     width: BOX_SIZE,
     height: BOX_SIZE,
-    // borderColor: '#F5FCFF',
+    borderColor: '#F5FCFF',
     alignSelf: 'center',
     backgroundColor: 'plum',
     margin: BOX_SIZE / 2,
-
-    borderWidth: 2,
-    borderColor: 'black',
   },
 });

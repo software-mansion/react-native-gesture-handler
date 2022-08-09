@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Alert, Text } from 'react-native';
 
 import {
   LongPressGestureHandler,
@@ -25,21 +25,15 @@ export class PressBox extends Component<PressBoxProps> {
     event: LongPressGestureHandlerStateChangeEvent
   ) => {
     this.props.setDuration?.(event.nativeEvent.duration);
-    if (event.nativeEvent.state === State.ACTIVE) {
-      console.log('long');
-      // window.alert(`LONG`);
-    }
   };
   private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      console.log('single');
-      // window.alert("I'm touched");
+      Alert.alert("I'm touched");
     }
   };
   private onDoubleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      console.log('double');
-      // window.alert('Double tap, good job!');
+      Alert.alert('Double tap, good job!');
     }
   };
   render() {
@@ -49,9 +43,7 @@ export class PressBox extends Component<PressBoxProps> {
         minDurationMs={800}>
         <TapGestureHandler
           onHandlerStateChange={this.onSingleTap}
-          waitFor={this.doubleTapRef}
-          // simultaneousHandlers={this.doubleTapRef}>
-        >
+          waitFor={this.doubleTapRef}>
           <TapGestureHandler
             ref={this.doubleTapRef}
             onHandlerStateChange={this.onDoubleTap}
@@ -103,8 +95,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'plum',
     margin: 10,
     zIndex: 200,
-    borderWidth: 2,
-    // userSelect: 'none',
   },
   text: {
     marginLeft: 20,

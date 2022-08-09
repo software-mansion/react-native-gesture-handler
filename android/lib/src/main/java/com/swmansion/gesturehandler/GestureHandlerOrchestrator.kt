@@ -122,7 +122,7 @@ class GestureHandlerOrchestrator(
   fun onHandlerStateChange(handler: GestureHandler<*>, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
     if (isFinished(newState)) {
-      // if there were handlers awaiting completion of thimanuas handler, we can trigger active state
+      // if there were handlers awaiting completion of this handler, we can trigger active state
       for (i in 0 until awaitingHandlersCount) {
         val otherHandler = awaitingHandlers[i]
         if (shouldHandlerWaitForOther(otherHandler!!, handler)) {

@@ -7,7 +7,6 @@ import {
   PanGestureHandlerStateChangeEvent,
   PanGestureHandlerGestureEvent,
   ScrollView,
-  GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../../config';
@@ -56,9 +55,7 @@ export class DraggableBox extends Component<DraggableBoxProps> {
         {...this.props}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}
-        minDist={this.props.minDist}
-        shouldCancelWhenOutside={true}
-        avgTouches={true}>
+        minDist={this.props.minDist}>
         <Animated.View
           style={[
             styles.box,
@@ -79,14 +76,11 @@ export class DraggableBox extends Component<DraggableBoxProps> {
 export default class Example extends Component {
   render() {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        {/* <ScrollView style={styles.scrollView}> */}
+      <ScrollView style={styles.scrollView}>
         <LoremIpsum words={40} />
         <DraggableBox />
-        {/* <DraggableBox /> */}
         <LoremIpsum />
-        {/* </ScrollView> */}
-      </GestureHandlerRootView>
+      </ScrollView>
     );
   }
 }
@@ -96,15 +90,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   box: {
-    width: 300,
-    height: 300,
-    // width: 150,
-    // height: 150,
+    width: 150,
+    height: 150,
     alignSelf: 'center',
     backgroundColor: 'plum',
     margin: 10,
     zIndex: 200,
-    borderWidth: 2,
-    borderColor: 'black',
   },
 });

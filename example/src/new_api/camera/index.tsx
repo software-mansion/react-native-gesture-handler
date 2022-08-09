@@ -75,7 +75,6 @@ export default function Home() {
     .onEnd(() => {
       'worklet';
       if (isRecording) {
-        console.log('finish');
         runOnJS(finishRecording)();
       }
     });
@@ -108,11 +107,11 @@ export default function Home() {
   }
 
   function takePhoto() {
-    window.alert('You took a photo');
+    Alert.alert('You took a photo');
   }
 
   function takeSeries() {
-    window.alert('You took a series of photos');
+    Alert.alert('You took a series of photos');
   }
 
   function startRecording() {
@@ -127,11 +126,10 @@ export default function Home() {
 
   function finishRecording() {
     setIsRecording(false);
-    console.log(recordingIntervalHandle);
     clearInterval(recordingIntervalHandle!);
     setRemainingTimeMs(MAX_VIDEO_DURATION_MS);
 
-    window.alert(
+    Alert.alert(
       `You took a video (${(MAX_VIDEO_DURATION_MS - remainingTimeMs) / 1000} s)`
     );
   }
