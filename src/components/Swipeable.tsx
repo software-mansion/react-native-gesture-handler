@@ -319,7 +319,7 @@ export default class Swipeable extends Component<
   private handleRelease = (
     ev: HandlerStateChangeEvent<PanGestureHandlerEventPayload>
   ) => {
-    let { velocityX, translationX: dragX } = ev.nativeEvent;
+    const { velocityX, translationX: dragX } = ev.nativeEvent;
     const { leftWidth = 0, rowWidth = 0, rowState } = this.state;
     const { rightOffset = rowWidth } = this.state;
     const rightWidth = rowWidth - rightOffset;
