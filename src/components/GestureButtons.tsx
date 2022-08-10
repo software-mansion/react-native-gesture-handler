@@ -73,6 +73,12 @@ export interface BaseButtonProps extends RawButtonProps {
   onPress?: (pointerInside: boolean) => void;
 
   /**
+   * Called when the button gets pressed and is held for `delayLongPress`
+   * milliseconds.
+   */
+  onLongPress?: () => void;
+
+  /**
    * Called when button changes from inactive to active and vice versa. It
    * passes active state as a boolean variable as a first parameter for that
    * method.
@@ -80,6 +86,12 @@ export interface BaseButtonProps extends RawButtonProps {
   onActiveStateChange?: (active: boolean) => void;
   style?: StyleProp<ViewStyle>;
   testID?: string;
+
+  /**
+   * Delay, in milliseconds, after which the `onLongPress` callback gets called.
+   * Defaults to 600.
+   */
+  delayLongPress?: number;
 }
 
 export interface RectButtonProps extends BaseButtonProps {
@@ -111,11 +123,18 @@ export const RawButton = createNativeWrapper(GestureHandlerButton, {
 });
 
 export class BaseButton extends React.Component<BaseButtonProps> {
+  static defaultProps = {
+    delayLongPress: 600,
+  };
+
   private lastActive: boolean;
+  private longPressTimeout: ReturnType<typeof setTimeout> | undefined;
+  private longPressDetected: boolean;
 
   constructor(props: BaseButtonProps) {
     super(props);
     this.lastActive = false;
+    this.longPressDetected = false;
   }
 
   private handleEvent = ({
@@ -129,6 +148,7 @@ export class BaseButton extends React.Component<BaseButtonProps> {
     }
 
     if (
+      !this.longPressDetected &&
       oldState === State.ACTIVE &&
       state !== State.CANCELLED &&
       this.lastActive &&
@@ -137,7 +157,44 @@ export class BaseButton extends React.Component<BaseButtonProps> {
       this.props.onPress(active);
     }
 
+    if (
+      !this.lastActive &&
+      // NativeViewGestureHandler sends different events based on platform
+      state === (Platform.OS !== 'android' ? State.ACTIVE : State.BEGAN) &&
+      pointerInside
+    ) {
+      this.longPressDetected = false;
+      if (this.props.onLongPress) {
+        this.longPressTimeout = setTimeout(
+          this.onLongPress,
+          this.props.delayLongPress
+        );
+      }
+    } else if (
+      // cancel longpress timeout if it's set and the finger moved out of the view
+      state === State.ACTIVE &&
+      !pointerInside &&
+      this.longPressTimeout !== undefined
+    ) {
+      clearTimeout(this.longPressTimeout);
+      this.longPressTimeout = undefined;
+    } else if (
+      // cancel longpress timeout if it's set and the gesture has finished
+      this.longPressTimeout !== undefined &&
+      (state === State.END ||
+        state === State.CANCELLED ||
+        state === State.FAILED)
+    ) {
+      clearTimeout(this.longPressTimeout);
+      this.longPressTimeout = undefined;
+    }
+
     this.lastActive = active;
+  };
+
+  private onLongPress = () => {
+    this.longPressDetected = true;
+    this.props.onLongPress?.();
   };
 
   // Normally, the parent would execute it's handler first, then forward the

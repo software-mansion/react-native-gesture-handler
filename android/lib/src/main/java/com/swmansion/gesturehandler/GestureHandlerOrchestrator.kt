@@ -129,6 +129,13 @@ class GestureHandlerOrchestrator(
           if (newState == GestureHandler.STATE_END) {
             // gesture has ended, we need to kill the awaiting handler
             otherHandler.cancel()
+            if (otherHandler.state == GestureHandler.STATE_END) {
+              // Handle edge case, where discrete gestures end immediately after activation thus
+              // their state is set to END and when the gesture they are waiting for activates they
+              // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
+              // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
+              otherHandler.dispatchStateChange(GestureHandler.STATE_CANCELLED, GestureHandler.STATE_BEGAN)
+            }
             otherHandler.isAwaiting = false
           } else {
             // gesture has failed recognition, we may try activating
@@ -143,9 +150,12 @@ class GestureHandlerOrchestrator(
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
       if (handler.isActive) {
         handler.dispatchStateChange(newState, prevState)
-      } else if (prevState == GestureHandler.STATE_ACTIVE) {
-        // handle edge case where handler awaiting for another one tries to activate but finishes
-        // before the other would not send state change event upon ending
+      } else if (prevState == GestureHandler.STATE_ACTIVE && (newState == GestureHandler.STATE_CANCELLED || newState == GestureHandler.STATE_FAILED)) {
+        // Handle edge case where handler awaiting for another one tries to activate but finishes
+        // before the other would not send state change event upon ending. Note that we only want
+        // to do this if the newState is either CANCELLED or FAILED, if it is END we still want to
+        // wait for the other handler to finish as in that case synthetic events will be sent by the
+        // makeActive method.
         handler.dispatchStateChange(newState, GestureHandler.STATE_BEGAN)
       }
     } else if (prevState != GestureHandler.STATE_UNDETERMINED || newState != GestureHandler.STATE_CANCELLED) {
