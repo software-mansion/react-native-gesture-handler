@@ -1,12 +1,5 @@
 import React, { Component, PropsWithChildren } from 'react';
-import {
-  Animated,
-  StyleSheet,
-  Text,
-  View,
-  I18nManager,
-  Alert,
-} from 'react-native';
+import { Animated, StyleSheet, Text, View, I18nManager } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
 
@@ -51,7 +44,8 @@ export default class AppleStyleSwipeableRow extends Component<
     });
     const pressHandler = () => {
       this.close();
-      Alert.alert(text);
+      // eslint-disable-next-line no-alert
+      window.alert(text);
     };
 
     return (

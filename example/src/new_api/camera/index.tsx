@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, useWindowDimensions } from 'react-native';
+import { StyleSheet, useWindowDimensions } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -48,7 +48,6 @@ export default function Home() {
     .numberOfTaps(2)
     .onEnd((_e, success) => {
       'worklet';
-      console.log(isRecording);
       if (success) {
         runOnJS(takeSeries)();
       }
@@ -69,9 +68,8 @@ export default function Home() {
 
   const buttonLongPressGesture = Gesture.LongPress()
     .maxDistance(10000)
-    .onStart((e) => {
+    .onStart(() => {
       'worklet';
-      console.log(e);
       runOnJS(startRecording)();
     })
     .onEnd(() => {
@@ -109,11 +107,13 @@ export default function Home() {
   }
 
   function takePhoto() {
-    Alert.alert('You took a photo');
+    // eslint-disable-next-line no-alert
+    window.alert('You took a photo');
   }
 
   function takeSeries() {
-    Alert.alert('You took a series of photos');
+    // eslint-disable-next-line no-alert
+    window.alert('You took a series of photos');
   }
 
   function startRecording() {
@@ -128,13 +128,12 @@ export default function Home() {
 
   function finishRecording() {
     setIsRecording(false);
-    setTimeout(() => {
-      console.log(isRecording);
-    }, 1000);
+    setTimeout(() => {}, 1000);
     clearInterval(recordingIntervalHandle!);
     setRemainingTimeMs(MAX_VIDEO_DURATION_MS);
 
-    Alert.alert(
+    // eslint-disable-next-line no-alert
+    window.alert(
       `You took a video (${(MAX_VIDEO_DURATION_MS - remainingTimeMs) / 1000} s)`
     );
   }
