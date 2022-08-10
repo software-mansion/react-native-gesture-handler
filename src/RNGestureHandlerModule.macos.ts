@@ -21,6 +21,7 @@ import HammerLongPressGestureHandler from './web_hammer/LongPressGestureHandler'
 import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
 import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
 import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
+import { Config } from './web_hammer/GestureHandler';
 
 export const Gestures = {
   NativeViewGestureHandler,
@@ -64,7 +65,7 @@ export default {
       NodeManager.createGestureHandler(handlerTag, new GestureClass());
       interactionManager.configureInteractions(
         NodeManager.getHandler(handlerTag),
-        config
+        (config as unknown) as Config
       );
     } else {
       if (!(handlerName in HammerGestures)) return;

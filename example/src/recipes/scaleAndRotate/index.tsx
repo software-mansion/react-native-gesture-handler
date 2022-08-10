@@ -76,6 +76,11 @@ export class PinchableBox extends React.Component {
   private onRotateHandlerStateChange = (
     event: RotationGestureHandlerStateChangeEvent
   ) => {
+    console.log(
+      event.nativeEvent.oldState,
+      event.nativeEvent.state,
+      'rotation'
+    );
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastRotate += event.nativeEvent.rotation;
       this.rotate.setOffset(this.lastRotate);
@@ -85,6 +90,7 @@ export class PinchableBox extends React.Component {
   private onPinchHandlerStateChange = (
     event: PinchGestureHandlerStateChangeEvent
   ) => {
+    console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'pinch');
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastScale *= event.nativeEvent.scale;
       this.baseScale.setValue(this.lastScale);
@@ -94,6 +100,7 @@ export class PinchableBox extends React.Component {
   private onTiltGestureStateChange = (
     event: PanGestureHandlerStateChangeEvent
   ) => {
+    console.log(event.nativeEvent.oldState, event.nativeEvent.state, 'pan');
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastTilt += event.nativeEvent.translationY;
       this.tilt.setOffset(this.lastTilt);

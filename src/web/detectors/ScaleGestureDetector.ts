@@ -5,7 +5,7 @@ import Tracker from '../tools/Tracker';
 export interface ScaleGestureListener {
   onScaleBegin: (detector: ScaleGestureDetector) => boolean;
   onScale: (detector: ScaleGestureDetector, event: GHEvent) => boolean;
-  onScaleEnd: (detector: ScaleGestureDetector) => void;
+  onScaleEnd: (detector: ScaleGestureDetector, event: GHEvent) => void;
 }
 
 const SCALE_FACTOR = 0.5;
@@ -16,7 +16,7 @@ const ANCHORED_SCALE_MODE_STYLUS = 2;
 export default class ScaleGestureDetector implements ScaleGestureListener {
   public onScaleBegin: (detector: ScaleGestureDetector) => boolean;
   public onScale: (detector: ScaleGestureDetector, event: GHEvent) => boolean;
-  public onScaleEnd: (detector: ScaleGestureDetector) => void;
+  public onScaleEnd: (detector: ScaleGestureDetector, event: GHEvent) => void;
 
   private focusX!: number;
   private focusY!: number;
@@ -75,7 +75,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     if (action === EventTypes.DOWN || streamComplete) {
       if (this.inProgress) {
-        this.onScaleEnd(this);
+        this.onScaleEnd(this, event);
         this.inProgress = false;
         this.initialSpan = 0;
         this.anchoredScaleMode = ANCHORED_SCALE_MODE_NONE;
@@ -154,7 +154,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
       this.inProgress &&
       (span < this.minSpan || configChanged)
     ) {
-      this.onScaleEnd(this);
+      this.onScaleEnd(this, event);
       this.inProgress = false;
       this.initialSpan = span;
     }

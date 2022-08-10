@@ -28,12 +28,14 @@ export class PressBox extends Component<PressBoxProps> {
   };
   private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert("I'm touched");
+      // eslint-disable-next-line no-alert
+      window.alert("I'm touched");
     }
   };
   private onDoubleTap = (event: TapGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      Alert.alert('Double tap, good job!');
+      // eslint-disable-next-line no-alert
+      window.alert('Double tap, good job!');
     }
   };
   render() {

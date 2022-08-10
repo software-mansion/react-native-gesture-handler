@@ -1,3 +1,4 @@
+import { Directions } from '../Directions';
 import { State } from '../State';
 
 export interface HitSlop {
@@ -11,14 +12,54 @@ export interface HitSlop {
   height?: number;
 }
 
-export interface Config extends Record<string, any> {
-  enabled?: boolean;
-  simultaneousHandlers?: any[] | null;
-  waitFor?: [] | null;
-  hitSlop?: HitSlop;
+export interface Handler {
+  handlerTag: number;
 }
 
-interface NativeEvent extends Record<string, any> {
+type ConfigArgs =
+  | number
+  | boolean
+  | HitSlop
+  | Directions
+  | Handler[]
+  | null
+  | undefined;
+
+export interface Config extends Record<string, ConfigArgs> {
+  enabled?: boolean;
+  simultaneousHandlers?: [] | null;
+  waitFor?: any[] | null;
+  hitSlop?: HitSlop;
+
+  //
+  minPointers?: number;
+  maxPointers?: number;
+  minDist?: number;
+  minDistSq?: number;
+  minVelocity?: number;
+  minVelocitySq?: number;
+  maxDist?: number;
+  maxDistSq?: number;
+  failOffsetXStart?: number;
+  failOffsetYStart?: number;
+  failOffsetXEnd?: number;
+  failOffsetYEnd?: number;
+  activeOffsetXStart?: number;
+  activeOffsetXEnd?: number;
+  activeOffsetYStart?: number;
+  activeOffsetYEnd?: number;
+  numberOfPointers?: number;
+  minDurationMs?: number;
+  numberOfTaps?: number;
+  maxDurationMs?: number;
+  maxDelayMs?: number;
+  maxDeltaX?: number;
+  maxDeltaY?: number;
+  direction?: Directions;
+}
+
+type NativeEventArgs = number | State | boolean | undefined;
+interface NativeEvent extends Record<string, NativeEventArgs> {
   numberOfPointers: number;
   state: State;
   pointerInside: boolean | undefined;
@@ -32,13 +73,7 @@ export interface ResultEvent extends Record<string, NativeEvent | number> {
   timeStamp: number;
 }
 
-export interface GestureMethods {
-  onGestureHandlerEvent: () => void;
-  onGestureHandlerStateChange: () => void;
-}
-
 export interface PropsRef {
-  //   current: GestureMethods;
   onGestureHandlerEvent: () => void;
   onGestureHandlerStateChange: () => void;
 }

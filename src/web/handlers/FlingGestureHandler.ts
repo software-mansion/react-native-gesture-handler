@@ -21,21 +21,21 @@ export default class FlingGestureHandler extends GestureHandler {
 
   private maxNumberOfPointersSimultaneously = 0;
 
-  public init(ref: number, propsRef: any): void {
+  public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
   }
 
   public updateGestureConfig({ ...props }): void {
     super.updateGestureConfig({ enabled: true, ...props });
 
-    this.enabled = this.config.enabled as boolean;
+    this.enabled = true;
 
     if (this.config.direction) {
-      this.direction = this.config.direction as number;
+      this.direction = this.config.direction;
     }
 
     if (this.config.numberOfPointers) {
-      this.numberOfPointersRequired = this.config.numberOfPointers as number;
+      this.numberOfPointersRequired = this.config.numberOfPointers;
     }
   }
 

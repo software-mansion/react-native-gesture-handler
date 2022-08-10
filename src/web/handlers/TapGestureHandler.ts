@@ -1,5 +1,4 @@
 import { State } from '../../State';
-import { PropsRef } from '../interfaces';
 import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
@@ -31,7 +30,7 @@ export default class TapGestureHandler extends GestureHandler {
 
   private tapsSoFar = 0;
 
-  public init(ref: number, propsRef: React.RefObject<PropsRef>): void {
+  public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
     this.setShouldCancelWhenOutside(true);
 
@@ -45,34 +44,34 @@ export default class TapGestureHandler extends GestureHandler {
   public updateGestureConfig({ ...props }): void {
     super.updateGestureConfig({ enabled: true, ...props });
 
-    this.enabled = this.config.enabled as boolean;
+    this.enabled = true;
 
-    if (this.config.numberOfTaps || this.config.numberOfTaps === 0) {
-      this.numberOfTaps = this.config.numberOfTaps as number;
+    if (this.config.numberOfTaps !== undefined) {
+      this.numberOfTaps = this.config.numberOfTaps;
     }
 
-    if (this.config.maxDurationMs || this.config.maxDurationMs === 0) {
-      this.maxDurationMs = this.config.maxDurationMs as number;
+    if (this.config.maxDurationMs !== undefined) {
+      this.maxDurationMs = this.config.maxDurationMs;
     }
 
-    if (this.config.maxDelayMs || this.config.maxDelayMs === 0) {
-      this.maxDelayMs = this.config.maxDurationMs as number;
+    if (this.config.maxDelayMs !== undefined) {
+      this.maxDelayMs = this.config.maxDelayMs;
     }
 
-    if (this.config.maxDeltaX || this.config.maxDeltaX === 0) {
-      this.maxDeltaX = this.config.maxDeltaX as number;
+    if (this.config.maxDeltaX !== undefined) {
+      this.maxDeltaX = this.config.maxDeltaX;
     }
 
-    if (this.config.maxDeltaY || this.config.maxDeltaY === 0) {
-      this.maxDeltaY = this.config.maxDeltaY as number;
+    if (this.config.maxDeltaY !== undefined) {
+      this.maxDeltaY = this.config.maxDeltaY;
     }
 
-    if (this.config.maxDistSq || this.config.maxDistSq === 0) {
-      this.maxDistSq = this.config.maxDistSq as number;
+    if (this.config.maxDistSq !== undefined) {
+      this.maxDistSq = this.config.maxDistSq;
     }
 
-    if (this.config.minPointers || this.config.minPointers === 0) {
-      this.minNumberOfPointers = this.config.minPointers as number;
+    if (this.config.minPointers !== undefined) {
+      this.minNumberOfPointers = this.config.minPointers;
     }
   }
 

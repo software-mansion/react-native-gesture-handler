@@ -5,7 +5,6 @@ import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
   ScaleGestureListener,
 } from '../detectors/ScaleGestureDetector';
-import { PropsRef } from '../interfaces';
 
 export default class PinchGestureHandler extends GestureHandler {
   private scale = 1;
@@ -39,8 +38,9 @@ export default class PinchGestureHandler extends GestureHandler {
       }
       return true;
     },
-    onScaleEnd: (_detector: ScaleGestureDetector): void => {
-      //
+    onScaleEnd: (_detector: ScaleGestureDetector, event: GHEvent): void => {
+      this.end(event);
+      this.reset();
     },
   };
 
@@ -48,7 +48,7 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleDetectorListener
   );
 
-  public init(ref: number, propsRef: React.RefObject<PropsRef>) {
+  public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
 
     this.setShouldCancelWhenOutside(false);

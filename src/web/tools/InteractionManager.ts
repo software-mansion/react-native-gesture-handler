@@ -1,5 +1,5 @@
 import GestureHandler from '../handlers/GestureHandler';
-import { Config } from '../interfaces';
+import { Config, Handler } from '../interfaces';
 
 export default class InteractionManager {
   private readonly waitForRelations: Map<number, number[]> = new Map();
@@ -10,8 +10,7 @@ export default class InteractionManager {
 
     if (config.waitFor) {
       const waitFor: number[] = [];
-      config.waitFor.forEach((handler: any) => {
-        console.log(handler);
+      config.waitFor.forEach((handler: Handler): void => {
         if (typeof handler === 'number') waitFor.push(handler);
         else waitFor.push(handler.handlerTag);
       });
@@ -21,7 +20,7 @@ export default class InteractionManager {
 
     if (config.simultaneousHandlers) {
       const simultaneousHandlers: number[] = [];
-      config.simultaneousHandlers.forEach((handler) => {
+      config.simultaneousHandlers.forEach((handler: Handler): void => {
         if (typeof handler === 'number') {
           simultaneousHandlers.push(handler);
         } else {
@@ -45,7 +44,7 @@ export default class InteractionManager {
 
     let shouldWait = false;
 
-    waitFor.forEach((tag: number) => {
+    waitFor.forEach((tag: number): void => {
       if (tag === otherHandler.getTag()) {
         shouldWait = true;
         return; //Returns from callback
@@ -66,7 +65,7 @@ export default class InteractionManager {
 
     let shouldRecognizeSimultaneously = false;
 
-    simultaneousHandlers.forEach((tag: number) => {
+    simultaneousHandlers.forEach((tag: number): void => {
       if (tag === otherHandler.getTag()) {
         shouldRecognizeSimultaneously = true;
         return;

@@ -1,5 +1,4 @@
 import { State } from '../../State';
-import { PropsRef } from '../interfaces';
 import { GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
@@ -7,7 +6,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   private disallowInterruption = false;
 
-  public init(ref: number, propsRef: React.RefObject<PropsRef>): void {
+  public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
 
     this.setShouldCancelWhenOutside(true);

@@ -21,7 +21,7 @@ export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
   const [remainingTimeMs, setRemainingTimeMs] = useState(MAX_VIDEO_DURATION_MS);
   const [recordingIntervalHandle, setRecordingIntervalHandle] =
-    useState<ReturnType<typeof setTimeout> | null>(null);
+    useState<ReturnType<typeof setInterval> | null>(null);
 
   const filtersPanGesture = Gesture.Pan()
     .onUpdate((e) => {
@@ -48,6 +48,7 @@ export default function Home() {
     .numberOfTaps(2)
     .onEnd((_e, success) => {
       'worklet';
+      console.log(isRecording);
       if (success) {
         runOnJS(takeSeries)();
       }
@@ -68,8 +69,9 @@ export default function Home() {
 
   const buttonLongPressGesture = Gesture.LongPress()
     .maxDistance(10000)
-    .onStart(() => {
+    .onStart((e) => {
       'worklet';
+      console.log(e);
       runOnJS(startRecording)();
     })
     .onEnd(() => {
@@ -125,8 +127,15 @@ export default function Home() {
   }
 
   function finishRecording() {
+    console.log('FINISH');
     setIsRecording(false);
-    clearInterval(recordingIntervalHandle!);
+    console.log(isRecording);
+    setTimeout(() => {
+      console.log(isRecording);
+    }, 1000);
+    console.log(recordingIntervalHandle);
+    clearInterval(recordingIntervalHandle);
+    console.log(recordingIntervalHandle);
     setRemainingTimeMs(MAX_VIDEO_DURATION_MS);
 
     Alert.alert(

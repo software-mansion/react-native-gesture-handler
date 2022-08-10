@@ -407,6 +407,7 @@ export default function createHandler<
         onGestureEvent,
         onGestureHandlerEvent,
       }: OnGestureEventHandlers = this.props;
+
       if (onGestureEvent && typeof onGestureEvent !== 'function') {
         // If it's not a method it should be an native Animated.event
         // object. We set it directly as the handler for the view

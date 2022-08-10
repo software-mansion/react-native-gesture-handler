@@ -1,5 +1,4 @@
 import { State } from '../../State';
-import { PropsRef } from '../interfaces';
 import { GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
@@ -24,7 +23,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     return 'long';
   }
 
-  public init(ref: number, propsRef: React.RefObject<PropsRef>) {
+  public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
     this.setShouldCancelWhenOutside(true);
   }
@@ -38,13 +37,13 @@ export default class LongPressGestureHandler extends GestureHandler {
   public updateGestureConfig({ ...props }): void {
     super.updateGestureConfig({ enabled: true, ...props });
 
-    this.enabled = this.config.enabled as boolean;
+    this.enabled = true;
 
-    if (this.config.minDurationMs || this.config.maxDurationMs === 0) {
-      this.minDurationMs = this.config.minDurationMs as number;
+    if (this.config.minDurationMs !== undefined) {
+      this.minDurationMs = this.config.minDurationMs;
     }
 
-    if (this.config.maxDist || this.config.minDist === 0) {
+    if (this.config.maxDist !== undefined) {
       this.maxDistSq = this.config.maxDist * this.config.maxDist;
     }
   }
@@ -106,8 +105,6 @@ export default class LongPressGestureHandler extends GestureHandler {
       else this.fail(event);
     }
   }
-
-  //
 
   protected onCancel(): void {
     // throw new Error('Method not implemented.');

@@ -21,7 +21,7 @@ import HammerLongPressGestureHandler from './web_hammer/LongPressGestureHandler'
 import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
 import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
 import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
-import { PropsRef } from './web/interfaces';
+import { Config } from './web/interfaces';
 
 export const Gestures = {
   NativeViewGestureHandler,
@@ -66,7 +66,7 @@ export default {
       NodeManager.createGestureHandler(handlerTag, new GestureClass());
       interactionManager.configureInteractions(
         NodeManager.getHandler(handlerTag),
-        config
+        (config as unknown) as Config
       );
     } else {
       if (!(handlerName in HammerGestures)) return;
@@ -75,13 +75,13 @@ export default {
       HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
     }
 
-    this.updateGestureHandler(handlerTag, config);
+    this.updateGestureHandler(handlerTag, (config as unknown) as Config);
   },
   attachGestureHandler(
     handlerTag: number,
     newView: number, //ref
     _actionType: ActionType,
-    propsRef: React.RefObject<PropsRef>
+    propsRef: React.RefObject<unknown>
   ) {
     if (EXPERIMENTAL_IMPLEMENTATION) {
       NodeManager.getHandler(handlerTag).init(newView, propsRef);
@@ -89,7 +89,7 @@ export default {
       HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
     }
   },
-  updateGestureHandler(handlerTag: number, newConfig: any) {
+  updateGestureHandler(handlerTag: number, newConfig: Config) {
     if (EXPERIMENTAL_IMPLEMENTATION) {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
 
