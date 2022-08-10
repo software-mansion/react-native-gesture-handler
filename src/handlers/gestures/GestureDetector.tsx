@@ -40,6 +40,8 @@ import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
+import { RNRenderer } from '../../RNRenderer';
+
 import { EXPERIMENTAL_IMPLEMENTATION } from '../../EnableExperimentalImplementation';
 
 declare const global: {
