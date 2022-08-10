@@ -18,8 +18,8 @@ export default abstract class GestureHandler {
   protected enabled = false;
 
   private ref!: number;
-  private propsRef!: React.RefObject<PropsRef>;
-  protected config: Config = {};
+  private propsRef!: React.RefObject<unknown>;
+  protected config: Config = { enabled: false };
   private handlerTag!: number;
   protected view: HTMLElement | null = null;
 
@@ -42,7 +42,7 @@ export default abstract class GestureHandler {
   //Initializing handler
   //
 
-  protected init(ref: number, propsRef: React.RefObject<PropsRef>) {
+  protected init(ref: number, propsRef: React.RefObject<unknown>) {
     this.propsRef = propsRef;
     this.ref = ref;
 
@@ -62,6 +62,8 @@ export default abstract class GestureHandler {
     this.view.style['touchAction'] = 'none';
     this.view.style['webkitUserSelect'] = 'none';
     this.view.style['userSelect'] = 'none';
+
+    //@ts-ignore This one disablea default events on Safari
     this.view.style['WebkitTouchCallout'] = 'none';
   }
 
@@ -285,13 +287,26 @@ export default abstract class GestureHandler {
       oldState
     );
 
-    if (this.currentState === State.ACTIVE) {
-      invokeNullableMethod(onGestureHandlerEvent, resultEvent);
-    }
+    // const backup = resultEvent.nativeEvent.oldState;
+
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
+    if (this.currentState === State.ACTIVE) {
+      resultEvent.nativeEvent.oldState = undefined;
+      invokeNullableMethod(onGestureHandlerEvent, resultEvent);
+    }
+
+    // if (this.currentState === State.ACTIVE) {
+    //   resultEvent.nativeEvent.oldState = undefined;
+    //   invokeNullableMethod(onGestureHandlerEvent, resultEvent);
+    // }
+    // if (this.lastSentState !== newState) {
+    //   this.lastSentState = newState;
+    //   resultEvent.nativeEvent.oldState = backup;
+    //   invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
+    // }
   };
 
   private transformEventData(
@@ -327,16 +342,11 @@ export default abstract class GestureHandler {
   public updateGestureConfig({ enabled = true, ...props }): void {
     this.config = { enabled, ...props };
     this.validateHitSlops();
-    this.hasCustomActivationCriteria = true;
   }
 
-  protected hasCustomCriteria(): void {
+  protected checkCustomActivationCriteria(criterias: string[]): void {
     for (const key in this.config) {
-      if (
-        !isNaN(this.config[key]) &&
-        this.config[key] !== undefined &&
-        this.config[key] !== null
-      ) {
+      if (criterias.indexOf(key) >= 0) {
         this.hasCustomActivationCriteria = true;
       }
     }
@@ -388,8 +398,6 @@ export default abstract class GestureHandler {
 
   private checkHitSlopTest(event: GHEvent): boolean {
     if (!this.config.hitSlop || !this.view) return true;
-
-    console.log(this.view);
 
     const width = this.view.getBoundingClientRect().width;
     const height = this.view.getBoundingClientRect().height;
@@ -511,7 +519,7 @@ function invokeNullableMethod(
   method:
     | ((event: ResultEvent) => void)
     | { __getHandler: () => (event: ResultEvent) => void }
-    | { __nodeConfig: { argMapping: any[] } },
+    | { __nodeConfig: { argMapping: unknown[] } },
   event: ResultEvent
 ): void {
   if (!method) return;
@@ -527,24 +535,27 @@ function invokeNullableMethod(
     return;
   }
 
-  if ('__nodeConfig' in method) {
-    const { argMapping } = method.__nodeConfig;
-    if (!Array.isArray(argMapping)) return;
+  if (!('__nodeConfig' in method)) return;
 
-    for (const [index, [key, value]] of argMapping.entries()) {
-      if (!(key in event.nativeEvent)) continue;
+  const { argMapping } = method.__nodeConfig;
+  if (!Array.isArray(argMapping)) return;
 
-      const nativeValue = event.nativeEvent[key];
+  for (const [index, [key, value]] of argMapping.entries()) {
+    if (!(key in event.nativeEvent)) continue;
 
-      if (value?.setValue) {
-        //Reanimated API
-        value.setValue(nativeValue);
-      } else {
-        //RN Animated API
-        method.__nodeConfig.argMapping[index] = [key, nativeValue];
-      }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const nativeValue = event.nativeEvent[key];
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (value?.setValue) {
+      //Reanimated API
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      value.setValue(nativeValue);
+    } else {
+      //RN Animated API
+      method.__nodeConfig.argMapping[index] = [key, nativeValue];
     }
-
-    return;
   }
+
+  return;
 }

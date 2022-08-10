@@ -1,7 +1,6 @@
 import { PixelRatio } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { PropsRef } from '../interfaces';
 import { EventTypes, GHEvent } from '../tools/EventManager';
 import GestureHandler from './GestureHandler';
 
@@ -58,7 +57,7 @@ export default class PanGestureHandler extends GestureHandler {
     return 'pan';
   }
 
-  public init(ref: number, propsRef: React.RefObject<PropsRef>): void {
+  public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
   }
 
@@ -294,8 +293,6 @@ export default class PanGestureHandler extends GestureHandler {
     this.lastY = this.tracker.getLastAvgY();
     this.velocityX = this.tracker.getVelocityX(event.pointerId);
     this.velocityY = this.tracker.getVelocityY(event.pointerId);
-
-    console.log(this.velocityX, this.velocityY);
 
     this.checkBegan(event);
 
