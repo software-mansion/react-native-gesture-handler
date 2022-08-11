@@ -7,7 +7,11 @@ import {
   CALLBACK_TYPE,
 } from './gesture';
 import { Reanimated, SharedValue } from './reanimatedWrapper';
-import { registerHandler, unregisterHandler } from '../handlersRegistry';
+import {
+  registerHandler,
+  unregisterHandler,
+  findHandler,
+} from '../handlersRegistry';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import {
   baseGestureHandlerWithMonitorProps,
@@ -257,15 +261,18 @@ function updateHandlers(
         handler.config.simultaneousWith
       );
 
-      RNGestureHandlerModule.updateGestureHandler(
-        handler.handlerTag,
-        filterConfig(handler.config, ALLOWED_PROPS, {
-          simultaneousHandlers: simultaneousWith,
-          waitFor: requireToFail,
-        })
-      );
+      // only update handler if it hasn't been dropped
+      if (findHandler(handler.handlerTag) !== undefined) {
+        RNGestureHandlerModule.updateGestureHandler(
+          handler.handlerTag,
+          filterConfig(handler.config, ALLOWED_PROPS, {
+            simultaneousHandlers: simultaneousWith,
+            waitFor: requireToFail,
+          })
+        );
 
-      registerHandler(handler.handlerTag, handler, handler.config.testId);
+        registerHandler(handler.handlerTag, handler, handler.config.testId);
+      }
     }
 
     if (preparedGesture.animatedHandlers) {
