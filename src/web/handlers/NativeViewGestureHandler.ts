@@ -17,6 +17,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.view.style['touchAction'] = 'auto';
     this.view.style['webkitUserSelect'] = 'auto';
     this.view.style['userSelect'] = 'auto';
+
+    //@ts-ignore Turns off defualt touch behavior on Safari
     this.view.style['WebkitTouchCallout'] = 'auto';
 
     if (this.view.hasAttribute('role')) this.buttonRole = true;
