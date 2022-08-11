@@ -25,8 +25,12 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(true);
   }
 
-  protected transformNativeEvent(_event: AdaptedPointerEvent) {
+  protected transformNativeEvent(event: AdaptedPointerEvent) {
     return {
+      x: event.offsetX,
+      y: event.offsetY,
+      absoluteX: event.x,
+      absoluteY: event.y,
       duration: Date.now() - this.startTime,
     };
   }

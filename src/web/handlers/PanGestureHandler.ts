@@ -191,7 +191,6 @@ export default class PanGestureHandler extends GestureHandler {
   protected transformNativeEvent(event: AdaptedPointerEvent) {
     if (!this.view) return {};
 
-    const rect = this.view.getBoundingClientRect();
     const ratio = PixelRatio.get();
 
     return {
@@ -201,8 +200,8 @@ export default class PanGestureHandler extends GestureHandler {
       absoluteY: event.y,
       velocityX: this.velocityX * ratio * 10,
       velocityY: this.velocityY * ratio * 10,
-      x: event.x - rect.left,
-      y: event.y - rect.top,
+      x: event.offsetX,
+      y: event.offsetY,
     };
   }
 
@@ -226,11 +225,11 @@ export default class PanGestureHandler extends GestureHandler {
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
 
-    this.checkUndetermined(event);
+    this.tryBegin(event);
     this.checkBegan(event);
   }
   protected onPointerAdd(event: AdaptedPointerEvent): void {
-    this.checkUndetermined(event);
+    this.tryBegin(event);
 
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
@@ -429,7 +428,7 @@ export default class PanGestureHandler extends GestureHandler {
     );
   }
 
-  private checkUndetermined(event: AdaptedPointerEvent): void {
+  private tryBegin(event: AdaptedPointerEvent): void {
     if (
       this.currentState === State.UNDETERMINED &&
       this.tracker.getTrackedPointersCount() >= this.minPointers

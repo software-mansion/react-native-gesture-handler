@@ -40,6 +40,15 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
+  protected transformNativeEvent(event: AdaptedPointerEvent) {
+    return {
+      x: event.offsetX,
+      y: event.offsetY,
+      absoluteX: event.x,
+      absoluteY: event.y,
+    };
+  }
+
   private startFling(event: AdaptedPointerEvent): void {
     this.startX = event.x;
     this.startY = event.y;
@@ -129,12 +138,5 @@ export default class FlingGestureHandler extends GestureHandler {
     super.resetConfig();
     this.numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
     this.direction = DEFAULT_DIRECTION;
-  }
-
-  protected onCancel(): void {
-    // throw new Error('Method not implemented.');
-  }
-  protected onReset(): void {
-    // throw new Error('Method not implemented.');
   }
 }

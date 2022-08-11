@@ -82,6 +82,15 @@ export default class TapGestureHandler extends GestureHandler {
     this.minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
   }
 
+  protected transformNativeEvent(event: AdaptedPointerEvent) {
+    return {
+      x: event.offsetX,
+      y: event.offsetY,
+      absoluteX: event.x,
+      absoluteY: event.y,
+    };
+  }
+
   private clearTimeouts(): void {
     clearTimeout(this.waitTimeout);
     clearTimeout(this.delayTimeout);

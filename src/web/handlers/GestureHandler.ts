@@ -508,6 +508,8 @@ function invokeNullableMethod(
 ): void {
   if (!method) return;
 
+  console.log(event);
+
   if (typeof method === 'function') {
     method(event);
     return;
