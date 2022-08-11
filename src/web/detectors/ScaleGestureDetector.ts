@@ -1,36 +1,37 @@
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { EventTypes, GHEvent } from '../tools/EventManager';
-import Tracker from '../tools/Tracker';
+import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+
+import PointerTracker from '../tools/PointerTracker';
 
 export interface ScaleGestureListener {
   onScaleBegin: (detector: ScaleGestureDetector) => boolean;
-  onScale: (detector: ScaleGestureDetector, event: GHEvent) => boolean;
-  onScaleEnd: (detector: ScaleGestureDetector, event: GHEvent) => void;
+  onScale: (
+    detector: ScaleGestureDetector,
+    event: AdaptedPointerEvent
+  ) => boolean;
+  onScaleEnd: (
+    detector: ScaleGestureDetector,
+    event: AdaptedPointerEvent
+  ) => void;
 }
-
-const SCALE_FACTOR = 0.5;
-const ANCHORED_SCALE_MODE_NONE = 0;
-// const ANCHORED_SCALE_MODE_DOUBLE_TAP = 1;
-const ANCHORED_SCALE_MODE_STYLUS = 2;
 
 export default class ScaleGestureDetector implements ScaleGestureListener {
   public onScaleBegin: (detector: ScaleGestureDetector) => boolean;
-  public onScale: (detector: ScaleGestureDetector, event: GHEvent) => boolean;
-  public onScaleEnd: (detector: ScaleGestureDetector, event: GHEvent) => void;
+  public onScale: (
+    detector: ScaleGestureDetector,
+    event: AdaptedPointerEvent
+  ) => boolean;
+  public onScaleEnd: (
+    detector: ScaleGestureDetector,
+    event: AdaptedPointerEvent
+  ) => void;
 
   private focusX!: number;
   private focusY!: number;
 
-  // private quickScaleEnabled: boolean;
-  // private stylusScaleEnabled: boolean;
-
   private currentSpan!: number;
   private prevSpan!: number;
   private initialSpan!: number;
-  // private currentSpanX!: number;
-  // private currentSpanY!: number;
-  // private prevSpanX: number;
-  // private prevSpanY: number;
 
   private currentTime!: number;
   private prevTime!: number;
@@ -39,12 +40,6 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
   private spanSlop: number;
   private minSpan: number;
-
-  private anchoredScaleStartX!: number;
-  private anchoredScaleStartY!: number;
-  private anchoredScaleMode = ANCHORED_SCALE_MODE_NONE;
-
-  private eventBeforeOrAboveStartingGestureEvent!: boolean;
 
   public constructor(callbacks: ScaleGestureListener) {
     this.onScaleBegin = callbacks.onScaleBegin;
@@ -55,72 +50,52 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     this.minSpan = 0;
   }
 
-  public onTouchEvent(event: GHEvent, tracker: Tracker): boolean {
+  public onTouchEvent(
+    event: AdaptedPointerEvent,
+    tracker: PointerTracker
+  ): boolean {
+    this.adaptEvent(event, tracker);
+
     this.currentTime = event.time;
 
     const action: EventTypes = event.eventType;
-    const numOfPointers = tracker.getTrackedPointersNumber();
-
-    const isStylusButtonDown = false;
-
-    const anchoredScaleCancelled: boolean =
-      this.anchoredScaleMode === ANCHORED_SCALE_MODE_STYLUS &&
-      !isStylusButtonDown;
+    const numOfPointers = tracker.getTrackedPointersCount();
 
     const streamComplete: boolean =
       action === EventTypes.UP ||
-      action === EventTypes.POINTER_UP ||
-      action === EventTypes.CANCEL ||
-      anchoredScaleCancelled;
+      action === EventTypes.ADDITIONAL_POINTER_UP ||
+      action === EventTypes.CANCEL;
 
     if (action === EventTypes.DOWN || streamComplete) {
       if (this.inProgress) {
         this.onScaleEnd(this, event);
         this.inProgress = false;
         this.initialSpan = 0;
-        this.anchoredScaleMode = ANCHORED_SCALE_MODE_NONE;
-      } else if (this.inAnchoredScaleMode() && streamComplete) {
-        this.inProgress = false;
-        this.initialSpan = 0;
-        this.anchoredScaleMode = ANCHORED_SCALE_MODE_NONE;
       }
+
       if (streamComplete) return true;
     }
 
     const configChanged: boolean =
       action === EventTypes.DOWN ||
-      action === EventTypes.POINTER_UP ||
-      action === EventTypes.POINTER_DOWN ||
-      anchoredScaleCancelled;
+      action === EventTypes.ADDITIONAL_POINTER_UP ||
+      action === EventTypes.NEXT_POINTER_DOWN;
 
-    const pointerUp = action === EventTypes.POINTER_UP;
+    const pointerUp = action === EventTypes.ADDITIONAL_POINTER_UP;
 
     const ignoredPointer: number | undefined = pointerUp
       ? event.pointerId
       : undefined;
 
     //Determine focal point
-    let sumX = 0;
-    let sumY = 0;
 
     const div: number = pointerUp ? numOfPointers - 1 : numOfPointers;
 
-    let focusX: number;
-    let focusY: number;
+    const sumX = tracker.getSumX(ignoredPointer);
+    const sumY = tracker.getSumY(ignoredPointer);
 
-    if (this.inAnchoredScaleMode()) {
-      focusX = this.anchoredScaleStartX;
-      focusY = this.anchoredScaleStartY;
-
-      if (event.y < focusY) this.eventBeforeOrAboveStartingGestureEvent = true;
-      else this.eventBeforeOrAboveStartingGestureEvent = false;
-    } else {
-      sumX = tracker.getSumX(ignoredPointer);
-      sumY = tracker.getSumY(ignoredPointer);
-
-      focusX = sumX / div;
-      focusY = sumY / div;
-    }
+    const focusX = sumX / div;
+    const focusY = sumY / div;
 
     //Determine average deviation from focal point
 
@@ -139,43 +114,29 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     const spanX: number = devX * 2;
     const spanY: number = devY * 2;
-    let span: number;
 
-    if (this.inAnchoredScaleMode()) span = spanY;
-    else span = Math.hypot(spanX, spanY);
+    const span = Math.hypot(spanX, spanY);
 
     //Begin/end events
     const wasInProgress: boolean = this.inProgress;
     this.focusX = focusX;
     this.focusY = focusY;
 
-    if (
-      !this.inAnchoredScaleMode() &&
-      this.inProgress &&
-      (span < this.minSpan || configChanged)
-    ) {
+    if (this.inProgress && (span < this.minSpan || configChanged)) {
       this.onScaleEnd(this, event);
       this.inProgress = false;
       this.initialSpan = span;
     }
 
     if (configChanged) {
-      // this.prevSpanX = this.currentSpanX = spanX;
-      // this.prevSpanY = this.currentSpanY = spanY;
       this.initialSpan = this.prevSpan = this.currentSpan = span;
     }
 
-    const minSpan: number = this.inAnchoredScaleMode()
-      ? this.spanSlop
-      : this.minSpan;
-
     if (
       !this.inProgress &&
-      span >= minSpan &&
+      span >= this.minSpan &&
       (wasInProgress || Math.abs(span - this.initialSpan) > this.spanSlop)
     ) {
-      // this.prevSpanX = this.currentSpanX = spanX;
-      // this.prevSpanY = this.currentSpanY = spanY;
       this.prevSpan = this.currentSpan = span;
       this.prevTime = this.currentTime;
       this.inProgress = this.onScaleBegin(this);
@@ -184,34 +145,35 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     //Handle motion
     if (action !== EventTypes.MOVE) return true;
 
-    // this.currentSpanX = spanX;
-    // this.currentSpanY = spanY;
     this.currentSpan = span;
 
-    let updatePrev = true;
+    if (this.inProgress && !this.onScale(this, event)) {
+      return true;
+    }
 
-    if (this.inProgress) updatePrev = this.onScale(this, event);
-
-    if (!updatePrev) return true;
-
-    // this.prevSpanX = this.currentSpanX;
-    // this.prevSpanY = this.currentSpanY;
     this.prevSpan = this.currentSpan;
     this.prevTime = this.currentTime;
 
     return true;
   }
 
-  private inAnchoredScaleMode(): boolean {
-    return this.anchoredScaleMode !== ANCHORED_SCALE_MODE_NONE;
-  }
+  private adaptEvent(
+    event: AdaptedPointerEvent,
+    tracker: PointerTracker
+  ): void {
+    if (
+      tracker.getTrackedPointersCount() > 1 &&
+      event.eventType === EventTypes.DOWN
+    ) {
+      event.eventType = EventTypes.NEXT_POINTER_DOWN;
+    }
 
-  public setQuickScaleEnabled(_scales: boolean): void {
-    // this.quickScaleEnabled = scales;
-  }
-
-  public setStylusScaleEnabled(_scales: boolean): void {
-    // this.stylusScaleEnabled = scales;
+    if (
+      tracker.getTrackedPointersCount() > 1 &&
+      event.eventType === EventTypes.UP
+    ) {
+      event.eventType = EventTypes.ADDITIONAL_POINTER_UP;
+    }
   }
 
   public getCurrentSpan(): number {
@@ -233,22 +195,6 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   public getScaleFactor(numOfPointers: number): number {
     if (numOfPointers < 2) return 1;
 
-    if (!this.inAnchoredScaleMode()) {
-      return this.prevSpan > 0 ? this.currentSpan / this.prevSpan : 1;
-    }
-    const scaleUp: boolean =
-      (this.eventBeforeOrAboveStartingGestureEvent &&
-        this.currentSpan < this.prevSpan) ||
-      (!this.eventBeforeOrAboveStartingGestureEvent &&
-        this.currentSpan > this.prevSpan);
-
-    const spanDiff =
-      Math.abs(1 - this.currentSpan / this.prevSpan) * SCALE_FACTOR;
-
-    return this.prevSpan <= this.currentSpan
-      ? 1
-      : scaleUp
-      ? 1 + spanDiff
-      : 1 - spanDiff;
+    return this.prevSpan > 0 ? this.currentSpan / this.prevSpan : 1;
   }
 }
