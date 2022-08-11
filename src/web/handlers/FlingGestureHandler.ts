@@ -1,6 +1,7 @@
 import { State } from '../../State';
 import { Direction } from '../constants';
-import { GHEvent } from '../tools/EventManager';
+import { AdaptedPointerEvent } from '../interfaces';
+
 import GestureHandler from './GestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 800;
@@ -25,10 +26,10 @@ export default class FlingGestureHandler extends GestureHandler {
     super.init(ref, propsRef);
   }
 
-  public updateGestureConfig({ ...props }): void {
-    super.updateGestureConfig({ enabled: true, ...props });
+  public updateGestureConfig({ enabled = true, ...props }): void {
+    super.updateGestureConfig({ enabled: enabled, ...props });
 
-    this.enabled = true;
+    this.enabled = enabled;
 
     if (this.config.direction) {
       this.direction = this.config.direction;
@@ -39,11 +40,7 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  get name(): string {
-    return 'fling';
-  }
-
-  private startFling(event: GHEvent): void {
+  private startFling(event: AdaptedPointerEvent): void {
     this.startX = event.x;
     this.startY = event.y;
 
@@ -54,7 +51,7 @@ export default class FlingGestureHandler extends GestureHandler {
     this.delayTimeout = setTimeout(() => this.fail(event), this.maxDurationMs);
   }
 
-  private tryEndFling(event: GHEvent): boolean {
+  private tryEndFling(event: AdaptedPointerEvent): boolean {
     if (
       this.maxNumberOfPointersSimultaneously ===
         this.numberOfPointersRequired &&
@@ -76,50 +73,54 @@ export default class FlingGestureHandler extends GestureHandler {
     return false;
   }
 
-  private endFling(event: GHEvent) {
-    if (!this.tryEndFling(event)) this.fail(event);
+  private endFling(event: AdaptedPointerEvent) {
+    if (!this.tryEndFling(event)) {
+      this.fail(event);
+    }
   }
 
-  protected onDownAction(event: GHEvent): void {
-    super.onDownAction(event);
+  protected onPointerDown(event: AdaptedPointerEvent): void {
+    super.onPointerDown(event);
 
     this.tracker.addToTracker(event);
 
-    if (this.getState() === State.UNDETERMINED) {
+    if (this.currentState === State.UNDETERMINED) {
       this.startFling(event);
     }
 
-    if (this.getState() !== State.BEGAN) return;
+    if (this.currentState !== State.BEGAN) {
+      return;
+    }
 
     this.tryEndFling(event);
 
     if (
-      this.tracker.getTrackedPointersNumber() >
+      this.tracker.getTrackedPointersCount() >
       this.maxNumberOfPointersSimultaneously
     ) {
-      this.maxNumberOfPointersSimultaneously = this.tracker.getTrackedPointersNumber();
+      this.maxNumberOfPointersSimultaneously = this.tracker.getTrackedPointersCount();
     }
   }
 
-  protected onMoveAction(event: GHEvent): void {
+  protected onPointerMove(event: AdaptedPointerEvent): void {
     this.tracker.track(event);
 
-    if (this.getState() !== State.BEGAN) return;
+    if (this.currentState !== State.BEGAN) return;
 
     this.tryEndFling(event);
 
-    super.onMoveAction(event);
+    super.onPointerMove(event);
   }
 
-  protected onUpAction(event: GHEvent): void {
+  protected onPointerUp(event: AdaptedPointerEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
 
-    if (this.getState() !== State.BEGAN) return;
+    if (this.currentState !== State.BEGAN) return;
 
     this.endFling(event);
   }
 
-  protected activate(event: GHEvent, force?: boolean): void {
+  protected activate(event: AdaptedPointerEvent, force?: boolean): void {
     super.activate(event, force);
     this.end(event);
   }

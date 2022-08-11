@@ -31,12 +31,13 @@ export interface Config extends Record<string, ConfigArgs> {
   waitFor?: any[] | null;
   hitSlop?: HitSlop;
 
-  //
   minPointers?: number;
   maxPointers?: number;
   minDist?: number;
   minDistSq?: number;
   minVelocity?: number;
+  minVelocityX?: number;
+  minVelocityY?: number;
   minVelocitySq?: number;
   maxDist?: number;
   maxDistSq?: number;
@@ -76,4 +77,38 @@ export interface ResultEvent extends Record<string, NativeEvent | number> {
 export interface PropsRef {
   onGestureHandlerEvent: () => void;
   onGestureHandlerStateChange: () => void;
+}
+
+export interface AdaptedPointerEvent {
+  x: number;
+  y: number;
+  offsetX: number;
+  offsetY: number;
+  pointerId: number;
+  eventType: EventTypes;
+  pointerType: string;
+  buttons: number;
+  time: number;
+}
+
+export enum MouseButtons {
+  NONE,
+  LEFT,
+  RIGHT,
+  LEFT_RIGHT,
+  SCROLL,
+  SCROLL_LEFT,
+  SCROLL_RIGHT,
+  SCROLL_LEFT_RIGHT,
+}
+
+export enum EventTypes {
+  DOWN,
+  NEXT_POINTER_DOWN,
+  UP,
+  ADDITIONAL_POINTER_UP,
+  MOVE,
+  ENTER,
+  OUT,
+  CANCEL,
 }

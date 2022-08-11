@@ -1,7 +1,8 @@
 import { State } from '../../State';
-import { GHEvent } from './EventManager';
+import { AdaptedPointerEvent } from '../interfaces';
+
 import GestureHandler from '../handlers/GestureHandler';
-import Tracker from './Tracker';
+import PointerTracker from './PointerTracker';
 
 export default class GestureHandlerOrchestrator {
   private static instance: GestureHandlerOrchestrator;
@@ -57,7 +58,10 @@ export default class GestureHandlerOrchestrator {
     return hasToWait;
   }
 
-  private tryActivate(handler: GestureHandler, event: GHEvent): void {
+  private tryActivate(
+    handler: GestureHandler,
+    event: AdaptedPointerEvent
+  ): void {
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler);
     } else {
@@ -81,7 +85,7 @@ export default class GestureHandlerOrchestrator {
     handler: GestureHandler,
     newState: State,
     oldState: State,
-    event: GHEvent
+    event: AdaptedPointerEvent
   ): void {
     this.handlingChangeSemaphore += 1;
 
@@ -122,7 +126,10 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  private makeActive(handler: GestureHandler, event: GHEvent): void {
+  private makeActive(
+    handler: GestureHandler,
+    event: AdaptedPointerEvent
+  ): void {
     const currentState = handler.getState();
 
     handler.setActive(true);
@@ -130,7 +137,7 @@ export default class GestureHandlerOrchestrator {
     handler.setActivationIndex(this.activationIndex++);
 
     this.gestureHandlers.forEach((otherHandler) => {
-      //Order of arguments is correct - we check whether current handler should cancell existing handlers
+      // Order of arguments is correct - we check whether current handler should cancel existing handlers
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
         this.handlersToCancel.push(otherHandler);
       }
@@ -230,7 +237,7 @@ export default class GestureHandlerOrchestrator {
     const otherPointers: number[] = otherHandler.getTrackedPointersID();
 
     if (
-      !Tracker.shareCommonPointers(handlerPointers, otherPointers) &&
+      !PointerTracker.shareCommonPointers(handlerPointers, otherPointers) &&
       handler.getView() !== otherHandler.getView()
     ) {
       return this.checkOverlap(handler, otherHandler);
@@ -244,7 +251,7 @@ export default class GestureHandlerOrchestrator {
       handler !== otherHandler &&
       (handler.isAwaiting() || handler.getState() === State.ACTIVE)
     ) {
-      //For now it always returns false
+      // For now it always returns false
       return handler.shouldBeCancelledByOther(otherHandler);
     }
 
@@ -255,9 +262,11 @@ export default class GestureHandlerOrchestrator {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    //If handlers don't have common pointers, default return value is false.
-    //However, if at least on pointer overlaps with both handlers, we return true
-    //This solves issue in overlapping parents example
+    // If handlers don't have common pointers, default return value is false.
+    // However, if at least on pointer overlaps with both handlers, we return true
+    // This solves issue in overlapping parents example
+
+    // TODO: Find better way to handle that issue, for example by activation order and handler cancelling
 
     const handlerPointers: number[] = handler.getTrackedPointersID();
     const otherPointers: number[] = otherHandler.getTrackedPointersID();

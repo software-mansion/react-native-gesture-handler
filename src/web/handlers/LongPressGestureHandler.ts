@@ -1,5 +1,6 @@
 import { State } from '../../State';
-import { GHEvent } from '../tools/EventManager';
+import { AdaptedPointerEvent } from '../interfaces';
+
 import GestureHandler from './GestureHandler';
 
 const DEFAULT_MIN_DURATION_MS = 500;
@@ -19,25 +20,21 @@ export default class LongPressGestureHandler extends GestureHandler {
 
   private activationTimeout: number | undefined;
 
-  get name(): string {
-    return 'long';
-  }
-
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
     this.setShouldCancelWhenOutside(true);
   }
 
-  protected transformNativeEvent(_event: GHEvent) {
+  protected transformNativeEvent(_event: AdaptedPointerEvent) {
     return {
       duration: Date.now() - this.startTime,
     };
   }
 
-  public updateGestureConfig({ ...props }): void {
-    super.updateGestureConfig({ enabled: true, ...props });
+  public updateGestureConfig({ enabled = true, ...props }): void {
+    super.updateGestureConfig({ enabled: enabled, ...props });
 
-    this.enabled = true;
+    this.enabled = enabled;
 
     if (this.config.minDurationMs !== undefined) {
       this.minDurationMs = this.config.minDurationMs;
@@ -58,24 +55,25 @@ export default class LongPressGestureHandler extends GestureHandler {
     clearTimeout(this.activationTimeout);
   }
 
-  protected onDownAction(event: GHEvent): void {
-    super.onDownAction(event);
-    this.checkUndetermined(event);
-    this.commonAction(event);
+  protected onPointerDown(event: AdaptedPointerEvent): void {
+    super.onPointerDown(event);
+    this.tryBegin(event);
+    this.tryActivate(event);
+    this.shouldFail(event);
   }
 
-  protected onUpAction(event: GHEvent): void {
-    super.onUpAction(event);
+  protected onPointerUp(event: AdaptedPointerEvent): void {
+    super.onPointerUp(event);
 
     if (this.currentState === State.ACTIVE) this.end(event);
     else this.fail(event);
   }
 
-  protected onMoveAction(event: GHEvent): void {
-    this.commonAction(event);
+  protected onPointerMove(event: AdaptedPointerEvent): void {
+    this.shouldFail(event);
   }
 
-  private checkUndetermined(event: GHEvent): void {
+  private tryBegin(event: AdaptedPointerEvent): void {
     if (this.currentState !== State.UNDETERMINED) return;
 
     this.previousTime = Date.now();
@@ -85,7 +83,9 @@ export default class LongPressGestureHandler extends GestureHandler {
 
     this.startX = event.x;
     this.startY = event.y;
+  }
 
+  private tryActivate(event: AdaptedPointerEvent): void {
     if (this.minDurationMs > 0) {
       this.activationTimeout = setTimeout(() => {
         this.activate(event);
@@ -95,7 +95,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     }
   }
 
-  private commonAction(event: GHEvent): void {
+  private shouldFail(event: AdaptedPointerEvent): void {
     const dx = event.x - this.startX;
     const dy = event.y - this.startY;
     const distSq = dx * dx + dy * dy;
@@ -104,12 +104,5 @@ export default class LongPressGestureHandler extends GestureHandler {
       if (this.currentState === State.ACTIVE) this.cancel(event);
       else this.fail(event);
     }
-  }
-
-  protected onCancel(): void {
-    // throw new Error('Method not implemented.');
-  }
-  protected onReset(): void {
-    // throw new Error('Method not implemented.');
   }
 }

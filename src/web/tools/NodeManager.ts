@@ -18,7 +18,7 @@ export default class NodeManager {
     handlerTag: number,
     handler: InstanceType<ValueOf<typeof Gestures>>
   ) {
-    if (handlerTag in NodeManager.gestures)
+    if (handlerTag in this.gestures)
       throw new Error(`Handler with tag ${handlerTag} already exists`);
 
     this.gestures[handlerTag] = handler;

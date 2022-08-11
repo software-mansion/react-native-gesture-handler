@@ -128,7 +128,6 @@ export default function Home() {
 
   function finishRecording() {
     setIsRecording(false);
-    setTimeout(() => {}, 1000);
     clearInterval(recordingIntervalHandle!);
     setRemainingTimeMs(MAX_VIDEO_DURATION_MS);
 

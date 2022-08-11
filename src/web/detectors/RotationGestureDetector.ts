@@ -1,17 +1,29 @@
-import { EventTypes, GHEvent } from '../tools/EventManager';
-import Tracker from '../tools/Tracker';
+import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+import PointerTracker from '../tools/PointerTracker';
 
 export interface RotationGestureListener {
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
-  onRotation: (detector: RotationGestureDetector, event: GHEvent) => boolean;
-  onRotationEnd: (detector: RotationGestureDetector, event: GHEvent) => void;
+  onRotation: (
+    detector: RotationGestureDetector,
+    event: AdaptedPointerEvent
+  ) => boolean;
+  onRotationEnd: (
+    detector: RotationGestureDetector,
+    event: AdaptedPointerEvent
+  ) => void;
 }
 
 export default class RotationGestureDetector
   implements RotationGestureListener {
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
-  onRotation: (detector: RotationGestureDetector, event: GHEvent) => boolean;
-  onRotationEnd: (detector: RotationGestureDetector, event: GHEvent) => void;
+  onRotation: (
+    detector: RotationGestureDetector,
+    event: AdaptedPointerEvent
+  ) => boolean;
+  onRotationEnd: (
+    detector: RotationGestureDetector,
+    event: AdaptedPointerEvent
+  ) => void;
 
   private currentTime = 0;
   private previousTime = 0;
@@ -32,25 +44,28 @@ export default class RotationGestureDetector
     this.onRotationEnd = callbacks.onRotationEnd;
   }
 
-  private updateCurrent(event: GHEvent, tracker: Tracker): void {
+  private updateCurrent(
+    event: AdaptedPointerEvent,
+    tracker: PointerTracker
+  ): void {
     this.previousTime = this.currentTime;
     this.currentTime = event.time;
 
     const pointerIDs: IterableIterator<number> = tracker.getData().keys();
 
-    const stPointerID: number = pointerIDs.next().value as number;
-    const ndPointerID: number = pointerIDs.next().value as number;
+    const firstPointerID: number = pointerIDs.next().value as number;
+    const secondPointerID: number = pointerIDs.next().value as number;
 
-    const stPointerX: number = tracker.getLastX(stPointerID);
-    const stPointerY: number = tracker.getLastY(stPointerID);
-    const ndPointerX: number = tracker.getLastX(ndPointerID);
-    const ndPointerY: number = tracker.getLastY(ndPointerID);
+    const firstPointerX: number = tracker.getLastX(firstPointerID);
+    const firstPointerY: number = tracker.getLastY(firstPointerID);
+    const secondPointerX: number = tracker.getLastX(secondPointerID);
+    const secondPointerY: number = tracker.getLastY(secondPointerID);
 
-    const vectorX: number = ndPointerX - stPointerX;
-    const vectorY: number = ndPointerY - stPointerY;
+    const vectorX: number = secondPointerX - firstPointerX;
+    const vectorY: number = secondPointerY - firstPointerY;
 
-    this.anchorX = (stPointerX + ndPointerX) * 0.5;
-    this.anchorY = (stPointerY + ndPointerY) * 0.5;
+    this.anchorX = (firstPointerX + secondPointerX) / 2;
+    this.anchorY = (firstPointerY + secondPointerY) / 2;
 
     //Angle diff should be positive when rotating in clockwise direction
     const angle: number = -Math.atan2(vectorY, vectorX);
@@ -73,7 +88,7 @@ export default class RotationGestureDetector
     }
   }
 
-  private finish(event: GHEvent): void {
+  private finish(event: AdaptedPointerEvent): void {
     if (!this.isInProgress) return;
 
     this.isInProgress = false;
@@ -81,7 +96,7 @@ export default class RotationGestureDetector
     this.onRotationEnd(this, event);
   }
 
-  private setKeyPointers(tracker: Tracker): void {
+  private setKeyPointers(tracker: PointerTracker): void {
     if (this.keyPointers[0] && this.keyPointers[1]) return;
 
     const pointerIDs: IterableIterator<number> = tracker.getData().keys();
@@ -90,13 +105,18 @@ export default class RotationGestureDetector
     this.keyPointers[1] = pointerIDs.next().value as number;
   }
 
-  public onTouchEvent(event: GHEvent, tracker: Tracker): boolean {
+  public onTouchEvent(
+    event: AdaptedPointerEvent,
+    tracker: PointerTracker
+  ): boolean {
+    this.adaptEvent(event, tracker);
+
     switch (event.eventType) {
       case EventTypes.DOWN:
         this.isInProgress = false;
         break;
 
-      case EventTypes.POINTER_DOWN:
+      case EventTypes.NEXT_POINTER_DOWN:
         if (this.isInProgress) break;
 
         this.isInProgress = true;
@@ -118,7 +138,7 @@ export default class RotationGestureDetector
 
         break;
 
-      case EventTypes.POINTER_UP:
+      case EventTypes.ADDITIONAL_POINTER_UP:
         if (!this.isInProgress) break;
 
         if (this.keyPointers.indexOf(event.pointerId) >= 0) this.finish(event);
@@ -131,6 +151,25 @@ export default class RotationGestureDetector
     }
 
     return true;
+  }
+
+  private adaptEvent(
+    event: AdaptedPointerEvent,
+    tracker: PointerTracker
+  ): void {
+    if (
+      tracker.getTrackedPointersCount() &&
+      event.eventType === EventTypes.DOWN
+    ) {
+      event.eventType = EventTypes.NEXT_POINTER_DOWN;
+    }
+
+    if (
+      tracker.getTrackedPointersCount() > 1 &&
+      event.eventType === EventTypes.UP
+    ) {
+      event.eventType = EventTypes.ADDITIONAL_POINTER_UP;
+    }
   }
 
   public getTimeDelta(): number {

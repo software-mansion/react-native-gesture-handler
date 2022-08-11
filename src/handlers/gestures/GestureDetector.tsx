@@ -41,7 +41,7 @@ import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
 import { RNRenderer } from '../../RNRenderer';
-import { EXPERIMENTAL_IMPLEMENTATION } from '../../EnableExperimentalImplementation';
+import { EXPERIMENTAL_WEB_IMPLEMENTATION } from '../../EnableExperimentalWebImplementation';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -152,7 +152,7 @@ function attachHandlers({
 
   for (const handler of gesture) {
     checkGestureCallbacksForWorklets(handler);
-
+    console.trace('Set immediate');
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
       handler.handlerTag,
@@ -575,7 +575,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
     },
-    onGestureHandlerStateChange: EXPERIMENTAL_IMPLEMENTATION
+    onGestureHandlerStateChange: EXPERIMENTAL_WEB_IMPLEMENTATION
       ? (e: HandlerStateChangeEvent<unknown>) => {
           onGestureHandlerEvent(e.nativeEvent);
         }

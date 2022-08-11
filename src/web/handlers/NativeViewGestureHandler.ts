@@ -1,5 +1,6 @@
 import { State } from '../../State';
-import { GHEvent } from '../tools/EventManager';
+import { AdaptedPointerEvent } from '../interfaces';
+
 import GestureHandler from './GestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
@@ -14,9 +15,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
     if (!this.view) return;
 
     this.view.style['touchAction'] = 'auto';
-    // this.view.style['webkitUserSelect'] = 'auto';
-    // this.view.style['userSelect'] = 'auto';
-    // this.view.style['WebkitTouchCallout'] = 'auto';
+    this.view.style['webkitUserSelect'] = 'auto';
+    this.view.style['userSelect'] = 'auto';
+    this.view.style['WebkitTouchCallout'] = 'auto';
 
     if (this.view.hasAttribute('role')) this.buttonRole = true;
     else this.buttonRole = false;
@@ -26,12 +27,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
     super.resetConfig();
   }
 
-  get name(): string {
-    return 'native';
-  }
-
-  protected onDownAction(event: GHEvent): void {
-    super.onDownAction(event);
+  protected onPointerDown(event: AdaptedPointerEvent): void {
+    super.onPointerDown(event);
     this.tracker.addToTracker(event);
 
     if (this.currentState === State.UNDETERMINED) {
@@ -40,21 +37,21 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected onMoveAction(_event: GHEvent): void {
+  protected onPointerMove(_event: AdaptedPointerEvent): void {
     //
   }
 
-  protected onOutAction(event: GHEvent): void {
+  protected onPointerOut(event: AdaptedPointerEvent): void {
     this.cancel(event);
   }
 
-  protected onUpAction(event: GHEvent): void {
+  protected onPointerUp(event: AdaptedPointerEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
     if (!this.buttonRole) this.activate(event);
-    if (this.tracker.getTrackedPointersNumber() === 0) this.end(event);
+    if (this.tracker.getTrackedPointersCount() === 0) this.end(event);
   }
 
-  protected onCancelAction(event: GHEvent): void {
+  protected onPointerCancel(event: AdaptedPointerEvent): void {
     this.cancel(event);
     this.reset();
   }
@@ -93,12 +90,5 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   public disallowsInterruption(): boolean {
     return this.disallowInterruption;
-  }
-
-  protected onCancel(): void {
-    // throw new Error('Method not implemented.');/
-  }
-  protected onReset(): void {
-    // throw new Error('Method not implemented.');
   }
 }

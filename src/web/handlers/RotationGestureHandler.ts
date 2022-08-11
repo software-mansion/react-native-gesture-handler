@@ -1,5 +1,6 @@
 import { State } from '../../State';
-import { EventTypes, GHEvent } from '../tools/EventManager';
+import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+
 import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
   RotationGestureListener,
@@ -18,7 +19,7 @@ export default class RotationGestureHandler extends GestureHandler {
     onRotationBegin: (_detector: RotationGestureDetector): boolean => true,
     onRotation: (
       detector: RotationGestureDetector,
-      event: GHEvent
+      event: AdaptedPointerEvent
     ): boolean => {
       const previousRotation: number = this.rotation;
       this.rotation += detector.getRotation();
@@ -40,10 +41,9 @@ export default class RotationGestureHandler extends GestureHandler {
     },
     onRotationEnd: (
       _detector: RotationGestureDetector,
-      event: GHEvent
+      event: AdaptedPointerEvent
     ): void => {
       this.end(event);
-      // this.reset();
     },
   };
 
@@ -57,17 +57,19 @@ export default class RotationGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(false);
   }
 
-  protected transformNativeEvent(_event: GHEvent) {
+  public updateGestureConfig({ enabled = true, ...props }): void {
+    super.updateGestureConfig({ enabled: enabled, ...props });
+
+    this.enabled = enabled;
+  }
+
+  protected transformNativeEvent(_event: AdaptedPointerEvent) {
     return {
       rotation: this.rotation ? this.rotation : 0,
       anchorX: this.getAnchorX(),
       anchorY: this.getAnchorY(),
       velocity: this.velocity ? this.velocity : 0,
     };
-  }
-
-  public get name(): string {
-    return 'rotation';
   }
 
   public getAnchorX(): number {
@@ -82,21 +84,22 @@ export default class RotationGestureHandler extends GestureHandler {
     return anchorY ? anchorY : this.cachedAnchorY;
   }
 
-  protected onDownAction(event: GHEvent): void {
-    super.onDownAction(event);
+  protected onPointerDown(event: AdaptedPointerEvent): void {
+    super.onPointerDown(event);
 
     this.tracker.addToTracker(event);
 
-    if (this.tracker.getTrackedPointersNumber() <= 1) return;
+    if (this.tracker.getTrackedPointersCount() <= 1) {
+      return;
+    }
 
-    event.eventType = EventTypes.POINTER_DOWN;
-    this.checkUndetermined(event);
+    this.tryBegin(event);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
   }
 
-  protected onMoveAction(event: GHEvent): void {
+  protected onPointerMove(event: AdaptedPointerEvent): void {
     if (
-      this.tracker.getTrackedPointersNumber() < 2 ||
+      this.tracker.getTrackedPointersCount() < 2 ||
       !this.rotationGestureDetector
     ) {
       return;
@@ -109,21 +112,16 @@ export default class RotationGestureHandler extends GestureHandler {
 
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 
-    super.onMoveAction(event);
+    super.onPointerMove(event);
   }
 
-  protected onOutOfBoundsAction(_event: GHEvent): void {
-    //
-  }
-
-  protected onUpAction(event: GHEvent): void {
+  protected onPointerUp(event: AdaptedPointerEvent): void {
     if (!this.rotationGestureDetector) {
       this.tracker.resetTracker();
       return;
     }
 
-    if (this.tracker.getTrackedPointersNumber() > 1) {
-      event.eventType = EventTypes.POINTER_UP;
+    if (this.tracker.getTrackedPointersCount() > 1) {
       this.rotationGestureDetector.onTouchEvent(event, this.tracker);
       this.tracker.removeFromTracker(event.pointerId);
     } else {
@@ -138,12 +136,12 @@ export default class RotationGestureHandler extends GestureHandler {
     else this.fail(event);
   }
 
-  protected onCancelAction(event: GHEvent): void {
+  protected onPointerCancel(event: AdaptedPointerEvent): void {
     this.end(event);
     this.reset();
   }
 
-  protected checkUndetermined(event: GHEvent): void {
+  protected tryBegin(event: AdaptedPointerEvent): void {
     if (this.currentState !== State.UNDETERMINED) return;
 
     this.resetProgress();
@@ -151,15 +149,10 @@ export default class RotationGestureHandler extends GestureHandler {
     this.begin(event);
   }
 
-  //
-  protected activate(event: GHEvent, _force?: boolean): void {
+  protected activate(event: AdaptedPointerEvent, _force?: boolean): void {
     if (this.currentState !== State.ACTIVE) this.resetProgress();
 
     super.activate(event);
-  }
-
-  protected onCancel(): void {
-    //throw new Error('Method not implemented.');
   }
 
   protected onReset(): void {

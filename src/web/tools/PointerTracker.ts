@@ -1,4 +1,5 @@
-import { GHEvent } from './EventManager';
+import { AdaptedPointerEvent } from '../interfaces';
+
 interface TrackerElement {
   lastX: number;
   lastY: number;
@@ -10,13 +11,14 @@ interface TrackerElement {
 }
 
 const VELOCITY_FACTOR = 0.2;
-export default class Tracker {
+
+export default class PointerTracker {
   private trackedPointers: Map<number, TrackerElement> = new Map<
     number,
     TrackerElement
   >();
 
-  public addToTracker(event: GHEvent): void {
+  public addToTracker(event: AdaptedPointerEvent): void {
     if (this.trackedPointers.has(event.pointerId)) return;
 
     const newElement: TrackerElement = {
@@ -34,7 +36,7 @@ export default class Tracker {
     this.trackedPointers.delete(pointerId);
   }
 
-  public track(event: GHEvent): void {
+  public track(event: AdaptedPointerEvent): void {
     const element: TrackerElement = this.trackedPointers.get(
       event.pointerId
     ) as TrackerElement;
@@ -90,7 +92,7 @@ export default class Tracker {
 
     return sumY;
   }
-  public getTrackedPointersNumber(): number {
+  public getTrackedPointersCount(): number {
     return this.trackedPointers.size;
   }
   public getTrackedPointersID(): number[] {

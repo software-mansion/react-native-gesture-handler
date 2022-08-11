@@ -1,5 +1,5 @@
 import { ActionType } from './ActionType';
-import { EXPERIMENTAL_IMPLEMENTATION } from './EnableExperimentalImplementation';
+import { EXPERIMENTAL_WEB_IMPLEMENTATION } from './EnableExperimentalWebImplementation';
 
 //GestureHandlers
 import InteractionManager from './web/tools/InteractionManager';
@@ -58,9 +58,12 @@ export default {
     handlerTag: number,
     config: T
   ) {
-    console.log();
-    if (EXPERIMENTAL_IMPLEMENTATION) {
-      if (!(handlerName in Gestures)) return;
+    // console.trace(handlerTag);
+    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+      if (!(handlerName in Gestures))
+        throw new Error(
+          `react-native-gesture-handler: ${handlerName} is not supported on web.`
+        );
 
       const GestureClass = Gestures[handlerName];
       NodeManager.createGestureHandler(handlerTag, new GestureClass());
@@ -69,7 +72,10 @@ export default {
         (config as unknown) as Config
       );
     } else {
-      if (!(handlerName in HammerGestures)) return;
+      if (!(handlerName in HammerGestures))
+        throw new Error(
+          `react-native-gesture-handler: ${handlerName} is not supported on web.`
+        );
 
       const GestureClass = HammerGestures[handlerName];
       HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
@@ -83,14 +89,14 @@ export default {
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
-    if (EXPERIMENTAL_IMPLEMENTATION) {
+    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
       NodeManager.getHandler(handlerTag).init(newView, propsRef);
     } else {
       HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
     }
   },
   updateGestureHandler(handlerTag: number, newConfig: Config) {
-    if (EXPERIMENTAL_IMPLEMENTATION) {
+    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
 
       interactionManager.configureInteractions(
@@ -102,14 +108,14 @@ export default {
     }
   },
   getGestureHandlerNode(handlerTag: number) {
-    if (EXPERIMENTAL_IMPLEMENTATION) {
+    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
       return NodeManager.getHandler(handlerTag);
     } else {
       return HammerNodeManager.getHandler(handlerTag);
     }
   },
   dropGestureHandler(handlerTag: number) {
-    if (EXPERIMENTAL_IMPLEMENTATION) {
+    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
       NodeManager.dropGestureHandler(handlerTag);
     } else {
       HammerNodeManager.dropGestureHandler(handlerTag);

@@ -1,37 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-export interface GHEvent {
-  x: number;
-  y: number;
-  offsetX: number;
-  offsetY: number;
-  pointerId: number;
-  eventType: EventTypes;
-  pointerType: string;
-  buttons: number;
-  time: number;
-}
 
-enum Buttons {
-  NONE,
-  LEFT,
-  RIGHT,
-  LEFT_RIGHT,
-  SCROLL,
-  SCROLL_LEFT,
-  SCROLL_RIGHT,
-  SCROLL_LEFT_RIGHT,
-}
-
-export enum EventTypes {
-  DOWN,
-  POINTER_DOWN,
-  UP,
-  POINTER_UP,
-  MOVE,
-  ENTER,
-  OUT,
-  CANCEL,
-}
+import { EventTypes, AdaptedPointerEvent, MouseButtons } from '../interfaces';
 
 export default class EventManager {
   private activePointers: number[] = [];
@@ -39,13 +8,10 @@ export default class EventManager {
 
   constructor(view: HTMLElement) {
     this.view = view;
-    // this.view.oncontextmenu = () => false;
   }
 
   public setListeners() {
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
-      event.preventDefault();
-
       if (
         !this.isPointerInBounds({
           x: event.clientX,
@@ -55,58 +21,66 @@ export default class EventManager {
         return;
       }
 
-      const ghEvent: GHEvent = this.mapEvent(event, EventTypes.DOWN);
+      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
+        event,
+        EventTypes.DOWN
+      );
       const target = event.target as HTMLElement;
 
-      target.setPointerCapture(ghEvent.pointerId);
-      this.addActivePointer(ghEvent.pointerId);
-      this.onDownAction(ghEvent);
+      target.setPointerCapture(adaptedEvent.pointerId);
+      this.addActivePointer(adaptedEvent.pointerId);
+      this.onPointerDown(adaptedEvent);
     });
 
     this.view.addEventListener('pointerup', (event: PointerEvent): void => {
-      event.preventDefault();
-
-      const ghEvent: GHEvent = this.mapEvent(event, EventTypes.UP);
+      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
+        event,
+        EventTypes.UP
+      );
       const target = event.target as HTMLElement;
 
-      this.onUpAction(ghEvent);
-      target.releasePointerCapture(ghEvent.pointerId);
-      this.removeActivePointer(ghEvent.pointerId);
+      this.onPointerUp(adaptedEvent);
+      target.releasePointerCapture(adaptedEvent.pointerId);
+      this.removeActivePointer(adaptedEvent.pointerId);
     });
 
     this.view.addEventListener('pointermove', (event: PointerEvent): void => {
-      event.preventDefault();
-
-      if (event.pointerType === 'mouse' && event.buttons !== Buttons.LEFT) {
+      if (
+        event.pointerType === 'mouse' &&
+        event.buttons !== MouseButtons.LEFT
+      ) {
         return;
       }
 
-      const ghEvent: GHEvent = this.mapEvent(event, EventTypes.MOVE);
+      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
+        event,
+        EventTypes.MOVE
+      );
 
       const inBounds: boolean = this.isPointerInBounds({
-        x: ghEvent.x,
-        y: ghEvent.y,
+        x: adaptedEvent.x,
+        y: adaptedEvent.y,
       });
 
       const pointerIndex: number = this.activePointers.indexOf(
-        ghEvent.pointerId
+        adaptedEvent.pointerId
       );
 
       if (inBounds) {
         if (pointerIndex < 0) {
-          ghEvent.eventType = EventTypes.ENTER;
-          this.onEnterAction(ghEvent);
-          this.addActivePointer(ghEvent.pointerId);
+          adaptedEvent.eventType = EventTypes.ENTER;
+          this.onPointerEnter(adaptedEvent);
+          this.addActivePointer(adaptedEvent.pointerId);
         } else {
-          this.onMoveAction(ghEvent);
+          this.onPointerMove(adaptedEvent);
         }
       } else {
         if (pointerIndex >= 0) {
-          ghEvent.eventType = EventTypes.OUT;
-          this.onOutAction(ghEvent);
-          this.removeActivePointer(ghEvent.pointerId);
+          adaptedEvent.eventType = EventTypes.OUT;
+          this.onPointerOut(adaptedEvent);
+          this.removeActivePointer(adaptedEvent.pointerId);
         } else {
-          this.onOutOfBoundsAction(ghEvent);
+          this.onPointerOutOfBounds(adaptedEvent);
         }
       }
     });
@@ -114,43 +88,55 @@ export default class EventManager {
     this.view.addEventListener('pointercancel', (event: PointerEvent): void => {
       event.preventDefault();
 
-      const ghEvent: GHEvent = this.mapEvent(event, EventTypes.CANCEL);
+      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
+        event,
+        EventTypes.CANCEL
+      );
 
-      this.onCancelAction(ghEvent);
+      this.onPointerCancel(adaptedEvent);
     });
   }
 
-  private onDownAction(_event: GHEvent): void {}
-  private onUpAction(_event: GHEvent): void {}
-  private onMoveAction(_event: GHEvent): void {}
-  private onOutAction(_event: GHEvent): void {}
-  private onEnterAction(_event: GHEvent): void {}
-  private onCancelAction(_event: GHEvent): void {}
-  private onOutOfBoundsAction(_event: GHEvent): void {}
+  private onPointerDown(_event: AdaptedPointerEvent): void {}
+  private onPointerUp(_event: AdaptedPointerEvent): void {}
+  private onPointerMove(_event: AdaptedPointerEvent): void {}
+  private onPointerOut(_event: AdaptedPointerEvent): void {}
+  private onPointerEnter(_event: AdaptedPointerEvent): void {}
+  private onPointerCancel(_event: AdaptedPointerEvent): void {}
+  private onPointerOutOfBounds(_event: AdaptedPointerEvent): void {}
 
-  public setOnDownAction(callback: (event: GHEvent) => void): void {
-    this.onDownAction = callback;
+  public setOnDownAction(callback: (event: AdaptedPointerEvent) => void): void {
+    this.onPointerDown = callback;
   }
-  public setOnUpAction(callback: (event: GHEvent) => void): void {
-    this.onUpAction = callback;
+  public setOnUpAction(callback: (event: AdaptedPointerEvent) => void): void {
+    this.onPointerUp = callback;
   }
-  public setOnMoveAction(callback: (event: GHEvent) => void): void {
-    this.onMoveAction = callback;
+  public setOnMoveAction(callback: (event: AdaptedPointerEvent) => void): void {
+    this.onPointerMove = callback;
   }
-  public setOnOutAction(callback: (event: GHEvent) => void): void {
-    this.onOutAction = callback;
+  public setOnOutAction(callback: (event: AdaptedPointerEvent) => void): void {
+    this.onPointerOut = callback;
   }
-  public setOnEnterAction(callback: (event: GHEvent) => void): void {
-    this.onEnterAction = callback;
+  public setOnEnterAction(
+    callback: (event: AdaptedPointerEvent) => void
+  ): void {
+    this.onPointerEnter = callback;
   }
-  public setOnCancelAction(callback: (event: GHEvent) => void): void {
-    this.onCancelAction = callback;
+  public setOnCancelAction(
+    callback: (event: AdaptedPointerEvent) => void
+  ): void {
+    this.onPointerCancel = callback;
   }
-  public setOutOfBoundsAction(callback: (event: GHEvent) => void): void {
-    this.onOutOfBoundsAction = callback;
+  public setOutOfBoundsAction(
+    callback: (event: AdaptedPointerEvent) => void
+  ): void {
+    this.onPointerOutOfBounds = callback;
   }
 
-  private mapEvent(event: PointerEvent, eventType: EventTypes): GHEvent {
+  private mapEvent(
+    event: PointerEvent,
+    eventType: EventTypes
+  ): AdaptedPointerEvent {
     return {
       x: event.clientX,
       y: event.clientY,
@@ -160,7 +146,7 @@ export default class EventManager {
       eventType: eventType,
       pointerType: event.pointerType,
       buttons: event.buttons,
-      time: event.timeStamp, //Date.now()
+      time: event.timeStamp,
     };
   }
 
