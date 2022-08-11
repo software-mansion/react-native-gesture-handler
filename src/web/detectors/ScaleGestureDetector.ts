@@ -1,29 +1,23 @@
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 
 import PointerTracker from '../tools/PointerTracker';
 
 export interface ScaleGestureListener {
   onScaleBegin: (detector: ScaleGestureDetector) => boolean;
-  onScale: (
-    detector: ScaleGestureDetector,
-    event: AdaptedPointerEvent
-  ) => boolean;
-  onScaleEnd: (
-    detector: ScaleGestureDetector,
-    event: AdaptedPointerEvent
-  ) => void;
+  onScale: (detector: ScaleGestureDetector, event: AdaptedEvent) => boolean;
+  onScaleEnd: (detector: ScaleGestureDetector, event: AdaptedEvent) => void;
 }
 
 export default class ScaleGestureDetector implements ScaleGestureListener {
   public onScaleBegin: (detector: ScaleGestureDetector) => boolean;
   public onScale: (
     detector: ScaleGestureDetector,
-    event: AdaptedPointerEvent
+    event: AdaptedEvent
   ) => boolean;
   public onScaleEnd: (
     detector: ScaleGestureDetector,
-    event: AdaptedPointerEvent
+    event: AdaptedEvent
   ) => void;
 
   private focusX!: number;
@@ -50,10 +44,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     this.minSpan = 0;
   }
 
-  public onTouchEvent(
-    event: AdaptedPointerEvent,
-    tracker: PointerTracker
-  ): boolean {
+  public onTouchEvent(event: AdaptedEvent, tracker: PointerTracker): boolean {
     this.adaptEvent(event, tracker);
 
     this.currentTime = event.time;
@@ -79,7 +70,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     const configChanged: boolean =
       action === EventTypes.DOWN ||
       action === EventTypes.ADDITIONAL_POINTER_UP ||
-      action === EventTypes.NEXT_POINTER_DOWN;
+      action === EventTypes.ADDITIONAL_POINTER_DOWN;
 
     const pointerUp = action === EventTypes.ADDITIONAL_POINTER_UP;
 
@@ -157,15 +148,12 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     return true;
   }
 
-  private adaptEvent(
-    event: AdaptedPointerEvent,
-    tracker: PointerTracker
-  ): void {
+  private adaptEvent(event: AdaptedEvent, tracker: PointerTracker): void {
     if (
       tracker.getTrackedPointersCount() > 1 &&
       event.eventType === EventTypes.DOWN
     ) {
-      event.eventType = EventTypes.NEXT_POINTER_DOWN;
+      event.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
     }
 
     if (

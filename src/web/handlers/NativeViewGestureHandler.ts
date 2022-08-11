@@ -1,5 +1,6 @@
 import { State } from '../../State';
-import { AdaptedPointerEvent } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
+import TouchEventManager from '../tools/TouchEventManager';
 
 import GestureHandler from './GestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
@@ -15,21 +16,24 @@ export default class NativeViewGestureHandler extends GestureHandler {
     if (!this.view) return;
 
     this.view.style['touchAction'] = 'auto';
-    this.view.style['webkitUserSelect'] = 'auto';
-    this.view.style['userSelect'] = 'auto';
 
     //@ts-ignore Turns off defualt touch behavior on Safari
     this.view.style['WebkitTouchCallout'] = 'auto';
 
     if (this.view.hasAttribute('role')) this.buttonRole = true;
     else this.buttonRole = false;
+
+    // this.eventManager = new TouchEventManager(this.view);
+    // this.eventManager.setOnPointerDown(this.onPointerDown.bind(this));
+
+    // this.eventManager.setListeners();
   }
 
   protected resetConfig(): void {
     super.resetConfig();
   }
 
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
     this.tracker.addToTracker(event);
 
@@ -39,21 +43,21 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(_event: AdaptedPointerEvent): void {
+  protected onPointerMove(_event: AdaptedEvent): void {
     //
   }
 
-  protected onPointerOut(event: AdaptedPointerEvent): void {
+  protected onPointerOut(event: AdaptedEvent): void {
     this.cancel(event);
   }
 
-  protected onPointerUp(event: AdaptedPointerEvent): void {
+  protected onPointerUp(event: AdaptedEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
     if (!this.buttonRole) this.activate(event);
     if (this.tracker.getTrackedPointersCount() === 0) this.end(event);
   }
 
-  protected onPointerCancel(event: AdaptedPointerEvent): void {
+  protected onPointerCancel(event: AdaptedEvent): void {
     this.cancel(event);
     this.reset();
   }

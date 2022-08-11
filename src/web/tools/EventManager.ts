@@ -1,153 +1,53 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import { AdaptedEvent, EventTypes } from '../interfaces';
 
-import { EventTypes, AdaptedPointerEvent, MouseButtons } from '../interfaces';
-
-export default class EventManager {
-  private activePointers: number[] = [];
-  private readonly view: HTMLElement;
+export default abstract class EventManager {
+  protected readonly view: HTMLElement;
+  protected pointersInBounds: number[] = [];
+  protected activePointersCounter: number;
 
   constructor(view: HTMLElement) {
     this.view = view;
+    this.activePointersCounter = 0;
   }
 
-  public setListeners() {
-    this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
-      if (
-        !this.isPointerInBounds({
-          x: event.clientX,
-          y: event.clientY,
-        })
-      ) {
-        return;
-      }
+  public abstract setListeners(): void;
+  protected abstract mapEvent(
+    event: Event,
+    eventType: EventTypes,
+    index?: number
+  ): AdaptedEvent;
 
-      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
-        event,
-        EventTypes.DOWN
-      );
-      const target = event.target as HTMLElement;
+  protected onPointerDown(_event: AdaptedEvent): void {}
+  protected onPointerUp(_event: AdaptedEvent): void {}
+  protected onPointerMove(_event: AdaptedEvent): void {}
+  protected onPointerOut(_event: AdaptedEvent): void {}
+  protected onPointerEnter(_event: AdaptedEvent): void {}
+  protected onPointerCancel(_event: AdaptedEvent): void {}
+  protected onPointerOutOfBounds(_event: AdaptedEvent): void {}
 
-      target.setPointerCapture(adaptedEvent.pointerId);
-      this.addActivePointer(adaptedEvent.pointerId);
-      this.onPointerDown(adaptedEvent);
-    });
-
-    this.view.addEventListener('pointerup', (event: PointerEvent): void => {
-      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
-        event,
-        EventTypes.UP
-      );
-      const target = event.target as HTMLElement;
-
-      this.onPointerUp(adaptedEvent);
-      target.releasePointerCapture(adaptedEvent.pointerId);
-      this.removeActivePointer(adaptedEvent.pointerId);
-    });
-
-    this.view.addEventListener('pointermove', (event: PointerEvent): void => {
-      if (
-        event.pointerType === 'mouse' &&
-        event.buttons !== MouseButtons.LEFT
-      ) {
-        return;
-      }
-
-      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
-        event,
-        EventTypes.MOVE
-      );
-
-      const inBounds: boolean = this.isPointerInBounds({
-        x: adaptedEvent.x,
-        y: adaptedEvent.y,
-      });
-
-      const pointerIndex: number = this.activePointers.indexOf(
-        adaptedEvent.pointerId
-      );
-
-      if (inBounds) {
-        if (pointerIndex < 0) {
-          adaptedEvent.eventType = EventTypes.ENTER;
-          this.onPointerEnter(adaptedEvent);
-          this.addActivePointer(adaptedEvent.pointerId);
-        } else {
-          this.onPointerMove(adaptedEvent);
-        }
-      } else {
-        if (pointerIndex >= 0) {
-          adaptedEvent.eventType = EventTypes.OUT;
-          this.onPointerOut(adaptedEvent);
-          this.removeActivePointer(adaptedEvent.pointerId);
-        } else {
-          this.onPointerOutOfBounds(adaptedEvent);
-        }
-      }
-    });
-
-    this.view.addEventListener('pointercancel', (event: PointerEvent): void => {
-      event.preventDefault();
-
-      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
-        event,
-        EventTypes.CANCEL
-      );
-
-      this.onPointerCancel(adaptedEvent);
-    });
-  }
-
-  private onPointerDown(_event: AdaptedPointerEvent): void {}
-  private onPointerUp(_event: AdaptedPointerEvent): void {}
-  private onPointerMove(_event: AdaptedPointerEvent): void {}
-  private onPointerOut(_event: AdaptedPointerEvent): void {}
-  private onPointerEnter(_event: AdaptedPointerEvent): void {}
-  private onPointerCancel(_event: AdaptedPointerEvent): void {}
-  private onPointerOutOfBounds(_event: AdaptedPointerEvent): void {}
-
-  public setOnDownAction(callback: (event: AdaptedPointerEvent) => void): void {
+  public setOnPointerDown(callback: (event: AdaptedEvent) => void): void {
     this.onPointerDown = callback;
   }
-  public setOnUpAction(callback: (event: AdaptedPointerEvent) => void): void {
+  public setOnPointerUp(callback: (event: AdaptedEvent) => void): void {
     this.onPointerUp = callback;
   }
-  public setOnMoveAction(callback: (event: AdaptedPointerEvent) => void): void {
+  public setOnPointerMove(callback: (event: AdaptedEvent) => void): void {
     this.onPointerMove = callback;
   }
-  public setOnOutAction(callback: (event: AdaptedPointerEvent) => void): void {
+  public setOnPointerOut(callback: (event: AdaptedEvent) => void): void {
     this.onPointerOut = callback;
   }
-  public setOnEnterAction(
-    callback: (event: AdaptedPointerEvent) => void
-  ): void {
+  public setOnPointerEnter(callback: (event: AdaptedEvent) => void): void {
     this.onPointerEnter = callback;
   }
-  public setOnCancelAction(
-    callback: (event: AdaptedPointerEvent) => void
-  ): void {
+  public setOnPointerCancel(callback: (event: AdaptedEvent) => void): void {
     this.onPointerCancel = callback;
   }
-  public setOutOfBoundsAction(
-    callback: (event: AdaptedPointerEvent) => void
+  public setOnPointerOutOfBounds(
+    callback: (event: AdaptedEvent) => void
   ): void {
     this.onPointerOutOfBounds = callback;
-  }
-
-  private mapEvent(
-    event: PointerEvent,
-    eventType: EventTypes
-  ): AdaptedPointerEvent {
-    return {
-      x: event.clientX,
-      y: event.clientY,
-      offsetX: event.offsetX,
-      offsetY: event.offsetY,
-      pointerId: event.pointerId,
-      eventType: eventType,
-      pointerType: event.pointerType,
-      buttons: event.buttons,
-      time: event.timeStamp,
-    };
   }
 
   public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
@@ -160,17 +60,17 @@ export default class EventManager {
     );
   }
 
-  private addActivePointer(pointerId: number): void {
-    if (this.activePointers.indexOf(pointerId) >= 0) return;
+  protected markAsInBounds(pointerId: number): void {
+    if (this.pointersInBounds.indexOf(pointerId) >= 0) return;
 
-    this.activePointers.push(pointerId);
+    this.pointersInBounds.push(pointerId);
   }
 
-  private removeActivePointer(pointerId: number): void {
-    const index: number = this.activePointers.indexOf(pointerId);
+  protected markAsOutOfBounds(pointerId: number): void {
+    const index: number = this.pointersInBounds.indexOf(pointerId);
 
     if (index < 0) return;
 
-    this.activePointers.splice(index, 1);
+    this.pointersInBounds.splice(index, 1);
   }
 }

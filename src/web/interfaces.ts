@@ -79,7 +79,7 @@ export interface PropsRef {
   onGestureHandlerStateChange: () => void;
 }
 
-export interface AdaptedPointerEvent {
+export interface AdaptedEvent {
   x: number;
   y: number;
   offsetX: number;
@@ -104,7 +104,7 @@ export enum MouseButtons {
 
 export enum EventTypes {
   DOWN,
-  NEXT_POINTER_DOWN,
+  ADDITIONAL_POINTER_DOWN,
   UP,
   ADDITIONAL_POINTER_UP,
   MOVE,

@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedPointerEvent } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -25,8 +25,12 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(true);
   }
 
-  protected transformNativeEvent(_event: AdaptedPointerEvent) {
+  protected transformNativeEvent(event: AdaptedEvent) {
     return {
+      x: event.offsetX,
+      y: event.offsetY,
+      absoluteX: event.x,
+      absoluteY: event.y,
       duration: Date.now() - this.startTime,
     };
   }
@@ -55,25 +59,25 @@ export default class LongPressGestureHandler extends GestureHandler {
     clearTimeout(this.activationTimeout);
   }
 
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
     this.tryBegin(event);
     this.tryActivate(event);
     this.shouldFail(event);
   }
 
-  protected onPointerUp(event: AdaptedPointerEvent): void {
+  protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
 
     if (this.currentState === State.ACTIVE) this.end(event);
     else this.fail(event);
   }
 
-  protected onPointerMove(event: AdaptedPointerEvent): void {
+  protected onPointerMove(event: AdaptedEvent): void {
     this.shouldFail(event);
   }
 
-  private tryBegin(event: AdaptedPointerEvent): void {
+  private tryBegin(event: AdaptedEvent): void {
     if (this.currentState !== State.UNDETERMINED) return;
 
     this.previousTime = Date.now();
@@ -85,7 +89,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.startY = event.y;
   }
 
-  private tryActivate(event: AdaptedPointerEvent): void {
+  private tryActivate(event: AdaptedEvent): void {
     if (this.minDurationMs > 0) {
       this.activationTimeout = setTimeout(() => {
         this.activate(event);
@@ -95,7 +99,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     }
   }
 
-  private shouldFail(event: AdaptedPointerEvent): void {
+  private shouldFail(event: AdaptedEvent): void {
     const dx = event.x - this.startX;
     const dy = event.y - this.startY;
     const distSq = dx * dx + dy * dy;

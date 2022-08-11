@@ -1,16 +1,13 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { findNodeHandle } from 'react-native';
 import { State } from '../../State';
-import {
-  Config,
-  AdaptedPointerEvent,
-  PropsRef,
-  ResultEvent,
-} from '../interfaces';
+import { Config, AdaptedEvent, PropsRef, ResultEvent } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
+import PointerEventManager from '../tools/PointerEventManager';
 import PointerTracker from '../tools/PointerTracker';
+import TouchEventManager from '../tools/TouchEventManager';
 
 export default abstract class GestureHandler {
   private lastSentState: State | null = null;
@@ -72,15 +69,15 @@ export default abstract class GestureHandler {
   private setEventManager(): void {
     if (!this.view) return;
 
-    this.eventManager = new EventManager(this.view);
+    this.eventManager = new PointerEventManager(this.view);
 
-    this.eventManager.setOnDownAction(this.onPointerDown.bind(this));
-    this.eventManager.setOnUpAction(this.onPointerUp.bind(this));
-    this.eventManager.setOnMoveAction(this.onPointerMove.bind(this));
-    this.eventManager.setOnEnterAction(this.onPointerEnter.bind(this));
-    this.eventManager.setOnOutAction(this.onPointerOut.bind(this));
-    this.eventManager.setOnCancelAction(this.onPointerCancel.bind(this));
-    this.eventManager.setOutOfBoundsAction(
+    this.eventManager.setOnPointerDown(this.onPointerDown.bind(this));
+    this.eventManager.setOnPointerUp(this.onPointerUp.bind(this));
+    this.eventManager.setOnPointerMove(this.onPointerMove.bind(this));
+    this.eventManager.setOnPointerEnter(this.onPointerEnter.bind(this));
+    this.eventManager.setOnPointerOut(this.onPointerOut.bind(this));
+    this.eventManager.setOnPointerCancel(this.onPointerCancel.bind(this));
+    this.eventManager.setOnPointerOutOfBounds(
       this.onPointerOutOfBounds.bind(this)
     );
 
@@ -109,7 +106,7 @@ export default abstract class GestureHandler {
   // State logic
   //
 
-  public moveToState(newState: State, event: AdaptedPointerEvent) {
+  public moveToState(newState: State, event: AdaptedEvent) {
     if (this.currentState === newState) return;
 
     const oldState = this.currentState;
@@ -127,14 +124,14 @@ export default abstract class GestureHandler {
 
   protected onStateChange(_newState: State, _oldState: State): void {}
 
-  public begin(event: AdaptedPointerEvent): void {
+  public begin(event: AdaptedEvent): void {
     if (!this.checkHitSlop(event)) return;
 
     if (this.currentState === State.UNDETERMINED)
       this.moveToState(State.BEGAN, event);
   }
 
-  public fail(event: AdaptedPointerEvent): void {
+  public fail(event: AdaptedEvent): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.BEGAN
@@ -145,7 +142,7 @@ export default abstract class GestureHandler {
     this.resetProgress();
   }
 
-  public cancel(event: AdaptedPointerEvent): void {
+  public cancel(event: AdaptedEvent): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.UNDETERMINED ||
@@ -156,7 +153,7 @@ export default abstract class GestureHandler {
     }
   }
 
-  protected activate(event: AdaptedPointerEvent, _force = false) {
+  protected activate(event: AdaptedEvent, _force = false) {
     if (
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
@@ -165,7 +162,7 @@ export default abstract class GestureHandler {
     }
   }
 
-  public end(event: AdaptedPointerEvent) {
+  public end(event: AdaptedEvent) {
     if (
       this.currentState === State.BEGAN ||
       this.currentState === State.ACTIVE
@@ -239,24 +236,24 @@ export default abstract class GestureHandler {
   // Event actions
   //
 
-  protected onPointerDown(_event: AdaptedPointerEvent): void {
+  protected onPointerDown(_event: AdaptedEvent): void {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
   }
   // Adding another pointer to existing ones
-  protected onPointerAdd(_event: AdaptedPointerEvent): void {}
-  protected onPointerUp(_event: AdaptedPointerEvent): void {}
+  protected onPointerAdd(_event: AdaptedEvent): void {}
+  protected onPointerUp(_event: AdaptedEvent): void {}
   // Removing pointer, when there is more than one pointers
-  protected onPointerRemove(_event: AdaptedPointerEvent): void {}
-  protected onPointerMove(event: AdaptedPointerEvent): void {
+  protected onPointerRemove(_event: AdaptedEvent): void {}
+  protected onPointerMove(event: AdaptedEvent): void {
     this.tryToSendMoveEvent(event, false);
   }
-  protected onPointerOut(_event: AdaptedPointerEvent): void {}
-  protected onPointerEnter(_event: AdaptedPointerEvent): void {}
-  protected onPointerCancel(_event: AdaptedPointerEvent): void {}
-  protected onPointerOutOfBounds(event: AdaptedPointerEvent): void {
+  protected onPointerOut(_event: AdaptedEvent): void {}
+  protected onPointerEnter(_event: AdaptedEvent): void {}
+  protected onPointerCancel(_event: AdaptedEvent): void {}
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.tryToSendMoveEvent(event, true);
   }
-  private tryToSendMoveEvent(event: AdaptedPointerEvent, out: boolean): void {
+  private tryToSendMoveEvent(event: AdaptedEvent, out: boolean): void {
     if (
       this.currentState === State.ACTIVE &&
       (!out || (out && !this.shouldCancellWhenOutside))
@@ -270,7 +267,7 @@ export default abstract class GestureHandler {
   //
 
   public sendEvent = (
-    event: AdaptedPointerEvent,
+    event: AdaptedEvent,
     newState: State,
     oldState: State
   ): void => {
@@ -301,7 +298,7 @@ export default abstract class GestureHandler {
   };
 
   private transformEventData(
-    event: AdaptedPointerEvent,
+    event: AdaptedEvent,
     newState: State,
     oldState: State
   ): ResultEvent {
@@ -309,7 +306,7 @@ export default abstract class GestureHandler {
       nativeEvent: {
         numberOfPointers: this.tracker.getTrackedPointersCount(),
         state: newState,
-        pointerInside: this.eventManager?.isPointerInBounds({
+        pointerInside: this.isPointerInBounds({
           x: event.x,
           y: event.y,
         }),
@@ -322,7 +319,7 @@ export default abstract class GestureHandler {
     };
   }
 
-  protected transformNativeEvent(_event: AdaptedPointerEvent) {
+  protected transformNativeEvent(_event: AdaptedEvent) {
     return {};
   }
 
@@ -387,7 +384,7 @@ export default abstract class GestureHandler {
     }
   }
 
-  private checkHitSlop(event: AdaptedPointerEvent): boolean {
+  private checkHitSlop(event: AdaptedEvent): boolean {
     if (!this.config.hitSlop || !this.view) return true;
 
     const width = this.view.getBoundingClientRect().width;
@@ -448,6 +445,16 @@ export default abstract class GestureHandler {
       return true;
     }
     return false;
+  }
+
+  public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
+    if (!this.view) return false;
+
+    const rect: DOMRect = this.view.getBoundingClientRect();
+
+    return (
+      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+    );
   }
 
   protected resetConfig(): void {}

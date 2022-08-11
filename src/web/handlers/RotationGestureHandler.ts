@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
@@ -19,7 +19,7 @@ export default class RotationGestureHandler extends GestureHandler {
     onRotationBegin: (_detector: RotationGestureDetector): boolean => true,
     onRotation: (
       detector: RotationGestureDetector,
-      event: AdaptedPointerEvent
+      event: AdaptedEvent
     ): boolean => {
       const previousRotation: number = this.rotation;
       this.rotation += detector.getRotation();
@@ -41,7 +41,7 @@ export default class RotationGestureHandler extends GestureHandler {
     },
     onRotationEnd: (
       _detector: RotationGestureDetector,
-      event: AdaptedPointerEvent
+      event: AdaptedEvent
     ): void => {
       this.end(event);
     },
@@ -63,7 +63,7 @@ export default class RotationGestureHandler extends GestureHandler {
     this.enabled = enabled;
   }
 
-  protected transformNativeEvent(_event: AdaptedPointerEvent) {
+  protected transformNativeEvent(_event: AdaptedEvent) {
     return {
       rotation: this.rotation ? this.rotation : 0,
       anchorX: this.getAnchorX(),
@@ -84,7 +84,7 @@ export default class RotationGestureHandler extends GestureHandler {
     return anchorY ? anchorY : this.cachedAnchorY;
   }
 
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
 
     this.tracker.addToTracker(event);
@@ -97,7 +97,7 @@ export default class RotationGestureHandler extends GestureHandler {
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
   }
 
-  protected onPointerMove(event: AdaptedPointerEvent): void {
+  protected onPointerMove(event: AdaptedEvent): void {
     if (
       this.tracker.getTrackedPointersCount() < 2 ||
       !this.rotationGestureDetector
@@ -115,7 +115,7 @@ export default class RotationGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerUp(event: AdaptedPointerEvent): void {
+  protected onPointerUp(event: AdaptedEvent): void {
     if (!this.rotationGestureDetector) {
       this.tracker.resetTracker();
       return;
@@ -136,12 +136,12 @@ export default class RotationGestureHandler extends GestureHandler {
     else this.fail(event);
   }
 
-  protected onPointerCancel(event: AdaptedPointerEvent): void {
+  protected onPointerCancel(event: AdaptedEvent): void {
     this.end(event);
     this.reset();
   }
 
-  protected tryBegin(event: AdaptedPointerEvent): void {
+  protected tryBegin(event: AdaptedEvent): void {
     if (this.currentState !== State.UNDETERMINED) return;
 
     this.resetProgress();
@@ -149,7 +149,7 @@ export default class RotationGestureHandler extends GestureHandler {
     this.begin(event);
   }
 
-  protected activate(event: AdaptedPointerEvent, _force?: boolean): void {
+  protected activate(event: AdaptedEvent, _force?: boolean): void {
     if (this.currentState !== State.ACTIVE) this.resetProgress();
 
     super.activate(event);

@@ -1,15 +1,15 @@
-import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 import PointerTracker from '../tools/PointerTracker';
 
 export interface RotationGestureListener {
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
   onRotation: (
     detector: RotationGestureDetector,
-    event: AdaptedPointerEvent
+    event: AdaptedEvent
   ) => boolean;
   onRotationEnd: (
     detector: RotationGestureDetector,
-    event: AdaptedPointerEvent
+    event: AdaptedEvent
   ) => void;
 }
 
@@ -18,11 +18,11 @@ export default class RotationGestureDetector
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
   onRotation: (
     detector: RotationGestureDetector,
-    event: AdaptedPointerEvent
+    event: AdaptedEvent
   ) => boolean;
   onRotationEnd: (
     detector: RotationGestureDetector,
-    event: AdaptedPointerEvent
+    event: AdaptedEvent
   ) => void;
 
   private currentTime = 0;
@@ -44,10 +44,7 @@ export default class RotationGestureDetector
     this.onRotationEnd = callbacks.onRotationEnd;
   }
 
-  private updateCurrent(
-    event: AdaptedPointerEvent,
-    tracker: PointerTracker
-  ): void {
+  private updateCurrent(event: AdaptedEvent, tracker: PointerTracker): void {
     this.previousTime = this.currentTime;
     this.currentTime = event.time;
 
@@ -88,7 +85,7 @@ export default class RotationGestureDetector
     }
   }
 
-  private finish(event: AdaptedPointerEvent): void {
+  private finish(event: AdaptedEvent): void {
     if (!this.isInProgress) return;
 
     this.isInProgress = false;
@@ -105,10 +102,7 @@ export default class RotationGestureDetector
     this.keyPointers[1] = pointerIDs.next().value as number;
   }
 
-  public onTouchEvent(
-    event: AdaptedPointerEvent,
-    tracker: PointerTracker
-  ): boolean {
+  public onTouchEvent(event: AdaptedEvent, tracker: PointerTracker): boolean {
     this.adaptEvent(event, tracker);
 
     switch (event.eventType) {
@@ -116,7 +110,7 @@ export default class RotationGestureDetector
         this.isInProgress = false;
         break;
 
-      case EventTypes.NEXT_POINTER_DOWN:
+      case EventTypes.ADDITIONAL_POINTER_DOWN:
         if (this.isInProgress) break;
 
         this.isInProgress = true;
@@ -153,15 +147,12 @@ export default class RotationGestureDetector
     return true;
   }
 
-  private adaptEvent(
-    event: AdaptedPointerEvent,
-    tracker: PointerTracker
-  ): void {
+  private adaptEvent(event: AdaptedEvent, tracker: PointerTracker): void {
     if (
       tracker.getTrackedPointersCount() &&
       event.eventType === EventTypes.DOWN
     ) {
-      event.eventType = EventTypes.NEXT_POINTER_DOWN;
+      event.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
     }
 
     if (

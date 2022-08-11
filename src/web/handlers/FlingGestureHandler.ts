@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import { Direction } from '../constants';
-import { AdaptedPointerEvent } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -40,7 +40,16 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  private startFling(event: AdaptedPointerEvent): void {
+  protected transformNativeEvent(event: AdaptedEvent) {
+    return {
+      x: event.offsetX,
+      y: event.offsetY,
+      absoluteX: event.x,
+      absoluteY: event.y,
+    };
+  }
+
+  private startFling(event: AdaptedEvent): void {
     this.startX = event.x;
     this.startY = event.y;
 
@@ -51,7 +60,7 @@ export default class FlingGestureHandler extends GestureHandler {
     this.delayTimeout = setTimeout(() => this.fail(event), this.maxDurationMs);
   }
 
-  private tryEndFling(event: AdaptedPointerEvent): boolean {
+  private tryEndFling(event: AdaptedEvent): boolean {
     if (
       this.maxNumberOfPointersSimultaneously ===
         this.numberOfPointersRequired &&
@@ -73,13 +82,13 @@ export default class FlingGestureHandler extends GestureHandler {
     return false;
   }
 
-  private endFling(event: AdaptedPointerEvent) {
+  private endFling(event: AdaptedEvent) {
     if (!this.tryEndFling(event)) {
       this.fail(event);
     }
   }
 
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
 
     this.tracker.addToTracker(event);
@@ -102,7 +111,7 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedPointerEvent): void {
+  protected onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
     if (this.currentState !== State.BEGAN) return;
@@ -112,7 +121,7 @@ export default class FlingGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerUp(event: AdaptedPointerEvent): void {
+  protected onPointerUp(event: AdaptedEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
 
     if (this.currentState !== State.BEGAN) return;
@@ -120,7 +129,7 @@ export default class FlingGestureHandler extends GestureHandler {
     this.endFling(event);
   }
 
-  protected activate(event: AdaptedPointerEvent, force?: boolean): void {
+  protected activate(event: AdaptedEvent, force?: boolean): void {
     super.activate(event, force);
     this.end(event);
   }

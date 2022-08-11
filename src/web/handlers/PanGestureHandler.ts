@@ -1,7 +1,7 @@
 import { PixelRatio } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedPointerEvent } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -188,7 +188,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.activateAfterLongPress = 0;
   }
 
-  protected transformNativeEvent(event: AdaptedPointerEvent) {
+  protected transformNativeEvent(event: AdaptedEvent) {
     if (!this.view) return {};
 
     const rect = this.view.getBoundingClientRect();
@@ -214,9 +214,11 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   //EventsHandling
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
     this.tracker.addToTracker(event);
+
+    console.log(event.eventType);
 
     if (this.tracker.getTrackedPointersCount() > 1) {
       this.onPointerAdd(event);
@@ -229,7 +231,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.checkUndetermined(event);
     this.checkBegan(event);
   }
-  protected onPointerAdd(event: AdaptedPointerEvent): void {
+  protected onPointerAdd(event: AdaptedEvent): void {
     this.checkUndetermined(event);
 
     this.offsetX += this.lastX - this.startX;
@@ -247,8 +249,9 @@ export default class PanGestureHandler extends GestureHandler {
     } else this.checkBegan(event);
   }
 
-  protected onPointerUp(event: AdaptedPointerEvent): void {
+  protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
+    console.log(event.eventType);
 
     if (this.tracker.getTrackedPointersCount() > 1) {
       this.tracker.removeFromTracker(event.pointerId);
@@ -271,7 +274,7 @@ export default class PanGestureHandler extends GestureHandler {
       this.fail(event);
     }
   }
-  protected onPointerRemove(event: AdaptedPointerEvent): void {
+  protected onPointerRemove(event: AdaptedEvent): void {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
@@ -291,7 +294,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedPointerEvent): void {
+  protected onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
     this.lastX = this.tracker.getLastAvgX();
@@ -304,12 +307,12 @@ export default class PanGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerCancel(event: AdaptedPointerEvent): void {
+  protected onPointerCancel(event: AdaptedEvent): void {
     super.onPointerCancel(event);
 
     this.reset();
   }
-  protected onPointerOutOfBounds(event: AdaptedPointerEvent): void {
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
     if (this.getShouldCancelWhenOutside()) return;
 
     this.tracker.track(event);
@@ -429,7 +432,7 @@ export default class PanGestureHandler extends GestureHandler {
     );
   }
 
-  private checkUndetermined(event: AdaptedPointerEvent): void {
+  private checkUndetermined(event: AdaptedEvent): void {
     if (
       this.currentState === State.UNDETERMINED &&
       this.tracker.getTrackedPointersCount() >= this.minPointers
@@ -449,7 +452,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  private checkBegan(event: AdaptedPointerEvent): void {
+  private checkBegan(event: AdaptedEvent): void {
     if (this.currentState === State.BEGAN) {
       if (this.shouldFail()) this.fail(event);
       else if (this.shouldActivate()) {
@@ -458,7 +461,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected activate(event: AdaptedPointerEvent, force = false): void {
+  protected activate(event: AdaptedEvent, force = false): void {
     if (this.currentState !== State.ACTIVE) {
       this.resetProgress();
     }

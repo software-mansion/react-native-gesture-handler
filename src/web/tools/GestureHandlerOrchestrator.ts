@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedPointerEvent } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 import GestureHandler from '../handlers/GestureHandler';
 import PointerTracker from './PointerTracker';
@@ -58,10 +58,7 @@ export default class GestureHandlerOrchestrator {
     return hasToWait;
   }
 
-  private tryActivate(
-    handler: GestureHandler,
-    event: AdaptedPointerEvent
-  ): void {
+  private tryActivate(handler: GestureHandler, event: AdaptedEvent): void {
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler);
     } else {
@@ -85,7 +82,7 @@ export default class GestureHandlerOrchestrator {
     handler: GestureHandler,
     newState: State,
     oldState: State,
-    event: AdaptedPointerEvent
+    event: AdaptedEvent
   ): void {
     this.handlingChangeSemaphore += 1;
 
@@ -126,10 +123,7 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  private makeActive(
-    handler: GestureHandler,
-    event: AdaptedPointerEvent
-  ): void {
+  private makeActive(handler: GestureHandler, event: AdaptedEvent): void {
     const currentState = handler.getState();
 
     handler.setActive(true);
@@ -278,12 +272,8 @@ export default class GestureHandlerOrchestrator {
       const handlerY: number = handler.getTracker().getLastY(pointer);
 
       if (
-        handler
-          .getEventManager()
-          .isPointerInBounds({ x: handlerX, y: handlerY }) &&
-        otherHandler
-          .getEventManager()
-          .isPointerInBounds({ x: handlerX, y: handlerY })
+        handler.isPointerInBounds({ x: handlerX, y: handlerY }) &&
+        otherHandler.isPointerInBounds({ x: handlerX, y: handlerY })
       ) {
         overlap = true;
       }
@@ -294,10 +284,8 @@ export default class GestureHandlerOrchestrator {
       const otherY: number = otherHandler.getTracker().getLastY(pointer);
 
       if (
-        handler.getEventManager().isPointerInBounds({ x: otherX, y: otherY }) &&
-        otherHandler
-          .getEventManager()
-          .isPointerInBounds({ x: otherX, y: otherY })
+        handler.isPointerInBounds({ x: otherX, y: otherY }) &&
+        otherHandler.isPointerInBounds({ x: otherX, y: otherY })
       ) {
         overlap = true;
       }

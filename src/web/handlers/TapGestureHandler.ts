@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -82,18 +82,27 @@ export default class TapGestureHandler extends GestureHandler {
     this.minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
   }
 
+  protected transformNativeEvent(event: AdaptedEvent) {
+    return {
+      x: event.offsetX,
+      y: event.offsetY,
+      absoluteX: event.x,
+      absoluteY: event.y,
+    };
+  }
+
   private clearTimeouts(): void {
     clearTimeout(this.waitTimeout);
     clearTimeout(this.delayTimeout);
   }
 
-  private startTap(event: AdaptedPointerEvent): void {
+  private startTap(event: AdaptedEvent): void {
     this.clearTimeouts();
 
     this.waitTimeout = setTimeout(() => this.fail(event), this.maxDurationMs);
   }
 
-  private endTap(event: AdaptedPointerEvent): void {
+  private endTap(event: AdaptedEvent): void {
     this.clearTimeouts();
 
     if (
@@ -107,7 +116,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   //Handling Events
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
     this.tracker.addToTracker(event);
 
@@ -122,7 +131,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
-  protected onPointerAdd(_event: AdaptedPointerEvent): void {
+  protected onPointerAdd(_event: AdaptedEvent): void {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY = this.startY;
 
@@ -133,7 +142,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.startY = this.lastY;
   }
 
-  protected onPointerUp(event: AdaptedPointerEvent): void {
+  protected onPointerUp(event: AdaptedEvent): void {
     if (this.tracker.getTrackedPointersCount() > 1) {
       this.tracker.removeFromTracker(event.pointerId);
 
@@ -148,7 +157,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
-  protected onPointerRemove(_event: AdaptedPointerEvent): void {
+  protected onPointerRemove(_event: AdaptedEvent): void {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY = this.startY;
 
@@ -159,7 +168,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.startY = this.lastY;
   }
 
-  protected onPointerMove(event: AdaptedPointerEvent): void {
+  protected onPointerMove(event: AdaptedEvent): void {
     this.trySettingPosition(event);
 
     this.lastX = this.tracker.getLastAvgX();
@@ -167,7 +176,7 @@ export default class TapGestureHandler extends GestureHandler {
 
     this.updateState(event);
   }
-  protected onPointerOutOfBounds(event: AdaptedPointerEvent): void {
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.trySettingPosition(event);
 
     this.lastX = this.tracker.getLastAvgX();
@@ -176,12 +185,12 @@ export default class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
-  protected onPointerCancel(event: AdaptedPointerEvent): void {
+  protected onPointerCancel(event: AdaptedEvent): void {
     this.tracker.resetTracker();
     this.fail(event);
   }
 
-  private updateState(event: AdaptedPointerEvent): void {
+  private updateState(event: AdaptedEvent): void {
     if (
       this.currentMaxNumberOfPointers < this.tracker.getTrackedPointersCount()
     ) {
@@ -207,7 +216,7 @@ export default class TapGestureHandler extends GestureHandler {
     }
   }
 
-  private trySettingPosition(event: AdaptedPointerEvent): void {
+  private trySettingPosition(event: AdaptedEvent): void {
     if (this.currentState !== State.UNDETERMINED) {
       return;
     }
@@ -240,7 +249,7 @@ export default class TapGestureHandler extends GestureHandler {
     return this.maxDistSq !== Number.MIN_SAFE_INTEGER && dist > this.maxDistSq;
   }
 
-  protected activate(event: AdaptedPointerEvent): void {
+  protected activate(event: AdaptedEvent): void {
     super.activate(event);
 
     if (!this.isAwaiting()) {

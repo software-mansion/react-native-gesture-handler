@@ -1,4 +1,4 @@
-import { AdaptedPointerEvent } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 interface TrackerElement {
   lastX: number;
@@ -18,7 +18,7 @@ export default class PointerTracker {
     TrackerElement
   >();
 
-  public addToTracker(event: AdaptedPointerEvent): void {
+  public addToTracker(event: AdaptedEvent): void {
     if (this.trackedPointers.has(event.pointerId)) return;
 
     const newElement: TrackerElement = {
@@ -36,7 +36,7 @@ export default class PointerTracker {
     this.trackedPointers.delete(pointerId);
   }
 
-  public track(event: AdaptedPointerEvent): void {
+  public track(event: AdaptedEvent): void {
     const element: TrackerElement = this.trackedPointers.get(
       event.pointerId
     ) as TrackerElement;
