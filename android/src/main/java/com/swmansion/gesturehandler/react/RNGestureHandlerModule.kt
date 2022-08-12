@@ -256,7 +256,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     override fun extractEventData(handler: PinchGestureHandler, eventData: WritableMap) {
       super.extractEventData(handler, eventData)
       with(eventData) {
-        // TODO: there is a better way to do this
         putDouble("scale", handler.scale)
         putDouble("focalX", PixelUtil.toDIPFromPixel(handler.focalPointX).toDouble())
         putDouble("focalY", PixelUtil.toDIPFromPixel(handler.focalPointY).toDouble())

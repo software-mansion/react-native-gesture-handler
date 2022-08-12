@@ -224,7 +224,7 @@ class GestureHandlerOrchestrator(
     // should be tested)
     preparedHandlers.sortWith(handlersComparator, 0, handlersCount)
     for (i in 0 until handlersCount) {
-      deliverEventToGestureHandler(preparedHandlers[i]!!, MotionEvent.obtain(event))
+      deliverEventToGestureHandler(preparedHandlers[i]!!, event)
     }
   }
 
@@ -251,7 +251,7 @@ class GestureHandlerOrchestrator(
     if (!handler.wantEvents()) {
       return
     }
-    // TODO: recycle event created here and above
+
     val action = originalEvent.actionMasked
     val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(originalEvent))
     
@@ -296,6 +296,8 @@ class GestureHandlerOrchestrator(
         handler.stopTrackingPointer(pointerId)
       }
     }
+
+    event.recycle()
   }
 
   /**
