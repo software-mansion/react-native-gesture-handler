@@ -12,17 +12,22 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.setShouldCancelWhenOutside(true);
 
-    if (!this.view) return;
+    if (!this.view) {
+      return;
+    }
 
     this.view.style['touchAction'] = 'auto';
     this.view.style['webkitUserSelect'] = 'auto';
     this.view.style['userSelect'] = 'auto';
 
-    //@ts-ignore Turns off defualt touch behavior on Safari
+    //@ts-ignore Turns on defualt touch behavior on Safari
     this.view.style['WebkitTouchCallout'] = 'auto';
 
-    if (this.view.hasAttribute('role')) this.buttonRole = true;
-    else this.buttonRole = false;
+    if (this.view.hasAttribute('role')) {
+      this.buttonRole = true;
+    } else {
+      this.buttonRole = false;
+    }
   }
 
   protected resetConfig(): void {
@@ -35,7 +40,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     if (this.currentState === State.UNDETERMINED) {
       this.begin(event);
-      if (this.buttonRole) this.activate(event);
+      if (this.buttonRole) {
+        this.activate(event);
+      }
     }
   }
 
@@ -49,8 +56,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   protected onPointerUp(event: AdaptedPointerEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
-    if (!this.buttonRole) this.activate(event);
-    if (this.tracker.getTrackedPointersCount() === 0) this.end(event);
+    if (!this.buttonRole) {
+      this.activate(event);
+    }
+    if (this.tracker.getTrackedPointersCount() === 0) {
+      this.end(event);
+    }
   }
 
   protected onPointerCancel(event: AdaptedPointerEvent): void {
@@ -59,7 +70,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
-    if (super.shouldRecognizeSimultaneously(handler)) return true;
+    if (super.shouldRecognizeSimultaneously(handler)) {
+      return true;
+    }
 
     if (
       handler instanceof NativeViewGestureHandler &&

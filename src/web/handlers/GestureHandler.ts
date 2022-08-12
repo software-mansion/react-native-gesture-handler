@@ -70,17 +70,19 @@ export default abstract class GestureHandler {
   }
 
   private setEventManager(): void {
-    if (!this.view) return;
+    if (!this.view) {
+      return;
+    }
 
     this.eventManager = new EventManager(this.view);
 
-    this.eventManager.setOnDownAction(this.onPointerDown.bind(this));
-    this.eventManager.setOnUpAction(this.onPointerUp.bind(this));
-    this.eventManager.setOnMoveAction(this.onPointerMove.bind(this));
-    this.eventManager.setOnEnterAction(this.onPointerEnter.bind(this));
-    this.eventManager.setOnOutAction(this.onPointerOut.bind(this));
-    this.eventManager.setOnCancelAction(this.onPointerCancel.bind(this));
-    this.eventManager.setOutOfBoundsAction(
+    this.eventManager.setOnPointerDown(this.onPointerDown.bind(this));
+    this.eventManager.setOnPointerUp(this.onPointerUp.bind(this));
+    this.eventManager.setOnPointerMove(this.onPointerMove.bind(this));
+    this.eventManager.setOnPointerEnter(this.onPointerEnter.bind(this));
+    this.eventManager.setOnPointerOut(this.onPointerOut.bind(this));
+    this.eventManager.setOnPointerCancel(this.onPointerCancel.bind(this));
+    this.eventManager.setOnPointerOutOfBounds(
       this.onPointerOutOfBounds.bind(this)
     );
 
@@ -110,7 +112,9 @@ export default abstract class GestureHandler {
   //
 
   public moveToState(newState: State, event: AdaptedPointerEvent) {
-    if (this.currentState === newState) return;
+    if (this.currentState === newState) {
+      return;
+    }
 
     const oldState = this.currentState;
     this.currentState = newState;
@@ -128,10 +132,13 @@ export default abstract class GestureHandler {
   protected onStateChange(_newState: State, _oldState: State): void {}
 
   public begin(event: AdaptedPointerEvent): void {
-    if (!this.checkHitSlop(event)) return;
+    if (!this.checkHitSlop(event)) {
+      return;
+    }
 
-    if (this.currentState === State.UNDETERMINED)
+    if (this.currentState === State.UNDETERMINED) {
       this.moveToState(State.BEGAN, event);
+    }
   }
 
   public fail(event: AdaptedPointerEvent): void {
@@ -209,13 +216,17 @@ export default abstract class GestureHandler {
   }
 
   public shouldWaitForHandlerFailure(handler: GestureHandler): boolean {
-    if (handler === this) return false;
+    if (handler === this) {
+      return false;
+    }
 
     return this.interactionManager.shouldWaitForHandlerFailure(this, handler);
   }
 
   public shouldRequireToWaitForFailure(handler: GestureHandler): boolean {
-    if (handler === this) return false;
+    if (handler === this) {
+      return false;
+    }
 
     return this.interactionManager.shouldRequireHandlerToWaitForFailure(
       this,
@@ -224,13 +235,17 @@ export default abstract class GestureHandler {
   }
 
   public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
-    if (handler === this) return true;
+    if (handler === this) {
+      return true;
+    }
 
     return this.interactionManager.shouldRecognizeSimultaneously(this, handler);
   }
 
   public shouldBeCancelledByOther(handler: GestureHandler): boolean {
-    if (handler === this) return false;
+    if (handler === this) {
+      return false;
+    }
 
     return this.interactionManager.shouldHandlerBeCancelledBy(this, handler);
   }
@@ -286,8 +301,8 @@ export default abstract class GestureHandler {
     );
 
     // In the new API oldState field has to be undefined, unless we send event state changed
-    // Here the order is flipped to avoid workarounds such as backuping state and setting it to undefined first, then bringing it back
-    // Flipping order with setting oldState to undefined solves issue, when events were sending twice instead of once
+    // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
+    // Flipping order with setting oldState to undefined solves issue, when events were being sent twice instead of once
     // However, this may cause trouble in the future (but for now we don't know that)
 
     if (this.lastSentState !== newState) {
@@ -344,7 +359,9 @@ export default abstract class GestureHandler {
   }
 
   private validateHitSlops(): void {
-    if (!this.config.hitSlop) return;
+    if (!this.config.hitSlop) {
+      return;
+    }
 
     if (
       this.config.hitSlop.left !== undefined &&
@@ -388,7 +405,9 @@ export default abstract class GestureHandler {
   }
 
   private checkHitSlop(event: AdaptedPointerEvent): boolean {
-    if (!this.config.hitSlop || !this.view) return true;
+    if (!this.config.hitSlop || !this.view) {
+      return true;
+    }
 
     const width = this.view.getBoundingClientRect().width;
     const height = this.view.getBoundingClientRect().height;
@@ -506,9 +525,9 @@ function invokeNullableMethod(
     | { __nodeConfig: { argMapping: unknown[] } },
   event: ResultEvent
 ): void {
-  if (!method) return;
-
-  console.log(event);
+  if (!method) {
+    return;
+  }
 
   if (typeof method === 'function') {
     method(event);
@@ -521,13 +540,19 @@ function invokeNullableMethod(
     return;
   }
 
-  if (!('__nodeConfig' in method)) return;
+  if (!('__nodeConfig' in method)) {
+    return;
+  }
 
   const { argMapping } = method.__nodeConfig;
-  if (!Array.isArray(argMapping)) return;
+  if (!Array.isArray(argMapping)) {
+    return;
+  }
 
   for (const [index, [key, value]] of argMapping.entries()) {
-    if (!(key in event.nativeEvent)) continue;
+    if (!(key in event.nativeEvent)) {
+      continue;
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const nativeValue = event.nativeEvent[key];

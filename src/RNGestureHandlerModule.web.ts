@@ -58,7 +58,6 @@ export default {
     handlerTag: number,
     config: T
   ) {
-    // console.trace(handlerTag);
     if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
       if (!(handlerName in Gestures))
         throw new Error(

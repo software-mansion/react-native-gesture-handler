@@ -11,8 +11,11 @@ export default class InteractionManager {
     if (config.waitFor) {
       const waitFor: number[] = [];
       config.waitFor.forEach((handler: Handler): void => {
-        if (typeof handler === 'number') waitFor.push(handler);
-        else waitFor.push(handler.handlerTag);
+        if (typeof handler === 'number') {
+          waitFor.push(handler);
+        } else {
+          waitFor.push(handler.handlerTag);
+        }
       });
 
       this.waitForRelations.set(handler.getTag(), waitFor);
@@ -40,7 +43,9 @@ export default class InteractionManager {
     const waitFor: number[] | undefined = this.waitForRelations.get(
       handler.getTag()
     );
-    if (!waitFor) return false;
+    if (!waitFor) {
+      return false;
+    }
 
     let shouldWait = false;
 
@@ -61,7 +66,9 @@ export default class InteractionManager {
     const simultaneousHandlers:
       | number[]
       | undefined = this.simultaneousRelations.get(handler.getTag());
-    if (!simultaneousHandlers) return false;
+    if (!simultaneousHandlers) {
+      return false;
+    }
 
     let shouldRecognizeSimultaneously = false;
 

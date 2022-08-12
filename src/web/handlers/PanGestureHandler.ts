@@ -189,7 +189,9 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected transformNativeEvent(event: AdaptedPointerEvent) {
-    if (!this.view) return {};
+    if (!this.view) {
+      return {};
+    }
 
     const ratio = PixelRatio.get();
 
@@ -241,9 +243,14 @@ export default class PanGestureHandler extends GestureHandler {
     this.startY = this.lastY;
 
     if (this.tracker.getTrackedPointersCount() > this.maxPointers) {
-      if (this.currentState === State.ACTIVE) this.cancel(event);
-      else this.fail(event);
-    } else this.checkBegan(event);
+      if (this.currentState === State.ACTIVE) {
+        this.cancel(event);
+      } else {
+        this.fail(event);
+      }
+    } else {
+      this.checkBegan(event);
+    }
   }
 
   protected onPointerUp(event: AdaptedPointerEvent): void {
@@ -309,7 +316,9 @@ export default class PanGestureHandler extends GestureHandler {
     this.reset();
   }
   protected onPointerOutOfBounds(event: AdaptedPointerEvent): void {
-    if (this.getShouldCancelWhenOutside()) return;
+    if (this.getShouldCancelWhenOutside()) {
+      return;
+    }
 
     this.tracker.track(event);
 
@@ -320,7 +329,9 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.checkBegan(event);
 
-    if (this.currentState === State.ACTIVE) super.onPointerOutOfBounds(event);
+    if (this.currentState === State.ACTIVE) {
+      super.onPointerOutOfBounds(event);
+    }
   }
 
   private shouldActivate(): boolean {
@@ -450,8 +461,9 @@ export default class PanGestureHandler extends GestureHandler {
 
   private checkBegan(event: AdaptedPointerEvent): void {
     if (this.currentState === State.BEGAN) {
-      if (this.shouldFail()) this.fail(event);
-      else if (this.shouldActivate()) {
+      if (this.shouldFail()) {
+        this.fail(event);
+      } else if (this.shouldActivate()) {
         this.activate(event);
       }
     }
@@ -466,7 +478,9 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
-    if (this.currentState === State.ACTIVE) return;
+    if (this.currentState === State.ACTIVE) {
+      return;
+    }
 
     this.startX = this.lastX;
     this.startY = this.lastY;

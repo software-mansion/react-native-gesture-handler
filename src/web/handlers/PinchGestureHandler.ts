@@ -57,6 +57,7 @@ export default class PinchGestureHandler extends GestureHandler {
     super.init(ref, propsRef);
 
     this.setShouldCancelWhenOutside(false);
+    this.spanSlop = DEFAULT_TOUCH_SLOP;
   }
 
   public updateGestureConfig({ enabled = true, ...props }): void {
@@ -112,7 +113,9 @@ export default class PinchGestureHandler extends GestureHandler {
     }
   }
   protected onPointerMove(event: AdaptedPointerEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) return;
+    if (this.tracker.getTrackedPointersCount() < 2) {
+      return;
+    }
     this.tracker.track(event);
 
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
@@ -133,13 +136,13 @@ export default class PinchGestureHandler extends GestureHandler {
 
     this.resetProgress();
 
-    this.spanSlop = DEFAULT_TOUCH_SLOP;
-
     this.begin(event);
   }
 
   protected activate(event: AdaptedPointerEvent, force?: boolean): void {
-    if (this.currentState !== State.ACTIVE) this.resetProgress();
+    if (this.currentState !== State.ACTIVE) {
+      this.resetProgress();
+    }
 
     super.activate(event, force);
   }
@@ -149,7 +152,10 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
-    if (this.currentState === State.ACTIVE) return;
+    if (this.currentState === State.ACTIVE) {
+      return;
+    }
+
     this.velocity = 0;
     this.scale = 1;
   }

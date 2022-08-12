@@ -19,7 +19,9 @@ export default class PointerTracker {
   >();
 
   public addToTracker(event: AdaptedPointerEvent): void {
-    if (this.trackedPointers.has(event.pointerId)) return;
+    if (this.trackedPointers.has(event.pointerId)) {
+      return;
+    }
 
     const newElement: TrackerElement = {
       lastX: event.x,
@@ -41,7 +43,9 @@ export default class PointerTracker {
       event.pointerId
     ) as TrackerElement;
 
-    if (!element) return;
+    if (!element) {
+      return;
+    }
 
     const dx = event.x - element.lastX;
     const dy = event.y - element.lastY;
@@ -78,7 +82,9 @@ export default class PointerTracker {
     let sumX = 0;
 
     this.trackedPointers.forEach((value, key) => {
-      if (key !== ignoredPointer) sumX += value.lastX;
+      if (key !== ignoredPointer) {
+        sumX += value.lastX;
+      }
     });
 
     return sumX;
@@ -87,7 +93,9 @@ export default class PointerTracker {
     let sumY = 0;
 
     this.trackedPointers.forEach((value, key) => {
-      if (key !== ignoredPointer) sumY += value.lastY;
+      if (key !== ignoredPointer) {
+        sumY += value.lastY;
+      }
     });
 
     return sumY;

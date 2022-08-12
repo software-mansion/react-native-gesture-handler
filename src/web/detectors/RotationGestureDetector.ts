@@ -51,10 +51,7 @@ export default class RotationGestureDetector
     this.previousTime = this.currentTime;
     this.currentTime = event.time;
 
-    const pointerIDs: IterableIterator<number> = tracker.getData().keys();
-
-    const firstPointerID: number = pointerIDs.next().value as number;
-    const secondPointerID: number = pointerIDs.next().value as number;
+    const [firstPointerID, secondPointerID] = this.keyPointers;
 
     const firstPointerX: number = tracker.getLastX(firstPointerID);
     const firstPointerY: number = tracker.getLastY(firstPointerID);
@@ -89,7 +86,9 @@ export default class RotationGestureDetector
   }
 
   private finish(event: AdaptedPointerEvent): void {
-    if (!this.isInProgress) return;
+    if (!this.isInProgress) {
+      return;
+    }
 
     this.isInProgress = false;
     this.keyPointers = [NaN, NaN];
@@ -97,7 +96,9 @@ export default class RotationGestureDetector
   }
 
   private setKeyPointers(tracker: PointerTracker): void {
-    if (this.keyPointers[0] && this.keyPointers[1]) return;
+    if (this.keyPointers[0] && this.keyPointers[1]) {
+      return;
+    }
 
     const pointerIDs: IterableIterator<number> = tracker.getData().keys();
 
@@ -116,8 +117,10 @@ export default class RotationGestureDetector
         this.isInProgress = false;
         break;
 
-      case EventTypes.NEXT_POINTER_DOWN:
-        if (this.isInProgress) break;
+      case EventTypes.ADDITIONAL_POINTER_DOWN:
+        if (this.isInProgress) {
+          break;
+        }
 
         this.isInProgress = true;
 
@@ -131,7 +134,9 @@ export default class RotationGestureDetector
         break;
 
       case EventTypes.MOVE:
-        if (!this.isInProgress) break;
+        if (!this.isInProgress) {
+          break;
+        }
 
         this.updateCurrent(event, tracker);
         this.onRotation(this, event);
@@ -139,9 +144,13 @@ export default class RotationGestureDetector
         break;
 
       case EventTypes.ADDITIONAL_POINTER_UP:
-        if (!this.isInProgress) break;
+        if (!this.isInProgress) {
+          break;
+        }
 
-        if (this.keyPointers.indexOf(event.pointerId) >= 0) this.finish(event);
+        if (this.keyPointers.indexOf(event.pointerId) >= 0) {
+          this.finish(event);
+        }
 
         break;
 
@@ -161,7 +170,7 @@ export default class RotationGestureDetector
       tracker.getTrackedPointersCount() &&
       event.eventType === EventTypes.DOWN
     ) {
-      event.eventType = EventTypes.NEXT_POINTER_DOWN;
+      event.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
     }
 
     if (

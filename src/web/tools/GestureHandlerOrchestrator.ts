@@ -19,7 +19,9 @@ export default class GestureHandlerOrchestrator {
   private constructor() {}
 
   private scheduleFinishedHandlersCleanup(): void {
-    if (this.handlingChangeSemaphore === 0) this.cleanupFinishedHandlers();
+    if (this.handlingChangeSemaphore === 0) {
+      this.cleanupFinishedHandlers();
+    }
   }
 
   private cleanHandler(handler: GestureHandler): void {
@@ -32,7 +34,9 @@ export default class GestureHandlerOrchestrator {
   private cleanupFinishedHandlers(): void {
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
       const handler = this.gestureHandlers[i];
-      if (!handler) continue;
+      if (!handler) {
+        continue;
+      }
 
       if (this.isFinished(handler.getState()) && !handler.isAwaiting()) {
         this.gestureHandlers.splice(i, 1);
@@ -180,7 +184,9 @@ export default class GestureHandlerOrchestrator {
       }
     });
 
-    if (alreadyExists) return;
+    if (alreadyExists) {
+      return;
+    }
 
     this.awaitingHandlers.push(handler);
 
@@ -198,7 +204,9 @@ export default class GestureHandlerOrchestrator {
       }
     });
 
-    if (alreadyExists) return;
+    if (alreadyExists) {
+      return;
+    }
 
     this.gestureHandlers.push(handler);
 

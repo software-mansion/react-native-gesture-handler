@@ -63,22 +63,27 @@ export default class LongPressGestureHandler extends GestureHandler {
     super.onPointerDown(event);
     this.tryBegin(event);
     this.tryActivate(event);
-    this.shouldFail(event);
+    this.checkDistanceFail(event);
   }
 
   protected onPointerUp(event: AdaptedPointerEvent): void {
     super.onPointerUp(event);
 
-    if (this.currentState === State.ACTIVE) this.end(event);
-    else this.fail(event);
+    if (this.currentState === State.ACTIVE) {
+      this.end(event);
+    } else {
+      this.fail(event);
+    }
   }
 
   protected onPointerMove(event: AdaptedPointerEvent): void {
-    this.shouldFail(event);
+    this.checkDistanceFail(event);
   }
 
   private tryBegin(event: AdaptedPointerEvent): void {
-    if (this.currentState !== State.UNDETERMINED) return;
+    if (this.currentState !== State.UNDETERMINED) {
+      return;
+    }
 
     this.previousTime = Date.now();
     this.startTime = this.previousTime;
@@ -99,14 +104,19 @@ export default class LongPressGestureHandler extends GestureHandler {
     }
   }
 
-  private shouldFail(event: AdaptedPointerEvent): void {
+  private checkDistanceFail(event: AdaptedPointerEvent): void {
     const dx = event.x - this.startX;
     const dy = event.y - this.startY;
     const distSq = dx * dx + dy * dy;
 
-    if (distSq > this.maxDistSq) {
-      if (this.currentState === State.ACTIVE) this.cancel(event);
-      else this.fail(event);
+    if (distSq <= this.maxDistSq) {
+      return;
+    }
+
+    if (this.currentState === State.ACTIVE) {
+      this.cancel(event);
+    } else {
+      this.fail(event);
     }
   }
 }

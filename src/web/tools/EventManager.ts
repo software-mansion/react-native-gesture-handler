@@ -105,29 +105,33 @@ export default class EventManager {
   private onPointerCancel(_event: AdaptedPointerEvent): void {}
   private onPointerOutOfBounds(_event: AdaptedPointerEvent): void {}
 
-  public setOnDownAction(callback: (event: AdaptedPointerEvent) => void): void {
+  public setOnPointerDown(
+    callback: (event: AdaptedPointerEvent) => void
+  ): void {
     this.onPointerDown = callback;
   }
-  public setOnUpAction(callback: (event: AdaptedPointerEvent) => void): void {
+  public setOnPointerUp(callback: (event: AdaptedPointerEvent) => void): void {
     this.onPointerUp = callback;
   }
-  public setOnMoveAction(callback: (event: AdaptedPointerEvent) => void): void {
+  public setOnPointerMove(
+    callback: (event: AdaptedPointerEvent) => void
+  ): void {
     this.onPointerMove = callback;
   }
-  public setOnOutAction(callback: (event: AdaptedPointerEvent) => void): void {
+  public setOnPointerOut(callback: (event: AdaptedPointerEvent) => void): void {
     this.onPointerOut = callback;
   }
-  public setOnEnterAction(
+  public setOnPointerEnter(
     callback: (event: AdaptedPointerEvent) => void
   ): void {
     this.onPointerEnter = callback;
   }
-  public setOnCancelAction(
+  public setOnPointerCancel(
     callback: (event: AdaptedPointerEvent) => void
   ): void {
     this.onPointerCancel = callback;
   }
-  public setOutOfBoundsAction(
+  public setOnPointerOutOfBounds(
     callback: (event: AdaptedPointerEvent) => void
   ): void {
     this.onPointerOutOfBounds = callback;
@@ -151,7 +155,9 @@ export default class EventManager {
   }
 
   public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
-    if (!this.view) return false;
+    if (!this.view) {
+      return false;
+    }
 
     const rect: DOMRect = this.view.getBoundingClientRect();
 
@@ -161,7 +167,9 @@ export default class EventManager {
   }
 
   private addActivePointer(pointerId: number): void {
-    if (this.activePointers.indexOf(pointerId) >= 0) return;
+    if (this.activePointers.indexOf(pointerId) >= 0) {
+      return;
+    }
 
     this.activePointers.push(pointerId);
   }
@@ -169,7 +177,9 @@ export default class EventManager {
   private removeActivePointer(pointerId: number): void {
     const index: number = this.activePointers.indexOf(pointerId);
 
-    if (index < 0) return;
+    if (index < 0) {
+      return;
+    }
 
     this.activePointers.splice(index, 1);
   }

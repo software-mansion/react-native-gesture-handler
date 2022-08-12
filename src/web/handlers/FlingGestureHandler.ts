@@ -114,7 +114,9 @@ export default class FlingGestureHandler extends GestureHandler {
   protected onPointerMove(event: AdaptedPointerEvent): void {
     this.tracker.track(event);
 
-    if (this.currentState !== State.BEGAN) return;
+    if (this.currentState !== State.BEGAN) {
+      return;
+    }
 
     this.tryEndFling(event);
 
@@ -124,7 +126,9 @@ export default class FlingGestureHandler extends GestureHandler {
   protected onPointerUp(event: AdaptedPointerEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
 
-    if (this.currentState !== State.BEGAN) return;
+    if (this.currentState !== State.BEGAN) {
+      return;
+    }
 
     this.endFling(event);
   }
