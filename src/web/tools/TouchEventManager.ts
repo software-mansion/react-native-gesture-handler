@@ -25,6 +25,8 @@ export default class TouchEventManager extends EventManager {
 
         if (++this.activePointersCounter > 1) {
           adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
+          this.onPointerAdd(adaptedEvent);
+          continue;
         }
 
         this.onPointerDown(adaptedEvent);
@@ -76,12 +78,15 @@ export default class TouchEventManager extends EventManager {
           i
         );
 
+        this.markAsOutOfBounds(adaptedEvent.pointerId);
+
         if (--this.activePointersCounter > 0) {
           adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_UP;
+          this.onPointerRemove(adaptedEvent);
+          continue;
         }
 
         this.onPointerUp(adaptedEvent);
-        this.markAsOutOfBounds(adaptedEvent.pointerId);
       }
     });
 
@@ -95,7 +100,7 @@ export default class TouchEventManager extends EventManager {
 
         this.onPointerCancel(adaptedEvent);
         this.markAsOutOfBounds(adaptedEvent.pointerId);
-        this.activePointersCounter = 0;
+        // this.activePointersCounter = 0;
       }
     });
   }

@@ -72,7 +72,9 @@ export default abstract class GestureHandler {
     this.eventManager = new PointerEventManager(this.view);
 
     this.eventManager.setOnPointerDown(this.onPointerDown.bind(this));
+    this.eventManager.setOnPointerAdd(this.onPointerAdd.bind(this));
     this.eventManager.setOnPointerUp(this.onPointerUp.bind(this));
+    this.eventManager.setOnPointerRemove(this.onPointerRemove.bind(this));
     this.eventManager.setOnPointerMove(this.onPointerMove.bind(this));
     this.eventManager.setOnPointerEnter(this.onPointerEnter.bind(this));
     this.eventManager.setOnPointerOut(this.onPointerOut.bind(this));

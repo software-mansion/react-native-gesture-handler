@@ -21,6 +21,8 @@ export default class PointerEventManager extends EventManager {
 
       if (++this.activePointersCounter > 1) {
         adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
+        this.onPointerAdd(adaptedEvent);
+        return;
       }
 
       this.onPointerDown(adaptedEvent);
@@ -30,13 +32,16 @@ export default class PointerEventManager extends EventManager {
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
       const target = event.target as HTMLElement;
 
+      target.releasePointerCapture(adaptedEvent.pointerId);
+      this.markAsOutOfBounds(adaptedEvent.pointerId);
+
       if (--this.activePointersCounter > 0) {
         adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_UP;
+        this.onPointerRemove(adaptedEvent);
+        return;
       }
 
       this.onPointerUp(adaptedEvent);
-      target.releasePointerCapture(adaptedEvent.pointerId);
-      this.markAsOutOfBounds(adaptedEvent.pointerId);
     });
 
     this.view.addEventListener('pointermove', (event: PointerEvent): void => {

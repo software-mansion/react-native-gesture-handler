@@ -1,7 +1,7 @@
 import { PixelRatio } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -215,15 +215,9 @@ export default class PanGestureHandler extends GestureHandler {
 
   //EventsHandling
   protected onPointerDown(event: AdaptedEvent): void {
+    console.log('first', this.eventManager.activePointersCounter);
     super.onPointerDown(event);
     this.tracker.addToTracker(event);
-
-    console.log(event.eventType);
-
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.onPointerAdd(event);
-      return;
-    }
 
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
@@ -231,8 +225,11 @@ export default class PanGestureHandler extends GestureHandler {
     this.checkUndetermined(event);
     this.checkBegan(event);
   }
+
   protected onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
     this.checkUndetermined(event);
+    console.log('another', this.eventManager.activePointersCounter);
 
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
@@ -250,15 +247,15 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
+    console.log('first up', this.eventManager.activePointersCounter);
     super.onPointerUp(event);
-    console.log(event.eventType);
 
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.tracker.removeFromTracker(event.pointerId);
+    // if (this.tracker.getTrackedPointersCount() > 1) {
+    //   this.tracker.removeFromTracker(event.pointerId);
 
-      this.onPointerRemove(event);
-      return;
-    }
+    //   this.onPointerRemove(event);
+    //   return;
+    // }
 
     if (this.currentState === State.ACTIVE) {
       this.lastX = this.tracker.getLastAvgX();
@@ -275,6 +272,10 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
   protected onPointerRemove(event: AdaptedEvent): void {
+    this.tracker.removeFromTracker(event.pointerId);
+
+    console.log('another up', this.eventManager.activePointersCounter);
+
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
@@ -309,6 +310,8 @@ export default class PanGestureHandler extends GestureHandler {
 
   protected onPointerCancel(event: AdaptedEvent): void {
     super.onPointerCancel(event);
+
+    console.log('cancel');
 
     this.reset();
   }

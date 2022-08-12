@@ -4,7 +4,7 @@ import { AdaptedEvent, EventTypes } from '../interfaces';
 export default abstract class EventManager {
   protected readonly view: HTMLElement;
   protected pointersInBounds: number[] = [];
-  protected activePointersCounter: number;
+  public activePointersCounter: number;
 
   constructor(view: HTMLElement) {
     this.view = view;
@@ -19,7 +19,9 @@ export default abstract class EventManager {
   ): AdaptedEvent;
 
   protected onPointerDown(_event: AdaptedEvent): void {}
+  protected onPointerAdd(_event: AdaptedEvent): void {}
   protected onPointerUp(_event: AdaptedEvent): void {}
+  protected onPointerRemove(_event: AdaptedEvent): void {}
   protected onPointerMove(_event: AdaptedEvent): void {}
   protected onPointerOut(_event: AdaptedEvent): void {}
   protected onPointerEnter(_event: AdaptedEvent): void {}
@@ -29,8 +31,14 @@ export default abstract class EventManager {
   public setOnPointerDown(callback: (event: AdaptedEvent) => void): void {
     this.onPointerDown = callback;
   }
+  public setOnPointerAdd(callback: (event: AdaptedEvent) => void): void {
+    this.onPointerAdd = callback;
+  }
   public setOnPointerUp(callback: (event: AdaptedEvent) => void): void {
     this.onPointerUp = callback;
+  }
+  public setOnPointerRemove(callback: (event: AdaptedEvent) => void): void {
+    this.onPointerRemove = callback;
   }
   public setOnPointerMove(callback: (event: AdaptedEvent) => void): void {
     this.onPointerMove = callback;
