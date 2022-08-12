@@ -66,11 +66,19 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.shouldFail(event);
   }
 
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.onPointerDown(event);
+  }
+
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
 
     if (this.currentState === State.ACTIVE) this.end(event);
     else this.fail(event);
+  }
+
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.onPointerUp(event);
   }
 
   protected onPointerMove(event: AdaptedEvent): void {

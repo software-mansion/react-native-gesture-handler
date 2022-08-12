@@ -101,6 +101,7 @@ export default abstract class GestureHandler {
   public reset(): void {
     this.tracker.resetTracker();
     this.onReset();
+    this.resetProgress();
     this.currentState = State.UNDETERMINED;
   }
 

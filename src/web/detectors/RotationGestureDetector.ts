@@ -103,8 +103,6 @@ export default class RotationGestureDetector
   }
 
   public onTouchEvent(event: AdaptedEvent, tracker: PointerTracker): boolean {
-    this.adaptEvent(event, tracker);
-
     switch (event.eventType) {
       case EventTypes.DOWN:
         this.isInProgress = false;
@@ -145,22 +143,6 @@ export default class RotationGestureDetector
     }
 
     return true;
-  }
-
-  private adaptEvent(event: AdaptedEvent, tracker: PointerTracker): void {
-    if (
-      tracker.getTrackedPointersCount() &&
-      event.eventType === EventTypes.DOWN
-    ) {
-      event.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
-    }
-
-    if (
-      tracker.getTrackedPointersCount() > 1 &&
-      event.eventType === EventTypes.UP
-    ) {
-      event.eventType = EventTypes.ADDITIONAL_POINTER_UP;
-    }
   }
 
   public getTimeDelta(): number {

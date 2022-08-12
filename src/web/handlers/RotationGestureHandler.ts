@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
@@ -86,22 +86,18 @@ export default class RotationGestureHandler extends GestureHandler {
 
   protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
-
     this.tracker.addToTracker(event);
+  }
 
-    if (this.tracker.getTrackedPointersCount() <= 1) {
-      return;
-    }
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
 
     this.tryBegin(event);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    if (
-      this.tracker.getTrackedPointersCount() < 2 ||
-      !this.rotationGestureDetector
-    ) {
+    if (this.tracker.getTrackedPointersCount() < 2) {
       return;
     }
 
@@ -116,24 +112,18 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
-    if (!this.rotationGestureDetector) {
-      this.tracker.resetTracker();
-      return;
-    }
+    this.tracker.removeFromTracker(event.pointerId);
+    this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.rotationGestureDetector.onTouchEvent(event, this.tracker);
-      this.tracker.removeFromTracker(event.pointerId);
-    } else {
-      this.tracker.removeFromTracker(event.pointerId);
-      this.rotationGestureDetector.onTouchEvent(event, this.tracker);
-      if (this.currentState !== State.ACTIVE) return;
-    }
-
-    if (event.eventType !== EventTypes.UP) return;
+    if (this.currentState !== State.ACTIVE) return;
 
     if (this.currentState === State.ACTIVE) this.end(event);
     else this.fail(event);
+  }
+
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.rotationGestureDetector.onTouchEvent(event, this.tracker);
+    this.tracker.removeFromTracker(event.pointerId);
   }
 
   protected onPointerCancel(event: AdaptedEvent): void {

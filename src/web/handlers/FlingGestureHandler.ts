@@ -111,6 +111,10 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.onPointerDown(event);
+  }
+
   protected onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
@@ -123,10 +127,12 @@ export default class FlingGestureHandler extends GestureHandler {
 
   protected onPointerUp(event: AdaptedEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
-
     if (this.currentState !== State.BEGAN) return;
-
     this.endFling(event);
+  }
+
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.onPointerUp(event);
   }
 
   protected activate(event: AdaptedEvent, force?: boolean): void {

@@ -71,6 +71,10 @@ export default class TouchEventManager extends EventManager {
     });
 
     this.view.addEventListener('touchend', (event: TouchEvent) => {
+      if (this.activePointersCounter === 0) {
+        return;
+      }
+
       for (let i = 0; i < event.changedTouches.length; ++i) {
         const adaptedEvent: AdaptedEvent = this.mapEvent(
           event,
@@ -100,7 +104,7 @@ export default class TouchEventManager extends EventManager {
 
         this.onPointerCancel(adaptedEvent);
         this.markAsOutOfBounds(adaptedEvent.pointerId);
-        // this.activePointersCounter = 0;
+        this.activePointersCounter = 0;
       }
     });
   }

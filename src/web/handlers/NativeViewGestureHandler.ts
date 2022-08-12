@@ -43,6 +43,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.onPointerDown(event);
+  }
+
   protected onPointerMove(_event: AdaptedEvent): void {
     //
   }
@@ -55,6 +59,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
     if (!this.buttonRole) this.activate(event);
     if (this.tracker.getTrackedPointersCount() === 0) this.end(event);
+  }
+
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.onPointerUp(event);
   }
 
   protected onPointerCancel(event: AdaptedEvent): void {

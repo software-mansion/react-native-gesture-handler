@@ -45,8 +45,6 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   }
 
   public onTouchEvent(event: AdaptedEvent, tracker: PointerTracker): boolean {
-    this.adaptEvent(event, tracker);
-
     this.currentTime = event.time;
 
     const action: EventTypes = event.eventType;
@@ -146,22 +144,6 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     this.prevTime = this.currentTime;
 
     return true;
-  }
-
-  private adaptEvent(event: AdaptedEvent, tracker: PointerTracker): void {
-    if (
-      tracker.getTrackedPointersCount() > 1 &&
-      event.eventType === EventTypes.DOWN
-    ) {
-      event.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
-    }
-
-    if (
-      tracker.getTrackedPointersCount() > 1 &&
-      event.eventType === EventTypes.UP
-    ) {
-      event.eventType = EventTypes.ADDITIONAL_POINTER_UP;
-    }
   }
 
   public getCurrentSpan(): number {

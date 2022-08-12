@@ -122,16 +122,16 @@ export default class TapGestureHandler extends GestureHandler {
 
     this.trySettingPosition(event);
 
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.onPointerAdd(event);
-    } else {
-      this.lastX = this.tracker.getLastAvgX();
-      this.lastY = this.tracker.getLastAvgY();
-    }
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
+
     this.updateState(event);
   }
 
-  protected onPointerAdd(_event: AdaptedEvent): void {
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
+    this.trySettingPosition(event);
+
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY = this.startY;
 
@@ -140,24 +140,22 @@ export default class TapGestureHandler extends GestureHandler {
 
     this.startX = this.lastX;
     this.startY = this.lastY;
+
+    this.updateState(event);
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.tracker.removeFromTracker(event.pointerId);
+    this.lastX = this.tracker.getLastAvgX();
+    this.lastY = this.tracker.getLastAvgY();
 
-      this.onPointerRemove(event);
-    } else {
-      this.lastX = this.tracker.getLastAvgX();
-      this.lastY = this.tracker.getLastAvgY();
-
-      this.tracker.removeFromTracker(event.pointerId);
-    }
+    this.tracker.removeFromTracker(event.pointerId);
 
     this.updateState(event);
   }
 
-  protected onPointerRemove(_event: AdaptedEvent): void {
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.tracker.removeFromTracker(event.pointerId);
+
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY = this.startY;
 
@@ -166,6 +164,8 @@ export default class TapGestureHandler extends GestureHandler {
 
     this.startX = this.lastX;
     this.startY = this.lastY;
+
+    this.updateState(event);
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
@@ -176,6 +176,7 @@ export default class TapGestureHandler extends GestureHandler {
 
     this.updateState(event);
   }
+
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.trySettingPosition(event);
 

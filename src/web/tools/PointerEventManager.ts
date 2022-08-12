@@ -29,6 +29,10 @@ export default class PointerEventManager extends EventManager {
     });
 
     this.view.addEventListener('pointerup', (event: PointerEvent): void => {
+      if (this.activePointersCounter === 0) {
+        return;
+      }
+
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
       const target = event.target as HTMLElement;
 

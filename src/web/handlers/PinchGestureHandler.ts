@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
@@ -73,41 +73,41 @@ export default class PinchGestureHandler extends GestureHandler {
 
   protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
-
     this.tracker.addToTracker(event);
+  }
 
-    if (this.tracker.getTrackedPointersCount() < 2) {
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
+    this.tryBegin(event);
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+  }
+
+  protected onPointerUp(event: AdaptedEvent): void {
+    this.tracker.removeFromTracker(event.pointerId);
+    if (this.currentState !== State.ACTIVE) {
       return;
     }
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
 
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.tryBegin(event);
-      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    if (this.currentState === State.ACTIVE) {
+      this.end(event);
+    } else {
+      this.fail(event);
     }
   }
-  protected onPointerUp(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
-      this.tracker.removeFromTracker(event.pointerId);
-    } else {
-      this.tracker.removeFromTracker(event.pointerId);
-      if (this.currentState !== State.ACTIVE) {
-        return;
-      }
-      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
-    }
+
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.tracker.removeFromTracker(event.pointerId);
+
     if (
       this.currentState === State.ACTIVE &&
       this.tracker.getTrackedPointersCount() < 2
     ) {
       this.end(event);
-    } else if (
-      event.eventType === EventTypes.UP &&
-      this.currentState !== State.BEGAN
-    ) {
-      this.fail(event);
     }
   }
+
   protected onPointerMove(event: AdaptedEvent): void {
     if (this.tracker.getTrackedPointersCount() < 2) return;
     this.tracker.track(event);
