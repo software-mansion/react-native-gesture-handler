@@ -10,7 +10,6 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "ts-check": "yarn tsc --noEmit",
     "lint-check": "yarn eslint src/ && yarn prettier --check src/",
-    "format": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
     "postinstall": "patch-package"
   },
   "dependencies": {
