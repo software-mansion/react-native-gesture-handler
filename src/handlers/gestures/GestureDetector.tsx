@@ -193,7 +193,9 @@ function attachHandlers({
       : ActionType.JS_FUNCTION_NEW_API;
 
     if (Platform.OS === 'web') {
-      (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
+      (
+        RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
+      )(
         gesture.handlerTag,
         viewTag,
         ActionType.JS_FUNCTION_OLD_API, // ignored on web
@@ -211,9 +213,9 @@ function attachHandlers({
   if (preparedGesture.animatedHandlers) {
     const isAnimatedGesture = (g: GestureType) => g.shouldUseReanimated;
 
-    preparedGesture.animatedHandlers.value = (gesture
+    preparedGesture.animatedHandlers.value = gesture
       .filter(isAnimatedGesture)
-      .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+      .map((g) => g.handlers) as unknown as HandlerCallbacks<
       Record<string, unknown>
     >[];
   }
@@ -270,9 +272,9 @@ function updateHandlers(
     if (preparedGesture.animatedHandlers) {
       const previousHandlersValue =
         preparedGesture.animatedHandlers.value ?? [];
-      const newHandlersValue = (preparedGesture.config
+      const newHandlersValue = preparedGesture.config
         .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
-        .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+        .map((g) => g.handlers) as unknown as HandlerCallbacks<
         Record<string, unknown>
       >[];
 

@@ -651,18 +651,15 @@ export default class DrawerLayout extends Component<
   private setPanGestureRef = (ref: PanGestureHandler) => {
     // TODO(TS): make sure it is OK taken from
     // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065#issuecomment-596081842
-    (this
-      .panGestureHandler as React.MutableRefObject<PanGestureHandler>).current = ref;
+    (
+      this.panGestureHandler as React.MutableRefObject<PanGestureHandler>
+    ).current = ref;
     this.props.onGestureRef?.(ref);
   };
 
   render() {
-    const {
-      drawerPosition,
-      drawerLockMode,
-      edgeWidth,
-      minSwipeDistance,
-    } = this.props;
+    const { drawerPosition, drawerLockMode, edgeWidth, minSwipeDistance } =
+      this.props;
 
     const fromLeft = drawerPosition === 'left';
 

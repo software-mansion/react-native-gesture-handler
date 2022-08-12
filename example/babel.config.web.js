@@ -7,7 +7,7 @@ module.exports = {
         extensions: ['.js', '.ts', '.tsx'],
         alias: {
           'react-native-gesture-handler': '../src/index',
-          'react': './node_modules/react',
+          react: './node_modules/react',
         },
       },
     ],

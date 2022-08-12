@@ -90,9 +90,8 @@ export type GestureTouchEvent = {
   changedTouches: TouchData[];
 };
 
-export type GestureUpdateEvent<
-  GestureEventPayloadT = Record<string, unknown>
-> = GestureEventPayload & GestureEventPayloadT;
+export type GestureUpdateEvent<GestureEventPayloadT = Record<string, unknown>> =
+  GestureEventPayload & GestureEventPayloadT;
 
 export type GestureStateChangeEvent<
   GestureStateChangeEventPayloadT = Record<string, unknown>

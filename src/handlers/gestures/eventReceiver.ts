@@ -12,7 +12,8 @@ import { BaseGesture } from './gesture';
 import { tagMessage } from '../../utils';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
-let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
+let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null =
+  null;
 
 const warningMessage = tagMessage(
   'You have to use react-native-reanimated in order to control the state of the gesture.'

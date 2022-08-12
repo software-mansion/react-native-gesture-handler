@@ -251,10 +251,8 @@ export default class Swipeable extends Component<
     const { rightOffset = rowWidth } = state;
     const rightWidth = Math.max(0, rowWidth - rightOffset);
 
-    const {
-      overshootLeft = leftWidth > 0,
-      overshootRight = rightWidth > 0,
-    } = props;
+    const { overshootLeft = leftWidth > 0, overshootRight = rightWidth > 0 } =
+      props;
 
     const transX = Animated.add(
       rowTranslation,
