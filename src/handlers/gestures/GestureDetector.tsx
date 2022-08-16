@@ -540,7 +540,7 @@ function validateDetectorChildren(ref: any) {
   if (__DEV__ && Platform.OS !== 'web') {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const wrapType = ref._reactInternals.elementType;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     let instance =
       RNRenderer.findHostInstance_DEPRECATED(
         ref
