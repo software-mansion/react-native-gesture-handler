@@ -326,7 +326,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     while handling event: $event
   """.trimIndent(), e) {}
 
-  fun handle(transformedEvent: MotionEvent, originalEvent: MotionEvent) {
+  fun handle(transformedEvent: MotionEvent, sourceEvent: MotionEvent) {
     if (!isEnabled
       || state == STATE_CANCELLED
       || state == STATE_FAILED
@@ -336,11 +336,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     // a workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/1188
-    val (adaptedTransformedEvent, adaptedOriginalEvent) = if (BuildConfig.DEBUG) {
-      arrayOf(adaptEvent(transformedEvent), adaptEvent(originalEvent))
+    val (adaptedTransformedEvent, adaptedSourceEvent) = if (BuildConfig.DEBUG) {
+      arrayOf(adaptEvent(transformedEvent), adaptEvent(sourceEvent))
     } else {
       try {
-        arrayOf(adaptEvent(transformedEvent), adaptEvent(originalEvent))
+        arrayOf(adaptEvent(transformedEvent), adaptEvent(sourceEvent))
       } catch (e: AdaptEventException) {
         fail()
         return
@@ -363,12 +363,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
     lastEventOffsetY = adaptedTransformedEvent.rawY - adaptedTransformedEvent.y
-    onHandle(adaptedTransformedEvent, adaptedOriginalEvent)
+    onHandle(adaptedTransformedEvent, adaptedSourceEvent)
     if (adaptedTransformedEvent != transformedEvent) {
       adaptedTransformedEvent.recycle()
     }
-    if (adaptedOriginalEvent != originalEvent) {
-      adaptedOriginalEvent.recycle()
+    if (adaptedSourceEvent != sourceEvent) {
+      adaptedSourceEvent.recycle()
     }
   }
 
@@ -663,7 +663,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   // if the handler is waiting for failure of other one)
   open fun resetProgress() {}
 
-  protected open fun onHandle(event: MotionEvent, originalEvent: MotionEvent) {
+  protected open fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     moveToState(STATE_FAILED)
   }
 

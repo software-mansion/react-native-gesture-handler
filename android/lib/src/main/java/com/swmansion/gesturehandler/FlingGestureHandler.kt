@@ -62,19 +62,19 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     }
   }
 
-  override fun onHandle(event: MotionEvent, originalEvent: MotionEvent) {
+  override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val state = state
     if (state == STATE_UNDETERMINED) {
-      startFling(originalEvent)
+      startFling(sourceEvent)
     }
     if (state == STATE_BEGAN) {
-      tryEndFling(originalEvent)
-      if (originalEvent.pointerCount > maxNumberOfPointersSimultaneously) {
-        maxNumberOfPointersSimultaneously = originalEvent.pointerCount
+      tryEndFling(sourceEvent)
+      if (sourceEvent.pointerCount > maxNumberOfPointersSimultaneously) {
+        maxNumberOfPointersSimultaneously = sourceEvent.pointerCount
       }
-      val action = originalEvent.actionMasked
+      val action = sourceEvent.actionMasked
       if (action == MotionEvent.ACTION_UP) {
-        endFling(originalEvent)
+        endFling(sourceEvent)
       }
     }
   }

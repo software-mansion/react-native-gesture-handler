@@ -41,19 +41,19 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     }
   }
 
-  override fun onHandle(event: MotionEvent, originalEvent: MotionEvent) {
+  override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       resetProgress()
       rotationGestureDetector = RotationGestureDetector(gestureListener)
       begin()
     }
-    rotationGestureDetector?.onTouchEvent(originalEvent)
+    rotationGestureDetector?.onTouchEvent(sourceEvent)
     rotationGestureDetector?.let {
       val point = transformPoint(PointF(it.anchorX, it.anchorY))
       anchorX = point.x
       anchorY = point.y
     }
-    if (originalEvent.actionMasked == MotionEvent.ACTION_UP) {
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
         end()
       } else {

@@ -48,7 +48,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     }
   }
 
-  override fun onHandle(event: MotionEvent, originalEvent: MotionEvent) {
+  override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       val context = view!!.context
       resetProgress()
@@ -57,19 +57,19 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       spanSlop = configuration.scaledTouchSlop.toFloat()
       begin()
     }
-    scaleGestureDetector?.onTouchEvent(originalEvent)
+    scaleGestureDetector?.onTouchEvent(sourceEvent)
     scaleGestureDetector?.let {
       val point = transformPoint(PointF(it.focusX, it.focusY))
       this.focalPointX = point.x
       this.focalPointY = point.y
     }
-    var activePointers = originalEvent.pointerCount
-    if (originalEvent.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+    var activePointers = sourceEvent.pointerCount
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       activePointers -= 1
     }
     if (state == STATE_ACTIVE && activePointers < 2) {
       end()
-    } else if (originalEvent.actionMasked == MotionEvent.ACTION_UP) {
+    } else if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
       fail()
     }
   }

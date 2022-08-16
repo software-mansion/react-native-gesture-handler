@@ -6,7 +6,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import java.util.*
 
 class GestureHandlerOrchestrator(
@@ -243,7 +242,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun deliverEventToGestureHandler(handler: GestureHandler<*>, originalEvent: MotionEvent) {
+  private fun deliverEventToGestureHandler(handler: GestureHandler<*>, sourceEvent: MotionEvent) {
     if (!isViewAttachedUnderWrapper(handler.view)) {
       handler.cancel()
       return
@@ -252,8 +251,8 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    val action = originalEvent.actionMasked
-    val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(originalEvent))
+    val action = sourceEvent.actionMasked
+    val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
     
     // Touch events are sent before the handler itself has a chance to process them,
     // mainly because `onTouchesUp` shoul be send befor gesture finishes. This means that
@@ -269,7 +268,7 @@ class GestureHandlerOrchestrator(
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
       val isFirstEvent = handler.state == 0
-      handler.handle(event, originalEvent)
+      handler.handle(event, sourceEvent)
       if (handler.isActive) {
         // After handler is done waiting for other one to fail its progress should be
         // reset, otherwise there may be a visible jump in values sent by the handler.
