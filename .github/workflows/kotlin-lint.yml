@@ -15,12 +15,30 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: Use Node.js 14
+
+      - name: Use Node.js 16
         uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
           cache: 'yarn'
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
       - name: Install node dependencies
-        run: yarn
+        run: yarn install --frozen-lockfile
+
+      - name: Restore build from cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/build
+            android/.gradle
+          key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'android/build.gradle') }}
+
       - name: Lint
         run: yarn lint:android
