@@ -8,7 +8,8 @@
     "web": "expo start --web",
     "start": "react-native start",
     "test": "jest",
-    "ts-check": "yarn tsc --noEmit"
+    "ts-check": "yarn tsc --noEmit",
+    "lint-check": "yarn eslint src/ && yarn prettier --check src/"
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.10",
