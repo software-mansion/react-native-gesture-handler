@@ -23,6 +23,12 @@ jobs:
           cache: 'yarn'
       - name: Install node dependencies
         run: yarn
+      - name: Install Example node dependencies
+        working-directory: ${{ env.WORKING_DIRECTORY }}/example
+        run: yarn
+      - name: Install FabricExample node dependencies
+        working-directory: ${{ env.WORKING_DIRECTORY }}/FabricExample
+        run: yarn
       - name: Check types
         run: yarn tsc --noEmit
       - name: Lint
