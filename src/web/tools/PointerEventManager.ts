@@ -4,12 +4,7 @@ import EventManager from './EventManager';
 export default class PointerEventManager extends EventManager {
   public setListeners(): void {
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
-      if (
-        !this.isPointerInBounds({
-          x: event.clientX,
-          y: event.clientY,
-        })
-      ) {
+      if (!this.isPointerInBounds({ x: event.clientX, y: event.clientY })) {
         return;
       }
 
@@ -87,8 +82,6 @@ export default class PointerEventManager extends EventManager {
     });
 
     this.view.addEventListener('pointercancel', (event: PointerEvent): void => {
-      event.preventDefault();
-
       const adaptedEvent: AdaptedEvent = this.mapEvent(
         event,
         EventTypes.CANCEL

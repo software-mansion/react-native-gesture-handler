@@ -60,10 +60,11 @@ export default {
   ) {
     // console.trace(handlerTag);
     if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
-      if (!(handlerName in Gestures))
+      if (!(handlerName in Gestures)) {
         throw new Error(
           `react-native-gesture-handler: ${handlerName} is not supported on web.`
         );
+      }
 
       const GestureClass = Gestures[handlerName];
       NodeManager.createGestureHandler(handlerTag, new GestureClass());
@@ -72,10 +73,11 @@ export default {
         (config as unknown) as Config
       );
     } else {
-      if (!(handlerName in HammerGestures))
+      if (!(handlerName in HammerGestures)) {
         throw new Error(
           `react-native-gesture-handler: ${handlerName} is not supported on web.`
         );
+      }
 
       const GestureClass = HammerGestures[handlerName];
       HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());

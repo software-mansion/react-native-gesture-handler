@@ -152,7 +152,6 @@ function attachHandlers({
 
   for (const handler of gesture) {
     checkGestureCallbacksForWorklets(handler);
-    console.trace('Set immediate');
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
       handler.handlerTag,

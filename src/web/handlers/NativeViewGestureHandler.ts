@@ -13,15 +13,20 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.setShouldCancelWhenOutside(true);
 
-    if (!this.view) return;
+    if (!this.view) {
+      return;
+    }
 
     this.view.style['touchAction'] = 'auto';
 
     //@ts-ignore Turns off defualt touch behavior on Safari
     this.view.style['WebkitTouchCallout'] = 'auto';
 
-    if (this.view.hasAttribute('role')) this.buttonRole = true;
-    else this.buttonRole = false;
+    if (this.view.hasAttribute('role')) {
+      this.buttonRole = true;
+    } else {
+      this.buttonRole = false;
+    }
 
     // this.eventManager = new TouchEventManager(this.view);
     // this.eventManager.setOnPointerDown(this.onPointerDown.bind(this));
@@ -39,7 +44,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     if (this.currentState === State.UNDETERMINED) {
       this.begin(event);
-      if (this.buttonRole) this.activate(event);
+      if (this.buttonRole) {
+        this.activate(event);
+      }
     }
   }
 
@@ -57,8 +64,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   protected onPointerUp(event: AdaptedEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
-    if (!this.buttonRole) this.activate(event);
-    if (this.tracker.getTrackedPointersCount() === 0) this.end(event);
+    if (!this.buttonRole) {
+      this.activate(event);
+    }
+    if (this.tracker.getTrackedPointersCount() === 0) {
+      this.end(event);
+    }
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
@@ -71,7 +82,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
-    if (super.shouldRecognizeSimultaneously(handler)) return true;
+    if (super.shouldRecognizeSimultaneously(handler)) {
+      return true;
+    }
 
     if (
       handler instanceof NativeViewGestureHandler &&

@@ -4,7 +4,7 @@ import { AdaptedEvent, EventTypes } from '../interfaces';
 export default abstract class EventManager {
   protected readonly view: HTMLElement;
   protected pointersInBounds: number[] = [];
-  public activePointersCounter: number;
+  protected activePointersCounter: number;
 
   constructor(view: HTMLElement) {
     this.view = view;
@@ -25,7 +25,12 @@ export default abstract class EventManager {
   protected onPointerMove(_event: AdaptedEvent): void {}
   protected onPointerOut(_event: AdaptedEvent): void {}
   protected onPointerEnter(_event: AdaptedEvent): void {}
-  protected onPointerCancel(_event: AdaptedEvent): void {}
+  protected onPointerCancel(_event: AdaptedEvent): void {
+    // When pointer cancel is triggered and there are more pointers on the view, only one pointer is cancelled
+    // Because we want all pointers to be cancelled by that event, we are doing it manually by reseting handler and changing activePointersCounter to 0
+    // Events that correspond to removing the pointer (pointerup, touchend) have condition, that they don't perform any action when activePointersCounter
+    // is equal to 0. This prevents counter from going to negative values, when pointers are removed from view after one of them has been cancelled
+  }
   protected onPointerOutOfBounds(_event: AdaptedEvent): void {}
 
   public setOnPointerDown(callback: (event: AdaptedEvent) => void): void {
@@ -59,7 +64,9 @@ export default abstract class EventManager {
   }
 
   public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
-    if (!this.view) return false;
+    if (!this.view) {
+      return false;
+    }
 
     const rect: DOMRect = this.view.getBoundingClientRect();
 
@@ -69,7 +76,9 @@ export default abstract class EventManager {
   }
 
   protected markAsInBounds(pointerId: number): void {
-    if (this.pointersInBounds.indexOf(pointerId) >= 0) return;
+    if (this.pointersInBounds.indexOf(pointerId) >= 0) {
+      return;
+    }
 
     this.pointersInBounds.push(pointerId);
   }
@@ -77,8 +86,22 @@ export default abstract class EventManager {
   protected markAsOutOfBounds(pointerId: number): void {
     const index: number = this.pointersInBounds.indexOf(pointerId);
 
-    if (index < 0) return;
+    if (index < 0) {
+      return;
+    }
 
     this.pointersInBounds.splice(index, 1);
+  }
+
+  public resetManager(): void {
+    // Reseting activePointersCounter is necessary to make gestures such as pinch work properly
+    // There are gestures that end when there is still one active pointer (like pinch/rotation)
+    // When these gestures end, they are reseted, but they still receive events from pointer that is active
+    // This causes trouble, since only onPointerDown registers gesture in orchestrator, and while gestures receive
+    // Events from active pointer after they finished, next pointerdown event will be registered as additional pointer, not the first one
+    // This casues trouble like gestures getting stuck in END state, even though they should have gone to UNDETERMINED
+
+    this.activePointersCounter = 0;
+    this.pointersInBounds = [];
   }
 }

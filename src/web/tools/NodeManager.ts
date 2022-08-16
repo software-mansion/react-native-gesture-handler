@@ -9,7 +9,9 @@ export default class NodeManager {
   > = {};
 
   static getHandler(tag: number) {
-    if (tag in this.gestures) return this.gestures[tag];
+    if (tag in this.gestures) {
+      return this.gestures[tag];
+    }
 
     throw new Error(`No handler for tag ${tag}`);
   }
@@ -18,15 +20,18 @@ export default class NodeManager {
     handlerTag: number,
     handler: InstanceType<ValueOf<typeof Gestures>>
   ) {
-    if (handlerTag in this.gestures)
+    if (handlerTag in this.gestures) {
       throw new Error(`Handler with tag ${handlerTag} already exists`);
+    }
 
     this.gestures[handlerTag] = handler;
     this.gestures[handlerTag].setTag(handlerTag);
   }
 
   static dropGestureHandler(handlerTag: number) {
-    if (!(handlerTag in this.gestures)) return;
+    if (!(handlerTag in this.gestures)) {
+      return;
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.gestures[handlerTag];

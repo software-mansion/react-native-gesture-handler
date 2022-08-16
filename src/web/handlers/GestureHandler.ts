@@ -67,9 +67,12 @@ export default abstract class GestureHandler {
   }
 
   private setEventManager(): void {
-    if (!this.view) return;
+    if (!this.view) {
+      return;
+    }
 
-    this.eventManager = new PointerEventManager(this.view);
+    // this.eventManager = new PointerEventManager(this.view);
+    this.eventManager = new TouchEventManager(this.view);
 
     this.eventManager.setOnPointerDown(this.onPointerDown.bind(this));
     this.eventManager.setOnPointerAdd(this.onPointerAdd.bind(this));
@@ -102,6 +105,7 @@ export default abstract class GestureHandler {
     this.tracker.resetTracker();
     this.onReset();
     this.resetProgress();
+    this.eventManager.resetManager();
     this.currentState = State.UNDETERMINED;
   }
 
@@ -110,7 +114,9 @@ export default abstract class GestureHandler {
   //
 
   public moveToState(newState: State, event: AdaptedEvent) {
-    if (this.currentState === newState) return;
+    if (this.currentState === newState) {
+      return;
+    }
 
     const oldState = this.currentState;
     this.currentState = newState;
@@ -128,10 +134,13 @@ export default abstract class GestureHandler {
   protected onStateChange(_newState: State, _oldState: State): void {}
 
   public begin(event: AdaptedEvent): void {
-    if (!this.checkHitSlop(event)) return;
+    if (!this.checkHitSlop(event)) {
+      return;
+    }
 
-    if (this.currentState === State.UNDETERMINED)
+    if (this.currentState === State.UNDETERMINED) {
       this.moveToState(State.BEGAN, event);
+    }
   }
 
   public fail(event: AdaptedEvent): void {
@@ -209,13 +218,17 @@ export default abstract class GestureHandler {
   }
 
   public shouldWaitForHandlerFailure(handler: GestureHandler): boolean {
-    if (handler === this) return false;
+    if (handler === this) {
+      return false;
+    }
 
     return this.interactionManager.shouldWaitForHandlerFailure(this, handler);
   }
 
   public shouldRequireToWaitForFailure(handler: GestureHandler): boolean {
-    if (handler === this) return false;
+    if (handler === this) {
+      return false;
+    }
 
     return this.interactionManager.shouldRequireHandlerToWaitForFailure(
       this,
@@ -224,13 +237,17 @@ export default abstract class GestureHandler {
   }
 
   public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
-    if (handler === this) return true;
+    if (handler === this) {
+      return true;
+    }
 
     return this.interactionManager.shouldRecognizeSimultaneously(this, handler);
   }
 
   public shouldBeCancelledByOther(handler: GestureHandler): boolean {
-    if (handler === this) return false;
+    if (handler === this) {
+      return false;
+    }
 
     return this.interactionManager.shouldHandlerBeCancelledBy(this, handler);
   }
@@ -344,7 +361,9 @@ export default abstract class GestureHandler {
   }
 
   private validateHitSlops(): void {
-    if (!this.config.hitSlop) return;
+    if (!this.config.hitSlop) {
+      return;
+    }
 
     if (
       this.config.hitSlop.left !== undefined &&
@@ -388,7 +407,9 @@ export default abstract class GestureHandler {
   }
 
   private checkHitSlop(event: AdaptedEvent): boolean {
-    if (!this.config.hitSlop || !this.view) return true;
+    if (!this.config.hitSlop || !this.view) {
+      return true;
+    }
 
     const width = this.view.getBoundingClientRect().width;
     const height = this.view.getBoundingClientRect().height;
@@ -451,7 +472,9 @@ export default abstract class GestureHandler {
   }
 
   public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
-    if (!this.view) return false;
+    if (!this.view) {
+      return false;
+    }
 
     const rect: DOMRect = this.view.getBoundingClientRect();
 
@@ -516,7 +539,9 @@ function invokeNullableMethod(
     | { __nodeConfig: { argMapping: unknown[] } },
   event: ResultEvent
 ): void {
-  if (!method) return;
+  if (!method) {
+    return;
+  }
 
   if (typeof method === 'function') {
     method(event);
@@ -529,13 +554,19 @@ function invokeNullableMethod(
     return;
   }
 
-  if (!('__nodeConfig' in method)) return;
+  if (!('__nodeConfig' in method)) {
+    return;
+  }
 
   const { argMapping } = method.__nodeConfig;
-  if (!Array.isArray(argMapping)) return;
+  if (!Array.isArray(argMapping)) {
+    return;
+  }
 
   for (const [index, [key, value]] of argMapping.entries()) {
-    if (!(key in event.nativeEvent)) continue;
+    if (!(key in event.nativeEvent)) {
+      continue;
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const nativeValue = event.nativeEvent[key];

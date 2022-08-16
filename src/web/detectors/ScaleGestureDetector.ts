@@ -62,7 +62,9 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
         this.initialSpan = 0;
       }
 
-      if (streamComplete) return true;
+      if (streamComplete) {
+        return true;
+      }
     }
 
     const configChanged: boolean =
@@ -92,7 +94,9 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     let devSumY = 0;
 
     tracker.getData().forEach((value, key) => {
-      if (key === ignoredPointer) return;
+      if (key === ignoredPointer) {
+        return;
+      }
 
       devSumX += Math.abs(value.lastX - focusX);
       devSumY += Math.abs(value.lastY - focusY);
@@ -132,7 +136,9 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     }
 
     //Handle motion
-    if (action !== EventTypes.MOVE) return true;
+    if (action !== EventTypes.MOVE) {
+      return true;
+    }
 
     this.currentSpan = span;
 
@@ -163,7 +169,9 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   }
 
   public getScaleFactor(numOfPointers: number): number {
-    if (numOfPointers < 2) return 1;
+    if (numOfPointers < 2) {
+      return 1;
+    }
 
     return this.prevSpan > 0 ? this.currentSpan / this.prevSpan : 1;
   }

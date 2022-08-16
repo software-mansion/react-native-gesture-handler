@@ -205,12 +205,18 @@ export default class TapGestureHandler extends GestureHandler {
 
     switch (this.currentState) {
       case State.UNDETERMINED:
-        if (event.eventType === EventTypes.DOWN) this.begin(event);
+        if (event.eventType === EventTypes.DOWN) {
+          this.begin(event);
+        }
         this.startTap(event);
         break;
       case State.BEGAN:
-        if (event.eventType === EventTypes.UP) this.endTap(event);
-        if (event.eventType === EventTypes.DOWN) this.startTap(event);
+        if (event.eventType === EventTypes.UP) {
+          this.endTap(event);
+        }
+        if (event.eventType === EventTypes.DOWN) {
+          this.startTap(event);
+        }
         break;
       default:
         break;

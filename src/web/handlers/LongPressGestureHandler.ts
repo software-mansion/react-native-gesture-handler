@@ -73,8 +73,11 @@ export default class LongPressGestureHandler extends GestureHandler {
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
 
-    if (this.currentState === State.ACTIVE) this.end(event);
-    else this.fail(event);
+    if (this.currentState === State.ACTIVE) {
+      this.end(event);
+    } else {
+      this.fail(event);
+    }
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
@@ -86,7 +89,9 @@ export default class LongPressGestureHandler extends GestureHandler {
   }
 
   private tryBegin(event: AdaptedEvent): void {
-    if (this.currentState !== State.UNDETERMINED) return;
+    if (this.currentState !== State.UNDETERMINED) {
+      return;
+    }
 
     this.previousTime = Date.now();
     this.startTime = this.previousTime;
@@ -113,8 +118,11 @@ export default class LongPressGestureHandler extends GestureHandler {
     const distSq = dx * dx + dy * dy;
 
     if (distSq > this.maxDistSq) {
-      if (this.currentState === State.ACTIVE) this.cancel(event);
-      else this.fail(event);
+      if (this.currentState === State.ACTIVE) {
+        this.cancel(event);
+      } else {
+        this.fail(event);
+      }
     }
   }
 }

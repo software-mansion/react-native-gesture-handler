@@ -101,8 +101,12 @@ export default class RotationGestureHandler extends GestureHandler {
       return;
     }
 
-    if (this.getAnchorX()) this.cachedAnchorX = this.getAnchorX();
-    if (this.getAnchorY()) this.cachedAnchorY = this.getAnchorY();
+    if (this.getAnchorX()) {
+      this.cachedAnchorX = this.getAnchorX();
+    }
+    if (this.getAnchorY()) {
+      this.cachedAnchorY = this.getAnchorY();
+    }
 
     this.tracker.track(event);
 
@@ -115,10 +119,15 @@ export default class RotationGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 
-    if (this.currentState !== State.ACTIVE) return;
+    if (this.currentState !== State.ACTIVE) {
+      return;
+    }
 
-    if (this.currentState === State.ACTIVE) this.end(event);
-    else this.fail(event);
+    if (this.currentState === State.ACTIVE) {
+      this.end(event);
+    } else {
+      this.fail(event);
+    }
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
@@ -132,7 +141,9 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected tryBegin(event: AdaptedEvent): void {
-    if (this.currentState !== State.UNDETERMINED) return;
+    if (this.currentState !== State.UNDETERMINED) {
+      return;
+    }
 
     this.resetProgress();
 
@@ -140,7 +151,9 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected activate(event: AdaptedEvent, _force?: boolean): void {
-    if (this.currentState !== State.ACTIVE) this.resetProgress();
+    if (this.currentState !== State.ACTIVE) {
+      this.resetProgress();
+    }
 
     super.activate(event);
   }
@@ -150,7 +163,9 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
-    if (this.currentState === State.ACTIVE) return;
+    if (this.currentState === State.ACTIVE) {
+      return;
+    }
 
     this.rotation = 0;
     this.velocity = 0;
