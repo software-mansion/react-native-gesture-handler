@@ -32,10 +32,11 @@ export default {
     config: T
   ) {
     //TODO(TS) extends config
-    if (!(handlerName in Gestures))
+    if (!(handlerName in Gestures)) {
       throw new Error(
         `react-native-gesture-handler: ${handlerName} is not supported on macos.`
       );
+    }
     const GestureClass = Gestures[handlerName];
     NodeManager.createGestureHandler(handlerTag, new GestureClass());
     this.updateGestureHandler(handlerTag, config);

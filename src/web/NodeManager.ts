@@ -4,7 +4,9 @@ import { Gestures } from '../RNGestureHandlerModule.web';
 const gestures: Record<number, InstanceType<ValueOf<typeof Gestures>>> = {};
 
 export function getHandler(tag: number) {
-  if (tag in gestures) return gestures[tag];
+  if (tag in gestures) {
+    return gestures[tag];
+  }
 
   throw new Error(`No handler for tag ${tag}`);
 }
