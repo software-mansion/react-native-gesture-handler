@@ -1,5 +1,5 @@
 import { ActionType } from './ActionType';
-import { EXPERIMENTAL_WEB_IMPLEMENTATION } from './EnableExperimentalWebImplementation';
+import { isExperimentalWebImplementationEnabled } from './EnableExperimentalWebImplementation';
 
 //GestureHandlers
 import InteractionManager from './web/tools/InteractionManager';
@@ -56,7 +56,7 @@ export default {
     handlerTag: number,
     config: T
   ) {
-    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+    if (isExperimentalWebImplementationEnabled()) {
       if (!(handlerName in Gestures)) return;
 
       const interactionManager = new InteractionManager();
@@ -82,28 +82,28 @@ export default {
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
-    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+    if (isExperimentalWebImplementationEnabled()) {
       NodeManager.getHandler(handlerTag).init(newView, propsRef);
     } else {
       HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
     }
   },
   updateGestureHandler(handlerTag: number, newConfig: any) {
-    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+    if (isExperimentalWebImplementationEnabled()) {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
     } else {
       HammerNodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
     }
   },
   getGestureHandlerNode(handlerTag: number) {
-    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+    if (isExperimentalWebImplementationEnabled()) {
       return NodeManager.getHandler(handlerTag);
     } else {
       return HammerNodeManager.getHandler(handlerTag);
     }
   },
   dropGestureHandler(handlerTag: number) {
-    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+    if (isExperimentalWebImplementationEnabled()) {
       NodeManager.dropGestureHandler(handlerTag);
     } else {
       HammerNodeManager.dropGestureHandler(handlerTag);
