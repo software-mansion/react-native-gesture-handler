@@ -278,6 +278,7 @@ export default class GenericTouchable extends Component<
         disallowInterruption={this.props.disallowInterruption}
         testID={this.props.testID}
         touchSoundDisabled={this.props.touchSoundDisabled ?? false}
+        enabled={!this.props.disabled}
         {...this.props.extraButtonProps}>
         <Animated.View {...coreProps} style={this.props.style}>
           {this.props.children}

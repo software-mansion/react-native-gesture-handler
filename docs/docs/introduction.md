@@ -34,6 +34,37 @@ Similarly, if you want to make a gesture simultaneous with (or wait for failure 
 
 This should allow you to migrate your codebase from the gesture handlers to gestures smoothly and at your own pace. Just keep in mind that the gesture handlers cannot have the GestureDetector as their direct child, as it's a functional component.
 
+### Automatic workletization of gesture callbacks
+
+Reanimated's Babel plugin is setup in a way that automatically marks callbacks passed to gestures in the configuration chain as worklets. This means that as long as all your callbacks are defined in a single chain, you don't need to add a `'worklet';` directive at the beginning of the functions. Here is an example that will be automatically workletized:
+```jsx
+const gesture = Gesture.Tap().onBegin(() => {
+  console.log(_WORKLET);
+});
+```
+And here are some examples that won't:
+```jsx
+const gesture = Gesture.Tap();
+gesture.onBegin(() => {
+  console.log(_WORKLET);
+});
+```
+
+```jsx
+const callback = () => {
+  console.log(_WORKLET);
+};
+const gesture = Gesture.Tap().onBegin(callback);
+```
+
+```jsx
+const callback = () => {
+  console.log(_WORKLET);
+};
+const gesture = Gesture.Tap();
+gesture.onBegin(callback);
+```
+
 ## Learning resources
 
 ### Apps

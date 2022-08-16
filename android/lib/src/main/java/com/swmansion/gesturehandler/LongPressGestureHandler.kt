@@ -19,7 +19,9 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
 
   init {
     setShouldCancelWhenOutside(true)
-    defaultMaxDistSq = DEFAULT_MAX_DIST_DP * context.resources.displayMetrics.density
+
+    val defaultMaxDist = DEFAULT_MAX_DIST_DP * context.resources.displayMetrics.density
+    defaultMaxDistSq = defaultMaxDist * defaultMaxDist
     maxDistSq = defaultMaxDistSq
   }
 
