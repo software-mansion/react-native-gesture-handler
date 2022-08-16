@@ -56,6 +56,8 @@ export interface Config extends Record<string, ConfigArgs> {
   maxDelayMs?: number;
   maxDeltaX?: number;
   maxDeltaY?: number;
+  shouldActivateOnStart: boolean;
+  disallowInterruption: boolean;
   direction?: Directions;
 }
 

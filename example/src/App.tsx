@@ -8,6 +8,7 @@ import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import {
   GestureHandlerRootView,
   RectButton,
+  ScrollView,
 } from 'react-native-gesture-handler';
 import OverflowParent from './release_tests/overflowParent';
 import DoublePinchRotate from './release_tests/doubleScalePinchAndRotate';
@@ -175,6 +176,7 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
       style={styles.list}
       sections={EXAMPLES}
       keyExtractor={(example) => example.name}
+      renderScrollComponent={(props) => <ScrollView {...props}></ScrollView>}
       renderItem={({ item }) => (
         <MainScreenItem
           name={item.name}

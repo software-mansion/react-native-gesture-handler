@@ -350,6 +350,8 @@ export default abstract class GestureHandler {
   public updateGestureConfig({ enabled = true, ...props }): void {
     this.config = { enabled, ...props };
     this.validateHitSlops();
+
+    console.log(this.config);
   }
 
   protected checkCustomActivationCriteria(criterias: string[]): void {

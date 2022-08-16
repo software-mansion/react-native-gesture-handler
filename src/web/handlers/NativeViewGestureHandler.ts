@@ -6,7 +6,12 @@ import GestureHandler from './GestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
+  private shouldActivateOnStart = false;
   private disallowInterruption = false;
+
+  private startX = 0;
+  private startY = 0;
+  private minDistSq = 10;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -18,6 +23,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
 
     this.view.style['touchAction'] = 'auto';
+    this.view.style['webkitUserSelect'] = 'auto';
+    this.view.style['userSelect'] = 'auto';
 
     //@ts-ignore Turns off defualt touch behavior on Safari
     this.view.style['WebkitTouchCallout'] = 'auto';
@@ -34,6 +41,18 @@ export default class NativeViewGestureHandler extends GestureHandler {
     // this.eventManager.setListeners();
   }
 
+  public updateGestureConfig({ enabled = true, ...props }): void {
+    super.updateGestureConfig({ enabled: enabled, ...props });
+    console.log(this.config);
+
+    if (this.config.shouldActivateOnStart !== undefined) {
+      this.shouldActivateOnStart = this.config.shouldActivateOnStart;
+    }
+    if (this.config.disallowInterruption !== undefined) {
+      this.disallowInterruption = this.config.disallowInterruption;
+    }
+  }
+
   protected resetConfig(): void {
     super.resetConfig();
   }
@@ -41,6 +60,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
   protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
     this.tracker.addToTracker(event);
+
+    this.startX = event.x;
+    this.startY = event.y;
 
     if (this.currentState === State.UNDETERMINED) {
       this.begin(event);
@@ -54,8 +76,18 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.onPointerDown(event);
   }
 
-  protected onPointerMove(_event: AdaptedEvent): void {
-    //
+  protected onPointerMove(event: AdaptedEvent): void {
+    const dx = this.startX - event.x;
+    const dy = this.startY - event.y;
+    const distSq = dx * dx + dy * dy;
+
+    if (
+      !this.buttonRole &&
+      distSq >= this.minDistSq &&
+      this.currentState === State.BEGAN
+    ) {
+      this.activate(event);
+    }
   }
 
   protected onPointerOut(event: AdaptedEvent): void {
@@ -64,9 +96,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   protected onPointerUp(event: AdaptedEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
-    if (!this.buttonRole) {
-      this.activate(event);
-    }
+
     if (this.tracker.getTrackedPointersCount() === 0) {
       this.end(event);
     }
@@ -104,6 +134,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
       return false;
     }
 
+    console.log('OVERRITEN');
+    console.log(this.currentState === State.ACTIVE);
+    console.log(canBeInterrupted);
+    console.log(handler.getTag() > 0);
     return (
       this.currentState === State.ACTIVE &&
       canBeInterrupted &&
