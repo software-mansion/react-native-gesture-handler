@@ -18,10 +18,10 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   private var coalescingKey: Short = 0
   private fun <T : GestureHandler<T>> init(
     handler: T,
-    dataExtractorr: RNGestureHandlerEventDataExtractor<T>?,
+    dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
   ) {
     super.init(handler.view!!.id)
-    extraData = createEventData(handler, dataExtractorr)
+    extraData = createEventData(handler, dataExtractor)
     coalescingKey = handler.eventCoalescingKey
   }
 
