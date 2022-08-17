@@ -1,3 +1,4 @@
+project(GestureHandler)
 cmake_minimum_required(VERSION 3.9.0)
 
 set (PACKAGE_NAME "react-native-gesture-handler")
@@ -8,6 +9,8 @@ add_library(rngesturehandler_modules # Library name
   SHARED
   cpp-adapter.cpp
 )
+
+add_subdirectory("${NODE_MODULES_DIR}/react-native/ReactCommon/jsi/jsi" jsi)
 
 # TODO: fix this path
 set (RN_SO_DIR "${CMAKE_SOURCE_DIR}/../../../../FabricExample/android/app/build/react-ndk/exported")
@@ -22,21 +25,7 @@ target_include_directories(
   "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi"
 )
 
-find_library(
-  JSI_LIB
-  jsi
-  PATHS ${LIBRN_DIR}
-  NO_CMAKE_FIND_ROOT_PATH
-)
-
-find_library(
-  JSI_LIB
-  jsi
-  PATHS ${LIBRN_DIR}
-  NO_CMAKE_FIND_ROOT_PATH
-)
-
 target_link_libraries(
   rngesturehandler_modules
-  ${JSI_LIB}
+  jsi
 )
