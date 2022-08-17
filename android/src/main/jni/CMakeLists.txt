@@ -5,7 +5,7 @@ set (PACKAGE_NAME "react-native-gesture-handler")
 set (CMAKE_VERBOSE_MAKEFILE ON)
 set (CMAKE_CXX_STANDARD 17)
 
-add_library(rngesturehandler_modules # Library name
+add_library(gesturehandler # Library name
   SHARED
   cpp-adapter.cpp
 )
@@ -31,7 +31,7 @@ set_target_properties(react_render_uimanager
 target_include_directories(react_render_uimanager INTERFACE ${REACT_COMMON_DIR}/react/renderer/uimanager)
 
 target_link_libraries(
-  rngesturehandler_modules
+  gesturehandler
   jsi
   react_render_uimanager
 )
