@@ -86,6 +86,20 @@ def findNodeModules(baseDir) {
 
 def nodeModules = findNodeModules(projectDir);
 
+def libInstanceCounter = 0;
+String parsedLocation = "";
+fileTree(rootDir.parent).visit { FileVisitDetails details ->
+    def path = details.file.path
+    if (path.contains("/react-native-gesture-handler/package.json")) {
+        libInstanceCounter++;
+        parsedLocation += "- " + path.replace("/package.json", "\n")
+    }
+    if (libInstanceCounter > 1) {
+        String exceptionMessage = "\n[Gesture Handler] Multiple versions of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-versions-of-reanimated-were-detected \n\nConflict between: \n" + parsedLocation + "\n";
+        throw new Exception(exceptionMessage);
+    }
+}
+
 repositories {
     mavenCentral()
 }
