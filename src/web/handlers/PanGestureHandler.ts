@@ -1,7 +1,7 @@
 import { PixelRatio } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -54,12 +54,13 @@ export default class PanGestureHandler extends GestureHandler {
 
   // TODO: Implement logic required for activateAfterLongPress
   private activateAfterLongPress = 0;
+  private activationTimeout: number;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
   }
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
     this.resetConfig();
 
     super.updateGestureConfig({ enabled: enabled, ...props });
@@ -92,6 +93,10 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (this.config.minVelocityY !== undefined) {
       this.minVelocityY = this.config.minVelocityY;
+    }
+
+    if (this.config.activateAfterLongPress !== undefined) {
+      this.activateAfterLongPress = this.config.activateAfterLongPress;
     }
 
     if (this.config.shouldCancelWhenOutside) {
@@ -213,6 +218,10 @@ export default class PanGestureHandler extends GestureHandler {
   }
   private getTranslationY(): number {
     return this.lastY - this.startY + this.offsetY;
+  }
+
+  private clearActivationTimeout(): void {
+    clearTimeout(this.activationTimeout);
   }
 
   //EventsHandling
@@ -402,6 +411,7 @@ export default class PanGestureHandler extends GestureHandler {
     const distanceSq = dx * dx + dy * dy;
 
     if (this.activateAfterLongPress > 0 && distanceSq > DEFAULT_MIN_DIST_SQ) {
+      this.clearActivationTimeout();
       return true;
     }
 
@@ -445,7 +455,11 @@ export default class PanGestureHandler extends GestureHandler {
 
       this.begin(event);
 
-      //Long press
+      if (this.activateAfterLongPress > 0) {
+        this.activationTimeout = setTimeout(() => {
+          this.activate(event);
+        }, this.activateAfterLongPress);
+      }
     } else {
       this.velocityX = this.tracker.getVelocityX(event.pointerId);
       this.velocityY = this.tracker.getVelocityY(event.pointerId);
@@ -468,6 +482,14 @@ export default class PanGestureHandler extends GestureHandler {
     }
 
     super.activate(event, force);
+  }
+
+  protected onCancel(): void {
+    this.clearActivationTimeout();
+  }
+
+  protected onReset(): void {
+    this.clearActivationTimeout();
   }
 
   protected resetProgress(): void {
