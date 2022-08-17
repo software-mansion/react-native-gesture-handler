@@ -1,10 +1,10 @@
 #include <jni.h>
 #include <jsi/jsi.h>
 
-#include <react/renderer/uimanager/primitives.h>
+// #include <react/renderer/uimanager/primitives.h>
 
 using namespace facebook;
-using namespace react;
+// using namespace react;
 
 void decorateRuntime(jsi::Runtime &runtime)
 {
@@ -22,10 +22,11 @@ void decorateRuntime(jsi::Runtime &runtime)
           return jsi::Value::null();
         }
 
-        auto shadowNode = arguments[0].asObject(runtime).getHostObject<ShadowNodeWrapper>(runtime)->shadowNode;
-        bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
+        // auto shadowNode = arguments[0].asObject(runtime).getHostObject<ShadowNodeWrapper>(runtime)->shadowNode;
+        // bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
 
-        return jsi::Value(isFormsStackingContext);
+        return jsi::Value(false);
+        // return jsi::Value(isFormsStackingContext);
       });
   runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
 }

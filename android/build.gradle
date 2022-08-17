@@ -64,6 +64,28 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+def findNodeModules(baseDir) {
+    // TODO: This is a temporary workaround for the fact that we can't depend on the
+    if (rootProject.ext.has("rnghExample") ? rootProject.ext.get("rnghExample") : false) {
+        return baseDir.parentFile.parent
+    }
+
+    def basePath = baseDir.toPath().normalize()
+    // Node's module resolution algorithm searches up to the root directory,
+    // after which the base path will be null
+    while (basePath) {
+     def nodeModulesPath = Paths.get(basePath.toString(), "node_modules")
+     def reactNativePath = Paths.get(nodeModulesPath.toString(), "react-native")
+     if (nodeModulesPath.toFile().exists() && reactNativePath.toFile().exists()) {
+       return nodeModulesPath.toString()
+     }
+     basePath = basePath.getParent()
+    }
+    throw new GradleException("react-native-quick-base64: Failed to find node_modules/ path!")
+}
+
+def nodeModules = findNodeModules(projectDir);
+
 repositories {
     mavenCentral()
 }
@@ -89,23 +111,12 @@ android {
         if (isNewArchitectureEnabled()) {
             var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
             externalNativeBuild {
-                ndkBuild {
-                    arguments "APP_PLATFORM=android-21",
-                            "APP_STL=c++_shared",
-                            "NDK_TOOLCHAIN_VERSION=clang",
-                            "GENERATED_SRC_DIR=${appProject.buildDir}/generated/source",
-                            "PROJECT_BUILD_DIR=${appProject.buildDir}",
-                            "REACT_ANDROID_DIR=${findNodeModulePath(appProject.rootDir, "react-native") ?: "../node_modules/react-native/"}/ReactAndroid",
-                            "REACT_ANDROID_BUILD_DIR=${findNodeModulePath(appProject.rootDir, "react-native") ?: "../node_modules/react-native/"}/ReactAndroid/build"
-                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
-                    cppFlags "-std=c++17"
-                    targets "rngesturehandler_modules"
+                cmake {
+                    cppFlags "-O2 -frtti -fexceptions -Wall -Wno-unused-variable -fstack-protector-all"
+                    arguments "-DNODE_MODULES_DIR=${nodeModules}"
+                    abiFilters (*reactNativeArchitectures())
                 }
             }
-        }
-
-        ndk {
-            abiFilters (*reactNativeArchitectures())
         }
     }
 
@@ -116,8 +127,8 @@ android {
 
     if (isNewArchitectureEnabled()) {
         externalNativeBuild {
-            ndkBuild {
-                path "src/main/jni/Android.mk"
+            cmake {
+                path "src/main/jni/CMakeLists.txt"
             }
         }
     }
