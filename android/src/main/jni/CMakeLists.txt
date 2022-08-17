@@ -10,22 +10,28 @@ add_library(rngesturehandler_modules # Library name
   cpp-adapter.cpp
 )
 
-add_subdirectory("${NODE_MODULES_DIR}/react-native/ReactCommon/jsi/jsi" jsi)
+set(APP_BUILD_DIR "${CMAKE_SOURCE_DIR}/../FabricExample/android/app/build")  # TODO: client side build
+set(REACT_COMMON_DIR "${NODE_MODULES_DIR}/react-native/ReactCommon")
+set(REACT_NDK_EXPORT_DIR "/Users/tomekzaw/RNOS/react-native-gesture-handler/FabricExample/android/app/build/react-ndk/exported")
 
-# TODO: fix this path
-set (RN_SO_DIR "${CMAKE_SOURCE_DIR}/../../../../FabricExample/android/app/build/react-ndk/exported")
-file (GLOB LIBRN_DIR "${RN_SO_DIR}/${ANDROID_ABI}")
+## jsi
+add_library(jsi SHARED IMPORTED GLOBAL)
+set_target_properties(jsi
+        PROPERTIES
+        IMPORTED_LOCATION
+        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libjsi.so)
+target_include_directories(jsi INTERFACE ${REACT_COMMON_DIR}/jsi)
 
-target_include_directories(
-  rngesturehandler_modules
-  PRIVATE
-  "${NODE_MODULES_DIR}/react-native/React"
-  "${NODE_MODULES_DIR}/react-native/React/Base"
-  "${NODE_MODULES_DIR}/react-native/ReactCommon"
-  "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi"
-)
+## react_render_uimanager
+add_library(react_render_uimanager SHARED IMPORTED GLOBAL)
+set_target_properties(react_render_uimanager
+        PROPERTIES
+        IMPORTED_LOCATION
+        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_uimanager.so)
+target_include_directories(react_render_uimanager INTERFACE ${REACT_COMMON_DIR}/react/renderer/uimanager)
 
 target_link_libraries(
   rngesturehandler_modules
   jsi
+  react_render_uimanager
 )
