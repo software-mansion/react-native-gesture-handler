@@ -11,6 +11,7 @@ add_library(gesturehandler
   cpp-adapter.cpp
 )
 
+set(REACT_ANDROID_DIR "${NODE_MODULES_DIR}/react-native/ReactAndroid")
 set(REACT_COMMON_DIR "${NODE_MODULES_DIR}/react-native/ReactCommon")
 set(REACT_NDK_EXPORT_DIR "${APP_BUILD_DIR}/react-ndk/exported")
 
@@ -46,9 +47,9 @@ target_include_directories(react_render_uimanager INTERFACE ${REACT_COMMON_DIR}/
 target_include_directories(
   gesturehandler
   PRIVATE
-  "/Users/tomekzaw/RNOS/react-native-gesture-handler/FabricExample/node_modules/react-native/ReactAndroid/build/third-party-ndk/boost/boost_1_76_0"
-  "/Users/tomekzaw/RNOS/react-native-gesture-handler/FabricExample/node_modules/react-native/ReactAndroid/build/third-party-ndk/double-conversion"
-  "/Users/tomekzaw/RNOS/react-native-gesture-handler/FabricExample/node_modules/react-native/ReactAndroid/build/third-party-ndk/folly"
+  "${REACT_ANDROID_DIR}/build/third-party-ndk/boost/boost_1_76_0"
+  "${REACT_ANDROID_DIR}/build/third-party-ndk/double-conversion"
+  "${REACT_ANDROID_DIR}/build/third-party-ndk/folly"
 )
 
 target_link_libraries(
