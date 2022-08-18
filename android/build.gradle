@@ -218,6 +218,21 @@ if (isNewArchitectureEnabled()) {
             project(":ReactAndroid").getTasksByName("buildCMakeDebug", true).forEach { rn -> 
                 task.dependsOn(rn)
             }
+            project(":ReactAndroid").getTasksByName("preDebugBuild", true).forEach { rn -> 
+                task.dependsOn(rn)
+            }
+            project(":ReactAndroid").getTasksByName("externalNativeBuildDebug", true).forEach { rn -> 
+                task.dependsOn(rn)
+            }
+            project(":ReactAndroid").getTasksByName("mergeDebugJniLibFolders", true).forEach { rn -> 
+                task.dependsOn(rn)
+            }
+            project(":ReactAndroid").getTasksByName("mergeDebugNativeLibs", true).forEach { rn -> 
+                task.dependsOn(rn)
+            }
+            project(":ReactAndroid").getTasksByName("packageReactNdkDebugLibsForBuck", true).forEach { rn -> 
+                task.dependsOn(rn)
+            }
         }
     }
 }
