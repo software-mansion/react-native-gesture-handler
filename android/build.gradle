@@ -213,9 +213,11 @@ if (isNewArchitectureEnabled()) {
         codegenJavaPackageName = "com.swmansion.gesturehandler"
     }
 
-    afterEvaluate {
-        project.getTasksByName("configureCMakeDebug", false).forEach {
-            it.dependsOn(project(":ReactAndroid").getTasksByName("buildCMakeDebug", true))
+    tasks.whenTaskAdded { task ->
+        if (task.name.contains("configureCMakeDebug")) {
+            project(":ReactAndroid").getTasksByName("buildCMakeDebug", true).forEach { rn -> 
+                task.dependsOn(rn)
+            }
         }
     }
 }
