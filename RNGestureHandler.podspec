@@ -4,7 +4,7 @@ fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED']
 
 isUserApp = File.exists?(File.join(__dir__, "..", "..", "node_modules", "react-native", "package.json"))
 if isUserApp
-  libInstances = %x[find ../../ -name "package.json" | grep "/react-native-gesture-handler/"]
+  libInstances = %x[find ../../ -name "package.json" | grep "/react-native-gesture-handler/package.json"]
   libInstancesArray = libInstances.split("\n")
   if libInstancesArray.length() > 1
     parsedLocation = ''
