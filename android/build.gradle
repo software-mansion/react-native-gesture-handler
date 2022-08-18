@@ -214,24 +214,30 @@ if (isNewArchitectureEnabled()) {
     }
 
     tasks.whenTaskAdded { task ->
+        // TODO: debug/release mode
+        // TODO: remove redundant dependencies
+        def ReactAndroid = project(":ReactAndroid")
         if (task.name.contains("configureCMakeDebug")) {
-            project(":ReactAndroid").getTasksByName("buildCMakeDebug", true).forEach { rn -> 
-                task.dependsOn(rn)
+            ReactAndroid.getTasksByName("buildCMakeDebug", true).forEach {
+                task.dependsOn(it)
             }
-            project(":ReactAndroid").getTasksByName("preDebugBuild", true).forEach { rn -> 
-                task.dependsOn(rn)
+            ReactAndroid.getTasksByName("preDebugBuild", true).forEach {
+                task.dependsOn(it)
             }
-            project(":ReactAndroid").getTasksByName("externalNativeBuildDebug", true).forEach { rn -> 
-                task.dependsOn(rn)
+            ReactAndroid.getTasksByName("externalNativeBuildDebug", true).forEach {
+                task.dependsOn(it)
             }
-            project(":ReactAndroid").getTasksByName("mergeDebugJniLibFolders", true).forEach { rn -> 
-                task.dependsOn(rn)
+            ReactAndroid.getTasksByName("mergeDebugJniLibFolders", true).forEach {
+                task.dependsOn(it)
             }
-            project(":ReactAndroid").getTasksByName("mergeDebugNativeLibs", true).forEach { rn -> 
-                task.dependsOn(rn)
+            ReactAndroid.getTasksByName("mergeDebugNativeLibs", true).forEach {
+                task.dependsOn(it)
             }
-            project(":ReactAndroid").getTasksByName("packageReactNdkDebugLibsForBuck", true).forEach { rn -> 
-                task.dependsOn(rn)
+            ReactAndroid.getTasksByName("packageReactNdkDebugLibsForBuck", true).forEach {
+                task.dependsOn(it)
+            }
+            ReactAndroid.getTasksByName("packageReactNdkDebugLibs", true).forEach {
+                task.dependsOn(it)
             }
         }
     }
