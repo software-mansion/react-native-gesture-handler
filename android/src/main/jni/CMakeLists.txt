@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.9.0)
 set(PACKAGE_NAME "react-native-gesture-handler")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-DFOLLY_NO_CONFIG=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_MOBILE=1 -DFOLLY_HAVE_RECVMMSG=1 -DFOLLY_HAVE_PTHREAD=1")
 
 add_library(gesturehandler
   SHARED
@@ -23,6 +24,17 @@ set_target_properties(jsi
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libjsi.so)
 target_include_directories(jsi INTERFACE ${REACT_COMMON_DIR}/jsi)
 
+## react_render_core
+add_library(react_render_core SHARED IMPORTED GLOBAL)
+set_target_properties(react_render_core
+        PROPERTIES
+        IMPORTED_LOCATION
+        ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_core.so)
+target_include_directories(react_render_core
+        INTERFACE
+        ${REACT_COMMON_DIR}
+        ${REACT_COMMON_DIR}/react/renderer/core)
+
 ## react_render_uimanager
 add_library(react_render_uimanager SHARED IMPORTED GLOBAL)
 set_target_properties(react_render_uimanager
@@ -31,8 +43,17 @@ set_target_properties(react_render_uimanager
         ${REACT_NDK_EXPORT_DIR}/${ANDROID_ABI}/libreact_render_uimanager.so)
 target_include_directories(react_render_uimanager INTERFACE ${REACT_COMMON_DIR}/react/renderer/uimanager)
 
+target_include_directories(
+  gesturehandler
+  PRIVATE
+  "/Users/tomekzaw/RNOS/react-native-gesture-handler/FabricExample/node_modules/react-native/ReactAndroid/build/third-party-ndk/boost/boost_1_76_0"
+  "/Users/tomekzaw/RNOS/react-native-gesture-handler/FabricExample/node_modules/react-native/ReactAndroid/build/third-party-ndk/double-conversion"
+  "/Users/tomekzaw/RNOS/react-native-gesture-handler/FabricExample/node_modules/react-native/ReactAndroid/build/third-party-ndk/folly"
+)
+
 target_link_libraries(
   gesturehandler
   jsi
   react_render_uimanager
+  react_render_core
 )
