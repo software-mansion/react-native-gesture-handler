@@ -10,9 +10,8 @@ add_library(gesturehandler
   cpp-adapter.cpp
 )
 
-set(APP_ANDROID_DIR "${CMAKE_SOURCE_DIR}/../../../../FabricExample/android")
 set(REACT_COMMON_DIR "${NODE_MODULES_DIR}/react-native/ReactCommon")
-set(REACT_NDK_EXPORT_DIR "${APP_ANDROID_DIR}/app/build/react-ndk/exported")
+set(REACT_NDK_EXPORT_DIR "${APP_BUILD_DIR}/react-ndk/exported")
 
 # copied from react-native/ReactAndroid/cmake-utils/Android-prebuilt.cmake
 

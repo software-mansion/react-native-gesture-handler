@@ -127,7 +127,9 @@ android {
             externalNativeBuild {
                 cmake {
                     cppFlags "-O2 -frtti -fexceptions -Wall -Wno-unused-variable -fstack-protector-all"
-                    arguments "-DNODE_MODULES_DIR=${nodeModules}"
+                    arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
+                        "-DNODE_MODULES_DIR=$rootDir/../node_modules",
+                        "-DANDROID_STL=c++_shared"
                     abiFilters (*reactNativeArchitectures())
                 }
             }
