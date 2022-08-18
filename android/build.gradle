@@ -215,7 +215,7 @@ if (isNewArchitectureEnabled()) {
 
     afterEvaluate {
         project.getTasksByName("configureCMakeDebug", false).forEach {
-            it.dependsOn(rootProject.getTasksByName("packageReactNdkDebugLibs", true))
+            it.dependsOn(project(":ReactAndroid").getTasksByName("buildCMakeDebug", true))
         }
     }
 }
