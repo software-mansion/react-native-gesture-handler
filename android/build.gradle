@@ -212,4 +212,10 @@ if (isNewArchitectureEnabled()) {
         libraryName = "rngesturehandler"
         codegenJavaPackageName = "com.swmansion.gesturehandler"
     }
+
+    afterEvaluate {
+        project.getTasksByName("configureCMakeDebug", false).forEach {
+            it.dependsOn(rootProject.getTasksByName("packageReactNdkDebugLibs", true))
+        }
+    }
 }
