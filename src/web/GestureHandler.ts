@@ -29,6 +29,7 @@ export type Config = Partial<{
   activeOffsetYStart: number;
   activeOffsetYEnd: number;
   waitFor: any[] | null;
+  simultaneousHandlers: any[] | null;
 }>;
 
 type NativeEvent = ReturnType<GestureHandler['transformEventData']>;
@@ -59,6 +60,12 @@ abstract class GestureHandler {
 
   get id() {
     return `${this.name}${this.gestureInstance}`;
+  }
+
+  // a simple way to check if GestureHandler is NativeViewGestureHandler, since importing it
+  // here to use instanceof would cause import cycle
+  get isNative() {
+    return false;
   }
 
   get isDiscrete() {
@@ -115,7 +122,7 @@ abstract class GestureHandler {
   updateGestureConfig({ enabled = true, ...props }) {
     this.clearSelfAsPending();
 
-    this.config = ensureConfig({ enabled, ...props });
+    this.config = this.ensureConfig({ enabled, ...props });
     this.hasCustomActivationCriteria = this.updateHasCustomActivationCriteria(
       this.config
     );
@@ -259,6 +266,12 @@ abstract class GestureHandler {
     }
   }
 
+  shouldUseTouchEvents(config: Config) {
+    return (
+      config.simultaneousHandlers?.some((handler) => handler.isNative) ?? false
+    );
+  }
+
   setView(ref: Parameters<typeof findNodeHandle>['0'], propsRef: any) {
     if (ref == null) {
       this.destroy();
@@ -266,11 +279,22 @@ abstract class GestureHandler {
       return;
     }
 
+    // @ts-ignore window doesn't exist on global type as we don't want to use Node types
+    const SUPPORTS_TOUCH = 'ontouchstart' in window;
     this.propsRef = propsRef;
     this.ref = ref;
 
     this.view = findNodeHandle(ref);
-    this.hammer = new Hammer.Manager(this.view as any);
+
+    // When the browser starts handling the gesture (e.g. scrolling), it sends a pointercancel event and stops
+    // sending additional pointer events. This is not the case with touch events, so if the gesture is simultaneous
+    // with a NativeGestureHandler, we need to check if touch events are supported and use them if possible.
+    this.hammer =
+      SUPPORTS_TOUCH && this.shouldUseTouchEvents(this.config)
+        ? new Hammer.Manager(this.view as any, {
+            inputClass: Hammer.TouchInput,
+          })
+        : new Hammer.Manager(this.view as any);
 
     this.oldState = State.UNDETERMINED;
     this.previousState = State.UNDETERMINED;
@@ -446,6 +470,82 @@ abstract class GestureHandler {
   };
 
   simulateCancelEvent(_inputData: any) {}
+
+  // Validate the props
+  ensureConfig(config: Config): Required<Config> {
+    const props = { ...config };
+
+    // TODO(TS) We use ! to assert that if property is present then value is not empty (null, undefined)
+    if ('minDist' in config) {
+      props.minDist = config.minDist;
+      props.minDistSq = props.minDist! * props.minDist!;
+    }
+    if ('minVelocity' in config) {
+      props.minVelocity = config.minVelocity;
+      props.minVelocitySq = props.minVelocity! * props.minVelocity!;
+    }
+    if ('maxDist' in config) {
+      props.maxDist = config.maxDist;
+      props.maxDistSq = config.maxDist! * config.maxDist!;
+    }
+    if ('waitFor' in config) {
+      props.waitFor = asArray(config.waitFor)
+        .map(({ handlerTag }: { handlerTag: number }) =>
+          NodeManager.getHandler(handlerTag)
+        )
+        .filter((v) => v);
+    } else {
+      props.waitFor = null;
+    }
+    if ('simultaneousHandlers' in config) {
+      const shouldUseTouchEvents = this.shouldUseTouchEvents(this.config);
+      props.simultaneousHandlers = asArray(config.simultaneousHandlers)
+        .map((handler: number | GestureHandler) => {
+          if (typeof handler === 'number') {
+            return NodeManager.getHandler(handler);
+          } else {
+            return NodeManager.getHandler(handler.handlerTag);
+          }
+        })
+        .filter((v) => v);
+
+      if (shouldUseTouchEvents !== this.shouldUseTouchEvents(props)) {
+        requestAnimationFrame(() => {
+          // if the undelying event API needs to be changed, we need to unmount and mount
+          // the hammer instance again.
+          this.destroy();
+          this.setView(this.ref, this.propsRef);
+        });
+      }
+    } else {
+      props.simultaneousHandlers = null;
+    }
+
+    const configProps = [
+      'minPointers',
+      'maxPointers',
+      'minDist',
+      'maxDist',
+      'maxDistSq',
+      'minVelocitySq',
+      'minDistSq',
+      'minVelocity',
+      'failOffsetXStart',
+      'failOffsetYStart',
+      'failOffsetXEnd',
+      'failOffsetYEnd',
+      'activeOffsetXStart',
+      'activeOffsetXEnd',
+      'activeOffsetYStart',
+      'activeOffsetYEnd',
+    ] as const;
+    configProps.forEach((prop: typeof configProps[number]) => {
+      if (typeof props[prop] === 'undefined') {
+        props[prop] = Number.NaN;
+      }
+    });
+    return props as Required<Config>; // TODO(TS) how to convince TS that props are filled?
+  }
 }
 
 // TODO(TS) investigate this method
@@ -490,59 +590,6 @@ function invokeNullableMethod(
       }
     }
   }
-}
-
-// Validate the props
-function ensureConfig(config: Config): Required<Config> {
-  const props = { ...config };
-
-  // TODO(TS) We use ! to assert that if property is present then value is not empty (null, undefined)
-  if ('minDist' in config) {
-    props.minDist = config.minDist;
-    props.minDistSq = props.minDist! * props.minDist!;
-  }
-  if ('minVelocity' in config) {
-    props.minVelocity = config.minVelocity;
-    props.minVelocitySq = props.minVelocity! * props.minVelocity!;
-  }
-  if ('maxDist' in config) {
-    props.maxDist = config.maxDist;
-    props.maxDistSq = config.maxDist! * config.maxDist!;
-  }
-  if ('waitFor' in config) {
-    props.waitFor = asArray(config.waitFor)
-      .map(({ handlerTag }: { handlerTag: number }) =>
-        NodeManager.getHandler(handlerTag)
-      )
-      .filter((v) => v);
-  } else {
-    props.waitFor = null;
-  }
-
-  const configProps = [
-    'minPointers',
-    'maxPointers',
-    'minDist',
-    'maxDist',
-    'maxDistSq',
-    'minVelocitySq',
-    'minDistSq',
-    'minVelocity',
-    'failOffsetXStart',
-    'failOffsetYStart',
-    'failOffsetXEnd',
-    'failOffsetYEnd',
-    'activeOffsetXStart',
-    'activeOffsetXEnd',
-    'activeOffsetYStart',
-    'activeOffsetYEnd',
-  ] as const;
-  configProps.forEach((prop: typeof configProps[number]) => {
-    if (typeof props[prop] === 'undefined') {
-      props[prop] = Number.NaN;
-    }
-  });
-  return props as Required<Config>; // TODO(TS) how to convince TS that props are filled?
 }
 
 function asArray<T>(value: T | T[]) {
