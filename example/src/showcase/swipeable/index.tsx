@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, I18nManager, Alert } from 'react-native';
+import { StyleSheet, Text, View, I18nManager } from 'react-native';
 
 import { FlatList, RectButton } from 'react-native-gesture-handler';
 
@@ -16,7 +16,8 @@ type DataRow = {
 };
 
 const Row = ({ item }: { item: DataRow }) => (
-  <RectButton style={styles.rectButton} onPress={() => Alert.alert(item.from)}>
+  // eslint-disable-next-line no-alert
+  <RectButton style={styles.rectButton} onPress={() => window.alert(item.from)}>
     <Text style={styles.fromText}>{item.from}</Text>
     <Text numberOfLines={2} style={styles.messageText}>
       {item.message}
