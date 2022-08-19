@@ -144,7 +144,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.root}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -203,6 +203,9 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   sectionTitle: {
     ...Platform.select({
       ios: {

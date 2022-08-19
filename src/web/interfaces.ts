@@ -27,8 +27,8 @@ type ConfigArgs =
 
 export interface Config extends Record<string, ConfigArgs> {
   enabled?: boolean;
-  simultaneousHandlers?: [] | null;
-  waitFor?: any[] | null;
+  simultaneousHandlers?: Handler[] | null;
+  waitFor?: Handler[] | null;
   hitSlop?: HitSlop;
 
   minPointers?: number;
