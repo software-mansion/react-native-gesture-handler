@@ -68,7 +68,9 @@ export default {
         (config as unknown) as Config
       );
     } else {
-      if (!(handlerName in HammerGestures)) return;
+      if (!(handlerName in HammerGestures)) {
+        return;
+      }
 
       const GestureClass = HammerGestures[handlerName];
       HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());

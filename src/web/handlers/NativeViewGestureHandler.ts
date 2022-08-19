@@ -1,6 +1,6 @@
 import { State } from '../../State';
+import { DEFAULT_TOUCH_SLOP } from '../constants';
 import { AdaptedEvent } from '../interfaces';
-import TouchEventManager from '../tools/TouchEventManager';
 
 import GestureHandler from './GestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
@@ -11,7 +11,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   private startX = 0;
   private startY = 0;
-  private minDistSq = 10;
+  private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP; //10;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -23,8 +23,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
 
     this.view.style['touchAction'] = 'auto';
-    this.view.style['webkitUserSelect'] = 'auto';
-    this.view.style['userSelect'] = 'auto';
+    // this.view.style['webkitUserSelect'] = 'auto';
+    // this.view.style['userSelect'] = 'auto';
 
     //@ts-ignore Turns off defualt touch behavior on Safari
     this.view.style['WebkitTouchCallout'] = 'auto';
@@ -34,16 +34,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
     } else {
       this.buttonRole = false;
     }
-
-    // this.eventManager = new TouchEventManager(this.view);
-    // this.eventManager.setOnPointerDown(this.onPointerDown.bind(this));
-
-    // this.eventManager.setListeners();
   }
 
   public updateGestureConfig({ enabled = true, ...props }): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
-    console.log(this.config);
 
     if (this.config.shouldActivateOnStart !== undefined) {
       this.shouldActivateOnStart = this.config.shouldActivateOnStart;
@@ -98,7 +92,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
 
     if (this.tracker.getTrackedPointersCount() === 0) {
-      this.end(event);
+      if (this.currentState === State.ACTIVE) {
+        this.end(event);
+      } else {
+        this.fail(event);
+      }
     }
   }
 
@@ -134,10 +132,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
       return false;
     }
 
-    console.log('OVERRITEN');
-    console.log(this.currentState === State.ACTIVE);
-    console.log(canBeInterrupted);
-    console.log(handler.getTag() > 0);
     return (
       this.currentState === State.ACTIVE &&
       canBeInterrupted &&

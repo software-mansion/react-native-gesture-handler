@@ -52,9 +52,8 @@ export default class PanGestureHandler extends GestureHandler {
   private lastX = 0;
   private lastY = 0;
 
-  // TODO: Implement logic required for activateAfterLongPress
   private activateAfterLongPress = 0;
-  private activationTimeout: number;
+  private activationTimeout = 0;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -201,9 +200,12 @@ export default class PanGestureHandler extends GestureHandler {
     const rect = this.view.getBoundingClientRect();
     const ratio = PixelRatio.get();
 
+    const translationX: number = this.getTranslationX();
+    const translationY: number = this.getTranslationY();
+
     return {
-      translationX: this.getTranslationX(),
-      translationY: this.getTranslationY(),
+      translationX: isNaN(translationX) ? 0 : translationX, //this.getTranslationX(),
+      translationY: isNaN(translationY) ? 0 : translationY, //this.getTranslationY(),
       absoluteX: event.x,
       absoluteY: event.y,
       velocityX: this.velocityX * ratio * 10,

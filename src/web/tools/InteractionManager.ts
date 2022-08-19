@@ -86,6 +86,7 @@ export default class InteractionManager {
     _handler: GestureHandler,
     _otherHandler: GestureHandler
   ): boolean {
+    //TODO: Implement logic
     return false;
   }
 
@@ -93,6 +94,7 @@ export default class InteractionManager {
     _handler: GestureHandler,
     _otherHandler: GestureHandler
   ): boolean {
+    //TODO: Implement logic
     return false;
   }
 

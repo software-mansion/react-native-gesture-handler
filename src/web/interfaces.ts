@@ -27,10 +27,20 @@ type ConfigArgs =
 
 export interface Config extends Record<string, ConfigArgs> {
   enabled?: boolean;
-  simultaneousHandlers?: [] | null;
-  waitFor?: any[] | null;
+  simultaneousHandlers?: Handler[] | null;
+  waitFor?: Handler[] | null;
   hitSlop?: HitSlop;
+  shouldCancelWhenOutside?: boolean;
 
+  activateAfterLongPress?: number;
+  failOffsetXStart?: number;
+  failOffsetYStart?: number;
+  failOffsetXEnd?: number;
+  failOffsetYEnd?: number;
+  activeOffsetXStart?: number;
+  activeOffsetXEnd?: number;
+  activeOffsetYStart?: number;
+  activeOffsetYEnd?: number;
   minPointers?: number;
   maxPointers?: number;
   minDist?: number;
@@ -41,14 +51,6 @@ export interface Config extends Record<string, ConfigArgs> {
   minVelocitySq?: number;
   maxDist?: number;
   maxDistSq?: number;
-  failOffsetXStart?: number;
-  failOffsetYStart?: number;
-  failOffsetXEnd?: number;
-  failOffsetYEnd?: number;
-  activeOffsetXStart?: number;
-  activeOffsetXEnd?: number;
-  activeOffsetYStart?: number;
-  activeOffsetYEnd?: number;
   numberOfPointers?: number;
   minDurationMs?: number;
   numberOfTaps?: number;
@@ -56,10 +58,66 @@ export interface Config extends Record<string, ConfigArgs> {
   maxDelayMs?: number;
   maxDeltaX?: number;
   maxDeltaY?: number;
-  shouldActivateOnStart: boolean;
-  disallowInterruption: boolean;
+  shouldActivateOnStart?: boolean;
+  disallowInterruption?: boolean;
   direction?: Directions;
 }
+
+// export interface CommonConfig {
+//   enabled?: boolean;
+//   shouldCancelWhenOutside?: boolean;
+//   simultaneousHandlers?: [] | null;
+//   waitFor?: any[] | null;
+//   hitSlop?: HitSlop;
+// }
+
+// export interface PanConfig extends CommonConfig {
+//   activateAfterLongPress?: number;
+//   failOffsetXStart?: number;
+//   failOffsetYStart?: number;
+//   failOffsetXEnd?: number;
+//   failOffsetYEnd?: number;
+//   activeOffsetXStart?: number;
+//   activeOffsetXEnd?: number;
+//   activeOffsetYStart?: number;
+//   activeOffsetYEnd?: number;
+//   minPointers?: number;
+//   maxPointers?: number;
+//   minDist?: number;
+// }
+
+// export interface TapConfig extends CommonConfig {
+//   minPointers?: number;
+//   maxDurationMs?: number;
+//   maxDelayMs?: number;
+//   numberOfTaps?: number;
+//   maxDeltaX?: number;
+//   maxDeltaY?: number;
+//   maxDist?: number;
+// }
+
+// export interface LongPressConfig extends CommonConfig {
+//   minDurationMs?: number;
+//   maxDist?: number;
+// }
+
+// export interface FlingConfig extends CommonConfig {
+//   direction?: Directions;
+//   numberOfPointers?: number;
+// }
+
+// export interface NativeConfig extends CommonConfig {
+//   shouldActivateOnStart?: boolean;
+//   disallowInterruption?: boolean;
+// }
+
+// export type Config =
+//   | CommonConfig
+//   | PanConfig
+//   | TapConfig
+//   | LongPressConfig
+//   | FlingConfig
+//   | NativeConfig;
 
 type NativeEventArgs = number | State | boolean | undefined;
 interface NativeEvent extends Record<string, NativeEventArgs> {

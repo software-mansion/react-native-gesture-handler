@@ -9,6 +9,8 @@ import PointerEventManager from '../tools/PointerEventManager';
 import PointerTracker from '../tools/PointerTracker';
 import TouchEventManager from '../tools/TouchEventManager';
 
+let gi = 0;
+
 export default abstract class GestureHandler {
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
@@ -32,9 +34,13 @@ export default abstract class GestureHandler {
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
+  public id: number;
+  protected pointerType: string | null = null;
 
   public constructor() {
     this.hasCustomActivationCriteria = false;
+    this.id = gi;
+    gi++;
   }
 
   //
@@ -48,7 +54,8 @@ export default abstract class GestureHandler {
     this.currentState = State.UNDETERMINED;
 
     this.setView(ref);
-    this.setEventManager();
+    this.setEventManager(new PointerEventManager(this.view as HTMLElement));
+    this.setEventManager(new TouchEventManager(this.view as HTMLElement));
   }
 
   private setView(ref: number) {
@@ -66,14 +73,12 @@ export default abstract class GestureHandler {
     this.view.style['WebkitTouchCallout'] = 'none';
   }
 
-  private setEventManager(): void {
+  private setEventManager(manager: EventManager): void {
     if (!this.view) {
       return;
     }
 
-    // this.eventManager = new PointerEventManager(this.view);
-    this.eventManager = new TouchEventManager(this.view);
-
+    this.eventManager = manager;
     this.eventManager.setOnPointerDown(this.onPointerDown.bind(this));
     this.eventManager.setOnPointerAdd(this.onPointerAdd.bind(this));
     this.eventManager.setOnPointerUp(this.onPointerUp.bind(this));
@@ -85,7 +90,6 @@ export default abstract class GestureHandler {
     this.eventManager.setOnPointerOutOfBounds(
       this.onPointerOutOfBounds.bind(this)
     );
-
     this.eventManager.setListeners();
   }
 
@@ -258,6 +262,14 @@ export default abstract class GestureHandler {
 
   protected onPointerDown(_event: AdaptedEvent): void {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
+    this.pointerType = event.pointerType;
+
+    if (this.pointerType === 'touch') {
+      GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(
+        event,
+        this
+      );
+    }
   }
   // Adding another pointer to existing ones
   protected onPointerAdd(_event: AdaptedEvent): void {}
@@ -347,11 +359,9 @@ export default abstract class GestureHandler {
   // Handling config
   //
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
-    this.config = { enabled, ...props };
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
+    this.config = { enabled: enabled, ...props };
     this.validateHitSlops();
-
-    console.log(this.config);
   }
 
   protected checkCustomActivationCriteria(criterias: string[]): void {
@@ -531,6 +541,10 @@ export default abstract class GestureHandler {
   }
   protected getShouldCancelWhenOutside(): boolean {
     return this.shouldCancellWhenOutside;
+  }
+
+  public getPointerType(): string | null {
+    return this.pointerType;
   }
 }
 

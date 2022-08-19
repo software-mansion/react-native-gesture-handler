@@ -4,6 +4,10 @@ import EventManager from './EventManager';
 export default class PointerEventManager extends EventManager {
   public setListeners(): void {
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
+      if (event.pointerType === 'touch') {
+        return;
+      }
+
       if (!this.isPointerInBounds({ x: event.clientX, y: event.clientY })) {
         return;
       }
@@ -24,6 +28,10 @@ export default class PointerEventManager extends EventManager {
     });
 
     this.view.addEventListener('pointerup', (event: PointerEvent): void => {
+      if (event.pointerType === 'touch') {
+        return;
+      }
+
       if (this.activePointersCounter === 0) {
         return;
       }
@@ -44,6 +52,10 @@ export default class PointerEventManager extends EventManager {
     });
 
     this.view.addEventListener('pointermove', (event: PointerEvent): void => {
+      if (event.pointerType === 'touch') {
+        return;
+      }
+
       if (
         event.pointerType === 'mouse' &&
         event.buttons !== MouseButtons.LEFT
@@ -82,6 +94,10 @@ export default class PointerEventManager extends EventManager {
     });
 
     this.view.addEventListener('pointercancel', (event: PointerEvent): void => {
+      if (event.pointerType === 'touch') {
+        return;
+      }
+
       const adaptedEvent: AdaptedEvent = this.mapEvent(
         event,
         EventTypes.CANCEL

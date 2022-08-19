@@ -308,6 +308,39 @@ export default class GestureHandlerOrchestrator {
     );
   }
 
+  // This function is called when handler receives touchdown event
+  // If handler is using mouse or pen as a pointer and any handler receives touch event,
+  // mouse/pen event dissappears - it doesn't send onPointerCancel nor onPointerUp (and others)
+  // This became a problem because handler was left at active state without any signal to end or fail
+  // To handle this, when new touch event is received, we loop through active handlers and check which type of
+  // pointer they're using
+  // If there are any handler with mouse/pen as a pointer, we cancel them
+  public cancelMouseAndPenGestures(
+    event: AdaptedEvent,
+    currentHandler: GestureHandler
+  ): void {
+    this.gestureHandlers.forEach((handler: GestureHandler) => {
+      if (
+        handler !== currentHandler &&
+        (handler.getPointerType() === 'mouse' ||
+          handler.getPointerType() === 'pen')
+      ) {
+        handler.cancel(event);
+      }
+
+      if (handler === currentHandler) {
+        // Handler that received touch event should have its pointer tracker reseted
+        // This allows handler to smoothly change from mouse/pen to touch
+        // The drawback is, that when we try to use mouse/pen one more time, it doesn't send onPointerDown at the first time
+        // so it is required to click two times to get handler to work
+        //
+        // However, handler will receive mannualy created onPointerEnter, that is triggered in EventManager in onPointerMove method.
+        // There may be possibility to use that fact to make handler respond properly to first mouse click
+        handler.getTracker().resetTracker();
+      }
+    });
+  }
+
   public static getInstance(): GestureHandlerOrchestrator {
     if (!GestureHandlerOrchestrator.instance) {
       GestureHandlerOrchestrator.instance = new GestureHandlerOrchestrator();
