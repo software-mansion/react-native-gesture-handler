@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
@@ -57,7 +57,7 @@ export default class RotationGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(false);
   }
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     this.enabled = enabled;

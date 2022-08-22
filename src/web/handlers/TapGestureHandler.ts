@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, Config, EventTypes } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -36,7 +36,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(true);
   }
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     this.enabled = enabled;

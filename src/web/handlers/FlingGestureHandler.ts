@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import { Direction } from '../constants';
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -26,7 +26,7 @@ export default class FlingGestureHandler extends GestureHandler {
     super.init(ref, propsRef);
   }
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     this.enabled = enabled;

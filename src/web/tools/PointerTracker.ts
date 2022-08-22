@@ -10,6 +10,7 @@ interface TrackerElement {
   velocityY: number;
 }
 
+// Used to scale velocity so that it is similar to velocity in Android/iOS
 const VELOCITY_FACTOR = 0.2;
 
 export default class PointerTracker {

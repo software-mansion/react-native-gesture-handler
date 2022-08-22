@@ -334,7 +334,7 @@ export default class GestureHandlerOrchestrator {
         // The drawback is, that when we try to use mouse/pen one more time, it doesn't send onPointerDown at the first time
         // so it is required to click two times to get handler to work
         //
-        // However, handler will receive mannualy created onPointerEnter, that is triggered in EventManager in onPointerMove method.
+        // However, handler will receive mannualy created onPointerEnter that is triggered in EventManager in onPointerMove method.
         // There may be possibility to use that fact to make handler respond properly to first mouse click
         handler.getTracker().resetTracker();
       }

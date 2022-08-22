@@ -44,7 +44,6 @@ export const HammerGestures = {
 };
 
 export default {
-  // Direction,
   handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
     console.warn('handleSetJSResponder: ', tag, blockNativeResponder);
   },
@@ -82,7 +81,7 @@ export default {
   },
   attachGestureHandler(
     handlerTag: number,
-    newView: number, //ref
+    newView: number,
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {

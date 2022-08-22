@@ -11,9 +11,11 @@ export default class InteractionManager {
     if (config.waitFor) {
       const waitFor: number[] = [];
       config.waitFor.forEach((handler: Handler): void => {
+        // Old API reference
         if (typeof handler === 'number') {
           waitFor.push(handler);
         } else {
+          // New API reference
           waitFor.push(handler.handlerTag);
         }
       });
