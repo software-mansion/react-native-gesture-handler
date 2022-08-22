@@ -202,30 +202,15 @@ if (isNewArchitectureEnabled()) {
         codegenJavaPackageName = "com.swmansion.gesturehandler"
     }
 
+    // Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".
     tasks.whenTaskAdded { task ->
-        // TODO: debug/release mode
-        // TODO: remove redundant dependencies
-        def ReactAndroid = project(":ReactAndroid")
         if (task.name.contains("configureCMakeDebug")) {
-            ReactAndroid.getTasksByName("buildCMakeDebug", true).forEach {
+            project(":ReactAndroid").getTasksByName("packageReactNdkDebugLibs", true).forEach {
                 task.dependsOn(it)
             }
-            ReactAndroid.getTasksByName("preDebugBuild", true).forEach {
-                task.dependsOn(it)
-            }
-            ReactAndroid.getTasksByName("externalNativeBuildDebug", true).forEach {
-                task.dependsOn(it)
-            }
-            ReactAndroid.getTasksByName("mergeDebugJniLibFolders", true).forEach {
-                task.dependsOn(it)
-            }
-            ReactAndroid.getTasksByName("mergeDebugNativeLibs", true).forEach {
-                task.dependsOn(it)
-            }
-            ReactAndroid.getTasksByName("packageReactNdkDebugLibsForBuck", true).forEach {
-                task.dependsOn(it)
-            }
-            ReactAndroid.getTasksByName("packageReactNdkDebugLibs", true).forEach {
+        }
+        if (task.name.contains("configureCMakeRelease")) {
+            project(":ReactAndroid").getTasksByName("packageReactNdkReleaseLibs", true).forEach {
                 task.dependsOn(it)
             }
         }
