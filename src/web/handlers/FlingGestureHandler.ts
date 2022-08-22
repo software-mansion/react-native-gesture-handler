@@ -90,7 +90,14 @@ export default class FlingGestureHandler extends GestureHandler {
 
   protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
+    this.newPointerAction(event);
+  }
 
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.newPointerAction(event);
+  }
+
+  private newPointerAction(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
 
     if (this.currentState === State.UNDETERMINED) {
@@ -109,10 +116,6 @@ export default class FlingGestureHandler extends GestureHandler {
     ) {
       this.maxNumberOfPointersSimultaneously = this.tracker.getTrackedPointersCount();
     }
-  }
-
-  protected onPointerAdd(event: AdaptedEvent): void {
-    this.onPointerDown(event);
   }
 
   protected onPointerMove(event: AdaptedEvent): void {

@@ -93,9 +93,9 @@ export default class Example extends Component {
     const panRef = React.createRef<PanGestureHandler>();
     return (
       <ScrollView waitFor={[tapRef, panRef]}>
-        <LoremIpsum words={1500} />
+        <LoremIpsum words={150} />
         <TapOrPan tapRef={tapRef} panRef={panRef} />
-        <LoremIpsum words={1500} />
+        <LoremIpsum words={150} />
       </ScrollView>
     );
   }

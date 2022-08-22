@@ -46,7 +46,6 @@ export const HammerGestures = {
 const interactionManager = new InteractionManager();
 
 export default {
-  // Direction,
   handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
     console.warn('handleSetJSResponder: ', tag, blockNativeResponder);
   },
@@ -58,7 +57,6 @@ export default {
     handlerTag: number,
     config: T
   ) {
-    // console.trace(handlerTag);
     if (isExperimentalWebImplementationEnabled()) {
       if (!(handlerName in Gestures)) {
         throw new Error(

@@ -48,10 +48,7 @@ export default class RotationGestureDetector
     this.previousTime = this.currentTime;
     this.currentTime = event.time;
 
-    const pointerIDs: IterableIterator<number> = tracker.getData().keys();
-
-    const firstPointerID: number = pointerIDs.next().value as number;
-    const secondPointerID: number = pointerIDs.next().value as number;
+    const [firstPointerID, secondPointerID] = this.keyPointers;
 
     const firstPointerX: number = tracker.getLastX(firstPointerID);
     const firstPointerY: number = tracker.getLastY(firstPointerID);
