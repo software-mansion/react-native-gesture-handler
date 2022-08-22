@@ -26,6 +26,9 @@ jobs:
       - name: Install node dependencies
         working-directory: ${{ matrix.working-directory }}
         run: yarn
+      - name: Build libfb.so
+        working-directory: ${{ matrix.working-directory }}/android
+        run: ./gradlew packageReactNdkDebugLibs --console=plain -PreactNativeArchitectures=arm64-v8a
       - name: Build app
         working-directory: ${{ matrix.working-directory }}/android
         run: ./gradlew assembleDebug --console=plain -PreactNativeArchitectures=arm64-v8a
