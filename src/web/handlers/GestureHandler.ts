@@ -113,7 +113,6 @@ export default abstract class GestureHandler {
   //
 
   public moveToState(newState: State, event: AdaptedEvent) {
-    console.log(this.currentState, newState, this);
     if (this.currentState === newState) {
       return;
     }
