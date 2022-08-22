@@ -27,8 +27,9 @@ jobs:
         working-directory: ${{ matrix.working-directory }}
         run: yarn
       - name: Build libfb.so
+        if: matrix.working-directory == 'FabricExample'
         working-directory: ${{ matrix.working-directory }}/android
-        run: ./gradlew packageReactNdkDebugLibs --console=plain -PreactNativeArchitectures=arm64-v8a
+        run: ./gradlew :ReactAndroid:packageReactNdkDebugLibs --console=plain -PreactNativeArchitectures=arm64-v8a
       - name: Build app
         working-directory: ${{ matrix.working-directory }}/android
         run: ./gradlew assembleDebug --console=plain -PreactNativeArchitectures=arm64-v8a
