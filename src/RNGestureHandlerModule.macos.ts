@@ -82,7 +82,7 @@ export default {
   },
   attachGestureHandler(
     handlerTag: number,
-    newView: number,
+    newView: number, //ref
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
