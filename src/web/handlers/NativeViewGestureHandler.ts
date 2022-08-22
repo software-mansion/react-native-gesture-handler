@@ -7,12 +7,13 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
   //TODO: Implement logic for activation on start
+  //@ts-ignore Logic yet to be implemented
   private shouldActivateOnStart = false;
   private disallowInterruption = false;
 
   private startX = 0;
   private startY = 0;
-  private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP; //10;
+  private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -52,26 +53,34 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
-    this.tracker.addToTracker(event);
-
-    this.startX = event.x;
-    this.startY = event.y;
-
-    if (this.currentState === State.UNDETERMINED) {
-      this.begin(event);
-      if (this.buttonRole) {
-        this.activate(event);
-      }
-    }
+    this.newPointerAction(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
-    this.onPointerDown(event);
+    this.newPointerAction(event);
+  }
+
+  private newPointerAction(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
+
+    this.startX = this.tracker.getLastAvgX();
+    this.startY = this.tracker.getLastAvgY();
+
+    if (this.currentState !== State.UNDETERMINED) {
+      return;
+    }
+
+    this.begin(event);
+    if (this.buttonRole) {
+      this.activate(event);
+    }
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    const dx = this.startX - event.x;
-    const dy = this.startY - event.y;
+    this.tracker.track(event);
+
+    const dx = this.startX - this.tracker.getLastAvgX();
+    const dy = this.startY - this.tracker.getLastAvgY();
     const distSq = dx * dx + dy * dy;
 
     if (
