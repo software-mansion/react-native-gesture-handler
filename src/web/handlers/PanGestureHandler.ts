@@ -204,8 +204,8 @@ export default class PanGestureHandler extends GestureHandler {
     const translationY: number = this.getTranslationY();
 
     return {
-      translationX: isNaN(translationX) ? 0 : translationX, //this.getTranslationX(),
-      translationY: isNaN(translationY) ? 0 : translationY, //this.getTranslationY(),
+      translationX: isNaN(translationX) ? 0 : translationX,
+      translationY: isNaN(translationY) ? 0 : translationY,
       absoluteX: event.x,
       absoluteY: event.y,
       velocityX: this.velocityX * ratio * 10,
