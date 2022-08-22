@@ -82,7 +82,7 @@ def assertNoMultipleInstallations() {
 
 def REACT_NATIVE_DIR = findNodeModulePath("react-native")
 
-assertNoMultipleInstallations()
+// assertNoMultipleInstallations()
 
 repositories {
     mavenCentral()
