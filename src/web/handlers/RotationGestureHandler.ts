@@ -159,10 +159,6 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onReset(): void {
-    this.resetProgress();
-  }
-
-  protected resetProgress(): void {
     if (this.currentState === State.ACTIVE) {
       return;
     }

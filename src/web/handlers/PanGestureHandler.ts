@@ -42,8 +42,8 @@ export default class PanGestureHandler extends GestureHandler {
   private minVelocityY = Number.MAX_SAFE_INTEGER;
   private minVelocitySq = Number.MAX_SAFE_INTEGER;
 
-  private minPointers = 1;
-  private maxPointers = 10;
+  private minPointers = DEFAULT_MIN_POINTERS;
+  private maxPointers = DEFAULT_MAX_POINTERS;
 
   private startX = 0;
   private startY = 0;
@@ -234,13 +234,13 @@ export default class PanGestureHandler extends GestureHandler {
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
 
-    this.checkUndetermined(event);
+    this.tryBegin(event);
     this.checkBegan(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
-    this.checkUndetermined(event);
+    this.tryBegin(event);
 
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
@@ -444,7 +444,7 @@ export default class PanGestureHandler extends GestureHandler {
     );
   }
 
-  private checkUndetermined(event: AdaptedEvent): void {
+  private tryBegin(event: AdaptedEvent): void {
     if (
       this.currentState === State.UNDETERMINED &&
       this.tracker.getTrackedPointersCount() >= this.minPointers

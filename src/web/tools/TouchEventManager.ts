@@ -4,7 +4,6 @@ import EventManager from './EventManager';
 export default class TouchEventManager extends EventManager {
   public setListeners(): void {
     this.view.addEventListener('touchstart', (event: TouchEvent) => {
-      // event.preventDefault();
       for (let i = 0; i < event.changedTouches.length; ++i) {
         const adaptedEvent: AdaptedEvent = this.mapEvent(
           event,

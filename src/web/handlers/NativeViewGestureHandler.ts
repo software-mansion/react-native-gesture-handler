@@ -6,6 +6,7 @@ import GestureHandler from './GestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
+  //TODO: Implement logic for activation on start
   private shouldActivateOnStart = false;
   private disallowInterruption = false;
 
@@ -23,10 +24,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
 
     this.view.style['touchAction'] = 'auto';
-    // this.view.style['webkitUserSelect'] = 'auto';
-    // this.view.style['userSelect'] = 'auto';
 
-    //@ts-ignore Turns off defualt touch behavior on Safari
+    //@ts-ignore Turns on defualt touch behavior on Safari
     this.view.style['WebkitTouchCallout'] = 'auto';
 
     if (this.view.hasAttribute('role')) {

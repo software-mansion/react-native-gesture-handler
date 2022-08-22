@@ -149,11 +149,4 @@ export default class FlingGestureHandler extends GestureHandler {
     this.numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
     this.direction = DEFAULT_DIRECTION;
   }
-
-  protected onCancel(): void {
-    // throw new Error('Method not implemented.');
-  }
-  protected onReset(): void {
-    // throw new Error('Method not implemented.');
-  }
 }

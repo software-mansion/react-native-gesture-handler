@@ -145,7 +145,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.root}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -176,7 +176,7 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
       style={styles.list}
       sections={EXAMPLES}
       keyExtractor={(example) => example.name}
-      renderScrollComponent={(props) => <ScrollView {...props}></ScrollView>}
+      renderScrollComponent={(props) => <ScrollView {...props} />}
       renderItem={({ item }) => (
         <MainScreenItem
           name={item.name}
@@ -205,6 +205,9 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   sectionTitle: {
     ...Platform.select({
       ios: {

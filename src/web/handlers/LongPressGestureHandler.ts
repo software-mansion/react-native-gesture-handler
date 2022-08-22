@@ -63,7 +63,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     super.onPointerDown(event);
     this.tryBegin(event);
     this.tryActivate(event);
-    this.shouldFail(event);
+    this.checkDistanceFail(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
@@ -85,7 +85,7 @@ export default class LongPressGestureHandler extends GestureHandler {
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    this.shouldFail(event);
+    this.checkDistanceFail(event);
   }
 
   private tryBegin(event: AdaptedEvent): void {
@@ -112,17 +112,19 @@ export default class LongPressGestureHandler extends GestureHandler {
     }
   }
 
-  private shouldFail(event: AdaptedEvent): void {
+  private checkDistanceFail(event: AdaptedEvent): void {
     const dx = event.x - this.startX;
     const dy = event.y - this.startY;
     const distSq = dx * dx + dy * dy;
 
-    if (distSq > this.maxDistSq) {
-      if (this.currentState === State.ACTIVE) {
-        this.cancel(event);
-      } else {
-        this.fail(event);
-      }
+    if (distSq < this.maxDistSq) {
+      return;
+    }
+
+    if (this.currentState === State.ACTIVE) {
+      this.cancel(event);
+    } else {
+      this.fail(event);
     }
   }
 }

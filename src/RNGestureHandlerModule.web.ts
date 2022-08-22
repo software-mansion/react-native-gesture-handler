@@ -1,5 +1,5 @@
 import { ActionType } from './ActionType';
-import { EXPERIMENTAL_WEB_IMPLEMENTATION } from './EnableExperimentalWebImplementation';
+import { isExperimentalWebImplementationEnabled } from './EnableExperimentalWebImplementation';
 
 //GestureHandlers
 import InteractionManager from './web/tools/InteractionManager';
@@ -59,7 +59,7 @@ export default {
     config: T
   ) {
     // console.trace(handlerTag);
-    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+    if (isExperimentalWebImplementationEnabled()) {
       if (!(handlerName in Gestures)) {
         throw new Error(
           `react-native-gesture-handler: ${handlerName} is not supported on web.`
@@ -91,14 +91,14 @@ export default {
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
-    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+    if (isExperimentalWebImplementationEnabled()) {
       NodeManager.getHandler(handlerTag).init(newView, propsRef);
     } else {
       HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
     }
   },
   updateGestureHandler(handlerTag: number, newConfig: Config) {
-    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+    if (isExperimentalWebImplementationEnabled()) {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
 
       interactionManager.configureInteractions(
@@ -110,14 +110,14 @@ export default {
     }
   },
   getGestureHandlerNode(handlerTag: number) {
-    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+    if (isExperimentalWebImplementationEnabled()) {
       return NodeManager.getHandler(handlerTag);
     } else {
       return HammerNodeManager.getHandler(handlerTag);
     }
   },
   dropGestureHandler(handlerTag: number) {
-    if (EXPERIMENTAL_WEB_IMPLEMENTATION) {
+    if (isExperimentalWebImplementationEnabled()) {
       NodeManager.dropGestureHandler(handlerTag);
     } else {
       HammerNodeManager.dropGestureHandler(handlerTag);

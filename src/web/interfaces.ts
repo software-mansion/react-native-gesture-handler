@@ -63,62 +63,6 @@ export interface Config extends Record<string, ConfigArgs> {
   direction?: Directions;
 }
 
-// export interface CommonConfig {
-//   enabled?: boolean;
-//   shouldCancelWhenOutside?: boolean;
-//   simultaneousHandlers?: [] | null;
-//   waitFor?: any[] | null;
-//   hitSlop?: HitSlop;
-// }
-
-// export interface PanConfig extends CommonConfig {
-//   activateAfterLongPress?: number;
-//   failOffsetXStart?: number;
-//   failOffsetYStart?: number;
-//   failOffsetXEnd?: number;
-//   failOffsetYEnd?: number;
-//   activeOffsetXStart?: number;
-//   activeOffsetXEnd?: number;
-//   activeOffsetYStart?: number;
-//   activeOffsetYEnd?: number;
-//   minPointers?: number;
-//   maxPointers?: number;
-//   minDist?: number;
-// }
-
-// export interface TapConfig extends CommonConfig {
-//   minPointers?: number;
-//   maxDurationMs?: number;
-//   maxDelayMs?: number;
-//   numberOfTaps?: number;
-//   maxDeltaX?: number;
-//   maxDeltaY?: number;
-//   maxDist?: number;
-// }
-
-// export interface LongPressConfig extends CommonConfig {
-//   minDurationMs?: number;
-//   maxDist?: number;
-// }
-
-// export interface FlingConfig extends CommonConfig {
-//   direction?: Directions;
-//   numberOfPointers?: number;
-// }
-
-// export interface NativeConfig extends CommonConfig {
-//   shouldActivateOnStart?: boolean;
-//   disallowInterruption?: boolean;
-// }
-
-// export type Config =
-//   | CommonConfig
-//   | PanConfig
-//   | TapConfig
-//   | LongPressConfig
-//   | FlingConfig
-//   | NativeConfig;
-
 type NativeEventArgs = number | State | boolean | undefined;
 interface NativeEvent extends Record<string, NativeEventArgs> {
   numberOfPointers: number;

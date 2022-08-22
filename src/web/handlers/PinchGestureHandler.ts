@@ -12,7 +12,7 @@ export default class PinchGestureHandler extends GestureHandler {
   private velocity = 0;
 
   private startingSpan = 0;
-  private spanSlop = 0;
+  private spanSlop = DEFAULT_TOUCH_SLOP;
 
   private scaleDetectorListener: ScaleGestureListener = {
     onScaleBegin: (detector: ScaleGestureDetector): boolean => {
@@ -131,9 +131,6 @@ export default class PinchGestureHandler extends GestureHandler {
     }
 
     this.resetProgress();
-
-    this.spanSlop = DEFAULT_TOUCH_SLOP;
-
     this.begin(event);
   }
 

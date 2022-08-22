@@ -9,8 +9,6 @@ import PointerEventManager from '../tools/PointerEventManager';
 import PointerTracker from '../tools/PointerTracker';
 import TouchEventManager from '../tools/TouchEventManager';
 
-let gi = 0;
-
 export default abstract class GestureHandler {
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
@@ -34,13 +32,10 @@ export default abstract class GestureHandler {
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
-  public id: number;
   protected pointerType: string | null = null;
 
   public constructor() {
     this.hasCustomActivationCriteria = false;
-    this.id = gi;
-    gi++;
   }
 
   //
@@ -260,7 +255,7 @@ export default abstract class GestureHandler {
   // Event actions
   //
 
-  protected onPointerDown(_event: AdaptedEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
     this.pointerType = event.pointerType;
 
