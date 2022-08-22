@@ -310,8 +310,8 @@ export default abstract class GestureHandler {
     );
 
     // In the new API oldState field has to be undefined, unless we send event state changed
-    // Here the order is flipped to avoid workarounds such as backuping state and setting it to undefined first, then bringing it back
-    // Flipping order with setting oldState to undefined solves issue, when events were sending twice instead of once
+    // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
+    // Flipping order with setting oldState to undefined solves issue, when events were being sent twice instead of once
     // However, this may cause trouble in the future (but for now we don't know that)
 
     if (this.lastSentState !== newState) {

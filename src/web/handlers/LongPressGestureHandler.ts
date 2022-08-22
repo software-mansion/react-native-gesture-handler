@@ -117,7 +117,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     const dy = event.y - this.startY;
     const distSq = dx * dx + dy * dy;
 
-    if (distSq < this.maxDistSq) {
+    if (distSq <= this.maxDistSq) {
       return;
     }
 
