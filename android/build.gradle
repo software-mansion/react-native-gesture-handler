@@ -71,6 +71,11 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+def shouldAssertNoMultipleInstallations() {
+    return rootProject.hasProperty("assertNoMultipleInstallations") &&
+            rootProject.property("assertNoMultipleInstallations") == "true"
+}
+
 def assertNoMultipleInstallations() {
     Set<File> files = fileTree(dir: rootDir.parent, include: "node_modules/**/react-native-gesture-handler/package.json").files
     if (files.size() > 1) {
@@ -80,9 +85,11 @@ def assertNoMultipleInstallations() {
     }
 }
 
-def REACT_NATIVE_DIR = findNodeModulePath("react-native")
+if (shouldAssertNoMultipleInstallations()) {
+    assertNoMultipleInstallations()
+}
 
-// assertNoMultipleInstallations()
+def REACT_NATIVE_DIR = findNodeModulePath("react-native")
 
 repositories {
     mavenCentral()
