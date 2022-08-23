@@ -64,27 +64,27 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def shouldAssertNoMultipleInstallations() {
-  if (rootProject.hasProperty("assertNoMultipleInstallations")) {
-    return rootProject.property("assertNoMultipleInstallations") == "true"
+def shouldAssertNoMultipleInstances() {
+  if (rootProject.hasProperty("disableMultipleInstancesCheck")) {
+    return rootProject.property("disableMultipleInstancesCheck") == "true"
   } else {
     return true
   }
 }
 
-def noMultipleInstallationsAssertion() {
+def noMultipleInstancesAssertion() {
     Set<File> files = fileTree(dir: rootDir.parent, include: "node_modules/**/react-native-gesture-handler/package.json").files
     if (files.size() > 1) {
         String parsedLocation = files.stream().map({ File file -> "- " + file.toString().replace("/package.json", "") }).collect().join("\n")
-        String exceptionMessage = "\n[Gesture Handler] Multiple versions of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-versions-of-gesture-handler-were-detected \n\nConflict between: \n" + parsedLocation + "\n";
+        String exceptionMessage = "\n[Gesture Handler] Multiple instances of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-instances-of-gesture-handler-were-detected \n\nConflict between: \n" + parsedLocation + "\n";
         throw new Exception(exceptionMessage);
     }
 }
 
-def assertionTask = task assertNoMultipleInstallations {
-    onlyIf { shouldAssertNoMultipleInstallations() }
+def assertionTask = task assertNoMultipleInstances {
+    onlyIf { shouldAssertNoMultipleInstances() }
     doFirst {
-        noMultipleInstallationsAssertion()
+        noMultipleInstancesAssertion()
     }
 }
 
