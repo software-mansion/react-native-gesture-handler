@@ -72,7 +72,7 @@ def shouldAssertNoMultipleInstallations() {
   }
 }
 
-def assertNoMultipleInstallations() {
+def noMultipleInstallationsAssertion() {
     Set<File> files = fileTree(dir: rootDir.parent, include: "node_modules/**/react-native-gesture-handler/package.json").files
     if (files.size() > 1) {
         String parsedLocation = files.stream().map({ File file -> "- " + file.toString().replace("/package.json", "") }).collect().join("\n")
@@ -81,8 +81,15 @@ def assertNoMultipleInstallations() {
     }
 }
 
-if (shouldAssertNoMultipleInstallations()) {
-    assertNoMultipleInstallations()
+def assertionTask = task assertNoMultilpleInstallations {
+    onlyIf { shouldAssertNoMultipleInstallations() }
+    doFirst {
+        noMultipleInstallationsAssertion()
+    }
+}
+
+tasks.preBuild {
+    dependsOn assertionTask
 }
 
 repositories {
