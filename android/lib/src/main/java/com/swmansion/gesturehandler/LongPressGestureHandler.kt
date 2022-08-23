@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.view.MotionEvent
 
@@ -43,7 +44,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       begin()
       startX = event.rawX
       startY = event.rawY
-      handler = Handler()
+      handler = Handler(Looper.getMainLooper())
       if (minDurationMs > 0) {
         handler!!.postDelayed({ activate() }, minDurationMs)
       } else if (minDurationMs == 0L) {
