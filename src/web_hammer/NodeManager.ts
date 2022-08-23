@@ -1,7 +1,10 @@
 import { ValueOf } from '../typeUtils';
-import { Gestures } from '../RNGestureHandlerModule.web';
+import { HammerGestures } from '../RNGestureHandlerModule.web';
 
-const gestures: Record<number, InstanceType<ValueOf<typeof Gestures>>> = {};
+const gestures: Record<
+  number,
+  InstanceType<ValueOf<typeof HammerGestures>>
+> = {};
 
 export function getHandler(tag: number) {
   if (tag in gestures) return gestures[tag];
@@ -11,7 +14,7 @@ export function getHandler(tag: number) {
 
 export function createGestureHandler(
   handlerTag: number,
-  handler: InstanceType<ValueOf<typeof Gestures>>
+  handler: InstanceType<ValueOf<typeof HammerGestures>>
 ) {
   if (handlerTag in gestures) {
     throw new Error(`Handler with tag ${handlerTag} already exists`);

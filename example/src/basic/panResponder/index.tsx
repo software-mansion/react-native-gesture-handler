@@ -6,7 +6,6 @@ import {
   I18nManager,
   GestureResponderEvent,
   PanResponderGestureState,
-  Alert,
   GestureResponderHandlers,
 } from 'react-native';
 
@@ -129,7 +128,8 @@ class PanResponderExample extends Component {
 
 export default class Example extends Component {
   onClick = () => {
-    Alert.alert("I'm so touched");
+    // eslint-disable-next-line no-alert
+    window.alert("I'm so touched");
   };
   render() {
     return (

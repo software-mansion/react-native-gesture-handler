@@ -5,7 +5,6 @@ import {
   Text,
   View,
   LayoutChangeEvent,
-  Alert,
 } from 'react-native';
 
 import {
@@ -133,7 +132,8 @@ export const InfoButton = (props: BorderlessButtonProps & { name: string }) => (
   <BorderlessButton
     {...props}
     style={styles.infoButton}
-    onPress={() => Alert.alert(`${props.name} info button clicked`)}>
+    // eslint-disable-next-line no-alert
+    onPress={() => window.alert(`${props.name} info button clicked`)}>
     <View style={styles.infoButtonBorders}>
       <Text style={styles.infoButtonText}>i</Text>
     </View>
@@ -149,7 +149,8 @@ export default class Example extends Component {
           <Swipeable enableTrackpadTwoFingerGesture>
             <RectButton
               style={styles.rectButton}
-              onPress={() => Alert.alert('First row clicked')}>
+              // eslint-disable-next-line no-alert
+              onPress={() => window.alert('First row clicked')}>
               <Text style={styles.buttonText}>
                 Swipe this row & observe highlight delay
               </Text>
@@ -164,7 +165,8 @@ export default class Example extends Component {
           <View style={styles.buttonDelimiter} />
           <RectButton
             style={styles.rectButton}
-            onPress={() => Alert.alert('Second row clicked')}>
+            // eslint-disable-next-line no-alert
+            onPress={() => window.alert('Second row clicked')}>
             <Text style={styles.buttonText}>
               Second info icon will block scrolling
             </Text>
@@ -177,7 +179,8 @@ export default class Example extends Component {
           <RectButton
             rippleColor="red"
             style={styles.rectButton}
-            onPress={() => Alert.alert('Third row clicked')}>
+            // eslint-disable-next-line no-alert
+            onPress={() => window.alert('Third row clicked')}>
             <Text style={styles.buttonText}>
               This one will cancel when you drag outside
             </Text>
@@ -192,7 +195,8 @@ export default class Example extends Component {
             <RectButton
               enabled={false}
               style={styles.rectButton}
-              onPress={() => Alert.alert('Fourth row clicked')}>
+              // eslint-disable-next-line no-alert
+              onPress={() => window.alert('Fourth row clicked')}>
               <Text style={styles.buttonText}>
                 This row is &quot;disabled&quot; but you can swipe it
               </Text>
@@ -201,12 +205,14 @@ export default class Example extends Component {
           </Swipeable>
           <LongPressGestureHandler
             onHandlerStateChange={({ nativeEvent }) =>
-              nativeEvent.state === State.ACTIVE && Alert.alert('Long')
+              // eslint-disable-next-line no-alert
+              nativeEvent.state === State.ACTIVE && window.alert('Long')
             }>
             <RectButton
               rippleColor="red"
               style={styles.rectButton}
-              onPress={() => Alert.alert('Fifth row clicked')}>
+              // eslint-disable-next-line no-alert
+              onPress={() => window.alert('Fifth row clicked')}>
               <Text style={styles.buttonText}>
                 Clickable row with long press handler
               </Text>
