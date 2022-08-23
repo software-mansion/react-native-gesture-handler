@@ -65,8 +65,11 @@ def reactNativeArchitectures() {
 }
 
 def shouldAssertNoMultipleInstallations() {
-    return rootProject.hasProperty("assertNoMultipleInstallations") &&
-            rootProject.property("assertNoMultipleInstallations") == "true"
+  if (rootProject.hasProperty("assertNoMultipleInstallations")) {
+    return rootProject.property("assertNoMultipleInstallations") == "true"
+  } else {
+    return true
+  }
 }
 
 def assertNoMultipleInstallations() {
