@@ -205,12 +205,13 @@ if (isNewArchitectureEnabled()) {
     // Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".
     tasks.whenTaskAdded { task ->
         if (task.name.contains("configureCMakeDebug")) {
-            project(":ReactAndroid").getTasksByName("packageReactNdkDebugLibs", true).forEach {
+            rootProject.getTasksByName("packageReactNdkDebugLibs", true).forEach {
                 task.dependsOn(it)
             }
         }
-        if (task.name.contains("configureCMakeRelease")) {
-            project(":ReactAndroid").getTasksByName("packageReactNdkReleaseLibs", true).forEach {
+        // We want to add a dependency for both configureCMakeRelease and configureCMakeRelWithDebInfo
+        if (task.name.contains("configureCMakeRel")) {
+            rootProject.getTasksByName("packageReactNdkReleaseLibs", true).forEach {
                 task.dependsOn(it)
             }
         }
