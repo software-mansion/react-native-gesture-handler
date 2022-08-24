@@ -63,6 +63,7 @@ export default class RotationGestureDetector
 
     //Angle diff should be positive when rotating in clockwise direction
     const angle: number = -Math.atan2(vectorY, vectorX);
+
     this.rotation = Number.isNaN(this.previousAngle)
       ? 0
       : this.previousAngle - angle;
@@ -146,7 +147,9 @@ export default class RotationGestureDetector
         break;
 
       case EventTypes.UP:
-        this.finish(event);
+        if (this.isInProgress) {
+          this.finish(event);
+        }
         break;
     }
 
@@ -167,5 +170,10 @@ export default class RotationGestureDetector
 
   public getRotation(): number {
     return this.rotation;
+  }
+
+  public resetDetector(): void {
+    this.keyPointers = [NaN, NaN];
+    this.isInProgress = false;
   }
 }

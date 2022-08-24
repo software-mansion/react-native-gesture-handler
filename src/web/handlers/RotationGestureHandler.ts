@@ -86,6 +86,7 @@ export default class RotationGestureHandler extends GestureHandler {
 
   protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
+
     this.tracker.addToTracker(event);
   }
 
@@ -115,6 +116,25 @@ export default class RotationGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+    if (this.tracker.getTrackedPointersCount() < 2) {
+      return;
+    }
+
+    if (this.getAnchorX()) {
+      this.cachedAnchorX = this.getAnchorX();
+    }
+    if (this.getAnchorY()) {
+      this.cachedAnchorY = this.getAnchorY();
+    }
+
+    this.tracker.track(event);
+
+    this.rotationGestureDetector.onTouchEvent(event, this.tracker);
+
+    super.onPointerOutOfBounds(event);
+  }
+
   protected onPointerUp(event: AdaptedEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
@@ -137,6 +157,7 @@ export default class RotationGestureHandler extends GestureHandler {
 
   protected onPointerCancel(event: AdaptedEvent): void {
     this.end(event);
+
     this.reset();
   }
 
@@ -145,16 +166,10 @@ export default class RotationGestureHandler extends GestureHandler {
       return;
     }
 
-    this.resetProgress();
-
     this.begin(event);
   }
 
   protected activate(event: AdaptedEvent, _force?: boolean): void {
-    if (this.currentState !== State.ACTIVE) {
-      this.resetProgress();
-    }
-
     super.activate(event);
   }
 
@@ -165,5 +180,6 @@ export default class RotationGestureHandler extends GestureHandler {
 
     this.rotation = 0;
     this.velocity = 0;
+    this.rotationGestureDetector.resetDetector();
   }
 }
