@@ -64,10 +64,6 @@ export default abstract class EventManager {
   }
 
   public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
-    if (!this.view) {
-      return false;
-    }
-
     const rect: DOMRect = this.view.getBoundingClientRect();
 
     return (

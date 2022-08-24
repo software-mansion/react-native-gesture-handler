@@ -193,10 +193,6 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected transformNativeEvent(event: AdaptedEvent) {
-    if (!this.view) {
-      return {};
-    }
-
     const rect = this.view.getBoundingClientRect();
     const ratio = PixelRatio.get();
 

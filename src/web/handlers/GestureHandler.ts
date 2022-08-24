@@ -21,7 +21,7 @@ export default abstract class GestureHandler {
   private propsRef!: React.RefObject<unknown>;
   protected config: Config = { enabled: false };
   private handlerTag!: number;
-  protected view: HTMLElement | null = null;
+  protected view!: HTMLElement;
 
   protected eventManagers: EventManager[] = [];
   protected tracker: PointerTracker = new PointerTracker();
@@ -49,14 +49,15 @@ export default abstract class GestureHandler {
     this.currentState = State.UNDETERMINED;
 
     this.setView(ref);
-    this.setEventManager(new PointerEventManager(this.view as HTMLElement));
-    this.setEventManager(new TouchEventManager(this.view as HTMLElement));
+    this.setEventManager(new PointerEventManager(this.view));
+    this.setEventManager(new TouchEventManager(this.view));
   }
 
   private setView(ref: number) {
     if (!ref) {
-      this.view = null;
-      return;
+      throw new Error(
+        `Cannot find HTML Element for handler ${this.handlerTag}`
+      );
     }
 
     this.view = (findNodeHandle(ref) as unknown) as HTMLElement;
@@ -69,10 +70,6 @@ export default abstract class GestureHandler {
   }
 
   private setEventManager(manager: EventManager): void {
-    if (!this.view) {
-      return;
-    }
-
     manager.setOnPointerDown(this.onPointerDown.bind(this));
     manager.setOnPointerAdd(this.onPointerAdd.bind(this));
     manager.setOnPointerUp(this.onPointerUp.bind(this));
@@ -149,7 +146,7 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.moveToState(State.FAILED, event);
-      this.view!.style.cursor = 'auto';
+      this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
@@ -163,7 +160,7 @@ export default abstract class GestureHandler {
     ) {
       this.onCancel();
       this.moveToState(State.CANCELLED, event);
-      this.view!.style.cursor = 'auto';
+      this.view.style.cursor = 'auto';
     }
   }
 
@@ -173,8 +170,7 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.moveToState(State.ACTIVE, event);
-      this.view!.style.cursor = 'grab';
-      console.log('activate');
+      this.view.style.cursor = 'grab';
     }
   }
 
@@ -184,7 +180,7 @@ export default abstract class GestureHandler {
       this.currentState === State.ACTIVE
     ) {
       this.moveToState(State.END, event);
-      this.view!.style.cursor = 'auto';
+      this.view.style.cursor = 'auto';
       this.currentState = State.UNDETERMINED;
     }
 
@@ -418,7 +414,7 @@ export default abstract class GestureHandler {
   }
 
   private checkHitSlop(event: AdaptedEvent): boolean {
-    if (!this.config.hitSlop || !this.view) {
+    if (!this.config.hitSlop) {
       return true;
     }
 
@@ -483,10 +479,6 @@ export default abstract class GestureHandler {
   }
 
   public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
-    if (!this.view) {
-      return false;
-    }
-
     const rect: DOMRect = this.view.getBoundingClientRect();
 
     return (
@@ -515,7 +507,7 @@ export default abstract class GestureHandler {
     throw new Error('Must override GestureHandler.shouldEnableGestureOnSetup');
   }
 
-  public getView(): HTMLElement | null {
+  public getView(): HTMLElement {
     return this.view;
   }
 
@@ -535,8 +527,8 @@ export default abstract class GestureHandler {
     return this.currentState;
   }
 
-  protected setShouldCancelWhenOutside(flag: boolean) {
-    this.shouldCancellWhenOutside = flag;
+  protected setShouldCancelWhenOutside(shouldCancel: boolean) {
+    this.shouldCancellWhenOutside = shouldCancel;
   }
   protected getShouldCancelWhenOutside(): boolean {
     return this.shouldCancellWhenOutside;
