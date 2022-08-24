@@ -149,6 +149,7 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.moveToState(State.FAILED, event);
+      this.view!.style.cursor = 'auto';
     }
 
     this.resetProgress();
@@ -162,6 +163,7 @@ export default abstract class GestureHandler {
     ) {
       this.onCancel();
       this.moveToState(State.CANCELLED, event);
+      this.view!.style.cursor = 'auto';
     }
   }
 
@@ -171,6 +173,8 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.moveToState(State.ACTIVE, event);
+      this.view!.style.cursor = 'grab';
+      console.log('activate');
     }
   }
 
@@ -180,10 +184,11 @@ export default abstract class GestureHandler {
       this.currentState === State.ACTIVE
     ) {
       this.moveToState(State.END, event);
+      this.view!.style.cursor = 'auto';
+      this.currentState = State.UNDETERMINED;
     }
 
     this.resetProgress();
-    this.currentState = State.UNDETERMINED;
   }
 
   //
