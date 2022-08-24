@@ -1,6 +1,6 @@
 require "json"
 
-fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED']
+fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
 isUserApp = File.exists?(File.join(__dir__, "..", "..", "node_modules", "react-native", "package.json"))
 if isUserApp
