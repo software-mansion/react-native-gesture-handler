@@ -23,7 +23,7 @@ export default abstract class GestureHandler {
   private handlerTag!: number;
   protected view: HTMLElement | null = null;
 
-  protected eventManager!: EventManager;
+  protected eventManagers: EventManager[] = [];
   protected tracker: PointerTracker = new PointerTracker();
   protected interactionManager!: InteractionManager;
 
@@ -73,19 +73,18 @@ export default abstract class GestureHandler {
       return;
     }
 
-    this.eventManager = manager;
-    this.eventManager.setOnPointerDown(this.onPointerDown.bind(this));
-    this.eventManager.setOnPointerAdd(this.onPointerAdd.bind(this));
-    this.eventManager.setOnPointerUp(this.onPointerUp.bind(this));
-    this.eventManager.setOnPointerRemove(this.onPointerRemove.bind(this));
-    this.eventManager.setOnPointerMove(this.onPointerMove.bind(this));
-    this.eventManager.setOnPointerEnter(this.onPointerEnter.bind(this));
-    this.eventManager.setOnPointerOut(this.onPointerOut.bind(this));
-    this.eventManager.setOnPointerCancel(this.onPointerCancel.bind(this));
-    this.eventManager.setOnPointerOutOfBounds(
-      this.onPointerOutOfBounds.bind(this)
-    );
-    this.eventManager.setListeners();
+    manager.setOnPointerDown(this.onPointerDown.bind(this));
+    manager.setOnPointerAdd(this.onPointerAdd.bind(this));
+    manager.setOnPointerUp(this.onPointerUp.bind(this));
+    manager.setOnPointerRemove(this.onPointerRemove.bind(this));
+    manager.setOnPointerMove(this.onPointerMove.bind(this));
+    manager.setOnPointerEnter(this.onPointerEnter.bind(this));
+    manager.setOnPointerOut(this.onPointerOut.bind(this));
+    manager.setOnPointerCancel(this.onPointerCancel.bind(this));
+    manager.setOnPointerOutOfBounds(this.onPointerOutOfBounds.bind(this));
+    manager.setListeners();
+
+    this.eventManagers.push(manager);
   }
 
   public setInteractionManager(manager: InteractionManager): void {
@@ -104,7 +103,9 @@ export default abstract class GestureHandler {
     this.tracker.resetTracker();
     this.onReset();
     this.resetProgress();
-    this.eventManager.resetManager();
+    this.eventManagers.forEach((manager: EventManager) =>
+      manager.resetManager()
+    );
     this.currentState = State.UNDETERMINED;
   }
 
@@ -182,6 +183,7 @@ export default abstract class GestureHandler {
     }
 
     this.resetProgress();
+    this.currentState = State.UNDETERMINED;
   }
 
   //
@@ -281,10 +283,7 @@ export default abstract class GestureHandler {
     this.tryToSendMoveEvent(event, true);
   }
   private tryToSendMoveEvent(event: AdaptedEvent, out: boolean): void {
-    if (
-      this.currentState === State.ACTIVE &&
-      (!out || (out && !this.shouldCancellWhenOutside))
-    ) {
+    if (this.active && (!out || (out && !this.shouldCancellWhenOutside))) {
       this.sendEvent(event, this.currentState, this.currentState);
     }
   }
@@ -515,8 +514,8 @@ export default abstract class GestureHandler {
     return this.view;
   }
 
-  public getEventManager(): EventManager {
-    return this.eventManager;
+  public getEventManagers(): EventManager[] {
+    return this.eventManagers;
   }
 
   public getTracker(): PointerTracker {

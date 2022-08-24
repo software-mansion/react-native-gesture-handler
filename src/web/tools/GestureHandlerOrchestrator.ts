@@ -65,7 +65,10 @@ export default class GestureHandlerOrchestrator {
   private tryActivate(handler: GestureHandler, event: AdaptedEvent): void {
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler);
-    } else {
+    } else if (
+      handler.getState() !== State.CANCELLED &&
+      handler.getState() !== State.FAILED
+    ) {
       this.makeActive(handler, event);
     }
   }
@@ -95,6 +98,13 @@ export default class GestureHandlerOrchestrator {
         if (this.shouldHandlerWaitForOther(otherHandler, handler)) {
           if (newState === State.END) {
             otherHandler?.cancel(event);
+            if (otherHandler.getState() === State.END) {
+              // Handle edge case, where discrete gestures end immediately after activation thus
+              // their state is set to END and when the gesture they are waiting for activates they
+              // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
+              // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
+              otherHandler.sendEvent(event, State.CANCELLED, State.BEGAN);
+            }
             otherHandler?.setAwaiting(false);
           } else {
             this.tryActivate(otherHandler, event);
@@ -108,7 +118,10 @@ export default class GestureHandlerOrchestrator {
     } else if (oldState === State.ACTIVE || oldState === State.END) {
       if (handler.isActive()) {
         handler.sendEvent(event, newState, oldState);
-      } else if (oldState === State.ACTIVE) {
+      } else if (
+        oldState === State.ACTIVE &&
+        (newState === State.CANCELLED || newState === State.FAILED)
+      ) {
         handler.sendEvent(event, newState, State.BEGAN);
       }
     } else if (
@@ -136,6 +149,7 @@ export default class GestureHandlerOrchestrator {
 
     this.gestureHandlers.forEach((otherHandler) => {
       // Order of arguments is correct - we check whether current handler should cancel existing handlers
+
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
         this.handlersToCancel.push(otherHandler);
       }
@@ -162,7 +176,11 @@ export default class GestureHandlerOrchestrator {
 
     if (handler.isAwaiting()) {
       handler.setAwaiting(false);
-      handler.end(event);
+      for (let i = 0; i < this.awaitingHandlers.length; ++i) {
+        if (this.awaitingHandlers[i] === handler) {
+          this.awaitingHandlers.splice(i, 1);
+        }
+      }
     }
 
     this.handlersToCancel = [];

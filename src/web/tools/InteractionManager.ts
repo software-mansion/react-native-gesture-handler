@@ -10,13 +10,13 @@ export default class InteractionManager {
 
     if (config.waitFor) {
       const waitFor: number[] = [];
-      config.waitFor.forEach((handler: Handler): void => {
-        // Old API reference
-        if (typeof handler === 'number') {
-          waitFor.push(handler);
+      config.waitFor.forEach((otherHandler: Handler): void => {
+        // New API reference
+        if (typeof otherHandler === 'number') {
+          waitFor.push(otherHandler);
         } else {
-          // New API reference
-          waitFor.push(handler.handlerTag);
+          // Old API reference
+          waitFor.push(otherHandler.handlerTag);
         }
       });
 
@@ -25,11 +25,11 @@ export default class InteractionManager {
 
     if (config.simultaneousHandlers) {
       const simultaneousHandlers: number[] = [];
-      config.simultaneousHandlers.forEach((handler: Handler): void => {
-        if (typeof handler === 'number') {
-          simultaneousHandlers.push(handler);
+      config.simultaneousHandlers.forEach((otherHandler: Handler): void => {
+        if (typeof otherHandler === 'number') {
+          simultaneousHandlers.push(otherHandler);
         } else {
-          simultaneousHandlers.push(handler.handlerTag);
+          simultaneousHandlers.push(otherHandler.handlerTag);
         }
       });
 
