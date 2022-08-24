@@ -25,6 +25,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
 
     this.view.style['touchAction'] = 'auto';
+    // this.view.style['userSelect'] = 'auto';
 
     //@ts-ignore Turns on defualt touch behavior on Safari
     this.view.style['WebkitTouchCallout'] = 'auto';
@@ -33,6 +34,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
       this.buttonRole = true;
     } else {
       this.buttonRole = false;
+    }
+
+    if (this.view.tagName.toLowerCase() === 'input') {
+      //Enables textinpit on fucking safari
+      this.view.style['webkitUserSelect'] = 'auto';
     }
   }
 
