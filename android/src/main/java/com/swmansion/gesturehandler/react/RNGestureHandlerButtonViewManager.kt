@@ -167,6 +167,10 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
      * [com.swmansion.gesturehandler.NativeViewGestureHandler.onHandle]  */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+      if (event.action == MotionEvent.ACTION_CANCEL) {
+        tryFreeingResponder()
+      }
+
       val eventTime = event.eventTime
       val action = event.action
       // always true when lastEventTime or lastAction have default value (-1)
@@ -267,7 +271,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     }
 
     override fun drawableHotspotChanged(x: Float, y: Float) {
-      if (responder == null || responder === this) {
+      if (touchResponder == null || touchResponder === this) {
         super.drawableHotspotChanged(x, y)
       }
     }
@@ -280,19 +284,31 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       return isResponder
     }
 
+    override fun afterGestureEnd(event: MotionEvent) {
+      tryFreeingResponder()
+      isTouched = false
+    }
+
+    private fun tryFreeingResponder() {
+      if (touchResponder === this) {
+        touchResponder = null
+        soundResponder = this
+      }
+    }
+
     private fun tryGrabbingResponder(): Boolean {
       if (isChildTouched()) {
         return false
       }
 
-      if (responder == null) {
-        responder = this
+      if (touchResponder == null) {
+        touchResponder = this
         return true
       }
       return if (exclusive) {
-        responder === this
+        touchResponder === this
       } else {
-        !(responder?.exclusive ?: false)
+        !(touchResponder?.exclusive ?: false)
       }
     }
 
@@ -313,7 +329,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     override fun performClick(): Boolean {
       // don't preform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
-      return if (!isChildTouched()) {
+      return if (!isChildTouched() && soundResponder == this) {
+        soundResponder = null
         super.performClick()
       } else {
         false
@@ -327,22 +344,23 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       // when canStart is called eventually, tryGrabbingResponder will return true if the button
       // already is a responder
       if (pressed) {
-        tryGrabbingResponder()
+        if (tryGrabbingResponder()) {
+          soundResponder = this
+        }
       }
 
       // button can be pressed alongside other button if both are non-exclusive and it doesn't have
       // any pressed children (to prevent pressing the parent when children is pressed).
-      val canBePressedAlongsideOther = !exclusive && responder?.exclusive != true && !isChildTouched()
+      val canBePressedAlongsideOther = !exclusive && touchResponder?.exclusive != true && !isChildTouched()
 
-      if (!pressed || responder === this || canBePressedAlongsideOther) {
+      if (!pressed || touchResponder === this || canBePressedAlongsideOther) {
         // we set pressed state only for current responder or any non-exclusive button when responder
         // is null or non-exclusive, assuming it doesn't have pressed children
         isTouched = pressed
         super.setPressed(pressed)
       }
-      if (!pressed && responder === this) {
+      if (!pressed && touchResponder === this) {
         // if the responder is no longer pressed we release button responder
-        responder = null
         isTouched = false
       }
     }
@@ -354,7 +372,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     companion object {
       var resolveOutValue = TypedValue()
-      var responder: ButtonViewGroup? = null
+      var touchResponder: ButtonViewGroup? = null
+      var soundResponder: ButtonViewGroup? = null
       var dummyClickListener = OnClickListener { }
     }
   }
