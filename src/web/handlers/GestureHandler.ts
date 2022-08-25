@@ -181,7 +181,6 @@ export default abstract class GestureHandler {
     ) {
       this.moveToState(State.END, event);
       this.view.style.cursor = 'auto';
-      this.currentState = State.UNDETERMINED;
     }
 
     this.resetProgress();

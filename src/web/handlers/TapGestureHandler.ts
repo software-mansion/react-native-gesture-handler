@@ -4,7 +4,7 @@ import { AdaptedEvent, Config, EventTypes } from '../interfaces';
 import GestureHandler from './GestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 500;
-const DEFAULT_MAX_DELAY_MS = 500;
+const DEFAULT_MAX_DELAY_MS = 200;
 const DEFAULT_NUMBER_OF_TAPS = 1;
 const DEFAULT_MIN_NUMBER_OF_POINTERS = 1;
 
@@ -274,6 +274,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
+    this.clearTimeouts();
     this.tapsSoFar = 0;
     this.currentMaxNumberOfPointers = 0;
   }
