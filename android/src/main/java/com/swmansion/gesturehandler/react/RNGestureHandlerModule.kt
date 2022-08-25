@@ -425,7 +425,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   @ReactMethod(isBlockingSynchronousMethod = true)
   fun install(): Boolean {
     return try {
-      SoLoader.loadLibrary("rngesturehandler_modules")
+      SoLoader.loadLibrary("gesturehandler")
       val jsContext = reactApplicationContext.javaScriptContextHolder
       decorateRuntime(jsContext.get())
       true

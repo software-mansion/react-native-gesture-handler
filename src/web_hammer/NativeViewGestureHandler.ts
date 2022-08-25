@@ -5,6 +5,10 @@ import PressGestureHandler from './PressGestureHandler';
 import { TEST_MIN_IF_NOT_NAN, VEC_LEN_SQ } from './utils';
 
 class NativeViewGestureHandler extends PressGestureHandler {
+  get isNative() {
+    return true;
+  }
+
   onRawEvent(ev: HammerInputExt) {
     super.onRawEvent(ev);
     if (!ev.isFinal) {
