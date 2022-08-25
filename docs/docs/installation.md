@@ -171,3 +171,13 @@ For React Native 0.61 or greater, add the library as the first import in your in
 ```js
 import 'react-native-gesture-handler';
 ```
+
+## Web
+
+There is no additional configuration required for web, however, if you want to try the new (experimental) web implementation of Gesture Handler, you need to enable at the beginning of your index.js file:
+
+```js
+import { enableExperimentalWebImplementation } from 'react-native-gesture-handler';
+
+enableExperimentalWebImplementation(true);
+```
