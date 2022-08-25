@@ -24,7 +24,7 @@ It is recommended to use Reanimated 2 for animations when using React Native Ges
 
 RNGH2 introduces a new way of creating gestures. Instead of creating a gesture handler component for every gesture you want to create, you just need to create a `GestureDetector` component and assign to it all the gestures you want it to recognize. It is also designed to work seamlessly with `Reanimated 2` and it will automatically detect if it is installed, and start using it if it is.
 You can create gestures using the `Gesture` object and methods it provides, and configure them in the builder-like pattern. If you want to specify behavior between the gestures instead of using `waitFor` and `simultaneousGestures` you can use the new system of [gesture composition](./gesture-composition).
-Along the new API, version 2.0 brings one of the most requested features: [pointer events and manual gestures](./manual-gestures/manual-gestures). Thanks to great work done by the Reanimated team, we were able to provide synchronous communication between gestures and their native implementation using worklets. This allows to manage gesture state from the JS without risking race-conditions.
+Along the new API, version 2.0 brings one of the most requested features: [touch events and manual gestures](manual-gestures). Thanks to great work done by the Reanimated team, we were able to provide synchronous communication between gestures and their native implementation using worklets. This allows to manage gesture state from the JS without risking race-conditions.
 
 ### Interoperability with gesture handlers
 
@@ -106,17 +106,23 @@ If you've build something with this library you'd like to share, please contact 
 <div class="community-holder-container">
 
   <div class="community-holder-container-item">
-    <img class="community-imageHolder" src="https://ca.slack-edge.com/T03Q9AMJJ-U02700KC6J1-0c9e18c89e71-512" />
+    <div class="community-imageHolder">
+      <img src="https://ca.slack-edge.com/T03Q9AMJJ-U02700KC6J1-0c9e18c89e71-512" />
+    </div>
     <div>Jakub Piasecki</div>
   </div>
 
   <div class="community-holder-container-item">
-    <img class="community-imageHolder" src="https://ca.slack-edge.com/T03Q9AMJJ-UK2KQ52CA-1ee569e1258f-512" />
+    <div class="community-imageHolder">
+      <img src="https://ca.slack-edge.com/T03Q9AMJJ-UK2KQ52CA-1ee569e1258f-512" />
+    </div>
     <div>Jakub Gonet</div>
   </div>
 
   <div class="community-holder-container-item">
-    <img class="community-imageHolder" src="https://ca.slack-edge.com/T03Q9AMJJ-U0F40CATS-d0a2e7559a1b-512" />
+    <div class="community-imageHolder">
+      <img src="https://ca.slack-edge.com/T03Q9AMJJ-U0F40CATS-d0a2e7559a1b-512" />
+    </div>
     <div>Krzysztof Magiera</div>
     <a href="https://twitter.com/kzzzf">@kzzzf</a>
   </div>
@@ -131,15 +137,19 @@ We really appreciate our sponsors! Thanks to them we can develop our library and
 
   <div class="community-holder-container-item">
     <a href="https://www.shopify.com/">
-      <img class="community-imageHolder" src="https://avatars1.githubusercontent.com/u/8085?v=3&s=100" />
+      <div class="community-imageHolder">
+        <img src="https://avatars1.githubusercontent.com/u/8085?v=3&s=100" />
+      </div>
       <div>Shopify</div>
     </a>
   </div>
 
   <div class="community-holder-container-item">
     <a href="https://expo.dev">
-    <img class="community-imageHolder" src="https://avatars2.githubusercontent.com/u/12504344?v=3&s=100" />
-    <div>Expo</div>
+      <div class="community-imageHolder">
+        <img class="community-imageHolder" src="https://avatars2.githubusercontent.com/u/12504344?v=3&s=100" />
+      </div>
+      <div>Expo</div>
     </a>
   </div>
 

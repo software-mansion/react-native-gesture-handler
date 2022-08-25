@@ -1,31 +1,30 @@
 {
-  "name": "documentation",
+  "name": "react-native-gesture-handler-docs",
   "version": "0.0.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "docusaurus build",
-    "build:baseUrl": "BASE_URL='/react-native-gesture-handler/' yarn build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
-    "serve": "docusaurus serve"
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids"
   },
   "dependencies": {
-    "@docusaurus/core": "2.0.0-alpha.63",
-    "@docusaurus/preset-classic": "2.0.0-alpha.63",
-    "@mdx-js/react": "^1.5.8",
-    "classnames": "^2.2.6",
+    "@docusaurus/core": "^2.0.1",
+    "@docusaurus/preset-classic": "^2.0.1",
+    "@mdx-js/react": "^1.6.21",
+    "classnames": "^2.3.1",
     "clsx": "^1.1.1",
-    "gh-pages": "^2.2.0",
-    "react": "^16.8.4",
-    "react-dom": "^16.8.4",
-    "react-github-btn": "^1.2.0",
-    "webfontloader": "^1.6.28"
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
   },
   "browserslist": {
     "production": [
-      ">0.2%",
+      ">0.5%",
       "not dead",
       "not op_mini all"
     ],

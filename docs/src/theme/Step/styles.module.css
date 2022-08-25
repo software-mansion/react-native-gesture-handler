@@ -29,7 +29,7 @@
   }
 }
 .description {
-  flex: 1;
+  flex: 2;
   display: flex;
   margin-bottom: 20px;
   height: fit-content;
@@ -62,7 +62,7 @@
 }
 
 .code {
-  flex: 1;
+  flex: 3;
   flex-direction: column;
   flex-wrap: wrap;
   background-color: 'red';
