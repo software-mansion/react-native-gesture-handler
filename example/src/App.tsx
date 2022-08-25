@@ -100,7 +100,10 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Nested Touchables - issue #784',
         component: NestedTouchables as React.ComponentType,
       },
-      { name: 'Nested buttons', component: NestedButtons },
+      {
+        name: 'Nested buttons (sound & ripple on Android)',
+        component: NestedButtons,
+      },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
       { name: 'Rows', component: Rows },
