@@ -2,8 +2,13 @@ import GestureHandler from '../handlers/GestureHandler';
 import { Config, Handler } from '../interfaces';
 
 export default class InteractionManager {
+  private static instance: InteractionManager;
   private readonly waitForRelations: Map<number, number[]> = new Map();
   private readonly simultaneousRelations: Map<number, number[]> = new Map();
+
+  // Private becaues of singleton
+  // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
+  private constructor() {}
 
   public configureInteractions(handler: GestureHandler, config: Config) {
     this.dropRelationsForHandlerWithTag(handler.getTag());
@@ -35,7 +40,6 @@ export default class InteractionManager {
 
       this.simultaneousRelations.set(handler.getTag(), simultaneousHandlers);
     }
-    handler.setInteractionManager(this);
   }
 
   public shouldWaitForHandlerFailure(
@@ -108,5 +112,13 @@ export default class InteractionManager {
   public reset() {
     this.waitForRelations.clear();
     this.simultaneousRelations.clear();
+  }
+
+  public static getInstance(): InteractionManager {
+    if (!this.instance) {
+      this.instance = new InteractionManager();
+    }
+
+    return this.instance;
   }
 }

@@ -117,8 +117,8 @@ export default class TapGestureHandler extends GestureHandler {
 
   //Handling Events
   protected onPointerDown(event: AdaptedEvent): void {
-    super.onPointerDown(event);
     this.tracker.addToTracker(event);
+    super.onPointerDown(event);
 
     this.trySettingPosition(event);
 
@@ -132,6 +132,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
+    super.onPointerAdd(event);
     this.tracker.addToTracker(event);
     this.trySettingPosition(event);
 
@@ -148,6 +149,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
+    super.onPointerUp(event);
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
 
@@ -157,6 +159,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
+    super.onPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);
 
     this.offsetX += this.lastX - this.startX;
@@ -179,6 +182,8 @@ export default class TapGestureHandler extends GestureHandler {
     this.lastY = this.tracker.getLastAvgY();
 
     this.updateState(event);
+
+    super.onPointerMove(event);
   }
 
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
@@ -189,9 +194,12 @@ export default class TapGestureHandler extends GestureHandler {
     this.lastY = this.tracker.getLastAvgY();
 
     this.updateState(event);
+
+    super.onPointerOutOfBounds(event);
   }
 
   protected onPointerCancel(event: AdaptedEvent): void {
+    super.onPointerCancel(event);
     this.tracker.resetTracker();
     this.fail(event);
   }

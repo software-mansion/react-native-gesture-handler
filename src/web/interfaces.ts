@@ -73,8 +73,33 @@ interface NativeEvent extends Record<string, NativeEventArgs> {
   oldState?: State;
 }
 
+export interface PointerData {
+  id: number;
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+}
+
+type TouchNativeArgs = number | State | TouchEventType | PointerData[];
+
+interface NativeTouchEvent extends Record<string, TouchNativeArgs> {
+  handlerTag: number;
+  state: State;
+  eventType: TouchEventType;
+  changedTouches: PointerData[];
+  allTouches: PointerData[];
+  numberOfTouches: number;
+}
+
 export interface ResultEvent extends Record<string, NativeEvent | number> {
   nativeEvent: NativeEvent;
+  timeStamp: number;
+}
+
+export interface ResultTouchEvent
+  extends Record<string, NativeTouchEvent | number> {
+  nativeEvent: NativeTouchEvent;
   timeStamp: number;
 }
 
@@ -93,6 +118,9 @@ export interface AdaptedEvent {
   pointerType: string;
   buttons: number;
   time: number;
+  allTouches?: TouchList;
+  changedTouches?: TouchList;
+  touchEventType?: TouchEventType;
 }
 
 export enum MouseButtons {
@@ -115,4 +143,12 @@ export enum EventTypes {
   ENTER,
   OUT,
   CANCEL,
+}
+
+export enum TouchEventType {
+  UNDETERMINED,
+  DOWN,
+  MOVE,
+  UP,
+  CANCELLED,
 }
