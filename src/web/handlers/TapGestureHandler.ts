@@ -270,7 +270,7 @@ export default class TapGestureHandler extends GestureHandler {
     return this.maxDist !== Number.MIN_SAFE_INTEGER && distSq > this.maxDist;
   }
 
-  protected activate(event: AdaptedEvent): void {
+  public activate(event: AdaptedEvent): void {
     super.activate(event);
 
     this.end(event);

@@ -172,7 +172,7 @@ export default class RotationGestureHandler extends GestureHandler {
     this.begin(event);
   }
 
-  protected activate(event: AdaptedEvent, _force?: boolean): void {
+  public activate(event: AdaptedEvent, _force?: boolean): void {
     super.activate(event);
   }
 

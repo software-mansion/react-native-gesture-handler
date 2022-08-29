@@ -9,6 +9,13 @@ import EventManager from './EventManager';
 export default class TouchEventManager extends EventManager {
   public setListeners(): void {
     this.view.addEventListener('touchstart', (event: TouchEvent) => {
+      // if (
+      //   this.view.hasAttribute('role') &&
+      //   this.view.getAttribute('role') === 'button'
+      // ) {
+      //   //For now it solves issue with nested touchables, but disables rows
+      //   event.stopPropagation();
+      // }
       for (let i = 0; i < event.changedTouches.length; ++i) {
         const adaptedEvent: AdaptedEvent = this.mapEvent(
           event,

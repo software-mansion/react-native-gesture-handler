@@ -9,13 +9,11 @@ export default class ManualGestureHandler extends GestureHandler {
   protected onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
-
     this.begin(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
-
     super.onPointerAdd(event);
   }
 
@@ -26,13 +24,11 @@ export default class ManualGestureHandler extends GestureHandler {
 
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
-
     this.tracker.removeFromTracker(event.pointerId);
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
-
     this.tracker.removeFromTracker(event.pointerId);
   }
 

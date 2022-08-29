@@ -476,7 +476,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected activate(event: AdaptedEvent, force = false): void {
+  public activate(event: AdaptedEvent, force = false): void {
     if (this.currentState !== State.ACTIVE) {
       this.resetProgress();
     }

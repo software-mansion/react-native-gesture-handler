@@ -144,7 +144,7 @@ export default class PinchGestureHandler extends GestureHandler {
     this.begin(event);
   }
 
-  protected activate(event: AdaptedEvent, force?: boolean): void {
+  public activate(event: AdaptedEvent, force?: boolean): void {
     if (this.currentState !== State.ACTIVE) {
       this.resetProgress();
     }

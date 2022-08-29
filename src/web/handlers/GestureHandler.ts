@@ -26,8 +26,8 @@ export default abstract class GestureHandler {
 
   private ref!: number;
   private propsRef!: React.RefObject<unknown>;
-  protected config: Config = { enabled: false };
   private handlerTag!: number;
+  protected config: Config = { enabled: false };
   protected view!: HTMLElement;
 
   protected eventManagers: EventManager[] = [];
@@ -166,7 +166,7 @@ export default abstract class GestureHandler {
     }
   }
 
-  protected activate(event: AdaptedEvent, _force = false) {
+  public activate(event: AdaptedEvent, _force = false) {
     if (
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
@@ -334,14 +334,16 @@ export default abstract class GestureHandler {
     }
   }
 
-  protected sendTouchEvent(event: AdaptedEvent): void {
+  public sendTouchEvent(event: AdaptedEvent): void {
     const { onGestureHandlerEvent }: PropsRef = this.propsRef
       .current as PropsRef;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const touchEvent: ResultTouchEvent = this.transformTouchEvent(event)!;
 
-    if (touchEvent) invokeNullableMethod(onGestureHandlerEvent, touchEvent);
+    if (touchEvent) {
+      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
+    }
   }
 
   //

@@ -154,7 +154,7 @@ export default class FlingGestureHandler extends GestureHandler {
     this.reset();
   }
 
-  protected activate(event: AdaptedEvent, force?: boolean): void {
+  public activate(event: AdaptedEvent, force?: boolean): void {
     super.activate(event, force);
     this.end(event);
   }
