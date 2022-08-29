@@ -63,14 +63,6 @@ export default abstract class EventManager {
     this.onPointerOutOfBounds = callback;
   }
 
-  public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
-    const rect: DOMRect = this.view.getBoundingClientRect();
-
-    return (
-      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
-    );
-  }
-
   protected markAsInBounds(pointerId: number): void {
     if (this.pointersInBounds.indexOf(pointerId) >= 0) {
       return;
@@ -92,7 +84,7 @@ export default abstract class EventManager {
   public resetManager(): void {
     // Reseting activePointersCounter is necessary to make gestures such as pinch work properly
     // There are gestures that end when there is still one active pointer (like pinch/rotation)
-    // When these gestures end, they are reseted, but they still receive events from pointer that is active
+    // When these gestures end, they are reset, but they still receive events from pointer that is active
     // This causes trouble, since only onPointerDown registers gesture in orchestrator, and while gestures receive
     // Events from active pointer after they finished, next pointerdown event will be registered as additional pointer, not the first one
     // This casues trouble like gestures getting stuck in END state, even though they should have gone to UNDETERMINED

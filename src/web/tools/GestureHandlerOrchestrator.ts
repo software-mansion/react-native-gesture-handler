@@ -1,8 +1,9 @@
 import { State } from '../../State';
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, PointerType } from '../interfaces';
 
 import GestureHandler from '../handlers/GestureHandler';
 import PointerTracker from './PointerTracker';
+import { isPointerInBounds } from './Utils';
 
 export default class GestureHandlerOrchestrator {
   private static instance: GestureHandlerOrchestrator;
@@ -298,8 +299,8 @@ export default class GestureHandlerOrchestrator {
       const handlerY: number = handler.getTracker().getLastY(pointer);
 
       if (
-        handler.isPointerInBounds({ x: handlerX, y: handlerY }) &&
-        otherHandler.isPointerInBounds({ x: handlerX, y: handlerY })
+        isPointerInBounds(handler.getView(), { x: handlerX, y: handlerY }) &&
+        isPointerInBounds(otherHandler.getView(), { x: handlerX, y: handlerY })
       ) {
         overlap = true;
       }
@@ -310,8 +311,8 @@ export default class GestureHandlerOrchestrator {
       const otherY: number = otherHandler.getTracker().getLastY(pointer);
 
       if (
-        handler.isPointerInBounds({ x: otherX, y: otherY }) &&
-        otherHandler.isPointerInBounds({ x: otherX, y: otherY })
+        isPointerInBounds(handler.getView(), { x: otherX, y: otherY }) &&
+        isPointerInBounds(otherHandler.getView(), { x: otherX, y: otherY })
       ) {
         overlap = true;
       }
@@ -331,8 +332,7 @@ export default class GestureHandlerOrchestrator {
   // mouse/pen event dissappears - it doesn't send onPointerCancel nor onPointerUp (and others)
   // This became a problem because handler was left at active state without any signal to end or fail
   // To handle this, when new touch event is received, we loop through active handlers and check which type of
-  // pointer they're using
-  // If there are any handler with mouse/pen as a pointer, we cancel them
+  // pointer they're using. If there are any handler with mouse/pen as a pointer, we cancel them
   public cancelMouseAndPenGestures(
     event: AdaptedEvent,
     currentHandler: GestureHandler
@@ -340,19 +340,19 @@ export default class GestureHandlerOrchestrator {
     this.gestureHandlers.forEach((handler: GestureHandler) => {
       if (
         handler !== currentHandler &&
-        (handler.getPointerType() === 'mouse' ||
-          handler.getPointerType() === 'pen')
+        (handler.getPointerType() === PointerType.MOUSE ||
+          handler.getPointerType() === PointerType.PEN)
       ) {
         handler.cancel(event);
       }
 
       if (handler === currentHandler) {
-        // Handler that received touch event should have its pointer tracker reseted
+        // Handler that received touch event should have its pointer tracker reset
         // This allows handler to smoothly change from mouse/pen to touch
         // The drawback is, that when we try to use mouse/pen one more time, it doesn't send onPointerDown at the first time
         // so it is required to click two times to get handler to work
         //
-        // However, handler will receive mannualy created onPointerEnter that is triggered in EventManager in onPointerMove method.
+        // However, handler will receive manually created onPointerEnter that is triggered in EventManager in onPointerMove method.
         // There may be possibility to use that fact to make handler respond properly to first mouse click
         handler.getTracker().resetTracker();
       }

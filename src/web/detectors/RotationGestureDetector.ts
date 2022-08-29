@@ -172,7 +172,7 @@ export default class RotationGestureDetector
     return this.rotation;
   }
 
-  public resetDetector(): void {
+  public reset(): void {
     this.keyPointers = [NaN, NaN];
     this.isInProgress = false;
   }

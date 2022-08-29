@@ -180,6 +180,6 @@ export default class RotationGestureHandler extends GestureHandler {
 
     this.rotation = 0;
     this.velocity = 0;
-    this.rotationGestureDetector.resetDetector();
+    this.rotationGestureDetector.reset();
   }
 }

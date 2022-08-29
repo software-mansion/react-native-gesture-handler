@@ -90,7 +90,7 @@ export interface AdaptedEvent {
   offsetY: number;
   pointerId: number;
   eventType: EventTypes;
-  pointerType: string;
+  pointerType: PointerType;
   buttons: number;
   time: number;
 }
@@ -115,4 +115,12 @@ export enum EventTypes {
   ENTER,
   OUT,
   CANCEL,
+}
+
+//TODO: ask if it is necessary
+export enum PointerType {
+  NONE = 'none',
+  MOUSE = 'mouse',
+  TOUCH = 'touch',
+  PEN = 'pen',
 }

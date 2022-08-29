@@ -1,5 +1,11 @@
-import { AdaptedEvent, EventTypes, MouseButtons } from '../interfaces';
+import {
+  AdaptedEvent,
+  EventTypes,
+  MouseButtons,
+  PointerType,
+} from '../interfaces';
 import EventManager from './EventManager';
+import { isPointerInBounds } from './Utils';
 
 export default class TouchEventManager extends EventManager {
   public setListeners(): void {
@@ -12,7 +18,7 @@ export default class TouchEventManager extends EventManager {
         );
 
         if (
-          !this.isPointerInBounds({
+          !isPointerInBounds(this.view, {
             x: adaptedEvent.x,
             y: adaptedEvent.y,
           })
@@ -25,10 +31,9 @@ export default class TouchEventManager extends EventManager {
         if (++this.activePointersCounter > 1) {
           adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
           this.onPointerAdd(adaptedEvent);
-          continue;
+        } else {
+          this.onPointerDown(adaptedEvent);
         }
-
-        this.onPointerDown(adaptedEvent);
       }
     });
 
@@ -40,7 +45,7 @@ export default class TouchEventManager extends EventManager {
           i
         );
 
-        const inBounds: boolean = this.isPointerInBounds({
+        const inBounds: boolean = isPointerInBounds(this.view, {
           x: adaptedEvent.x,
           y: adaptedEvent.y,
         });
@@ -70,6 +75,10 @@ export default class TouchEventManager extends EventManager {
     });
 
     this.view.addEventListener('touchend', (event: TouchEvent) => {
+      // When we call reset on gesture handlers, it also resets their event managers
+      // In some handlers (like RotationGestureHandler) reset is called before all pointers leave view
+      // This means, that activePointersCounter will be set to 0, while there are still remaining pointers on view
+      // Removing them will end in activePointersCounter going below 0, therefore handlers won't behave properly
       if (this.activePointersCounter === 0) {
         return;
       }
@@ -86,10 +95,9 @@ export default class TouchEventManager extends EventManager {
         if (--this.activePointersCounter > 0) {
           adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_UP;
           this.onPointerRemove(adaptedEvent);
-          continue;
+        } else {
+          this.onPointerUp(adaptedEvent);
         }
-
-        this.onPointerUp(adaptedEvent);
       }
     });
 
@@ -124,7 +132,7 @@ export default class TouchEventManager extends EventManager {
       offsetY: clientY - rect.top,
       pointerId: event.changedTouches[index].identifier,
       eventType: eventType,
-      pointerType: 'touch',
+      pointerType: PointerType.TOUCH,
       buttons: MouseButtons.NONE,
       time: event.timeStamp,
     };
