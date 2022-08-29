@@ -11,7 +11,7 @@ const DEFAULT_MIN_NUMBER_OF_POINTERS = 1;
 export default class TapGestureHandler extends GestureHandler {
   private maxDeltaX = Number.MIN_SAFE_INTEGER;
   private maxDeltaY = Number.MIN_SAFE_INTEGER;
-  private maxDist = Number.MIN_SAFE_INTEGER;
+  private maxDistSq = Number.MIN_SAFE_INTEGER;
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
   private maxDelayMs = DEFAULT_MAX_DELAY_MS;
 
@@ -62,7 +62,7 @@ export default class TapGestureHandler extends GestureHandler {
     }
 
     if (this.config.maxDist !== undefined) {
-      this.maxDist = this.config.maxDist;
+      this.maxDistSq = this.config.maxDist * this.config.maxDist;
     }
 
     if (this.config.minPointers !== undefined) {
@@ -75,7 +75,7 @@ export default class TapGestureHandler extends GestureHandler {
 
     this.maxDeltaX = Number.MIN_SAFE_INTEGER;
     this.maxDeltaY = Number.MIN_SAFE_INTEGER;
-    this.maxDist = Number.MIN_SAFE_INTEGER;
+    this.maxDistSq = Number.MIN_SAFE_INTEGER;
     this.maxDurationMs = DEFAULT_MAX_DURATION_MS;
     this.maxDelayMs = DEFAULT_MAX_DELAY_MS;
     this.numberOfTaps = DEFAULT_NUMBER_OF_TAPS;
@@ -267,7 +267,9 @@ export default class TapGestureHandler extends GestureHandler {
 
     const distSq = dy * dy + dx * dx;
 
-    return this.maxDist !== Number.MIN_SAFE_INTEGER && distSq > this.maxDist;
+    return (
+      this.maxDistSq !== Number.MIN_SAFE_INTEGER && distSq > this.maxDistSq
+    );
   }
 
   public activate(event: AdaptedEvent): void {
@@ -282,6 +284,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
+    this.clearTimeouts();
     this.tapsSoFar = 0;
     this.currentMaxNumberOfPointers = 0;
   }

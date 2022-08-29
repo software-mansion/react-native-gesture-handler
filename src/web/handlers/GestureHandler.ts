@@ -8,6 +8,7 @@ import {
   ResultEvent,
   PointerData,
   ResultTouchEvent,
+  PointerType,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
@@ -15,6 +16,7 @@ import InteractionManager from '../tools/InteractionManager';
 import PointerEventManager from '../tools/PointerEventManager';
 import PointerTracker from '../tools/PointerTracker';
 import TouchEventManager from '../tools/TouchEventManager';
+import { isPointerInBounds } from '../utils';
 
 export default abstract class GestureHandler {
   private lastSentState: State | null = null;
@@ -38,7 +40,7 @@ export default abstract class GestureHandler {
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
-  protected pointerType: string | null = null;
+  protected pointerType: PointerType = PointerType.NONE;
 
   public constructor() {
     this.hasCustomActivationCriteria = false;
@@ -55,8 +57,8 @@ export default abstract class GestureHandler {
     this.currentState = State.UNDETERMINED;
 
     this.setView(ref);
-    this.setEventManager(new PointerEventManager(this.view));
-    this.setEventManager(new TouchEventManager(this.view));
+    this.addEventManager(new PointerEventManager(this.view));
+    this.addEventManager(new TouchEventManager(this.view));
   }
 
   private setView(ref: number) {
@@ -75,7 +77,7 @@ export default abstract class GestureHandler {
     this.view.style['WebkitTouchCallout'] = 'none';
   }
 
-  private setEventManager(manager: EventManager): void {
+  private addEventManager(manager: EventManager): void {
     manager.setOnPointerDown(this.onPointerDown.bind(this));
     manager.setOnPointerAdd(this.onPointerAdd.bind(this));
     manager.setOnPointerUp(this.onPointerUp.bind(this));
@@ -273,7 +275,7 @@ export default abstract class GestureHandler {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
     this.pointerType = event.pointerType;
 
-    if (this.pointerType === 'touch') {
+    if (this.pointerType === PointerType.TOUCH) {
       GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(
         event,
         this
@@ -390,7 +392,7 @@ export default abstract class GestureHandler {
       nativeEvent: {
         numberOfPointers: this.tracker.getTrackedPointersCount(),
         state: newState,
-        pointerInside: this.isPointerInBounds({
+        pointerInside: isPointerInBounds(this.view, {
           x: event.x,
           y: event.y,
         }),
@@ -650,7 +652,7 @@ export default abstract class GestureHandler {
     return this.shouldCancellWhenOutside;
   }
 
-  public getPointerType(): string | null {
+  public getPointerType(): PointerType {
     return this.pointerType;
   }
 }
