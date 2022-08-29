@@ -1,4 +1,5 @@
 import { ActionType } from './ActionType';
+import { isExperimentalWebImplementationEnabled } from './EnableExperimentalWebImplementation';
 
 //GestureHandlers
 import InteractionManager from './web/tools/InteractionManager';
@@ -21,7 +22,6 @@ import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
 import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
 import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
 import { Config } from './web/interfaces';
-import { isExperimentalWebImplementationEnabled } from './EnableExperimentalWebImplementation';
 
 export const Gestures = {
   NativeViewGestureHandler,
@@ -46,7 +46,6 @@ export const HammerGestures = {
 const interactionManager = new InteractionManager();
 
 export default {
-  // Direction,
   handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
     console.warn('handleSetJSResponder: ', tag, blockNativeResponder);
   },

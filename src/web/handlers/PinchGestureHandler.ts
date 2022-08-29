@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
@@ -12,17 +12,14 @@ export default class PinchGestureHandler extends GestureHandler {
   private velocity = 0;
 
   private startingSpan = 0;
-  private spanSlop = 0;
+  private spanSlop = DEFAULT_TOUCH_SLOP;
 
   private scaleDetectorListener: ScaleGestureListener = {
     onScaleBegin: (detector: ScaleGestureDetector): boolean => {
       this.startingSpan = detector.getCurrentSpan();
       return true;
     },
-    onScale: (
-      detector: ScaleGestureDetector,
-      event: AdaptedPointerEvent
-    ): boolean => {
+    onScale: (detector: ScaleGestureDetector, event: AdaptedEvent): boolean => {
       const prevScaleFactor: number = this.scale;
       this.scale *= detector.getScaleFactor(
         this.tracker.getTrackedPointersCount()
@@ -44,7 +41,7 @@ export default class PinchGestureHandler extends GestureHandler {
     },
     onScaleEnd: (
       _detector: ScaleGestureDetector,
-      _event: AdaptedPointerEvent
+      _event: AdaptedEvent
       // eslint-disable-next-line @typescript-eslint/no-empty-function
     ): void => {},
   };
@@ -57,16 +54,15 @@ export default class PinchGestureHandler extends GestureHandler {
     super.init(ref, propsRef);
 
     this.setShouldCancelWhenOutside(false);
-    this.spanSlop = DEFAULT_TOUCH_SLOP;
   }
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     this.enabled = enabled;
   }
 
-  protected transformNativeEvent(_event: AdaptedPointerEvent) {
+  protected transformNativeEvent(_event: AdaptedEvent) {
     return {
       focalX: this.scaleGestureDetector.getFocusX(),
       focalY: this.scaleGestureDetector.getFocusY(),
@@ -75,44 +71,44 @@ export default class PinchGestureHandler extends GestureHandler {
     };
   }
 
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
-
     this.tracker.addToTracker(event);
+  }
 
-    if (this.tracker.getTrackedPointersCount() < 2) {
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
+    this.tryBegin(event);
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+  }
+
+  protected onPointerUp(event: AdaptedEvent): void {
+    this.tracker.removeFromTracker(event.pointerId);
+    if (this.currentState !== State.ACTIVE) {
       return;
     }
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
 
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.tryBegin(event);
-      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    if (this.currentState === State.ACTIVE) {
+      this.end(event);
+    } else {
+      this.fail(event);
     }
   }
-  protected onPointerUp(event: AdaptedPointerEvent): void {
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
-      this.tracker.removeFromTracker(event.pointerId);
-    } else {
-      this.tracker.removeFromTracker(event.pointerId);
-      if (this.currentState !== State.ACTIVE) {
-        return;
-      }
-      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
-    }
+
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.tracker.removeFromTracker(event.pointerId);
+
     if (
       this.currentState === State.ACTIVE &&
       this.tracker.getTrackedPointersCount() < 2
     ) {
       this.end(event);
-    } else if (
-      event.eventType === EventTypes.UP &&
-      this.currentState !== State.BEGAN
-    ) {
-      this.fail(event);
     }
   }
-  protected onPointerMove(event: AdaptedPointerEvent): void {
+
+  protected onPointerMove(event: AdaptedEvent): void {
     if (this.tracker.getTrackedPointersCount() < 2) {
       return;
     }
@@ -121,25 +117,30 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     super.onPointerMove(event);
   }
-  protected onPointerOutOfBounds(_event: AdaptedPointerEvent): void {
-    //
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+    if (this.tracker.getTrackedPointersCount() < 2) {
+      return;
+    }
+    this.tracker.track(event);
+
+    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    super.onPointerOutOfBounds(event);
   }
 
-  protected onPointerCancel(_event: AdaptedPointerEvent): void {
+  protected onPointerCancel(_event: AdaptedEvent): void {
     this.reset();
   }
 
-  private tryBegin(event: AdaptedPointerEvent): void {
+  private tryBegin(event: AdaptedEvent): void {
     if (this.currentState !== State.UNDETERMINED) {
       return;
     }
 
     this.resetProgress();
-
     this.begin(event);
   }
 
-  protected activate(event: AdaptedPointerEvent, force?: boolean): void {
+  protected activate(event: AdaptedEvent, force?: boolean): void {
     if (this.currentState !== State.ACTIVE) {
       this.resetProgress();
     }
@@ -155,7 +156,6 @@ export default class PinchGestureHandler extends GestureHandler {
     if (this.currentState === State.ACTIVE) {
       return;
     }
-
     this.velocity = 0;
     this.scale = 1;
   }

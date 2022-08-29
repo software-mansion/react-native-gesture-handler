@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
@@ -19,7 +19,7 @@ export default class RotationGestureHandler extends GestureHandler {
     onRotationBegin: (_detector: RotationGestureDetector): boolean => true,
     onRotation: (
       detector: RotationGestureDetector,
-      event: AdaptedPointerEvent
+      event: AdaptedEvent
     ): boolean => {
       const previousRotation: number = this.rotation;
       this.rotation += detector.getRotation();
@@ -41,7 +41,7 @@ export default class RotationGestureHandler extends GestureHandler {
     },
     onRotationEnd: (
       _detector: RotationGestureDetector,
-      event: AdaptedPointerEvent
+      event: AdaptedEvent
     ): void => {
       this.end(event);
     },
@@ -57,13 +57,13 @@ export default class RotationGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(false);
   }
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     this.enabled = enabled;
   }
 
-  protected transformNativeEvent(_event: AdaptedPointerEvent) {
+  protected transformNativeEvent(_event: AdaptedEvent) {
     return {
       rotation: this.rotation ? this.rotation : 0,
       anchorX: this.getAnchorX(),
@@ -84,24 +84,21 @@ export default class RotationGestureHandler extends GestureHandler {
     return anchorY ? anchorY : this.cachedAnchorY;
   }
 
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
 
     this.tracker.addToTracker(event);
+  }
 
-    if (this.tracker.getTrackedPointersCount() <= 1) {
-      return;
-    }
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
 
     this.tryBegin(event);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
   }
 
-  protected onPointerMove(event: AdaptedPointerEvent): void {
-    if (
-      this.tracker.getTrackedPointersCount() < 2 ||
-      !this.rotationGestureDetector
-    ) {
+  protected onPointerMove(event: AdaptedEvent): void {
+    if (this.tracker.getTrackedPointersCount() < 2) {
       return;
     }
 
@@ -119,24 +116,30 @@ export default class RotationGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerUp(event: AdaptedPointerEvent): void {
-    if (!this.rotationGestureDetector) {
-      this.tracker.resetTracker();
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+    if (this.tracker.getTrackedPointersCount() < 2) {
       return;
     }
 
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.rotationGestureDetector.onTouchEvent(event, this.tracker);
-      this.tracker.removeFromTracker(event.pointerId);
-    } else {
-      this.tracker.removeFromTracker(event.pointerId);
-      this.rotationGestureDetector.onTouchEvent(event, this.tracker);
-      if (this.currentState !== State.ACTIVE) {
-        return;
-      }
+    if (this.getAnchorX()) {
+      this.cachedAnchorX = this.getAnchorX();
+    }
+    if (this.getAnchorY()) {
+      this.cachedAnchorY = this.getAnchorY();
     }
 
-    if (event.eventType !== EventTypes.UP) {
+    this.tracker.track(event);
+
+    this.rotationGestureDetector.onTouchEvent(event, this.tracker);
+
+    super.onPointerOutOfBounds(event);
+  }
+
+  protected onPointerUp(event: AdaptedEvent): void {
+    this.tracker.removeFromTracker(event.pointerId);
+    this.rotationGestureDetector.onTouchEvent(event, this.tracker);
+
+    if (this.currentState !== State.ACTIVE) {
       return;
     }
 
@@ -147,26 +150,26 @@ export default class RotationGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerCancel(event: AdaptedPointerEvent): void {
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.rotationGestureDetector.onTouchEvent(event, this.tracker);
+    this.tracker.removeFromTracker(event.pointerId);
+  }
+
+  protected onPointerCancel(event: AdaptedEvent): void {
     this.end(event);
+
     this.reset();
   }
 
-  protected tryBegin(event: AdaptedPointerEvent): void {
+  protected tryBegin(event: AdaptedEvent): void {
     if (this.currentState !== State.UNDETERMINED) {
       return;
     }
 
-    this.resetProgress();
-
     this.begin(event);
   }
 
-  protected activate(event: AdaptedPointerEvent, _force?: boolean): void {
-    if (this.currentState !== State.ACTIVE) {
-      this.resetProgress();
-    }
-
+  protected activate(event: AdaptedEvent, _force?: boolean): void {
     super.activate(event);
   }
 
@@ -177,5 +180,6 @@ export default class RotationGestureHandler extends GestureHandler {
 
     this.rotation = 0;
     this.velocity = 0;
+    this.rotationGestureDetector.reset();
   }
 }

@@ -152,7 +152,6 @@ function attachHandlers({
 
   for (const handler of gesture) {
     checkGestureCallbacksForWorklets(handler);
-
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
       handler.handlerTag,

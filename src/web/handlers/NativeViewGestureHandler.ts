@@ -1,24 +1,26 @@
 import { State } from '../../State';
-import { AdaptedPointerEvent } from '../interfaces';
+import { DEFAULT_TOUCH_SLOP } from '../constants';
+import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
+  //TODO: Implement logic for activation on start
+  //@ts-ignore Logic yet to be implemented
+  private shouldActivateOnStart = false;
   private disallowInterruption = false;
+
+  private startX = 0;
+  private startY = 0;
+  private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
 
     this.setShouldCancelWhenOutside(true);
 
-    if (!this.view) {
-      return;
-    }
-
     this.view.style['touchAction'] = 'auto';
-    this.view.style['webkitUserSelect'] = 'auto';
-    this.view.style['userSelect'] = 'auto';
 
     //@ts-ignore Turns on defualt touch behavior on Safari
     this.view.style['WebkitTouchCallout'] = 'auto';
@@ -28,43 +30,90 @@ export default class NativeViewGestureHandler extends GestureHandler {
     } else {
       this.buttonRole = false;
     }
+
+    if (this.view.tagName.toLowerCase() === 'input') {
+      //Enables text input on Safari
+      this.view.style['webkitUserSelect'] = 'auto';
+    }
+  }
+
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
+    super.updateGestureConfig({ enabled: enabled, ...props });
+
+    if (this.config.shouldActivateOnStart !== undefined) {
+      this.shouldActivateOnStart = this.config.shouldActivateOnStart;
+    }
+    if (this.config.disallowInterruption !== undefined) {
+      this.disallowInterruption = this.config.disallowInterruption;
+    }
   }
 
   protected resetConfig(): void {
     super.resetConfig();
   }
 
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
+    this.newPointerAction(event);
+  }
+
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.newPointerAction(event);
+  }
+
+  private newPointerAction(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
 
-    if (this.currentState === State.UNDETERMINED) {
-      this.begin(event);
-      if (this.buttonRole) {
-        this.activate(event);
+    this.startX = this.tracker.getLastAvgX();
+    this.startY = this.tracker.getLastAvgY();
+
+    if (this.currentState !== State.UNDETERMINED) {
+      return;
+    }
+
+    this.begin(event);
+    if (this.buttonRole) {
+      this.activate(event);
+    }
+  }
+
+  protected onPointerMove(event: AdaptedEvent): void {
+    this.tracker.track(event);
+
+    const dx = this.startX - this.tracker.getLastAvgX();
+    const dy = this.startY - this.tracker.getLastAvgY();
+    const distSq = dx * dx + dy * dy;
+
+    if (
+      !this.buttonRole &&
+      distSq >= this.minDistSq &&
+      this.currentState === State.BEGAN
+    ) {
+      this.activate(event);
+    }
+  }
+
+  protected onPointerOut(event: AdaptedEvent): void {
+    this.cancel(event);
+  }
+
+  protected onPointerUp(event: AdaptedEvent): void {
+    this.tracker.removeFromTracker(event.pointerId);
+
+    if (this.tracker.getTrackedPointersCount() === 0) {
+      if (this.currentState === State.ACTIVE) {
+        this.end(event);
+      } else {
+        this.fail(event);
       }
     }
   }
 
-  protected onPointerMove(_event: AdaptedPointerEvent): void {
-    //
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.onPointerUp(event);
   }
 
-  protected onPointerOut(event: AdaptedPointerEvent): void {
-    this.cancel(event);
-  }
-
-  protected onPointerUp(event: AdaptedPointerEvent): void {
-    this.tracker.removeFromTracker(event.pointerId);
-    if (!this.buttonRole) {
-      this.activate(event);
-    }
-    if (this.tracker.getTrackedPointersCount() === 0) {
-      this.end(event);
-    }
-  }
-
-  protected onPointerCancel(event: AdaptedPointerEvent): void {
+  protected onPointerCancel(event: AdaptedEvent): void {
     this.cancel(event);
     this.reset();
   }

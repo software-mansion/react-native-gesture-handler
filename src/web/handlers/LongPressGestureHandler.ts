@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedPointerEvent } from '../interfaces';
+import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -25,7 +25,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(true);
   }
 
-  protected transformNativeEvent(event: AdaptedPointerEvent) {
+  protected transformNativeEvent(event: AdaptedEvent) {
     return {
       x: event.offsetX,
       y: event.offsetY,
@@ -35,7 +35,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     };
   }
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     this.enabled = enabled;
@@ -59,14 +59,18 @@ export default class LongPressGestureHandler extends GestureHandler {
     clearTimeout(this.activationTimeout);
   }
 
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
     this.tryBegin(event);
     this.tryActivate(event);
     this.checkDistanceFail(event);
   }
 
-  protected onPointerUp(event: AdaptedPointerEvent): void {
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.onPointerDown(event);
+  }
+
+  protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
 
     if (this.currentState === State.ACTIVE) {
@@ -76,11 +80,15 @@ export default class LongPressGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedPointerEvent): void {
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.onPointerUp(event);
+  }
+
+  protected onPointerMove(event: AdaptedEvent): void {
     this.checkDistanceFail(event);
   }
 
-  private tryBegin(event: AdaptedPointerEvent): void {
+  private tryBegin(event: AdaptedEvent): void {
     if (this.currentState !== State.UNDETERMINED) {
       return;
     }
@@ -94,7 +102,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.startY = event.y;
   }
 
-  private tryActivate(event: AdaptedPointerEvent): void {
+  private tryActivate(event: AdaptedEvent): void {
     if (this.minDurationMs > 0) {
       this.activationTimeout = setTimeout(() => {
         this.activate(event);
@@ -104,7 +112,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     }
   }
 
-  private checkDistanceFail(event: AdaptedPointerEvent): void {
+  private checkDistanceFail(event: AdaptedEvent): void {
     const dx = event.x - this.startX;
     const dy = event.y - this.startY;
     const distSq = dx * dx + dy * dy;

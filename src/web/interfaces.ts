@@ -30,7 +30,17 @@ export interface Config extends Record<string, ConfigArgs> {
   simultaneousHandlers?: Handler[] | null;
   waitFor?: Handler[] | null;
   hitSlop?: HitSlop;
+  shouldCancelWhenOutside?: boolean;
 
+  activateAfterLongPress?: number;
+  failOffsetXStart?: number;
+  failOffsetYStart?: number;
+  failOffsetXEnd?: number;
+  failOffsetYEnd?: number;
+  activeOffsetXStart?: number;
+  activeOffsetXEnd?: number;
+  activeOffsetYStart?: number;
+  activeOffsetYEnd?: number;
   minPointers?: number;
   maxPointers?: number;
   minDist?: number;
@@ -41,14 +51,6 @@ export interface Config extends Record<string, ConfigArgs> {
   minVelocitySq?: number;
   maxDist?: number;
   maxDistSq?: number;
-  failOffsetXStart?: number;
-  failOffsetYStart?: number;
-  failOffsetXEnd?: number;
-  failOffsetYEnd?: number;
-  activeOffsetXStart?: number;
-  activeOffsetXEnd?: number;
-  activeOffsetYStart?: number;
-  activeOffsetYEnd?: number;
   numberOfPointers?: number;
   minDurationMs?: number;
   numberOfTaps?: number;
@@ -56,6 +58,8 @@ export interface Config extends Record<string, ConfigArgs> {
   maxDelayMs?: number;
   maxDeltaX?: number;
   maxDeltaY?: number;
+  shouldActivateOnStart?: boolean;
+  disallowInterruption?: boolean;
   direction?: Directions;
 }
 
@@ -79,14 +83,14 @@ export interface PropsRef {
   onGestureHandlerStateChange: () => void;
 }
 
-export interface AdaptedPointerEvent {
+export interface AdaptedEvent {
   x: number;
   y: number;
   offsetX: number;
   offsetY: number;
   pointerId: number;
   eventType: EventTypes;
-  pointerType: string;
+  pointerType: PointerType;
   buttons: number;
   time: number;
 }
@@ -111,4 +115,12 @@ export enum EventTypes {
   ENTER,
   OUT,
   CANCEL,
+}
+
+//TODO: ask if it is necessary
+export enum PointerType {
+  NONE = 'none',
+  MOUSE = 'mouse',
+  TOUCH = 'touch',
+  PEN = 'pen',
 }

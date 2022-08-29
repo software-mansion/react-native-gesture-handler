@@ -1,7 +1,7 @@
 import { PixelRatio } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedPointerEvent } from '../interfaces';
+import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -42,8 +42,8 @@ export default class PanGestureHandler extends GestureHandler {
   private minVelocityY = Number.MAX_SAFE_INTEGER;
   private minVelocitySq = Number.MAX_SAFE_INTEGER;
 
-  private minPointers = 1;
-  private maxPointers = 10;
+  private minPointers = DEFAULT_MIN_POINTERS;
+  private maxPointers = DEFAULT_MAX_POINTERS;
 
   private startX = 0;
   private startY = 0;
@@ -52,14 +52,14 @@ export default class PanGestureHandler extends GestureHandler {
   private lastX = 0;
   private lastY = 0;
 
-  // TODO: Implement logic required for activateAfterLongPress
   private activateAfterLongPress = 0;
+  private activationTimeout = 0;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
   }
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
     this.resetConfig();
 
     super.updateGestureConfig({ enabled: enabled, ...props });
@@ -92,6 +92,10 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (this.config.minVelocityY !== undefined) {
       this.minVelocityY = this.config.minVelocityY;
+    }
+
+    if (this.config.activateAfterLongPress !== undefined) {
+      this.activateAfterLongPress = this.config.activateAfterLongPress;
     }
 
     if (this.config.shouldCancelWhenOutside) {
@@ -188,22 +192,22 @@ export default class PanGestureHandler extends GestureHandler {
     this.activateAfterLongPress = 0;
   }
 
-  protected transformNativeEvent(event: AdaptedPointerEvent) {
-    if (!this.view) {
-      return {};
-    }
-
+  protected transformNativeEvent(event: AdaptedEvent) {
+    const rect = this.view.getBoundingClientRect();
     const ratio = PixelRatio.get();
 
+    const translationX: number = this.getTranslationX();
+    const translationY: number = this.getTranslationY();
+
     return {
-      translationX: this.getTranslationX(),
-      translationY: this.getTranslationY(),
+      translationX: isNaN(translationX) ? 0 : translationX,
+      translationY: isNaN(translationY) ? 0 : translationY,
       absoluteX: event.x,
       absoluteY: event.y,
       velocityX: this.velocityX * ratio * 10,
       velocityY: this.velocityY * ratio * 10,
-      x: event.offsetX,
-      y: event.offsetY,
+      x: event.x - rect.left,
+      y: event.y - rect.top,
     };
   }
 
@@ -214,15 +218,14 @@ export default class PanGestureHandler extends GestureHandler {
     return this.lastY - this.startY + this.offsetY;
   }
 
+  private clearActivationTimeout(): void {
+    clearTimeout(this.activationTimeout);
+  }
+
   //EventsHandling
-  protected onPointerDown(event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     super.onPointerDown(event);
     this.tracker.addToTracker(event);
-
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.onPointerAdd(event);
-      return;
-    }
 
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
@@ -230,7 +233,9 @@ export default class PanGestureHandler extends GestureHandler {
     this.tryBegin(event);
     this.checkBegan(event);
   }
-  protected onPointerAdd(event: AdaptedPointerEvent): void {
+
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
     this.tryBegin(event);
 
     this.offsetX += this.lastX - this.startX;
@@ -253,15 +258,8 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerUp(event: AdaptedPointerEvent): void {
+  protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
-
-    if (this.tracker.getTrackedPointersCount() > 1) {
-      this.tracker.removeFromTracker(event.pointerId);
-
-      this.onPointerRemove(event);
-      return;
-    }
 
     if (this.currentState === State.ACTIVE) {
       this.lastX = this.tracker.getLastAvgX();
@@ -277,7 +275,9 @@ export default class PanGestureHandler extends GestureHandler {
       this.fail(event);
     }
   }
-  protected onPointerRemove(event: AdaptedPointerEvent): void {
+  protected onPointerRemove(event: AdaptedEvent): void {
+    this.tracker.removeFromTracker(event.pointerId);
+
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
@@ -297,7 +297,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedPointerEvent): void {
+  protected onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
     this.lastX = this.tracker.getLastAvgX();
@@ -310,12 +310,12 @@ export default class PanGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerCancel(event: AdaptedPointerEvent): void {
+  protected onPointerCancel(event: AdaptedEvent): void {
     super.onPointerCancel(event);
 
     this.reset();
   }
-  protected onPointerOutOfBounds(event: AdaptedPointerEvent): void {
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
     if (this.getShouldCancelWhenOutside()) {
       return;
     }
@@ -409,6 +409,7 @@ export default class PanGestureHandler extends GestureHandler {
     const distanceSq = dx * dx + dy * dy;
 
     if (this.activateAfterLongPress > 0 && distanceSq > DEFAULT_MIN_DIST_SQ) {
+      this.clearActivationTimeout();
       return true;
     }
 
@@ -439,7 +440,7 @@ export default class PanGestureHandler extends GestureHandler {
     );
   }
 
-  private tryBegin(event: AdaptedPointerEvent): void {
+  private tryBegin(event: AdaptedEvent): void {
     if (
       this.currentState === State.UNDETERMINED &&
       this.tracker.getTrackedPointersCount() >= this.minPointers
@@ -452,14 +453,18 @@ export default class PanGestureHandler extends GestureHandler {
 
       this.begin(event);
 
-      //Long press
+      if (this.activateAfterLongPress > 0) {
+        this.activationTimeout = setTimeout(() => {
+          this.activate(event);
+        }, this.activateAfterLongPress);
+      }
     } else {
       this.velocityX = this.tracker.getVelocityX(event.pointerId);
       this.velocityY = this.tracker.getVelocityY(event.pointerId);
     }
   }
 
-  private checkBegan(event: AdaptedPointerEvent): void {
+  private checkBegan(event: AdaptedEvent): void {
     if (this.currentState === State.BEGAN) {
       if (this.shouldFail()) {
         this.fail(event);
@@ -469,12 +474,20 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected activate(event: AdaptedPointerEvent, force = false): void {
+  protected activate(event: AdaptedEvent, force = false): void {
     if (this.currentState !== State.ACTIVE) {
       this.resetProgress();
     }
 
     super.activate(event, force);
+  }
+
+  protected onCancel(): void {
+    this.clearActivationTimeout();
+  }
+
+  protected onReset(): void {
+    this.clearActivationTimeout();
   }
 
   protected resetProgress(): void {
