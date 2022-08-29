@@ -3,7 +3,7 @@ import { AdaptedEvent, PointerType } from '../interfaces';
 
 import GestureHandler from '../handlers/GestureHandler';
 import PointerTracker from './PointerTracker';
-import { isPointerInBounds } from './Utils';
+import { isPointerInBounds } from '../utils';
 
 export default class GestureHandlerOrchestrator {
   private static instance: GestureHandlerOrchestrator;

@@ -14,7 +14,7 @@ import InteractionManager from '../tools/InteractionManager';
 import PointerEventManager from '../tools/PointerEventManager';
 import PointerTracker from '../tools/PointerTracker';
 import TouchEventManager from '../tools/TouchEventManager';
-import { isPointerInBounds } from '../tools/Utils';
+import { isPointerInBounds } from '../utils';
 
 export default abstract class GestureHandler {
   private lastSentState: State | null = null;

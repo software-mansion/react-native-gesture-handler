@@ -5,7 +5,7 @@ import {
   PointerType,
 } from '../interfaces';
 import EventManager from './EventManager';
-import { isPointerInBounds } from './Utils';
+import { isPointerInBounds } from '../utils';
 
 export default class TouchEventManager extends EventManager {
   public setListeners(): void {
