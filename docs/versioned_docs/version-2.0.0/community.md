@@ -12,17 +12,23 @@ If you've build something with this library you'd like to share, please contact 
 <div class="community-holder-container">
 
   <div class="community-holder-container-item">
-    <img class="community-imageHolder" src="https://ca.slack-edge.com/T03Q9AMJJ-U02700KC6J1-0c9e18c89e71-512" />
+    <div class="community-imageHolder">
+      <img src="https://ca.slack-edge.com/T03Q9AMJJ-U02700KC6J1-0c9e18c89e71-512" />
+    </div>
     <div>Jakub Piasecki</div>
   </div>
 
   <div class="community-holder-container-item">
-    <img class="community-imageHolder" src="https://ca.slack-edge.com/T03Q9AMJJ-UK2KQ52CA-1ee569e1258f-512" />
+    <div class="community-imageHolder">
+      <img src="https://ca.slack-edge.com/T03Q9AMJJ-UK2KQ52CA-1ee569e1258f-512" />
+    </div>
     <div>Jakub Gonet</div>
   </div>
 
   <div class="community-holder-container-item">
-    <img class="community-imageHolder" src="https://ca.slack-edge.com/T03Q9AMJJ-U0F40CATS-d0a2e7559a1b-512" />
+    <div class="community-imageHolder">
+      <img src="https://ca.slack-edge.com/T03Q9AMJJ-U0F40CATS-d0a2e7559a1b-512" />
+    </div>
     <div>Krzysztof Magiera</div>
     <a href="https://twitter.com/kzzzf">@kzzzf</a>
   </div>
@@ -37,15 +43,19 @@ We really appreciate our sponsors! Thanks to them we can develop our library and
 
   <div class="community-holder-container-item">
     <a href="https://www.shopify.com/">
-      <img class="community-imageHolder" src="https://avatars1.githubusercontent.com/u/8085?v=3&s=100" />
+      <div class="community-imageHolder">
+        <img src="https://avatars1.githubusercontent.com/u/8085?v=3&s=100" />
+      </div>
       <div>Shopify</div>
     </a>
   </div>
 
   <div class="community-holder-container-item">
     <a href="https://expo.dev">
-    <img class="community-imageHolder" src="https://avatars2.githubusercontent.com/u/12504344?v=3&s=100" />
-    <div>Expo</div>
+      <div class="community-imageHolder">
+        <img class="community-imageHolder" src="https://avatars2.githubusercontent.com/u/12504344?v=3&s=100" />
+      </div>
+      <div>Expo</div>
     </a>
   </div>
 
