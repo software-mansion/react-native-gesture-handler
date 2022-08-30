@@ -3,27 +3,15 @@ import PointerTracker from '../tools/PointerTracker';
 
 export interface RotationGestureListener {
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
-  onRotation: (
-    detector: RotationGestureDetector,
-    event: AdaptedEvent
-  ) => boolean;
-  onRotationEnd: (
-    detector: RotationGestureDetector,
-    event: AdaptedEvent
-  ) => void;
+  onRotation: (detector: RotationGestureDetector) => boolean;
+  onRotationEnd: (detector: RotationGestureDetector) => void;
 }
 
 export default class RotationGestureDetector
   implements RotationGestureListener {
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
-  onRotation: (
-    detector: RotationGestureDetector,
-    event: AdaptedEvent
-  ) => boolean;
-  onRotationEnd: (
-    detector: RotationGestureDetector,
-    event: AdaptedEvent
-  ) => void;
+  onRotation: (detector: RotationGestureDetector) => boolean;
+  onRotationEnd: (detector: RotationGestureDetector) => void;
 
   private currentTime = 0;
   private previousTime = 0;
@@ -83,14 +71,14 @@ export default class RotationGestureDetector
     }
   }
 
-  private finish(event: AdaptedEvent): void {
+  private finish(): void {
     if (!this.isInProgress) {
       return;
     }
 
     this.isInProgress = false;
     this.keyPointers = [NaN, NaN];
-    this.onRotationEnd(this, event);
+    this.onRotationEnd(this);
   }
 
   private setKeyPointers(tracker: PointerTracker): void {
@@ -131,7 +119,7 @@ export default class RotationGestureDetector
         }
 
         this.updateCurrent(event, tracker);
-        this.onRotation(this, event);
+        this.onRotation(this);
 
         break;
 
@@ -141,14 +129,14 @@ export default class RotationGestureDetector
         }
 
         if (this.keyPointers.indexOf(event.pointerId) >= 0) {
-          this.finish(event);
+          this.finish();
         }
 
         break;
 
       case EventTypes.UP:
         if (this.isInProgress) {
-          this.finish(event);
+          this.finish();
         }
         break;
     }

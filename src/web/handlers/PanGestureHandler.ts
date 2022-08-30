@@ -192,8 +192,8 @@ export default class PanGestureHandler extends GestureHandler {
     this.activateAfterLongPress = 0;
   }
 
-  protected transformNativeEvent(event: AdaptedEvent) {
-    const rect = this.view.getBoundingClientRect();
+  protected transformNativeEvent() {
+    const rect: DOMRect = this.view.getBoundingClientRect();
     const ratio = PixelRatio.get();
 
     const translationX: number = this.getTranslationX();
@@ -202,12 +202,12 @@ export default class PanGestureHandler extends GestureHandler {
     return {
       translationX: isNaN(translationX) ? 0 : translationX,
       translationY: isNaN(translationY) ? 0 : translationY,
-      absoluteX: event.x,
-      absoluteY: event.y,
+      absoluteX: this.tracker.getLastAvgX(),
+      absoluteY: this.tracker.getLastAvgY(),
       velocityX: this.velocityX * ratio * 10,
       velocityY: this.velocityY * ratio * 10,
-      x: event.x - rect.left,
-      y: event.y - rect.top,
+      x: this.tracker.getLastAvgX() - rect.left,
+      y: this.tracker.getLastAvgY() - rect.top,
     };
   }
 
@@ -231,7 +231,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.lastY = this.tracker.getLastAvgY();
 
     this.tryBegin(event);
-    this.checkBegan(event);
+    this.checkBegan();
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
@@ -250,12 +250,12 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (this.tracker.getTrackedPointersCount() > this.maxPointers) {
       if (this.currentState === State.ACTIVE) {
-        this.cancel(event);
+        this.cancel();
       } else {
-        this.fail(event);
+        this.fail();
       }
     } else {
-      this.checkBegan(event);
+      this.checkBegan();
     }
   }
 
@@ -270,10 +270,10 @@ export default class PanGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
 
     if (this.currentState === State.ACTIVE) {
-      this.end(event);
+      this.end();
     } else {
       this.resetProgress();
-      this.fail(event);
+      this.fail();
     }
   }
   protected onPointerRemove(event: AdaptedEvent): void {
@@ -295,7 +295,7 @@ export default class PanGestureHandler extends GestureHandler {
         this.tracker.getTrackedPointersCount() < this.minPointers
       )
     ) {
-      this.checkBegan(event);
+      this.checkBegan();
     }
   }
 
@@ -307,7 +307,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.velocityX = this.tracker.getVelocityX(event.pointerId);
     this.velocityY = this.tracker.getVelocityY(event.pointerId);
 
-    this.checkBegan(event);
+    this.checkBegan();
 
     super.onPointerMove(event);
   }
@@ -329,7 +329,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.velocityX = this.tracker.getVelocityX(event.pointerId);
     this.velocityY = this.tracker.getVelocityY(event.pointerId);
 
-    this.checkBegan(event);
+    this.checkBegan();
 
     if (this.currentState === State.ACTIVE) {
       super.onPointerOutOfBounds(event);
@@ -453,11 +453,11 @@ export default class PanGestureHandler extends GestureHandler {
       this.velocityX = 0;
       this.velocityY = 0;
 
-      this.begin(event);
+      this.begin();
 
       if (this.activateAfterLongPress > 0) {
         this.activationTimeout = setTimeout(() => {
-          this.activate(event);
+          this.activate();
         }, this.activateAfterLongPress);
       }
     } else {
@@ -466,22 +466,22 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  private checkBegan(event: AdaptedEvent): void {
+  private checkBegan(): void {
     if (this.currentState === State.BEGAN) {
       if (this.shouldFail()) {
-        this.fail(event);
+        this.fail();
       } else if (this.shouldActivate()) {
-        this.activate(event);
+        this.activate();
       }
     }
   }
 
-  public activate(event: AdaptedEvent, force = false): void {
+  public activate(force = false): void {
     if (this.currentState !== State.ACTIVE) {
       this.resetProgress();
     }
 
-    super.activate(event, force);
+    super.activate(force);
   }
 
   protected onCancel(): void {

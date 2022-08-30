@@ -114,7 +114,7 @@ export default abstract class GestureHandler {
   // State logic
   //
 
-  public moveToState(newState: State, event: AdaptedEvent) {
+  public moveToState(newState: State) {
     if (this.currentState === newState) {
       return;
     }
@@ -125,8 +125,7 @@ export default abstract class GestureHandler {
     GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
       this,
       newState,
-      oldState,
-      event
+      oldState
     );
 
     this.onStateChange(newState, oldState);
@@ -134,56 +133,56 @@ export default abstract class GestureHandler {
 
   protected onStateChange(_newState: State, _oldState: State): void {}
 
-  public begin(event: AdaptedEvent): void {
-    if (!this.checkHitSlop(event)) {
+  public begin(): void {
+    if (!this.checkHitSlop()) {
       return;
     }
 
     if (this.currentState === State.UNDETERMINED) {
-      this.moveToState(State.BEGAN, event);
+      this.moveToState(State.BEGAN);
     }
   }
 
-  public fail(event: AdaptedEvent): void {
+  public fail(): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.BEGAN
     ) {
-      this.moveToState(State.FAILED, event);
+      this.moveToState(State.FAILED);
       this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
   }
 
-  public cancel(event: AdaptedEvent): void {
+  public cancel(): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
     ) {
       this.onCancel();
-      this.moveToState(State.CANCELLED, event);
+      this.moveToState(State.CANCELLED);
       this.view.style.cursor = 'auto';
     }
   }
 
-  public activate(event: AdaptedEvent, _force = false) {
+  public activate(_force = false) {
     if (
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
     ) {
-      this.moveToState(State.ACTIVE, event);
+      this.moveToState(State.ACTIVE);
       this.view.style.cursor = 'grab';
     }
   }
 
-  public end(event: AdaptedEvent) {
+  public end() {
     if (
       this.currentState === State.BEGAN ||
       this.currentState === State.ACTIVE
     ) {
-      this.moveToState(State.END, event);
+      this.moveToState(State.END);
       this.view.style.cursor = 'auto';
     }
 
@@ -275,10 +274,7 @@ export default abstract class GestureHandler {
     this.pointerType = event.pointerType;
 
     if (this.pointerType === PointerType.TOUCH) {
-      GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(
-        event,
-        this
-      );
+      GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(this);
     }
 
     if (this.config.needsPointerData) {
@@ -303,7 +299,7 @@ export default abstract class GestureHandler {
     }
   }
   protected onPointerMove(event: AdaptedEvent): void {
-    this.tryToSendMoveEvent(event, false);
+    this.tryToSendMoveEvent(false);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
@@ -324,14 +320,14 @@ export default abstract class GestureHandler {
     }
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    this.tryToSendMoveEvent(event, true);
+    this.tryToSendMoveEvent(true);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
   }
-  private tryToSendMoveEvent(event: AdaptedEvent, out: boolean): void {
+  private tryToSendMoveEvent(out: boolean): void {
     if (this.active && (!out || (out && !this.shouldCancellWhenOutside))) {
-      this.sendEvent(event, this.currentState, this.currentState);
+      this.sendEvent(this.currentState, this.currentState);
     }
   }
 
@@ -351,18 +347,13 @@ export default abstract class GestureHandler {
   // Events Sending
   //
 
-  public sendEvent = (
-    event: AdaptedEvent,
-    newState: State,
-    oldState: State
-  ): void => {
+  public sendEvent = (newState: State, oldState: State): void => {
     const {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
     }: PropsRef = this.propsRef.current as PropsRef;
 
     const resultEvent: ResultEvent = this.transformEventData(
-      event,
       newState,
       oldState
     );
@@ -382,20 +373,16 @@ export default abstract class GestureHandler {
     }
   };
 
-  private transformEventData(
-    event: AdaptedEvent,
-    newState: State,
-    oldState: State
-  ): ResultEvent {
+  private transformEventData(newState: State, oldState: State): ResultEvent {
     return {
       nativeEvent: {
         numberOfPointers: this.tracker.getTrackedPointersCount(),
         state: newState,
         pointerInside: isPointerInBounds(this.view, {
-          x: event.x,
-          y: event.y,
+          x: this.tracker.getLastAvgX(),
+          y: this.tracker.getLastAvgY(),
         }),
-        ...this.transformNativeEvent(event),
+        ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
         target: this.ref,
         oldState: newState !== oldState ? oldState : undefined,
@@ -447,7 +434,7 @@ export default abstract class GestureHandler {
       if (isNaN(id)) return;
 
       changed.push({
-        id: id, //event.changedTouches[i].identifier,
+        id: id,
         x: event.changedTouches[i].clientX - rect.left,
         y: event.changedTouches[i].clientY - rect.top,
         absoluteX: event.changedTouches[i].clientX,
@@ -468,7 +455,7 @@ export default abstract class GestureHandler {
     };
   }
 
-  protected transformNativeEvent(_event: AdaptedEvent) {
+  protected transformNativeEvent() {
     return {};
   }
 
@@ -535,7 +522,7 @@ export default abstract class GestureHandler {
     }
   }
 
-  private checkHitSlop(event: AdaptedEvent): boolean {
+  private checkHitSlop(): boolean {
     if (!this.config.hitSlop) {
       return true;
     }
@@ -589,11 +576,15 @@ export default abstract class GestureHandler {
       }
     }
 
+    const rect: DOMRect = this.view.getBoundingClientRect();
+    const offsetX: number = this.tracker.getLastX() - rect.left;
+    const offsetY: number = this.tracker.getLastY() - rect.top;
+
     if (
-      event.offsetX >= left &&
-      event.offsetX <= right &&
-      event.offsetY >= top &&
-      event.offsetY <= bottom
+      offsetX >= left &&
+      offsetX <= right &&
+      offsetY >= top &&
+      offsetY <= bottom
     ) {
       return true;
     }

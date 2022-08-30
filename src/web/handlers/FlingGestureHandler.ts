@@ -40,12 +40,14 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected transformNativeEvent(event: AdaptedEvent) {
+  protected transformNativeEvent() {
+    const rect: DOMRect = this.view.getBoundingClientRect();
+
     return {
-      x: event.offsetX,
-      y: event.offsetY,
-      absoluteX: event.x,
-      absoluteY: event.y,
+      x: this.tracker.getLastAvgX() - rect.left,
+      y: this.tracker.getLastAvgY() - rect.top,
+      absoluteX: this.tracker.getLastAvgX(),
+      absoluteY: this.tracker.getLastAvgY(),
     };
   }
 
@@ -53,11 +55,11 @@ export default class FlingGestureHandler extends GestureHandler {
     this.startX = event.x;
     this.startY = event.y;
 
-    this.begin(event);
+    this.begin();
 
     this.maxNumberOfPointersSimultaneously = 1;
 
-    this.delayTimeout = setTimeout(() => this.fail(event), this.maxDurationMs);
+    this.delayTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
   }
 
   private tryEndFling(event: AdaptedEvent): boolean {
@@ -74,7 +76,7 @@ export default class FlingGestureHandler extends GestureHandler {
           event.y - this.startY > this.minAcceptableDelta))
     ) {
       clearTimeout(this.delayTimeout);
-      this.activate(event);
+      this.activate();
 
       return true;
     }
@@ -84,7 +86,7 @@ export default class FlingGestureHandler extends GestureHandler {
 
   private endFling(event: AdaptedEvent) {
     if (!this.tryEndFling(event)) {
-      this.fail(event);
+      this.fail();
     }
   }
 
@@ -154,9 +156,9 @@ export default class FlingGestureHandler extends GestureHandler {
     this.reset();
   }
 
-  public activate(event: AdaptedEvent, force?: boolean): void {
-    super.activate(event, force);
-    this.end(event);
+  public activate(force?: boolean): void {
+    super.activate(force);
+    this.end();
   }
 
   protected resetConfig(): void {
