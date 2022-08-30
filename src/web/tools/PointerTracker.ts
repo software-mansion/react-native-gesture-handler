@@ -84,22 +84,19 @@ export default class PointerTracker {
 
   //Mapping TouchEvents ID
   private mapTouchEventId(id: number): void {
-    let isSet = false;
-
-    this.touchEventsIds.forEach((touchId: number, mappedId: number) => {
-      if (isNaN(touchId) && !isSet) {
+    for (const [mappedId, touchId] of this.touchEventsIds) {
+      if (isNaN(touchId)) {
         this.touchEventsIds.set(mappedId, id);
-        isSet = true;
-        return;
+        break;
       }
-    });
-
-    return;
+    }
   }
 
   private removeMappedTouchId(id: number): void {
     const mappedId: number = this.getMappedTouchEventId(id);
-    if (!isNaN(mappedId)) this.touchEventsIds.set(mappedId, NaN);
+    if (!isNaN(mappedId)) {
+      this.touchEventsIds.set(mappedId, NaN);
+    }
   }
 
   public getMappedTouchEventId(touchEventId: number): number {
