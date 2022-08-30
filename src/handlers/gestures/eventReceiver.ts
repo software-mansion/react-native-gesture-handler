@@ -83,24 +83,28 @@ export function onGestureHandlerEvent(
         case TouchEventType.TOUCHES_DOWN:
           handler.handlers?.onTouchesDown?.(
             event,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             gestureStateManagers.get(event.handlerTag)!
           );
           break;
         case TouchEventType.TOUCHES_MOVE:
           handler.handlers?.onTouchesMove?.(
             event,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             gestureStateManagers.get(event.handlerTag)!
           );
           break;
         case TouchEventType.TOUCHES_UP:
           handler.handlers?.onTouchesUp?.(
             event,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             gestureStateManagers.get(event.handlerTag)!
           );
           break;
         case TouchEventType.TOUCHES_CANCELLED:
           handler.handlers?.onTouchesCancelled?.(
             event,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             gestureStateManagers.get(event.handlerTag)!
           );
           break;
