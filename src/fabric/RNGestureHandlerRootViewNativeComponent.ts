@@ -1,4 +1,3 @@
-// @ts-ignore TODO: remove once there is a .d.ts file with definitions
 import codegenNativeComponentUntyped from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type { ViewProps, HostComponent } from 'react-native';
 
