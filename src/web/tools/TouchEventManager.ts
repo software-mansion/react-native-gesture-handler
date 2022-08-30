@@ -3,6 +3,7 @@ import {
   EventTypes,
   MouseButtons,
   PointerType,
+  TouchEventType,
 } from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
@@ -14,7 +15,8 @@ export default class TouchEventManager extends EventManager {
         const adaptedEvent: AdaptedEvent = this.mapEvent(
           event,
           EventTypes.DOWN,
-          i
+          i,
+          TouchEventType.DOWN
         );
 
         if (
@@ -42,7 +44,8 @@ export default class TouchEventManager extends EventManager {
         const adaptedEvent: AdaptedEvent = this.mapEvent(
           event,
           EventTypes.MOVE,
-          i
+          i,
+          TouchEventType.MOVE
         );
 
         const inBounds: boolean = isPointerInBounds(this.view, {
@@ -87,7 +90,8 @@ export default class TouchEventManager extends EventManager {
         const adaptedEvent: AdaptedEvent = this.mapEvent(
           event,
           EventTypes.UP,
-          i
+          i,
+          TouchEventType.UP
         );
 
         this.markAsOutOfBounds(adaptedEvent.pointerId);
@@ -106,7 +110,8 @@ export default class TouchEventManager extends EventManager {
         const adaptedEvent: AdaptedEvent = this.mapEvent(
           event,
           EventTypes.CANCEL,
-          i
+          i,
+          TouchEventType.CANCELLED
         );
 
         this.onPointerCancel(adaptedEvent);
@@ -119,7 +124,8 @@ export default class TouchEventManager extends EventManager {
   protected mapEvent(
     event: TouchEvent,
     eventType: EventTypes,
-    index: number
+    index: number,
+    touchEventType: TouchEventType
   ): AdaptedEvent {
     const rect = this.view.getBoundingClientRect();
     const clientX = event.changedTouches[index].clientX;
@@ -135,6 +141,9 @@ export default class TouchEventManager extends EventManager {
       pointerType: PointerType.TOUCH,
       buttons: MouseButtons.NONE,
       time: event.timeStamp,
+      allTouches: event.touches,
+      changedTouches: event.changedTouches,
+      touchEventType: touchEventType,
     };
   }
 }

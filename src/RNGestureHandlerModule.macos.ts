@@ -11,6 +11,7 @@ import PinchGestureHandler from './web/handlers/PinchGestureHandler';
 import RotationGestureHandler from './web/handlers/RotationGestureHandler';
 import FlingGestureHandler from './web/handlers/FlingGestureHandler';
 import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
+import ManualGestureHandler from './web/handlers/ManualGestureHandler';
 
 //Hammer Handlers
 import * as HammerNodeManager from './web_hammer/NodeManager';
@@ -31,6 +32,7 @@ export const Gestures = {
   PinchGestureHandler,
   RotationGestureHandler,
   FlingGestureHandler,
+  ManualGestureHandler,
 };
 
 export const HammerGestures = {
@@ -42,8 +44,6 @@ export const HammerGestures = {
   RotationGestureHandler: HammerRotationGestureHandler,
   FlingGestureHandler: HammerFlingGestureHandler,
 };
-
-const interactionManager = new InteractionManager();
 
 export default {
   handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
@@ -66,7 +66,7 @@ export default {
 
       const GestureClass = Gestures[handlerName];
       NodeManager.createGestureHandler(handlerTag, new GestureClass());
-      interactionManager.configureInteractions(
+      InteractionManager.getInstance().configureInteractions(
         NodeManager.getHandler(handlerTag),
         (config as unknown) as Config
       );
@@ -77,7 +77,10 @@ export default {
         );
       }
 
+      // @ts-ignore If it doesn't exist, the error is thrown
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const GestureClass = HammerGestures[handlerName];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
     }
 
@@ -99,7 +102,7 @@ export default {
     if (isExperimentalWebImplementationEnabled()) {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
 
-      interactionManager.configureInteractions(
+      InteractionManager.getInstance().configureInteractions(
         NodeManager.getHandler(handlerTag),
         newConfig
       );

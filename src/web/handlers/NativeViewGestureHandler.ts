@@ -53,17 +53,18 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
     super.onPointerDown(event);
     this.newPointerAction(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
+    super.onPointerAdd(event);
     this.newPointerAction(event);
   }
 
   private newPointerAction(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
-
     this.startX = this.tracker.getLastAvgX();
     this.startY = this.tracker.getLastAvgY();
 
@@ -98,6 +99,16 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
+    super.onPointerUp(event);
+    this.onUp(event);
+  }
+
+  protected onPointerRemove(event: AdaptedEvent): void {
+    super.onPointerRemove(event);
+    this.onUp(event);
+  }
+
+  private onUp(event: AdaptedEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
 
     if (this.tracker.getTrackedPointersCount() === 0) {
@@ -109,11 +120,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
-    this.onPointerUp(event);
-  }
-
   protected onPointerCancel(event: AdaptedEvent): void {
+    super.onPointerCancel(event);
     this.cancel(event);
     this.reset();
   }

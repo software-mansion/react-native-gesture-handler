@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { AdaptedEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, EventTypes, TouchEventType } from '../interfaces';
 
 export default abstract class EventManager {
   protected readonly view: HTMLElement;
@@ -15,7 +15,8 @@ export default abstract class EventManager {
   protected abstract mapEvent(
     event: Event,
     eventType: EventTypes,
-    index?: number
+    index?: number,
+    touchEventType?: TouchEventType
   ): AdaptedEvent;
 
   protected onPointerDown(_event: AdaptedEvent): void {}

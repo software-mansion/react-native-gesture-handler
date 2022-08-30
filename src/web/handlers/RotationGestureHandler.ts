@@ -85,13 +85,13 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
-    super.onPointerDown(event);
-
     this.tracker.addToTracker(event);
+    super.onPointerDown(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
+    super.onPointerAdd(event);
 
     this.tryBegin(event);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
@@ -136,6 +136,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
+    super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 
@@ -151,11 +152,13 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
+    super.onPointerRemove(event);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
     this.tracker.removeFromTracker(event.pointerId);
   }
 
   protected onPointerCancel(event: AdaptedEvent): void {
+    super.onPointerCancel(event);
     this.end(event);
 
     this.reset();
@@ -169,7 +172,7 @@ export default class RotationGestureHandler extends GestureHandler {
     this.begin(event);
   }
 
-  protected activate(event: AdaptedEvent, _force?: boolean): void {
+  public activate(event: AdaptedEvent, _force?: boolean): void {
     super.activate(event);
   }
 

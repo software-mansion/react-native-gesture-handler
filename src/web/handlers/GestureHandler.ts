@@ -6,6 +6,8 @@ import {
   AdaptedEvent,
   PropsRef,
   ResultEvent,
+  PointerData,
+  ResultTouchEvent,
   PointerType,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
@@ -26,13 +28,12 @@ export default abstract class GestureHandler {
 
   private ref!: number;
   private propsRef!: React.RefObject<unknown>;
-  protected config: Config = { enabled: false };
   private handlerTag!: number;
+  protected config: Config = { enabled: false };
   protected view!: HTMLElement;
 
   protected eventManagers: EventManager[] = [];
   protected tracker: PointerTracker = new PointerTracker();
-  protected interactionManager!: InteractionManager;
 
   // Orchestrator properties
   protected activationIndex = 0;
@@ -89,10 +90,6 @@ export default abstract class GestureHandler {
     manager.setListeners();
 
     this.eventManagers.push(manager);
-  }
-
-  public setInteractionManager(manager: InteractionManager): void {
-    this.interactionManager = manager;
   }
 
   //
@@ -171,7 +168,7 @@ export default abstract class GestureHandler {
     }
   }
 
-  protected activate(event: AdaptedEvent, _force = false) {
+  public activate(event: AdaptedEvent, _force = false) {
     if (
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
@@ -230,7 +227,10 @@ export default abstract class GestureHandler {
       return false;
     }
 
-    return this.interactionManager.shouldWaitForHandlerFailure(this, handler);
+    return InteractionManager.getInstance().shouldWaitForHandlerFailure(
+      this,
+      handler
+    );
   }
 
   public shouldRequireToWaitForFailure(handler: GestureHandler): boolean {
@@ -238,7 +238,7 @@ export default abstract class GestureHandler {
       return false;
     }
 
-    return this.interactionManager.shouldRequireHandlerToWaitForFailure(
+    return InteractionManager.getInstance().shouldRequireHandlerToWaitForFailure(
       this,
       handler
     );
@@ -249,7 +249,10 @@ export default abstract class GestureHandler {
       return true;
     }
 
-    return this.interactionManager.shouldRecognizeSimultaneously(this, handler);
+    return InteractionManager.getInstance().shouldRecognizeSimultaneously(
+      this,
+      handler
+    );
   }
 
   public shouldBeCancelledByOther(handler: GestureHandler): boolean {
@@ -257,7 +260,10 @@ export default abstract class GestureHandler {
       return false;
     }
 
-    return this.interactionManager.shouldHandlerBeCancelledBy(this, handler);
+    return InteractionManager.getInstance().shouldHandlerBeCancelledBy(
+      this,
+      handler
+    );
   }
 
   //
@@ -274,24 +280,70 @@ export default abstract class GestureHandler {
         this
       );
     }
+
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
   }
   // Adding another pointer to existing ones
-  protected onPointerAdd(_event: AdaptedEvent): void {}
-  protected onPointerUp(_event: AdaptedEvent): void {}
+  protected onPointerAdd(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
+  protected onPointerUp(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
   // Removing pointer, when there is more than one pointers
-  protected onPointerRemove(_event: AdaptedEvent): void {}
+  protected onPointerRemove(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
   protected onPointerMove(event: AdaptedEvent): void {
     this.tryToSendMoveEvent(event, false);
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
   }
-  protected onPointerOut(_event: AdaptedEvent): void {}
-  protected onPointerEnter(_event: AdaptedEvent): void {}
-  protected onPointerCancel(_event: AdaptedEvent): void {}
+  protected onPointerOut(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
+  protected onPointerEnter(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
+  protected onPointerCancel(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.tryToSendMoveEvent(event, true);
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
   }
   private tryToSendMoveEvent(event: AdaptedEvent, out: boolean): void {
     if (this.active && (!out || (out && !this.shouldCancellWhenOutside))) {
       this.sendEvent(event, this.currentState, this.currentState);
+    }
+  }
+
+  public sendTouchEvent(event: AdaptedEvent): void {
+    const { onGestureHandlerEvent }: PropsRef = this.propsRef
+      .current as PropsRef;
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const touchEvent: ResultTouchEvent = this.transformTouchEvent(event)!;
+
+    if (touchEvent) {
+      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
     }
   }
 
@@ -347,6 +399,70 @@ export default abstract class GestureHandler {
         handlerTag: this.handlerTag,
         target: this.ref,
         oldState: newState !== oldState ? oldState : undefined,
+      },
+      timeStamp: Date.now(),
+    };
+  }
+
+  private transformTouchEvent(
+    event: AdaptedEvent
+  ): ResultTouchEvent | undefined {
+    if (!event.allTouches || !event.changedTouches || !event.touchEventType) {
+      return;
+    }
+
+    const rect = this.view.getBoundingClientRect();
+
+    const all: PointerData[] = [];
+    const changed: PointerData[] = [];
+
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for (let i = 0; i < event.allTouches.length; ++i) {
+      const id: number = this.tracker.getMappedTouchEventId(
+        event.allTouches[i].identifier
+      );
+
+      // When we simultaneously add 2 (or more) pointers to handler, both allTouches and changedTouches contains information
+      // about all pointers. Because first pointer tries to send event before second was added to tracker, mapped id of second pointer will be NaN.
+      // To avoid crashes, we check whether current id is NaN and, if that's the case, we return undfined and don't send event.
+
+      //TODO: Find another way to handle this problem, such as using tracker instead of arrays given in event
+      if (isNaN(id)) return;
+
+      all.push({
+        id: id,
+        x: event.allTouches[i].clientX - rect.left,
+        y: event.allTouches[i].clientY - rect.top,
+        absoluteX: event.allTouches[i].clientX,
+        absoluteY: event.allTouches[i].clientY,
+      });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for (let i = 0; i < event.changedTouches.length; ++i) {
+      const id: number = this.tracker.getMappedTouchEventId(
+        event.changedTouches[i].identifier
+      );
+
+      if (isNaN(id)) return;
+
+      changed.push({
+        id: id, //event.changedTouches[i].identifier,
+        x: event.changedTouches[i].clientX - rect.left,
+        y: event.changedTouches[i].clientY - rect.top,
+        absoluteX: event.changedTouches[i].clientX,
+        absoluteY: event.changedTouches[i].clientY,
+      });
+    }
+
+    return {
+      nativeEvent: {
+        handlerTag: this.handlerTag,
+        state: this.currentState,
+        eventType: event.touchEventType,
+        changedTouches: changed,
+        allTouches: all,
+        numberOfTouches: all.length,
       },
       timeStamp: Date.now(),
     };
@@ -484,6 +600,14 @@ export default abstract class GestureHandler {
     return false;
   }
 
+  public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
+    const rect: DOMRect = this.view.getBoundingClientRect();
+
+    return (
+      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+    );
+  }
+
   protected resetConfig(): void {}
 
   //
@@ -539,10 +663,10 @@ export default abstract class GestureHandler {
 
 function invokeNullableMethod(
   method:
-    | ((event: ResultEvent) => void)
-    | { __getHandler: () => (event: ResultEvent) => void }
+    | ((event: ResultEvent | ResultTouchEvent) => void)
+    | { __getHandler: () => (event: ResultEvent | ResultTouchEvent) => void }
     | { __nodeConfig: { argMapping: unknown[] } },
-  event: ResultEvent
+  event: ResultEvent | ResultTouchEvent
 ): void {
   if (!method) {
     return;

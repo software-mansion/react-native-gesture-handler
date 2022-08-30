@@ -89,17 +89,18 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
     super.onPointerDown(event);
     this.newPointerAction(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
+    super.onPointerAdd(event);
     this.newPointerAction(event);
   }
 
   private newPointerAction(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
-
     if (this.currentState === State.UNDETERMINED) {
       this.startFling(event);
     }
@@ -131,6 +132,16 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
+    super.onPointerUp(event);
+    this.onUp(event);
+  }
+
+  protected onPointerRemove(event: AdaptedEvent): void {
+    super.onPointerRemove(event);
+    this.onUp(event);
+  }
+
+  private onUp(event: AdaptedEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
     if (this.currentState !== State.BEGAN) {
       return;
@@ -138,11 +149,12 @@ export default class FlingGestureHandler extends GestureHandler {
     this.endFling(event);
   }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
-    this.onPointerUp(event);
+  protected onPointerCancel(event: AdaptedEvent): void {
+    super.onPointerCancel(event);
+    this.reset();
   }
 
-  protected activate(event: AdaptedEvent, force?: boolean): void {
+  public activate(event: AdaptedEvent, force?: boolean): void {
     super.activate(event, force);
     this.end(event);
   }

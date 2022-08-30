@@ -339,14 +339,15 @@ export default class GestureHandlerOrchestrator {
   ): void {
     this.gestureHandlers.forEach((handler: GestureHandler) => {
       if (
-        handler !== currentHandler &&
-        (handler.getPointerType() === PointerType.MOUSE ||
-          handler.getPointerType() === PointerType.PEN)
+        handler.getPointerType() !== PointerType.MOUSE &&
+        handler.getPointerType() !== PointerType.PEN
       ) {
-        handler.cancel(event);
+        return;
       }
 
-      if (handler === currentHandler) {
+      if (handler !== currentHandler) {
+        handler.cancel(event);
+      } else {
         // Handler that received touch event should have its pointer tracker reset
         // This allows handler to smoothly change from mouse/pen to touch
         // The drawback is, that when we try to use mouse/pen one more time, it doesn't send onPointerDown at the first time

@@ -72,17 +72,19 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
-    super.onPointerDown(event);
     this.tracker.addToTracker(event);
+    super.onPointerDown(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
+    super.onPointerAdd(event);
     this.tryBegin(event);
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
+    super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
     if (this.currentState !== State.ACTIVE) {
       return;
@@ -97,6 +99,7 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
+    super.onPointerRemove(event);
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     this.tracker.removeFromTracker(event.pointerId);
 
@@ -127,7 +130,8 @@ export default class PinchGestureHandler extends GestureHandler {
     super.onPointerOutOfBounds(event);
   }
 
-  protected onPointerCancel(_event: AdaptedEvent): void {
+  protected onPointerCancel(event: AdaptedEvent): void {
+    super.onPointerCancel(event);
     this.reset();
   }
 
@@ -140,7 +144,7 @@ export default class PinchGestureHandler extends GestureHandler {
     this.begin(event);
   }
 
-  protected activate(event: AdaptedEvent, force?: boolean): void {
+  public activate(event: AdaptedEvent, force?: boolean): void {
     if (this.currentState !== State.ACTIVE) {
       this.resetProgress();
     }
