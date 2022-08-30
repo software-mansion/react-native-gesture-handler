@@ -105,6 +105,7 @@ export {
   TextInput,
   DrawerLayoutAndroid,
   FlatList,
+  RefreshControl,
 } from './components/GestureComponents';
 export type {
   //events
@@ -155,5 +156,7 @@ export type {
   DrawerKeyboardDismissMode,
 } from './components/DrawerLayout';
 export { default as DrawerLayout } from './components/DrawerLayout';
+
+export { enableExperimentalWebImplementation } from './EnableExperimentalWebImplementation';
 
 initialize();

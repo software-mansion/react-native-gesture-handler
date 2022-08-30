@@ -1,6 +1,6 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "prepare": "bob build",
@@ -80,7 +80,7 @@
     "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^27.0.3",
     "@types/react": "^17.0.0",
-    "@types/react-native": "^0.64.2",
+    "@types/react-native": "^0.69.6",
     "@types/react-test-renderer": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",

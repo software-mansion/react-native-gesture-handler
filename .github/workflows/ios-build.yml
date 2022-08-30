@@ -2,18 +2,22 @@ name: Test iOS build
 on:
   pull_request:
     paths:
+      - '.github/workflows/ios-build.yml'
+      - 'RNGestureHandler.podspec'
       - 'ios/**'
+      - 'Example/ios/**'
+      - 'FabricExample/ios/**'
   push:
     branches:
       - main
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-12
     strategy:
       matrix:
         working-directory: [example, FabricExample]
     concurrency:
-      group: ios-${{ github.ref }}
+      group: ios-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true
     steps:
       - name: checkout

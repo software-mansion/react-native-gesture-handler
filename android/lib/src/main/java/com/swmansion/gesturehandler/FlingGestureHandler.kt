@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler
 
 import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 
 class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
@@ -27,7 +28,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     begin()
     maxNumberOfPointersSimultaneously = 1
     if (handler == null) {
-      handler = Handler() // lazy delegate?
+      handler = Handler(Looper.getMainLooper()) // lazy delegate?
     } else {
       handler!!.removeCallbacksAndMessages(null)
     }

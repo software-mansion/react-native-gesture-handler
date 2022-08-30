@@ -21,7 +21,7 @@ def isNewArchitectureEnabled() {
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
 
-def findNodeModulePath(baseDir, packageName) {
+static def findNodeModulePath(baseDir, packageName) {
     def basePath = baseDir.toPath().normalize()
     // Node's module resolution algorithm searches up to the root directory,
     // after which the base path will be null
@@ -33,6 +33,13 @@ def findNodeModulePath(baseDir, packageName) {
         basePath = basePath.getParent()
     }
     return null
+}
+
+def findNodeModulePath(packageName) {
+    // Don't start in the project dir, as its path ends with node_modules/react-native-gesture-handler/android
+    // we want to go two levels up, so we end up in the first_node modules and eventually
+    // search upwards if the package is not found there
+    return findNodeModulePath(projectDir.toPath().parent.parent.toFile(), packageName)
 }
 
 if (isNewArchitectureEnabled()) {
@@ -64,6 +71,40 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+def shouldAssertNoMultipleInstances() {
+  if (rootProject.hasProperty("disableMultipleInstancesCheck")) {
+    return rootProject.property("disableMultipleInstancesCheck") != "true"
+  } else {
+    return true
+  }
+}
+
+def noMultipleInstancesAssertion() {
+    Set<File> files = fileTree(rootDir.parent) {
+        include "node_modules/**/react-native-gesture-handler/package.json"
+        exclude "**/.yarn/**"
+    }.files
+
+    if (files.size() > 1) {
+        String parsedLocation = files.stream().map({ File file -> "- " + file.toString().replace("/package.json", "") }).collect().join("\n")
+        String exceptionMessage = "\n[Gesture Handler] Multiple instances of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-instances-of-gesture-handler-were-detected \n\nConflict between: \n" + parsedLocation + "\n";
+        throw new Exception(exceptionMessage);
+    }
+}
+
+def REACT_NATIVE_DIR = findNodeModulePath("react-native")
+
+def assertionTask = task assertNoMultipleInstances {
+    onlyIf { shouldAssertNoMultipleInstances() }
+    doFirst {
+        noMultipleInstancesAssertion()
+    }
+}
+
+tasks.preBuild {
+    dependsOn assertionTask
+}
+
 repositories {
     mavenCentral()
 }
@@ -89,23 +130,14 @@ android {
         if (isNewArchitectureEnabled()) {
             var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
             externalNativeBuild {
-                ndkBuild {
-                    arguments "APP_PLATFORM=android-21",
-                            "APP_STL=c++_shared",
-                            "NDK_TOOLCHAIN_VERSION=clang",
-                            "GENERATED_SRC_DIR=${appProject.buildDir}/generated/source",
-                            "PROJECT_BUILD_DIR=${appProject.buildDir}",
-                            "REACT_ANDROID_DIR=${findNodeModulePath(appProject.rootDir, "react-native") ?: "../node_modules/react-native/"}/ReactAndroid",
-                            "REACT_ANDROID_BUILD_DIR=${findNodeModulePath(appProject.rootDir, "react-native") ?: "../node_modules/react-native/"}/ReactAndroid/build"
-                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
-                    cppFlags "-std=c++17"
-                    targets "rngesturehandler_modules"
+                cmake {
+                    cppFlags "-O2 -frtti -fexceptions -Wall -Wno-unused-variable -fstack-protector-all"
+                    arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
+                        "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+                        "-DANDROID_STL=c++_shared"
+                    abiFilters (*reactNativeArchitectures())
                 }
             }
-        }
-
-        ndk {
-            abiFilters (*reactNativeArchitectures())
         }
     }
 
@@ -116,8 +148,8 @@ android {
 
     if (isNewArchitectureEnabled()) {
         externalNativeBuild {
-            ndkBuild {
-                path "src/main/jni/Android.mk"
+            cmake {
+                path "src/main/jni/CMakeLists.txt"
             }
         }
     }
@@ -125,7 +157,7 @@ android {
     packagingOptions {
         // For some reason gradle only complains about the duplicated version of libreact_render libraries
         // while there are more libraries copied in intermediates folder of the lib build directory, we exclude
-        // only the ones that make the build fail (ideally we should only include librngesturehandler_modules but we
+        // only the ones that make the build fail (ideally we should only include libgesturehandler but we
         // are only allowed to specify exclude patterns)
         exclude "**/libreact_render*.so"
     }
@@ -186,5 +218,20 @@ if (isNewArchitectureEnabled()) {
         codegenDir = rootProject.file(findNodeModulePath(rootProject.rootDir, "react-native-codegen") ?: "../node_modules/react-native-codegen/")
         libraryName = "rngesturehandler"
         codegenJavaPackageName = "com.swmansion.gesturehandler"
+    }
+
+    // Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".
+    tasks.whenTaskAdded { task ->
+        if (task.name.contains("configureCMakeDebug")) {
+            rootProject.getTasksByName("packageReactNdkDebugLibs", true).forEach {
+                task.dependsOn(it)
+            }
+        }
+        // We want to add a dependency for both configureCMakeRelease and configureCMakeRelWithDebInfo
+        if (task.name.contains("configureCMakeRel")) {
+            rootProject.getTasksByName("packageReactNdkReleaseLibs", true).forEach {
+                task.dependsOn(it)
+            }
+        }
     }
 }
