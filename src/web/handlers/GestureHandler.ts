@@ -186,7 +186,6 @@ export default abstract class GestureHandler {
       this.moveToState(State.END, event);
       this.view.style.cursor = 'auto';
     }
-    // this.currentState = State.UNDETERMINED;
 
     this.resetProgress();
   }
@@ -423,6 +422,11 @@ export default abstract class GestureHandler {
         event.allTouches[i].identifier
       );
 
+      // When we simultaneously add 2 (or more) pointers to handler, both allTouches and changedTouches contains information
+      // about all pointers. Because first pointer tries to send event before second was added to tracker, mapped id of second pointer will be NaN.
+      // To avoid crashes, we check whether current id is NaN and, if that's the case, we return undfined and don't send event.
+
+      //TODO: Find another way to handle this problem, such as using tracker instead of arrays given in event
       if (isNaN(id)) return;
 
       all.push({

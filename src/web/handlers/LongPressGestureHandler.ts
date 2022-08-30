@@ -67,14 +67,6 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.checkDistanceFail(event);
   }
 
-  protected onPointerAdd(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
-    super.onPointerAdd(event);
-    this.tryBegin(event);
-    this.tryActivate(event);
-    this.checkDistanceFail(event);
-  }
-
   protected onPointerMove(event: AdaptedEvent): void {
     super.onPointerMove(event);
     this.tracker.track(event);
@@ -84,16 +76,7 @@ export default class LongPressGestureHandler extends GestureHandler {
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
-    this.onUp(event);
-  }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
-    super.onPointerRemove(event);
-    this.tracker.removeFromTracker(event.pointerId);
-    this.onUp(event);
-  }
-
-  private onUp(event: AdaptedEvent): void {
     if (this.currentState === State.ACTIVE) {
       this.end(event);
     } else {
