@@ -6,32 +6,17 @@ import {
   GestureUpdateEvent,
   GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
-import { GestureStateManagerType } from './gestureStateManager';
 import { findHandler, findOldGestureHandler } from '../handlersRegistry';
 import { BaseGesture } from './gesture';
-import { tagMessage } from '../../utils';
+import GestureStateManager from '../../web/tools/GestureStateManager';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
 
-const warningMessage = tagMessage(
-  'You have to use react-native-reanimated in order to control the state of the gesture.'
-);
-
-const dummyStateManager: GestureStateManagerType = {
-  begin: () => {
-    console.warn(warningMessage);
-  },
-  activate: () => {
-    console.warn(warningMessage);
-  },
-  end: () => {
-    console.warn(warningMessage);
-  },
-  fail: () => {
-    console.warn(warningMessage);
-  },
-};
+const gestureStateManagers: Map<number, GestureStateManager> = new Map<
+  number,
+  GestureStateManager
+>();
 
 const lastUpdateEvent: (GestureUpdateEvent | undefined)[] = [];
 
@@ -83,21 +68,41 @@ export function onGestureHandlerEvent(
           handler.handlers.onEnd?.(event, false);
         }
         handler.handlers.onFinalize?.(event, false);
+        gestureStateManagers.delete(event.handlerTag);
         lastUpdateEvent[handler.handlers.handlerTag] = undefined;
       }
     } else if (isTouchEvent(event)) {
+      if (!gestureStateManagers.has(event.handlerTag)) {
+        gestureStateManagers.set(
+          event.handlerTag,
+          new GestureStateManager(event.handlerTag)
+        );
+      }
+
       switch (event.eventType) {
         case TouchEventType.TOUCHES_DOWN:
-          handler.handlers?.onTouchesDown?.(event, dummyStateManager);
+          handler.handlers?.onTouchesDown?.(
+            event,
+            gestureStateManagers.get(event.handlerTag)!
+          );
           break;
         case TouchEventType.TOUCHES_MOVE:
-          handler.handlers?.onTouchesMove?.(event, dummyStateManager);
+          handler.handlers?.onTouchesMove?.(
+            event,
+            gestureStateManagers.get(event.handlerTag)!
+          );
           break;
         case TouchEventType.TOUCHES_UP:
-          handler.handlers?.onTouchesUp?.(event, dummyStateManager);
+          handler.handlers?.onTouchesUp?.(
+            event,
+            gestureStateManagers.get(event.handlerTag)!
+          );
           break;
         case TouchEventType.TOUCHES_CANCELLED:
-          handler.handlers?.onTouchesCancelled?.(event, dummyStateManager);
+          handler.handlers?.onTouchesCancelled?.(
+            event,
+            gestureStateManagers.get(event.handlerTag)!
+          );
           break;
       }
     } else {
