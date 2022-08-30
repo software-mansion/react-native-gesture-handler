@@ -22,7 +22,11 @@ export default class PointerTracker {
 
   private touchEventsIds: Map<number, number> = new Map<number, number>();
 
+  private lastMovedPointerId: number;
+
   public constructor() {
+    this.lastMovedPointerId = NaN;
+
     for (let i = 0; i < MAX_POINTERS; ++i) {
       this.touchEventsIds.set(i, NaN);
     }
@@ -32,6 +36,8 @@ export default class PointerTracker {
     if (this.trackedPointers.has(event.pointerId)) {
       return;
     }
+
+    this.lastMovedPointerId = event.pointerId;
 
     const newElement: TrackerElement = {
       lastX: event.x,
@@ -60,6 +66,8 @@ export default class PointerTracker {
     if (!element) {
       return;
     }
+
+    this.lastMovedPointerId = event.pointerId;
 
     const dx = event.x - element.lastX;
     const dy = event.y - element.lastY;
@@ -110,12 +118,49 @@ export default class PointerTracker {
   public getVelocityY(pointerId: number): number {
     return this.trackedPointers.get(pointerId)?.velocityY as number;
   }
-  public getLastX(pointerId: number): number {
-    return this.trackedPointers.get(pointerId)?.lastX as number;
+
+  /**
+   * Returns X coordinate of last tracked pointer
+   */
+  public getLastX(): number;
+
+  /**
+   *
+   * @param pointerId
+   * Returns X coordinate of given pointer
+   */
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  public getLastX(pointerId: number): number;
+
+  public getLastX(pointerId?: number): number {
+    if (pointerId) {
+      return this.trackedPointers.get(pointerId)?.lastX as number;
+    } else {
+      return this.trackedPointers.get(this.lastMovedPointerId)?.lastX as number;
+    }
   }
-  public getLastY(pointerId: number): number {
-    return this.trackedPointers.get(pointerId)?.lastY as number;
+
+  /**
+   * Returns Y coordinate of last tracked pointer
+   */
+  public getLastY(): number;
+
+  /**
+   *
+   * @param pointerId
+   * Returns Y coordinate of given pointer
+   */
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  public getLastY(pointerId: number): number;
+
+  public getLastY(pointerId?: number): number {
+    if (pointerId) {
+      return this.trackedPointers.get(pointerId)?.lastY as number;
+    } else {
+      return this.trackedPointers.get(this.lastMovedPointerId)?.lastY as number;
+    }
   }
+
   public getLastAvgX(): number {
     return this.getSumX() / this.trackedPointers.size;
   }
@@ -163,6 +208,7 @@ export default class PointerTracker {
 
   public resetTracker(): void {
     this.trackedPointers.clear();
+    this.lastMovedPointerId = NaN;
 
     for (let i = 0; i < MAX_POINTERS; ++i) {
       this.touchEventsIds.set(i, NaN);

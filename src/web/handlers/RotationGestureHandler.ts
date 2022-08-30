@@ -17,10 +17,7 @@ export default class RotationGestureHandler extends GestureHandler {
 
   private rotationGestureListener: RotationGestureListener = {
     onRotationBegin: (_detector: RotationGestureDetector): boolean => true,
-    onRotation: (
-      detector: RotationGestureDetector,
-      event: AdaptedEvent
-    ): boolean => {
+    onRotation: (detector: RotationGestureDetector): boolean => {
       const previousRotation: number = this.rotation;
       this.rotation += detector.getRotation();
 
@@ -34,16 +31,13 @@ export default class RotationGestureHandler extends GestureHandler {
         Math.abs(this.rotation) >= ROTATION_RECOGNITION_THRESHOLD &&
         this.currentState === State.BEGAN
       ) {
-        this.activate(event);
+        this.activate();
       }
 
       return true;
     },
-    onRotationEnd: (
-      _detector: RotationGestureDetector,
-      event: AdaptedEvent
-    ): void => {
-      this.end(event);
+    onRotationEnd: (_detector: RotationGestureDetector): void => {
+      this.end();
     },
   };
 
@@ -63,7 +57,7 @@ export default class RotationGestureHandler extends GestureHandler {
     this.enabled = enabled;
   }
 
-  protected transformNativeEvent(_event: AdaptedEvent) {
+  protected transformNativeEvent() {
     return {
       rotation: this.rotation ? this.rotation : 0,
       anchorX: this.getAnchorX(),
@@ -93,7 +87,7 @@ export default class RotationGestureHandler extends GestureHandler {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
 
-    this.tryBegin(event);
+    this.tryBegin();
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
   }
 
@@ -145,9 +139,9 @@ export default class RotationGestureHandler extends GestureHandler {
     }
 
     if (this.currentState === State.ACTIVE) {
-      this.end(event);
+      this.end();
     } else {
-      this.fail(event);
+      this.fail();
     }
   }
 
@@ -159,21 +153,21 @@ export default class RotationGestureHandler extends GestureHandler {
 
   protected onPointerCancel(event: AdaptedEvent): void {
     super.onPointerCancel(event);
-    this.end(event);
+    this.end();
 
     this.reset();
   }
 
-  protected tryBegin(event: AdaptedEvent): void {
+  protected tryBegin(): void {
     if (this.currentState !== State.UNDETERMINED) {
       return;
     }
 
-    this.begin(event);
+    this.begin();
   }
 
-  public activate(event: AdaptedEvent, _force?: boolean): void {
-    super.activate(event);
+  public activate(_force?: boolean): void {
+    super.activate();
   }
 
   protected onReset(): void {

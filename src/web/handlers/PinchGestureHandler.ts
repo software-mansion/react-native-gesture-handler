@@ -19,7 +19,7 @@ export default class PinchGestureHandler extends GestureHandler {
       this.startingSpan = detector.getCurrentSpan();
       return true;
     },
-    onScale: (detector: ScaleGestureDetector, event: AdaptedEvent): boolean => {
+    onScale: (detector: ScaleGestureDetector): boolean => {
       const prevScaleFactor: number = this.scale;
       this.scale *= detector.getScaleFactor(
         this.tracker.getTrackedPointersCount()
@@ -35,13 +35,12 @@ export default class PinchGestureHandler extends GestureHandler {
           this.spanSlop &&
         this.currentState === State.BEGAN
       ) {
-        this.activate(event);
+        this.activate();
       }
       return true;
     },
     onScaleEnd: (
-      _detector: ScaleGestureDetector,
-      _event: AdaptedEvent
+      _detector: ScaleGestureDetector
       // eslint-disable-next-line @typescript-eslint/no-empty-function
     ): void => {},
   };
@@ -62,7 +61,7 @@ export default class PinchGestureHandler extends GestureHandler {
     this.enabled = enabled;
   }
 
-  protected transformNativeEvent(_event: AdaptedEvent) {
+  protected transformNativeEvent() {
     return {
       focalX: this.scaleGestureDetector.getFocusX(),
       focalY: this.scaleGestureDetector.getFocusY(),
@@ -79,7 +78,7 @@ export default class PinchGestureHandler extends GestureHandler {
   protected onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
-    this.tryBegin(event);
+    this.tryBegin();
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
   }
 
@@ -92,9 +91,9 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
 
     if (this.currentState === State.ACTIVE) {
-      this.end(event);
+      this.end();
     } else {
-      this.fail(event);
+      this.fail();
     }
   }
 
@@ -107,7 +106,7 @@ export default class PinchGestureHandler extends GestureHandler {
       this.currentState === State.ACTIVE &&
       this.tracker.getTrackedPointersCount() < 2
     ) {
-      this.end(event);
+      this.end();
     }
   }
 
@@ -135,21 +134,21 @@ export default class PinchGestureHandler extends GestureHandler {
     this.reset();
   }
 
-  private tryBegin(event: AdaptedEvent): void {
+  private tryBegin(): void {
     if (this.currentState !== State.UNDETERMINED) {
       return;
     }
 
     this.resetProgress();
-    this.begin(event);
+    this.begin();
   }
 
-  public activate(event: AdaptedEvent, force?: boolean): void {
+  public activate(force?: boolean): void {
     if (this.currentState !== State.ACTIVE) {
       this.resetProgress();
     }
 
-    super.activate(event, force);
+    super.activate(force);
   }
 
   protected onReset(): void {

@@ -25,12 +25,14 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.setShouldCancelWhenOutside(true);
   }
 
-  protected transformNativeEvent(event: AdaptedEvent) {
+  protected transformNativeEvent() {
+    const rect: DOMRect = this.view.getBoundingClientRect();
+
     return {
-      x: event.offsetX,
-      y: event.offsetY,
-      absoluteX: event.x,
-      absoluteY: event.y,
+      x: this.tracker.getLastAvgX() - rect.left,
+      y: this.tracker.getLastAvgY() - rect.top,
+      absoluteX: this.tracker.getLastAvgX(),
+      absoluteY: this.tracker.getLastAvgY(),
       duration: Date.now() - this.startTime,
     };
   }
@@ -63,7 +65,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
     this.tryBegin(event);
-    this.tryActivate(event);
+    this.tryActivate();
     this.checkDistanceFail(event);
   }
 
@@ -71,7 +73,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
     this.tryBegin(event);
-    this.tryActivate(event);
+    this.tryActivate();
     this.checkDistanceFail(event);
   }
 
@@ -84,20 +86,20 @@ export default class LongPressGestureHandler extends GestureHandler {
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
-    this.onUp(event);
+    this.onUp();
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);
-    this.onUp(event);
+    this.onUp();
   }
 
-  private onUp(event: AdaptedEvent): void {
+  private onUp(): void {
     if (this.currentState === State.ACTIVE) {
-      this.end(event);
+      this.end();
     } else {
-      this.fail(event);
+      this.fail();
     }
   }
 
@@ -109,19 +111,19 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.previousTime = Date.now();
     this.startTime = this.previousTime;
 
-    this.begin(event);
+    this.begin();
 
     this.startX = event.x;
     this.startY = event.y;
   }
 
-  private tryActivate(event: AdaptedEvent): void {
+  private tryActivate(): void {
     if (this.minDurationMs > 0) {
       this.activationTimeout = setTimeout(() => {
-        this.activate(event);
+        this.activate();
       }, this.minDurationMs);
     } else if (this.minDurationMs === 0) {
-      this.activate(event);
+      this.activate();
     }
   }
 
@@ -135,9 +137,9 @@ export default class LongPressGestureHandler extends GestureHandler {
     }
 
     if (this.currentState === State.ACTIVE) {
-      this.cancel(event);
+      this.cancel();
     } else {
-      this.fail(event);
+      this.fail();
     }
   }
 }

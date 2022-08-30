@@ -9,7 +9,7 @@ export default class ManualGestureHandler extends GestureHandler {
   protected onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
-    this.begin(event);
+    this.begin();
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
