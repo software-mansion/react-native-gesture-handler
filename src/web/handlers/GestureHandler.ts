@@ -16,7 +16,7 @@ import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerEventManager from '../tools/PointerEventManager';
-import PointerTracker from '../tools/PointerTracker';
+import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import TouchEventManager from '../tools/TouchEventManager';
 import { isPointerInBounds } from '../utils';
 
@@ -338,20 +338,9 @@ export default abstract class GestureHandler {
     const { onGestureHandlerEvent }: PropsRef = this.propsRef
       .current as PropsRef;
 
-    // const touchEvent: ResultTouchEvent = this.transformTouchEvent(event)!;
-    let touchEvent: ResultTouchEvent;
-
-    console.log(event.pointerType);
-
-    if (
-      event.pointerType === PointerType.MOUSE ||
-      event.pointerType === PointerType.PEN
-    ) {
-      touchEvent = this.mapPointerEventToTouchEvent(event);
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      touchEvent = this.transformTouchEvent(event)!;
-    }
+    const touchEvent: ResultTouchEvent | undefined = this.transformTouchEvent(
+      event
+    );
 
     if (touchEvent) {
       invokeNullableMethod(onGestureHandlerEvent, touchEvent);
@@ -409,77 +398,56 @@ export default abstract class GestureHandler {
   private transformTouchEvent(
     event: AdaptedEvent
   ): ResultTouchEvent | undefined {
-    if (!event.allTouches || !event.changedTouches || !event.touchEventType) {
-      return;
-    }
-
     const rect = this.view.getBoundingClientRect();
 
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
 
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for (let i = 0; i < event.allTouches.length; ++i) {
-      const id: number = this.tracker.getMappedTouchEventId(
-        event.allTouches[i].identifier
-      );
+    const trackerData = this.tracker.getData();
 
-      // When we simultaneously add 2 (or more) pointers to handler, both allTouches and changedTouches contains information
-      // about all pointers. Because first pointer tries to send event before second was added to tracker, mapped id of second pointer will be NaN.
-      // To avoid crashes, we check whether current id is NaN and, if that's the case, we return undfined and don't send event.
+    // This if handles edge case where all pointers have been cancelled
+    // When pointercancel is triggered, reset method is called. This means that tracker will be reset after first pointer being cancelled
+    // The problem is, that handler will receive another pointercancel event from rest oh the pointers
+    // To avoid crashing, we don't send event if tracker tracks no poonters, i.e. has been reset
+    if (trackerData.size === 0) {
+      return;
+    }
 
-      //TODO: Find another way to handle this problem, such as using tracker instead of arrays given in event
-      if (isNaN(id)) return;
+    trackerData.forEach((element: TrackerElement, key: number): void => {
+      const id: number = this.tracker.getMappedTouchEventId(key);
 
       all.push({
         id: id,
-        x: event.allTouches[i].clientX - rect.left,
-        y: event.allTouches[i].clientY - rect.top,
-        absoluteX: event.allTouches[i].clientX,
-        absoluteY: event.allTouches[i].clientY,
+        x: element.lastX - rect.left,
+        y: element.lastY - rect.top,
+        absoluteX: element.lastX,
+        absoluteY: element.lastY,
       });
-    }
+    });
 
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for (let i = 0; i < event.changedTouches.length; ++i) {
-      const id: number = this.tracker.getMappedTouchEventId(
-        event.changedTouches[i].identifier
-      );
-
-      if (isNaN(id)) return;
-
+    // Each pointer send its own event, so we want changed touches to contain only the pointer that has changed.
+    // However, if the event is cancel, we want to cancel all pointers to avoid crashes
+    if (event.eventType !== EventTypes.CANCEL) {
       changed.push({
-        id: id,
-        x: event.changedTouches[i].clientX - rect.left,
-        y: event.changedTouches[i].clientY - rect.top,
-        absoluteX: event.changedTouches[i].clientX,
-        absoluteY: event.changedTouches[i].clientY,
+        id: this.tracker.getMappedTouchEventId(event.pointerId),
+        x: event.x - rect.left,
+        y: event.y - rect.top,
+        absoluteX: event.x,
+        absoluteY: event.y,
+      });
+    } else {
+      trackerData.forEach((element: TrackerElement, key: number): void => {
+        const id: number = this.tracker.getMappedTouchEventId(key);
+
+        changed.push({
+          id: id,
+          x: element.lastX - rect.left,
+          y: element.lastY - rect.top,
+          absoluteX: element.lastX,
+          absoluteY: element.lastY,
+        });
       });
     }
-
-    return {
-      nativeEvent: {
-        handlerTag: this.handlerTag,
-        state: this.currentState,
-        eventType: event.touchEventType,
-        changedTouches: changed,
-        allTouches: all,
-        numberOfTouches: all.length,
-      },
-      timeStamp: Date.now(),
-    };
-  }
-
-  private mapPointerEventToTouchEvent(event: AdaptedEvent): ResultTouchEvent {
-    const pointerData: PointerData = {
-      id: 0,
-      x: event.offsetX,
-      y: event.offsetY,
-      absoluteX: event.x,
-      absoluteY: event.y,
-    };
-
-    console.log(event);
 
     let eventType: TouchEventType = TouchEventType.UNDETERMINED;
 
@@ -493,7 +461,6 @@ export default abstract class GestureHandler {
         eventType = TouchEventType.UP;
         break;
       case EventTypes.MOVE:
-        console.log('move');
         eventType = TouchEventType.MOVE;
         break;
       case EventTypes.CANCEL:
@@ -501,14 +468,23 @@ export default abstract class GestureHandler {
         break;
     }
 
+    let numberOfTouches: number = all.length;
+
+    if (
+      event.eventType === EventTypes.UP ||
+      event.eventType === EventTypes.ADDITIONAL_POINTER_UP
+    ) {
+      --numberOfTouches;
+    }
+
     return {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.currentState,
-        eventType: eventType,
-        changedTouches: [pointerData],
-        allTouches: [pointerData],
-        numberOfTouches: 1,
+        eventType: event.touchEventType ? event.touchEventType : eventType,
+        changedTouches: changed,
+        allTouches: all,
+        numberOfTouches: numberOfTouches,
       },
       timeStamp: Date.now(),
     };
