@@ -408,8 +408,8 @@ export default abstract class GestureHandler {
     // This if handles edge case where all pointers have been cancelled
     // When pointercancel is triggered, reset method is called. This means that tracker will be reset after first pointer being cancelled
     // The problem is, that handler will receive another pointercancel event from rest oh the pointers
-    // To avoid crashing, we don't send event if tracker tracks no poonters, i.e. has been reset
-    if (trackerData.size === 0) {
+    // To avoid crashing, we don't send event if tracker tracks no pointers, i.e. has been reset
+    if (trackerData.size === 0 || !trackerData.has(event.pointerId)) {
       return;
     }
 
