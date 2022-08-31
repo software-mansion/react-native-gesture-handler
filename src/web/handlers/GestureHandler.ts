@@ -9,6 +9,8 @@ import {
   PointerData,
   ResultTouchEvent,
   PointerType,
+  TouchEventType,
+  EventTypes,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
@@ -336,8 +338,20 @@ export default abstract class GestureHandler {
     const { onGestureHandlerEvent }: PropsRef = this.propsRef
       .current as PropsRef;
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const touchEvent: ResultTouchEvent = this.transformTouchEvent(event)!;
+    // const touchEvent: ResultTouchEvent = this.transformTouchEvent(event)!;
+    let touchEvent: ResultTouchEvent;
+
+    console.log(event.pointerType);
+
+    if (
+      event.pointerType === PointerType.MOUSE ||
+      event.pointerType === PointerType.PEN
+    ) {
+      touchEvent = this.mapPointerEventToTouchEvent(event);
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      touchEvent = this.transformTouchEvent(event)!;
+    }
 
     if (touchEvent) {
       invokeNullableMethod(onGestureHandlerEvent, touchEvent);
@@ -451,6 +465,50 @@ export default abstract class GestureHandler {
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: all.length,
+      },
+      timeStamp: Date.now(),
+    };
+  }
+
+  private mapPointerEventToTouchEvent(event: AdaptedEvent): ResultTouchEvent {
+    const pointerData: PointerData = {
+      id: 0,
+      x: event.offsetX,
+      y: event.offsetY,
+      absoluteX: event.x,
+      absoluteY: event.y,
+    };
+
+    console.log(event);
+
+    let eventType: TouchEventType = TouchEventType.UNDETERMINED;
+
+    switch (event.eventType) {
+      case EventTypes.DOWN:
+      case EventTypes.ADDITIONAL_POINTER_DOWN:
+        eventType = TouchEventType.DOWN;
+        break;
+      case EventTypes.UP:
+      case EventTypes.ADDITIONAL_POINTER_UP:
+        eventType = TouchEventType.UP;
+        break;
+      case EventTypes.MOVE:
+        console.log('move');
+        eventType = TouchEventType.MOVE;
+        break;
+      case EventTypes.CANCEL:
+        eventType = TouchEventType.CANCELLED;
+        break;
+    }
+
+    return {
+      nativeEvent: {
+        handlerTag: this.handlerTag,
+        state: this.currentState,
+        eventType: eventType,
+        changedTouches: [pointerData],
+        allTouches: [pointerData],
+        numberOfTouches: 1,
       },
       timeStamp: Date.now(),
     };
