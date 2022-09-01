@@ -12,9 +12,9 @@ import {
 } from '../gestureHandlerCommon';
 import { findHandler, findOldGestureHandler } from '../handlersRegistry';
 import { BaseGesture } from './gesture';
-import GestureStateManager from '../../web/tools/GestureStateManager';
 import { GestureStateManagerType } from './gestureStateManager';
 import { tagMessage } from '../../utils';
+// import GestureStateManager from '../../web/tools/GestureStateManager';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
@@ -37,6 +37,15 @@ const dummyStateManager: GestureStateManagerType = {
     console.warn(warningMessage);
   },
 };
+
+const webStateManagerModule =
+  Platform.OS === 'web' ? import('../../web/tools/GestureStateManager') : null;
+
+let MyGestureStateManager;
+
+webStateManagerModule?.then((module) => {
+  MyGestureStateManager = module.default;
+});
 
 const gestureStateManagers: Map<number, GestureStateManager> = new Map<
   number,
@@ -103,7 +112,8 @@ export function onGestureHandlerEvent(
       ) {
         gestureStateManagers.set(
           event.handlerTag,
-          new GestureStateManager(event.handlerTag)
+          //new GestureStateManager(event.handlerTag)
+          new MyGestureStateManager(event.handlerTag)
         );
       }
 
