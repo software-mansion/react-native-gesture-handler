@@ -41,15 +41,16 @@ const dummyStateManager: GestureStateManagerType = {
 const webStateManagerModule =
   Platform.OS === 'web' ? import('../../web/tools/GestureStateManager') : null;
 
+//@ts-ignore Type is known
 let MyGestureStateManager;
 
 webStateManagerModule?.then((module) => {
   MyGestureStateManager = module.default;
 });
 
-const gestureStateManagers: Map<number, GestureStateManager> = new Map<
+const gestureStateManagers: Map<number, typeof MyGestureStateManager> = new Map<
   number,
-  GestureStateManager
+  typeof MyGestureStateManager
 >();
 
 const lastUpdateEvent: (GestureUpdateEvent | undefined)[] = [];
@@ -113,6 +114,8 @@ export function onGestureHandlerEvent(
         gestureStateManagers.set(
           event.handlerTag,
           //new GestureStateManager(event.handlerTag)
+          //@ts-ignore Type is known
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           new MyGestureStateManager(event.handlerTag)
         );
       }
