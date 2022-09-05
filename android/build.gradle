@@ -54,7 +54,7 @@ def safeExtGet(prop, fallback) {
 
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
 def shouldUseCommonInterfaceFromReanimated() {
-    def reanimated = rootProject.subprojects.find { it.name == 'react-native-reanimated' };
+    def reanimated = rootProject.subprojects.find { it.name == 'react-native-reanimated' }
     if (reanimated != null) {
         def inputFile = new File(reanimated.projectDir, '../package.json')
         def json = new JsonSlurper().parseText(inputFile.text)
@@ -201,7 +201,7 @@ dependencies {
 
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
-        implementation (project(':react-native-reanimated')) {
+        implementation (rootProject.subprojects.find { it.name == 'react-native-reanimated' }) {
             exclude group:'com.facebook.fbjni' // resolves "Duplicate class com.facebook.jni.CppException"
         }
     }
