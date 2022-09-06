@@ -115,7 +115,7 @@ export default class PointerTracker {
   }
 
   /**
-   * Returns X coordinate of last tracked pointer
+   * Returns X coordinate of last moved pointer
    */
   public getLastX(): number;
 
@@ -136,7 +136,7 @@ export default class PointerTracker {
   }
 
   /**
-   * Returns Y coordinate of last tracked pointer
+   * Returns Y coordinate of last moved pointer
    */
   public getLastY(): number;
 
