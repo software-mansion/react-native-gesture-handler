@@ -78,15 +78,15 @@ export default class TouchEventManager extends EventManager {
     });
 
     this.view.addEventListener('touchend', (event: TouchEvent) => {
-      // When we call reset on gesture handlers, it also resets their event managers
-      // In some handlers (like RotationGestureHandler) reset is called before all pointers leave view
-      // This means, that activePointersCounter will be set to 0, while there are still remaining pointers on view
-      // Removing them will end in activePointersCounter going below 0, therefore handlers won't behave properly
-      if (this.activePointersCounter === 0) {
-        return;
-      }
-
       for (let i = 0; i < event.changedTouches.length; ++i) {
+        // When we call reset on gesture handlers, it also resets their event managers
+        // In some handlers (like RotationGestureHandler) reset is called before all pointers leave view
+        // This means, that activePointersCounter will be set to 0, while there are still remaining pointers on view
+        // Removing them will end in activePointersCounter going below 0, therefore handlers won't behave properly
+        if (this.activePointersCounter === 0) {
+          break;
+        }
+
         const adaptedEvent: AdaptedEvent = this.mapEvent(
           event,
           EventTypes.UP,
