@@ -12,8 +12,6 @@ export default abstract class EventManager {
   }
 
   public abstract setListeners(): void;
-  public abstract removeListeners(): void;
-
   protected abstract mapEvent(
     event: Event,
     eventType: EventTypes,

@@ -1,6 +1,6 @@
 import { AdaptedEvent } from '../interfaces';
 
-export interface TrackerElement {
+interface TrackerElement {
   lastX: number;
   lastY: number;
 

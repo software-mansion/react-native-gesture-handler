@@ -32,15 +32,6 @@ export default class GestureHandlerOrchestrator {
     handler.setActivationIndex(Number.MAX_VALUE);
   }
 
-  public removeHandlerFromOrchestrator(handler: GestureHandler): void {
-    let index: number = this.gestureHandlers.indexOf(handler);
-    this.gestureHandlers.splice(index, 1);
-    index = this.awaitingHandlers.indexOf(handler);
-    this.awaitingHandlers.splice(index, 1);
-    index = this.handlersToCancel.indexOf(handler);
-    this.handlersToCancel.splice(index, 1);
-  }
-
   private cleanupFinishedHandlers(): void {
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
       const handler = this.gestureHandlers[i];

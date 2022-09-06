@@ -9,120 +9,113 @@ import { isPointerInBounds } from '../utils';
 
 export default class PointerEventManager extends EventManager {
   public setListeners(): void {
-    this.view.onpointerdown = this.pointerDownCallback.bind(this);
-    this.view.onpointermove = this.pointerMoveCallback.bind(this);
-    this.view.onpointerup = this.pointerUpCallback.bind(this);
-    this.view.onpointercancel = this.pointerCancelCallback.bind(this);
-  }
+    this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
+      if (event.pointerType === PointerType.TOUCH) {
+        return;
+      }
+      if (
+        !isPointerInBounds(this.view, { x: event.clientX, y: event.clientY })
+      ) {
+        return;
+      }
 
-  public removeListeners(): void {
-    this.view.onpointerdown = null;
-    this.view.onpointermove = null;
-    this.view.onpointerup = null;
-    this.view.onpointercancel = null;
-  }
+      const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.DOWN);
+      const target = event.target as HTMLElement;
 
-  private pointerDownCallback(event: PointerEvent): void {
-    if (event.pointerType === PointerType.TOUCH) {
-      return;
-    }
-    if (!isPointerInBounds(this.view, { x: event.clientX, y: event.clientY })) {
-      return;
-    }
+      target.setPointerCapture(adaptedEvent.pointerId);
+      this.markAsInBounds(adaptedEvent.pointerId);
 
-    const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.DOWN);
-    const target = event.target as HTMLElement;
-
-    target.setPointerCapture(adaptedEvent.pointerId);
-    this.markAsInBounds(adaptedEvent.pointerId);
-
-    if (++this.activePointersCounter > 1) {
-      adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
-      this.onPointerAdd(adaptedEvent);
-    } else {
-      this.onPointerDown(adaptedEvent);
-    }
-  }
-
-  private pointerMoveCallback(event: PointerEvent): void {
-    if (event.pointerType === PointerType.TOUCH) {
-      return;
-    }
-
-    if (
-      event.pointerType === PointerType.MOUSE &&
-      event.buttons !== MouseButtons.LEFT
-    ) {
-      return;
-    }
-
-    const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
-
-    const inBounds: boolean = isPointerInBounds(this.view, {
-      x: adaptedEvent.x,
-      y: adaptedEvent.y,
+      if (++this.activePointersCounter > 1) {
+        adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
+        this.onPointerAdd(adaptedEvent);
+      } else {
+        this.onPointerDown(adaptedEvent);
+      }
     });
 
-    const pointerIndex: number = this.pointersInBounds.indexOf(
-      adaptedEvent.pointerId
-    );
-
-    if (inBounds) {
-      if (pointerIndex < 0) {
-        adaptedEvent.eventType = EventTypes.ENTER;
-        this.onPointerEnter(adaptedEvent);
-        this.markAsInBounds(adaptedEvent.pointerId);
-      } else {
-        this.onPointerMove(adaptedEvent);
+    this.view.addEventListener('pointerup', (event: PointerEvent): void => {
+      if (event.pointerType === PointerType.TOUCH) {
+        return;
       }
-    } else {
-      if (pointerIndex >= 0) {
-        adaptedEvent.eventType = EventTypes.OUT;
-        this.onPointerOut(adaptedEvent);
-        this.markAsOutOfBounds(adaptedEvent.pointerId);
-      } else {
-        this.onPointerOutOfBounds(adaptedEvent);
+
+      // When we call reset on gesture handlers, it also resets their event managers
+      // In some handlers (like RotationGestureHandler) reset is called before all pointers leave view
+      // This means, that activePointersCounter will be set to 0, while there are still remaining pointers on view
+      // Removing them will end in activePointersCounter going below 0, therefore handlers won't behave properly
+      if (this.activePointersCounter === 0) {
+        return;
       }
-    }
-  }
 
-  private pointerUpCallback(event: PointerEvent): void {
-    if (event.pointerType === PointerType.TOUCH) {
-      return;
-    }
+      const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
+      const target = event.target as HTMLElement;
 
-    // When we call reset on gesture handlers, it also resets their event managers
-    // In some handlers (like RotationGestureHandler) reset is called before all pointers leave view
-    // This means, that activePointersCounter will be set to 0, while there are still remaining pointers on view
-    // Removing them will end in activePointersCounter going below 0, therefore handlers won't behave properly
-    if (this.activePointersCounter === 0) {
-      return;
-    }
+      target.releasePointerCapture(adaptedEvent.pointerId);
+      this.markAsOutOfBounds(adaptedEvent.pointerId);
 
-    const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
-    const target = event.target as HTMLElement;
+      if (--this.activePointersCounter > 0) {
+        adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_UP;
+        this.onPointerRemove(adaptedEvent);
+      } else {
+        this.onPointerUp(adaptedEvent);
+      }
+    });
 
-    target.releasePointerCapture(adaptedEvent.pointerId);
-    this.markAsOutOfBounds(adaptedEvent.pointerId);
+    this.view.addEventListener('pointermove', (event: PointerEvent): void => {
+      if (event.pointerType === PointerType.TOUCH) {
+        return;
+      }
 
-    if (--this.activePointersCounter > 0) {
-      adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_UP;
-      this.onPointerRemove(adaptedEvent);
-    } else {
-      this.onPointerUp(adaptedEvent);
-    }
-  }
+      if (
+        event.pointerType === PointerType.MOUSE &&
+        event.buttons !== MouseButtons.LEFT
+      ) {
+        return;
+      }
 
-  private pointerCancelCallback(event: PointerEvent): void {
-    if (event.pointerType === PointerType.TOUCH) {
-      return;
-    }
+      const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
 
-    const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.CANCEL);
+      const inBounds: boolean = isPointerInBounds(this.view, {
+        x: adaptedEvent.x,
+        y: adaptedEvent.y,
+      });
 
-    this.onPointerCancel(adaptedEvent);
-    this.markAsOutOfBounds(adaptedEvent.pointerId);
-    this.activePointersCounter = 0;
+      const pointerIndex: number = this.pointersInBounds.indexOf(
+        adaptedEvent.pointerId
+      );
+
+      if (inBounds) {
+        if (pointerIndex < 0) {
+          adaptedEvent.eventType = EventTypes.ENTER;
+          this.onPointerEnter(adaptedEvent);
+          this.markAsInBounds(adaptedEvent.pointerId);
+        } else {
+          this.onPointerMove(adaptedEvent);
+        }
+      } else {
+        if (pointerIndex >= 0) {
+          adaptedEvent.eventType = EventTypes.OUT;
+          this.onPointerOut(adaptedEvent);
+          this.markAsOutOfBounds(adaptedEvent.pointerId);
+        } else {
+          this.onPointerOutOfBounds(adaptedEvent);
+        }
+      }
+    });
+
+    this.view.addEventListener('pointercancel', (event: PointerEvent): void => {
+      if (event.pointerType === PointerType.TOUCH) {
+        return;
+      }
+
+      const adaptedEvent: AdaptedEvent = this.mapEvent(
+        event,
+        EventTypes.CANCEL
+      );
+
+      this.onPointerCancel(adaptedEvent);
+      this.markAsOutOfBounds(adaptedEvent.pointerId);
+      this.activePointersCounter = 0;
+    });
   }
 
   protected mapEvent(event: PointerEvent, eventType: EventTypes): AdaptedEvent {
