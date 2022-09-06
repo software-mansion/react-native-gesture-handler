@@ -88,10 +88,15 @@ export default {
   },
   attachGestureHandler(
     handlerTag: number,
-    newView: number,
+    newView: any,
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (!(newView instanceof HTMLElement || newView.updater)) {
+      return;
+    }
+
     if (isExperimentalWebImplementationEnabled()) {
       NodeManager.getHandler(handlerTag).init(newView, propsRef);
     } else {

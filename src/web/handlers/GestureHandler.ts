@@ -56,19 +56,19 @@ export default abstract class GestureHandler {
 
     this.currentState = State.UNDETERMINED;
 
-    this.setView(ref);
+    this.setView();
     this.addEventManager(new PointerEventManager(this.view));
     this.addEventManager(new TouchEventManager(this.view));
   }
 
-  private setView(ref: number) {
-    if (!ref) {
+  private setView() {
+    if (!this.ref) {
       throw new Error(
         `Cannot find HTML Element for handler ${this.handlerTag}`
       );
     }
 
-    this.view = (findNodeHandle(ref) as unknown) as HTMLElement;
+    this.view = (findNodeHandle(this.ref) as unknown) as HTMLElement;
     this.view.style['touchAction'] = 'none';
     this.view.style['webkitUserSelect'] = 'none';
     this.view.style['userSelect'] = 'none';
