@@ -1,8 +1,4 @@
-import {
-  DeviceEventEmitter,
-  EmitterSubscription,
-  Platform,
-} from 'react-native';
+import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
 import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import {
@@ -12,45 +8,17 @@ import {
 } from '../gestureHandlerCommon';
 import { findHandler, findOldGestureHandler } from '../handlersRegistry';
 import { BaseGesture } from './gesture';
-import { GestureStateManagerType } from './gestureStateManager';
-import { tagMessage } from '../../utils';
-// import GestureStateManager from '../../web/tools/GestureStateManager';
+import {
+  GestureStateManager,
+  GestureStateManagerType,
+} from './gestureStateManager';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
 
-const warningMessage = tagMessage(
-  'You have to use react-native-reanimated in order to control the state of the gesture.'
-);
-
-const dummyStateManager: GestureStateManagerType = {
-  begin: () => {
-    console.warn(warningMessage);
-  },
-  activate: () => {
-    console.warn(warningMessage);
-  },
-  end: () => {
-    console.warn(warningMessage);
-  },
-  fail: () => {
-    console.warn(warningMessage);
-  },
-};
-
-const webStateManagerModule =
-  Platform.OS === 'web' ? import('../../web/tools/GestureStateManager') : null;
-
-//@ts-ignore Type is known
-let MyGestureStateManager;
-
-webStateManagerModule?.then((module) => {
-  MyGestureStateManager = module.default;
-});
-
-const gestureStateManagers: Map<number, typeof MyGestureStateManager> = new Map<
+const gestureStateManagers: Map<number, GestureStateManagerType> = new Map<
   number,
-  typeof MyGestureStateManager
+  GestureStateManagerType
 >();
 
 const lastUpdateEvent: (GestureUpdateEvent | undefined)[] = [];
@@ -107,24 +75,15 @@ export function onGestureHandlerEvent(
         lastUpdateEvent[handler.handlers.handlerTag] = undefined;
       }
     } else if (isTouchEvent(event)) {
-      if (
-        Platform.OS === 'web' &&
-        !gestureStateManagers.has(event.handlerTag)
-      ) {
+      if (!gestureStateManagers.has(event.handlerTag)) {
         gestureStateManagers.set(
           event.handlerTag,
-          //new GestureStateManager(event.handlerTag)
-          //@ts-ignore Type is known
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          new MyGestureStateManager(event.handlerTag)
+          GestureStateManager.create(event.handlerTag)
         );
       }
 
-      const manager =
-        Platform.OS === 'web'
-          ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            gestureStateManagers.get(event.handlerTag)!
-          : dummyStateManager;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const manager = gestureStateManagers.get(event.handlerTag)!;
 
       switch (event.eventType) {
         case TouchEventType.TOUCHES_DOWN:
