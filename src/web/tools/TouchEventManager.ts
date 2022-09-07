@@ -23,7 +23,9 @@ export default class TouchEventManager extends EventManager {
           !isPointerInBounds(this.view, {
             x: adaptedEvent.x,
             y: adaptedEvent.y,
-          })
+          }) ||
+          //@ts-ignore touchType field does exist
+          event.changedTouches[i].touchType === 'stylus'
         ) {
           continue;
         }
@@ -47,6 +49,10 @@ export default class TouchEventManager extends EventManager {
           i,
           TouchEventType.MOVE
         );
+        //@ts-ignore touchType field does exist
+        if (event.changedTouches[i].touchType === 'stylus') {
+          continue;
+        }
 
         const inBounds: boolean = isPointerInBounds(this.view, {
           x: adaptedEvent.x,
@@ -87,6 +93,11 @@ export default class TouchEventManager extends EventManager {
           break;
         }
 
+        //@ts-ignore touchType field does exist
+        if (event.changedTouches[i].touchType === 'stylus') {
+          continue;
+        }
+
         const adaptedEvent: AdaptedEvent = this.mapEvent(
           event,
           EventTypes.UP,
@@ -113,6 +124,11 @@ export default class TouchEventManager extends EventManager {
           i,
           TouchEventType.CANCELLED
         );
+
+        //@ts-ignore touchType field does exist
+        if (event.changedTouches[i].touchType === 'stylus') {
+          continue;
+        }
 
         this.onPointerCancel(adaptedEvent);
         this.markAsOutOfBounds(adaptedEvent.pointerId);
