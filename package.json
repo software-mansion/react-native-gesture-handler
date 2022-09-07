@@ -142,12 +142,8 @@
     "src/fabric/*NativeComponent.js"
   ],
   "codegenConfig": {
-    "libraries": [
-      {
-        "name": "rngesturehandler",
-        "type": "components",
-        "jsSrcsDir": "./src/fabric"
-      }
-    ]
+    "name": "rngesturehandler_codegen",
+    "type": "components",
+    "jsSrcsDir": "./src/fabric"
   }
 }
