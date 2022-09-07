@@ -480,7 +480,7 @@ export default abstract class GestureHandler {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.currentState,
-        eventType: event.touchEventType ? event.touchEventType : eventType,
+        eventType: event.touchEventType ?? eventType,
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: numberOfTouches,
