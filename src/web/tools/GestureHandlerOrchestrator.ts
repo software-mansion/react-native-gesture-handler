@@ -32,6 +32,12 @@ export default class GestureHandlerOrchestrator {
     handler.setActivationIndex(Number.MAX_VALUE);
   }
 
+  public removeHandlerFromOrchestrator(handler: GestureHandler): void {
+    this.gestureHandlers.splice(this.gestureHandlers.indexOf(handler), 1);
+    this.awaitingHandlers.splice(this.awaitingHandlers.indexOf(handler), 1);
+    this.handlersToCancel.splice(this.handlersToCancel.indexOf(handler), 1);
+  }
+
   private cleanupFinishedHandlers(): void {
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
       const handler = this.gestureHandlers[i];
@@ -89,8 +95,13 @@ export default class GestureHandlerOrchestrator {
   public onHandlerStateChange(
     handler: GestureHandler,
     newState: State,
-    oldState: State
+    oldState: State,
+    forceStateChange?: boolean
   ): void {
+    if (!handler.isEnabled() && !forceStateChange) {
+      return;
+    }
+
     this.handlingChangeSemaphore += 1;
 
     if (this.isFinished(newState)) {
