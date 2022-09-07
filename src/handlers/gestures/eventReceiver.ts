@@ -8,14 +8,17 @@ import {
 } from '../gestureHandlerCommon';
 import { findHandler, findOldGestureHandler } from '../handlersRegistry';
 import { BaseGesture } from './gesture';
-import GestureStateManager from '../../web/tools/GestureStateManager';
+import {
+  GestureStateManager,
+  GestureStateManagerType,
+} from './gestureStateManager';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
 
-const gestureStateManagers: Map<number, GestureStateManager> = new Map<
+const gestureStateManagers: Map<number, GestureStateManagerType> = new Map<
   number,
-  GestureStateManager
+  GestureStateManagerType
 >();
 
 const lastUpdateEvent: (GestureUpdateEvent | undefined)[] = [];
@@ -75,38 +78,25 @@ export function onGestureHandlerEvent(
       if (!gestureStateManagers.has(event.handlerTag)) {
         gestureStateManagers.set(
           event.handlerTag,
-          new GestureStateManager(event.handlerTag)
+          GestureStateManager.create(event.handlerTag)
         );
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const manager = gestureStateManagers.get(event.handlerTag)!;
+
       switch (event.eventType) {
         case TouchEventType.TOUCHES_DOWN:
-          handler.handlers?.onTouchesDown?.(
-            event,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            gestureStateManagers.get(event.handlerTag)!
-          );
+          handler.handlers?.onTouchesDown?.(event, manager);
           break;
         case TouchEventType.TOUCHES_MOVE:
-          handler.handlers?.onTouchesMove?.(
-            event,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            gestureStateManagers.get(event.handlerTag)!
-          );
+          handler.handlers?.onTouchesMove?.(event, manager);
           break;
         case TouchEventType.TOUCHES_UP:
-          handler.handlers?.onTouchesUp?.(
-            event,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            gestureStateManagers.get(event.handlerTag)!
-          );
+          handler.handlers?.onTouchesUp?.(event, manager);
           break;
         case TouchEventType.TOUCHES_CANCELLED:
-          handler.handlers?.onTouchesCancelled?.(
-            event,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            gestureStateManagers.get(event.handlerTag)!
-          );
+          handler.handlers?.onTouchesCancelled?.(event, manager);
           break;
       }
     } else {
