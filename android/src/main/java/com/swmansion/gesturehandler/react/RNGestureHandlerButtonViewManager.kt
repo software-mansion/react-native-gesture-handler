@@ -13,10 +13,12 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 import android.os.Build
 import android.util.TypedValue
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.view.ViewParent
 import androidx.core.view.children
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
@@ -27,6 +29,7 @@ import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
+import com.swmansion.gesturehandler.GestureHandlerOrchestrator
 import com.swmansion.gesturehandler.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
@@ -118,6 +121,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
+    private var receivedKeyEvent = false
 
     var isTouched = false
 
@@ -326,11 +330,43 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       return false
     }
 
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+      receivedKeyEvent = true
+      return super.onKeyUp(keyCode, event)
+    }
+
     override fun performClick(): Boolean {
       // don't preform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
       return if (!isChildTouched() && soundResponder == this) {
         soundResponder = null
+        tryFreeingResponder()
+
+        if (receivedKeyEvent) {
+          receivedKeyEvent = false
+
+          var orchestrator: GestureHandlerOrchestrator? = null
+          var parent: ViewParent? = this.parent
+          while (parent != null) {
+            if (parent is RNGestureHandlerRootView) {
+              orchestrator = parent.rootHelper?.orchestrator
+            }
+            parent = parent.parent
+          }
+
+          if (orchestrator != null) {
+            orchestrator.handlerRegistry.getHandlersForView(this)?.forEach {
+              if (it is NativeViewGestureHandler) {
+                orchestrator.recordHandlerIfNotPresent(it, this)
+                it.isWithinBounds = true
+                it.begin()
+                it.activate()
+                it.end()
+              }
+            }
+          }
+        }
+
         super.performClick()
       } else {
         false

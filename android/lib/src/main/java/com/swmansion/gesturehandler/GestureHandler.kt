@@ -31,7 +31,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   var y = 0f
     private set
   var isWithinBounds = false
-    private set
+    set
   var isEnabled = true
     private set
   var actionType = 0

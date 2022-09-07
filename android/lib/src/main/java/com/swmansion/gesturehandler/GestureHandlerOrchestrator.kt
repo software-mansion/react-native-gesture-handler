@@ -10,7 +10,7 @@ import java.util.*
 
 class GestureHandlerOrchestrator(
   private val wrapperView: ViewGroup,
-  private val handlerRegistry: GestureHandlerRegistry,
+  public val handlerRegistry: GestureHandlerRegistry,
   private val viewConfigHelper: ViewConfigurationHelper,
 ) {
   /**
@@ -358,7 +358,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
+  public fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
     for (i in 0 until gestureHandlersCount) {
       if (gestureHandlers[i] === handler) {
         return

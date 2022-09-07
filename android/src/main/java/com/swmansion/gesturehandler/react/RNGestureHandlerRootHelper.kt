@@ -14,7 +14,7 @@ import com.swmansion.gesturehandler.GestureHandler
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
-  private val orchestrator: GestureHandlerOrchestrator?
+  public val orchestrator: GestureHandlerOrchestrator?
   private val jsGestureHandler: GestureHandler<*>?
   val rootView: ViewGroup
   private var shouldIntercept = false

@@ -14,7 +14,7 @@ import com.facebook.react.views.view.ReactViewGroup
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var _enabled = false
-  private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
+  public var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     _enabled = !hasGestureHandlerEnabledRootView(this)
