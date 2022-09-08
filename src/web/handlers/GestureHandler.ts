@@ -58,19 +58,19 @@ export default abstract class GestureHandler {
 
     this.currentState = State.UNDETERMINED;
 
-    this.setView(ref);
+    this.setView();
     this.addEventManager(new PointerEventManager(this.view));
     this.addEventManager(new TouchEventManager(this.view));
   }
 
-  private setView(ref: number) {
-    if (!ref) {
+  private setView() {
+    if (!this.ref) {
       throw new Error(
         `Cannot find HTML Element for handler ${this.handlerTag}`
       );
     }
 
-    this.view = (findNodeHandle(ref) as unknown) as HTMLElement;
+    this.view = (findNodeHandle(this.ref) as unknown) as HTMLElement;
     this.view.style['touchAction'] = 'none';
     this.view.style['webkitUserSelect'] = 'none';
     this.view.style['userSelect'] = 'none';
@@ -116,7 +116,7 @@ export default abstract class GestureHandler {
   // State logic
   //
 
-  public moveToState(newState: State) {
+  public moveToState(newState: State, sendIfDisabled?: boolean) {
     if (this.currentState === newState) {
       return;
     }
@@ -127,7 +127,8 @@ export default abstract class GestureHandler {
     GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
       this,
       newState,
-      oldState
+      oldState,
+      sendIfDisabled
     );
 
     this.onStateChange(newState, oldState);
@@ -145,26 +146,32 @@ export default abstract class GestureHandler {
     }
   }
 
-  public fail(): void {
+  /**
+   * @param {boolean} sendIfDisabled - Used when handler becomes disabled. With this flag orchestrator will be forced to send fail event
+   */
+  public fail(sendIfDisabled?: boolean): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.BEGAN
     ) {
-      this.moveToState(State.FAILED);
+      this.moveToState(State.FAILED, sendIfDisabled);
       this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
   }
 
-  public cancel(): void {
+  /**
+   * @param {boolean} sendIfDisabled - Used when handler becomes disabled. With this flag orchestrator will be forced to send cancel event
+   */
+  public cancel(sendIfDisabled?: boolean): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
     ) {
       this.onCancel();
-      this.moveToState(State.CANCELLED);
+      this.moveToState(State.CANCELLED, sendIfDisabled);
       this.view.style.cursor = 'auto';
     }
   }
@@ -328,12 +335,20 @@ export default abstract class GestureHandler {
     }
   }
   private tryToSendMoveEvent(out: boolean): void {
-    if (this.active && (!out || (out && !this.shouldCancellWhenOutside))) {
+    if (
+      this.enabled &&
+      this.active &&
+      (!out || (out && !this.shouldCancellWhenOutside))
+    ) {
       this.sendEvent(this.currentState, this.currentState);
     }
   }
 
   public sendTouchEvent(event: AdaptedEvent): void {
+    if (!this.enabled) {
+      return;
+    }
+
     const { onGestureHandlerEvent }: PropsRef = this.propsRef
       .current as PropsRef;
 
@@ -502,7 +517,26 @@ export default abstract class GestureHandler {
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     this.config = { enabled: enabled, ...props };
+    this.enabled = enabled;
     this.validateHitSlops();
+
+    if (this.enabled) {
+      return;
+    }
+
+    switch (this.currentState) {
+      case State.ACTIVE:
+        this.fail(true);
+        break;
+      case State.UNDETERMINED:
+        GestureHandlerOrchestrator.getInstance().removeHandlerFromOrchestrator(
+          this
+        );
+        break;
+      default:
+        this.cancel(true);
+        break;
+    }
   }
 
   protected checkCustomActivationCriteria(criterias: string[]): void {
@@ -675,6 +709,10 @@ export default abstract class GestureHandler {
 
   public getState(): State {
     return this.currentState;
+  }
+
+  public isEnabled(): boolean {
+    return this.enabled;
   }
 
   protected setShouldCancelWhenOutside(shouldCancel: boolean) {
