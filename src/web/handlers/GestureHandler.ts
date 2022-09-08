@@ -406,7 +406,7 @@ export default abstract class GestureHandler {
 
     // This if handles edge case where all pointers have been cancelled
     // When pointercancel is triggered, reset method is called. This means that tracker will be reset after first pointer being cancelled
-    // The problem is, that handler will receive another pointercancel event from rest oh the pointers
+    // The problem is, that handler will receive another pointercancel event from the rest of the pointers
     // To avoid crashing, we don't send event if tracker tracks no pointers, i.e. has been reset
     if (trackerData.size === 0 || !trackerData.has(event.pointerId)) {
       return;
@@ -424,7 +424,7 @@ export default abstract class GestureHandler {
       });
     });
 
-    // Each pointer send its own event, so we want changed touches to contain only the pointer that has changed.
+    // Each pointer sends its own event, so we want changed touches to contain only the pointer that has changed.
     // However, if the event is cancel, we want to cancel all pointers to avoid crashes
     if (event.eventType !== EventTypes.CANCEL) {
       changed.push({
@@ -467,6 +467,9 @@ export default abstract class GestureHandler {
         break;
     }
 
+    // Here, when we receive up event, we want to decrease number of touches
+    // That's because we want handler to send information that there's one pointer less
+    // However, we still want this pointer to be present in allTouches array, so that its data can be accessed
     let numberOfTouches: number = all.length;
 
     if (

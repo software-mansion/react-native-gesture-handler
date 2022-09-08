@@ -19,6 +19,8 @@ export default class TouchEventManager extends EventManager {
           TouchEventType.DOWN
         );
 
+        // Here we skip stylus, because in case of anything different than touch we want to handle it by using PointerEvents
+        // If we leave stylus to send touch events, handlers will receive every action twice
         if (
           !isPointerInBounds(this.view, {
             x: adaptedEvent.x,
