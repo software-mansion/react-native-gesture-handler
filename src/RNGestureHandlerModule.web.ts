@@ -90,6 +90,7 @@ export default {
   },
   attachGestureHandler(
     handlerTag: number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newView: any,
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
