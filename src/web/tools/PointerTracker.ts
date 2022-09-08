@@ -1,6 +1,6 @@
 import { AdaptedEvent } from '../interfaces';
 
-interface TrackerElement {
+export interface TrackerElement {
   lastX: number;
   lastY: number;
 
@@ -48,9 +48,7 @@ export default class PointerTracker {
     };
 
     this.trackedPointers.set(event.pointerId, newElement);
-    if (event.pointerType === 'touch') {
-      this.mapTouchEventId(event.pointerId);
-    }
+    this.mapTouchEventId(event.pointerId);
   }
 
   public removeFromTracker(pointerId: number): void {

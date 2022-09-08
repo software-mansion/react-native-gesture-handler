@@ -82,7 +82,7 @@ export default function Example() {
       }
     })
     .onTouchesCancelled((e, manager) => {
-      for (const touch of e.changedTouches) {
+      for (const touch of e.allTouches) {
         trackedPointers[touch.id].value = {
           visible: false,
           x: touch.x,
