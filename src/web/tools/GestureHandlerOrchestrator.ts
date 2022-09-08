@@ -96,9 +96,9 @@ export default class GestureHandlerOrchestrator {
     handler: GestureHandler,
     newState: State,
     oldState: State,
-    forceStateChange?: boolean
+    sendIfDisabled?: boolean
   ): void {
-    if (!handler.isEnabled() && !forceStateChange) {
+    if (!handler.isEnabled() && !sendIfDisabled) {
       return;
     }
 

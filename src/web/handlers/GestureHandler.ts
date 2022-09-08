@@ -114,7 +114,7 @@ export default abstract class GestureHandler {
   // State logic
   //
 
-  public moveToState(newState: State, forceStateChange?: boolean) {
+  public moveToState(newState: State, sendIfDisabled?: boolean) {
     if (this.currentState === newState) {
       return;
     }
@@ -126,7 +126,7 @@ export default abstract class GestureHandler {
       this,
       newState,
       oldState,
-      forceStateChange
+      sendIfDisabled
     );
 
     this.onStateChange(newState, oldState);
@@ -145,14 +145,14 @@ export default abstract class GestureHandler {
   }
 
   /**
-   * @param {boolean} forceStateChange - Used when handler becomes disabled. With this flag orchestrator will be forced to send fail event
+   * @param {boolean} sendIfDisabled - Used when handler becomes disabled. With this flag orchestrator will be forced to send fail event
    */
-  public fail(forceStateChange?: boolean): void {
+  public fail(sendIfDisabled?: boolean): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.BEGAN
     ) {
-      this.moveToState(State.FAILED, forceStateChange);
+      this.moveToState(State.FAILED, sendIfDisabled);
       this.view.style.cursor = 'auto';
     }
 
@@ -160,16 +160,16 @@ export default abstract class GestureHandler {
   }
 
   /**
-   * @param {boolean} forceStateChange - Used when handler becomes disabled. With this flag orchestrator will be forced to send cancel event
+   * @param {boolean} sendIfDisabled - Used when handler becomes disabled. With this flag orchestrator will be forced to send cancel event
    */
-  public cancel(forceStateChange?: boolean): void {
+  public cancel(sendIfDisabled?: boolean): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
     ) {
       this.onCancel();
-      this.moveToState(State.CANCELLED, forceStateChange);
+      this.moveToState(State.CANCELLED, sendIfDisabled);
       this.view.style.cursor = 'auto';
     }
   }
