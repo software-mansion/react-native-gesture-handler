@@ -172,7 +172,7 @@ export default class PointerTracker {
   }
 
   // Some handlers use these methods to send average values in native event.
-  // That may happen when pointers has already been removed from tracker (i.e. pointerup event).
+  // This may happen when pointers has already been removed from tracker (i.e. pointerup event).
   // In situation when NaN would be sent as a response, we return cached value.
   // That prevents handlers from crashing
   public getLastAvgX(): number {
