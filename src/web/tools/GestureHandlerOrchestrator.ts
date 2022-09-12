@@ -76,8 +76,28 @@ export default class GestureHandlerOrchestrator {
       handler.getState() !== State.CANCELLED &&
       handler.getState() !== State.FAILED
     ) {
-      this.makeActive(handler);
+      if (this.shouldActivate(handler)) {
+        this.makeActive(handler);
+      } else {
+        switch (handler.getState()) {
+          case State.ACTIVE:
+            handler.fail();
+            break;
+          case State.BEGAN:
+            handler.cancel();
+        }
+      }
     }
+  }
+
+  private shouldActivate(handler: GestureHandler): boolean {
+    for (const otherHandler of this.gestureHandlers) {
+      if (this.shouldHandlerBeCancelledBy(handler, otherHandler)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private cleanupAwaitingHandlers(handler: GestureHandler): void {
@@ -264,16 +284,6 @@ export default class GestureHandlerOrchestrator {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const handlerPointers: number[] = handler.getTrackedPointersID();
-    const otherPointers: number[] = otherHandler.getTrackedPointersID();
-
-    if (
-      !PointerTracker.shareCommonPointers(handlerPointers, otherPointers) &&
-      handler.getView() !== otherHandler.getView()
-    ) {
-      return this.checkOverlap(handler, otherHandler);
-    }
-
     if (this.canRunSimultaneously(handler, otherHandler)) {
       return false;
     }
@@ -284,6 +294,16 @@ export default class GestureHandlerOrchestrator {
     ) {
       // For now it always returns false
       return handler.shouldBeCancelledByOther(otherHandler);
+    }
+
+    const handlerPointers: number[] = handler.getTrackedPointersID();
+    const otherPointers: number[] = otherHandler.getTrackedPointersID();
+
+    if (
+      !PointerTracker.shareCommonPointers(handlerPointers, otherPointers) &&
+      handler.getView() !== otherHandler.getView()
+    ) {
+      return this.checkOverlap(handler, otherHandler);
     }
 
     return true;
