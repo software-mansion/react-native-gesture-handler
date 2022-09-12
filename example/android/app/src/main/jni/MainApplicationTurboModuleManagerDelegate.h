@@ -15,16 +15,16 @@ class MainApplicationTurboModuleManagerDelegate
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>);
   static void registerNatives();
   std::shared_ptr<TurboModule> getTurboModule(
-      const std::string name,
-      const std::shared_ptr<CallInvoker> jsInvoker) override;
+      const std::string &name,
+      const std::shared_ptr<CallInvoker> &jsInvoker) override;
   std::shared_ptr<TurboModule> getTurboModule(
-      const std::string name,
+      const std::string &name,
       const JavaTurboModule::InitParams &params) override;
   /**
    * Test-only method. Allows user to verify whether a TurboModule can be
    * created by instances of this class.
    */
-  bool canCreateTurboModule(std::string name);
+  bool canCreateTurboModule(const std::string &name);
 };
 } // namespace react
 } // namespace facebook
