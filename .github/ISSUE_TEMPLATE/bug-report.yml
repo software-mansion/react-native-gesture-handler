@@ -147,9 +147,9 @@ body:
     id: dependencies
     attributes:
       label: Dependencies
-      description: What dependencies are you using in your app? You can just copy this information from your `package.json` file.
+      description: What dependencies are you using in your app? You can just copy this information from your `package.json` file. You can skip this section if you have provided a link to a snack or repository with a reproduction.
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: acknowledgements
