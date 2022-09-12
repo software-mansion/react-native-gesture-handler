@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { ActionType } from './ActionType';
 import { isExperimentalWebImplementationEnabled } from './EnableExperimentalWebImplementation';
 
@@ -88,13 +90,22 @@ export default {
   },
   attachGestureHandler(
     handlerTag: number,
-    newView: number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    newView: any,
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
+    if (
+      !(newView instanceof HTMLElement || newView instanceof React.Component)
+    ) {
+      return;
+    }
+
     if (isExperimentalWebImplementationEnabled()) {
+      //@ts-ignore Types should be HTMLElement or React.Component
       NodeManager.getHandler(handlerTag).init(newView, propsRef);
     } else {
+      //@ts-ignore Types should be HTMLElement or React.Component
       HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
     }
   },

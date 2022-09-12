@@ -16,7 +16,10 @@ if (RNGestureHandlerModule == null) {
   );
 }
 
-if (RNGestureHandlerModule.flushOperations === undefined) {
+if (
+  RNGestureHandlerModule &&
+  RNGestureHandlerModule.flushOperations === undefined
+) {
   RNGestureHandlerModule.flushOperations = () => {
     // NO-OP if not defined
   };
