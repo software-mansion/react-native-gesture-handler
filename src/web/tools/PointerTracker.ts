@@ -90,8 +90,8 @@ export default class PointerTracker {
     const avgY: number = this.getLastAvgY();
 
     this.cachedAverages = {
-      x: avgX ? avgX : this.cachedAverages.x,
-      y: avgY ? avgY : this.cachedAverages.y,
+      x: avgX,
+      y: avgY,
     };
   }
 
@@ -177,11 +177,11 @@ export default class PointerTracker {
   // That prevents handlers from crashing
   public getLastAvgX(): number {
     const avgX: number = this.getSumX() / this.trackedPointers.size;
-    return avgX ? avgX : this.cachedAverages.x;
+    return isNaN(avgX) ? this.cachedAverages.x : avgX;
   }
   public getLastAvgY(): number {
     const avgY: number = this.getSumY() / this.trackedPointers.size;
-    return avgY ? avgY : this.cachedAverages.y;
+    return isNaN(avgY) ? this.cachedAverages.y : avgY;
   }
   public getSumX(ignoredPointer?: number): number {
     let sumX = 0;
