@@ -24,6 +24,8 @@ export default class PointerTracker {
 
   private lastMovedPointerId: number;
 
+  private cachedAverages: { x: number; y: number } = { x: 0, y: 0 };
+
   public constructor() {
     this.lastMovedPointerId = NaN;
 
@@ -49,6 +51,11 @@ export default class PointerTracker {
 
     this.trackedPointers.set(event.pointerId, newElement);
     this.mapTouchEventId(event.pointerId);
+
+    this.cachedAverages = {
+      x: this.getLastAvgX(),
+      y: this.getLastAvgY(),
+    };
   }
 
   public removeFromTracker(pointerId: number): void {
@@ -78,6 +85,14 @@ export default class PointerTracker {
     element.lastY = event.y;
 
     this.trackedPointers.set(event.pointerId, element);
+
+    const avgX: number = this.getLastAvgX();
+    const avgY: number = this.getLastAvgY();
+
+    this.cachedAverages = {
+      x: avgX,
+      y: avgY,
+    };
   }
 
   //Mapping TouchEvents ID
@@ -156,11 +171,17 @@ export default class PointerTracker {
     }
   }
 
+  // Some handlers use these methods to send average values in native event.
+  // This may happen when pointers have already been removed from tracker (i.e. pointerup event).
+  // In situation when NaN would be sent as a response, we return cached value.
+  // That prevents handlers from crashing
   public getLastAvgX(): number {
-    return this.getSumX() / this.trackedPointers.size;
+    const avgX: number = this.getSumX() / this.trackedPointers.size;
+    return isNaN(avgX) ? this.cachedAverages.x : avgX;
   }
   public getLastAvgY(): number {
-    return this.getSumY() / this.trackedPointers.size;
+    const avgY: number = this.getSumY() / this.trackedPointers.size;
+    return isNaN(avgY) ? this.cachedAverages.y : avgY;
   }
   public getSumX(ignoredPointer?: number): number {
     let sumX = 0;
