@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler
 
 import android.os.SystemClock
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -127,7 +128,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     private fun tryIntercept(view: View, event: MotionEvent) =
       view is ViewGroup && view.onInterceptTouchEvent(event)
 
-    private val defaultHook = object : NativeViewGestureHandlerHook {}
+    private val defaultHook = object : NativeViewGestureHandlerHook{}
   }
 
   interface NativeViewGestureHandlerHook {
@@ -169,6 +170,10 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * by this one.
      */
     fun shouldCancelRootViewGestureHandlerIfNecessary() = false
+
+
+    fun lol(orchestrator: GestureHandlerOrchestrator){
+    }
   }
 
   private class EditTextHook(

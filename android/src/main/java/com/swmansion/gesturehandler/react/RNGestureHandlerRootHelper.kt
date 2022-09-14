@@ -14,7 +14,7 @@ import com.swmansion.gesturehandler.GestureHandler
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
-  private val orchestrator: GestureHandlerOrchestrator?
+  public val orchestrator: GestureHandlerOrchestrator?
   private val jsGestureHandler: GestureHandler<*>?
   val rootView: ViewGroup
   private var shouldIntercept = false
@@ -25,13 +25,13 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     val wrappedViewTag = wrappedView.id
     check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
     val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
-    val registry = module.registry
+    val registry = RNGestureHandlerModule.registry
     rootView = findRootViewTag(wrappedView)
     Log.i(
-      ReactConstants.TAG,
-      "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
+            ReactConstants.TAG,
+            "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
     orchestrator = GestureHandlerOrchestrator(
-      wrappedView, registry, RNViewConfigurationHelper()).apply {
+            wrappedView, registry, RNViewConfigurationHelper()).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
     jsGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
@@ -44,11 +44,11 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
 
   fun tearDown() {
     Log.i(
-      ReactConstants.TAG,
-      "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView")
+            ReactConstants.TAG,
+            "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView")
     val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
     with(module) {
-      registry.dropHandler(jsGestureHandler!!.tag)
+      RNGestureHandlerModule.registry.dropHandler(jsGestureHandler!!.tag)
       unregisterRootHelper(this@RNGestureHandlerRootHelper)
     }
   }

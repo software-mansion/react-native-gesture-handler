@@ -9,9 +9,9 @@ import android.widget.EditText
 import java.util.*
 
 class GestureHandlerOrchestrator(
-  private val wrapperView: ViewGroup,
-  private val handlerRegistry: GestureHandlerRegistry,
-  private val viewConfigHelper: ViewConfigurationHelper,
+        private val wrapperView: ViewGroup,
+        public val handlerRegistry: GestureHandlerRegistry,
+        private val viewConfigHelper: ViewConfigurationHelper,
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
@@ -20,7 +20,7 @@ class GestureHandlerOrchestrator(
    */
   var minimumAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
 
-  private val gestureHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
+  val gestureHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private val awaitingHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private val preparedHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
   private val handlersToCancel = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
@@ -262,10 +262,10 @@ class GestureHandlerOrchestrator(
     // approach when we want to use pointer coordinates to calculate velocity or distance
     // for pinch so I don't know yet if we should transform or not...
     event.setLocation(coords[0], coords[1])
-    
+
     // Touch events are sent before the handler itself has a chance to process them,
     // mainly because `onTouchesUp` shoul be send befor gesture finishes. This means that
-    // the first `onTouchesDown` event is sent before a gesture begins, activation in 
+    // the first `onTouchesDown` event is sent before a gesture begins, activation in
     // callback for this event causes problems because the handler doesn't have a chance
     // to initialize itself with starting values of pointer (in pan this causes translation
     // to be equal to the coordinates of the pointer). The simplest solution is to send
@@ -358,7 +358,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
+  public fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
     for (i in 0 until gestureHandlersCount) {
       if (gestureHandlers[i] === handler) {
         return
@@ -429,8 +429,8 @@ class GestureHandlerOrchestrator(
     // if the pointer is inside the view but it overflows its parent, handlers attached to the parent
     // might not have been extracted (pointer might be in a child, but may be outside parent)
     if (coords[0] in 0f..view.width.toFloat() && coords[1] in 0f..view.height.toFloat()
-      && isViewOverflowingParent(view) && extractAncestorHandlers(view, coords, pointerId)) {
-        found = true
+            && isViewOverflowingParent(view) && extractAncestorHandlers(view, coords, pointerId)) {
+      found = true
     }
 
     return found
@@ -473,55 +473,55 @@ class GestureHandlerOrchestrator(
   }
 
   private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int): Boolean =
-    when (viewConfigHelper.getPointerEventsConfigForView(view)) {
-      PointerEventsConfig.NONE -> {
-        // This view and its children can't be the target
-        false
-      }
-      PointerEventsConfig.BOX_ONLY -> {
-        // This view is the target, its children don't matter
-        (recordViewHandlersForPointer(view, coords, pointerId)
-          || shouldHandlerlessViewBecomeTouchTarget(view, coords))
-      }
-      PointerEventsConfig.BOX_NONE -> {
-        // This view can't be the target, but its children might
-        when (view) {
-          is ViewGroup -> {
-            extractGestureHandlers(view, coords, pointerId).also { found ->
-              // A child view is handling touch, also extract handlers attached to this view
-              if (found) {
-                recordViewHandlersForPointer(view, coords, pointerId)
+          when (viewConfigHelper.getPointerEventsConfigForView(view)) {
+            PointerEventsConfig.NONE -> {
+              // This view and its children can't be the target
+              false
+            }
+            PointerEventsConfig.BOX_ONLY -> {
+              // This view is the target, its children don't matter
+              (recordViewHandlersForPointer(view, coords, pointerId)
+                      || shouldHandlerlessViewBecomeTouchTarget(view, coords))
+            }
+            PointerEventsConfig.BOX_NONE -> {
+              // This view can't be the target, but its children might
+              when (view) {
+                is ViewGroup -> {
+                  extractGestureHandlers(view, coords, pointerId).also { found ->
+                    // A child view is handling touch, also extract handlers attached to this view
+                    if (found) {
+                      recordViewHandlersForPointer(view, coords, pointerId)
+                    }
+                  }
+                }
+                // When <TextInput> has editable set to `false` getPointerEventsConfigForView returns
+                // `BOX_NONE` as it's `isEnabled` property is false. In this case we still want to extract
+                // handlers attached to the text input, as it makes sense that gestures would work on a
+                // non-editable TextInput.
+                is EditText -> {
+                  recordViewHandlersForPointer(view, coords, pointerId)
+                }
+                else -> false
               }
             }
-          }
-          // When <TextInput> has editable set to `false` getPointerEventsConfigForView returns
-          // `BOX_NONE` as it's `isEnabled` property is false. In this case we still want to extract
-          // handlers attached to the text input, as it makes sense that gestures would work on a
-          // non-editable TextInput.
-          is EditText -> {
-            recordViewHandlersForPointer(view, coords, pointerId)
-          }
-          else -> false
-        }
-      }
-      PointerEventsConfig.AUTO -> {
-        // Either this view or one of its children is the target
-        val found = if (view is ViewGroup) {
-          extractGestureHandlers(view, coords, pointerId)
-        } else false
+            PointerEventsConfig.AUTO -> {
+              // Either this view or one of its children is the target
+              val found = if (view is ViewGroup) {
+                extractGestureHandlers(view, coords, pointerId)
+              } else false
 
-        (recordViewHandlersForPointer(view, coords, pointerId)
-          || found || shouldHandlerlessViewBecomeTouchTarget(view, coords))
-      }
-    }
+              (recordViewHandlersForPointer(view, coords, pointerId)
+                      || found || shouldHandlerlessViewBecomeTouchTarget(view, coords))
+            }
+          }
 
   private fun canReceiveEvents(view: View) =
-    view.visibility == View.VISIBLE && view.alpha >= minimumAlphaForTraversal
+          view.visibility == View.VISIBLE && view.alpha >= minimumAlphaForTraversal
 
   // if view is not a view group it is clipping, otherwise we check for `getClipChildren` flag to
   // be turned on and also confirm with the ViewConfigHelper implementation
   private fun isClipping(view: View) =
-    view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
+          view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
 
 
   companion object {
@@ -565,11 +565,11 @@ class GestureHandlerOrchestrator(
     }
 
     private fun transformTouchPointToViewCoords(
-      x: Float,
-      y: Float,
-      parent: ViewGroup,
-      child: View,
-      outLocalPoint: PointF,
+            x: Float,
+            y: Float,
+            parent: ViewGroup,
+            child: View,
+            outLocalPoint: PointF,
     ) {
       var localX = x + parent.scrollX - child.left
       var localY = y + parent.scrollY - child.top
@@ -587,15 +587,15 @@ class GestureHandlerOrchestrator(
     }
 
     private fun isTransformedTouchPointInView(x: Float, y: Float, child: View) =
-      x in 0f..child.width.toFloat() && y in 0f..child.height.toFloat()
+            x in 0f..child.width.toFloat() && y in 0f..child.height.toFloat()
 
     private fun shouldHandlerWaitForOther(handler: GestureHandler<*>, other: GestureHandler<*>): Boolean {
       return handler !== other && (handler.shouldWaitForHandlerFailure(other)
-        || other.shouldRequireToWaitForFailure(handler))
+              || other.shouldRequireToWaitForFailure(handler))
     }
 
     private fun canRunSimultaneously(a: GestureHandler<*>, b: GestureHandler<*>) =
-      a === b || a.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
+            a === b || a.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
 
 
     private fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, other: GestureHandler<*>): Boolean {
@@ -609,7 +609,7 @@ class GestureHandlerOrchestrator(
         return false
       }
       return if (handler !== other &&
-        (handler.isAwaiting || handler.state == GestureHandler.STATE_ACTIVE)) {
+              (handler.isAwaiting || handler.state == GestureHandler.STATE_ACTIVE)) {
         // in every other case as long as the handler is about to be activated or already in active
         // state, we delegate the decision to the implementation of GestureHandler#shouldBeCancelledBy
         handler.shouldBeCancelledBy(other)
@@ -617,8 +617,8 @@ class GestureHandlerOrchestrator(
     }
 
     private fun isFinished(state: Int) =
-      state == GestureHandler.STATE_CANCELLED
-        || state == GestureHandler.STATE_FAILED
-        || state == GestureHandler.STATE_END
+            state == GestureHandler.STATE_CANCELLED
+                    || state == GestureHandler.STATE_FAILED
+                    || state == GestureHandler.STATE_END
   }
 }
