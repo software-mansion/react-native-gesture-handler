@@ -4,9 +4,8 @@ title: PanGestureHandler
 sidebar_label: Pan
 ---
 
-:::info
-We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
-section in Introduction](../../introduction.md#rngh-20) for more information.
+:::warning
+Consider using the new [gestures API](../../api/gestures/gesture.md) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](../../introduction.md#rngh-20) for more information.
 :::
 
 A continuous gesture handler that can recognize a panning (dragging) gesture and track its movement.
@@ -192,8 +191,7 @@ class Circle extends Component {
             style={{
               height: 150,
               justifyContent: 'center',
-            }}
-          >
+            }}>
             <Animated.View
               style={[
                 {
@@ -207,7 +205,7 @@ class Circle extends Component {
                     {
                       translateX: Animated.add(
                         this._touchX,
-                        new Animated.Value(-circleRadius),
+                        new Animated.Value(-circleRadius)
                       ),
                     },
                   ],
