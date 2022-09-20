@@ -46,7 +46,9 @@ export const HammerGestures = {
 };
 
 export default {
-  handleSetJSResponder(_tag: number, _blockNativeResponder: boolean) {},
+  handleSetJSResponder(_tag: number, _blockNativeResponder: boolean) {
+    // NO-OP
+  },
   handleClearJSResponder() {},
   createGestureHandler<T>(
     handlerName: keyof typeof Gestures,
