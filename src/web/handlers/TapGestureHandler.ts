@@ -82,12 +82,14 @@ export default class TapGestureHandler extends GestureHandler {
     this.minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
   }
 
-  protected transformNativeEvent(event: AdaptedEvent) {
+  protected transformNativeEvent() {
+    const rect: DOMRect = this.view.getBoundingClientRect();
+
     return {
-      x: event.offsetX,
-      y: event.offsetY,
-      absoluteX: event.x,
-      absoluteY: event.y,
+      x: this.tracker.getLastAvgX() - rect.left,
+      y: this.tracker.getLastAvgY() - rect.top,
+      absoluteX: this.tracker.getLastAvgX(),
+      absoluteY: this.tracker.getLastAvgY(),
     };
   }
 
@@ -96,22 +98,22 @@ export default class TapGestureHandler extends GestureHandler {
     clearTimeout(this.delayTimeout);
   }
 
-  private startTap(event: AdaptedEvent): void {
+  private startTap(): void {
     this.clearTimeouts();
 
-    this.waitTimeout = setTimeout(() => this.fail(event), this.maxDurationMs);
+    this.waitTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
   }
 
-  private endTap(event: AdaptedEvent): void {
+  private endTap(): void {
     this.clearTimeouts();
 
     if (
       ++this.tapsSoFar === this.numberOfTaps &&
       this.currentMaxNumberOfPointers >= this.minNumberOfPointers
     ) {
-      this.activate(event);
+      this.activate();
     } else {
-      this.delayTimeout = setTimeout(() => this.fail(event), this.maxDelayMs);
+      this.delayTimeout = setTimeout(() => this.fail(), this.maxDelayMs);
     }
   }
 
@@ -201,7 +203,7 @@ export default class TapGestureHandler extends GestureHandler {
   protected onPointerCancel(event: AdaptedEvent): void {
     super.onPointerCancel(event);
     this.tracker.resetTracker();
-    this.fail(event);
+    this.fail();
   }
 
   private updateState(event: AdaptedEvent): void {
@@ -212,23 +214,23 @@ export default class TapGestureHandler extends GestureHandler {
     }
 
     if (this.shouldFail()) {
-      this.fail(event);
+      this.fail();
       return;
     }
 
     switch (this.currentState) {
       case State.UNDETERMINED:
         if (event.eventType === EventTypes.DOWN) {
-          this.begin(event);
+          this.begin();
         }
-        this.startTap(event);
+        this.startTap();
         break;
       case State.BEGAN:
         if (event.eventType === EventTypes.UP) {
-          this.endTap(event);
+          this.endTap();
         }
         if (event.eventType === EventTypes.DOWN) {
-          this.startTap(event);
+          this.startTap();
         }
         break;
       default:
@@ -272,10 +274,10 @@ export default class TapGestureHandler extends GestureHandler {
     );
   }
 
-  public activate(event: AdaptedEvent): void {
-    super.activate(event);
+  public activate(): void {
+    super.activate();
 
-    this.end(event);
+    this.end();
   }
 
   protected onCancel(): void {

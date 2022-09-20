@@ -1,6 +1,6 @@
 import { AdaptedEvent } from '../interfaces';
 
-interface TrackerElement {
+export interface TrackerElement {
   lastX: number;
   lastY: number;
 
@@ -22,7 +22,13 @@ export default class PointerTracker {
 
   private touchEventsIds: Map<number, number> = new Map<number, number>();
 
+  private lastMovedPointerId: number;
+
+  private cachedAverages: { x: number; y: number } = { x: 0, y: 0 };
+
   public constructor() {
+    this.lastMovedPointerId = NaN;
+
     for (let i = 0; i < MAX_POINTERS; ++i) {
       this.touchEventsIds.set(i, NaN);
     }
@@ -33,6 +39,8 @@ export default class PointerTracker {
       return;
     }
 
+    this.lastMovedPointerId = event.pointerId;
+
     const newElement: TrackerElement = {
       lastX: event.x,
       lastY: event.y,
@@ -42,9 +50,12 @@ export default class PointerTracker {
     };
 
     this.trackedPointers.set(event.pointerId, newElement);
-    if (event.pointerType === 'touch') {
-      this.mapTouchEventId(event.pointerId);
-    }
+    this.mapTouchEventId(event.pointerId);
+
+    this.cachedAverages = {
+      x: this.getLastAvgX(),
+      y: this.getLastAvgY(),
+    };
   }
 
   public removeFromTracker(pointerId: number): void {
@@ -61,6 +72,8 @@ export default class PointerTracker {
       return;
     }
 
+    this.lastMovedPointerId = event.pointerId;
+
     const dx = event.x - element.lastX;
     const dy = event.y - element.lastY;
     const dt = event.time - element.timeStamp;
@@ -72,6 +85,14 @@ export default class PointerTracker {
     element.lastY = event.y;
 
     this.trackedPointers.set(event.pointerId, element);
+
+    const avgX: number = this.getLastAvgX();
+    const avgY: number = this.getLastAvgY();
+
+    this.cachedAverages = {
+      x: avgX,
+      y: avgY,
+    };
   }
 
   //Mapping TouchEvents ID
@@ -107,17 +128,60 @@ export default class PointerTracker {
   public getVelocityY(pointerId: number): number {
     return this.trackedPointers.get(pointerId)?.velocityY as number;
   }
-  public getLastX(pointerId: number): number {
-    return this.trackedPointers.get(pointerId)?.lastX as number;
+
+  /**
+   * Returns X coordinate of last moved pointer
+   */
+  public getLastX(): number;
+
+  /**
+   *
+   * @param pointerId
+   * Returns X coordinate of given pointer
+   */
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  public getLastX(pointerId: number): number;
+
+  public getLastX(pointerId?: number): number {
+    if (pointerId) {
+      return this.trackedPointers.get(pointerId)?.lastX as number;
+    } else {
+      return this.trackedPointers.get(this.lastMovedPointerId)?.lastX as number;
+    }
   }
-  public getLastY(pointerId: number): number {
-    return this.trackedPointers.get(pointerId)?.lastY as number;
+
+  /**
+   * Returns Y coordinate of last moved pointer
+   */
+  public getLastY(): number;
+
+  /**
+   *
+   * @param pointerId
+   * Returns Y coordinate of given pointer
+   */
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
+  public getLastY(pointerId: number): number;
+
+  public getLastY(pointerId?: number): number {
+    if (pointerId) {
+      return this.trackedPointers.get(pointerId)?.lastY as number;
+    } else {
+      return this.trackedPointers.get(this.lastMovedPointerId)?.lastY as number;
+    }
   }
+
+  // Some handlers use these methods to send average values in native event.
+  // This may happen when pointers have already been removed from tracker (i.e. pointerup event).
+  // In situation when NaN would be sent as a response, we return cached value.
+  // That prevents handlers from crashing
   public getLastAvgX(): number {
-    return this.getSumX() / this.trackedPointers.size;
+    const avgX: number = this.getSumX() / this.trackedPointers.size;
+    return isNaN(avgX) ? this.cachedAverages.x : avgX;
   }
   public getLastAvgY(): number {
-    return this.getSumY() / this.trackedPointers.size;
+    const avgY: number = this.getSumY() / this.trackedPointers.size;
+    return isNaN(avgY) ? this.cachedAverages.y : avgY;
   }
   public getSumX(ignoredPointer?: number): number {
     let sumX = 0;
@@ -160,6 +224,7 @@ export default class PointerTracker {
 
   public resetTracker(): void {
     this.trackedPointers.clear();
+    this.lastMovedPointerId = NaN;
 
     for (let i = 0; i < MAX_POINTERS; ++i) {
       this.touchEventsIds.set(i, NaN);

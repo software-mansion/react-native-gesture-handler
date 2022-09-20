@@ -9,12 +9,14 @@ import {
   PointerData,
   ResultTouchEvent,
   PointerType,
+  TouchEventType,
+  EventTypes,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerEventManager from '../tools/PointerEventManager';
-import PointerTracker from '../tools/PointerTracker';
+import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import TouchEventManager from '../tools/TouchEventManager';
 import { isPointerInBounds } from '../utils';
 
@@ -56,19 +58,19 @@ export default abstract class GestureHandler {
 
     this.currentState = State.UNDETERMINED;
 
-    this.setView(ref);
+    this.setView();
     this.addEventManager(new PointerEventManager(this.view));
     this.addEventManager(new TouchEventManager(this.view));
   }
 
-  private setView(ref: number) {
-    if (!ref) {
+  private setView() {
+    if (!this.ref) {
       throw new Error(
         `Cannot find HTML Element for handler ${this.handlerTag}`
       );
     }
 
-    this.view = (findNodeHandle(ref) as unknown) as HTMLElement;
+    this.view = (findNodeHandle(this.ref) as unknown) as HTMLElement;
     this.view.style['touchAction'] = 'none';
     this.view.style['webkitUserSelect'] = 'none';
     this.view.style['userSelect'] = 'none';
@@ -114,7 +116,7 @@ export default abstract class GestureHandler {
   // State logic
   //
 
-  public moveToState(newState: State, event: AdaptedEvent) {
+  public moveToState(newState: State, sendIfDisabled?: boolean) {
     if (this.currentState === newState) {
       return;
     }
@@ -126,7 +128,7 @@ export default abstract class GestureHandler {
       this,
       newState,
       oldState,
-      event
+      sendIfDisabled
     );
 
     this.onStateChange(newState, oldState);
@@ -134,56 +136,62 @@ export default abstract class GestureHandler {
 
   protected onStateChange(_newState: State, _oldState: State): void {}
 
-  public begin(event: AdaptedEvent): void {
-    if (!this.checkHitSlop(event)) {
+  public begin(): void {
+    if (!this.checkHitSlop()) {
       return;
     }
 
     if (this.currentState === State.UNDETERMINED) {
-      this.moveToState(State.BEGAN, event);
+      this.moveToState(State.BEGAN);
     }
   }
 
-  public fail(event: AdaptedEvent): void {
+  /**
+   * @param {boolean} sendIfDisabled - Used when handler becomes disabled. With this flag orchestrator will be forced to send fail event
+   */
+  public fail(sendIfDisabled?: boolean): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.BEGAN
     ) {
-      this.moveToState(State.FAILED, event);
+      this.moveToState(State.FAILED, sendIfDisabled);
       this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
   }
 
-  public cancel(event: AdaptedEvent): void {
+  /**
+   * @param {boolean} sendIfDisabled - Used when handler becomes disabled. With this flag orchestrator will be forced to send cancel event
+   */
+  public cancel(sendIfDisabled?: boolean): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
     ) {
       this.onCancel();
-      this.moveToState(State.CANCELLED, event);
+      this.moveToState(State.CANCELLED, sendIfDisabled);
       this.view.style.cursor = 'auto';
     }
   }
 
-  public activate(event: AdaptedEvent, _force = false) {
+  public activate(_force = false) {
     if (
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
     ) {
-      this.moveToState(State.ACTIVE, event);
+      this.moveToState(State.ACTIVE);
       this.view.style.cursor = 'grab';
     }
   }
 
-  public end(event: AdaptedEvent) {
+  public end() {
     if (
       this.currentState === State.BEGAN ||
       this.currentState === State.ACTIVE
     ) {
-      this.moveToState(State.END, event);
+      this.moveToState(State.END);
       this.view.style.cursor = 'auto';
     }
 
@@ -275,10 +283,7 @@ export default abstract class GestureHandler {
     this.pointerType = event.pointerType;
 
     if (this.pointerType === PointerType.TOUCH) {
-      GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(
-        event,
-        this
-      );
+      GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(this);
     }
 
     if (this.config.needsPointerData) {
@@ -303,7 +308,7 @@ export default abstract class GestureHandler {
     }
   }
   protected onPointerMove(event: AdaptedEvent): void {
-    this.tryToSendMoveEvent(event, false);
+    this.tryToSendMoveEvent(false);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
@@ -324,23 +329,32 @@ export default abstract class GestureHandler {
     }
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    this.tryToSendMoveEvent(event, true);
+    this.tryToSendMoveEvent(true);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
   }
-  private tryToSendMoveEvent(event: AdaptedEvent, out: boolean): void {
-    if (this.active && (!out || (out && !this.shouldCancellWhenOutside))) {
-      this.sendEvent(event, this.currentState, this.currentState);
+  private tryToSendMoveEvent(out: boolean): void {
+    if (
+      this.enabled &&
+      this.active &&
+      (!out || (out && !this.shouldCancellWhenOutside))
+    ) {
+      this.sendEvent(this.currentState, this.currentState);
     }
   }
 
   public sendTouchEvent(event: AdaptedEvent): void {
+    if (!this.enabled) {
+      return;
+    }
+
     const { onGestureHandlerEvent }: PropsRef = this.propsRef
       .current as PropsRef;
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const touchEvent: ResultTouchEvent = this.transformTouchEvent(event)!;
+    const touchEvent: ResultTouchEvent | undefined = this.transformTouchEvent(
+      event
+    );
 
     if (touchEvent) {
       invokeNullableMethod(onGestureHandlerEvent, touchEvent);
@@ -351,18 +365,13 @@ export default abstract class GestureHandler {
   // Events Sending
   //
 
-  public sendEvent = (
-    event: AdaptedEvent,
-    newState: State,
-    oldState: State
-  ): void => {
+  public sendEvent = (newState: State, oldState: State): void => {
     const {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
     }: PropsRef = this.propsRef.current as PropsRef;
 
     const resultEvent: ResultEvent = this.transformEventData(
-      event,
       newState,
       oldState
     );
@@ -382,20 +391,16 @@ export default abstract class GestureHandler {
     }
   };
 
-  private transformEventData(
-    event: AdaptedEvent,
-    newState: State,
-    oldState: State
-  ): ResultEvent {
+  private transformEventData(newState: State, oldState: State): ResultEvent {
     return {
       nativeEvent: {
         numberOfPointers: this.tracker.getTrackedPointersCount(),
         state: newState,
         pointerInside: isPointerInBounds(this.view, {
-          x: event.x,
-          y: event.y,
+          x: this.tracker.getLastAvgX(),
+          y: this.tracker.getLastAvgY(),
         }),
-        ...this.transformNativeEvent(event),
+        ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
         target: this.ref,
         oldState: newState !== oldState ? oldState : undefined,
@@ -407,68 +412,102 @@ export default abstract class GestureHandler {
   private transformTouchEvent(
     event: AdaptedEvent
   ): ResultTouchEvent | undefined {
-    if (!event.allTouches || !event.changedTouches || !event.touchEventType) {
-      return;
-    }
-
     const rect = this.view.getBoundingClientRect();
 
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
 
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for (let i = 0; i < event.allTouches.length; ++i) {
-      const id: number = this.tracker.getMappedTouchEventId(
-        event.allTouches[i].identifier
-      );
+    const trackerData = this.tracker.getData();
 
-      // When we simultaneously add 2 (or more) pointers to handler, both allTouches and changedTouches contains information
-      // about all pointers. Because first pointer tries to send event before second was added to tracker, mapped id of second pointer will be NaN.
-      // To avoid crashes, we check whether current id is NaN and, if that's the case, we return undfined and don't send event.
+    // This if handles edge case where all pointers have been cancelled
+    // When pointercancel is triggered, reset method is called. This means that tracker will be reset after first pointer being cancelled
+    // The problem is, that handler will receive another pointercancel event from the rest of the pointers
+    // To avoid crashing, we don't send event if tracker tracks no pointers, i.e. has been reset
+    if (trackerData.size === 0 || !trackerData.has(event.pointerId)) {
+      return;
+    }
 
-      //TODO: Find another way to handle this problem, such as using tracker instead of arrays given in event
-      if (isNaN(id)) return;
+    trackerData.forEach((element: TrackerElement, key: number): void => {
+      const id: number = this.tracker.getMappedTouchEventId(key);
 
       all.push({
         id: id,
-        x: event.allTouches[i].clientX - rect.left,
-        y: event.allTouches[i].clientY - rect.top,
-        absoluteX: event.allTouches[i].clientX,
-        absoluteY: event.allTouches[i].clientY,
+        x: element.lastX - rect.left,
+        y: element.lastY - rect.top,
+        absoluteX: element.lastX,
+        absoluteY: element.lastY,
+      });
+    });
+
+    // Each pointer sends its own event, so we want changed touches to contain only the pointer that has changed.
+    // However, if the event is cancel, we want to cancel all pointers to avoid crashes
+    if (event.eventType !== EventTypes.CANCEL) {
+      changed.push({
+        id: this.tracker.getMappedTouchEventId(event.pointerId),
+        x: event.x - rect.left,
+        y: event.y - rect.top,
+        absoluteX: event.x,
+        absoluteY: event.y,
+      });
+    } else {
+      trackerData.forEach((element: TrackerElement, key: number): void => {
+        const id: number = this.tracker.getMappedTouchEventId(key);
+
+        changed.push({
+          id: id,
+          x: element.lastX - rect.left,
+          y: element.lastY - rect.top,
+          absoluteX: element.lastX,
+          absoluteY: element.lastY,
+        });
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for (let i = 0; i < event.changedTouches.length; ++i) {
-      const id: number = this.tracker.getMappedTouchEventId(
-        event.changedTouches[i].identifier
-      );
+    let eventType: TouchEventType = TouchEventType.UNDETERMINED;
 
-      if (isNaN(id)) return;
+    switch (event.eventType) {
+      case EventTypes.DOWN:
+      case EventTypes.ADDITIONAL_POINTER_DOWN:
+        eventType = TouchEventType.DOWN;
+        break;
+      case EventTypes.UP:
+      case EventTypes.ADDITIONAL_POINTER_UP:
+        eventType = TouchEventType.UP;
+        break;
+      case EventTypes.MOVE:
+        eventType = TouchEventType.MOVE;
+        break;
+      case EventTypes.CANCEL:
+        eventType = TouchEventType.CANCELLED;
+        break;
+    }
 
-      changed.push({
-        id: id, //event.changedTouches[i].identifier,
-        x: event.changedTouches[i].clientX - rect.left,
-        y: event.changedTouches[i].clientY - rect.top,
-        absoluteX: event.changedTouches[i].clientX,
-        absoluteY: event.changedTouches[i].clientY,
-      });
+    // Here, when we receive up event, we want to decrease number of touches
+    // That's because we want handler to send information that there's one pointer less
+    // However, we still want this pointer to be present in allTouches array, so that its data can be accessed
+    let numberOfTouches: number = all.length;
+
+    if (
+      event.eventType === EventTypes.UP ||
+      event.eventType === EventTypes.ADDITIONAL_POINTER_UP
+    ) {
+      --numberOfTouches;
     }
 
     return {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.currentState,
-        eventType: event.touchEventType,
+        eventType: event.touchEventType ?? eventType,
         changedTouches: changed,
         allTouches: all,
-        numberOfTouches: all.length,
+        numberOfTouches: numberOfTouches,
       },
       timeStamp: Date.now(),
     };
   }
 
-  protected transformNativeEvent(_event: AdaptedEvent) {
+  protected transformNativeEvent() {
     return {};
   }
 
@@ -478,7 +517,26 @@ export default abstract class GestureHandler {
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     this.config = { enabled: enabled, ...props };
+    this.enabled = enabled;
     this.validateHitSlops();
+
+    if (this.enabled) {
+      return;
+    }
+
+    switch (this.currentState) {
+      case State.ACTIVE:
+        this.fail(true);
+        break;
+      case State.UNDETERMINED:
+        GestureHandlerOrchestrator.getInstance().removeHandlerFromOrchestrator(
+          this
+        );
+        break;
+      default:
+        this.cancel(true);
+        break;
+    }
   }
 
   protected checkCustomActivationCriteria(criterias: string[]): void {
@@ -535,7 +593,7 @@ export default abstract class GestureHandler {
     }
   }
 
-  private checkHitSlop(event: AdaptedEvent): boolean {
+  private checkHitSlop(): boolean {
     if (!this.config.hitSlop) {
       return true;
     }
@@ -589,11 +647,15 @@ export default abstract class GestureHandler {
       }
     }
 
+    const rect: DOMRect = this.view.getBoundingClientRect();
+    const offsetX: number = this.tracker.getLastX() - rect.left;
+    const offsetY: number = this.tracker.getLastY() - rect.top;
+
     if (
-      event.offsetX >= left &&
-      event.offsetX <= right &&
-      event.offsetY >= top &&
-      event.offsetY <= bottom
+      offsetX >= left &&
+      offsetX <= right &&
+      offsetY >= top &&
+      offsetY <= bottom
     ) {
       return true;
     }
@@ -647,6 +709,10 @@ export default abstract class GestureHandler {
 
   public getState(): State {
     return this.currentState;
+  }
+
+  public isEnabled(): boolean {
+    return this.enabled;
   }
 
   protected setShouldCancelWhenOutside(shouldCancel: boolean) {

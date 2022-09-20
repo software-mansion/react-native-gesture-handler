@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedEvent, PointerType } from '../interfaces';
+import { PointerType } from '../interfaces';
 
 import GestureHandler from '../handlers/GestureHandler';
 import PointerTracker from './PointerTracker';
@@ -30,6 +30,12 @@ export default class GestureHandlerOrchestrator {
     handler.setActive(false);
     handler.setAwaiting(false);
     handler.setActivationIndex(Number.MAX_VALUE);
+  }
+
+  public removeHandlerFromOrchestrator(handler: GestureHandler): void {
+    this.gestureHandlers.splice(this.gestureHandlers.indexOf(handler), 1);
+    this.awaitingHandlers.splice(this.awaitingHandlers.indexOf(handler), 1);
+    this.handlersToCancel.splice(this.handlersToCancel.indexOf(handler), 1);
   }
 
   private cleanupFinishedHandlers(): void {
@@ -63,15 +69,35 @@ export default class GestureHandlerOrchestrator {
     return hasToWait;
   }
 
-  private tryActivate(handler: GestureHandler, event: AdaptedEvent): void {
+  private tryActivate(handler: GestureHandler): void {
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler);
     } else if (
       handler.getState() !== State.CANCELLED &&
       handler.getState() !== State.FAILED
     ) {
-      this.makeActive(handler, event);
+      if (this.shouldActivate(handler)) {
+        this.makeActive(handler);
+      } else {
+        switch (handler.getState()) {
+          case State.ACTIVE:
+            handler.fail();
+            break;
+          case State.BEGAN:
+            handler.cancel();
+        }
+      }
     }
+  }
+
+  private shouldActivate(handler: GestureHandler): boolean {
+    for (const otherHandler of this.gestureHandlers) {
+      if (this.shouldHandlerBeCancelledBy(handler, otherHandler)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private cleanupAwaitingHandlers(handler: GestureHandler): void {
@@ -90,46 +116,50 @@ export default class GestureHandlerOrchestrator {
     handler: GestureHandler,
     newState: State,
     oldState: State,
-    event: AdaptedEvent
+    sendIfDisabled?: boolean
   ): void {
+    if (!handler.isEnabled() && !sendIfDisabled) {
+      return;
+    }
+
     this.handlingChangeSemaphore += 1;
 
     if (this.isFinished(newState)) {
       this.awaitingHandlers.forEach((otherHandler) => {
         if (this.shouldHandlerWaitForOther(otherHandler, handler)) {
           if (newState === State.END) {
-            otherHandler?.cancel(event);
+            otherHandler?.cancel();
             if (otherHandler.getState() === State.END) {
               // Handle edge case, where discrete gestures end immediately after activation thus
               // their state is set to END and when the gesture they are waiting for activates they
               // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
               // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
-              otherHandler.sendEvent(event, State.CANCELLED, State.BEGAN);
+              otherHandler.sendEvent(State.CANCELLED, State.BEGAN);
             }
             otherHandler?.setAwaiting(false);
           } else {
-            this.tryActivate(otherHandler, event);
+            this.tryActivate(otherHandler);
           }
         }
       });
     }
 
     if (newState === State.ACTIVE) {
-      this.tryActivate(handler, event);
+      this.tryActivate(handler);
     } else if (oldState === State.ACTIVE || oldState === State.END) {
       if (handler.isActive()) {
-        handler.sendEvent(event, newState, oldState);
+        handler.sendEvent(newState, oldState);
       } else if (
         oldState === State.ACTIVE &&
         (newState === State.CANCELLED || newState === State.FAILED)
       ) {
-        handler.sendEvent(event, newState, State.BEGAN);
+        handler.sendEvent(newState, State.BEGAN);
       }
     } else if (
       oldState !== State.UNDETERMINED ||
       newState !== State.CANCELLED
     ) {
-      handler.sendEvent(event, newState, oldState);
+      handler.sendEvent(newState, oldState);
     }
 
     this.handlingChangeSemaphore -= 1;
@@ -141,7 +171,7 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  private makeActive(handler: GestureHandler, event: AdaptedEvent): void {
+  private makeActive(handler: GestureHandler): void {
     const currentState = handler.getState();
 
     handler.setActive(true);
@@ -157,21 +187,21 @@ export default class GestureHandlerOrchestrator {
     });
 
     for (let i = this.handlersToCancel.length - 1; i >= 0; --i) {
-      this.handlersToCancel[i]?.cancel(event);
+      this.handlersToCancel[i]?.cancel();
     }
     this.awaitingHandlers.forEach((otherHandler) => {
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler?.cancel(event);
+        otherHandler?.cancel();
         otherHandler?.setAwaiting(true);
       }
     });
 
-    handler.sendEvent(event, State.ACTIVE, State.BEGAN);
+    handler.sendEvent(State.ACTIVE, State.BEGAN);
 
     if (currentState !== State.ACTIVE) {
-      handler.sendEvent(event, State.END, State.ACTIVE);
+      handler.sendEvent(State.END, State.ACTIVE);
       if (currentState !== State.END) {
-        handler.sendEvent(event, State.UNDETERMINED, State.END);
+        handler.sendEvent(State.UNDETERMINED, State.END);
       }
     }
 
@@ -254,16 +284,6 @@ export default class GestureHandlerOrchestrator {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const handlerPointers: number[] = handler.getTrackedPointersID();
-    const otherPointers: number[] = otherHandler.getTrackedPointersID();
-
-    if (
-      !PointerTracker.shareCommonPointers(handlerPointers, otherPointers) &&
-      handler.getView() !== otherHandler.getView()
-    ) {
-      return this.checkOverlap(handler, otherHandler);
-    }
-
     if (this.canRunSimultaneously(handler, otherHandler)) {
       return false;
     }
@@ -274,6 +294,16 @@ export default class GestureHandlerOrchestrator {
     ) {
       // For now it always returns false
       return handler.shouldBeCancelledByOther(otherHandler);
+    }
+
+    const handlerPointers: number[] = handler.getTrackedPointersID();
+    const otherPointers: number[] = otherHandler.getTrackedPointersID();
+
+    if (
+      !PointerTracker.shareCommonPointers(handlerPointers, otherPointers) &&
+      handler.getView() !== otherHandler.getView()
+    ) {
+      return this.checkOverlap(handler, otherHandler);
     }
 
     return true;
@@ -333,10 +363,7 @@ export default class GestureHandlerOrchestrator {
   // This became a problem because handler was left at active state without any signal to end or fail
   // To handle this, when new touch event is received, we loop through active handlers and check which type of
   // pointer they're using. If there are any handler with mouse/pen as a pointer, we cancel them
-  public cancelMouseAndPenGestures(
-    event: AdaptedEvent,
-    currentHandler: GestureHandler
-  ): void {
+  public cancelMouseAndPenGestures(currentHandler: GestureHandler): void {
     this.gestureHandlers.forEach((handler: GestureHandler) => {
       if (
         handler.getPointerType() !== PointerType.MOUSE &&
@@ -346,7 +373,7 @@ export default class GestureHandlerOrchestrator {
       }
 
       if (handler !== currentHandler) {
-        handler.cancel(event);
+        handler.cancel();
       } else {
         // Handler that received touch event should have its pointer tracker reset
         // This allows handler to smoothly change from mouse/pen to touch

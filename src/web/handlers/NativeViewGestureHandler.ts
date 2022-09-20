@@ -55,16 +55,16 @@ export default class NativeViewGestureHandler extends GestureHandler {
   protected onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
-    this.newPointerAction(event);
+    this.newPointerAction();
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
-    this.newPointerAction(event);
+    this.newPointerAction();
   }
 
-  private newPointerAction(event: AdaptedEvent): void {
+  private newPointerAction(): void {
     this.startX = this.tracker.getLastAvgX();
     this.startY = this.tracker.getLastAvgY();
 
@@ -72,9 +72,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
       return;
     }
 
-    this.begin(event);
+    this.begin();
     if (this.buttonRole) {
-      this.activate(event);
+      this.activate();
     }
   }
 
@@ -90,12 +90,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
       distSq >= this.minDistSq &&
       this.currentState === State.BEGAN
     ) {
-      this.activate(event);
+      this.activate();
     }
   }
 
-  protected onPointerOut(event: AdaptedEvent): void {
-    this.cancel(event);
+  protected onPointerOut(): void {
+    this.cancel();
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
@@ -113,16 +113,16 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     if (this.tracker.getTrackedPointersCount() === 0) {
       if (this.currentState === State.ACTIVE) {
-        this.end(event);
+        this.end();
       } else {
-        this.fail(event);
+        this.fail();
       }
     }
   }
 
   protected onPointerCancel(event: AdaptedEvent): void {
     super.onPointerCancel(event);
-    this.cancel(event);
+    this.cancel();
     this.reset();
   }
 
