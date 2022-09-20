@@ -130,7 +130,7 @@ module.exports = {
           editUrl: undefined, // hide edit button
           versions: {
             '2.4.0': {
-              label: '2.4.0-2.5.0',
+              label: '2.4.0 – 2.5.0',
             },
           },
         },
