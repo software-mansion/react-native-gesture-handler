@@ -1,8 +1,10 @@
 package com.swmansion.gesturehandler.react
 
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
+import android.content.Context.ACCESSIBILITY_SERVICE
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -20,6 +22,8 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.view.ViewParent
+import android.view.accessibility.AccessibilityManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.allViews
 import androidx.core.view.children
 import com.facebook.react.module.annotations.ReactModule
@@ -39,6 +43,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.Butt
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), RNGestureHandlerButtonManagerInterface<ButtonViewGroup> {
   private val mDelegate: ViewManagerDelegate<ButtonViewGroup>
+  private var hasActivated = false
 
   init {
     mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
@@ -338,60 +343,26 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       return super.onKeyUp(keyCode, event)
     }
 
+    fun Context.isScreenReaderOn():Boolean{
+      val am = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
+      if (am.isEnabled) {
+          return true
+      }
+      return false}
+
     override fun performClick(): Boolean {
       // don't preform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
-      var _orchestrator: GestureHandlerOrchestrator? = null
-      var _parent: ViewParent? = this.parent
-      while (_parent != null) {
-        if (_parent is RNGestureHandlerRootView) {
-          _orchestrator = _parent.rootHelper?.orchestrator
-        }
-        _parent = _parent.parent
-      }
-
-//      val hdl = RNGestureHandlerModule.registry.getHandlersForViewWithTag(this.id)?.firstOrNull()
-//      hdl?.let { _orchestrator?.recordHandlerIfNotPresent(it,this)}
-//      hdl?.begin()
-//      hdl?.activate()
-//      hdl?.end()
-
-      for(v in this.children){
-        Log.d("dupa", v.toString())
-      }
-
-      val v = this.children.elementAt(0)
-
-      Log.d("dupa", "${this.id}, ${this.tag}")
-
-      return if (!isChildTouched() && soundResponder == this) {
-        soundResponder = null
+      return if (!isChildTouched() && context.isScreenReaderOn()) {
         tryFreeingResponder()
 
-        if (receivedKeyEvent) {
+        if (receivedKeyEvent && soundResponder == this) {
+          soundResponder = null
           receivedKeyEvent = false
-
-          var orchestrator: GestureHandlerOrchestrator? = null
-          var parent: ViewParent? = this.parent
-          while (parent != null) {
-            if (parent is RNGestureHandlerRootView) {
-              orchestrator = parent.rootHelper?.orchestrator
-            }
-            parent = parent.parent
-          }
-
-          if (orchestrator != null) {
-            orchestrator.handlerRegistry.getHandlersForView(this)?.forEach {
-              if (it is NativeViewGestureHandler) {
-                orchestrator.recordHandlerIfNotPresent(it, this)
-                it.isWithinBounds = true
-                it.begin()
-                it.activate()
-                it.end()
-              }
-            }
-          }
         }
+
+        val rv = getRV()
+//        rv?.activateHandlers(this)
 
         super.performClick()
       } else {
@@ -410,7 +381,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
           soundResponder = this
         }
       }
-
       // button can be pressed alongside other button if both are non-exclusive and it doesn't have
       // any pressed children (to prevent pressing the parent when children is pressed).
       val canBePressedAlongsideOther = !exclusive && touchResponder?.exclusive != true && !isChildTouched()
@@ -430,6 +400,20 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     override fun dispatchDrawableHotspotChanged(x: Float, y: Float) {
       // No-op
       // by default Viewgroup would pass hotspot change events
+    }
+
+    private fun getRV():RNGestureHandlerRootView?{
+      var parent: ViewParent? = this.parent
+      var rv: RNGestureHandlerRootView? = null
+
+      while (parent != null) {
+        if (parent is RNGestureHandlerRootView) {
+            rv = parent
+        }
+        parent = parent.parent
+      }
+
+      return rv
     }
 
     companion object {

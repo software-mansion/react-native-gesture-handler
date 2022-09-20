@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react
 import android.os.SystemClock
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import com.facebook.react.bridge.ReactContext
@@ -12,9 +13,10 @@ import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.modal.ReactModalHostView
 import com.swmansion.gesturehandler.GestureHandler
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator
+import com.swmansion.gesturehandler.NativeViewGestureHandler
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
-  public val orchestrator: GestureHandlerOrchestrator?
+  private val orchestrator: GestureHandlerOrchestrator?
   private val jsGestureHandler: GestureHandler<*>?
   val rootView: ViewGroup
   private var shouldIntercept = false
@@ -113,6 +115,10 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     if (blockNativeResponder) {
       UiThreadUtil.runOnUiThread { tryCancelAllHandlers() }
     }
+  }
+
+  fun activateHandlers(view: View){
+    orchestrator?.activateHandlersForView(view)
   }
 
   companion object {

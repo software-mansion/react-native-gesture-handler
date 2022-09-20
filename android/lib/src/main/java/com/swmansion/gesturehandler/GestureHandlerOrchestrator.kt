@@ -10,7 +10,7 @@ import java.util.*
 
 class GestureHandlerOrchestrator(
         private val wrapperView: ViewGroup,
-        public val handlerRegistry: GestureHandlerRegistry,
+        private val handlerRegistry: GestureHandlerRegistry,
         private val viewConfigHelper: ViewConfigurationHelper,
 ) {
   /**
@@ -358,7 +358,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  public fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
+  private fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
     for (i in 0 until gestureHandlersCount) {
       if (gestureHandlers[i] === handler) {
         return
@@ -522,6 +522,19 @@ class GestureHandlerOrchestrator(
   // be turned on and also confirm with the ViewConfigHelper implementation
   private fun isClipping(view: View) =
           view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
+
+
+  fun activateHandlersForView(view:View){
+    handlerRegistry.getHandlersForView(view)?.forEach {
+      if (it is NativeViewGestureHandler) {
+        this.recordHandlerIfNotPresent(it, view)
+        it.markAsInBounds()
+        it.begin()
+        it.activate()
+        it.end()
+      }
+    }
+  }
 
 
   companion object {

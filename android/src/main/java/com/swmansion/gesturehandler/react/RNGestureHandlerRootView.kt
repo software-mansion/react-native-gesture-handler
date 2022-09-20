@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react
 import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import com.facebook.react.bridge.ReactContext
@@ -14,7 +15,7 @@ import com.facebook.react.views.view.ReactViewGroup
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var _enabled = false
-  public var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
+  private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     _enabled = !hasGestureHandlerEnabledRootView(this)
@@ -43,6 +44,10 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
       rootHelper!!.requestDisallowInterceptTouchEvent(disallowIntercept)
     }
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
+  }
+
+  fun activateHandlers(view: View){
+    rootHelper?.activateHandlers(view)
   }
 
   companion object {
