@@ -49,7 +49,9 @@ export default {
   handleSetJSResponder(_tag: number, _blockNativeResponder: boolean) {
     // NO-OP
   },
-  handleClearJSResponder() {},
+  handleClearJSResponder() {
+    // NO-OP
+  },
   createGestureHandler<T>(
     handlerName: keyof typeof Gestures,
     handlerTag: number,
