@@ -162,7 +162,7 @@ export interface SwipeableProps
   renderRightActions?: (
     progressAnimatedValue: Animated.AnimatedInterpolation,
     dragAnimatedValue: Animated.AnimatedInterpolation,
-    swipeable: Swipeable,
+    swipeable: Swipeable
   ) => React.ReactNode;
 
   useNativeAnimations?: boolean;
