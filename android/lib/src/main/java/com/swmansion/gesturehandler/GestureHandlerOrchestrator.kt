@@ -336,20 +336,22 @@ class GestureHandlerOrchestrator(
     val parent = view.parent as? ViewGroup
     // Events are passed down to the orchestrator by the wrapperView, so they are already in the
     // relevant coordinate space. We want to stop traversing the tree when we reach it.
-    val newEvent = if (parent == wrapperView) event else transformEventToViewCoords(parent, event)
+    if (parent != wrapperView) {
+      transformEventToViewCoords(parent, event)
+    }
 
     if (parent != null) {
       val localX = event.x + parent.scrollX - view.left
       val localY = event.y + parent.scrollY - view.top
-      newEvent.setLocation(localX, localY)
+      event.setLocation(localX, localY)
     }
 
     if (!view.matrix.isIdentity) {
       view.matrix.invert(inverseMatrix)
-      newEvent.transform(inverseMatrix)
+      event.transform(inverseMatrix)
     }
 
-    return newEvent
+    return event
   }
 
   /**
@@ -368,23 +370,25 @@ class GestureHandlerOrchestrator(
     val parent = view.parent as? ViewGroup
     // Events are passed down to the orchestrator by the wrapperView, so they are already in the
     // relevant coordinate space. We want to stop traversing the tree when we reach it.
-    val newPoint = if (parent == wrapperView) point else transformPointToViewCoords(parent, point)
+    if (parent != wrapperView) {
+      transformPointToViewCoords(parent, point)
+    }
 
     if (parent != null) {
-      newPoint.x += parent.scrollX - view.left
-      newPoint.y += parent.scrollY - view.top
+      point.x += parent.scrollX - view.left
+      point.y += parent.scrollY - view.top
     }
 
     if (!view.matrix.isIdentity) {
       view.matrix.invert(inverseMatrix)
-      tempCoords[0] = newPoint.x
-      tempCoords[1] = newPoint.y
+      tempCoords[0] = point.x
+      tempCoords[1] = point.y
       inverseMatrix.mapPoints(tempCoords)
-      newPoint.x = tempCoords[0]
-      newPoint.y = tempCoords[1]
+      point.x = tempCoords[0]
+      point.y = tempCoords[1]
     }
 
-    return newPoint
+    return point
   }
 
   private fun addAwaitingHandler(handler: GestureHandler<*>) {
