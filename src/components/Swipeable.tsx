@@ -106,7 +106,10 @@ export interface SwipeableProps
   /**
    * Called when action panel gets open (either right or left).
    */
-  onSwipeableOpen?: (direction: 'left' | 'right', swipeable: Swipeable) => void;
+  onSwipeableOpen?: (
+    direction: 'left' | 'right',
+    swipeable: Swipeable
+  ) => void;
 
   /**
    * Called when action panel is closed.
