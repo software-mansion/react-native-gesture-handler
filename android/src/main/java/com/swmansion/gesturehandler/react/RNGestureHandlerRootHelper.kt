@@ -1,7 +1,6 @@
 package com.swmansion.gesturehandler.react
 
 import android.os.SystemClock
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
