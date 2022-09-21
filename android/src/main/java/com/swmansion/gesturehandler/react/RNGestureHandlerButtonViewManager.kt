@@ -353,16 +353,26 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     override fun performClick(): Boolean {
       // don't preform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
-      return if (!isChildTouched() && context.isScreenReaderOn()) {
+      return if (!isChildTouched()) {
         tryFreeingResponder()
 
-        if (receivedKeyEvent && soundResponder == this) {
-          soundResponder = null
-          receivedKeyEvent = false
-        }
+        val gestureHandlerRootView = getGestureHandlerRootView()
 
-        val rv = getRV()
-//        rv?.activateHandlers(this)
+        when {
+          // Checks whether TalkBack is on
+          context.isScreenReaderOn() -> {
+            gestureHandlerRootView?.activateNativeHandlers(this)
+          }
+          receivedKeyEvent -> {
+            if (soundResponder == this) {
+              receivedKeyEvent = false
+            }
+            gestureHandlerRootView?.activateNativeHandlers(this)
+          }
+          soundResponder == this -> {
+            soundResponder = null
+          }
+        }
 
         super.performClick()
       } else {
@@ -402,18 +412,18 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       // by default Viewgroup would pass hotspot change events
     }
 
-    private fun getRV():RNGestureHandlerRootView?{
+    private fun getGestureHandlerRootView():RNGestureHandlerRootView?{
       var parent: ViewParent? = this.parent
-      var rv: RNGestureHandlerRootView? = null
+      var gestureHandlerRootView: RNGestureHandlerRootView? = null
 
       while (parent != null) {
         if (parent is RNGestureHandlerRootView) {
-            rv = parent
+          gestureHandlerRootView = parent
         }
         parent = parent.parent
       }
 
-      return rv
+      return gestureHandlerRootView
     }
 
     companion object {
