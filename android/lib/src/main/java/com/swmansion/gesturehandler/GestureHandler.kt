@@ -126,7 +126,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT =
-       applySelf { this.manualActivation = manualActivation }
+      applySelf { this.manualActivation = manualActivation }
 
   fun setHitSlop(
     leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float,
