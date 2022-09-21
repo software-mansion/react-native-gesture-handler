@@ -27,7 +27,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     val wrappedViewTag = wrappedView.id
     check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
     val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
-    val registry = RNGestureHandlerModule.registry
+    val registry = module.registry
     rootView = findRootViewTag(wrappedView)
     Log.i(
             ReactConstants.TAG,
@@ -50,7 +50,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
             "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView")
     val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
     with(module) {
-      RNGestureHandlerModule.registry.dropHandler(jsGestureHandler!!.tag)
+      module.registry.dropHandler(jsGestureHandler!!.tag)
       unregisterRootHelper(this@RNGestureHandlerRootHelper)
     }
   }
