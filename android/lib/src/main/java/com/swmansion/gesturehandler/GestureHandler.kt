@@ -126,7 +126,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT =
-    applySelf { this.manualActivation = manualActivation }
+       applySelf { this.manualActivation = manualActivation }
 
   fun setHitSlop(
     leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float,
@@ -277,7 +277,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     // introduced in 1.11.0, remove if crashes are not reported
-    if (pointerProps.isEmpty() || pointerCoords.isEmpty()) {
+    if(pointerProps.isEmpty() || pointerCoords.isEmpty()){
       throw IllegalStateException("pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}")
     }
 
@@ -376,11 +376,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     val offsetY = event.rawY - event.y
 
     trackedPointers[pointerId] = PointerData(
-      pointerId,
-      event.getX(event.actionIndex),
-      event.getY(event.actionIndex),
-      event.getX(event.actionIndex) + offsetX - windowOffset[0],
-      event.getY(event.actionIndex) + offsetY - windowOffset[1],
+        pointerId,
+        event.getX(event.actionIndex),
+        event.getY(event.actionIndex),
+        event.getX(event.actionIndex) + offsetX - windowOffset[0],
+        event.getY(event.actionIndex) + offsetY - windowOffset[1],
     )
     trackedPointersCount++
     addChangedPointer(trackedPointers[pointerId]!!)
@@ -398,11 +398,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     val offsetY = event.rawY - event.y
 
     trackedPointers[pointerId] = PointerData(
-      pointerId,
-      event.getX(event.actionIndex),
-      event.getY(event.actionIndex),
-      event.getX(event.actionIndex) + offsetX - windowOffset[0],
-      event.getY(event.actionIndex) + offsetY - windowOffset[1],
+        pointerId,
+        event.getX(event.actionIndex),
+        event.getY(event.actionIndex),
+        event.getX(event.actionIndex) + offsetX - windowOffset[0],
+        event.getY(event.actionIndex) + offsetY - windowOffset[1],
     )
     addChangedPointer(trackedPointers[pointerId]!!)
     trackedPointers[pointerId] = null

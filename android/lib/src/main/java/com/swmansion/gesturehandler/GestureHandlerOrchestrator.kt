@@ -430,7 +430,7 @@ class GestureHandlerOrchestrator(
     // might not have been extracted (pointer might be in a child, but may be outside parent)
     if (coords[0] in 0f..view.width.toFloat() && coords[1] in 0f..view.height.toFloat()
       && isViewOverflowingParent(view) && extractAncestorHandlers(view, coords, pointerId)) {
-      found = true
+        found = true
     }
 
     return found
