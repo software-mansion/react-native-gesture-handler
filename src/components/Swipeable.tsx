@@ -106,12 +106,15 @@ export interface SwipeableProps
   /**
    * Called when action panel gets open (either right or left).
    */
-  onSwipeableOpen?: (direction: 'left' | 'right') => void;
+  onSwipeableOpen?: (direction: 'left' | 'right', swipeable: Swipeable) => void;
 
   /**
    * Called when action panel is closed.
    */
-  onSwipeableClose?: (direction: 'left' | 'right') => void;
+  onSwipeableClose?: (
+    direction: 'left' | 'right',
+    swipeable: Swipeable
+  ) => void;
 
   /**
    * @deprecated Use `direction` argument of onSwipeableWillOpen()
@@ -161,7 +164,8 @@ export interface SwipeableProps
    * */
   renderRightActions?: (
     progressAnimatedValue: Animated.AnimatedInterpolation,
-    dragAnimatedValue: Animated.AnimatedInterpolation
+    dragAnimatedValue: Animated.AnimatedInterpolation,
+    swipeable: Swipeable
   ) => React.ReactNode;
 
   useNativeAnimations?: boolean;
@@ -381,13 +385,13 @@ export default class Swipeable extends Component<
       if (finished) {
         if (toValue > 0) {
           this.props.onSwipeableLeftOpen?.();
-          this.props.onSwipeableOpen?.('left');
+          this.props.onSwipeableOpen?.('left', this);
         } else if (toValue < 0) {
           this.props.onSwipeableRightOpen?.();
-          this.props.onSwipeableOpen?.('right');
+          this.props.onSwipeableOpen?.('right', this);
         } else {
           const closingDirection = fromValue > 0 ? 'left' : 'right';
-          this.props.onSwipeableClose?.(closingDirection);
+          this.props.onSwipeableClose?.(closingDirection, this);
         }
       }
     });
@@ -463,7 +467,7 @@ export default class Swipeable extends Component<
           styles.rightActions,
           { transform: [{ translateX: this.rightActionTranslate! }] },
         ]}>
-        {renderRightActions(this.showRightAction!, this.transX!)}
+        {renderRightActions(this.showRightAction!, this.transX!, this)}
         <View
           onLayout={({ nativeEvent }) =>
             this.setState({ rightOffset: nativeEvent.layout.x })
