@@ -71,7 +71,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected fun self(): ConcreteGestureHandlerT = this as ConcreteGestureHandlerT
 
   protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT =
-          self().apply { block() }
+    self().apply { block() }
 
   // properties set and accessed only by the orchestrator
   var activationIndex = 0
@@ -111,7 +111,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT =
-          applySelf { this.shouldCancelWhenOutside = shouldCancelWhenOutside }
+    applySelf { this.shouldCancelWhenOutside = shouldCancelWhenOutside }
 
   fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT = applySelf {
     // Don't cancel handler when not changing the value of the isEnabled, executing it always caused
@@ -126,11 +126,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT =
-          applySelf { this.manualActivation = manualActivation }
+    applySelf { this.manualActivation = manualActivation }
 
   fun setHitSlop(
-          leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float,
-          width: Float, height: Float,
+    leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float,
+    width: Float, height: Float,
   ): ConcreteGestureHandlerT = applySelf {
     if (hitSlop == null) {
       hitSlop = FloatArray(6)
@@ -152,7 +152,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT =
-          applySelf { interactionController = controller }
+    applySelf { interactionController = controller }
 
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
     check(!(this.view != null || this.orchestrator != null)) { "Already prepared or hasn't been reset" }
@@ -277,27 +277,27 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     // introduced in 1.11.0, remove if crashes are not reported
-    if(pointerProps.isEmpty()|| pointerCoords.isEmpty()){
+    if (pointerProps.isEmpty() || pointerCoords.isEmpty()) {
       throw IllegalStateException("pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}")
     }
 
     val result: MotionEvent
     try {
       result = MotionEvent.obtain(
-              event.downTime,
-              event.eventTime,
-              action,
-              count,
-              pointerProps,  /* props are copied and hence it is safe to use static array here */
-              pointerCoords,  /* same applies to coords */
-              event.metaState,
-              event.buttonState,
-              event.xPrecision,
-              event.yPrecision,
-              event.deviceId,
-              event.edgeFlags,
-              event.source,
-              event.flags
+        event.downTime,
+        event.eventTime,
+        action,
+        count,
+        pointerProps,  /* props are copied and hence it is safe to use static array here */
+        pointerCoords,  /* same applies to coords */
+        event.metaState,
+        event.buttonState,
+        event.xPrecision,
+        event.yPrecision,
+        event.deviceId,
+        event.edgeFlags,
+        event.source,
+        event.flags
       )
     } catch (e: IllegalArgumentException) {
       throw AdaptEventException(this, event, e)
@@ -309,9 +309,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   // exception to help debug https://github.com/software-mansion/react-native-gesture-handler/issues/1188
   class AdaptEventException(
-          handler: GestureHandler<*>,
-          event: MotionEvent,
-          e: IllegalArgumentException
+    handler: GestureHandler<*>,
+    event: MotionEvent,
+    e: IllegalArgumentException
   ) : Exception("""
     handler: ${handler::class.simpleName}
     state: ${handler.state}
@@ -327,10 +327,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   fun handle(origEvent: MotionEvent) {
     if (!isEnabled
-            || state == STATE_CANCELLED
-            || state == STATE_FAILED
-            || state == STATE_END
-            || trackedPointersIDsCount < 1) {
+      || state == STATE_CANCELLED
+      || state == STATE_FAILED
+      || state == STATE_END
+      || trackedPointersIDsCount < 1) {
       return
     }
 
@@ -376,11 +376,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     val offsetY = event.rawY - event.y
 
     trackedPointers[pointerId] = PointerData(
-            pointerId,
-            event.getX(event.actionIndex),
-            event.getY(event.actionIndex),
-            event.getX(event.actionIndex) + offsetX - windowOffset[0],
-            event.getY(event.actionIndex) + offsetY - windowOffset[1],
+      pointerId,
+      event.getX(event.actionIndex),
+      event.getY(event.actionIndex),
+      event.getX(event.actionIndex) + offsetX - windowOffset[0],
+      event.getY(event.actionIndex) + offsetY - windowOffset[1],
     )
     trackedPointersCount++
     addChangedPointer(trackedPointers[pointerId]!!)
@@ -398,11 +398,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     val offsetY = event.rawY - event.y
 
     trackedPointers[pointerId] = PointerData(
-            pointerId,
-            event.getX(event.actionIndex),
-            event.getY(event.actionIndex),
-            event.getX(event.actionIndex) + offsetX - windowOffset[0],
-            event.getY(event.actionIndex) + offsetY - windowOffset[1],
+      pointerId,
+      event.getX(event.actionIndex),
+      event.getY(event.actionIndex),
+      event.getX(event.actionIndex) + offsetX - windowOffset[0],
+      event.getY(event.actionIndex) + offsetY - windowOffset[1],
     )
     addChangedPointer(trackedPointers[pointerId]!!)
     trackedPointers[pointerId] = null
@@ -542,10 +542,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   fun wantEvents(): Boolean {
     return isEnabled
-            && state != STATE_FAILED
-            && state != STATE_CANCELLED
-            && state != STATE_END
-            && trackedPointersIDsCount > 0
+      && state != STATE_FAILED
+      && state != STATE_CANCELLED
+      && state != STATE_END
+      && trackedPointersIDsCount > 0
   }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
@@ -755,10 +755,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   private data class PointerData(
-          val pointerId: Int,
-          var x: Float,
-          var y: Float,
-          var absoluteX: Float,
-          var absoluteY: Float
+    val pointerId: Int,
+    var x: Float,
+    var y: Float,
+    var absoluteX: Float,
+    var absoluteY: Float
   )
 }

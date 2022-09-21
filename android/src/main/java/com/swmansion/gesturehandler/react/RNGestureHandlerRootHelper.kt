@@ -30,10 +30,10 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     val registry = module.registry
     rootView = findRootViewTag(wrappedView)
     Log.i(
-            ReactConstants.TAG,
-            "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
+      ReactConstants.TAG,
+      "[GESTURE HANDLER] Initialize gesture handler for root view $rootView")
     orchestrator = GestureHandlerOrchestrator(
-            wrappedView, registry, RNViewConfigurationHelper()).apply {
+      wrappedView, registry, RNViewConfigurationHelper()).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
     jsGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
@@ -46,8 +46,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
 
   fun tearDown() {
     Log.i(
-            ReactConstants.TAG,
-            "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView")
+      ReactConstants.TAG,
+      "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView")
     val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
     with(module) {
       module.registry.dropHandler(jsGestureHandler!!.tag)
@@ -117,7 +117,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
   }
 
-  fun activateNativeHandlers(view: View){
+  fun activateNativeHandlers(view: View) {
     orchestrator?.activateNativeHandlersForView(view)
   }
 

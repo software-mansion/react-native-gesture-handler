@@ -21,8 +21,8 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     _enabled = !hasGestureHandlerEnabledRootView(this)
     if (!_enabled) {
       Log.i(
-              ReactConstants.TAG,
-              "[GESTURE HANDLER] Gesture handler is already enabled for a parent view"
+        ReactConstants.TAG,
+        "[GESTURE HANDLER] Gesture handler is already enabled for a parent view"
       )
     }
     if (_enabled && rootHelper == null) {
@@ -35,9 +35,9 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent) =
-          if (_enabled && rootHelper!!.dispatchTouchEvent(ev)) {
-            true
-          } else super.dispatchTouchEvent(ev)
+    if (_enabled && rootHelper!!.dispatchTouchEvent(ev)) {
+      true
+    } else super.dispatchTouchEvent(ev)
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
     if (_enabled) {
@@ -46,7 +46,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
   }
 
-  fun activateNativeHandlers(view: View){
+  fun activateNativeHandlers(view: View) {
     rootHelper?.activateNativeHandlers(view)
   }
 

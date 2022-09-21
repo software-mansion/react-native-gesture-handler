@@ -115,7 +115,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   override fun onCancel() {
     val time = SystemClock.uptimeMillis()
     val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
-      action =  MotionEvent.ACTION_CANCEL
+      action = MotionEvent.ACTION_CANCEL
     }
     view!!.onTouchEvent(event)
   }
@@ -124,7 +124,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     this.hook = defaultHook
   }
 
-  fun markAsInBounds(){
+  fun markAsInBounds() {
     isWithinBounds = true
   }
 
@@ -132,7 +132,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     private fun tryIntercept(view: View, event: MotionEvent) =
       view is ViewGroup && view.onInterceptTouchEvent(event)
 
-    private val defaultHook = object : NativeViewGestureHandlerHook{}
+    private val defaultHook = object : NativeViewGestureHandlerHook {}
   }
 
   interface NativeViewGestureHandlerHook {
@@ -177,8 +177,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   private class EditTextHook(
-          private val handler: NativeViewGestureHandler,
-          private val editText: ReactEditText
+    private val handler: NativeViewGestureHandler,
+    private val editText: ReactEditText
   ) : NativeViewGestureHandlerHook {
     private var startX = 0f
     private var startY = 0f
@@ -199,7 +199,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     // of RNGestureHandlerRootHelper so no explicit type checks, but its tag is always negative
     // also if other handler is NativeViewGestureHandler then don't override the default implementation
     override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) =
-            handler.tag > 0 && handler !is NativeViewGestureHandler
+      handler.tag > 0 && handler !is NativeViewGestureHandler
 
     override fun wantsToHandleEventBeforeActivation() = true
 

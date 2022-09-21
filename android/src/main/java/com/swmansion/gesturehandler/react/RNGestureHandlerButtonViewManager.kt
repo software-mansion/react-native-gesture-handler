@@ -103,7 +103,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   }
 
   class ButtonViewGroup(context: Context?) : ViewGroup(context),
-          NativeViewGestureHandler.NativeViewGestureHandlerHook {
+    NativeViewGestureHandler.NativeViewGestureHandlerHook {
     // Using object because of handling null representing no value set.
     var rippleColor: Int? = null
       set(color) = withBackgroundUpdate {
@@ -266,9 +266,9 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
 
       val drawable = RippleDrawable(
-              colorStateList,
-              null,
-              if (useBorderlessDrawable) null else ShapeDrawable(RectShape())
+        colorStateList,
+        null,
+        if (useBorderlessDrawable) null else ShapeDrawable(RectShape())
       )
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && rippleRadius != null) {
@@ -343,12 +343,13 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       return super.onKeyUp(keyCode, event)
     }
 
-    private fun Context.isScreenReaderOn():Boolean{
+    private fun Context.isScreenReaderOn(): Boolean {
       val am = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
       if (am.isEnabled) {
-          return true
+        return true
       }
-      return false}
+      return false
+    }
 
     override fun performClick(): Boolean {
       // don't preform click when a child button is pressed (mainly to prevent sound effect of
@@ -412,7 +413,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       // by default Viewgroup would pass hotspot change events
     }
 
-    private fun getGestureHandlerRootView():RNGestureHandlerRootView?{
+    private fun getGestureHandlerRootView(): RNGestureHandlerRootView? {
       var parent: ViewParent? = this.parent
       var gestureHandlerRootView: RNGestureHandlerRootView? = null
 
