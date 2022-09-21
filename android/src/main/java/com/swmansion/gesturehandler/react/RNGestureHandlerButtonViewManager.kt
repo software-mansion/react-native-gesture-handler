@@ -1,10 +1,8 @@
 package com.swmansion.gesturehandler.react
 
-import android.accessibilityservice.AccessibilityServiceInfo
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
-import android.content.Context.ACCESSIBILITY_SERVICE
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -21,9 +19,6 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.view.ViewParent
-import android.view.accessibility.AccessibilityManager
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.view.allViews
 import androidx.core.view.children
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
@@ -34,15 +29,13 @@ import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
-import com.swmansion.gesturehandler.GestureHandler
-import com.swmansion.gesturehandler.GestureHandlerOrchestrator
 import com.swmansion.gesturehandler.NativeViewGestureHandler
+import com.swmansion.gesturehandler.isScreenReaderOn
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), RNGestureHandlerButtonManagerInterface<ButtonViewGroup> {
   private val mDelegate: ViewManagerDelegate<ButtonViewGroup>
-  private var hasActivated = false
 
   init {
     mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
@@ -340,14 +333,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
       receivedKeyEvent = true
       return super.onKeyUp(keyCode, event)
-    }
-
-    private fun Context.isScreenReaderOn(): Boolean {
-      val am = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
-      if (am.isEnabled) {
-        return true
-      }
-      return false
     }
 
     override fun performClick(): Boolean {
