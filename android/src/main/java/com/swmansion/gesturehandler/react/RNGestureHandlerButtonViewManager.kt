@@ -343,7 +343,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       return super.onKeyUp(keyCode, event)
     }
 
-    fun Context.isScreenReaderOn():Boolean{
+    private fun Context.isScreenReaderOn():Boolean{
       val am = getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
       if (am.isEnabled) {
           return true

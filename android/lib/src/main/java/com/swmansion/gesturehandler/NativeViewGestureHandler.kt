@@ -174,10 +174,6 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * by this one.
      */
     fun shouldCancelRootViewGestureHandlerIfNecessary() = false
-
-
-    fun lol(orchestrator: GestureHandlerOrchestrator){
-    }
   }
 
   private class EditTextHook(
