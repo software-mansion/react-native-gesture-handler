@@ -524,7 +524,7 @@ class GestureHandlerOrchestrator(
           view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
 
 
-  fun activateHandlersForView(view:View){
+  fun activateNativeHandlersForView(view:View){
     handlerRegistry.getHandlersForView(view)?.forEach {
       if (it is NativeViewGestureHandler) {
         this.recordHandlerIfNotPresent(it, view)

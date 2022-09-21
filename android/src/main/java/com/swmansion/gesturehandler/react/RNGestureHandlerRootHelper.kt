@@ -117,8 +117,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
   }
 
-  fun activateHandlers(view: View){
-    orchestrator?.activateHandlersForView(view)
+  fun activateNativeHandlers(view: View){
+    orchestrator?.activateNativeHandlersForView(view)
   }
 
   companion object {

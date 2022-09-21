@@ -46,8 +46,8 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
   }
 
-  fun activateHandlers(view: View){
-    rootHelper?.activateHandlers(view)
+  fun activateNativeHandlers(view: View){
+    rootHelper?.activateNativeHandlers(view)
   }
 
   companion object {

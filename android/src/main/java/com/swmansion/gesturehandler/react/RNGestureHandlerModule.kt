@@ -343,7 +343,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     FlingGestureHandlerFactory(),
     ManualGestureHandlerFactory(),
   )
-//  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
+  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val enqueuedRootViewInit: MutableList<Int> = ArrayList()
@@ -619,7 +619,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   companion object {
-    val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
     const val MODULE_NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
