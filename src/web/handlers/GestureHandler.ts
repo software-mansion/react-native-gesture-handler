@@ -121,6 +121,15 @@ export default abstract class GestureHandler {
       return;
     }
 
+    if (
+      this.tracker.getTrackedPointersCount() > 0 &&
+      (newState === State.END ||
+        newState === State.CANCELLED ||
+        newState === State.FAILED)
+    ) {
+      this.cancelTouches();
+    }
+
     const oldState = this.currentState;
     this.currentState = newState;
 
@@ -505,6 +514,58 @@ export default abstract class GestureHandler {
       },
       timeStamp: Date.now(),
     };
+  }
+
+  private cancelTouches(): void {
+    const rect = this.view.getBoundingClientRect();
+
+    const all: PointerData[] = [];
+    const changed: PointerData[] = [];
+
+    const trackerData = this.tracker.getData();
+
+    if (trackerData.size === 0) {
+      return;
+    }
+
+    trackerData.forEach((element: TrackerElement, key: number): void => {
+      const id: number = this.tracker.getMappedTouchEventId(key);
+
+      all.push({
+        id: id,
+        x: element.lastX - rect.left,
+        y: element.lastY - rect.top,
+        absoluteX: element.lastX,
+        absoluteY: element.lastY,
+      });
+
+      changed.push({
+        id: id,
+        x: element.lastX - rect.left,
+        y: element.lastY - rect.top,
+        absoluteX: element.lastX,
+        absoluteY: element.lastY,
+      });
+    });
+
+    const cancelEvent: ResultTouchEvent = {
+      nativeEvent: {
+        handlerTag: this.handlerTag,
+        state: this.currentState,
+        eventType: TouchEventType.CANCELLED,
+        changedTouches: changed,
+        allTouches: all,
+        numberOfTouches: all.length,
+      },
+      timeStamp: Date.now(),
+    };
+
+    const { onGestureHandlerEvent }: PropsRef = this.propsRef
+      .current as PropsRef;
+
+    if (cancelEvent) {
+      invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
+    }
   }
 
   protected transformNativeEvent() {
