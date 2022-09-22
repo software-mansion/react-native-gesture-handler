@@ -563,9 +563,7 @@ export default abstract class GestureHandler {
     const { onGestureHandlerEvent }: PropsRef = this.propsRef
       .current as PropsRef;
 
-    if (cancelEvent) {
-      invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
-    }
+    invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
   }
 
   protected transformNativeEvent() {
