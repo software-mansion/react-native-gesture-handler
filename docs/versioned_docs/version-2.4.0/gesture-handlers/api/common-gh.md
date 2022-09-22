@@ -4,9 +4,8 @@ title: Common handler properties
 sidebar_label: Common handler properties
 ---
 
-:::info
-We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
-section in Introduction](../../introduction.md#rngh-20) for more information.
+:::warning
+Consider using the new [gestures API](../../api/gestures/gesture.md) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](../../introduction.md#rngh-20) for more information.
 :::
 
 This page covers the common set of properties all gesture handler components expose.

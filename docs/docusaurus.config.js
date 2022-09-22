@@ -128,6 +128,11 @@ module.exports = {
           path: 'docs',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: undefined, // hide edit button
+          versions: {
+            '2.4.0': {
+              label: '2.4.0 – 2.5.0',
+            },
+          },
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

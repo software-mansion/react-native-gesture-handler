@@ -4,9 +4,8 @@ title: ForceTouchGestureHandler (iOS only)
 sidebar_label: Force touch
 ---
 
-:::info
-We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
-section in Introduction](../../introduction.md#rngh-20) for more information.
+:::warning
+Consider using the new [gestures API](../../api/gestures/gesture.md) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](../../introduction.md#rngh-20) for more information.
 :::
 
 A continuous gesture handler that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.
