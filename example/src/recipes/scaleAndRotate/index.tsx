@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, Platform, StyleSheet } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -135,7 +135,11 @@ export class PinchableBox extends React.Component {
                         ],
                       },
                     ]}
-                    source={require('./swmansion.png')}
+                    source={
+                      Platform.OS === 'web'
+                        ? require('./swm.svg')
+                        : require('./swmansion.png')
+                    }
                   />
                 </Animated.View>
               </PinchGestureHandler>

@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "jsx": "react-native",
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom"],
     "types": ["jest"],
     "module": "esnext",
     "moduleResolution": "node",

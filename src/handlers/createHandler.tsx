@@ -25,7 +25,7 @@ import {
   scheduleFlushOperations,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
-import { isFabric, isJestEnv } from '../utils';
+import { isFabric, isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 
@@ -468,7 +468,17 @@ export default function createHandler<
 
       this.propsRef.current = events;
 
-      const child: any = React.Children.only(this.props.children);
+      let child: any = null;
+      try {
+        child = React.Children.only(this.props.children);
+      } catch (e) {
+        throw new Error(
+          tagMessage(
+            `${name} got more than one view as a child. If you want the gesture to work on multiple views, wrap them with a common parent and attach the gesture to that view.`
+          )
+        );
+      }
+
       let grandChildren = child.props.children;
       if (
         __DEV__ &&

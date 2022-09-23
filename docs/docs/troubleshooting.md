@@ -34,16 +34,18 @@ To make it easier for us to understand your issue and to be able to approach it 
 - Keep in mind that `Touchables` from RNGH are rendering two additional views that may need to be styled separately to achieve desired effect (`style` and `containerStyle` props).
 - In order for the gesture composition to work, all composed gestures must be attached to the same `GestureHandlerRootView`.
 
-### Multiple versions of Gesture Handler were detected
+### Multiple instances of Gesture Handler were detected
 
 This error usually happens when in your project there exists more than one instance of Gesture Handler. It can occur when some of your dependencies have installed Gesture Handler inside their own `node_modules` instead of using it as a peer dependency. In this case two different versions of Gesture Handler JS module try to install the same Native Module. You can resolve this problem manually by modifying your `package.json` file.
 
 You can check which libraries are using Gesture Handler, for example, with the command:
+
 ```bash
 npm why react-native-gesture-handler
-``` 
+```
 
 If you use `yarn` you should add [`resolution` property](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/).
+
 ```json
 "resolutions": {
   "react-native-gesture-handler": <Gesture Handler version>
@@ -51,6 +53,7 @@ If you use `yarn` you should add [`resolution` property](https://classic.yarnpkg
 ```
 
 If you use `npm` you should add [`overrides` property](https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides).
+
 ```json
 "overrides": {
   "react-native-gesture-handler": <Gesture Handler version>
@@ -58,10 +61,13 @@ If you use `npm` you should add [`overrides` property](https://docs.npmjs.com/cl
 ```
 
 After that you need to run your package manager again
+
 ```bash
 yarn
 ```
+
 or
+
 ```bash
 npm install
 ```

@@ -35,12 +35,13 @@ import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
-import { isFabric, tagMessage } from '../../utils';
+import { isFabric, REACT_NATIVE_VERSION, tagMessage } from '../../utils';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
 import { RNRenderer } from '../../RNRenderer';
+import { isExperimentalWebImplementationEnabled } from '../../EnableExperimentalWebImplementation';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -117,6 +118,9 @@ function checkGestureCallbacksForWorklets(gesture: GestureType) {
 
 interface WebEventHandler {
   onGestureHandlerEvent: (event: HandlerStateChangeEvent<unknown>) => void;
+  onGestureHandlerStateChange?: (
+    event: HandlerStateChangeEvent<unknown>
+  ) => void;
 }
 
 interface AttachHandlersConfig {
@@ -148,7 +152,6 @@ function attachHandlers({
 
   for (const handler of gesture) {
     checkGestureCallbacksForWorklets(handler);
-
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
       handler.handlerTag,
@@ -538,8 +541,13 @@ function validateDetectorChildren(ref: any) {
   //         /       \
   //   NativeView  NativeView
   if (__DEV__ && Platform.OS !== 'web') {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const wrapType = ref._reactInternals.elementType;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const wrapType =
+      REACT_NATIVE_VERSION.minor > 63 || REACT_NATIVE_VERSION.major > 0
+        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          ref._reactInternals.elementType
+        : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          ref._reactInternalFiber.elementType;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     let instance =
       RNRenderer.findHostInstance_DEPRECATED(
@@ -575,6 +583,11 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
     },
+    onGestureHandlerStateChange: isExperimentalWebImplementationEnabled()
+      ? (e: HandlerStateChangeEvent<unknown>) => {
+          onGestureHandlerEvent(e.nativeEvent);
+        }
+      : undefined,
   });
 
   const preparedGesture = React.useRef<GestureConfigReference>({
@@ -686,18 +699,26 @@ class Wrap extends React.Component<{
   children?: React.ReactNode;
 }> {
   render() {
-    // I don't think that fighting with types over such a simple function is worth it
-    // The only thing it does is add 'collapsable: false' to the child component
-    // to make sure it is in the native view hierarchy so the detector can find
-    // correct viewTag to attach to.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const child: any = React.Children.only(this.props.children);
-    return React.cloneElement(
-      child,
-      { collapsable: false },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      child.props.children
-    );
+    try {
+      // I don't think that fighting with types over such a simple function is worth it
+      // The only thing it does is add 'collapsable: false' to the child component
+      // to make sure it is in the native view hierarchy so the detector can find
+      // correct viewTag to attach to.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const child: any = React.Children.only(this.props.children);
+      return React.cloneElement(
+        child,
+        { collapsable: false },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        child.props.children
+      );
+    } catch (e) {
+      throw new Error(
+        tagMessage(
+          `GestureDetector got more than one view as a child. If you want the gesture to work on multiple views, wrap them with a common parent and attach the gesture to that view.`
+        )
+      );
+    }
   }
 }
 
