@@ -212,14 +212,6 @@ dependencies {
 }
 
 if (isNewArchitectureEnabled()) {
-    react {
-        reactNativeDir = rootProject.file(findNodeModulePath(rootProject.rootDir, "react-native") ?: "../node_modules/react-native/")
-        jsRootDir = file("../src/fabric/")
-        codegenDir = rootProject.file(findNodeModulePath(rootProject.rootDir, "react-native-codegen") ?: "../node_modules/react-native-codegen/")
-        libraryName = "rngesturehandler"
-        codegenJavaPackageName = "com.swmansion.gesturehandler"
-    }
-
     // Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".
     tasks.whenTaskAdded { task ->
         if (task.name.contains("configureCMakeDebug")) {
