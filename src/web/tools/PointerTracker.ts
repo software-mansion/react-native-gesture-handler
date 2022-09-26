@@ -143,7 +143,7 @@ export default class PointerTracker {
   public getLastX(pointerId: number): number;
 
   public getLastX(pointerId?: number): number {
-    if (pointerId) {
+    if (pointerId !== undefined) {
       return this.trackedPointers.get(pointerId)?.lastX as number;
     } else {
       return this.trackedPointers.get(this.lastMovedPointerId)?.lastX as number;
@@ -164,7 +164,7 @@ export default class PointerTracker {
   public getLastY(pointerId: number): number;
 
   public getLastY(pointerId?: number): number {
-    if (pointerId) {
+    if (pointerId !== undefined) {
       return this.trackedPointers.get(pointerId)?.lastY as number;
     } else {
       return this.trackedPointers.get(this.lastMovedPointerId)?.lastY as number;
