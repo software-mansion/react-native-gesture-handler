@@ -47,6 +47,9 @@ import { enableExperimentalWebImplementation } from 'react-native-gesture-handle
 
 enableExperimentalWebImplementation();
 
+import Test from './test';
+import Demo from './basic/demo/index';
+
 interface Example {
   name: string;
   component: React.ComponentType;
@@ -60,6 +63,8 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Basic examples',
     data: [
+      { name: 'Demo', component: Demo },
+      { name: 'Test', component: Test },
       { name: 'Draggable', component: Draggable },
       { name: 'Multitap', component: MultiTap },
       { name: 'Bouncing box', component: BouncingBox },
