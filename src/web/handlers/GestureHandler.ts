@@ -123,6 +123,7 @@ export default abstract class GestureHandler {
 
     if (
       this.tracker.getTrackedPointersCount() > 0 &&
+      this.config.needsPointerData &&
       (newState === State.END ||
         newState === State.CANCELLED ||
         newState === State.FAILED)
