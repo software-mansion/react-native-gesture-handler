@@ -1,25 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  Directions,
+  Gesture,
+  GestureDetector,
+} from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withDelay,
   withSequence,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { getRandomColor } from './utils';
 
 export default function Character() {
+  // Background color
   const [currentColor, setBgColor] = useState('white');
   const [lastColor, setLastColor] = useState('white');
-  const [progressFlag, setProgressFlag] = useState(0);
+  const [progress, setProgress] = useState(0);
 
-  const progress = useDerivedValue(() => {
-    return withTiming(progressFlag ? 0 : 1, { duration: 1000 });
+  // Simley
+  const [smile, setSmile] = useState('M 70 120 L 100 150 L 130 120');
+
+  const progressSharedValue = useDerivedValue(() => {
+    return withTiming(progress, { duration: 500 });
   });
 
   // LongPress
@@ -28,7 +34,7 @@ export default function Character() {
 
     setLastColor(currentColor);
     setBgColor(color);
-    setProgressFlag(progressFlag ? 0 : 1);
+    setProgress(progress + 1);
   });
 
   // Tap
@@ -39,6 +45,18 @@ export default function Character() {
       withTiming(0, { duration: 200 })
     );
   });
+
+  // Fling
+  const downFlingGesture = Gesture.Fling()
+    .direction(Directions.DOWN)
+    .onEnd((e) => {
+      setSmile('M 70 120 L 100 150 L 130 120');
+    });
+  const upFlingGesture = Gesture.Fling()
+    .direction(Directions.UP)
+    .onEnd((e) => {
+      setSmile('M 70 150 L 100 120 L 130 150');
+    });
 
   // Pinch
   const scale = useSharedValue(1);
@@ -57,16 +75,16 @@ export default function Character() {
   const gesture = Gesture.Simultaneous(
     pinchGesture,
     rotationGesture,
-    tapGesture,
-    longGesture
+    longGesture,
+    Gesture.Exclusive(downFlingGesture, upFlingGesture, tapGesture)
   );
 
   const animatedStyle = useAnimatedStyle(() => {
-    console.log(lastColor, currentColor, progressFlag);
+    console.log(progressSharedValue.value);
     const backgroundColor = interpolateColor(
-      progress.value,
-      [0, 1],
-      progressFlag ? [currentColor, lastColor] : [lastColor, currentColor]
+      progressSharedValue.value,
+      [progress - 1, progress],
+      [lastColor, currentColor]
     );
     return {
       backgroundColor: backgroundColor,
@@ -83,14 +101,12 @@ export default function Character() {
       <Animated.View style={[styles.wrapper, styles.char, animatedStyle]}>
         <svg width="200" height="200">
           <path
-            d="M 40 75
+            d={`M 40 75
               A 26 150 0 0 1 70 75
               M 130 75
               A 26 150 0 0 1 160 75
-              M 70 120
-              L 100 150
-              L 130 120
-            "
+              ${smile}
+            `}
             stroke="black"
             fill="transparent"
             strokeWidth="2"
