@@ -1,88 +1,113 @@
-import React from 'react';
-import { Animated, StyleSheet } from 'react-native';
-import {
-  RotationGestureHandlerGestureEvent,
-  RotationGestureHandler,
-  RotationGestureHandlerStateChangeEvent,
-  State,
-} from 'react-native-gesture-handler';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withDelay,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import { getRandomColor } from './utils';
 
-import { USE_NATIVE_DRIVER } from '../../config';
+export default function Character() {
+  const [currentColor, setBgColor] = useState('white');
+  const [lastColor, setLastColor] = useState('white');
+  const [progressFlag, setProgressFlag] = useState(0);
 
-export default class Character extends React.Component {
-  private rotate: Animated.Value;
-  private rotateStr: Animated.AnimatedInterpolation;
-  private lastRotate: number;
-  private onRotateGestureEvent: (
-    event: RotationGestureHandlerGestureEvent
-  ) => void;
+  const progress = useDerivedValue(() => {
+    return withTiming(progressFlag ? 0 : 1, { duration: 1000 });
+  });
 
-  constructor(props: Record<string, unknown>) {
-    super(props);
+  // LongPress
+  const longGesture = Gesture.LongPress().onStart((e) => {
+    const color = getRandomColor();
 
-    this.rotate = new Animated.Value(0);
-    this.rotateStr = this.rotate.interpolate({
-      inputRange: [-100, 100],
-      outputRange: ['-100rad', '100rad'],
-    });
-    this.lastRotate = 0;
-    this.onRotateGestureEvent = Animated.event(
-      [{ nativeEvent: { rotation: this.rotate } }],
-      {
-        useNativeDriver: USE_NATIVE_DRIVER,
-      }
+    setLastColor(currentColor);
+    setBgColor(color);
+    setProgressFlag(progressFlag ? 0 : 1);
+  });
+
+  // Tap
+  const spring = useSharedValue(0);
+  const tapGesture = Gesture.Tap().onStart((e) => {
+    spring.value = withSequence(
+      withTiming(150, { duration: 200 }),
+      withTiming(0, { duration: 200 })
     );
-  }
+  });
 
-  private onRotateHandlerStateChange = (
-    event: RotationGestureHandlerStateChangeEvent
-  ) => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      this.lastRotate += event.nativeEvent.rotation;
-      this.rotate.setOffset(this.lastRotate);
-      this.rotate.setValue(0);
-    }
-  };
+  // Pinch
+  const scale = useSharedValue(1);
+  const pinchGesture = Gesture.Pinch().onChange((e) => {
+    'worklet';
+    scale.value *= e.scaleChange;
+  });
 
-  render() {
-    return (
-      <RotationGestureHandler
-        onGestureEvent={this.onRotateGestureEvent}
-        onHandlerStateChange={this.onRotateHandlerStateChange}>
-        <Animated.View
-          style={[
-            styles.wrapper,
-            styles.char,
-            { transform: [{ rotate: this.rotateStr }] },
-          ]}>
-          <svg width="200" height="200">
-            <path
-              d="M 40 75
+  // Rotation
+  const rotation = useSharedValue(0);
+  const rotationGesture = Gesture.Rotation().onChange((e) => {
+    'worklet';
+    rotation.value += e.rotationChange;
+  });
+
+  const gesture = Gesture.Simultaneous(
+    pinchGesture,
+    rotationGesture,
+    tapGesture,
+    longGesture
+  );
+
+  const animatedStyle = useAnimatedStyle(() => {
+    console.log(lastColor, currentColor, progressFlag);
+    const backgroundColor = interpolateColor(
+      progress.value,
+      [0, 1],
+      progressFlag ? [currentColor, lastColor] : [lastColor, currentColor]
+    );
+    return {
+      backgroundColor: backgroundColor,
+      transform: [
+        { scale: scale.value },
+        { rotateZ: `${rotation.value}rad` },
+        { translateY: -spring.value },
+      ],
+    };
+  });
+
+  return (
+    <GestureDetector gesture={gesture}>
+      <Animated.View style={[styles.wrapper, styles.char, animatedStyle]}>
+        <svg width="200" height="200">
+          <path
+            d="M 40 75
               A 26 150 0 0 1 70 75
               M 130 75
               A 26 150 0 0 1 160 75
+              M 70 120
+              L 100 150
+              L 130 120
             "
-              //M 40 120
-              //A 30 25 0 1 0 160 120
-              stroke="black"
-              fill="transparent"
-              strokeWidth="2"
-            />
-          </svg>
-        </Animated.View>
-      </RotationGestureHandler>
-    );
-  }
+            stroke="black"
+            fill="transparent"
+            strokeWidth="2"
+          />
+        </svg>
+      </Animated.View>
+    </GestureDetector>
+  );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 100,
-    backgroundColor: 'white',
   },
   char: {
     shadowColor: 'white',
     shadowOpacity: 1,
-    shadowRadius: 20,
+    shadowRadius: 25,
   },
 });
