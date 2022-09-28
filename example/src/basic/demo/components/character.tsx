@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
-  SlideInRight,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
