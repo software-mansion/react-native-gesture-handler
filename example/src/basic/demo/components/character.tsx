@@ -3,6 +3,7 @@ import { Image, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
+  SlideInRight,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -99,7 +100,7 @@ export default function Character() {
   return (
     <GestureDetector gesture={gesture}>
       <Animated.View style={[styles.wrapper, animatedStyle]}>
-        <Image style={styles.img} source={IMAGES[currentImage]} />
+        <Animated.Image style={styles.img} source={IMAGES[currentImage]} />
       </Animated.View>
     </GestureDetector>
   );
