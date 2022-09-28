@@ -9,7 +9,12 @@ import {
   SLIDER_WIDTH,
 } from '../utils';
 
-export default function Slider(props) {
+interface SliderProps {
+  color: string;
+  onChange: (value: number) => void;
+}
+
+export default function Slider(props: SliderProps) {
   const [left, setLeft] = useState(-5);
 
   const scaleValue = (x: number) => {

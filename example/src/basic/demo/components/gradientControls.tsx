@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text } from 'react-native';
+import { RGB } from '..';
 import Slider from './slider';
 
 const COLORS = {
@@ -8,7 +9,12 @@ const COLORS = {
   BLUE: 'rgba(0,0,255,1)',
 };
 
-export default function GradientControls(props) {
+interface GradientControlProps {
+  style: any[];
+  onChange: (rgb: RGB) => void;
+}
+
+export default function GradientControls(props: GradientControlProps) {
   const [r, setR] = useState(0);
   const [g, setG] = useState(0);
   const [b, setB] = useState(0);
@@ -31,6 +37,8 @@ export default function GradientControls(props) {
       <Slider color={COLORS.RED} onChange={updateR} />
       <Slider color={COLORS.GREEN} onChange={updateG} />
       <Slider color={COLORS.BLUE} onChange={updateB} />
+
+      {/* @ts-ignore Types are ok */}
       <Text style={styles.text}>
         rgb({Math.round(r)},{Math.round(g)},{Math.round(b)})
       </Text>

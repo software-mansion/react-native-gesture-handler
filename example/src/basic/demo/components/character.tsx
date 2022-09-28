@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Direction } from '../../../../../src/web/constants';
-import { getRandomColor, IMAGES, IMG_SIZE, LOGO_SIZE, WIDTH } from '../utils';
+import { getRandomColor, IMAGES, IMG_SIZE, LOGO_SIZE } from '../utils';
 
 export default function Character() {
   // Background color
@@ -28,7 +28,7 @@ export default function Character() {
   // Fling
   const leftFlingGesture = Gesture.Fling()
     .direction(Direction.LEFT)
-    .onEnd((e) => {
+    .onEnd(() => {
       const index = currentImage === 0 ? IMAGES.length - 1 : currentImage - 1;
 
       setCurrentImage(index);
@@ -36,13 +36,13 @@ export default function Character() {
 
   const rightFlingGesture = Gesture.Fling()
     .direction(Direction.RIGHT)
-    .onEnd((e) => {
+    .onEnd(() => {
       const index = (currentImage + 1) % IMAGES.length;
       setCurrentImage(index);
     });
 
   // LongPress
-  const longGesture = Gesture.LongPress().onStart((e) => {
+  const longGesture = Gesture.LongPress().onStart(() => {
     const color = getRandomColor();
 
     setLastColor(currentColor);
@@ -52,7 +52,7 @@ export default function Character() {
 
   // Tap
   const spring = useSharedValue(0);
-  const tapGesture = Gesture.Tap().onStart((e) => {
+  const tapGesture = Gesture.Tap().onStart(() => {
     spring.value = withSequence(
       withTiming(150, { duration: 200 }),
       withTiming(0, { duration: 200 })
