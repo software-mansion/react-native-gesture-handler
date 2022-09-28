@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Direction } from '../../../../../src/web/constants';
-import { getRandomColor, IMAGES } from '../utils';
+import { getRandomColor, IMAGES, IMG_SIZE, LOGO_SIZE, WIDTH } from '../utils';
 
 export default function Character() {
   // Background color
@@ -107,9 +107,9 @@ export default function Character() {
 
 const styles = StyleSheet.create({
   wrapper: {
-    borderRadius: 110,
-    width: 220,
-    height: 220,
+    width: LOGO_SIZE,
+    height: LOGO_SIZE,
+    borderRadius: LOGO_SIZE / 2,
 
     display: 'flex',
     justifyContent: 'space-around',
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
 
   img: {
-    width: 200,
-    height: 200,
+    width: IMG_SIZE,
+    height: IMG_SIZE,
   },
 });

@@ -1,21 +1,37 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  POINTER_HEIGHT,
+  POINTER_WIDTH,
+  SLIDER_HEIGHT,
+  SLIDER_WIDTH,
+} from '../utils';
 
 export default function Slider(props) {
   const [left, setLeft] = useState(-5);
+
+  const scaleValue = (x: number) => {
+    const factor = x / SLIDER_WIDTH;
+    return 255 * factor;
+  };
 
   const panGesture = Gesture.Pan()
     .minDistance(0)
     .shouldCancelWhenOutside(true)
     .onChange((e) => {
-      setLeft(e.x - 5);
-      props.onChange(e.x);
+      setLeft(e.x - POINTER_WIDTH / 2);
+
+      const value = scaleValue(e.x);
+      props.onChange(value);
     })
+
     .onEnd((e) => {
-      setLeft(e.x - 5);
-      props.onChange(e.x);
+      setLeft(e.x - POINTER_WIDTH / 2);
+
+      const value = scaleValue(e.x);
+      props.onChange(value);
     });
 
   return (
@@ -33,8 +49,8 @@ export default function Slider(props) {
 
 const styles = StyleSheet.create({
   slider: {
-    width: '30vw',
-    height: '5vh',
+    width: SLIDER_WIDTH,
+    height: SLIDER_HEIGHT,
     borderRadius: 15,
     margin: 7,
     borderWidth: 2,
@@ -43,8 +59,8 @@ const styles = StyleSheet.create({
   },
 
   pointer: {
-    width: '2vw',
-    height: '6vh',
+    width: POINTER_WIDTH,
+    height: POINTER_HEIGHT,
     backgroundColor: 'lightgrey',
     borderRadius: 3,
     borderWidth: 2,
