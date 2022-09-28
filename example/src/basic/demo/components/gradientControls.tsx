@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import Slider from './slider';
 
 const COLORS = {
@@ -27,10 +27,23 @@ export default function GradientControls(props) {
   };
 
   return (
-    <View>
+    <View style={props.style}>
       <Slider color={COLORS.RED} onChange={updateR} />
       <Slider color={COLORS.GREEN} onChange={updateG} />
       <Slider color={COLORS.BLUE} onChange={updateB} />
+      <Text style={styles.text}>
+        rgb({Math.round(r)},{Math.round(g)},{Math.round(b)})
+      </Text>
     </View>
   );
 }
+
+const styles = {
+  text: {
+    textAlign: 'center',
+    fontSize: 20,
+    color: 'white',
+    textShadowColor: 'black',
+    textShadowRadius: 5,
+  },
+};

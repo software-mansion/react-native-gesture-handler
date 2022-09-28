@@ -1,9 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import Character from './character';
-import GradientControls from './gradientControls';
+import Character from './components/character';
+import GradientControls from './components/gradientControls';
 
 export interface RGB {
   r: number;
@@ -21,14 +21,12 @@ export default function Demo() {
   const [upperColors, setUpperColors] = useState<RGB>(defaultColor);
   const [downColors, setDownColors] = useState<RGB>(defaultColor);
 
-  const updateUpperGradient = (val) => {
+  const updateUpperGradient = (val: RGB) => {
     setUpperColors(val);
-    console.log(upperColors);
   };
 
-  const updateDownGradient = (val) => {
+  const updateDownGradient = (val: RGB) => {
     setDownColors(val);
-    console.log(downColors);
   };
 
   return (
@@ -37,14 +35,18 @@ export default function Demo() {
       colors={[
         `rgba(${upperColors.r}, ${upperColors.g}, ${upperColors.b}, 1)`,
         `rgba(${downColors.r}, ${downColors.g}, ${downColors.b}, 1)`,
-        // 'rgba(0,0,0,1)',
-        // 'red',
       ]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}>
-      <GradientControls onChange={updateUpperGradient} />
+      <GradientControls
+        onChange={updateUpperGradient}
+        style={[styles.gradientControl, styles.upperControl]}
+      />
+      <GradientControls
+        onChange={updateDownGradient}
+        style={[styles.gradientControl, styles.downControl]}
+      />
       <Character />
-      <GradientControls onChange={updateDownGradient} />
     </LinearGradient>
   );
 }
@@ -54,6 +56,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
-    // backgroundColor: 'rgba(33,33,33,1)',
+  },
+
+  gradientControl: {
+    position: 'absolute',
+    left: 0,
+    margin: 5,
+  },
+
+  upperControl: {
+    top: 0,
+  },
+
+  downControl: {
+    bottom: 0,
   },
 });

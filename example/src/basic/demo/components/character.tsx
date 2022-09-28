@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
-import {
-  Directions,
-  Gesture,
-  GestureDetector,
-} from 'react-native-gesture-handler';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -13,7 +9,8 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { getRandomColor } from './utils';
+import { Direction } from '../../../../../src/web/constants';
+import { getRandomColor, IMAGES } from '../utils';
 
 export default function Character() {
   // Background color
@@ -21,12 +18,28 @@ export default function Character() {
   const [lastColor, setLastColor] = useState('white');
   const [progress, setProgress] = useState(0);
 
-  // Simley
-  const [smile, setSmile] = useState('M 70 120 L 100 150 L 130 120');
+  // Image
+  const [currentImage, setCurrentImage] = useState(0);
 
   const progressSharedValue = useDerivedValue(() => {
     return withTiming(progress, { duration: 500 });
   });
+
+  // Fling
+  const leftFlingGesture = Gesture.Fling()
+    .direction(Direction.LEFT)
+    .onEnd((e) => {
+      const index = currentImage === 0 ? IMAGES.length - 1 : currentImage - 1;
+
+      setCurrentImage(index);
+    });
+
+  const rightFlingGesture = Gesture.Fling()
+    .direction(Direction.RIGHT)
+    .onEnd((e) => {
+      const index = (currentImage + 1) % IMAGES.length;
+      setCurrentImage(index);
+    });
 
   // LongPress
   const longGesture = Gesture.LongPress().onStart((e) => {
@@ -46,18 +59,6 @@ export default function Character() {
     );
   });
 
-  // Fling
-  const downFlingGesture = Gesture.Fling()
-    .direction(Directions.DOWN)
-    .onEnd((e) => {
-      setSmile('M 70 120 L 100 150 L 130 120');
-    });
-  const upFlingGesture = Gesture.Fling()
-    .direction(Directions.UP)
-    .onEnd((e) => {
-      setSmile('M 70 150 L 100 120 L 130 150');
-    });
-
   // Pinch
   const scale = useSharedValue(1);
   const pinchGesture = Gesture.Pinch().onChange((e) => {
@@ -76,11 +77,10 @@ export default function Character() {
     pinchGesture,
     rotationGesture,
     longGesture,
-    Gesture.Exclusive(downFlingGesture, upFlingGesture, tapGesture)
+    Gesture.Exclusive(leftFlingGesture, rightFlingGesture, tapGesture)
   );
 
   const animatedStyle = useAnimatedStyle(() => {
-    console.log(progressSharedValue.value);
     const backgroundColor = interpolateColor(
       progressSharedValue.value,
       [progress - 1, progress],
@@ -98,20 +98,8 @@ export default function Character() {
 
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.wrapper, styles.char, animatedStyle]}>
-        <svg width="200" height="200">
-          <path
-            d={`M 40 75
-              A 26 150 0 0 1 70 75
-              M 130 75
-              A 26 150 0 0 1 160 75
-              ${smile}
-            `}
-            stroke="black"
-            fill="transparent"
-            strokeWidth="2"
-          />
-        </svg>
+      <Animated.View style={[styles.wrapper, animatedStyle]}>
+        <Image style={styles.img} source={IMAGES[currentImage]} />
       </Animated.View>
     </GestureDetector>
   );
@@ -119,11 +107,21 @@ export default function Character() {
 
 const styles = StyleSheet.create({
   wrapper: {
-    borderRadius: 100,
-  },
-  char: {
+    borderRadius: 110,
+    width: 220,
+    height: 220,
+
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+
     shadowColor: 'white',
     shadowOpacity: 1,
     shadowRadius: 25,
+  },
+
+  img: {
+    width: 200,
+    height: 200,
   },
 });

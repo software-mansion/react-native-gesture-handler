@@ -1,5 +1,5 @@
 const COLORS = [
-  'crimson',
+  'salmon',
   'lightgreen',
   'goldenrod',
   'cyan',
@@ -7,16 +7,24 @@ const COLORS = [
   'white',
 ];
 
-function getRandomNumber(max: number): number {
-  return Math.floor(Math.random() * (max + 1));
+function getRandomNumber(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 export function getRandomColor(): string {
   return COLORS[Math.floor(Math.random() * COLORS.length)];
-  //   const r = getRandomNumber(255);
-  //   const g = getRandomNumber(255);
-  //   const b = getRandomNumber(255);
-  //   const a = Math.random();
+  // const RGB = [0, 0, 0];
+  // for (let i = 0; i < RGB.length; ++i) {
+  //   RGB[i] = getRandomNumber(128, 255);
+  // }
+  // const a = Math.random();
+  // console.log(RGB);
 
-  //   return `rgba(${r}, ${g}, ${b}, ${a})`;
+  // return `rgba(${RGB[0]}, ${RGB[1]}, ${RGB[2]}, ${a})`;
 }
+
+const GestureHandlerLogo = require('./assets/gh.png');
+const ReanimatedLogo = require('./assets/reanimated.png');
+const SWMLogo = require('./assets/swm.svg');
+
+export const IMAGES = [GestureHandlerLogo, ReanimatedLogo, SWMLogo];
