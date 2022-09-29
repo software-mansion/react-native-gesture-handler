@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Direction } from '../../../../../src/web/constants';
-import { getRandomColor, IMAGES, IMG_SIZE, LOGO_SIZE } from '../utils';
+import { getRandomColor, IMAGES, IMG_SIZE, LOGO_SIZE, HEIGHT } from '../utils';
 
 export default function Character() {
   // Background color
@@ -54,7 +54,7 @@ export default function Character() {
   const spring = useSharedValue(0);
   const tapGesture = Gesture.Tap().onStart(() => {
     spring.value = withSequence(
-      withTiming(150, { duration: 200 }),
+      withTiming(HEIGHT / 7, { duration: 200 }),
       withTiming(0, { duration: 200 })
     );
   });

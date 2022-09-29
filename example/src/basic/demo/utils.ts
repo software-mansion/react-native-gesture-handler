@@ -22,8 +22,8 @@ const SWMLogo = require('./assets/swm.svg');
 
 export const IMAGES = [GestureHandlerLogo, ReanimatedLogo, SWMLogo];
 
-const WIDTH = Dimensions.get('window').width;
-const HEIGHT = Dimensions.get('window').height;
+export const WIDTH = Dimensions.get('window').width;
+export const HEIGHT = Dimensions.get('window').height;
 
 export const SLIDER_WIDTH = WIDTH / 3.5;
 export const SLIDER_HEIGHT = HEIGHT / 25;
