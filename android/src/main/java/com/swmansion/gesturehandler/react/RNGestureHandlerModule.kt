@@ -259,6 +259,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
         putDouble("focalX", PixelUtil.toDIPFromPixel(handler.focalPointX).toDouble())
         putDouble("focalY", PixelUtil.toDIPFromPixel(handler.focalPointY).toDouble())
         putDouble("velocity", handler.velocity)
+        putDouble("numberOfPointers", handler.activePointers.toDouble())
       }
     }
   }

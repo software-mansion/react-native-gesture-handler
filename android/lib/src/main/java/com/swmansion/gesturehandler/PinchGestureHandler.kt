@@ -11,6 +11,8 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     private set
   val focalPointX: Float
     get() = scaleGestureDetector?.focusX ?: Float.NaN
+  var activePointers = 0
+    private set
   val focalPointY: Float
     get() = scaleGestureDetector?.focusY ?: Float.NaN
 
@@ -57,11 +59,11 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       begin()
     }
     scaleGestureDetector?.onTouchEvent(event)
-    var activePointers = event.pointerCount
+    activePointers = event.pointerCount
     if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       activePointers -= 1
     }
-    if (state == STATE_ACTIVE && activePointers < 2) {
+    if (state == STATE_ACTIVE && event.actionMasked == MotionEvent.ACTION_UP) {
       end()
     } else if (event.actionMasked == MotionEvent.ACTION_UP) {
       fail()
