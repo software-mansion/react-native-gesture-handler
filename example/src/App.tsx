@@ -17,6 +17,7 @@ import { TouchablesIndex, TouchableExample } from './release_tests/touchables';
 import Rows from './release_tests/rows';
 import Fling from './release_tests/fling';
 import NestedTouchables from './release_tests/nestedTouchables';
+import NestedButtons from './release_tests/nestedButtons';
 import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
 import { PinchableBox } from './recipes/scaleAndRotate';
 import PanAndScroll from './recipes/panAndScroll';
@@ -98,6 +99,10 @@ const EXAMPLES: ExamplesSection[] = [
       {
         name: 'Nested Touchables - issue #784',
         component: NestedTouchables as React.ComponentType,
+      },
+      {
+        name: 'Nested buttons (sound & ripple on Android)',
+        component: NestedButtons,
       },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
