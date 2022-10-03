@@ -4,7 +4,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.reanimated.ReanimatedModule
 
-object ReanimatedEventDispatcher {
+class ReanimatedEventDispatcher {
     private var reanimatedModule: ReanimatedModule? = null
 
     fun <T : Event<T>>sendEvent(event: T, reactApplicationContext: ReactContext) {
