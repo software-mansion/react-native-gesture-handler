@@ -3,14 +3,22 @@ import { findNodeHandle } from 'react-native';
 import { State } from '../../State';
 import {
   Config,
-  AdaptedPointerEvent,
+  AdaptedEvent,
   PropsRef,
   ResultEvent,
+  PointerData,
+  ResultTouchEvent,
+  PointerType,
+  TouchEventType,
+  EventTypes,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
-import PointerTracker from '../tools/PointerTracker';
+import PointerEventManager from '../tools/PointerEventManager';
+import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
+import TouchEventManager from '../tools/TouchEventManager';
+import { isPointerInBounds } from '../utils';
 
 export default abstract class GestureHandler {
   private lastSentState: State | null = null;
@@ -22,19 +30,19 @@ export default abstract class GestureHandler {
 
   private ref!: number;
   private propsRef!: React.RefObject<unknown>;
-  protected config: Config = { enabled: false };
   private handlerTag!: number;
-  protected view: HTMLElement | null = null;
+  protected config: Config = { enabled: false };
+  protected view!: HTMLElement;
 
-  protected eventManager!: EventManager;
+  protected eventManagers: EventManager[] = [];
   protected tracker: PointerTracker = new PointerTracker();
-  protected interactionManager!: InteractionManager;
 
   // Orchestrator properties
   protected activationIndex = 0;
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
+  protected pointerType: PointerType = PointerType.NONE;
 
   public constructor() {
     this.hasCustomActivationCriteria = false;
@@ -50,17 +58,19 @@ export default abstract class GestureHandler {
 
     this.currentState = State.UNDETERMINED;
 
-    this.setView(ref);
-    this.setEventManager();
+    this.setView();
+    this.addEventManager(new PointerEventManager(this.view));
+    this.addEventManager(new TouchEventManager(this.view));
   }
 
-  private setView(ref: number) {
-    if (!ref) {
-      this.view = null;
-      return;
+  private setView() {
+    if (!this.ref) {
+      throw new Error(
+        `Cannot find HTML Element for handler ${this.handlerTag}`
+      );
     }
 
-    this.view = (findNodeHandle(ref) as unknown) as HTMLElement;
+    this.view = (findNodeHandle(this.ref) as unknown) as HTMLElement;
     this.view.style['touchAction'] = 'none';
     this.view.style['webkitUserSelect'] = 'none';
     this.view.style['userSelect'] = 'none';
@@ -69,28 +79,19 @@ export default abstract class GestureHandler {
     this.view.style['WebkitTouchCallout'] = 'none';
   }
 
-  private setEventManager(): void {
-    if (!this.view) {
-      return;
-    }
+  private addEventManager(manager: EventManager): void {
+    manager.setOnPointerDown(this.onPointerDown.bind(this));
+    manager.setOnPointerAdd(this.onPointerAdd.bind(this));
+    manager.setOnPointerUp(this.onPointerUp.bind(this));
+    manager.setOnPointerRemove(this.onPointerRemove.bind(this));
+    manager.setOnPointerMove(this.onPointerMove.bind(this));
+    manager.setOnPointerEnter(this.onPointerEnter.bind(this));
+    manager.setOnPointerOut(this.onPointerOut.bind(this));
+    manager.setOnPointerCancel(this.onPointerCancel.bind(this));
+    manager.setOnPointerOutOfBounds(this.onPointerOutOfBounds.bind(this));
+    manager.setListeners();
 
-    this.eventManager = new EventManager(this.view);
-
-    this.eventManager.setOnPointerDown(this.onPointerDown.bind(this));
-    this.eventManager.setOnPointerUp(this.onPointerUp.bind(this));
-    this.eventManager.setOnPointerMove(this.onPointerMove.bind(this));
-    this.eventManager.setOnPointerEnter(this.onPointerEnter.bind(this));
-    this.eventManager.setOnPointerOut(this.onPointerOut.bind(this));
-    this.eventManager.setOnPointerCancel(this.onPointerCancel.bind(this));
-    this.eventManager.setOnPointerOutOfBounds(
-      this.onPointerOutOfBounds.bind(this)
-    );
-
-    this.eventManager.setListeners();
-  }
-
-  public setInteractionManager(manager: InteractionManager): void {
-    this.interactionManager = manager;
+    this.eventManagers.push(manager);
   }
 
   //
@@ -104,6 +105,10 @@ export default abstract class GestureHandler {
   public reset(): void {
     this.tracker.resetTracker();
     this.onReset();
+    this.resetProgress();
+    this.eventManagers.forEach((manager: EventManager) =>
+      manager.resetManager()
+    );
     this.currentState = State.UNDETERMINED;
   }
 
@@ -111,9 +116,19 @@ export default abstract class GestureHandler {
   // State logic
   //
 
-  public moveToState(newState: State, event: AdaptedPointerEvent) {
+  public moveToState(newState: State, sendIfDisabled?: boolean) {
     if (this.currentState === newState) {
       return;
+    }
+
+    if (
+      this.tracker.getTrackedPointersCount() > 0 &&
+      this.config.needsPointerData &&
+      (newState === State.END ||
+        newState === State.CANCELLED ||
+        newState === State.FAILED)
+    ) {
+      this.cancelTouches();
     }
 
     const oldState = this.currentState;
@@ -123,7 +138,7 @@ export default abstract class GestureHandler {
       this,
       newState,
       oldState,
-      event
+      sendIfDisabled
     );
 
     this.onStateChange(newState, oldState);
@@ -131,53 +146,63 @@ export default abstract class GestureHandler {
 
   protected onStateChange(_newState: State, _oldState: State): void {}
 
-  public begin(event: AdaptedPointerEvent): void {
-    if (!this.checkHitSlop(event)) {
+  public begin(): void {
+    if (!this.checkHitSlop()) {
       return;
     }
 
     if (this.currentState === State.UNDETERMINED) {
-      this.moveToState(State.BEGAN, event);
+      this.moveToState(State.BEGAN);
     }
   }
 
-  public fail(event: AdaptedPointerEvent): void {
+  /**
+   * @param {boolean} sendIfDisabled - Used when handler becomes disabled. With this flag orchestrator will be forced to send fail event
+   */
+  public fail(sendIfDisabled?: boolean): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.BEGAN
     ) {
-      this.moveToState(State.FAILED, event);
+      this.moveToState(State.FAILED, sendIfDisabled);
+      this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
   }
 
-  public cancel(event: AdaptedPointerEvent): void {
+  /**
+   * @param {boolean} sendIfDisabled - Used when handler becomes disabled. With this flag orchestrator will be forced to send cancel event
+   */
+  public cancel(sendIfDisabled?: boolean): void {
     if (
       this.currentState === State.ACTIVE ||
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
     ) {
       this.onCancel();
-      this.moveToState(State.CANCELLED, event);
+      this.moveToState(State.CANCELLED, sendIfDisabled);
+      this.view.style.cursor = 'auto';
     }
   }
 
-  protected activate(event: AdaptedPointerEvent, _force = false) {
+  public activate(_force = false) {
     if (
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
     ) {
-      this.moveToState(State.ACTIVE, event);
+      this.moveToState(State.ACTIVE);
+      this.view.style.cursor = 'grab';
     }
   }
 
-  public end(event: AdaptedPointerEvent) {
+  public end() {
     if (
       this.currentState === State.BEGAN ||
       this.currentState === State.ACTIVE
     ) {
-      this.moveToState(State.END, event);
+      this.moveToState(State.END);
+      this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
@@ -220,7 +245,10 @@ export default abstract class GestureHandler {
       return false;
     }
 
-    return this.interactionManager.shouldWaitForHandlerFailure(this, handler);
+    return InteractionManager.getInstance().shouldWaitForHandlerFailure(
+      this,
+      handler
+    );
   }
 
   public shouldRequireToWaitForFailure(handler: GestureHandler): boolean {
@@ -228,7 +256,7 @@ export default abstract class GestureHandler {
       return false;
     }
 
-    return this.interactionManager.shouldRequireHandlerToWaitForFailure(
+    return InteractionManager.getInstance().shouldRequireHandlerToWaitForFailure(
       this,
       handler
     );
@@ -239,7 +267,10 @@ export default abstract class GestureHandler {
       return true;
     }
 
-    return this.interactionManager.shouldRecognizeSimultaneously(this, handler);
+    return InteractionManager.getInstance().shouldRecognizeSimultaneously(
+      this,
+      handler
+    );
   }
 
   public shouldBeCancelledByOther(handler: GestureHandler): boolean {
@@ -247,36 +278,96 @@ export default abstract class GestureHandler {
       return false;
     }
 
-    return this.interactionManager.shouldHandlerBeCancelledBy(this, handler);
+    return InteractionManager.getInstance().shouldHandlerBeCancelledBy(
+      this,
+      handler
+    );
   }
 
   //
   // Event actions
   //
 
-  protected onPointerDown(_event: AdaptedPointerEvent): void {
+  protected onPointerDown(event: AdaptedEvent): void {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
+    this.pointerType = event.pointerType;
+
+    if (this.pointerType === PointerType.TOUCH) {
+      GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(this);
+    }
+
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
   }
   // Adding another pointer to existing ones
-  protected onPointerAdd(_event: AdaptedPointerEvent): void {}
-  protected onPointerUp(_event: AdaptedPointerEvent): void {}
+  protected onPointerAdd(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
+  protected onPointerUp(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
   // Removing pointer, when there is more than one pointers
-  protected onPointerRemove(_event: AdaptedPointerEvent): void {}
-  protected onPointerMove(event: AdaptedPointerEvent): void {
-    this.tryToSendMoveEvent(event, false);
+  protected onPointerRemove(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
   }
-  protected onPointerOut(_event: AdaptedPointerEvent): void {}
-  protected onPointerEnter(_event: AdaptedPointerEvent): void {}
-  protected onPointerCancel(_event: AdaptedPointerEvent): void {}
-  protected onPointerOutOfBounds(event: AdaptedPointerEvent): void {
-    this.tryToSendMoveEvent(event, true);
+  protected onPointerMove(event: AdaptedEvent): void {
+    this.tryToSendMoveEvent(false);
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
   }
-  private tryToSendMoveEvent(event: AdaptedPointerEvent, out: boolean): void {
+  protected onPointerOut(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
+  protected onPointerEnter(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
+  protected onPointerCancel(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+    this.tryToSendMoveEvent(true);
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
+    }
+  }
+  private tryToSendMoveEvent(out: boolean): void {
     if (
-      this.currentState === State.ACTIVE &&
+      this.enabled &&
+      this.active &&
       (!out || (out && !this.shouldCancellWhenOutside))
     ) {
-      this.sendEvent(event, this.currentState, this.currentState);
+      this.sendEvent(this.currentState, this.currentState);
+    }
+  }
+
+  public sendTouchEvent(event: AdaptedEvent): void {
+    if (!this.enabled) {
+      return;
+    }
+
+    const { onGestureHandlerEvent }: PropsRef = this.propsRef
+      .current as PropsRef;
+
+    const touchEvent: ResultTouchEvent | undefined = this.transformTouchEvent(
+      event
+    );
+
+    if (touchEvent) {
+      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
     }
   }
 
@@ -284,18 +375,13 @@ export default abstract class GestureHandler {
   // Events Sending
   //
 
-  public sendEvent = (
-    event: AdaptedPointerEvent,
-    newState: State,
-    oldState: State
-  ): void => {
+  public sendEvent = (newState: State, oldState: State): void => {
     const {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
     }: PropsRef = this.propsRef.current as PropsRef;
 
     const resultEvent: ResultEvent = this.transformEventData(
-      event,
       newState,
       oldState
     );
@@ -315,20 +401,16 @@ export default abstract class GestureHandler {
     }
   };
 
-  private transformEventData(
-    event: AdaptedPointerEvent,
-    newState: State,
-    oldState: State
-  ): ResultEvent {
+  private transformEventData(newState: State, oldState: State): ResultEvent {
     return {
       nativeEvent: {
         numberOfPointers: this.tracker.getTrackedPointersCount(),
         state: newState,
-        pointerInside: this.eventManager?.isPointerInBounds({
-          x: event.x,
-          y: event.y,
+        pointerInside: isPointerInBounds(this.view, {
+          x: this.tracker.getLastAvgX(),
+          y: this.tracker.getLastAvgY(),
         }),
-        ...this.transformNativeEvent(event),
+        ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
         target: this.ref,
         oldState: newState !== oldState ? oldState : undefined,
@@ -337,7 +419,155 @@ export default abstract class GestureHandler {
     };
   }
 
-  protected transformNativeEvent(_event: AdaptedPointerEvent) {
+  private transformTouchEvent(
+    event: AdaptedEvent
+  ): ResultTouchEvent | undefined {
+    const rect = this.view.getBoundingClientRect();
+
+    const all: PointerData[] = [];
+    const changed: PointerData[] = [];
+
+    const trackerData = this.tracker.getData();
+
+    // This if handles edge case where all pointers have been cancelled
+    // When pointercancel is triggered, reset method is called. This means that tracker will be reset after first pointer being cancelled
+    // The problem is, that handler will receive another pointercancel event from the rest of the pointers
+    // To avoid crashing, we don't send event if tracker tracks no pointers, i.e. has been reset
+    if (trackerData.size === 0 || !trackerData.has(event.pointerId)) {
+      return;
+    }
+
+    trackerData.forEach((element: TrackerElement, key: number): void => {
+      const id: number = this.tracker.getMappedTouchEventId(key);
+
+      all.push({
+        id: id,
+        x: element.lastX - rect.left,
+        y: element.lastY - rect.top,
+        absoluteX: element.lastX,
+        absoluteY: element.lastY,
+      });
+    });
+
+    // Each pointer sends its own event, so we want changed touches to contain only the pointer that has changed.
+    // However, if the event is cancel, we want to cancel all pointers to avoid crashes
+    if (event.eventType !== EventTypes.CANCEL) {
+      changed.push({
+        id: this.tracker.getMappedTouchEventId(event.pointerId),
+        x: event.x - rect.left,
+        y: event.y - rect.top,
+        absoluteX: event.x,
+        absoluteY: event.y,
+      });
+    } else {
+      trackerData.forEach((element: TrackerElement, key: number): void => {
+        const id: number = this.tracker.getMappedTouchEventId(key);
+
+        changed.push({
+          id: id,
+          x: element.lastX - rect.left,
+          y: element.lastY - rect.top,
+          absoluteX: element.lastX,
+          absoluteY: element.lastY,
+        });
+      });
+    }
+
+    let eventType: TouchEventType = TouchEventType.UNDETERMINED;
+
+    switch (event.eventType) {
+      case EventTypes.DOWN:
+      case EventTypes.ADDITIONAL_POINTER_DOWN:
+        eventType = TouchEventType.DOWN;
+        break;
+      case EventTypes.UP:
+      case EventTypes.ADDITIONAL_POINTER_UP:
+        eventType = TouchEventType.UP;
+        break;
+      case EventTypes.MOVE:
+        eventType = TouchEventType.MOVE;
+        break;
+      case EventTypes.CANCEL:
+        eventType = TouchEventType.CANCELLED;
+        break;
+    }
+
+    // Here, when we receive up event, we want to decrease number of touches
+    // That's because we want handler to send information that there's one pointer less
+    // However, we still want this pointer to be present in allTouches array, so that its data can be accessed
+    let numberOfTouches: number = all.length;
+
+    if (
+      event.eventType === EventTypes.UP ||
+      event.eventType === EventTypes.ADDITIONAL_POINTER_UP
+    ) {
+      --numberOfTouches;
+    }
+
+    return {
+      nativeEvent: {
+        handlerTag: this.handlerTag,
+        state: this.currentState,
+        eventType: event.touchEventType ?? eventType,
+        changedTouches: changed,
+        allTouches: all,
+        numberOfTouches: numberOfTouches,
+      },
+      timeStamp: Date.now(),
+    };
+  }
+
+  private cancelTouches(): void {
+    const rect = this.view.getBoundingClientRect();
+
+    const all: PointerData[] = [];
+    const changed: PointerData[] = [];
+
+    const trackerData = this.tracker.getData();
+
+    if (trackerData.size === 0) {
+      return;
+    }
+
+    trackerData.forEach((element: TrackerElement, key: number): void => {
+      const id: number = this.tracker.getMappedTouchEventId(key);
+
+      all.push({
+        id: id,
+        x: element.lastX - rect.left,
+        y: element.lastY - rect.top,
+        absoluteX: element.lastX,
+        absoluteY: element.lastY,
+      });
+
+      changed.push({
+        id: id,
+        x: element.lastX - rect.left,
+        y: element.lastY - rect.top,
+        absoluteX: element.lastX,
+        absoluteY: element.lastY,
+      });
+    });
+
+    const cancelEvent: ResultTouchEvent = {
+      nativeEvent: {
+        handlerTag: this.handlerTag,
+        state: this.currentState,
+        eventType: TouchEventType.CANCELLED,
+        changedTouches: changed,
+        allTouches: all,
+        numberOfTouches: all.length,
+      },
+      timeStamp: Date.now(),
+    };
+
+    const { onGestureHandlerEvent }: PropsRef = this.propsRef
+      .current as PropsRef;
+
+    invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
+  }
+
+  protected transformNativeEvent() {
     return {};
   }
 
@@ -345,9 +575,28 @@ export default abstract class GestureHandler {
   // Handling config
   //
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
-    this.config = { enabled, ...props };
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
+    this.config = { enabled: enabled, ...props };
+    this.enabled = enabled;
     this.validateHitSlops();
+
+    if (this.enabled) {
+      return;
+    }
+
+    switch (this.currentState) {
+      case State.ACTIVE:
+        this.fail(true);
+        break;
+      case State.UNDETERMINED:
+        GestureHandlerOrchestrator.getInstance().removeHandlerFromOrchestrator(
+          this
+        );
+        break;
+      default:
+        this.cancel(true);
+        break;
+    }
   }
 
   protected checkCustomActivationCriteria(criterias: string[]): void {
@@ -404,8 +653,8 @@ export default abstract class GestureHandler {
     }
   }
 
-  private checkHitSlop(event: AdaptedPointerEvent): boolean {
-    if (!this.config.hitSlop || !this.view) {
+  private checkHitSlop(): boolean {
+    if (!this.config.hitSlop) {
       return true;
     }
 
@@ -458,15 +707,27 @@ export default abstract class GestureHandler {
       }
     }
 
+    const rect: DOMRect = this.view.getBoundingClientRect();
+    const offsetX: number = this.tracker.getLastX() - rect.left;
+    const offsetY: number = this.tracker.getLastY() - rect.top;
+
     if (
-      event.offsetX >= left &&
-      event.offsetX <= right &&
-      event.offsetY >= top &&
-      event.offsetY <= bottom
+      offsetX >= left &&
+      offsetX <= right &&
+      offsetY >= top &&
+      offsetY <= bottom
     ) {
       return true;
     }
     return false;
+  }
+
+  public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
+    const rect: DOMRect = this.view.getBoundingClientRect();
+
+    return (
+      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+    );
   }
 
   protected resetConfig(): void {}
@@ -490,12 +751,12 @@ export default abstract class GestureHandler {
     throw new Error('Must override GestureHandler.shouldEnableGestureOnSetup');
   }
 
-  public getView(): HTMLElement | null {
+  public getView(): HTMLElement {
     return this.view;
   }
 
-  public getEventManager(): EventManager {
-    return this.eventManager;
+  public getEventManagers(): EventManager[] {
+    return this.eventManagers;
   }
 
   public getTracker(): PointerTracker {
@@ -510,20 +771,28 @@ export default abstract class GestureHandler {
     return this.currentState;
   }
 
-  protected setShouldCancelWhenOutside(flag: boolean) {
-    this.shouldCancellWhenOutside = flag;
+  public isEnabled(): boolean {
+    return this.enabled;
+  }
+
+  protected setShouldCancelWhenOutside(shouldCancel: boolean) {
+    this.shouldCancellWhenOutside = shouldCancel;
   }
   protected getShouldCancelWhenOutside(): boolean {
     return this.shouldCancellWhenOutside;
+  }
+
+  public getPointerType(): PointerType {
+    return this.pointerType;
   }
 }
 
 function invokeNullableMethod(
   method:
-    | ((event: ResultEvent) => void)
-    | { __getHandler: () => (event: ResultEvent) => void }
+    | ((event: ResultEvent | ResultTouchEvent) => void)
+    | { __getHandler: () => (event: ResultEvent | ResultTouchEvent) => void }
     | { __nodeConfig: { argMapping: unknown[] } },
-  event: ResultEvent
+  event: ResultEvent | ResultTouchEvent
 ): void {
   if (!method) {
     return;

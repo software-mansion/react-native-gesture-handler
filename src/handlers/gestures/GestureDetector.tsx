@@ -35,7 +35,7 @@ import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
-import { isFabric, tagMessage } from '../../utils';
+import { isFabric, REACT_NATIVE_VERSION, tagMessage } from '../../utils';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
@@ -152,7 +152,6 @@ function attachHandlers({
 
   for (const handler of gesture) {
     checkGestureCallbacksForWorklets(handler);
-
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
       handler.handlerTag,
@@ -540,8 +539,13 @@ function validateDetectorChildren(ref: any) {
   //         /       \
   //   NativeView  NativeView
   if (__DEV__ && Platform.OS !== 'web') {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const wrapType = ref._reactInternals.elementType;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const wrapType =
+      REACT_NATIVE_VERSION.minor > 63 || REACT_NATIVE_VERSION.major > 0
+        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          ref._reactInternals.elementType
+        : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          ref._reactInternalFiber.elementType;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     let instance = RNRenderer.findHostInstance_DEPRECATED(ref)
       ._internalFiberInstanceHandleDEV;

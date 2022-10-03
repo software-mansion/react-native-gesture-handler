@@ -1,30 +1,18 @@
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 
 import PointerTracker from '../tools/PointerTracker';
 
 export interface ScaleGestureListener {
   onScaleBegin: (detector: ScaleGestureDetector) => boolean;
-  onScale: (
-    detector: ScaleGestureDetector,
-    event: AdaptedPointerEvent
-  ) => boolean;
-  onScaleEnd: (
-    detector: ScaleGestureDetector,
-    event: AdaptedPointerEvent
-  ) => void;
+  onScale: (detector: ScaleGestureDetector) => boolean;
+  onScaleEnd: (detector: ScaleGestureDetector) => void;
 }
 
 export default class ScaleGestureDetector implements ScaleGestureListener {
   public onScaleBegin: (detector: ScaleGestureDetector) => boolean;
-  public onScale: (
-    detector: ScaleGestureDetector,
-    event: AdaptedPointerEvent
-  ) => boolean;
-  public onScaleEnd: (
-    detector: ScaleGestureDetector,
-    event: AdaptedPointerEvent
-  ) => void;
+  public onScale: (detector: ScaleGestureDetector) => boolean;
+  public onScaleEnd: (detector: ScaleGestureDetector) => void;
 
   private focusX!: number;
   private focusY!: number;
@@ -50,12 +38,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     this.minSpan = 0;
   }
 
-  public onTouchEvent(
-    event: AdaptedPointerEvent,
-    tracker: PointerTracker
-  ): boolean {
-    this.adaptEvent(event, tracker);
-
+  public onTouchEvent(event: AdaptedEvent, tracker: PointerTracker): boolean {
     this.currentTime = event.time;
 
     const action: EventTypes = event.eventType;
@@ -68,7 +51,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     if (action === EventTypes.DOWN || streamComplete) {
       if (this.inProgress) {
-        this.onScaleEnd(this, event);
+        this.onScaleEnd(this);
         this.inProgress = false;
         this.initialSpan = 0;
       }
@@ -127,7 +110,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     this.focusY = focusY;
 
     if (this.inProgress && (span < this.minSpan || configChanged)) {
-      this.onScaleEnd(this, event);
+      this.onScaleEnd(this);
       this.inProgress = false;
       this.initialSpan = span;
     }
@@ -153,7 +136,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     this.currentSpan = span;
 
-    if (this.inProgress && !this.onScale(this, event)) {
+    if (this.inProgress && !this.onScale(this)) {
       return true;
     }
 
@@ -161,25 +144,6 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     this.prevTime = this.currentTime;
 
     return true;
-  }
-
-  private adaptEvent(
-    event: AdaptedPointerEvent,
-    tracker: PointerTracker
-  ): void {
-    if (
-      tracker.getTrackedPointersCount() > 1 &&
-      event.eventType === EventTypes.DOWN
-    ) {
-      event.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
-    }
-
-    if (
-      tracker.getTrackedPointersCount() > 1 &&
-      event.eventType === EventTypes.UP
-    ) {
-      event.eventType = EventTypes.ADDITIONAL_POINTER_UP;
-    }
   }
 
   public getCurrentSpan(): number {

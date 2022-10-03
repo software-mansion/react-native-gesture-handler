@@ -1,29 +1,17 @@
-import { AdaptedPointerEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 import PointerTracker from '../tools/PointerTracker';
 
 export interface RotationGestureListener {
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
-  onRotation: (
-    detector: RotationGestureDetector,
-    event: AdaptedPointerEvent
-  ) => boolean;
-  onRotationEnd: (
-    detector: RotationGestureDetector,
-    event: AdaptedPointerEvent
-  ) => void;
+  onRotation: (detector: RotationGestureDetector) => boolean;
+  onRotationEnd: (detector: RotationGestureDetector) => void;
 }
 
 export default class RotationGestureDetector
   implements RotationGestureListener {
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
-  onRotation: (
-    detector: RotationGestureDetector,
-    event: AdaptedPointerEvent
-  ) => boolean;
-  onRotationEnd: (
-    detector: RotationGestureDetector,
-    event: AdaptedPointerEvent
-  ) => void;
+  onRotation: (detector: RotationGestureDetector) => boolean;
+  onRotationEnd: (detector: RotationGestureDetector) => void;
 
   private currentTime = 0;
   private previousTime = 0;
@@ -44,10 +32,7 @@ export default class RotationGestureDetector
     this.onRotationEnd = callbacks.onRotationEnd;
   }
 
-  private updateCurrent(
-    event: AdaptedPointerEvent,
-    tracker: PointerTracker
-  ): void {
+  private updateCurrent(event: AdaptedEvent, tracker: PointerTracker): void {
     this.previousTime = this.currentTime;
     this.currentTime = event.time;
 
@@ -66,6 +51,7 @@ export default class RotationGestureDetector
 
     //Angle diff should be positive when rotating in clockwise direction
     const angle: number = -Math.atan2(vectorY, vectorX);
+
     this.rotation = Number.isNaN(this.previousAngle)
       ? 0
       : this.previousAngle - angle;
@@ -85,14 +71,14 @@ export default class RotationGestureDetector
     }
   }
 
-  private finish(event: AdaptedPointerEvent): void {
+  private finish(): void {
     if (!this.isInProgress) {
       return;
     }
 
     this.isInProgress = false;
     this.keyPointers = [NaN, NaN];
-    this.onRotationEnd(this, event);
+    this.onRotationEnd(this);
   }
 
   private setKeyPointers(tracker: PointerTracker): void {
@@ -106,12 +92,7 @@ export default class RotationGestureDetector
     this.keyPointers[1] = pointerIDs.next().value as number;
   }
 
-  public onTouchEvent(
-    event: AdaptedPointerEvent,
-    tracker: PointerTracker
-  ): boolean {
-    this.adaptEvent(event, tracker);
-
+  public onTouchEvent(event: AdaptedEvent, tracker: PointerTracker): boolean {
     switch (event.eventType) {
       case EventTypes.DOWN:
         this.isInProgress = false;
@@ -121,7 +102,6 @@ export default class RotationGestureDetector
         if (this.isInProgress) {
           break;
         }
-
         this.isInProgress = true;
 
         this.previousTime = event.time;
@@ -139,7 +119,7 @@ export default class RotationGestureDetector
         }
 
         this.updateCurrent(event, tracker);
-        this.onRotation(this, event);
+        this.onRotation(this);
 
         break;
 
@@ -149,36 +129,19 @@ export default class RotationGestureDetector
         }
 
         if (this.keyPointers.indexOf(event.pointerId) >= 0) {
-          this.finish(event);
+          this.finish();
         }
 
         break;
 
       case EventTypes.UP:
-        this.finish(event);
+        if (this.isInProgress) {
+          this.finish();
+        }
         break;
     }
 
     return true;
-  }
-
-  private adaptEvent(
-    event: AdaptedPointerEvent,
-    tracker: PointerTracker
-  ): void {
-    if (
-      tracker.getTrackedPointersCount() &&
-      event.eventType === EventTypes.DOWN
-    ) {
-      event.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
-    }
-
-    if (
-      tracker.getTrackedPointersCount() > 1 &&
-      event.eventType === EventTypes.UP
-    ) {
-      event.eventType = EventTypes.ADDITIONAL_POINTER_UP;
-    }
   }
 
   public getTimeDelta(): number {
@@ -195,5 +158,10 @@ export default class RotationGestureDetector
 
   public getRotation(): number {
     return this.rotation;
+  }
+
+  public reset(): void {
+    this.keyPointers = [NaN, NaN];
+    this.isInProgress = false;
   }
 }

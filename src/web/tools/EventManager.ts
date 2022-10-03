@@ -1,186 +1,96 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import { AdaptedEvent, EventTypes, TouchEventType } from '../interfaces';
 
-import { EventTypes, AdaptedPointerEvent, MouseButtons } from '../interfaces';
-
-export default class EventManager {
-  private activePointers: number[] = [];
-  private readonly view: HTMLElement;
+export default abstract class EventManager {
+  protected readonly view: HTMLElement;
+  protected pointersInBounds: number[] = [];
+  protected activePointersCounter: number;
 
   constructor(view: HTMLElement) {
     this.view = view;
+    this.activePointersCounter = 0;
   }
 
-  public setListeners() {
-    this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
-      if (
-        !this.isPointerInBounds({
-          x: event.clientX,
-          y: event.clientY,
-        })
-      ) {
-        return;
-      }
+  public abstract setListeners(): void;
+  protected abstract mapEvent(
+    event: Event,
+    eventType: EventTypes,
+    index?: number,
+    touchEventType?: TouchEventType
+  ): AdaptedEvent;
 
-      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
-        event,
-        EventTypes.DOWN
-      );
-      const target = event.target as HTMLElement;
-
-      target.setPointerCapture(adaptedEvent.pointerId);
-      this.addActivePointer(adaptedEvent.pointerId);
-      this.onPointerDown(adaptedEvent);
-    });
-
-    this.view.addEventListener('pointerup', (event: PointerEvent): void => {
-      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
-        event,
-        EventTypes.UP
-      );
-      const target = event.target as HTMLElement;
-
-      this.onPointerUp(adaptedEvent);
-      target.releasePointerCapture(adaptedEvent.pointerId);
-      this.removeActivePointer(adaptedEvent.pointerId);
-    });
-
-    this.view.addEventListener('pointermove', (event: PointerEvent): void => {
-      if (
-        event.pointerType === 'mouse' &&
-        event.buttons !== MouseButtons.LEFT
-      ) {
-        return;
-      }
-
-      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
-        event,
-        EventTypes.MOVE
-      );
-
-      const inBounds: boolean = this.isPointerInBounds({
-        x: adaptedEvent.x,
-        y: adaptedEvent.y,
-      });
-
-      const pointerIndex: number = this.activePointers.indexOf(
-        adaptedEvent.pointerId
-      );
-
-      if (inBounds) {
-        if (pointerIndex < 0) {
-          adaptedEvent.eventType = EventTypes.ENTER;
-          this.onPointerEnter(adaptedEvent);
-          this.addActivePointer(adaptedEvent.pointerId);
-        } else {
-          this.onPointerMove(adaptedEvent);
-        }
-      } else {
-        if (pointerIndex >= 0) {
-          adaptedEvent.eventType = EventTypes.OUT;
-          this.onPointerOut(adaptedEvent);
-          this.removeActivePointer(adaptedEvent.pointerId);
-        } else {
-          this.onPointerOutOfBounds(adaptedEvent);
-        }
-      }
-    });
-
-    this.view.addEventListener('pointercancel', (event: PointerEvent): void => {
-      event.preventDefault();
-
-      const adaptedEvent: AdaptedPointerEvent = this.mapEvent(
-        event,
-        EventTypes.CANCEL
-      );
-
-      this.onPointerCancel(adaptedEvent);
-    });
+  protected onPointerDown(_event: AdaptedEvent): void {}
+  protected onPointerAdd(_event: AdaptedEvent): void {}
+  protected onPointerUp(_event: AdaptedEvent): void {}
+  protected onPointerRemove(_event: AdaptedEvent): void {}
+  protected onPointerMove(_event: AdaptedEvent): void {}
+  protected onPointerOut(_event: AdaptedEvent): void {}
+  protected onPointerEnter(_event: AdaptedEvent): void {}
+  protected onPointerCancel(_event: AdaptedEvent): void {
+    // When pointer cancel is triggered and there are more pointers on the view, only one pointer is cancelled
+    // Because we want all pointers to be cancelled by that event, we are doing it manually by reseting handler and changing activePointersCounter to 0
+    // Events that correspond to removing the pointer (pointerup, touchend) have condition, that they don't perform any action when activePointersCounter
+    // is equal to 0. This prevents counter from going to negative values, when pointers are removed from view after one of them has been cancelled
   }
+  protected onPointerOutOfBounds(_event: AdaptedEvent): void {}
 
-  private onPointerDown(_event: AdaptedPointerEvent): void {}
-  private onPointerUp(_event: AdaptedPointerEvent): void {}
-  private onPointerMove(_event: AdaptedPointerEvent): void {}
-  private onPointerOut(_event: AdaptedPointerEvent): void {}
-  private onPointerEnter(_event: AdaptedPointerEvent): void {}
-  private onPointerCancel(_event: AdaptedPointerEvent): void {}
-  private onPointerOutOfBounds(_event: AdaptedPointerEvent): void {}
-
-  public setOnPointerDown(
-    callback: (event: AdaptedPointerEvent) => void
-  ): void {
+  public setOnPointerDown(callback: (event: AdaptedEvent) => void): void {
     this.onPointerDown = callback;
   }
-  public setOnPointerUp(callback: (event: AdaptedPointerEvent) => void): void {
+  public setOnPointerAdd(callback: (event: AdaptedEvent) => void): void {
+    this.onPointerAdd = callback;
+  }
+  public setOnPointerUp(callback: (event: AdaptedEvent) => void): void {
     this.onPointerUp = callback;
   }
-  public setOnPointerMove(
-    callback: (event: AdaptedPointerEvent) => void
-  ): void {
+  public setOnPointerRemove(callback: (event: AdaptedEvent) => void): void {
+    this.onPointerRemove = callback;
+  }
+  public setOnPointerMove(callback: (event: AdaptedEvent) => void): void {
     this.onPointerMove = callback;
   }
-  public setOnPointerOut(callback: (event: AdaptedPointerEvent) => void): void {
+  public setOnPointerOut(callback: (event: AdaptedEvent) => void): void {
     this.onPointerOut = callback;
   }
-  public setOnPointerEnter(
-    callback: (event: AdaptedPointerEvent) => void
-  ): void {
+  public setOnPointerEnter(callback: (event: AdaptedEvent) => void): void {
     this.onPointerEnter = callback;
   }
-  public setOnPointerCancel(
-    callback: (event: AdaptedPointerEvent) => void
-  ): void {
+  public setOnPointerCancel(callback: (event: AdaptedEvent) => void): void {
     this.onPointerCancel = callback;
   }
   public setOnPointerOutOfBounds(
-    callback: (event: AdaptedPointerEvent) => void
+    callback: (event: AdaptedEvent) => void
   ): void {
     this.onPointerOutOfBounds = callback;
   }
 
-  private mapEvent(
-    event: PointerEvent,
-    eventType: EventTypes
-  ): AdaptedPointerEvent {
-    return {
-      x: event.clientX,
-      y: event.clientY,
-      offsetX: event.offsetX,
-      offsetY: event.offsetY,
-      pointerId: event.pointerId,
-      eventType: eventType,
-      pointerType: event.pointerType,
-      buttons: event.buttons,
-      time: event.timeStamp,
-    };
-  }
-
-  public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
-    if (!this.view) {
-      return false;
-    }
-
-    const rect: DOMRect = this.view.getBoundingClientRect();
-
-    return (
-      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
-    );
-  }
-
-  private addActivePointer(pointerId: number): void {
-    if (this.activePointers.indexOf(pointerId) >= 0) {
+  protected markAsInBounds(pointerId: number): void {
+    if (this.pointersInBounds.indexOf(pointerId) >= 0) {
       return;
     }
 
-    this.activePointers.push(pointerId);
+    this.pointersInBounds.push(pointerId);
   }
 
-  private removeActivePointer(pointerId: number): void {
-    const index: number = this.activePointers.indexOf(pointerId);
+  protected markAsOutOfBounds(pointerId: number): void {
+    const index: number = this.pointersInBounds.indexOf(pointerId);
 
     if (index < 0) {
       return;
     }
 
-    this.activePointers.splice(index, 1);
+    this.pointersInBounds.splice(index, 1);
+  }
+
+  public resetManager(): void {
+    // Reseting activePointersCounter is necessary to make gestures such as pinch work properly
+    // There are gestures that end when there is still one active pointer (like pinch/rotation)
+    // When these gestures end, they are reset, but they still receive events from pointer that is active
+    // This causes trouble, since only onPointerDown registers gesture in orchestrator, and while gestures receive
+    // Events from active pointer after they finished, next pointerdown event will be registered as additional pointer, not the first one
+    // This casues trouble like gestures getting stuck in END state, even though they should have gone to UNDETERMINED
+
+    this.activePointersCounter = 0;
+    this.pointersInBounds = [];
   }
 }

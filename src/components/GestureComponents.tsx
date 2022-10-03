@@ -57,14 +57,12 @@ export const ScrollView = React.forwardRef<
       waitFor={[...toArray(waitFor ?? []), refreshControlGestureRef]}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
-        refreshControl ? (
-          <RefreshControl
-            {...refreshControl.props}
-            ref={refreshControlGestureRef}
-          />
-        ) : (
-          refreshControl
-        )
+        refreshControl
+          ? React.cloneElement(refreshControl, {
+              // @ts-ignore for reasons unknown to me, `ref` doesn't exist on the type inferred by TS
+              ref: refreshControlGestureRef,
+            })
+          : undefined
       }
     />
   );
@@ -129,14 +127,12 @@ export const FlatList = React.forwardRef((props, ref) => {
       )}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
-        refreshControl ? (
-          <RefreshControl
-            {...refreshControl.props}
-            ref={refreshControlGestureRef}
-          />
-        ) : (
-          refreshControl
-        )
+        refreshControl
+          ? React.cloneElement(refreshControl, {
+              // @ts-ignore for reasons unknown to me, `ref` doesn't exist on the type inferred by TS
+              ref: refreshControlGestureRef,
+            })
+          : undefined
       }
     />
   );

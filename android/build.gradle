@@ -54,7 +54,7 @@ def safeExtGet(prop, fallback) {
 
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
 def shouldUseCommonInterfaceFromReanimated() {
-    def reanimated = rootProject.subprojects.find { it.name == 'react-native-reanimated' };
+    def reanimated = rootProject.subprojects.find { it.name == 'react-native-reanimated' }
     if (reanimated != null) {
         def inputFile = new File(reanimated.projectDir, '../package.json')
         def json = new JsonSlurper().parseText(inputFile.text)
@@ -71,21 +71,39 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def libInstanceCounter = 0;
-String parsedLocation = "";
-fileTree(rootDir.parent).visit { FileVisitDetails details ->
-    def path = details.file.path
-    if (path.contains("/react-native-gesture-handler/package.json")) {
-        libInstanceCounter++;
-        parsedLocation += "- " + path.replace("/package.json", "\n")
-    }
-    if (libInstanceCounter > 1) {
-        String exceptionMessage = "\n[Gesture Handler] Multiple versions of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-versions-of-reanimated-were-detected \n\nConflict between: \n" + parsedLocation + "\n";
+def shouldAssertNoMultipleInstances() {
+  if (rootProject.hasProperty("disableMultipleInstancesCheck")) {
+    return rootProject.property("disableMultipleInstancesCheck") != "true"
+  } else {
+    return true
+  }
+}
+
+def noMultipleInstancesAssertion() {
+    Set<File> files = fileTree(rootDir.parent) {
+        include "node_modules/**/react-native-gesture-handler/package.json"
+        exclude "**/.yarn/**"
+    }.files
+
+    if (files.size() > 1) {
+        String parsedLocation = files.stream().map({ File file -> "- " + file.toString().replace("/package.json", "") }).collect().join("\n")
+        String exceptionMessage = "\n[Gesture Handler] Multiple instances of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-instances-of-gesture-handler-were-detected \n\nConflict between: \n" + parsedLocation + "\n";
         throw new Exception(exceptionMessage);
     }
 }
 
 def REACT_NATIVE_DIR = findNodeModulePath("react-native")
+
+def assertionTask = task assertNoMultipleInstances {
+    onlyIf { shouldAssertNoMultipleInstances() }
+    doFirst {
+        noMultipleInstancesAssertion()
+    }
+}
+
+tasks.preBuild {
+    dependsOn assertionTask
+}
 
 repositories {
     mavenCentral()
@@ -183,7 +201,7 @@ dependencies {
 
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
-        implementation (project(':react-native-reanimated')) {
+        implementation (rootProject.subprojects.find { it.name == 'react-native-reanimated' }) {
             exclude group:'com.facebook.fbjni' // resolves "Duplicate class com.facebook.jni.CppException"
         }
     }
@@ -194,14 +212,6 @@ dependencies {
 }
 
 if (isNewArchitectureEnabled()) {
-    react {
-        reactNativeDir = rootProject.file(findNodeModulePath(rootProject.rootDir, "react-native") ?: "../node_modules/react-native/")
-        jsRootDir = file("../src/fabric/")
-        codegenDir = rootProject.file(findNodeModulePath(rootProject.rootDir, "react-native-codegen") ?: "../node_modules/react-native-codegen/")
-        libraryName = "rngesturehandler"
-        codegenJavaPackageName = "com.swmansion.gesturehandler"
-    }
-
     // Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".
     tasks.whenTaskAdded { task ->
         if (task.name.contains("configureCMakeDebug")) {
