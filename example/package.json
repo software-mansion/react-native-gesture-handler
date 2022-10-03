@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.17.8",
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@babel/preset-env": "^7.1.6",
     "@babel/runtime": "^7.12.5",
     "@expo/webpack-config": "^0.12.52",
