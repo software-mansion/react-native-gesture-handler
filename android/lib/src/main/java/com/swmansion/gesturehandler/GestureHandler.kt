@@ -589,11 +589,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     var top = 0f
     var right = view!!.width.toFloat()
     var bottom = view.height.toFloat()
-    if (hitSlop != null) {
-      val padLeft = hitSlop!![HIT_SLOP_LEFT_IDX]
-      val padTop = hitSlop!![HIT_SLOP_TOP_IDX]
-      val padRight = hitSlop!![HIT_SLOP_RIGHT_IDX]
-      val padBottom = hitSlop!![HIT_SLOP_BOTTOM_IDX]
+    hitSlop?.let { hitSlop ->
+      val padLeft = hitSlop[HIT_SLOP_LEFT_IDX]
+      val padTop = hitSlop[HIT_SLOP_TOP_IDX]
+      val padRight = hitSlop[HIT_SLOP_RIGHT_IDX]
+      val padBottom = hitSlop[HIT_SLOP_BOTTOM_IDX]
       if (hitSlopSet(padLeft)) {
         left -= padLeft
       }
@@ -606,8 +606,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       if (hitSlopSet(padBottom)) {
         bottom += padBottom
       }
-      val width = hitSlop!![HIT_SLOP_WIDTH_IDX]
-      val height = hitSlop!![HIT_SLOP_HEIGHT_IDX]
+      val width = hitSlop[HIT_SLOP_WIDTH_IDX]
+      val height = hitSlop[HIT_SLOP_HEIGHT_IDX]
       if (hitSlopSet(width)) {
         if (!hitSlopSet(padLeft)) {
           left = right - width
