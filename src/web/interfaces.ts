@@ -30,7 +30,17 @@ export interface Config extends Record<string, ConfigArgs> {
   simultaneousHandlers?: Handler[] | null;
   waitFor?: Handler[] | null;
   hitSlop?: HitSlop;
+  shouldCancelWhenOutside?: boolean;
 
+  activateAfterLongPress?: number;
+  failOffsetXStart?: number;
+  failOffsetYStart?: number;
+  failOffsetXEnd?: number;
+  failOffsetYEnd?: number;
+  activeOffsetXStart?: number;
+  activeOffsetXEnd?: number;
+  activeOffsetYStart?: number;
+  activeOffsetYEnd?: number;
   minPointers?: number;
   maxPointers?: number;
   minDist?: number;
@@ -41,14 +51,6 @@ export interface Config extends Record<string, ConfigArgs> {
   minVelocitySq?: number;
   maxDist?: number;
   maxDistSq?: number;
-  failOffsetXStart?: number;
-  failOffsetYStart?: number;
-  failOffsetXEnd?: number;
-  failOffsetYEnd?: number;
-  activeOffsetXStart?: number;
-  activeOffsetXEnd?: number;
-  activeOffsetYStart?: number;
-  activeOffsetYEnd?: number;
   numberOfPointers?: number;
   minDurationMs?: number;
   numberOfTaps?: number;
@@ -56,6 +58,8 @@ export interface Config extends Record<string, ConfigArgs> {
   maxDelayMs?: number;
   maxDeltaX?: number;
   maxDeltaY?: number;
+  shouldActivateOnStart?: boolean;
+  disallowInterruption?: boolean;
   direction?: Directions;
 }
 
@@ -69,8 +73,33 @@ interface NativeEvent extends Record<string, NativeEventArgs> {
   oldState?: State;
 }
 
+export interface PointerData {
+  id: number;
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+}
+
+type TouchNativeArgs = number | State | TouchEventType | PointerData[];
+
+interface NativeTouchEvent extends Record<string, TouchNativeArgs> {
+  handlerTag: number;
+  state: State;
+  eventType: TouchEventType;
+  changedTouches: PointerData[];
+  allTouches: PointerData[];
+  numberOfTouches: number;
+}
+
 export interface ResultEvent extends Record<string, NativeEvent | number> {
   nativeEvent: NativeEvent;
+  timeStamp: number;
+}
+
+export interface ResultTouchEvent
+  extends Record<string, NativeTouchEvent | number> {
+  nativeEvent: NativeTouchEvent;
   timeStamp: number;
 }
 
@@ -79,16 +108,19 @@ export interface PropsRef {
   onGestureHandlerStateChange: () => void;
 }
 
-export interface AdaptedPointerEvent {
+export interface AdaptedEvent {
   x: number;
   y: number;
   offsetX: number;
   offsetY: number;
   pointerId: number;
   eventType: EventTypes;
-  pointerType: string;
+  pointerType: PointerType;
   buttons: number;
   time: number;
+  allTouches?: TouchList;
+  changedTouches?: TouchList;
+  touchEventType?: TouchEventType;
 }
 
 export enum MouseButtons {
@@ -111,4 +143,19 @@ export enum EventTypes {
   ENTER,
   OUT,
   CANCEL,
+}
+
+export enum TouchEventType {
+  UNDETERMINED,
+  DOWN,
+  MOVE,
+  UP,
+  CANCELLED,
+}
+
+export enum PointerType {
+  NONE = 'none',
+  MOUSE = 'mouse',
+  TOUCH = 'touch',
+  PEN = 'pen',
 }

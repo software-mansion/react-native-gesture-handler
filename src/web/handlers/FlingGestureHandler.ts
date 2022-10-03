@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import { Direction } from '../constants';
-import { AdaptedPointerEvent } from '../interfaces';
+import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -26,7 +26,7 @@ export default class FlingGestureHandler extends GestureHandler {
     super.init(ref, propsRef);
   }
 
-  public updateGestureConfig({ enabled = true, ...props }): void {
+  public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     this.enabled = enabled;
@@ -40,27 +40,29 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected transformNativeEvent(event: AdaptedPointerEvent) {
+  protected transformNativeEvent() {
+    const rect: DOMRect = this.view.getBoundingClientRect();
+
     return {
-      x: event.offsetX,
-      y: event.offsetY,
-      absoluteX: event.x,
-      absoluteY: event.y,
+      x: this.tracker.getLastAvgX() - rect.left,
+      y: this.tracker.getLastAvgY() - rect.top,
+      absoluteX: this.tracker.getLastAvgX(),
+      absoluteY: this.tracker.getLastAvgY(),
     };
   }
 
-  private startFling(event: AdaptedPointerEvent): void {
+  private startFling(event: AdaptedEvent): void {
     this.startX = event.x;
     this.startY = event.y;
 
-    this.begin(event);
+    this.begin();
 
     this.maxNumberOfPointersSimultaneously = 1;
 
-    this.delayTimeout = setTimeout(() => this.fail(event), this.maxDurationMs);
+    this.delayTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
   }
 
-  private tryEndFling(event: AdaptedPointerEvent): boolean {
+  private tryEndFling(event: AdaptedEvent): boolean {
     if (
       this.maxNumberOfPointersSimultaneously ===
         this.numberOfPointersRequired &&
@@ -74,7 +76,7 @@ export default class FlingGestureHandler extends GestureHandler {
           event.y - this.startY > this.minAcceptableDelta))
     ) {
       clearTimeout(this.delayTimeout);
-      this.activate(event);
+      this.activate();
 
       return true;
     }
@@ -82,17 +84,25 @@ export default class FlingGestureHandler extends GestureHandler {
     return false;
   }
 
-  private endFling(event: AdaptedPointerEvent) {
+  private endFling(event: AdaptedEvent) {
     if (!this.tryEndFling(event)) {
-      this.fail(event);
+      this.fail();
     }
   }
 
-  protected onPointerDown(event: AdaptedPointerEvent): void {
-    super.onPointerDown(event);
-
+  protected onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
+    super.onPointerDown(event);
+    this.newPointerAction(event);
+  }
 
+  protected onPointerAdd(event: AdaptedEvent): void {
+    this.tracker.addToTracker(event);
+    super.onPointerAdd(event);
+    this.newPointerAction(event);
+  }
+
+  private newPointerAction(event: AdaptedEvent): void {
     if (this.currentState === State.UNDETERMINED) {
       this.startFling(event);
     }
@@ -111,7 +121,7 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedPointerEvent): void {
+  protected onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
     if (this.currentState !== State.BEGAN) {
@@ -123,19 +133,32 @@ export default class FlingGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerUp(event: AdaptedPointerEvent): void {
-    this.tracker.removeFromTracker(event.pointerId);
+  protected onPointerUp(event: AdaptedEvent): void {
+    super.onPointerUp(event);
+    this.onUp(event);
+  }
 
+  protected onPointerRemove(event: AdaptedEvent): void {
+    super.onPointerRemove(event);
+    this.onUp(event);
+  }
+
+  private onUp(event: AdaptedEvent): void {
+    this.tracker.removeFromTracker(event.pointerId);
     if (this.currentState !== State.BEGAN) {
       return;
     }
-
     this.endFling(event);
   }
 
-  protected activate(event: AdaptedPointerEvent, force?: boolean): void {
-    super.activate(event, force);
-    this.end(event);
+  protected onPointerCancel(event: AdaptedEvent): void {
+    super.onPointerCancel(event);
+    this.reset();
+  }
+
+  public activate(force?: boolean): void {
+    super.activate(force);
+    this.end();
   }
 
   protected resetConfig(): void {

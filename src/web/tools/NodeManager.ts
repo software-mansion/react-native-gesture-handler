@@ -2,13 +2,13 @@ import { ValueOf } from '../../typeUtils';
 import { Gestures } from '../../RNGestureHandlerModule.web';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export default class NodeManager {
+export default abstract class NodeManager {
   private static gestures: Record<
     number,
     InstanceType<ValueOf<typeof Gestures>>
   > = {};
 
-  static getHandler(tag: number) {
+  public static getHandler(tag: number) {
     if (tag in this.gestures) {
       return this.gestures[tag];
     }
@@ -16,10 +16,10 @@ export default class NodeManager {
     throw new Error(`No handler for tag ${tag}`);
   }
 
-  static createGestureHandler(
+  public static createGestureHandler(
     handlerTag: number,
     handler: InstanceType<ValueOf<typeof Gestures>>
-  ) {
+  ): void {
     if (handlerTag in this.gestures) {
       throw new Error(`Handler with tag ${handlerTag} already exists`);
     }
@@ -28,7 +28,7 @@ export default class NodeManager {
     this.gestures[handlerTag].setTag(handlerTag);
   }
 
-  static dropGestureHandler(handlerTag: number) {
+  public static dropGestureHandler(handlerTag: number): void {
     if (!(handlerTag in this.gestures)) {
       return;
     }
@@ -37,7 +37,7 @@ export default class NodeManager {
     delete this.gestures[handlerTag];
   }
 
-  static getNodes() {
+  public static getNodes() {
     return { ...this.gestures };
   }
 }

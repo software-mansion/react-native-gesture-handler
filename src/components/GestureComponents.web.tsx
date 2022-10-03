@@ -12,7 +12,7 @@ import {
 import createNativeWrapper from '../handlers/createNativeWrapper';
 
 export const ScrollView = createNativeWrapper(RNScrollView, {
-  disallowInterruption: true,
+  disallowInterruption: false,
 });
 
 export const Switch = createNativeWrapper(RNSwitch, {

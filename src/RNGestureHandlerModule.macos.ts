@@ -11,6 +11,7 @@ import PinchGestureHandler from './web/handlers/PinchGestureHandler';
 import RotationGestureHandler from './web/handlers/RotationGestureHandler';
 import FlingGestureHandler from './web/handlers/FlingGestureHandler';
 import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
+import ManualGestureHandler from './web/handlers/ManualGestureHandler';
 
 //Hammer Handlers
 import * as HammerNodeManager from './web_hammer/NodeManager';
@@ -21,7 +22,7 @@ import HammerLongPressGestureHandler from './web_hammer/LongPressGestureHandler'
 import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
 import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
 import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
-import { Config } from './web_hammer/GestureHandler';
+import { Config } from './web/interfaces';
 
 export const Gestures = {
   NativeViewGestureHandler,
@@ -31,6 +32,7 @@ export const Gestures = {
   PinchGestureHandler,
   RotationGestureHandler,
   FlingGestureHandler,
+  ManualGestureHandler,
 };
 
 export const HammerGestures = {
@@ -44,12 +46,11 @@ export const HammerGestures = {
 };
 
 export default {
-  // Direction,
-  handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
-    console.warn('handleSetJSResponder: ', tag, blockNativeResponder);
+  handleSetJSResponder(_tag: number, _blockNativeResponder: boolean) {
+    // NO-OP
   },
   handleClearJSResponder() {
-    console.warn('handleClearJSResponder: ');
+    // NO-OP
   },
   createGestureHandler<T>(
     handlerName: keyof typeof Gestures,
@@ -57,28 +58,37 @@ export default {
     config: T
   ) {
     if (isExperimentalWebImplementationEnabled()) {
-      if (!(handlerName in Gestures)) return;
-
-      const interactionManager = new InteractionManager();
+      if (!(handlerName in Gestures)) {
+        throw new Error(
+          `react-native-gesture-handler: ${handlerName} is not supported on web.`
+        );
+      }
 
       const GestureClass = Gestures[handlerName];
       NodeManager.createGestureHandler(handlerTag, new GestureClass());
-      interactionManager.configureInteractions(
+      InteractionManager.getInstance().configureInteractions(
         NodeManager.getHandler(handlerTag),
         (config as unknown) as Config
       );
     } else {
-      if (!(handlerName in HammerGestures)) return;
+      if (!(handlerName in HammerGestures)) {
+        throw new Error(
+          `react-native-gesture-handler: ${handlerName} is not supported on web.`
+        );
+      }
 
+      // @ts-ignore If it doesn't exist, the error is thrown
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const GestureClass = HammerGestures[handlerName];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
     }
 
-    this.updateGestureHandler(handlerTag, config);
+    this.updateGestureHandler(handlerTag, (config as unknown) as Config);
   },
   attachGestureHandler(
     handlerTag: number,
-    newView: number, //ref
+    newView: number,
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
@@ -88,9 +98,14 @@ export default {
       HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
     }
   },
-  updateGestureHandler(handlerTag: number, newConfig: any) {
+  updateGestureHandler(handlerTag: number, newConfig: Config) {
     if (isExperimentalWebImplementationEnabled()) {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+
+      InteractionManager.getInstance().configureInteractions(
+        NodeManager.getHandler(handlerTag),
+        newConfig
+      );
     } else {
       HammerNodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
     }

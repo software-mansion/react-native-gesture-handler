@@ -1,4 +1,7 @@
+import React from 'react';
+
 import { ActionType } from './ActionType';
+import { isExperimentalWebImplementationEnabled } from './EnableExperimentalWebImplementation';
 
 //GestureHandlers
 import InteractionManager from './web/tools/InteractionManager';
@@ -10,6 +13,7 @@ import PinchGestureHandler from './web/handlers/PinchGestureHandler';
 import RotationGestureHandler from './web/handlers/RotationGestureHandler';
 import FlingGestureHandler from './web/handlers/FlingGestureHandler';
 import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
+import ManualGestureHandler from './web/handlers/ManualGestureHandler';
 
 //Hammer Handlers
 import * as HammerNodeManager from './web_hammer/NodeManager';
@@ -21,7 +25,6 @@ import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
 import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
 import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
 import { Config } from './web/interfaces';
-import { isExperimentalWebImplementationEnabled } from './EnableExperimentalWebImplementation';
 
 export const Gestures = {
   NativeViewGestureHandler,
@@ -31,6 +34,7 @@ export const Gestures = {
   PinchGestureHandler,
   RotationGestureHandler,
   FlingGestureHandler,
+  ManualGestureHandler,
 };
 
 export const HammerGestures = {
@@ -43,10 +47,7 @@ export const HammerGestures = {
   FlingGestureHandler: HammerFlingGestureHandler,
 };
 
-const interactionManager = new InteractionManager();
-
 export default {
-  // Direction,
   handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
     console.warn('handleSetJSResponder: ', tag, blockNativeResponder);
   },
@@ -67,7 +68,7 @@ export default {
 
       const GestureClass = Gestures[handlerName];
       NodeManager.createGestureHandler(handlerTag, new GestureClass());
-      interactionManager.configureInteractions(
+      InteractionManager.getInstance().configureInteractions(
         NodeManager.getHandler(handlerTag),
         (config as unknown) as Config
       );
@@ -78,7 +79,10 @@ export default {
         );
       }
 
+      // @ts-ignore If it doesn't exist, the error is thrown
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const GestureClass = HammerGestures[handlerName];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
     }
 
@@ -86,13 +90,22 @@ export default {
   },
   attachGestureHandler(
     handlerTag: number,
-    newView: number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    newView: any,
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
+    if (
+      !(newView instanceof HTMLElement || newView instanceof React.Component)
+    ) {
+      return;
+    }
+
     if (isExperimentalWebImplementationEnabled()) {
+      //@ts-ignore Types should be HTMLElement or React.Component
       NodeManager.getHandler(handlerTag).init(newView, propsRef);
     } else {
+      //@ts-ignore Types should be HTMLElement or React.Component
       HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
     }
   },
@@ -100,7 +113,7 @@ export default {
     if (isExperimentalWebImplementationEnabled()) {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
 
-      interactionManager.configureInteractions(
+      InteractionManager.getInstance().configureInteractions(
         NodeManager.getHandler(handlerTag),
         newConfig
       );

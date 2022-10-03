@@ -1,159 +1,147 @@
-const path = require('path');
-const versions = require('./versions.json');
-console.log(versions);
+/** @type {import('@docusaurus/types').DocusaurusConfig} */
 
-const allDocHomesPaths = [
-  '/docs/next/',
-  '/docs/',
-  ...versions.slice(1).map((version) => `/docs/${version}/`),
-];
-
-const baseUrl = process.env.BASE_URL || '/';
+const prismConfig = {
+  plain: {
+    color: '#ffffff',
+    backgroundColor: '#001a72',
+  },
+  styles: [
+    {
+      types: ['comment'],
+      style: {
+        color: '#aaaaaa',
+        fontStyle: 'italic',
+      },
+    },
+    {
+      types: ['string'],
+      style: {
+        color: '#ffffff',
+      },
+    },
+    {
+      types: ['punctuation'],
+      style: {
+        color: '#ffee86',
+      },
+    },
+    {
+      types: ['variable', 'constant', 'builtin', 'attr-name'],
+      style: {
+        color: '#a3b8ff',
+      },
+    },
+    {
+      types: ['number', 'operator'],
+      style: {
+        color: '#ffaaa8',
+      },
+    },
+    {
+      types: ['keyword'],
+      style: {
+        color: '#8ed3ef',
+      },
+    },
+    {
+      types: ['char'],
+      style: {
+        color: '#a3b8ff',
+      },
+    },
+    {
+      types: ['tag'],
+      style: {
+        color: '#ffaaa8',
+      },
+    },
+    {
+      types: ['function'],
+      style: {
+        color: '#a3b8ff',
+      },
+    },
+  ],
+};
+/*
+In swizzled components look for "SWM -" string to see our modifications
+*/
 
 module.exports = {
   title: 'React Native Gesture Handler',
-  tagline:
-    'Declarative API exposing platform native touch and gesture system to React Native.',
-  organizationName: 'software-mansion',
-  projectName: 'react-native-gesture-handler',
-  baseUrl,
+  tagline: 'Declarative API exposing platform native touch and gesture system to React Native.',
   url: 'https://docs.swmansion.com',
+  baseUrl: '/react-native-gesture-handler/',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
   favicon: 'img/SWM_Fav_192x192.png',
-  presets: [
-    [
-      '@docusaurus/preset-classic',
-      {
-        debug: false,
-        docs: {
-          path: 'docs',
-          sidebarPath: require.resolve('./sidebars.js'),
-          editUrl:
-            'https://github.com/software-mansion/react-native-gesture-handler/tree/main/docs',
-        },
-        theme: {
-          customCss: require.resolve('./src/css/custom.css'),
-        },
-      },
-    ],
-  ],
+  organizationName: 'software-mansion',
+  customFields: {
+    shortTitle: 'Gesture Handler',
+  },
+  projectName: 'react-native-gesture-handler',
   themeConfig: {
     algolia: {
+      appId: 'BKGDKVWG6F',
       apiKey: 'd738e28e9c67a26dd7933b011fe2b9e4',
       indexName: 'react-native-gesture-handler',
-
-      contextualSearch: true,
-      searchParameters: {},
+      // contextualSearch: true, // doesn't work for some reason
     },
-    colorMode: { disableSwitch: true },
-    prism: {
-      theme: {
-        plain: {
-          color: '#ffffff',
-          backgroundColor: '#001a72',
-        },
-        styles: [
-          {
-            types: ['comment'],
-            style: {
-              color: '#aaaaaa',
-              fontStyle: 'italic',
-            },
-          },
-          {
-            types: ['string'],
-            style: {
-              color: '#ffffff',
-            },
-          },
-          {
-            types: ['punctuation'],
-            style: {
-              color: '#ffee86',
-            },
-          },
-          {
-            types: ['variable', 'constant', 'builtin', 'attr-name'],
-            style: {
-              color: '#a3b8ff',
-            },
-          },
-          {
-            types: ['number', 'operator'],
-            style: {
-              color: '#ffaaa8',
-            },
-          },
-          {
-            types: ['keyword'],
-            style: {
-              color: '#8ed3ef',
-            },
-          },
-          {
-            types: ['char'],
-            style: {
-              color: '#a3b8ff',
-            },
-          },
-          {
-            types: ['tag'],
-            style: {
-              color: '#ffaaa8',
-            },
-          },
-          {
-            types: ['function'],
-            style: {
-              color: '#a3b8ff',
-            },
-          },
-        ],
-      },
-    },
-    googleAnalytics: {
-      trackingID: 'UA-41044622-6',
-      anonymizeIP: true, // Should IPs be anonymized?
+    colorMode: {
+      disableSwitch: true,
     },
     navbar: {
       title: 'React Native Gesture Handler',
       items: [
-        // {
-        //   label: 'Docs',
-        //   to: 'docs/getting-started', // "fake" link
-        //   position: 'right',
-        //   activeBaseRegex: `docs/(?!next)`,
-        //   items: [
-        //     {
-        //       label: 'Master',
-        //       to: 'docs/',
-        //       activeBaseRegex: `docs/next`,
-        //     },
-        //     {
-        //       label: versions[0],
-        //       to: 'docs/stable',
-        //       activeBaseRegex: `docs/(?!${versions.join('|')}|next)`,
-        //     },
-        //     ...versions.slice(1).map(version => ({
-        //       label: version,
-        //       to: `docs/${version}/`,
-        //     })),
-        //   ],
-        // },
         {
           type: 'docsVersionDropdown',
-          position: 'left',
+          position: 'right',
         },
         {
-          href:
-            'https://github.com/software-mansion/react-native-gesture-handler',
+          type: 'search',
           position: 'right',
-          className: 'header-github-link',
-          'aria-label': 'GitHub repository',
+        },
+        {
+          className: 'github-navbar-logo',
+          href: 'https://github.com/software-mansion/react-native-gesture-handler/',
+          label: 'Github',
+          position: 'right',
         },
       ],
     },
     footer: {
-      style: 'dark',
+      logo: {
+        alt: 'Software Mansion',
+        src: 'img/swmLogo.svg',
+        href: 'https://swmansion.com/',
+      },
+    },
+    prism: {
+      theme: prismConfig,
     },
   },
+  presets: [
+    [
+      '@docusaurus/preset-classic',
+      {
+        docs: {
+          path: 'docs',
+          sidebarPath: require.resolve('./sidebars.js'),
+          editUrl: undefined, // hide edit button
+          versions: {
+            '2.4.0': {
+              label: '2.4.0 – 2.5.0',
+            },
+          },
+        },
+        theme: {
+          customCss: require.resolve('./src/css/custom.css'),
+        },
+        googleAnalytics: {
+          trackingID: 'UA-41044622-6',
+          anonymizeIP: true, // Should IPs be anonymized?
+        },
+      },
+    ],
+  ],
 };

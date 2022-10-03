@@ -2,19 +2,26 @@ import GestureHandler from '../handlers/GestureHandler';
 import { Config, Handler } from '../interfaces';
 
 export default class InteractionManager {
+  private static instance: InteractionManager;
   private readonly waitForRelations: Map<number, number[]> = new Map();
   private readonly simultaneousRelations: Map<number, number[]> = new Map();
+
+  // Private becaues of singleton
+  // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
+  private constructor() {}
 
   public configureInteractions(handler: GestureHandler, config: Config) {
     this.dropRelationsForHandlerWithTag(handler.getTag());
 
     if (config.waitFor) {
       const waitFor: number[] = [];
-      config.waitFor.forEach((handler: Handler): void => {
-        if (typeof handler === 'number') {
-          waitFor.push(handler);
+      config.waitFor.forEach((otherHandler: Handler): void => {
+        // New API reference
+        if (typeof otherHandler === 'number') {
+          waitFor.push(otherHandler);
         } else {
-          waitFor.push(handler.handlerTag);
+          // Old API reference
+          waitFor.push(otherHandler.handlerTag);
         }
       });
 
@@ -23,17 +30,16 @@ export default class InteractionManager {
 
     if (config.simultaneousHandlers) {
       const simultaneousHandlers: number[] = [];
-      config.simultaneousHandlers.forEach((handler: Handler): void => {
-        if (typeof handler === 'number') {
-          simultaneousHandlers.push(handler);
+      config.simultaneousHandlers.forEach((otherHandler: Handler): void => {
+        if (typeof otherHandler === 'number') {
+          simultaneousHandlers.push(otherHandler);
         } else {
-          simultaneousHandlers.push(handler.handlerTag);
+          simultaneousHandlers.push(otherHandler.handlerTag);
         }
       });
 
       this.simultaneousRelations.set(handler.getTag(), simultaneousHandlers);
     }
-    handler.setInteractionManager(this);
   }
 
   public shouldWaitForHandlerFailure(
@@ -86,6 +92,7 @@ export default class InteractionManager {
     _handler: GestureHandler,
     _otherHandler: GestureHandler
   ): boolean {
+    //TODO: Implement logic
     return false;
   }
 
@@ -93,6 +100,7 @@ export default class InteractionManager {
     _handler: GestureHandler,
     _otherHandler: GestureHandler
   ): boolean {
+    //TODO: Implement logic
     return false;
   }
 
@@ -104,5 +112,13 @@ export default class InteractionManager {
   public reset() {
     this.waitForRelations.clear();
     this.simultaneousRelations.clear();
+  }
+
+  public static getInstance(): InteractionManager {
+    if (!this.instance) {
+      this.instance = new InteractionManager();
+    }
+
+    return this.instance;
   }
 }
