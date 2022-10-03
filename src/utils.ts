@@ -1,6 +1,10 @@
 import pack from 'react-native/package.json';
 
-const rnVersion = pack.version;
+const [majorStr, minorStr] = pack.version.split('.');
+export const REACT_NATIVE_VERSION = {
+  major: parseInt(majorStr, 10),
+  minor: parseInt(minorStr, 10),
+};
 
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
@@ -52,12 +56,8 @@ export function isFabric(): boolean {
 }
 
 export function shouldUseCodegenNativeComponent(): boolean {
-  const [majorStr, minorStr] = rnVersion.split('.');
-  const major = Number.parseInt(majorStr);
-  const minor = Number.parseInt(minorStr);
-
   // use codegenNativeComponent starting with RN 0.68
-  return minor >= 68 || major > 0;
+  return REACT_NATIVE_VERSION.minor >= 68 || REACT_NATIVE_VERSION.major > 0;
 }
 
 export function isRemoteDebuggingEnabled(): boolean {
