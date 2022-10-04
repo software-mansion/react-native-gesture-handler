@@ -140,7 +140,7 @@ export default function Example() {
 
 ### Kotlin
 
-Since version `2.0.0` RNGH has been rewritten with Kotlin. The default version of the Kotlin plugin used in this library is `1.5.20`.
+Since version `2.0.0` RNGH has been rewritten with Kotlin. The default version of the Kotlin plugin used in this library is `1.6.21`.
 
 If you need to use a different Kotlin version, set the `kotlinVersion` ext property in `android/build.gradle` file and RNGH will use that version:
 
@@ -148,7 +148,7 @@ If you need to use a different Kotlin version, set the `kotlinVersion` ext prope
 buildscript {
     ext {
         ...
-        kotlinVersion = "1.5.20"
+        kotlinVersion = "1.6.21"
     }
 }
 ```
