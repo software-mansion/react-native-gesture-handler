@@ -40,14 +40,6 @@ export class ComposedGesture extends Gesture {
 
       gesture.config = newConfig;
     } else if (gesture instanceof ComposedGesture) {
-      for (const g of gesture.gestures) {
-        const index = simultaneousGestures.indexOf(g);
-
-        if (index >= 0) {
-          simultaneousGestures.splice(index, 1);
-        }
-      }
-
       gesture.simultaneousGestures = simultaneousGestures;
       gesture.requireGesturesToFail = requireGesturesToFail;
       gesture.prepare();
@@ -55,7 +47,6 @@ export class ComposedGesture extends Gesture {
   }
 
   prepare() {
-    console.log(this.simultaneousGestures);
     for (const gesture of this.gestures) {
       this.prepareSingleGesture(
         gesture,
