@@ -98,8 +98,8 @@ export default class PanGestureHandler extends GestureHandler {
       this.activateAfterLongPress = this.config.activateAfterLongPress;
     }
 
-    if (this.config.shouldCancelWhenOutside) {
-      this.setShouldCancelWhenOutside(false);
+    if (this.config.shouldCancelWhenOutside !== undefined) {
+      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
     }
 
     if (this.config.activeOffsetXStart !== undefined) {
