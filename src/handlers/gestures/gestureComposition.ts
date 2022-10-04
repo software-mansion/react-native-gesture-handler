@@ -76,7 +76,7 @@ export class SimultaneousGesture extends ComposedGesture {
       this.gestures
         // and make a copy without it
         .filter((x) => x !== gesture)
-        // then we flatmap the restul to get list of raw (not composed) gestures
+        // then we flatmap the result to get list of raw (not composed) gestures
         // this way we don't make the gestures simultaneous with themselves, which is
         // important when the gesture is `ExclusiveGesture` - we don't want to make
         // exclusive gestures simultaneous
