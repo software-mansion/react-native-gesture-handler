@@ -12,9 +12,9 @@ export interface RGB {
 }
 
 const defaultColor: RGB = {
-  r: 32,
-  g: 32,
-  b: 32,
+  r: 0,
+  g: 0,
+  b: 0,
 };
 
 export default function Demo() {
@@ -38,6 +38,7 @@ export default function Demo() {
       ]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}>
+      <Character />
       <GradientControls
         onChange={updateUpperGradient}
         style={[styles.gradientControl, styles.upperControl]}
@@ -46,7 +47,6 @@ export default function Demo() {
         onChange={updateDownGradient}
         style={[styles.gradientControl, styles.downControl]}
       />
-      <Character />
     </LinearGradient>
   );
 }
