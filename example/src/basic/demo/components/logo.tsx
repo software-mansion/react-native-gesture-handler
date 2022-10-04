@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  Directions,
+} from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -9,7 +13,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { Direction } from '../../../../../src/web/constants';
 import { getRandomColor, IMAGES, IMG_SIZE, LOGO_SIZE, HEIGHT } from '../utils';
 
 export default function Logo() {
@@ -27,17 +30,16 @@ export default function Logo() {
 
   // Fling
   const leftFlingGesture = Gesture.Fling()
-    .direction(Direction.LEFT)
+    .direction(Directions.LEFT)
     .onEnd(() => {
-      const index = currentImage === 0 ? IMAGES.length - 1 : currentImage - 1;
-
+      const index = (currentImage + 1) % IMAGES.length;
       setCurrentImage(index);
     });
 
   const rightFlingGesture = Gesture.Fling()
-    .direction(Direction.RIGHT)
+    .direction(Directions.RIGHT)
     .onEnd(() => {
-      const index = (currentImage + 1) % IMAGES.length;
+      const index = currentImage === 0 ? IMAGES.length - 1 : currentImage - 1;
       setCurrentImage(index);
     });
 
