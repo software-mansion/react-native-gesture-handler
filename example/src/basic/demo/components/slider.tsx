@@ -15,7 +15,7 @@ interface SliderProps {
 }
 
 export default function Slider(props: SliderProps) {
-  const [left, setLeft] = useState(-5);
+  const [left, setLeft] = useState(-POINTER_WIDTH / 2);
 
   const scaleValue = (x: number) => {
     const factor = x / SLIDER_WIDTH;

@@ -16,9 +16,9 @@ export function getRandomColor(): string {
   return COLORS[Math.floor(Math.random() * COLORS.length)];
 }
 
-const GestureHandlerLogo = require('./assets/gh.png');
-const ReanimatedLogo = require('./assets/reanimated.png');
-const SWMLogo = require('./assets/swm.svg');
+const GestureHandlerLogo = require('./assets/GestureHandlerLogo.png');
+const ReanimatedLogo = require('./assets/ReanimatedLogo.png');
+const SWMLogo = require('./assets/SWMLogo.svg');
 
 export const IMAGES = [GestureHandlerLogo, ReanimatedLogo, SWMLogo];
 

@@ -12,7 +12,7 @@ import Animated, {
 import { Direction } from '../../../../../src/web/constants';
 import { getRandomColor, IMAGES, IMG_SIZE, LOGO_SIZE, HEIGHT } from '../utils';
 
-export default function Character() {
+export default function Logo() {
   // Background color
   const [currentColor, setBgColor] = useState('white');
   const [lastColor, setLastColor] = useState('white');

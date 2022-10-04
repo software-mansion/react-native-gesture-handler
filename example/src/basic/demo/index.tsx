@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Character from './components/character';
+import Logo from './components/logo';
 import GradientControls from './components/gradientControls';
 
 export interface RGB {
@@ -38,7 +38,7 @@ export default function Demo() {
       ]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}>
-      <Character />
+      <Logo />
       <GradientControls
         onChange={updateUpperGradient}
         style={[styles.gradientControl, styles.upperControl]}
