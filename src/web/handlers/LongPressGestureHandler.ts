@@ -23,6 +23,8 @@ export default class LongPressGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
     this.setShouldCancelWhenOutside(true);
+
+    this.view.oncontextmenu = () => false;
   }
 
   protected transformNativeEvent() {
