@@ -341,22 +341,14 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       return if (!isChildTouched()) {
         tryFreeingResponder()
 
-        val gestureHandlerRootView = getGestureHandlerRootView()
+        if (soundResponder == this) {
+          soundResponder = null
+        } else if (receivedKeyEvent || context.isScreenReaderOn()) {
+          if (soundResponder == this) {
+            receivedKeyEvent = false
+          }
 
-        when {
-          // Checks whether TalkBack is on
-          context.isScreenReaderOn() -> {
-            gestureHandlerRootView?.activateNativeHandlers(this)
-          }
-          receivedKeyEvent -> {
-            if (soundResponder == this) {
-              receivedKeyEvent = false
-            }
-            gestureHandlerRootView?.activateNativeHandlers(this)
-          }
-          soundResponder == this -> {
-            soundResponder = null
-          }
+          findGestureHandlerRootView()?.activateNativeHandlers(this)
         }
 
         super.performClick()
@@ -397,7 +389,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       // by default Viewgroup would pass hotspot change events
     }
 
-    private fun getGestureHandlerRootView(): RNGestureHandlerRootView? {
+    private fun findGestureHandlerRootView(): RNGestureHandlerRootView? {
       var parent: ViewParent? = this.parent
       var gestureHandlerRootView: RNGestureHandlerRootView? = null
 

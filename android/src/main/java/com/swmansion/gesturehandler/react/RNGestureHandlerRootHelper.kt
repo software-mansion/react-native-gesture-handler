@@ -13,7 +13,6 @@ import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.modal.ReactModalHostView
 import com.swmansion.gesturehandler.GestureHandler
 import com.swmansion.gesturehandler.GestureHandlerOrchestrator
-import com.swmansion.gesturehandler.NativeViewGestureHandler
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
   private val orchestrator: GestureHandlerOrchestrator?
