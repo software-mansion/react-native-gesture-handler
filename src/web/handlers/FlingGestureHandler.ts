@@ -21,6 +21,7 @@ export default class FlingGestureHandler extends GestureHandler {
   private startY = 0;
 
   private maxNumberOfPointersSimultaneously = 0;
+  private keyPointer = NaN;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -51,9 +52,9 @@ export default class FlingGestureHandler extends GestureHandler {
     };
   }
 
-  private startFling(event: AdaptedEvent): void {
-    this.startX = event.x;
-    this.startY = event.y;
+  private startFling(): void {
+    this.startX = this.tracker.getLastX(this.keyPointer);
+    this.startY = this.tracker.getLastY(this.keyPointer);
 
     this.begin();
 
@@ -62,18 +63,22 @@ export default class FlingGestureHandler extends GestureHandler {
     this.delayTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
   }
 
-  private tryEndFling(event: AdaptedEvent): boolean {
+  private tryEndFling(): boolean {
     if (
       this.maxNumberOfPointersSimultaneously ===
         this.numberOfPointersRequired &&
       ((this.direction & Direction.RIGHT &&
-        event.x - this.startX > this.minAcceptableDelta) ||
+        this.tracker.getLastX(this.keyPointer) - this.startX >
+          this.minAcceptableDelta) ||
         (this.direction & Direction.LEFT &&
-          this.startX - event.x > this.minAcceptableDelta) ||
+          this.startX - this.tracker.getLastX(this.keyPointer) >
+            this.minAcceptableDelta) ||
         (this.direction & Direction.UP &&
-          this.startY - event.y > this.minAcceptableDelta) ||
+          this.startY - this.tracker.getLastY(this.keyPointer) >
+            this.minAcceptableDelta) ||
         (this.direction & Direction.DOWN &&
-          event.y - this.startY > this.minAcceptableDelta))
+          this.tracker.getLastY(this.keyPointer) - this.startY >
+            this.minAcceptableDelta))
     ) {
       clearTimeout(this.delayTimeout);
       this.activate();
@@ -84,34 +89,36 @@ export default class FlingGestureHandler extends GestureHandler {
     return false;
   }
 
-  private endFling(event: AdaptedEvent) {
-    if (!this.tryEndFling(event)) {
+  private endFling() {
+    if (!this.tryEndFling()) {
       this.fail();
     }
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
+    this.keyPointer = event.pointerId;
+
     super.onPointerDown(event);
-    this.newPointerAction(event);
+    this.newPointerAction();
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
-    this.newPointerAction(event);
+    this.newPointerAction();
   }
 
-  private newPointerAction(event: AdaptedEvent): void {
+  private newPointerAction(): void {
     if (this.currentState === State.UNDETERMINED) {
-      this.startFling(event);
+      this.startFling();
     }
 
     if (this.currentState !== State.BEGAN) {
       return;
     }
 
-    this.tryEndFling(event);
+    this.tryEndFling();
 
     if (
       this.tracker.getTrackedPointersCount() >
@@ -129,7 +136,7 @@ export default class FlingGestureHandler extends GestureHandler {
       return;
     }
 
-    this.tryEndFling(event);
+    this.tryEndFling();
 
     super.onPointerMove(event);
   }
@@ -137,6 +144,8 @@ export default class FlingGestureHandler extends GestureHandler {
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.onUp(event);
+
+    this.keyPointer = NaN;
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
@@ -149,7 +158,7 @@ export default class FlingGestureHandler extends GestureHandler {
     if (this.currentState !== State.BEGAN) {
       return;
     }
-    this.endFling(event);
+    this.endFling();
   }
 
   protected onPointerCancel(event: AdaptedEvent): void {

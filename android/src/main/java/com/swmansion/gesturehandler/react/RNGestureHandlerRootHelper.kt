@@ -56,7 +56,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   private inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
-    override fun onHandle(event: MotionEvent) {
+    override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
       val currentState = state
       if (currentState == STATE_UNDETERMINED) {
         begin()
