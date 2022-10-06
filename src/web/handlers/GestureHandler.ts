@@ -120,6 +120,8 @@ export default abstract class GestureHandler {
     if (this.currentState === newState) {
       return;
     }
+    const oldState = this.currentState;
+    this.currentState = newState;
 
     if (
       this.tracker.getTrackedPointersCount() > 0 &&
@@ -130,9 +132,6 @@ export default abstract class GestureHandler {
     ) {
       this.cancelTouches();
     }
-
-    const oldState = this.currentState;
-    this.currentState = newState;
 
     GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
       this,
