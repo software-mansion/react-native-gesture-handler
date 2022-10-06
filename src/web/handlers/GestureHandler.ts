@@ -120,6 +120,7 @@ export default abstract class GestureHandler {
     if (this.currentState === newState) {
       return;
     }
+
     const oldState = this.currentState;
     this.currentState = newState;
 
