@@ -127,9 +127,7 @@ export default abstract class GestureHandler {
     if (
       this.tracker.getTrackedPointersCount() > 0 &&
       this.config.needsPointerData &&
-      (newState === State.END ||
-        newState === State.CANCELLED ||
-        newState === State.FAILED)
+      this.isFinished()
     ) {
       this.cancelTouches();
     }
@@ -773,6 +771,14 @@ export default abstract class GestureHandler {
 
   public isEnabled(): boolean {
     return this.enabled;
+  }
+
+  private isFinished(): boolean {
+    return (
+      this.currentState === State.END ||
+      this.currentState === State.FAILED ||
+      this.currentState === State.CANCELLED
+    );
   }
 
   protected setShouldCancelWhenOutside(shouldCancel: boolean) {
