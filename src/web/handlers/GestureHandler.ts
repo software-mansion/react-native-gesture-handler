@@ -121,18 +121,16 @@ export default abstract class GestureHandler {
       return;
     }
 
+    const oldState = this.currentState;
+    this.currentState = newState;
+
     if (
       this.tracker.getTrackedPointersCount() > 0 &&
       this.config.needsPointerData &&
-      (newState === State.END ||
-        newState === State.CANCELLED ||
-        newState === State.FAILED)
+      this.isFinished()
     ) {
       this.cancelTouches();
     }
-
-    const oldState = this.currentState;
-    this.currentState = newState;
 
     GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
       this,
@@ -773,6 +771,14 @@ export default abstract class GestureHandler {
 
   public isEnabled(): boolean {
     return this.enabled;
+  }
+
+  private isFinished(): boolean {
+    return (
+      this.currentState === State.END ||
+      this.currentState === State.FAILED ||
+      this.currentState === State.CANCELLED
+    );
   }
 
   protected setShouldCancelWhenOutside(shouldCancel: boolean) {
