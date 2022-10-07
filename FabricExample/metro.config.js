@@ -1,9 +1,9 @@
 const path = require('path');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
 const escape = require('escape-string-regexp');
-const pack = require('../package.json');
+const pack = require('../react-native-gesture-handler/package.json');
 
-const root = path.resolve(__dirname, '..');
+const root = path.resolve(__dirname, '../react-native-gesture-handler');
 
 const modules = Object.keys(pack.peerDependencies);
 
