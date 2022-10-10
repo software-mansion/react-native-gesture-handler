@@ -247,7 +247,9 @@ function updateHandlers(
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
   setImmediate(() => {
-    if (!mountedRef.current) return;
+    if (!mountedRef.current) {
+      return;
+    }
     for (let i = 0; i < gesture.length; i++) {
       const handler = preparedGesture.config[i];
 
