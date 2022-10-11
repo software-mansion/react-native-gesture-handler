@@ -322,6 +322,18 @@ export default abstract class GestureHandler {
     }
   }
   protected onPointerOut(event: AdaptedEvent): void {
+    if (this.shouldCancellWhenOutside) {
+      switch (this.currentState) {
+        case State.ACTIVE:
+          this.cancel();
+          break;
+        case State.BEGAN:
+          this.fail();
+          break;
+      }
+      return;
+    }
+
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
@@ -337,18 +349,6 @@ export default abstract class GestureHandler {
     }
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    if (this.shouldCancellWhenOutside) {
-      switch (this.currentState) {
-        case State.ACTIVE:
-          this.cancel();
-          break;
-        case State.BEGAN:
-          this.fail();
-          break;
-      }
-      return;
-    }
-
     this.tryToSendMoveEvent(true);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
