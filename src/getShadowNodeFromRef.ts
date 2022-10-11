@@ -8,9 +8,9 @@ export function getShadowNodeFromRef(ref: any) {
   // load findHostInstance_DEPRECATED lazily because it may not be available before render
   if (findHostInstance_DEPRECATED === undefined) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      findHostInstance_DEPRECATED = require('react-native/Libraries/Renderer/shims/ReactFabric')
-        .findHostInstance_DEPRECATED;
+      findHostInstance_DEPRECATED =
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require('react-native/Libraries/Renderer/shims/ReactFabric').findHostInstance_DEPRECATED;
     } catch (e) {
       findHostInstance_DEPRECATED = (_ref: any) => null;
     }
