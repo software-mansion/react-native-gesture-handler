@@ -619,7 +619,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   }
 
   companion object {
-    const val MODULE_NAME = "RNGestureHandlerModule"
+    const val MODULE_NAME = "RNGestureHandlerModuleV2"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
     private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
