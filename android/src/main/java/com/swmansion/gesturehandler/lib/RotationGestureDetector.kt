@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandler.lib
 
 import android.view.MotionEvent
 import kotlin.math.atan2

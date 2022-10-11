@@ -17,19 +17,19 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.soloader.SoLoader
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.BuildConfig
-import com.swmansion.gesturehandler.FlingGestureHandler
-import com.swmansion.gesturehandler.GestureHandler
-import com.swmansion.gesturehandler.LongPressGestureHandler
-import com.swmansion.gesturehandler.ManualGestureHandler
-import com.swmansion.gesturehandler.NativeViewGestureHandler
-import com.swmansion.gesturehandler.OnTouchEventListener
-import com.swmansion.gesturehandler.PanGestureHandler
-import com.swmansion.gesturehandler.PinchGestureHandler
+import com.swmansion.gesturehandler.lib.FlingGestureHandler
+import com.swmansion.gesturehandler.lib.GestureHandler
+import com.swmansion.gesturehandler.lib.LongPressGestureHandler
+import com.swmansion.gesturehandler.lib.ManualGestureHandler
+import com.swmansion.gesturehandler.lib.NativeViewGestureHandler
+import com.swmansion.gesturehandler.lib.OnTouchEventListener
+import com.swmansion.gesturehandler.lib.PanGestureHandler
+import com.swmansion.gesturehandler.lib.PinchGestureHandler
 import com.swmansion.gesturehandler.ReanimatedEventDispatcher
-import com.swmansion.gesturehandler.RotationGestureHandler
-import com.swmansion.gesturehandler.TapGestureHandler
-import com.swmansion.gesturehandler.UIManager
-import com.swmansion.gesturehandler.deviceEventEmitter
+import com.swmansion.gesturehandler.lib.RotationGestureHandler
+import com.swmansion.gesturehandler.lib.TapGestureHandler
+import com.swmansion.gesturehandler.lib.UIManager
+import com.swmansion.gesturehandler.lib.deviceEventEmitter
 import com.swmansion.gesturehandler.dispatchEvent
 
 // NativeModule.onCatalystInstanceDestroy() was deprecated in favor of NativeModule.invalidate()

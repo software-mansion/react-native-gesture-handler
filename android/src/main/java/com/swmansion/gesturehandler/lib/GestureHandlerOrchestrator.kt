@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandler.lib
 
 import android.graphics.Matrix
 import android.graphics.PointF
@@ -134,7 +134,10 @@ class GestureHandlerOrchestrator(
               // their state is set to END and when the gesture they are waiting for activates they
               // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
               // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
-              otherHandler.dispatchStateChange(GestureHandler.STATE_CANCELLED, GestureHandler.STATE_BEGAN)
+              otherHandler.dispatchStateChange(
+                GestureHandler.STATE_CANCELLED,
+                GestureHandler.STATE_BEGAN
+              )
             }
             otherHandler.isAwaiting = false
           } else {

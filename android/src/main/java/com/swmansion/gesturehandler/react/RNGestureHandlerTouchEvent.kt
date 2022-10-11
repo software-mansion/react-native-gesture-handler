@@ -5,7 +5,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
-import com.swmansion.gesturehandler.GestureHandler
+import com.swmansion.gesturehandler.lib.GestureHandler
 
 class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerTouchEvent>() {
   private var extraData: WritableMap? = null

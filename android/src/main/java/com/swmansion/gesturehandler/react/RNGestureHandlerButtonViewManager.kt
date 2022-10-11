@@ -27,7 +27,7 @@ import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
-import com.swmansion.gesturehandler.NativeViewGestureHandler
+import com.swmansion.gesturehandler.lib.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)

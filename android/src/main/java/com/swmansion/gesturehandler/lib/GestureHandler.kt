@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandler.lib
 
 import android.app.Activity
 import android.content.Context
@@ -14,6 +14,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
+import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import java.lang.IllegalStateException
 import java.util.*
@@ -745,7 +746,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
       var size = size
-      if (!::pointerProps.isInitialized) {
+      if (!Companion::pointerProps.isInitialized) {
         pointerProps = arrayOfNulls(MAX_POINTERS_COUNT)
         pointerCoords = arrayOfNulls(MAX_POINTERS_COUNT)
       }

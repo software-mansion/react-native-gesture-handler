@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandler.lib
 
 import android.os.SystemClock
 import android.view.MotionEvent
@@ -172,8 +172,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   private class EditTextHook(
-          private val handler: NativeViewGestureHandler,
-          private val editText: ReactEditText
+      private val handler: NativeViewGestureHandler,
+      private val editText: ReactEditText
   ) : NativeViewGestureHandlerHook {
     private var startX = 0f
     private var startY = 0f
