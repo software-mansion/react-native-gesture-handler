@@ -38,7 +38,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     const val EVENT_TOUCH_UP = 3
     const val EVENT_TOUCH_CANCELLED = 4
 
-    const val EVENT_NAME = "onGestureHandlerEvent"
+    const val EVENT_NAME = "onGestureHandlerEventV2"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerTouchEvent>(TOUCH_EVENTS_POOL_SIZE)
 

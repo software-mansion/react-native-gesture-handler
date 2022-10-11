@@ -379,6 +379,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   }
 
   companion object {
-    const val REACT_CLASS = "RNGestureHandlerButton"
+    const val REACT_CLASS = "RNGestureHandlerButtonV2"
   }
 }

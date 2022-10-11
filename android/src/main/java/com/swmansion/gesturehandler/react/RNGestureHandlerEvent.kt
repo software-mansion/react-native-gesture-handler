@@ -41,7 +41,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   }
 
   companion object {
-    const val EVENT_NAME = "onGestureHandlerEvent"
+    const val EVENT_NAME = "onGestureHandlerEventV2"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerEvent>(TOUCH_EVENTS_POOL_SIZE)
 

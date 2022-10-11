@@ -44,6 +44,6 @@ class RNGestureHandlerRootViewManager : ViewGroupManager<RNGestureHandlerRootVie
       mutableMapOf("registrationName" to RNGestureHandlerStateChangeEvent.EVENT_NAME))
 
   companion object {
-    const val REACT_CLASS = "RNGestureHandlerRootView"
+    const val REACT_CLASS = "RNGestureHandlerRootViewV2"
   }
 }
