@@ -144,10 +144,6 @@ export default class FlingGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    super.onPointerOutOfBounds(event);
-  }
-
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.onUp(event);
