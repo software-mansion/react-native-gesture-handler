@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler.react
+package com.swmansion.gesturehandlerv2.react
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
@@ -27,8 +27,8 @@ import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
-import com.swmansion.gesturehandler.NativeViewGestureHandler
-import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
+import com.swmansion.gesturehandlerv2.NativeViewGestureHandler
+import com.swmansion.gesturehandlerv2.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), RNGestureHandlerButtonManagerInterface<ButtonViewGroup> {
@@ -164,7 +164,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
      * (e.g. move and up in one gesture; move and cancel)
      *
      * Reference:
-     * [com.swmansion.gesturehandler.NativeViewGestureHandler.onHandle]  */
+     * [com.swmansion.gesturehandlerv2.NativeViewGestureHandler.onHandle]  */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
       if (event.action == MotionEvent.ACTION_CANCEL) {

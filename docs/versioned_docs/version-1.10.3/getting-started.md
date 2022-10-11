@@ -102,12 +102,12 @@ only applies to RN apps that use a standard Android project layout.
 Update your `MainActivity.java` file (or wherever you create an instance of `ReactActivityDelegate`), so that it overrides the method responsible for creating `ReactRootView` instance and then use the root view wrapper provided by this library. Do not forget to import `ReactActivityDelegate`, `ReactRootView`, and `RNGestureHandlerEnabledRootView`:
 
 ```diff
-package com.swmansion.gesturehandler.react.example;
+package com.swmansion.gesturehandlerv2.react.example;
 
 import com.facebook.react.ReactActivity;
 + import com.facebook.react.ReactActivityDelegate;
 + import com.facebook.react.ReactRootView;
-+ import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
++ import com.swmansion.gesturehandlerv2.react.RNGestureHandlerEnabledRootView;
 
 public class MainActivity extends ReactActivity {
 

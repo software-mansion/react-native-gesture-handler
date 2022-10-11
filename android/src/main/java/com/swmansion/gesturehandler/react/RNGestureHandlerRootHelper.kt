@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler.react
+package com.swmansion.gesturehandlerv2.react
 
 import android.os.SystemClock
 import android.util.Log
@@ -10,8 +10,8 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.modal.ReactModalHostView
-import com.swmansion.gesturehandler.GestureHandler
-import com.swmansion.gesturehandler.GestureHandlerOrchestrator
+import com.swmansion.gesturehandlerv2.GestureHandler
+import com.swmansion.gesturehandlerv2.GestureHandlerOrchestrator
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
   private val orchestrator: GestureHandlerOrchestrator?

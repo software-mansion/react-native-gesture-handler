@@ -11,7 +11,7 @@ import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import com.swmansion.gesturehandler.RNGestureHandlerPackageV2;
+import com.swmansion.gesturehandlerv2.RNGestureHandlerPackageV2;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 

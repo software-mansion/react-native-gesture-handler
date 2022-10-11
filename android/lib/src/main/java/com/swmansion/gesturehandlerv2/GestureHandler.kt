@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandlerv2
 
 import android.app.Activity
 import android.content.Context
@@ -14,7 +14,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
-import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
+import com.swmansion.gesturehandlerv2.react.RNGestureHandlerTouchEvent
 import java.lang.IllegalStateException
 import java.util.*
 

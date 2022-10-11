@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.swmansion.gesturehandler.react.example",
+    package = "com.swmansion.gesturehandlerv2.react.example",
 )
 
 android_resource(
     name = "res",
-    package = "com.swmansion.gesturehandler.react.example",
+    package = "com.swmansion.gesturehandlerv2.react.example",
     res = "src/main/res",
 )
 

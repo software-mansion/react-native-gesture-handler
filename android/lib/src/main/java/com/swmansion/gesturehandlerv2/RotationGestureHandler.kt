@@ -1,8 +1,8 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandlerv2
 
 import android.graphics.PointF
 import android.view.MotionEvent
-import com.swmansion.gesturehandler.RotationGestureDetector.OnRotationGestureListener
+import com.swmansion.gesturehandlerv2.RotationGestureDetector.OnRotationGestureListener
 import kotlin.math.abs
 
 class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {

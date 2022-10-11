@@ -266,7 +266,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.gesturehandler.react.example;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.gesturehandlerv2.react.example;
 				PRODUCT_NAME = ExampleE2E;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -285,7 +285,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.gesturehandler.react.example;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.gesturehandlerv2.react.example;
 				PRODUCT_NAME = ExampleE2E;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

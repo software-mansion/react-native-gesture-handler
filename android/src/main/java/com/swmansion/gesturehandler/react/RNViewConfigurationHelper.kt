@@ -1,12 +1,12 @@
-package com.swmansion.gesturehandler.react
+package com.swmansion.gesturehandlerv2.react
 
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.uimanager.PointerEvents
 import com.facebook.react.uimanager.ReactPointerEventsView
 import com.facebook.react.views.view.ReactViewGroup
-import com.swmansion.gesturehandler.PointerEventsConfig
-import com.swmansion.gesturehandler.ViewConfigurationHelper
+import com.swmansion.gesturehandlerv2.PointerEventsConfig
+import com.swmansion.gesturehandlerv2.ViewConfigurationHelper
 
 class RNViewConfigurationHelper : ViewConfigurationHelper {
   override fun getPointerEventsConfigForView(view: View): PointerEventsConfig {

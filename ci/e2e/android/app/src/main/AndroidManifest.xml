@@ -1,17 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.swmansion.gesturehandler.react.example">
+  package="com.swmansion.gesturehandlerv2.react.example">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-      android:name="com.swmansion.gesturehandler.react.example.MainApplication"
+      android:name="com.swmansion.gesturehandlerv2.react.example.MainApplication"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
       <activity
-        android:name="com.swmansion.gesturehandler.react.example.MainActivity"
+        android:name="com.swmansion.gesturehandlerv2.react.example.MainActivity"
         android:label="@string/app_name"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
         android:windowSoftInputMode="adjustResize">

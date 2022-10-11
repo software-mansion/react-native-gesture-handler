@@ -1,9 +1,9 @@
-package com.swmansion.gesturehandler.react.example;
+package com.swmansion.gesturehandlerv2.react.example;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
-import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
+import com.swmansion.gesturehandlerv2.react.RNGestureHandlerEnabledRootView;
 
 public class MainActivity extends ReactActivity {
 

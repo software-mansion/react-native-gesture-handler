@@ -8,10 +8,10 @@ title: Migrating off RNGHEnabledRootView
 Update your `MainActivity.java` file (or wherever you create an instance of `ReactActivityDelegate`), so that it no longer overrides the method responsible for creating `ReactRootView` instance, or modify it so that it no longer uses `RNGestureHandlerEnabledRootView`. Do not forget to remove import for `RNGestureHandlerEnabledRootView`:
 
 ```java
-package com.swmansion.gesturehandler.react.example;
+package com.swmansion.gesturehandlerv2.react.example;
 
 import com.facebook.react.ReactActivity;
-- import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
+- import com.swmansion.gesturehandlerv2.react.RNGestureHandlerEnabledRootView;
 public class MainActivity extends ReactActivity {
 
 -  @Override

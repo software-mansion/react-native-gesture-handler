@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler.react
+package com.swmansion.gesturehandlerv2.react
 
 import android.content.Context
 import android.util.Log
@@ -12,7 +12,7 @@ import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.events.Event
 import com.facebook.soloader.SoLoader
 import com.swmansion.common.GestureHandlerStateManager
-import com.swmansion.gesturehandler.*
+import com.swmansion.gesturehandlerv2.*
 import java.util.*
 // NativeModule.onCatalystInstanceDestroy() was deprecated in favor of NativeModule.invalidate()
 // ref: https://github.com/facebook/react-native/commit/18c8417290823e67e211bde241ae9dde27b72f17

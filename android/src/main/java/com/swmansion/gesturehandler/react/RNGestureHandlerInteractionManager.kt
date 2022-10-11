@@ -1,10 +1,10 @@
-package com.swmansion.gesturehandler.react
+package com.swmansion.gesturehandlerv2.react
 
 import android.util.SparseArray
 import com.facebook.react.bridge.ReadableMap
-import com.swmansion.gesturehandler.GestureHandler
-import com.swmansion.gesturehandler.GestureHandlerInteractionController
-import com.swmansion.gesturehandler.NativeViewGestureHandler
+import com.swmansion.gesturehandlerv2.GestureHandler
+import com.swmansion.gesturehandlerv2.GestureHandlerInteractionController
+import com.swmansion.gesturehandlerv2.NativeViewGestureHandler
 
 class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   private val waitForRelations = SparseArray<IntArray>()

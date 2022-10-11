@@ -4,14 +4,14 @@
 // ref: https://github.com/facebook/react-native/commit/2fbbdbb2ce897e8da3f471b08b93f167d566db1d
 @file:Suppress("DEPRECATION")
 
-package com.swmansion.gesturehandler.react
+package com.swmansion.gesturehandlerv2.react
 
 import androidx.core.util.Pools
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
-import com.swmansion.gesturehandler.GestureHandler
+import com.swmansion.gesturehandlerv2.GestureHandler
 
 class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHandlerStateChangeEvent>() {
   private var extraData: WritableMap? = null
