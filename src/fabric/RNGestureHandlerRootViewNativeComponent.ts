@@ -3,4 +3,4 @@ import type { ViewProps } from 'react-native';
 
 interface NativeProps extends ViewProps {}
 
-export default codegenNativeComponent<NativeProps>('RNGestureHandlerRootView');
+export default codegenNativeComponent<NativeProps>('RNGestureHandlerRootViewV2');

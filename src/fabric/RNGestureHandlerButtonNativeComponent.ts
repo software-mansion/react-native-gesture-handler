@@ -15,4 +15,4 @@ interface NativeProps extends ViewProps {
   touchSoundDisabled?: WithDefault<boolean, false>;
 }
 
-export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');
+export default codegenNativeComponent<NativeProps>('RNGestureHandlerButtonV2');

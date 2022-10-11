@@ -7,7 +7,7 @@ import { shouldUseCodegenNativeComponent } from './utils';
 
 const GestureHandlerRootViewNativeComponent = shouldUseCodegenNativeComponent()
   ? require('./fabric/RNGestureHandlerRootViewNativeComponent').default
-  : requireNativeComponent('RNGestureHandlerRootView');
+  : requireNativeComponent('RNGestureHandlerRootViewV2');
 
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<ViewProps> {}

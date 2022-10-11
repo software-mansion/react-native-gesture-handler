@@ -5,6 +5,6 @@ import { shouldUseCodegenNativeComponent } from '../utils';
 
 const RNGestureHandlerButtonNativeComponent = shouldUseCodegenNativeComponent()
   ? require('../fabric/RNGestureHandlerButtonNativeComponent').default
-  : requireNativeComponent('RNGestureHandlerButton');
+  : requireNativeComponent('RNGestureHandlerButtonV2');
 
 export default RNGestureHandlerButtonNativeComponent as HostComponent<RawButtonProps>;
