@@ -206,10 +206,8 @@ abstract class GestureHandler {
   }
 
   sendEvent = (nativeEvent: HammerInputExt) => {
-    const {
-      onGestureHandlerEvent,
-      onGestureHandlerStateChange,
-    } = this.propsRef.current;
+    const { onGestureHandlerEvent, onGestureHandlerStateChange } =
+      this.propsRef.current;
 
     const event = this.transformEventData(nativeEvent);
 
@@ -312,7 +310,7 @@ abstract class GestureHandler {
         return;
       }
 
-      this.onRawEvent((ev as unknown) as HammerInputExt);
+      this.onRawEvent(ev as unknown as HammerInputExt);
 
       // TODO: Bacon: Check against something other than null
       // The isFirst value is not called when the first rotation is calculated.
@@ -336,17 +334,17 @@ abstract class GestureHandler {
     // TODO(TS) Hammer types aren't exactly that what we get in runtime
     if (!this.isDiscrete) {
       this.hammer!.on(`${this.name}start`, (event: HammerInput) =>
-        this.onStart((event as unknown) as HammerInputExt)
+        this.onStart(event as unknown as HammerInputExt)
       );
       this.hammer!.on(
         `${this.name}end ${this.name}cancel`,
         (event: HammerInput) => {
-          this.onGestureEnded((event as unknown) as HammerInputExt);
+          this.onGestureEnded(event as unknown as HammerInputExt);
         }
       );
     }
     this.hammer!.on(this.name, (ev: HammerInput) =>
-      this.onGestureActivated((ev as unknown) as HammerInputExt)
+      this.onGestureActivated(ev as unknown as HammerInputExt)
     ); // TODO(TS) remove cast after https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50438 is merged
   }
 
