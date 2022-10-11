@@ -44,6 +44,10 @@ export default class LongPressGestureHandler extends GestureHandler {
 
     this.enabled = enabled;
 
+    if (this.config.shouldCancelWhenOutside !== undefined) {
+      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
+    }
+
     if (this.config.minDurationMs !== undefined) {
       this.minDurationMs = this.config.minDurationMs;
     }

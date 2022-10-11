@@ -41,6 +41,10 @@ export default class TapGestureHandler extends GestureHandler {
 
     this.enabled = enabled;
 
+    if (this.config.shouldCancelWhenOutside !== undefined) {
+      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
+    }
+
     if (this.config.numberOfTaps !== undefined) {
       this.numberOfTaps = this.config.numberOfTaps;
     }

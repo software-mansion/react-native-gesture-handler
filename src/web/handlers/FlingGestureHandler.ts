@@ -32,6 +32,10 @@ export default class FlingGestureHandler extends GestureHandler {
 
     this.enabled = enabled;
 
+    if (this.config.shouldCancelWhenOutside !== undefined) {
+      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
+    }
+
     if (this.config.direction) {
       this.direction = this.config.direction;
     }

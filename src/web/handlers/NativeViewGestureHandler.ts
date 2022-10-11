@@ -37,6 +37,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
+    this.enabled = enabled;
+
+    if (this.config.shouldCancelWhenOutside !== undefined) {
+      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
+    }
+
     if (this.config.shouldActivateOnStart !== undefined) {
       this.shouldActivateOnStart = this.config.shouldActivateOnStart;
     }

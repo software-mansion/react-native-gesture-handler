@@ -55,6 +55,10 @@ export default class RotationGestureHandler extends GestureHandler {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     this.enabled = enabled;
+
+    if (this.config.shouldCancelWhenOutside !== undefined) {
+      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
+    }
   }
 
   protected transformNativeEvent() {
