@@ -18,7 +18,6 @@ import com.facebook.soloader.SoLoader
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.ReanimatedEventDispatcher
-import com.swmansion.gesturehandler.dispatchEvent
 import com.swmansion.gesturehandler.core.FlingGestureHandler
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.LongPressGestureHandler
@@ -29,6 +28,7 @@ import com.swmansion.gesturehandler.core.PanGestureHandler
 import com.swmansion.gesturehandler.core.PinchGestureHandler
 import com.swmansion.gesturehandler.core.RotationGestureHandler
 import com.swmansion.gesturehandler.core.TapGestureHandler
+import com.swmansion.gesturehandler.dispatchEvent
 
 // NativeModule.onCatalystInstanceDestroy() was deprecated in favor of NativeModule.invalidate()
 // ref: https://github.com/facebook/react-native/commit/18c8417290823e67e211bde241ae9dde27b72f17
