@@ -19,18 +19,16 @@ import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.ReanimatedEventDispatcher
 import com.swmansion.gesturehandler.dispatchEvent
-import com.swmansion.gesturehandler.lib.FlingGestureHandler
-import com.swmansion.gesturehandler.lib.GestureHandler
-import com.swmansion.gesturehandler.lib.LongPressGestureHandler
-import com.swmansion.gesturehandler.lib.ManualGestureHandler
-import com.swmansion.gesturehandler.lib.NativeViewGestureHandler
-import com.swmansion.gesturehandler.lib.OnTouchEventListener
-import com.swmansion.gesturehandler.lib.PanGestureHandler
-import com.swmansion.gesturehandler.lib.PinchGestureHandler
-import com.swmansion.gesturehandler.lib.RotationGestureHandler
-import com.swmansion.gesturehandler.lib.TapGestureHandler
-import com.swmansion.gesturehandler.react.UIManager
-import com.swmansion.gesturehandler.react.deviceEventEmitter
+import com.swmansion.gesturehandler.core.FlingGestureHandler
+import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.LongPressGestureHandler
+import com.swmansion.gesturehandler.core.ManualGestureHandler
+import com.swmansion.gesturehandler.core.NativeViewGestureHandler
+import com.swmansion.gesturehandler.core.OnTouchEventListener
+import com.swmansion.gesturehandler.core.PanGestureHandler
+import com.swmansion.gesturehandler.core.PinchGestureHandler
+import com.swmansion.gesturehandler.core.RotationGestureHandler
+import com.swmansion.gesturehandler.core.TapGestureHandler
 
 // NativeModule.onCatalystInstanceDestroy() was deprecated in favor of NativeModule.invalidate()
 // ref: https://github.com/facebook/react-native/commit/18c8417290823e67e211bde241ae9dde27b72f17

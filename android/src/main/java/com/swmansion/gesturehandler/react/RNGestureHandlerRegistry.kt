@@ -3,8 +3,8 @@ package com.swmansion.gesturehandler.react
 import android.util.SparseArray
 import android.view.View
 import com.facebook.react.bridge.UiThreadUtil
-import com.swmansion.gesturehandler.lib.GestureHandler
-import com.swmansion.gesturehandler.lib.GestureHandlerRegistry
+import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.GestureHandlerRegistry
 import java.util.*
 
 class RNGestureHandlerRegistry : GestureHandlerRegistry {

@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler.lib
+package com.swmansion.gesturehandler.core
 
 import android.content.Context
 import android.os.Handler
@@ -6,8 +6,8 @@ import android.os.Looper
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.ViewConfiguration
-import com.swmansion.gesturehandler.lib.GestureUtils.getLastPointerX
-import com.swmansion.gesturehandler.lib.GestureUtils.getLastPointerY
+import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
+import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
 
 class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>() {
   var velocityX = 0f
