@@ -9,7 +9,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
 
-class RNGestureHandlerPackage : ReactPackage {
+class RNGestureHandlerPackageV2 : ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     return listOf<NativeModule>(RNGestureHandlerModule(reactContext))
   }
