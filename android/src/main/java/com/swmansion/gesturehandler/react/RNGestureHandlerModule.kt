@@ -29,8 +29,8 @@ import com.swmansion.gesturehandler.lib.PanGestureHandler
 import com.swmansion.gesturehandler.lib.PinchGestureHandler
 import com.swmansion.gesturehandler.lib.RotationGestureHandler
 import com.swmansion.gesturehandler.lib.TapGestureHandler
-import com.swmansion.gesturehandler.lib.UIManager
-import com.swmansion.gesturehandler.lib.deviceEventEmitter
+import com.swmansion.gesturehandler.react.UIManager
+import com.swmansion.gesturehandler.react.deviceEventEmitter
 
 // NativeModule.onCatalystInstanceDestroy() was deprecated in favor of NativeModule.invalidate()
 // ref: https://github.com/facebook/react-native/commit/18c8417290823e67e211bde241ae9dde27b72f17
