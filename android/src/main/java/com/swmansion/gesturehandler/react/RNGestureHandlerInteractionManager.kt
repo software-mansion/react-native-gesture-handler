@@ -39,8 +39,8 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
     waitForRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   override fun shouldRequireHandlerToWaitForFailure(
-      handler: GestureHandler<*>,
-      otherHandler: GestureHandler<*>,
+    handler: GestureHandler<*>,
+    otherHandler: GestureHandler<*>,
   ) = false
 
   override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>): Boolean {
@@ -51,8 +51,8 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
     return false
   }
   override fun shouldRecognizeSimultaneously(
-      handler: GestureHandler<*>,
-      otherHandler: GestureHandler<*>,
+    handler: GestureHandler<*>,
+    otherHandler: GestureHandler<*>,
   ) = simultaneousRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   fun reset() {
