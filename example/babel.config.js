@@ -12,8 +12,9 @@ module.exports = {
             '../react-native-gesture-handler/src/components/DrawerLayout',
           'react-native-gesture-handler/Swipeable':
             '../react-native-gesture-handler/src/components/Swipeable',
-          'react-native-gesture-handler': '../react-native-gesture-handler/src/index',
-          'react': './node_modules/react',
+          'react-native-gesture-handler':
+            '../react-native-gesture-handler/src/index',
+          react: './node_modules/react',
           'react-native': './node_modules/react-native',
           'react-native-reanimated': './node_modules/react-native-reanimated',
           '@babel': './node_modules/@babel',
