@@ -3,8 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/android-build.yml'
-      - 'android/**'
-      - 'Common/**'
+      - 'package/android/**'
       - 'Example/android/**'
       - 'FabricExample/android/**'
   push:
@@ -22,10 +21,10 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: Use Node.js 14
+      - name: Use Node.js 16
         uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
           cache: 'yarn'
       - name: Install node dependencies
         working-directory: ${{ matrix.working-directory }}
