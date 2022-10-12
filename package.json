@@ -5,6 +5,7 @@
   "scripts": {
     "prepare": "husky install",
     "precommit": "lint-staged",
+    "ts-check": "cd react-native-gesture-handler && yarn tsc --noEmit",
     "format:js": "prettier --write --list-different './{react-native-gesture-handler/src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'",
     "lint:js": "eslint --ext '.js,.ts,.tsx' react-native-gesture-handler/src/ example/src FabricExample/src && yarn prettier --check './{react-native-gesture-handler/src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'"
   },
@@ -17,6 +18,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^26.0.0",
     "husky": "^8.0.1",
+    "lint-staged": "^12.3.2",
     "prettier": "^2.7.1",
     "typescript": "^4.5.5"
   },

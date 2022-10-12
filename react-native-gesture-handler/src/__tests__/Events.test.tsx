@@ -14,6 +14,7 @@ import {
   State,
   PanGesture,
   TapGesture,
+  LongPressGestureHandlerGestureEvent,
 } from '../index';
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
@@ -209,9 +210,10 @@ describe('Using RNGH v1 base API', () => {
 
 describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
   function UseAnimatedGestureHandler({ eventHandlers }: EventHandlersProps) {
-    const eventHandler = useAnimatedGestureHandler({
-      onStart: eventHandlers.begin,
-    });
+    const eventHandler =
+      useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>({
+        onStart: eventHandlers.begin,
+      });
     return (
       <LongPressGestureHandler
         testID="longPress"

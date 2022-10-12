@@ -3,10 +3,9 @@
   "version": "2.7.1",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
-    "prepare": "bob build && husky install",
+    "prepare": "bob build",
     "test": "jest",
     "build": "yarn tsc -p tsconfig.build.json",
-    "precommit": "lint-staged",
     "release": "npm login && release-it",
     "ts-check": "yarn tsc --noEmit",
     "format:js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
@@ -95,7 +94,6 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^26.0.0",
     "expo": "^35.0.1",
-    "husky": "^8.0.1",
     "jest": "^26.6.3",
     "lint-staged": "^12.3.2",
     "metro-react-native-babel-preset": "^0.64.0",
@@ -113,11 +111,6 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
-  },
-  "lint-staged": {
-    "./{src,example,FabricExample}/**/*.{ts,tsx}": "yarn format:js",
-    "android/**/*.kt": "yarn format:android",
-    "ios/**/*.{h,m,mm,cpp}": "yarn format:ios"
   },
   "release-it": {
     "hooks": {
