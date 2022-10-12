@@ -1,6 +1,7 @@
 name: Check documentation
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - 'docs/**'
