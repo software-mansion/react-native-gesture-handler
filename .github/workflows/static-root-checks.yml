@@ -22,6 +22,7 @@ jobs:
           node-version: 16
           cache: 'yarn'
       - name: Install node dependencies
+        working-directory: package/
         run: yarn
       - name: Check types
         working-directory: package/

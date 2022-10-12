@@ -25,6 +25,7 @@ jobs:
           node-version: 16
           cache: 'yarn'
       - name: Install root node dependencies
+        working-directory: package/
         run: yarn
       - name: Install ${{ matrix.working-directory }} app node dependencies
         working-directory: ${{ matrix.working-directory }}

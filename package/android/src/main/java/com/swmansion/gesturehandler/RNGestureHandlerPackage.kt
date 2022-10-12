@@ -12,7 +12,7 @@ class RNGestureHandlerPackage : ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     return listOf<NativeModule>(RNGestureHandlerModule(reactContext))
   }
-// trigger CI
+
   override fun createViewManagers(reactContext: ReactApplicationContext) =
     listOf<ViewManager<*, *>>(
       RNGestureHandlerRootViewManager(),

@@ -28,6 +28,7 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install node dependencies
+        working-directory: package/
         run: yarn install --frozen-lockfile
 
       - name: Restore build from cache

@@ -1,45 +1,35 @@
 #import "RNGestureHandlerActionType.h"
+#import "RNGestureHandlerState.h"
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerEvents.h"
 #import "RNGestureHandlerPointerTracker.h"
-#import "RNGestureHandlerState.h"
 
 #import <Foundation/Foundation.h>
-#import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
-// trigger CI
+#import <React/RCTConvert.h>
+
 #define VEC_LEN_SQ(pt) (pt.x * pt.x + pt.y * pt.y)
 #define TEST_MIN_IF_NOT_NAN(value, limit) \
-  (!isnan(limit) && ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit)))
+(!isnan(limit) && ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit)))
 
-#define TEST_MAX_IF_NOT_NAN(value, max) (!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
+#define TEST_MAX_IF_NOT_NAN(value, max) \
+(!isnan(max) && ((max < 0 && value < max) || (max >= 0 && value > max)))
 
-#define APPLY_PROP(recognizer, config, type, prop, propName) \
-  do {                                                       \
-    id value = config[propName];                             \
-    if (value != nil) {                                      \
-      recognizer.prop = [RCTConvert type:value];             \
-    }                                                        \
-  } while (0)
+#define APPLY_PROP(recognizer, config, type, prop, propName) do { \
+id value = config[propName]; \
+if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
+} while(0)
 
-#define APPLY_FLOAT_PROP(prop)                              \
-  do {                                                      \
-    APPLY_PROP(recognizer, config, CGFloat, prop, @ #prop); \
-  } while (0)
-#define APPLY_INT_PROP(prop)                                  \
-  do {                                                        \
-    APPLY_PROP(recognizer, config, NSInteger, prop, @ #prop); \
-  } while (0)
-#define APPLY_NAMED_INT_PROP(prop, propName)                   \
-  do {                                                         \
-    APPLY_PROP(recognizer, config, NSInteger, prop, propName); \
-  } while (0)
+#define APPLY_FLOAT_PROP(prop) do { APPLY_PROP(recognizer, config, CGFloat, prop, @#prop); } while(0)
+#define APPLY_INT_PROP(prop) do { APPLY_PROP(recognizer, config, NSInteger, prop, @#prop); } while(0)
+#define APPLY_NAMED_INT_PROP(prop, propName) do { APPLY_PROP(recognizer, config, NSInteger, prop, propName); } while(0)
 
 @protocol RNGestureHandlerEventEmitter
 
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType;
 
 @end
+
 
 @protocol RNRootViewGestureRecognizerDelegate <UIGestureRecognizerDelegate>
 
@@ -48,11 +38,12 @@
 
 @end
 
+
 @interface RNGestureHandler : NSObject <UIGestureRecognizerDelegate> {
- @protected
-  UIGestureRecognizer *_recognizer;
- @protected
-  RNGestureHandlerState _lastState;
+
+@protected UIGestureRecognizer *_recognizer;
+@protected RNGestureHandlerState _lastState;
+
 }
 
 + (nullable RNGestureHandler *)findGestureHandlerByRecognizer:(nonnull UIGestureRecognizer *)recognizer;
@@ -85,6 +76,8 @@
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
-- (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
+- (void)sendTouchEventInState:(RNGestureHandlerState)state
+                 forViewWithTag:(nonnull NSNumber *)reactTag;
 
 @end
+
