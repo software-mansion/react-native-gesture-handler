@@ -132,15 +132,14 @@ const stateToPropMappings = {
   [State.END]: 'onEnded',
 } as const;
 
-type CreateHandlerArgs<
-  HandlerPropsT extends Record<string, unknown>
-> = Readonly<{
-  name: string;
-  allowedProps: Readonly<Extract<keyof HandlerPropsT, string>[]>;
-  config: Readonly<Record<string, unknown>>;
-  transformProps?: (props: HandlerPropsT) => HandlerPropsT;
-  customNativeProps?: Readonly<string[]>;
-}>;
+type CreateHandlerArgs<HandlerPropsT extends Record<string, unknown>> =
+  Readonly<{
+    name: string;
+    allowedProps: Readonly<Extract<keyof HandlerPropsT, string>[]>;
+    config: Readonly<Record<string, unknown>>;
+    transformProps?: (props: HandlerPropsT) => HandlerPropsT;
+    customNativeProps?: Readonly<string[]>;
+  }>;
 
 // TODO(TS) fix event types
 type InternalEventHandlers = {
@@ -313,7 +312,9 @@ export default function createHandler<
 
       if (Platform.OS === 'web') {
         // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
-        (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
+        (
+          RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
+        )(
           this.handlerTag,
           newViewTag,
           ActionType.JS_FUNCTION_OLD_API, // ignored on web
@@ -403,11 +404,8 @@ export default function createHandler<
         onGestureEvent?: BaseGestureHandlerProps<U>['onGestureEvent'];
         onGestureHandlerEvent?: InternalEventHandlers['onGestureHandlerEvent'];
       };
-      const {
-        onGestureEvent,
-        onGestureHandlerEvent,
-      }: OnGestureEventHandlers = this.props;
-
+      const { onGestureEvent, onGestureHandlerEvent }: OnGestureEventHandlers =
+        this.props;
       if (onGestureEvent && typeof onGestureEvent !== 'function') {
         // If it's not a method it should be an native Animated.event
         // object. We set it directly as the handler for the view

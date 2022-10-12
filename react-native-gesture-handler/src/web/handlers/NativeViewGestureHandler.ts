@@ -29,11 +29,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
       this.buttonRole = true;
     } else {
       this.buttonRole = false;
-    }
-
-    if (this.view.tagName.toLowerCase() === 'input') {
-      //Enables text input on Safari
       this.view.style['webkitUserSelect'] = 'auto';
+      this.view.style['userSelect'] = 'auto';
     }
   }
 

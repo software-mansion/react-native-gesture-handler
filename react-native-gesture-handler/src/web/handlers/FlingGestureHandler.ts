@@ -124,7 +124,8 @@ export default class FlingGestureHandler extends GestureHandler {
       this.tracker.getTrackedPointersCount() >
       this.maxNumberOfPointersSimultaneously
     ) {
-      this.maxNumberOfPointersSimultaneously = this.tracker.getTrackedPointersCount();
+      this.maxNumberOfPointersSimultaneously =
+        this.tracker.getTrackedPointersCount();
     }
   }
 

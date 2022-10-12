@@ -70,7 +70,7 @@ export default abstract class GestureHandler {
       );
     }
 
-    this.view = (findNodeHandle(this.ref) as unknown) as HTMLElement;
+    this.view = findNodeHandle(this.ref) as unknown as HTMLElement;
     this.view.style['touchAction'] = 'none';
     this.view.style['webkitUserSelect'] = 'none';
     this.view.style['userSelect'] = 'none';
@@ -121,18 +121,16 @@ export default abstract class GestureHandler {
       return;
     }
 
+    const oldState = this.currentState;
+    this.currentState = newState;
+
     if (
       this.tracker.getTrackedPointersCount() > 0 &&
       this.config.needsPointerData &&
-      (newState === State.END ||
-        newState === State.CANCELLED ||
-        newState === State.FAILED)
+      this.isFinished()
     ) {
       this.cancelTouches();
     }
-
-    const oldState = this.currentState;
-    this.currentState = newState;
 
     GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
       this,
@@ -362,9 +360,8 @@ export default abstract class GestureHandler {
     const { onGestureHandlerEvent }: PropsRef = this.propsRef
       .current as PropsRef;
 
-    const touchEvent: ResultTouchEvent | undefined = this.transformTouchEvent(
-      event
-    );
+    const touchEvent: ResultTouchEvent | undefined =
+      this.transformTouchEvent(event);
 
     if (touchEvent) {
       invokeNullableMethod(onGestureHandlerEvent, touchEvent);
@@ -376,10 +373,8 @@ export default abstract class GestureHandler {
   //
 
   public sendEvent = (newState: State, oldState: State): void => {
-    const {
-      onGestureHandlerEvent,
-      onGestureHandlerStateChange,
-    }: PropsRef = this.propsRef.current as PropsRef;
+    const { onGestureHandlerEvent, onGestureHandlerStateChange }: PropsRef =
+      this.propsRef.current as PropsRef;
 
     const resultEvent: ResultEvent = this.transformEventData(
       newState,
@@ -773,6 +768,14 @@ export default abstract class GestureHandler {
 
   public isEnabled(): boolean {
     return this.enabled;
+  }
+
+  private isFinished(): boolean {
+    return (
+      this.currentState === State.END ||
+      this.currentState === State.FAILED ||
+      this.currentState === State.CANCELLED
+    );
   }
 
   protected setShouldCancelWhenOutside(shouldCancel: boolean) {
