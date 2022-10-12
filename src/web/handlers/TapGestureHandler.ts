@@ -39,12 +39,6 @@ export default class TapGestureHandler extends GestureHandler {
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
-    this.enabled = enabled;
-
-    if (this.config.shouldCancelWhenOutside !== undefined) {
-      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
-    }
-
     if (this.config.numberOfTaps !== undefined) {
       this.numberOfTaps = this.config.numberOfTaps;
     }

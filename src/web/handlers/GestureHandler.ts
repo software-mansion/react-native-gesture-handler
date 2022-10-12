@@ -585,6 +585,11 @@ export default abstract class GestureHandler {
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     this.config = { enabled: enabled, ...props };
     this.enabled = enabled;
+
+    if (this.config.shouldCancelWhenOutside !== undefined) {
+      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
+    }
+
     this.validateHitSlops();
 
     if (this.enabled) {

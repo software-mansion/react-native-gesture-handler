@@ -57,12 +57,6 @@ export default class PinchGestureHandler extends GestureHandler {
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
-
-    this.enabled = enabled;
-
-    if (this.config.shouldCancelWhenOutside !== undefined) {
-      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
-    }
   }
 
   protected transformNativeEvent() {
