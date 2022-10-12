@@ -15,7 +15,7 @@ export default class FlingGestureHandler extends GestureHandler {
 
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
   private minAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA;
-  private delayTimeout!: number;
+  private delayTimeout!: ReturnType<typeof setTimeout>;
 
   private startX = 0;
   private startY = 0;

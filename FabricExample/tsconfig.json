@@ -4,6 +4,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
+      "react": ["./node_modules/@types/react"],
       "react-native-gesture-handler": ["../package/src/index.ts"],
       "react-native-gesture-handler/Swipeable": [
         "../package/src/components/Swipeable.tsx"

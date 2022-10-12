@@ -53,7 +53,7 @@ export default class PanGestureHandler extends GestureHandler {
   private lastY = 0;
 
   private activateAfterLongPress = 0;
-  private activationTimeout = 0;
+  private activationTimeout!: ReturnType<typeof setTimeout>;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
