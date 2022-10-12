@@ -27,7 +27,7 @@ target 'Example' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'RNGestureHandler', :path => '../..'
+  pod 'RNGestureHandler', :path => '../../package'
 
   target 'ExampleTests' do
     inherit! :complete

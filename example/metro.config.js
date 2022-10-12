@@ -4,7 +4,7 @@ const path = require('path');
 const glob = require('glob-to-regexp');
 
 function getBlacklist() {
-  const rootDir = path.resolve(__dirname, '../react-native-gesture-handler');
+  const rootDir = path.resolve(__dirname, '../package');
   const currentDir = path.resolve(__dirname);
   const nodeModuleDirs = [
     glob(`${rootDir}/node_modules/*`),

@@ -6390,7 +6390,7 @@ react-native-codegen@^0.70.4:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-"react-native-gesture-handler@link:../react-native-gesture-handler":
+"react-native-gesture-handler@link:../package":
   version "0.0.0"
   uid ""
 
