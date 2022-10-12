@@ -9,11 +9,10 @@
     "precommit": "lint-staged",
     "release": "npm login && release-it",
     "ts-check": "yarn tsc --noEmit",
-    "format:js": "prettier --write --list-different './{src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'",
+    "format:js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
     "format:android": "node ./scripts/format-android.js",
     "format:ios": "find ios/ -iname *.h -o -iname *.m -o -iname *.cpp -o -iname *.mm | xargs clang-format -i",
-    "lint:js": "eslint --ext '.js,.ts,.tsx' src/ example/src FabricExample/src && yarn prettier --check './{src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'",
-    "lint:js-root": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
+    "lint:js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
     "lint:android": "./android/gradlew -p android spotlessCheck -q"
   },
   "react-native": "src/index.ts",

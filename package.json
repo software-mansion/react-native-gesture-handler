@@ -1,0 +1,28 @@
+{
+  "name": "react-native-gesture-handler-dev-tools",
+  "private": true,
+  "description": "React Native Gesture Handler Dev Tools",
+  "scripts": {
+    "prepare": "husky install",
+    "precommit": "lint-staged",
+    "format:js": "prettier --write --list-different './{react-native-gesture-handler/src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'",
+    "lint:js": "eslint --ext '.js,.ts,.tsx' react-native-gesture-handler/src/ example/src FabricExample/src && yarn prettier --check './{react-native-gesture-handler/src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "eslint": "^7.15.0",
+    "eslint-config-satya164": "^3.1.8",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^26.0.0",
+    "husky": "^8.0.1",
+    "prettier": "^2.7.1",
+    "typescript": "^4.5.5"
+  },
+  "lint-staged": {
+    "./{react-native-gesture-handler/src,example,FabricExample}/**/*.{ts,tsx}": "yarn format:js",
+    "./react-native-gesture-handler/android/**/*.kt": "yarn format:android",
+    "./react-native-gesture-handler/ios/**/*.{h,m,mm,cpp}": "yarn format:ios"
+  }
+}
