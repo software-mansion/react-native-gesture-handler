@@ -54,23 +54,29 @@ class PanGestureHandler extends DraggingGestureHandler {
       return Hammer.DIRECTION_ALL;
     }
 
-    if (!isnan(activeOffsetXStart))
+    if (!isnan(activeOffsetXStart)) {
       horizontalDirections.push(Hammer.DIRECTION_LEFT);
-    if (!isnan(activeOffsetXEnd))
+    }
+    if (!isnan(activeOffsetXEnd)) {
       horizontalDirections.push(Hammer.DIRECTION_RIGHT);
-    if (horizontalDirections.length === 2)
+    }
+    if (horizontalDirections.length === 2) {
       horizontalDirections = [Hammer.DIRECTION_HORIZONTAL];
+    }
 
     directions = directions.concat(horizontalDirections);
     let verticalDirections = [];
 
-    if (!isnan(activeOffsetYStart))
+    if (!isnan(activeOffsetYStart)) {
       verticalDirections.push(Hammer.DIRECTION_UP);
-    if (!isnan(activeOffsetYEnd))
+    }
+    if (!isnan(activeOffsetYEnd)) {
       verticalDirections.push(Hammer.DIRECTION_DOWN);
+    }
 
-    if (verticalDirections.length === 2)
+    if (verticalDirections.length === 2) {
       verticalDirections = [Hammer.DIRECTION_VERTICAL];
+    }
 
     directions = directions.concat(verticalDirections);
 

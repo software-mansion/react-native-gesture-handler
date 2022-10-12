@@ -202,9 +202,8 @@ export abstract class BaseGesture<
   onTouchesDown(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesDown = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_DOWN] = this.isWorklet(
-      callback
-    );
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_DOWN] =
+      this.isWorklet(callback);
 
     return this;
   }
@@ -212,9 +211,8 @@ export abstract class BaseGesture<
   onTouchesMove(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesMove = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_MOVE] = this.isWorklet(
-      callback
-    );
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_MOVE] =
+      this.isWorklet(callback);
 
     return this;
   }
@@ -222,9 +220,8 @@ export abstract class BaseGesture<
   onTouchesUp(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesUp = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_UP] = this.isWorklet(
-      callback
-    );
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_UP] =
+      this.isWorklet(callback);
 
     return this;
   }
@@ -232,9 +229,8 @@ export abstract class BaseGesture<
   onTouchesCancelled(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesCancelled = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_CANCELLED] = this.isWorklet(
-      callback
-    );
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_CANCELLED] =
+      this.isWorklet(callback);
 
     return this;
   }

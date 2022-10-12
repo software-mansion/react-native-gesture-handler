@@ -70,7 +70,7 @@ export default abstract class GestureHandler {
       );
     }
 
-    this.view = (findNodeHandle(this.ref) as unknown) as HTMLElement;
+    this.view = findNodeHandle(this.ref) as unknown as HTMLElement;
     this.view.style['touchAction'] = 'none';
     this.view.style['webkitUserSelect'] = 'none';
     this.view.style['userSelect'] = 'none';
@@ -360,9 +360,8 @@ export default abstract class GestureHandler {
     const { onGestureHandlerEvent }: PropsRef = this.propsRef
       .current as PropsRef;
 
-    const touchEvent: ResultTouchEvent | undefined = this.transformTouchEvent(
-      event
-    );
+    const touchEvent: ResultTouchEvent | undefined =
+      this.transformTouchEvent(event);
 
     if (touchEvent) {
       invokeNullableMethod(onGestureHandlerEvent, touchEvent);
@@ -374,10 +373,8 @@ export default abstract class GestureHandler {
   //
 
   public sendEvent = (newState: State, oldState: State): void => {
-    const {
-      onGestureHandlerEvent,
-      onGestureHandlerStateChange,
-    }: PropsRef = this.propsRef.current as PropsRef;
+    const { onGestureHandlerEvent, onGestureHandlerStateChange }: PropsRef =
+      this.propsRef.current as PropsRef;
 
     const resultEvent: ResultEvent = this.transformEventData(
       newState,

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, RefObject } from 'react';
 import {
   GestureType,
   HandlerCallbacks,
@@ -197,7 +197,9 @@ function attachHandlers({
       : ActionType.JS_FUNCTION_NEW_API;
 
     if (Platform.OS === 'web') {
-      (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
+      (
+        RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
+      )(
         gesture.handlerTag,
         viewTag,
         ActionType.JS_FUNCTION_OLD_API, // ignored on web
@@ -215,9 +217,9 @@ function attachHandlers({
   if (preparedGesture.animatedHandlers) {
     const isAnimatedGesture = (g: GestureType) => g.shouldUseReanimated;
 
-    preparedGesture.animatedHandlers.value = (gesture
+    preparedGesture.animatedHandlers.value = gesture
       .filter(isAnimatedGesture)
-      .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+      .map((g) => g.handlers) as unknown as HandlerCallbacks<
       Record<string, unknown>
     >[];
   }
@@ -226,7 +228,8 @@ function attachHandlers({
 function updateHandlers(
   preparedGesture: GestureConfigReference,
   gestureConfig: ComposedGesture | GestureType | undefined,
-  gesture: GestureType[]
+  gesture: GestureType[],
+  mountedRef: RefObject<boolean>
 ) {
   gestureConfig?.prepare();
 
@@ -246,6 +249,9 @@ function updateHandlers(
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
   setImmediate(() => {
+    if (!mountedRef.current) {
+      return;
+    }
     for (let i = 0; i < gesture.length; i++) {
       const handler = preparedGesture.config[i];
 
@@ -274,9 +280,9 @@ function updateHandlers(
     if (preparedGesture.animatedHandlers) {
       const previousHandlersValue =
         preparedGesture.animatedHandlers.value ?? [];
-      const newHandlersValue = (preparedGesture.config
+      const newHandlersValue = preparedGesture.config
         .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
-        .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+        .map((g) => g.handlers) as unknown as HandlerCallbacks<
         Record<string, unknown>
       >[];
 
@@ -546,9 +552,11 @@ function validateDetectorChildren(ref: any) {
           ref._reactInternals.elementType
         : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           ref._reactInternalFiber.elementType;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    let instance = RNRenderer.findHostInstance_DEPRECATED(ref)
-      ._internalFiberInstanceHandleDEV;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    let instance =
+      RNRenderer.findHostInstance_DEPRECATED(
+        ref
+      )._internalFiberInstanceHandleDEV;
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     while (instance && instance.elementType !== wrapType) {
@@ -575,6 +583,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
+  const mountedRef = useRef(false);
   const webEventHandlersRef = useRef<WebEventHandler>({
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
@@ -619,6 +628,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   useEffect(() => {
     firstRenderRef.current = true;
+    mountedRef.current = true;
     const viewTag = findNodeHandle(viewRef.current) as number;
 
     validateDetectorChildren(viewRef.current);
@@ -631,6 +641,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     });
 
     return () => {
+      mountedRef.current = false;
       dropHandlers(preparedGesture);
     };
   }, []);
@@ -650,7 +661,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
           webEventHandlersRef,
         });
       } else {
-        updateHandlers(preparedGesture, gestureConfig, gesture);
+        updateHandlers(preparedGesture, gestureConfig, gesture, mountedRef);
       }
     } else {
       firstRenderRef.current = false;
