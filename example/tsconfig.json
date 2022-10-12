@@ -4,15 +4,15 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "react-native-gesture-handler": ["../react-native-gesture-handler/src/index.ts"],
+      "react-native-gesture-handler": ["../package/src/index.ts"],
       "react-native-gesture-handler/Swipeable": [
-        "../react-native-gesture-handler/src/components/Swipeable.tsx"
+        "../package/src/components/Swipeable.tsx"
       ],
       "react-native-gesture-handler/DrawerLayout": [
-        "../react-native-gesture-handler/src/components/DrawerLayout.tsx"
+        "../package/src/components/DrawerLayout.tsx"
       ],
       "react-native-gesture-handler/jest-utils": [
-        "../react-native-gesture-handler/src/jestUtils/index.ts"
+        "../package/src/jestUtils/index.ts"
       ]
     }
   },
