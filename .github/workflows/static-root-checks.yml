@@ -25,6 +25,9 @@ jobs:
           cache: 'yarn'
       - name: Install node dependencies
         run: yarn
+      - name: Install package node dependencies
+        working-directory: package
+        run: yarn
       - name: Check types
         run: yarn ts-check
       - name: Lint
