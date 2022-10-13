@@ -12,6 +12,7 @@
     "target": "esnext",
     "declaration": true,
     "declarationMap": false,
+    "types": [],
 
     "noStrictGenericChecks": false,
     "forceConsistentCasingInFileNames": true,
