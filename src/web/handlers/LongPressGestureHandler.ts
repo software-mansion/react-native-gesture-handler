@@ -42,8 +42,6 @@ export default class LongPressGestureHandler extends GestureHandler {
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
-    this.enabled = enabled;
-
     if (this.config.minDurationMs !== undefined) {
       this.minDurationMs = this.config.minDurationMs;
     }

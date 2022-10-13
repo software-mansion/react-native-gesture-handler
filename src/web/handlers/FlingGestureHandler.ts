@@ -30,8 +30,6 @@ export default class FlingGestureHandler extends GestureHandler {
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
-    this.enabled = enabled;
-
     if (this.config.direction) {
       this.direction = this.config.direction;
     }
