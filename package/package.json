@@ -6,13 +6,7 @@
     "prepare": "bob build",
     "test": "jest",
     "build": "yarn tsc -p tsconfig.build.json",
-    "release": "npm login && release-it",
-    "ts-check": "yarn tsc --noEmit",
-    "format:js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
-    "format:android": "node ./scripts/format-android.js",
-    "format:ios": "find ios/ -iname *.h -o -iname *.m -o -iname *.cpp -o -iname *.mm | xargs clang-format -i",
-    "lint:js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
-    "lint:android": "./android/gradlew -p android spotlessCheck -q"
+    "release": "npm login && release-it"
   },
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
@@ -59,7 +53,6 @@
   "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
   "dependencies": {
     "@egjs/hammerjs": "^2.0.17",
-    "clang-format": "^1.8.0",
     "hoist-non-react-statics": "^3.3.0",
     "invariant": "^2.2.4",
     "lodash": "^4.17.21",
@@ -95,7 +88,6 @@
     "eslint-plugin-jest": "^26.0.0",
     "expo": "^35.0.1",
     "jest": "^26.6.3",
-    "lint-staged": "^12.3.2",
     "metro-react-native-babel-preset": "^0.64.0",
     "prettier": "^2.7.1",
     "react": "^16.8.6",

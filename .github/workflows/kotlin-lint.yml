@@ -43,5 +43,4 @@ jobs:
           key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'android/build.gradle') }}
 
       - name: Lint
-        working-directory: package/
         run: yarn lint:android

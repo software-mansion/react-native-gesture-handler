@@ -23,11 +23,8 @@ jobs:
           node-version: 16
           cache: 'yarn'
       - name: Install node dependencies
-        working-directory: package/
         run: yarn
       - name: Check types
-        working-directory: package/
-        run: yarn tsc --noEmit
+        run: yarn ts-check
       - name: Lint
-        working-directory: package/
-        run: yarn lint:js
+        run: yarn lint:js-package

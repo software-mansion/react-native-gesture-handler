@@ -7,12 +7,18 @@
     "precommit": "lint-staged",
     "ts-check": "cd package && yarn tsc --noEmit",
     "format:js": "prettier --write --list-different './{package/src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'",
-    "lint:js": "eslint --ext '.js,.ts,.tsx' package/src/ example/src FabricExample/src && yarn prettier --check './{package/src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'"
+    "format:js-package": "prettier --write --list-different './package/src/**/*.{js,jsx,ts,tsx}'",
+    "format:android": "node ./scripts/format-android.js",
+    "format:ios": "find package/ios/ -iname *.h -o -iname *.m -o -iname *.cpp -o -iname *.mm | xargs clang-format -i",
+    "lint:js": "eslint --ext '.js,.ts,.tsx' package/src/ example/src FabricExample/src && yarn prettier --check './{package/src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'",
+    "lint:js-package": "eslint --ext '.js,.ts,.tsx' package/src/ && yarn prettier --check './package/src/**/*.{js,jsx,ts,tsx}'",
+    "lint:android": "./package/android/gradlew -p package/android spotlessCheck -q"
   },
   "dependencies": {},
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
+    "clang-format": "^1.8.0",
     "eslint": "^7.15.0",
     "eslint-config-satya164": "^3.1.8",
     "eslint-plugin-import": "^2.22.1",
@@ -24,7 +30,7 @@
   },
   "lint-staged": {
     "./{package/src,example,FabricExample}/**/*.{ts,tsx}": "yarn format:js",
-    "./package/android/**/*.kt": "cd package && yarn format:android",
-    "./package/ios/**/*.{h,m,mm,cpp}": "cd package && yarn format:ios"
+    "./package/android/**/*.kt": "yarn format:android",
+    "./package/ios/**/*.{h,m,mm,cpp}": "yarn format:ios"
   }
 }

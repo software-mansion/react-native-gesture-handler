@@ -7,7 +7,7 @@ const { exit } = require("process");
 const { exec } = require("child_process");
 
 // spotless ktlint formatting task in android/build.gradle
-const spotlessApply = "./android/gradlew -p android spotlessApply";
+const spotlessApply = "./package/android/gradlew -p package/android spotlessApply";
 
 // takes file as parameter passed by lint-staged (optional)
 const fileName = process.argv[2];
