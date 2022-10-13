@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - '.github/workflows/kotlin-lint.yml'
       - 'package/android/**'
   push:
     branches:

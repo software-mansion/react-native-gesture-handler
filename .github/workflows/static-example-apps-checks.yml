@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - '.github/workflows/static-example-apps-checks.yml'
       - 'example/**'
       - 'FabricExample/**'
   push:
