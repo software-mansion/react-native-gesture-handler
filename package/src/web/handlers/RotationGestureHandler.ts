@@ -52,8 +52,6 @@ export default class RotationGestureHandler extends GestureHandler {
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
-
-    this.enabled = enabled;
   }
 
   protected transformNativeEvent() {
