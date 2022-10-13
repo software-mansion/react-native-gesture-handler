@@ -2,7 +2,7 @@
 
 @interface RNManualRecognizer : UIGestureRecognizer
 
-- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
 @end
 
@@ -24,7 +24,7 @@
 {
   [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
-  
+
   if (_shouldSendBeginEvent) {
     [_gestureHandler handleGesture:self];
     _shouldSendBeginEvent = NO;
@@ -35,6 +35,16 @@
 {
   [super touchesMoved:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+
+  if ([self shouldFail]) {
+    if (_gestureHandler.state == RNGestureHandlerStateActive) {
+      self.state = UIGestureRecognizerStateFailed;
+    } else if (_gestureHandler.state == RNGestureHandlerStateBegan) {
+      self.state = UIGestureRecognizerStateCancelled;
+    }
+
+    [self reset];
+  }
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -53,8 +63,17 @@
 {
   [_gestureHandler.pointerTracker reset];
   [super reset];
-  
+
   _shouldSendBeginEvent = YES;
+}
+
+- (BOOL)shouldFail
+{
+  if (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) {
+    return YES;
+  } else {
+    return NO;
+  }
 }
 
 @end
@@ -63,11 +82,10 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-    if ((self = [super initWithTag:tag])) {
-        _recognizer = [[RNManualRecognizer alloc] initWithGestureHandler:self];
-
-    }
-    return self;
+  if ((self = [super initWithTag:tag])) {
+    _recognizer = [[RNManualRecognizer alloc] initWithGestureHandler:self];
+  }
+  return self;
 }
 
 @end
