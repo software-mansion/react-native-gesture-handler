@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "types": ["jest"],
     "outDir": "lib/typescript",
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"],
