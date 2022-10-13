@@ -5,7 +5,7 @@
   "scripts": {
     "prepare": "husky install",
     "precommit": "lint-staged",
-    "ts-check": "cd package && yarn tsc --noEmit",
+    "ts-check": "yarn tsc --project package/ --noEmit",
     "format:js": "prettier --write --list-different './{package/src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'",
     "format:js-package": "prettier --write --list-different './package/src/**/*.{js,jsx,ts,tsx}'",
     "format:android": "node ./scripts/format-android.js",
