@@ -39,6 +39,9 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
 
     override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
       startingSpan = detector.currentSpan
+      if (state == STATE_UNDETERMINED) {
+        begin()
+      }
       return true
     }
 
@@ -55,7 +58,6 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
       val configuration = ViewConfiguration.get(context)
       spanSlop = configuration.scaledTouchSlop.toFloat()
-      begin()
     }
     scaleGestureDetector?.onTouchEvent(sourceEvent)
     scaleGestureDetector?.let {
