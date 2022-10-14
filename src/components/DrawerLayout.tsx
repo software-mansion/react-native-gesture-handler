@@ -153,6 +153,12 @@ export interface DrawerLayoutProps {
   children?:
     | React.ReactNode
     | ((openValue?: Animated.AnimatedInterpolation) => React.ReactNode);
+
+  /**
+   * @default false
+   * Defines whether userSelect property should be enabled
+   */
+  userSelect?: boolean;
 }
 
 export type DrawerLayoutState = {
@@ -678,6 +684,7 @@ export default class DrawerLayout extends Component<
     return (
       <PanGestureHandler
         // @ts-ignore could be fixed in handler types
+        userSelect={this.props.userSelect}
         ref={this.setPanGestureRef}
         hitSlop={hitSlop}
         activeOffsetX={gestureOrientation * minSwipeDistance!}
