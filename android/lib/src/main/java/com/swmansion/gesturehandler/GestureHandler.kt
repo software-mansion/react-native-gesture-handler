@@ -46,6 +46,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   var trackedPointersCount = 0
     private set
   private val trackedPointers: Array<PointerData?> = Array(MAX_POINTERS_COUNT) { null }
+  private var deferredPointerEventSender: (() -> Unit)? = null
   var needsPointerData = false
 
 
@@ -447,14 +448,36 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun updatePointerData(event: MotionEvent) {
-    if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
-      dispatchTouchDownEvent(event)
-      dispatchTouchMoveEvent(event)
-    } else if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
-      dispatchTouchMoveEvent(event)
-      dispatchTouchUpEvent(event)
-    } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-      dispatchTouchMoveEvent(event)
+    // Touch events are sent before the handler itself has a chance to process them. This means that
+    // the first `onTouchesDown` event is sent before a gesture begins, activation in callback for
+    // this event causes problems because the handler doesn't have a chance to initialize itself
+    // with starting values of pointer, resulting in wrong positioning or trying to send NaN values.
+    // The simplest (I think) solution to that, while preserving the correct ordering of events on
+    // the JS side, is to defer sending the first `onTouchesDown` event until the gesture is
+    // initialized and sends `BEGIN` event. When that happens we can also send deferred touch event
+    // preserving the correct flow.
+
+    val eventSender = {
+      when (event.actionMasked) {
+          MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+            dispatchTouchDownEvent(event)
+            dispatchTouchMoveEvent(event)
+          }
+          MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
+            dispatchTouchMoveEvent(event)
+            dispatchTouchUpEvent(event)
+          }
+          MotionEvent.ACTION_MOVE -> {
+            dispatchTouchMoveEvent(event)
+          }
+      }
+    }
+
+    if (this.state != STATE_UNDETERMINED) {
+      eventSender()
+    } else {
+      // this is the first event, we want to defer it
+      this.deferredPointerEventSender = eventSender
     }
   }
 
@@ -648,6 +671,19 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun begin() {
+    // double state check as it might change because of the touch event
+    if (state == STATE_UNDETERMINED && this.deferredPointerEventSender != null) {
+      // if there was a deferred touch event, we want to send it before sending `BEGAN` event, to
+      // preserve the correct event flow.
+
+      // set `deferredPointerEventSender` to null before invoking the sender, as the current state
+      // is still UNDETERMINED, and there is a possibility that `begin` will be called on the JS
+      // which would result in an infinite loop
+      val sender = this.deferredPointerEventSender
+      this.deferredPointerEventSender = null
+      sender!!()
+    }
+
     if (state == STATE_UNDETERMINED) {
       moveToState(STATE_BEGAN)
     }
