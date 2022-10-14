@@ -37,11 +37,9 @@
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 
   if ([self shouldFail]) {
-    if (_gestureHandler.state == RNGestureHandlerStateActive) {
-      self.state = UIGestureRecognizerStateFailed;
-    } else if (_gestureHandler.state == RNGestureHandlerStateBegan) {
-      self.state = UIGestureRecognizerStateCancelled;
-    }
+    self.state = (self.state == UIGestureRecognizerStatePossible)
+      ? UIGestureRecognizerStateFailed
+      : UIGestureRecognizerStateCancelled;
 
     [self reset];
   }
