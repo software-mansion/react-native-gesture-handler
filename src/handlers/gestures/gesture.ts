@@ -245,6 +245,11 @@ export abstract class BaseGesture<
     return this;
   }
 
+  userSelect(value: boolean) {
+    this.config.userSelect = value;
+    return this;
+  }
+
   hitSlop(hitSlop: HitSlop) {
     this.config.hitSlop = hitSlop;
     return this;

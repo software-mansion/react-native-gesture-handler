@@ -31,6 +31,7 @@ export interface Config extends Record<string, ConfigArgs> {
   waitFor?: Handler[] | null;
   hitSlop?: HitSlop;
   shouldCancelWhenOutside?: boolean;
+  userSelect?: boolean;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;
