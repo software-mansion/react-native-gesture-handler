@@ -2,6 +2,7 @@ import { FlingGestureHandlerEventPayload } from '../FlingGestureHandler';
 import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandler';
 import {
   HitSlop,
+  UserSelect,
   CommonGestureConfig,
   GestureTouchEvent,
   GestureStateChangeEvent,
@@ -245,7 +246,7 @@ export abstract class BaseGesture<
     return this;
   }
 
-  userSelect(value: boolean) {
+  userSelect(value: UserSelect) {
     this.config.userSelect = value;
     return this;
   }

@@ -26,6 +26,7 @@ import {
 import {
   GestureEvent,
   HandlerStateChangeEvent,
+  UserSelect,
 } from '../handlers/gestureHandlerCommon';
 import {
   PanGestureHandler,
@@ -155,10 +156,11 @@ export interface DrawerLayoutProps {
     | ((openValue?: Animated.AnimatedInterpolation) => React.ReactNode);
 
   /**
-   * @default false
-   * Defines whether userSelect property should be enabled
+   * @default 'none'
+   * Defines which userSelect property should be used.
+   * Values: 'none'|'text'|'auto'
    */
-  userSelect?: boolean;
+  userSelect?: UserSelect;
 }
 
 export type DrawerLayoutState = {
