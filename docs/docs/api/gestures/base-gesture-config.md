@@ -27,6 +27,10 @@ Specifying `width` or `height` is useful if we only want the gesture to activate
 
 **IMPORTANT:** Note that this parameter is primarily designed to reduce the area where gesture can activate. Hence it is only supported for all the values (except `width` and `height`) to be non positive (0 or lower). Although on Android it is supported for the values to also be positive and therefore allow to expand beyond view bounds but not further than the parent view bounds. To achieve this effect on both platforms you can use React Native's View [hitSlop](https://facebook.github.io/react-native/docs/view.html#props) property.
 
+### `userSelect(value: "none" | "auto" | "text")` (**web only**)
+
+This parameter allows to specify which `userSelect` property should be applied to underlying view. If this parameter is not specified, default value is `"none"`.
+
 ### `withRef(ref)`
 
 Sets a ref to the gesture object, allowing for interoperability with the old
@@ -37,6 +41,7 @@ API.
 Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
 ### `cancelsToucesInView(value)` (**iOS only**)
+
 Accepts a boolean value.
 When `true`, the gesture will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes [`ACTIVE`](../../under-the-hood/states-events.md#active).
 Default value is `true`.
