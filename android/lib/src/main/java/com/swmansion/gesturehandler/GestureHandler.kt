@@ -57,6 +57,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   var lastAbsolutePositionY = 0f
     private set
 
+  private var isInitialized = false
   private var manualActivation = false
 
   private var lastEventOffsetX = 0f
@@ -67,6 +68,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   private var orchestrator: GestureHandlerOrchestrator? = null
   private var onTouchEventListener: OnTouchEventListener? = null
   private var interactionController: GestureHandlerInteractionController? = null
+
+  private var eventTriggeringStateChangeInTouchEventHandler: MotionEvent? = null
 
   @Suppress("UNCHECKED_CAST")
   protected fun self(): ConcreteGestureHandlerT = this as ConcreteGestureHandlerT
@@ -88,8 +91,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     onTouchEventListener?.onHandlerUpdate(self(), event)
   }
 
-  open fun dispatchTouchEvent() {
-    if (changedTouchesPayload != null) {
+  open fun tryDispatchingTouchEvent() {
+    if (needsPointerData && changedTouchesPayload != null) {
       onTouchEventListener?.onTouchEvent(self())
     }
   }
@@ -372,7 +375,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  private fun dispatchTouchDownEvent(event: MotionEvent) {
+  private fun handleTouchDownEvent(event: MotionEvent) {
     changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_DOWN
     val pointerId = event.getPointerId(event.actionIndex)
@@ -390,10 +393,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     addChangedPointer(trackedPointers[pointerId]!!)
     extractAllPointersData()
 
-    dispatchTouchEvent()
+    tryDispatchingTouchEvent()
   }
 
-  private fun dispatchTouchUpEvent(event: MotionEvent) {
+  private fun handleTouchUpEvent(event: MotionEvent) {
     extractAllPointersData()
     changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_UP
@@ -412,10 +415,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointers[pointerId] = null
     trackedPointersCount--
 
-    dispatchTouchEvent()
+    tryDispatchingTouchEvent()
   }
 
-  private fun dispatchTouchMoveEvent(event: MotionEvent) {
+  private fun handleTouchMoveEvent(event: MotionEvent) {
     changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_MOVE
     val offsetX = event.rawX - event.x
@@ -442,20 +445,28 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     // only info about one pointer)
     if (pointersAdded > 0) {
       extractAllPointersData()
-      dispatchTouchEvent()
+      tryDispatchingTouchEvent()
     }
   }
 
-  fun updatePointerData(event: MotionEvent) {
-    if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
-      dispatchTouchDownEvent(event)
-      dispatchTouchMoveEvent(event)
-    } else if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
-      dispatchTouchMoveEvent(event)
-      dispatchTouchUpEvent(event)
-    } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-      dispatchTouchMoveEvent(event)
+  fun updatePointerData(event: MotionEvent, sourceEvent: MotionEvent) {
+    eventTriggeringStateChangeInTouchEventHandler = sourceEvent
+
+    when (event.actionMasked) {
+        MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+          handleTouchDownEvent(event)
+          handleTouchMoveEvent(event)
+        }
+        MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
+          handleTouchMoveEvent(event)
+          handleTouchUpEvent(event)
+        }
+        MotionEvent.ACTION_MOVE -> {
+          handleTouchMoveEvent(event)
+        }
     }
+
+    eventTriggeringStateChangeInTouchEventHandler = null
   }
 
   private fun extractAllPointersData() {
@@ -482,7 +493,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointersCount = 0
     trackedPointers.fill(null)
 
-    dispatchTouchEvent()
+    tryDispatchingTouchEvent()
   }
 
   private fun addChangedPointer(pointerData: PointerData) {
@@ -659,6 +670,17 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
+  fun initialize(withEvent: MotionEvent? = null) {
+    if (!isInitialized) {
+      val event = withEvent ?: eventTriggeringStateChangeInTouchEventHandler ?: throw IllegalStateException("No event to initialize handler")
+      onInitialize(event)
+    }
+
+    isInitialized = true
+  }
+
+  open fun onInitialize(event: MotionEvent) {}
+
   // responsible for resetting the state of handler upon activation (may be called more than once
   // if the handler is waiting for failure of other one)
   open fun resetProgress() {}
@@ -695,6 +717,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointersCount = 0
     trackedPointers.fill(null)
     touchEventType = RNGestureHandlerTouchEvent.EVENT_UNDETERMINED
+    isInitialized = false
     onReset()
   }
 
@@ -774,7 +797,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  private data class PointerData(
+  data class PointerData(
     val pointerId: Int,
     var x: Float,
     var y: Float,

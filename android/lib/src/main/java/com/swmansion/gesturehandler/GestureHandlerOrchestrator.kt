@@ -253,21 +253,10 @@ class GestureHandlerOrchestrator(
 
     val action = sourceEvent.actionMasked
     val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
-    
-    // Touch events are sent before the handler itself has a chance to process them,
-    // mainly because `onTouchesUp` shoul be send befor gesture finishes. This means that
-    // the first `onTouchesDown` event is sent before a gesture begins, activation in 
-    // callback for this event causes problems because the handler doesn't have a chance
-    // to initialize itself with starting values of pointer (in pan this causes translation
-    // to be equal to the coordinates of the pointer). The simplest solution is to send
-    // the first `onTouchesDown` event after the handler processes it and changes state
-    // to `BEGAN`.
-    if (handler.needsPointerData && handler.state != 0) {
-      handler.updatePointerData(event)
-    }
+
+    handler.updatePointerData(event, sourceEvent)
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
-      val isFirstEvent = handler.state == 0
       handler.handle(event, sourceEvent)
       if (handler.isActive) {
         // After handler is done waiting for other one to fail its progress should be
@@ -282,10 +271,6 @@ class GestureHandlerOrchestrator(
           handler.resetProgress()
         }
         handler.dispatchHandlerUpdate(event)
-      }
-
-      if (handler.needsPointerData && isFirstEvent) {
-        handler.updatePointerData(event)
       }
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that

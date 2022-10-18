@@ -50,11 +50,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
-      val context = view!!.context
-      resetProgress()
-      scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
-      val configuration = ViewConfiguration.get(context)
-      spanSlop = configuration.scaledTouchSlop.toFloat()
+      initialize(sourceEvent)
       begin()
     }
     scaleGestureDetector?.onTouchEvent(sourceEvent)
@@ -87,6 +83,14 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     focalPointX = Float.NaN
     focalPointY = Float.NaN
     resetProgress()
+  }
+
+  override fun onInitialize(event: MotionEvent) {
+    resetProgress()
+    val context = view!!.context
+    val configuration = ViewConfiguration.get(context)
+    scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
+    spanSlop = configuration.scaledTouchSlop.toFloat()
   }
 
   override fun resetProgress() {
