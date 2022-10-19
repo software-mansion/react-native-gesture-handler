@@ -18,6 +18,7 @@ import {
   GestureStateChangeEvent,
   HandlerStateChangeEvent,
   scheduleFlushOperations,
+  UserSelect,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -573,12 +574,31 @@ function validateDetectorChildren(ref: any) {
   }
 }
 
+const applyUserSelectProp = (
+  userSelect: UserSelect,
+  gesture: ComposedGesture | GestureType
+): void => {
+  if (gesture instanceof ComposedGesture) {
+    gesture.toGestureArray().forEach((gesture) => {
+      gesture.config.userSelect = userSelect;
+    });
+  } else {
+    gesture.config.userSelect = userSelect;
+  }
+};
+
 interface GestureDetectorProps {
   gesture?: ComposedGesture | GestureType;
+  userSelect?: UserSelect;
   children?: React.ReactNode;
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
   const gestureConfig = props.gesture;
+
+  if (props.userSelect && gestureConfig) {
+    applyUserSelectProp(props.userSelect, gestureConfig);
+  }
+
   const gesture = gestureConfig?.toGestureArray?.() ?? [];
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
   const viewRef = useRef(null);
