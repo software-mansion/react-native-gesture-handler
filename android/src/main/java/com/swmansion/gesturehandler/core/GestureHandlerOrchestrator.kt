@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandler.core
 
 import android.graphics.Matrix
 import android.graphics.PointF
@@ -134,7 +134,10 @@ class GestureHandlerOrchestrator(
               // their state is set to END and when the gesture they are waiting for activates they
               // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
               // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
-              otherHandler.dispatchStateChange(GestureHandler.STATE_CANCELLED, GestureHandler.STATE_BEGAN)
+              otherHandler.dispatchStateChange(
+                GestureHandler.STATE_CANCELLED,
+                GestureHandler.STATE_BEGAN
+              )
             }
             otherHandler.isAwaiting = false
           } else {
@@ -460,9 +463,10 @@ class GestureHandlerOrchestrator(
 
     // if the pointer is inside the view but it overflows its parent, handlers attached to the parent
     // might not have been extracted (pointer might be in a child, but may be outside parent)
-    if (coords[0] in 0f..view.width.toFloat() && coords[1] in 0f..view.height.toFloat()
-      && isViewOverflowingParent(view) && extractAncestorHandlers(view, coords, pointerId)) {
-        found = true
+    if (coords[0] in 0f..view.width.toFloat() && coords[1] in 0f..view.height.toFloat() &&
+      isViewOverflowingParent(view) && extractAncestorHandlers(view, coords, pointerId)
+    ) {
+      found = true
     }
 
     return found
@@ -512,8 +516,10 @@ class GestureHandlerOrchestrator(
       }
       PointerEventsConfig.BOX_ONLY -> {
         // This view is the target, its children don't matter
-        (recordViewHandlersForPointer(view, coords, pointerId)
-          || shouldHandlerlessViewBecomeTouchTarget(view, coords))
+        (
+          recordViewHandlersForPointer(view, coords, pointerId) ||
+            shouldHandlerlessViewBecomeTouchTarget(view, coords)
+          )
       }
       PointerEventsConfig.BOX_NONE -> {
         // This view can't be the target, but its children might
@@ -542,8 +548,10 @@ class GestureHandlerOrchestrator(
           extractGestureHandlers(view, coords, pointerId)
         } else false
 
-        (recordViewHandlersForPointer(view, coords, pointerId)
-          || found || shouldHandlerlessViewBecomeTouchTarget(view, coords))
+        (
+          recordViewHandlersForPointer(view, coords, pointerId) ||
+            found || shouldHandlerlessViewBecomeTouchTarget(view, coords)
+          )
       }
     }
 
@@ -554,7 +562,6 @@ class GestureHandlerOrchestrator(
   // be turned on and also confirm with the ViewConfigHelper implementation
   private fun isClipping(view: View) =
     view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
-
 
   companion object {
     // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
@@ -622,13 +629,14 @@ class GestureHandlerOrchestrator(
       x in 0f..child.width.toFloat() && y in 0f..child.height.toFloat()
 
     private fun shouldHandlerWaitForOther(handler: GestureHandler<*>, other: GestureHandler<*>): Boolean {
-      return handler !== other && (handler.shouldWaitForHandlerFailure(other)
-        || other.shouldRequireToWaitForFailure(handler))
+      return handler !== other && (
+        handler.shouldWaitForHandlerFailure(other) ||
+          other.shouldRequireToWaitForFailure(handler)
+        )
     }
 
     private fun canRunSimultaneously(a: GestureHandler<*>, b: GestureHandler<*>) =
       a === b || a.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
-
 
     private fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, other: GestureHandler<*>): Boolean {
       if (!handler.hasCommonPointers(other)) {
@@ -641,7 +649,8 @@ class GestureHandlerOrchestrator(
         return false
       }
       return if (handler !== other &&
-        (handler.isAwaiting || handler.state == GestureHandler.STATE_ACTIVE)) {
+        (handler.isAwaiting || handler.state == GestureHandler.STATE_ACTIVE)
+      ) {
         // in every other case as long as the handler is about to be activated or already in active
         // state, we delegate the decision to the implementation of GestureHandler#shouldBeCancelledBy
         handler.shouldBeCancelledBy(other)
@@ -649,8 +658,8 @@ class GestureHandlerOrchestrator(
     }
 
     private fun isFinished(state: Int) =
-      state == GestureHandler.STATE_CANCELLED
-        || state == GestureHandler.STATE_FAILED
-        || state == GestureHandler.STATE_END
+      state == GestureHandler.STATE_CANCELLED ||
+        state == GestureHandler.STATE_FAILED ||
+        state == GestureHandler.STATE_END
   }
 }
