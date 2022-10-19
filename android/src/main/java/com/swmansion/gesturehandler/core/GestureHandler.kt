@@ -69,6 +69,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   private var onTouchEventListener: OnTouchEventListener? = null
   private var interactionController: GestureHandlerInteractionController? = null
 
+  // a field to store a motion event that caused the touch event to be dispatched, in case the state
+  // change is triggered in the callback, this event will be used to initialize the gesture
   private var eventTriggeringStateChangeInTouchEventHandler: MotionEvent? = null
 
   @Suppress("UNCHECKED_CAST")
@@ -461,17 +463,17 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     eventTriggeringStateChangeInTouchEventHandler = sourceEvent
 
     when (event.actionMasked) {
-        MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
-          handleTouchDownEvent(event)
-          handleTouchMoveEvent(event)
-        }
-        MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
-          handleTouchMoveEvent(event)
-          handleTouchUpEvent(event)
-        }
-        MotionEvent.ACTION_MOVE -> {
-          handleTouchMoveEvent(event)
-        }
+      MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+        handleTouchDownEvent(event)
+        handleTouchMoveEvent(event)
+      }
+      MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
+        handleTouchMoveEvent(event)
+        handleTouchUpEvent(event)
+      }
+      MotionEvent.ACTION_MOVE -> {
+        handleTouchMoveEvent(event)
+      }
     }
 
     eventTriggeringStateChangeInTouchEventHandler = null
