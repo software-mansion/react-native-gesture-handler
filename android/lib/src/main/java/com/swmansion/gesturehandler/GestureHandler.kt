@@ -797,7 +797,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  data class PointerData(
+  private data class PointerData(
     val pointerId: Int,
     var x: Float,
     var y: Float,
