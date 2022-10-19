@@ -9,8 +9,8 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.RootView
-import com.swmansion.gesturehandler.GestureHandler
-import com.swmansion.gesturehandler.GestureHandlerOrchestrator
+import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
   private val orchestrator: GestureHandlerOrchestrator?
