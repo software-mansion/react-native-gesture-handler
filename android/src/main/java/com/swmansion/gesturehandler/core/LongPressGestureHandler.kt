@@ -30,6 +30,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     super.resetConfig()
     minDurationMs = DEFAULT_MIN_DURATION_MS
     maxDistSq = defaultMaxDistSq
+    setShouldCancelWhenOutside(true)
   }
 
   fun setMaxDist(maxDist: Float): LongPressGestureHandler {
