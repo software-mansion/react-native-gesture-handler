@@ -578,12 +578,8 @@ const applyUserSelectProp = (
   userSelect: UserSelect,
   gesture: ComposedGesture | GestureType
 ): void => {
-  if (gesture instanceof ComposedGesture) {
-    gesture.toGestureArray().forEach((gesture) => {
-      gesture.config.userSelect = userSelect;
-    });
-  } else {
-    gesture.config.userSelect = userSelect;
+  for (const g of gesture.toGestureArray()) {
+    g.config.userSelect = userSelect;
   }
 };
 
