@@ -125,7 +125,7 @@ interface WebEventHandler {
 
 interface AttachHandlersConfig {
   preparedGesture: GestureConfigReference;
-  gestureConfig: ComposedGesture | GestureType | undefined;
+  gestureConfig: ComposedGesture | GestureType;
   gesture: GestureType[];
   viewTag: number;
   webEventHandlersRef: React.RefObject<WebEventHandler>;
@@ -139,7 +139,7 @@ function attachHandlers({
   webEventHandlersRef,
 }: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
-    gestureConfig?.initialize();
+    gestureConfig.initialize();
   } else {
     preparedGesture.firstExecution = false;
   }
@@ -147,7 +147,7 @@ function attachHandlers({
   // use setImmediate to extract handlerTags, because all refs should be initialized
   // when it's ran
   setImmediate(() => {
-    gestureConfig?.prepare();
+    gestureConfig.prepare();
   });
 
   for (const handler of gesture) {
@@ -227,11 +227,11 @@ function attachHandlers({
 
 function updateHandlers(
   preparedGesture: GestureConfigReference,
-  gestureConfig: ComposedGesture | GestureType | undefined,
+  gestureConfig: ComposedGesture | GestureType,
   gesture: GestureType[],
   mountedRef: RefObject<boolean>
 ) {
-  gestureConfig?.prepare();
+  gestureConfig.prepare();
 
   for (let i = 0; i < gesture.length; i++) {
     const handler = preparedGesture.config[i];
@@ -574,12 +574,12 @@ function validateDetectorChildren(ref: any) {
 }
 
 interface GestureDetectorProps {
-  gesture?: ComposedGesture | GestureType;
+  gesture: ComposedGesture | GestureType;
   children?: React.ReactNode;
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
   const gestureConfig = props.gesture;
-  const gesture = gestureConfig?.toGestureArray?.() ?? [];
+  const gesture = gestureConfig.toGestureArray();
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
@@ -617,7 +617,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     preparedGesture.firstExecution || needsToReattach(preparedGesture, gesture);
 
   if (preparedGesture.firstExecution) {
-    gestureConfig?.initialize?.();
+    gestureConfig.initialize();
   }
 
   if (useReanimatedHook) {
