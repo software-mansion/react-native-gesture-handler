@@ -25,3 +25,7 @@ GestureDetector will decide whether to use Reanimated to process provided gestur
 
 Starting with Reanimated-2.3.0-beta.4 Gesture Handler will provide a [StateManager](./state-manager.md) in the [touch events](./touch-events.md) that allows for managing the state of the gesture.
 :::
+
+### `userSelect` (**web only**)
+
+This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Defaults to `"none"`. **Available since version 2.8.0**

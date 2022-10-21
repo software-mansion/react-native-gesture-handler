@@ -63,6 +63,10 @@ Specifying `width` or `height` is useful if we only want the gesture to activate
 
 **IMPORTANT:** Note that this parameter is primarily designed to reduce the area where gesture can activate. Hence it is only supported for all the values (except `width` and `height`) to be non positive (0 or lower). Although on Android it is supported for the values to also be positive and therefore allow to expand beyond view bounds but not further than the parent view bounds. To achieve this effect on both platforms you can use React Native's View [hitSlop](https://facebook.github.io/react-native/docs/view.html#props) property.
 
+### `userSelect` (**web only**)
+
+This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Defaults to `"none"`. **Available since version 2.8.0**
+
 ### `onGestureEvent`
 
 Takes a callback that is going to be triggered for each subsequent touch event while the handler is in an [ACTIVE](../basics/state.md#active) state. Event payload depends on the particular handler type. Common set of event data attributes is documented [below](#event-data) and handler specific attributes are documented on the corresponding handler pages. E.g. event payload for [`PinchGestureHandler`](./rotation-gh.md#event-data) contains `scale` attribute that represents how the distance between fingers changed since when the gesture started.
