@@ -70,13 +70,18 @@ export default abstract class GestureHandler {
       );
     }
 
-    this.view = (findNodeHandle(this.ref) as unknown) as HTMLElement;
+    this.view = findNodeHandle(this.ref) as unknown as HTMLElement;
     this.view.style['touchAction'] = 'none';
-    this.view.style['webkitUserSelect'] = 'none';
-    this.view.style['userSelect'] = 'none';
-
     //@ts-ignore This one disables default events on Safari
     this.view.style['WebkitTouchCallout'] = 'none';
+
+    if (!this.config.userSelect) {
+      this.view.style['webkitUserSelect'] = 'none';
+      this.view.style['userSelect'] = 'none';
+    } else {
+      this.view.style['webkitUserSelect'] = this.config.userSelect;
+      this.view.style['userSelect'] = this.config.userSelect;
+    }
   }
 
   private addEventManager(manager: EventManager): void {
@@ -322,6 +327,18 @@ export default abstract class GestureHandler {
     }
   }
   protected onPointerOut(event: AdaptedEvent): void {
+    if (this.shouldCancellWhenOutside) {
+      switch (this.currentState) {
+        case State.ACTIVE:
+          this.cancel();
+          break;
+        case State.BEGAN:
+          this.fail();
+          break;
+      }
+      return;
+    }
+
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
@@ -360,9 +377,8 @@ export default abstract class GestureHandler {
     const { onGestureHandlerEvent }: PropsRef = this.propsRef
       .current as PropsRef;
 
-    const touchEvent: ResultTouchEvent | undefined = this.transformTouchEvent(
-      event
-    );
+    const touchEvent: ResultTouchEvent | undefined =
+      this.transformTouchEvent(event);
 
     if (touchEvent) {
       invokeNullableMethod(onGestureHandlerEvent, touchEvent);
@@ -374,10 +390,8 @@ export default abstract class GestureHandler {
   //
 
   public sendEvent = (newState: State, oldState: State): void => {
-    const {
-      onGestureHandlerEvent,
-      onGestureHandlerStateChange,
-    }: PropsRef = this.propsRef.current as PropsRef;
+    const { onGestureHandlerEvent, onGestureHandlerStateChange }: PropsRef =
+      this.propsRef.current as PropsRef;
 
     const resultEvent: ResultEvent = this.transformEventData(
       newState,
@@ -576,6 +590,11 @@ export default abstract class GestureHandler {
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     this.config = { enabled: enabled, ...props };
     this.enabled = enabled;
+
+    if (this.config.shouldCancelWhenOutside !== undefined) {
+      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
+    }
+
     this.validateHitSlops();
 
     if (this.enabled) {

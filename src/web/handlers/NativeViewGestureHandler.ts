@@ -29,8 +29,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
       this.buttonRole = true;
     } else {
       this.buttonRole = false;
-      this.view.style['webkitUserSelect'] = 'auto';
-      this.view.style['userSelect'] = 'auto';
     }
   }
 

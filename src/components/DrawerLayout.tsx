@@ -26,6 +26,7 @@ import {
 import {
   GestureEvent,
   HandlerStateChangeEvent,
+  UserSelect,
 } from '../handlers/gestureHandlerCommon';
 import {
   PanGestureHandler,
@@ -153,6 +154,13 @@ export interface DrawerLayoutProps {
   children?:
     | React.ReactNode
     | ((openValue?: Animated.AnimatedInterpolation) => React.ReactNode);
+
+  /**
+   * @default 'none'
+   * Defines which userSelect property should be used.
+   * Values: 'none'|'text'|'auto'
+   */
+  userSelect?: UserSelect;
 }
 
 export type DrawerLayoutState = {
@@ -650,18 +658,15 @@ export default class DrawerLayout extends Component<
   private setPanGestureRef = (ref: PanGestureHandler) => {
     // TODO(TS): make sure it is OK taken from
     // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065#issuecomment-596081842
-    (this
-      .panGestureHandler as React.MutableRefObject<PanGestureHandler>).current = ref;
+    (
+      this.panGestureHandler as React.MutableRefObject<PanGestureHandler>
+    ).current = ref;
     this.props.onGestureRef?.(ref);
   };
 
   render() {
-    const {
-      drawerPosition,
-      drawerLockMode,
-      edgeWidth,
-      minSwipeDistance,
-    } = this.props;
+    const { drawerPosition, drawerLockMode, edgeWidth, minSwipeDistance } =
+      this.props;
 
     const fromLeft = drawerPosition === 'left';
 
@@ -681,6 +686,7 @@ export default class DrawerLayout extends Component<
     return (
       <PanGestureHandler
         // @ts-ignore could be fixed in handler types
+        userSelect={this.props.userSelect}
         ref={this.setPanGestureRef}
         hitSlop={hitSlop}
         activeOffsetX={gestureOrientation * minSwipeDistance!}

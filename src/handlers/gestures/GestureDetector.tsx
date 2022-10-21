@@ -18,6 +18,7 @@ import {
   GestureStateChangeEvent,
   HandlerStateChangeEvent,
   scheduleFlushOperations,
+  UserSelect,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -125,7 +126,7 @@ interface WebEventHandler {
 
 interface AttachHandlersConfig {
   preparedGesture: GestureConfigReference;
-  gestureConfig: ComposedGesture | GestureType | undefined;
+  gestureConfig: ComposedGesture | GestureType;
   gesture: GestureType[];
   viewTag: number;
   webEventHandlersRef: React.RefObject<WebEventHandler>;
@@ -139,7 +140,7 @@ function attachHandlers({
   webEventHandlersRef,
 }: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
-    gestureConfig?.initialize();
+    gestureConfig.initialize();
   } else {
     preparedGesture.firstExecution = false;
   }
@@ -147,7 +148,7 @@ function attachHandlers({
   // use setImmediate to extract handlerTags, because all refs should be initialized
   // when it's ran
   setImmediate(() => {
-    gestureConfig?.prepare();
+    gestureConfig.prepare();
   });
 
   for (const handler of gesture) {
@@ -197,7 +198,9 @@ function attachHandlers({
       : ActionType.JS_FUNCTION_NEW_API;
 
     if (Platform.OS === 'web') {
-      (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
+      (
+        RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
+      )(
         gesture.handlerTag,
         viewTag,
         ActionType.JS_FUNCTION_OLD_API, // ignored on web
@@ -215,9 +218,9 @@ function attachHandlers({
   if (preparedGesture.animatedHandlers) {
     const isAnimatedGesture = (g: GestureType) => g.shouldUseReanimated;
 
-    preparedGesture.animatedHandlers.value = (gesture
+    preparedGesture.animatedHandlers.value = gesture
       .filter(isAnimatedGesture)
-      .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+      .map((g) => g.handlers) as unknown as HandlerCallbacks<
       Record<string, unknown>
     >[];
   }
@@ -225,11 +228,11 @@ function attachHandlers({
 
 function updateHandlers(
   preparedGesture: GestureConfigReference,
-  gestureConfig: ComposedGesture | GestureType | undefined,
+  gestureConfig: ComposedGesture | GestureType,
   gesture: GestureType[],
   mountedRef: RefObject<boolean>
 ) {
-  gestureConfig?.prepare();
+  gestureConfig.prepare();
 
   for (let i = 0; i < gesture.length; i++) {
     const handler = preparedGesture.config[i];
@@ -278,9 +281,9 @@ function updateHandlers(
     if (preparedGesture.animatedHandlers) {
       const previousHandlersValue =
         preparedGesture.animatedHandlers.value ?? [];
-      const newHandlersValue = (preparedGesture.config
+      const newHandlersValue = preparedGesture.config
         .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
-        .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+        .map((g) => g.handlers) as unknown as HandlerCallbacks<
         Record<string, unknown>
       >[];
 
@@ -550,9 +553,11 @@ function validateDetectorChildren(ref: any) {
           ref._reactInternals.elementType
         : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           ref._reactInternalFiber.elementType;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    let instance = RNRenderer.findHostInstance_DEPRECATED(ref)
-      ._internalFiberInstanceHandleDEV;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    let instance =
+      RNRenderer.findHostInstance_DEPRECATED(
+        ref
+      )._internalFiberInstanceHandleDEV;
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     while (instance && instance.elementType !== wrapType) {
@@ -569,13 +574,28 @@ function validateDetectorChildren(ref: any) {
   }
 }
 
+const applyUserSelectProp = (
+  userSelect: UserSelect,
+  gesture: ComposedGesture | GestureType
+): void => {
+  for (const g of gesture.toGestureArray()) {
+    g.config.userSelect = userSelect;
+  }
+};
+
 interface GestureDetectorProps {
-  gesture?: ComposedGesture | GestureType;
+  gesture: ComposedGesture | GestureType;
+  userSelect?: UserSelect;
   children?: React.ReactNode;
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
   const gestureConfig = props.gesture;
-  const gesture = gestureConfig?.toGestureArray?.() ?? [];
+
+  if (props.userSelect) {
+    applyUserSelectProp(props.userSelect, gestureConfig);
+  }
+
+  const gesture = gestureConfig.toGestureArray();
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
   const viewRef = useRef(null);
   const firstRenderRef = useRef(true);
@@ -613,7 +633,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     preparedGesture.firstExecution || needsToReattach(preparedGesture, gesture);
 
   if (preparedGesture.firstExecution) {
-    gestureConfig?.initialize?.();
+    gestureConfig.initialize();
   }
 
   if (useReanimatedHook) {

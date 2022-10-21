@@ -14,7 +14,8 @@ import {
 } from './gestureStateManager';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
-let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null = null;
+let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null =
+  null;
 
 const gestureStateManagers: Map<number, GestureStateManagerType> = new Map<
   number,

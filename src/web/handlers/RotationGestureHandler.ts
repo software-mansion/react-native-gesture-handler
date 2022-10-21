@@ -41,9 +41,8 @@ export default class RotationGestureHandler extends GestureHandler {
     },
   };
 
-  private rotationGestureDetector: RotationGestureDetector = new RotationGestureDetector(
-    this.rotationGestureListener
-  );
+  private rotationGestureDetector: RotationGestureDetector =
+    new RotationGestureDetector(this.rotationGestureListener);
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -53,8 +52,6 @@ export default class RotationGestureHandler extends GestureHandler {
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
-
-    this.enabled = enabled;
   }
 
   protected transformNativeEvent() {

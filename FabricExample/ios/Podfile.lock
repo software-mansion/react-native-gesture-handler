@@ -720,7 +720,7 @@ PODS:
     - React-jsi (= 0.70.2)
     - React-logger (= 0.70.2)
     - React-perflogger (= 0.70.2)
-  - RNGestureHandler (2.7.0):
+  - RNGestureHandler (2.7.1):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -974,7 +974,7 @@ SPEC CHECKSUMS:
   React-rncore: ee33dc2a470a8bf9f464292e2e882439f09eb2d4
   React-runtimeexecutor: 80065f60af4f4b05603661070c8622bb3740bf16
   ReactCommon: 1209130f460e4aa9d255ddc75fa0a827ebf93dfb
-  RNGestureHandler: 9497ef13d44f0cf470c9b41798e8804e9aca26ad
+  RNGestureHandler: 8e5218fe0fde045c6f318202fc51ce3638deee54
   RNScreens: bb17bdc9eca378fefc6103fb52c35b4f7ef0a791
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 043f8eb97345d0171f27fead4d1849cacf0472a5
