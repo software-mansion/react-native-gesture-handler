@@ -72,11 +72,16 @@ export default abstract class GestureHandler {
 
     this.view = findNodeHandle(this.ref) as unknown as HTMLElement;
     this.view.style['touchAction'] = 'none';
-    this.view.style['webkitUserSelect'] = 'none';
-    this.view.style['userSelect'] = 'none';
-
     //@ts-ignore This one disables default events on Safari
     this.view.style['WebkitTouchCallout'] = 'none';
+
+    if (!this.config.userSelect) {
+      this.view.style['webkitUserSelect'] = 'none';
+      this.view.style['userSelect'] = 'none';
+    } else {
+      this.view.style['webkitUserSelect'] = this.config.userSelect;
+      this.view.style['userSelect'] = this.config.userSelect;
+    }
   }
 
   private addEventManager(manager: EventManager): void {
