@@ -65,7 +65,7 @@ Specifying `width` or `height` is useful if we only want the gesture to activate
 
 ### `userSelect` (**web only**)
 
-This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. If this parameter is not specified, default value is `"none"`. **Available since version 2.8.0**
+This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Defaults to `"none"`. **Available since version 2.8.0**
 
 ### `onGestureEvent`
 
