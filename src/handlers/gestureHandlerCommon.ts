@@ -90,9 +90,8 @@ export type GestureTouchEvent = {
   changedTouches: TouchData[];
 };
 
-export type GestureUpdateEvent<
-  GestureEventPayloadT = Record<string, unknown>
-> = GestureEventPayload & GestureEventPayloadT;
+export type GestureUpdateEvent<GestureEventPayloadT = Record<string, unknown>> =
+  GestureEventPayload & GestureEventPayloadT;
 
 export type GestureStateChangeEvent<
   GestureStateChangeEventPayloadT = Record<string, unknown>
@@ -182,7 +181,9 @@ function transformIntoHandlerTags(handlerIDs: any) {
 export function findNodeHandle(
   node: null | number | React.Component<any, any> | React.ComponentClass<any>
 ): null | number | React.Component<any, any> | React.ComponentClass<any> {
-  if (Platform.OS === 'web') return node;
+  if (Platform.OS === 'web') {
+    return node;
+  }
   return findNodeHandleRN(node);
 }
 

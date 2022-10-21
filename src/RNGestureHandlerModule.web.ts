@@ -70,7 +70,7 @@ export default {
       NodeManager.createGestureHandler(handlerTag, new GestureClass());
       InteractionManager.getInstance().configureInteractions(
         NodeManager.getHandler(handlerTag),
-        (config as unknown) as Config
+        config as unknown as Config
       );
     } else {
       if (!(handlerName in HammerGestures)) {
@@ -86,7 +86,7 @@ export default {
       HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
     }
 
-    this.updateGestureHandler(handlerTag, (config as unknown) as Config);
+    this.updateGestureHandler(handlerTag, config as unknown as Config);
   },
   attachGestureHandler(
     handlerTag: number,

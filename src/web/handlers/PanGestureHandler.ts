@@ -65,8 +65,6 @@ export default class PanGestureHandler extends GestureHandler {
     super.updateGestureConfig({ enabled: enabled, ...props });
     this.checkCustomActivationCriteria(this.customActivationProperties);
 
-    this.enabled = enabled;
-
     if (this.config.minDist !== undefined) {
       this.minDistSq = this.config.minDist * this.config.minDist;
     } else if (this.hasCustomActivationCriteria) {
@@ -96,10 +94,6 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (this.config.activateAfterLongPress !== undefined) {
       this.activateAfterLongPress = this.config.activateAfterLongPress;
-    }
-
-    if (this.config.shouldCancelWhenOutside !== undefined) {
-      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
     }
 
     if (this.config.activeOffsetXStart !== undefined) {
