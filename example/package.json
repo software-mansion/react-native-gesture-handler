@@ -22,10 +22,10 @@
     "hoist-non-react-statics": "^3.3.2",
     "invariant": "^2.2.4",
     "react": "18.1.0",
-    "react-native": "0.70.0",
-    "react-native-reanimated": "2.10.0",
-    "react-native-safe-area-context": "4.3.3",
-    "react-native-screens": "3.17.0",
+    "react-native": "0.70.3",
+    "react-native-reanimated": "2.11.0",
+    "react-native-safe-area-context": "4.4.1",
+    "react-native-screens": "3.18.2",
     "react-native-web": "^0.18.1"
   },
   "devDependencies": {
@@ -46,7 +46,7 @@
     "glob-to-regexp": "^0.4.1",
     "jest": "^25.1.0",
     "metro-config": "^0.64.0",
-    "metro-react-native-babel-preset": "^0.72.1",
+    "metro-react-native-babel-preset": "0.72.3",
     "prettier": "^2.2.1",
     "react-test-renderer": "18.1.0",
     "typescript": "^4.5.5"
