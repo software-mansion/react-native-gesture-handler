@@ -50,7 +50,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   }
 
   MBFingerTipWindow *window = [[MBFingerTipWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  window.alwaysShowTouches = YES;
+//  window.alwaysShowTouches = YES;
   self.window = window;
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
