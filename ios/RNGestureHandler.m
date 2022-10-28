@@ -97,16 +97,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   self.enabled = YES;
   self.manualActivation = NO;
+  _shouldCancelWhenOutside = NO;
   _handlersToWaitFor = nil;
   _simultaneousHandlers = nil;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
-
-  if ([self class] == [RNTapGestureHandler class] || [self class] == [RNLongPressGestureHandler class]) {
-    _shouldCancelWhenOutside = YES;
-  } else {
-    _shouldCancelWhenOutside = NO;
-  }
 
   _recognizer.cancelsTouchesInView = YES;
 }
@@ -125,10 +120,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   prop = config[@"shouldCancelWhenOutside"];
   if (prop != nil) {
     _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
-  } else if ([self class] == [RNTapGestureHandler class] || [self class] == [RNLongPressGestureHandler class]) {
-    _shouldCancelWhenOutside = YES;
-  } else {
-    _shouldCancelWhenOutside = NO;
   }
 
   prop = config[@"cancelsTouchesInView"];
