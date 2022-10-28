@@ -54,6 +54,10 @@ export type DrawerLockMode = 'unlocked' | 'locked-closed' | 'locked-open';
 
 export type DrawerKeyboardDismissMode = 'none' | 'on-drag';
 
+// Animated.AnimatedInterpolation has been converted to a generic type
+// in @types/react-native 0.70. This way we can maintain compatibility
+// with all versions of @types/react-native`
+type AnimatedInterpolation = ReturnType<Animated.Value['interpolate']>;
 export interface DrawerLayoutProps {
   /**
    * This attribute is present in the standard implementation already and is one
@@ -153,7 +157,7 @@ export interface DrawerLayoutProps {
   // implicit `children` prop has been removed in @types/react^18.0.0
   children?:
     | React.ReactNode
-    | ((openValue?: Animated.AnimatedInterpolation) => React.ReactNode);
+    | ((openValue?: AnimatedInterpolation) => React.ReactNode);
 
   /**
    * @default 'none'
@@ -224,7 +228,7 @@ export default class DrawerLayout extends Component<
     return true;
   }
 
-  private openValue?: Animated.AnimatedInterpolation;
+  private openValue?: AnimatedInterpolation;
   private onGestureEvent?: (
     event: GestureEvent<PanGestureHandlerEventPayload>
   ) => void;
@@ -603,7 +607,7 @@ export default class DrawerLayout extends Component<
       };
     }
 
-    let drawerTranslateX: number | Animated.AnimatedInterpolation = 0;
+    let drawerTranslateX: number | AnimatedInterpolation = 0;
     if (drawerSlide) {
       const closedDrawerOffset = fromLeft ? -drawerWidth! : drawerWidth!;
       if (this.state.drawerState !== IDLE) {
@@ -617,7 +621,7 @@ export default class DrawerLayout extends Component<
       }
     }
     const drawerStyles: {
-      transform: { translateX: number | Animated.AnimatedInterpolation }[];
+      transform: { translateX: number | AnimatedInterpolation }[];
       flexDirection: 'row-reverse' | 'row';
     } = {
       transform: [{ translateX: drawerTranslateX }],
