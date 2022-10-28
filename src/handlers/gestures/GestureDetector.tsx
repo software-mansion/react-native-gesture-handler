@@ -731,7 +731,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       }
 
       // pass true as `skipConfigUpdate`, here we only want to trigger the eventual reattaching of handlers
-      // in case the view has changed while config update would be handled be the `useEffect` above
+      // in case the view has changed, while config update would be handled be the `useEffect` above
       onHandlersUpdate(true);
 
       if (isFabric()) {
