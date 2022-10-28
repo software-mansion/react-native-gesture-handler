@@ -4,9 +4,8 @@ title: Common handler properties
 sidebar_label: Common handler properties
 ---
 
-:::info
-We recently released RNGH 2.0 with new Gestures system. Check out [RNGH 2.0
-section in Introduction](../../introduction.md#rngh-20) for more information.
+:::warning
+Consider using the new [gestures API](../../api/gestures/gesture.md) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](../../introduction.md#rngh-20) for more information.
 :::
 
 This page covers the common set of properties all gesture handler components expose.
@@ -63,6 +62,10 @@ Similarly when `height` is provided only `top` or `bottom` can be set.
 Specifying `width` or `height` is useful if we only want the gesture to activate on the edge of the view. In which case for example we can set `left: 0` and `width: 20` which would make it possible for the gesture to be recognize when started no more than 20 points from the left edge.
 
 **IMPORTANT:** Note that this parameter is primarily designed to reduce the area where gesture can activate. Hence it is only supported for all the values (except `width` and `height`) to be non positive (0 or lower). Although on Android it is supported for the values to also be positive and therefore allow to expand beyond view bounds but not further than the parent view bounds. To achieve this effect on both platforms you can use React Native's View [hitSlop](https://facebook.github.io/react-native/docs/view.html#props) property.
+
+### `userSelect` (**web only**)
+
+This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Defaults to `"none"`.
 
 ### `onGestureEvent`
 

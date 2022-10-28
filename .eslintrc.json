@@ -58,6 +58,7 @@
         "ts-ignore": "allow-with-description",
         "ts-expect-error": "allow-with-description"
       }
-    ]
+    ],
+    "curly": "error"
   }
 }

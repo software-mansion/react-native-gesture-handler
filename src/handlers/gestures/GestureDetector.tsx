@@ -18,6 +18,7 @@ import {
   GestureStateChangeEvent,
   HandlerStateChangeEvent,
   scheduleFlushOperations,
+  UserSelect,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -35,11 +36,13 @@ import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
-import { isFabric, tagMessage } from '../../utils';
+import { isFabric, REACT_NATIVE_VERSION, tagMessage } from '../../utils';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
+import { RNRenderer } from '../../RNRenderer';
+import { isExperimentalWebImplementationEnabled } from '../../EnableExperimentalWebImplementation';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -116,11 +119,14 @@ function checkGestureCallbacksForWorklets(gesture: GestureType) {
 
 interface WebEventHandler {
   onGestureHandlerEvent: (event: HandlerStateChangeEvent<unknown>) => void;
+  onGestureHandlerStateChange?: (
+    event: HandlerStateChangeEvent<unknown>
+  ) => void;
 }
 
 interface AttachHandlersConfig {
   preparedGesture: GestureConfigReference;
-  gestureConfig: ComposedGesture | GestureType | undefined;
+  gestureConfig: ComposedGesture | GestureType;
   gesture: GestureType[];
   viewTag: number;
   webEventHandlersRef: React.RefObject<WebEventHandler>;
@@ -134,7 +140,7 @@ function attachHandlers({
   webEventHandlersRef,
 }: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
-    gestureConfig?.initialize();
+    gestureConfig.initialize();
   } else {
     preparedGesture.firstExecution = false;
   }
@@ -142,12 +148,11 @@ function attachHandlers({
   // use setImmediate to extract handlerTags, because all refs should be initialized
   // when it's ran
   setImmediate(() => {
-    gestureConfig?.prepare();
+    gestureConfig.prepare();
   });
 
   for (const handler of gesture) {
     checkGestureCallbacksForWorklets(handler);
-
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
       handler.handlerTag,
@@ -193,7 +198,9 @@ function attachHandlers({
       : ActionType.JS_FUNCTION_NEW_API;
 
     if (Platform.OS === 'web') {
-      (RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler)(
+      (
+        RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
+      )(
         gesture.handlerTag,
         viewTag,
         ActionType.JS_FUNCTION_OLD_API, // ignored on web
@@ -211,9 +218,9 @@ function attachHandlers({
   if (preparedGesture.animatedHandlers) {
     const isAnimatedGesture = (g: GestureType) => g.shouldUseReanimated;
 
-    preparedGesture.animatedHandlers.value = (gesture
+    preparedGesture.animatedHandlers.value = gesture
       .filter(isAnimatedGesture)
-      .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+      .map((g) => g.handlers) as unknown as HandlerCallbacks<
       Record<string, unknown>
     >[];
   }
@@ -221,10 +228,11 @@ function attachHandlers({
 
 function updateHandlers(
   preparedGesture: GestureConfigReference,
-  gestureConfig: ComposedGesture | GestureType | undefined,
-  gesture: GestureType[]
+  gestureConfig: ComposedGesture | GestureType,
+  gesture: GestureType[],
+  detectorState: GestureDetectorState
 ) {
-  gestureConfig?.prepare();
+  gestureConfig.prepare();
 
   for (let i = 0; i < gesture.length; i++) {
     const handler = preparedGesture.config[i];
@@ -242,6 +250,9 @@ function updateHandlers(
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
   setImmediate(() => {
+    if (!detectorState.mounted) {
+      return;
+    }
     for (let i = 0; i < gesture.length; i++) {
       const handler = preparedGesture.config[i];
 
@@ -270,9 +281,9 @@ function updateHandlers(
     if (preparedGesture.animatedHandlers) {
       const previousHandlersValue =
         preparedGesture.animatedHandlers.value ?? [];
-      const newHandlersValue = (preparedGesture.config
+      const newHandlersValue = preparedGesture.config
         .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
-        .map((g) => g.handlers) as unknown) as HandlerCallbacks<
+        .map((g) => g.handlers) as unknown as HandlerCallbacks<
         Record<string, unknown>
       >[];
 
@@ -511,25 +522,107 @@ function useAnimatedGesture(
   preparedGesture.animatedHandlers = sharedHandlersCallbacks;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function validateDetectorChildren(ref: any) {
+  // finds the first native view under the Wrap component and traverses the fiber tree upwards
+  // to check whether there is more than one native view as a pseudo-direct child of GestureDetector
+  // i.e. this is not ok:
+  //            Wrap
+  //             |
+  //            / \
+  //           /   \
+  //          /     \
+  //         /       \
+  //   NativeView  NativeView
+  //
+  // but this is fine:
+  //            Wrap
+  //             |
+  //         NativeView
+  //             |
+  //            / \
+  //           /   \
+  //          /     \
+  //         /       \
+  //   NativeView  NativeView
+  if (__DEV__ && Platform.OS !== 'web') {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const wrapType =
+      REACT_NATIVE_VERSION.minor > 63 || REACT_NATIVE_VERSION.major > 0
+        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          ref._reactInternals.elementType
+        : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          ref._reactInternalFiber.elementType;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    let instance =
+      RNRenderer.findHostInstance_DEPRECATED(
+        ref
+      )._internalFiberInstanceHandleDEV;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    while (instance && instance.elementType !== wrapType) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (instance.sibling) {
+        throw new Error(
+          'GestureDetector has more than one native view as its children. This can happen if you are using a custom component that renders multiple views, like React.Fragment. You should wrap content of GestureDetector with a <View> or <Animated.View>.'
+        );
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      instance = instance.return;
+    }
+  }
+}
+
+const applyUserSelectProp = (
+  userSelect: UserSelect,
+  gesture: ComposedGesture | GestureType
+): void => {
+  for (const g of gesture.toGestureArray()) {
+    g.config.userSelect = userSelect;
+  }
+};
+
 interface GestureDetectorProps {
-  gesture?: ComposedGesture | GestureType;
+  gesture: ComposedGesture | GestureType;
+  userSelect?: UserSelect;
   children?: React.ReactNode;
+}
+interface GestureDetectorState {
+  firstRender: boolean;
+  viewRef: React.Component | null;
+  previousViewTag: number;
+  forceReattach: boolean;
+  mounted: boolean;
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
   const gestureConfig = props.gesture;
-  const gesture = gestureConfig?.toGestureArray?.() ?? [];
+
+  if (props.userSelect) {
+    applyUserSelectProp(props.userSelect, gestureConfig);
+  }
+
+  const gesture = gestureConfig.toGestureArray();
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
+
   // store state in ref to prevent unnecessary renders
-  const state = useRef({
+  const state = useRef<GestureDetectorState>({
     firstRender: true,
     viewRef: null,
     previousViewTag: -1,
     forceReattach: false,
+    mounted: false,
   }).current;
+
   const webEventHandlersRef = useRef<WebEventHandler>({
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
     },
+    onGestureHandlerStateChange: isExperimentalWebImplementationEnabled()
+      ? (e: HandlerStateChangeEvent<unknown>) => {
+          onGestureHandlerEvent(e.nativeEvent);
+        }
+      : undefined,
   });
 
   const [renderState, setRenderState] = useState(false);
@@ -559,6 +652,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     const forceReattach = viewTag !== state.previousViewTag;
 
     if (forceReattach || needsToReattach(preparedGesture, gesture)) {
+      validateDetectorChildren(state.viewRef);
       dropHandlers(preparedGesture);
       attachHandlers({
         preparedGesture,
@@ -574,7 +668,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
         forceRender();
       }
     } else if (!skipConfigUpdate) {
-      updateHandlers(preparedGesture, gestureConfig, gesture);
+      updateHandlers(preparedGesture, gestureConfig, gesture, state);
     }
   }
 
@@ -588,7 +682,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   state.forceReattach = false;
 
   if (preparedGesture.firstExecution) {
-    gestureConfig?.initialize?.();
+    gestureConfig.initialize();
   }
 
   if (useReanimatedHook) {
@@ -600,6 +694,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   useEffect(() => {
     const viewTag = findNodeHandle(state.viewRef) as number;
     state.firstRender = true;
+    state.mounted = true;
+
+    validateDetectorChildren(state.viewRef);
+
     attachHandlers({
       preparedGesture,
       gestureConfig,
@@ -609,6 +707,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     });
 
     return () => {
+      state.mounted = false;
       dropHandlers(preparedGesture);
     };
   }, []);
@@ -623,7 +722,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   const refFunction = (ref: unknown) => {
     if (ref !== null) {
-      //@ts-ignore Just setting the view ref
+      // @ts-ignore Just setting the view ref
       state.viewRef = ref;
 
       // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
@@ -668,18 +767,26 @@ class Wrap extends React.Component<{
   children?: React.ReactNode;
 }> {
   render() {
-    // I don't think that fighting with types over such a simple function is worth it
-    // The only thing it does is add 'collapsable: false' to the child component
-    // to make sure it is in the native view hierarchy so the detector can find
-    // correct viewTag to attach to.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const child: any = React.Children.only(this.props.children);
-    return React.cloneElement(
-      child,
-      { collapsable: false },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      child.props.children
-    );
+    try {
+      // I don't think that fighting with types over such a simple function is worth it
+      // The only thing it does is add 'collapsable: false' to the child component
+      // to make sure it is in the native view hierarchy so the detector can find
+      // correct viewTag to attach to.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const child: any = React.Children.only(this.props.children);
+      return React.cloneElement(
+        child,
+        { collapsable: false },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        child.props.children
+      );
+    } catch (e) {
+      throw new Error(
+        tagMessage(
+          `GestureDetector got more than one view as a child. If you want the gesture to work on multiple views, wrap them with a common parent and attach the gesture to that view.`
+        )
+      );
+    }
   }
 }
 

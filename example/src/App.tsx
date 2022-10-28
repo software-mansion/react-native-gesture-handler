@@ -17,6 +17,7 @@ import { TouchablesIndex, TouchableExample } from './release_tests/touchables';
 import Rows from './release_tests/rows';
 import Fling from './release_tests/fling';
 import NestedTouchables from './release_tests/nestedTouchables';
+import NestedButtons from './release_tests/nestedButtons';
 import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
 import { PinchableBox } from './recipes/scaleAndRotate';
 import PanAndScroll from './recipes/panAndScroll';
@@ -42,6 +43,10 @@ import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
 import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
 import ManualGestures from './new_api/manualGestures/index';
+
+import { enableExperimentalWebImplementation } from 'react-native-gesture-handler';
+
+enableExperimentalWebImplementation();
 
 interface Example {
   name: string;
@@ -95,6 +100,10 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Nested Touchables - issue #784',
         component: NestedTouchables as React.ComponentType,
       },
+      {
+        name: 'Nested buttons (sound & ripple on Android)',
+        component: NestedButtons,
+      },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
       { name: 'Rows', component: Rows },
@@ -140,7 +149,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.root}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -199,6 +208,9 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   sectionTitle: {
     ...Platform.select({
       ios: {

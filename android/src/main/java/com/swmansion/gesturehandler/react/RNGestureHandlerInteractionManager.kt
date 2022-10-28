@@ -2,8 +2,9 @@ package com.swmansion.gesturehandler.react
 
 import android.util.SparseArray
 import com.facebook.react.bridge.ReadableMap
-import com.swmansion.gesturehandler.GestureHandler
-import com.swmansion.gesturehandler.GestureHandlerInteractionController
+import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.GestureHandlerInteractionController
+import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 
 class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   private val waitForRelations = SparseArray<IntArray>()
@@ -42,8 +43,13 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
     otherHandler: GestureHandler<*>,
   ) = false
 
-  override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) = false
+  override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>): Boolean {
+    if (otherHandler is NativeViewGestureHandler) {
+      return otherHandler.disallowInterruption
+    }
 
+    return false
+  }
   override fun shouldRecognizeSimultaneously(
     handler: GestureHandler<*>,
     otherHandler: GestureHandler<*>,

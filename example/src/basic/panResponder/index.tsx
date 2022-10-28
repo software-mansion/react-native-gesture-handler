@@ -6,7 +6,6 @@ import {
   I18nManager,
   GestureResponderEvent,
   PanResponderGestureState,
-  Alert,
   GestureResponderHandlers,
 } from 'react-native';
 
@@ -33,7 +32,8 @@ class PanResponderExample extends Component {
   };
   private circle: React.ElementRef<typeof View> | null = null;
 
-  UNSAFE_componentWillMount() {
+  constructor(props: Record<string, unknown>) {
+    super(props);
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: this.handleStartShouldSetPanResponder,
       onMoveShouldSetPanResponder: this.handleMoveShouldSetPanResponder,
@@ -128,7 +128,8 @@ class PanResponderExample extends Component {
 
 export default class Example extends Component {
   onClick = () => {
-    Alert.alert("I'm so touched");
+    // eslint-disable-next-line no-alert
+    window.alert("I'm so touched");
   };
   render() {
     return (

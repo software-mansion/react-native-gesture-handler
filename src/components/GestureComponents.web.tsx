@@ -6,12 +6,13 @@ import {
   TextInput as RNTextInput,
   ScrollView as RNScrollView,
   FlatListProps,
+  View,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 
 export const ScrollView = createNativeWrapper(RNScrollView, {
-  disallowInterruption: true,
+  disallowInterruption: false,
 });
 
 export const Switch = createNativeWrapper(RNSwitch, {
@@ -25,6 +26,10 @@ export const DrawerLayoutAndroid = createNativeWrapper(RNDrawerLayoutAndroid, {
 });
 // @ts-ignore -- TODO(TS) to investigate if it's needed
 DrawerLayoutAndroid.positions = RNDrawerLayoutAndroid.positions;
+// RefreshControl is implemented as a functional component, rendering a View
+// NativeViewGestureHandler needs to set a ref on its child, which cannot be done
+// on functional components
+export const RefreshControl = createNativeWrapper(View);
 
 export const FlatList = React.forwardRef(
   <ItemT extends any>(props: FlatListProps<ItemT>, ref: any) => (

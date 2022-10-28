@@ -200,12 +200,17 @@ function DragAndDrop<T extends { id: string }>({
         /* empty handler */
       };
 
-  const dragGesture = Gesture.Pan().onUpdate(onUpdateHandler).onEnd(onDragEnd);
-  const tapEndedGesture = Gesture.Tap().onEnd((_, isFinished) => {
-    if (isFinished) {
-      updateDataOnEnd();
-    }
-  });
+  const dragGesture = Gesture.Pan()
+    .runOnJS(true)
+    .onUpdate(onUpdateHandler)
+    .onEnd(onDragEnd);
+  const tapEndedGesture = Gesture.Tap()
+    .runOnJS(true)
+    .onEnd((_, isFinished) => {
+      if (isFinished) {
+        updateDataOnEnd();
+      }
+    });
 
   const _renderItems = () => {
     const newData = [...data];

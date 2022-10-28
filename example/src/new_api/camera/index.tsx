@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, useWindowDimensions } from 'react-native';
+import { StyleSheet, useWindowDimensions } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const filters = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
-const MAX_VIDEO_DURATION_MS = 60_000;
+const MAX_VIDEO_DURATION_MS = 60000;
 const CAPTURE_BUTTON_RADIUS = 50;
 const FILTER_BUTTON_RADIUS = 35;
 
@@ -21,7 +21,7 @@ export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
   const [remainingTimeMs, setRemainingTimeMs] = useState(MAX_VIDEO_DURATION_MS);
   const [recordingIntervalHandle, setRecordingIntervalHandle] =
-    useState<ReturnType<typeof setTimeout> | null>(null);
+    useState<ReturnType<typeof setInterval> | null>(null);
 
   const filtersPanGesture = Gesture.Pan()
     .onUpdate((e) => {
@@ -107,11 +107,13 @@ export default function Home() {
   }
 
   function takePhoto() {
-    Alert.alert('You took a photo');
+    // eslint-disable-next-line no-alert
+    window.alert('You took a photo');
   }
 
   function takeSeries() {
-    Alert.alert('You took a series of photos');
+    // eslint-disable-next-line no-alert
+    window.alert('You took a series of photos');
   }
 
   function startRecording() {
@@ -129,7 +131,8 @@ export default function Home() {
     clearInterval(recordingIntervalHandle!);
     setRemainingTimeMs(MAX_VIDEO_DURATION_MS);
 
-    Alert.alert(
+    // eslint-disable-next-line no-alert
+    window.alert(
       `You took a video (${(MAX_VIDEO_DURATION_MS - remainingTimeMs) / 1000} s)`
     );
   }
