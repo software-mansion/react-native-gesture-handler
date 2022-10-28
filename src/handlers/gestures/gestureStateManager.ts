@@ -13,14 +13,19 @@ const warningMessage = tagMessage(
   'react-native-reanimated is required in order to use synchronous state management'
 );
 
+// check if reanimated module is available, but look for useSharedValue as conditional
+// require of reanimated can sometimes return content of `utils.ts` file (?)
+const REANIMATED_AVAILABLE = Reanimated?.useSharedValue !== undefined;
+const setGestureState = Reanimated?.setGestureState;
+
 export const GestureStateManager = {
   create(handlerTag: number): GestureStateManagerType {
     'worklet';
     return {
       begin: () => {
         'worklet';
-        if (Reanimated) {
-          Reanimated.setGestureState(handlerTag, State.BEGAN);
+        if (REANIMATED_AVAILABLE) {
+          setGestureState(handlerTag, State.BEGAN);
         } else {
           console.warn(warningMessage);
         }
@@ -28,8 +33,8 @@ export const GestureStateManager = {
 
       activate: () => {
         'worklet';
-        if (Reanimated) {
-          Reanimated.setGestureState(handlerTag, State.ACTIVE);
+        if (REANIMATED_AVAILABLE) {
+          setGestureState(handlerTag, State.ACTIVE);
         } else {
           console.warn(warningMessage);
         }
@@ -37,8 +42,8 @@ export const GestureStateManager = {
 
       fail: () => {
         'worklet';
-        if (Reanimated) {
-          Reanimated.setGestureState(handlerTag, State.FAILED);
+        if (REANIMATED_AVAILABLE) {
+          setGestureState(handlerTag, State.FAILED);
         } else {
           console.warn(warningMessage);
         }
@@ -46,8 +51,8 @@ export const GestureStateManager = {
 
       end: () => {
         'worklet';
-        if (Reanimated) {
-          Reanimated.setGestureState(handlerTag, State.END);
+        if (REANIMATED_AVAILABLE) {
+          setGestureState(handlerTag, State.END);
         } else {
           console.warn(warningMessage);
         }

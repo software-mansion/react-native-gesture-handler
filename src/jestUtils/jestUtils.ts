@@ -464,9 +464,8 @@ export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
   componentOrGesture: ReactTestInstance | GestureType,
   eventList: Partial<GestureHandlerTestEvent<ExtractConfig<THandler>>>[] = []
 ): void {
-  const { emitEvent, handlerType, handlerTag } = getHandlerData(
-    componentOrGesture
-  );
+  const { emitEvent, handlerType, handlerTag } =
+    getHandlerData(componentOrGesture);
 
   let _ = fillMissingStatesTransitions(
     eventList,
@@ -478,7 +477,7 @@ export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
   // @ts-ignore TODO
   _ = _.map(wrapWithNativeEvent);
 
-  const events = (_ as unknown) as WrappedGestureHandlerTestEvent[];
+  const events = _ as unknown as WrappedGestureHandlerTestEvent[];
 
   const firstEvent = events.shift()!;
 

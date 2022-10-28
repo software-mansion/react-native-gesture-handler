@@ -16,6 +16,7 @@ import {
   DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
+  RefreshControl as RNRefreshControl,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
@@ -25,16 +26,51 @@ import {
   nativeViewProps,
 } from '../handlers/NativeViewGestureHandler';
 
-export const ScrollView = createNativeWrapper<
-  PropsWithChildren<RNScrollViewProps>
->(RNScrollView, {
+import { toArray } from '../utils';
+
+export const RefreshControl = createNativeWrapper(RNRefreshControl, {
   disallowInterruption: true,
   shouldCancelWhenOutside: false,
+});
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type RefreshControl = typeof RefreshControl & RNRefreshControl;
+
+const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
+  RNScrollView,
+  {
+    disallowInterruption: true,
+    shouldCancelWhenOutside: false,
+  }
+);
+export const ScrollView = React.forwardRef<
+  RNScrollView,
+  RNScrollViewProps & NativeViewGestureHandlerProps
+>((props, ref) => {
+  const refreshControlGestureRef = React.useRef<RefreshControl>(null);
+  const { refreshControl, waitFor, ...rest } = props;
+
+  return (
+    <GHScrollView
+      {...rest}
+      // @ts-ignore `ref` exists on `GHScrollView`
+      ref={ref}
+      waitFor={[...toArray(waitFor ?? []), refreshControlGestureRef]}
+      // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
+      refreshControl={
+        refreshControl
+          ? React.cloneElement(refreshControl, {
+              // @ts-ignore for reasons unknown to me, `ref` doesn't exist on the type inferred by TS
+              ref: refreshControlGestureRef,
+            })
+          : undefined
+      }
+    />
+  );
 });
 // backward type compatibility with https://github.com/software-mansion/react-native-gesture-handler/blob/db78d3ca7d48e8ba57482d3fe9b0a15aa79d9932/react-native-gesture-handler.d.ts#L440-L457
 // include methods of wrapped components by creating an intersection type with the RN component instead of duplicating them.
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type ScrollView = typeof ScrollView & RNScrollView;
+export type ScrollView = typeof GHScrollView & RNScrollView;
 
 export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,
@@ -56,9 +92,13 @@ export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
   RNDrawerLayoutAndroid;
 
 export const FlatList = React.forwardRef((props, ref) => {
+  const refreshControlGestureRef = React.useRef<RefreshControl>(null);
+
+  const { waitFor, refreshControl, ...rest } = props;
+
   const flatListProps = {};
   const scrollViewProps = {};
-  for (const [propName, value] of Object.entries(props)) {
+  for (const [propName, value] of Object.entries(rest)) {
     // https://github.com/microsoft/TypeScript/issues/26255
     if ((nativeViewProps as readonly string[]).includes(propName)) {
       // @ts-ignore - this function cannot have generic type so we have to ignore this error
@@ -70,14 +110,30 @@ export const FlatList = React.forwardRef((props, ref) => {
       flatListProps[propName] = value;
     }
   }
+
   return (
     // @ts-ignore - this function cannot have generic type so we have to ignore this error
     <RNFlatList
       ref={ref}
       {...flatListProps}
       renderScrollComponent={(scrollProps) => (
-        <ScrollView {...{ ...scrollProps, ...scrollViewProps }} />
+        <ScrollView
+          {...{
+            ...scrollProps,
+            ...scrollViewProps,
+            waitFor: [...toArray(waitFor ?? []), refreshControlGestureRef],
+          }}
+        />
       )}
+      // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
+      refreshControl={
+        refreshControl
+          ? React.cloneElement(refreshControl, {
+              // @ts-ignore for reasons unknown to me, `ref` doesn't exist on the type inferred by TS
+              ref: refreshControlGestureRef,
+            })
+          : undefined
+      }
     />
   );
 }) as <ItemT = any>(

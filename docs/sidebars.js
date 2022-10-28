@@ -15,6 +15,7 @@ module.exports = {
         'gesture-handlers/basics/interactions',
         'guides/testing',
         'guides/migrating-off-rnghenabledroot',
+        'guides/upgrading-to-2',
       ],
     },
     {

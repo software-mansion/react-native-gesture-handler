@@ -1,6 +1,21 @@
 require "json"
 
-fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED']
+fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+
+isUserApp = File.exists?(File.join(__dir__, "..", "..", "node_modules", "react-native", "package.json"))
+if isUserApp
+  libInstances = %x[find ../../ -name "package.json" | grep "/react-native-gesture-handler/package.json" | grep -v "/.yarn/"]
+  libInstancesArray = libInstances.split("\n")
+  if libInstancesArray.length() > 1
+    parsedLocation = ''
+    for location in libInstancesArray
+      location['../../'] = '- '
+      location['/package.json'] = ''
+      parsedLocation += location + "\n"
+    end
+    raise "[Gesture Handler] Multiple versions of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-versions-of-reanimated-were-detected \n\nConflict between: \n" + parsedLocation
+  end
+end
 
 Pod::Spec.new do |s|
   # NPM package specification
@@ -17,9 +32,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   if fabric_enabled
-    # folly_version must match the version used in React Native
-    # See folly_version in react-native/React/FBReactNativeSpec/FBReactNativeSpec.podspec
-    folly_version = '2021.06.28.00-v2'
     folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
     s.pod_target_xcconfig = {
@@ -32,7 +44,7 @@ Pod::Spec.new do |s|
     s.dependency "React"
     s.dependency "React-RCTFabric" # This is for fabric component
     s.dependency "React-Codegen"
-    s.dependency "RCT-Folly", folly_version
+    s.dependency "RCT-Folly"
     s.dependency "RCTRequired"
     s.dependency "RCTTypeSafety"
     s.dependency "ReactCommon/turbomodule/core"

@@ -48,6 +48,10 @@
         {
           "type": "doc",
           "id": "version-2.4.0/guides/migrating-off-rnghenabledroot"
+        },
+        {
+          "type": "doc",
+          "id": "version-2.4.0/guides/upgrading-to-2"
         }
       ]
     },

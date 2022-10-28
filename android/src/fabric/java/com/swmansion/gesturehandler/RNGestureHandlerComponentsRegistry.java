@@ -9,7 +9,7 @@ import com.facebook.soloader.SoLoader;
 public class RNGestureHandlerComponentsRegistry {
   static {
     SoLoader.loadLibrary("fabricjni");
-    SoLoader.loadLibrary("rngesturehandler_modules");
+    SoLoader.loadLibrary("gesturehandler");
   }
 
   @DoNotStrip private final HybridData mHybridData;
