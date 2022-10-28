@@ -36,6 +36,11 @@ type SwipeableExcludes = Exclude<
   'onGestureEvent' | 'onHandlerStateChange'
 >;
 
+// Animated.AnimatedInterpolation has been converted to a generic type
+// in @types/react-native 0.70. This way we can maintain compatibility
+// with all versions of @types/react-native
+type AnimatedInterpolation = ReturnType<Animated.Value['interpolate']>;
+
 export interface SwipeableProps
   extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
   /**
@@ -150,8 +155,8 @@ export interface SwipeableProps
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderLeftActions?: (
-    progressAnimatedValue: Animated.AnimatedInterpolation,
-    dragAnimatedValue: Animated.AnimatedInterpolation
+    progressAnimatedValue: AnimatedInterpolation,
+    dragAnimatedValue: AnimatedInterpolation
   ) => React.ReactNode;
   /**
    *
@@ -163,8 +168,8 @@ export interface SwipeableProps
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderRightActions?: (
-    progressAnimatedValue: Animated.AnimatedInterpolation,
-    dragAnimatedValue: Animated.AnimatedInterpolation,
+    progressAnimatedValue: AnimatedInterpolation,
+    dragAnimatedValue: AnimatedInterpolation,
     swipeable: Swipeable
   ) => React.ReactNode;
 
@@ -242,11 +247,11 @@ export default class Swipeable extends Component<
   private onGestureEvent?: (
     event: GestureEvent<PanGestureHandlerEventPayload>
   ) => void;
-  private transX?: Animated.AnimatedInterpolation;
-  private showLeftAction?: Animated.AnimatedInterpolation | Animated.Value;
-  private leftActionTranslate?: Animated.AnimatedInterpolation;
-  private showRightAction?: Animated.AnimatedInterpolation | Animated.Value;
-  private rightActionTranslate?: Animated.AnimatedInterpolation;
+  private transX?: AnimatedInterpolation;
+  private showLeftAction?: AnimatedInterpolation | Animated.Value;
+  private leftActionTranslate?: AnimatedInterpolation;
+  private showRightAction?: AnimatedInterpolation | Animated.Value;
+  private rightActionTranslate?: AnimatedInterpolation;
 
   private updateAnimatedEvent = (
     props: SwipeableProps,

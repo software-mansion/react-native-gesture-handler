@@ -18,6 +18,7 @@ const commonProps = [
   'shouldCancelWhenOutside',
   'hitSlop',
   'cancelsTouchesInView',
+  'userSelect',
 ] as const;
 
 const componentInteractionProps = ['waitFor', 'simultaneousHandlers'] as const;
@@ -62,6 +63,8 @@ export type HitSlop =
   | Record<'height' | 'top', number>
   | Record<'height' | 'bottom', number>;
 
+export type UserSelect = 'none' | 'auto' | 'text';
+
 //TODO(TS) events in handlers
 
 export interface GestureEvent<ExtraEventPayloadT = Record<string, unknown>> {
@@ -101,6 +104,7 @@ export type CommonGestureConfig = {
   enabled?: boolean;
   shouldCancelWhenOutside?: boolean;
   hitSlop?: HitSlop;
+  userSelect?: UserSelect;
 };
 
 // Events payloads are types instead of interfaces due to TS limitation.
