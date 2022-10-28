@@ -39,7 +39,6 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     maxDelayMs = DEFAULT_MAX_DELAY_MS
     numberOfTaps = DEFAULT_NUMBER_OF_TAPS
     minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS
-    setShouldCancelWhenOutside(true)
   }
 
   fun setNumberOfTaps(numberOfTaps: Int) = apply {
