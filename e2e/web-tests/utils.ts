@@ -35,6 +35,7 @@ export const getEvent = async (eventBox: Locator) => {
 export const stringify = (event: any): string => {
   return JSON.stringify(
     event,
+    // Without removing target from event, JSON.stringify will fail
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     (key, value) => (key === 'target' ? undefined : value),
     2
