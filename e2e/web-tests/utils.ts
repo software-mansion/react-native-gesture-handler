@@ -22,7 +22,7 @@ export const LONG_PRESS_ACTIVATION_TIME = 500;
 
 /**
  *
- * @param eventBox
+ * @param eventBox Locator
  * @returns Last event received by gesture handler
  */
 export const getEvent = async (eventBox: Locator) => {
@@ -32,6 +32,14 @@ export const getEvent = async (eventBox: Locator) => {
   });
 };
 
+/**
+ * This function is used to wrap JSON.stringify(), as it fails when target is not removed from event
+ *
+ * @param event
+ * Event is typed any only beacuse you cannot use import from GestureHandler, howver
+ * proper types are `GestureHandlerStateChangeEvent | GestureHandlerGestureEvent`
+ * @returns Stringified event
+ */
 export const stringify = (event: any): string => {
   return JSON.stringify(
     event,
@@ -42,6 +50,10 @@ export const stringify = (event: any): string => {
   );
 };
 
+/**
+ *
+ * @param time Time to wait in ms
+ */
 export const sleep = (time: number) => {
   return new Promise<void>((resolve, _reject) => {
     setTimeout(() => {
