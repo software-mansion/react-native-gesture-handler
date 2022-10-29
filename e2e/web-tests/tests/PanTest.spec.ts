@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { getEvent } from '../utils';
+import { DEFAULT_PORT, getEvent } from '../utils';
 
 test.use({ hasTouch: true });
 
 test('Pan Test', async ({ page }) => {
-  await page.goto('localhost:19007/');
+  await page.goto(`localhost:${DEFAULT_PORT}/`);
 
   const stateBox = page.locator('[data-testid="panStateBox"]');
   const eventBox = page.locator('[data-testid="panEventBox"]');

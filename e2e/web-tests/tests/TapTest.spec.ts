@@ -1,11 +1,11 @@
 /* eslint-disable jest/consistent-test-it */
 import { test, expect } from '@playwright/test';
-import { getEvent } from '../utils';
+import { DEFAULT_PORT, getEvent } from '../utils';
 
 test.use({ hasTouch: true });
 
 test('Tap Test', async ({ page }) => {
-  await page.goto('localhost:19007/');
+  await page.goto(`localhost:${DEFAULT_PORT}/`);
 
   const stateBox = page.locator('[data-testid="tapStateBox"]');
   const eventBox = page.locator('[data-testid="tapEventBox"]');

@@ -1,11 +1,16 @@
 /* eslint-disable jest/consistent-test-it */
 import { test, expect } from '@playwright/test';
-import { DOUBLE_TAP_FAIL_TIMEOUT, getEvent, sleep } from '../utils';
+import {
+  DEFAULT_PORT,
+  DOUBLE_TAP_FAIL_TIMEOUT,
+  getEvent,
+  sleep,
+} from '../utils';
 
 test.use({ hasTouch: true });
 
 test('Double Tap Test', async ({ page }) => {
-  await page.goto('localhost:19007/');
+  await page.goto(`localhost:${DEFAULT_PORT}/`);
   const box = page.locator('[data-testid="tapTextTest"]');
 
   const singleTapEventBox = page.locator('[data-testid="singleTapEventBox"]');

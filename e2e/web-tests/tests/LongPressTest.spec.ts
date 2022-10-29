@@ -1,11 +1,16 @@
 /* eslint-disable jest/consistent-test-it */
 import { test, expect } from '@playwright/test';
-import { getEvent, LONG_PRESS_ACTIVATION_TIME, sleep } from '../utils';
+import {
+  DEFAULT_PORT,
+  getEvent,
+  LONG_PRESS_ACTIVATION_TIME,
+  sleep,
+} from '../utils';
 
 test.use({ hasTouch: true });
 
 test('Long Press Test', async ({ page }) => {
-  await page.goto('localhost:19007/');
+  await page.goto(`localhost:${DEFAULT_PORT}/`);
 
   const stateBox = page.locator('[data-testid="longPressStateBox"]');
   const eventBox = page.locator('[data-testid="longPressEventBox"]');

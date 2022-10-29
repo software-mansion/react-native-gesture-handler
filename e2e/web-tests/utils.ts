@@ -15,6 +15,8 @@ interface GHEvent {
   timeStamp: number;
 }
 
+export const DEFAULT_PORT = 19007;
+
 export const DOUBLE_TAP_FAIL_TIMEOUT = 500;
 export const LONG_PRESS_ACTIVATION_TIME = 500;
 
