@@ -82,5 +82,7 @@ export const LongPressGestureHandler = createHandler<
     ...baseGestureHandlerProps,
     ...longPressGestureHandlerProps,
   ] as const,
-  config: {},
+  config: {
+    shouldCancelWhenOutside: true,
+  },
 });

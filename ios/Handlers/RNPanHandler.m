@@ -94,8 +94,8 @@
   }
 #endif
   [super touchesBegan:touches withEvent:event];
-  [self triggerAction];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+  [self triggerAction];
 
   if (!isnan(_activateAfterLongPress)) {
     [self performSelector:@selector(activateAfterLongPress) withObject:nil afterDelay:_activateAfterLongPress];

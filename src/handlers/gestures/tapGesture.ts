@@ -11,6 +11,7 @@ export class TapGesture extends BaseGesture<TapGestureHandlerEventPayload> {
     super();
 
     this.handlerName = 'TapGestureHandler';
+    this.shouldCancelWhenOutside(true);
   }
 
   minPointers(minPointers: number) {
