@@ -27,6 +27,7 @@
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [_gestureHandler reset];
   [super touchesBegan:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   // self.numberOfTouches doesn't work for this because in case than one finger is required,
   // when holding one finger on the screen and tapping with the second one, numberOfTouches is equal
@@ -35,8 +36,6 @@
     [self triggerAction];
     _hasBegan = YES;
   }
-
-  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event

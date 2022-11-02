@@ -88,5 +88,7 @@ export const TapGestureHandler = createHandler<
     ...baseGestureHandlerProps,
     ...tapGestureHandlerProps,
   ] as const,
-  config: {},
+  config: {
+    shouldCancelWhenOutside: true,
+  },
 });
