@@ -145,7 +145,7 @@ android {
             var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
             externalNativeBuild {
                 cmake {
-                    cppFlags "-frtti -fexceptions -Wall -Wno-unused-variable -fstack-protector-all"
+                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++17", "-Wno-unused-variable", "-fstack-protector-all"
                     arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
                         "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
                         "-DANDROID_STL=c++_shared"
@@ -214,21 +214,4 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.core:core-ktx:1.6.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-}
-
-if (isNewArchitectureEnabled()) {
-    // Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".
-    tasks.whenTaskAdded { task ->
-        if (task.name.contains("configureCMakeDebug")) {
-            rootProject.getTasksByName("packageReactNdkDebugLibs", true).forEach {
-                task.dependsOn(it)
-            }
-        }
-        // We want to add a dependency for both configureCMakeRelease and configureCMakeRelWithDebInfo
-        if (task.name.contains("configureCMakeRel")) {
-            rootProject.getTasksByName("packageReactNdkReleaseLibs", true).forEach {
-                task.dependsOn(it)
-            }
-        }
-    }
 }
