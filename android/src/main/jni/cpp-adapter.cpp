@@ -1,13 +1,10 @@
 #include <jni.h>
 #include <jsi/jsi.h>
 
-#include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/primitives.h>
 
 using namespace facebook;
 using namespace react;
-
-// ShadowNodeWrapper::~ShadowNodeWrapper() = default;
 
 void decorateRuntime(jsi::Runtime &runtime) {
   auto isFormsStackingContext = jsi::Function::createFromHostFunction(
@@ -26,12 +23,10 @@ void decorateRuntime(jsi::Runtime &runtime) {
                               .asObject(runtime)
                               .getHostObject<ShadowNodeWrapper>(runtime)
                               ->shadowNode;
-        (void)shadowNode;
-        // bool isFormsStackingContext = shadowNode->getTraits().check(
-        //     ShadowNodeTraits::FormsStackingContext);
+        bool isFormsStackingContext = shadowNode->getTraits().check(
+            ShadowNodeTraits::FormsStackingContext);
 
-        // return jsi::Value(isFormsStackingContext);
-        return jsi::Value(false);
+        return jsi::Value(isFormsStackingContext);
       });
   runtime.global().setProperty(
       runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
