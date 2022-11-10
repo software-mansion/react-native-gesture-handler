@@ -33,7 +33,6 @@ export default class TapGestureHandler extends GestureHandler {
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
-    this.setShouldCancelWhenOutside(true);
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {

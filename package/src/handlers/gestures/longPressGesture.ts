@@ -11,6 +11,7 @@ export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPa
     super();
 
     this.handlerName = 'LongPressGestureHandler';
+    this.shouldCancelWhenOutside(true);
   }
 
   minDuration(duration: number) {
