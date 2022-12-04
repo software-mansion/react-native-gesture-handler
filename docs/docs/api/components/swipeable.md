@@ -133,6 +133,13 @@ style object for the children container (Animated.View), for example to apply `f
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
 
+### `useNativeAnimations`
+
+Whether to use native animations. Defaults to `true`. Note that if you use
+`LayoutAnimation` to smooth deletions/changes of `Swipeable` items in a list
+(e.g. you want a swipe-right to delete the item from the list and render an
+deletion animation via `LayoutAnimation.configureNext`), you'll want to set this to `false`. Otherwise, your list will show the non-open version of the Swipeable as it animates out of the list.
+
 ## Methods
 
 Using reference to `Swipeable` it's possible to trigger some actions on it
