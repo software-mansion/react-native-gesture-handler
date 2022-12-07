@@ -14,23 +14,12 @@ add_library(gesturehandler
   cpp-adapter.cpp
 )
 
-# TODO: remove when symbols arrive
-add_library(react_render_uimanager SHARED IMPORTED GLOBAL)
-set_target_properties(react_render_uimanager
-        PROPERTIES
-        IMPORTED_LOCATION
-        /Users/jakubpiasecki/libreact_render_uimanager.so)
-
 find_package(ReactAndroid REQUIRED CONFIG)
 
 target_link_libraries(
   gesturehandler
-  react_render_uimanager # TODO: remove
+  ReactAndroid::react_render_core
+  ReactAndroid::react_render_uimanager
   ReactAndroid::jsi
   ReactAndroid::react_nativemodule_core
-  # headers
-  ReactAndroid::react_debug
-  ReactAndroid::react_render_core
-  ReactAndroid::glog
-  ReactAndroid::react_render_debug
 )
