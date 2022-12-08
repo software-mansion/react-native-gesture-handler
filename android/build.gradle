@@ -93,6 +93,7 @@ def noMultipleInstancesAssertion() {
     Set<File> files = fileTree(rootDir.parent) {
         include "node_modules/**/react-native-gesture-handler/package.json"
         exclude "**/.yarn/**"
+        exclude "**/.pnpm/**"
     }.files
 
     if (files.size() > 1) {
