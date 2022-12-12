@@ -130,6 +130,7 @@ interface AttachHandlersConfig {
   gesture: GestureType[];
   viewTag: number;
   webEventHandlersRef: React.RefObject<WebEventHandler>;
+  mountedRef: React.RefObject<boolean>;
 }
 
 function attachHandlers({
@@ -138,6 +139,7 @@ function attachHandlers({
   gesture,
   viewTag,
   webEventHandlersRef,
+  mountedRef,
 }: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
     gestureConfig.initialize();
@@ -148,6 +150,9 @@ function attachHandlers({
   // use setImmediate to extract handlerTags, because all refs should be initialized
   // when it's ran
   setImmediate(() => {
+    if (!mountedRef.current) {
+      return;
+    }
     gestureConfig.prepare();
   });
 
@@ -165,6 +170,9 @@ function attachHandlers({
   // use setImmediate to extract handlerTags, because all refs should be initialized
   // when it's ran
   setImmediate(() => {
+    if (!mountedRef.current) {
+      return;
+    }
     for (const handler of gesture) {
       let requireToFail: number[] = [];
       if (handler.config.requireToFail) {
@@ -654,6 +662,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       gesture,
       viewTag,
       webEventHandlersRef,
+      mountedRef,
     });
 
     return () => {
@@ -675,6 +684,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
           gesture,
           viewTag,
           webEventHandlersRef,
+          mountedRef,
         });
       } else {
         updateHandlers(preparedGesture, gestureConfig, gesture, mountedRef);
