@@ -121,6 +121,8 @@ Minimum distance along Y (in points) axis the finger (or multiple finger) need t
 
 ### `avgTouches` (Android only)
 
+Android, by default, will calculate translation values based on the position of the leading pointer (the first one that was placed on the screen). This prop allows that behavior to be changed to the one that is default on iOS - the averaged position of all active pointers will be used to calculate the translation values.
+
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
