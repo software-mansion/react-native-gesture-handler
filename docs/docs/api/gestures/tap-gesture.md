@@ -88,6 +88,7 @@ const singleTap = Gesture.Tap()
 
 const doubleTap = Gesture.Tap()
   .maxDuration(250)
+  .numberOfTaps(2)
   .onStart(() => {
     Alert.alert('Double tap!');
   });
