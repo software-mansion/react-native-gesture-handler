@@ -699,7 +699,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       //@ts-ignore Just setting the ref
       viewRef.current = ref;
 
-      if (isFabric()) {
+      if (isFabric() && global.isFormsStackingContext) {
         const node = getShadowNodeFromRef(ref);
         if (global.isFormsStackingContext(node) === false) {
           console.error(

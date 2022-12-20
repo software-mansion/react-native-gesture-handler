@@ -462,7 +462,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     try {
       SoLoader.loadLibrary("gesturehandler")
       val jsContext = reactApplicationContext.javaScriptContextHolder
-      decorateRuntime(jsContext.get())
+      // decorateRuntime(jsContext.get())
     } catch (exception: Exception) {
       Log.w("[RNGestureHandler]", "Could not install JSI bindings.")
     }
