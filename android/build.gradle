@@ -108,6 +108,12 @@ def noMultipleInstancesAssertion() {
 
 def REACT_NATIVE_DIR = resolveReactNativeDirectory()
 
+def _rnPackageJSONFile = new File(REACT_NATIVE_DIR, 'package.json')
+def _rnPackageJSON = new JsonSlurper().parseText(_rnPackageJSONFile.text)
+def _rnVersion = _rnPackageJSON.version as String
+def (REACT_NATIVE_MAJOR_VERSION_STR, REACT_NATIVE_MINOR_VERSION_STR, REACT_NATIVE_PATCH_VERSION_STR) = _rnVersion.tokenize('.')
+def REACT_NATIVE_MINOR_VERSION = Integer.parseInt(REACT_NATIVE_MINOR_VERSION_STR)
+
 def assertionTask = task assertNoMultipleInstances {
     onlyIf { shouldAssertNoMultipleInstances() }
     doFirst {
@@ -134,9 +140,11 @@ android {
     if (rootProject.hasProperty("ndkVersion")) {
         ndkVersion rootProject.ext.ndkVersion
     }
-    
-    buildFeatures {
-        prefab true
+
+    if (REACT_NATIVE_MINOR_VERSION >= 71) {
+        buildFeatures {
+            prefab true
+        }
     }
 
     defaultConfig {
@@ -149,7 +157,7 @@ android {
             var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
             externalNativeBuild {
                 cmake {
-                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++17", "-Wno-unused-variable", "-fstack-protector-all", "-DANDROID"
+                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++17", "-fstack-protector-all", "-DANDROID"
                     arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
                         "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
                         "-DANDROID_STL=c++_shared"
@@ -206,7 +214,11 @@ def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlin
 
 dependencies {
     //noinspection GradleDynamicVersion
-    implementation 'com.facebook.react:react-native:+' // TODO
+    if (REACT_NATIVE_MINOR_VERSION >= 71) {
+        implementation "com.facebook.react:react-android" // version substituted by RNGP
+    } else {
+        implementation 'com.facebook.react:react-native:+' // from node_modules
+    }
 
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
