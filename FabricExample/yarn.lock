@@ -1552,12 +1552,12 @@
     hermes-profile-transformer "^0.0.6"
     ip "^1.1.5"
 
-"@react-native-community/cli-platform-android@10.0.0", "@react-native-community/cli-platform-android@10.0.0-alpha.4", "@react-native-community/cli-platform-android@^10.0.0":
-  version "10.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-10.0.0-alpha.4.tgz#6fa184a85548e682c3e21d7485cc1ef86aed0489"
-  integrity sha512-KW4qJx0nW09WUyFlCcdo0pLKOjz+IoqdKtpN3ya9PP2utb2bsn5U8oOxR9UQaMBZQ+Z5cgiJQ6YUfDEWBHeydw==
+"@react-native-community/cli-platform-android@10.0.0", "@react-native-community/cli-platform-android@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-10.0.0.tgz#9894a0b54de94da4d01f3b9db4e6b51ba112fa72"
+  integrity sha512-wUXq+//PagXVjG6ZedO+zIbNPkCsAiP+uiE45llFTsCtI6vFBwa6oJFHH6fhfeib4mOd7DvIh2Kktrpgyb6nBg==
   dependencies:
-    "@react-native-community/cli-tools" "^10.0.0-alpha.0"
+    "@react-native-community/cli-tools" "^10.0.0"
     chalk "^4.1.2"
     execa "^1.0.0"
     glob "^7.1.3"
@@ -1609,21 +1609,6 @@
   version "10.0.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-10.0.0.tgz#51ec1775f699951837091cf84dc765e290377a53"
   integrity sha512-cPUaOrahRcMJvJpBaoc/zpYPHoPqj91qV5KmvA9cJvKktY4rl/PFfUi1A0gTqqFhdH7qW1zkeyKo80lWq7NvxA==
-  dependencies:
-    appdirsjs "^1.2.4"
-    chalk "^4.1.2"
-    find-up "^5.0.0"
-    mime "^2.4.1"
-    node-fetch "^2.6.0"
-    open "^6.2.0"
-    ora "^5.4.1"
-    semver "^6.3.0"
-    shell-quote "^1.7.3"
-
-"@react-native-community/cli-tools@^10.0.0-alpha.0":
-  version "10.0.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-10.0.0-alpha.0.tgz#171c40dc81dc238350bf9a5e81673d1a38c88105"
-  integrity sha512-fZc0UfyNwkd8rBJHzYg+uLUvIdsWwW83c2LGnpmevEfQhe1lV/f4+H+l63JGiB/TJ3ru6RmV6MvrBUgRTfqEEg==
   dependencies:
     appdirsjs "^1.2.4"
     chalk "^4.1.2"

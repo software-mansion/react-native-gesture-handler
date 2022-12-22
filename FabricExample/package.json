@@ -37,8 +37,5 @@
   },
   "jest": {
     "preset": "react-native"
-  },
-  "resolutions": {
-    "@react-native-community/cli-platform-android": "10.0.0-alpha.4"
   }
 }
