@@ -30,6 +30,7 @@ export type Config = Partial<{
   activeOffsetYEnd: number;
   waitFor: any[] | null;
   simultaneousHandlers: any[] | null;
+  disableSelection: boolean;
 }>;
 
 type NativeEvent = ReturnType<GestureHandler['transformEventData']>;
@@ -39,7 +40,7 @@ let gestureInstances = 0;
 abstract class GestureHandler {
   public handlerTag: any;
   public isGestureRunning = false;
-  public view: number | null = null;
+  public view: number | HTMLElement | null = null;
   protected hasCustomActivationCriteria: boolean;
   protected hasGestureFailed = false;
   protected hammer: HammerManager | null = null;
@@ -285,7 +286,8 @@ abstract class GestureHandler {
     this.view = findNodeHandle(ref);
 
     if (this.config.disableSelection) {
-      this.view.onselectstart = () => false;
+      const viewHTMLElement = this.view as unknown as HTMLElement;
+      this.viewHTMLElement.onselectstart = () => false;
     }
 
     // When the browser starts handling the gesture (e.g. scrolling), it sends a pointercancel event and stops
