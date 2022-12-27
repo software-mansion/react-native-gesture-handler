@@ -287,7 +287,7 @@ abstract class GestureHandler {
 
     if (this.config.disableSelection) {
       const viewHTMLElement = this.view as unknown as HTMLElement;
-      this.viewHTMLElement.onselectstart = () => false;
+      viewHTMLElement.onselectstart = () => false;
     }
 
     // When the browser starts handling the gesture (e.g. scrolling), it sends a pointercancel event and stops
