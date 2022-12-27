@@ -165,6 +165,8 @@ export interface DrawerLayoutProps {
    * Values: 'none'|'text'|'auto'
    */
   userSelect?: UserSelect;
+
+  disableSelection?: boolean;
 }
 
 export type DrawerLayoutState = {
@@ -691,6 +693,7 @@ export default class DrawerLayout extends Component<
       <PanGestureHandler
         // @ts-ignore could be fixed in handler types
         userSelect={this.props.userSelect}
+        disableSelection={this.props.disableSelection}
         ref={this.setPanGestureRef}
         hitSlop={hitSlop}
         activeOffsetX={gestureOrientation * minSwipeDistance!}

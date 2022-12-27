@@ -591,9 +591,19 @@ const applyUserSelectProp = (
   }
 };
 
+const applyDisableSelectionProp = (
+  disableSelection: boolean,
+  gesture: ComposedGesture | GestureType
+): void => {
+  for (const g of gesture.toGestureArray()) {
+    g.config.disableSelection = disableSelection;
+  }
+};
+
 interface GestureDetectorProps {
   gesture: ComposedGesture | GestureType;
   userSelect?: UserSelect;
+  disableSelection?: boolean;
   children?: React.ReactNode;
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
@@ -601,6 +611,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   if (props.userSelect) {
     applyUserSelectProp(props.userSelect, gestureConfig);
+  }
+
+  if (props.disableSelection) {
+    applyDisableSelectionProp(props.disableSelection, gestureConfig);
   }
 
   const gesture = gestureConfig.toGestureArray();

@@ -67,6 +67,10 @@ Specifying `width` or `height` is useful if we only want the gesture to activate
 
 This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Defaults to `"none"`.
 
+### `disableSelection` (**web only**)
+
+This parameter disables selection. If enabled `onselectstart` returns `false`. Defaults to `false`.
+
 ### `onGestureEvent`
 
 Takes a callback that is going to be triggered for each subsequent touch event while the handler is in an [ACTIVE](../basics/state.md#active) state. Event payload depends on the particular handler type. Common set of event data attributes is documented [below](#event-data) and handler specific attributes are documented on the corresponding handler pages. E.g. event payload for [`PinchGestureHandler`](./rotation-gh.md#event-data) contains `scale` attribute that represents how the distance between fingers changed since when the gesture started.

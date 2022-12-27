@@ -284,6 +284,10 @@ abstract class GestureHandler {
 
     this.view = findNodeHandle(ref);
 
+    if (this.config.disableSelection) {
+      this.view.onselectstart = () => false;
+    }
+
     // When the browser starts handling the gesture (e.g. scrolling), it sends a pointercancel event and stops
     // sending additional pointer events. This is not the case with touch events, so if the gesture is simultaneous
     // with a NativeGestureHandler, we need to check if touch events are supported and use them if possible.

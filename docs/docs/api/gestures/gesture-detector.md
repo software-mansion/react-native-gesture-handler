@@ -29,3 +29,7 @@ Starting with Reanimated-2.3.0-beta.4 Gesture Handler will provide a [StateManag
 ### `userSelect` (**web only**)
 
 This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Defaults to `"none"`.
+
+### `disableSelection` (**web only**)
+
+This parameter disables selection. If enabled `onselectstart` returns `false`. Defaults to `false`.

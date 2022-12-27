@@ -82,6 +82,10 @@ export default abstract class GestureHandler {
       this.view.style['webkitUserSelect'] = this.config.userSelect;
       this.view.style['userSelect'] = this.config.userSelect;
     }
+
+    if (this.config.disableSelection) {
+      this.view.onselectstart = () => false;
+    }
   }
 
   private addEventManager(manager: EventManager): void {
