@@ -26,6 +26,8 @@
 #import "RNGestureHandlerButton.h"
 #import "RNGestureHandlerStateManager.h"
 
+#import <React/RCTJSThread.h>
+
 #ifdef RN_FABRIC_ENABLED
 using namespace facebook;
 using namespace react;
@@ -123,10 +125,15 @@ void decorateRuntime(jsi::Runtime &runtime)
 #ifdef RN_FABRIC_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 {
-  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
-  auto runtime = (jsi::Runtime *)cxxBridge.runtime;
-  //  TODO: decorateRuntime(*runtime);
-  return @true;
+  [self.bridge
+      dispatchBlock:^{
+        RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+        auto runtime = (jsi::Runtime *)cxxBridge.runtime;
+        decorateRuntime(*runtime);
+      }
+              queue:RCTJSThread];
+
+  return nil;
 }
 #endif // RN_FABRIC_ENABLED
 
