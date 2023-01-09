@@ -14,4 +14,3 @@ val ReactContext.UIManager: UIManagerModule
 
 fun Context.isScreenReaderOn() =
   (getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager).isEnabled
-
