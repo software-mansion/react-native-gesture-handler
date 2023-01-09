@@ -137,7 +137,7 @@ function SectionBoxes() {
 
 function BannerSection() {
   return (
-    <section>
+    <section className="landing-page__section">
       <div className="container">
         <div className="row">
           <div
@@ -180,7 +180,7 @@ function Home() {
       <Hero />
 
       <main>
-        <section>
+        <section className="landing-page__section">
           <div className="container">
             <div className="row row--box-section">
               <SectionBoxes />
@@ -188,7 +188,7 @@ function Home() {
           </div>
         </section>
         {/* <BannerSection /> */}
-        <section>
+        <section className="landing-page__section">
           <div className="container container--center">
             <div className="row row--center">
               <div className="col col--7 text--center col--bottom-section">

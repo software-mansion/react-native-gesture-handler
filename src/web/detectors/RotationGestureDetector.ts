@@ -8,7 +8,8 @@ export interface RotationGestureListener {
 }
 
 export default class RotationGestureDetector
-  implements RotationGestureListener {
+  implements RotationGestureListener
+{
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
   onRotation: (detector: RotationGestureDetector) => boolean;
   onRotationEnd: (detector: RotationGestureDetector) => void;

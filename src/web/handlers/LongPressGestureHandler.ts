@@ -22,7 +22,6 @@ export default class LongPressGestureHandler extends GestureHandler {
 
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
-    this.setShouldCancelWhenOutside(true);
 
     this.view.oncontextmenu = () => false;
   }
@@ -41,8 +40,6 @@ export default class LongPressGestureHandler extends GestureHandler {
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
-
-    this.enabled = enabled;
 
     if (this.config.minDurationMs !== undefined) {
       this.minDurationMs = this.config.minDurationMs;

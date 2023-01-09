@@ -30,11 +30,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
     } else {
       this.buttonRole = false;
     }
-
-    if (this.view.tagName.toLowerCase() === 'input') {
-      //Enables text input on Safari
-      this.view.style['webkitUserSelect'] = 'auto';
-    }
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {

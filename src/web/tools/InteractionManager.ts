@@ -69,9 +69,8 @@ export default class InteractionManager {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const simultaneousHandlers:
-      | number[]
-      | undefined = this.simultaneousRelations.get(handler.getTag());
+    const simultaneousHandlers: number[] | undefined =
+      this.simultaneousRelations.get(handler.getTag());
     if (!simultaneousHandlers) {
       return false;
     }
