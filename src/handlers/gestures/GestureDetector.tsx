@@ -130,7 +130,7 @@ interface AttachHandlersConfig {
   gesture: GestureType[];
   viewTag: number;
   webEventHandlersRef: React.RefObject<WebEventHandler>;
-  detectorState: GestureDetectorState;
+  mountedRef: React.RefObject<boolean>;
 }
 
 function attachHandlers({
@@ -139,7 +139,7 @@ function attachHandlers({
   gesture,
   viewTag,
   webEventHandlersRef,
-  detectorState,
+  mountedRef,
 }: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
     gestureConfig.initialize();
@@ -150,7 +150,7 @@ function attachHandlers({
   // use setImmediate to extract handlerTags, because all refs should be initialized
   // when it's ran
   setImmediate(() => {
-    if (!detectorState.mounted) {
+    if (!mountedRef.current) {
       return;
     }
     gestureConfig.prepare();
@@ -170,7 +170,7 @@ function attachHandlers({
   // use setImmediate to extract handlerTags, because all refs should be initialized
   // when it's ran
   setImmediate(() => {
-    if (!detectorState.mounted) {
+    if (!mountedRef.current) {
       return;
     }
     for (const handler of gesture) {
@@ -238,7 +238,7 @@ function updateHandlers(
   preparedGesture: GestureConfigReference,
   gestureConfig: ComposedGesture | GestureType,
   gesture: GestureType[],
-  detectorState: GestureDetectorState
+  mountedRef: React.RefObject<boolean>
 ) {
   gestureConfig.prepare();
 
@@ -258,7 +258,7 @@ function updateHandlers(
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
   setImmediate(() => {
-    if (!detectorState.mounted) {
+    if (!mountedRef.current) {
       return;
     }
     for (let i = 0; i < gesture.length; i++) {
@@ -601,7 +601,6 @@ interface GestureDetectorState {
   viewRef: React.Component | null;
   previousViewTag: number;
   forceReattach: boolean;
-  mounted: boolean;
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
   const gestureConfig = props.gesture;
@@ -619,9 +618,8 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     viewRef: null,
     previousViewTag: -1,
     forceReattach: false,
-    mounted: false,
   }).current;
-
+  const mountedRef = useRef(false);
   const webEventHandlersRef = useRef<WebEventHandler>({
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
@@ -668,7 +666,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
         gesture,
         webEventHandlersRef,
         viewTag,
-        detectorState: state,
+        mountedRef,
       });
 
       state.previousViewTag = viewTag;
@@ -677,7 +675,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
         forceRender();
       }
     } else if (!skipConfigUpdate) {
-      updateHandlers(preparedGesture, gestureConfig, gesture, state);
+      updateHandlers(preparedGesture, gestureConfig, gesture, mountedRef);
     }
   }
 
@@ -703,7 +701,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   useEffect(() => {
     const viewTag = findNodeHandle(state.viewRef) as number;
     state.firstRender = true;
-    state.mounted = true;
+    mountedRef.current = true;
 
     validateDetectorChildren(state.viewRef);
 
@@ -713,11 +711,11 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       gesture,
       webEventHandlersRef,
       viewTag,
-      detectorState: state,
+      mountedRef,
     });
 
     return () => {
-      state.mounted = false;
+      mountedRef.current = false;
       dropHandlers(preparedGesture);
     };
   }, []);
