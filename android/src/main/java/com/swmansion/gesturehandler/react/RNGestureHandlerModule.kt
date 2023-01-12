@@ -541,7 +541,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         val event = RNGestureHandlerEvent.obtain(
           handler,
           handlerFactory,
-          useTopPrefixedName = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+          useTopPrefixedName = BuildConfig.REACT_NATIVE_MINOR_VERSION >= 71
         )
         sendEventForNativeAnimatedEvent(event)
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API) {

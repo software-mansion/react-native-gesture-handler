@@ -153,6 +153,8 @@ android {
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
+
         if (isNewArchitectureEnabled()) {
             var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
             externalNativeBuild {
