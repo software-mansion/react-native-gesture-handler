@@ -15,7 +15,7 @@ import { USE_NATIVE_DRIVER } from '../../config';
 
 class Snappable extends Component<PropsWithChildren<Record<string, unknown>>> {
   private onGestureEvent?: (event: PanGestureHandlerGestureEvent) => void;
-  private transX: Animated.AnimatedInterpolation;
+  private transX: Animated.AnimatedInterpolation<number>;
   private dragX: Animated.Value;
 
   constructor(props: Record<string, unknown>) {
@@ -62,7 +62,7 @@ class Snappable extends Component<PropsWithChildren<Record<string, unknown>>> {
 class Twistable extends Component<PropsWithChildren<unknown>> {
   private gesture: Animated.Value;
   private onGestureEvent?: (event: RotationGestureHandlerGestureEvent) => void;
-  private rot: Animated.AnimatedInterpolation;
+  private rot: Animated.AnimatedInterpolation<number>;
 
   constructor(props: Record<string, unknown>) {
     super(props);

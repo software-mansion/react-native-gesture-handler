@@ -11,8 +11,8 @@ export default class GmailStyleSwipeableRow extends Component<
   PropsWithChildren<unknown>
 > {
   private renderLeftActions = (
-    _progress: Animated.AnimatedInterpolation,
-    dragX: Animated.AnimatedInterpolation
+    _progress: Animated.AnimatedInterpolation<number>,
+    dragX: Animated.AnimatedInterpolation<number>
   ) => {
     const scale = dragX.interpolate({
       inputRange: [0, 80],
@@ -27,8 +27,8 @@ export default class GmailStyleSwipeableRow extends Component<
     );
   };
   private renderRightActions = (
-    _progress: Animated.AnimatedInterpolation,
-    dragX: Animated.AnimatedInterpolation
+    _progress: Animated.AnimatedInterpolation<number>,
+    dragX: Animated.AnimatedInterpolation<number>
   ) => {
     const scale = dragX.interpolate({
       inputRange: [-80, 0],
