@@ -6,7 +6,6 @@ import {
   PanGestureHandler,
   PanGestureHandlerStateChangeEvent,
   State,
-  GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 
 import { isFabric, isHermes } from './utils';
@@ -157,7 +156,7 @@ export function AnimatedEventDemo({
 
 export default function HomeScreen() {
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.bold}>Hello from React Native Gesture Handler!</Text>
       <Text style={styles.bold}>
         This example app runs on {isHermes() ? 'Hermes' : 'JSC'} with Fabric{' '}
@@ -168,7 +167,7 @@ export default function HomeScreen() {
       <PanGestureHandlerDemo color={COLORS.YELLOW} />
       <AnimatedEventDemo color={COLORS.KINDA_GREEN} useNativeDriver />
       <AnimatedEventDemo color={COLORS.KINDA_BLUE} useNativeDriver={false} />
-    </GestureHandlerRootView>
+    </View>
   );
 }
 

@@ -1,10 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import { COLORS } from './colors';
 
@@ -81,7 +77,7 @@ function SimultaneousDemo() {
 
 export default function ComponentsScreen() {
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.bold}>
         Gesture Handler provides a simple API for using multiple gestures at
         once in different configurations.
@@ -89,7 +85,7 @@ export default function ComponentsScreen() {
       <RaceDemo />
       <ExclusiveDemo />
       <SimultaneousDemo />
-    </GestureHandlerRootView>
+    </View>
   );
 }
 

@@ -8,7 +8,6 @@ import {
   TextInput,
   TouchableNativeFeedback,
   TouchableOpacity,
-  GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -134,7 +133,7 @@ function FlatListDemo() {
 
 export default function ComponentsScreen() {
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.bold}>
         Gesture Handler also provides a set of components that support gestures.
       </Text>
@@ -144,7 +143,7 @@ export default function ComponentsScreen() {
       <TouchableOpacityDemo />
       <ScrollViewDemo />
       <FlatListDemo />
-    </GestureHandlerRootView>
+    </View>
   );
 }
 

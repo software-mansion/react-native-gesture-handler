@@ -1,10 +1,6 @@
 import React from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import { COLORS } from './colors';
 
@@ -119,7 +115,7 @@ function InnerParentAnimatedView() {
 
 export default function ViewFlatteningScreen() {
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.bold}>
         Fabric comes with a brand new advanced view flattening mechanism. Not
         only some of the views may gets collapsed but also the structure of
@@ -129,7 +125,7 @@ export default function ViewFlatteningScreen() {
       <ParentViewNotFlattenedCollapsableTrueDemo />
       <ParentViewNotFlattenedCollapsableFalseDemo />
       <ParentAnimatedViewDemo />
-    </GestureHandlerRootView>
+    </View>
   );
 }
 
