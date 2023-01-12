@@ -5,9 +5,12 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "ts-check": "yarn tsc --noEmit",
+    "lint-check": "yarn eslint src/ && yarn prettier --check src/",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "patch-package": "^6.5.0",
