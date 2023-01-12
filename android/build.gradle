@@ -50,7 +50,7 @@ def resolveReactNativeDirectory() {
     }
 
     throw new Exception(
-        "[react-native-gesture-native] Unable to resolve react-native location in " +
+        "[react-native-gesture-handler] Unable to resolve react-native location in " +
             "node_modules. You should add project extension property (in app/build.gradle) " +
             "`REACT_NATIVE_NODE_MODULES_DIR` with path to react-native."
     )
