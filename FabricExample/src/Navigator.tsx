@@ -79,15 +79,17 @@ export default class Navigator {
     this.setCurrentRoute = setCurrentRoute;
 
     useEffect(() => {
-      this.history.push(currentRoute);
-
       BackHandler.addEventListener('hardwareBackPress', this.backHandler);
-
       return () => {
         BackHandler.removeEventListener('hardwareBackPress', this.backHandler);
       };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+      if (this.history.length === 0) {
+        this.history.push(currentRoute);
+      }
+    }, [currentRoute]);
 
     const route = this.routes[currentRoute];
     return (
