@@ -156,6 +156,7 @@ class Combo extends Component<ComboProps> {
               <Text>Hello</Text>
             </View>
           </TouchableHighlight>
+          {/* @ts-ignore Slider is a union type and it seems like TS has some trouble with infering props type */}
           <WrappedSlider style={styles.slider} />
           <TextInput
             style={styles.textinput}
