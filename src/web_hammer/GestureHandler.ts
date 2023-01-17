@@ -31,7 +31,7 @@ export type Config = Partial<{
   activeOffsetYEnd: number;
   waitFor: any[] | null;
   simultaneousHandlers: any[] | null;
-  useSelect?: UserSelect;
+  userSelect?: UserSelect;
 }>;
 
 type NativeEvent = ReturnType<GestureHandler['transformEventData']>;
@@ -286,7 +286,7 @@ abstract class GestureHandler {
 
     this.view = findNodeHandle(ref);
     const viewAsElement = this.view as unknown as HTMLElement;
-    viewAsElement.onselectstart = () => this.config.useSelect && this.config.useSelect !== 'none';
+    viewAsElement.onselectstart = () => this.config.userSelect && this.config.userSelect !== 'none';
 
     // When the browser starts handling the gesture (e.g. scrolling), it sends a pointercancel event and stops
     // sending additional pointer events. This is not the case with touch events, so if the gesture is simultaneous
