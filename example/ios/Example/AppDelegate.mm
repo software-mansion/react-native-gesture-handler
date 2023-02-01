@@ -67,8 +67,8 @@
 //   InitializeFlipper(application);
 // #endif
 
-//   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-//   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+//   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
+//   RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge
 //                                                    moduleName:@"Example"
 //                                             initialProperties:nil];
 
@@ -77,7 +77,7 @@
 //   MBFingerTipWindow *window = [[MBFingerTipWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 //   window.alwaysShowTouches = YES;
 //   self.window = window;
-//   UIViewController *rootViewController = [UIViewController new];
+//   UIViewController *rootViewController = [self.reactDelegate createRootViewController];
 //   rootViewController.view = rootView;
 //   self.window.rootViewController = rootViewController;
 //   [self.window makeKeyAndVisible];
