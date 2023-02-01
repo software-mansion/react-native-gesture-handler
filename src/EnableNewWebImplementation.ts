@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-let USE_NEW_WEB_IMPLEMENTATION = true;
+let useNewWebImplementation = true;
 let getWasCalled = false;
 
 export function enableExperimentalWebImplementation(
@@ -14,7 +14,7 @@ export function enableLegacyWebImplementation(
 ): void {
   if (
     Platform.OS !== 'web' ||
-    USE_NEW_WEB_IMPLEMENTATION === !shouldUseLegacyImplementation
+    useNewWebImplementation === !shouldUseLegacyImplementation
   ) {
     return;
   }
@@ -26,10 +26,10 @@ export function enableLegacyWebImplementation(
     return;
   }
 
-  USE_NEW_WEB_IMPLEMENTATION = !shouldUseLegacyImplementation;
+  useNewWebImplementation = !shouldUseLegacyImplementation;
 }
 
 export function isNewWebImplementationEnabled(): boolean {
   getWasCalled = true;
-  return USE_NEW_WEB_IMPLEMENTATION;
+  return useNewWebImplementation;
 }
