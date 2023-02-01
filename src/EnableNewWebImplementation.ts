@@ -21,7 +21,7 @@ export function enableLegacyWebImplementation(
 
   if (getWasCalled) {
     console.error(
-      'Some parts of this application have already started using old gesture handler implementation. No changes will be applied. You can try enabling new implementation earlier.'
+      'Some parts of this application have already started using the new gesture handler implementation. No changes will be applied. You can try enabling legacy implementation earlier.'
     );
     return;
   }
