@@ -4,6 +4,7 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
+import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.RNGestureHandlerRootViewManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerRootViewManagerInterface
 
@@ -30,6 +31,11 @@ class RNGestureHandlerRootViewManager :
 
   override fun onDropViewInstance(view: RNGestureHandlerRootView) {
     view.tearDown()
+  }
+
+  @ReactProp(name = "unstable_forceActive")
+  override fun setUnstable_forceActive(view: RNGestureHandlerRootView, active: Boolean) {
+    view.setUnstableForceActive(active)
   }
 
   /**

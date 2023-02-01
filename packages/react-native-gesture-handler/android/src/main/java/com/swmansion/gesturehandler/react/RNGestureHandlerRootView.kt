@@ -13,10 +13,12 @@ import com.facebook.react.views.view.ReactViewGroup
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var rootViewEnabled = false
+  private var unstableForceActive = false
   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
+
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
-    rootViewEnabled = !hasGestureHandlerEnabledRootView(this)
+    rootViewEnabled = unstableForceActive || !hasGestureHandlerEnabledRootView(this)
     if (!rootViewEnabled) {
       Log.i(
         ReactConstants.TAG,
@@ -54,6 +56,12 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
   fun activateNativeHandlers(view: View) {
     rootHelper?.activateNativeHandlers(view)
+  }
+
+  fun isRootViewEnabled() = rootViewEnabled
+
+  fun setUnstableForceActive(active: Boolean) {
+    this.unstableForceActive = active
   }
 
   companion object {
