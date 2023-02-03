@@ -68,6 +68,9 @@ export type GestureConfigReference = {
   useReanimatedHook: boolean;
 };
 
+const scheduleUpdate =
+  Platform.OS === 'web' ? requestAnimationFrame : setImmediate;
+
 function convertToHandlerTag(ref: GestureRef): number {
   if (typeof ref === 'number') {
     return ref;
@@ -147,9 +150,9 @@ function attachHandlers({
     preparedGesture.firstExecution = false;
   }
 
-  // use setImmediate to extract handlerTags, because all refs should be initialized
+  // use scheduleUpdate to extract handlerTags, because all refs should be initialized
   // when it's ran
-  setImmediate(() => {
+  scheduleUpdate(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -167,9 +170,9 @@ function attachHandlers({
     registerHandler(handler.handlerTag, handler, handler.config.testId);
   }
 
-  // use setImmediate to extract handlerTags, because all refs should be initialized
+  // use scheduleUpdate to extract handlerTags, because all refs should be initialized
   // when it's ran
-  setImmediate(() => {
+  scheduleUpdate(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -254,10 +257,10 @@ function updateHandlers(
     }
   }
 
-  // use setImmediate to extract handlerTags, because when it's ran, all refs should be updated
+  // use scheduleUpdate to extract handlerTags, because when it's ran, all refs should be updated
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
-  setImmediate(() => {
+  scheduleUpdate(() => {
     if (!mountedRef.current) {
       return;
     }
