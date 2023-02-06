@@ -6,6 +6,7 @@ import {
   StyleProp,
   ViewStyle,
   TouchableWithoutFeedbackProps,
+  Insets,
 } from 'react-native';
 
 import { State } from '../../State';
@@ -14,7 +15,6 @@ import { BaseButton } from '../GestureButtons';
 import {
   GestureEvent,
   HandlerStateChangeEvent,
-  HitSlop,
 } from '../../handlers/gestureHandlerCommon';
 import { NativeViewGestureHandlerPayload } from '../../handlers/NativeViewGestureHandler';
 import { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedback.android';
@@ -50,7 +50,7 @@ export interface GenericTouchableProps
   disallowInterruption?: boolean;
 
   containerStyle?: StyleProp<ViewStyle>;
-  hitSlop?: HitSlop;
+  hitSlop?: Insets | number;
 }
 
 interface InternalProps {
