@@ -14,7 +14,7 @@ const circleRadius = 30;
 
 class Fling extends Component {
   private touchX: Animated.Value;
-  private translateX: Animated.AnimatedAddition;
+  private translateX: Animated.AnimatedAddition<number>;
   private translateY: Animated.Value;
   constructor(props: Record<string, unknown>) {
     super(props);

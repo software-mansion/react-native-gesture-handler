@@ -83,7 +83,7 @@ module.exports = {
   themeConfig: {
     algolia: {
       appId: 'BKGDKVWG6F',
-      apiKey: 'd738e28e9c67a26dd7933b011fe2b9e4',
+      apiKey: '742696612cb124b06465cf68bce6ec92',
       indexName: 'react-native-gesture-handler',
       // contextualSearch: true, // doesn't work for some reason
     },
@@ -133,7 +133,7 @@ module.exports = {
               label: '2.4.0 – 2.5.0',
             },
             '2.6.0': {
-              label: '2.6.0 – 2.8.0',
+              label: '2.6.0 – 2.9.0',
             },
           },
         },
