@@ -31,9 +31,9 @@ type Props = {
 export class Swipeable extends Component<PropsWithChildren<Props>> {
   private width: number;
   private dragX: Animated.Value;
-  private transX: Animated.AnimatedInterpolation;
-  private showLeftAction: Animated.AnimatedInterpolation;
-  private showRightAction: Animated.AnimatedInterpolation;
+  private transX: Animated.AnimatedInterpolation<number>;
+  private showLeftAction: Animated.AnimatedInterpolation<number>;
+  private showRightAction: Animated.AnimatedInterpolation<number>;
   private onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   constructor(props: Props) {
     super(props);

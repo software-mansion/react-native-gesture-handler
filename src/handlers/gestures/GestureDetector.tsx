@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, RefObject } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   GestureType,
   HandlerCallbacks,
@@ -42,7 +42,7 @@ import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
 import { RNRenderer } from '../../RNRenderer';
-import { isExperimentalWebImplementationEnabled } from '../../EnableExperimentalWebImplementation';
+import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -67,6 +67,9 @@ export type GestureConfigReference = {
   firstExecution: boolean;
   useReanimatedHook: boolean;
 };
+
+const scheduleUpdate =
+  Platform.OS === 'web' ? requestAnimationFrame : setImmediate;
 
 function convertToHandlerTag(ref: GestureRef): number {
   if (typeof ref === 'number') {
@@ -130,6 +133,7 @@ interface AttachHandlersConfig {
   gesture: GestureType[];
   viewTag: number;
   webEventHandlersRef: React.RefObject<WebEventHandler>;
+  mountedRef: React.RefObject<boolean>;
 }
 
 function attachHandlers({
@@ -138,6 +142,7 @@ function attachHandlers({
   gesture,
   viewTag,
   webEventHandlersRef,
+  mountedRef,
 }: AttachHandlersConfig) {
   if (!preparedGesture.firstExecution) {
     gestureConfig.initialize();
@@ -145,9 +150,12 @@ function attachHandlers({
     preparedGesture.firstExecution = false;
   }
 
-  // use setImmediate to extract handlerTags, because all refs should be initialized
+  // use scheduleUpdate to extract handlerTags, because all refs should be initialized
   // when it's ran
-  setImmediate(() => {
+  scheduleUpdate(() => {
+    if (!mountedRef.current) {
+      return;
+    }
     gestureConfig.prepare();
   });
 
@@ -162,9 +170,12 @@ function attachHandlers({
     registerHandler(handler.handlerTag, handler, handler.config.testId);
   }
 
-  // use setImmediate to extract handlerTags, because all refs should be initialized
+  // use scheduleUpdate to extract handlerTags, because all refs should be initialized
   // when it's ran
-  setImmediate(() => {
+  scheduleUpdate(() => {
+    if (!mountedRef.current) {
+      return;
+    }
     for (const handler of gesture) {
       let requireToFail: number[] = [];
       if (handler.config.requireToFail) {
@@ -230,7 +241,7 @@ function updateHandlers(
   preparedGesture: GestureConfigReference,
   gestureConfig: ComposedGesture | GestureType,
   gesture: GestureType[],
-  mountedRef: RefObject<boolean>
+  mountedRef: React.RefObject<boolean>
 ) {
   gestureConfig.prepare();
 
@@ -246,10 +257,10 @@ function updateHandlers(
     }
   }
 
-  // use setImmediate to extract handlerTags, because when it's ran, all refs should be updated
+  // use scheduleUpdate to extract handlerTags, because when it's ran, all refs should be updated
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
-  setImmediate(() => {
+  scheduleUpdate(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -588,6 +599,12 @@ interface GestureDetectorProps {
   userSelect?: UserSelect;
   children?: React.ReactNode;
 }
+interface GestureDetectorState {
+  firstRender: boolean;
+  viewRef: React.Component | null;
+  previousViewTag: number;
+  forceReattach: boolean;
+}
 export const GestureDetector = (props: GestureDetectorProps) => {
   const gestureConfig = props.gesture;
 
@@ -597,19 +614,30 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   const gesture = gestureConfig.toGestureArray();
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
-  const viewRef = useRef(null);
-  const firstRenderRef = useRef(true);
+
+  // store state in ref to prevent unnecessary renders
+  const state = useRef<GestureDetectorState>({
+    firstRender: true,
+    viewRef: null,
+    previousViewTag: -1,
+    forceReattach: false,
+  }).current;
   const mountedRef = useRef(false);
   const webEventHandlersRef = useRef<WebEventHandler>({
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
     },
-    onGestureHandlerStateChange: isExperimentalWebImplementationEnabled()
+    onGestureHandlerStateChange: isNewWebImplementationEnabled()
       ? (e: HandlerStateChangeEvent<unknown>) => {
           onGestureHandlerEvent(e.nativeEvent);
         }
       : undefined,
   });
+
+  const [renderState, setRenderState] = useState(false);
+  function forceRender() {
+    setRenderState(!renderState);
+  }
 
   const preparedGesture = React.useRef<GestureConfigReference>({
     config: gesture,
@@ -627,10 +655,41 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     );
   }
 
+  function onHandlersUpdate(skipConfigUpdate?: boolean) {
+    // if the underlying view has changed we need to reattach handlers to the new view
+    const viewTag = findNodeHandle(state.viewRef) as number;
+    const forceReattach = viewTag !== state.previousViewTag;
+
+    if (forceReattach || needsToReattach(preparedGesture, gesture)) {
+      validateDetectorChildren(state.viewRef);
+      dropHandlers(preparedGesture);
+      attachHandlers({
+        preparedGesture,
+        gestureConfig,
+        gesture,
+        webEventHandlersRef,
+        viewTag,
+        mountedRef,
+      });
+
+      state.previousViewTag = viewTag;
+      state.forceReattach = forceReattach;
+      if (forceReattach) {
+        forceRender();
+      }
+    } else if (!skipConfigUpdate) {
+      updateHandlers(preparedGesture, gestureConfig, gesture, mountedRef);
+    }
+  }
+
   // Reanimated event should be rebuilt only when gestures are reattached, otherwise
   // config update will be enough as all necessary items are stored in shared values anyway
   const needsToRebuildReanimatedEvent =
-    preparedGesture.firstExecution || needsToReattach(preparedGesture, gesture);
+    preparedGesture.firstExecution ||
+    needsToReattach(preparedGesture, gesture) ||
+    state.forceReattach;
+
+  state.forceReattach = false;
 
   if (preparedGesture.firstExecution) {
     gestureConfig.initialize();
@@ -643,17 +702,19 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   }
 
   useEffect(() => {
-    firstRenderRef.current = true;
+    const viewTag = findNodeHandle(state.viewRef) as number;
+    state.firstRender = true;
     mountedRef.current = true;
-    const viewTag = findNodeHandle(viewRef.current) as number;
 
-    validateDetectorChildren(viewRef.current);
+    validateDetectorChildren(state.viewRef);
+
     attachHandlers({
       preparedGesture,
       gestureConfig,
       gesture,
-      viewTag,
       webEventHandlersRef,
+      viewTag,
+      mountedRef,
     });
 
     return () => {
@@ -663,31 +724,26 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   }, []);
 
   useEffect(() => {
-    if (!firstRenderRef.current) {
-      const viewTag = findNodeHandle(viewRef.current) as number;
-
-      if (needsToReattach(preparedGesture, gesture)) {
-        validateDetectorChildren(viewRef.current);
-        dropHandlers(preparedGesture);
-        attachHandlers({
-          preparedGesture,
-          gestureConfig,
-          gesture,
-          viewTag,
-          webEventHandlersRef,
-        });
-      } else {
-        updateHandlers(preparedGesture, gestureConfig, gesture, mountedRef);
-      }
+    if (!state.firstRender) {
+      onHandlersUpdate();
     } else {
-      firstRenderRef.current = false;
+      state.firstRender = false;
     }
   }, [props]);
 
   const refFunction = (ref: unknown) => {
     if (ref !== null) {
-      //@ts-ignore Just setting the ref
-      viewRef.current = ref;
+      // @ts-ignore Just setting the view ref
+      state.viewRef = ref;
+
+      // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
+      if (state.previousViewTag === -1) {
+        state.previousViewTag = findNodeHandle(state.viewRef) as number;
+      }
+
+      // pass true as `skipConfigUpdate`, here we only want to trigger the eventual reattaching of handlers
+      // in case the view has changed, while config update would be handled be the `useEffect` above
+      onHandlersUpdate(true);
 
       if (isFabric()) {
         const node = getShadowNodeFromRef(ref);
