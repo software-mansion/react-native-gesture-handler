@@ -207,6 +207,10 @@
         {
           "type": "doc",
           "id": "version-2.4.0/under-the-hood/how-does-it-work"
+        },
+        {
+          "type": "doc",
+          "id": "version-2.4.0/gesture-handlers/basics/state"
         }
       ]
     }
