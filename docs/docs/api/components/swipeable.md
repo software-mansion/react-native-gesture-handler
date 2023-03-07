@@ -149,6 +149,12 @@ method that opens component on left side.
 
 method that opens component on right side.
 
+### `reset`
+
+method that resets the swiping states of this `Swipeable` component.
+
+Unlike method `close`, this method does not trigger any animation.
+
 ### Example:
 
 See the [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/showcase/swipeable/index.tsx) from GestureHandler Example App or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
