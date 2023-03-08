@@ -43,6 +43,7 @@ import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
 import { RNRenderer } from '../../RNRenderer';
 import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
+import { nativeViewGestureHandlerProps } from '../NativeViewGestureHandler';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -56,6 +57,7 @@ const ALLOWED_PROPS = [
   ...longPressGestureHandlerProps,
   ...forceTouchGestureHandlerProps,
   ...flingGestureHandlerProps,
+  ...nativeViewGestureHandlerProps,
 ];
 
 export type GestureConfigReference = {
