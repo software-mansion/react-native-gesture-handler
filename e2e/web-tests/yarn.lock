@@ -2088,9 +2088,9 @@
     "@xtuc/long" "4.2.2"
 
 "@xmldom/xmldom@~0.7.0":
-  version "0.7.6"
-  resolved "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.7.6.tgz"
-  integrity sha512-HHXP9hskkFQHy8QxxUXkS7946FFIhYVfGqsk0WLwllmexN9x/+R4UBLvurHEuyXRfVEObVR8APuQehykLviwSQ==
+  version "0.7.9"
+  resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.7.9.tgz#7f9278a50e737920e21b297b8a35286e9942c056"
+  integrity sha512-yceMpm/xd4W2a85iqZyO09gTnHvXF6pyiWjD2jcOJs7hRoZtNNOO1eJlhHj1ixA+xip2hOyGn+LgcvLCMo5zXA==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
