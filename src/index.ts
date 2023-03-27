@@ -92,6 +92,7 @@ export {
   BaseButton,
   RectButton,
   BorderlessButton,
+  PureNativeButton,
 } from './components/GestureButtons';
 export {
   TouchableHighlight,
