@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   GestureType,
   HandlerCallbacks,
@@ -43,6 +43,7 @@ import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
 import { RNRenderer } from '../../RNRenderer';
 import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
+import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -606,6 +607,13 @@ interface GestureDetectorState {
   forceReattach: boolean;
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
+  const rootViewContext = useContext(GestureHandlerRootViewContext);
+  if (__DEV__ && !rootViewContext) {
+    throw new Error(
+      'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
+    );
+  }
+
   const gestureConfig = props.gesture;
 
   if (props.userSelect) {

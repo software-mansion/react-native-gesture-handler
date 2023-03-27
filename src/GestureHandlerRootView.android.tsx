@@ -4,6 +4,7 @@ import { PropsWithChildren } from 'react';
 import { requireNativeComponent, ViewProps } from 'react-native';
 import { maybeInitializeFabric } from './init';
 import { shouldUseCodegenNativeComponent } from './utils';
+import GestureHandlerRootViewContext from './GestureHandlerRootViewContext';
 
 const GestureHandlerRootViewNativeComponent = shouldUseCodegenNativeComponent()
   ? require('./fabric/RNGestureHandlerRootViewNativeComponent').default
@@ -20,5 +21,9 @@ export default function GestureHandlerRootView(
   // to make sure it's called only once)
   maybeInitializeFabric();
 
-  return <GestureHandlerRootViewNativeComponent {...props} />;
+  return (
+    <GestureHandlerRootViewContext.Provider value>
+      <GestureHandlerRootViewNativeComponent {...props} />
+    </GestureHandlerRootViewContext.Provider>
+  );
 }
