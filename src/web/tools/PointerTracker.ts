@@ -1,6 +1,5 @@
-import { PixelRatio } from 'react-native';
 import { AdaptedEvent } from '../interfaces';
-import CircularBuffer from './CircularBuffer';
+import VelocityTracker from './VelocityTracker';
 
 export interface TrackerElement {
   lastX: number;
@@ -10,53 +9,6 @@ export interface TrackerElement {
 
   velocityX: number;
   velocityY: number;
-}
-
-class VelocityTracker {
-  private buffer: CircularBuffer<AdaptedEvent>;
-
-  constructor() {
-    this.buffer = new CircularBuffer<AdaptedEvent>(5);
-  }
-
-  public add(event: AdaptedEvent): void {
-    this.buffer.push(event);
-  }
-
-  public getVelocity(): [number, number] {
-    if (this.buffer.size < 2) {
-      return [0, 0];
-    }
-
-    // I don't know, feels about right
-    const ratio = PixelRatio.get() > 1 ? PixelRatio.get() - 0.5 : 1.5;
-
-    let changeX = 0;
-    let changeY = 0;
-    let startTime = this.buffer.get(0).time;
-    let endTime = this.buffer.get(0).time;
-
-    for (let i = 0; i < this.buffer.size - 1; i++) {
-      const current = this.buffer.get(i);
-      const next = this.buffer.get(i + 1);
-
-      changeX += next.x - current.x;
-      changeY += next.y - current.y;
-
-      startTime = Math.min(current.time, next.time, startTime);
-      endTime = Math.max(current.time, next.time, endTime);
-    }
-
-    const dt = (endTime - startTime) / 1000; // to seconds
-    const velocityX = changeX / dt / ratio;
-    const velocityY = changeY / dt / ratio;
-
-    return [velocityX, velocityY];
-  }
-
-  public reset(): void {
-    this.buffer.clear();
-  }
 }
 
 const MAX_POINTERS = 20;
