@@ -125,19 +125,18 @@ export default class PointerEventManager extends EventManager {
     this.view.addEventListener(
       'lostpointercapture',
       (event: PointerEvent): void => {
-        const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
+        const adaptedEvent: AdaptedEvent = this.mapEvent(
+          event,
+          EventTypes.CANCEL
+        );
 
         if (this.trackedPointers.has(adaptedEvent.pointerId)) {
           // in some cases the `pointerup` event is not fired, but `lostpointercapture` is
-          // we simulate the `pointerup` event here to make sure the gesture handler stops tracking it
-          this.trackedPointers.delete(adaptedEvent.pointerId);
+          // we simulate the `pointercancel` event here to make sure the gesture handler stops tracking it
+          this.onPointerCancel(adaptedEvent);
 
-          if (--this.activePointersCounter > 0) {
-            adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_UP;
-            this.onPointerRemove(adaptedEvent);
-          } else {
-            this.onPointerUp(adaptedEvent);
-          }
+          this.activePointersCounter = 0;
+          this.trackedPointers.clear();
         }
       }
     );

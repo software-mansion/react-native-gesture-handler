@@ -352,6 +352,9 @@ export default abstract class GestureHandler {
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
+
+    this.cancel();
+    this.reset();
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.tryToSendMoveEvent(true);
