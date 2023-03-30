@@ -37,7 +37,7 @@ class GestureHandlerOrchestrator(
   fun onTouchEvent(event: MotionEvent): Boolean {
     isHandlingTouch = true
     val action = event.actionMasked
-    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_HOVER_MOVE) {
       extractGestureHandlers(event)
     } else if (action == MotionEvent.ACTION_CANCEL) {
       cancelAll()
@@ -462,15 +462,17 @@ class GestureHandlerOrchestrator(
     return found
   }
 
-  private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int): Boolean {
+  private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean {
     var found = false
     handlerRegistry.getHandlersForView(view)?.let {
       synchronized(it) {
         for (handler in it) {
           if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
-            recordHandlerIfNotPresent(handler, view)
-            handler.startTrackingPointer(pointerId)
-            found = true
+            if (event.action !in listOf(MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_MOVE) || handler is HoverGestureHandler) {
+              recordHandlerIfNotPresent(handler, view)
+              handler.startTrackingPointer(pointerId)
+              found = true
+            }
           }
         }
       }
@@ -492,11 +494,11 @@ class GestureHandlerOrchestrator(
     val pointerId = event.getPointerId(actionIndex)
     tempCoords[0] = event.getX(actionIndex)
     tempCoords[1] = event.getY(actionIndex)
-    traverseWithPointerEvents(wrapperView, tempCoords, pointerId)
-    extractGestureHandlers(wrapperView, tempCoords, pointerId)
+    traverseWithPointerEvents(wrapperView, tempCoords, pointerId, event)
+    extractGestureHandlers(wrapperView, tempCoords, pointerId, event)
   }
 
-  private fun extractGestureHandlers(viewGroup: ViewGroup, coords: FloatArray, pointerId: Int): Boolean {
+  private fun extractGestureHandlers(viewGroup: ViewGroup, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean {
     val childrenCount = viewGroup.childCount
     for (i in childrenCount - 1 downTo 0) {
       val child = viewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i)
@@ -511,7 +513,7 @@ class GestureHandlerOrchestrator(
         if (!isClipping(child) || isTransformedTouchPointInView(coords[0], coords[1], child)) {
           // we only consider the view if touch is inside the view bounds or if the view's children
           // can render outside of the view bounds (overflow visible)
-          found = traverseWithPointerEvents(child, coords, pointerId)
+          found = traverseWithPointerEvents(child, coords, pointerId, event)
         }
         coords[0] = restoreX
         coords[1] = restoreY
@@ -523,7 +525,7 @@ class GestureHandlerOrchestrator(
     return false
   }
 
-  private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int): Boolean =
+  private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean =
     when (viewConfigHelper.getPointerEventsConfigForView(view)) {
       PointerEventsConfig.NONE -> {
         // This view and its children can't be the target
@@ -532,7 +534,7 @@ class GestureHandlerOrchestrator(
       PointerEventsConfig.BOX_ONLY -> {
         // This view is the target, its children don't matter
         (
-          recordViewHandlersForPointer(view, coords, pointerId) ||
+          recordViewHandlersForPointer(view, coords, pointerId, event) ||
             shouldHandlerlessViewBecomeTouchTarget(view, coords)
           )
       }
@@ -540,10 +542,10 @@ class GestureHandlerOrchestrator(
         // This view can't be the target, but its children might
         when (view) {
           is ViewGroup -> {
-            extractGestureHandlers(view, coords, pointerId).also { found ->
+            extractGestureHandlers(view, coords, pointerId, event).also { found ->
               // A child view is handling touch, also extract handlers attached to this view
               if (found) {
-                recordViewHandlersForPointer(view, coords, pointerId)
+                recordViewHandlersForPointer(view, coords, pointerId, event)
               }
             }
           }
@@ -552,7 +554,7 @@ class GestureHandlerOrchestrator(
           // handlers attached to the text input, as it makes sense that gestures would work on a
           // non-editable TextInput.
           is EditText -> {
-            recordViewHandlersForPointer(view, coords, pointerId)
+            recordViewHandlersForPointer(view, coords, pointerId, event)
           }
           else -> false
         }
@@ -560,11 +562,11 @@ class GestureHandlerOrchestrator(
       PointerEventsConfig.AUTO -> {
         // Either this view or one of its children is the target
         val found = if (view is ViewGroup) {
-          extractGestureHandlers(view, coords, pointerId)
+          extractGestureHandlers(view, coords, pointerId, event)
         } else false
 
         (
-          recordViewHandlersForPointer(view, coords, pointerId) ||
+          recordViewHandlersForPointer(view, coords, pointerId, event) ||
             found || shouldHandlerlessViewBecomeTouchTarget(view, coords)
           )
       }

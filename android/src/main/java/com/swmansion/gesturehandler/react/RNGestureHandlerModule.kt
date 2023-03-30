@@ -20,6 +20,7 @@ import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.ReanimatedEventDispatcher
 import com.swmansion.gesturehandler.core.FlingGestureHandler
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.HoverGestureHandler
 import com.swmansion.gesturehandler.core.LongPressGestureHandler
 import com.swmansion.gesturehandler.core.ManualGestureHandler
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
@@ -337,6 +338,15 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
+  private class HoverGestureHandlerFactory : HandlerFactory<HoverGestureHandler>() {
+    override val type = HoverGestureHandler::class.java
+    override val name = "HoverGestureHandler"
+
+    override fun create(context: Context?): HoverGestureHandler {
+      return HoverGestureHandler()
+    }
+  }
+
   private val eventListener = object : OnTouchEventListener {
     override fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, event: MotionEvent) {
       this@RNGestureHandlerModule.onHandlerUpdate(handler)
@@ -359,6 +369,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     RotationGestureHandlerFactory(),
     FlingGestureHandlerFactory(),
     ManualGestureHandlerFactory(),
+    HoverGestureHandlerFactory(),
   )
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val interactionManager = RNGestureHandlerInteractionManager()
