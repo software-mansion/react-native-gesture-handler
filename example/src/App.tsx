@@ -43,6 +43,7 @@ import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
 import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
 import ManualGestures from './new_api/manualGestures/index';
+import Hover from './new_api/hover';
 
 interface Example {
   name: string;
@@ -115,6 +116,7 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Simple interaction with Reanimated',
         component: ReanimatedSimple,
       },
+      { name: 'Hover', component: Hover },
       { name: 'Camera', component: Camera },
       { name: 'Transformations', component: Transformations },
       { name: 'Overlap parents', component: OverlapParents },
