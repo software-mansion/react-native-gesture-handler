@@ -2,42 +2,35 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
+function makeHover(color: string) {
+  return Gesture.Hover()
+    .onBegin(() => {
+      console.log('hover begin', color);
+    })
+    .onStart(() => {
+      console.log('hover start', color);
+    })
+    .onChange((e) => {
+      // console.log('hover change', color, e);
+    })
+    .onEnd((_, s) => {
+      console.log('hover end', color, 'failed', !s);
+    })
+    .onFinalize(() => {
+      console.log('hover finalize', color);
+    });
+}
+
 export default function Example() {
-  const hover1 = Gesture.Hover()
-    .onStart(() => {
-      console.log('hover start red');
-    })
-    .onFinalize(() => {
-      console.log('hover end red');
-    });
-  const hover2 = Gesture.Hover()
-    .onStart(() => {
-      console.log('hover start green');
-    })
-    .onFinalize(() => {
-      console.log('hover end green');
-    });
-  const hover3 = Gesture.Hover()
-    .onStart(() => {
-      console.log('hover start red');
-    })
-    .onFinalize(() => {
-      console.log('hover end red');
-    });
-  const hover4 = Gesture.Hover()
-    .onStart(() => {
-      console.log('hover start green');
-    })
-    .onFinalize(() => {
-      console.log('hover end green');
-    });
-  const hover5 = Gesture.Hover()
-    .onStart(() => {
-      console.log('hover start blue');
-    })
-    .onFinalize(() => {
-      console.log('hover end blue');
-    });
+  const hover1 = makeHover('red');
+
+  const hover2 = makeHover('green');
+
+  const hover3 = makeHover('red');
+
+  const hover4 = makeHover('green');
+
+  const hover5 = makeHover('blue');
   hover1.simultaneousWithExternalGesture(hover2);
   hover4.simultaneousWithExternalGesture(hover5);
 
