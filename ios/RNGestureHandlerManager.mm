@@ -23,6 +23,7 @@
 
 #import "Handlers/RNFlingHandler.h"
 #import "Handlers/RNForceTouchHandler.h"
+#import "Handlers/RNHoverHandler.h"
 #import "Handlers/RNLongPressHandler.h"
 #import "Handlers/RNManualHandler.h"
 #import "Handlers/RNNativeViewHandler.h"
@@ -76,6 +77,7 @@
       @"RotationGestureHandler" : [RNRotationGestureHandler class],
       @"ForceTouchGestureHandler" : [RNForceTouchHandler class],
       @"ManualGestureHandler" : [RNManualGestureHandler class],
+      @"HoverGestureHandler" : [RNHoverGestureHandler class],
     };
   });
 
