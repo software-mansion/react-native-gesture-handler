@@ -170,7 +170,6 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.moveToState(State.FAILED, sendIfDisabled);
-      this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
@@ -187,7 +186,6 @@ export default abstract class GestureHandler {
     ) {
       this.onCancel();
       this.moveToState(State.CANCELLED, sendIfDisabled);
-      this.view.style.cursor = 'auto';
     }
   }
 
@@ -197,7 +195,6 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.moveToState(State.ACTIVE);
-      this.view.style.cursor = 'grab';
     }
   }
 
@@ -207,7 +204,6 @@ export default abstract class GestureHandler {
       this.currentState === State.ACTIVE
     ) {
       this.moveToState(State.END);
-      this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();

@@ -476,6 +476,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
 
     super.activate(force);
+    this.view.style.cursor = 'grab';
   }
 
   protected onCancel(): void {
@@ -484,6 +485,7 @@ export default class PanGestureHandler extends GestureHandler {
 
   protected onReset(): void {
     this.clearActivationTimeout();
+    this.view.style.cursor = 'auto';
   }
 
   protected resetProgress(): void {
