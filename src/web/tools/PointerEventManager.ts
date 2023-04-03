@@ -93,8 +93,8 @@ export default class PointerEventManager extends EventManager {
         }
       } else {
         if (pointerIndex >= 0) {
-          adaptedEvent.eventType = EventTypes.OUT;
-          this.onPointerOut(adaptedEvent);
+          adaptedEvent.eventType = EventTypes.LEAVE;
+          this.onPointerLeave(adaptedEvent);
           this.markAsOutOfBounds(adaptedEvent.pointerId);
         } else {
           this.onPointerOutOfBounds(adaptedEvent);

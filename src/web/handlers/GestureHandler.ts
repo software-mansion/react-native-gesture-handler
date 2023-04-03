@@ -91,7 +91,7 @@ export default abstract class GestureHandler {
     manager.setOnPointerRemove(this.onPointerRemove.bind(this));
     manager.setOnPointerMove(this.onPointerMove.bind(this));
     manager.setOnPointerEnter(this.onPointerEnter.bind(this));
-    manager.setOnPointerOut(this.onPointerOut.bind(this));
+    manager.setOnPointerLeave(this.onPointerLeave.bind(this));
     manager.setOnPointerCancel(this.onPointerCancel.bind(this));
     manager.setOnPointerOutOfBounds(this.onPointerOutOfBounds.bind(this));
     manager.setListeners();
@@ -326,7 +326,7 @@ export default abstract class GestureHandler {
       this.sendTouchEvent(event);
     }
   }
-  protected onPointerOut(event: AdaptedEvent): void {
+  protected onPointerLeave(event: AdaptedEvent): void {
     if (this.shouldCancellWhenOutside) {
       switch (this.currentState) {
         case State.ACTIVE:

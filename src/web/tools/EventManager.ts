@@ -24,8 +24,8 @@ export default abstract class EventManager {
   protected onPointerUp(_event: AdaptedEvent): void {}
   protected onPointerRemove(_event: AdaptedEvent): void {}
   protected onPointerMove(_event: AdaptedEvent): void {}
-  protected onPointerOut(_event: AdaptedEvent): void {}
-  protected onPointerEnter(_event: AdaptedEvent): void {}
+  protected onPointerLeave(_event: AdaptedEvent): void {} // called only when pointer is pressed (or touching)
+  protected onPointerEnter(_event: AdaptedEvent): void {} // called only when pointer is pressed (or touching)
   protected onPointerCancel(_event: AdaptedEvent): void {
     // When pointer cancel is triggered and there are more pointers on the view, only one pointer is cancelled
     // Because we want all pointers to be cancelled by that event, we are doing it manually by reseting handler and changing activePointersCounter to 0
@@ -49,8 +49,8 @@ export default abstract class EventManager {
   public setOnPointerMove(callback: (event: AdaptedEvent) => void): void {
     this.onPointerMove = callback;
   }
-  public setOnPointerOut(callback: (event: AdaptedEvent) => void): void {
-    this.onPointerOut = callback;
+  public setOnPointerLeave(callback: (event: AdaptedEvent) => void): void {
+    this.onPointerLeave = callback;
   }
   public setOnPointerEnter(callback: (event: AdaptedEvent) => void): void {
     this.onPointerEnter = callback;

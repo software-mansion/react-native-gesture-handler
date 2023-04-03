@@ -89,7 +89,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerOut(): void {
+  protected onPointerLeave(): void {
     this.cancel();
   }
 
