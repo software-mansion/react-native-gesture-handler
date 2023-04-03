@@ -345,6 +345,16 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override fun create(context: Context?): HoverGestureHandler {
       return HoverGestureHandler()
     }
+
+    override fun extractEventData(handler: HoverGestureHandler, eventData: WritableMap) {
+      super.extractEventData(handler, eventData)
+      with(eventData) {
+        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
+        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
+      }
+    }
   }
 
   private val eventListener = object : OnTouchEventListener {
