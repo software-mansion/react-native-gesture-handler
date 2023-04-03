@@ -33,6 +33,8 @@ export default abstract class EventManager {
     // is equal to 0. This prevents counter from going to negative values, when pointers are removed from view after one of them has been cancelled
   }
   protected onPointerOutOfBounds(_event: AdaptedEvent): void {}
+  protected onPointerMoveOver(_event: AdaptedEvent): void {}
+  protected onPointerMoveOut(_event: AdaptedEvent): void {}
 
   public setOnPointerDown(callback: (event: AdaptedEvent) => void): void {
     this.onPointerDown = callback;
@@ -62,6 +64,12 @@ export default abstract class EventManager {
     callback: (event: AdaptedEvent) => void
   ): void {
     this.onPointerOutOfBounds = callback;
+  }
+  public setOnPointerMoveOver(callback: (event: AdaptedEvent) => void): void {
+    this.onPointerMoveOver = callback;
+  }
+  public setOnPointerMoveOut(callback: (event: AdaptedEvent) => void): void {
+    this.onPointerMoveOut = callback;
   }
 
   protected markAsInBounds(pointerId: number): void {

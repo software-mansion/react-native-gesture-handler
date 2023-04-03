@@ -1,9 +1,4 @@
-import {
-  AdaptedEvent,
-  EventTypes,
-  MouseButtons,
-  PointerType,
-} from '../interfaces';
+import { AdaptedEvent, EventTypes, PointerType } from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
@@ -65,13 +60,6 @@ export default class PointerEventManager extends EventManager {
         return;
       }
 
-      if (
-        event.pointerType === PointerType.MOUSE &&
-        event.buttons !== MouseButtons.LEFT
-      ) {
-        return;
-      }
-
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
 
       const inBounds: boolean = isPointerInBounds(this.view, {
@@ -115,6 +103,26 @@ export default class PointerEventManager extends EventManager {
       this.onPointerCancel(adaptedEvent);
       this.markAsOutOfBounds(adaptedEvent.pointerId);
       this.activePointersCounter = 0;
+    });
+
+    this.view.addEventListener('pointerenter', (event: PointerEvent): void => {
+      if (event.pointerType === PointerType.TOUCH) {
+        return;
+      }
+
+      const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.ENTER);
+
+      this.onPointerMoveOver(adaptedEvent);
+    });
+
+    this.view.addEventListener('pointerleave', (event: PointerEvent): void => {
+      if (event.pointerType === PointerType.TOUCH) {
+        return;
+      }
+
+      const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.LEAVE);
+
+      this.onPointerMoveOut(adaptedEvent);
     });
   }
 

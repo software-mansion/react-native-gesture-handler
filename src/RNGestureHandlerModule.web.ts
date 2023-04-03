@@ -14,6 +14,7 @@ import RotationGestureHandler from './web/handlers/RotationGestureHandler';
 import FlingGestureHandler from './web/handlers/FlingGestureHandler';
 import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
 import ManualGestureHandler from './web/handlers/ManualGestureHandler';
+import HoverGestureHandler from './web/handlers/HoverGestureHandler';
 
 //Hammer Handlers
 import * as HammerNodeManager from './web_hammer/NodeManager';
@@ -35,6 +36,7 @@ export const Gestures = {
   RotationGestureHandler,
   FlingGestureHandler,
   ManualGestureHandler,
+  HoverGestureHandler,
 };
 
 export const HammerGestures = {
