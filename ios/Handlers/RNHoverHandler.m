@@ -12,9 +12,17 @@
 
 // TODO: handle iOS versions lower than 13?
 
+typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
+  RNGestureHandlerHoverEffectNone = 0,
+  RNGestureHandlerHoverEffectLift,
+  RNGestureHandlerHoverEffectHightlight,
+};
+
 @interface RNBetterHoverGestureRecognizer : UIHoverGestureRecognizer <UIPointerInteractionDelegate>
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
+
+@property (nonatomic) RNGestureHandlerHoverEffect hoverEffect;
 
 @end
 
@@ -26,6 +34,7 @@
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
+    _hoverEffect = RNGestureHandlerHoverEffectNone;
   }
   return self;
 }
@@ -42,13 +51,18 @@
 
 - (UIPointerStyle *)pointerInteraction:(UIPointerInteraction *)interaction styleForRegion:(UIPointerRegion *)region
 {
-  // TODO: figure out whether this stays or not
-  //    if (interaction.view != nil) {
-  //        UITargetedPreview *preview = [[UITargetedPreview alloc] initWithView:interaction.view];
-  //        UIPointerEffect *effect = [UIPointerLiftEffect effectWithPreview:preview];
-  //
-  //        return [UIPointerStyle styleWithEffect:effect shape:nil];
-  //    }
+  if (interaction.view != nil && _hoverEffect != RNGestureHandlerHoverEffectNone) {
+    UITargetedPreview *preview = [[UITargetedPreview alloc] initWithView:interaction.view];
+    UIPointerEffect *effect = nil;
+
+    if (_hoverEffect == RNGestureHandlerHoverEffectLift) {
+      effect = [UIPointerLiftEffect effectWithPreview:preview];
+    } else if (_hoverEffect == RNGestureHandlerHoverEffectHightlight) {
+      effect = [UIPointerHoverEffect effectWithPreview:preview];
+    }
+
+    return [UIPointerStyle styleWithEffect:effect shape:nil];
+  }
 
   return nil;
 }
@@ -80,17 +94,20 @@
   [self.recognizer.view removeInteraction:_pointerInteraction];
 }
 
-//- (void)resetConfig
-//{
-//  [super resetConfig];
-//  RNBetterHoverGestureRecognizer *recognizer = (RNBetterHoverGestureRecognizer *)_recognizer;
-//}
-//
-//- (void)configure:(NSDictionary *)config
-//{
-//  [super configure:config];
-//  RNBetterHoverGestureRecognizer *recognizer = (RNBetterHoverGestureRecognizer *)_recognizer;
-//}
+- (void)resetConfig
+{
+  [super resetConfig];
+  RNBetterHoverGestureRecognizer *recognizer = (RNBetterHoverGestureRecognizer *)_recognizer;
+  recognizer.hoverEffect = RNGestureHandlerHoverEffectNone;
+}
+
+- (void)configure:(NSDictionary *)config
+{
+  [super configure:config];
+  RNBetterHoverGestureRecognizer *recognizer = (RNBetterHoverGestureRecognizer *)_recognizer;
+
+  APPLY_INT_PROP(hoverEffect);
+}
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {

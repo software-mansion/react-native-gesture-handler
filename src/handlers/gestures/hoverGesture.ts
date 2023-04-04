@@ -1,7 +1,6 @@
 import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
 import { GestureUpdateEvent } from '../gestureHandlerCommon';
 
-// TODO: actually send events and figure out what to send
 export type HoverGestureHandlerEventPayload = {
   x: number;
   y: number;
@@ -9,19 +8,47 @@ export type HoverGestureHandlerEventPayload = {
   absoluteY: number;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface HoverGestureConfig {}
+export type HoverGestureChangeEventPayload = {
+  changeX: number;
+  changeY: number;
+};
+
+export enum HoverEffect {
+  NONE = 0,
+  LIFT = 1,
+  HIGHLIGHT = 2,
+}
+
+export interface HoverGestureConfig {
+  hoverEffect?: HoverEffect;
+}
+
+export const hoverGestureHandlerProps = ['hoverEffect'] as const;
 
 function changeEventCalculator(
-  current: GestureUpdateEvent<HoverGestureHandlerEventPayload>
+  current: GestureUpdateEvent<HoverGestureHandlerEventPayload>,
+  previous?: GestureUpdateEvent<HoverGestureHandlerEventPayload>
 ) {
   'worklet';
-  return current;
+  let changePayload: HoverGestureChangeEventPayload;
+  if (previous === undefined) {
+    changePayload = {
+      changeX: current.x,
+      changeY: current.y,
+    };
+  } else {
+    changePayload = {
+      changeX: current.x - previous.x,
+      changeY: current.y - previous.y,
+    };
+  }
+
+  return { ...current, ...changePayload };
 }
 
 export class HoverGesture extends ContinousBaseGesture<
   HoverGestureHandlerEventPayload,
-  never
+  HoverGestureChangeEventPayload
 > {
   public config: BaseGestureConfig & HoverGestureConfig = {};
 
@@ -31,9 +58,20 @@ export class HoverGesture extends ContinousBaseGesture<
     this.handlerName = 'HoverGestureHandler';
   }
 
+  /**
+   * Sets the visual hover effect.
+   * iOS only
+   */
+  withEffect(effect: HoverEffect) {
+    this.config.hoverEffect = effect;
+    return this;
+  }
+
   onChange(
     callback: (
-      event: GestureUpdateEvent<HoverGestureHandlerEventPayload & never>
+      event: GestureUpdateEvent<
+        HoverGestureHandlerEventPayload & HoverGestureChangeEventPayload
+      >
     ) => void
   ) {
     // @ts-ignore TS being overprotective, HoverGestureHandlerEventPayload is Record
