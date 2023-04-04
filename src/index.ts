@@ -73,6 +73,7 @@ export type { RotationGestureType as RotationGesture } from './handlers/gestures
 export type { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
 export type { NativeGestureType as NativeGesture } from './handlers/gestures/nativeGesture';
 export type { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
+export type { HoverGestureType as HoverGesture } from './handlers/gestures/hoverGesture';
 export type {
   ComposedGestureType as ComposedGesture,
   RaceGestureType as RaceGesture,
@@ -107,6 +108,7 @@ export {
   FlatList,
   RefreshControl,
 } from './components/GestureComponents';
+export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
   //events
   GestureHandlerGestureEvent,
