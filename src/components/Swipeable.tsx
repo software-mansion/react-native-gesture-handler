@@ -443,6 +443,13 @@ export default class Swipeable extends Component<
     this.animateRow(this.currentOffset(), -rightWidth);
   };
 
+  reset = () => {
+    const { dragX, rowTranslation } = this.state;
+    dragX.setValue(0);
+    rowTranslation.setValue(0);
+    this.setState({ rowState: 0 });
+  };
+
   render() {
     const { rowState } = this.state;
     const { children, renderLeftActions, renderRightActions } = this.props;
