@@ -293,7 +293,7 @@ class GestureHandlerOrchestrator(
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that
       // the event has been dispatched
-      if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
+      if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_HOVER_EXIT) {
         val pointerId = event.getPointerId(event.actionIndex)
         handler.stopTrackingPointer(pointerId)
       }
