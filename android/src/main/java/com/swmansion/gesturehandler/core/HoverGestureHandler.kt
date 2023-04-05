@@ -1,11 +1,16 @@
 package com.swmansion.gesturehandler.core
 
+import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import com.swmansion.gesturehandler.react.RNViewConfigurationHelper
 
 class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
+  private var handler: Handler? = null
+  private var finishRunnable = Runnable { finish() }
+
   private infix fun isAncestorOf(other: GestureHandler<*>): Boolean {
     var current: View? = other.view
 
@@ -68,24 +73,40 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
     return super.shouldRecognizeSimultaneously(handler)
   }
 
-  override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) {
-    if (event.action == MotionEvent.ACTION_HOVER_EXIT || !isWithinBounds) {
-      when (this.state) {
-        STATE_UNDETERMINED, STATE_BEGAN -> fail()
-        STATE_ACTIVE -> end()
-      }
-    } else if (event.action == MotionEvent.ACTION_HOVER_MOVE || event.action == MotionEvent.ACTION_HOVER_ENTER) {
-      when (this.state) {
-        STATE_UNDETERMINED -> begin()
-        STATE_BEGAN -> activate()
+  override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+    if (event.action == MotionEvent.ACTION_DOWN) {
+      handler?.removeCallbacksAndMessages(null)
+      handler = null
+    } else if (event.action == MotionEvent.ACTION_UP) {
+      if (!isWithinBounds) {
+        finish()
       }
     }
+  }
 
-    // should hover finish on touch (atm. it does probably `ACTION_HOVER_EXIT`, it doesn't on iOS)?
-    // if so, fix double finalize event when touching hovered view and dragging outside
+  override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) {
+    if (event.action == MotionEvent.ACTION_HOVER_EXIT) {
+      if (handler == null) {
+        handler = Handler(Looper.getMainLooper())
+      }
 
-    // iOS doesn't seem to like absolutely positioned views on top of each other even if
-    // gestures are simultaneous, reproduce here?
+      handler!!.postDelayed(finishRunnable, 4)
+    } else if (!isWithinBounds) {
+      finish()
+    } else if (event.action == MotionEvent.ACTION_HOVER_MOVE || event.action == MotionEvent.ACTION_HOVER_ENTER) {
+      if (this.state == STATE_UNDETERMINED) {
+        begin()
+        activate()
+      }
+    }
+  }
+
+  private fun finish() {
+    when (this.state) {
+      STATE_UNDETERMINED -> cancel()
+      STATE_BEGAN -> fail()
+      STATE_ACTIVE -> end()
+    }
   }
 
   companion object {
