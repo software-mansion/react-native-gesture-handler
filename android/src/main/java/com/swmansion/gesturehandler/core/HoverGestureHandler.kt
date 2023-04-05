@@ -68,7 +68,7 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
     return super.shouldRecognizeSimultaneously(handler)
   }
 
-  override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+  override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) {
     if (event.action == MotionEvent.ACTION_HOVER_EXIT || !isWithinBounds) {
       when (this.state) {
         STATE_UNDETERMINED, STATE_BEGAN -> fail()
