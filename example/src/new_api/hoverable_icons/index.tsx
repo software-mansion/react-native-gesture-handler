@@ -86,18 +86,14 @@ function BoxNative(props: { source: any }) {
 }
 
 export default function Example() {
+  const BoxComponent = Platform.OS === 'ios' ? BoxNative : BoxReanimated;
+
   return (
     <Animated.View style={styles.container}>
       <Animated.View style={{ flexDirection: 'row', overflow: 'visible' }}>
-        {Platform.OS === 'ios' &&
-          images.map((source, index) => (
-            <BoxNative key={index} source={source} />
-          ))}
-
-        {Platform.OS !== 'ios' &&
-          images.map((source, index) => (
-            <BoxReanimated key={index} source={source} />
-          ))}
+        {images.map((source, index) => (
+          <BoxComponent key={index} source={source} />
+        ))}
       </Animated.View>
     </Animated.View>
   );

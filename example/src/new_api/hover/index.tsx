@@ -26,9 +26,6 @@ function useHover(color: string): [GestureType, any] {
       .onStart(() => {
         console.log('hover start', color);
       })
-      .onChange((e) => {
-        // console.log('hover change', color, e);
-      })
       .onEnd((_, s) => {
         console.log('hover end', color, 'failed', !s);
       })

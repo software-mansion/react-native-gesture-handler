@@ -26,7 +26,6 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
   }
 
   private fun isViewDisplayedOverAnother(view: View, other: View, rootView: View = view.rootView): Boolean? {
-    // TODO: handle elevation?
     if (rootView == other) {
       return true
     } else if (rootView == view) {
