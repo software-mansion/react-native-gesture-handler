@@ -108,7 +108,7 @@ export {
   FlatList,
   RefreshControl,
 } from './components/GestureComponents';
-export { HoverEffect } from './handlers/gestures/hoverGesture';
+export { HoverFeedback } from './handlers/gestures/hoverGesture';
 export type {
   //events
   GestureHandlerGestureEvent,

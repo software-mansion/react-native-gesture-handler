@@ -21,15 +21,15 @@ Don't rely on `Hover` gesture to continue after the mouse button is clicked or t
 
 ### Properties specific to `HoverGesture`:
 
-### `withEffect(effect: HoverEffect)` (iOS only)
+### `withFeedback(feedback: HoverFeedback)` (iOS only)
 
-Visual effect applied to the view while the view is hovered. The possible values are:
+Visual feedback applied to the view while the view is hovered. The possible values are:
 
-- `HoverEffect.None`
-- `HoverEffect.Lift`
-- `HoverEffect.Highlight`
+- `HoverFeedback.None`
+- `HoverFeedback.Lift`
+- `HoverFeedback.Highlight`
 
-Defaults to `HoverEffect.None`
+Defaults to `HoverFeedback.None`
 
 <BaseEventConfig />
 
