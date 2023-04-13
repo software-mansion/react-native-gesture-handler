@@ -10,10 +10,10 @@
 #import <React/RCTConvert.h>
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
-typedef NS_ENUM(NSInteger, RNGestureHandlerHoverFeedback) {
-  RNGestureHandlerHoverFeedbackNone = 0,
-  RNGestureHandlerHoverFeedbackLift,
-  RNGestureHandlerHoverFeedbackHightlight,
+typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
+  RNGestureHandlerHoverEffectNone = 0,
+  RNGestureHandlerHoverEffectLift,
+  RNGestureHandlerHoverEffectHightlight,
 };
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_4) && \
@@ -24,7 +24,7 @@ API_AVAILABLE(ios(13.4))
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
-@property (nonatomic) RNGestureHandlerHoverFeedback hoverFeedback;
+@property (nonatomic) RNGestureHandlerHoverEffect hoverEffect;
 
 @end
 
@@ -36,7 +36,7 @@ API_AVAILABLE(ios(13.4))
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
-    _hoverFeedback = RNGestureHandlerHoverFeedbackNone;
+    _hoverEffect = RNGestureHandlerHoverEffectNone;
   }
   return self;
 }
@@ -53,13 +53,13 @@ API_AVAILABLE(ios(13.4))
 
 - (UIPointerStyle *)pointerInteraction:(UIPointerInteraction *)interaction styleForRegion:(UIPointerRegion *)region
 {
-  if (interaction.view != nil && _hoverFeedback != RNGestureHandlerHoverFeedbackNone) {
+  if (interaction.view != nil && _hoverEffect != RNGestureHandlerHoverEffectNone) {
     UITargetedPreview *preview = [[UITargetedPreview alloc] initWithView:interaction.view];
     UIPointerEffect *effect = nil;
 
-    if (_hoverFeedback == RNGestureHandlerHoverFeedbackLift) {
+    if (_hoverEffect == RNGestureHandlerHoverEffectLift) {
       effect = [UIPointerLiftEffect effectWithPreview:preview];
-    } else if (_hoverFeedback == RNGestureHandlerHoverFeedbackHightlight) {
+    } else if (_hoverEffect == RNGestureHandlerHoverEffectHightlight) {
       effect = [UIPointerHoverEffect effectWithPreview:preview];
     }
 
@@ -125,7 +125,7 @@ API_AVAILABLE(ios(13.4))
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_4
   if (@available(iOS 13.4, *)) {
     RNBetterHoverGestureRecognizer *recognizer = (RNBetterHoverGestureRecognizer *)_recognizer;
-    recognizer.hoverFeedback = RNGestureHandlerHoverFeedbackNone;
+    recognizer.hoverEffect = RNGestureHandlerHoverEffectNone;
   }
 #endif
 }
@@ -138,7 +138,7 @@ API_AVAILABLE(ios(13.4))
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_4
   if (@available(iOS 13.4, *)) {
     RNBetterHoverGestureRecognizer *recognizer = (RNBetterHoverGestureRecognizer *)_recognizer;
-    APPLY_INT_PROP(hoverFeedback);
+    APPLY_INT_PROP(hoverEffect);
   }
 #endif
 }

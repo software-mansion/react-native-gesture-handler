@@ -4,7 +4,7 @@ import {
   Gesture,
   GestureDetector,
   GestureType,
-  HoverFeedback,
+  HoverEffect,
 } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -33,7 +33,7 @@ function useHover(color: string): [GestureType, any] {
         hovered.value = false;
         console.log('hover finalize', color);
       })
-      .withFeedback(HoverFeedback.LIFT),
+      .effect(HoverEffect.LIFT),
     style,
   ];
 }

@@ -13,17 +13,17 @@ export type HoverGestureChangeEventPayload = {
   changeY: number;
 };
 
-export enum HoverFeedback {
+export enum HoverEffect {
   NONE = 0,
   LIFT = 1,
   HIGHLIGHT = 2,
 }
 
 export interface HoverGestureConfig {
-  hoverFeedback?: HoverFeedback;
+  hoverEffect?: HoverEffect;
 }
 
-export const hoverGestureHandlerProps = ['hoverFeedback'] as const;
+export const hoverGestureHandlerProps = ['hoverEffect'] as const;
 
 function changeEventCalculator(
   current: GestureUpdateEvent<HoverGestureHandlerEventPayload>,
@@ -59,11 +59,11 @@ export class HoverGesture extends ContinousBaseGesture<
   }
 
   /**
-   * Sets the visual feedback for hover.
+   * Sets the visual hover effect.
    * iOS only
    */
-  withFeedback(feedback: HoverFeedback) {
-    this.config.hoverFeedback = feedback;
+  effect(effect: HoverEffect) {
+    this.config.hoverEffect = effect;
     return this;
   }
 

@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Gesture,
   GestureDetector,
-  HoverFeedback,
+  HoverEffect,
 } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -76,7 +76,7 @@ function BoxReanimated(props: { source: any }) {
 }
 
 function BoxNative(props: { source: any }) {
-  const hover = Gesture.Hover().withFeedback(HoverFeedback.LIFT);
+  const hover = Gesture.Hover().effect(HoverEffect.LIFT);
 
   return (
     <GestureDetector gesture={hover}>
