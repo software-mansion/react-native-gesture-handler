@@ -219,7 +219,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     override fun wantsToHandleEventBeforeActivation() = true
 
     override fun handleEventBeforeActivation(event: MotionEvent) {
-      // RefreshControl from GH is setup in a way that ScrollView wrapped with it should wait for
+      // RefreshControl from GH is set up in a way that ScrollView wrapped with it should wait for
       // it to fail. This way the RefreshControl is not canceled by the scroll handler.
       // The problem with this approach is that the RefreshControl handler stays active all the time
       // preventing scroll from activating.
