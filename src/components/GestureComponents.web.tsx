@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  DrawerLayoutAndroid as RNDrawerLayoutAndroid,
   FlatList as RNFlatList,
   Switch as RNSwitch,
   TextInput as RNTextInput,
@@ -21,11 +20,11 @@ export const Switch = createNativeWrapper(RNSwitch, {
   disallowInterruption: true,
 });
 export const TextInput = createNativeWrapper(RNTextInput);
-export const DrawerLayoutAndroid = createNativeWrapper(RNDrawerLayoutAndroid, {
-  disallowInterruption: true,
-});
-// @ts-ignore -- TODO(TS) to investigate if it's needed
-DrawerLayoutAndroid.positions = RNDrawerLayoutAndroid.positions;
+export const DrawerLayoutAndroid = () => {
+  console.warn('DrawerLayoutAndroid is not supported on web!');
+  return <View />;
+};
+
 // RefreshControl is implemented as a functional component, rendering a View
 // NativeViewGestureHandler needs to set a ref on its child, which cannot be done
 // on functional components
