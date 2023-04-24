@@ -142,11 +142,11 @@
   "eslintIgnore": [
     "node_modules/",
     "lib/",
-    "src/fabric/*NativeComponent.js"
+    "src/specs/*NativeComponent.js"
   ],
   "codegenConfig": {
     "name": "rngesturehandler_codegen",
     "type": "components",
-    "jsSrcsDir": "./src/fabric"
+    "jsSrcsDir": "./src/specs"
   }
 }

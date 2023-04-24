@@ -3,7 +3,7 @@ import { PropsWithChildren } from 'react';
 import { ViewProps } from 'react-native';
 import { maybeInitializeFabric } from './init';
 import GestureHandlerRootViewContext from './GestureHandlerRootViewContext';
-import GestureHandlerRootViewNativeComponent from './fabric/RNGestureHandlerRootViewNativeComponent';
+import GestureHandlerRootViewNativeComponent from './specs/RNGestureHandlerRootViewNativeComponent';
 
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<ViewProps> {}
