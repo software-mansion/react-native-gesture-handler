@@ -34,17 +34,17 @@ try {
     // @ts-ignore Make sure the loaded module is actually Reanimated, if it's not
     // reset the module to undefined so we can fallback to the default implementation
     Reanimated = undefined;
-  }
-
-  if (!Reanimated.setGestureState) {
-    Reanimated.setGestureState = () => {
-      'worklet';
-      console.warn(
-        tagMessage(
-          'Please use newer version of react-native-reanimated in order to control state of the gestures.'
-        )
-      );
-    };
+  } else {
+    if (!Reanimated.setGestureState) {
+      Reanimated.setGestureState = () => {
+        'worklet';
+        console.warn(
+          tagMessage(
+            'Please use newer version of react-native-reanimated in order to control state of the gestures.'
+          )
+        );
+      };
+    }
   }
   // When 'react-native-reanimated' is not available we want to
   // quietly continue
