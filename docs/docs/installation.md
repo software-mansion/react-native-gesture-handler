@@ -66,6 +66,10 @@ Note that `GestureHandlerRootView` acts like a normal `View`. So if you want it 
 If you're using gesture handler in your component library, you may want to wrap your library's code in the GestureHandlerRootView component. This will avoid extra configuration for the user.
 :::
 
+:::tip
+If you're having trouble with gestures not working when inside a component provided by a third-party library, even though you've wrapped the entry point with `<GestureHandlerRootView>`, you can try adding another `<GestureHandlerRootView active>` closer to the place the gestures are defined. This way, you can prevent Android from canceling relevant gestures when one of the native views tries to grab lock for delivering touch events.
+:::
+
 ### Linking
 
 > **Important**: You only need to do this step if you're using React Native 0.59 or lower. Since v0.60, linking happens automatically.

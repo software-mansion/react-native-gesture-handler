@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import java.util.*
 
 class GestureHandlerOrchestrator(
@@ -497,6 +498,17 @@ class GestureHandlerOrchestrator(
   }
 
   private fun extractGestureHandlers(viewGroup: ViewGroup, coords: FloatArray, pointerId: Int): Boolean {
+    if (viewGroup is RNGestureHandlerRootView && viewGroup != wrapperView && viewGroup.isActive()) {
+      // When we encounter another active root view while traversing the view hierarchy, we want
+      // to stop there so that it can handle the gesture attached under it itself.
+      // This helps in cases where a view may call `requestDisallowInterceptTouchEvent` (which would
+      // cancel all gestures handled by its parent root view) but there may be some gestures attached
+      // to views under it which should work. Adding another root view under that particular view
+      // would allow the gesture to be recognized even though the parent root view cancelled its gestures.
+      // We want to stop here so the gesture receives event only once.
+      return false
+    }
+
     val childrenCount = viewGroup.childCount
     for (i in childrenCount - 1 downTo 0) {
       val child = viewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i)
@@ -523,8 +535,19 @@ class GestureHandlerOrchestrator(
     return false
   }
 
-  private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int): Boolean =
-    when (viewConfigHelper.getPointerEventsConfigForView(view)) {
+  private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int): Boolean {
+    if (view is RNGestureHandlerRootView && view != wrapperView && view.isActive()) {
+      // When we encounter another active root view while traversing the view hierarchy, we want
+      // to stop there so that it can handle the gesture attached under it itself.
+      // This helps in cases where a view may call `requestDisallowInterceptTouchEvent` (which would
+      // cancel all gestures handled by its parent root view) but there may be some gestures attached
+      // to views under it which should work. Adding another root view under that particular view
+      // would allow the gesture to be recognized even though the parent root view cancelled its gestures.
+      // We want to stop here so the gesture receives event only once.
+      return false
+    }
+
+    return when (viewConfigHelper.getPointerEventsConfigForView(view)) {
       PointerEventsConfig.NONE -> {
         // This view and its children can't be the target
         false
@@ -569,6 +592,7 @@ class GestureHandlerOrchestrator(
           )
       }
     }
+  }
 
   private fun canReceiveEvents(view: View) =
     view.visibility == View.VISIBLE && view.alpha >= minimumAlphaForTraversal

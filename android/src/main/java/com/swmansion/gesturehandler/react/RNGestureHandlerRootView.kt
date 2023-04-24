@@ -12,10 +12,12 @@ import com.facebook.react.views.view.ReactViewGroup
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var _enabled = false
+  private var active = false
   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
+
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
-    _enabled = !hasGestureHandlerEnabledRootView(this)
+    _enabled = active || !hasGestureHandlerEnabledRootView(this)
     if (!_enabled) {
       Log.i(
         ReactConstants.TAG,
@@ -41,6 +43,17 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
       rootHelper!!.requestDisallowInterceptTouchEvent(disallowIntercept)
     }
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
+  }
+
+  // Those methods refer to different variables because we need to enforce at least
+  // one of the Root Views to be enabled to intecept events. By default only the
+  // top-most view is enabled, but users may want to enable more views to be able
+  // to work around some native views calling `requestDisallowInterceptTouchEvent`,
+  // which prevents gestures from working.
+  fun isActive() = _enabled
+
+  fun setActive(active: Boolean) {
+    this.active = active
   }
 
   companion object {
