@@ -1,14 +1,9 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
-import { requireNativeComponent, ViewProps } from 'react-native';
+import { ViewProps } from 'react-native';
 import { maybeInitializeFabric } from './init';
-import { shouldUseCodegenNativeComponent } from './utils';
 import GestureHandlerRootViewContext from './GestureHandlerRootViewContext';
-
-const GestureHandlerRootViewNativeComponent = shouldUseCodegenNativeComponent()
-  ? require('./fabric/RNGestureHandlerRootViewNativeComponent').default
-  : requireNativeComponent('RNGestureHandlerRootView');
+import GestureHandlerRootViewNativeComponent from './specs/RNGestureHandlerRootViewNativeComponent';
 
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<ViewProps> {}
