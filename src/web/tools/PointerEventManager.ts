@@ -8,7 +8,7 @@ import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
 export default class PointerEventManager extends EventManager {
-  private trackedPointers: Set<number> = new Set<number>();
+  private trackedPointers = new Set<number>();
 
   public setListeners(): void {
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
