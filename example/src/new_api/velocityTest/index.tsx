@@ -62,8 +62,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   box: {
-    height: BOX_SIZE,
     width: BOX_SIZE,
+    height: BOX_SIZE,
     backgroundColor: '#001A72',
     borderRadius: 20,
     cursor: 'grab',
