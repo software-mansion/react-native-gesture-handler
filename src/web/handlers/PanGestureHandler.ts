@@ -306,11 +306,6 @@ export default class PanGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-
-    this.reset();
-  }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     if (this.getShouldCancelWhenOutside()) {
       return;
