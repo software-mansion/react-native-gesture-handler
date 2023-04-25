@@ -71,9 +71,6 @@ export type GestureConfigReference = {
   useReanimatedHook: boolean;
 };
 
-const scheduleUpdate =
-  Platform.OS === 'web' ? requestAnimationFrame : setImmediate;
-
 function convertToHandlerTag(ref: GestureRef): number {
   if (typeof ref === 'number') {
     return ref;
@@ -153,9 +150,9 @@ function attachHandlers({
     preparedGesture.firstExecution = false;
   }
 
-  // use scheduleUpdate to extract handlerTags, because all refs should be initialized
+  // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
-  scheduleUpdate(() => {
+  queueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -173,9 +170,9 @@ function attachHandlers({
     registerHandler(handler.handlerTag, handler, handler.config.testId);
   }
 
-  // use scheduleUpdate to extract handlerTags, because all refs should be initialized
+  // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
-  scheduleUpdate(() => {
+  queueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -260,10 +257,10 @@ function updateHandlers(
     }
   }
 
-  // use scheduleUpdate to extract handlerTags, because when it's ran, all refs should be updated
+  // use queueMicrotask to extract handlerTags, because when it's ran, all refs should be updated
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
-  scheduleUpdate(() => {
+  queueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
