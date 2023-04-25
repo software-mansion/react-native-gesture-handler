@@ -13,7 +13,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 const BOX_SIZE = 120;
 
 export default function App() {
-  const aref = useAnimatedRef() as React.RefObject<View>;
+  const aref = useAnimatedRef<View>();
   const offsetX = useSharedValue(0);
   const offsetY = useSharedValue(0);
 
@@ -23,7 +23,9 @@ export default function App() {
       offsetY.value += event.changeY;
     })
     .onFinalize((event) => {
-      const size = measure(aref)!;
+      // If we can't get view size, just ignore it. Half of the view will be
+      // able to go outside the screen
+      const size = measure(aref) ?? { width: 0, height: 0 };
 
       offsetX.value = withDecay({
         velocity: event.velocityX,
