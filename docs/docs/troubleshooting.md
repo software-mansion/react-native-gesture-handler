@@ -41,7 +41,8 @@ This error usually happens when in your project there exists more than one insta
 You can check which libraries are using Gesture Handler, for example, with the command:
 
 ```bash
-npm why react-native-gesture-handler
+npm ls react-native-gesture-handler
+yarn why react-native-gesture-handler
 ```
 
 If you use `yarn` you should add [`resolution` property](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/).
