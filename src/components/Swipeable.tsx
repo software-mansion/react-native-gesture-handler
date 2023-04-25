@@ -77,13 +77,13 @@ export interface SwipeableProps
    * Distance that the panel must be dragged from the left edge to be considered
    * a swipe. The default value is 10.
    */
-  dragOffsetLeft?: number;
+  dragOffsetFromLeftEdge?: number;
 
   /**
    * Distance that the panel must be dragged from the right edge to be considered
    * a swipe. The default value is 10.
    */
-  dragOffsetRight?: number;
+  dragOffsetFromRightEdge?: number;
 
   /**
    * Value indicating if the swipeable panel can be pulled further than the left
@@ -460,8 +460,8 @@ export default class Swipeable extends Component<
       children,
       renderLeftActions,
       renderRightActions,
-      dragOffsetLeft = 10,
-      dragOffsetRight = 10,
+      dragOffsetFromLeftEdge = 10,
+      dragOffsetFromRightEdge = 10,
     } = this.props;
 
     const left = renderLeftActions && (
@@ -499,7 +499,7 @@ export default class Swipeable extends Component<
 
     return (
       <PanGestureHandler
-        activeOffsetX={[-dragOffsetRight, dragOffsetLeft]}
+        activeOffsetX={[-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]}
         {...this.props}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}>

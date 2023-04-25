@@ -35,11 +35,11 @@ distance from the left edge at which released panel will animate to the open sta
 
 distance from the right edge at which released panel will animate to the open state (or the open panel will animate into the closed state). By default it's a half of the panel's width.
 
-### `dragOffsetLeft`
+### `dragOffsetFromLeftEdge`
 
 distance that the panel must be dragged from the left edge to be considered a swipe. The default value is 10.
 
-### `dragOffsetRight`
+### `dragOffsetFromRightEdge`
 
 distance that the panel must be dragged from the right edge to be considered a swipe. The default value is 10.
 
