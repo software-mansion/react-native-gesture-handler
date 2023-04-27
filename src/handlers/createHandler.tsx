@@ -174,9 +174,9 @@ export default function createHandler<
     private handlerTag: number;
     private config: Record<string, unknown>;
     private propsRef: React.MutableRefObject<unknown>;
+    private isMountedRef: React.MutableRefObject<boolean | null>;
     private viewNode: any;
     private viewTag?: number;
-    private updateEnqueued: ReturnType<typeof setImmediate> | null = null;
     private inspectorToggleListener?: EmitterSubscription;
 
     constructor(props: T & InternalEventHandlers) {
@@ -184,6 +184,7 @@ export default function createHandler<
       this.handlerTag = getNextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
+      this.isMountedRef = React.createRef();
       this.state = { allowTouches };
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
@@ -195,6 +196,7 @@ export default function createHandler<
 
     componentDidMount() {
       const props: HandlerProps<U> = this.props;
+      this.isMountedRef.current = true;
 
       if (DEV_ON_ANDROID) {
         this.inspectorToggleListener = DeviceEventEmitter.addListener(
@@ -209,11 +211,10 @@ export default function createHandler<
         // If there are unresolved refs (e.g. ".current" has not yet been set)
         // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
         // _update method that will try to update native handler props using
-        // setImmediate. This makes it so update() function gets called after all
+        // queueMicrotask. This makes it so update() function gets called after all
         // react components are mounted and we expect the missing ref object to
         // be resolved by then.
-        this.updateEnqueued = setImmediate(() => {
-          this.updateEnqueued = null;
+        queueMicrotask(() => {
           this.update(UNRESOLVED_REFS_RETRY_LIMIT);
         });
       }
@@ -239,11 +240,9 @@ export default function createHandler<
 
     componentWillUnmount() {
       this.inspectorToggleListener?.remove();
+      this.isMountedRef.current = false;
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
       scheduleFlushOperations();
-      if (this.updateEnqueued) {
-        clearImmediate(this.updateEnqueued);
-      }
       // We can't use this.props.id directly due to TS generic type narrowing bug, see https://github.com/microsoft/TypeScript/issues/13995 for more context
       const handlerID: string | undefined = this.props.id;
       if (handlerID) {
@@ -367,14 +366,17 @@ export default function createHandler<
     };
 
     private update(remainingTries: number) {
+      if (!this.isMountedRef.current) {
+        return;
+      }
+
       const props: HandlerProps<U> = this.props;
 
       // When ref is set via a function i.e. `ref={(r) => refObject.current = r}` instead of
       // `ref={refObject}` it's possible that it won't be resolved in time. Seems like trying
       // again is easy enough fix.
       if (hasUnresolvedRefs(props) && remainingTries > 0) {
-        this.updateEnqueued = setImmediate(() => {
-          this.updateEnqueued = null;
+        queueMicrotask(() => {
           this.update(remainingTries - 1);
         });
       } else {
