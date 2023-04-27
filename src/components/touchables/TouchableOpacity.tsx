@@ -30,7 +30,10 @@ export default class TouchableOpacity extends Component<
   // opacity is 1 one by default but could be overwritten
   getChildStyleOpacityWithDefault = () => {
     const childStyle = StyleSheet.flatten(this.props.style) || {};
-    return childStyle.opacity == null ? 1 : childStyle.opacity;
+    return childStyle.opacity == null
+      ? 1
+      : // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        (childStyle.opacity.valueOf() as number);
   };
 
   opacity = new Animated.Value(this.getChildStyleOpacityWithDefault());

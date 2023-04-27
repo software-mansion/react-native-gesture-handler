@@ -63,9 +63,9 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
-  - hermes-engine (0.72.0-rc.0):
-    - hermes-engine/Pre-built (= 0.72.0-rc.0)
-  - hermes-engine/Pre-built (0.72.0-rc.0)
+  - hermes-engine (0.72.0-rc.1):
+    - hermes-engine/Pre-built (= 0.72.0-rc.1)
+  - hermes-engine/Pre-built (0.72.0-rc.1)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
@@ -960,7 +960,7 @@ SPEC CHECKSUMS:
   FlipperKit: 2efad7007d6745a3f95e4034d547be637f89d3f6
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: e0b7e4e4e0b3cd29364d81b5ffa969a828644cc8
+  hermes-engine: c8d2c2131abbe84d5eef8a3cac2523fcf4880f0a
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
