@@ -1,6 +1,6 @@
 module.exports = {
   dependencies: {
-    'expo': {
+    expo: {
       platforms: {
         android: null,
         ios: null,
