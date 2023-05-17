@@ -200,7 +200,7 @@ RCT_EXPORT_METHOD(flushOperations)
           operation(self->_manager);
         }
       }];
-#endif
+#endif // RCT_NEW_ARCH_ENABLED
 }
 
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
