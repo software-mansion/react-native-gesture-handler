@@ -260,7 +260,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   }
 #else
   RCTTouchHandler *touchHandler = [viewWithTouchHandler performSelector:@selector(touchHandler)];
-#endif
+#endif // RCT_NEW_ARCH_ENABLED
   [touchHandler setEnabled:NO];
   [touchHandler setEnabled:YES];
 }
