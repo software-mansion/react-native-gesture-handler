@@ -199,8 +199,9 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 #ifdef RCT_NEW_ARCH_ENABLED
   UIView *touchHandlerView = childView;
 
-  while (touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]])
+  while (touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]]) {
     touchHandlerView = touchHandlerView.superview;
+  }
 #else
   UIView *parent = childView;
   while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)])
