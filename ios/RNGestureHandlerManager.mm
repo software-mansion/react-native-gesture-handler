@@ -38,7 +38,7 @@
   RCTDefaultLogFunction(     \
       RCTLogLevelInfo, RCTLogSourceNative, @(__FILE__), @(__LINE__), [NSString stringWithFormat:__VA_ARGS__])
 
-#define NEW_ARCH_NUMBER_OF_ATTACH_RETRIES 25
+constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 @interface RNGestureHandlerManager () <RNGestureHandlerEventEmitter, RNRootViewGestureRecognizerDelegate>
 
