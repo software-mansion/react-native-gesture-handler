@@ -1,6 +1,6 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "prepare": "bob build && husky install",
@@ -142,11 +142,11 @@
   "eslintIgnore": [
     "node_modules/",
     "lib/",
-    "src/fabric/*NativeComponent.js"
+    "src/specs/*NativeComponent.js"
   ],
   "codegenConfig": {
     "name": "rngesturehandler_codegen",
     "type": "components",
-    "jsSrcsDir": "./src/fabric"
+    "jsSrcsDir": "./src/specs"
   }
 }
