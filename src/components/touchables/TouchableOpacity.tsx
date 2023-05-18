@@ -32,8 +32,7 @@ export default class TouchableOpacity extends Component<
     const childStyle = StyleSheet.flatten(this.props.style) || {};
     return childStyle.opacity == null
       ? 1
-      : // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-        (childStyle.opacity.valueOf() as number);
+      : (childStyle.opacity.valueOf() as number);
   };
 
   opacity = new Animated.Value(this.getChildStyleOpacityWithDefault());
