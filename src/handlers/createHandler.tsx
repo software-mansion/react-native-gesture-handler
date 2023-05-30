@@ -330,12 +330,14 @@ export default function createHandler<
         const actionType = (() => {
           if (
             this.props?.onGestureEvent &&
+            // @ts-ignore No, the right side of this expression cannot be a primitive value
             'current' in this.props.onGestureEvent
           ) {
             // Reanimated worklet
             return ActionType.REANIMATED_WORKLET;
           } else if (
             this.props?.onGestureEvent &&
+            // @ts-ignore No, the right side of this expression cannot be a primitive value
             '__isNative' in this.props.onGestureEvent
           ) {
             // Animated.event with useNativeDriver: true
