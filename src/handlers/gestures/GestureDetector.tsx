@@ -36,7 +36,12 @@ import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
-import { isFabric, REACT_NATIVE_VERSION, tagMessage } from '../../utils';
+import {
+  isFabric,
+  isJestEnv,
+  REACT_NATIVE_VERSION,
+  tagMessage,
+} from '../../utils';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
@@ -607,7 +612,7 @@ interface GestureDetectorState {
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
   const rootViewContext = useContext(GestureHandlerRootViewContext);
-  if (__DEV__ && !rootViewContext) {
+  if (__DEV__ && !rootViewContext && !isJestEnv()) {
     throw new Error(
       'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
     );
