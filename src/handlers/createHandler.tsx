@@ -402,7 +402,16 @@ export default function createHandler<
     }
 
     render() {
-      if (__DEV__ && !this.context) {
+      if (
+        __DEV__ &&
+        !this.context &&
+        // @ts-expect-error process.env exists on @types/node but we don't want to depend on it
+        // as there have been issues with it in the past, where GH was causing type conflicts
+        // between @types/node and @types/react-native
+        // as for the check itself, we don't want to throw the error in testing environment
+        // because the components are often tested in isolation, without the root view
+        process.env.JEST_WORKER_ID === undefined
+      ) {
         throw new Error(
           name +
             ' must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
