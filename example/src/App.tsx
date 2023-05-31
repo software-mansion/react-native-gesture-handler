@@ -45,6 +45,7 @@ import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
 import ManualGestures from './new_api/manualGestures/index';
 import Hover from './new_api/hover';
 import HoverableIcons from './new_api/hoverable_icons';
+import VelocityTest from './new_api/velocityTest';
 
 interface Example {
   name: string;
@@ -120,6 +121,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Hover', component: Hover },
       { name: 'Hoverable icons', component: HoverableIcons },
       { name: 'Camera', component: Camera },
+      { name: 'Velocity test', component: VelocityTest },
       { name: 'Transformations', component: Transformations },
       { name: 'Overlap parents', component: OverlapParents },
       { name: 'Overlap siblings', component: OverlapSiblings },

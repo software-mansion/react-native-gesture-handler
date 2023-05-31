@@ -184,6 +184,9 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
 
 RCT_EXPORT_METHOD(flushOperations)
 {
+  // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
+  // On the old arch we rely on `uiManagerWillPerformMounting`
+#ifdef RCT_NEW_ARCH_ENABLED
   if (_operations.count == 0) {
     return;
   }
@@ -197,6 +200,7 @@ RCT_EXPORT_METHOD(flushOperations)
           operation(self->_manager);
         }
       }];
+#endif // RCT_NEW_ARCH_ENABLED
 }
 
 - (void)setGestureState:(int)state forHandler:(int)handlerTag

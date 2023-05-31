@@ -191,16 +191,15 @@ export function findNodeHandle(
   return findNodeHandleRN(node);
 }
 
-let scheduledFlushOperationsId: ReturnType<
-  typeof requestAnimationFrame
-> | null = null;
+let flushOperationsScheduled = false;
 
 export function scheduleFlushOperations() {
-  if (scheduledFlushOperationsId === null) {
-    scheduledFlushOperationsId = requestAnimationFrame(() => {
+  if (!flushOperationsScheduled) {
+    flushOperationsScheduled = true;
+    queueMicrotask(() => {
       RNGestureHandlerModule.flushOperations();
 
-      scheduledFlushOperationsId = null;
+      flushOperationsScheduled = false;
     });
   }
 }

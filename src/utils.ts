@@ -55,11 +55,6 @@ export function isFabric(): boolean {
   return !!global?.nativeFabricUIManager;
 }
 
-export function shouldUseCodegenNativeComponent(): boolean {
-  // use codegenNativeComponent starting with RN 0.68
-  return REACT_NATIVE_VERSION.minor >= 68 || REACT_NATIVE_VERSION.major > 0;
-}
-
 export function isRemoteDebuggingEnabled(): boolean {
   // react-native-reanimated checks if in remote debugging in the same way
   // @ts-ignore global is available but node types are not included

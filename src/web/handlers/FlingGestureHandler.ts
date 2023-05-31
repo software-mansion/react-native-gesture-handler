@@ -159,11 +159,6 @@ export default class FlingGestureHandler extends GestureHandler {
     this.endFling();
   }
 
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.reset();
-  }
-
   public activate(force?: boolean): void {
     super.activate(force);
     this.end();

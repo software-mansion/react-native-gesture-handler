@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   GestureType,
   HandlerCallbacks,
@@ -37,13 +37,20 @@ import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
-import { isFabric, REACT_NATIVE_VERSION, tagMessage } from '../../utils';
+import {
+  isFabric,
+  isJestEnv,
+  REACT_NATIVE_VERSION,
+  tagMessage,
+} from '../../utils';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
 import { RNRenderer } from '../../RNRenderer';
 import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
+import { nativeViewGestureHandlerProps } from '../NativeViewGestureHandler';
+import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -58,6 +65,7 @@ const ALLOWED_PROPS = [
   ...forceTouchGestureHandlerProps,
   ...flingGestureHandlerProps,
   ...hoverGestureHandlerProps,
+  ...nativeViewGestureHandlerProps,
 ];
 
 export type GestureConfigReference = {
@@ -69,9 +77,6 @@ export type GestureConfigReference = {
   firstExecution: boolean;
   useReanimatedHook: boolean;
 };
-
-const scheduleUpdate =
-  Platform.OS === 'web' ? requestAnimationFrame : setImmediate;
 
 function convertToHandlerTag(ref: GestureRef): number {
   if (typeof ref === 'number') {
@@ -152,9 +157,9 @@ function attachHandlers({
     preparedGesture.firstExecution = false;
   }
 
-  // use scheduleUpdate to extract handlerTags, because all refs should be initialized
+  // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
-  scheduleUpdate(() => {
+  queueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -172,9 +177,9 @@ function attachHandlers({
     registerHandler(handler.handlerTag, handler, handler.config.testId);
   }
 
-  // use scheduleUpdate to extract handlerTags, because all refs should be initialized
+  // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
-  scheduleUpdate(() => {
+  queueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -259,10 +264,10 @@ function updateHandlers(
     }
   }
 
-  // use scheduleUpdate to extract handlerTags, because when it's ran, all refs should be updated
+  // use queueMicrotask to extract handlerTags, because when it's ran, all refs should be updated
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
-  scheduleUpdate(() => {
+  queueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -608,6 +613,13 @@ interface GestureDetectorState {
   forceReattach: boolean;
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
+  const rootViewContext = useContext(GestureHandlerRootViewContext);
+  if (__DEV__ && !rootViewContext && !isJestEnv()) {
+    throw new Error(
+      'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
+    );
+  }
+
   const gestureConfig = props.gesture;
 
   if (props.userSelect) {

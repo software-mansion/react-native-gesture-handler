@@ -115,12 +115,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.cancel();
-    this.reset();
-  }
-
   public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
     if (super.shouldRecognizeSimultaneously(handler)) {
       return true;
