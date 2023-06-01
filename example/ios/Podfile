@@ -54,7 +54,7 @@ target 'Example' do
     # Pods for testing
   end
 
-  # https://github.com/facebook/react-native/blob/main/scripts/react_native_pods.rb#L197-L202
+  # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
   post_install do |installer|
     react_native_post_install(
       installer,
