@@ -268,7 +268,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     if ([recognizer isKindOfClass:[RCTSurfaceTouchHandler class]]) {
 #else
     if ([recognizer isKindOfClass:[RCTTouchHandler class]]) {
-#endif
+#endif // RCT_NEW_ARCH_ENABLED
       touchHandler = recognizer;
       break;
     }
