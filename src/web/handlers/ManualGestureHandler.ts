@@ -40,9 +40,4 @@ export default class ManualGestureHandler extends GestureHandler {
     super.onPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);
   }
-
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.reset();
-  }
 }

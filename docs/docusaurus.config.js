@@ -119,6 +119,12 @@ module.exports = {
     prism: {
       theme: prismConfig,
     },
+    announcementBar: {
+      id: 'appjs_announcement',
+      content: 'mleko', // content is set in swizzled component but docusaurus requires it to be non-empty
+      backgroundColor: '#0033CC',
+      textColor: '#FFFFFF',
+    },
   },
   presets: [
     [
@@ -133,7 +139,7 @@ module.exports = {
               label: '2.4.0 – 2.5.0',
             },
             '2.6.0': {
-              label: '2.6.0 – 2.9.0',
+              label: '2.6.0 – 2.10.0',
             },
           },
         },

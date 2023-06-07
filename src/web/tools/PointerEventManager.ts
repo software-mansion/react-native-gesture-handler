@@ -8,6 +8,8 @@ import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
 export default class PointerEventManager extends EventManager {
+  private trackedPointers = new Set<number>();
+
   public setListeners(): void {
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
       if (event.pointerType === PointerType.TOUCH) {
@@ -24,6 +26,7 @@ export default class PointerEventManager extends EventManager {
 
       target.setPointerCapture(adaptedEvent.pointerId);
       this.markAsInBounds(adaptedEvent.pointerId);
+      this.trackedPointers.add(adaptedEvent.pointerId);
 
       if (++this.activePointersCounter > 1) {
         adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
@@ -51,6 +54,7 @@ export default class PointerEventManager extends EventManager {
 
       target.releasePointerCapture(adaptedEvent.pointerId);
       this.markAsOutOfBounds(adaptedEvent.pointerId);
+      this.trackedPointers.delete(adaptedEvent.pointerId);
 
       if (--this.activePointersCounter > 0) {
         adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_UP;
@@ -115,7 +119,27 @@ export default class PointerEventManager extends EventManager {
       this.onPointerCancel(adaptedEvent);
       this.markAsOutOfBounds(adaptedEvent.pointerId);
       this.activePointersCounter = 0;
+      this.trackedPointers.clear();
     });
+
+    this.view.addEventListener(
+      'lostpointercapture',
+      (event: PointerEvent): void => {
+        const adaptedEvent: AdaptedEvent = this.mapEvent(
+          event,
+          EventTypes.CANCEL
+        );
+
+        if (this.trackedPointers.has(adaptedEvent.pointerId)) {
+          // in some cases the `pointerup` event is not fired, but `lostpointercapture` is
+          // we simulate the `pointercancel` event here to make sure the gesture handler stops tracking it
+          this.onPointerCancel(adaptedEvent);
+
+          this.activePointersCounter = 0;
+          this.trackedPointers.clear();
+        }
+      }
+    );
   }
 
   protected mapEvent(event: PointerEvent, eventType: EventTypes): AdaptedEvent {
@@ -130,5 +154,10 @@ export default class PointerEventManager extends EventManager {
       buttons: event.buttons,
       time: event.timeStamp,
     };
+  }
+
+  public resetManager(): void {
+    super.resetManager();
+    this.trackedPointers.clear();
   }
 }

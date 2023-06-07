@@ -42,7 +42,8 @@ import BottomSheetNewApi from './new_api/bottom_sheet';
 import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
 import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
-import ManualGestures from './new_api/manualGestures/index';
+import ManualGestures from './new_api/manualGestures';
+import VelocityTest from './new_api/velocityTest';
 
 interface Example {
   name: string;
@@ -116,6 +117,7 @@ const EXAMPLES: ExamplesSection[] = [
         component: ReanimatedSimple,
       },
       { name: 'Camera', component: Camera },
+      { name: 'Velocity test', component: VelocityTest },
       { name: 'Transformations', component: Transformations },
       { name: 'Overlap parents', component: OverlapParents },
       { name: 'Overlap siblings', component: OverlapSiblings },
