@@ -215,8 +215,9 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     touchHandlerView = [childView reactViewController].view.subviews[0];
   } else {
     UIView *parent = childView;
-    while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)])
+    while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) {
       parent = parent.superview;
+    }
 
     touchHandlerView = [[parent performSelector:@selector(touchHandler)] view];
   }
