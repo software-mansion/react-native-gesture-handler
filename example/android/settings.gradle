@@ -4,8 +4,4 @@ include ':app'
 include ':react-native-gesture-handler'
 project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../../android')
 
-includeBuild('../node_modules/react-native-gradle-plugin')
-
-
-apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
-useExpoModules()
+includeBuild('../node_modules/@react-native/gradle-plugin')
