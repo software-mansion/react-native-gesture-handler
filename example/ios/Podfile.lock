@@ -496,7 +496,7 @@ PODS:
     - React-perflogger (= 0.72.0-rc.4)
   - RNCMaskedView (0.1.10):
     - React
-  - RNGestureHandler (2.10.0):
+  - RNGestureHandler (2.11.0):
     - React-Core
   - RNReanimated (3.3.0-nightly-20230531-663ee7492):
     - DoubleConversion
