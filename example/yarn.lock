@@ -4074,10 +4074,10 @@
   resolved "https://registry.yarnpkg.com/@react-native/eslint-plugin/-/eslint-plugin-0.72.0.tgz#7ec4c6a73dfde4bd6b4a4d3c462cfdc2637bf91d"
   integrity sha512-xWQthnyKd+H22TBqeJUTFebsyWAAwzUb7EQCT8F/WMZsS1sv5UG+2cM/cU9/2HEbVZgxHYuLIi915WznjKPvlg==
 
-"@react-native/gradle-plugin@^0.72.9":
-  version "0.72.9"
-  resolved "https://registry.yarnpkg.com/@react-native/gradle-plugin/-/gradle-plugin-0.72.9.tgz#1e65d16ce1fc7a2a84962cb85989b36697e46e03"
-  integrity sha512-0tkRVT8IQZs61zp8e036sIRTmQhLLvoXCSVdC/2DoiyWYFrRqpM5zkqoIr+/QVoupeD3sj3ep1j6RN8MFZTIuw==
+"@react-native/gradle-plugin@^0.72.10":
+  version "0.72.10"
+  resolved "https://registry.yarnpkg.com/@react-native/gradle-plugin/-/gradle-plugin-0.72.10.tgz#cd7ad2203039dc1f97fb849898d689442776b004"
+  integrity sha512-/3KZSdFOWpTCHlp468NOgNfSIhENEH44O3Xq+dmgp4kJ/WhTvCmI+7glJ0Io6T7AizcWlIuW5VKA2+Pb3GHXmg==
 
 "@react-native/js-polyfills@^0.72.1":
   version "0.72.1"
@@ -14101,10 +14101,10 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.1.tgz#5b3531bd76a645a4c9fb6e693ed36419e3301339"
   integrity sha512-NAnt2iGDXohE5LI7uBnLnqvLQMtzhkiAOLXTmv+qnF9Ky7xAPcX8Up/xWIhxvLVGJvuLiNc4xQLtuqDRzb4fSA==
 
-react-native-reanimated@^3.3.0-nightly-20230531-663ee7492:
-  version "3.3.0-nightly-20230531-663ee7492"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.3.0-nightly-20230531-663ee7492.tgz#cbc84663e9eee3a75b163e6218b932f24828b150"
-  integrity sha512-jTcLZ/0ScnQtev8W1HdpVqczODlwkg5MzTBwZ/MS1RxRBB+YMK9nVA8WvVyWfQTQ/pqJxjkYmMpO6iUxVzJlPA==
+react-native-reanimated@3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.3.0.tgz#80f9d58e28fddf62fe4c1bc792337b8ab57936ab"
+  integrity sha512-LzfpPZ1qXBGy5BcUHqw3pBC0qSd22qXS3t8hWSbozXNrBkzMhhOrcILE/nEg/PHpNNp1xvGOW8NwpAMF006roQ==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.16.7"
     "@babel/preset-typescript" "^7.16.7"
@@ -14137,10 +14137,10 @@ react-native-web@^0.18.1:
     prop-types "^15.6.0"
     styleq "^0.1.2"
 
-react-native@0.72.0-rc.4:
-  version "0.72.0-rc.4"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.72.0-rc.4.tgz#bbcd3b2b88d7116ea01cd0596d5251b74809d333"
-  integrity sha512-EKlG90lAcq7fCEfdQDHxpwBOhjBVncw78hlF1yx/+jfX0fcjq1YL9qEpikNB1NZzXIOKOSsuV2gU/aR834/dDA==
+react-native@0.72.0-rc.5:
+  version "0.72.0-rc.5"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.72.0-rc.5.tgz#b2359b0d21174c13238eec4ebcc368bf182886a4"
+  integrity sha512-TDp42Z73cxuMQGM6+i7NnPizOnU3Jm0jz8TC2fLGG4hQfAy0Qsmzo3OG/IcqKMRbIxxRC6m+dJhL+QK446YOHw==
   dependencies:
     "@jest/create-cache-key-function" "^29.2.1"
     "@react-native-community/cli" "11.3.1"
@@ -14148,7 +14148,7 @@ react-native@0.72.0-rc.4:
     "@react-native-community/cli-platform-ios" "11.3.1"
     "@react-native/assets-registry" "^0.72.0"
     "@react-native/codegen" "^0.72.5"
-    "@react-native/gradle-plugin" "^0.72.9"
+    "@react-native/gradle-plugin" "^0.72.10"
     "@react-native/js-polyfills" "^0.72.1"
     "@react-native/normalize-colors" "^0.72.0"
     "@react-native/virtualized-lists" "^0.72.5"
