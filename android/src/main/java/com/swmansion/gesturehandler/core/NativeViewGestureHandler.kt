@@ -120,6 +120,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       action = MotionEvent.ACTION_CANCEL
     }
     view!!.onTouchEvent(event)
+    event.recycle()
   }
 
   override fun onReset() {
