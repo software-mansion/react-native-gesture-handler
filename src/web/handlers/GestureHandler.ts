@@ -201,7 +201,7 @@ export default abstract class GestureHandler {
       this.moveToState(State.ACTIVE);
 
       if (
-        (this.view.style.cursor === 'auto' || this.view.style.cursor === '') &&
+        (!this.view.style.cursor || this.view.style.cursor === 'auto') &&
         this.config.activeCursor
       ) {
         this.view.style.cursor = this.config.activeCursor;
