@@ -1,6 +1,6 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "2.10.2",
+  "version": "2.12.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "prepare": "bob build && husky install",
@@ -101,7 +101,7 @@
     "prettier": "^2.7.1",
     "react": "18.2.0",
     "react-dom": "^16.12.0",
-    "react-native": "0.71.0",
+    "react-native": "0.72.0-rc.5",
     "react-native-builder-bob": "^0.17.1",
     "react-native-reanimated": "^2.3.1",
     "react-native-web": "^0.11.7",

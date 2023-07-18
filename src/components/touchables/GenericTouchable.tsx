@@ -250,6 +250,16 @@ export default class GenericTouchable extends Component<
   }
 
   render() {
+    const hitSlop =
+      (typeof this.props.hitSlop === 'number'
+        ? {
+            top: this.props.hitSlop,
+            left: this.props.hitSlop,
+            bottom: this.props.hitSlop,
+            right: this.props.hitSlop,
+          }
+        : this.props.hitSlop) ?? undefined;
+
     const coreProps = {
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
@@ -262,7 +272,9 @@ export default class GenericTouchable extends Component<
       onAccessibilityAction: this.props.onAccessibilityAction,
       nativeID: this.props.nativeID,
       onLayout: this.props.onLayout,
-      hitSlop: this.props.hitSlop,
+      hitSlop: hitSlop as
+        | Animated.WithAnimatedObject<typeof hitSlop>
+        | undefined,
     };
 
     return (
@@ -273,7 +285,7 @@ export default class GenericTouchable extends Component<
           this.props.disabled ? undefined : this.onHandlerStateChange
         }
         onGestureEvent={this.onGestureEvent}
-        hitSlop={this.props.hitSlop}
+        hitSlop={hitSlop}
         shouldActivateOnStart={this.props.shouldActivateOnStart}
         disallowInterruption={this.props.disallowInterruption}
         testID={this.props.testID}
