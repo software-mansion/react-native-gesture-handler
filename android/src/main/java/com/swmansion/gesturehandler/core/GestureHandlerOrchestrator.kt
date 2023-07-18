@@ -470,11 +470,14 @@ class GestureHandlerOrchestrator(
       synchronized(it) {
         for (handler in it) {
           if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
-            if (event.action !in listOf(MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_MOVE) || handler is HoverGestureHandler) {
-              recordHandlerIfNotPresent(handler, view)
-              handler.startTrackingPointer(pointerId)
-              found = true
+            // we don't want to extract gestures other than hover when processing hover events
+            if (event.action in listOf(MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_MOVE) && handler !is HoverGestureHandler) {
+              continue
             }
+
+            recordHandlerIfNotPresent(handler, view)
+            handler.startTrackingPointer(pointerId)
+            found = true
           }
         }
       }
