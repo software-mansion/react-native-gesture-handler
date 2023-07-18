@@ -195,7 +195,9 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.moveToState(State.ACTIVE);
-      this.view.style.cursor = 'grab';
+      this.view.style.cursor = this.config.activeCursor
+        ? this.config.activeCursor
+        : 'auto';
     }
   }
 

@@ -19,6 +19,7 @@ import {
   HandlerStateChangeEvent,
   scheduleFlushOperations,
   UserSelect,
+  ActiveCursor,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -599,9 +600,19 @@ const applyUserSelectProp = (
   }
 };
 
+const applyCursorProp = (
+  activeCursor: ActiveCursor,
+  gesture: ComposedGesture | GestureType
+): void => {
+  for (const g of gesture.toGestureArray()) {
+    g.config.cursor = activeCursor;
+  }
+};
+
 interface GestureDetectorProps {
   gesture: ComposedGesture | GestureType;
   userSelect?: UserSelect;
+  activeCursor?: ActiveCursor;
   children?: React.ReactNode;
 }
 interface GestureDetectorState {
@@ -622,6 +633,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   if (props.userSelect) {
     applyUserSelectProp(props.userSelect, gestureConfig);
+  }
+
+  if (props.activeCursor) {
+    applyCursorProp(props.activeCursor, gestureConfig);
   }
 
   const gesture = gestureConfig.toGestureArray();
