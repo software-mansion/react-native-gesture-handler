@@ -26,27 +26,32 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
   }
 
   private fun isViewDisplayedOverAnother(view: View, other: View, rootView: View = view.rootView): Boolean? {
-    if (rootView == other) {
-      return true
-    } else if (rootView == view) {
-      return false
-    } else if (rootView is ViewGroup) {
-      for (i in 0 until rootView.childCount) {
-        val child = viewConfigHelper.getChildInDrawingOrderAtIndex(rootView, i)
-        return isViewDisplayedOverAnother(view, other, child) ?: continue
-      }
-    }
+    // traverse the tree starting on the root view, to see which view will be drawn first
+    return when (rootView) {
+      other -> true
+      view -> false
+      is ViewGroup -> {
+        var result: Boolean? = null
 
-    return null
+        for (i in 0 until rootView.childCount) {
+          val child = viewConfigHelper.getChildInDrawingOrderAtIndex(rootView, i)
+          result = isViewDisplayedOverAnother(view, other, child)
+
+          if (result != null) {
+            break
+          }
+        }
+
+        result
+      }
+
+      else -> null
+    }
   }
 
   override fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
-    if (handler is HoverGestureHandler) {
-      if (!(handler isAncestorOf this)) {
-        isViewDisplayedOverAnother(handler.view!!, this.view!!)?.let {
-          return it
-        }
-      }
+    if (handler is HoverGestureHandler && !(handler isAncestorOf this)) {
+      return isViewDisplayedOverAnother(handler.view!!, this.view!!)!!
     }
 
     return super.shouldBeCancelledBy(handler)
@@ -84,16 +89,21 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
   }
 
   override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) {
-    if (event.action == MotionEvent.ACTION_HOVER_EXIT) {
-      if (handler == null) {
-        handler = Handler(Looper.getMainLooper())
+    when {
+      event.action == MotionEvent.ACTION_HOVER_EXIT -> {
+        if (handler == null) {
+          handler = Handler(Looper.getMainLooper())
+        }
+
+        handler!!.postDelayed(finishRunnable, 4)
       }
 
-      handler!!.postDelayed(finishRunnable, 4)
-    } else if (!isWithinBounds) {
-      finish()
-    } else if (event.action == MotionEvent.ACTION_HOVER_MOVE || event.action == MotionEvent.ACTION_HOVER_ENTER) {
-      if (this.state == STATE_UNDETERMINED) {
+      !isWithinBounds -> {
+        finish()
+      }
+
+      this.state == STATE_UNDETERMINED &&
+        (event.action == MotionEvent.ACTION_HOVER_MOVE || event.action == MotionEvent.ACTION_HOVER_ENTER) -> {
         begin()
         activate()
       }
