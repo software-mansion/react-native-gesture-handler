@@ -110,6 +110,11 @@ export default class PointerEventManager extends EventManager {
       this.trackedPointers.clear();
     });
 
+    // onPointerEnter and onPointerLeave are triggered by a custom logic responsible for
+    // handling shouldCancelWhenOutside flag, and are unreliable unless the pointer is down.
+    // We therefore use pointerenter and pointerleave events to handle the hover gesture,
+    // mapping them to onPointerMoveOver and onPointerMoveOut respectively.
+
     this.view.addEventListener('pointerenter', (event: PointerEvent): void => {
       if (event.pointerType === PointerType.TOUCH) {
         return;
