@@ -600,7 +600,7 @@ const applyUserSelectProp = (
   }
 };
 
-const applyCursorProp = (
+const applyActiveCursorProp = (
   activeCursor: ActiveCursor,
   gesture: ComposedGesture | GestureType
 ): void => {
@@ -636,7 +636,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   }
 
   if (props.activeCursor) {
-    applyCursorProp(props.activeCursor, gestureConfig);
+    applyActiveCursorProp(props.activeCursor, gestureConfig);
   }
 
   const gesture = gestureConfig.toGestureArray();
