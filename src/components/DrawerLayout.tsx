@@ -167,6 +167,11 @@ export interface DrawerLayoutProps {
    */
   userSelect?: UserSelect;
 
+  /**
+   * @default 'auto'
+   * Defines which cursor property should be used when gesture activates.
+   * Values: see CSS cursor values
+   */
   activeCursor?: ActiveCursor;
 }
 
