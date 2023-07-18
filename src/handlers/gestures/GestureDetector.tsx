@@ -605,7 +605,7 @@ const applyCursorProp = (
   gesture: ComposedGesture | GestureType
 ): void => {
   for (const g of gesture.toGestureArray()) {
-    g.config.cursor = activeCursor;
+    g.config.activeCursor = activeCursor;
   }
 };
 
