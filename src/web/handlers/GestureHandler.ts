@@ -167,10 +167,18 @@ export default abstract class GestureHandler {
       this.currentState === State.ACTIVE ||
       this.currentState === State.BEGAN
     ) {
-      this.moveToState(State.FAILED, sendIfDisabled);
-      if (this.config.activeCursor && this.config.activeCursor != 'auto') {
+      // Here the order of this if statement and moveToState call is important.
+      // At this point we can use currentState as previuos state, because immediately after changing cursor we call moveToState method.
+      // By checking whether previous state was ACTIVE, we can decide if we should reset the cursor or not.
+      if (
+        this.config.activeCursor &&
+        this.config.activeCursor != 'auto' &&
+        this.currentState === State.ACTIVE
+      ) {
         this.view.style.cursor = 'auto';
       }
+
+      this.moveToState(State.FAILED, sendIfDisabled);
     }
 
     this.resetProgress();
@@ -186,10 +194,17 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.onCancel();
-      this.moveToState(State.CANCELLED, sendIfDisabled);
-      if (this.config.activeCursor && this.config.activeCursor != 'auto') {
+
+      // Same as above - order matters
+      if (
+        this.config.activeCursor &&
+        this.config.activeCursor != 'auto' &&
+        this.currentState === State.ACTIVE
+      ) {
         this.view.style.cursor = 'auto';
       }
+
+      this.moveToState(State.CANCELLED, sendIfDisabled);
     }
   }
 
@@ -214,11 +229,16 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN ||
       this.currentState === State.ACTIVE
     ) {
-      this.moveToState(State.END);
-
-      if (this.config.activeCursor && this.config.activeCursor != 'auto') {
+      // Same as above - order matters
+      if (
+        this.config.activeCursor &&
+        this.config.activeCursor != 'auto' &&
+        this.currentState === State.ACTIVE
+      ) {
         this.view.style.cursor = 'auto';
       }
+
+      this.moveToState(State.END);
     }
 
     this.resetProgress();
