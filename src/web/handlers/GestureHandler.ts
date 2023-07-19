@@ -170,7 +170,11 @@ export default abstract class GestureHandler {
       // Here the order of this if statement and moveToState call is important.
       // At this point we can use currentState as previuos state, because immediately after changing cursor we call moveToState method.
       // By checking whether previous state was ACTIVE, we can decide if we should reset the cursor or not.
-      if (this.config.activeCursor && this.currentState === State.ACTIVE) {
+      if (
+        this.config.activeCursor &&
+        this.config.activeCursor !== 'auto' &&
+        this.currentState === State.ACTIVE
+      ) {
         this.view.style.cursor = 'auto';
       }
 
@@ -192,7 +196,11 @@ export default abstract class GestureHandler {
       this.onCancel();
 
       // Same as above - order matters
-      if (this.config.activeCursor && this.currentState === State.ACTIVE) {
+      if (
+        this.config.activeCursor &&
+        this.config.activeCursor !== 'auto' &&
+        this.currentState === State.ACTIVE
+      ) {
         this.view.style.cursor = 'auto';
       }
 
@@ -222,7 +230,11 @@ export default abstract class GestureHandler {
       this.currentState === State.ACTIVE
     ) {
       // Same as above - order matters
-      if (this.config.activeCursor && this.currentState === State.ACTIVE) {
+      if (
+        this.config.activeCursor &&
+        this.config.activeCursor !== 'auto' &&
+        this.currentState === State.ACTIVE
+      ) {
         this.view.style.cursor = 'auto';
       }
 
