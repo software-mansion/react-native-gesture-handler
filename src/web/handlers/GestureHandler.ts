@@ -172,7 +172,7 @@ export default abstract class GestureHandler {
       // By checking whether previous state was ACTIVE, we can decide if we should reset the cursor or not.
       if (
         this.config.activeCursor &&
-        this.config.activeCursor != 'auto' &&
+        this.config.activeCursor !== 'auto' &&
         this.currentState === State.ACTIVE
       ) {
         this.view.style.cursor = 'auto';
@@ -198,7 +198,7 @@ export default abstract class GestureHandler {
       // Same as above - order matters
       if (
         this.config.activeCursor &&
-        this.config.activeCursor != 'auto' &&
+        this.config.activeCursor !== 'auto' &&
         this.currentState === State.ACTIVE
       ) {
         this.view.style.cursor = 'auto';
@@ -232,7 +232,7 @@ export default abstract class GestureHandler {
       // Same as above - order matters
       if (
         this.config.activeCursor &&
-        this.config.activeCursor != 'auto' &&
+        this.config.activeCursor !== 'auto' &&
         this.currentState === State.ACTIVE
       ) {
         this.view.style.cursor = 'auto';
