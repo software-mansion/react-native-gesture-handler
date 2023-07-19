@@ -29,7 +29,3 @@ Starting with Reanimated-2.3.0-beta.4 Gesture Handler will provide a [StateManag
 ### `userSelect` (**web only**)
 
 This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
-
-### `activeCursor` (**web only**)
-
-This parameter allows to specify which cursor should be used when gesture activates. Supports all CSS cursor values (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
