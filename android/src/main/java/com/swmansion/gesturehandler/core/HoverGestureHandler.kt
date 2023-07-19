@@ -27,26 +27,22 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
 
   private fun isViewDisplayedOverAnother(view: View, other: View, rootView: View = view.rootView): Boolean? {
     // traverse the tree starting on the root view, to see which view will be drawn first
-    return when (rootView) {
-      other -> true
-      view -> false
-      is ViewGroup -> {
-        var result: Boolean? = null
-
-        for (i in 0 until rootView.childCount) {
-          val child = viewConfigHelper.getChildInDrawingOrderAtIndex(rootView, i)
-          result = isViewDisplayedOverAnother(view, other, child)
-
-          if (result != null) {
-            break
-          }
-        }
-
-        result
-      }
-
-      else -> null
+    if (rootView == other) {
+      return true
     }
+
+    if (rootView == view) {
+      return false
+    }
+
+    if (rootView is ViewGroup) {
+      for (i in 0 until rootView.childCount) {
+        val child = viewConfigHelper.getChildInDrawingOrderAtIndex(rootView, i)
+        return isViewDisplayedOverAnother(view, other, child) ?: continue
+      }
+    }
+
+    return null
   }
 
   override fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
