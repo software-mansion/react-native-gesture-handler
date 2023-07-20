@@ -7,6 +7,7 @@ title: Installation
 
 | version   | `react-native` version |
 | --------- | ---------------------- |
+| 2.10.0+   | 0.64.0+                |
 | 2.0.0+    | 0.63.0+                |
 | 1.4.0+    | 0.60.0+                |
 | 1.1.0+    | 0.57.2+                |
@@ -52,7 +53,11 @@ For example:
 
 ```js
 export default function App() {
-  return <GestureHandlerRootView style={{ flex: 1 }}>{/* content */}</GestureHandlerRootView>;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      {/* content */}
+    </GestureHandlerRootView>
+  );
 }
 ```
 
@@ -75,10 +80,15 @@ react-native link react-native-gesture-handler
 ```
 
 ## Fabric
+
 Starting with version 2.3.0, Gesture Handler now supports [Fabric](https://reactnative.dev/docs/fabric-renderer)!. To use Gesture Handler in your Fabric application you have to:
+
 #### on iOS:
+
 Install pods using `RCT_NEW_ARCH_ENABLED=1 pod install` – this is the same command you run to prepare a Fabric build but you also need to run it after a new native library gets added.
+
 #### on Android:
+
 There are no additional steps required so long as your app is configured to build with Fabric – this is typically configured by setting `newArchEnabled=true` in `gradle.properties` file in your project.
 
 ### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
@@ -93,15 +103,18 @@ import SecondTabScreen from './SecondTabScreen';
 import PushedScreen from './PushedScreen';
 // register all screens of the app (including internal ones)
 export function registerScreens() {
-  Navigation.registerComponent('example.FirstTabScreen', 
+  Navigation.registerComponent(
+    'example.FirstTabScreen',
     () => gestureHandlerRootHOC(FirstTabScreen),
     () => FirstTabScreen
   );
-  Navigation.registerComponent('example.SecondTabScreen', 
+  Navigation.registerComponent(
+    'example.SecondTabScreen',
     () => gestureHandlerRootHOC(SecondTabScreen),
     () => SecondTabScreen
   );
-  Navigation.registerComponent('example.PushedScreen', 
+  Navigation.registerComponent(
+    'example.PushedScreen',
     () => gestureHandlerRootHOC(PushedScreen),
     () => PushedScreen
   );
@@ -174,7 +187,17 @@ import 'react-native-gesture-handler';
 
 ## Web
 
-There is no additional configuration required for web, however, if you want to try the new (experimental) web implementation of Gesture Handler, you need to enable at the beginning of your index.js file:
+There is no additional configuration required for the web, however, since the Gesture Handler 2.10.0 the new web implementation is enabled by default. It is recommended to check if the gestures in your app are working as expected since their behavior should now resemble the native platforms. If you don't want to use the new implementation, you can still revert back to the legacy one by enabling it at the beginning of your `index.js` file:
+
+```js
+import { enableLegacyWebImplementation } from 'react-native-gesture-handler';
+
+enableLegacyWebImplementation(true);
+```
+
+Nonetheless, it's recommended to adapt to the new implementation, as the legacy one will be dropped at some point in the future.
+
+If you want to start using the new implementation but don't want to upgrade Gesture Handler, you can enable it (starting with Gesture Handler 2.6.0) at the beginning of your `index.js` file:
 
 ```js
 import { enableExperimentalWebImplementation } from 'react-native-gesture-handler';

@@ -74,6 +74,18 @@ export interface SwipeableProps
   rightThreshold?: number;
 
   /**
+   * Distance that the panel must be dragged from the left edge to be considered
+   * a swipe. The default value is 10.
+   */
+  dragOffsetFromLeftEdge?: number;
+
+  /**
+   * Distance that the panel must be dragged from the right edge to be considered
+   * a swipe. The default value is 10.
+   */
+  dragOffsetFromRightEdge?: number;
+
+  /**
    * Value indicating if the swipeable panel can be pulled further than the left
    * actions panel's width. It is set to true by default as long as the left
    * panel render method is present.
@@ -156,7 +168,8 @@ export interface SwipeableProps
    * */
   renderLeftActions?: (
     progressAnimatedValue: AnimatedInterpolation,
-    dragAnimatedValue: AnimatedInterpolation
+    dragAnimatedValue: AnimatedInterpolation,
+    swipeable: Swipeable
   ) => React.ReactNode;
   /**
    *
@@ -442,9 +455,22 @@ export default class Swipeable extends Component<
     this.animateRow(this.currentOffset(), -rightWidth);
   };
 
+  reset = () => {
+    const { dragX, rowTranslation } = this.state;
+    dragX.setValue(0);
+    rowTranslation.setValue(0);
+    this.setState({ rowState: 0 });
+  };
+
   render() {
     const { rowState } = this.state;
-    const { children, renderLeftActions, renderRightActions } = this.props;
+    const {
+      children,
+      renderLeftActions,
+      renderRightActions,
+      dragOffsetFromLeftEdge = 10,
+      dragOffsetFromRightEdge = 10,
+    } = this.props;
 
     const left = renderLeftActions && (
       <Animated.View
@@ -455,7 +481,7 @@ export default class Swipeable extends Component<
           // it for some reason
           { transform: [{ translateX: this.leftActionTranslate! }] },
         ]}>
-        {renderLeftActions(this.showLeftAction!, this.transX!)}
+        {renderLeftActions(this.showLeftAction!, this.transX!, this)}
         <View
           onLayout={({ nativeEvent }) =>
             this.setState({ leftWidth: nativeEvent.layout.x })
@@ -481,7 +507,7 @@ export default class Swipeable extends Component<
 
     return (
       <PanGestureHandler
-        activeOffsetX={[-10, 10]}
+        activeOffsetX={[-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]}
         {...this.props}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}>

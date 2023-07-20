@@ -2,8 +2,8 @@ import { initialize } from './init';
 
 export { Directions } from './Directions';
 export { State } from './State';
-export { default as gestureHandlerRootHOC } from './gestureHandlerRootHOC';
-export { default as GestureHandlerRootView } from './GestureHandlerRootView';
+export { default as gestureHandlerRootHOC } from './components/gestureHandlerRootHOC';
+export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
 export type {
   // event types
   GestureEvent,
@@ -92,6 +92,7 @@ export {
   BaseButton,
   RectButton,
   BorderlessButton,
+  PureNativeButton,
 } from './components/GestureButtons';
 export {
   TouchableHighlight,
@@ -157,6 +158,9 @@ export type {
 } from './components/DrawerLayout';
 export { default as DrawerLayout } from './components/DrawerLayout';
 
-export { enableExperimentalWebImplementation } from './EnableExperimentalWebImplementation';
+export {
+  enableExperimentalWebImplementation,
+  enableLegacyWebImplementation,
+} from './EnableNewWebImplementation';
 
 initialize();

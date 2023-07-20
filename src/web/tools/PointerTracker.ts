@@ -1,4 +1,5 @@
 import { AdaptedEvent } from '../interfaces';
+import VelocityTracker from './VelocityTracker';
 
 export interface TrackerElement {
   lastX: number;
@@ -10,11 +11,10 @@ export interface TrackerElement {
   velocityY: number;
 }
 
-// Used to scale velocity so that it is similar to velocity in Android/iOS
-const VELOCITY_FACTOR = 0.2;
 const MAX_POINTERS = 20;
 
 export default class PointerTracker {
+  private velocityTracker = new VelocityTracker();
   private trackedPointers: Map<number, TrackerElement> = new Map<
     number,
     TrackerElement
@@ -74,12 +74,11 @@ export default class PointerTracker {
 
     this.lastMovedPointerId = event.pointerId;
 
-    const dx = event.x - element.lastX;
-    const dy = event.y - element.lastY;
-    const dt = event.time - element.timeStamp;
+    this.velocityTracker.add(event);
+    const [velocityX, velocityY] = this.velocityTracker.getVelocity();
 
-    element.velocityX = (dx / dt) * 1000 * VELOCITY_FACTOR;
-    element.velocityY = (dy / dt) * 1000 * VELOCITY_FACTOR;
+    element.velocityX = velocityX;
+    element.velocityY = velocityY;
 
     element.lastX = event.x;
     element.lastY = event.y;
@@ -223,6 +222,7 @@ export default class PointerTracker {
   }
 
   public resetTracker(): void {
+    this.velocityTracker.reset();
     this.trackedPointers.clear();
     this.lastMovedPointerId = NaN;
 
