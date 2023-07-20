@@ -65,7 +65,11 @@ Specifying `width` or `height` is useful if we only want the gesture to activate
 
 ### `userSelect` (**web only**)
 
-This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Defaults to `"none"`.
+This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
+
+### `activeCursor` (**web only**)
+
+This parameter allows to specify which cursor should be used when gesture activates. Supports all CSS cursor values (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
 
 ### `onGestureEvent`
 

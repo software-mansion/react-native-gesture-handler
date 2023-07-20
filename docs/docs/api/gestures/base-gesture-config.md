@@ -58,3 +58,7 @@ Adds a gesture that should be recognized simultaneously with this one.
 Adds a relation requiring another gesture to fail, before this one can activate.
 
 **IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](../../gesture-composition).[`GestureDetector`](gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
+
+### `activeCursor(value)` (**web only**)
+
+This parameter allows to specify which cursor should be used when gesture activates. Supports all CSS cursor values (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
