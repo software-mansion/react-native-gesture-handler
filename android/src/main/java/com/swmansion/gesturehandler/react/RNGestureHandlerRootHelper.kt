@@ -59,8 +59,10 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
       val currentState = state
       if (currentState == STATE_UNDETERMINED) {
-        begin()
-        shouldIntercept = false
+        if (!shouldIntercept || orchestrator?.isAnyHandlerActive() != true) {
+          begin()
+          shouldIntercept = false
+        }
       }
       if (event.actionMasked == MotionEvent.ACTION_UP) {
         end()

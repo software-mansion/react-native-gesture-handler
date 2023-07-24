@@ -325,6 +325,8 @@ class GestureHandlerOrchestrator(
     return parent === wrapperView
   }
 
+  fun isAnyHandlerActive() = gestureHandlers.any { it?.state == GestureHandler.STATE_ACTIVE }
+
   /**
    * Transforms an event in the coordinates of wrapperView into the coordinate space of the received view.
    *
