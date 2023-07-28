@@ -126,8 +126,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     this.hook = defaultHook
   }
 
-  fun markAsInBounds() {
-    isWithinBounds = true
+  fun markAsInBounds(value: Boolean) {
+    isWithinBounds = value
   }
 
   companion object {

@@ -584,10 +584,14 @@ class GestureHandlerOrchestrator(
     handlerRegistry.getHandlersForView(view)?.forEach {
       if (it is NativeViewGestureHandler) {
         this.recordHandlerIfNotPresent(it, view)
-        it.markAsInBounds()
+        val wasInBounds = it.isWithinBounds
+
+        it.markAsInBounds(true)
         it.begin()
         it.activate()
         it.end()
+
+        it.markAsInBounds(wasInBounds)
       }
     }
   }
