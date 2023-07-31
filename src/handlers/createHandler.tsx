@@ -329,8 +329,10 @@ export default function createHandler<
 
         const actionType = (() => {
           if (
-            this.props?.onGestureEvent &&
-            'current' in this.props.onGestureEvent
+            (this.props?.onGestureEvent &&
+              'current' in this.props.onGestureEvent) ||
+            (this.props?.onHandlerStateChange &&
+              'current' in this.props.onHandlerStateChange)
           ) {
             // Reanimated worklet
             return ActionType.REANIMATED_WORKLET;
@@ -402,7 +404,7 @@ export default function createHandler<
     }
 
     render() {
-      if (__DEV__ && !this.context && !isJestEnv()) {
+      if (__DEV__ && !this.context && !isJestEnv() && Platform.OS !== 'web') {
         throw new Error(
           name +
             ' must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'

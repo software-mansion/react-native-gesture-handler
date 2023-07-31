@@ -77,6 +77,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       if (rootView is RootView) {
         rootView.onChildStartedNativeGesture(event)
       }
+      event.recycle()
     }
   }
 
