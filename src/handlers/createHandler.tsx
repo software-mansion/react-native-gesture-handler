@@ -402,7 +402,7 @@ export default function createHandler<
     }
 
     render() {
-      if (__DEV__ && !this.context && !isJestEnv()) {
+      if (__DEV__ && !this.context && !isJestEnv() && Platform.OS !== 'web') {
         throw new Error(
           name +
             ' must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
