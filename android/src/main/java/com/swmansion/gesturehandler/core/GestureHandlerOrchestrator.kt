@@ -592,7 +592,6 @@ class GestureHandlerOrchestrator(
         it.activate()
         it.end()
       }
-
     }
   }
 
