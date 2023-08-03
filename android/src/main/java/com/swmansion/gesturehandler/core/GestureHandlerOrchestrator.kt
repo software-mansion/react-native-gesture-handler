@@ -587,11 +587,12 @@ class GestureHandlerOrchestrator(
       }
       this.recordHandlerIfNotPresent(it, view)
 
-      it.markAsInBounds(true)
-      it.begin()
-      it.activate()
-      it.end()
-      it.markAsInBounds(false)
+      it.withMarkedAsInBounds {
+        it.begin()
+        it.activate()
+        it.end()
+      }
+
     }
   }
 

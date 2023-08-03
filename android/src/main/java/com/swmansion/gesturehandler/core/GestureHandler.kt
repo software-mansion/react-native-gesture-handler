@@ -33,7 +33,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   var y = 0f
     private set
   var isWithinBounds = false
-    protected set
+    private set
   var isEnabled = true
     private set
   var actionType = 0
@@ -704,6 +704,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointers.fill(null)
     touchEventType = RNGestureHandlerTouchEvent.EVENT_UNDETERMINED
     onReset()
+  }
+
+  fun withMarkedAsInBounds(closure: () -> Unit) {
+    isWithinBounds = true
+    closure()
+    isWithinBounds = false
   }
 
   fun setOnTouchEventListener(listener: OnTouchEventListener?): GestureHandler<*> {

@@ -127,10 +127,6 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     this.hook = defaultHook
   }
 
-  fun markAsInBounds(value: Boolean) {
-    isWithinBounds = value
-  }
-
   companion object {
     private fun tryIntercept(view: View, event: MotionEvent) =
       view is ViewGroup && view.onInterceptTouchEvent(event)
