@@ -13,10 +13,12 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 import android.os.Build
 import android.util.TypedValue
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.view.ViewParent
 import androidx.core.view.children
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
@@ -119,6 +121,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
+    private var receivedKeyEvent = false
 
     var isTouched = false
 
@@ -333,13 +336,30 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       return false
     }
 
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+      receivedKeyEvent = true
+      return super.onKeyUp(keyCode, event)
+    }
+
     override fun performClick(): Boolean {
       // don't preform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
-      return if (!isChildTouched() && soundResponder == this) {
-        tryFreeingResponder()
-        soundResponder = null
-        super.performClick()
+      return if (!isChildTouched()) {
+
+        if (context.isScreenReaderOn()) {
+          findGestureHandlerRootView()?.activateNativeHandlers(this)
+        } else if (receivedKeyEvent) {
+          findGestureHandlerRootView()?.activateNativeHandlers(this)
+          receivedKeyEvent = false
+        }
+
+        if (soundResponder === this) {
+          tryFreeingResponder()
+          soundResponder = null
+          super.performClick()
+        } else {
+          false
+        }
       } else {
         false
       }
@@ -356,7 +376,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
           soundResponder = this
         }
       }
-
       // button can be pressed alongside other button if both are non-exclusive and it doesn't have
       // any pressed children (to prevent pressing the parent when children is pressed).
       val canBePressedAlongsideOther = !exclusive && touchResponder?.exclusive != true && !isChildTouched()
@@ -376,6 +395,20 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     override fun dispatchDrawableHotspotChanged(x: Float, y: Float) {
       // No-op
       // by default Viewgroup would pass hotspot change events
+    }
+
+    private fun findGestureHandlerRootView(): RNGestureHandlerRootView? {
+      var parent: ViewParent? = this.parent
+      var gestureHandlerRootView: RNGestureHandlerRootView? = null
+
+      while (parent != null) {
+        if (parent is RNGestureHandlerRootView) {
+          gestureHandlerRootView = parent
+        }
+        parent = parent.parent
+      }
+
+      return gestureHandlerRootView
     }
 
     companion object {

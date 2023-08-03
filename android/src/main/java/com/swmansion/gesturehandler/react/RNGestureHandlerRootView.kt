@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react
 import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
@@ -41,6 +42,10 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
       rootHelper!!.requestDisallowInterceptTouchEvent(disallowIntercept)
     }
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
+  }
+
+  fun activateNativeHandlers(view: View) {
+    rootHelper?.activateNativeHandlers(view)
   }
 
   companion object {

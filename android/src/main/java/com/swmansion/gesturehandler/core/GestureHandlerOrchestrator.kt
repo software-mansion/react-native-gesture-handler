@@ -580,6 +580,21 @@ class GestureHandlerOrchestrator(
   private fun isClipping(view: View) =
     view !is ViewGroup || viewConfigHelper.isViewClippingChildren(view)
 
+  fun activateNativeHandlersForView(view: View) {
+    handlerRegistry.getHandlersForView(view)?.forEach {
+      if (it !is NativeViewGestureHandler) {
+        return@forEach
+      }
+      this.recordHandlerIfNotPresent(it, view)
+
+      it.withMarkedAsInBounds {
+        it.begin()
+        it.activate()
+        it.end()
+      }
+    }
+  }
+
   companion object {
     // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
     // it is also more allocation-wise efficient to have a fixed limit

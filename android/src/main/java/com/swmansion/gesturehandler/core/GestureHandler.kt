@@ -706,6 +706,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     onReset()
   }
 
+  fun withMarkedAsInBounds(closure: () -> Unit) {
+    isWithinBounds = true
+    closure()
+    isWithinBounds = false
+  }
+
   fun setOnTouchEventListener(listener: OnTouchEventListener?): GestureHandler<*> {
     onTouchEventListener = listener
     return this
