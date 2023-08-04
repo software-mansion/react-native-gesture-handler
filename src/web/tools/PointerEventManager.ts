@@ -77,6 +77,23 @@ export default class PointerEventManager extends EventManager {
       }
 
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
+      const target = event.target as HTMLElement;
+
+      // You may be wondering why are we setting pointer capture here, when we
+      // already set it in `pointerdown` handler. Well, that's a great question,
+      // for which I don't have an answer. Specification (https://www.w3.org/TR/pointerevents2/#dom-element-setpointercapture)
+      // says that the requirement for `setPointerCapture` to work is that pointer
+      // must be in 'active buttons state`, otherwise it will fail silently, which
+      // is lovely. Obviously, when `pointerdown` is fired, one of the buttons
+      // (when using mouse) is pressed, but that doesn't mean that `setPointerCapture`
+      // will succeed, for some reason. Since it fails silently, we don't actually know
+      // if it worked or not (there's `gotpointercapture` event, but the complexity of
+      // incorporating it here seems stupid), so we just call it again here, every time
+      // pointer moves until it succeeds.
+      // God, I do love web development.
+      if (!target.hasPointerCapture(event.pointerId)) {
+        target.setPointerCapture(event.pointerId);
+      }
 
       const inBounds: boolean = isPointerInBounds(this.view, {
         x: adaptedEvent.x,
