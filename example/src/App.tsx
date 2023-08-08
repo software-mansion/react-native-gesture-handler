@@ -45,6 +45,8 @@ import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
 import ManualGestures from './new_api/manualGestures';
 import VelocityTest from './new_api/velocityTest';
 
+import EmptyExample from './empty/EmptyExample';
+
 interface Example {
   name: string;
   component: React.ComponentType;
@@ -55,6 +57,10 @@ interface ExamplesSection {
 }
 
 const EXAMPLES: ExamplesSection[] = [
+  {
+    sectionTitle: 'Empty',
+    data: [{ name: 'Empty Example', component: EmptyExample }],
+  },
   {
     sectionTitle: 'Basic examples',
     data: [
