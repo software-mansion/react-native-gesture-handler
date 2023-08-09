@@ -94,6 +94,11 @@ export {
   BorderlessButton,
   PureNativeButton,
 } from './components/GestureButtons';
+export type {
+  TouchableHighlightProps,
+  TouchableOpacityProps,
+  TouchableWithoutFeedbackProps,
+} from './components/touchables';
 export {
   TouchableHighlight,
   TouchableNativeFeedback,
