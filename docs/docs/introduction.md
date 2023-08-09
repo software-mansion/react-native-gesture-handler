@@ -114,9 +114,9 @@ If you've build something with this library you'd like to share, please contact 
 
   <div class="community-holder-container-item">
     <div class="community-imageHolder">
-      <img src="https://ca.slack-edge.com/T03Q9AMJJ-UK2KQ52CA-1ee569e1258f-512" />
+      <img src="https://ca.slack-edge.com/T03Q9AMJJ-U03N3HU2C0M-60a31c54a7d5-512" />
     </div>
-    <div>Jakub Gonet</div>
+    <div>Michał Bert</div>
   </div>
 
   <div class="community-holder-container-item">
