@@ -47,6 +47,8 @@ using namespace facebook::react;
 
   _buttonView.userEnabled = newProps.enabled;
   _buttonView.exclusiveTouch = newProps.exclusive;
+  _buttonView.hitTestEdgeInsets = UIEdgeInsetsMake(
+      -newProps.hitSlop.top, -newProps.hitSlop.left, -newProps.hitSlop.bottom, -newProps.hitSlop.right);
 
   [super updateProps:props oldProps:oldProps];
 }

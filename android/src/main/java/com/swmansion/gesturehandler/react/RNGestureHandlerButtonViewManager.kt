@@ -131,6 +131,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       isClickable = true
       isFocusable = true
       needBackgroundUpdate = true
+      clipChildren = false
     }
 
     private inline fun withBackgroundUpdate(block: () -> Unit) {
