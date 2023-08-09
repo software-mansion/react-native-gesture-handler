@@ -197,12 +197,6 @@ export default class TapGestureHandler extends GestureHandler {
     super.onPointerOutOfBounds(event);
   }
 
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.tracker.resetTracker();
-    this.fail();
-  }
-
   private updateState(event: AdaptedEvent): void {
     if (
       this.currentMaxNumberOfPointers < this.tracker.getTrackedPointersCount()

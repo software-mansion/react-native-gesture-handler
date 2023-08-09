@@ -127,11 +127,6 @@ export default class PinchGestureHandler extends GestureHandler {
     super.onPointerOutOfBounds(event);
   }
 
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.reset();
-  }
-
   private tryBegin(): void {
     if (this.currentState !== State.UNDETERMINED) {
       return;

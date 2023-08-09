@@ -80,17 +80,22 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const dy = this.startY - this.tracker.getLastAvgY();
     const distSq = dx * dx + dy * dy;
 
-    if (
-      !this.buttonRole &&
-      distSq >= this.minDistSq &&
-      this.currentState === State.BEGAN
-    ) {
-      this.activate();
+    if (distSq >= this.minDistSq) {
+      if (this.buttonRole && this.currentState === State.ACTIVE) {
+        this.cancel();
+      } else if (!this.buttonRole && this.currentState === State.BEGAN) {
+        this.activate();
+      }
     }
   }
 
   protected onPointerOut(): void {
-    this.cancel();
+    if (
+      this.currentState === State.BEGAN ||
+      this.currentState === State.ACTIVE
+    ) {
+      this.cancel();
+    }
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
@@ -113,12 +118,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
         this.fail();
       }
     }
-  }
-
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.cancel();
-    this.reset();
   }
 
   public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {

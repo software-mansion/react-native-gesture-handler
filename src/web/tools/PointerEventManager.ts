@@ -8,6 +8,8 @@ import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
 export default class PointerEventManager extends EventManager {
+  private trackedPointers = new Set<number>();
+
   public setListeners(): void {
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
       if (event.pointerType === PointerType.TOUCH) {
@@ -24,6 +26,7 @@ export default class PointerEventManager extends EventManager {
 
       target.setPointerCapture(adaptedEvent.pointerId);
       this.markAsInBounds(adaptedEvent.pointerId);
+      this.trackedPointers.add(adaptedEvent.pointerId);
 
       if (++this.activePointersCounter > 1) {
         adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
@@ -51,6 +54,7 @@ export default class PointerEventManager extends EventManager {
 
       target.releasePointerCapture(adaptedEvent.pointerId);
       this.markAsOutOfBounds(adaptedEvent.pointerId);
+      this.trackedPointers.delete(adaptedEvent.pointerId);
 
       if (--this.activePointersCounter > 0) {
         adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_UP;
@@ -73,6 +77,23 @@ export default class PointerEventManager extends EventManager {
       }
 
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
+      const target = event.target as HTMLElement;
+
+      // You may be wondering why are we setting pointer capture here, when we
+      // already set it in `pointerdown` handler. Well, that's a great question,
+      // for which I don't have an answer. Specification (https://www.w3.org/TR/pointerevents2/#dom-element-setpointercapture)
+      // says that the requirement for `setPointerCapture` to work is that pointer
+      // must be in 'active buttons state`, otherwise it will fail silently, which
+      // is lovely. Obviously, when `pointerdown` is fired, one of the buttons
+      // (when using mouse) is pressed, but that doesn't mean that `setPointerCapture`
+      // will succeed, for some reason. Since it fails silently, we don't actually know
+      // if it worked or not (there's `gotpointercapture` event, but the complexity of
+      // incorporating it here seems stupid), so we just call it again here, every time
+      // pointer moves until it succeeds.
+      // God, I do love web development.
+      if (!target.hasPointerCapture(event.pointerId)) {
+        target.setPointerCapture(event.pointerId);
+      }
 
       const inBounds: boolean = isPointerInBounds(this.view, {
         x: adaptedEvent.x,
@@ -115,7 +136,27 @@ export default class PointerEventManager extends EventManager {
       this.onPointerCancel(adaptedEvent);
       this.markAsOutOfBounds(adaptedEvent.pointerId);
       this.activePointersCounter = 0;
+      this.trackedPointers.clear();
     });
+
+    this.view.addEventListener(
+      'lostpointercapture',
+      (event: PointerEvent): void => {
+        const adaptedEvent: AdaptedEvent = this.mapEvent(
+          event,
+          EventTypes.CANCEL
+        );
+
+        if (this.trackedPointers.has(adaptedEvent.pointerId)) {
+          // in some cases the `pointerup` event is not fired, but `lostpointercapture` is
+          // we simulate the `pointercancel` event here to make sure the gesture handler stops tracking it
+          this.onPointerCancel(adaptedEvent);
+
+          this.activePointersCounter = 0;
+          this.trackedPointers.clear();
+        }
+      }
+    );
   }
 
   protected mapEvent(event: PointerEvent, eventType: EventTypes): AdaptedEvent {
@@ -130,5 +171,10 @@ export default class PointerEventManager extends EventManager {
       buttons: event.buttons,
       time: event.timeStamp,
     };
+  }
+
+  public resetManager(): void {
+    super.resetManager();
+    this.trackedPointers.clear();
   }
 }
