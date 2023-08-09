@@ -38,7 +38,7 @@ export default class TouchableHighlight extends Component<
     underlayColor: 'black',
   };
 
-  constructor(props: RNTouchableHighlightProps & GenericTouchableProps) {
+  constructor(props: TouchableHighlightProps) {
     super(props);
     this.state = {
       extraChildStyle: null,
