@@ -47,6 +47,8 @@ import Hover from './new_api/hover';
 import HoverableIcons from './new_api/hoverable_icons';
 import VelocityTest from './new_api/velocityTest';
 
+import EmptyExample from './empty/EmptyExample';
+
 interface Example {
   name: string;
   component: React.ComponentType;
@@ -57,6 +59,10 @@ interface ExamplesSection {
 }
 
 const EXAMPLES: ExamplesSection[] = [
+  {
+    sectionTitle: 'Empty',
+    data: [{ name: 'Empty Example', component: EmptyExample }],
+  },
   {
     sectionTitle: 'Basic examples',
     data: [

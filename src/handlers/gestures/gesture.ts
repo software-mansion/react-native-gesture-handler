@@ -6,6 +6,7 @@ import {
   GestureTouchEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
+  ActiveCursor,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
 import { GestureStateManagerType } from './gestureStateManager';
@@ -247,6 +248,11 @@ export abstract class BaseGesture<
 
   hitSlop(hitSlop: HitSlop) {
     this.config.hitSlop = hitSlop;
+    return this;
+  }
+
+  activeCursor(activeCursor: ActiveCursor) {
+    this.config.activeCursor = activeCursor;
     return this;
   }
 

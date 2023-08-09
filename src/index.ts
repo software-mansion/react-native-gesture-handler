@@ -95,6 +95,11 @@ export {
   BorderlessButton,
   PureNativeButton,
 } from './components/GestureButtons';
+export type {
+  TouchableHighlightProps,
+  TouchableOpacityProps,
+  TouchableWithoutFeedbackProps,
+} from './components/touchables';
 export {
   TouchableHighlight,
   TouchableNativeFeedback,
@@ -149,6 +154,7 @@ export type {
   BorderlessButtonProperties,
 } from './handlers/gestureHandlerTypesCompat';
 
+export type { SwipeableProps } from './components/Swipeable';
 export { default as Swipeable } from './components/Swipeable';
 export type {
   DrawerLayoutProps,

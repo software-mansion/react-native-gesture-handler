@@ -80,6 +80,8 @@ If only one number `p` is given a range of `(-inf, p)` will be used if `p` is hi
 
 ### `averageTouches(value: boolean)` (Android only)
 
+Android, by default, will calculate translation values based on the position of the leading pointer (the first one that was placed on the screen). This modifier allows that behavior to be changed to the one that is default on iOS - the averaged position of all active pointers will be used to calculate the translation values.
+
 ### `enableTrackpadTwoFingerGesture(value: boolean)` (iOS only)
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
