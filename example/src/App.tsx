@@ -42,7 +42,9 @@ import BottomSheetNewApi from './new_api/bottom_sheet';
 import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
 import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
-import ManualGestures from './new_api/manualGestures';
+import ManualGestures from './new_api/manualGestures/index';
+import Hover from './new_api/hover';
+import HoverableIcons from './new_api/hoverable_icons';
 import VelocityTest from './new_api/velocityTest';
 
 import EmptyExample from './empty/EmptyExample';
@@ -122,6 +124,8 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Simple interaction with Reanimated',
         component: ReanimatedSimple,
       },
+      { name: 'Hover', component: Hover },
+      { name: 'Hoverable icons', component: HoverableIcons },
       { name: 'Camera', component: Camera },
       { name: 'Velocity test', component: VelocityTest },
       { name: 'Transformations', component: Transformations },

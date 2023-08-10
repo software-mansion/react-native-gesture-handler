@@ -32,6 +32,7 @@ import {
   panGestureHandlerCustomNativeProps,
 } from '../PanGestureHandler';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
+import { hoverGestureHandlerProps } from './hoverGesture';
 import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
@@ -63,6 +64,7 @@ const ALLOWED_PROPS = [
   ...longPressGestureHandlerProps,
   ...forceTouchGestureHandlerProps,
   ...flingGestureHandlerProps,
+  ...hoverGestureHandlerProps,
   ...nativeViewGestureHandlerProps,
 ];
 

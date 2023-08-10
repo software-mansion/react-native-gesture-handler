@@ -89,7 +89,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerOut(): void {
+  protected onPointerLeave(): void {
     if (
       this.currentState === State.BEGAN ||
       this.currentState === State.ACTIVE

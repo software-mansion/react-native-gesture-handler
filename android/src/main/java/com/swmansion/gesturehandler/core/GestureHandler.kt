@@ -371,7 +371,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
     lastEventOffsetY = adaptedTransformedEvent.rawY - adaptedTransformedEvent.y
-    onHandle(adaptedTransformedEvent, adaptedSourceEvent)
+    if (sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
+      sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE ||
+      sourceEvent.action == MotionEvent.ACTION_HOVER_EXIT
+    ) {
+      onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
+    } else {
+      onHandle(adaptedTransformedEvent, adaptedSourceEvent)
+    }
     if (adaptedTransformedEvent != transformedEvent) {
       adaptedTransformedEvent.recycle()
     }
@@ -674,6 +681,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected open fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     moveToState(STATE_FAILED)
   }
+
+  protected open fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) {}
 
   protected open fun onStateChange(newState: Int, previousState: Int) {}
   protected open fun onReset() {}

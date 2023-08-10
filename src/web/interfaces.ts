@@ -146,7 +146,7 @@ export enum EventTypes {
   ADDITIONAL_POINTER_UP,
   MOVE,
   ENTER,
-  OUT,
+  LEAVE,
   CANCEL,
 }
 

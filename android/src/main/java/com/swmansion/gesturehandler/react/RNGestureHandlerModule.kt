@@ -20,6 +20,7 @@ import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.ReanimatedEventDispatcher
 import com.swmansion.gesturehandler.core.FlingGestureHandler
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.HoverGestureHandler
 import com.swmansion.gesturehandler.core.LongPressGestureHandler
 import com.swmansion.gesturehandler.core.ManualGestureHandler
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
@@ -337,6 +338,25 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
+  private class HoverGestureHandlerFactory : HandlerFactory<HoverGestureHandler>() {
+    override val type = HoverGestureHandler::class.java
+    override val name = "HoverGestureHandler"
+
+    override fun create(context: Context?): HoverGestureHandler {
+      return HoverGestureHandler()
+    }
+
+    override fun extractEventData(handler: HoverGestureHandler, eventData: WritableMap) {
+      super.extractEventData(handler, eventData)
+      with(eventData) {
+        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
+        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
+        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
+        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
+      }
+    }
+  }
+
   private val eventListener = object : OnTouchEventListener {
     override fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, event: MotionEvent) {
       this@RNGestureHandlerModule.onHandlerUpdate(handler)
@@ -359,6 +379,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     RotationGestureHandlerFactory(),
     FlingGestureHandlerFactory(),
     ManualGestureHandlerFactory(),
+    HoverGestureHandlerFactory(),
   )
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val interactionManager = RNGestureHandlerInteractionManager()

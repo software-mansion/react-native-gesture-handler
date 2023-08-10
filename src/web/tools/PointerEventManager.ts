@@ -1,9 +1,4 @@
-import {
-  AdaptedEvent,
-  EventTypes,
-  MouseButtons,
-  PointerType,
-} from '../interfaces';
+import { AdaptedEvent, EventTypes, PointerType } from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
@@ -69,13 +64,6 @@ export default class PointerEventManager extends EventManager {
         return;
       }
 
-      if (
-        event.pointerType === PointerType.MOUSE &&
-        event.buttons !== MouseButtons.LEFT
-      ) {
-        return;
-      }
-
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
       const target = event.target as HTMLElement;
 
@@ -114,8 +102,8 @@ export default class PointerEventManager extends EventManager {
         }
       } else {
         if (pointerIndex >= 0) {
-          adaptedEvent.eventType = EventTypes.OUT;
-          this.onPointerOut(adaptedEvent);
+          adaptedEvent.eventType = EventTypes.LEAVE;
+          this.onPointerLeave(adaptedEvent);
           this.markAsOutOfBounds(adaptedEvent.pointerId);
         } else {
           this.onPointerOutOfBounds(adaptedEvent);
@@ -137,6 +125,31 @@ export default class PointerEventManager extends EventManager {
       this.markAsOutOfBounds(adaptedEvent.pointerId);
       this.activePointersCounter = 0;
       this.trackedPointers.clear();
+    });
+
+    // onPointerEnter and onPointerLeave are triggered by a custom logic responsible for
+    // handling shouldCancelWhenOutside flag, and are unreliable unless the pointer is down.
+    // We therefore use pointerenter and pointerleave events to handle the hover gesture,
+    // mapping them to onPointerMoveOver and onPointerMoveOut respectively.
+
+    this.view.addEventListener('pointerenter', (event: PointerEvent): void => {
+      if (event.pointerType === PointerType.TOUCH) {
+        return;
+      }
+
+      const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.ENTER);
+
+      this.onPointerMoveOver(adaptedEvent);
+    });
+
+    this.view.addEventListener('pointerleave', (event: PointerEvent): void => {
+      if (event.pointerType === PointerType.TOUCH) {
+        return;
+      }
+
+      const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.LEAVE);
+
+      this.onPointerMoveOut(adaptedEvent);
     });
 
     this.view.addEventListener(

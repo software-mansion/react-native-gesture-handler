@@ -37,6 +37,7 @@ module.exports = {
             'api/gestures/force-touch-gesture',
             'api/gestures/native-gesture',
             'api/gestures/manual-gesture',
+            'api/gestures/hover-gesture',
             'api/gestures/composed-gestures',
             'api/gestures/touch-events',
             'api/gestures/state-manager',

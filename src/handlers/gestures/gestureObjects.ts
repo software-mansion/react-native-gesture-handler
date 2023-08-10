@@ -13,6 +13,7 @@ import { RotationGesture } from './rotationGesture';
 import { TapGesture } from './tapGesture';
 import { NativeGesture } from './nativeGesture';
 import { ManualGesture } from './manualGesture';
+import { HoverGesture } from './hoverGesture';
 
 export const GestureObjects = {
   Tap: () => {
@@ -49,6 +50,10 @@ export const GestureObjects = {
 
   Manual: () => {
     return new ManualGesture();
+  },
+
+  Hover: () => {
+    return new HoverGesture();
   },
 
   /**

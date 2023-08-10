@@ -91,9 +91,11 @@ export default abstract class GestureHandler {
     manager.setOnPointerRemove(this.onPointerRemove.bind(this));
     manager.setOnPointerMove(this.onPointerMove.bind(this));
     manager.setOnPointerEnter(this.onPointerEnter.bind(this));
-    manager.setOnPointerOut(this.onPointerOut.bind(this));
+    manager.setOnPointerLeave(this.onPointerLeave.bind(this));
     manager.setOnPointerCancel(this.onPointerCancel.bind(this));
     manager.setOnPointerOutOfBounds(this.onPointerOutOfBounds.bind(this));
+    manager.setOnPointerMoveOver(this.onPointerMoveOver.bind(this));
+    manager.setOnPointerMoveOut(this.onPointerMoveOut.bind(this));
     manager.setListeners();
 
     this.eventManagers.push(manager);
@@ -359,7 +361,7 @@ export default abstract class GestureHandler {
       this.sendTouchEvent(event);
     }
   }
-  protected onPointerOut(event: AdaptedEvent): void {
+  protected onPointerLeave(event: AdaptedEvent): void {
     if (this.shouldCancellWhenOutside) {
       switch (this.currentState) {
         case State.ACTIVE:
@@ -394,6 +396,12 @@ export default abstract class GestureHandler {
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
+  }
+  protected onPointerMoveOver(_event: AdaptedEvent): void {
+    // used only by hover gesture handler atm
+  }
+  protected onPointerMoveOut(_event: AdaptedEvent): void {
+    // used only by hover gesture handler atm
   }
   private tryToSendMoveEvent(out: boolean): void {
     if (
