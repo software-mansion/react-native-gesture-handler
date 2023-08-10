@@ -256,12 +256,8 @@ android {
 def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlinVersion'])
 
 dependencies {
-    //noinspection GradleDynamicVersion
-    if (REACT_NATIVE_MINOR_VERSION >= 71) {
-        implementation "com.facebook.react:react-android" // version substituted by RNGP
-    } else {
-        implementation 'com.facebook.react:react-native:+' // from node_modules
-    }
+    implementation 'com.facebook.react:react-native:+' // from node_modules
+    
 
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
