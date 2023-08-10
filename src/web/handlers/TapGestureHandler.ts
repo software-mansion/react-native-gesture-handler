@@ -33,7 +33,6 @@ export default class TapGestureHandler extends GestureHandler {
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
-    this.setShouldCancelWhenOutside(true);
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
@@ -196,12 +195,6 @@ export default class TapGestureHandler extends GestureHandler {
     this.updateState(event);
 
     super.onPointerOutOfBounds(event);
-  }
-
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.tracker.resetTracker();
-    this.fail();
   }
 
   private updateState(event: AdaptedEvent): void {

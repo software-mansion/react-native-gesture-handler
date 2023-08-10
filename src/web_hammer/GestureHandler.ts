@@ -508,7 +508,7 @@ abstract class GestureHandler {
         .filter((v) => v);
 
       if (shouldUseTouchEvents !== this.shouldUseTouchEvents(props)) {
-        requestAnimationFrame(() => {
+        queueMicrotask(() => {
           // if the undelying event API needs to be changed, we need to unmount and mount
           // the hammer instance again.
           this.destroy();

@@ -2,7 +2,7 @@ require "json"
 
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
-isUserApp = File.exists?(File.join(__dir__, "..", "..", "node_modules", "react-native", "package.json"))
+isUserApp = File.exist?(File.join(__dir__, "..", "..", "node_modules", "react-native", "package.json"))
 if isUserApp
   libInstances = %x[find ../../ -name "package.json" | grep "/react-native-gesture-handler/package.json" | grep -v "/.yarn/"]
   libInstancesArray = libInstances.split("\n")
@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
       'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     }
     s.platforms       = { ios: '11.0', tvos: '11.0' }
-    s.compiler_flags  = folly_compiler_flags + ' -DRN_FABRIC_ENABLED'
+    s.compiler_flags  = folly_compiler_flags + ' -DRCT_NEW_ARCH_ENABLED'
 
     s.dependency "React"
     s.dependency "React-RCTFabric" # This is for fabric component

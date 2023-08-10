@@ -72,6 +72,10 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   override fun onInitialize(event: MotionEvent) {
     resetProgress()
     rotationGestureDetector = RotationGestureDetector(gestureListener)
+
+    // set the anchor to the position of the first pointer as NaN causes the event not to arrive
+    this.anchorX = event.x
+    this.anchorY = event.y
   }
 
   override fun onReset() {

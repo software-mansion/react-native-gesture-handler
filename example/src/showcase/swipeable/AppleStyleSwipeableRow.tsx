@@ -9,8 +9,8 @@ export default class AppleStyleSwipeableRow extends Component<
   PropsWithChildren<unknown>
 > {
   private renderLeftActions = (
-    _progress: Animated.AnimatedInterpolation,
-    dragX: Animated.AnimatedInterpolation
+    _progress: Animated.AnimatedInterpolation<number>,
+    dragX: Animated.AnimatedInterpolation<number>
   ) => {
     const trans = dragX.interpolate({
       inputRange: [0, 50, 100, 101],
@@ -36,7 +36,7 @@ export default class AppleStyleSwipeableRow extends Component<
     text: string,
     color: string,
     x: number,
-    progress: Animated.AnimatedInterpolation
+    progress: Animated.AnimatedInterpolation<number>
   ) => {
     const trans = progress.interpolate({
       inputRange: [0, 1],
@@ -60,8 +60,8 @@ export default class AppleStyleSwipeableRow extends Component<
   };
 
   private renderRightActions = (
-    progress: Animated.AnimatedInterpolation,
-    _dragAnimatedValue: Animated.AnimatedInterpolation
+    progress: Animated.AnimatedInterpolation<number>,
+    _dragAnimatedValue: Animated.AnimatedInterpolation<number>
   ) => (
     <View
       style={{

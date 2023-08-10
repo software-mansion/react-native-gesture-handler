@@ -74,7 +74,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Under the hood',
-      items: ['under-the-hood/how-does-it-work'],
+      items: ['under-the-hood/how-does-it-work', 'gesture-handlers/basics/state'],
     },
   ],
 };

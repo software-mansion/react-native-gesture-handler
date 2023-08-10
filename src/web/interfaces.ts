@@ -1,3 +1,4 @@
+import { UserSelect, ActiveCursor } from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
 import { State } from '../State';
 
@@ -20,6 +21,8 @@ type ConfigArgs =
   | number
   | boolean
   | HitSlop
+  | UserSelect
+  | ActiveCursor
   | Directions
   | Handler[]
   | null
@@ -31,6 +34,8 @@ export interface Config extends Record<string, ConfigArgs> {
   waitFor?: Handler[] | null;
   hitSlop?: HitSlop;
   shouldCancelWhenOutside?: boolean;
+  userSelect?: UserSelect;
+  activeCursor?: ActiveCursor;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;

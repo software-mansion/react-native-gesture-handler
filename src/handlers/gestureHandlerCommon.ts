@@ -18,6 +18,8 @@ const commonProps = [
   'shouldCancelWhenOutside',
   'hitSlop',
   'cancelsTouchesInView',
+  'userSelect',
+  'activeCursor',
 ] as const;
 
 const componentInteractionProps = ['waitFor', 'simultaneousHandlers'] as const;
@@ -62,6 +64,45 @@ export type HitSlop =
   | Record<'height' | 'top', number>
   | Record<'height' | 'bottom', number>;
 
+export type UserSelect = 'none' | 'auto' | 'text';
+export type ActiveCursor =
+  | 'auto'
+  | 'default'
+  | 'none'
+  | 'context-menu'
+  | 'help'
+  | 'pointer'
+  | 'progress'
+  | 'wait'
+  | 'cell'
+  | 'crosshair'
+  | 'text'
+  | 'vertical-text'
+  | 'alias'
+  | 'copy'
+  | 'move'
+  | 'no-drop'
+  | 'not-allowed'
+  | 'grab'
+  | 'grabbing'
+  | 'e-resize'
+  | 'n-resize'
+  | 'ne-resize'
+  | 'nw-resize'
+  | 's-resize'
+  | 'se-resize'
+  | 'sw-resize'
+  | 'w-resize'
+  | 'ew-resize'
+  | 'ns-resize'
+  | 'nesw-resize'
+  | 'nwse-resize'
+  | 'col-resize'
+  | 'row-resize'
+  | 'all-scroll'
+  | 'zoom-in'
+  | 'zoom-out';
+
 //TODO(TS) events in handlers
 
 export interface GestureEvent<ExtraEventPayloadT = Record<string, unknown>> {
@@ -101,6 +142,8 @@ export type CommonGestureConfig = {
   enabled?: boolean;
   shouldCancelWhenOutside?: boolean;
   hitSlop?: HitSlop;
+  userSelect?: UserSelect;
+  activeCursor?: ActiveCursor;
 };
 
 // Events payloads are types instead of interfaces due to TS limitation.
@@ -187,16 +230,15 @@ export function findNodeHandle(
   return findNodeHandleRN(node);
 }
 
-let scheduledFlushOperationsId: ReturnType<
-  typeof requestAnimationFrame
-> | null = null;
+let flushOperationsScheduled = false;
 
 export function scheduleFlushOperations() {
-  if (scheduledFlushOperationsId === null) {
-    scheduledFlushOperationsId = requestAnimationFrame(() => {
+  if (!flushOperationsScheduled) {
+    flushOperationsScheduled = true;
+    queueMicrotask(() => {
       RNGestureHandlerModule.flushOperations();
 
-      scheduledFlushOperationsId = null;
+      flushOperationsScheduled = false;
     });
   }
 }

@@ -72,11 +72,16 @@ export default abstract class GestureHandler {
 
     this.view = findNodeHandle(this.ref) as unknown as HTMLElement;
     this.view.style['touchAction'] = 'none';
-    this.view.style['webkitUserSelect'] = 'none';
-    this.view.style['userSelect'] = 'none';
-
     //@ts-ignore This one disables default events on Safari
     this.view.style['WebkitTouchCallout'] = 'none';
+
+    if (!this.config.userSelect) {
+      this.view.style['webkitUserSelect'] = 'none';
+      this.view.style['userSelect'] = 'none';
+    } else {
+      this.view.style['webkitUserSelect'] = this.config.userSelect;
+      this.view.style['userSelect'] = this.config.userSelect;
+    }
   }
 
   private addEventManager(manager: EventManager): void {
@@ -162,8 +167,18 @@ export default abstract class GestureHandler {
       this.currentState === State.ACTIVE ||
       this.currentState === State.BEGAN
     ) {
+      // Here the order of this if statement and moveToState call is important.
+      // At this point we can use currentState as previuos state, because immediately after changing cursor we call moveToState method.
+      // By checking whether previous state was ACTIVE, we can decide if we should reset the cursor or not.
+      if (
+        this.config.activeCursor &&
+        this.config.activeCursor !== 'auto' &&
+        this.currentState === State.ACTIVE
+      ) {
+        this.view.style.cursor = 'auto';
+      }
+
       this.moveToState(State.FAILED, sendIfDisabled);
-      this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
@@ -179,8 +194,17 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.onCancel();
+
+      // Same as above - order matters
+      if (
+        this.config.activeCursor &&
+        this.config.activeCursor !== 'auto' &&
+        this.currentState === State.ACTIVE
+      ) {
+        this.view.style.cursor = 'auto';
+      }
+
       this.moveToState(State.CANCELLED, sendIfDisabled);
-      this.view.style.cursor = 'auto';
     }
   }
 
@@ -190,7 +214,13 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.moveToState(State.ACTIVE);
-      this.view.style.cursor = 'grab';
+
+      if (
+        (!this.view.style.cursor || this.view.style.cursor === 'auto') &&
+        this.config.activeCursor
+      ) {
+        this.view.style.cursor = this.config.activeCursor;
+      }
     }
   }
 
@@ -199,8 +229,16 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN ||
       this.currentState === State.ACTIVE
     ) {
+      // Same as above - order matters
+      if (
+        this.config.activeCursor &&
+        this.config.activeCursor !== 'auto' &&
+        this.currentState === State.ACTIVE
+      ) {
+        this.view.style.cursor = 'auto';
+      }
+
       this.moveToState(State.END);
-      this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
@@ -347,6 +385,9 @@ export default abstract class GestureHandler {
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
+
+    this.cancel();
+    this.reset();
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.tryToSendMoveEvent(true);

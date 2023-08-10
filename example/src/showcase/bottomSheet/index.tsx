@@ -42,9 +42,9 @@ export class BottomSheet extends Component<
   ) => void;
   private dragY: Animated.Value;
   private onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
-  private reverseLastScrollY: Animated.AnimatedMultiplication;
+  private reverseLastScrollY: Animated.AnimatedMultiplication<number>;
   private translateYOffset: Animated.Value;
-  private translateY: Animated.AnimatedInterpolation;
+  private translateY: Animated.AnimatedInterpolation<number>;
   constructor(props: Record<string, unknown>) {
     super(props);
     const START = SNAP_POINTS_FROM_TOP[0];

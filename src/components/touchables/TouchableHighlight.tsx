@@ -7,7 +7,7 @@ import GenericTouchable, {
 import {
   StyleSheet,
   View,
-  TouchableHighlightProps,
+  TouchableHighlightProps as RNTouchableHighlightProps,
   ColorValue,
   ViewProps,
 } from 'react-native';
@@ -21,11 +21,14 @@ interface State {
   };
 }
 
+export type TouchableHighlightProps = RNTouchableHighlightProps &
+  GenericTouchableProps;
+
 /**
  * TouchableHighlight follows RN's implementation
  */
 export default class TouchableHighlight extends Component<
-  TouchableHighlightProps & GenericTouchableProps,
+  TouchableHighlightProps,
   State
 > {
   static defaultProps = {
@@ -35,7 +38,7 @@ export default class TouchableHighlight extends Component<
     underlayColor: 'black',
   };
 
-  constructor(props: TouchableHighlightProps & GenericTouchableProps) {
+  constructor(props: TouchableHighlightProps) {
     super(props);
     this.state = {
       extraChildStyle: null,

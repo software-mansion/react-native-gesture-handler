@@ -93,6 +93,10 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     val configuration = ViewConfiguration.get(context)
     scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
     spanSlop = configuration.scaledTouchSlop.toFloat()
+
+    // set the focal point to the position of the first pointer as NaN causes the event not to arrive
+    this.focalPointX = event.x
+    this.focalPointY = event.y
   }
 
   override fun resetProgress() {

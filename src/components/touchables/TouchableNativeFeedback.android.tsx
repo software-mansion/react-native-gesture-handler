@@ -1,6 +1,6 @@
 import {
   Platform,
-  TouchableNativeFeedbackProps,
+  TouchableNativeFeedbackProps as RNTouchableNativeFeedbackProps,
   ColorValue,
 } from 'react-native';
 import * as React from 'react';
@@ -14,15 +14,16 @@ export type TouchableNativeFeedbackExtraProps = {
   foreground?: boolean;
 };
 
+export type TouchableNativeFeedbackProps = RNTouchableNativeFeedbackProps &
+  GenericTouchableProps;
+
 /**
  * TouchableNativeFeedback behaves slightly different than RN's TouchableNativeFeedback.
  * There's small difference with handling long press ripple since RN's implementation calls
  * ripple animation via bridge. This solution leaves all animations' handling for native components so
  * it follows native behaviours.
  */
-export default class TouchableNativeFeedback extends Component<
-  TouchableNativeFeedbackProps & GenericTouchableProps
-> {
+export default class TouchableNativeFeedback extends Component<TouchableNativeFeedbackProps> {
   static defaultProps = {
     ...GenericTouchable.defaultProps,
     useForeground: true,

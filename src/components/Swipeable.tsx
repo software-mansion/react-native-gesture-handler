@@ -36,6 +36,11 @@ type SwipeableExcludes = Exclude<
   'onGestureEvent' | 'onHandlerStateChange'
 >;
 
+// Animated.AnimatedInterpolation has been converted to a generic type
+// in @types/react-native 0.70. This way we can maintain compatibility
+// with all versions of @types/react-native
+type AnimatedInterpolation = ReturnType<Animated.Value['interpolate']>;
+
 export interface SwipeableProps
   extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
   /**
@@ -67,6 +72,18 @@ export interface SwipeableProps
    * default it's a half of the panel's width.
    */
   rightThreshold?: number;
+
+  /**
+   * Distance that the panel must be dragged from the left edge to be considered
+   * a swipe. The default value is 10.
+   */
+  dragOffsetFromLeftEdge?: number;
+
+  /**
+   * Distance that the panel must be dragged from the right edge to be considered
+   * a swipe. The default value is 10.
+   */
+  dragOffsetFromRightEdge?: number;
 
   /**
    * Value indicating if the swipeable panel can be pulled further than the left
@@ -150,8 +167,9 @@ export interface SwipeableProps
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderLeftActions?: (
-    progressAnimatedValue: Animated.AnimatedInterpolation,
-    dragAnimatedValue: Animated.AnimatedInterpolation
+    progressAnimatedValue: AnimatedInterpolation,
+    dragAnimatedValue: AnimatedInterpolation,
+    swipeable: Swipeable
   ) => React.ReactNode;
   /**
    *
@@ -163,8 +181,8 @@ export interface SwipeableProps
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderRightActions?: (
-    progressAnimatedValue: Animated.AnimatedInterpolation,
-    dragAnimatedValue: Animated.AnimatedInterpolation,
+    progressAnimatedValue: AnimatedInterpolation,
+    dragAnimatedValue: AnimatedInterpolation,
     swipeable: Swipeable
   ) => React.ReactNode;
 
@@ -242,11 +260,11 @@ export default class Swipeable extends Component<
   private onGestureEvent?: (
     event: GestureEvent<PanGestureHandlerEventPayload>
   ) => void;
-  private transX?: Animated.AnimatedInterpolation;
-  private showLeftAction?: Animated.AnimatedInterpolation | Animated.Value;
-  private leftActionTranslate?: Animated.AnimatedInterpolation;
-  private showRightAction?: Animated.AnimatedInterpolation | Animated.Value;
-  private rightActionTranslate?: Animated.AnimatedInterpolation;
+  private transX?: AnimatedInterpolation;
+  private showLeftAction?: AnimatedInterpolation | Animated.Value;
+  private leftActionTranslate?: AnimatedInterpolation;
+  private showRightAction?: AnimatedInterpolation | Animated.Value;
+  private rightActionTranslate?: AnimatedInterpolation;
 
   private updateAnimatedEvent = (
     props: SwipeableProps,
@@ -437,9 +455,22 @@ export default class Swipeable extends Component<
     this.animateRow(this.currentOffset(), -rightWidth);
   };
 
+  reset = () => {
+    const { dragX, rowTranslation } = this.state;
+    dragX.setValue(0);
+    rowTranslation.setValue(0);
+    this.setState({ rowState: 0 });
+  };
+
   render() {
     const { rowState } = this.state;
-    const { children, renderLeftActions, renderRightActions } = this.props;
+    const {
+      children,
+      renderLeftActions,
+      renderRightActions,
+      dragOffsetFromLeftEdge = 10,
+      dragOffsetFromRightEdge = 10,
+    } = this.props;
 
     const left = renderLeftActions && (
       <Animated.View
@@ -450,7 +481,7 @@ export default class Swipeable extends Component<
           // it for some reason
           { transform: [{ translateX: this.leftActionTranslate! }] },
         ]}>
-        {renderLeftActions(this.showLeftAction!, this.transX!)}
+        {renderLeftActions(this.showLeftAction!, this.transX!, this)}
         <View
           onLayout={({ nativeEvent }) =>
             this.setState({ leftWidth: nativeEvent.layout.x })
@@ -476,7 +507,7 @@ export default class Swipeable extends Component<
 
     return (
       <PanGestureHandler
-        activeOffsetX={[-10, 10]}
+        activeOffsetX={[-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]}
         {...this.props}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}>

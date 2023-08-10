@@ -65,7 +65,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   private var shouldCancelWhenOutside = false
   var numberOfPointers = 0
     private set
-  private var orchestrator: GestureHandlerOrchestrator? = null
+  protected var orchestrator: GestureHandlerOrchestrator? = null
   private var onTouchEventListener: OnTouchEventListener? = null
   private var interactionController: GestureHandlerInteractionController? = null
 
@@ -729,6 +729,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     touchEventType = RNGestureHandlerTouchEvent.EVENT_UNDETERMINED
     isInitialized = false
     onReset()
+  }
+
+  fun withMarkedAsInBounds(closure: () -> Unit) {
+    isWithinBounds = true
+    closure()
+    isWithinBounds = false
   }
 
   fun setOnTouchEventListener(listener: OnTouchEventListener?): GestureHandler<*> {

@@ -3,7 +3,7 @@ import {
   Easing,
   StyleSheet,
   View,
-  TouchableOpacityProps,
+  TouchableOpacityProps as RNTouchableOpacityProps,
 } from 'react-native';
 import GenericTouchable, {
   TOUCHABLE_STATE,
@@ -12,16 +12,15 @@ import GenericTouchable, {
 import * as React from 'react';
 import { Component } from 'react';
 
-interface GHTouchableOpacityProps {
-  useNativeAnimations?: boolean;
-}
+export type TouchableOpacityProps = RNTouchableOpacityProps &
+  GenericTouchableProps & {
+    useNativeAnimations?: boolean;
+  };
 
 /**
  * TouchableOpacity bases on timing animation which has been used in RN's core
  */
-export default class TouchableOpacity extends Component<
-  TouchableOpacityProps & GenericTouchableProps & GHTouchableOpacityProps
-> {
+export default class TouchableOpacity extends Component<TouchableOpacityProps> {
   static defaultProps = {
     ...GenericTouchable.defaultProps,
     activeOpacity: 0.2,
@@ -30,7 +29,9 @@ export default class TouchableOpacity extends Component<
   // opacity is 1 one by default but could be overwritten
   getChildStyleOpacityWithDefault = () => {
     const childStyle = StyleSheet.flatten(this.props.style) || {};
-    return childStyle.opacity == null ? 1 : childStyle.opacity;
+    return childStyle.opacity == null
+      ? 1
+      : (childStyle.opacity.valueOf() as number);
   };
 
   opacity = new Animated.Value(this.getChildStyleOpacityWithDefault());
