@@ -212,7 +212,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         // Therefore it might be used as long as:
         // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
         // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && selectable is RippleDrawable) {
+        if (selectable is RippleDrawable) {
           val mask = PaintDrawable(Color.WHITE)
           mask.setCornerRadius(borderRadius)
           selectable.setDrawableByLayerId(android.R.id.mask, mask)
@@ -239,13 +239,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     }
 
     private fun createSelectableDrawable(): Drawable? {
-      // TODO: remove once support for RN 0.63 is dropped, since 0.64 minSdkVersion is 21
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-        context.theme.resolveAttribute(android.R.attr.selectableItemBackground, resolveOutValue, true)
-        @Suppress("Deprecation")
-        return resources.getDrawable(resolveOutValue.resourceId)
-      }
-
       // don't create ripple drawable at all when it's not supposed to be visible
       if (rippleColor == Color.TRANSPARENT) {
         return null
