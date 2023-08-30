@@ -34,7 +34,7 @@ export default abstract class GestureHandler {
   protected config: Config = { enabled: false };
   protected view!: HTMLElement;
 
-  protected eventManagers: EventManager[] = [];
+  protected eventManagers: EventManager<unknown>[] = [];
   protected tracker: PointerTracker = new PointerTracker();
 
   // Orchestrator properties
@@ -84,7 +84,7 @@ export default abstract class GestureHandler {
     }
   }
 
-  private addEventManager(manager: EventManager): void {
+  private addEventManager(manager: EventManager<unknown>): void {
     manager.setOnPointerDown(this.onPointerDown.bind(this));
     manager.setOnPointerAdd(this.onPointerAdd.bind(this));
     manager.setOnPointerUp(this.onPointerUp.bind(this));
@@ -113,7 +113,7 @@ export default abstract class GestureHandler {
     this.tracker.resetTracker();
     this.onReset();
     this.resetProgress();
-    this.eventManagers.forEach((manager: EventManager) =>
+    this.eventManagers.forEach((manager: EventManager<unknown>) =>
       manager.resetManager()
     );
     this.currentState = State.UNDETERMINED;
@@ -816,7 +816,7 @@ export default abstract class GestureHandler {
     return this.view;
   }
 
-  public getEventManagers(): EventManager[] {
+  public getEventManagers(): EventManager<unknown>[] {
     return this.eventManagers;
   }
 
