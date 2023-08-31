@@ -8,12 +8,14 @@ import PointerEventManager from './PointerEventManager';
 import TouchEventManager from './TouchEventManager';
 import { State } from '../../State';
 import { isPointerInBounds } from '../utils';
+import EventManager from './EventManager';
 
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement>
 {
   private _view!: HTMLElement;
   private gestureHandler!: GestureHandler;
+  private eventManagers: EventManager<unknown>[] = [];
 
   get view(): HTMLElement {
     return this._view;
@@ -43,8 +45,12 @@ export class GestureHandlerWebDelegate
       this.view.style['userSelect'] = config.userSelect;
     }
 
-    handler.addEventManager(new PointerEventManager(this.view));
-    handler.addEventManager(new TouchEventManager(this.view));
+    this.eventManagers.push(new PointerEventManager(this.view));
+    this.eventManagers.push(new TouchEventManager(this.view));
+
+    this.eventManagers.forEach((manager) =>
+      this.gestureHandler.attachEventManager(manager)
+    );
   }
 
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
@@ -63,7 +69,9 @@ export class GestureHandlerWebDelegate
   }
 
   reset(): void {
-    throw new Error('Method not implemented.');
+    this.eventManagers.forEach((manager: EventManager<unknown>) =>
+      manager.resetManager()
+    );
   }
 
   onBegin(): void {

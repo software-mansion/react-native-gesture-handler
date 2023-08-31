@@ -30,7 +30,6 @@ export default abstract class GestureHandler {
   private handlerTag!: number;
   protected config: Config = { enabled: false };
 
-  protected eventManagers: EventManager<unknown>[] = [];
   protected tracker: PointerTracker = new PointerTracker();
 
   // Orchestrator properties
@@ -59,7 +58,7 @@ export default abstract class GestureHandler {
     this.delegate.init(viewRef, this);
   }
 
-  public addEventManager(manager: EventManager<unknown>): void {
+  public attachEventManager(manager: EventManager<unknown>): void {
     manager.setOnPointerDown(this.onPointerDown.bind(this));
     manager.setOnPointerAdd(this.onPointerAdd.bind(this));
     manager.setOnPointerUp(this.onPointerUp.bind(this));
@@ -72,8 +71,6 @@ export default abstract class GestureHandler {
     manager.setOnPointerMoveOver(this.onPointerMoveOver.bind(this));
     manager.setOnPointerMoveOut(this.onPointerMoveOut.bind(this));
     manager.setListeners();
-
-    this.eventManagers.push(manager);
   }
 
   //
@@ -88,9 +85,7 @@ export default abstract class GestureHandler {
     this.tracker.resetTracker();
     this.onReset();
     this.resetProgress();
-    this.eventManagers.forEach((manager: EventManager<unknown>) =>
-      manager.resetManager()
-    );
+    this.delegate.reset();
     this.currentState = State.UNDETERMINED;
   }
 
