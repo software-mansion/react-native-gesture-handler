@@ -12,17 +12,6 @@ export default class HoverGestureHandler extends GestureHandler {
     super.updateGestureConfig({ enabled: enabled, ...props });
   }
 
-  protected transformNativeEvent() {
-    const rect: DOMRect = this.view.getBoundingClientRect();
-
-    return {
-      x: this.tracker.getLastAvgX() - rect.left,
-      y: this.tracker.getLastAvgY() - rect.top,
-      absoluteX: this.tracker.getLastAvgX(),
-      absoluteY: this.tracker.getLastAvgY(),
-    };
-  }
-
   protected onPointerMoveOver(event: AdaptedEvent): void {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
 
