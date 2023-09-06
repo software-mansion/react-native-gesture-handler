@@ -74,6 +74,18 @@ export class GestureHandlerWebDelegate
     );
   }
 
+  tryResetCursor() {
+    const config = this.gestureHandler.getConfig();
+
+    if (
+      config.activeCursor &&
+      config.activeCursor !== 'auto' &&
+      this.gestureHandler.getState() === State.ACTIVE
+    ) {
+      this.view.style.cursor = 'auto';
+    }
+  }
+
   onBegin(): void {
     // no-op for now
   }
@@ -90,38 +102,14 @@ export class GestureHandlerWebDelegate
   }
 
   onEnd(): void {
-    const config = this.gestureHandler.getConfig();
-
-    if (
-      config.activeCursor &&
-      config.activeCursor !== 'auto' &&
-      this.gestureHandler.getState() === State.ACTIVE
-    ) {
-      this.view.style.cursor = 'auto';
-    }
+    this.tryResetCursor();
   }
 
   onCancel(): void {
-    const config = this.gestureHandler.getConfig();
-
-    if (
-      config.activeCursor &&
-      config.activeCursor !== 'auto' &&
-      this.gestureHandler.getState() === State.ACTIVE
-    ) {
-      this.view.style.cursor = 'auto';
-    }
+    this.tryResetCursor();
   }
 
   onFail(): void {
-    const config = this.gestureHandler.getConfig();
-
-    if (
-      config.activeCursor &&
-      config.activeCursor !== 'auto' &&
-      this.gestureHandler.getState() === State.ACTIVE
-    ) {
-      this.view.style.cursor = 'auto';
-    }
+    this.tryResetCursor();
   }
 }
