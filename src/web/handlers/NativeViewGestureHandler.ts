@@ -21,19 +21,21 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.setShouldCancelWhenOutside(true);
 
-    if (Platform.OS === 'web') {
-      const view = this.delegate.view as HTMLElement;
+    if (Platform.OS !== 'web') {
+      return;
+    }
 
-      view.style['touchAction'] = 'auto';
+    const view = this.delegate.view as HTMLElement;
 
-      //@ts-ignore Turns on defualt touch behavior on Safari
-      view.style['WebkitTouchCallout'] = 'auto';
+    view.style['touchAction'] = 'auto';
 
-      if (view.hasAttribute('role')) {
-        this.buttonRole = true;
-      } else {
-        this.buttonRole = false;
-      }
+    //@ts-ignore Turns on defualt touch behavior on Safari
+    view.style['WebkitTouchCallout'] = 'auto';
+
+    if (view.hasAttribute('role')) {
+      this.buttonRole = true;
+    } else {
+      this.buttonRole = false;
     }
   }
 
