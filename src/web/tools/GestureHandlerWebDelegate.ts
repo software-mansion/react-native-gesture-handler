@@ -13,12 +13,12 @@ import EventManager from './EventManager';
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement>
 {
-  private _view!: HTMLElement;
+  private view!: HTMLElement;
   private gestureHandler!: GestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
 
-  get view(): HTMLElement {
-    return this._view;
+  getView(): HTMLElement {
+    return this.view;
   }
 
   init(viewRef: number, handler: GestureHandler): void {
@@ -29,7 +29,7 @@ export class GestureHandlerWebDelegate
     }
 
     this.gestureHandler = handler;
-    this._view = findNodeHandle(viewRef) as unknown as HTMLElement;
+    this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
 
     this.view.style['touchAction'] = 'none';
     //@ts-ignore This one disables default events on Safari

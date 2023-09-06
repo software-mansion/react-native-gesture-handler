@@ -300,7 +300,7 @@ export default class GestureHandlerOrchestrator {
 
     if (
       !PointerTracker.shareCommonPointers(handlerPointers, otherPointers) &&
-      handler.getDelegate().view !== otherHandler.getDelegate().view
+      handler.getDelegate().getView() !== otherHandler.getDelegate().getView()
     ) {
       return this.checkOverlap(handler, otherHandler);
     }

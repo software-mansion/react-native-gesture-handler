@@ -25,7 +25,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
       return;
     }
 
-    const view = this.delegate.view as HTMLElement;
+    const view = this.delegate.getView() as HTMLElement;
 
     view.style['touchAction'] = 'auto';
 

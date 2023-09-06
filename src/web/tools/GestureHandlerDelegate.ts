@@ -8,7 +8,7 @@ export interface MeasureResult {
 }
 
 export interface GestureHandlerDelegate<T> {
-  readonly view: T;
+  getView(): T;
 
   init(viewRef: number, handler: GestureHandler): void;
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean;

@@ -25,7 +25,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     super.init(ref, propsRef);
 
     if (Platform.OS === 'web') {
-      (this.delegate.view as HTMLElement).oncontextmenu = () => false;
+      (this.delegate.getView() as HTMLElement).oncontextmenu = () => false;
     }
   }
 
