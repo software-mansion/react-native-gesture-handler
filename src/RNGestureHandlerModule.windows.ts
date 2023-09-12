@@ -25,6 +25,7 @@ import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
 import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
 import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
 import { Config } from './web/interfaces';
+import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
 
 export const Gestures = {
   NativeViewGestureHandler,
@@ -67,7 +68,10 @@ export default {
       }
 
       const GestureClass = Gestures[handlerName];
-      NodeManager.createGestureHandler(handlerTag, new GestureClass());
+      NodeManager.createGestureHandler(
+        handlerTag,
+        new GestureClass(new GestureHandlerWebDelegate())
+      );
       InteractionManager.getInstance().configureInteractions(
         NodeManager.getHandler(handlerTag),
         config as unknown as Config
