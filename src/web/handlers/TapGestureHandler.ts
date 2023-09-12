@@ -79,17 +79,6 @@ export default class TapGestureHandler extends GestureHandler {
     this.minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
   }
 
-  protected transformNativeEvent() {
-    const rect: DOMRect = this.view.getBoundingClientRect();
-
-    return {
-      x: this.tracker.getLastAvgX() - rect.left,
-      y: this.tracker.getLastAvgY() - rect.top,
-      absoluteX: this.tracker.getLastAvgX(),
-      absoluteY: this.tracker.getLastAvgY(),
-    };
-  }
-
   private clearTimeouts(): void {
     clearTimeout(this.waitTimeout);
     clearTimeout(this.delayTimeout);

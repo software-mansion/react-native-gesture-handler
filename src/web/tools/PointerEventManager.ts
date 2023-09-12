@@ -2,7 +2,7 @@ import { AdaptedEvent, EventTypes, PointerType } from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
-export default class PointerEventManager extends EventManager {
+export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
 
   public setListeners(): void {

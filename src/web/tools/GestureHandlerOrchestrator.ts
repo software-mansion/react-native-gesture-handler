@@ -3,7 +3,6 @@ import { PointerType } from '../interfaces';
 
 import GestureHandler from '../handlers/GestureHandler';
 import PointerTracker from './PointerTracker';
-import { isPointerInBounds } from '../utils';
 
 export default class GestureHandlerOrchestrator {
   private static instance: GestureHandlerOrchestrator;
@@ -301,7 +300,7 @@ export default class GestureHandlerOrchestrator {
 
     if (
       !PointerTracker.shareCommonPointers(handlerPointers, otherPointers) &&
-      handler.getView() !== otherHandler.getView()
+      handler.getDelegate().getView() !== otherHandler.getDelegate().getView()
     ) {
       return this.checkOverlap(handler, otherHandler);
     }
@@ -329,8 +328,10 @@ export default class GestureHandlerOrchestrator {
       const handlerY: number = handler.getTracker().getLastY(pointer);
 
       if (
-        isPointerInBounds(handler.getView(), { x: handlerX, y: handlerY }) &&
-        isPointerInBounds(otherHandler.getView(), { x: handlerX, y: handlerY })
+        handler.getDelegate().isPointerInBounds({ x: handlerX, y: handlerY }) &&
+        otherHandler
+          .getDelegate()
+          .isPointerInBounds({ x: handlerX, y: handlerY })
       ) {
         overlap = true;
       }
@@ -341,8 +342,8 @@ export default class GestureHandlerOrchestrator {
       const otherY: number = otherHandler.getTracker().getLastY(pointer);
 
       if (
-        isPointerInBounds(handler.getView(), { x: otherX, y: otherY }) &&
-        isPointerInBounds(otherHandler.getView(), { x: otherX, y: otherY })
+        handler.getDelegate().isPointerInBounds({ x: otherX, y: otherY }) &&
+        otherHandler.getDelegate().isPointerInBounds({ x: otherX, y: otherY })
       ) {
         overlap = true;
       }

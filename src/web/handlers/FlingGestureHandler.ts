@@ -39,17 +39,6 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected transformNativeEvent() {
-    const rect: DOMRect = this.view.getBoundingClientRect();
-
-    return {
-      x: this.tracker.getLastAvgX() - rect.left,
-      y: this.tracker.getLastAvgY() - rect.top,
-      absoluteX: this.tracker.getLastAvgX(),
-      absoluteY: this.tracker.getLastAvgY(),
-    };
-  }
-
   private startFling(): void {
     this.startX = this.tracker.getLastX(this.keyPointer);
     this.startY = this.tracker.getLastY(this.keyPointer);

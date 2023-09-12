@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { AdaptedEvent, EventTypes, TouchEventType } from '../interfaces';
 
-export default abstract class EventManager {
-  protected readonly view: HTMLElement;
+export default abstract class EventManager<T> {
+  protected readonly view: T;
   protected pointersInBounds: number[] = [];
   protected activePointersCounter: number;
 
-  constructor(view: HTMLElement) {
+  constructor(view: T) {
     this.view = view;
     this.activePointersCounter = 0;
   }
