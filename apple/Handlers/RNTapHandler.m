@@ -10,6 +10,7 @@
 
 #if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
+#endif
 
 #import <React/RCTConvert.h>
 
@@ -70,9 +71,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   self.enabled = NO;
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent*)event
 {
-  [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   if (_tapsSoFar == 0) {
@@ -80,7 +80,11 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
     // is called (it resets the gesture handler), making it send whatever the last known state as oldState
     // in the event. If we reset it here it correctly sends UNDETERMINED as oldState.
     [_gestureHandler reset];
-    _initPosition = [self locationInView:self.view.window];
+    #if TARGET_OS_OSX
+      _initPosition = [self locationInView:self.view.window.contentView];
+    #else
+      _initPosition = [self locationInView:self.view.window];
+    #endif
   }
   _tapsSoFar++;
   if (_tapsSoFar) {
@@ -97,9 +101,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   [self triggerAction];
 }
 
-- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent*)event
 {
-  [super touchesMoved:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 
   NSInteger numberOfTouches = [touches count];
@@ -122,9 +125,96 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   [self triggerAction];
 }
 
+- (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent*)event
+{
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+
+  if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
+    self.state = UIGestureRecognizerStateEnded;
+    [self reset];
+  } else {
+    [self performSelector:@selector(cancel) withObject:nil afterDelay:_maxDelay];
+  }
+}
+
+- (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent*)event
+{
+  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+  self.state = UIGestureRecognizerStateCancelled;
+  [self reset];
+}
+
+#if TARGET_OS_OSX
+- (void)mouseDown:(NSEvent *)event
+{
+  [super mouseDown:event];
+  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+}
+
+- (void)rightMouseDown:(NSEvent *)event
+{
+  [super rightMouseDown:event];
+  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  [super mouseDragged:event];
+  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)rightMouseDragged:(NSEvent *)event
+{
+  [super rightMouseDragged:event];
+  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [super mouseUp:event];
+  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)rightMouseUp:(NSEvent *)event
+{
+  [super rightMouseUp:event];
+  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+}
+#else
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesBegan:touches withEvent:event];
+  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesMoved:touches withEvent:event];
+  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesEnded:touches withEvent:event];
+  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesCancelled:touches withEvent:event];
+  [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+}
+
+#endif
+
 - (CGPoint)translationInView
 {
+#if TARGET_OS_OSX
+  CGPoint currentPosition = [self locationInView:self.view.window.contentView];
+#else
   CGPoint currentPosition = [self locationInView:self.view.window];
+#endif
   return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
 }
 
@@ -149,28 +239,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   return NO;
 }
 
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-  [super touchesEnded:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
-
-  if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
-    self.state = UIGestureRecognizerStateEnded;
-    [self reset];
-  } else {
-    [self performSelector:@selector(cancel) withObject:nil afterDelay:_maxDelay];
-  }
-}
-
-- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-  [super touchesCancelled:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
-
-  self.state = UIGestureRecognizerStateCancelled;
-  [self reset];
-}
-
 - (void)reset
 {
   if (self.state == UIGestureRecognizerStateFailed) {
@@ -186,7 +254,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 }
 
 @end
-#endif
 
 @implementation RNTapGestureHandler {
   RNGestureHandlerEventExtraData *_lastData;
@@ -195,14 +262,11 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
-#if !TARGET_OS_OSX
     _recognizer = [[RNBetterTapGestureRecognizer alloc] initWithGestureHandler:self];
-#endif
   }
   return self;
 }
 
-#if !TARGET_OS_OSX
 - (void)resetConfig
 {
   [super resetConfig];
@@ -266,6 +330,5 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
   return shouldBegin;
 }
-#endif
 
 @end
