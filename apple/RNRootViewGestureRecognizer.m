@@ -69,63 +69,100 @@
     if (handler != nil) {
         [self.delegate gestureRecognizer:preventingGestureRecognizer didActivateInViewWithTouchHandler:self.view];
     }
-    
+
     return [super canBePreventedByGestureRecognizer:preventingGestureRecognizer];
 }
 
-#if !TARGET_OS_OSX
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+
+- (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent*)event
 {
     _active = YES;
     self.state = UIGestureRecognizerStatePossible;
+}
+
+- (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent*)event
+{
+    self.state = UIGestureRecognizerStatePossible;
+}
+
+- (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent*)event
+{
+    if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
+        self.state = UIGestureRecognizerStateEnded;
+    } else {
+        self.state = UIGestureRecognizerStateFailed;
+    }
+    [self reset];
+    _active = NO;
+}
+
+- (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent*)event
+{
+    self.state = UIGestureRecognizerStateCancelled;
+    [self reset];
+    _active = NO;
+}
+
+
+#if TARGET_OS_OSX
+- (void)mouseDown:(NSEvent *)event
+{
+  [super mouseDown:event];
+  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+}
+
+- (void)rightMouseDown:(NSEvent *)event
+{
+  [super rightMouseDown:event];
+  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  [super mouseDragged:event];
+  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)rightMouseDragged:(NSEvent *)event
+{
+  [super rightMouseDragged:event];
+  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [super mouseUp:event];
+  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)rightMouseUp:(NSEvent *)event
+{
+  [super rightMouseUp:event];
+  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+}
+#else
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesBegan:touches withEvent:event];
+  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    self.state = UIGestureRecognizerStatePossible;
+  [super touchesMoved:touches withEvent:event];
+  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
-        self.state = UIGestureRecognizerStateEnded;
-    } else {
-        self.state = UIGestureRecognizerStateFailed;
-    }
-    [self reset];
-    _active = NO;
+  [super touchesEnded:touches withEvent:event];
+  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    self.state = UIGestureRecognizerStateCancelled;
-    [self reset];
-    _active = NO;
-}
-#else
-- (void)mouseDown:(NSEvent *)event {
-    _active = YES;
-    self.state = UIGestureRecognizerStatePossible;
-}
-
-- (void)mouseDragged:(NSEvent *)event {
-    self.state = UIGestureRecognizerStatePossible;
-}
-
-- (void)mouseUp:(NSEvent *)event {
-    if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
-        self.state = UIGestureRecognizerStateEnded;
-    } else {
-        self.state = UIGestureRecognizerStateFailed;
-    }
-    [self reset];
-    _active = NO;
-}
-
-- (void)touchesCancelledWithEvent:(NSEvent *)event {
-    self.state = UIGestureRecognizerStateCancelled;
-    [self reset];
-    _active = NO;
+  [super touchesCancelled:touches withEvent:event];
+  [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
 }
 #endif
 
