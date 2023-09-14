@@ -8,9 +8,13 @@
 
 #import "RNPanHandler.h"
 
+#if TARGET_OS_OSX
+@interface RNBetterPanGestureRecognizer : NSPanGestureRecognizer
+#else
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
 @interface RNBetterPanGestureRecognizer : UIPanGestureRecognizer
+#endif
 
 @property (nonatomic) CGFloat minDistSq;
 @property (nonatomic) CGFloat minVelocityX;
@@ -32,7 +36,9 @@
 
 @implementation RNBetterPanGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
+#if !TARGET_OS_TV && !TARGET_OS_OSX
   NSUInteger _realMinimumNumberOfTouches;
+#endif
   BOOL _hasCustomActivationCriteria;
 }
 
@@ -54,12 +60,13 @@
     _failOffsetYEnd = NAN;
     _activateAfterLongPress = NAN;
     _hasCustomActivationCriteria = NO;
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
 #endif
   }
   return self;
 }
+
 
 - (void)triggerAction
 {
@@ -68,7 +75,9 @@
 
 - (void)setMinimumNumberOfTouches:(NSUInteger)minimumNumberOfTouches
 {
+#if !TARGET_OS_TV && !TARGET_OS_OSX
   _realMinimumNumberOfTouches = minimumNumberOfTouches;
+#endif
 }
 
 - (void)activateAfterLongPress
@@ -78,23 +87,25 @@
   [_gestureHandler handleGesture:self inState:RNGestureHandlerStateActive];
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent*)event
 {
-  if ([self numberOfTouches] == 0) {
-    [_gestureHandler reset];
-  }
-#if !TARGET_OS_TV
-  if (_hasCustomActivationCriteria) {
-    // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
-    // the gesture too early before we are sure that all criteria (e.g. minimum distance
-    // etc. are met)
-    super.minimumNumberOfTouches = 20;
-  } else {
-    super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
-  }
-#endif
-  [super touchesBegan:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+    [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+
+    if (touches.count == 0) {
+      [_gestureHandler reset];
+    }
+
+  #if !TARGET_OS_TV && !TARGET_OS_OSX
+    if (_hasCustomActivationCriteria) {
+      // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
+      // the gesture too early before we are sure that all criteria (e.g. minimum distance
+      // etc. are met)
+      super.minimumNumberOfTouches = 20;
+    } else {
+      super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
+    }
+  #endif
+
   [self triggerAction];
 
   if (!isnan(_activateAfterLongPress)) {
@@ -102,15 +113,15 @@
   }
 }
 
-- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent*)event
 {
-  [super touchesMoved:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 
   if (self.state == UIGestureRecognizerStatePossible && [self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
     return;
   }
+
   if ((self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateChanged)) {
     if (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) {
       // If the previous recognizer state is UIGestureRecognizerStateChanged
@@ -118,34 +129,99 @@
       // UIGestureRecognizerStateCancelled even if you set the state to
       // UIGestureRecognizerStateFailed here. Making the behavior explicit.
       self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
-                                                                    : UIGestureRecognizerStateCancelled;
+                                                                      : UIGestureRecognizerStateCancelled;
       [self reset];
       return;
     }
   }
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
   if (_hasCustomActivationCriteria && self.state == UIGestureRecognizerStatePossible &&
       [self shouldActivateUnderCustomCriteria]) {
-#if !TARGET_OS_TV
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
     if ([self numberOfTouches] >= _realMinimumNumberOfTouches) {
       self.state = UIGestureRecognizerStateBegan;
       [self setTranslation:CGPointMake(0, 0) inView:self.view];
     }
-#endif
   }
+#endif
+}
+
+- (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent*)event
+{
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+}
+
+- (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent*)event
+{
+  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+}
+
+
+#if TARGET_OS_OSX
+
+- (void)mouseDown:(NSEvent *)event
+{
+  [super mouseDown:event];
+  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+}
+
+- (void)rightMouseDown:(NSEvent *)event
+{
+  [super rightMouseDown:event];
+  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  [super mouseDragged:event];
+  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)rightMouseDragged:(NSEvent *)event
+{
+  [super rightMouseDragged:event];
+  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [super mouseUp:event];
+  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)rightMouseUp:(NSEvent *)event
+{
+  [super rightMouseUp:event];
+  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+}
+
+#else
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesBegan:touches withEvent:event];
+  [self interactionsBegan:touches withEvent:event];
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesMoved:touches withEvent:event];
+  [self interactionsMoved:touches withEvent:event];
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+  [self interactionsEnded:touches withEvent:event];
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+  [self interactionsCancelled:touches withEvent:event];
 }
+
+#endif
 
 - (void)reset
 {
@@ -165,7 +241,11 @@
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
+#if TARGET_OS_OSX
+  CGPoint trans = [self translationInView:self.view.window.contentView];
+#else
   CGPoint trans = [self translationInView:self.view.window];
+#endif
   // Apple docs say that 10 units is the default allowable movement for UILongPressGestureRecognizer
   if (!isnan(_activateAfterLongPress) && trans.x * trans.x + trans.y * trans.y > 100) {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
@@ -189,7 +269,11 @@
 
 - (BOOL)shouldActivateUnderCustomCriteria
 {
+#if TARGET_OS_OSX
+  CGPoint trans = [self translationInView:self.view.window.contentView];
+#else
   CGPoint trans = [self translationInView:self.view.window];
+#endif
   if (!isnan(_activeOffsetXStart) && trans.x < _activeOffsetXStart) {
     return YES;
   }
@@ -248,12 +332,12 @@
   recognizer.failOffsetYStart = NAN;
   recognizer.failOffsetYStart = NAN;
   recognizer.failOffsetYEnd = NAN;
-#if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
+#if !TARGET_OS_OSX && !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
   if (@available(iOS 13.4, *)) {
     recognizer.allowedScrollTypesMask = 0;
   }
 #endif
-#if !TARGET_OS_TV
+#if !TARGET_OS_OSX && !TARGET_OS_TV
   recognizer.minimumNumberOfTouches = 1;
   recognizer.maximumNumberOfTouches = NSUIntegerMax;
 #endif
@@ -278,7 +362,7 @@
   APPLY_FLOAT_PROP(failOffsetYStart);
   APPLY_FLOAT_PROP(failOffsetYEnd);
 
-#if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
+#if !TARGET_OS_OSX && !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
   if (@available(iOS 13.4, *)) {
     bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:config[@"enableTrackpadTwoFingerGesture"]];
     if (enableTrackpadTwoFingerGesture) {
@@ -319,6 +403,16 @@
   return shouldBegin;
 }
 
+#if TARGET_OS_OSX
+- (RNGestureHandlerEventExtraData *)eventExtraData:(NSPanGestureRecognizer *)recognizer
+{
+    return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:recognizer.view]
+                         withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
+                              withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
+                                 withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
+                          withNumberOfTouches:0];
+}
+# else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:recognizer.view]
@@ -327,5 +421,6 @@
                                    withVelocity:[recognizer velocityInView:recognizer.view.window]
                             withNumberOfTouches:recognizer.numberOfTouches];
 }
+#endif
 
 @end

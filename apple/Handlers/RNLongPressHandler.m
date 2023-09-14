@@ -8,6 +8,8 @@
 
 #import "RNLongPressHandler.h"
 
+#if !TARGET_OS_OSX
+
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
 #import <React/RCTConvert.h>
@@ -116,16 +118,21 @@
 
 @end
 
+#endif
+
 @implementation RNLongPressGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
+#if !TARGET_OS_OSX
     _recognizer = [[RNBetterLongPressGestureRecognizer alloc] initWithGestureHandler:self];
+#endif
   }
   return self;
 }
 
+#if !TARGET_OS_OSX
 - (void)resetConfig
 {
   [super resetConfig];
@@ -180,4 +187,6 @@
                                  withNumberOfTouches:recognizer.numberOfTouches
                                         withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]];
 }
+#endif
+
 @end

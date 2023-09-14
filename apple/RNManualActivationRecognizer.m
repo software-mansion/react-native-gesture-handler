@@ -12,7 +12,9 @@
     _handler = gestureHandler;
     _activePointers = 0;
     self.delegate = self;
+#if !TARGET_OS_OSX
     self.cancelsTouchesInView = NO;
+#endif
   }
   return self;
 }
@@ -24,6 +26,34 @@
     [self reset];
   }
 }
+
+#if TARGET_OS_OSX
+- (void)mouseUp:(NSEvent *)event
+{
+    [super mouseUp:event];
+
+    _activePointers += 1;
+}
+
+
+- (void)mouseDragged:(NSEvent *)event
+{
+    [super mouseDragged:event];
+    
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+    [super mouseDown:event];
+    
+    _activePointers -= 1;
+
+    if (_activePointers == 0) {
+      self.state = UIGestureRecognizerStateBegan;
+    }
+}
+
+#else
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
@@ -55,6 +85,8 @@
   _activePointers = 0;
   [self reset];
 }
+
+#endif
 
 - (void)reset
 {

@@ -8,7 +8,9 @@
 
 #import "RNGestureHandlerButton.h"
 
+#if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
+#endif
 
 /**
  * Gesture Handler Button components overrides standard mechanism used by RN
@@ -39,14 +41,15 @@
   if (self) {
     _hitTestEdgeInsets = UIEdgeInsetsZero;
     _userEnabled = YES;
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX
     [self setExclusiveTouch:YES];
 #endif
   }
   return self;
 }
 
-- (BOOL)shouldHandleTouch:(UIView *)view
+#if !TARGET_OS_OSX
+- (BOOL)shouldHandleTouch:(RCTPlatformView *)view
 {
   if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
     RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
@@ -65,13 +68,42 @@
   return CGRectContainsPoint(hitFrame, point);
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-  UIView *inner = [super hitTest:point withEvent:event];
+  RCTPlatformView *inner = [super hitTest:point withEvent:event];
   while (inner && ![self shouldHandleTouch:inner]) {
     inner = inner.superview;
   }
   return inner;
 }
+#else
+- (BOOL)shouldHandleTouch:(RCTPlatformView *)view
+{
+  if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
+    RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
+    return button.userEnabled;
+  }
+
+  return [view isKindOfClass:[NSControl class]] || [view.gestureRecognizers count] > 0;
+}
+
+- (BOOL)pointInside:(NSPoint)point withEvent:(UIEvent *)event
+{
+  if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
+    return [super hitTest:point];
+  }
+  CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+  return CGRectContainsPoint(hitFrame, point);
+}
+
+- (RCTPlatformView *)hitTest:(NSPoint)point withEvent:(UIEvent *)event
+{
+  RCTPlatformView *inner = [super hitTest:point];
+  while (inner && ![self shouldHandleTouch:inner]) {
+    inner = inner.superview;
+  }
+  return inner;
+}
+#endif
 
 @end

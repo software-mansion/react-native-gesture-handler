@@ -9,12 +9,14 @@ RCT_CUSTOM_VIEW_PROPERTY(enabled, BOOL, RNGestureHandlerButton)
 {
   view.userEnabled = json == nil ? YES : [RCTConvert BOOL:json];
 }
-#if !TARGET_OS_TV
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
 RCT_CUSTOM_VIEW_PROPERTY(exclusive, BOOL, RNGestureHandlerButton)
 {
   [view setExclusiveTouch:json == nil ? YES : [RCTConvert BOOL:json]];
 }
 #endif
+
 RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RNGestureHandlerButton)
 {
   if (json) {
@@ -26,7 +28,7 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RNGestureHandlerButton)
   }
 }
 
-- (UIView *)view
+- (RCTPlatformView *)view
 {
   return [RNGestureHandlerButton new];
 }

@@ -8,7 +8,9 @@
 
 #import "RNNativeViewHandler.h"
 
+#if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
+#endif
 
 #import <React/RCTConvert.h>
 #import <React/UIView+React.h>
@@ -21,6 +23,7 @@
 
 #pragma mark RNDummyGestureRecognizer
 
+
 @implementation RNDummyGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
 }
@@ -28,29 +31,33 @@
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+#if !TARGET_OS_OSX
     _gestureHandler = gestureHandler;
+#endif
   }
   return self;
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+#if !TARGET_OS_OSX
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
-- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 }
 
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
   self.state = UIGestureRecognizerStateFailed;
   [self reset];
 }
 
-- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
   self.state = UIGestureRecognizerStateCancelled;
@@ -62,8 +69,11 @@
   [_gestureHandler.pointerTracker reset];
   [super reset];
 }
+#endif
+
 
 @end
+
 
 #pragma mark RNNativeViewgestureHandler
 
@@ -75,11 +85,14 @@
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
+#if !TARGET_OS_OSX
     _recognizer = [[RNDummyGestureRecognizer alloc] initWithGestureHandler:self];
+#endif
   }
   return self;
 }
 
+#if !TARGET_OS_OSX
 - (void)configure:(NSDictionary *)config
 {
   [super configure:config];
@@ -189,5 +202,6 @@
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
 }
+#endif
 
 @end

@@ -3,7 +3,9 @@
 
 #import "Handlers/RNNativeViewHandler.h"
 
+#if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
+#endif
 
 #import <React/UIView+React.h>
 
@@ -100,8 +102,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _simultaneousHandlers = nil;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
-
+#if !TARGET_OS_OSX
   _recognizer.cancelsTouchesInView = YES;
+#endif
 }
 
 - (void)configure:(NSDictionary *)config
@@ -120,10 +123,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
   }
 
+#if !TARGET_OS_OSX
   prop = config[@"cancelsTouchesInView"];
   if (prop != nil) {
     _recognizer.cancelsTouchesInView = [RCTConvert BOOL:prop];
   }
+#endif
 
   prop = config[@"needsPointerData"];
   if (prop != nil) {
@@ -168,9 +173,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   self.recognizer.enabled = enabled;
 }
 
-- (void)bindToView:(UIView *)view
+- (void)bindToView:(RCTPlatformView *)view
 {
+#if !TARGET_OS_OSX
   view.userInteractionEnabled = YES;
+#endif
   self.recognizer.delegate = self;
   [view addGestureRecognizer:self.recognizer];
 
@@ -187,9 +194,18 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
-                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-                                 withNumberOfTouches:recognizer.numberOfTouches];
+#if TARGET_OS_OSX
+  return [RNGestureHandlerEventExtraData
+            forPosition:[recognizer locationInView:recognizer.view]
+            withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
+            withNumberOfTouches:1
+#else
+  return [RNGestureHandlerEventExtraData
+            forPosition:[recognizer locationInView:recognizer.view]
+            withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+            withNumberOfTouches:recognizer.numberOfTouches
+#endif
+  ];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
@@ -329,7 +345,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 }
 
-- (void)bindManualActivationToView:(UIView *)view
+- (void)bindManualActivationToView:(RCTPlatformView *)view
 {
   if (_manualActivationRecognizer != nil) {
     [view addGestureRecognizer:_manualActivationRecognizer];
@@ -354,7 +370,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   // We may try to extract "DummyGestureHandler" in case when "otherGestureRecognizer" belongs to
   // a native view being wrapped with "NativeViewGestureHandler"
-  UIView *reactView = recognizer.view;
+  RCTPlatformView *reactView = recognizer.view;
   while (reactView != nil && reactView.reactTag == nil) {
     reactView = reactView.superview;
   }
@@ -464,6 +480,22 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return YES;
 }
 
+#if TARGET_OS_OSX
+- (BOOL)gestureRecognizer:(NSGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(NSEvent *)event
+{
+  // If hitSlop is set we use it to determine if a given gesture recognizer should start processing
+  // touch stream. This only works for negative values of hitSlop as this method won't be triggered
+  // unless touch startes in the bounds of the attached view. To acheve similar effect with positive
+  // values of hitSlop one should set hitSlop for the underlying view. This limitation is due to the
+  // fact that hitTest method is only available at the level of UIView
+  if (RNGH_HIT_SLOP_IS_SET(_hitSlop)) {
+    CGPoint location = [gestureRecognizer.view convertPoint:event.locationInWindow fromView:nil];
+    CGRect hitFrame = RNGHHitSlopInsetRect(gestureRecognizer.view.bounds, _hitSlop);
+    return CGRectContainsPoint(hitFrame, location);
+  }
+  return YES;
+}
+#else
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
   // If hitSlop is set we use it to determine if a given gesture recognizer should start processing
@@ -478,5 +510,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
   return YES;
 }
+#endif
 
 @end

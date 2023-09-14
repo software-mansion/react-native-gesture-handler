@@ -8,8 +8,11 @@
 
 #import "RNGestureHandler.h"
 
+#if TARGET_OS_OSX
+@interface RNGestureHandlerButton : NSControl
+#else
 @interface RNGestureHandlerButton : UIControl
-
+#endif
 /**
  *  Insets used when hit testing inside this view.
  */

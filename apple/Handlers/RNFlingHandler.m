@@ -1,5 +1,7 @@
 #import "RNFlingHandler.h"
 
+#if !TARGET_OS_OSX
+
 @interface RNBetterSwipeGestureRecognizer : UISwipeGestureRecognizer
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
@@ -82,15 +84,21 @@
 
 @end
 
+#endif
+
 @implementation RNFlingGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
+#if !TARGET_OS_OSX
     _recognizer = [[RNBetterSwipeGestureRecognizer alloc] initWithGestureHandler:self];
+#endif
   }
   return self;
 }
+
+#if !TARGET_OS_OSX
 - (void)resetConfig
 {
   [super resetConfig];
@@ -148,5 +156,6 @@
                                viewAbsolutePosition.x + locationInView.x, viewAbsolutePosition.y + locationInView.y)
        withNumberOfTouches:recognizer.numberOfTouches];
 }
+#endif
 
 @end

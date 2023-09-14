@@ -203,6 +203,38 @@ RCT_EXPORT_METHOD(flushOperations)
 #endif // RCT_NEW_ARCH_ENABLED
 }
 
+#if TARGET_OS_OSX
+- (void)setGestureState:(int)state forHandler:(int)handlerTag
+{
+  RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];
+
+  if (handler != nil) {
+    if (state == 1) { // FAILED
+      handler.recognizer.state = NSGestureRecognizerStateFailed;
+    } else if (state == 2) { // BEGAN
+      handler.recognizer.state = NSGestureRecognizerStatePossible;
+    } else if (state == 3) { // CANCELLED
+      handler.recognizer.state = NSGestureRecognizerStateCancelled;
+    } else if (state == 4) { // ACTIVE
+      [handler stopActivationBlocker];
+      handler.recognizer.state = NSGestureRecognizerStateBegan;
+    } else if (state == 5) { // ENDED
+      handler.recognizer.state = NSGestureRecognizerStateEnded;
+    }
+  }
+
+  // if the gesture was set to finish, cancel all pointers it was tracking
+  if (state == 1 || state == 3 || state == 5) {
+    [handler.pointerTracker cancelPointers];
+  }
+
+  // do not send state change event when activating because it bypasses
+  // shouldRequireFailureOfGestureRecognizer
+  if (state != 4) {
+    [handler handleGesture:handler.recognizer];
+  }
+}
+#else
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
 {
   RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];
@@ -233,6 +265,7 @@ RCT_EXPORT_METHOD(flushOperations)
     [handler handleGesture:handler.recognizer];
   }
 }
+#endif
 
 #pragma mark-- Batch handling
 
@@ -279,7 +312,7 @@ RCT_EXPORT_METHOD(flushOperations)
   NSArray<GestureHandlerOperation> *operations = _operations;
   _operations = [NSMutableArray new];
 
-  [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) {
     for (GestureHandlerOperation operation in operations) {
       operation(self->_manager);
     }

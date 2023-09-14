@@ -1,23 +1,22 @@
-
-
 //
-//  RNPinchHandler.m
+//  RNRotationHandler.m
 //  RNGestureHandler
 //
 //  Created by Krzysztof Magiera on 12/10/2017.
 //  Copyright © 2017 Software Mansion. All rights reserved.
 //
 
-#import "RNPinchHandler.h"
+#import "RNRotationHandler.h"
 
-#if !TARGET_OS_TV
-@interface RNBetterPinchRecognizer : UIPinchGestureRecognizer
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+
+@interface RNBetterRotationRecognizer : UIRotationGestureRecognizer
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
 @end
 
-@implementation RNBetterPinchRecognizer {
+@implementation RNBetterRotationRecognizer {
   __weak RNGestureHandler *_gestureHandler;
 }
 
@@ -32,7 +31,7 @@
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
   if (self.state == UIGestureRecognizerStateBegan) {
-    self.scale = 1;
+    self.rotation = 0;
   }
   [_gestureHandler handleGesture:recognizer];
 }
@@ -70,25 +69,27 @@
 @end
 #endif
 
-@implementation RNPinchGestureHandler
+@implementation RNRotationGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
-#if !TARGET_OS_TV
-    _recognizer = [[RNBetterPinchRecognizer alloc] initWithGestureHandler:self];
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+
+    _recognizer = [[RNBetterRotationRecognizer alloc] initWithGestureHandler:self];
 #endif
   }
   return self;
 }
 
-#if !TARGET_OS_TV
-- (RNGestureHandlerEventExtraData *)eventExtraData:(UIPinchGestureRecognizer *)recognizer
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIRotationGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPinch:recognizer.scale
-                                   withFocalPoint:[recognizer locationInView:recognizer.view]
-                                     withVelocity:recognizer.velocity
-                              withNumberOfTouches:recognizer.numberOfTouches];
+  return [RNGestureHandlerEventExtraData forRotation:recognizer.rotation
+                                     withAnchorPoint:[recognizer locationInView:recognizer.view]
+                                        withVelocity:recognizer.velocity
+                                 withNumberOfTouches:recognizer.numberOfTouches];
 }
 #endif
 

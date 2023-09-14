@@ -8,6 +8,7 @@
 
 #import "RNTapHandler.h"
 
+#if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
 #import <React/RCTConvert.h>
@@ -185,6 +186,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 }
 
 @end
+#endif
 
 @implementation RNTapGestureHandler {
   RNGestureHandlerEventExtraData *_lastData;
@@ -193,11 +195,14 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
+#if !TARGET_OS_OSX
     _recognizer = [[RNBetterTapGestureRecognizer alloc] initWithGestureHandler:self];
+#endif
   }
   return self;
 }
 
+#if !TARGET_OS_OSX
 - (void)resetConfig
 {
   [super resetConfig];
@@ -261,5 +266,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
   return shouldBegin;
 }
+#endif
 
 @end
