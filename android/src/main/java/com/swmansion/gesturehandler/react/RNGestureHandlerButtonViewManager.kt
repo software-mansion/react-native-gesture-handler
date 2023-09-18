@@ -174,6 +174,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     override fun onTouchEvent(event: MotionEvent): Boolean {
       if (event.action == MotionEvent.ACTION_CANCEL) {
         tryFreeingResponder()
+        return super.onTouchEvent(event)
       }
 
       val eventTime = event.eventTime
