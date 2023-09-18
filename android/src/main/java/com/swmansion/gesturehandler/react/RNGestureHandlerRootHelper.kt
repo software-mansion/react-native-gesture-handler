@@ -59,7 +59,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
     override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
       val currentState = state
-      if (currentState == STATE_UNDETERMINED) {
+      // we shouldn't stop intercepting events when there is an active handler already, which could happen when
+      // adding a new pointer to the screen after a handler activates
+      if (currentState == STATE_UNDETERMINED && (!shouldIntercept || orchestrator?.isAnyHandlerActive() != true)) {
         begin()
         shouldIntercept = false
       }
