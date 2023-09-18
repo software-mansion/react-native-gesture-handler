@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { State } from '../../State';
 import { AdaptedEvent, Config } from '../interfaces';
 
@@ -23,17 +24,14 @@ export default class LongPressGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
 
-    this.view.oncontextmenu = () => false;
+    if (Platform.OS === 'web') {
+      (this.delegate.getView() as HTMLElement).oncontextmenu = () => false;
+    }
   }
 
   protected transformNativeEvent() {
-    const rect: DOMRect = this.view.getBoundingClientRect();
-
     return {
-      x: this.tracker.getLastAvgX() - rect.left,
-      y: this.tracker.getLastAvgY() - rect.top,
-      absoluteX: this.tracker.getLastAvgX(),
-      absoluteY: this.tracker.getLastAvgY(),
+      ...super.transformNativeEvent(),
       duration: Date.now() - this.startTime,
     };
   }
