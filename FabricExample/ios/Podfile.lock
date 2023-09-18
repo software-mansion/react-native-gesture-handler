@@ -1057,7 +1057,7 @@ PODS:
     - React-jsi (= 0.72.0-rc.5)
     - React-logger (= 0.72.0-rc.5)
     - React-perflogger (= 0.72.0-rc.5)
-  - RNGestureHandler (2.12.0):
+  - RNGestureHandler (2.13.0):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -1300,11 +1300,11 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 7c3287c689ba5bbff52ef95400fb8d6964cc8eae
   React-utils: cbbe99dc2e49db0a3fbb425c304f511a422f0ca2
   ReactCommon: 01b6643cfeef0d9078c8125378066d20cc34ddfe
-  RNGestureHandler: d8224aad6d7081834ae6e6cf925397059485b69e
+  RNGestureHandler: 3237ee31ff056842bbe7ed0e943efacc2fc22105
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 258bd5f6f188432f18cc3f854497f1cf6a0f21c1
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: 91003e48a586df93324958b314f617825e98fcd1
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1
