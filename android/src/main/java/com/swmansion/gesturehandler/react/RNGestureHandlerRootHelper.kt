@@ -77,7 +77,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
         action = MotionEvent.ACTION_CANCEL
       }
       if (rootView is RootView) {
-        rootView.onChildStartedNativeGesture(event)
+        // This method with only event parameter is deprecated. Inside react-native you can find, that
+        // this deprecated method calls this one, with first argument being null.
+        rootView.onChildStartedNativeGesture(null, event)
       }
       event.recycle()
     }
