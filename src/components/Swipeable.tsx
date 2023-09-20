@@ -158,6 +158,16 @@ export interface SwipeableProps
   onSwipeableWillClose?: (direction: 'left' | 'right') => void;
 
   /**
+   * Called when action panel starts being shown on dragging to open.
+   */
+  onSwipeableOpenStartDrag?: (direction: 'left' | 'right') => void;
+
+  /**
+   * Called when action panel starts being shown on dragging to close.
+   */
+  onSwipeableCloseStartDrag?: (direction: 'left' | 'right') => void;
+
+  /**
    *
    * This map describes the values to use as inputRange for extra interpolation:
    * AnimatedValue: [startValue, endValue]
@@ -333,6 +343,29 @@ export default class Swipeable extends Component<
   ) => {
     if (ev.nativeEvent.oldState === State.ACTIVE) {
       this.handleRelease(ev);
+    }
+
+    if (ev.nativeEvent.state === State.ACTIVE) {
+      const { velocityX, translationX: dragX } = ev.nativeEvent;
+      const { rowState } = this.state;
+      const { friction } = this.props;
+
+      const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
+
+      const direction =
+        rowState === -1
+          ? 'right'
+          : rowState === 1
+          ? 'left'
+          : translationX > 0
+          ? 'left'
+          : 'right';
+
+      if (rowState === 0) {
+        this.props.onSwipeableOpenStartDrag?.(direction);
+      } else {
+        this.props.onSwipeableCloseStartDrag?.(direction);
+      }
     }
   };
 
