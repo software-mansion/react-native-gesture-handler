@@ -346,28 +346,24 @@ export default class Swipeable extends Component<
     }
     if (ev.nativeEvent.state === State.ACTIVE) {
       const { velocityX, translationX: dragX } = ev.nativeEvent;
-
       const { rowState } = this.state;
-
       const { friction } = this.props;
+
       const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
 
-      let direction: 'left' | 'right' | undefined = undefined;
+      const direction =
+        rowState === -1
+          ? 'right'
+          : rowState === 1
+          ? 'left'
+          : translationX > 0
+          ? 'left'
+          : 'right';
 
       if (rowState === 0) {
-        direction = translationX > 0 ? 'left' : 'right';
-      } else if (rowState === 1) {
-        direction = 'left';
-      } else if (rowState === -1) {
-        direction = 'right';
-      }
-
-      if (direction) {
-        if (rowState === 0) {
-          this.props.onSwipeableOpenStartDrag?.(direction);
-        } else {
-          this.props.onSwipeableCloseStartDrag?.(direction);
-        }
+        this.props.onSwipeableOpenStartDrag?.(direction);
+      } else {
+        this.props.onSwipeableCloseStartDrag?.(direction);
       }
     }
   };
