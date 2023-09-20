@@ -83,6 +83,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
   }
 
+  @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
+  // This parameter may be useful in the future
   fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
     // If this method gets called it means that some native view is attempting to grab lock for
     // touch event delivery. In that case we cancel all gesture recognizers
@@ -115,6 +117,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   /*package*/
+  @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
+  // We want to keep order of parameters, so instead of removing viewTag we suppress the warning
   fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
     if (blockNativeResponder) {
       UiThreadUtil.runOnUiThread { tryCancelAllHandlers() }
