@@ -344,6 +344,7 @@ export default class Swipeable extends Component<
     if (ev.nativeEvent.oldState === State.ACTIVE) {
       this.handleRelease(ev);
     }
+
     if (ev.nativeEvent.state === State.ACTIVE) {
       const { velocityX, translationX: dragX } = ev.nativeEvent;
       const { rowState } = this.state;
