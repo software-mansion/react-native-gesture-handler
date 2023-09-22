@@ -2,7 +2,6 @@
 id: state
 title: Handler State
 sidebar_label: Handler State
-sidebar_position: 2
 ---
 
 As described in ["About Gesture Handlers"](./about-handlers.md), gesture handlers can be treated as ["state machines"](https://en.wikipedia.org/wiki/Finite-state_machine).
