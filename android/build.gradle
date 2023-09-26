@@ -7,9 +7,6 @@ buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
 
     repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
         mavenCentral()
         google()
     }
