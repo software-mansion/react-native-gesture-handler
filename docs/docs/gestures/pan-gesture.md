@@ -5,6 +5,14 @@ sidebar_label: Pan gesture
 sidebar_position: 3
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+    <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
+  </video>
+</div>
+
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseContinousEventConfig from './\_shared/base-continous-gesture-config.md';
@@ -18,6 +26,23 @@ The gesture [activates](../../under-the-hood/states-events.md#active) when a fin
 Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](#minPointers) required for activation (allowing for multifinger swipes) may be specified.
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
+
+## Reference
+
+```jsx
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+
+function App() {
+  // highlight-next-line
+  const pan = Gesture.Pan();
+
+  return (
+    <GestureDetector gesture={pan}>
+      <Animated.View />
+    </GestureDetector>
+  );
+}
+```
 
 ## Multi touch pan handling
 
@@ -136,35 +161,58 @@ Y coordinate of the current position of the pointer (finger or a leading pointer
 ## Example
 
 ```jsx
+import { StyleSheet } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+
 const END_POSITION = 200;
-const onLeft = useSharedValue(true);
-const position = useSharedValue(0);
 
-const panGesture = Gesture.Pan()
-  .onUpdate((e) => {
-    if (onLeft.value) {
-      position.value = e.translationX;
-    } else {
-      position.value = END_POSITION + e.translationX;
-    }
-  })
-  .onEnd((e) => {
-    if (position.value > END_POSITION / 2) {
-      position.value = withTiming(END_POSITION, { duration: 100 });
-      onLeft.value = false;
-    } else {
-      position.value = withTiming(0, { duration: 100 });
-      onLeft.value = true;
-    }
-  });
+export default function App() {
+  const onLeft = useSharedValue(true);
+  const position = useSharedValue(0);
 
-const animatedStyle = useAnimatedStyle(() => ({
-  transform: [{ translateX: position.value }],
-}));
+  // highlight-next-line
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      if (onLeft.value) {
+        position.value = e.translationX;
+      } else {
+        position.value = END_POSITION + e.translationX;
+      }
+    })
+    .onEnd((e) => {
+      if (position.value > END_POSITION / 2) {
+        position.value = withTiming(END_POSITION, { duration: 100 });
+        onLeft.value = false;
+      } else {
+        position.value = withTiming(0, { duration: 100 });
+        onLeft.value = true;
+      }
+    });
 
-return (
-  <GestureDetector gesture={panGesture}>
-    <Animated.View style={[styles.box, animatedStyle]} />
-  </GestureDetector>
-);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: position.value }],
+  }));
+
+  return (
+    // highlight-next-line
+    <GestureDetector gesture={panGesture}>
+      <Animated.View style={[styles.box, animatedStyle]} />
+    </GestureDetector>
+  );
+}
+
+const styles = StyleSheet.create({
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
 ```

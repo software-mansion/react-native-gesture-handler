@@ -9,11 +9,22 @@ import FunctionalComponents from './\_shared/gesture-detector-functional1.md';
 
 `GestureDetector` is the main component of the RNGH2. It is responsible for creating and updating native gesture handlers based on the config of provided gesture. The most significant difference between it and old gesture handlers is that the `GestureDetector` can recognize more than one gesture at the time thanks to gesture composition. Keep in mind that `GestureDetector` is not compatible with the [Animated API](https://reactnative.dev/docs/animated), nor with [Reanimated 1](https://docs.swmansion.com/react-native-reanimated/docs/1.x.x/).
 
-:::caution
-Gesture Detector will use first native view in its subtree to recognize gestures, however if this view is used only to group its children it may get automatically [collapsed](https://reactnative.dev/docs/view#collapsable-android). Consider this example:
-<FunctionalComponents />
-If we were to remove the collapsable prop from the View, the gesture would stop working because it would be attached to a view that is not present in the view hierarchy. Gesture Detector adds this prop automatically to its direct child but it's impossible to do automatically for more complex view trees.
-:::
+## Reference
+
+```javascript
+import { GestureDetector } from 'react-native-gesture-handler';
+
+function App() {
+  const tap = Gesture.Tap();
+  return (
+    // highlight-next-line
+    <GestureDetector gesture={tap}>
+      <Animated.View />
+      // highlight-next-line
+    </GestureDetector>
+  );
+}
+```
 
 ## Properties
 
@@ -30,3 +41,9 @@ Starting with Reanimated-2.3.0-beta.4 Gesture Handler will provide a [StateManag
 ### `userSelect` (**web only**)
 
 This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
+
+## Remarks
+
+- Gesture Detector will use first native view in its subtree to recognize gestures, however if this view is used only to group its children it may get automatically [collapsed](https://reactnative.dev/docs/view#collapsable-android). Consider this example:
+  <FunctionalComponents />
+  If we were to remove the collapsable prop from the View, the gesture would stop working because it would be attached to a view that is not present in the view hierarchy. Gesture Detector adds this prop automatically to its direct child but it's impossible to do automatically for more complex view trees.

@@ -138,6 +138,8 @@ To fix that, components need to be wrapped with `gestureHandlerRootHOC` (it's no
 For example:
 
 ```js
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
+
 const ExampleWithHoc = gestureHandlerRootHOC(() => (
     <View>
       <DraggableBox />

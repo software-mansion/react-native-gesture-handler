@@ -5,6 +5,14 @@ sidebar_label: Pinch gesture
 sidebar_position: 7
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+    <source src={useBaseUrl("/video/pinch.mp4")} type="video/mp4"/>
+  </video>
+</div>
+
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseContinousEventConfig from './\_shared/base-continous-gesture-config.md';
@@ -19,6 +27,23 @@ The distance between the fingers is reported as a scale factor. At the beginning
 Similarly, the scale factor decreases as the distance between the fingers decreases.
 Pinch gestures are used most commonly to change the size of objects or content onscreen.
 For example, map views use pinch gestures to change the zoom level of the map.
+
+## Reference
+
+```jsx
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+
+function App() {
+  // highlight-next-line
+  const pinch = Gesture.Pinch();
+
+  return (
+    <GestureDetector gesture={pinch}>
+      <Animated.View />
+    </GestureDetector>
+  );
+}
+```
 
 ## Config
 
@@ -55,24 +80,43 @@ Position expressed in points along Y axis of center anchor point of gesture
 ## Example
 
 ```jsx
-const scale = useSharedValue(1);
-const savedScale = useSharedValue(1);
+import { StyleSheet } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
-const pinchGesture = Gesture.Pinch()
-  .onUpdate((e) => {
-    scale.value = savedScale.value * e.scale;
-  })
-  .onEnd(() => {
-    savedScale.value = scale.value;
-  });
+export default function App() {
+  const scale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
 
-const animatedStyle = useAnimatedStyle(() => ({
-  transform: [{ scale: scale.value }],
-}));
+  const pinchGesture = Gesture.Pinch()
+    .onUpdate((e) => {
+      scale.value = savedScale.value * e.scale;
+    })
+    .onEnd(() => {
+      savedScale.value = scale.value;
+    });
 
-return (
-  <GestureDetector gesture={pinchGesture}>
-    <Animated.View style={[styles.box, animatedStyle]} />
-  </GestureDetector>
-);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <GestureDetector gesture={pinchGesture}>
+      <Animated.View style={[styles.box, animatedStyle]} />
+    </GestureDetector>
+  );
+}
+
+const styles = StyleSheet.create({
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
 ```

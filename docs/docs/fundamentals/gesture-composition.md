@@ -17,59 +17,71 @@ For example, lets say that you have a component that you want to make draggable 
 > Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
 ```js
-const offset = useSharedValue({ x: 0, y: 0 });
-const start = useSharedValue({ x: 0, y: 0 });
-const popupPosition = useSharedValue({ x: 0, y: 0 });
-const popupAlpha = useSharedValue(0);
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 
-const animatedStyles = useAnimatedStyle(() => {
-  return {
-    transform: [{ translateX: offset.value.x }, { translateY: offset.value.y }],
-  };
-});
+function App() {
+  const offset = useSharedValue({ x: 0, y: 0 });
+  const start = useSharedValue({ x: 0, y: 0 });
+  const popupPosition = useSharedValue({ x: 0, y: 0 });
+  const popupAlpha = useSharedValue(0);
 
-const animatedPopupStyles = useAnimatedStyle(() => {
-  return {
-    transform: [
-      { translateX: popupPosition.value.x },
-      { translateY: popupPosition.value.y },
-    ],
-    opacity: popupAlpha.value,
-  };
-});
-
-const dragGesture = Gesture.Pan()
-  .onStart((_e) => {
-    popupAlpha.value = withTiming(0);
-  })
-  .onUpdate((e) => {
-    offset.value = {
-      x: e.translationX + start.value.x,
-      y: e.translationY + start.value.y,
-    };
-  })
-  .onEnd(() => {
-    start.value = {
-      x: offset.value.x,
-      y: offset.value.y,
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: offset.value.x },
+        { translateY: offset.value.y },
+      ],
     };
   });
 
-const longPressGesture = Gesture.LongPress().onStart((_event) => {
-  popupPosition.value = { x: offset.value.x, y: offset.value.y };
-  popupAlpha.value = withTiming(1);
-});
+  const animatedPopupStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: popupPosition.value.x },
+        { translateY: popupPosition.value.y },
+      ],
+      opacity: popupAlpha.value,
+    };
+  });
 
-const composed = Gesture.Race(dragGesture, longPressGesture);
+  const dragGesture = Gesture.Pan()
+    .onStart((_e) => {
+      popupAlpha.value = withTiming(0);
+    })
+    .onUpdate((e) => {
+      offset.value = {
+        x: e.translationX + start.value.x,
+        y: e.translationY + start.value.y,
+      };
+    })
+    .onEnd(() => {
+      start.value = {
+        x: offset.value.x,
+        y: offset.value.y,
+      };
+    });
 
-return (
-  <Animated.View>
-    <Popup style={animatedPopupStyles} />
-    <GestureDetector gesture={composed}>
-      <Component style={animatedStyles} />
-    </GestureDetector>
-  </Animated.View>
-);
+  const longPressGesture = Gesture.LongPress().onStart((_event) => {
+    popupPosition.value = { x: offset.value.x, y: offset.value.y };
+    popupAlpha.value = withTiming(1);
+  });
+
+  const composed = Gesture.Race(dragGesture, longPressGesture);
+
+  return (
+    <Animated.View>
+      <Popup style={animatedPopupStyles} />
+      <GestureDetector gesture={composed}>
+        <Component style={animatedStyles} />
+      </GestureDetector>
+    </Animated.View>
+  );
+}
 ```
 
 ## Simultaneous
@@ -82,67 +94,75 @@ For example, if you want to make a gallery app, you might want user to be able t
 > Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
 ```js
-const offset = useSharedValue({ x: 0, y: 0 });
-const start = useSharedValue({ x: 0, y: 0 });
-const scale = useSharedValue(1);
-const savedScale = useSharedValue(1);
-const rotation = useSharedValue(0);
-const savedRotation = useSharedValue(0);
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
-const animatedStyles = useAnimatedStyle(() => {
-  return {
-    transform: [
-      { translateX: offset.value.x },
-      { translateY: offset.value.y },
-      { scale: scale.value },
-      { rotateZ: `${rotation.value}rad` },
-    ],
-  };
-});
-
-const dragGesture = Gesture.Pan()
-  .averageTouches(true)
-  .onUpdate((e) => {
-    offset.value = {
-      x: e.translationX + start.value.x,
-      y: e.translationY + start.value.y,
-    };
-  })
-  .onEnd(() => {
-    start.value = {
-      x: offset.value.x,
-      y: offset.value.y,
+function App() {
+  const offset = useSharedValue({ x: 0, y: 0 });
+  const start = useSharedValue({ x: 0, y: 0 });
+  const scale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
+  const rotation = useSharedValue(0);
+  const savedRotation = useSharedValue(0);
+  s;
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: offset.value.x },
+        { translateY: offset.value.y },
+        { scale: scale.value },
+        { rotateZ: `${rotation.value}rad` },
+      ],
     };
   });
 
-const zoomGesture = Gesture.Pinch()
-  .onUpdate((event) => {
-    scale.value = savedScale.value * event.scale;
-  })
-  .onEnd(() => {
-    savedScale.value = scale.value;
-  });
+  const dragGesture = Gesture.Pan()
+    .averageTouches(true)
+    .onUpdate((e) => {
+      offset.value = {
+        x: e.translationX + start.value.x,
+        y: e.translationY + start.value.y,
+      };
+    })
+    .onEnd(() => {
+      start.value = {
+        x: offset.value.x,
+        y: offset.value.y,
+      };
+    });
 
-const rotateGesture = Gesture.Rotation()
-  .onUpdate((event) => {
-    rotation.value = savedRotation.value + event.rotation;
-  })
-  .onEnd(() => {
-    savedRotation.value = rotation.value;
-  });
+  const zoomGesture = Gesture.Pinch()
+    .onUpdate((event) => {
+      scale.value = savedScale.value * event.scale;
+    })
+    .onEnd(() => {
+      savedScale.value = scale.value;
+    });
 
-const composed = Gesture.Simultaneous(
-  dragGesture,
-  Gesture.Simultaneous(zoomGesture, rotateGesture)
-);
+  const rotateGesture = Gesture.Rotation()
+    .onUpdate((event) => {
+      rotation.value = savedRotation.value + event.rotation;
+    })
+    .onEnd(() => {
+      savedRotation.value = rotation.value;
+    });
 
-return (
-  <Animated.View>
-    <GestureDetector gesture={composed}>
-      <Photo style={animatedStyles} />
-    </GestureDetector>
-  </Animated.View>
-);
+  const composed = Gesture.Simultaneous(
+    dragGesture,
+    Gesture.Simultaneous(zoomGesture, rotateGesture)
+  );
+
+  return (
+    <Animated.View>
+      <GestureDetector gesture={composed}>
+        <Photo style={animatedStyles} />
+      </GestureDetector>
+    </Animated.View>
+  );
+}
 ```
 
 ## Exclusive
@@ -155,26 +175,30 @@ For example, if you want to make a component that responds to single tap as well
 > Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
 ```js
-const singleTap = Gesture.Tap().onEnd((_event, success) => {
-  if (success) {
-    console.log('single tap!');
-  }
-});
-const doubleTap = Gesture.Tap()
-  .numberOfTaps(2)
-  .onEnd((_event, success) => {
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+
+function App() {
+  const singleTap = Gesture.Tap().onEnd((_event, success) => {
     if (success) {
-      console.log('double tap!');
+      console.log('single tap!');
     }
   });
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .onEnd((_event, success) => {
+      if (success) {
+        console.log('double tap!');
+      }
+    });
 
-const taps = Gesture.Exclusive(doubleTap, singleTap);
+  const taps = Gesture.Exclusive(doubleTap, singleTap);
 
-return (
-  <GestureDetector gesture={taps}>
-    <Component />
-  </GestureDetector>
-);
+  return (
+    <GestureDetector gesture={taps}>
+      <Component />
+    </GestureDetector>
+  );
+}
 ```
 
 ## Composition vs `simultaneousWithExternalGesture` and `requireExternalGestureToFail`

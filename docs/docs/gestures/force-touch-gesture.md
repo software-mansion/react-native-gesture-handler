@@ -20,6 +20,23 @@ At the beginning of the gesture, the pressure factor is 0.0. As the pressure inc
 There's no implementation provided on Android and it simply renders children without any wrappers.
 Since this behaviour is only provided on some iOS devices, this gesture should not be used for defining any crucial behaviors. Use it only as an additional improvement and make all features to be accessed without this gesture as well.
 
+## Reference
+
+```jsx
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+
+function App() {
+  // highlight-next-line
+  const forceTouch = Gesture.ForceTouch();
+
+  return (
+    <GestureDetector gesture={forceTouch}>
+      <View />
+    </GestureDetector>
+  );
+}
+```
+
 ## Config
 
 ### Properties specific to `ForceTouchGesture`:

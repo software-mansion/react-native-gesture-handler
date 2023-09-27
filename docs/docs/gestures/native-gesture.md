@@ -12,6 +12,23 @@ import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callb
 
 A gesture that allows other touch handling components to participate in RNGH's gesture system. When used, the other component should be the direct child of a `GestureDetector`.
 
+## Reference
+
+```jsx
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+
+function App() {
+  // highlight-next-line
+  const native = Gesture.Native();
+
+  return (
+    <GestureDetector gesture={native}>
+      <View />
+    </GestureDetector>
+  );
+}
+```
+
 ## Config
 
 ### Properties specific to `NativeGesture`:

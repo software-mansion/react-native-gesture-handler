@@ -5,6 +5,14 @@ sidebar_label: Tap gesture
 sidebar_position: 4
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+    <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
+  </video>
+</div>
+
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
@@ -17,6 +25,23 @@ The required number of taps and allowed distance from initial position may be co
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
 In order for a gesture to [activate](../../under-the-hood/states-events.md#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](../../under-the-hood/states-events.md#active), it will [end](../../under-the-hood/states-events.md#end).
+
+## Reference
+
+```jsx
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+
+function App() {
+  // highlight-next-line
+  const tap = Gesture.Tap();
+
+  return (
+    <GestureDetector gesture={tap}>
+      <View />
+    </GestureDetector>
+  );
+}
+```
 
 ## Config
 
@@ -81,22 +106,37 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 ## Example
 
 ```jsx
-const singleTap = Gesture.Tap()
-  .maxDuration(250)
-  .onStart(() => {
-    Alert.alert('Single tap!');
-  });
+import { View, Alert, StyleSheet } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-const doubleTap = Gesture.Tap()
-  .maxDuration(250)
-  .numberOfTaps(2)
-  .onStart(() => {
-    Alert.alert('Double tap!');
-  });
+export default function App() {
+  const singleTap = Gesture.Tap()
+    .maxDuration(250)
+    .onStart(() => {
+      Alert.alert('Single tap!');
+    });
 
-return (
-  <GestureDetector gesture={Gesture.Exclusive(doubleTap, singleTap)}>
-    <View style={styles.box} />
-  </GestureDetector>
-);
+  const doubleTap = Gesture.Tap()
+    .maxDuration(250)
+    .numberOfTaps(2)
+    .onStart(() => {
+      Alert.alert('Double tap!');
+    });
+
+  return (
+    <GestureDetector gesture={Gesture.Exclusive(doubleTap, singleTap)}>
+      <View style={styles.box} />
+    </GestureDetector>
+  );
+}
+
+const styles = StyleSheet.create({
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
 ```

@@ -7,21 +7,22 @@ sidebar_position: 2
 
 `Gesture` is the object that allows you to create and compose gestures.
 
-:::tip
-Consider wrapping your gesture configurations with `useMemo`, as it will reduce the amount of work Gesture Handler has to do under the hood when updating gestures. For example:
+## Reference
 
 ```jsx
-const gesture = useMemo(
-  () =>
-    Gesture.Tap().onStart(() => {
-      console.log('Number of taps:', tapNumber + 1);
-      setTapNumber((value) => value + 1);
-    }),
-  [tapNumber, setTapNumber]
-);
-```
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
-:::
+function App() {
+  // highlight-next-line
+  const tap = Gesture.Tap();
+
+  return (
+    <GestureDetector gesture={tap}>
+      <Animated.View />
+    </GestureDetector>
+  );
+}
+```
 
 ### Gesture.Tap()
 
@@ -70,3 +71,23 @@ Creates a gesture composed of those provided as arguments. All of them can becom
 ### Gesture.Exclusive(gesture1, gesture2, gesture3, ...): ComposedGesture
 
 Creates a gesture composed of those provided as arguments. Only one of them can become active, but the first one has a higher priority than the second one, the second one has a higher priority than the third one, and so on. When all gestures are in the `BEGAN` state and the activation criteria for the second one is met, instead of activating it will wait until the first one fails (and only then it will activate) or until the first one activates (and then the second one will get cancelled). It is useful when you want to compose gestures with similar activation criteria (e.g. single and double tap at the same component, without Exclusive the single tap would activate every time user taps thus cancelling the double tap).
+
+## Remarks
+
+- Consider wrapping your gesture configurations with `useMemo`, as it will reduce the amount of work Gesture Handler has to do under the hood when updating gestures. For example:
+
+```jsx
+import React from 'react';
+
+function App() {
+  const gesture = React.useMemo(
+    () =>
+      Gesture.Tap().onStart(() => {
+        console.log('Number of taps:', tapNumber + 1);
+        setTapNumber((value) => value + 1);
+      }),
+    [tapNumber, setTapNumber]
+  );
+  // ...
+}
+```

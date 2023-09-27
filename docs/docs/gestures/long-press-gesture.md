@@ -5,6 +5,14 @@ sidebar_label: Long press gesture
 sidebar_position: 5
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+    <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
+  </video>
+</div>
+
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
@@ -12,6 +20,23 @@ import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture's state will turn into [END](../../under-the-hood/states-events.md#end) immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#mindurationms) or if the finger is moved further than the [allowable distance](#maxdist).
+
+## Reference
+
+```jsx
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+
+function App() {
+  // highlight-next-line
+  const longPress = Gesture.LongPress();
+
+  return (
+    <GestureDetector gesture={longPress}>
+      <View />
+    </GestureDetector>
+  );
+}
+```
 
 ## Config
 
@@ -60,15 +85,30 @@ Duration of the long press (time since the start of the gesture), expressed in m
 ## Example
 
 ```jsx
-const longPressGesture = Gesture.LongPress().onEnd((e, success) => {
-  if (success) {
-    Alert.alert(`Long pressed for ${e.duration} ms!`);
-  }
-});
+import { View, StyleSheet, Alert } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-return (
-  <GestureDetector gesture={longPressGesture}>
-    <View style={styles.box} />
-  </GestureDetector>
-);
+export default function App() {
+  const longPressGesture = Gesture.LongPress().onEnd((e, success) => {
+    if (success) {
+      Alert.alert(`Long pressed for ${e.duration} ms!`);
+    }
+  });
+
+  return (
+    <GestureDetector gesture={longPressGesture}>
+      <View style={styles.box} />
+    </GestureDetector>
+  );
+}
+
+const styles = StyleSheet.create({
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
 ```

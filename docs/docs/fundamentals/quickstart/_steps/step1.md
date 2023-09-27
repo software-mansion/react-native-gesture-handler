@@ -1,4 +1,6 @@
 ```jsx
+import { StyleSheet } from 'react-native';
+
 const styles = StyleSheet.create({
   ball: {
     width: 100,
