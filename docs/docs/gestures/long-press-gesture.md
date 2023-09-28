@@ -18,7 +18,7 @@ import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
-This gesture's state will turn into [END](../../under-the-hood/states-events.md#end) immediately after the finger is released.
+This gesture's state will turn into [END](/docs/fundamentals/states-events#end) immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#mindurationms) or if the finger is moved further than the [allowable distance](#maxdist).
 
 ## Reference
@@ -48,7 +48,7 @@ Minimum time, expressed in milliseconds, that a finger must remain pressed on th
 
 ### `maxDistance(value: number)`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](../../under-the-hood/states-events.md#active), it will fail to recognize the gesture. The default value is 10.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture. The default value is 10.
 
 <BaseEventConfig />
 
@@ -62,19 +62,19 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 
 ### `x`
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](./gesture-detector.md).
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector).
 
 ### `y`
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](./gesture-detector.md).
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector).
 
 ### `absoluteX`
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](./gesture-detector.md) can be transformed as an effect of the gesture.
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector) can be transformed as an effect of the gesture.
 
 ### `absoluteY`
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](./gesture-detector.md) can be transformed as an effect of the gesture.
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector) can be transformed as an effect of the gesture.
 
 ### `duration`
 

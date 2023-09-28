@@ -1,4 +1,10 @@
 ```jsx
+import { StyleSheet } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
+
 function PointerElement(props: {
   pointer: Animated.SharedValue<Pointer>,
   active: Animated.SharedValue<boolean>,
@@ -19,7 +25,7 @@ function PointerElement(props: {
   return <Animated.View style={[styles.pointer, animatedStyle]} />;
 }
 
-...
+// ...
 
 const styles = StyleSheet.create({
   pointer: {

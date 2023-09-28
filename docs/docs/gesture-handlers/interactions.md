@@ -6,10 +6,10 @@ sidebar_position: 3
 ---
 
 :::warning
-Consider using the new [gestures API](../../api/gestures/gesture.md) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](../../introduction.md#rngh-20) for more information.
+Consider using the new [gestures API](/docs/gestures/gesture) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
 :::
 
-Gesture handlers can "communicate" with each other to support complex gestures and control how they _[activate](./state.md#active)_ in certain scenarios.
+Gesture handlers can "communicate" with each other to support complex gestures and control how they _[activate](/docs/under-the-hood/state#active)_ in certain scenarios.
 
 There are two means of achieving that described in the sections below.
 In each case, it is necessary to provide a reference of one handler as a property to the other.
@@ -17,17 +17,17 @@ Gesture handler relies on ref objects created using [`React.createRef()`](https:
 
 ## Simultaneous recognition
 
-By default, only one gesture handler is allowed to be in the [`ACTIVE`](./state.md#active) state.
-So when a gesture handler recognizes a gesture it [cancels](./state.md#cancelled) all other handlers in the [`BEGAN`](./state.md#began) state and prevents any new handlers from receiving a stream of touch events as long as it remains [`ACTIVE`](./state.md#active).
+By default, only one gesture handler is allowed to be in the [`ACTIVE`](/docs/under-the-hood/state#active) state.
+So when a gesture handler recognizes a gesture it [cancels](/docs/under-the-hood/state#cancelled) all other handlers in the [`BEGAN`](/docs/under-the-hood/state#began) state and prevents any new handlers from receiving a stream of touch events as long as it remains [`ACTIVE`](/docs/under-the-hood/state#active).
 
-This behavior can be altered using the [`simultaneousHandlers`](../api/common-gh.md#simultaneousHandlers) property (available for all types of handlers).
+This behavior can be altered using the [`simultaneousHandlers`](/docs/gesture-handlers/common-gh#simultaneoushandlers) property (available for all types of handlers).
 This property accepts a ref or an array of refs to other handlers.
-Handlers connected in this way will be allowed to remain in the [`ACTIVE`](./state.md#active) state at the same time.
+Handlers connected in this way will be allowed to remain in the [`ACTIVE`](/docs/under-the-hood/state#active) state at the same time.
 
 ### Use cases
 
 Simultaneous recognition needs to be used when implementing a photo preview component that supports zooming (scaling) the photo, rotating and panning it while zoomed in.
-In this case we would use a [`PinchGestureHandler`](../api/pinch-gh.md), [`RotationGestureHandler`](../api/rotation-gh.md) and [`PanGestureHandler`](../api/pan-gh.md) that would have to simultaneously recognize gestures.
+In this case we would use a [`PinchGestureHandler`](/docs/gesture-handlers/pinch-gh), [`RotationGestureHandler`](/docs/gesture-handlers/rotation-gh) and [`PanGestureHandler`](/docs/gesture-handlers/pan-gh) that would have to simultaneously recognize gestures.
 
 ### Example
 
@@ -75,7 +75,7 @@ class PinchableBox extends React.Component {
 
 A good example where awaiting is necessary is when we want to have single and double tap handlers registered for one view (a button).
 In such a case we need to make single tap handler await a double tap.
-Otherwise if we try to perform a double tap the single tap handler will fire just after we hit the button for the first time, consequently [cancelling](./state.md#cancelled) the double tap handler.
+Otherwise if we try to perform a double tap the single tap handler will fire just after we hit the button for the first time, consequently [cancelling](/docs/under-the-hood/state#cancelled) the double tap handler.
 
 ### Example
 

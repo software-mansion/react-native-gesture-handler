@@ -21,7 +21,7 @@ import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callb
 
 A continuous gesture that can recognize a rotation gesture and track its movement.
 
-The gesture [activates](../../under-the-hood/states-events.md#active) when fingers are placed on the screen and change position in a proper way.
+The gesture [activates](/docs/fundamentals/states-events#active) when fingers are placed on the screen and change position in a proper way.
 
 Gesture callback can be used for continuous tracking of the rotation gesture. It provides information about the gesture such as the amount rotated, the focal point of the rotation (anchor), and its instantaneous velocity.
 

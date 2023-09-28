@@ -1,4 +1,4 @@
-### Callbacks common to all continous gestures:
+### Callbacks common to all continuous gestures:
 
 ### `onUpdate(callback)`
 

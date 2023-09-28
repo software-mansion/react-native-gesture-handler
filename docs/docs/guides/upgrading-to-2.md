@@ -5,7 +5,7 @@ title: Upgrading to the new API introduced in Gesture Handler 2
 
 ## Make sure to migrate off the `RNGestureHandlerEnabledRootView` (Android only)
 
-Gesture Handler 1 required you to override `createRootView` to return an instance of `RNGestureHandlerEnabledRootView`. This class has been the cause of many hard to debug and fix crashed and was deprecated in version 2.0, and subsequently removed in version 2.4. If you are still using it, check out [migrating off RNGHEnabledRootView guide](./migrating-off-rnghenabledroot.md).
+Gesture Handler 1 required you to override `createRootView` to return an instance of `RNGestureHandlerEnabledRootView`. This class has been the cause of many hard to debug and fix crashed and was deprecated in version 2.0, and subsequently removed in version 2.4. If you are still using it, check out [migrating off RNGHEnabledRootView guide](/docs/guides/migrating-off-rnghenabledroot).
 
 ## Upgrading to the new API
 
@@ -24,6 +24,7 @@ return (
 ```
 
 As you can see, there are no `onGestureEvent` and `onHandlerStateChange` callbacks, instead the state machine is handled under the hood and relevant callbacks are called for specific transitions or events:
+
 - `onBegin` - called when the gesture transitions to the `BEGAN` state, which in most cases is when the gesture starts processing the touch stream - when the finger first touches the view
 - `onStart` - called when the activation criteria for the gesture are met and it transitions from `BEGAN` to `ACTIVE` state
 - `onUpdate` - replaces `onGestureEvent`, called every time the gesture sends a new event while it's in the `ACTIVE` state
@@ -95,7 +96,7 @@ return (
 );
 ```
 
-With the `GestureDetector` you can use the [Gesture Composition API](../gesture-composition.md) to stack the gestures onto one view:
+With the `GestureDetector` you can use the [Gesture Composition API](/docs/fundamentals/gesture-composition) to stack the gestures onto one view:
 
 ```jsx
 const tapGesture = Gesture.Tap();
@@ -109,8 +110,8 @@ return (
 );
 ```
 
-Similarily, you can use [`Gesture.Simultaneous`](../gesture-composition.md#simultaneous) to replace stacked gesture handlers that should be able to recognize gestures simultaneously, and [`Gesture.Exclusive`](../gesture-composition.md#exclusive) to replace stacked gesture handlers that require failure of others.
+Similarily, you can use [`Gesture.Simultaneous`](/docs/fundamentals/gesture-composition#simultaneous) to replace stacked gesture handlers that should be able to recognize gestures simultaneously, and [`Gesture.Exclusive`](/docs/fundamentals/gesture-composition#exclusive) to replace stacked gesture handlers that require failure of others.
 
 ### Replacing `waitFor` and `simultaneousHandlers`
 
-If you want to make relations between the gestures attached to the same view, you should use the [Gesture Composition API](../gesture-composition.md) described above. However, if you want to make a relation between gestures attached to different views, or between gesture and an old gesture handler, you should use `simultaneousWithExternalGesture` instead of `simultaneousHandlers`, and `requireExternalGestureToFail` instead of `waitFor`. In case you need a ref object to pass to an old gesture handler, you can set it to the gesture using `.withRef(refObject)` modifier.
+If you want to make relations between the gestures attached to the same view, you should use the [Gesture Composition API](/docs/fundamentals/gesture-composition) described above. However, if you want to make a relation between gestures attached to different views, or between gesture and an old gesture handler, you should use `simultaneousWithExternalGesture` instead of `simultaneousHandlers`, and `requireExternalGestureToFail` instead of `waitFor`. In case you need a ref object to pass to an old gesture handler, you can set it to the gesture using `.withRef(refObject)` modifier.

@@ -6,12 +6,12 @@ sidebar_position: 8
 ---
 
 :::warning
-Consider using the new [gestures API](../../api/gestures/gesture.md) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](../../introduction.md#rngh-20) for more information.
+Consider using the new [gestures API](/docs/gestures/gesture) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
 :::
 
 A continuous gesture handler that can recognize a rotation gesture and track its movement.
 
-The handler [activates](../basics/state.md#active) when fingers are placed on the screen and change position in a proper way.
+The handler [activates](/docs/under-the-hood/state#active) when fingers are placed on the screen and change position in a proper way.
 
 Gesture callback can be used for continuous tracking of the rotation gesture. It provides information about the gesture such as the amount rotated, the focal point of the rotation (anchor), and its instantaneous velocity.
 
@@ -19,11 +19,11 @@ The handler is implemented using [UIRotationGestureRecognizer](https://developer
 
 ## Properties
 
-Properties provided to `RotationGestureHandler` do not extend [common set of properties from base handler class](./common-gh.md#properties).
+Properties provided to `RotationGestureHandler` do not extend [common set of properties from base handler class](/docs/gesture-handlers/common-gh#properties).
 
 ## Event data
 
-See [set of event attributes from base handler class](./common-gh.md#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
+See [set of event attributes from base handler class](/docs/gesture-handlers/common-gh#event-data). Below is a list of gesture event attributes specific to `RotationGestureHandler`:
 
 ### `rotation`
 

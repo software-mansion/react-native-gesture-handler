@@ -6,7 +6,7 @@ sidebar_position: 1
 ---
 
 :::warning
-Consider using the new [gestures API](../../api/gestures/gesture.md) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](../../introduction.md#rngh-20) for more information.
+Consider using the new [gestures API](/docs/gestures/gesture) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
 :::
 
 Gesture handlers are the core building blocks of this library.
@@ -16,10 +16,10 @@ Each handler type is capable of recognizing one type of gesture (pan, pinch, etc
 
 Handlers analyze touch stream synchronously in the UI thread. This allows for uninterrupted interactions even when the Javascript thread is blocked.
 
-Each handler works as an isolated state machine. It takes touch stream as an input and based on it, it can flip between [states](./state.md).
+Each handler works as an isolated state machine. It takes touch stream as an input and based on it, it can flip between [states](/docs/under-the-hood/state).
 When a gesture starts, based on the position where the finger was placed, a set of handlers that may be interested in recognizing the gesture is selected.
 All the touch events (touch down, move, up, or when other fingers are placed or lifted) are delivered to all of the handlers selected initially.
-When one gesture becomes [active](./state.md#active), it cancels all the other gestures (read more about how to influence this process in ["Cross handler interactions"](./interactions.md) section).
+When one gesture becomes [active](/docs/under-the-hood/state#active), it cancels all the other gestures (read more about how to influence this process in ["Cross handler interactions"](/docs/gesture-handlers/interactions) section).
 
 Gesture handler components do not instantiate a native view in the view hierarchy. Instead, they are kept in library's own registry and are only connected to native views. When using any of the gesture handler components, it is important for it to have a native view rendered as a child.
 Since handler components don't have corresponding views in the hierarchy, the events registered with them are actually hooked into the underlying view.
@@ -28,23 +28,23 @@ Since handler components don't have corresponding views in the hierarchy, the ev
 
 Currently, the library provides the following list of gestures. Their parameters and attributes they provide to gesture events are documented under each gesture page:
 
-- [`PanGestureHandler`](../api/pan-gh.md)
-- [`TapGestureHandler`](../api/tap-gh.md)
-- [`LongPressGestureHandler`](../api/longpress-gh.md)
-- [`RotationGestureHandler`](../api/rotation-gh.md)
-- [`FlingGestureHandler`](../api/fling-gh.md)
-- [`PinchGestureHandler`](../api/pinch-gh.md)
-- [`ForceTouchGestureHandler`](../api/force-gh.md)
+- [`PanGestureHandler`](/docs/gesture-handlers/pan-gh)
+- [`TapGestureHandler`](/docs/gesture-handlers/tap-gh)
+- [`LongPressGestureHandler`](/docs/gesture-handlers/longpress-gh)
+- [`RotationGestureHandler`](/docs/gesture-handlers/rotation-gh)
+- [`FlingGestureHandler`](/docs/gesture-handlers/fling-gh)
+- [`PinchGestureHandler`](/docs/gesture-handlers/pinch-gh)
+- [`ForceTouchGestureHandler`](docs/gesture-handlers/forcetouch-gh)
 
 ### Discrete vs continuous
 
 We distinguish between two types of gestures: discrete and continuous.
 
-Continuous gesture handlers can be [active](./state.md#active) for a long period of time and will generate a stream of [gesture events](../api/common-gh.md#ongestureevent) until the gesture is [over](./state.md#ended).
-An example of a continuous handler is [`PanGestureHandler`](../api/pan-gh.md) that once [activated](./state.md#active), will start providing updates about [translation](../api/pan-gh.md#translationx) and other properties.
+Continuous gesture handlers can be [active](/docs/under-the-hood/state#active) for a long period of time and will generate a stream of [gesture events](/docs/gesture-handlers/common-gh#ongestureevent) until the gesture is [over](/docs/under-the-hood/state#ended).
+An example of a continuous handler is [`PanGestureHandler`](/docs/gesture-handlers/pan-gh) that once [activated](/docs/under-the-hood/state#active), will start providing updates about [translation](/docs/gesture-handlers/pan-gh#translationx) and other properties.
 
-On the other hand, discrete gesture handlers once [activated](./state.md#active) will not stay in the active state but will [end](./state.md#ended) immediately.
-[`LongPressGestureHandler`](../api/longpress-gh.md) is a discrete handler, as it only detects if the finger is placed for a sufficiently long period of time, it does not track finger movements (as that's the responsibility of [`PanGestureHandler`](../api/pan-gh.md)).
+On the other hand, discrete gesture handlers once [activated](/docs/under-the-hood/state#active) will not stay in the active state but will [end](/docs/under-the-hood/state#ended) immediately.
+[`LongPressGestureHandler`](/docs/gesture-handlers/longpress-gh) is a discrete handler, as it only detects if the finger is placed for a sufficiently long period of time, it does not track finger movements (as that's the responsibility of [`PanGestureHandler`](/docs/gesture-handlers/pan-gh)).
 
 Keep in mind that `onGestureEvent` is only generated in continuous gesture handlers and shouldn't be used in the `TapGestureHandler` and other discrete handlers.
 
@@ -77,7 +77,7 @@ class Multitap extends Component {
 
 ### Using native components
 
-Gesture handler library exposes a set of components normally available in React Native that are wrapped in [`NativeViewGestureHandler`](../api/nativeview-gh.md).
+Gesture handler library exposes a set of components normally available in React Native that are wrapped in [`NativeViewGestureHandler`](/docs/gesture-handlers/nativeview-gh).
 Here is a list of exposed components:
 
 - `ScrollView`
@@ -86,7 +86,7 @@ Here is a list of exposed components:
 - `TextInput`
 - `DrawerLayoutAndroid` (**Android only**)
 
-If you want to use other handlers or [buttons](../../api/components/buttons.mdx) nested in a `ScrollView`, use the [`waitFor`](../api/common-gh.md#waitfor) property to define interaction between a handler and `ScrollView`
+If you want to use other handlers or [buttons](/docs/components/buttons) nested in a `ScrollView`, use the [`waitFor`](/docs/gesture-handlers/common-gh#waitfor) property to define interaction between a handler and `ScrollView`
 
 ### Events with `useNativeDriver`
 

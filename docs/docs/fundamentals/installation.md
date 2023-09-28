@@ -17,9 +17,9 @@ sidebar_position: 2
 It may be possible to use newer versions of react-native-gesture-handler on React Native with version <= 0.59 by reverse Jetifying.
 Read more on that here https://github.com/mikehardy/jetifier#to-reverse-jetify--convert-node_modules-dependencies-to-support-libraries
 
-Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](./gesture-handlers/basics/interactions.md) you need to use v16.3 of [React](https://reactjs.org/)
+Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](/docs/gesture-handlers/interactions/) you need to use v16.3 of [React](https://reactjs.org/)
 
-In order to fully utilize the [touch events](./api/gestures/touch-events.md) you also need to use `react-native-reanimated` 2.3.0-beta.4 or newer.
+In order to fully utilize the [touch events](/docs/gestures/touch-events/) you also need to use `react-native-reanimated` 2.3.0-beta.4 or newer.
 
 ## Expo
 

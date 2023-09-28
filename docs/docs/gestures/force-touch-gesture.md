@@ -12,7 +12,7 @@ import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callbacks.md';
 
 A continuous gesture that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.
-The gesture [activates](../../under-the-hood/states-events.md#active) when pressure of touch if greater or equal than `minForce`. It fails if pressure is greater than `maxForce`
+The gesture [activates](/docs/fundamentals/states-events#active) when pressure of touch if greater or equal than `minForce`. It fails if pressure is greater than `maxForce`
 Gesture callback can be used for continuous tracking of the touch pressure. It provides information for one finger (the first one).
 
 At the beginning of the gesture, the pressure factor is 0.0. As the pressure increases, the pressure factor increases proportionally. The maximum pressure is 1.0.
@@ -43,11 +43,11 @@ function App() {
 
 ### `minForce(value: number)`
 
-A minimal pressure that is required before gesture can [activate](../../under-the-hood/states-events.md#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
+A minimal pressure that is required before gesture can [activate](/docs/fundamentals/states-events#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
 
 ### `maxForce(value: number)`
 
-A maximal pressure that could be applied for gesture. If the pressure is greater, gesture [fails](../../under-the-hood/states-events.md#failed). Should be a value from range `[0.0, 1.0]`.
+A maximal pressure that could be applied for gesture. If the pressure is greater, gesture [fails](/docs/fundamentals/states-events#failed). Should be a value from range `[0.0, 1.0]`.
 
 ### `feedbackOnActivation(value: boolean)`
 

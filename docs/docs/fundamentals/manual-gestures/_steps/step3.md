@@ -1,4 +1,6 @@
 ```jsx
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
 export default function Example() {
   const trackedPointers: Animated.SharedValue<Pointer>[] = [];
   const active = useSharedValue(false);

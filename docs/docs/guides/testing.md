@@ -24,8 +24,8 @@ Example:
 
 RNGH provides an API for triggering selected handlers:
 
-- [`fireGestureHandler(gestureOrHandler, eventList)`](../api/test-api#firegesturehandlergestureorhandler-eventlist)
-- [`getByGestureTestId(testID)`](../api/test-api#getbygesturetestidtestid)
+- [`fireGestureHandler(gestureOrHandler, eventList)`](/docs/guides/testing#firegesturehandlergestureorhandler-eventlist)
+- [`getByGestureTestId(testID)`](/docs/guides/testing#getbygesturetestidtestid)
 
 ## fireGestureHandler(gestureOrHandler, eventList)
 

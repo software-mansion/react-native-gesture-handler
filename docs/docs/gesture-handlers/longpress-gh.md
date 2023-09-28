@@ -6,18 +6,18 @@ sidebar_position: 7
 ---
 
 :::warning
-Consider using the new [gestures API](../../api/gestures/gesture.md) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](../../introduction.md#rngh-20) for more information.
+Consider using the new [gestures API](/docs/gestures/gesture) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
 :::
 
 A discrete gesture handler that activates when the corresponding view is pressed for a sufficiently long time.
-This handler's state will turn into [END](../basics/state.md#end) immediately after the finger is released.
+This handler's state will turn into [END](/docs/under-the-hood/state#end) immediately after the finger is released.
 The handler will fail to recognize a touch event if the finger is lifted before the [minimum required time](#mindurationms) or if the finger is moved further than the [allowable distance](#maxdist).
 
 The handler is implemented using [UILongPressGestureRecognizer](https://developer.apple.com/documentation/uikit/uilongpressgesturerecognizer) on iOS and [LongPressGestureHandler](https://github.com/software-mansion/react-native-gesture-handler/blob/main/android/lib/src/main/java/com/swmansion/gesturehandler/LongPressGestureHandler.java) on Android.
 
 ## Properties
 
-See [set of properties inherited from base handler class](./common-gh.md#properties). Below is a list of properties specific to the `LongPressGestureHandler` component:
+See [set of properties inherited from base handler class](/docs/gesture-handlers/common-gh#properties). Below is a list of properties specific to the `LongPressGestureHandler` component:
 
 ### `minDurationMs`
 
@@ -25,11 +25,11 @@ Minimum time, expressed in milliseconds, that a finger must remain pressed on th
 
 ### `maxDist`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the handler hasn't yet [activated](../basics/state.md#active), it will fail to recognize the gesture. The default value is 10.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the handler hasn't yet [activated](/docs/under-the-hood/state#active), it will fail to recognize the gesture. The default value is 10.
 
 ## Event data
 
-See [set of event attributes from base handler class](./common-gh.md#event-data). Below is a list of gesture event attributes specific to the `LongPressGestureHandler` component:
+See [set of event attributes from base handler class](/docs/gesture-handlers/common-gh#event-data). Below is a list of gesture event attributes specific to the `LongPressGestureHandler` component:
 
 ### `x`
 
