@@ -237,6 +237,7 @@ export function scheduleFlushOperations() {
   if (!flushOperationsScheduled) {
     flushOperationsScheduled = true;
     ghQueueMicrotask(() => {
+      console.log(3);
       RNGestureHandlerModule.flushOperations();
 
       flushOperationsScheduled = false;

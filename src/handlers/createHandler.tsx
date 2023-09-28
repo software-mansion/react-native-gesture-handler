@@ -216,6 +216,7 @@ export default function createHandler<
         // react components are mounted and we expect the missing ref object to
         // be resolved by then.
         ghQueueMicrotask(() => {
+          console.log('1');
           this.update(UNRESOLVED_REFS_RETRY_LIMIT);
         });
       }
@@ -380,6 +381,7 @@ export default function createHandler<
       // again is easy enough fix.
       if (hasUnresolvedRefs(props) && remainingTries > 0) {
         ghQueueMicrotask(() => {
+          console.log(2);
           this.update(remainingTries - 1);
         });
       } else {

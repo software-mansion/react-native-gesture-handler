@@ -161,6 +161,7 @@ function attachHandlers({
   // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
   ghQueueMicrotask(() => {
+    console.log(4);
     if (!mountedRef.current) {
       return;
     }
@@ -181,6 +182,7 @@ function attachHandlers({
   // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
   ghQueueMicrotask(() => {
+    console.log(5);
     if (!mountedRef.current) {
       return;
     }
@@ -269,6 +271,7 @@ function updateHandlers(
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
   ghQueueMicrotask(() => {
+    console.log(7);
     if (!mountedRef.current) {
       return;
     }
