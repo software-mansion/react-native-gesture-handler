@@ -11,7 +11,7 @@ import { ValueOf } from '../typeUtils';
 import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import { ghQueueMicrotask } from '../queueMicrotask';
+import { ghQueueMicrotask } from '../ghQueueMicrotask';
 
 const commonProps = [
   'id',

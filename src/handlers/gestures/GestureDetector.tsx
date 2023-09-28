@@ -51,7 +51,7 @@ import { RNRenderer } from '../../RNRenderer';
 import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
 import { nativeViewGestureHandlerProps } from '../NativeViewGestureHandler';
 import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
-import { ghQueueMicrotask } from '../../queueMicrotask';
+import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function

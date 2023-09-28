@@ -29,7 +29,7 @@ import { isFabric, isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
-import { ghQueueMicrotask } from '../queueMicrotask';
+import { ghQueueMicrotask } from '../ghQueueMicrotask';
 
 const UIManagerAny = UIManager as any;
 
