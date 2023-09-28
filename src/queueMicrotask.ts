@@ -1,5 +1,5 @@
 export const ghQueueMicrotask = (callbackFn: () => void) => {
-  if (queueMicrotask) {
+  if (typeof queueMicrotask === 'function') {
     queueMicrotask(callbackFn);
   } else {
     Promise.resolve().then(callbackFn);
