@@ -29,6 +29,7 @@ import { isFabric, isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
+import { ghQueueMicrotask } from '../ghQueueMicrotask';
 
 const UIManagerAny = UIManager as any;
 
@@ -214,7 +215,7 @@ export default function createHandler<
         // queueMicrotask. This makes it so update() function gets called after all
         // react components are mounted and we expect the missing ref object to
         // be resolved by then.
-        queueMicrotask(() => {
+        ghQueueMicrotask(() => {
           this.update(UNRESOLVED_REFS_RETRY_LIMIT);
         });
       }
@@ -378,7 +379,7 @@ export default function createHandler<
       // `ref={refObject}` it's possible that it won't be resolved in time. Seems like trying
       // again is easy enough fix.
       if (hasUnresolvedRefs(props) && remainingTries > 0) {
-        queueMicrotask(() => {
+        ghQueueMicrotask(() => {
           this.update(remainingTries - 1);
         });
       } else {
