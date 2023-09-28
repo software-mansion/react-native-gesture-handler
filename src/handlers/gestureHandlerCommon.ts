@@ -11,6 +11,7 @@ import { ValueOf } from '../typeUtils';
 import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
+import { ghQueueMicrotask } from '../queueMicrotask';
 
 const commonProps = [
   'id',
@@ -235,7 +236,8 @@ let flushOperationsScheduled = false;
 export function scheduleFlushOperations() {
   if (!flushOperationsScheduled) {
     flushOperationsScheduled = true;
-    queueMicrotask(() => {
+    ghQueueMicrotask(() => {
+      console.log(3);
       RNGestureHandlerModule.flushOperations();
 
       flushOperationsScheduled = false;
