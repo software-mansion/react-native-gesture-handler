@@ -103,7 +103,7 @@ function handleSiteMap(pathname, hash) {
 
   const [redirectFromEnding, redirectToEnding] = element ?? [];
 
-  if (redirectFromEnding === undefined) return pathname + hash;
+  if (redirectFromEnding === undefined) return null;
 
   const redirectTo = pathname.replace(redirectFromEnding, redirectToEnding);
 

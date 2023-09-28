@@ -8,8 +8,6 @@ export default function NotFoundWrapper(props) {
 
   const redirect = mapLegacyUrl(location);
 
-  console.log(redirect);
-
   if (redirect) {
     return <Redirect to={redirect} />;
   }
