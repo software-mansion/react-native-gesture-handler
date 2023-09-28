@@ -52,7 +52,7 @@ The difference in multi touch pan handling lies in the way how translation prope
 On iOS the default behavior when more than one finger is placed on the screen is to treat this situation as if only one pointer was placed in the center of mass (average position of all the pointers).
 This applies also to many platform native components that handle touch even if not primarily interested in multi touch interactions like for example UIScrollView component.
 
-The default behavior for native components like scroll view, pager views or drawers is different and hence gesture defaults to that when it comes to pan handling.
+On Android, the default behavior for native components like scroll view, pager views or drawers is different and hence gesture defaults to that when it comes to pan handling.
 The difference is that instead of treating the center of mass of all the fingers placed as a leading pointer it takes the latest placed finger as such.
 This behavior can be changed on Android using [`averageTouches`](#averagetouchesvalue-boolean-android-only) flag.
 
