@@ -14,7 +14,7 @@ This page covers the common set of properties all gesture handler components exp
 ### Units
 
 All handler component properties and event attributes that represent onscreen dimensions are expressed in screen density independent units we refer to as "points".
-These are the units commonly used in React Native ecosystem (e.g. in the [layout system](http://facebook.github.io/react-native/docs/flexbox.html)).
+These are the units commonly used in React Native ecosystem (e.g. in the [layout system](http://reactnative.dev/docs/flexbox.html)).
 They do not map directly to physical pixels but instead to [iOS's points](https://developer.apple.com/library/content/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/GraphicsDrawingOverview/GraphicsDrawingOverview.html#//apple_ref/doc/uid/TP40010156-CH14-SW7) and to [dp](https://developer.android.com/guide/topics/resources/more-resources#Dimension) units on Android.
 
 ## Properties
@@ -62,7 +62,7 @@ When `width` is set it is only allow to specify one of the sides `right` or `lef
 Similarly when `height` is provided only `top` or `bottom` can be set.
 Specifying `width` or `height` is useful if we only want the gesture to activate on the edge of the view. In which case for example we can set `left: 0` and `width: 20` which would make it possible for the gesture to be recognize when started no more than 20 points from the left edge.
 
-**IMPORTANT:** Note that this parameter is primarily designed to reduce the area where gesture can activate. Hence it is only supported for all the values (except `width` and `height`) to be non positive (0 or lower). Although on Android it is supported for the values to also be positive and therefore allow to expand beyond view bounds but not further than the parent view bounds. To achieve this effect on both platforms you can use React Native's View [hitSlop](https://facebook.github.io/react-native/docs/view.html#props) property.
+**IMPORTANT:** Note that this parameter is primarily designed to reduce the area where gesture can activate. Hence it is only supported for all the values (except `width` and `height`) to be non positive (0 or lower). Although on Android it is supported for the values to also be positive and therefore allow to expand beyond view bounds but not further than the parent view bounds. To achieve this effect on both platforms you can use React Native's View [hitSlop](https://reactnative.dev/docs/view.html#props) property.
 
 ### `userSelect` (**web only**)
 
@@ -76,7 +76,7 @@ This parameter allows to specify which cursor should be used when gesture activa
 
 Takes a callback that is going to be triggered for each subsequent touch event while the handler is in an [ACTIVE](/docs/under-the-hood/state#active) state. Event payload depends on the particular handler type. Common set of event data attributes is documented [below](#event-data) and handler specific attributes are documented on the corresponding handler pages. E.g. event payload for [`PinchGestureHandler`](/docs/gesture-handlers/rotation-gh#event-data) contains `scale` attribute that represents how the distance between fingers changed since when the gesture started.
 
-Instead of a callback [`Animated.event`](https://facebook.github.io/react-native/docs/animated.html#event) object can be used. Also Animated events with `useNativeDriver` flag enabled **are fully supported**.
+Instead of a callback [`Animated.event`](https://reactnative.dev/docs/animated.html#event) object can be used. Also Animated events with `useNativeDriver` flag enabled **are fully supported**.
 
 ### `onHandlerStateChange`
 
@@ -86,7 +86,7 @@ The event payload contains the same payload as in case of [`onGestureEvent`](#on
 
 In addition `onHandlerStateChange` event payload contains `oldState` attribute which represents the [state](/docs/under-the-hood/state) of the handler right before the change.
 
-Instead of a callback [`Animated.event`](https://facebook.github.io/react-native/docs/animated.html#event) object can be used. Also Animated events with `useNativeDriver` flag enabled **are fully supported**.
+Instead of a callback [`Animated.event`](https://reactnative.dev/docs/animated.html#event) object can be used. Also Animated events with `useNativeDriver` flag enabled **are fully supported**.
 
 ## Event data
 

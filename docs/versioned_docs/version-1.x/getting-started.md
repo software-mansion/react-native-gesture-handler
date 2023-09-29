@@ -5,7 +5,7 @@ sidebar_label: Getting Started
 slug: /
 ---
 
-Gesture Handler aims to replace React Native's built in touch system called [Gesture Responder System](http://facebook.github.io/react-native/docs/gesture-responder-system).
+Gesture Handler aims to replace React Native's built in touch system called [Gesture Responder System](http://reactnative.dev/docs/gesture-responder-system).
 
 The motivation for building this library was to address the performance limitations of React Native's Gesture Responder System and to provide more control over the built-in native components that can handle gestures.
 We recommend [this talk](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) in which he explains issues with the responder system.
@@ -40,7 +40,7 @@ To use the version of react-native-gesture-handler that is compatible with your 
 
 The Expo SDK incorporates the latest version of react-native-gesture-handler available at the time of each SDK release, so managed Expo apps might not always support all our latest features as soon as they are available.
 
-#### Bare [React Native](http://facebook.github.io/react-native/)
+#### Bare [React Native](http://reactnative.dev/)
 
 Since the library uses native support for handling gestures, it requires an extended installation to the norm. If you are starting a new project, you may want to initialize it with [expo-cli](https://docs.expo.io/versions/latest/workflow/expo-cli/) and use a bare template, they come pre-installed with react-native-gesture-handler.
 

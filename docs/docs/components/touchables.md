@@ -8,10 +8,10 @@ Gesture Handler library provides an implementation of RN's touchable components 
 
 React Native's touchables API can be found here:
 
-- [Touchable Native Feedback](https://facebook.github.io/react-native/docs/touchablenativefeedback)
-- [Touchable Highlight](https://facebook.github.io/react-native/docs/touchablehighlight)
-- [Touchable Opacity](https://facebook.github.io/react-native/docs/touchableopacity)
-- [Touchable Without Feedback](https://facebook.github.io/react-native/docs/touchablewithoutfeedback)
+- [Touchable Native Feedback](https://reactnative.dev/docs/touchablenativefeedback)
+- [Touchable Highlight](https://reactnative.dev/docs/touchablehighlight)
+- [Touchable Opacity](https://reactnative.dev/docs/touchableopacity)
+- [Touchable Without Feedback](https://reactnative.dev/docs/touchablewithoutfeedback)
 
 All major touchable properties (except from `pressRetentionOffset`) have been adopted and should behave in a similar way as with RN's touchables.
 

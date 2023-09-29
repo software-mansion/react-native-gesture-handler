@@ -21,7 +21,7 @@ You can run example app on [Expo](https://expo.io). Follow instructions under [t
 
 ## Running example app locally
 
-Before you begin you should follow [React Native's setup steps](http://facebook.github.io/react-native/docs/getting-started.html) to make sure you have all the tools necessary to build and run React Native apps installed.
+Before you begin you should follow [React Native's setup steps](http://reactnative.dev/docs/getting-started.html) to make sure you have all the tools necessary to build and run React Native apps installed.
 The example app is a regular React Native app, so in case of problems or to learn about available commands you may want to [check react-native cli documentation](https://github.com/react-native-community/cli/blob/master/README.md).
 
 In order to run example app you need to clone the repo first:
