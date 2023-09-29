@@ -7,7 +7,7 @@ sidebar_label: How does it work?
 ### Units
 
 All handler component properties and event attributes that represent onscreen dimensions are expressed in screen density independent units we refer to as "points".
-These are the units commonly used in React Native ecosystem (e.g. in the [layout system](http://facebook.github.io/react-native/docs/flexbox.html)).
+These are the units commonly used in React Native ecosystem (e.g. in the [layout system](http://reactnative.dev/docs/flexbox.html)).
 They do not map directly to physical pixels but instead to [iOS's points](https://developer.apple.com/library/content/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/GraphicsDrawingOverview/GraphicsDrawingOverview.html#//apple_ref/doc/uid/TP40010156-CH14-SW7) and to [dp](https://developer.android.com/guide/topics/resources/more-resources#Dimension) units on Android.
 
 ## iOS
