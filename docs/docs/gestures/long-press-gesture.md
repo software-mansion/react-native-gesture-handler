@@ -19,7 +19,7 @@ import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture's state will turn into [END](/docs/fundamentals/states-events#end) immediately after the finger is released.
-The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#mindurationms) or if the finger is moved further than the [allowable distance](#maxdist).
+The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](/docs/gestures/long-press-gesture#mindurationvalue-number) or if the finger is moved further than the [allowable distance](/docs/gestures/long-press-gesture#maxdistancevalue-number).
 
 ## Reference
 
