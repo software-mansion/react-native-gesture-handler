@@ -35,7 +35,7 @@ A gesture object containing the configuration and callbacks. Can be any of the b
 :::info
 GestureDetector will decide whether to use Reanimated to process provided gestures based on callbacks they have. If any of the callbacks is a worklet, tools provided by the Reanimated will be utilized bringing ability to handle gestures synchronously.
 
-Starting with Reanimated-2.3.0-beta.4 Gesture Handler will provide a [StateManager](/docs/gestures/state-manager) in the [touch events](/docs/gestures/touch-events) that allows for managing the state of the gesture.
+Starting with Reanimated 2.3.0 Gesture Handler will provide a [StateManager](/docs/gestures/state-manager) in the [touch events](/docs/gestures/touch-events) that allows for managing the state of the gesture.
 :::
 
 ### `userSelect` (**web only**)

@@ -39,7 +39,7 @@ with one of `END`/`FAIL`/`CANCEL` states), calling appropriate callbacks associa
 Represents either:
 
 1. Gesture handler component found by Jest queries (e.g. `getByTestId`)
-2. Gesture found by [`getByGestureTestId()`](#getbygestureidtestid)
+2. Gesture found by [`getByGestureTestId()`](/docs/guides/testing#getbygesturetestidtestid)
 
 #### `eventList`
 

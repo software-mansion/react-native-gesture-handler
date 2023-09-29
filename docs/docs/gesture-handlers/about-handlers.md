@@ -34,7 +34,7 @@ Currently, the library provides the following list of gestures. Their parameters
 - [`RotationGestureHandler`](/docs/gesture-handlers/rotation-gh)
 - [`FlingGestureHandler`](/docs/gesture-handlers/fling-gh)
 - [`PinchGestureHandler`](/docs/gesture-handlers/pinch-gh)
-- [`ForceTouchGestureHandler`](docs/gesture-handlers/force-gh)
+- [`ForceTouchGestureHandler`](/docs/gesture-handlers/force-gh)
 
 ### Discrete vs continuous
 
