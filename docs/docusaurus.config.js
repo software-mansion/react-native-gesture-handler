@@ -130,7 +130,7 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           sidebarCollapsible: false,
           editUrl:
-            'https://github.com/software-mansion/react-native-gesture-handler/edit/main/',
+            'https://github.com/software-mansion/react-native-gesture-handler/edit/main/docs',
           lastVersion: 'current', // <- this makes 2.x docs as default
           versions: {
             current: {
