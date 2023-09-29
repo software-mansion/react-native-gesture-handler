@@ -48,6 +48,10 @@ Creates a new instance of [`PinchGesture`](/docs/gestures/pinch-gesture.md) with
 
 Creates a new instance of [`RotationGesture`](/docs/gestures/rotation-gesture.md) with its default config and no callbacks.
 
+### Gesture.Hover()
+
+Creates a new instance of [`HoverGesture`](/docs/gestures/hover-gesture.md) with its default config and no callbacks.
+
 ### Gesture.ForceTouch()
 
 Creates a new instance of [`ForceTouchGesture`](/docs/gestures/force-touch-gesture.md) with its default config and no callbacks.
