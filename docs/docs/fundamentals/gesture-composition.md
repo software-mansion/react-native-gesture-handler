@@ -107,7 +107,6 @@ function App() {
   const savedScale = useSharedValue(1);
   const rotation = useSharedValue(0);
   const savedRotation = useSharedValue(0);
-  s;
   const animatedStyles = useAnimatedStyle(() => {
     return {
       transform: [
