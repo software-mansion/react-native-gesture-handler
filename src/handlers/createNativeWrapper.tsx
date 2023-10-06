@@ -58,9 +58,11 @@ export default function createNativeWrapper<P>(
       },
       [_ref, _gestureHandlerRef]
     );
+
     return (
       <NativeViewGestureHandler
         {...gestureHandlerProps}
+        isScrollView={Component.displayName === 'ScrollView'}
         // @ts-ignore TODO(TS)
         ref={_gestureHandlerRef}>
         <Component {...props} ref={_ref} />
