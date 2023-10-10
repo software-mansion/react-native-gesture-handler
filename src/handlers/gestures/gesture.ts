@@ -41,7 +41,7 @@ export interface BaseGestureConfig
   ref?: React.MutableRefObject<GestureType | undefined>;
   requireToFail?: GestureRef[];
   simultaneousWith?: GestureRef[];
-  shouldBeRequiredToFailBy?: GestureRef[];
+  requiredToFailBy?: GestureRef[];
   needsPointerData?: boolean;
   manualActivation?: boolean;
   runOnJS?: boolean;
@@ -145,7 +145,7 @@ export abstract class BaseGesture<
   }
 
   private addDependency(
-    key: 'simultaneousWith' | 'requireToFail' | 'shouldBeRequiredToFailBy',
+    key: 'simultaneousWith' | 'requireToFail' | 'requiredToFailBy',
     gesture: Exclude<GestureRef, number>
   ) {
     const value = this.config[key];
@@ -276,11 +276,9 @@ export abstract class BaseGesture<
     return this;
   }
 
-  shouldBeRequiredToFailByExternalGesture(
-    ...gestures: Exclude<GestureRef, number>[]
-  ) {
+  requiredToFailByExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
-      this.addDependency('shouldBeRequiredToFailBy', gesture);
+      this.addDependency('requiredToFailBy', gesture);
     }
     return this;
   }

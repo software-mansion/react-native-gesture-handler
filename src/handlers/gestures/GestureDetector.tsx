@@ -197,10 +197,10 @@ function attachHandlers({
         );
       }
 
-      let shouldBeRequiredToFailBy: number[] = [];
-      if (handler.config.shouldBeRequiredToFailBy) {
-        shouldBeRequiredToFailBy = extractValidHandlerTags(
-          handler.config.shouldBeRequiredToFailBy
+      let requiredToFailBy: number[] = [];
+      if (handler.config.requiredToFailBy) {
+        requiredToFailBy = extractValidHandlerTags(
+          handler.config.requiredToFailBy
         );
       }
 
@@ -209,7 +209,7 @@ function attachHandlers({
         filterConfig(handler.config, ALLOWED_PROPS, {
           simultaneousHandlers: simultaneousWith,
           waitFor: requireToFail,
-          shouldBeRequiredToFailBy: shouldBeRequiredToFailBy,
+          requiredToFailBy: requiredToFailBy,
         })
       );
     }
