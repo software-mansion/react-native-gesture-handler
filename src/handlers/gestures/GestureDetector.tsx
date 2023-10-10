@@ -197,11 +197,19 @@ function attachHandlers({
         );
       }
 
+      let shouldBeRequiredToFailBy: number[] = [];
+      if (handler.config.shouldBeRequiredToFailBy) {
+        shouldBeRequiredToFailBy = extractValidHandlerTags(
+          handler.config.shouldBeRequiredToFailBy
+        );
+      }
+
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
         filterConfig(handler.config, ALLOWED_PROPS, {
           simultaneousHandlers: simultaneousWith,
           waitFor: requireToFail,
+          shouldBeRequiredToFailBy: shouldBeRequiredToFailBy,
         })
       );
     }
