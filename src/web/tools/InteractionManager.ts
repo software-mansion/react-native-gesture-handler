@@ -1,5 +1,7 @@
+import NativeViewGestureHandler from '../handlers/NativeViewGestureHandler';
 import GestureHandler from '../handlers/GestureHandler';
 import { Config, Handler } from '../interfaces';
+import { State } from '../../State';
 
 export default class InteractionManager {
   private static instance: InteractionManager;
@@ -97,10 +99,14 @@ export default class InteractionManager {
 
   public shouldHandlerBeCancelledBy(
     _handler: GestureHandler,
-    _otherHandler: GestureHandler
+    otherHandler: GestureHandler
   ): boolean {
-    //TODO: Implement logic
-    return false;
+    const shouldBeCancelledByScrollView =
+      otherHandler instanceof NativeViewGestureHandler &&
+      otherHandler.getLastSentState() === State.ACTIVE &&
+      otherHandler.getState() === State.ACTIVE;
+
+    return shouldBeCancelledByScrollView;
   }
 
   public dropRelationsForHandlerWithTag(handlerTag: number): void {
