@@ -71,7 +71,7 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
             this.onPointerEnter(adaptedEvent);
             this.markAsInBounds(adaptedEvent.pointerId);
           } else {
-            this.onPointerMove(adaptedEvent);
+            this.onPointerMove(adaptedEvent, event);
           }
         } else {
           if (pointerIndex >= 0) {
@@ -79,7 +79,7 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
             this.onPointerLeave(adaptedEvent);
             this.markAsOutOfBounds(adaptedEvent.pointerId);
           } else {
-            this.onPointerOutOfBounds(adaptedEvent);
+            this.onPointerOutOfBounds(adaptedEvent, event);
           }
         }
       }
@@ -111,9 +111,9 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
 
         if (--this.activePointersCounter > 0) {
           adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_UP;
-          this.onPointerRemove(adaptedEvent);
+          this.onPointerRemove(adaptedEvent, event);
         } else {
-          this.onPointerUp(adaptedEvent);
+          this.onPointerUp(adaptedEvent, event);
         }
       }
     });

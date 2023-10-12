@@ -272,42 +272,60 @@ export default abstract class GestureHandler {
   // Event actions
   //
 
-  protected onPointerDown(event: AdaptedEvent): void {
+  protected onPointerDown(
+    adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
-    this.pointerType = event.pointerType;
+    this.pointerType = adaptedEvent.pointerType;
 
     if (this.pointerType === PointerType.TOUCH) {
       GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(this);
     }
 
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
+      this.sendTouchEvent(adaptedEvent);
     }
   }
   // Adding another pointer to existing ones
-  protected onPointerAdd(event: AdaptedEvent): void {
+  protected onPointerAdd(
+    adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
+      this.sendTouchEvent(adaptedEvent);
     }
   }
-  protected onPointerUp(event: AdaptedEvent): void {
+  protected onPointerUp(
+    adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
+      this.sendTouchEvent(adaptedEvent);
     }
   }
   // Removing pointer, when there is more than one pointers
-  protected onPointerRemove(event: AdaptedEvent): void {
+  protected onPointerRemove(
+    adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
+      this.sendTouchEvent(adaptedEvent);
     }
   }
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected onPointerMove(
+    adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     this.tryToSendMoveEvent(false);
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
+      this.sendTouchEvent(adaptedEvent);
     }
   }
-  protected onPointerLeave(event: AdaptedEvent): void {
+  protected onPointerLeave(
+    adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     if (this.shouldCancellWhenOutside) {
       switch (this.currentState) {
         case State.ACTIVE:
@@ -321,34 +339,50 @@ export default abstract class GestureHandler {
     }
 
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
+      this.sendTouchEvent(adaptedEvent);
     }
   }
-  protected onPointerEnter(event: AdaptedEvent): void {
+  protected onPointerEnter(
+    adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
+      this.sendTouchEvent(adaptedEvent);
     }
   }
-  protected onPointerCancel(event: AdaptedEvent): void {
+  protected onPointerCancel(
+    adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
+      this.sendTouchEvent(adaptedEvent);
     }
 
     this.cancel();
     this.reset();
   }
-  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+  protected onPointerOutOfBounds(
+    adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     this.tryToSendMoveEvent(true);
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
+      this.sendTouchEvent(adaptedEvent);
     }
   }
-  protected onPointerMoveOver(_event: AdaptedEvent): void {
+  protected onPointerMoveOver(
+    _adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     // used only by hover gesture handler atm
   }
-  protected onPointerMoveOut(_event: AdaptedEvent): void {
+  protected onPointerMoveOut(
+    _adaptedEvent: AdaptedEvent,
+    _originalEvent?: TouchEvent | PointerEvent
+  ): void {
     // used only by hover gesture handler atm
   }
+
   private tryToSendMoveEvent(out: boolean): void {
     if (
       this.enabled &&
