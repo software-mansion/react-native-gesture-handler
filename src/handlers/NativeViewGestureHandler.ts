@@ -7,7 +7,6 @@ import {
 export const nativeViewGestureHandlerProps = [
   'shouldActivateOnStart',
   'disallowInterruption',
-  'isScrollView',
 ] as const;
 
 export interface NativeViewGestureConfig {
@@ -24,8 +23,6 @@ export interface NativeViewGestureConfig {
    * `NativeViewGestureHandler` receives an `ACTIVE` state event.
    */
   disallowInterruption?: boolean;
-
-  isScrollView?: boolean;
 }
 
 export interface NativeViewGestureHandlerProps
