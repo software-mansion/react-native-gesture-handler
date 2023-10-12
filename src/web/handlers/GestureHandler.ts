@@ -770,6 +770,10 @@ export default abstract class GestureHandler {
     return this.currentState;
   }
 
+  public getLastSentState(): State | null {
+    return this.lastSentState;
+  }
+
   public isEnabled(): boolean {
     return this.enabled;
   }
