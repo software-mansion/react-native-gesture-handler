@@ -252,7 +252,9 @@ export default class PanGestureHandler extends GestureHandler {
   ): void {
     super.onPointerUp(event);
 
-    ev?.preventDefault();
+    if (ev?.cancelable) {
+      ev.preventDefault();
+    }
 
     if (this.currentState === State.ACTIVE) {
       this.lastX = this.tracker.getLastAvgX();
@@ -269,7 +271,9 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
   protected onPointerRemove(event: AdaptedEvent, ev: TouchEvent): void {
-    ev?.preventDefault();
+    if (ev?.cancelable) {
+      ev.preventDefault();
+    }
 
     super.onPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);
@@ -294,7 +298,9 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected onPointerMove(event: AdaptedEvent, ev: TouchEvent): void {
-    ev?.preventDefault();
+    if (ev?.cancelable) {
+      ev.preventDefault();
+    }
 
     this.tracker.track(event);
 
@@ -313,7 +319,9 @@ export default class PanGestureHandler extends GestureHandler {
       return;
     }
 
-    ev?.preventDefault();
+    if (ev?.cancelable) {
+      ev.preventDefault();
+    }
 
     this.tracker.track(event);
 
