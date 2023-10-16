@@ -101,12 +101,11 @@ export default class InteractionManager {
     _handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const shouldBeCancelledByScrollView =
+    return (
       otherHandler instanceof NativeViewGestureHandler &&
       otherHandler.getLastSentState() === State.ACTIVE &&
-      otherHandler.getState() === State.ACTIVE;
-
-    return shouldBeCancelledByScrollView;
+      otherHandler.getState() === State.ACTIVE
+    );
   }
 
   public dropRelationsForHandlerWithTag(handlerTag: number): void {
