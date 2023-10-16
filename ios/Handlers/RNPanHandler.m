@@ -34,6 +34,7 @@
   __weak RNGestureHandler *_gestureHandler;
   NSUInteger _realMinimumNumberOfTouches;
   BOOL _hasCustomActivationCriteria;
+  BOOL _activateAfterLongPressScheduled;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
@@ -73,9 +74,11 @@
 
 - (void)activateAfterLongPress
 {
-  self.state = UIGestureRecognizerStateBegan;
-  // Send event in ACTIVE state because UIGestureRecognizerStateBegan is mapped to RNGestureHandlerStateBegan
-  [_gestureHandler handleGesture:self inState:RNGestureHandlerStateActive];
+  if (_activateAfterLongPressScheduled == YES) {
+    self.state = UIGestureRecognizerStateBegan;
+    // Send event in ACTIVE state because UIGestureRecognizerStateBegan is mapped to RNGestureHandlerStateBegan
+    [_gestureHandler handleGesture:self inState:RNGestureHandlerStateActive];
+  }
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -98,6 +101,7 @@
   [self triggerAction];
 
   if (!isnan(_activateAfterLongPress)) {
+    _activateAfterLongPressScheduled = YES;
     [self performSelector:@selector(activateAfterLongPress) withObject:nil afterDelay:_activateAfterLongPress];
   }
 }
@@ -151,6 +155,7 @@
 {
   [self triggerAction];
   [_gestureHandler.pointerTracker reset];
+  _activateAfterLongPressScheduled = NO;
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
   self.enabled = YES;
   [super reset];
@@ -168,6 +173,7 @@
   CGPoint trans = [self translationInView:self.view.window];
   // Apple docs say that 10 units is the default allowable movement for UILongPressGestureRecognizer
   if (!isnan(_activateAfterLongPress) && trans.x * trans.x + trans.y * trans.y > 100) {
+    _activateAfterLongPressScheduled = NO;
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
     return YES;
   }
