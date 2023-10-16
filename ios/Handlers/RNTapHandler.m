@@ -36,6 +36,9 @@
   NSUInteger _tapsSoFar;
   CGPoint _initPosition;
   NSInteger _maxNumberOfTouches;
+  // Workaround boolean to track if a timer was scheduled because Detox _always_ fires timers.
+  // see: https://github.com/wix-incubator/DetoxSync/pull/68
+  BOOL _cancelScheduled;
 }
 
 static const NSUInteger defaultNumberOfTaps = 1;
@@ -55,6 +58,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
     _maxDeltaX = NAN;
     _maxDeltaY = NAN;
     _maxDistSq = NAN;
+    _cancelScheduled = NO;
   }
   return self;
 }
@@ -66,7 +70,9 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)cancel
 {
-  self.enabled = NO;
+  if (_cancelScheduled == YES) {
+    self.enabled = NO;
+  }
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -83,6 +89,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   }
   _tapsSoFar++;
   if (_tapsSoFar) {
+    _cancelScheduled = NO;
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
   }
   NSInteger numberOfTouches = [touches count];
@@ -90,6 +97,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
     _maxNumberOfTouches = numberOfTouches;
   }
   if (!isnan(_maxDuration)) {
+    _cancelScheduled = YES;
     [self performSelector:@selector(cancel) withObject:nil afterDelay:_maxDuration];
   }
   self.state = UIGestureRecognizerStatePossible;
@@ -157,6 +165,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
     self.state = UIGestureRecognizerStateEnded;
     [self reset];
   } else {
+    _cancelScheduled = YES;
     [self performSelector:@selector(cancel) withObject:nil afterDelay:_maxDelay];
   }
 }
@@ -177,6 +186,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   }
   [_gestureHandler.pointerTracker reset];
 
+  _cancelScheduled = NO;
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
   _tapsSoFar = 0;
   _maxNumberOfTouches = 0;
