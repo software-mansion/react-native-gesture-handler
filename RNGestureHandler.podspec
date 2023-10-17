@@ -1,6 +1,31 @@
 require "json"
 
-fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+apple_platform = new_arch_enabled ? '11.0' : '9.0'
+
+# Utility function to install dependencies if React Native's
+# install_modules_dependencies is not defined
+def install_dependencies(s, new_arch_enabled)
+  if new_arch_enabled
+    folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+
+    s.pod_target_xcconfig = {
+      'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/boost" "$(PODS_ROOT)/boost-for-react-native" "$(PODS_ROOT)/RCT-Folly"',
+      'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    }
+    s.compiler_flags  = folly_compiler_flags + ' -DRCT_NEW_ARCH_ENABLED'
+
+    s.dependency "React"
+    s.dependency "React-RCTFabric" # This is for fabric component
+    s.dependency "React-Codegen"
+    s.dependency "RCT-Folly"
+    s.dependency "RCTRequired"
+    s.dependency "RCTTypeSafety"
+    s.dependency "ReactCommon/turbomodule/core"
+  else
+    s.dependency "React-Core"
+  end
+end
 
 Pod::Spec.new do |s|
   # NPM package specification
@@ -15,27 +40,11 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/software-mansion/react-native-gesture-handler", :tag => "#{s.version}" }
   s.source_files = "ios/**/*.{h,m,mm}"
   s.requires_arc = true
+  s.platforms       = { ios: apple_platform, tvos: apple_platform }
 
-  if fabric_enabled
-    folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-
-    s.pod_target_xcconfig = {
-      'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/boost" "$(PODS_ROOT)/boost-for-react-native" "$(PODS_ROOT)/RCT-Folly"',
-      'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
-    }
-    s.platforms       = { ios: '11.0', tvos: '11.0' }
-    s.compiler_flags  = folly_compiler_flags + ' -DRCT_NEW_ARCH_ENABLED'
-
-    s.dependency "React"
-    s.dependency "React-RCTFabric" # This is for fabric component
-    s.dependency "React-Codegen"
-    s.dependency "RCT-Folly"
-    s.dependency "RCTRequired"
-    s.dependency "RCTTypeSafety"
-    s.dependency "ReactCommon/turbomodule/core"
+  if defined?(install_modules_dependencies()) != nil
+    install_modules_dependencies(s);
   else
-    s.platforms = { :ios => "9.0", :tvos => "9.0" }
-
-    s.dependency "React-Core"
+    install_dependencies(s, new_arch_enabled)
   end
 end
