@@ -272,7 +272,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
   protected onPointerRemove(
     event: AdaptedEvent,
-    sourceEvent?: TouchEvent
+    sourceEvent?: TouchEvent | PointerEvent
   ): void {
     if (sourceEvent?.cancelable) {
       sourceEvent.preventDefault();
@@ -300,7 +300,10 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedEvent, sourceEvent?: TouchEvent): void {
+  protected onPointerMove(
+    event: AdaptedEvent,
+    sourceEvent?: TouchEvent | PointerEvent
+  ): void {
     if (sourceEvent?.cancelable) {
       sourceEvent.preventDefault();
     }
@@ -319,7 +322,7 @@ export default class PanGestureHandler extends GestureHandler {
 
   protected onPointerOutOfBounds(
     event: AdaptedEvent,
-    sourceEvent?: TouchEvent
+    sourceEvent?: TouchEvent | PointerEvent
   ): void {
     if (this.getShouldCancelWhenOutside()) {
       return;
