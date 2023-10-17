@@ -384,8 +384,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 
   if (handler != nil) {
-    for (NSNumber *handlerTag in handler->_handlersThatShouldWait) {
-      if ([_tag isEqual:handlerTag]) {
+    for (NSNumber *handlerTag in _handlersThatShouldWait) {
+      if ([handler.tag isEqual:handlerTag]) {
         return YES;
       }
     }
