@@ -234,8 +234,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       if (useDrawableOnForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         foreground = selectable
         if (_backgroundColor != Color.TRANSPARENT) {
-          setBackgroundColor(_backgroundColor)
-          updateBackgroundColor(_backgroundColor, borderRadius, selectable)
+          updateBackgroundColor(_backgroundColor, borderRadius, null)
         }
       } else if (_backgroundColor == Color.TRANSPARENT && rippleColor == null) {
         background = selectable
