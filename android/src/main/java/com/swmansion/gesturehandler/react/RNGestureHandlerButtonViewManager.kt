@@ -203,6 +203,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       if (!needBackgroundUpdate) {
         return
       }
+      needBackgroundUpdate = false
+
       if (_backgroundColor == Color.TRANSPARENT) {
         // reset background
         background = null
