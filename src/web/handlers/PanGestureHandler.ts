@@ -248,12 +248,12 @@ export default class PanGestureHandler extends GestureHandler {
 
   protected onPointerUp(
     event: AdaptedEvent,
-    ev: TouchEvent | PointerEvent
+    sourceEvent?: TouchEvent | PointerEvent
   ): void {
     super.onPointerUp(event);
 
-    if (ev?.cancelable) {
-      ev.preventDefault();
+    if (sourceEvent?.cancelable) {
+      sourceEvent.preventDefault();
     }
 
     if (this.currentState === State.ACTIVE) {
@@ -270,9 +270,12 @@ export default class PanGestureHandler extends GestureHandler {
       this.fail();
     }
   }
-  protected onPointerRemove(event: AdaptedEvent, ev: TouchEvent): void {
-    if (ev?.cancelable) {
-      ev.preventDefault();
+  protected onPointerRemove(
+    event: AdaptedEvent,
+    sourceEvent?: TouchEvent
+  ): void {
+    if (sourceEvent?.cancelable) {
+      sourceEvent.preventDefault();
     }
 
     super.onPointerRemove(event);
@@ -297,9 +300,9 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedEvent, ev: TouchEvent): void {
-    if (ev?.cancelable) {
-      ev.preventDefault();
+  protected onPointerMove(event: AdaptedEvent, sourceEvent?: TouchEvent): void {
+    if (sourceEvent?.cancelable) {
+      sourceEvent.preventDefault();
     }
 
     this.tracker.track(event);
@@ -314,13 +317,16 @@ export default class PanGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerOutOfBounds(event: AdaptedEvent, ev: TouchEvent): void {
+  protected onPointerOutOfBounds(
+    event: AdaptedEvent,
+    sourceEvent?: TouchEvent
+  ): void {
     if (this.getShouldCancelWhenOutside()) {
       return;
     }
 
-    if (ev?.cancelable) {
-      ev.preventDefault();
+    if (sourceEvent?.cancelable) {
+      sourceEvent.preventDefault();
     }
 
     this.tracker.track(event);

@@ -273,58 +273,58 @@ export default abstract class GestureHandler {
   //
 
   protected onPointerDown(
-    adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
-    this.pointerType = adaptedEvent.pointerType;
+    this.pointerType = event.pointerType;
 
     if (this.pointerType === PointerType.TOUCH) {
       GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(this);
     }
 
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(adaptedEvent);
+      this.sendTouchEvent(event);
     }
   }
   // Adding another pointer to existing ones
   protected onPointerAdd(
-    adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(adaptedEvent);
+      this.sendTouchEvent(event);
     }
   }
   protected onPointerUp(
-    adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(adaptedEvent);
+      this.sendTouchEvent(event);
     }
   }
   // Removing pointer, when there is more than one pointers
   protected onPointerRemove(
-    adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(adaptedEvent);
+      this.sendTouchEvent(event);
     }
   }
   protected onPointerMove(
-    adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     this.tryToSendMoveEvent(false);
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(adaptedEvent);
+      this.sendTouchEvent(event);
     }
   }
   protected onPointerLeave(
-    adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     if (this.shouldCancellWhenOutside) {
       switch (this.currentState) {
@@ -339,46 +339,46 @@ export default abstract class GestureHandler {
     }
 
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(adaptedEvent);
+      this.sendTouchEvent(event);
     }
   }
   protected onPointerEnter(
-    adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(adaptedEvent);
+      this.sendTouchEvent(event);
     }
   }
   protected onPointerCancel(
-    adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(adaptedEvent);
+      this.sendTouchEvent(event);
     }
 
     this.cancel();
     this.reset();
   }
   protected onPointerOutOfBounds(
-    adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     this.tryToSendMoveEvent(true);
     if (this.config.needsPointerData) {
-      this.sendTouchEvent(adaptedEvent);
+      this.sendTouchEvent(event);
     }
   }
   protected onPointerMoveOver(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     // used only by hover gesture handler atm
   }
   protected onPointerMoveOut(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     // used only by hover gesture handler atm
   }

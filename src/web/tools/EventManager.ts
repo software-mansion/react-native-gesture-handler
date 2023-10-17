@@ -20,36 +20,36 @@ export default abstract class EventManager<T> {
   ): AdaptedEvent;
 
   protected onPointerDown(
-    _adaptedEvent: AdaptedEvent,
-    _originalEven?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {}
   protected onPointerAdd(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {}
   protected onPointerUp(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {}
   protected onPointerRemove(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {}
   protected onPointerMove(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {}
   protected onPointerLeave(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {} // called only when pointer is pressed (or touching)
   protected onPointerEnter(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {} // called only when pointer is pressed (or touching)
   protected onPointerCancel(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {
     // When pointer cancel is triggered and there are more pointers on the view, only one pointer is cancelled
     // Because we want all pointers to be cancelled by that event, we are doing it manually by reseting handler and changing activePointersCounter to 0
@@ -57,22 +57,22 @@ export default abstract class EventManager<T> {
     // is equal to 0. This prevents counter from going to negative values, when pointers are removed from view after one of them has been cancelled
   }
   protected onPointerOutOfBounds(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {}
   protected onPointerMoveOver(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {}
   protected onPointerMoveOut(
-    _adaptedEvent: AdaptedEvent,
-    _originalEvent?: TouchEvent | PointerEvent
+    _event: AdaptedEvent,
+    _sourceEvent?: TouchEvent | PointerEvent
   ): void {}
 
   public setOnPointerDown(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerDown = callback;
@@ -80,7 +80,7 @@ export default abstract class EventManager<T> {
   public setOnPointerAdd(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerAdd = callback;
@@ -88,7 +88,7 @@ export default abstract class EventManager<T> {
   public setOnPointerUp(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerUp = callback;
@@ -96,7 +96,7 @@ export default abstract class EventManager<T> {
   public setOnPointerRemove(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerRemove = callback;
@@ -104,7 +104,7 @@ export default abstract class EventManager<T> {
   public setOnPointerMove(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerMove = callback;
@@ -112,7 +112,7 @@ export default abstract class EventManager<T> {
   public setOnPointerLeave(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerLeave = callback;
@@ -120,7 +120,7 @@ export default abstract class EventManager<T> {
   public setOnPointerEnter(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerEnter = callback;
@@ -128,7 +128,7 @@ export default abstract class EventManager<T> {
   public setOnPointerCancel(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerCancel = callback;
@@ -136,7 +136,7 @@ export default abstract class EventManager<T> {
   public setOnPointerOutOfBounds(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerOutOfBounds = callback;
@@ -144,7 +144,7 @@ export default abstract class EventManager<T> {
   public setOnPointerMoveOver(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerMoveOver = callback;
@@ -152,7 +152,7 @@ export default abstract class EventManager<T> {
   public setOnPointerMoveOut(
     callback: (
       event: AdaptedEvent,
-      originalEvent?: TouchEvent | PointerEvent
+      sourceEvent?: TouchEvent | PointerEvent
     ) => void
   ): void {
     this.onPointerMoveOut = callback;
