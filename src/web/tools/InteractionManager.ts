@@ -103,7 +103,6 @@ export default class InteractionManager {
   ): boolean {
     return (
       otherHandler instanceof NativeViewGestureHandler &&
-      otherHandler.getLastSentState() === State.ACTIVE &&
       otherHandler.getState() === State.ACTIVE
     );
   }
