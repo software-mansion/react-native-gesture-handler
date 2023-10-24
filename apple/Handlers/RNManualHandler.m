@@ -77,18 +77,28 @@
 
 @end
 
-#endif
-
 @implementation RNManualGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
-#if !TARGET_OS_OSX
     _recognizer = [[RNManualRecognizer alloc] initWithGestureHandler:self];
-#endif
   }
   return self;
 }
 
 @end
+
+#else 
+
+@implementation RNManualGestureHandler
+
+- (instancetype)initWithTag:(NSNumber *)tag
+{
+  self = [super initWithTag:tag];
+  return self;
+}
+
+@end
+
+#endif

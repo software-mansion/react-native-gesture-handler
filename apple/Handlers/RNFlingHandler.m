@@ -84,21 +84,16 @@
 
 @end
 
-#endif
-
 @implementation RNFlingGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
-#if !TARGET_OS_OSX
     _recognizer = [[RNBetterSwipeGestureRecognizer alloc] initWithGestureHandler:self];
-#endif
   }
   return self;
 }
 
-#if !TARGET_OS_OSX
 - (void)resetConfig
 {
   [super resetConfig];
@@ -156,6 +151,18 @@
                                viewAbsolutePosition.x + locationInView.x, viewAbsolutePosition.y + locationInView.y)
        withNumberOfTouches:recognizer.numberOfTouches];
 }
-#endif
+@end
+
+#else 
+
+@implementation RNFlingGestureHandler
+
+- (instancetype)initWithTag:(NSNumber *)tag
+{
+  self = [super initWithTag:tag];
+  return self;
+}
 
 @end
+
+#endif

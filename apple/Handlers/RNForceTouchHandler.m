@@ -130,21 +130,17 @@ static const BOOL defaultFeedbackOnActivation = NO;
 }
 
 @end
-#endif
 
 @implementation RNForceTouchHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
-#if !TARGET_OS_OSX
     _recognizer = [[RNForceTouchGestureRecognizer alloc] initWithGestureHandler:self];
-#endif
   }
   return self;
 }
 
-#if !TARGET_OS_OSX
 - (void)resetConfig
 {
   [super resetConfig];
@@ -176,6 +172,19 @@ static const BOOL defaultFeedbackOnActivation = NO;
                              withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                               withNumberOfTouches:recognizer.numberOfTouches];
 }
-#endif
 
 @end
+
+#else
+
+@implementation RNForceTouchHandler
+
+- (instancetype)initWithTag:(NSNumber *)tag
+{
+  self = [super initWithTag:tag];
+  return self;
+}
+
+@end
+
+#endif
