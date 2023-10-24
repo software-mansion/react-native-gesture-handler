@@ -1,94 +1,52 @@
-import React, {Component} from 'react';
-import {
-  Animated,
-  StyleProp,
-  StyleSheet,
-  ViewStyle,
-  ScrollView,
-} from 'react-native';
+import React, {FC} from 'react';
+import {ScrollView, StyleProp, StyleSheet, ViewStyle} from 'react-native';
 
-import {
-  PanGestureHandler,
-  State,
-  PanGestureHandlerStateChangeEvent,
-  PanGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
-import {USE_NATIVE_DRIVER} from '../../config';
-import {LoremIpsum} from '../../common';
+import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 
 type DraggableBoxProps = {
   minDist?: number;
   boxStyle?: StyleProp<ViewStyle>;
 };
 
-export class DraggableBox extends Component<DraggableBoxProps> {
-  private translateX: Animated.Value;
-  private translateY: Animated.Value;
-  private lastOffset: {x: number; y: number};
-  private onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
-  constructor(props: DraggableBoxProps) {
-    super(props);
-    this.translateX = new Animated.Value(0);
-    this.translateY = new Animated.Value(0);
-    this.lastOffset = {x: 0, y: 0};
-    this.onGestureEvent = Animated.event(
-      [
-        {
-          nativeEvent: {
-            translationX: this.translateX,
-            translationY: this.translateY,
-          },
-        },
-      ],
-      {useNativeDriver: false},
-    );
-  }
-  private onHandlerStateChange = (event: PanGestureHandlerStateChangeEvent) => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
-      this.lastOffset.x += event.nativeEvent.translationX;
-      this.lastOffset.y += event.nativeEvent.translationY;
-      this.translateX.setOffset(this.lastOffset.x);
-      this.translateX.setValue(0);
-      this.translateY.setOffset(this.lastOffset.y);
-      this.translateY.setValue(0);
-    }
-  };
-  render() {
-    return (
-      <PanGestureHandler
-        {...this.props}
-        onGestureEvent={this.onGestureEvent}
-        onHandlerStateChange={this.onHandlerStateChange}
-        minDist={this.props.minDist}
-      >
-        <Animated.View
-          style={[
-            styles.box,
-            {
-              transform: [
-                {translateX: this.translateX},
-                {translateY: this.translateY},
-              ],
-            },
-            this.props.boxStyle,
-          ]}
-        />
-      </PanGestureHandler>
-    );
-  }
-}
+export const DraggableBox: FC<DraggableBoxProps> = props => {
+  const translateY = useSharedValue(0);
+  const translateX = useSharedValue(0);
 
-export default class Example extends Component {
-  render() {
-    return (
-      <ScrollView style={styles.scrollView}>
-        <LoremIpsum words={40} />
-        <DraggableBox />
-        <LoremIpsum />
-      </ScrollView>
-    );
-  }
+  let x = useSharedValue(0);
+  let y = useSharedValue(0);
+
+  const panGesture = Gesture.Pan()
+    .minDistance(props.minDist || 0)
+    .onUpdate(e => {
+      translateX.value = x.value + e.translationX;
+      translateY.value = y.value + e.translationY;
+    }).onEnd( e => {
+      x.value = translateX.value;
+      y.value = translateY.value;
+    });
+
+  return (
+    <GestureDetector gesture={panGesture}>
+      <Animated.View style={[styles.box, props.boxStyle,
+      {
+        top: translateY,
+        left: translateX,
+      }]} />
+    </GestureDetector>
+  );
+};
+
+export default function Example() {
+  return (
+    <ScrollView style={styles.scrollView}>
+      <DraggableBox />
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -98,9 +56,8 @@ const styles = StyleSheet.create({
   box: {
     width: 150,
     height: 150,
-    alignSelf: 'center',
+    position: 'absolute',
     backgroundColor: 'plum',
     margin: 10,
-    zIndex: 200,
   },
 });

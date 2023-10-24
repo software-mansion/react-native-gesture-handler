@@ -1,12 +1,12 @@
 import React from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {StyleSheet} from 'react-native';
-import BottomSheet from './showcase/bottomSheet';
+import Draggable from './basic/draggable';
 
 export default function App() {
   return (
     <GestureHandlerRootView style={styles.root}>
-      <BottomSheet />
+      <Draggable />
     </GestureHandlerRootView>
   );
 }
