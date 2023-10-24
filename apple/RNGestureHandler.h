@@ -3,12 +3,10 @@
 #import "RNGestureHandlerEvents.h"
 #import "RNGestureHandlerPointerTracker.h"
 #import "RNGestureHandlerState.h"
-
-#import "RNGesturePlatform.h"
+#import "RNGHUIKit.h"
 
 #import <Foundation/Foundation.h>
 #import <React/RCTConvert.h>
-
 
 #define VEC_LEN_SQ(pt) (pt.x * pt.x + pt.y * pt.y)
 #define TEST_MIN_IF_NOT_NAN(value, limit) \
@@ -46,7 +44,7 @@
 @protocol RNRootViewGestureRecognizerDelegate <UIGestureRecognizerDelegate>
 
 - (void)gestureRecognizer:(nullable UIGestureRecognizer *)gestureRecognizer
-    didActivateInViewWithTouchHandler:(nullable RCTPlatformView *)viewWithTouchHandler;
+    didActivateInViewWithTouchHandler:(nullable RNGHUIView *)viewWithTouchHandler;
 
 @end
 
@@ -71,7 +69,7 @@
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
 
-- (void)bindToView:(nonnull RCTPlatformView *)view;
+- (void)bindToView:(nonnull RNGHUIView *)view;
 - (void)unbindFromView;
 - (void)resetConfig NS_REQUIRES_SUPER;
 - (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;

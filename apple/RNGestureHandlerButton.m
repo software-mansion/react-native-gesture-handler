@@ -49,7 +49,7 @@
 }
 
 #if !TARGET_OS_OSX
-- (BOOL)shouldHandleTouch:(RCTPlatformView *)view
+- (BOOL)shouldHandleTouch:(RNGHUIView *)view
 {
   if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
     RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
@@ -68,16 +68,16 @@
   return CGRectContainsPoint(hitFrame, point);
 }
 
-- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+- (RNGHUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-  RCTPlatformView *inner = [super hitTest:point withEvent:event];
+  RNGHUIView *inner = [super hitTest:point withEvent:event];
   while (inner && ![self shouldHandleTouch:inner]) {
     inner = inner.superview;
   }
   return inner;
 }
 #else
-- (BOOL)shouldHandleTouch:(RCTPlatformView *)view
+- (BOOL)shouldHandleTouch:(RNGHUIView *)view
 {
   if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
     RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
@@ -96,9 +96,9 @@
   return CGRectContainsPoint(hitFrame, point);
 }
 
-- (RCTPlatformView *)hitTest:(NSPoint)point withEvent:(UIEvent *)event
+- (RNGHUIView *)hitTest:(NSPoint)point withEvent:(UIEvent *)event
 {
-  RCTPlatformView *inner = [super hitTest:point];
+  RNGHUIView *inner = [super hitTest:point];
   while (inner && ![self shouldHandleTouch:inner]) {
     inner = inner.superview;
   }

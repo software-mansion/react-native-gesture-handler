@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "RNGesturePlatform.h"
+#import "RNGHUIKit.h"
 #import "RNGHTouchEventType.h"
 
 #define MAX_POINTERS_COUNT 12

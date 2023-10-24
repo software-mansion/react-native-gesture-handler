@@ -106,7 +106,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                toViewWithTag:(nonnull NSNumber *)viewTag
               withActionType:(RNGestureHandlerActionType)actionType
 {
-  RCTPlatformView *view = [_uiManager viewForReactTag:viewTag];
+  RNGHUIView *view = [_uiManager viewForReactTag:viewTag];
 
 #ifdef RCT_NEW_ARCH_ENABLED
   if (view == nil || view.superview == nil) {
@@ -198,10 +198,10 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 #pragma mark Root Views Management
 
-- (void)registerViewWithGestureRecognizerAttachedIfNeeded:(RCTPlatformView *)childView
+- (void)registerViewWithGestureRecognizerAttachedIfNeeded:(RNGHUIView *)childView
 {
 #ifdef RCT_NEW_ARCH_ENABLED
-  RCTPlatformView *touchHandlerView = childView;
+  RNGHUIView *touchHandlerView = childView;
 
 #if !TARGET_OS_OSX
   if ([[childView reactViewController] isKindOfClass:[RCTFabricModalHostViewController class]]) {
@@ -218,7 +218,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 #endif
 
 #else
-  RCTPlatformView *touchHandlerView = nil;
+  RNGHUIView *touchHandlerView = nil;
 
 #if !TARGET_OS_OSX
   if ([[childView reactViewController] isKindOfClass:[RCTModalHostViewController class]]) {
@@ -266,7 +266,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 }
 
 - (void)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
-    didActivateInViewWithTouchHandler:(RCTPlatformView *)viewWithTouchHandler
+    didActivateInViewWithTouchHandler:(RNGHUIView *)viewWithTouchHandler
 {
   // Cancel touches in RN's root view in order to cancel all in-js recognizers
 

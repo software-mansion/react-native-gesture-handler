@@ -173,7 +173,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   self.recognizer.enabled = enabled;
 }
 
-- (void)bindToView:(RCTPlatformView *)view
+- (void)bindToView:(RNGHUIView *)view
 {
 #if !TARGET_OS_OSX
   view.userInteractionEnabled = YES;
@@ -198,14 +198,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return [RNGestureHandlerEventExtraData
             forPosition:[recognizer locationInView:recognizer.view]
             withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
-            withNumberOfTouches:1
+            withNumberOfTouches:1 ];
 #else
   return [RNGestureHandlerEventExtraData
             forPosition:[recognizer locationInView:recognizer.view]
             withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-            withNumberOfTouches:recognizer.numberOfTouches
+            withNumberOfTouches:recognizer.numberOfTouches ];
 #endif
-  ];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
@@ -345,7 +344,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 }
 
-- (void)bindManualActivationToView:(RCTPlatformView *)view
+- (void)bindManualActivationToView:(RNGHUIView *)view
 {
   if (_manualActivationRecognizer != nil) {
     [view addGestureRecognizer:_manualActivationRecognizer];
@@ -370,7 +369,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   // We may try to extract "DummyGestureHandler" in case when "otherGestureRecognizer" belongs to
   // a native view being wrapped with "NativeViewGestureHandler"
-  RCTPlatformView *reactView = recognizer.view;
+  RNGHUIView *reactView = recognizer.view;
   while (reactView != nil && reactView.reactTag == nil) {
     reactView = reactView.superview;
   }

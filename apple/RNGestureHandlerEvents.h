@@ -4,7 +4,7 @@
 
 #import "RNGHTouchEventType.h"
 #import "RNGestureHandlerState.h"
-#import "RNGesturePlatform.h"
+#import "RNGHUIKit.h"
 
 @interface RNGestureHandlerEventExtraData : NSObject
 
