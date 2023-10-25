@@ -12,7 +12,7 @@ RCT_CUSTOM_VIEW_PROPERTY(enabled, BOOL, RNGestureHandlerButton)
 #if !TARGET_OS_TV
 RCT_CUSTOM_VIEW_PROPERTY(exclusive, BOOL, RNGestureHandlerButton)
 {
-  view.exclusiveTouch = json == nil ? YES : [RCTConvert BOOL:json];
+  [view setExclusiveTouch:json == nil ? YES : [RCTConvert BOOL:json]];
 }
 #endif
 RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RNGestureHandlerButton)
