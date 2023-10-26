@@ -8,9 +8,7 @@
 
 #import "RNNativeViewHandler.h"
 
-#if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
-#endif
 
 #import <React/RCTConvert.h>
 #import <React/UIView+React.h>
@@ -20,8 +18,6 @@
 #else
 #import <React/RCTScrollView.h>
 #endif // RCT_NEW_ARCH_ENABLED
-
-#if !TARGET_OS_OSX
 
 #pragma mark RNDummyGestureRecognizer
 
@@ -37,24 +33,24 @@
   return self;
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
-- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 }
 
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
   self.state = UIGestureRecognizerStateFailed;
   [self reset];
 }
 
-- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
   self.state = UIGestureRecognizerStateCancelled;
@@ -137,7 +133,7 @@
   if (_disallowInterruption) {
     // When `disallowInterruption` is set we cancel all gesture handlers when this UIControl
     // gets DOWN event
-    for (UITouch *touch in [event allTouches]) {
+    for (RNGHUITouch *touch in [event allTouches]) {
       for (UIGestureRecognizer *recogn in [touch gestureRecognizers]) {
         recogn.enabled = NO;
         recogn.enabled = YES;
@@ -196,30 +192,3 @@
 
 @end
 
-#else 
-
-#pragma mark RNDummyGestureRecognizer
-
-@implementation RNDummyGestureRecognizer
-
-- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
-{
-  self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)];
-  return self;
-}
-
-@end
-
-#pragma mark RNNativeViewgestureHandler
-
-@implementation RNNativeViewGestureHandler 
-
-- (instancetype)initWithTag:(NSNumber *)tag
-{
-  self = [super initWithTag:tag];
-  return self;
-}
-
-@end
-
-#endif

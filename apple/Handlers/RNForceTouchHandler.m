@@ -18,7 +18,7 @@
 
 @implementation RNForceTouchGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
-  UITouch *_firstTouch;
+  RNGHUITouch *_firstTouch;
 }
 
 static const CGFloat defaultForce = 0;
@@ -38,7 +38,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
   return self;
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (_firstTouch) {
     // ignore rest of fingers
@@ -52,7 +52,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
   self.state = UIGestureRecognizerStatePossible;
 }
 
-- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (![touches containsObject:_firstTouch]) {
     // Considered only the very first touch
@@ -95,7 +95,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 #endif
 }
 
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (![touches containsObject:_firstTouch]) {
     // Considered only the very first touch
@@ -110,13 +110,13 @@ static const BOOL defaultFeedbackOnActivation = NO;
   }
 }
 
-- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
 }
 
-- (void)handleForceWithTouches:(NSSet<UITouch *> *)touches
+- (void)handleForceWithTouches:(NSSet<RNGHUITouch *> *)touches
 {
   _force = _firstTouch.force / _firstTouch.maximumPossibleForce;
 }

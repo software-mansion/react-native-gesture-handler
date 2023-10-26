@@ -15,10 +15,10 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
-- (void)touchesBegan:(NSSet<UIEvent *> *)touches withEvent:(UIEvent *)event;
-- (void)touchesMoved:(NSSet<UIEvent *> *)touches withEvent:(UIEvent *)event;
-- (void)touchesEnded:(NSSet<UIEvent *> *)touches withEvent:(UIEvent *)event;
-- (void)touchesCancelled:(NSSet<UIEvent *> *)touches withEvent:(UIEvent *)event;
+- (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event;
+- (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event;
+- (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event;
+- (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event;
 - (void)reset;
 - (void)cancelPointers;
 

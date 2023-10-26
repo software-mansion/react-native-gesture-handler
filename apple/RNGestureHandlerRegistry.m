@@ -33,7 +33,7 @@
 }
 
 - (void)attachHandlerWithTag:(NSNumber *)handlerTag
-                      toView:(RCTPlatformView *)view
+                      toView:(RNGHUIView *)view
               withActionType:(RNGestureHandlerActionType)actionType
 {
   RNGestureHandler *handler = _handlers[handlerTag];

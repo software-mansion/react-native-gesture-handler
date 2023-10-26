@@ -5,7 +5,7 @@
 
 @implementation RNGestureHandlerPointerTracker {
   __weak RNGestureHandler *_gestureHandler;
-  UIEvent *_trackedPointers[MAX_POINTERS_COUNT];
+  RNGHUITouch *_trackedPointers[MAX_POINTERS_COUNT];
   int _trackedPointersCount;
 }
 
@@ -23,7 +23,7 @@
   return self;
 }
 
-- (int)registerTouch:(UIEvent *)touch
+- (int)registerTouch:(RNGHUITouch *)touch
 {
   for (int index = 0; index < MAX_POINTERS_COUNT; index++) {
     if (_trackedPointers[index] == nil) {
@@ -35,7 +35,7 @@
   return -1;
 }
 
-- (int)unregisterTouch:(UIEvent *)touch
+- (int)unregisterTouch:(RNGHUITouch *)touch
 {
   for (int index = 0; index < MAX_POINTERS_COUNT; index++) {
     if (_trackedPointers[index] == touch) {
@@ -47,7 +47,7 @@
   return -1;
 }
 
-- (int)findTouchIndex:(UIEvent *)touch
+- (int)findTouchIndex:(RNGHUITouch *)touch
 {
   for (int index = 0; index < MAX_POINTERS_COUNT; index++) {
     if (_trackedPointers[index] == touch) {
@@ -84,7 +84,7 @@
   };
 }
 #else
-- (NSDictionary *)extractPointerData:(int)index forTouch:(UITouch *)touch
+- (NSDictionary *)extractPointerData:(int)index forTouch:(RNGHUITouch *)touch
 {
   CGPoint relativePos = [touch locationInView:_gestureHandler.recognizer.view];
   CGPoint absolutePos = [touch locationInView:_gestureHandler.recognizer.view.window];
@@ -107,7 +107,7 @@
   int nextIndex = 0;
 
   for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
-    UIEvent *touch = _trackedPointers[i];
+    RNGHUITouch *touch = _trackedPointers[i];
     if (touch != nil) {
       data[nextIndex++] = [self extractPointerData:i forTouch:touch];
     }
@@ -116,7 +116,7 @@
   _allPointersData = [[NSArray alloc] initWithObjects:data count:registeredTouches];
 }
 
-- (void)touchesBegan:(NSSet<UIEvent *> *)touches withEvent:(UIEvent *)event
+- (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (!_gestureHandler.needsPointerData) {
     return;
@@ -127,7 +127,7 @@
   NSDictionary *data[touches.count];
 
   for (int i = 0; i < [touches count]; i++) {
-    UIEvent *touch = [[touches allObjects] objectAtIndex:i];
+    RNGHUITouch *touch = [[touches allObjects] objectAtIndex:i];
     int index = [self registerTouch:touch];
     if (index >= 0) {
       _trackedPointersCount++;
@@ -142,7 +142,7 @@
   [self sendEvent];
 }
 
-- (void)touchesMoved:(NSSet<UIEvent *> *)touches withEvent:(UIEvent *)event
+- (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (!_gestureHandler.needsPointerData) {
     return;
@@ -153,7 +153,7 @@
   NSDictionary *data[touches.count];
 
   for (int i = 0; i < [touches count]; i++) {
-    UIEvent *touch = [[touches allObjects] objectAtIndex:i];
+    RNGHUITouch *touch = [[touches allObjects] objectAtIndex:i];
     int index = [self findTouchIndex:touch];
     data[i] = [self extractPointerData:index forTouch:touch];
   }
@@ -163,7 +163,7 @@
   [self sendEvent];
 }
 
-- (void)touchesEnded:(NSSet<UIEvent *> *)touches withEvent:(UIEvent *)event
+- (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (!_gestureHandler.needsPointerData) {
     return;
@@ -177,7 +177,7 @@
   NSDictionary *data[touches.count];
 
   for (int i = 0; i < [touches count]; i++) {
-    UIEvent *touch = [[touches allObjects] objectAtIndex:i];
+    RNGHUITouch *touch = [[touches allObjects] objectAtIndex:i];
     int index = [self unregisterTouch:touch];
     if (index >= 0) {
       _trackedPointersCount--;
@@ -190,7 +190,7 @@
   [self sendEvent];
 }
 
-- (void)touchesCancelled:(NSSet<UIEvent *> *)touches withEvent:(UIEvent *)event
+- (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   if (!_gestureHandler.needsPointerData) {
     return;
@@ -230,7 +230,7 @@
     NSDictionary *data[registeredTouches];
 
     for (int i = 0; i < MAX_POINTERS_COUNT; i++) {
-      UIEvent *touch = _trackedPointers[i];
+      RNGHUITouch *touch = _trackedPointers[i];
       if (touch != nil) {
         data[nextIndex++] = [self extractPointerData:i forTouch:touch];
         [self unregisterTouch:touch];

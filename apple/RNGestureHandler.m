@@ -495,7 +495,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return YES;
 }
 #else
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(RNGHUITouch *)touch
 {
   // If hitSlop is set we use it to determine if a given gesture recognizer should start processing
   // touch stream. This only works for negative values of hitSlop as this method won't be triggered
