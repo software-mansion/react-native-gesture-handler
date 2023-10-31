@@ -202,7 +202,7 @@ function App() {
 
 # Cross-component interactions
 
-You may have noticed that gesture composition described above requires you to mount all of the composed gestures under a single `GestureDetector`, effectively attaching them to the same underlying component. If you wish to customize how gestures interact with each other across multiple components, there are different mechanisms for that.
+You may have noticed that gesture composition described above requires you to mount all of the composed gestures under a single `GestureDetector`, effectively attaching them to the same underlying component. You can customize how gestures interact with each other across multiple components in a couple of ways:
 
 ## requireExternalGestureToFail
 
