@@ -265,9 +265,9 @@ const styles = StyleSheet.create({
 });
 ```
 
-## requiredToFailByExternalGesture
+## blocksExternalGesture
 
-`requiredToFailByExternalGesture` works similarily to `requireExternalGestureToFail` but the direction of the relation is reversed - instead of being one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
+`blocksExternalGesture` works similarily to `requireExternalGestureToFail` but the direction of the relation is reversed - instead of being one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
 
 ```jsx
 import React, { useRef } from 'react';
@@ -291,7 +291,7 @@ function Item({ backgroundColor, scrollRef }) {
   const zIndex = useSharedValue(1);
 
   const pinch = Gesture.Pinch()
-    .requiredToFailByExternalGesture(scrollRef)
+    .blocksExternalGesture(scrollRef)
     .onBegin(() => {
       zIndex.value = 100;
     })

@@ -197,10 +197,10 @@ function attachHandlers({
         );
       }
 
-      let requiredToFailBy: number[] = [];
-      if (handler.config.requiredToFailBy) {
-        requiredToFailBy = extractValidHandlerTags(
-          handler.config.requiredToFailBy
+      let blocksRecognizers: number[] = [];
+      if (handler.config.blocksRecognizers) {
+        blocksRecognizers = extractValidHandlerTags(
+          handler.config.blocksRecognizers
         );
       }
 
@@ -209,7 +209,7 @@ function attachHandlers({
         filterConfig(handler.config, ALLOWED_PROPS, {
           simultaneousHandlers: simultaneousWith,
           waitFor: requireToFail,
-          requiredToFailBy: requiredToFailBy,
+          blocksRecognizers: blocksRecognizers,
         })
       );
     }

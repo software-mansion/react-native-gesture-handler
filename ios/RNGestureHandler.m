@@ -111,7 +111,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   [self resetConfig];
   _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
   _simultaneousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
-  _handlersThatShouldWait = [RCTConvert NSNumberArray:config[@"requiredToFailBy"]];
+  _handlersThatShouldWait = [RCTConvert NSNumberArray:config[@"blocksRecognizers"]];
 
   id prop = config[@"enabled"];
   if (prop != nil) {

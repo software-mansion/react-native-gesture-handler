@@ -9,7 +9,7 @@ import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   private val waitForRelations = SparseArray<IntArray>()
   private val simultaneousRelations = SparseArray<IntArray>()
-  private val requiredToFailByRelations = SparseArray<IntArray>()
+  private val blocksRecognizerRelations = SparseArray<IntArray>()
 
   fun dropRelationsForHandlerWithTag(handlerTag: Int) {
     waitForRelations.remove(handlerTag)
@@ -35,15 +35,15 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
       val tags = convertHandlerTagsArray(config, KEY_SIMULTANEOUS_HANDLERS)
       simultaneousRelations.put(handler.tag, tags)
     }
-    if (config.hasKey(KEY_REQUIRED_BY_OTHER_TO_FAIL)) {
-      val tags = convertHandlerTagsArray(config, KEY_REQUIRED_BY_OTHER_TO_FAIL)
-      requiredToFailByRelations.put(handler.tag, tags)
+    if (config.hasKey(KEY_BLOCKS_RECOGNIZERS)) {
+      val tags = convertHandlerTagsArray(config, KEY_BLOCKS_RECOGNIZERS)
+      blocksRecognizerRelations.put(handler.tag, tags)
     }
   }
 
   override fun shouldWaitForHandlerFailure(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) =
     (waitForRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false) ||
-      (requiredToFailByRelations[otherHandler.tag]?.any { tag -> tag == handler.tag } ?: false)
+      (blocksRecognizerRelations[otherHandler.tag]?.any { tag -> tag == handler.tag } ?: false)
 
   override fun shouldRequireHandlerToWaitForFailure(
     handler: GestureHandler<*>,
@@ -70,6 +70,6 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   companion object {
     private const val KEY_WAIT_FOR = "waitFor"
     private const val KEY_SIMULTANEOUS_HANDLERS = "simultaneousHandlers"
-    private const val KEY_REQUIRED_BY_OTHER_TO_FAIL = "requiredToFailBy"
+    private const val KEY_BLOCKS_RECOGNIZERS = "blocksRecognizers"
   }
 }

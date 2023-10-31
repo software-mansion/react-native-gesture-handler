@@ -57,7 +57,7 @@ Adds a gesture that should be recognized simultaneously with this one.
 
 Adds a relation requiring another gesture to fail, before this one can activate.
 
-### `requiredToFailByExternalGesture(otherGesture1, otherGesture2, ...)`
+### `blocksExternalGesture(otherGesture1, otherGesture2, ...)`
 
 Adds a relation that makes other gestures wait with activation until this gesture fails (or doesn't start at all).
 
