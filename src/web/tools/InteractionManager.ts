@@ -64,20 +64,12 @@ export default class InteractionManager {
     const waitFor: number[] | undefined = this.waitForRelations.get(
       handler.getTag()
     );
-    if (!waitFor) {
-      return false;
-    }
 
-    let shouldWait = false;
-
-    waitFor.forEach((tag: number): void => {
-      if (tag === otherHandler.getTag()) {
-        shouldWait = true;
-        return; //Returns from callback
-      }
-    });
-
-    return shouldWait;
+    return (
+      waitFor?.find((tag: number) => {
+        return tag === otherHandler.getTag();
+      }) !== undefined
+    );
   }
 
   public shouldRecognizeSimultaneously(
@@ -86,20 +78,12 @@ export default class InteractionManager {
   ): boolean {
     const simultaneousHandlers: number[] | undefined =
       this.simultaneousRelations.get(handler.getTag());
-    if (!simultaneousHandlers) {
-      return false;
-    }
 
-    let shouldRecognizeSimultaneously = false;
-
-    simultaneousHandlers.forEach((tag: number): void => {
-      if (tag === otherHandler.getTag()) {
-        shouldRecognizeSimultaneously = true;
-        return;
-      }
-    });
-
-    return shouldRecognizeSimultaneously;
+    return (
+      simultaneousHandlers?.find((tag: number) => {
+        return tag === otherHandler.getTag();
+      }) !== undefined
+    );
   }
 
   public shouldRequireHandlerToWaitForFailure(
