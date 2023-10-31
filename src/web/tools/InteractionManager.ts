@@ -5,6 +5,8 @@ export default class InteractionManager {
   private static instance: InteractionManager;
   private readonly waitForRelations: Map<number, number[]> = new Map();
   private readonly simultaneousRelations: Map<number, number[]> = new Map();
+  private readonly blocksRecognizersRelations: Map<number, number[]> =
+    new Map();
 
   // Private becaues of singleton
   // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
@@ -39,6 +41,19 @@ export default class InteractionManager {
       });
 
       this.simultaneousRelations.set(handler.getTag(), simultaneousHandlers);
+    }
+
+    if (config.blocksRecognizers) {
+      const blocksRecognizers: number[] = [];
+      config.blocksRecognizers.forEach((otherHandler: Handler): void => {
+        if (typeof otherHandler === 'number') {
+          blocksRecognizers.push(otherHandler);
+        } else {
+          blocksRecognizers.push(otherHandler.handlerTag);
+        }
+      });
+
+      this.blocksRecognizersRelations.set(handler.getTag(), blocksRecognizers);
     }
   }
 
@@ -88,11 +103,18 @@ export default class InteractionManager {
   }
 
   public shouldRequireHandlerToWaitForFailure(
-    _handler: GestureHandler,
-    _otherHandler: GestureHandler
+    handler: GestureHandler,
+    otherHandler: GestureHandler
   ): boolean {
-    //TODO: Implement logic
-    return false;
+    const waitFor: number[] | undefined = this.blocksRecognizersRelations.get(
+      handler.getTag()
+    );
+
+    return (
+      waitFor?.find((tag: number) => {
+        return tag === otherHandler.getTag();
+      }) !== undefined
+    );
   }
 
   public shouldHandlerBeCancelledBy(
@@ -106,11 +128,13 @@ export default class InteractionManager {
   public dropRelationsForHandlerWithTag(handlerTag: number): void {
     this.waitForRelations.delete(handlerTag);
     this.simultaneousRelations.delete(handlerTag);
+    this.blocksRecognizersRelations.delete(handlerTag);
   }
 
   public reset() {
     this.waitForRelations.clear();
     this.simultaneousRelations.clear();
+    this.blocksRecognizersRelations.clear();
   }
 
   public static getInstance(): InteractionManager {
