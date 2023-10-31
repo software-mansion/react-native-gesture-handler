@@ -466,7 +466,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   fun install(): Boolean {
     return try {
       SoLoader.loadLibrary("gesturehandler")
-      val jsContext = reactApplicationContext.javaScriptContextHolder
+      val jsContext = reactApplicationContext.javaScriptContextHolder!!
       decorateRuntime(jsContext.get())
       true
     } catch (exception: Exception) {
