@@ -9,7 +9,7 @@ import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   private val waitForRelations = SparseArray<IntArray>()
   private val simultaneousRelations = SparseArray<IntArray>()
-  private val blocksRecognizerRelations = SparseArray<IntArray>()
+  private val blockingRelations = SparseArray<IntArray>()
 
   fun dropRelationsForHandlerWithTag(handlerTag: Int) {
     waitForRelations.remove(handlerTag)
@@ -35,9 +35,9 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
       val tags = convertHandlerTagsArray(config, KEY_SIMULTANEOUS_HANDLERS)
       simultaneousRelations.put(handler.tag, tags)
     }
-    if (config.hasKey(KEY_BLOCKS_RECOGNIZERS)) {
-      val tags = convertHandlerTagsArray(config, KEY_BLOCKS_RECOGNIZERS)
-      blocksRecognizerRelations.put(handler.tag, tags)
+    if (config.hasKey(KEY_BLOCKS_HANDLERS)) {
+      val tags = convertHandlerTagsArray(config, KEY_BLOCKS_HANDLERS)
+      blockingRelations.put(handler.tag, tags)
     }
   }
 
@@ -47,7 +47,7 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   override fun shouldRequireHandlerToWaitForFailure(
     handler: GestureHandler<*>,
     otherHandler: GestureHandler<*>,
-  ) = blocksRecognizerRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
+  ) = blockingRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>): Boolean {
     if (otherHandler is NativeViewGestureHandler) {
@@ -69,6 +69,6 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   companion object {
     private const val KEY_WAIT_FOR = "waitFor"
     private const val KEY_SIMULTANEOUS_HANDLERS = "simultaneousHandlers"
-    private const val KEY_BLOCKS_RECOGNIZERS = "blocksRecognizers"
+    private const val KEY_BLOCKS_HANDLERS = "blocksHandlers"
   }
 }

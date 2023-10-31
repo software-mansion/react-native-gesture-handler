@@ -197,11 +197,9 @@ function attachHandlers({
         );
       }
 
-      let blocksRecognizers: number[] = [];
-      if (handler.config.blocksRecognizers) {
-        blocksRecognizers = extractValidHandlerTags(
-          handler.config.blocksRecognizers
-        );
+      let blocksHandlers: number[] = [];
+      if (handler.config.blocksHandlers) {
+        blocksHandlers = extractValidHandlerTags(handler.config.blocksHandlers);
       }
 
       RNGestureHandlerModule.updateGestureHandler(
@@ -209,7 +207,7 @@ function attachHandlers({
         filterConfig(handler.config, ALLOWED_PROPS, {
           simultaneousHandlers: simultaneousWith,
           waitFor: requireToFail,
-          blocksRecognizers: blocksRecognizers,
+          blocksHandlers: blocksHandlers,
         })
       );
     }

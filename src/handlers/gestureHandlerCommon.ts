@@ -26,7 +26,7 @@ const commonProps = [
 const componentInteractionProps = [
   'waitFor',
   'simultaneousHandlers',
-  'blocksRecognizers',
+  'blocksHandlers',
 ] as const;
 
 export const baseGestureHandlerProps = [
@@ -159,7 +159,7 @@ export type BaseGestureHandlerProps<
   id?: string;
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
   simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
-  blocksRecognizers?: React.Ref<unknown> | React.Ref<unknown>[];
+  blocksHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
   testID?: string;
   cancelsTouchesInView?: boolean;
   // TODO(TS) - fix event types

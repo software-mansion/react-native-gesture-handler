@@ -5,8 +5,7 @@ export default class InteractionManager {
   private static instance: InteractionManager;
   private readonly waitForRelations: Map<number, number[]> = new Map();
   private readonly simultaneousRelations: Map<number, number[]> = new Map();
-  private readonly blocksRecognizersRelations: Map<number, number[]> =
-    new Map();
+  private readonly blocksHandlersRelations: Map<number, number[]> = new Map();
 
   // Private becaues of singleton
   // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
@@ -43,17 +42,17 @@ export default class InteractionManager {
       this.simultaneousRelations.set(handler.getTag(), simultaneousHandlers);
     }
 
-    if (config.blocksRecognizers) {
-      const blocksRecognizers: number[] = [];
-      config.blocksRecognizers.forEach((otherHandler: Handler): void => {
+    if (config.blocksHandlers) {
+      const blocksHandlers: number[] = [];
+      config.blocksHandlers.forEach((otherHandler: Handler): void => {
         if (typeof otherHandler === 'number') {
-          blocksRecognizers.push(otherHandler);
+          blocksHandlers.push(otherHandler);
         } else {
-          blocksRecognizers.push(otherHandler.handlerTag);
+          blocksHandlers.push(otherHandler.handlerTag);
         }
       });
 
-      this.blocksRecognizersRelations.set(handler.getTag(), blocksRecognizers);
+      this.blocksHandlersRelations.set(handler.getTag(), blocksHandlers);
     }
   }
 
@@ -90,7 +89,7 @@ export default class InteractionManager {
     handler: GestureHandler,
     otherHandler: GestureHandler
   ): boolean {
-    const waitFor: number[] | undefined = this.blocksRecognizersRelations.get(
+    const waitFor: number[] | undefined = this.blocksHandlersRelations.get(
       handler.getTag()
     );
 
@@ -112,13 +111,13 @@ export default class InteractionManager {
   public dropRelationsForHandlerWithTag(handlerTag: number): void {
     this.waitForRelations.delete(handlerTag);
     this.simultaneousRelations.delete(handlerTag);
-    this.blocksRecognizersRelations.delete(handlerTag);
+    this.blocksHandlersRelations.delete(handlerTag);
   }
 
   public reset() {
     this.waitForRelations.clear();
     this.simultaneousRelations.clear();
-    this.blocksRecognizersRelations.clear();
+    this.blocksHandlersRelations.clear();
   }
 
   public static getInstance(): InteractionManager {
