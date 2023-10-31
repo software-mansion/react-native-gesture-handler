@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
 
 ## requiredToFailByExternalGesture
 
-`requiredToFailByExternalGesture` works similarily to `requireExternalGestureToFail` but the direction of the relation is reversed - insted of making the gesture it's called on wait for failure of gestures passed as arguments, it's making gestures passed as arguments wait for the gesture it's called on. It's especially usefull for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required is passing a ref of the `ScrollView` to the gesture object, for example:
+`requiredToFailByExternalGesture` works similarily to `requireExternalGestureToFail` but the direction of the relation is reversed - instead of being one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required is passing a ref of the `ScrollView` to the gesture object, for example:
 
 ```jsx
 import React, { useRef } from 'react';
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
 
 ## simultaneousWithExternalGesture
 
-`simultaneousWithExternalGesture` allows gestures across different components to be recognized simultaneously. We can modify the example from `requireExternalGestureToFail` to showcase this: let's say you have two nested views, again both with tap gesture attached. This time, both of them require one tap, but tapping the inner one should also activate the gesture attached to the outer view:
+`simultaneousWithExternalGesture` allows gestures across different components to be recognized simultaneously. For example, you may want to have two nested views, both with tap gesture attached. Both of them require one tap, but tapping the inner one should also activate the gesture attached to the outer view:
 
 ```jsx
 import React from 'react';
