@@ -202,11 +202,11 @@ function App() {
 
 # Cross-component interactions
 
-You may have noticed that gesture composition described above requires you to mount all of the composed gestures under a single `GestureDetector`, effectively attaching them to the same underlying component. If you wish to customize how gestures interact with each other across multiple components, there are different mechanisms for that.
+You may have noticed that gesture composition described above requires you to mount all of the composed gestures under a single `GestureDetector`, effectively attaching them to the same underlying component. You can customize how gestures interact with each other across multiple components in a couple of ways:
 
 ## requireExternalGestureToFail
 
-`requireExternalGestureToFail` allows for delaying activation of the handler until all handlers passed as arguments to this method fail (or don't begin at all).
+`requireExternalGestureToFail` allows to delay activation of the handler until all handlers passed as arguments to this method fail (or don't begin at all).
 
 For example, you may want to have two nested components, both of them can be tapped by the user to trigger different actions: outer view requires one tap, but the inner one requires 2 taps. If you don't want the first tap on the inner view to activate the outer handler, you must make the outer gesture wait until the inner one fails:
 
