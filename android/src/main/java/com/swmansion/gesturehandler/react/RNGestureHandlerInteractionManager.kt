@@ -42,13 +42,12 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   }
 
   override fun shouldWaitForHandlerFailure(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) =
-    (waitForRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false) ||
-      (blocksRecognizerRelations[otherHandler.tag]?.any { tag -> tag == handler.tag } ?: false)
+    waitForRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   override fun shouldRequireHandlerToWaitForFailure(
     handler: GestureHandler<*>,
     otherHandler: GestureHandler<*>,
-  ) = false
+  ) = blocksRecognizerRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>): Boolean {
     if (otherHandler is NativeViewGestureHandler) {
