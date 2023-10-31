@@ -606,9 +606,9 @@ class GestureHandlerOrchestrator(
   }
 
   companion object {
-    // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
+    // The limit doesn't necessarily need to exist, it was just simpler to implement it that way
     // it is also more allocation-wise efficient to have a fixed limit
-    private const val SIMULTANEOUS_GESTURE_HANDLER_LIMIT = 20
+    private const val SIMULTANEOUS_GESTURE_HANDLER_LIMIT = 50
 
     // Be default fully transparent views can receive touch
     private const val DEFAULT_MIN_ALPHA_FOR_TRAVERSAL = 0f
