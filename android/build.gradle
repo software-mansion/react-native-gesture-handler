@@ -7,9 +7,6 @@ buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
 
     repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
         mavenCentral()
         google()
     }
@@ -68,14 +65,6 @@ if (project == rootProject) {
     apply from: "spotless.gradle"
 }
 
-def shouldAssertNoMultipleInstances() {
-  if (rootProject.hasProperty("disableMultipleInstancesCheck")) {
-    return rootProject.property("disableMultipleInstancesCheck") != "true"
-  } else {
-    return true
-  }
-}
-
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
 def shouldUseCommonInterfaceFromReanimated() {
     def reanimated = rootProject.subprojects.find { it.name == 'react-native-reanimated' }
@@ -103,65 +92,6 @@ file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { react
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
-
-abstract class NoMultipleInstancesAssertionTask extends DefaultTask {
-    @Inject abstract ObjectFactory getObjectFactory()
-
-    @Input abstract Property<File> getProjectDirFile()
-    @Input abstract Property<File> getRootDirFile()
-    @Input abstract Property<Boolean> getShouldCheck()
-
-    def findGestureHandlerInstancesForPath(String path) {
-        return objectFactory.fileTree().from(path)
-                .include("**/react-native-gesture-handler/package.json")
-                .exclude("**/.yarn/**")
-                .exclude({ Files.isSymbolicLink(it.getFile().toPath()) })
-                .findAll()
-    }
-
-    @TaskAction
-    def check() {
-        if (shouldCheck.get()) {
-            // Assert there are no multiple installations of Gesture Handler
-            Set<File> files
-
-            if (projectDirFile.get().parent.contains(rootDirFile.get().parent)) {
-                // standard app
-                files = findGestureHandlerInstancesForPath(rootDirFile.get().parent + "/node_modules")
-            } else {
-                // monorepo
-                files = findGestureHandlerInstancesForPath(rootDirFile.get().parent + "/node_modules")
-                files.addAll(
-                    findGestureHandlerInstancesForPath(projectDirFile.get().parentFile.parent)
-                )
-            }
-
-            if (files.size() > 1) {
-                String parsedLocation = files.stream().map({
-                    File file -> "- " + file.toString().replace("/package.json", "")
-                }).collect().join("\n")
-                String exceptionMessage = "\n[react-native-gesture-handler] Multiple versions of Gesture Handler " +
-                        "were detected. Only one instance of react-native-gesture-handler can be installed in a " +
-                        "project. You need to resolve the conflict manually. Check out the documentation: " +
-                        "https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting" +
-                        "#multiple-instances-of-gesture-handler-were-detected \n\nConflict between: \n" +
-                        parsedLocation + "\n"
-                throw new GradleException(exceptionMessage)
-            }
-        }
-    }
-}
-
-tasks.register('assertNoMultipleInstances', NoMultipleInstancesAssertionTask) {
-    shouldCheck = shouldAssertNoMultipleInstances()
-    rootDirFile = rootDir
-    projectDirFile = projectDir
-}
-
- tasks.preBuild {
-     dependsOn assertNoMultipleInstances
- }
-
 repositories {
     mavenCentral()
 }
@@ -171,6 +101,12 @@ android {
     def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
     if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
         namespace "com.swmansion.gesturehandler"
+    }
+
+    if (agpVersion.tokenize('.')[0].toInteger() >= 8) {
+        buildFeatures {
+            buildConfig = true
+        }
     }
 
     // Used to override the NDK path/version on internal CI or by allowing

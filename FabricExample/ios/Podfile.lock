@@ -1057,14 +1057,22 @@ PODS:
     - React-jsi (= 0.72.0-rc.5)
     - React-logger (= 0.72.0-rc.5)
     - React-perflogger (= 0.72.0-rc.5)
-  - RNGestureHandler (2.12.0):
-    - RCT-Folly
+  - RNGestureHandler (2.13.4):
+    - hermes-engine
+    - RCT-Folly (= 2021.07.22.00)
     - RCTRequired
     - RCTTypeSafety
-    - React
     - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-graphics
+    - React-NativeModulesApple
     - React-RCTFabric
+    - React-utils
+    - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
+    - Yoga
   - SocketRocket (0.6.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
@@ -1300,11 +1308,11 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 7c3287c689ba5bbff52ef95400fb8d6964cc8eae
   React-utils: cbbe99dc2e49db0a3fbb425c304f511a422f0ca2
   ReactCommon: 01b6643cfeef0d9078c8125378066d20cc34ddfe
-  RNGestureHandler: d8224aad6d7081834ae6e6cf925397059485b69e
+  RNGestureHandler: 3309ff2f0bd22d3a13f2c5c6c76ac261562a34d3
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 258bd5f6f188432f18cc3f854497f1cf6a0f21c1
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: 91003e48a586df93324958b314f617825e98fcd1
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1

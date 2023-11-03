@@ -1,4 +1,4 @@
-import { State } from '../../../src/State';
+import { State } from '../../State';
 import { AdaptedEvent, Config } from '../interfaces';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import GestureHandler from './GestureHandler';

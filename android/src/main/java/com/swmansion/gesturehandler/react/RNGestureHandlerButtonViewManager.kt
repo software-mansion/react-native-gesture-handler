@@ -174,6 +174,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     override fun onTouchEvent(event: MotionEvent): Boolean {
       if (event.action == MotionEvent.ACTION_CANCEL) {
         tryFreeingResponder()
+        return super.onTouchEvent(event)
       }
 
       val eventTime = event.eventTime
@@ -185,6 +186,17 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         return super.onTouchEvent(event)
       }
       return false
+    }
+
+    private fun updateBackgroundColor(backgroundColor: Int, borderRadius: Float, selectable: Drawable?) {
+      val colorDrawable = PaintDrawable(backgroundColor)
+
+      if (borderRadius != 0f) {
+        colorDrawable.setCornerRadius(borderRadius)
+      }
+
+      val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable) else arrayOf(colorDrawable))
+      background = layerDrawable
     }
 
     fun updateBackground() {
@@ -222,19 +234,12 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       if (useDrawableOnForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         foreground = selectable
         if (_backgroundColor != Color.TRANSPARENT) {
-          setBackgroundColor(_backgroundColor)
+          updateBackgroundColor(_backgroundColor, borderRadius, null)
         }
       } else if (_backgroundColor == Color.TRANSPARENT && rippleColor == null) {
         background = selectable
       } else {
-        val colorDrawable = PaintDrawable(_backgroundColor)
-
-        if (borderRadius != 0f) {
-          colorDrawable.setCornerRadius(borderRadius)
-        }
-
-        val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable) else arrayOf(colorDrawable))
-        background = layerDrawable
+        updateBackgroundColor(_backgroundColor, borderRadius, selectable)
       }
     }
 
