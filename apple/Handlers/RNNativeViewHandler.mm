@@ -8,7 +8,9 @@
 
 #import "RNNativeViewHandler.h"
 
+#if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
+#endif
 
 #import <React/RCTConvert.h>
 #import <React/UIView+React.h>
@@ -18,6 +20,9 @@
 #else
 #import <React/RCTScrollView.h>
 #endif // RCT_NEW_ARCH_ENABLED
+
+
+#if !TARGET_OS_OSX
 
 #pragma mark RNDummyGestureRecognizer
 
@@ -192,3 +197,30 @@
 
 @end
 
+#else
+
+#pragma mark RNDummyGestureRecognizer
+
+@implementation RNDummyGestureRecognizer
+
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
+{
+  self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)];
+  return self;
+}
+
+@end
+
+#pragma mark RNNativeViewgestureHandler
+
+@implementation RNNativeViewGestureHandler
+
+- (instancetype)initWithTag:(NSNumber *)tag
+{
+  self = [super initWithTag:tag];
+  return self;
+}
+
+@end
+
+#endif
