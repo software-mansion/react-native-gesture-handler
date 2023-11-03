@@ -1,11 +1,3 @@
-import pack from 'react-native/package.json';
-
-const [majorStr, minorStr] = pack.version.split('.');
-export const REACT_NATIVE_VERSION = {
-  major: parseInt(majorStr, 10),
-  minor: parseInt(minorStr, 10),
-};
-
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];

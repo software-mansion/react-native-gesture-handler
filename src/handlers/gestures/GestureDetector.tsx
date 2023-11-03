@@ -40,9 +40,9 @@ import { ActionType } from '../../ActionType';
 import {
   isFabric,
   isJestEnv,
-  REACT_NATIVE_VERSION,
   tagMessage,
 } from '../../utils';
+import { getReactNativeVersion } from 'src/getReactNativeVersion';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
@@ -565,6 +565,7 @@ function validateDetectorChildren(ref: any) {
   //         /       \
   //   NativeView  NativeView
   if (__DEV__ && Platform.OS !== 'web') {
+    const REACT_NATIVE_VERSION = getReactNativeVersion();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const wrapType =
       REACT_NATIVE_VERSION.minor > 63 || REACT_NATIVE_VERSION.major > 0
