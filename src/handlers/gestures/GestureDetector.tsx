@@ -37,12 +37,8 @@ import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
-import {
-  isFabric,
-  isJestEnv,
-  tagMessage,
-} from '../../utils';
-import { getReactNativeVersion } from 'src/getReactNativeVersion';
+import { isFabric, isJestEnv, tagMessage } from '../../utils';
+import { getReactNativeVersion } from '../../getReactNativeVersion';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
