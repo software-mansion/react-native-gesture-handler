@@ -26,7 +26,7 @@ Each state has its own description below.
 We can monitor a handler's state changes by using the [`onHandlerStateChange`](/docs/gesture-handlers/common-gh#onhandlerstatechange) callback and the destructured `nativeEvent` argument passed to it.
 This can be done by comparing the `nativeEvent`'s [`state`](/docs/gesture-handlers/common-gh#state) attribute to one of the constants exported under the `State` object (see example below).
 
-```
+```jsx
 import { State, LongPressGestureHandler } from 'react-native-gesture-handler';
 
 class Demo extends Component {

@@ -85,13 +85,13 @@ Duration of the long press (time since the start of the gesture), expressed in m
 ## Example
 
 ```jsx
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 export default function App() {
   const longPressGesture = Gesture.LongPress().onEnd((e, success) => {
     if (success) {
-      Alert.alert(`Long pressed for ${e.duration} ms!`);
+      console.log(`Long pressed for ${e.duration} ms!`);
     }
   });
 
