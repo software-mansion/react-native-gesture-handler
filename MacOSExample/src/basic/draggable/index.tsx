@@ -2,7 +2,6 @@ import React, {FC} from 'react';
 import {ScrollView, StyleProp, StyleSheet, ViewStyle} from 'react-native';
 
 import Animated, {
-  useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
 
