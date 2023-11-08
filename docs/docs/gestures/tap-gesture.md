@@ -106,21 +106,21 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 ## Example
 
 ```jsx
-import { View, Alert, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 export default function App() {
   const singleTap = Gesture.Tap()
     .maxDuration(250)
     .onStart(() => {
-      Alert.alert('Single tap!');
+      console.log('Single tap!');
     });
 
   const doubleTap = Gesture.Tap()
     .maxDuration(250)
     .numberOfTaps(2)
     .onStart(() => {
-      Alert.alert('Double tap!');
+      console.log('Double tap!');
     });
 
   return (
