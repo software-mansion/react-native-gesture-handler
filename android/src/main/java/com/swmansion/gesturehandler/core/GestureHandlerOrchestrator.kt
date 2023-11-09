@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import java.util.*
+import kotlin.collections.ArrayList
 
 class GestureHandlerOrchestrator(
   private val wrapperView: ViewGroup,
@@ -19,13 +20,10 @@ class GestureHandlerOrchestrator(
    * traversing view hierarchy and looking for gesture handlers.
    */
   var minimumAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
-
-  private val gestureHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
-  private val awaitingHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
-  private val preparedHandlers = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
-  private val handlersToCancel = arrayOfNulls<GestureHandler<*>?>(SIMULTANEOUS_GESTURE_HANDLER_LIMIT)
-  private var gestureHandlersCount = 0
-  private var awaitingHandlersCount = 0
+  private val gestureHandlers = arrayListOf<GestureHandler<*>?>()
+  private val awaitingHandlers = arrayListOf<GestureHandler<*>?>()
+  private val preparedHandlers = arrayListOf<GestureHandler<*>?>()
+  private val handlersToCancel = arrayListOf<GestureHandler<*>?>()
   private var isHandlingTouch = false
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
@@ -60,9 +58,9 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private inline fun compactHandlersIf(handlers: Array<GestureHandler<*>?>, count: Int, predicate: (handler: GestureHandler<*>?) -> Boolean): Int {
+  private inline fun compactHandlersIf(handlers: ArrayList<GestureHandler<*>?>, predicate: (handler: GestureHandler<*>?) -> Boolean): Int {
     var out = 0
-    for (i in 0 until count) {
+    for (i in 0 until handlers.size) {
       if (predicate(handlers[i])) {
         handlers[out++] = handlers[i]
       }
@@ -72,7 +70,7 @@ class GestureHandlerOrchestrator(
 
   private fun cleanupFinishedHandlers() {
     var shouldCleanEmptyCells = false
-    for (i in gestureHandlersCount - 1 downTo 0) {
+    for (i in gestureHandlers.size - 1 downTo 0) {
       val handler = gestureHandlers[i]!!
       if (isFinished(handler.state) && !handler.isAwaiting) {
         gestureHandlers[i] = null
@@ -85,18 +83,17 @@ class GestureHandlerOrchestrator(
         }
       }
     }
+
     if (shouldCleanEmptyCells) {
-      gestureHandlersCount = compactHandlersIf(gestureHandlers, gestureHandlersCount) { handler ->
-        handler != null
-      }
+      gestureHandlers.removeAll(listOf(null))
     }
+
     finishedHandlersCleanupScheduled = false
   }
 
   private fun hasOtherHandlerToWaitFor(handler: GestureHandler<*>): Boolean {
-    for (i in 0 until gestureHandlersCount) {
-      val otherHandler = gestureHandlers[i]!!
-      if (!isFinished(otherHandler.state) && shouldHandlerWaitForOther(handler, otherHandler)) {
+    for (otherHandler in gestureHandlers) {
+      if (!isFinished(otherHandler!!.state) && shouldHandlerWaitForOther(handler, otherHandler)) {
         return true
       }
     }
@@ -115,9 +112,11 @@ class GestureHandlerOrchestrator(
   }
 
   private fun cleanupAwaitingHandlers() {
-    awaitingHandlersCount = compactHandlersIf(awaitingHandlers, awaitingHandlersCount) { handler ->
+    val awaitingHandlersCount = compactHandlersIf(awaitingHandlers) { handler ->
       handler!!.isAwaiting
     }
+
+    awaitingHandlers.subList(awaitingHandlersCount, awaitingHandlers.size).clear()
   }
 
   /*package*/
@@ -125,8 +124,7 @@ class GestureHandlerOrchestrator(
     handlingChangeSemaphore += 1
     if (isFinished(newState)) {
       // if there were handlers awaiting completion of this handler, we can trigger active state
-      for (i in 0 until awaitingHandlersCount) {
-        val otherHandler = awaitingHandlers[i]
+      for (otherHandler in awaitingHandlers) {
         if (shouldHandlerWaitForOther(otherHandler!!, handler)) {
           if (newState == GestureHandler.STATE_END) {
             // gesture has ended, we need to kill the awaiting handler
@@ -182,20 +180,21 @@ class GestureHandlerOrchestrator(
       shouldResetProgress = true
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++
     }
-    var toCancelCount = 0
+
     // Cancel all handlers that are required to be cancel upon current handler's activation
-    for (i in 0 until gestureHandlersCount) {
-      val otherHandler = gestureHandlers[i]!!
-      if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        handlersToCancel[toCancelCount++] = otherHandler
+    for (otherHandler in gestureHandlers) {
+      if (shouldHandlerBeCancelledBy(otherHandler!!, handler)) {
+        handlersToCancel.add(otherHandler)
       }
     }
-    for (i in toCancelCount - 1 downTo 0) {
+    for (i in handlersToCancel.size - 1 downTo 0) {
       handlersToCancel[i]!!.cancel()
     }
 
+    handlersToCancel.clear()
+
     // Clear all awaiting handlers waiting for the current handler to fail
-    for (i in awaitingHandlersCount - 1 downTo 0) {
+    for (i in awaitingHandlers.size - 1 downTo 0) {
       val otherHandler = awaitingHandlers[i]!!
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
         otherHandler.cancel()
@@ -218,31 +217,30 @@ class GestureHandlerOrchestrator(
   private fun deliverEventToGestureHandlers(event: MotionEvent) {
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
-    val handlersCount = gestureHandlersCount
+    preparedHandlers.clear()
+    preparedHandlers.addAll(gestureHandlers)
 
-    gestureHandlers.copyInto(preparedHandlers, 0, 0, handlersCount)
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
     // order in which handlers has been added ("most direct" children goes first). Therefore we rely
     // on Arrays.sort providing a stable sort (as children are registered in order in which they
     // should be tested)
-    preparedHandlers.sortWith(handlersComparator, 0, handlersCount)
-    for (i in 0 until handlersCount) {
-      deliverEventToGestureHandler(preparedHandlers[i]!!, event)
+    preparedHandlers.sortWith(handlersComparator)
+    for (handler in preparedHandlers) {
+      deliverEventToGestureHandler(handler!!, event)
     }
   }
 
   private fun cancelAll() {
-    for (i in awaitingHandlersCount - 1 downTo 0) {
+    for (i in awaitingHandlers.size - 1 downTo 0) {
       awaitingHandlers[i]!!.cancel()
     }
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
-    val handlersCount = gestureHandlersCount
-    for (i in 0 until handlersCount) {
-      preparedHandlers[i] = gestureHandlers[i]
-    }
-    for (i in handlersCount - 1 downTo 0) {
+    preparedHandlers.clear()
+    preparedHandlers.addAll(gestureHandlers)
+
+    for (i in gestureHandlers.size - 1 downTo 0) {
       preparedHandlers[i]!!.cancel()
     }
   }
@@ -399,13 +397,13 @@ class GestureHandlerOrchestrator(
   }
 
   private fun addAwaitingHandler(handler: GestureHandler<*>) {
-    for (i in 0 until awaitingHandlersCount) {
+    for (i in 0 until awaitingHandlers.size) {
       if (awaitingHandlers[i] === handler) {
         return
       }
     }
-    check(awaitingHandlersCount < awaitingHandlers.size) { "Too many recognizers" }
-    awaitingHandlers[awaitingHandlersCount++] = handler
+
+    awaitingHandlers.add(handler)
     with(handler) {
       isAwaiting = true
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++
@@ -413,13 +411,13 @@ class GestureHandlerOrchestrator(
   }
 
   private fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
-    for (i in 0 until gestureHandlersCount) {
+    for (i in 0 until gestureHandlers.size) {
       if (gestureHandlers[i] === handler) {
         return
       }
     }
-    check(gestureHandlersCount < gestureHandlers.size) { "Too many recognizers" }
-    gestureHandlers[gestureHandlersCount++] = handler
+
+    gestureHandlers.add(handler)
     handler.isActive = false
     handler.isAwaiting = false
     handler.activationIndex = Int.MAX_VALUE
@@ -608,7 +606,6 @@ class GestureHandlerOrchestrator(
   companion object {
     // The limit doesn't necessarily need to exists, it was just simpler to implement it that way
     // it is also more allocation-wise efficient to have a fixed limit
-    private const val SIMULTANEOUS_GESTURE_HANDLER_LIMIT = 20
 
     // Be default fully transparent views can receive touch
     private const val DEFAULT_MIN_ALPHA_FOR_TRAVERSAL = 0f
