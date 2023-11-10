@@ -74,7 +74,7 @@
 {
   CGPoint absolutePos = [touch locationInWindow];
   CGPoint relativePos = [touch.window.contentView convertPoint:absolutePos fromView:_gestureHandler.recognizer.view];
-    
+
   return @{
     @"id" : @(index),
     @"x" : @(relativePos.x),
@@ -88,7 +88,7 @@
 {
   CGPoint relativePos = [touch locationInView:_gestureHandler.recognizer.view];
   CGPoint absolutePos = [touch locationInView:_gestureHandler.recognizer.view.window];
-    
+
   return @{
     @"id" : @(index),
     @"x" : @(relativePos.x),

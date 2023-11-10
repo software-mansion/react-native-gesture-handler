@@ -479,22 +479,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return YES;
 }
 
-#if TARGET_OS_OSX
-- (BOOL)gestureRecognizer:(NSGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(NSEvent *)event
-{
-  // If hitSlop is set we use it to determine if a given gesture recognizer should start processing
-  // touch stream. This only works for negative values of hitSlop as this method won't be triggered
-  // unless touch startes in the bounds of the attached view. To acheve similar effect with positive
-  // values of hitSlop one should set hitSlop for the underlying view. This limitation is due to the
-  // fact that hitTest method is only available at the level of UIView
-  if (RNGH_HIT_SLOP_IS_SET(_hitSlop)) {
-    CGPoint location = [gestureRecognizer.view convertPoint:event.locationInWindow fromView:nil];
-    CGRect hitFrame = RNGHHitSlopInsetRect(gestureRecognizer.view.bounds, _hitSlop);
-    return CGRectContainsPoint(hitFrame, location);
-  }
-  return YES;
-}
-#else
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(RNGHUITouch *)touch
 {
   // If hitSlop is set we use it to determine if a given gesture recognizer should start processing
@@ -503,12 +487,15 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // values of hitSlop one should set hitSlop for the underlying view. This limitation is due to the
   // fact that hitTest method is only available at the level of UIView
   if (RNGH_HIT_SLOP_IS_SET(_hitSlop)) {
+#if TARGET_OS_OSX
+    CGPoint location = [gestureRecognizer.view convertPoint:touch.locationInWindow fromView:nil];
+#else
     CGPoint location = [touch locationInView:gestureRecognizer.view];
+#endif
     CGRect hitFrame = RNGHHitSlopInsetRect(gestureRecognizer.view.bounds, _hitSlop);
     return CGRectContainsPoint(hitFrame, location);
   }
   return YES;
 }
-#endif
 
 @end

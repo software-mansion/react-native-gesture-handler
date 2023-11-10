@@ -67,7 +67,6 @@
   return self;
 }
 
-
 - (void)triggerAction
 {
   [_gestureHandler handleGesture:self];
@@ -87,7 +86,7 @@
   [_gestureHandler handleGesture:self inState:RNGestureHandlerStateActive];
 }
 
-- (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
@@ -113,7 +112,7 @@
   }
 }
 
-- (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
    [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 
@@ -147,12 +146,12 @@
 #endif
 }
 
-- (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
-- (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
 }

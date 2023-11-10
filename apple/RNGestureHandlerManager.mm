@@ -215,7 +215,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   while (touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]]) {
     touchHandlerView = touchHandlerView.superview;
   }
-#endif
+#endif // !TARGET_OS_OSX
 
 #else
   RNGHUIView *touchHandlerView = nil;
@@ -238,7 +238,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   }
     
   touchHandlerView = [[parent performSelector:@selector(touchHandler)] view];
-#endif
+#endif // !TARGET_OS_OSX
     
     
 #endif // RCT_NEW_ARCH_ENABLED

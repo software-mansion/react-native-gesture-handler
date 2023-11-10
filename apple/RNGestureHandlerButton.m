@@ -48,7 +48,6 @@
   return self;
 }
 
-#if !TARGET_OS_OSX
 - (BOOL)shouldHandleTouch:(RNGHUIView *)view
 {
   if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
@@ -56,9 +55,15 @@
     return button.userEnabled;
   }
 
+#if !TARGET_OS_OSX
   return [view isKindOfClass:[UIControl class]] || [view.gestureRecognizers count] > 0;
+#else
+  return [view isKindOfClass:[NSControl class]] || [view.gestureRecognizers count] > 0;
+#endif
 }
 
+
+#if !TARGET_OS_OSX
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
   if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
@@ -77,16 +82,6 @@
   return inner;
 }
 #else
-- (BOOL)shouldHandleTouch:(RNGHUIView *)view
-{
-  if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
-    RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
-    return button.userEnabled;
-  }
-
-  return [view isKindOfClass:[NSControl class]] || [view.gestureRecognizers count] > 0;
-}
-
 - (BOOL)pointInside:(NSPoint)point withEvent:(UIEvent *)event
 {
   if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
