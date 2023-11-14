@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import java.util.*
-import kotlin.collections.ArrayList
 
 class GestureHandlerOrchestrator(
   private val wrapperView: ViewGroup,
@@ -58,16 +57,6 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private inline fun compactHandlersIf(handlers: ArrayList<GestureHandler<*>>, predicate: (handler: GestureHandler<*>?) -> Boolean): Int {
-    var out = 0
-    for (i in 0 until handlers.size) {
-      if (predicate(handlers[i])) {
-        handlers[out++] = handlers[i]
-      }
-    }
-    return out
-  }
-
   private fun cleanupFinishedHandlers() {
     for (handler in gestureHandlers.reversed()) {
       if (isFinished(handler.state) && !handler.isAwaiting) {
@@ -105,11 +94,7 @@ class GestureHandlerOrchestrator(
   }
 
   private fun cleanupAwaitingHandlers() {
-    val awaitingHandlersCount = compactHandlersIf(awaitingHandlers) { handler ->
-      handler!!.isAwaiting
-    }
-
-    awaitingHandlers.subList(awaitingHandlersCount, awaitingHandlers.size).clear()
+    awaitingHandlers.removeAll { !it.isAwaiting }
   }
 
   /*package*/
