@@ -58,9 +58,8 @@ class GestureHandlerOrchestrator(
   }
 
   private fun cleanupFinishedHandlers() {
-    for (handler in gestureHandlers.reversed()) {
+    for (handler in gestureHandlers.asReversed()) {
       if (isFinished(handler.state) && !handler.isAwaiting) {
-        gestureHandlers.remove(handler)
         handler.reset()
         handler.apply {
           isActive = false
@@ -69,6 +68,8 @@ class GestureHandlerOrchestrator(
         }
       }
     }
+
+    gestureHandlers.removeAll { isFinished(it.state) && !it.isAwaiting }
 
     finishedHandlersCleanupScheduled = false
   }
