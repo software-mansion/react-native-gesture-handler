@@ -32,7 +32,7 @@
 {
     [super mouseUp:event];
 
-    _activePointers += 1;
+    _activePointers -= 1;
 }
 
 
@@ -46,7 +46,7 @@
 {
     [super mouseDown:event];
     
-    _activePointers -= 1;
+    _activePointers += 1;
 
     if (_activePointers == 0) {
       self.state = UIGestureRecognizerStateBegan;
