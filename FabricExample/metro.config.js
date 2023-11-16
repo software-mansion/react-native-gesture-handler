@@ -5,8 +5,8 @@
  * @format
  */
 
-const {getDefaultConfig} = require('@react-native/metro-config');
-const {mergeConfig} = require('metro-config');
+const { getDefaultConfig } = require('@react-native/metro-config');
+const { mergeConfig } = require('metro-config');
 
 const path = require('path');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
@@ -16,7 +16,6 @@ const pack = require('../package.json');
 const root = path.resolve(__dirname, '..');
 
 const modules = Object.keys(pack.peerDependencies);
-
 
 const config = {
   projectRoot: __dirname,
