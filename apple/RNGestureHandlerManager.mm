@@ -236,11 +236,10 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) {
     parent = parent.superview;
   }
-    
+
   touchHandlerView = [[parent performSelector:@selector(touchHandler)] view];
 #endif // !TARGET_OS_OSX
-    
-    
+
 #endif // RCT_NEW_ARCH_ENABLED
 
   if (touchHandlerView == nil) {
@@ -281,14 +280,14 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   // Once the upstream fix lands the line below along with this comment can be removed
 #if TARGET_OS_OSX
   if ([gestureRecognizer.view isKindOfClass:[NSScrollView class]]) {
-      return;
+    return;
   }
 #else
   if ([gestureRecognizer.view isKindOfClass:[UIScrollView class]]) {
-      return;
+    return;
   }
 #endif
-    
+
   UIGestureRecognizer *touchHandler = nil;
 
   // this way we can extract the touch handler on both architectures relatively easily

@@ -153,7 +153,7 @@
 }
 @end
 
-#else 
+#else
 
 @implementation RNFlingGestureHandler
 

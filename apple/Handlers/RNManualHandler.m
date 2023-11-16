@@ -89,7 +89,7 @@
 
 @end
 
-#else 
+#else
 
 @implementation RNManualGestureHandler
 

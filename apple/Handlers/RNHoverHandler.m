@@ -154,7 +154,7 @@ API_AVAILABLE(ios(13.4))
 
 @end
 
-#else 
+#else
 
 @implementation RNHoverGestureHandler
 

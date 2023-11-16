@@ -30,27 +30,25 @@
 #if TARGET_OS_OSX
 - (void)mouseUp:(NSEvent *)event
 {
-    [super mouseUp:event];
+  [super mouseUp:event];
 
-    _activePointers -= 1;
+  _activePointers -= 1;
 }
-
 
 - (void)mouseDragged:(NSEvent *)event
 {
-    [super mouseDragged:event];
-    
+  [super mouseDragged:event];
 }
 
 - (void)mouseDown:(NSEvent *)event
 {
-    [super mouseDown:event];
-    
-    _activePointers += 1;
+  [super mouseDown:event];
 
-    if (_activePointers == 0) {
-      self.state = UIGestureRecognizerStateBegan;
-    }
+  _activePointers += 1;
+
+  if (_activePointers == 0) {
+    self.state = UIGestureRecognizerStateBegan;
+  }
 }
 
 #else

@@ -184,7 +184,7 @@
 }
 @end
 
-#else 
+#else
 
 @implementation RNLongPressGestureHandler
 

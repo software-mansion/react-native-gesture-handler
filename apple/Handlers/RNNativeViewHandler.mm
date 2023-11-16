@@ -21,7 +21,6 @@
 #import <React/RCTScrollView.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
-
 #if !TARGET_OS_OSX
 
 #pragma mark RNDummyGestureRecognizer

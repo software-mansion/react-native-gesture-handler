@@ -71,7 +71,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   self.enabled = NO;
 }
 
-- (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
@@ -80,11 +80,11 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
     // is called (it resets the gesture handler), making it send whatever the last known state as oldState
     // in the event. If we reset it here it correctly sends UNDETERMINED as oldState.
     [_gestureHandler reset];
-    #if TARGET_OS_OSX
-      _initPosition = [self locationInView:self.view.window.contentView];
-    #else
-      _initPosition = [self locationInView:self.view.window];
-    #endif
+#if TARGET_OS_OSX
+    _initPosition = [self locationInView:self.view.window.contentView];
+#else
+    _initPosition = [self locationInView:self.view.window];
+#endif
   }
   _tapsSoFar++;
   if (_tapsSoFar) {
@@ -101,7 +101,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   [self triggerAction];
 }
 
-- (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 
@@ -125,7 +125,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   [self triggerAction];
 }
 
-- (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
 
@@ -137,7 +137,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   }
 }
 
-- (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
   self.state = UIGestureRecognizerStateCancelled;
@@ -148,13 +148,13 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 - (void)mouseDown:(NSEvent *)event
 {
   [super mouseDown:event];
-  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)rightMouseDown:(NSEvent *)event
 {
   [super rightMouseDown:event];
-  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)mouseDragged:(NSEvent *)event

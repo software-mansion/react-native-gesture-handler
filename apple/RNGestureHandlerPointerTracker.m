@@ -68,7 +68,6 @@
   return count;
 }
 
-
 #if TARGET_OS_OSX
 - (NSDictionary *)extractPointerData:(int)index forTouch:(NSEvent *)touch
 {

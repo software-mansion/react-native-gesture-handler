@@ -312,11 +312,12 @@ RCT_EXPORT_METHOD(flushOperations)
   NSArray<GestureHandlerOperation> *operations = _operations;
   _operations = [NSMutableArray new];
 
-  [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, RNGHUIView *> *viewRegistry) {
-    for (GestureHandlerOperation operation in operations) {
-      operation(self->_manager);
-    }
-  }];
+  [uiManager
+      addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, RNGHUIView *> *viewRegistry) {
+        for (GestureHandlerOperation operation in operations) {
+          operation(self->_manager);
+        }
+      }];
 }
 
 #endif // RCT_NEW_ARCH_ENABLED

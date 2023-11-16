@@ -39,22 +39,22 @@
   [_gestureHandler handleGesture:recognizer];
 }
 
-- (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
-- (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 }
 
-- (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
 }
 
-- (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent*)event
+- (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
 }
@@ -63,7 +63,7 @@
 - (void)touchesBeganWithEvent:(NSEvent *)event
 {
   [super touchesBeganWithEvent:event];
-  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)touchesMovedWithEvent:(NSEvent *)event
@@ -132,7 +132,7 @@
 
 #if !TARGET_OS_TV
 
-# if TARGET_OS_OSX
+#if TARGET_OS_OSX
 - (RNGestureHandlerEventExtraData *)eventExtraData:(NSRotationGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forRotation:recognizer.rotation

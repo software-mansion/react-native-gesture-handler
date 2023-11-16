@@ -1,9 +1,9 @@
+#import "RNGHUIKit.h"
 #import "RNGestureHandlerActionType.h"
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerEvents.h"
 #import "RNGestureHandlerPointerTracker.h"
 #import "RNGestureHandlerState.h"
-#import "RNGHUIKit.h"
 
 #import <Foundation/Foundation.h>
 #import <React/RCTConvert.h>

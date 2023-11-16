@@ -1,6 +1,6 @@
 #if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
-# else
+#else
 #import <Appkit/NSGestureRecognizer.h>
 #endif
 
@@ -8,7 +8,7 @@
 
 #if !TARGET_OS_OSX
 @interface RNManualActivationRecognizer : UIGestureRecognizer <UIGestureRecognizerDelegate>
-# else
+#else
 @interface RNManualActivationRecognizer : NSGestureRecognizer <NSGestureRecognizerDelegate>
 #endif
 

@@ -88,22 +88,22 @@
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
-    if (touches.count == 0) {
-      [_gestureHandler reset];
-    }
+  if (touches.count == 0) {
+    [_gestureHandler reset];
+  }
 
-  #if !TARGET_OS_TV && !TARGET_OS_OSX
-    if (_hasCustomActivationCriteria) {
-      // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
-      // the gesture too early before we are sure that all criteria (e.g. minimum distance
-      // etc. are met)
-      super.minimumNumberOfTouches = 20;
-    } else {
-      super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
-    }
-  #endif
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  if (_hasCustomActivationCriteria) {
+    // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
+    // the gesture too early before we are sure that all criteria (e.g. minimum distance
+    // etc. are met)
+    super.minimumNumberOfTouches = 20;
+  } else {
+    super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
+  }
+#endif
 
   [self triggerAction];
 
@@ -114,7 +114,7 @@
 
 - (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 
   if (self.state == UIGestureRecognizerStatePossible && [self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
@@ -128,7 +128,7 @@
       // UIGestureRecognizerStateCancelled even if you set the state to
       // UIGestureRecognizerStateFailed here. Making the behavior explicit.
       self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
-                                                                      : UIGestureRecognizerStateCancelled;
+                                                                    : UIGestureRecognizerStateCancelled;
       [self reset];
       return;
     }
@@ -156,19 +156,18 @@
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
 }
 
-
 #if TARGET_OS_OSX
 
 - (void)mouseDown:(NSEvent *)event
 {
   [super mouseDown:event];
-  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)rightMouseDown:(NSEvent *)event
 {
   [super rightMouseDown:event];
-  [self interactionsBegan:[NSSet setWithObject:event]  withEvent:event];
+  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)mouseDragged:(NSEvent *)event
@@ -405,13 +404,13 @@
 #if TARGET_OS_OSX
 - (RNGestureHandlerEventExtraData *)eventExtraData:(NSPanGestureRecognizer *)recognizer
 {
-    return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:recognizer.view]
-                         withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
-                              withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
-                                 withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
-                          withNumberOfTouches:0];
+  return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:recognizer.view]
+                           withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
+                                withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
+                                   withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
+                            withNumberOfTouches:0];
 }
-# else
+#else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:recognizer.view]

@@ -195,15 +195,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
 #if TARGET_OS_OSX
-  return [RNGestureHandlerEventExtraData
-            forPosition:[recognizer locationInView:recognizer.view]
-            withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
-            withNumberOfTouches:1 ];
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
+                                 withNumberOfTouches:1];
 #else
-  return [RNGestureHandlerEventExtraData
-            forPosition:[recognizer locationInView:recognizer.view]
-            withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-            withNumberOfTouches:recognizer.numberOfTouches ];
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+                                 withNumberOfTouches:recognizer.numberOfTouches];
 #endif
 }
 

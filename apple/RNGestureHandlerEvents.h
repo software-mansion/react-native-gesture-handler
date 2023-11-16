@@ -3,8 +3,8 @@
 #import <Foundation/Foundation.h>
 
 #import "RNGHTouchEventType.h"
-#import "RNGestureHandlerState.h"
 #import "RNGHUIKit.h"
+#import "RNGestureHandlerState.h"
 
 @interface RNGestureHandlerEventExtraData : NSObject
 
