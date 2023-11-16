@@ -1,7 +1,5 @@
-import NativeViewGestureHandler from '../handlers/NativeViewGestureHandler';
 import GestureHandler from '../handlers/GestureHandler';
 import { Config, Handler } from '../interfaces';
-import { State } from '../../State';
 
 export default class InteractionManager {
   private static instance: InteractionManager;
@@ -99,12 +97,9 @@ export default class InteractionManager {
 
   public shouldHandlerBeCancelledBy(
     _handler: GestureHandler,
-    otherHandler: GestureHandler
+    _otherHandler: GestureHandler
   ): boolean {
-    return (
-      otherHandler instanceof NativeViewGestureHandler &&
-      otherHandler.getState() === State.ACTIVE
-    );
+    return false;
   }
 
   public dropRelationsForHandlerWithTag(handlerTag: number): void {
@@ -114,7 +109,6 @@ export default class InteractionManager {
 
   public reset() {
     this.waitForRelations.clear();
-    this.simultaneousRelations.clear();
   }
 
   public static getInstance(): InteractionManager {

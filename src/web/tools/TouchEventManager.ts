@@ -38,7 +38,7 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
           adaptedEvent.eventType = EventTypes.ADDITIONAL_POINTER_DOWN;
           this.onPointerAdd(adaptedEvent);
         } else {
-          this.onPointerDown(adaptedEvent);
+          this.onPointerDown(adaptedEvent, event);
         }
       }
     });
