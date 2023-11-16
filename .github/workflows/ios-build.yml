@@ -35,4 +35,4 @@ jobs:
         run: pod install
       - name: Build app
         working-directory: ${{ matrix.working-directory }}
-        run: yarn ios
+        run: yarn ios --simulator=\"iPhone 11\" --mode Debug
