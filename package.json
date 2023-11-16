@@ -36,7 +36,7 @@
     "android/common/src/main/java/",
     "android/reanimated/src/main/java/",
     "android/noreanimated/src/main/java/",
-    "ios/",
+    "apple/",
     "Swipeable/",
     "jest-utils/",
     "DrawerLayout/",
@@ -116,7 +116,7 @@
   "lint-staged": {
     "./{src,example,FabricExample}/**/*.{ts,tsx}": "yarn format:js",
     "android/**/*.kt": "yarn format:android",
-    "ios/**/*.{h,m,mm,cpp}": "yarn format:ios"
+    "apple/**/*.{h,m,mm,cpp}": "yarn format:ios"
   },
   "release-it": {
     "hooks": {

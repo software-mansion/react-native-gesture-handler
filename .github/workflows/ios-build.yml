@@ -4,7 +4,7 @@ on:
     paths:
       - '.github/workflows/ios-build.yml'
       - 'RNGestureHandler.podspec'
-      - 'ios/**'
+      - 'apple/**'
       - 'Example/ios/**'
       - 'FabricExample/ios/**'
   push:
