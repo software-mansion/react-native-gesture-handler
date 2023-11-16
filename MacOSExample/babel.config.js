@@ -8,11 +8,6 @@ module.exports = {
       {
         extensions: ['.js', '.ts', '.tsx'],
         alias: {
-          'react-native-gesture-handler/DrawerLayout':
-            '../src/components/DrawerLayout',
-          'react-native-gesture-handler/Swipeable':
-            '../src/components/Swipeable',
-          'react-native-gesture-handler': '../src/index',
           react: './node_modules/react',
           'react-native': './node_modules/react-native-macos',
           'react-native-reanimated': './node_modules/react-native-reanimated',
