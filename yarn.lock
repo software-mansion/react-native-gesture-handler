@@ -4090,10 +4090,10 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
-"@types/react@^18.0.24":
-  version "18.0.26"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.26.tgz#8ad59fc01fef8eaf5c74f4ea392621749f0b7917"
-  integrity sha512-hCR3PJQsAIXyxhTNSiDFY//LhnMZWpNNr5etoCqx/iUfGc5gXWtQR2Phl908jVR6uPXacojQWTg4qRpkxTuGug==
+"@types/react@^18.2.6":
+  version "18.2.37"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.37.tgz#0f03af69e463c0f19a356c2660dbca5d19c44cae"
+  integrity sha512-RGAYMi2bhRgEXT3f4B92WTohopH6bIXw05FuGlmJEnv/omEn190+QYEIYxIAuIBdKgboYYdVved2p1AxZVQnaw==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
