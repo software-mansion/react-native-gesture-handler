@@ -22,7 +22,6 @@ class GestureHandlerOrchestrator(
   private val gestureHandlers = arrayListOf<GestureHandler<*>>()
   private val awaitingHandlers = arrayListOf<GestureHandler<*>>()
   private val preparedHandlers = arrayListOf<GestureHandler<*>>()
-  private val handlersToCancel = arrayListOf<GestureHandler<*>>()
   private var isHandlingTouch = false
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
@@ -160,18 +159,11 @@ class GestureHandlerOrchestrator(
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++
     }
 
-    // Cancel all handlers that are required to be cancel upon current handler's activation
-    for (otherHandler in gestureHandlers) {
+    for (otherHandler in gestureHandlers.reversed()) {
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        handlersToCancel.add(otherHandler)
+        otherHandler.cancel()
       }
     }
-
-    for (otherHandler in handlersToCancel.reversed()) {
-      otherHandler.cancel()
-    }
-
-    handlersToCancel.clear()
 
     // Clear all awaiting handlers waiting for the current handler to fail
     for (otherHandler in awaitingHandlers.reversed()) {
