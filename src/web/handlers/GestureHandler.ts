@@ -821,7 +821,7 @@ function invokeNullableMethod(
     return;
   }
 
-  const { argMapping } = method.__nodeConfig;
+  const { argMapping }: { argMapping: unknown } = method.__nodeConfig;
   if (!Array.isArray(argMapping)) {
     return;
   }
