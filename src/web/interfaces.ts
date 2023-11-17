@@ -36,6 +36,7 @@ export interface Config extends Record<string, ConfigArgs> {
   shouldCancelWhenOutside?: boolean;
   userSelect?: UserSelect;
   activeCursor?: ActiveCursor;
+  mouseButton?: MouseButton;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;
@@ -121,7 +122,7 @@ export interface AdaptedEvent {
   pointerId: number;
   eventType: EventTypes;
   pointerType: PointerType;
-  buttons: number | null;
+  button: MouseButton | null;
   time: number;
   allTouches?: TouchList;
   changedTouches?: TouchList;
@@ -129,9 +130,11 @@ export interface AdaptedEvent {
 }
 
 export enum MouseButton {
-  LEFT,
-  MIDDLE,
-  RIGHT,
+  LEFT = 1,
+  MIDDLE = 2,
+  RIGHT = 4,
+  BTN4 = 8,
+  BTN5 = 16,
 }
 
 export enum EventTypes {

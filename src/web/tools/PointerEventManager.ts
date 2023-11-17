@@ -1,9 +1,25 @@
-import { AdaptedEvent, EventTypes, PointerType } from '../interfaces';
+import {
+  AdaptedEvent,
+  EventTypes,
+  MouseButton,
+  PointerType,
+} from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
 export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
+  private readonly mouseButtonsMapper = new Map<number, MouseButton>();
+
+  constructor(view: HTMLElement) {
+    super(view);
+
+    this.mouseButtonsMapper.set(0, MouseButton.LEFT);
+    this.mouseButtonsMapper.set(1, MouseButton.MIDDLE);
+    this.mouseButtonsMapper.set(2, MouseButton.RIGHT);
+    this.mouseButtonsMapper.set(3, MouseButton.BTN4);
+    this.mouseButtonsMapper.set(4, MouseButton.BTN5);
+  }
 
   public setListeners(): void {
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
@@ -181,7 +197,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       pointerId: event.pointerId,
       eventType: eventType,
       pointerType: event.pointerType as PointerType,
-      buttons: event.buttons,
+      button: this.mouseButtonsMapper.get(event.button)!,
       time: event.timeStamp,
     };
   }
