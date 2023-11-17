@@ -31,6 +31,8 @@ export class GestureHandlerWebDelegate
     this.gestureHandler = handler;
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
 
+    this.view.oncontextmenu = () => false;
+
     this.view.style['touchAction'] = 'none';
     //@ts-ignore This one disables default events on Safari
     this.view.style['WebkitTouchCallout'] = 'none';
