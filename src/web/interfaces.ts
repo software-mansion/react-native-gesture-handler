@@ -130,8 +130,8 @@ export interface AdaptedEvent {
 
 export enum MouseButton {
   LEFT,
-  RIGHT,
   MIDDLE,
+  RIGHT,
 }
 
 export enum EventTypes {
