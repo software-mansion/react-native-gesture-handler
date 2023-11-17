@@ -10,6 +10,7 @@ import {
   PointerType,
   TouchEventType,
   EventTypes,
+  MouseButton,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
@@ -734,6 +735,14 @@ export default abstract class GestureHandler {
       return true;
     }
     return false;
+  }
+
+  protected wasPressedButtonCorrect(mouseButton: MouseButton | null) {
+    return (
+      typeof mouseButton !== 'number' ||
+      (!this.config.mouseButton && mouseButton === MouseButton.LEFT) ||
+      (this.config.mouseButton && mouseButton & this.config.mouseButton)
+    );
   }
 
   protected resetConfig(): void {}
