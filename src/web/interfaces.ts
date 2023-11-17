@@ -121,22 +121,17 @@ export interface AdaptedEvent {
   pointerId: number;
   eventType: EventTypes;
   pointerType: PointerType;
-  buttons: number;
+  buttons: number | null;
   time: number;
   allTouches?: TouchList;
   changedTouches?: TouchList;
   touchEventType?: TouchEventType;
 }
 
-export enum MouseButtons {
-  NONE,
+export enum MouseButton {
   LEFT,
   RIGHT,
-  LEFT_RIGHT,
-  SCROLL,
-  SCROLL_LEFT,
-  SCROLL_RIGHT,
-  SCROLL_LEFT_RIGHT,
+  MIDDLE,
 }
 
 export enum EventTypes {

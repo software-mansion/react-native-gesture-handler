@@ -256,6 +256,11 @@ export abstract class BaseGesture<
     return this;
   }
 
+  mouseButton(mouseButton: number) {
+    this.config.mouseButton = mouseButton;
+    return this;
+  }
+
   runOnJS(runOnJS: boolean) {
     this.config.runOnJS = runOnJS;
     return this;

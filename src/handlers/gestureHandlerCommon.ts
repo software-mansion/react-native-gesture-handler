@@ -21,6 +21,7 @@ const commonProps = [
   'cancelsTouchesInView',
   'userSelect',
   'activeCursor',
+  'mouseButton',
 ] as const;
 
 const componentInteractionProps = ['waitFor', 'simultaneousHandlers'] as const;
@@ -145,6 +146,7 @@ export type CommonGestureConfig = {
   hitSlop?: HitSlop;
   userSelect?: UserSelect;
   activeCursor?: ActiveCursor;
+  mouseButton?: number;
 };
 
 // Events payloads are types instead of interfaces due to TS limitation.
