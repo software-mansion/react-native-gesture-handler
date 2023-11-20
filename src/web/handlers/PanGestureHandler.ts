@@ -312,6 +312,7 @@ export default class PanGestureHandler extends GestureHandler {
 
       if (!sourceEvent.cancelable && state === State.ACTIVE) {
         this.fail();
+        return;
       }
     }
 
