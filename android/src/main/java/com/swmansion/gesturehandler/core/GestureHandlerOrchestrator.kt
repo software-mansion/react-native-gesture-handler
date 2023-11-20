@@ -159,7 +159,7 @@ class GestureHandlerOrchestrator(
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++
     }
 
-    for (otherHandler in gestureHandlers.reversed()) {
+    for (otherHandler in gestureHandlers.asReversed()) {
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
         otherHandler.cancel()
       }
