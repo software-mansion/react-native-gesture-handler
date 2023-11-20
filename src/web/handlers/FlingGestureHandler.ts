@@ -5,7 +5,7 @@ import { AdaptedEvent, Config } from '../interfaces';
 import GestureHandler from './GestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 800;
-const DEFAULT_MIN_ACCEPTABLE_DELTA = 160;
+const DEFAULT_MIN_ACCEPTABLE_DELTA = 35;
 const DEFAULT_DIRECTION = Direction.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
 
@@ -51,6 +51,8 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private tryEndFling(): boolean {
+    console.log(this.tracker.getLastAvgX(), this.startX);
+
     if (
       this.maxNumberOfPointersSimultaneously ===
         this.numberOfPointersRequired &&
