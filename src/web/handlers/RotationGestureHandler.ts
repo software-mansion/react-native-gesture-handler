@@ -88,9 +88,18 @@ export default class RotationGestureHandler extends GestureHandler {
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected onPointerMove(
+    event: AdaptedEvent,
+    sourceEvent: PointerEvent | TouchEvent
+  ): void {
     if (this.tracker.getTrackedPointersCount() < 2) {
       return;
+    }
+
+    if (sourceEvent?.cancelable) {
+      sourceEvent.preventDefault();
+    } else if (sourceEvent) {
+      this.fail();
     }
 
     if (this.getAnchorX()) {
@@ -107,9 +116,18 @@ export default class RotationGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+  protected onPointerOutOfBounds(
+    event: AdaptedEvent,
+    sourceEvent: PointerEvent | TouchEvent
+  ): void {
     if (this.tracker.getTrackedPointersCount() < 2) {
       return;
+    }
+
+    if (sourceEvent?.cancelable) {
+      sourceEvent.preventDefault();
+    } else if (sourceEvent) {
+      this.fail();
     }
 
     if (this.getAnchorX()) {

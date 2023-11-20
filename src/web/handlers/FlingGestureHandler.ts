@@ -116,11 +116,20 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected onPointerMove(
+    event: AdaptedEvent,
+    sourceEvent: PointerEvent | TouchEvent
+  ): void {
     this.tracker.track(event);
 
     if (this.currentState !== State.BEGAN) {
       return;
+    }
+
+    if (sourceEvent?.cancelable) {
+      sourceEvent.preventDefault();
+    } else if (sourceEvent) {
+      this.fail();
     }
 
     this.tryEndFling();

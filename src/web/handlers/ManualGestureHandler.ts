@@ -21,12 +21,30 @@ export default class ManualGestureHandler extends GestureHandler {
     super.onPointerAdd(event);
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected onPointerMove(
+    event: AdaptedEvent,
+    sourceEvent: PointerEvent | TouchEvent
+  ): void {
+    if (sourceEvent?.cancelable) {
+      sourceEvent.preventDefault();
+    } else if (sourceEvent) {
+      this.fail();
+    }
+
     this.tracker.track(event);
     super.onPointerMove(event);
   }
 
-  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+  protected onPointerOutOfBounds(
+    event: AdaptedEvent,
+    sourceEvent: PointerEvent | TouchEvent
+  ): void {
+    if (sourceEvent?.cancelable) {
+      sourceEvent.preventDefault();
+    } else if (sourceEvent) {
+      this.fail();
+    }
+
     this.tracker.track(event);
     super.onPointerOutOfBounds(event);
   }
