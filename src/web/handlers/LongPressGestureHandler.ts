@@ -1,4 +1,3 @@
-import { Platform } from 'react-native';
 import { State } from '../../State';
 import { AdaptedEvent, Config } from '../interfaces';
 
@@ -23,10 +22,6 @@ export default class LongPressGestureHandler extends GestureHandler {
 
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
-
-    if (Platform.OS === 'web') {
-      (this.delegate.getView() as HTMLElement).oncontextmenu = () => false;
-    }
   }
 
   protected transformNativeEvent() {
@@ -59,6 +54,10 @@ export default class LongPressGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
+    if (!this.wasPressedButtonCorrect(event.button)) {
+      return;
+    }
+
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
     this.tryBegin(event);
