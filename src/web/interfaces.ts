@@ -122,8 +122,8 @@ export interface AdaptedEvent {
   pointerId: number;
   eventType: EventTypes;
   pointerType: PointerType;
-  button: MouseButton | null;
   time: number;
+  button?: MouseButton;
   allTouches?: TouchList;
   changedTouches?: TouchList;
   touchEventType?: TouchEventType;

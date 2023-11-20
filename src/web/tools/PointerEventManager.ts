@@ -206,7 +206,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       pointerId: event.pointerId,
       eventType: eventType,
       pointerType: event.pointerType as PointerType,
-      button: this.mouseButtonsMapper.get(event.button)!,
+      button: this.mouseButtonsMapper.get(event.button),
       time: event.timeStamp,
     };
   }
