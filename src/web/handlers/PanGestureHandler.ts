@@ -54,8 +54,6 @@ export default class PanGestureHandler extends GestureHandler {
   private activateAfterLongPress = 0;
   private activationTimeout = 0;
 
-  private shouldBlockEvents = true;
-
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
   }
@@ -306,7 +304,7 @@ export default class PanGestureHandler extends GestureHandler {
     event: AdaptedEvent,
     sourceEvent?: TouchEvent | PointerEvent
   ): void {
-    if (sourceEvent?.cancelable && this.shouldBlockEvents) {
+    if (sourceEvent?.cancelable) {
       sourceEvent.preventDefault();
     } else if (sourceEvent) {
       this.fail();
@@ -499,15 +497,11 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   public fail(_sendIfDisabled?: boolean): void {
-    this.shouldBlockEvents = false;
     super.fail();
-    this.shouldBlockEvents = true;
   }
 
   protected onCancel(): void {
-    this.shouldBlockEvents = false;
     this.clearActivationTimeout();
-    this.shouldBlockEvents = true;
   }
 
   protected onReset(): void {
