@@ -5,6 +5,7 @@ import {
   GestureType,
   MouseButton,
   Directions,
+  ScrollView,
 } from 'react-native-gesture-handler';
 import { StyleSheet, View, Text } from 'react-native';
 
@@ -163,12 +164,12 @@ function FlingTests() {
 
 export default function Buttons() {
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       <TapTests />
       <PanTests />
       <LongPressTests />
       <FlingTests />
-    </View>
+    </ScrollView>
   );
 }
 
