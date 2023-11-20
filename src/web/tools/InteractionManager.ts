@@ -109,6 +109,7 @@ export default class InteractionManager {
 
   public reset() {
     this.waitForRelations.clear();
+    this.simultaneousRelations.clear();
   }
 
   public static getInstance(): InteractionManager {
