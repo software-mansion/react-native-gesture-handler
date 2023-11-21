@@ -9,7 +9,6 @@ export default class GestureHandlerOrchestrator {
 
   private gestureHandlers: GestureHandler[] = [];
   private awaitingHandlers: GestureHandler[] = [];
-  private handlersToCancel: GestureHandler[] = [];
 
   private handlingChangeSemaphore = 0;
   private activationIndex = 0;
@@ -34,7 +33,6 @@ export default class GestureHandlerOrchestrator {
   public removeHandlerFromOrchestrator(handler: GestureHandler): void {
     this.gestureHandlers.splice(this.gestureHandlers.indexOf(handler), 1);
     this.awaitingHandlers.splice(this.awaitingHandlers.indexOf(handler), 1);
-    this.handlersToCancel.splice(this.handlersToCancel.indexOf(handler), 1);
   }
 
   private cleanupFinishedHandlers(): void {
@@ -177,17 +175,12 @@ export default class GestureHandlerOrchestrator {
     handler.setShouldResetProgress(true);
     handler.setActivationIndex(this.activationIndex++);
 
-    this.gestureHandlers.forEach((otherHandler) => {
-      // Order of arguments is correct - we check whether current handler should cancel existing handlers
-
-      if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        this.handlersToCancel.push(otherHandler);
+    for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
+      if (this.shouldHandlerBeCancelledBy(this.gestureHandlers[i], handler)) {
+        this.gestureHandlers[i].cancel();
       }
-    });
-
-    for (let i = this.handlersToCancel.length - 1; i >= 0; --i) {
-      this.handlersToCancel[i]?.cancel();
     }
+
     this.awaitingHandlers.forEach((otherHandler) => {
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
         otherHandler?.cancel();
@@ -212,8 +205,6 @@ export default class GestureHandlerOrchestrator {
         }
       }
     }
-
-    this.handlersToCancel = [];
   }
 
   private addAwaitingHandler(handler: GestureHandler): void {
