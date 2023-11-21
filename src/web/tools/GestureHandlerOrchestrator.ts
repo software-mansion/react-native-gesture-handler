@@ -175,13 +175,11 @@ export default class GestureHandlerOrchestrator {
     handler.setShouldResetProgress(true);
     handler.setActivationIndex(this.activationIndex++);
 
-    this.gestureHandlers.reduceRight((_, otherHandler) => {
-      if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler.cancel();
+    for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
+      if (this.shouldHandlerBeCancelledBy(this.gestureHandlers[i], handler)) {
+        this.gestureHandlers[i].cancel();
       }
-
-      return null;
-    }, null);
+    }
 
     this.awaitingHandlers.forEach((otherHandler) => {
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
