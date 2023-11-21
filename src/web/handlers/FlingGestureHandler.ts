@@ -83,7 +83,7 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
-    if (!this.wasPressedButtonCorrect(event.button)) {
+    if (!this.isButtonInConfig(event.button)) {
       return;
     }
 

@@ -737,7 +737,7 @@ export default abstract class GestureHandler {
     return false;
   }
 
-  protected wasPressedButtonCorrect(mouseButton: MouseButton | undefined) {
+  protected isButtonInConfig(mouseButton: MouseButton | undefined) {
     return (
       !mouseButton ||
       (!this.config.mouseButton && mouseButton === MouseButton.LEFT) ||
