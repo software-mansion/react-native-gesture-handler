@@ -16,7 +16,7 @@ import { ComboWithGHScroll } from './release_tests/combo';
 import { TouchablesIndex, TouchableExample } from './release_tests/touchables';
 import Rows from './release_tests/rows';
 import Fling from './release_tests/fling';
-import Buttons from './release_tests/mouseButtons';
+import MouseButtons from './release_tests/mouseButtons';
 import NestedTouchables from './release_tests/nestedTouchables';
 import NestedButtons from './release_tests/nestedButtons';
 import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
@@ -116,7 +116,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Fling', component: Fling },
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
-      { name: 'MouseButtons', component: Buttons },
+      { name: 'MouseButtons', component: MouseButtons },
     ],
   },
   {
