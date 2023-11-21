@@ -17,8 +17,8 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     this.mouseButtonsMapper.set(0, MouseButton.LEFT);
     this.mouseButtonsMapper.set(1, MouseButton.MIDDLE);
     this.mouseButtonsMapper.set(2, MouseButton.RIGHT);
-    this.mouseButtonsMapper.set(3, MouseButton.BTN4);
-    this.mouseButtonsMapper.set(4, MouseButton.BTN5);
+    this.mouseButtonsMapper.set(3, MouseButton.BUTTON_4);
+    this.mouseButtonsMapper.set(4, MouseButton.BUTTON_5);
   }
 
   public setListeners(): void {

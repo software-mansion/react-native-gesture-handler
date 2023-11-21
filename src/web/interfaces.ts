@@ -133,8 +133,8 @@ export enum MouseButton {
   LEFT = 1,
   MIDDLE = 2,
   RIGHT = 4,
-  BTN4 = 8,
-  BTN5 = 16,
+  BUTTON_4 = 8,
+  BUTTON_5 = 16,
 }
 
 export enum EventTypes {
