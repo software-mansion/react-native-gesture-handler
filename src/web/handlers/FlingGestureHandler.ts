@@ -51,8 +51,6 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private tryEndFling(): boolean {
-    console.log(this.tracker.getLastAvgX(), this.startX);
-
     if (
       this.maxNumberOfPointersSimultaneously ===
         this.numberOfPointersRequired &&
