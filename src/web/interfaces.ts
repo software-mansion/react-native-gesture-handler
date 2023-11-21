@@ -135,6 +135,7 @@ export enum MouseButton {
   RIGHT = 4,
   BUTTON_4 = 8,
   BUTTON_5 = 16,
+  ALL = 31,
 }
 
 export enum EventTypes {

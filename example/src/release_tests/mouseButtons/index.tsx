@@ -59,8 +59,8 @@ function TapTests() {
     .onEnd(() => console.log('Tap with left | right'));
 
   const allTap = Gesture.Tap()
-    .mouseButton(MouseButton.LEFT | MouseButton.MIDDLE | MouseButton.RIGHT)
-    .onEnd(() => console.log('Tap with left | middle | right'));
+    .mouseButton(MouseButton.ALL)
+    .onEnd(() => console.log('Tap with any button'));
 
   const gestureHandlers = [leftTap, middleTap, rightTap, leftRightTap, allTap];
 
@@ -85,8 +85,8 @@ function PanTests() {
     .onChange(() => console.log('Panning with left | right'));
 
   const allPan = Gesture.Pan()
-    .mouseButton(MouseButton.LEFT | MouseButton.MIDDLE | MouseButton.RIGHT)
-    .onChange(() => console.log('Panning with left | middle | right'));
+    .mouseButton(MouseButton.ALL)
+    .onChange(() => console.log('Panning with any button'));
 
   const gestureHandlers = [leftPan, middlePan, rightPan, leftRightPan, allPan];
 
@@ -111,8 +111,8 @@ function LongPressTests() {
     .onStart(() => console.log('LongPress with left | right'));
 
   const allLongPress = Gesture.LongPress()
-    .mouseButton(MouseButton.LEFT | MouseButton.MIDDLE | MouseButton.RIGHT)
-    .onStart(() => console.log('LongPress with left | middle | right'));
+    .mouseButton(MouseButton.ALL)
+    .onStart(() => console.log('LongPress with any button'));
 
   const gestureHandlers = [
     leftLongPress,
@@ -148,8 +148,8 @@ function FlingTests() {
 
   const allFling = Gesture.Fling()
     .direction(Directions.LEFT | Directions.RIGHT)
-    .mouseButton(MouseButton.LEFT | MouseButton.MIDDLE | MouseButton.RIGHT)
-    .onStart(() => console.log('Fling with left | middle | right'));
+    .mouseButton(MouseButton.ALL)
+    .onStart(() => console.log('Fling with any button'));
 
   const gestureHandlers = [
     leftFling,
