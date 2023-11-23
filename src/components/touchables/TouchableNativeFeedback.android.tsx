@@ -56,7 +56,8 @@ export default class TouchableNativeFeedback extends Component<TouchableNativeFe
     rippleRadius,
   });
 
-  static canUseNativeForeground = () => Platform.Version >= 23;
+  static canUseNativeForeground = () =>
+    Platform.OS === 'android' && Platform.Version >= 23;
 
   getExtraButtonProps() {
     const extraProps: TouchableNativeFeedbackExtraProps = {};
