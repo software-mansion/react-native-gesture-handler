@@ -1,9 +1,7 @@
 package com.swmansion.gesturehandler.core
 
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
