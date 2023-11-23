@@ -38,7 +38,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
-    if(!shouldActivateWithMouse(sourceEvent)){
+    if (!shouldActivateWithMouse(sourceEvent)) {
       return
     }
 

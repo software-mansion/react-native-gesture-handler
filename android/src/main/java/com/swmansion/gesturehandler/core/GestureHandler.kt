@@ -69,7 +69,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   private var onTouchEventListener: OnTouchEventListener? = null
   private var interactionController: GestureHandlerInteractionController? = null
 
-  protected var mouseButton = 0;
+  protected var mouseButton = 0
 
   @Suppress("UNCHECKED_CAST")
   protected fun self(): ConcreteGestureHandlerT = this as ConcreteGestureHandlerT
@@ -696,7 +696,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected open fun onCancel() {}
 
   private fun isButtonInConfig(clickedButton: Int): Boolean {
-    if(mouseButton == 0){
+    if (mouseButton == 0) {
       return clickedButton == MotionEvent.BUTTON_PRIMARY
     }
 
@@ -707,26 +707,26 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     // While using mouse, we get both sets of events, for example ACTION_DOWN and ACTION_BUTTON_PRESS. That's why we want to take actions to only one of them.
     // On API >= 23, we will use events with infix BUTTON, otherwise we use standard action events (like ACTION_DOWN).
 
-    with(sourceEvent){
+    with(sourceEvent) {
       // To use actionButton, we need API >= 23.
-      if(getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+      if (getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         // While using mouse, we want to ignore default events for touch.
-        if(action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN){
+        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
           return@shouldActivateWithMouse false
         }
 
         // We don't want to do anything if wrong button was clicked. If we received event for BUTTON, we have to use actionButton to get which one was clicked.
-        if(action != MotionEvent.ACTION_MOVE && !isButtonInConfig(actionButton)){
+        if (action != MotionEvent.ACTION_MOVE && !isButtonInConfig(actionButton)) {
           return@shouldActivateWithMouse false
         }
 
         // When we receive ACTION_MOVE, we have to check buttonState field.
-        if(action == MotionEvent.ACTION_MOVE && !isButtonInConfig(buttonState)){
+        if (action == MotionEvent.ACTION_MOVE && !isButtonInConfig(buttonState)) {
           return@shouldActivateWithMouse false
         }
       } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         // We do not fully support mouse below API 23, so we will ignore BUTTON events.
-        if(action == MotionEvent.ACTION_BUTTON_PRESS || action == MotionEvent.ACTION_BUTTON_RELEASE){
+        if (action == MotionEvent.ACTION_BUTTON_PRESS || action == MotionEvent.ACTION_BUTTON_RELEASE) {
           return@shouldActivateWithMouse false
         }
       }

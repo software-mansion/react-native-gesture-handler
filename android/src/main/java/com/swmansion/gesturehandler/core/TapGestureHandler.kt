@@ -107,7 +107,7 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
-    if(!shouldActivateWithMouse(sourceEvent)){
+    if (!shouldActivateWithMouse(sourceEvent)) {
       return
     }
 

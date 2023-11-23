@@ -1,7 +1,6 @@
 package com.swmansion.gesturehandler.core
 
 import android.content.Context
-import android.os.Buil
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
@@ -209,7 +208,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
-    if(!shouldActivateWithMouse(sourceEvent)){
+    if (!shouldActivateWithMouse(sourceEvent)) {
       return
     }
 
