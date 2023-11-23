@@ -67,6 +67,10 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+    if (!shouldActivateWithMouse(sourceEvent)) {
+      return
+    }
+
     val state = state
     if (state == STATE_UNDETERMINED) {
       startFling(sourceEvent)

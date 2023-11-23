@@ -132,8 +132,8 @@ export interface AdaptedEvent {
 
 export enum MouseButton {
   LEFT = 1,
-  MIDDLE = 2,
-  RIGHT = 4,
+  RIGHT = 2,
+  MIDDLE = 4,
   BUTTON_4 = 8,
   BUTTON_5 = 16,
   ALL = 31,
