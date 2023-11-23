@@ -21,9 +21,9 @@ class RotationGestureHandlerEventDataBuilder(handler: RotationGestureHandler) : 
     super.buildEventData(eventData)
 
     with(eventData) {
-      putDouble("scale", rotation)
-      putDouble("focalX", PixelUtil.toDIPFromPixel(anchorX).toDouble())
-      putDouble("focalY", PixelUtil.toDIPFromPixel(anchorY).toDouble())
+      putDouble("rotation", rotation)
+      putDouble("anchorX", PixelUtil.toDIPFromPixel(anchorX).toDouble())
+      putDouble("anchorY", PixelUtil.toDIPFromPixel(anchorY).toDouble())
       putDouble("velocity", velocity)
     }
   }
