@@ -52,7 +52,7 @@ export class PinchableBox extends React.Component {
     this.rotate = new Animated.Value(0);
     this.rotateStr = this.rotate.interpolate({
       inputRange: [-100, 100],
-      outputRange: ['-5700deg', '5700deg'],
+      outputRange: ['5700deg', '-5700deg'],
     });
     this.lastRotate = 0;
     this.onRotateGestureEvent = Animated.event(
