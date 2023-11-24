@@ -148,7 +148,7 @@
 
 - (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
 }
 
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
