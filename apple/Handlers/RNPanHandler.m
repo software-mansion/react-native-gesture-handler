@@ -88,8 +88,6 @@
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
-
   if (touches.count == 0) {
     [_gestureHandler reset];
   }
@@ -105,6 +103,13 @@
   }
 #endif
 
+#if TARGET_OS_OSX
+  [super mouseDown:event];
+#else
+  [super touchesBegan:touches withEvent:event];
+#endif
+
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
   [self triggerAction];
 
   if (!isnan(_activateAfterLongPress)) {
@@ -160,13 +165,6 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
-  [super mouseDown:event];
-  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
-}
-
-- (void)rightMouseDown:(NSEvent *)event
-{
-  [super rightMouseDown:event];
   [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
@@ -176,28 +174,15 @@
   [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
 }
 
-- (void)rightMouseDragged:(NSEvent *)event
-{
-  [super rightMouseDragged:event];
-  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
-}
-
 - (void)mouseUp:(NSEvent *)event
 {
   [super mouseUp:event];
   [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
 }
 
-- (void)rightMouseUp:(NSEvent *)event
-{
-  [super rightMouseUp:event];
-  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
-}
-
 #else
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [super touchesBegan:touches withEvent:event];
   [self interactionsBegan:touches withEvent:event];
 }
 
