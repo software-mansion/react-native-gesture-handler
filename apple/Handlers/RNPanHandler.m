@@ -408,7 +408,7 @@
                            withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
                                 withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
-                            withNumberOfTouches:0];
+                            withNumberOfTouches:1];
 }
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
