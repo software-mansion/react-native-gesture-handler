@@ -61,7 +61,7 @@ export const flingHandlerName = 'FlingGestureHandler';
 
 export type FlingGestureHandler = typeof FlingGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
-export const FlingGestureHandler = isMacOS()
+export const FlingGestureHandler = !isMacOS()
   ? createHandler<FlingGestureHandlerProps, FlingGestureHandlerEventPayload>({
       name: flingHandlerName,
       allowedProps: [
