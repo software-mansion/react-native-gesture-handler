@@ -139,6 +139,7 @@ android {
                     cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++17", "-DANDROID"
                     arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
                         "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+                        "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
                         "-DANDROID_STL=c++_shared"
                     abiFilters (*reactNativeArchitectures())
                 }
@@ -179,11 +180,11 @@ android {
             }
 
             if (isNewArchitectureEnabled()) {
-                srcDirs += 'src/fabric/java'
+                srcDirs += 'fabric/src/main/java'
             } else {
                 // this folder also includes files from codegen so the library can compile with
                 // codegen turned off
-                srcDirs += 'src/paper/java'
+                srcDirs += 'paper/src/main/java'
             }
         }
     }
