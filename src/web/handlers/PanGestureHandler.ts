@@ -336,8 +336,16 @@ export default class PanGestureHandler extends GestureHandler {
       return;
     }
 
-    if (sourceEvent?.cancelable) {
-      sourceEvent.preventDefault();
+    if (sourceEvent) {
+      const state = this.getState();
+      if (sourceEvent.cancelable && state === State.ACTIVE) {
+        sourceEvent.preventDefault();
+      }
+
+      if (!sourceEvent.cancelable && state === State.ACTIVE) {
+        this.fail();
+        return;
+      }
     }
 
     this.tracker.track(event);
