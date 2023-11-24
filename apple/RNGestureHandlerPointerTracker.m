@@ -68,25 +68,15 @@
   return count;
 }
 
-#if TARGET_OS_OSX
-- (NSDictionary *)extractPointerData:(int)index forTouch:(NSEvent *)touch
-{
-  CGPoint absolutePos = [touch locationInWindow];
-  CGPoint relativePos = [touch.window.contentView convertPoint:absolutePos fromView:_gestureHandler.recognizer.view];
-
-  return @{
-    @"id" : @(index),
-    @"x" : @(relativePos.x),
-    @"y" : @(relativePos.y),
-    @"absoluteX" : @(absolutePos.x),
-    @"absoluteY" : @(absolutePos.y)
-  };
-}
-#else
 - (NSDictionary *)extractPointerData:(int)index forTouch:(RNGHUITouch *)touch
 {
+#if TARGET_OS_OSX
+  CGPoint absolutePos = [touch locationInWindow];
+  CGPoint relativePos = [touch.window.contentView convertPoint:absolutePos fromView:_gestureHandler.recognizer.view];
+#else
   CGPoint relativePos = [touch locationInView:_gestureHandler.recognizer.view];
   CGPoint absolutePos = [touch locationInView:_gestureHandler.recognizer.view.window];
+#endif
 
   return @{
     @"id" : @(index),
@@ -96,7 +86,6 @@
     @"absoluteY" : @(absolutePos.y)
   };
 }
-#endif
 
 - (void)extractAllTouches
 {
