@@ -12,6 +12,7 @@ import {
 
 import Draggable from './basic/draggable';
 import PinchableBox from './recipes/scaleAndRotate';
+import Tap from './basic/tap';
 
 interface Example {
   name: string;
@@ -28,6 +29,7 @@ const EXAMPLES: ExamplesSection[] = [
     data: [
       { name: 'Draggable', component: Draggable },
       { name: 'Pinch & rotate', component: PinchableBox },
+      { name: 'Tap', component: Tap },
     ],
   },
 ];
@@ -93,9 +95,6 @@ interface MainScreenItemProps {
 
 function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
-    // <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
-    //   <Text>{name}</Text>
-    // </RectButton>
     <Pressable style={[styles.button]} onPress={() => onPressItem(name)}>
       <Text>{name}</Text>
     </Pressable>
