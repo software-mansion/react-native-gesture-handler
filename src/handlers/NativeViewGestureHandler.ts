@@ -1,13 +1,28 @@
+import React, { PropsWithChildren } from 'react';
+import { tagMessage } from '../utils';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,
   baseGestureHandlerProps,
 } from './gestureHandlerCommon';
+import { isMacOS } from '../PlatformChecker';
 
 export const nativeViewGestureHandlerProps = [
   'shouldActivateOnStart',
   'disallowInterruption',
 ] as const;
+
+class NativeViewFallback extends React.Component<PropsWithChildren<unknown>> {
+  static forceTouchAvailable = false;
+  componentDidMount() {
+    console.warn(
+      tagMessage('NativeViewGestureHandler is not available on this platform.')
+    );
+  }
+  render() {
+    return this.props.children;
+  }
+}
 
 export interface NativeViewGestureConfig {
   /**
@@ -45,11 +60,13 @@ export const nativeViewHandlerName = 'NativeViewGestureHandler';
 
 export type NativeViewGestureHandler = typeof NativeViewGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
-export const NativeViewGestureHandler = createHandler<
-  NativeViewGestureHandlerProps,
-  NativeViewGestureHandlerPayload
->({
-  name: nativeViewHandlerName,
-  allowedProps: nativeViewProps,
-  config: {},
-});
+export const NativeViewGestureHandler = !isMacOS()
+  ? createHandler<
+      NativeViewGestureHandlerProps,
+      NativeViewGestureHandlerPayload
+    >({
+      name: nativeViewHandlerName,
+      allowedProps: nativeViewProps,
+      config: {},
+    })
+  : NativeViewFallback;
