@@ -160,7 +160,9 @@ API_AVAILABLE(ios(13.4))
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  self = [super initWithTag:tag];
+  if ((self = [super initWithTag:tag])) {
+    _recognizer = [NSGestureRecognizer alloc];
+  }
   return self;
 }
 
