@@ -35,11 +35,6 @@
   _activePointers -= 1;
 }
 
-- (void)mouseDragged:(NSEvent *)event
-{
-  [super mouseDragged:event];
-}
-
 - (void)mouseDown:(NSEvent *)event
 {
   [super mouseDown:event];
@@ -58,11 +53,6 @@
   [super touchesBegan:touches withEvent:event];
 
   _activePointers += touches.count;
-}
-
-- (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
-{
-  [super touchesMoved:touches withEvent:event];
 }
 
 - (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
