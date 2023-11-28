@@ -36,7 +36,7 @@
 
 @implementation RNBetterPanGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
-#if !TARGET_OS_TV && !TARGET_OS_OSX
+#if !TARGET_OS_OSX
   NSUInteger _realMinimumNumberOfTouches;
 #endif
   BOOL _hasCustomActivationCriteria;
@@ -74,7 +74,7 @@
 
 - (void)setMinimumNumberOfTouches:(NSUInteger)minimumNumberOfTouches
 {
-#if !TARGET_OS_TV && !TARGET_OS_OSX
+#if !TARGET_OS_OSX
   _realMinimumNumberOfTouches = minimumNumberOfTouches;
 #endif
 }
