@@ -46,7 +46,7 @@ export default function App() {
   }));
 
   return (
-    <View style={styles.container} ref={aref}>
+    <View style={styles.container} ref={aref} collapsable={false}>
       <GestureDetector gesture={pan}>
         <Animated.View style={[styles.box, animatedStyles]} />
       </GestureDetector>

@@ -68,6 +68,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   RNGestureHandlerState _state;
   RNManualActivationRecognizer *_manualActivationRecognizer;
   NSArray<NSNumber *> *_handlersToWaitFor;
+  NSArray<NSNumber *> *_handlersThatShouldWait;
   NSArray<NSNumber *> *_simultaneousHandlers;
   RNGHHitSlop _hitSlop;
   uint16_t _eventCoalescingKey;
@@ -100,6 +101,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _shouldCancelWhenOutside = NO;
   _handlersToWaitFor = nil;
   _simultaneousHandlers = nil;
+  _handlersThatShouldWait = nil;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
 #if !TARGET_OS_OSX
@@ -112,6 +114,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   [self resetConfig];
   _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
   _simultaneousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
+  _handlersThatShouldWait = [RCTConvert NSNumberArray:config[@"blocksHandlers"]];
 
   id prop = config[@"enabled"];
   if (prop != nil) {
@@ -388,6 +391,14 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   if ([handler isKindOfClass:[RNNativeViewGestureHandler class]]) {
     for (NSNumber *handlerTag in handler->_handlersToWaitFor) {
       if ([_tag isEqual:handlerTag]) {
+        return YES;
+      }
+    }
+  }
+
+  if (handler != nil) {
+    for (NSNumber *handlerTag in _handlersThatShouldWait) {
+      if ([handler.tag isEqual:handlerTag]) {
         return YES;
       }
     }
