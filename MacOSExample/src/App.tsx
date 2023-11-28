@@ -96,7 +96,7 @@ interface MainScreenItemProps {
 function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
     <Pressable style={[styles.button]} onPress={() => onPressItem(name)}>
-      <Text>{name}</Text>
+      <Text style={styles.text}>{name}</Text>
     </Pressable>
   );
 }
@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     paddingLeft: 10,
     backgroundColor: '#efefef',
+    color: 'black',
   },
   list: {},
   separator: {
@@ -132,5 +133,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
+  },
+  text: {
+    color: 'black',
   },
 });
