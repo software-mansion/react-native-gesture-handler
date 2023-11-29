@@ -72,12 +72,12 @@
   [_gestureHandler handleGesture:self];
 }
 
+#if !TARGET_OS_OSX
 - (void)setMinimumNumberOfTouches:(NSUInteger)minimumNumberOfTouches
 {
-#if !TARGET_OS_OSX
   _realMinimumNumberOfTouches = minimumNumberOfTouches;
-#endif
 }
+#endif
 
 - (void)activateAfterLongPress
 {
