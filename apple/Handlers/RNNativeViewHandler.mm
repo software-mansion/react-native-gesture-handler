@@ -210,7 +210,7 @@
 
 @end
 
-#pragma mark RNNativeViewgestureHandler
+#pragma mark RNNativeViewGestureHandler
 
 @implementation RNNativeViewGestureHandler
 
