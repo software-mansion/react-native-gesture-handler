@@ -243,25 +243,7 @@ RCT_EXPORT_METHOD(flushOperations)
 
 #pragma mark - RCTSurfacePresenterObserver
 
-#ifdef RCT_NEW_ARCH_ENABLED
-
-- (void)didMountComponentsWithRootTag:(NSInteger)rootTag
-{
-  RCTAssertMainQueue();
-
-  if (_operations.count == 0) {
-    return;
-  }
-
-  NSArray<GestureHandlerOperation> *operations = _operations;
-  _operations = [NSMutableArray new];
-
-  for (GestureHandlerOperation operation in operations) {
-    operation(self->_manager);
-  }
-}
-
-#else
+#ifndef RCT_NEW_ARCH_ENABLED
 
 #pragma mark - RCTUIManagerObserver
 
