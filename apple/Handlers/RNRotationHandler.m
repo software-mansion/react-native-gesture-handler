@@ -149,6 +149,6 @@
                                  withNumberOfTouches:recognizer.numberOfTouches];
 }
 #endif
-#endif
+#endif // !TARGET_OS_TV
 
 @end
