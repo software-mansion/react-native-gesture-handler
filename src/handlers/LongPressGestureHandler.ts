@@ -1,28 +1,13 @@
-import React, { PropsWithChildren } from 'react';
-import { tagMessage } from '../utils';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,
   baseGestureHandlerProps,
 } from './gestureHandlerCommon';
-import { isMacOS } from '../PlatformChecker';
 
 export const longPressGestureHandlerProps = [
   'minDurationMs',
   'maxDist',
 ] as const;
-
-class LongPressFallback extends React.Component<PropsWithChildren<unknown>> {
-  static forceTouchAvailable = false;
-  componentDidMount() {
-    console.warn(
-      tagMessage('LongPressGestureHandler is not available on this platform.')
-    );
-  }
-  render() {
-    return this.props.children;
-  }
-}
 
 export type LongPressGestureHandlerEventPayload = {
   /**
@@ -88,18 +73,16 @@ export const longPressHandlerName = 'LongPressGestureHandler';
 
 export type LongPressGestureHandler = typeof LongPressGestureHandler;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
-export const LongPressGestureHandler = !isMacOS()
-  ? createHandler<
-      LongPressGestureHandlerProps,
-      LongPressGestureHandlerEventPayload
-    >({
-      name: longPressHandlerName,
-      allowedProps: [
-        ...baseGestureHandlerProps,
-        ...longPressGestureHandlerProps,
-      ] as const,
-      config: {
-        shouldCancelWhenOutside: true,
-      },
-    })
-  : LongPressFallback;
+export const LongPressGestureHandler = createHandler<
+  LongPressGestureHandlerProps,
+  LongPressGestureHandlerEventPayload
+>({
+  name: longPressHandlerName,
+  allowedProps: [
+    ...baseGestureHandlerProps,
+    ...longPressGestureHandlerProps,
+  ] as const,
+  config: {
+    shouldCancelWhenOutside: true,
+  },
+});

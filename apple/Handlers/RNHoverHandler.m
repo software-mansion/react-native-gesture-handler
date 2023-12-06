@@ -160,6 +160,7 @@ API_AVAILABLE(ios(13.4))
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
+  RCTLogWarn(@"Hover gesture handler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
   }
