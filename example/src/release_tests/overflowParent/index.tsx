@@ -73,7 +73,9 @@ export default function Example() {
         bigger one shold be stationary. Clicking on any of the components should
         activate the tap handler that is logs a message to the console.
       </Text>
-      <TapGestureHandler onActivated={() => console.log('tap')}>
+      <TapGestureHandler
+        onActivated={() => console.log('tap')}
+        shouldCancelWhenOutside={false}>
         <Animated.View>
           <PanGestureHandler
             onGestureEvent={onGestureEvent}
