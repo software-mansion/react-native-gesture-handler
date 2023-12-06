@@ -58,17 +58,12 @@ export default class Example extends Component<
 
   render() {
     return (
-      <ScrollView style={styles.scrollView}>
-        <PressBox />
-      </ScrollView>
+      <PressBox />
     );
   }
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
   box: {
     width: 150,
     height: 150,
