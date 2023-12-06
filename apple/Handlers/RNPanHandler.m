@@ -165,6 +165,8 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
+  // super call was moved to interactionsBegan method to keep the
+  // original order of calls
   [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
@@ -183,6 +185,8 @@
 #else
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  // super call was moved to interactionsBegan method to keep the
+  // original order of calls
   [self interactionsBegan:touches withEvent:event];
 }
 
