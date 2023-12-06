@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -16,10 +17,16 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Use Node.js 16
+      - name: Use Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'oracle'
+          java-version: '17'
+
+      - name: Use Node.js 18
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 18
           cache: 'yarn'
 
       - uses: actions/cache@v2
