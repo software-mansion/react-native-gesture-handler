@@ -62,14 +62,11 @@
 #endif
 }
 
+#if !TARGET_OS_OSX
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
   if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
-#if !TARGET_OS_OSX
     return [super pointInside:point withEvent:event];
-#else
-    return [super hitTest:point];
-#endif
   }
   CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
   return CGRectContainsPoint(hitFrame, point);
@@ -77,15 +74,12 @@
 
 - (RNGHUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-#if !TARGET_OS_OSX
   RNGHUIView *inner = [super hitTest:point withEvent:event];
-#else
-  RNGHUIView *inner = [super hitTest:point];
-#endif
   while (inner && ![self shouldHandleTouch:inner]) {
     inner = inner.superview;
   }
   return inner;
 }
+#endif
 
 @end
