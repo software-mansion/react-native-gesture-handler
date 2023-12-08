@@ -1,6 +1,7 @@
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 const BORDERS: { [key in keyof ViewStyle]?: true } = {
+  borderColor: true,
   borderWidth: true,
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
@@ -20,27 +21,29 @@ const BORDERS: { [key in keyof ViewStyle]?: true } = {
 
 const INNER_STYLES: { [key in keyof ViewStyle]?: true } = {
   alignSelf: true,
-  bottom: true,
   display: true,
-  end: true,
   flexBasis: true,
   flexGrow: true,
   flexShrink: true,
-  left: true,
   maxHeight: true,
   maxWidth: true,
   minHeight: true,
   minWidth: true,
-  position: true,
-  right: true,
-  start: true,
-  top: true,
+
   width: true,
   zIndex: true,
 };
 
 const BOTH_STYLES: { [key in keyof ViewStyle]?: true } = {
   flex: true,
+
+  position: true,
+  left: true,
+  right: true,
+  top: true,
+  bottom: true,
+  start: true,
+  end: true,
 };
 
 export function splitStyleProp<T extends ViewStyle>(style?: StyleProp<T>): any {
