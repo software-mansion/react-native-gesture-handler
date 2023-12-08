@@ -1,12 +1,8 @@
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
-const BORDERS: { [key in keyof ViewStyle]?: true } = {
+const OUTER_STYLES: { [key in keyof ViewStyle]?: true } = {
   borderColor: true,
   borderWidth: true,
-  borderTopLeftRadius: true,
-  borderTopRightRadius: true,
-  borderBottomLeftRadius: true,
-  borderBottomRightRadius: true,
 
   margin: true,
   marginBottom: true,
@@ -17,6 +13,14 @@ const BORDERS: { [key in keyof ViewStyle]?: true } = {
   marginStart: true,
   marginTop: true,
   marginVertical: true,
+};
+
+const BORDERS: { [key in keyof ViewStyle]?: true } = {
+  borderRadius: true,
+  borderTopLeftRadius: true,
+  borderTopRightRadius: true,
+  borderBottomLeftRadius: true,
+  borderBottomRightRadius: true,
 };
 
 const INNER_STYLES: { [key in keyof ViewStyle]?: true } = {
@@ -50,6 +54,7 @@ export function splitStyleProp<T extends ViewStyle>(style?: StyleProp<T>): any {
   const resolvedStyle = StyleSheet.flatten(style ?? {});
 
   const borders: Record<string, unknown> = {};
+  const outerStyles: Record<string, unknown> = {};
   const innerStyles: Record<string, unknown> = {};
   const bothStyles: Record<string, unknown> = {};
   const restStyles: Record<string, unknown> = {};
@@ -57,6 +62,10 @@ export function splitStyleProp<T extends ViewStyle>(style?: StyleProp<T>): any {
   Object.entries(resolvedStyle).forEach(([key, value]) => {
     if ((BORDERS as { [key: string]: true | undefined })[key] === true) {
       borders[key] = value;
+    } else if (
+      (OUTER_STYLES as { [key: string]: true | undefined })[key] === true
+    ) {
+      outerStyles[key] = value;
     } else if (
       (BOTH_STYLES as { [key: string]: true | undefined })[key] === true
     ) {
@@ -70,5 +79,5 @@ export function splitStyleProp<T extends ViewStyle>(style?: StyleProp<T>): any {
     }
   });
 
-  return { borders, restStyles, innerStyles, bothStyles };
+  return { borders, restStyles, innerStyles, bothStyles, outerStyles };
 }

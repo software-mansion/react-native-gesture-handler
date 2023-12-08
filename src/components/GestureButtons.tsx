@@ -222,12 +222,48 @@ export class BaseButton extends React.Component<BaseButtonProps> {
   render() {
     const { rippleColor, style, ...rest } = this.props;
 
-    const { restStyles, innerStyles, borders, bothStyles } =
+    const { restStyles, innerStyles, borders, bothStyles, outerStyles } =
       splitStyleProp(style);
 
+    const { borderWidth } = outerStyles;
+    const outerBorders = { ...borders };
+
+    if (outerBorders.borderRadius !== undefined && borderWidth !== undefined) {
+      outerBorders.borderRadius += borderWidth;
+    }
+
+    if (
+      outerBorders.borderTopLeftRadius !== undefined &&
+      borderWidth !== undefined
+    ) {
+      outerBorders.borderTopLeftRadius += borderWidth;
+    }
+
+    if (
+      outerBorders.borderTopRightRadius !== undefined &&
+      borderWidth !== undefined
+    ) {
+      outerBorders.borderTopRightRadius += borderWidth;
+    }
+
+    if (
+      outerBorders.borderBottomLeftRadius !== undefined &&
+      borderWidth !== undefined
+    ) {
+      outerBorders.borderBottomLeftRadius += borderWidth;
+    }
+
+    if (
+      outerBorders.borderBottomRightRadius !== undefined &&
+      borderWidth !== undefined
+    ) {
+      outerBorders.borderBottomRightRadius += borderWidth;
+    }
+
     return (
-      <View style={[borders, bothStyles, { overflow: 'hidden' }]}>
-        <View style={[innerStyles, bothStyles]}>
+      <View style={[outerStyles, bothStyles, outerBorders]}>
+        <View
+          style={[innerStyles, bothStyles, borders, { overflow: 'hidden' }]}>
           <RawButton
             rippleColor={processColor(rippleColor)}
             style={[restStyles, bothStyles]}
