@@ -6,6 +6,7 @@ import {
   StyleSheet,
   StyleProp,
   ViewStyle,
+  View,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
@@ -20,6 +21,7 @@ import {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,
 } from '../handlers/NativeViewGestureHandler';
+import { splitStyleProp } from './splitStyleProp';
 
 export interface RawButtonProps extends NativeViewGestureHandlerProps {
   /**
@@ -218,15 +220,23 @@ export class BaseButton extends React.Component<BaseButtonProps> {
   };
 
   render() {
-    const { rippleColor, ...rest } = this.props;
+    const { rippleColor, style, ...rest } = this.props;
+
+    const { restStyles, innerStyles, borders, bothStyles } =
+      splitStyleProp(style);
 
     return (
-      <RawButton
-        rippleColor={processColor(rippleColor)}
-        {...rest}
-        onGestureEvent={this.onGestureEvent}
-        onHandlerStateChange={this.onHandlerStateChange}
-      />
+      <View style={[borders, bothStyles, { overflow: 'hidden' }]}>
+        <View style={[innerStyles, bothStyles]}>
+          <RawButton
+            rippleColor={processColor(rippleColor)}
+            style={[restStyles, bothStyles]}
+            {...rest}
+            onGestureEvent={this.onGestureEvent}
+            onHandlerStateChange={this.onHandlerStateChange}
+          />
+        </View>
+      </View>
     );
   }
 }

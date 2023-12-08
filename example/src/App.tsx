@@ -48,6 +48,7 @@ import HoverableIcons from './new_api/hoverable_icons';
 import VelocityTest from './new_api/velocityTest';
 
 import EmptyExample from './empty/EmptyExample';
+import ComplexUI from './release_tests/complexUI';
 
 interface Example {
   name: string;
@@ -115,6 +116,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Fling', component: Fling },
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
+      { name: 'Complex UI', component: ComplexUI },
     ],
   },
   {
