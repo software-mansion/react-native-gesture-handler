@@ -10,16 +10,20 @@ import {
 } from 'react-native';
 import GestureHandlerRootView from '../../../../src/components/GestureHandlerRootView';
 import { ScrollView } from '../../../../src/components/GestureComponents';
-import { RectButton } from '../../../../src/components/GestureButtons';
+import {
+  BorderlessButton,
+  RectButton,
+} from '../../../../src/components/GestureButtons';
+
+const MyButton = RectButton;
 
 export default function ComplexUI() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaView style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView>
           <Avatars />
           <View style={styles.paddedContainer}>
-            {/* <Habits /> */}
             <Gallery />
             <Gallery />
             <Gallery />
@@ -37,11 +41,11 @@ function Avatars() {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {colors.map((color) => (
-        <RectButton
+        <MyButton
           key={color}
           style={[styles.avatars, { backgroundColor: color }]}>
           <Text style={styles.avatarLabel}>{color.slice(1, 3)}</Text>
-        </RectButton>
+        </MyButton>
       ))}
     </ScrollView>
   );
@@ -50,10 +54,13 @@ function Avatars() {
 function Gallery() {
   return (
     <View style={[styles.container, styles.gap, styles.marginBottom]}>
-      <RectButton style={styles.fullWidthButton} />
+      <MyButton style={styles.fullWidthButton} />
       <View style={[styles.row, styles.gap]}>
-        <RectButton style={styles.leftButton} />
-        <RectButton style={styles.rightButton} />
+        <MyButton
+          style={styles.leftButton}
+          onPress={() => console.log('xDDD')}
+        />
+        <MyButton style={styles.rightButton} />
       </View>
     </View>
   );

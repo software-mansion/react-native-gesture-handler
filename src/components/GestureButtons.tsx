@@ -132,11 +132,18 @@ export class BaseButton extends React.Component<BaseButtonProps> {
   private lastActive: boolean;
   private longPressTimeout: ReturnType<typeof setTimeout> | undefined;
   private longPressDetected: boolean;
+  private ref: React.RefObject<View>;
 
   constructor(props: BaseButtonProps) {
     super(props);
     this.lastActive = false;
     this.longPressDetected = false;
+    // this.state = {
+    //   width: 0,
+    //   height: 0,
+    // };
+
+    // this.ref = React.createRef();
   }
 
   private handleEvent = ({
@@ -194,6 +201,12 @@ export class BaseButton extends React.Component<BaseButtonProps> {
     this.lastActive = active;
   };
 
+  // componentDidMount() {
+  //   this.ref.current?.measure((width: number, height: number) => {
+  //     this.setState({ width, height });
+  //   });
+  // }
+
   private onLongPress = () => {
     this.longPressDetected = true;
     this.props.onLongPress?.();
@@ -228,45 +241,31 @@ export class BaseButton extends React.Component<BaseButtonProps> {
     const { borderWidth } = outerStyles;
     const outerBorders = { ...borders };
 
-    if (outerBorders.borderRadius !== undefined && borderWidth !== undefined) {
-      outerBorders.borderRadius += borderWidth;
-    }
+    const updateBorderRadius = (prop: keyof typeof outerBorders) => {
+      if (outerBorders[prop] !== undefined && borderWidth !== undefined) {
+        outerBorders[prop] += borderWidth;
+      }
+    };
 
-    if (
-      outerBorders.borderTopLeftRadius !== undefined &&
-      borderWidth !== undefined
-    ) {
-      outerBorders.borderTopLeftRadius += borderWidth;
-    }
-
-    if (
-      outerBorders.borderTopRightRadius !== undefined &&
-      borderWidth !== undefined
-    ) {
-      outerBorders.borderTopRightRadius += borderWidth;
-    }
-
-    if (
-      outerBorders.borderBottomLeftRadius !== undefined &&
-      borderWidth !== undefined
-    ) {
-      outerBorders.borderBottomLeftRadius += borderWidth;
-    }
-
-    if (
-      outerBorders.borderBottomRightRadius !== undefined &&
-      borderWidth !== undefined
-    ) {
-      outerBorders.borderBottomRightRadius += borderWidth;
-    }
+    updateBorderRadius('borderRadius');
+    updateBorderRadius('borderTopLeftRadius');
+    updateBorderRadius('borderTopRightRadius');
+    updateBorderRadius('borderBottomLeftRadius');
+    updateBorderRadius('borderBottomRightRadius');
 
     return (
       <View style={[outerStyles, bothStyles, outerBorders]}>
         <View
-          style={[innerStyles, bothStyles, borders, { overflow: 'hidden' }]}>
+          style={[
+            { overflow: 'hidden', flexGrow: 1 },
+            innerStyles,
+            bothStyles,
+            borders,
+          ]}>
           <RawButton
             rippleColor={processColor(rippleColor)}
-            style={[restStyles, bothStyles]}
+            style={[{ flexGrow: 1 }, restStyles, bothStyles]}
+            // style={style}
             {...rest}
             onGestureEvent={this.onGestureEvent}
             onHandlerStateChange={this.onHandlerStateChange}

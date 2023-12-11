@@ -13,6 +13,9 @@ const OUTER_STYLES: { [key in keyof ViewStyle]?: true } = {
   marginStart: true,
   marginTop: true,
   marginVertical: true,
+
+  width: true,
+  height: true,
 };
 
 const BORDERS: { [key in keyof ViewStyle]?: true } = {
@@ -34,7 +37,6 @@ const INNER_STYLES: { [key in keyof ViewStyle]?: true } = {
   minHeight: true,
   minWidth: true,
 
-  width: true,
   zIndex: true,
 };
 
