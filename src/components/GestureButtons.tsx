@@ -132,18 +132,11 @@ export class BaseButton extends React.Component<BaseButtonProps> {
   private lastActive: boolean;
   private longPressTimeout: ReturnType<typeof setTimeout> | undefined;
   private longPressDetected: boolean;
-  private ref: React.RefObject<View>;
 
   constructor(props: BaseButtonProps) {
     super(props);
     this.lastActive = false;
     this.longPressDetected = false;
-    // this.state = {
-    //   width: 0,
-    //   height: 0,
-    // };
-
-    // this.ref = React.createRef();
   }
 
   private handleEvent = ({
@@ -235,36 +228,14 @@ export class BaseButton extends React.Component<BaseButtonProps> {
   render() {
     const { rippleColor, style, ...rest } = this.props;
 
-    const { restStyles, innerStyles, borders, bothStyles, outerStyles } =
-      splitStyleProp(style);
-
-    const { borderWidth } = outerStyles;
-    const outerBorders = { ...borders };
-
-    const updateBorderRadius = (prop: keyof typeof outerBorders) => {
-      if (outerBorders[prop] !== undefined && borderWidth !== undefined) {
-        outerBorders[prop] += borderWidth;
-      }
-    };
-
-    updateBorderRadius('borderRadius');
-    updateBorderRadius('borderTopLeftRadius');
-    updateBorderRadius('borderTopRightRadius');
-    updateBorderRadius('borderBottomLeftRadius');
-    updateBorderRadius('borderBottomRightRadius');
+    const { outerStyles, innerStyles, restStyles } = splitStyleProp(style);
 
     return (
-      <View style={[outerStyles, bothStyles, outerBorders]}>
-        <View
-          style={[
-            { overflow: 'hidden', flexGrow: 1 },
-            innerStyles,
-            bothStyles,
-            borders,
-          ]}>
+      <View style={outerStyles}>
+        <View style={innerStyles}>
           <RawButton
             rippleColor={processColor(rippleColor)}
-            style={[{ flexGrow: 1 }, restStyles, bothStyles]}
+            style={restStyles}
             // style={style}
             {...rest}
             onGestureEvent={this.onGestureEvent}
