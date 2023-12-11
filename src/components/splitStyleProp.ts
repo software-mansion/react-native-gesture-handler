@@ -77,7 +77,8 @@ const groupByStyle = (styles: ViewStyle) => {
   };
 };
 
-// to remain the same curvature of both inner and outer corners
+// if borderWidth was specified it will adjust the border radii
+// to remain the same curvature for both inner and outer views
 // https://twitter.com/lilykonings/status/1567317037126680576
 const shrinkBorderRadiiByBorderWidth = (
   borderRadiiStyles: ViewStyle,
