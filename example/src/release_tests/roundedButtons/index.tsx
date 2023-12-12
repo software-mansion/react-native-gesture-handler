@@ -10,10 +10,7 @@ import {
 } from 'react-native';
 import GestureHandlerRootView from '../../../../src/components/GestureHandlerRootView';
 import { ScrollView } from '../../../../src/components/GestureComponents';
-import {
-  BorderlessButton,
-  RectButton,
-} from '../../../../src/components/GestureButtons';
+import { RectButton } from '../../../../src/components/GestureButtons';
 
 const MyButton = RectButton;
 
