@@ -194,12 +194,6 @@ export class BaseButton extends React.Component<BaseButtonProps> {
     this.lastActive = active;
   };
 
-  // componentDidMount() {
-  //   this.ref.current?.measure((width: number, height: number) => {
-  //     this.setState({ width, height });
-  //   });
-  // }
-
   private onLongPress = () => {
     this.longPressDetected = true;
     this.props.onLongPress?.();
