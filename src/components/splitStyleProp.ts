@@ -1,50 +1,50 @@
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 const STYLE_GROUPS = {
-  borderRadiiStyles: [
-    'borderRadius',
-    'borderTopLeftRadius',
-    'borderTopRightRadius',
-    'borderBottomLeftRadius',
-    'borderBottomRightRadius',
-  ],
-  outerStyles: [
-    'borderColor',
-    'borderWidth',
-    'margin',
-    'marginBottom',
-    'marginEnd',
-    'marginHorizontal',
-    'marginLeft',
-    'marginRight',
-    'marginStart',
-    'marginTop',
-    'marginVertical',
-    'width',
-    'height',
-  ],
-  innerStyles: [
-    'alignSelf',
-    'display',
-    'flexBasis',
-    'flexGrow',
-    'flexShrink',
-    'maxHeight',
-    'maxWidth',
-    'minHeight',
-    'minWidth',
-    'zIndex',
-  ],
-  applyToAllStyles: [
-    'flex',
-    'position',
-    'left',
-    'right',
-    'top',
-    'bottom',
-    'start',
-    'end',
-  ],
+  borderRadiiStyles: {
+    borderRadius: true,
+    borderTopLeftRadius: true,
+    borderTopRightRadius: true,
+    borderBottomLeftRadius: true,
+    borderBottomRightRadius: true,
+  } as const,
+  outerStyles: {
+    borderColor: true,
+    borderWidth: true,
+    margin: true,
+    marginBottom: true,
+    marginEnd: true,
+    marginHorizontal: true,
+    marginLeft: true,
+    marginRight: true,
+    marginStart: true,
+    marginTop: true,
+    marginVertical: true,
+    width: true,
+    height: true,
+  } as const,
+  innerStyles: {
+    alignSelf: true,
+    display: true,
+    flexBasis: true,
+    flexGrow: true,
+    flexShrink: true,
+    maxHeight: true,
+    maxWidth: true,
+    minHeight: true,
+    minWidth: true,
+    zIndex: true,
+  } as const,
+  applyToAllStyles: {
+    flex: true,
+    position: true,
+    left: true,
+    right: true,
+    top: true,
+    bottom: true,
+    start: true,
+    end: true,
+  } as const,
 } as const;
 
 const groupByStyle = (styles: ViewStyle) => {
@@ -55,15 +55,20 @@ const groupByStyle = (styles: ViewStyle) => {
   const restStyles = {} as ViewStyle;
 
   Object.keys(styles).forEach((key) => {
-    if (STYLE_GROUPS.borderRadiiStyles.includes(key)) {
+    if (key in STYLE_GROUPS.borderRadiiStyles) {
+      // @ts-ignore I can't
       borderRadiiStyles[key] = styles[key];
-    } else if (STYLE_GROUPS.outerStyles.includes(key)) {
+    } else if (key in STYLE_GROUPS.outerStyles) {
+      // @ts-ignore figure out
       outerStyles[key] = styles[key];
-    } else if (STYLE_GROUPS.innerStyles.includes(key)) {
+    } else if (key in STYLE_GROUPS.innerStyles) {
+      // @ts-ignore how to
       innerStyles[key] = styles[key];
-    } else if (STYLE_GROUPS.applyToAllStyles.includes(key)) {
+    } else if (key in STYLE_GROUPS.applyToAllStyles) {
+      // @ts-ignore fix these
       applyToAllStyles[key] = styles[key];
     } else {
+      // @ts-ignore types
       restStyles[key] = styles[key];
     }
   });
@@ -86,8 +91,9 @@ const shrinkBorderRadiiByBorderWidth = (
 ) => {
   const newBorderRadiiStyles = { ...borderRadiiStyles };
 
-  STYLE_GROUPS.borderRadiiStyles.forEach((borderRadiusType) => {
-    if (newBorderRadiiStyles.hasOwnProperty(borderRadiusType)) {
+  Object.keys(STYLE_GROUPS.borderRadiiStyles).forEach((borderRadiusType) => {
+    if (borderRadiusType in newBorderRadiiStyles) {
+      // @ts-ignore it's fine
       newBorderRadiiStyles[borderRadiusType] -= borderWidth;
     }
   });
