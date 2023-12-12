@@ -235,8 +235,8 @@ export class BaseButton extends React.Component<BaseButtonProps> {
         <View style={innerStyles}>
           <RawButton
             rippleColor={processColor(rippleColor)}
+            // @ts-ignore TODO: fix this type
             style={restStyles}
-            // style={style}
             {...rest}
             onGestureEvent={this.onGestureEvent}
             onHandlerStateChange={this.onHandlerStateChange}

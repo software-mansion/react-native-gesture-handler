@@ -53,10 +53,7 @@ function Gallery() {
     <View style={[styles.container, styles.gap, styles.marginBottom]}>
       <MyButton style={styles.fullWidthButton} />
       <View style={[styles.row, styles.gap]}>
-        <MyButton
-          style={styles.leftButton}
-          onPress={() => console.log('xDDD')}
-        />
+        <MyButton style={styles.leftButton} />
         <MyButton style={styles.rightButton} />
       </View>
     </View>
