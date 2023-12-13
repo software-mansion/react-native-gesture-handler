@@ -14,6 +14,7 @@ interface PressBoxProps {
 interface ExampleState {
   longPressDuration: number;
 }
+
 export class PressBox extends Component<PressBoxProps> {
   private doubleTapRef = React.createRef<TapGestureHandler>();
   private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
