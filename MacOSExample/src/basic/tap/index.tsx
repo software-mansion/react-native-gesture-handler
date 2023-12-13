@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
-  ScrollView,
   State,
   TapGestureHandler,
-  LongPressGestureHandlerStateChangeEvent,
   TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
@@ -33,15 +31,15 @@ export class PressBox extends Component<PressBoxProps> {
   render() {
     return (
       <TapGestureHandler
-      onHandlerStateChange={this.onSingleTap}
-      waitFor={this.doubleTapRef}>
-      <TapGestureHandler
-        ref={this.doubleTapRef}
-        onHandlerStateChange={this.onDoubleTap}
-        numberOfTaps={2}>
-        <View style={styles.box} />
+        onHandlerStateChange={this.onSingleTap}
+        waitFor={this.doubleTapRef}>
+        <TapGestureHandler
+          ref={this.doubleTapRef}
+          onHandlerStateChange={this.onDoubleTap}
+          numberOfTaps={2}>
+          <View style={styles.box} />
+        </TapGestureHandler>
       </TapGestureHandler>
-    </TapGestureHandler>
     );
   }
 }
@@ -57,9 +55,7 @@ export default class Example extends Component<
   }
 
   render() {
-    return (
-      <PressBox />
-    );
+    return <PressBox />;
   }
 }
 

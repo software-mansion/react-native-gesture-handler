@@ -1,14 +1,18 @@
 import React from 'react';
-import { Text, View, StyleSheet, SectionList, Platform, Pressable } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  SectionList,
+  Platform,
+  Pressable,
+} from 'react-native';
 import {
   createStackNavigator,
   StackScreenProps,
 } from '@react-navigation/stack';
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
-import {
-  GestureHandlerRootView,
-  RectButton,
-} from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import Draggable from './basic/draggable';
 import PinchableBox from './recipes/scaleAndRotate';
@@ -18,6 +22,7 @@ interface Example {
   name: string;
   component: React.ComponentType;
 }
+
 interface ExamplesSection {
   sectionTitle: string;
   data: Example[];
@@ -122,7 +127,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#efefef',
     color: 'black',
   },
-  list: {},
   separator: {
     height: 2,
   },

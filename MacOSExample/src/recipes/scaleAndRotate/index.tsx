@@ -1,5 +1,5 @@
 import React from 'react';
-import {Animated, Platform, StyleSheet} from 'react-native';
+import { Animated, Platform, StyleSheet } from 'react-native';
 
 import {
   PanGestureHandler,
@@ -14,7 +14,7 @@ import {
   RotationGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import {USE_NATIVE_DRIVER} from '../../config';
+import { USE_NATIVE_DRIVER } from '../../config';
 
 export class PinchableBox extends React.Component {
   private panRef = React.createRef<PanGestureHandler>();
@@ -29,7 +29,7 @@ export class PinchableBox extends React.Component {
   private rotateStr: Animated.AnimatedInterpolation<number>;
   private lastRotate: number;
   private onRotateGestureEvent: (
-    event: RotationGestureHandlerGestureEvent,
+    event: RotationGestureHandlerGestureEvent
   ) => void;
   private tilt: Animated.Value;
   private tiltStr: Animated.AnimatedMultiplication<number>;
@@ -44,8 +44,8 @@ export class PinchableBox extends React.Component {
     this.scale = Animated.multiply(this.baseScale, this.pinchScale);
     this.lastScale = 1;
     this.onPinchGestureEvent = Animated.event(
-      [{nativeEvent: {scale: this.pinchScale}}],
-      {useNativeDriver: USE_NATIVE_DRIVER},
+      [{ nativeEvent: { scale: this.pinchScale } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
     /* Rotation */
@@ -56,8 +56,8 @@ export class PinchableBox extends React.Component {
     });
     this.lastRotate = 0;
     this.onRotateGestureEvent = Animated.event(
-      [{nativeEvent: {rotation: this.rotate}}],
-      {useNativeDriver: USE_NATIVE_DRIVER},
+      [{ nativeEvent: { rotation: this.rotate } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
 
     /* Tilt */
@@ -68,13 +68,13 @@ export class PinchableBox extends React.Component {
     });
     this.lastTilt = 0;
     this.onTiltGestureEvent = Animated.event(
-      [{nativeEvent: {translationY: this.tilt}}],
-      {useNativeDriver: USE_NATIVE_DRIVER},
+      [{ nativeEvent: { translationY: this.tilt } }],
+      { useNativeDriver: USE_NATIVE_DRIVER }
     );
   }
 
   private onRotateHandlerStateChange = (
-    event: RotationGestureHandlerStateChangeEvent,
+    event: RotationGestureHandlerStateChangeEvent
   ) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastRotate += event.nativeEvent.rotation;
@@ -83,7 +83,7 @@ export class PinchableBox extends React.Component {
     }
   };
   private onPinchHandlerStateChange = (
-    event: PinchGestureHandlerStateChangeEvent,
+    event: PinchGestureHandlerStateChangeEvent
   ) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastScale *= event.nativeEvent.scale;
@@ -92,7 +92,7 @@ export class PinchableBox extends React.Component {
     }
   };
   private onTiltGestureStateChange = (
-    event: PanGestureHandlerStateChangeEvent,
+    event: PanGestureHandlerStateChangeEvent
   ) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this.lastTilt += event.nativeEvent.translationY;
@@ -128,10 +128,10 @@ export class PinchableBox extends React.Component {
                       styles.pinchableImage,
                       {
                         transform: [
-                          {perspective: 200},
-                          {scale: this.scale},
-                          {rotate: this.rotateStr},
-                          {rotateX: this.tiltStr},
+                          { perspective: 200 },
+                          { scale: this.scale },
+                          { rotate: this.rotateStr },
+                          { rotateX: this.tiltStr },
                         ],
                       },
                     ]}

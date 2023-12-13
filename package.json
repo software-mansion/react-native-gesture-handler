@@ -9,10 +9,10 @@
     "precommit": "lint-staged",
     "release": "npm login && release-it",
     "ts-check": "yarn tsc --noEmit",
-    "format:js": "prettier --write --list-different './{src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'",
+    "format:js": "prettier --write --list-different './{src,example,FabricExample,MacOSExample}/**/*.{js,jsx,ts,tsx}'",
     "format:android": "node ./scripts/format-android.js",
     "format:ios": "find apple/ -iname *.h -o -iname *.m -o -iname *.cpp -o -iname *.mm | xargs clang-format -i",
-    "lint:js": "eslint --ext '.js,.ts,.tsx' src/ example/src FabricExample/src && yarn prettier --check './{src,example,FabricExample}/**/*.{js,jsx,ts,tsx}'",
+    "lint:js": "eslint --ext '.js,.ts,.tsx' src/ example/src FabricExample/src MacOSExample/src && yarn prettier --check './{src,example,FabricExample,MacOSExample}/**/*.{js,jsx,ts,tsx}'",
     "lint:js-root": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
     "lint:android": "./android/gradlew -p android spotlessCheck -q"
   },
@@ -114,7 +114,7 @@
     "react-native": "*"
   },
   "lint-staged": {
-    "./{src,example,FabricExample}/**/*.{ts,tsx}": "yarn format:js",
+    "./{src,example,FabricExample,MacOSExample}/**/*.{ts,tsx}": "yarn format:js",
     "android/**/*.kt": "yarn format:android",
     "apple/**/*.{h,m,mm,cpp}": "yarn format:ios"
   },
