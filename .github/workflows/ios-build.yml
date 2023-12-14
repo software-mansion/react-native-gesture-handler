@@ -4,12 +4,13 @@ on:
     paths:
       - '.github/workflows/ios-build.yml'
       - 'RNGestureHandler.podspec'
-      - 'ios/**'
+      - 'apple/**'
       - 'Example/ios/**'
       - 'FabricExample/ios/**'
   push:
     branches:
       - main
+  workflow_dispatch:
 jobs:
   build:
     runs-on: macos-12
