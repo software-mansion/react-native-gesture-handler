@@ -1,12 +1,11 @@
-name: Test iOS build
+name: Test macOS build
 on:
   pull_request:
     paths:
-      - '.github/workflows/ios-build.yml'
+      - '.github/workflows/macos-build.yml'
       - 'RNGestureHandler.podspec'
       - 'apple/**'
-      - 'Example/ios/**'
-      - 'FabricExample/ios/**'
+      - 'MacOSExample/macos/**'
   push:
     branches:
       - main
@@ -16,24 +15,24 @@ jobs:
     runs-on: macos-12
     strategy:
       matrix:
-        working-directory: [example, FabricExample]
+        working-directory: [MacOSExample]
     concurrency:
-      group: ios-${{ matrix.working-directory }}-${{ github.ref }}
+      group: macos-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: Use Node.js 18
+      - name: Use Node.js 16
         uses: actions/setup-node@v2
         with:
-          node-version: 18
+          node-version: 16
           cache: 'yarn'
       - name: Install node dependencies
         working-directory: ${{ matrix.working-directory }}
         run: yarn
       - name: Install pods
-        working-directory: ${{ matrix.working-directory }}/ios
+        working-directory: ${{ matrix.working-directory }}/macos
         run: pod install
       - name: Build app
         working-directory: ${{ matrix.working-directory }}
-        run: yarn ios --simulator=\"iPhone 11\" --mode Debug
+        run: yarn macos
