@@ -47,31 +47,50 @@ const STYLE_GROUPS = {
   } as const,
 } as const;
 
-const groupByStyle = (styles: ViewStyle) => {
-  const borderRadiiStyles = {} as ViewStyle;
-  const outerStyles = {} as ViewStyle;
-  const innerStyles = {} as ViewStyle;
-  const applyToAllStyles = {} as ViewStyle;
-  const restStyles = {} as ViewStyle;
+type BorderRadiiKey = keyof typeof STYLE_GROUPS.borderRadiiStyles;
+type OuterKey = keyof typeof STYLE_GROUPS.outerStyles;
+type InnerKey = keyof typeof STYLE_GROUPS.innerStyles;
+type ApplyToAllKey = keyof typeof STYLE_GROUPS.applyToAllStyles;
 
-  Object.keys(styles).forEach((key) => {
+type BorderRadiiStyles = Pick<ViewStyle, BorderRadiiKey>;
+type OuterStyles = Pick<ViewStyle, OuterKey>;
+type InnerStyles = Pick<ViewStyle, InnerKey>;
+type ApplyToAllStyles = Pick<ViewStyle, ApplyToAllKey>;
+type RestStyles = Omit<
+  ViewStyle,
+  BorderRadiiKey | OuterKey | InnerKey | ApplyToAllKey
+>;
+
+type GroupedStyles = {
+  borderRadiiStyles: BorderRadiiStyles;
+  outerStyles: OuterStyles;
+  innerStyles: InnerStyles;
+  applyToAllStyles: ApplyToAllStyles;
+  restStyles: RestStyles;
+};
+
+const groupByStyle = (styles: ViewStyle): GroupedStyles => {
+  const borderRadiiStyles = {} as Record<string, unknown>;
+  const outerStyles = {} as Record<string, unknown>;
+  const innerStyles = {} as Record<string, unknown>;
+  const applyToAllStyles = {} as Record<string, unknown>;
+  const restStyles = {} as Record<string, unknown>;
+
+  let key: keyof ViewStyle;
+
+  for (key in styles) {
     if (key in STYLE_GROUPS.borderRadiiStyles) {
-      // @ts-ignore I can't
       borderRadiiStyles[key] = styles[key];
     } else if (key in STYLE_GROUPS.outerStyles) {
-      // @ts-ignore figure out
       outerStyles[key] = styles[key];
     } else if (key in STYLE_GROUPS.innerStyles) {
-      // @ts-ignore how to
       innerStyles[key] = styles[key];
     } else if (key in STYLE_GROUPS.applyToAllStyles) {
-      // @ts-ignore fix these
       applyToAllStyles[key] = styles[key];
     } else {
-      // @ts-ignore types
       restStyles[key] = styles[key];
     }
-  });
+  }
 
   return {
     borderRadiiStyles,
@@ -86,17 +105,17 @@ const groupByStyle = (styles: ViewStyle) => {
 // to remain the same curvature for both inner and outer views
 // https://twitter.com/lilykonings/status/1567317037126680576
 const shrinkBorderRadiiByBorderWidth = (
-  borderRadiiStyles: ViewStyle,
+  borderRadiiStyles: BorderRadiiStyles,
   borderWidth: number
 ) => {
   const newBorderRadiiStyles = { ...borderRadiiStyles };
 
-  Object.keys(STYLE_GROUPS.borderRadiiStyles).forEach((borderRadiusType) => {
-    if (borderRadiusType in newBorderRadiiStyles) {
-      // @ts-ignore it's fine
-      newBorderRadiiStyles[borderRadiusType] -= borderWidth;
-    }
-  });
+  let borderRadiusType: BorderRadiiKey;
+
+  for (borderRadiusType in newBorderRadiiStyles) {
+    newBorderRadiiStyles[borderRadiusType] =
+      (newBorderRadiiStyles[borderRadiusType] as number) - borderWidth;
+  }
 
   return newBorderRadiiStyles;
 };

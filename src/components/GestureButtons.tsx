@@ -65,6 +65,7 @@ export interface RawButtonProps extends NativeViewGestureHandlerProps {
    * Set this to true if you don't want the system to play sound when the button is pressed.
    */
   touchSoundDisabled?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 export interface BaseButtonProps extends RawButtonProps {
@@ -86,7 +87,6 @@ export interface BaseButtonProps extends RawButtonProps {
    * method.
    */
   onActiveStateChange?: (active: boolean) => void;
-  style?: StyleProp<ViewStyle>;
   testID?: string;
 
   /**
@@ -229,7 +229,6 @@ export class BaseButton extends React.Component<BaseButtonProps> {
         <View style={innerStyles}>
           <RawButton
             rippleColor={processColor(rippleColor)}
-            // @ts-ignore TODO: fix this type
             style={restStyles}
             {...rest}
             onGestureEvent={this.onGestureEvent}
