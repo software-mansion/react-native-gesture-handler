@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  SafeAreaView,
-  Dimensions,
-  Image,
-  Pressable,
-} from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
 import GestureHandlerRootView from '../../../../src/components/GestureHandlerRootView';
 import { ScrollView } from '../../../../src/components/GestureComponents';
 import { RectButton } from '../../../../src/components/GestureButtons';

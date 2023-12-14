@@ -127,7 +127,7 @@ export function splitStyleProp<T extends ViewStyle>(
   innerStyles: T;
   restStyles: T;
 } {
-  const resolvedStyle = StyleSheet.flatten(style ?? {});
+  const resolvedStyle = StyleSheet.flatten((style ?? {}) as ViewStyle);
 
   let outerStyles = {} as T;
   let innerStyles = { overflow: 'hidden', flexGrow: 1 } as T;
