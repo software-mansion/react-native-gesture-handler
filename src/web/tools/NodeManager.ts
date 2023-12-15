@@ -21,7 +21,9 @@ export default abstract class NodeManager {
     handler: InstanceType<ValueOf<typeof Gestures>>
   ): void {
     if (handlerTag in this.gestures) {
-      throw new Error(`Handler with tag ${handlerTag} already exists`);
+      throw new Error(
+        `Handler with tag ${handlerTag} already exists. Please ensure that no GestureHandler instance is used across multiple GestureDetectors.`
+      );
     }
 
     this.gestures[handlerTag] = handler;
