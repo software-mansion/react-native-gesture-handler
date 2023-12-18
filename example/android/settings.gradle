@@ -4,5 +4,4 @@ include ':app'
 include ':react-native-gesture-handler'
 project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../../android')
 
-includeBuild('../node_modules/react-native-gradle-plugin')
-
+includeBuild('../node_modules/@react-native/gradle-plugin')

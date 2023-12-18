@@ -56,6 +56,10 @@ jsconfig.json
 .settings/
 .vscode
 
+# Yarn
+.yarn
+!.yarn/releases
+
 # TS
 dist/
 

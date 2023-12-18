@@ -43,10 +43,11 @@ import ChatHeadsNewApi from './new_api/chat_heads';
 import DragNDrop from './new_api/drag_n_drop';
 import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
 import ManualGestures from './new_api/manualGestures/index';
+import Hover from './new_api/hover';
+import HoverableIcons from './new_api/hoverable_icons';
+import VelocityTest from './new_api/velocityTest';
 
-import { enableExperimentalWebImplementation } from 'react-native-gesture-handler';
-
-enableExperimentalWebImplementation();
+import EmptyExample from './empty/EmptyExample';
 
 interface Example {
   name: string;
@@ -58,6 +59,10 @@ interface ExamplesSection {
 }
 
 const EXAMPLES: ExamplesSection[] = [
+  {
+    sectionTitle: 'Empty',
+    data: [{ name: 'Empty Example', component: EmptyExample }],
+  },
   {
     sectionTitle: 'Basic examples',
     data: [
@@ -119,7 +124,10 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Simple interaction with Reanimated',
         component: ReanimatedSimple,
       },
+      { name: 'Hover', component: Hover },
+      { name: 'Hoverable icons', component: HoverableIcons },
       { name: 'Camera', component: Camera },
+      { name: 'Velocity test', component: VelocityTest },
       { name: 'Transformations', component: Transformations },
       { name: 'Overlap parents', component: OverlapParents },
       { name: 'Overlap siblings', component: OverlapSiblings },

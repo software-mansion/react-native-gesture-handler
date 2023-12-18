@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ActionType } from './ActionType';
-import { isExperimentalWebImplementationEnabled } from './EnableExperimentalWebImplementation';
+import { isNewWebImplementationEnabled } from './EnableNewWebImplementation';
 
 //GestureHandlers
 import InteractionManager from './web/tools/InteractionManager';
@@ -14,6 +14,7 @@ import RotationGestureHandler from './web/handlers/RotationGestureHandler';
 import FlingGestureHandler from './web/handlers/FlingGestureHandler';
 import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
 import ManualGestureHandler from './web/handlers/ManualGestureHandler';
+import HoverGestureHandler from './web/handlers/HoverGestureHandler';
 
 //Hammer Handlers
 import * as HammerNodeManager from './web_hammer/NodeManager';
@@ -25,6 +26,7 @@ import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
 import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
 import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
 import { Config } from './web/interfaces';
+import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
 
 export const Gestures = {
   NativeViewGestureHandler,
@@ -35,6 +37,7 @@ export const Gestures = {
   RotationGestureHandler,
   FlingGestureHandler,
   ManualGestureHandler,
+  HoverGestureHandler,
 };
 
 export const HammerGestures = {
@@ -59,7 +62,7 @@ export default {
     handlerTag: number,
     config: T
   ) {
-    if (isExperimentalWebImplementationEnabled()) {
+    if (isNewWebImplementationEnabled()) {
       if (!(handlerName in Gestures)) {
         throw new Error(
           `react-native-gesture-handler: ${handlerName} is not supported on web.`
@@ -67,7 +70,10 @@ export default {
       }
 
       const GestureClass = Gestures[handlerName];
-      NodeManager.createGestureHandler(handlerTag, new GestureClass());
+      NodeManager.createGestureHandler(
+        handlerTag,
+        new GestureClass(new GestureHandlerWebDelegate())
+      );
       InteractionManager.getInstance().configureInteractions(
         NodeManager.getHandler(handlerTag),
         config as unknown as Config
@@ -101,7 +107,7 @@ export default {
       return;
     }
 
-    if (isExperimentalWebImplementationEnabled()) {
+    if (isNewWebImplementationEnabled()) {
       //@ts-ignore Types should be HTMLElement or React.Component
       NodeManager.getHandler(handlerTag).init(newView, propsRef);
     } else {
@@ -110,7 +116,7 @@ export default {
     }
   },
   updateGestureHandler(handlerTag: number, newConfig: Config) {
-    if (isExperimentalWebImplementationEnabled()) {
+    if (isNewWebImplementationEnabled()) {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
 
       InteractionManager.getInstance().configureInteractions(
@@ -122,14 +128,14 @@ export default {
     }
   },
   getGestureHandlerNode(handlerTag: number) {
-    if (isExperimentalWebImplementationEnabled()) {
+    if (isNewWebImplementationEnabled()) {
       return NodeManager.getHandler(handlerTag);
     } else {
       return HammerNodeManager.getHandler(handlerTag);
     }
   },
   dropGestureHandler(handlerTag: number) {
-    if (isExperimentalWebImplementationEnabled()) {
+    if (isNewWebImplementationEnabled()) {
       NodeManager.dropGestureHandler(handlerTag);
     } else {
       HammerNodeManager.dropGestureHandler(handlerTag);

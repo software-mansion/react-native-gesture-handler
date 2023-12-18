@@ -1,11 +1,3 @@
-import pack from 'react-native/package.json';
-
-const [majorStr, minorStr] = pack.version.split('.');
-export const REACT_NATIVE_VERSION = {
-  major: parseInt(majorStr, 10),
-  minor: parseInt(minorStr, 10),
-};
-
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];
@@ -53,11 +45,6 @@ export function tagMessage(msg: string) {
 export function isFabric(): boolean {
   // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
   return !!global?.nativeFabricUIManager;
-}
-
-export function shouldUseCodegenNativeComponent(): boolean {
-  // use codegenNativeComponent starting with RN 0.68
-  return REACT_NATIVE_VERSION.minor >= 68 || REACT_NATIVE_VERSION.major > 0;
 }
 
 export function isRemoteDebuggingEnabled(): boolean {

@@ -8,7 +8,7 @@ import {
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
-export default class TouchEventManager extends EventManager {
+export default class TouchEventManager extends EventManager<HTMLElement> {
   public setListeners(): void {
     this.view.addEventListener('touchstart', (event: TouchEvent) => {
       for (let i = 0; i < event.changedTouches.length; ++i) {
@@ -75,8 +75,8 @@ export default class TouchEventManager extends EventManager {
           }
         } else {
           if (pointerIndex >= 0) {
-            adaptedEvent.eventType = EventTypes.OUT;
-            this.onPointerOut(adaptedEvent);
+            adaptedEvent.eventType = EventTypes.LEAVE;
+            this.onPointerLeave(adaptedEvent);
             this.markAsOutOfBounds(adaptedEvent.pointerId);
           } else {
             this.onPointerOutOfBounds(adaptedEvent);

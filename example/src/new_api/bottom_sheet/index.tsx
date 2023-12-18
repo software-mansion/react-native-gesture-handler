@@ -1,5 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import {
+  Dimensions,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -117,7 +123,9 @@ function Example() {
             <Animated.ScrollView
               bounces={false}
               scrollEventThrottle={1}
-              onScrollBeginDrag={(e) => {
+              onScrollBeginDrag={(
+                e: NativeSyntheticEvent<NativeScrollEvent>
+              ) => {
                 scrollOffset.value = e.nativeEvent.contentOffset.y;
               }}>
               <LoremIpsum />

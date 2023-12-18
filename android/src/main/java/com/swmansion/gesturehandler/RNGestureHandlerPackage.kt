@@ -52,7 +52,7 @@ class RNGestureHandlerPackage : TurboReactPackage(), ViewManagerOnDemandReactPac
     return viewManagers[viewManagerName]?.provider?.get() as? ViewManager<*, *>
   }
 
-  override fun getModule(name: String?, reactContext: ReactApplicationContext?): NativeModule? {
+  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
     return if (name == RNGestureHandlerModule.MODULE_NAME) {
       RNGestureHandlerModule(reactContext)
     } else {

@@ -6,6 +6,7 @@ import {
   StyleProp,
   ViewStyle,
   TouchableWithoutFeedbackProps,
+  Insets,
 } from 'react-native';
 
 import { State } from '../../State';
@@ -33,7 +34,8 @@ export const TOUCHABLE_STATE = {
 
 type TouchableState = typeof TOUCHABLE_STATE[keyof typeof TOUCHABLE_STATE];
 
-export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
+export interface GenericTouchableProps
+  extends Omit<TouchableWithoutFeedbackProps, 'hitSlop'> {
   // Decided to drop not used fields from RN's implementation.
   // e.g. onBlur and onFocus as well as deprecated props. - TODO: this comment may be unuseful in this moment
 
@@ -48,6 +50,7 @@ export interface GenericTouchableProps extends TouchableWithoutFeedbackProps {
   disallowInterruption?: boolean;
 
   containerStyle?: StyleProp<ViewStyle>;
+  hitSlop?: Insets | number;
 }
 
 interface InternalProps {
@@ -250,6 +253,16 @@ export default class GenericTouchable extends Component<
   }
 
   render() {
+    const hitSlop =
+      (typeof this.props.hitSlop === 'number'
+        ? {
+            top: this.props.hitSlop,
+            left: this.props.hitSlop,
+            bottom: this.props.hitSlop,
+            right: this.props.hitSlop,
+          }
+        : this.props.hitSlop) ?? undefined;
+
     const coreProps = {
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
@@ -262,7 +275,6 @@ export default class GenericTouchable extends Component<
       onAccessibilityAction: this.props.onAccessibilityAction,
       nativeID: this.props.nativeID,
       onLayout: this.props.onLayout,
-      hitSlop: this.props.hitSlop,
     };
 
     return (
@@ -273,7 +285,7 @@ export default class GenericTouchable extends Component<
           this.props.disabled ? undefined : this.onHandlerStateChange
         }
         onGestureEvent={this.onGestureEvent}
-        hitSlop={this.props.hitSlop}
+        hitSlop={hitSlop}
         shouldActivateOnStart={this.props.shouldActivateOnStart}
         disallowInterruption={this.props.disallowInterruption}
         testID={this.props.testID}

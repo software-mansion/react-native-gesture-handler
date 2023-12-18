@@ -6,6 +6,7 @@ import {
   GestureTouchEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
+  ActiveCursor,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
 import { GestureStateManagerType } from './gestureStateManager';
@@ -40,6 +41,7 @@ export interface BaseGestureConfig
   ref?: React.MutableRefObject<GestureType | undefined>;
   requireToFail?: GestureRef[];
   simultaneousWith?: GestureRef[];
+  blocksHandlers?: GestureRef[];
   needsPointerData?: boolean;
   manualActivation?: boolean;
   runOnJS?: boolean;
@@ -143,7 +145,7 @@ export abstract class BaseGesture<
   }
 
   private addDependency(
-    key: 'simultaneousWith' | 'requireToFail',
+    key: 'simultaneousWith' | 'requireToFail' | 'blocksHandlers',
     gesture: Exclude<GestureRef, number>
   ) {
     const value = this.config[key];
@@ -250,6 +252,11 @@ export abstract class BaseGesture<
     return this;
   }
 
+  activeCursor(activeCursor: ActiveCursor) {
+    this.config.activeCursor = activeCursor;
+    return this;
+  }
+
   runOnJS(runOnJS: boolean) {
     this.config.runOnJS = runOnJS;
     return this;
@@ -265,6 +272,13 @@ export abstract class BaseGesture<
   requireExternalGestureToFail(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
       this.addDependency('requireToFail', gesture);
+    }
+    return this;
+  }
+
+  blocksExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
+    for (const gesture of gestures) {
+      this.addDependency('blocksHandlers', gesture);
     }
     return this;
   }

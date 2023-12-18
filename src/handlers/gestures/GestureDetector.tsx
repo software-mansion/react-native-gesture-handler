@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   GestureType,
   HandlerCallbacks,
@@ -32,17 +32,22 @@ import {
   panGestureHandlerCustomNativeProps,
 } from '../PanGestureHandler';
 import { tapGestureHandlerProps } from '../TapGestureHandler';
+import { hoverGestureHandlerProps } from './hoverGesture';
 import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
-import { isFabric, REACT_NATIVE_VERSION, tagMessage } from '../../utils';
+import { isFabric, isJestEnv, tagMessage } from '../../utils';
+import { getReactNativeVersion } from '../../getReactNativeVersion';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
 import { RNRenderer } from '../../RNRenderer';
-import { isExperimentalWebImplementationEnabled } from '../../EnableExperimentalWebImplementation';
+import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
+import { nativeViewGestureHandlerProps } from '../NativeViewGestureHandler';
+import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
+import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -56,6 +61,8 @@ const ALLOWED_PROPS = [
   ...longPressGestureHandlerProps,
   ...forceTouchGestureHandlerProps,
   ...flingGestureHandlerProps,
+  ...hoverGestureHandlerProps,
+  ...nativeViewGestureHandlerProps,
 ];
 
 export type GestureConfigReference = {
@@ -147,9 +154,9 @@ function attachHandlers({
     preparedGesture.firstExecution = false;
   }
 
-  // use setImmediate to extract handlerTags, because all refs should be initialized
+  // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
-  setImmediate(() => {
+  ghQueueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -167,9 +174,9 @@ function attachHandlers({
     registerHandler(handler.handlerTag, handler, handler.config.testId);
   }
 
-  // use setImmediate to extract handlerTags, because all refs should be initialized
+  // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
-  setImmediate(() => {
+  ghQueueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -186,11 +193,17 @@ function attachHandlers({
         );
       }
 
+      let blocksHandlers: number[] = [];
+      if (handler.config.blocksHandlers) {
+        blocksHandlers = extractValidHandlerTags(handler.config.blocksHandlers);
+      }
+
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
         filterConfig(handler.config, ALLOWED_PROPS, {
           simultaneousHandlers: simultaneousWith,
           waitFor: requireToFail,
+          blocksHandlers: blocksHandlers,
         })
       );
     }
@@ -254,10 +267,10 @@ function updateHandlers(
     }
   }
 
-  // use setImmediate to extract handlerTags, because when it's ran, all refs should be updated
+  // use queueMicrotask to extract handlerTags, because when it's ran, all refs should be updated
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
-  setImmediate(() => {
+  ghQueueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -554,6 +567,7 @@ function validateDetectorChildren(ref: any) {
   //         /       \
   //   NativeView  NativeView
   if (__DEV__ && Platform.OS !== 'web') {
+    const REACT_NATIVE_VERSION = getReactNativeVersion();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const wrapType =
       REACT_NATIVE_VERSION.minor > 63 || REACT_NATIVE_VERSION.major > 0
@@ -603,6 +617,13 @@ interface GestureDetectorState {
   forceReattach: boolean;
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
+  const rootViewContext = useContext(GestureHandlerRootViewContext);
+  if (__DEV__ && !rootViewContext && !isJestEnv() && Platform.OS !== 'web') {
+    throw new Error(
+      'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
+    );
+  }
+
   const gestureConfig = props.gesture;
 
   if (props.userSelect) {
@@ -624,7 +645,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
     },
-    onGestureHandlerStateChange: isExperimentalWebImplementationEnabled()
+    onGestureHandlerStateChange: isNewWebImplementationEnabled()
       ? (e: HandlerStateChangeEvent<unknown>) => {
           onGestureHandlerEvent(e.nativeEvent);
         }

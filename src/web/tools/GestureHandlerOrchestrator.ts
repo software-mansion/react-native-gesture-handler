@@ -3,14 +3,12 @@ import { PointerType } from '../interfaces';
 
 import GestureHandler from '../handlers/GestureHandler';
 import PointerTracker from './PointerTracker';
-import { isPointerInBounds } from '../utils';
 
 export default class GestureHandlerOrchestrator {
   private static instance: GestureHandlerOrchestrator;
 
   private gestureHandlers: GestureHandler[] = [];
   private awaitingHandlers: GestureHandler[] = [];
-  private handlersToCancel: GestureHandler[] = [];
 
   private handlingChangeSemaphore = 0;
   private activationIndex = 0;
@@ -35,7 +33,6 @@ export default class GestureHandlerOrchestrator {
   public removeHandlerFromOrchestrator(handler: GestureHandler): void {
     this.gestureHandlers.splice(this.gestureHandlers.indexOf(handler), 1);
     this.awaitingHandlers.splice(this.awaitingHandlers.indexOf(handler), 1);
-    this.handlersToCancel.splice(this.handlersToCancel.indexOf(handler), 1);
   }
 
   private cleanupFinishedHandlers(): void {
@@ -178,17 +175,12 @@ export default class GestureHandlerOrchestrator {
     handler.setShouldResetProgress(true);
     handler.setActivationIndex(this.activationIndex++);
 
-    this.gestureHandlers.forEach((otherHandler) => {
-      // Order of arguments is correct - we check whether current handler should cancel existing handlers
-
-      if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        this.handlersToCancel.push(otherHandler);
+    for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
+      if (this.shouldHandlerBeCancelledBy(this.gestureHandlers[i], handler)) {
+        this.gestureHandlers[i].cancel();
       }
-    });
-
-    for (let i = this.handlersToCancel.length - 1; i >= 0; --i) {
-      this.handlersToCancel[i]?.cancel();
     }
+
     this.awaitingHandlers.forEach((otherHandler) => {
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
         otherHandler?.cancel();
@@ -213,8 +205,6 @@ export default class GestureHandlerOrchestrator {
         }
       }
     }
-
-    this.handlersToCancel = [];
   }
 
   private addAwaitingHandler(handler: GestureHandler): void {
@@ -301,7 +291,7 @@ export default class GestureHandlerOrchestrator {
 
     if (
       !PointerTracker.shareCommonPointers(handlerPointers, otherPointers) &&
-      handler.getView() !== otherHandler.getView()
+      handler.getDelegate().getView() !== otherHandler.getDelegate().getView()
     ) {
       return this.checkOverlap(handler, otherHandler);
     }
@@ -329,8 +319,10 @@ export default class GestureHandlerOrchestrator {
       const handlerY: number = handler.getTracker().getLastY(pointer);
 
       if (
-        isPointerInBounds(handler.getView(), { x: handlerX, y: handlerY }) &&
-        isPointerInBounds(otherHandler.getView(), { x: handlerX, y: handlerY })
+        handler.getDelegate().isPointerInBounds({ x: handlerX, y: handlerY }) &&
+        otherHandler
+          .getDelegate()
+          .isPointerInBounds({ x: handlerX, y: handlerY })
       ) {
         overlap = true;
       }
@@ -341,8 +333,8 @@ export default class GestureHandlerOrchestrator {
       const otherY: number = otherHandler.getTracker().getLastY(pointer);
 
       if (
-        isPointerInBounds(handler.getView(), { x: otherX, y: otherY }) &&
-        isPointerInBounds(otherHandler.getView(), { x: otherX, y: otherY })
+        handler.getDelegate().isPointerInBounds({ x: otherX, y: otherY }) &&
+        otherHandler.getDelegate().isPointerInBounds({ x: otherX, y: otherY })
       ) {
         overlap = true;
       }

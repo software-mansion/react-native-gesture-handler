@@ -69,7 +69,8 @@ In swizzled components look for "SWM -" string to see our modifications
 
 module.exports = {
   title: 'React Native Gesture Handler',
-  tagline: 'Declarative API exposing platform native touch and gesture system to React Native.',
+  tagline:
+    'Declarative API exposing platform native touch and gesture system to React Native.',
   url: 'https://docs.swmansion.com',
   baseUrl: '/react-native-gesture-handler/',
   onBrokenLinks: 'throw',
@@ -125,15 +126,15 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
-          path: 'docs',
+          breadcrumbs: false,
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: undefined, // hide edit button
+          sidebarCollapsible: false,
+          editUrl:
+            'https://github.com/software-mansion/react-native-gesture-handler/edit/main/docs',
+          lastVersion: 'current', // <- this makes 2.x docs as default
           versions: {
-            '2.4.0': {
-              label: '2.4.0 – 2.5.0',
-            },
-            '2.6.0': {
-              label: '2.6.0 – 2.9.0',
+            current: {
+              label: '2.x',
             },
           },
         },

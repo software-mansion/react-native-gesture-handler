@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { findNodeHandle } from 'react-native';
 import { State } from '../../State';
 import {
   Config,
@@ -15,26 +14,22 @@ import {
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
-import PointerEventManager from '../tools/PointerEventManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
-import TouchEventManager from '../tools/TouchEventManager';
-import { isPointerInBounds } from '../utils';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 export default abstract class GestureHandler {
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
 
   protected shouldCancellWhenOutside = false;
-  protected hasCustomActivationCriteria: boolean;
+  protected hasCustomActivationCriteria = false;
   protected enabled = false;
 
-  private ref!: number;
+  private viewRef!: number;
   private propsRef!: React.RefObject<unknown>;
   private handlerTag!: number;
   protected config: Config = { enabled: false };
-  protected view!: HTMLElement;
 
-  protected eventManagers: EventManager[] = [];
   protected tracker: PointerTracker = new PointerTracker();
 
   // Orchestrator properties
@@ -44,59 +39,38 @@ export default abstract class GestureHandler {
   protected shouldResetProgress = false;
   protected pointerType: PointerType = PointerType.NONE;
 
-  public constructor() {
-    this.hasCustomActivationCriteria = false;
+  protected delegate: GestureHandlerDelegate<unknown>;
+
+  public constructor(delegate: GestureHandlerDelegate<unknown>) {
+    this.delegate = delegate;
   }
 
   //
   // Initializing handler
   //
 
-  protected init(ref: number, propsRef: React.RefObject<unknown>) {
+  protected init(viewRef: number, propsRef: React.RefObject<unknown>) {
     this.propsRef = propsRef;
-    this.ref = ref;
+    this.viewRef = viewRef;
 
     this.currentState = State.UNDETERMINED;
 
-    this.setView();
-    this.addEventManager(new PointerEventManager(this.view));
-    this.addEventManager(new TouchEventManager(this.view));
+    this.delegate.init(viewRef, this);
   }
 
-  private setView() {
-    if (!this.ref) {
-      throw new Error(
-        `Cannot find HTML Element for handler ${this.handlerTag}`
-      );
-    }
-
-    this.view = findNodeHandle(this.ref) as unknown as HTMLElement;
-    this.view.style['touchAction'] = 'none';
-    //@ts-ignore This one disables default events on Safari
-    this.view.style['WebkitTouchCallout'] = 'none';
-
-    if (!this.config.userSelect) {
-      this.view.style['webkitUserSelect'] = 'none';
-      this.view.style['userSelect'] = 'none';
-    } else {
-      this.view.style['webkitUserSelect'] = this.config.userSelect;
-      this.view.style['userSelect'] = this.config.userSelect;
-    }
-  }
-
-  private addEventManager(manager: EventManager): void {
+  public attachEventManager(manager: EventManager<unknown>): void {
     manager.setOnPointerDown(this.onPointerDown.bind(this));
     manager.setOnPointerAdd(this.onPointerAdd.bind(this));
     manager.setOnPointerUp(this.onPointerUp.bind(this));
     manager.setOnPointerRemove(this.onPointerRemove.bind(this));
     manager.setOnPointerMove(this.onPointerMove.bind(this));
     manager.setOnPointerEnter(this.onPointerEnter.bind(this));
-    manager.setOnPointerOut(this.onPointerOut.bind(this));
+    manager.setOnPointerLeave(this.onPointerLeave.bind(this));
     manager.setOnPointerCancel(this.onPointerCancel.bind(this));
     manager.setOnPointerOutOfBounds(this.onPointerOutOfBounds.bind(this));
+    manager.setOnPointerMoveOver(this.onPointerMoveOver.bind(this));
+    manager.setOnPointerMoveOut(this.onPointerMoveOut.bind(this));
     manager.setListeners();
-
-    this.eventManagers.push(manager);
   }
 
   //
@@ -111,9 +85,7 @@ export default abstract class GestureHandler {
     this.tracker.resetTracker();
     this.onReset();
     this.resetProgress();
-    this.eventManagers.forEach((manager: EventManager) =>
-      manager.resetManager()
-    );
+    this.delegate.reset();
     this.currentState = State.UNDETERMINED;
   }
 
@@ -167,8 +139,11 @@ export default abstract class GestureHandler {
       this.currentState === State.ACTIVE ||
       this.currentState === State.BEGAN
     ) {
+      // Here the order of calling the delegate and moveToState is important.
+      // At this point we can use currentState as previuos state, because immediately after changing cursor we call moveToState method.
+      this.delegate.onFail();
+
       this.moveToState(State.FAILED, sendIfDisabled);
-      this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
@@ -184,8 +159,11 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN
     ) {
       this.onCancel();
+
+      // Same as above - order matters
+      this.delegate.onCancel();
+
       this.moveToState(State.CANCELLED, sendIfDisabled);
-      this.view.style.cursor = 'auto';
     }
   }
 
@@ -194,8 +172,9 @@ export default abstract class GestureHandler {
       this.currentState === State.UNDETERMINED ||
       this.currentState === State.BEGAN
     ) {
+      this.delegate.onActivate();
+
       this.moveToState(State.ACTIVE);
-      this.view.style.cursor = 'grab';
     }
   }
 
@@ -204,8 +183,10 @@ export default abstract class GestureHandler {
       this.currentState === State.BEGAN ||
       this.currentState === State.ACTIVE
     ) {
+      // Same as above - order matters
+      this.delegate.onEnd();
+
       this.moveToState(State.END);
-      this.view.style.cursor = 'auto';
     }
 
     this.resetProgress();
@@ -326,7 +307,7 @@ export default abstract class GestureHandler {
       this.sendTouchEvent(event);
     }
   }
-  protected onPointerOut(event: AdaptedEvent): void {
+  protected onPointerLeave(event: AdaptedEvent): void {
     if (this.shouldCancellWhenOutside) {
       switch (this.currentState) {
         case State.ACTIVE:
@@ -352,12 +333,21 @@ export default abstract class GestureHandler {
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
+
+    this.cancel();
+    this.reset();
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.tryToSendMoveEvent(true);
     if (this.config.needsPointerData) {
       this.sendTouchEvent(event);
     }
+  }
+  protected onPointerMoveOver(_event: AdaptedEvent): void {
+    // used only by hover gesture handler atm
+  }
+  protected onPointerMoveOut(_event: AdaptedEvent): void {
+    // used only by hover gesture handler atm
   }
   private tryToSendMoveEvent(out: boolean): void {
     if (
@@ -418,13 +408,13 @@ export default abstract class GestureHandler {
       nativeEvent: {
         numberOfPointers: this.tracker.getTrackedPointersCount(),
         state: newState,
-        pointerInside: isPointerInBounds(this.view, {
+        pointerInside: this.delegate.isPointerInBounds({
           x: this.tracker.getLastAvgX(),
           y: this.tracker.getLastAvgY(),
         }),
         ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
-        target: this.ref,
+        target: this.viewRef,
         oldState: newState !== oldState ? oldState : undefined,
       },
       timeStamp: Date.now(),
@@ -434,7 +424,7 @@ export default abstract class GestureHandler {
   private transformTouchEvent(
     event: AdaptedEvent
   ): ResultTouchEvent | undefined {
-    const rect = this.view.getBoundingClientRect();
+    const rect = this.delegate.measureView();
 
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
@@ -454,8 +444,8 @@ export default abstract class GestureHandler {
 
       all.push({
         id: id,
-        x: element.lastX - rect.left,
-        y: element.lastY - rect.top,
+        x: element.lastX - rect.pageX,
+        y: element.lastY - rect.pageY,
         absoluteX: element.lastX,
         absoluteY: element.lastY,
       });
@@ -466,8 +456,8 @@ export default abstract class GestureHandler {
     if (event.eventType !== EventTypes.CANCEL) {
       changed.push({
         id: this.tracker.getMappedTouchEventId(event.pointerId),
-        x: event.x - rect.left,
-        y: event.y - rect.top,
+        x: event.x - rect.pageX,
+        y: event.y - rect.pageY,
         absoluteX: event.x,
         absoluteY: event.y,
       });
@@ -477,8 +467,8 @@ export default abstract class GestureHandler {
 
         changed.push({
           id: id,
-          x: element.lastX - rect.left,
-          y: element.lastY - rect.top,
+          x: element.lastX - rect.pageX,
+          y: element.lastY - rect.pageY,
           absoluteX: element.lastX,
           absoluteY: element.lastY,
         });
@@ -530,7 +520,7 @@ export default abstract class GestureHandler {
   }
 
   private cancelTouches(): void {
-    const rect = this.view.getBoundingClientRect();
+    const rect = this.delegate.measureView();
 
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
@@ -546,16 +536,16 @@ export default abstract class GestureHandler {
 
       all.push({
         id: id,
-        x: element.lastX - rect.left,
-        y: element.lastY - rect.top,
+        x: element.lastX - rect.pageX,
+        y: element.lastY - rect.pageY,
         absoluteX: element.lastX,
         absoluteY: element.lastY,
       });
 
       changed.push({
         id: id,
-        x: element.lastX - rect.left,
-        y: element.lastY - rect.top,
+        x: element.lastX - rect.pageX,
+        y: element.lastY - rect.pageY,
         absoluteX: element.lastX,
         absoluteY: element.lastY,
       });
@@ -579,8 +569,16 @@ export default abstract class GestureHandler {
     invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
   }
 
-  protected transformNativeEvent() {
-    return {};
+  protected transformNativeEvent(): Record<string, unknown> {
+    // those properties are shared by most handlers and if not this method will be overriden
+    const rect = this.delegate.measureView();
+
+    return {
+      x: this.tracker.getLastAvgX() - rect.pageX,
+      y: this.tracker.getLastAvgY() - rect.pageY,
+      absoluteX: this.tracker.getLastAvgX(),
+      absoluteY: this.tracker.getLastAvgY(),
+    };
   }
 
   //
@@ -675,8 +673,7 @@ export default abstract class GestureHandler {
       return true;
     }
 
-    const width = this.view.getBoundingClientRect().width;
-    const height = this.view.getBoundingClientRect().height;
+    const { width, height } = this.delegate.measureView();
 
     let left = 0;
     let top = 0;
@@ -724,9 +721,9 @@ export default abstract class GestureHandler {
       }
     }
 
-    const rect: DOMRect = this.view.getBoundingClientRect();
-    const offsetX: number = this.tracker.getLastX() - rect.left;
-    const offsetY: number = this.tracker.getLastY() - rect.top;
+    const rect = this.delegate.measureView();
+    const offsetX: number = this.tracker.getLastX() - rect.pageX;
+    const offsetY: number = this.tracker.getLastY() - rect.pageY;
 
     if (
       offsetX >= left &&
@@ -739,14 +736,6 @@ export default abstract class GestureHandler {
     return false;
   }
 
-  public isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
-    const rect: DOMRect = this.view.getBoundingClientRect();
-
-    return (
-      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
-    );
-  }
-
   protected resetConfig(): void {}
 
   //
@@ -756,24 +745,17 @@ export default abstract class GestureHandler {
   public getTag(): number {
     return this.handlerTag;
   }
+
   public setTag(tag: number): void {
     this.handlerTag = tag;
   }
 
-  protected getConfig() {
+  public getConfig() {
     return this.config;
   }
 
-  public getShouldEnableGestureOnSetup(): boolean {
-    throw new Error('Must override GestureHandler.shouldEnableGestureOnSetup');
-  }
-
-  public getView(): HTMLElement {
-    return this.view;
-  }
-
-  public getEventManagers(): EventManager[] {
-    return this.eventManagers;
+  public getDelegate(): GestureHandlerDelegate<unknown> {
+    return this.delegate;
   }
 
   public getTracker(): PointerTracker {
@@ -803,6 +785,7 @@ export default abstract class GestureHandler {
   protected setShouldCancelWhenOutside(shouldCancel: boolean) {
     this.shouldCancellWhenOutside = shouldCancel;
   }
+
   protected getShouldCancelWhenOutside(): boolean {
     return this.shouldCancellWhenOutside;
   }
@@ -838,7 +821,7 @@ function invokeNullableMethod(
     return;
   }
 
-  const { argMapping } = method.__nodeConfig;
+  const { argMapping }: { argMapping: unknown } = method.__nodeConfig;
   if (!Array.isArray(argMapping)) {
     return;
   }

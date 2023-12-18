@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
 import { AdaptedEvent, Config } from '../interfaces';
@@ -20,12 +21,18 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.setShouldCancelWhenOutside(true);
 
-    this.view.style['touchAction'] = 'auto';
+    if (Platform.OS !== 'web') {
+      return;
+    }
+
+    const view = this.delegate.getView() as HTMLElement;
+
+    view.style['touchAction'] = 'auto';
 
     //@ts-ignore Turns on defualt touch behavior on Safari
-    this.view.style['WebkitTouchCallout'] = 'auto';
+    view.style['WebkitTouchCallout'] = 'auto';
 
-    if (this.view.hasAttribute('role')) {
+    if (view.hasAttribute('role')) {
       this.buttonRole = true;
     } else {
       this.buttonRole = false;
@@ -80,17 +87,22 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const dy = this.startY - this.tracker.getLastAvgY();
     const distSq = dx * dx + dy * dy;
 
-    if (
-      !this.buttonRole &&
-      distSq >= this.minDistSq &&
-      this.currentState === State.BEGAN
-    ) {
-      this.activate();
+    if (distSq >= this.minDistSq) {
+      if (this.buttonRole && this.currentState === State.ACTIVE) {
+        this.cancel();
+      } else if (!this.buttonRole && this.currentState === State.BEGAN) {
+        this.activate();
+      }
     }
   }
 
-  protected onPointerOut(): void {
-    this.cancel();
+  protected onPointerLeave(): void {
+    if (
+      this.currentState === State.BEGAN ||
+      this.currentState === State.ACTIVE
+    ) {
+      this.cancel();
+    }
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
@@ -113,12 +125,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
         this.fail();
       }
     }
-  }
-
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.cancel();
-    this.reset();
   }
 
   public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {

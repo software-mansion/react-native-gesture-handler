@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { AdaptedEvent, EventTypes, TouchEventType } from '../interfaces';
 
-export default abstract class EventManager {
-  protected readonly view: HTMLElement;
+export default abstract class EventManager<T> {
+  protected readonly view: T;
   protected pointersInBounds: number[] = [];
   protected activePointersCounter: number;
 
-  constructor(view: HTMLElement) {
+  constructor(view: T) {
     this.view = view;
     this.activePointersCounter = 0;
   }
@@ -24,8 +24,8 @@ export default abstract class EventManager {
   protected onPointerUp(_event: AdaptedEvent): void {}
   protected onPointerRemove(_event: AdaptedEvent): void {}
   protected onPointerMove(_event: AdaptedEvent): void {}
-  protected onPointerOut(_event: AdaptedEvent): void {}
-  protected onPointerEnter(_event: AdaptedEvent): void {}
+  protected onPointerLeave(_event: AdaptedEvent): void {} // called only when pointer is pressed (or touching)
+  protected onPointerEnter(_event: AdaptedEvent): void {} // called only when pointer is pressed (or touching)
   protected onPointerCancel(_event: AdaptedEvent): void {
     // When pointer cancel is triggered and there are more pointers on the view, only one pointer is cancelled
     // Because we want all pointers to be cancelled by that event, we are doing it manually by reseting handler and changing activePointersCounter to 0
@@ -33,6 +33,8 @@ export default abstract class EventManager {
     // is equal to 0. This prevents counter from going to negative values, when pointers are removed from view after one of them has been cancelled
   }
   protected onPointerOutOfBounds(_event: AdaptedEvent): void {}
+  protected onPointerMoveOver(_event: AdaptedEvent): void {}
+  protected onPointerMoveOut(_event: AdaptedEvent): void {}
 
   public setOnPointerDown(callback: (event: AdaptedEvent) => void): void {
     this.onPointerDown = callback;
@@ -49,8 +51,8 @@ export default abstract class EventManager {
   public setOnPointerMove(callback: (event: AdaptedEvent) => void): void {
     this.onPointerMove = callback;
   }
-  public setOnPointerOut(callback: (event: AdaptedEvent) => void): void {
-    this.onPointerOut = callback;
+  public setOnPointerLeave(callback: (event: AdaptedEvent) => void): void {
+    this.onPointerLeave = callback;
   }
   public setOnPointerEnter(callback: (event: AdaptedEvent) => void): void {
     this.onPointerEnter = callback;
@@ -62,6 +64,12 @@ export default abstract class EventManager {
     callback: (event: AdaptedEvent) => void
   ): void {
     this.onPointerOutOfBounds = callback;
+  }
+  public setOnPointerMoveOver(callback: (event: AdaptedEvent) => void): void {
+    this.onPointerMoveOver = callback;
+  }
+  public setOnPointerMoveOut(callback: (event: AdaptedEvent) => void): void {
+    this.onPointerMoveOut = callback;
   }
 
   protected markAsInBounds(pointerId: number): void {

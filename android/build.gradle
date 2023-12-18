@@ -1,13 +1,12 @@
 import groovy.json.JsonSlurper
-import java.nio.file.Paths
+
+import javax.inject.Inject
+import java.nio.file.Files
 
 buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
 
     repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
         mavenCentral()
         google()
     }
@@ -85,28 +84,6 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def shouldAssertNoMultipleInstances() {
-  if (rootProject.hasProperty("disableMultipleInstancesCheck")) {
-    return rootProject.property("disableMultipleInstancesCheck") != "true"
-  } else {
-    return true
-  }
-}
-
-def noMultipleInstancesAssertion() {
-    Set<File> files = fileTree(rootDir.parent) {
-        include "node_modules/**/react-native-gesture-handler/package.json"
-        exclude "**/.yarn/**"
-        exclude "**/.pnpm/**"
-    }.files
-
-    if (files.size() > 1) {
-        String parsedLocation = files.stream().map({ File file -> "- " + file.toString().replace("/package.json", "") }).collect().join("\n")
-        String exceptionMessage = "\n[Gesture Handler] Multiple instances of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-instances-of-gesture-handler-were-detected \n\nConflict between: \n" + parsedLocation + "\n";
-        throw new Exception(exceptionMessage);
-    }
-}
-
 def REACT_NATIVE_DIR = resolveReactNativeDirectory()
 
 def reactProperties = new Properties()
@@ -115,23 +92,22 @@ file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { react
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
-def assertionTask = task assertNoMultipleInstances {
-    onlyIf { shouldAssertNoMultipleInstances() }
-    doFirst {
-        noMultipleInstancesAssertion()
-    }
-}
-
-tasks.preBuild {
-    dependsOn assertionTask
-}
-
 repositories {
     mavenCentral()
 }
 
 android {
-    compileSdkVersion safeExtGet("compileSdkVersion", 28)
+    compileSdkVersion safeExtGet("compileSdkVersion", 33)
+    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+        namespace "com.swmansion.gesturehandler"
+    }
+
+    if (agpVersion.tokenize('.')[0].toInteger() >= 8) {
+        buildFeatures {
+            buildConfig = true
+        }
+    }
 
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -149,8 +125,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion safeExtGet('minSdkVersion', 16)
-        targetSdkVersion safeExtGet('targetSdkVersion', 28)
+        minSdkVersion safeExtGet('minSdkVersion', 21)
+        targetSdkVersion safeExtGet('targetSdkVersion', 33)
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
@@ -160,9 +136,10 @@ android {
             var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
             externalNativeBuild {
                 cmake {
-                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++17"
+                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++17", "-DANDROID"
                     arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
                         "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+                        "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
                         "-DANDROID_STL=c++_shared"
                     abiFilters (*reactNativeArchitectures())
                 }
@@ -203,11 +180,11 @@ android {
             }
 
             if (isNewArchitectureEnabled()) {
-                srcDirs += 'src/fabric/java'
+                srcDirs += 'fabric/src/main/java'
             } else {
                 // this folder also includes files from codegen so the library can compile with
                 // codegen turned off
-                srcDirs += 'src/paper/java'
+                srcDirs += 'paper/src/main/java'
             }
         }
     }
@@ -216,12 +193,8 @@ android {
 def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlinVersion'])
 
 dependencies {
-    //noinspection GradleDynamicVersion
-    if (REACT_NATIVE_MINOR_VERSION >= 71) {
-        implementation "com.facebook.react:react-android" // version substituted by RNGP
-    } else {
-        implementation 'com.facebook.react:react-native:+' // from node_modules
-    }
+    implementation 'com.facebook.react:react-native:+' // from node_modules
+    
 
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface

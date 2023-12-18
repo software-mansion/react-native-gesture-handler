@@ -148,13 +148,6 @@ export default class RotationGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
   }
 
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.end();
-
-    this.reset();
-  }
-
   protected tryBegin(): void {
     if (this.currentState !== State.UNDETERMINED) {
       return;

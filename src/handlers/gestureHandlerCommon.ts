@@ -11,6 +11,7 @@ import { ValueOf } from '../typeUtils';
 import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
+import { ghQueueMicrotask } from '../ghQueueMicrotask';
 
 const commonProps = [
   'id',
@@ -19,9 +20,14 @@ const commonProps = [
   'hitSlop',
   'cancelsTouchesInView',
   'userSelect',
+  'activeCursor',
 ] as const;
 
-const componentInteractionProps = ['waitFor', 'simultaneousHandlers'] as const;
+const componentInteractionProps = [
+  'waitFor',
+  'simultaneousHandlers',
+  'blocksHandlers',
+] as const;
 
 export const baseGestureHandlerProps = [
   ...commonProps,
@@ -64,6 +70,43 @@ export type HitSlop =
   | Record<'height' | 'bottom', number>;
 
 export type UserSelect = 'none' | 'auto' | 'text';
+export type ActiveCursor =
+  | 'auto'
+  | 'default'
+  | 'none'
+  | 'context-menu'
+  | 'help'
+  | 'pointer'
+  | 'progress'
+  | 'wait'
+  | 'cell'
+  | 'crosshair'
+  | 'text'
+  | 'vertical-text'
+  | 'alias'
+  | 'copy'
+  | 'move'
+  | 'no-drop'
+  | 'not-allowed'
+  | 'grab'
+  | 'grabbing'
+  | 'e-resize'
+  | 'n-resize'
+  | 'ne-resize'
+  | 'nw-resize'
+  | 's-resize'
+  | 'se-resize'
+  | 'sw-resize'
+  | 'w-resize'
+  | 'ew-resize'
+  | 'ns-resize'
+  | 'nesw-resize'
+  | 'nwse-resize'
+  | 'col-resize'
+  | 'row-resize'
+  | 'all-scroll'
+  | 'zoom-in'
+  | 'zoom-out';
 
 //TODO(TS) events in handlers
 
@@ -105,6 +148,7 @@ export type CommonGestureConfig = {
   shouldCancelWhenOutside?: boolean;
   hitSlop?: HitSlop;
   userSelect?: UserSelect;
+  activeCursor?: ActiveCursor;
 };
 
 // Events payloads are types instead of interfaces due to TS limitation.
@@ -115,6 +159,7 @@ export type BaseGestureHandlerProps<
   id?: string;
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
   simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
+  blocksHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
   testID?: string;
   cancelsTouchesInView?: boolean;
   // TODO(TS) - fix event types
@@ -191,16 +236,15 @@ export function findNodeHandle(
   return findNodeHandleRN(node);
 }
 
-let scheduledFlushOperationsId: ReturnType<
-  typeof requestAnimationFrame
-> | null = null;
+let flushOperationsScheduled = false;
 
 export function scheduleFlushOperations() {
-  if (scheduledFlushOperationsId === null) {
-    scheduledFlushOperationsId = requestAnimationFrame(() => {
+  if (!flushOperationsScheduled) {
+    flushOperationsScheduled = true;
+    ghQueueMicrotask(() => {
       RNGestureHandlerModule.flushOperations();
 
-      scheduledFlushOperationsId = null;
+      flushOperationsScheduled = false;
     });
   }
 }

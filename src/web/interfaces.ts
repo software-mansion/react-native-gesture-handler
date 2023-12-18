@@ -1,4 +1,4 @@
-import { UserSelect } from '../handlers/gestureHandlerCommon';
+import { UserSelect, ActiveCursor } from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
 import { State } from '../State';
 
@@ -22,6 +22,7 @@ type ConfigArgs =
   | boolean
   | HitSlop
   | UserSelect
+  | ActiveCursor
   | Directions
   | Handler[]
   | null
@@ -31,9 +32,11 @@ export interface Config extends Record<string, ConfigArgs> {
   enabled?: boolean;
   simultaneousHandlers?: Handler[] | null;
   waitFor?: Handler[] | null;
+  blocksHandlers?: Handler[] | null;
   hitSlop?: HitSlop;
   shouldCancelWhenOutside?: boolean;
   userSelect?: UserSelect;
+  activeCursor?: ActiveCursor;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;
@@ -144,7 +147,7 @@ export enum EventTypes {
   ADDITIONAL_POINTER_UP,
   MOVE,
   ENTER,
-  OUT,
+  LEAVE,
   CANCEL,
 }
 

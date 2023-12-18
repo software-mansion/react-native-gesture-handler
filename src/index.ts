@@ -2,8 +2,8 @@ import { initialize } from './init';
 
 export { Directions } from './Directions';
 export { State } from './State';
-export { default as gestureHandlerRootHOC } from './gestureHandlerRootHOC';
-export { default as GestureHandlerRootView } from './GestureHandlerRootView';
+export { default as gestureHandlerRootHOC } from './components/gestureHandlerRootHOC';
+export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
 export type {
   // event types
   GestureEvent,
@@ -73,6 +73,7 @@ export type { RotationGestureType as RotationGesture } from './handlers/gestures
 export type { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
 export type { NativeGestureType as NativeGesture } from './handlers/gestures/nativeGesture';
 export type { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
+export type { HoverGestureType as HoverGesture } from './handlers/gestures/hoverGesture';
 export type {
   ComposedGestureType as ComposedGesture,
   RaceGestureType as RaceGesture,
@@ -92,7 +93,13 @@ export {
   BaseButton,
   RectButton,
   BorderlessButton,
+  PureNativeButton,
 } from './components/GestureButtons';
+export type {
+  TouchableHighlightProps,
+  TouchableOpacityProps,
+  TouchableWithoutFeedbackProps,
+} from './components/touchables';
 export {
   TouchableHighlight,
   TouchableNativeFeedback,
@@ -107,6 +114,7 @@ export {
   FlatList,
   RefreshControl,
 } from './components/GestureComponents';
+export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
   //events
   GestureHandlerGestureEvent,
@@ -146,6 +154,7 @@ export type {
   BorderlessButtonProperties,
 } from './handlers/gestureHandlerTypesCompat';
 
+export type { SwipeableProps } from './components/Swipeable';
 export { default as Swipeable } from './components/Swipeable';
 export type {
   DrawerLayoutProps,
@@ -157,6 +166,9 @@ export type {
 } from './components/DrawerLayout';
 export { default as DrawerLayout } from './components/DrawerLayout';
 
-export { enableExperimentalWebImplementation } from './EnableExperimentalWebImplementation';
+export {
+  enableExperimentalWebImplementation,
+  enableLegacyWebImplementation,
+} from './EnableNewWebImplementation';
 
 initialize();

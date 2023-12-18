@@ -75,7 +75,7 @@ class Twistable extends Component<PropsWithChildren<unknown>> {
       })
       .interpolate({
         inputRange: [-100, 100],
-        outputRange: ['-100rad', '100rad'],
+        outputRange: ['-5700deg', '5700deg'],
       });
 
     this.onGestureEvent = Animated.event(

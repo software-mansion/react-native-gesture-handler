@@ -27,6 +27,7 @@ import {
   GestureEvent,
   HandlerStateChangeEvent,
   UserSelect,
+  ActiveCursor,
 } from '../handlers/gestureHandlerCommon';
 import {
   PanGestureHandler,
@@ -165,6 +166,13 @@ export interface DrawerLayoutProps {
    * Values: 'none'|'text'|'auto'
    */
   userSelect?: UserSelect;
+
+  /**
+   * @default 'auto'
+   * Defines which cursor property should be used when gesture activates.
+   * Values: see CSS cursor values
+   */
+  activeCursor?: ActiveCursor;
 }
 
 export type DrawerLayoutState = {
@@ -691,6 +699,7 @@ export default class DrawerLayout extends Component<
       <PanGestureHandler
         // @ts-ignore could be fixed in handler types
         userSelect={this.props.userSelect}
+        activeCursor={this.props.activeCursor}
         ref={this.setPanGestureRef}
         hitSlop={hitSlop}
         activeOffsetX={gestureOrientation * minSwipeDistance!}

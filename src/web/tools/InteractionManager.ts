@@ -5,6 +5,7 @@ export default class InteractionManager {
   private static instance: InteractionManager;
   private readonly waitForRelations: Map<number, number[]> = new Map();
   private readonly simultaneousRelations: Map<number, number[]> = new Map();
+  private readonly blocksHandlersRelations: Map<number, number[]> = new Map();
 
   // Private becaues of singleton
   // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
@@ -40,6 +41,19 @@ export default class InteractionManager {
 
       this.simultaneousRelations.set(handler.getTag(), simultaneousHandlers);
     }
+
+    if (config.blocksHandlers) {
+      const blocksHandlers: number[] = [];
+      config.blocksHandlers.forEach((otherHandler: Handler): void => {
+        if (typeof otherHandler === 'number') {
+          blocksHandlers.push(otherHandler);
+        } else {
+          blocksHandlers.push(otherHandler.handlerTag);
+        }
+      });
+
+      this.blocksHandlersRelations.set(handler.getTag(), blocksHandlers);
+    }
   }
 
   public shouldWaitForHandlerFailure(
@@ -49,20 +63,12 @@ export default class InteractionManager {
     const waitFor: number[] | undefined = this.waitForRelations.get(
       handler.getTag()
     );
-    if (!waitFor) {
-      return false;
-    }
 
-    let shouldWait = false;
-
-    waitFor.forEach((tag: number): void => {
-      if (tag === otherHandler.getTag()) {
-        shouldWait = true;
-        return; //Returns from callback
-      }
-    });
-
-    return shouldWait;
+    return (
+      waitFor?.find((tag: number) => {
+        return tag === otherHandler.getTag();
+      }) !== undefined
+    );
   }
 
   public shouldRecognizeSimultaneously(
@@ -71,28 +77,27 @@ export default class InteractionManager {
   ): boolean {
     const simultaneousHandlers: number[] | undefined =
       this.simultaneousRelations.get(handler.getTag());
-    if (!simultaneousHandlers) {
-      return false;
-    }
 
-    let shouldRecognizeSimultaneously = false;
-
-    simultaneousHandlers.forEach((tag: number): void => {
-      if (tag === otherHandler.getTag()) {
-        shouldRecognizeSimultaneously = true;
-        return;
-      }
-    });
-
-    return shouldRecognizeSimultaneously;
+    return (
+      simultaneousHandlers?.find((tag: number) => {
+        return tag === otherHandler.getTag();
+      }) !== undefined
+    );
   }
 
   public shouldRequireHandlerToWaitForFailure(
-    _handler: GestureHandler,
-    _otherHandler: GestureHandler
+    handler: GestureHandler,
+    otherHandler: GestureHandler
   ): boolean {
-    //TODO: Implement logic
-    return false;
+    const waitFor: number[] | undefined = this.blocksHandlersRelations.get(
+      handler.getTag()
+    );
+
+    return (
+      waitFor?.find((tag: number) => {
+        return tag === otherHandler.getTag();
+      }) !== undefined
+    );
   }
 
   public shouldHandlerBeCancelledBy(
@@ -106,11 +111,13 @@ export default class InteractionManager {
   public dropRelationsForHandlerWithTag(handlerTag: number): void {
     this.waitForRelations.delete(handlerTag);
     this.simultaneousRelations.delete(handlerTag);
+    this.blocksHandlersRelations.delete(handlerTag);
   }
 
   public reset() {
     this.waitForRelations.clear();
     this.simultaneousRelations.clear();
+    this.blocksHandlersRelations.clear();
   }
 
   public static getInstance(): InteractionManager {

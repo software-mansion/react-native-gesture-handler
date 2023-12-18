@@ -1,4 +1,3 @@
-import { PixelRatio } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
 import { AdaptedEvent, Config } from '../interfaces';
@@ -187,21 +186,15 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected transformNativeEvent() {
-    const rect: DOMRect = this.view.getBoundingClientRect();
-    const ratio = PixelRatio.get();
-
     const translationX: number = this.getTranslationX();
     const translationY: number = this.getTranslationY();
 
     return {
+      ...super.transformNativeEvent(),
       translationX: isNaN(translationX) ? 0 : translationX,
       translationY: isNaN(translationY) ? 0 : translationY,
-      absoluteX: this.tracker.getLastAvgX(),
-      absoluteY: this.tracker.getLastAvgY(),
-      velocityX: this.velocityX * ratio * 10,
-      velocityY: this.velocityY * ratio * 10,
-      x: this.tracker.getLastAvgX() - rect.left,
-      y: this.tracker.getLastAvgY() - rect.top,
+      velocityX: this.velocityX,
+      velocityY: this.velocityY,
     };
   }
 
@@ -306,11 +299,6 @@ export default class PanGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-
-    this.reset();
-  }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     if (this.getShouldCancelWhenOutside()) {
       return;
