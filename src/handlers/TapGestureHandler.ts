@@ -12,6 +12,7 @@ export const tapGestureHandlerProps = [
   'maxDeltaY',
   'maxDist',
   'minPointers',
+  'enableContextMenu',
 ] as const;
 
 export type TapGestureHandlerEventPayload = {
@@ -73,7 +74,12 @@ export interface TapGestureConfig {
 
 export interface TapGestureHandlerProps
   extends BaseGestureHandlerProps<TapGestureHandlerEventPayload>,
-    TapGestureConfig {}
+    TapGestureConfig {
+  /**
+   * Specifies whether context menu should be enabled when you click on handler with right mouse button.
+   */
+  enableContextMenu?: boolean;
+}
 
 export const tapHandlerName = 'TapGestureHandler';
 

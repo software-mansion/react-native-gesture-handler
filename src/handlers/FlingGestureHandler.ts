@@ -7,6 +7,7 @@ import {
 export const flingGestureHandlerProps = [
   'numberOfPointers',
   'direction',
+  'enableContextMenu',
 ] as const;
 
 export type FlingGestureHandlerEventPayload = {
@@ -40,7 +41,12 @@ export interface FlingGestureConfig {
 
 export interface FlingGestureHandlerProps
   extends BaseGestureHandlerProps<FlingGestureHandlerEventPayload>,
-    FlingGestureConfig {}
+    FlingGestureConfig {
+  /**
+   * Specifies whether context menu should be enabled when you click on handler with right mouse button.
+   */
+  enableContextMenu?: boolean;
+}
 
 export const flingHandlerName = 'FlingGestureHandler';
 

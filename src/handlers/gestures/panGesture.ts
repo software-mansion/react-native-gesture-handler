@@ -136,6 +136,11 @@ export class PanGesture extends ContinousBaseGesture<
     return this;
   }
 
+  enableContextMenu(value: boolean) {
+    this.config.enableContextMenu = value;
+    return this;
+  }
+
   onChange(
     callback: (
       event: GestureUpdateEvent<

@@ -48,6 +48,11 @@ export class TapGesture extends BaseGesture<TapGestureHandlerEventPayload> {
     this.config.maxDeltaY = delta;
     return this;
   }
+
+  enableContextMenu(value: boolean) {
+    this.config.enableContextMenu = value;
+    return this;
+  }
 }
 
 export type TapGestureType = InstanceType<typeof TapGesture>;
