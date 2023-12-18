@@ -16,22 +16,16 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
 
 class RNGestureHandlerPackage : TurboReactPackage(), ViewManagerOnDemandReactPackage {
-  private var _viewManagers: Map<String, ModuleSpec>? = null
-  private val viewManagers: Map<String, ModuleSpec>
-    get() {
-      if (_viewManagers == null) {
-        _viewManagers = mutableMapOf(
-          RNGestureHandlerRootViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec {
-            RNGestureHandlerRootViewManager()
-          },
-          RNGestureHandlerButtonViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec {
-            RNGestureHandlerButtonViewManager()
-          }
-        )
+  private val viewManagers: Map<String, ModuleSpec> by lazy {
+    mapOf(
+      RNGestureHandlerRootViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec {
+        RNGestureHandlerRootViewManager()
+      },
+      RNGestureHandlerButtonViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec {
+        RNGestureHandlerButtonViewManager()
       }
-
-      return _viewManagers!!
-    }
+    )
+  }
 
   override fun createViewManagers(reactContext: ReactApplicationContext) =
     listOf<ViewManager<*, *>>(
