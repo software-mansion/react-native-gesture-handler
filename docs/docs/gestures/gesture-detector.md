@@ -58,7 +58,7 @@ This parameter allows to specify which `userSelect` property should be applied t
       <View>
         <GestureDetector gesture={pan}>
           <View>
-            <GestureDetector gesture={pan}> // Don't do this!
+            <GestureDetector gesture={pan}> {/* Don't do this!*/}
               <View />
             </GestureDetector>
           </View>
