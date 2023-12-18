@@ -48,7 +48,7 @@ This parameter allows to specify which `userSelect` property should be applied t
   <FunctionalComponents />
   If we were to remove the collapsable prop from the View, the gesture would stop working because it would be attached to a view that is not present in the view hierarchy. Gesture Detector adds this prop automatically to its direct child but it's impossible to do automatically for more complex view trees.
 
-- Using the same instance of gesture handler across multiple Gesture Detectors is not possible. Have a look at the code below:
+- Using the same instance of a gesture across multiple Gesture Detectors is not possible. Have a look at the code below:
 
   ```jsx
   export default function Example() {

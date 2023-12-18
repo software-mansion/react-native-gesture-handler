@@ -22,7 +22,7 @@ export default abstract class NodeManager {
   ): void {
     if (handlerTag in this.gestures) {
       throw new Error(
-        `Handler with tag ${handlerTag} already exists. Please ensure that no GestureHandler instance is used across multiple GestureDetectors.`
+        `Handler with tag ${handlerTag} already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors.`
       );
     }
 

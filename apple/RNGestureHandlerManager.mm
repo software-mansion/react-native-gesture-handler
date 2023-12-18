@@ -74,7 +74,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   if ([_registry handlerWithTag:handlerTag] != nullptr) {
     NSString *errorMessage = [NSString
         stringWithFormat:
-            @"Handler with tag %@ already exists. Please ensure that no GestureHandler instance is used across multiple GestureDetectors.",
+            @"Handler with tag %@ already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors.",
             handlerTag];
     @throw [NSException exceptionWithName:@"HandlerAlreadyRegistered" reason:errorMessage userInfo:nil];
   }
