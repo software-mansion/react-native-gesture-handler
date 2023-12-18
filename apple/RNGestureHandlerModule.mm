@@ -133,7 +133,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
       }
               queue:RCTJSThread];
 
-  return nil;
+  return @true;
 }
 #endif // RCT_NEW_ARCH_ENABLED
 

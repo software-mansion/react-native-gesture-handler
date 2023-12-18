@@ -424,7 +424,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  override fun install(): Double {
+  override fun install(): Boolean {
     reactApplicationContext.runOnJSQueueThread {
       try {
         SoLoader.loadLibrary("gesturehandler")
@@ -435,7 +435,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       }
     }
 
-    return 0.0
+    return true
   }
 
   private external fun decorateRuntime(jsiPtr: Long)
