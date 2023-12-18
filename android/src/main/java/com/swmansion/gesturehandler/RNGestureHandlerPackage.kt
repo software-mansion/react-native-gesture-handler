@@ -9,7 +9,6 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
-import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
@@ -42,9 +41,7 @@ class RNGestureHandlerPackage : TurboReactPackage(), ViewManagerOnDemandReactPac
   override fun createViewManager(
     reactContext: ReactApplicationContext?,
     viewManagerName: String?
-  ): ViewManager<*, out ReactShadowNode<*>>? {
-    return viewManagers[viewManagerName]?.provider?.get() as? ViewManager<*, *>
-  }
+  ) = viewManagers[viewManagerName]?.provider?.get() as? ViewManager<*, *>
 
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
     return if (name == RNGestureHandlerModule.MODULE_NAME) {
