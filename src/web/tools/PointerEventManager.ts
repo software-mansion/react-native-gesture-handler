@@ -2,7 +2,7 @@ import { AdaptedEvent, EventTypes, PointerType } from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
-const PointerCaptureBlacklist = new Set<string>(['SELECT', 'INPUT']);
+const POINTER_CAPTURE_EXCLUSION_LIST = new Set<string>(['SELECT', 'INPUT']);
 
 export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
@@ -21,7 +21,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.DOWN);
       const target = event.target as HTMLElement;
 
-      if (!PointerCaptureBlacklist.has(target.tagName)) {
+      if (!POINTER_CAPTURE_EXCLUSION_LIST.has(target.tagName)) {
         target.setPointerCapture(adaptedEvent.pointerId);
       }
 
@@ -52,7 +52,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
       const target = event.target as HTMLElement;
 
-      if (!PointerCaptureBlacklist.has(target.tagName)) {
+      if (!POINTER_CAPTURE_EXCLUSION_LIST.has(target.tagName)) {
         target.releasePointerCapture(adaptedEvent.pointerId);
       }
 
@@ -89,7 +89,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       // God, I do love web development.
       if (
         !target.hasPointerCapture(event.pointerId) &&
-        !PointerCaptureBlacklist.has(target.tagName)
+        !POINTER_CAPTURE_EXCLUSION_LIST.has(target.tagName)
       ) {
         target.setPointerCapture(event.pointerId);
       }
