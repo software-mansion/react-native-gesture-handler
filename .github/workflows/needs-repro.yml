@@ -7,6 +7,7 @@ on:
 
 jobs:
   main:
+    if: ${{ github.repository == 'software-mansion/react-native-gesture-handler' && !contains(github.event.issue.labels.*.name, 'Maintainer issue') }}
     runs-on: ubuntu-latest
     concurrency:
       group: needs-repro-${{ github.event.issue.number }}
