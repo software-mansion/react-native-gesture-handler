@@ -2,7 +2,7 @@ import { AdaptedEvent, EventTypes, PointerType } from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
-const PointerCaptureBlacklist = new Set<String>(['SELECT', 'INPUT']);
+const PointerCaptureBlacklist = new Set<string>(['SELECT', 'INPUT']);
 
 export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
