@@ -71,6 +71,14 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 - (void)createGestureHandler:(NSString *)handlerName tag:(NSNumber *)handlerTag config:(NSDictionary *)config
 {
+  if ([_registry handlerWithTag:handlerTag] != nullptr) {
+    NSString *errorMessage = [NSString
+        stringWithFormat:
+            @"Handler with tag %@ already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors.",
+            handlerTag];
+    @throw [NSException exceptionWithName:@"HandlerAlreadyRegistered" reason:errorMessage userInfo:nil];
+  }
+
   static NSDictionary *map;
   static dispatch_once_t mapToken;
   dispatch_once(&mapToken, ^{
