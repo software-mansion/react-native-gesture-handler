@@ -39,8 +39,9 @@ export class GestureHandlerWebDelegate
     const config = handler.getConfig();
 
     if (
-      !config.enableContextMenu &&
-      handler.isButtonInConfig(MouseButton.RIGHT)
+      (config.enableContextMenu === undefined &&
+        handler.isButtonInConfig(MouseButton.RIGHT)) ||
+      config.enableContextMenu === false
     ) {
       this.view.addEventListener('contextmenu', (e) => e.preventDefault());
     } else if (config.enableContextMenu) {
