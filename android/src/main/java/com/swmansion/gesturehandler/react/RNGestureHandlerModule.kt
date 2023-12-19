@@ -343,6 +343,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     handlerTag: Int,
     config: ReadableMap,
   ) {
+
+    if (registry.getHandler(handlerTag) !== null) {
+      throw IllegalStateException(
+        "Handler with tag $handlerTag already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors."
+      )
+    }
+
     for (handlerFactory in handlerFactories as Array<HandlerFactory<T>>) {
       if (handlerFactory.name == handlerName) {
         val handler = handlerFactory.create(reactApplicationContext).apply {
