@@ -2,6 +2,8 @@ import { AdaptedEvent, EventTypes, PointerType } from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
+const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);
+
 export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
 
@@ -19,7 +21,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.DOWN);
       const target = event.target as HTMLElement;
 
-      if (target instanceof HTMLDivElement) {
+      if (!POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName)) {
         target.setPointerCapture(adaptedEvent.pointerId);
       }
 
@@ -50,7 +52,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
       const target = event.target as HTMLElement;
 
-      if (target instanceof HTMLDivElement) {
+      if (!POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName)) {
         target.releasePointerCapture(adaptedEvent.pointerId);
       }
 
@@ -87,7 +89,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       // God, I do love web development.
       if (
         !target.hasPointerCapture(event.pointerId) &&
-        target instanceof HTMLDivElement
+        !POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName)
       ) {
         target.setPointerCapture(event.pointerId);
       }
