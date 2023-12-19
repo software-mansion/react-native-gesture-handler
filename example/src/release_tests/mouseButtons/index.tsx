@@ -46,13 +46,13 @@ function TapTests() {
     .mouseButton(MouseButton.LEFT)
     .onEnd(() => console.log('Tap with left'));
 
-  const rightTap = Gesture.Tap()
-    .mouseButton(MouseButton.RIGHT)
-    .onEnd(() => console.log('Tap with right'));
-
   const middleTap = Gesture.Tap()
     .mouseButton(MouseButton.MIDDLE)
     .onEnd(() => console.log('Tap with middle'));
+
+  const rightTap = Gesture.Tap()
+    .mouseButton(MouseButton.RIGHT)
+    .onEnd(() => console.log('Tap with right'));
 
   const leftRightTap = Gesture.Tap()
     .mouseButton(MouseButton.LEFT | MouseButton.RIGHT)
@@ -72,13 +72,13 @@ function PanTests() {
     .mouseButton(MouseButton.LEFT)
     .onChange(() => console.log('Panning with left'));
 
-  const rightPan = Gesture.Pan()
-    .mouseButton(MouseButton.RIGHT)
-    .onChange(() => console.log('Panning with right'));
-
   const middlePan = Gesture.Pan()
     .mouseButton(MouseButton.MIDDLE)
     .onChange(() => console.log('Panning with middle'));
+
+  const rightPan = Gesture.Pan()
+    .mouseButton(MouseButton.RIGHT)
+    .onChange(() => console.log('Panning with right'));
 
   const leftRightPan = Gesture.Pan()
     .mouseButton(MouseButton.LEFT | MouseButton.RIGHT)
@@ -98,13 +98,13 @@ function LongPressTests() {
     .mouseButton(MouseButton.LEFT)
     .onStart(() => console.log('LongPress with left'));
 
-  const rightLongPress = Gesture.LongPress()
-    .mouseButton(MouseButton.RIGHT)
-    .onStart(() => console.log('LongPress with right'));
-
   const middleLongPress = Gesture.LongPress()
     .mouseButton(MouseButton.MIDDLE)
     .onStart(() => console.log('LongPress with middle'));
+
+  const rightLongPress = Gesture.LongPress()
+    .mouseButton(MouseButton.RIGHT)
+    .onStart(() => console.log('LongPress with right'));
 
   const leftRightLongPress = Gesture.LongPress()
     .mouseButton(MouseButton.LEFT | MouseButton.RIGHT)
@@ -131,15 +131,15 @@ function FlingTests() {
     .mouseButton(MouseButton.LEFT)
     .onStart(() => console.log('Fling with left'));
 
-  const rightFling = Gesture.Fling()
-    .direction(Directions.LEFT | Directions.RIGHT)
-    .mouseButton(MouseButton.RIGHT)
-    .onStart(() => console.log('Fling with right'));
-
   const middleFling = Gesture.Fling()
     .direction(Directions.LEFT | Directions.RIGHT)
     .mouseButton(MouseButton.MIDDLE)
     .onStart(() => console.log('Fling with middle'));
+
+  const rightFling = Gesture.Fling()
+    .direction(Directions.LEFT | Directions.RIGHT)
+    .mouseButton(MouseButton.RIGHT)
+    .onStart(() => console.log('Fling with right'));
 
   const leftRightFling = Gesture.Fling()
     .direction(Directions.LEFT | Directions.RIGHT)
