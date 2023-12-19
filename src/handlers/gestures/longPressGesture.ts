@@ -23,11 +23,6 @@ export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPa
     this.config.maxDist = distance;
     return this;
   }
-
-  enableContextMenu(value: boolean) {
-    this.config.enableContextMenu = value;
-    return this;
-  }
 }
 
 export type LongPressGestureType = InstanceType<typeof LongPressGesture>;

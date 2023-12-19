@@ -28,6 +28,7 @@ import {
   HandlerStateChangeEvent,
   UserSelect,
   ActiveCursor,
+  EnableContextMenu,
 } from '../handlers/gestureHandlerCommon';
 import {
   PanGestureHandler,
@@ -38,6 +39,7 @@ import {
   TapGestureHandlerEventPayload,
 } from '../handlers/TapGestureHandler';
 import { State } from '../State';
+import { MouseButton } from '../web/interfaces';
 
 const DRAG_TOSS = 0.05;
 
@@ -173,6 +175,18 @@ export interface DrawerLayoutProps {
    * Values: see CSS cursor values
    */
   activeCursor?: ActiveCursor;
+
+  /**
+   * @default 'MouseButton.LEFT'
+   * Allows to choose which mouse button should underlying pan handler react to.
+   */
+  mouseButton?: MouseButton;
+
+  /**
+   * @default 'false if MouseButton.RIGHT is specified'
+   * Allows to enable/disable context menu.
+   */
+  enableContextMenu?: EnableContextMenu;
 }
 
 export type DrawerLayoutState = {
@@ -700,6 +714,8 @@ export default class DrawerLayout extends Component<
         // @ts-ignore could be fixed in handler types
         userSelect={this.props.userSelect}
         activeCursor={this.props.activeCursor}
+        mouseButton={this.props.mouseButton}
+        enableContextMenu={this.props.enableContextMenu}
         ref={this.setPanGestureRef}
         hitSlop={hitSlop}
         activeOffsetX={gestureOrientation * minSwipeDistance!}

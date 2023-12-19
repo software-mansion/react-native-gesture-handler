@@ -18,7 +18,6 @@ export const panGestureHandlerProps = [
   'avgTouches',
   'enableTrackpadTwoFingerGesture',
   'activateAfterLongPress',
-  'enableContextMenu',
 ] as const;
 
 export const panGestureHandlerCustomNativeProps = [
@@ -182,11 +181,6 @@ export interface PanGestureHandlerProps
    * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
    */
   failOffsetX?: number | number[];
-
-  /**
-   * Specifies whether context menu should be enabled when you click on handler with right mouse button.
-   */
-  enableContextMenu?: boolean;
 }
 
 export const panHandlerName = 'PanGestureHandler';

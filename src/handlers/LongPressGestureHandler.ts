@@ -7,7 +7,6 @@ import {
 export const longPressGestureHandlerProps = [
   'minDurationMs',
   'maxDist',
-  'enableContextMenu',
 ] as const;
 
 export type LongPressGestureHandlerEventPayload = {
@@ -68,12 +67,7 @@ export interface LongPressGestureConfig {
 
 export interface LongPressGestureHandlerProps
   extends BaseGestureHandlerProps<LongPressGestureHandlerEventPayload>,
-    LongPressGestureConfig {
-  /**
-   * Specifies whether context menu should be enabled when you click on handler with right mouse button.
-   */
-  enableContextMenu?: boolean;
-}
+    LongPressGestureConfig {}
 
 export const longPressHandlerName = 'LongPressGestureHandler';
 
