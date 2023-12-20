@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
@@ -352,6 +353,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     throw JSApplicationIllegalArgumentException("Invalid handler name $handlerName")
   }
 
+  @ReactMethod
   override fun createGestureHandler(
     handlerName: String,
     handlerTagDouble: Double,
@@ -362,6 +364,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     createGestureHandlerHelper(handlerName, handlerTag, config)
   }
 
+  @ReactMethod
   override fun attachGestureHandler(handlerTagDouble: Double, viewTagDouble: Double, actionTypeDouble: Double) {
     val handlerTag = handlerTagDouble.toInt()
     val viewTag = viewTagDouble.toInt()
@@ -387,6 +390,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
+  @ReactMethod
   @Suppress("UNCHECKED_CAST")
   override fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
@@ -394,21 +398,25 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     updateGestureHandlerHelper(handlerTag, config)
   }
 
+  @ReactMethod
   override fun dropGestureHandler(handlerTagDouble: Double) {
     val handlerTag = handlerTagDouble.toInt()
     interactionManager.dropRelationsForHandlerWithTag(handlerTag)
     registry.dropHandler(handlerTag)
   }
 
+  @ReactMethod
   override fun handleSetJSResponder(viewTagDouble: Double, blockNativeResponder: Boolean) {
     val viewTag = viewTagDouble.toInt()
     val rootView = findRootHelperForViewAncestor(viewTag)
     rootView?.handleSetJSResponder(viewTag, blockNativeResponder)
   }
 
+  @ReactMethod
   override fun handleClearJSResponder() {
   }
 
+  @ReactMethod
   override fun flushOperations() {
   }
 
@@ -424,6 +432,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
+  @ReactMethod(isBlockingSynchronousMethod = true)
   override fun install(): Boolean {
     reactApplicationContext.runOnJSQueueThread {
       try {
