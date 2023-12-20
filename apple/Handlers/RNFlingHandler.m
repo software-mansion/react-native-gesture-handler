@@ -72,6 +72,7 @@
   [_gestureHandler.pointerTracker reset];
   _hasBegan = NO;
   [super reset];
+  [_gestureHandler reset];
 }
 
 - (CGPoint)getLastLocation

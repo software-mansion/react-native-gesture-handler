@@ -56,6 +56,12 @@ API_AVAILABLE(ios(13.4))
   self.enabled = NO;
 }
 
+- (void)reset
+{
+  [super reset];
+  [_gestureHandler reset];
+}
+
 - (UIPointerStyle *)pointerInteraction:(UIPointerInteraction *)interaction styleForRegion:(UIPointerRegion *)region
 {
   if (interaction.view != nil && _hoverEffect != RNGestureHandlerHoverEffectNone) {

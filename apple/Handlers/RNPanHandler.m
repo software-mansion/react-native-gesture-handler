@@ -218,6 +218,7 @@
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
   self.enabled = YES;
   [super reset];
+  [_gestureHandler reset];
 }
 
 - (void)updateHasCustomActivationCriteria
