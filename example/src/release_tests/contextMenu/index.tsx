@@ -1,19 +1,23 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  MouseButton,
+} from 'react-native-gesture-handler';
 
 export default function ContextMenuExample() {
-  const p1 = Gesture.Pan();
+  const p1 = Gesture.Pan().mouseButton(MouseButton.RIGHT);
   const p2 = Gesture.Pan();
   const p3 = Gesture.Pan();
 
   return (
     <View style={styles.container}>
-      <GestureDetector gesture={p1} enableContextMenu={false}>
+      <GestureDetector gesture={p1}>
         <View style={[styles.box, styles.grandParent]}>
           <GestureDetector gesture={p2} enableContextMenu={true}>
             <View style={[styles.box, styles.parent]}>
-              <GestureDetector gesture={p3}>
+              <GestureDetector gesture={p3} enableContextMenu={false}>
                 <View style={[styles.box, styles.child]} />
               </GestureDetector>
             </View>
