@@ -123,6 +123,7 @@
 
   if (self.state == UIGestureRecognizerStatePossible && [self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
+    [self triggerAction];
     return;
   }
 
