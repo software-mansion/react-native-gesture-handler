@@ -60,28 +60,19 @@
 }
 
 #if TARGET_OS_OSX
-- (void)touchesBeganWithEvent:(NSEvent *)event
+- (void)rotateWithEvent:(NSEvent *)event
 {
-  [super touchesBeganWithEvent:event];
-  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
-}
+  [super rotateWithEvent:event];
 
-- (void)touchesMovedWithEvent:(NSEvent *)event
-{
-  [super touchesMovedWithEvent:event];
-  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
-}
-
-- (void)touchesEndedWithEvent:(NSEvent *)event
-{
-  [super touchesEndedWithEvent:event];
-  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
-}
-
-- (void)touchesCancelledWithEvent:(NSEvent *)event
-{
-  [super touchesCancelledWithEvent:event];
-  [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+  if (self.state == NSGestureRecognizerStateBegan) {
+    [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
+  } else if (self.state == NSGestureRecognizerStateChanged) {
+    [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+  } else if (self.state == NSGestureRecognizerStateEnded) {
+    [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+  } else if (self.state == NSGestureRecognizerStateCancelled) {
+    [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+  }
 }
 #else
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
