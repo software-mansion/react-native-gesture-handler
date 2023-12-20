@@ -333,6 +333,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
   override fun getName() = MODULE_NAME
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T : GestureHandler<T>> createGestureHandlerHelper(
     handlerName: String,
     handlerTag: Int,
@@ -378,6 +379,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T : GestureHandler<T>> updateGestureHandlerHelper(handlerTag: Int, config: ReadableMap) {
     val handler = registry.getHandler(handlerTag) as T?
     if (handler != null) {
@@ -391,7 +393,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  @Suppress("UNCHECKED_CAST")
   override fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
 
