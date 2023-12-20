@@ -35,6 +35,8 @@ export default abstract class NodeManager {
       return;
     }
 
+    this.gestures[handlerTag].finalize();
+
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.gestures[handlerTag];
   }
