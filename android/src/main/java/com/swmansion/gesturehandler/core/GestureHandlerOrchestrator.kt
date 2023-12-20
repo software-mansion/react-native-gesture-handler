@@ -174,13 +174,20 @@ class GestureHandlerOrchestrator(
     }
     cleanupAwaitingHandlers()
 
-    // Dispatch state change event if handler is no longer in the active state we should also
-    // trigger END state change and UNDETERMINED state change if necessary
-    handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)
-    if (currentState != GestureHandler.STATE_ACTIVE) {
-      handler.dispatchStateChange(GestureHandler.STATE_END, GestureHandler.STATE_ACTIVE)
-      if (currentState != GestureHandler.STATE_END) {
-        handler.dispatchStateChange(GestureHandler.STATE_UNDETERMINED, GestureHandler.STATE_END)
+    // At this point the waiting handler is allowed to activate, so we need to send BEGAN -> ACTIVE event
+    // as it wasn't sent before. If handler has finished recognizing the gesture before it was allowed to
+    // activate, we also need to send ACTIVE -> END and END -> UNDETERMINED events, as it was blocked from
+    // sending events while waiting.
+    // There is one catch though - if the handler failed or was cancelled while waiting, relevant event has
+    // already been sent. The following chain would result in artificially activating that handler after the
+    // failure logic was ran and we don't want to do that.
+    if (currentState != GestureHandler.STATE_FAILED && currentState != GestureHandler.STATE_CANCELLED) {
+      handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)
+      if (currentState != GestureHandler.STATE_ACTIVE) {
+        handler.dispatchStateChange(GestureHandler.STATE_END, GestureHandler.STATE_ACTIVE)
+        if (currentState != GestureHandler.STATE_END) {
+          handler.dispatchStateChange(GestureHandler.STATE_UNDETERMINED, GestureHandler.STATE_END)
+        }
       }
     }
   }
