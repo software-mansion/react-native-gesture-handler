@@ -7,8 +7,10 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 jobs:
   check:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -19,10 +21,10 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: Use Node.js 16
+      - name: Use Node.js 18
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 18
           cache: 'yarn'
       - name: Install root node dependencies
         run: yarn

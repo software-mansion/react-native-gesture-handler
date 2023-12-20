@@ -37,12 +37,8 @@ import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
-import {
-  isFabric,
-  isJestEnv,
-  REACT_NATIVE_VERSION,
-  tagMessage,
-} from '../../utils';
+import { isFabric, isJestEnv, tagMessage } from '../../utils';
+import { getReactNativeVersion } from '../../getReactNativeVersion';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
@@ -197,11 +193,17 @@ function attachHandlers({
         );
       }
 
+      let blocksHandlers: number[] = [];
+      if (handler.config.blocksHandlers) {
+        blocksHandlers = extractValidHandlerTags(handler.config.blocksHandlers);
+      }
+
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
         filterConfig(handler.config, ALLOWED_PROPS, {
           simultaneousHandlers: simultaneousWith,
           waitFor: requireToFail,
+          blocksHandlers: blocksHandlers,
         })
       );
     }
@@ -565,6 +567,7 @@ function validateDetectorChildren(ref: any) {
   //         /       \
   //   NativeView  NativeView
   if (__DEV__ && Platform.OS !== 'web') {
+    const REACT_NATIVE_VERSION = getReactNativeVersion();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const wrapType =
       REACT_NATIVE_VERSION.minor > 63 || REACT_NATIVE_VERSION.major > 0

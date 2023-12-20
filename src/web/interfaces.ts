@@ -32,6 +32,7 @@ export interface Config extends Record<string, ConfigArgs> {
   enabled?: boolean;
   simultaneousHandlers?: Handler[] | null;
   waitFor?: Handler[] | null;
+  blocksHandlers?: Handler[] | null;
   hitSlop?: HitSlop;
   shouldCancelWhenOutside?: boolean;
   userSelect?: UserSelect;

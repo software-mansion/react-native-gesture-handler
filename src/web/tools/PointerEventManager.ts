@@ -19,7 +19,10 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.DOWN);
       const target = event.target as HTMLElement;
 
-      target.setPointerCapture(adaptedEvent.pointerId);
+      if (target instanceof HTMLDivElement) {
+        target.setPointerCapture(adaptedEvent.pointerId);
+      }
+
       this.markAsInBounds(adaptedEvent.pointerId);
       this.trackedPointers.add(adaptedEvent.pointerId);
 
@@ -47,7 +50,10 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
       const target = event.target as HTMLElement;
 
-      target.releasePointerCapture(adaptedEvent.pointerId);
+      if (target instanceof HTMLDivElement) {
+        target.releasePointerCapture(adaptedEvent.pointerId);
+      }
+
       this.markAsOutOfBounds(adaptedEvent.pointerId);
       this.trackedPointers.delete(adaptedEvent.pointerId);
 
@@ -79,7 +85,10 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       // incorporating it here seems stupid), so we just call it again here, every time
       // pointer moves until it succeeds.
       // God, I do love web development.
-      if (!target.hasPointerCapture(event.pointerId)) {
+      if (
+        !target.hasPointerCapture(event.pointerId) &&
+        target instanceof HTMLDivElement
+      ) {
         target.setPointerCapture(event.pointerId);
       }
 
