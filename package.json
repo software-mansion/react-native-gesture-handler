@@ -146,7 +146,7 @@
   ],
   "codegenConfig": {
     "name": "rngesturehandler_codegen",
-    "type": "components",
+    "type": "all",
     "jsSrcsDir": "./src/specs"
   }
 }

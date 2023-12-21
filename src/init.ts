@@ -1,6 +1,7 @@
 import { startListening } from './handlers/gestures/eventReceiver';
 import RNGestureHandlerModule from './RNGestureHandlerModule';
 import { isFabric } from './utils';
+import RNGHTurboCppModule from './specs/NativeRNGHTurboCppModule';
 
 let fabricInitialized = false;
 
@@ -12,7 +13,9 @@ export function initialize() {
 // method during render of GestureHandlerRootView
 export function maybeInitializeFabric() {
   if (isFabric() && !fabricInitialized) {
-    RNGestureHandlerModule.install();
-    fabricInitialized = true;
+    fabricInitialized = RNGestureHandlerModule.install();
+    if (!fabricInitialized) {
+      fabricInitialized = RNGHTurboCppModule?.installBridgeless() || false;
+    }
   }
 }

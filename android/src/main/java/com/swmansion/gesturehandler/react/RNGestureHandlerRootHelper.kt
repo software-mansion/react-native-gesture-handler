@@ -10,8 +10,10 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.RootView
+import com.facebook.react.uimanager.ThemedReactContext
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
+import java.lang.Exception
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
   private val orchestrator: GestureHandlerOrchestrator?
@@ -24,7 +26,12 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     UiThreadUtil.assertOnUiThread()
     val wrappedViewTag = wrappedView.id
     check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
-    val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
+
+    val module = try {
+      context.getNativeModule(RNGestureHandlerModule::class.java)!!
+    } catch (e: Exception) {
+      (context as ThemedReactContext).reactApplicationContext.getNativeModule(RNGestureHandlerModule::class.java)!!
+    }
     val registry = module.registry
     rootView = findRootViewTag(wrappedView)
     Log.i(
@@ -49,7 +56,11 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       ReactConstants.TAG,
       "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView"
     )
-    val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
+    val module = try {
+      context.getNativeModule(RNGestureHandlerModule::class.java)!!
+    } catch (e: Exception) {
+      (context as ThemedReactContext).reactApplicationContext.getNativeModule(RNGestureHandlerModule::class.java)!!
+    }
     with(module) {
       registry.dropHandler(jsGestureHandler!!.tag)
       unregisterRootHelper(this@RNGestureHandlerRootHelper)

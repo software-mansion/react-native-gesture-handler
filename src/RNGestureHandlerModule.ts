@@ -43,7 +43,7 @@ export type RNGestureHandlerModuleProps = {
     newConfig: Readonly<Record<string, unknown>>
   ) => void;
   dropGestureHandler: (handlerTag: number) => void;
-  install: () => void;
+  install: () => boolean;
   flushOperations: () => void;
 };
 

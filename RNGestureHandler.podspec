@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
   s.author       = { package["author"]["name"] => package["author"]["email"] }
   s.source       = { :git => "https://github.com/software-mansion/react-native-gesture-handler", :tag => "#{s.version}" }
-  s.source_files = "apple/**/*.{h,m,mm}"
+  s.source_files = ["apple/**/*.{h,m,mm}", "common/cpp/**/*.{mm,h}"]
   s.requires_arc = true
   s.platforms       = { ios: apple_platform, tvos: apple_platform, osx: '10.15' }
 

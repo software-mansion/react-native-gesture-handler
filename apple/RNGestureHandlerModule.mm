@@ -13,7 +13,6 @@
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CallInvoker.h>
-#import <ReactCommon/RCTTurboModule.h>
 
 #import <react/renderer/uimanager/primitives.h>
 #endif // RCT_NEW_ARCH_ENABLED
@@ -125,8 +124,16 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 {
   RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
   auto runtime = (jsi::Runtime *)cxxBridge.runtime;
+  if (runtime) {
+    decorateRuntime(*runtime);
+    return @true;
+  }
+  return @false;
+}
+
++ (void)installWithRuntime:(jsi::Runtime *)runtime
+{
   decorateRuntime(*runtime);
-  return @true;
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
