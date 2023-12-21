@@ -240,8 +240,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       return;
     }
 
-    // When activating a handler under custom conditions (like activateAfterLongPress) recognizers don't respect
-    // manually changing their state, if we send a custom event in state ACTIVE and the recognizer will later update its
+    // Recognizers don't respect manually changing their state (that happens when we are activating handler
+    // under custom conditions). If we send a custom event in state ACTIVE and the recognizer will later update its
     // state, we will end up sending ACTIVE->BEGAN and BEGAN->ACTIVE chain. To prevent this, we simply detect the first
     // weird state change and stop it (then we don't update _lastState), so the second call ends up without state change
     // and is fine.
