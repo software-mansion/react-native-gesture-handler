@@ -55,7 +55,7 @@ body:
     attributes:
       label: Gesture Handler version
       description: What version of react-native-gesture-handler are you using?
-      placeholder: 2.5.0
+      placeholder: 2.14.0
     validations:
       required: true
 
@@ -64,7 +64,7 @@ body:
     attributes:
       label: React Native version
       description: What version of react-native are you using?
-      placeholder: 0.69.0
+      placeholder: 0.73.0
     validations:
       required: true
 
@@ -78,6 +78,7 @@ body:
         - Android
         - iOS
         - Web
+        - MacOS
     validations:
       required: true
 

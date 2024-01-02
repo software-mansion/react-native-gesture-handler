@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
 jobs:
   check:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: ubuntu-latest
     concurrency:
       group: kotlin-lint-${{ github.ref }}
