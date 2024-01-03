@@ -4,7 +4,7 @@ import hoistNonReactStatics from 'hoist-non-react-statics';
 import GestureHandlerRootView from './GestureHandlerRootView';
 
 export default function gestureHandlerRootHOC<
-  P extends Record<string, unknown>
+  P extends object,
 >(
   Component: React.ComponentType<P>,
   containerStyles?: StyleProp<ViewStyle>
