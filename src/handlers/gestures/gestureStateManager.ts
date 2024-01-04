@@ -18,8 +18,7 @@ const warningMessage = tagMessage(
 const REANIMATED_AVAILABLE = Reanimated?.useSharedValue !== undefined;
 const setGestureState = Reanimated?.setGestureState;
 
-export const GestureStateManager = {
-  create(handlerTag: number): GestureStateManagerType {
+function create(handlerTag: number): GestureStateManagerType {
     'worklet';
     return {
       begin: () => {
@@ -58,5 +57,8 @@ export const GestureStateManager = {
         }
       },
     };
-  },
+  }
+
+export const GestureStateManager = {
+  create,
 };
