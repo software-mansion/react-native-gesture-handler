@@ -216,7 +216,7 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"Manual gesture handler is not supported on macOS");
+  RCTLogWarn(@"Native view gesture handler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
   }
