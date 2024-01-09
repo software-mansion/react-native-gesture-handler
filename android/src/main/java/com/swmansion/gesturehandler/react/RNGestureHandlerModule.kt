@@ -611,8 +611,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   companion object {
     init {
-      // we need here so it is called before cpp turbo module is requested
-      SoLoader.loadLibrary("gesturehandler")
+      if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+        // we need here so it is called before cpp turbo module is requested
+        SoLoader.loadLibrary("gesturehandler")
+      }
     }
     const val MODULE_NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"

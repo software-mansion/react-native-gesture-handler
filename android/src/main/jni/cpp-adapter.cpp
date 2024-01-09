@@ -18,7 +18,7 @@ Java_com_swmansion_gesturehandler_react_RNGestureHandlerModule_decorateRuntime(
         jlong jsiPtr) {
     jsi::Runtime *runtime = reinterpret_cast<jsi::Runtime *>(jsiPtr);
     if (runtime) {
-        RNGHdecorateRuntime(*runtime);
+        RNGHDecorateRuntime(*runtime);
     }
 }
 

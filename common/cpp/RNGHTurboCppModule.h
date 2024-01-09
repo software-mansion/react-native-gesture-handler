@@ -10,7 +10,7 @@
 
 namespace facebook::react {
 
-void RNGHdecorateRuntime(jsi::Runtime &runtime);
+void RNGHDecorateRuntime(jsi::Runtime &runtime);
 
 class RNGHTurboCppModule : public NativeRNGHTurboCppModuleCxxSpec<RNGHTurboCppModule> {
  public:
@@ -19,6 +19,4 @@ class RNGHTurboCppModule : public NativeRNGHTurboCppModuleCxxSpec<RNGHTurboCppMo
   bool installBridgeless(jsi::Runtime& rt);
 };
 
-
 } // namespace facebook::react
-

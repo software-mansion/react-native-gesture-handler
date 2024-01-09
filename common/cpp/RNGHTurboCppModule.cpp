@@ -3,7 +3,7 @@
 
 namespace facebook::react {
 
-void RNGHdecorateRuntime(jsi::Runtime &runtime) {
+void RNGHDecorateRuntime(jsi::Runtime &runtime) {
     auto isFormsStackingContext = jsi::Function::createFromHostFunction(
             runtime,
             jsi::PropNameID::forAscii(runtime, "isFormsStackingContext"),
@@ -33,7 +33,7 @@ RNGHTurboCppModule::RNGHTurboCppModule(std::shared_ptr<CallInvoker> jsInvoker)
     : NativeRNGHTurboCppModuleCxxSpec(std::move(jsInvoker)) {}
 
 bool RNGHTurboCppModule::installBridgeless(jsi::Runtime& runtime) {
-    RNGHdecorateRuntime(runtime);
+    RNGHDecorateRuntime(runtime);
   return true;
 }
 

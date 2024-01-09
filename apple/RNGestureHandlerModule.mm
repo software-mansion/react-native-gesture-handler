@@ -15,6 +15,7 @@
 #import <ReactCommon/CallInvoker.h>
 
 #import <react/renderer/uimanager/primitives.h>
+#import "RNGHTurboCppModule.h"
 #endif // RCT_NEW_ARCH_ENABLED
 
 #import "RNGestureHandler.h"
@@ -83,27 +84,6 @@ RCT_EXPORT_MODULE()
   return RCTGetUIManagerQueue();
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
-void decorateRuntime(jsi::Runtime &runtime)
-{
-  auto isFormsStackingContext = jsi::Function::createFromHostFunction(
-      runtime,
-      jsi::PropNameID::forAscii(runtime, "isFormsStackingContext"),
-      1,
-      [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *arguments, size_t count) -> jsi::Value {
-        if (!arguments[0].isObject()) {
-          return jsi::Value::null();
-        }
-
-        auto shadowNode = arguments[0].asObject(runtime).getHostObject<ShadowNodeWrapper>(runtime)->shadowNode;
-        bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
-
-        return jsi::Value(isFormsStackingContext);
-      });
-  runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
-}
-#endif // RCT_NEW_ARCH_ENABLED
-
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
@@ -125,15 +105,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
   RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
   auto runtime = (jsi::Runtime *)cxxBridge.runtime;
   if (runtime) {
-    decorateRuntime(*runtime);
+    RNGHDecorateRuntime(*runtime);
     return @true;
   }
   return @false;
-}
-
-+ (void)installWithRuntime:(jsi::Runtime *)runtime
-{
-  decorateRuntime(*runtime);
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
