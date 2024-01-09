@@ -147,6 +147,9 @@
   "codegenConfig": {
     "name": "rngesturehandler_codegen",
     "type": "all",
-    "jsSrcsDir": "./src/specs"
+    "jsSrcsDir": "./src/specs",
+    "android": {
+      "javaPackageName": "com.swmansion.gesturehandler"
+    }
   }
 }
