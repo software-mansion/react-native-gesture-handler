@@ -83,33 +83,6 @@ def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
-def resolveReactNativeDirectory() {
-    def reactNativeLocation = safeExtGet("REACT_NATIVE_NODE_MODULES_DIR", null)
-    if (reactNativeLocation != null) {
-        return file(reactNativeLocation)
-    }
-
-    // monorepo workaround
-    // react-native can be hoisted or in project's own node_modules
-    def reactNativeFromProjectNodeModules = file("${rootProject.projectDir}/../node_modules/react-native")
-    if (reactNativeFromProjectNodeModules.exists()) {
-        return reactNativeFromProjectNodeModules
-    }
-
-    def reactNativeFromNodeModulesWithReanimated = file("${projectDir}/../../react-native")
-    if (reactNativeFromNodeModulesWithReanimated.exists()) {
-        return reactNativeFromNodeModulesWithReanimated
-    }
-
-    throw new Exception(
-        "[react-native-gesture-handler] Unable to resolve react-native location in " +
-            "node_modules. You should add project extension property (in app/build.gradle) " +
-            "`REACT_NATIVE_NODE_MODULES_DIR` with path to react-native."
-    )
-}
-
-def REACT_NATIVE_DIR = resolveReactNativeDirectory()
-
 /**
  * Private function to get the list of Native Architectures you want to build.
  * This reads the value from reactNativeArchitectures in your gradle.properties
@@ -133,20 +106,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-
-        externalNativeBuild {
-            cmake {
-                arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
-                        "-DANDROID_STL=c++_shared"
-            }
-        }
     }
-
-    externalNativeBuild {
-       cmake {
-           path "src/main/jni/CMakeLists.txt"
-       }
-   }
 
     splits {
         abi {
