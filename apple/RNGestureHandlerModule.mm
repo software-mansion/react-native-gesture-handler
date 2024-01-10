@@ -10,7 +10,6 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
-#import <React/RCTSurfacePresenter.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
@@ -34,7 +33,7 @@ using namespace react;
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
-@interface RNGestureHandlerModule () <RCTSurfacePresenterObserver, RNGestureHandlerStateManager>
+@interface RNGestureHandlerModule () <RNGestureHandlerStateManager>
 
 @end
 #else
@@ -68,9 +67,7 @@ RCT_EXPORT_MODULE()
 
   _manager = nil;
 
-#ifdef RCT_NEW_ARCH_ENABLED
-  [self.bridge.surfacePresenter removeObserver:self];
-#else
+#ifndef RCT_NEW_ARCH_ENABLED
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
 #endif // RCT_NEW_ARCH_ENABLED
 }
@@ -115,9 +112,7 @@ void decorateRuntime(jsi::Runtime &runtime)
                                                 eventDispatcher:bridge.eventDispatcher];
   _operations = [NSMutableArray new];
 
-#ifdef RCT_NEW_ARCH_ENABLED
-  [bridge.surfacePresenter addObserver:self];
-#else
+#ifndef RCT_NEW_ARCH_ENABLED
   [bridge.uiManager.observerCoordinator addObserver:self];
 #endif // RCT_NEW_ARCH_ENABLED
 }
@@ -242,8 +237,6 @@ RCT_EXPORT_METHOD(flushOperations)
 {
   [_operations addObject:operation];
 }
-
-#pragma mark - RCTSurfacePresenterObserver
 
 #ifndef RCT_NEW_ARCH_ENABLED
 
