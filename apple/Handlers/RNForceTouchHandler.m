@@ -125,6 +125,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 {
   [_gestureHandler.pointerTracker reset];
   [super reset];
+  [_gestureHandler reset];
   _force = 0;
   _firstTouch = NULL;
 }

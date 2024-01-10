@@ -123,6 +123,7 @@
 
   if (self.state == UIGestureRecognizerStatePossible && [self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
+    [self triggerAction];
     return;
   }
 
@@ -218,6 +219,7 @@
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
   self.enabled = YES;
   [super reset];
+  [_gestureHandler reset];
 }
 
 - (void)updateHasCustomActivationCriteria
