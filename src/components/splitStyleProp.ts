@@ -153,7 +153,7 @@ export function splitStyleProp<T extends ViewStyle>(
   };
 
   // if borderWidth was specified it adjusts border radii
-  //  to remain the same curvature for both inner and outer views
+  // to remain the same curvature for both inner and outer views
   if (styleGroups.outerStyles.borderWidth != null) {
     const { borderWidth } = styleGroups.outerStyles;
 

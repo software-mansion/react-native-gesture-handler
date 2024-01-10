@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
-import GestureHandlerRootView from '../../../../src/components/GestureHandlerRootView';
-import { ScrollView } from '../../../../src/components/GestureComponents';
-import { RectButton } from '../../../../src/components/GestureButtons';
+import {
+  GestureHandlerRootView,
+  ScrollView,
+  RectButton,
+} from 'react-native-gesture-handler';
 
 const MyButton = RectButton;
 
