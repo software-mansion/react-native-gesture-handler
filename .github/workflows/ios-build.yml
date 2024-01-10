@@ -4,7 +4,7 @@ on:
     paths:
       - '.github/workflows/ios-build.yml'
       - 'RNGestureHandler.podspec'
-      - 'ios/**'
+      - 'apple/**'
       - 'Example/ios/**'
       - 'FabricExample/ios/**'
   push:
@@ -13,6 +13,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: macos-12
     strategy:
       matrix:
@@ -36,4 +37,4 @@ jobs:
         run: pod install
       - name: Build app
         working-directory: ${{ matrix.working-directory }}
-        run: yarn ios --simulator=\"iPhone 11\" --mode Debug
+        run: yarn ios --simulator=\"iPhone 14\" --mode Debug --verbose --terminal /bin/zsh
