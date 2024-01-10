@@ -51,6 +51,10 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   NSMutableArray<GestureHandlerOperation> *_operations;
 }
 
+#ifdef RCT_NEW_ARCH_ENABLED
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+#endif // RCT_NEW_ARCH_ENABLED
+
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
@@ -83,18 +87,25 @@ RCT_EXPORT_MODULE()
   return RCTGetUIManagerQueue();
 }
 
+#ifdef RCT_NEW_ARCH_ENABLED
 - (void)initialize
 {
-  _manager = [[RNGestureHandlerManager alloc] initWithUIManager:[self.moduleRegistry moduleForName:"RCTUIManager"]
-                                                eventDispatcher:[self.moduleRegistry moduleForName:"EventDispatcher"]];
+  _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
+                                                        viewRegistry:_viewRegistry_DEPRECATED];
+  _operations = [NSMutableArray new];
 }
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
-
+#ifdef RCT_NEW_ARCH_ENABLED
+  _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
+                                                        viewRegistry:_viewRegistry_DEPRECATED];
+#else
   _manager = [[RNGestureHandlerManager alloc] initWithUIManager:bridge.uiManager
                                                 eventDispatcher:bridge.eventDispatcher];
+#endif // RCT_NEW_ARCH_ENABLED
   _operations = [NSMutableArray new];
 
 #ifndef RCT_NEW_ARCH_ENABLED
@@ -178,13 +189,11 @@ RCT_EXPORT_METHOD(flushOperations)
 
   NSArray<GestureHandlerOperation> *operations = _operations;
   _operations = [NSMutableArray new];
-
-  [self.bridge.uiManager
-      addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        for (GestureHandlerOperation operation in operations) {
-          operation(self->_manager);
-        }
-      }];
+  [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
+    for (GestureHandlerOperation operation in operations) {
+      operation(self->_manager);
+    }
+  }];
 #endif // RCT_NEW_ARCH_ENABLED
 }
 
