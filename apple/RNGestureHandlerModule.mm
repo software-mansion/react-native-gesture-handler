@@ -86,6 +86,12 @@ RCT_EXPORT_MODULE()
   return RCTGetUIManagerQueue();
 }
 
+- (void)initialize
+{
+  _manager = [[RNGestureHandlerManager alloc] initWithUIManager:[self.moduleRegistry moduleForName:"RCTUIManager"]
+                                                eventDispatcher:[self.moduleRegistry moduleForName:"EventDispatcher"]];
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
@@ -104,8 +110,7 @@ RCT_EXPORT_MODULE()
 #ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 {
-  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
-  if (!cxxBridge.runtime) {
+  if (!self.bridge) {
     return @false;
   }
   [self.bridge
