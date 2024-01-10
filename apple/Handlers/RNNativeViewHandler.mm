@@ -21,8 +21,6 @@
 #import <React/RCTScrollView.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
-#if !TARGET_OS_OSX
-
 #pragma mark RNDummyGestureRecognizer
 
 @implementation RNDummyGestureRecognizer {
@@ -36,6 +34,26 @@
   }
   return self;
 }
+
+#if TARGET_OS_OSX
+- (void)mouseDown:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
+  self.state = NSGestureRecognizerStateEnded;
+  [self reset];
+}
+
+#else
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
@@ -61,6 +79,8 @@
   [self reset];
 }
 
+#endif
+
 - (void)reset
 {
   [_gestureHandler.pointerTracker reset];
@@ -68,6 +88,8 @@
 }
 
 @end
+
+#if !TARGET_OS_OSX
 
 #pragma mark RNNativeViewGestureHandler
 
@@ -197,18 +219,6 @@
 @end
 
 #else
-
-#pragma mark RNDummyGestureRecognizer
-
-@implementation RNDummyGestureRecognizer
-
-- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
-{
-  self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)];
-  return self;
-}
-
-@end
 
 #pragma mark RNNativeViewGestureHandler
 
