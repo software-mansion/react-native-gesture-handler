@@ -19,6 +19,7 @@ import {
   HandlerStateChangeEvent,
   scheduleFlushOperations,
   UserSelect,
+  EnableContextMenu,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -605,10 +606,20 @@ const applyUserSelectProp = (
   }
 };
 
+const applyEnableContextMenuProp = (
+  enableContextMenu: EnableContextMenu,
+  gesture: ComposedGesture | GestureType
+): void => {
+  for (const g of gesture.toGestureArray()) {
+    g.config.enableContextMenu = enableContextMenu;
+  }
+};
+
 interface GestureDetectorProps {
   gesture: ComposedGesture | GestureType;
-  userSelect?: UserSelect;
   children?: React.ReactNode;
+  userSelect?: UserSelect;
+  enableContextMenu?: EnableContextMenu;
 }
 interface GestureDetectorState {
   firstRender: boolean;
@@ -628,6 +639,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   if (props.userSelect) {
     applyUserSelectProp(props.userSelect, gestureConfig);
+  }
+
+  if (props.enableContextMenu !== undefined) {
+    applyEnableContextMenuProp(props.enableContextMenu, gestureConfig);
   }
 
   const gesture = gestureConfig.toGestureArray();

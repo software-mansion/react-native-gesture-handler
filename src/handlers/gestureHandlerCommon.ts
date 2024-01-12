@@ -23,6 +23,7 @@ const commonProps = [
   'userSelect',
   'activeCursor',
   'mouseButton',
+  'enableContextMenu',
 ] as const;
 
 const componentInteractionProps = [
@@ -110,6 +111,8 @@ export type ActiveCursor =
   | 'zoom-in'
   | 'zoom-out';
 
+export type EnableContextMenu = boolean;
+
 //TODO(TS) events in handlers
 
 export interface GestureEvent<ExtraEventPayloadT = Record<string, unknown>> {
@@ -152,6 +155,7 @@ export type CommonGestureConfig = {
   userSelect?: UserSelect;
   activeCursor?: ActiveCursor;
   mouseButton?: MouseButton;
+  enableContextMenu?: EnableContextMenu;
 };
 
 // Events payloads are types instead of interfaces due to TS limitation.

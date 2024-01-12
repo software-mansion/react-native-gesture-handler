@@ -9,7 +9,7 @@ import TouchEventManager from './TouchEventManager';
 import { State } from '../../State';
 import { isPointerInBounds } from '../utils';
 import EventManager from './EventManager';
-import { MouseButton } from '../interfaces';
+import { Config, MouseButton } from '../interfaces';
 
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement>
@@ -17,6 +17,13 @@ export class GestureHandlerWebDelegate
   private view!: HTMLElement;
   private gestureHandler!: GestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
+  private boundDisableContextMenu: (e: MouseEvent) => void;
+  private boundEnableContextMenu: (e: MouseEvent) => void;
+
+  constructor() {
+    this.boundDisableContextMenu = this.disableContextMenu.bind(this);
+    this.boundEnableContextMenu = this.enableContextMenu.bind(this);
+  }
 
   getView(): HTMLElement {
     return this.view;
@@ -38,14 +45,7 @@ export class GestureHandlerWebDelegate
 
     const config = handler.getConfig();
 
-    if (
-      !config.enableContextMenu &&
-      handler.isButtonInConfig(MouseButton.RIGHT)
-    ) {
-      this.view.addEventListener('contextmenu', (e) => e.preventDefault());
-    } else if (config.enableContextMenu) {
-      this.view.addEventListener('contextmenu', (e) => e.stopPropagation());
-    }
+    this.addContextMenuListeners(config);
 
     if (!config.userSelect) {
       this.view.style['webkitUserSelect'] = 'none';
@@ -94,6 +94,41 @@ export class GestureHandlerWebDelegate
     ) {
       this.view.style.cursor = 'auto';
     }
+  }
+
+  private shouldDisableContextMenu(config: Config) {
+    return (
+      (config.enableContextMenu === undefined &&
+        this.gestureHandler.isButtonInConfig(MouseButton.RIGHT)) ||
+      config.enableContextMenu === false
+    );
+  }
+
+  addContextMenuListeners(config: Config): void {
+    if (this.shouldDisableContextMenu(config)) {
+      this.view.addEventListener('contextmenu', this.boundDisableContextMenu);
+    } else if (config.enableContextMenu) {
+      this.view.addEventListener('contextmenu', this.boundEnableContextMenu);
+    }
+  }
+
+  public removeContextMenuListeners(config: Config): void {
+    if (this.shouldDisableContextMenu(config)) {
+      this.view.removeEventListener(
+        'contextmenu',
+        this.boundDisableContextMenu
+      );
+    } else if (config.enableContextMenu) {
+      this.view.removeEventListener('contextmenu', this.boundEnableContextMenu);
+    }
+  }
+
+  private disableContextMenu(e: MouseEvent): void {
+    e.preventDefault();
+  }
+
+  private enableContextMenu(e: MouseEvent): void {
+    e.stopPropagation();
   }
 
   onBegin(): void {

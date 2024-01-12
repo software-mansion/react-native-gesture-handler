@@ -17,6 +17,7 @@ import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import type { GestureHandlerWebDelegate } from '../tools/GestureHandlerWebDelegate';
 
 export default abstract class GestureHandler {
   private lastSentState: State | null = null;
@@ -746,6 +747,12 @@ export default abstract class GestureHandler {
   }
 
   protected resetConfig(): void {}
+
+  public finalize(): void {
+    (this.delegate as GestureHandlerWebDelegate).removeContextMenuListeners(
+      this.config
+    );
+  }
 
   //
   // Getters and setters

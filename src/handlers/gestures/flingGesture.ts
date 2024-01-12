@@ -22,11 +22,6 @@ export class FlingGesture extends BaseGesture<FlingGestureHandlerEventPayload> {
     this.config.direction = direction;
     return this;
   }
-
-  enableContextMenu(value: boolean) {
-    this.config.enableContextMenu = value;
-    return this;
-  }
 }
 
 export type FlingGestureType = InstanceType<typeof FlingGesture>;
