@@ -6,6 +6,7 @@ import {
   StyleSheet,
   StyleProp,
   ViewStyle,
+  View,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
@@ -20,6 +21,7 @@ import {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,
 } from '../handlers/NativeViewGestureHandler';
+import { splitStyleProp } from './splitStyleProp';
 
 export interface RawButtonProps extends NativeViewGestureHandlerProps {
   /**
@@ -63,6 +65,7 @@ export interface RawButtonProps extends NativeViewGestureHandlerProps {
    * Set this to true if you don't want the system to play sound when the button is pressed.
    */
   touchSoundDisabled?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 export interface BaseButtonProps extends RawButtonProps {
@@ -84,7 +87,6 @@ export interface BaseButtonProps extends RawButtonProps {
    * method.
    */
   onActiveStateChange?: (active: boolean) => void;
-  style?: StyleProp<ViewStyle>;
   testID?: string;
 
   /**
@@ -218,15 +220,22 @@ export class BaseButton extends React.Component<BaseButtonProps> {
   };
 
   render() {
-    const { rippleColor, ...rest } = this.props;
+    const { rippleColor, style, ...rest } = this.props;
+
+    const { outerStyles, innerStyles, restStyles } = splitStyleProp(style);
 
     return (
-      <RawButton
-        rippleColor={processColor(rippleColor)}
-        {...rest}
-        onGestureEvent={this.onGestureEvent}
-        onHandlerStateChange={this.onHandlerStateChange}
-      />
+      <View style={outerStyles}>
+        <View style={innerStyles}>
+          <RawButton
+            rippleColor={processColor(rippleColor)}
+            style={restStyles}
+            {...rest}
+            onGestureEvent={this.onGestureEvent}
+            onHandlerStateChange={this.onHandlerStateChange}
+          />
+        </View>
+      </View>
     );
   }
 }
