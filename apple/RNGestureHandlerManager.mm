@@ -1,7 +1,7 @@
 #import "RNGestureHandlerManager.h"
 
 #import <React/RCTComponent.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTModalHostViewController.h>
 #import <React/RCTRootContentView.h>
@@ -52,11 +52,12 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   RCTUIManager *_uiManager;
   NSHashTable<RNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
   NSMutableDictionary<NSNumber *, NSNumber *> *_attachRetryCounter;
-  RCTEventDispatcher *_eventDispatcher;
+  id<RCTEventDispatcherProtocol> _eventDispatcher;
   id _reanimatedModule;
 }
 
-- (instancetype)initWithUIManager:(RCTUIManager *)uiManager eventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithUIManager:(RCTUIManager *)uiManager
+                  eventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   if ((self = [super init])) {
     _uiManager = uiManager;
@@ -185,9 +186,9 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   [_registry dropAllHandlers];
 }
 
-- (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder
+- (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(BOOL)blockNativeResponder
 {
-  if ([blockNativeResponder boolValue]) {
+  if (blockNativeResponder) {
     for (RNRootViewGestureRecognizer *recognizer in _rootViewGestureRecognizers) {
       [recognizer blockOtherRecognizers];
     }

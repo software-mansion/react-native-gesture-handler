@@ -763,7 +763,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       // in case the view has changed, while config update would be handled be the `useEffect` above
       onHandlersUpdate(true);
 
-      if (isFabric()) {
+      if (isFabric() && global.isFormsStackingContext) {
         const node = getShadowNodeFromRef(ref);
         if (global.isFormsStackingContext(node) === false) {
           console.error(

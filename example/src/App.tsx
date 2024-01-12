@@ -20,6 +20,7 @@ import MouseButtons from './release_tests/mouseButtons';
 import NestedTouchables from './release_tests/nestedTouchables';
 import NestedButtons from './release_tests/nestedButtons';
 import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
+import RoundedButtons from './release_tests/roundedButtons';
 import { PinchableBox } from './recipes/scaleAndRotate';
 import PanAndScroll from './recipes/panAndScroll';
 import { BottomSheet } from './showcase/bottomSheet';
@@ -117,6 +118,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
       { name: 'MouseButtons', component: MouseButtons },
+      { name: 'Rounded buttons', component: RoundedButtons },
     ],
   },
   {

@@ -6,7 +6,6 @@ import android.view.MotionEvent
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
@@ -17,6 +16,7 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.soloader.SoLoader
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.BuildConfig
+import com.swmansion.gesturehandler.NativeRNGestureHandlerModuleSpec
 import com.swmansion.gesturehandler.ReanimatedEventDispatcher
 import com.swmansion.gesturehandler.core.FlingGestureHandler
 import com.swmansion.gesturehandler.core.GestureHandler
@@ -49,7 +49,7 @@ import com.swmansion.gesturehandler.react.eventbuilders.TapGestureHandlerEventDa
 @Suppress("DEPRECATION")
 @ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
-  ReactContextBaseJavaModule(reactContext), GestureHandlerStateManager {
+  NativeRNGestureHandlerModuleSpec(reactContext), GestureHandlerStateManager {
   private abstract class HandlerFactory<T : GestureHandler<T>> {
     abstract val type: Class<T>
     abstract val name: String
@@ -336,9 +336,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
   override fun getName() = MODULE_NAME
 
-  @ReactMethod
   @Suppress("UNCHECKED_CAST")
-  fun <T : GestureHandler<T>> createGestureHandler(
+  private fun <T : GestureHandler<T>> createGestureHandlerHelper(
     handlerName: String,
     handlerTag: Int,
     config: ReadableMap,
@@ -366,7 +365,21 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  fun attachGestureHandler(handlerTag: Int, viewTag: Int, actionType: Int) {
+  override fun createGestureHandler(
+    handlerName: String,
+    handlerTagDouble: Double,
+    config: ReadableMap,
+  ) {
+    val handlerTag = handlerTagDouble.toInt()
+
+    createGestureHandlerHelper(handlerName, handlerTag, config)
+  }
+
+  @ReactMethod
+  override fun attachGestureHandler(handlerTagDouble: Double, viewTagDouble: Double, actionTypeDouble: Double) {
+    val handlerTag = handlerTagDouble.toInt()
+    val viewTag = viewTagDouble.toInt()
+    val actionType = actionTypeDouble.toInt()
     // We don't have to handle view flattening in any special way since handlers are stored as
     // a map: viewTag -> [handler]. If the view with attached handlers was to be flattened
     // then that viewTag simply wouldn't be visited when traversing the view hierarchy in the
@@ -376,9 +389,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  @ReactMethod
   @Suppress("UNCHECKED_CAST")
-  fun <T : GestureHandler<T>> updateGestureHandler(handlerTag: Int, config: ReadableMap) {
+  private fun <T : GestureHandler<T>> updateGestureHandlerHelper(handlerTag: Int, config: ReadableMap) {
     val handler = registry.getHandler(handlerTag) as T?
     if (handler != null) {
       val factory = findFactoryForHandler(handler)
@@ -391,19 +403,32 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  fun dropGestureHandler(handlerTag: Int) {
+  override fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
+    val handlerTag = handlerTagDouble.toInt()
+
+    updateGestureHandlerHelper(handlerTag, config)
+  }
+
+  @ReactMethod
+  override fun dropGestureHandler(handlerTagDouble: Double) {
+    val handlerTag = handlerTagDouble.toInt()
     interactionManager.dropRelationsForHandlerWithTag(handlerTag)
     registry.dropHandler(handlerTag)
   }
 
   @ReactMethod
-  fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
+  override fun handleSetJSResponder(viewTagDouble: Double, blockNativeResponder: Boolean) {
+    val viewTag = viewTagDouble.toInt()
     val rootView = findRootHelperForViewAncestor(viewTag)
     rootView?.handleSetJSResponder(viewTag, blockNativeResponder)
   }
 
   @ReactMethod
-  fun handleClearJSResponder() {
+  override fun handleClearJSResponder() {
+  }
+
+  @ReactMethod
+  override fun flushOperations() {
   }
 
   override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
@@ -419,16 +444,18 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  fun install(): Boolean {
-    return try {
-      SoLoader.loadLibrary("gesturehandler")
-      val jsContext = reactApplicationContext.javaScriptContextHolder!!
-      decorateRuntime(jsContext.get())
-      true
-    } catch (exception: Exception) {
-      Log.w("[RNGestureHandler]", "Could not install JSI bindings.")
-      false
+  override fun install(): Boolean {
+    reactApplicationContext.runOnJSQueueThread {
+      try {
+        SoLoader.loadLibrary("gesturehandler")
+        val jsContext = reactApplicationContext.javaScriptContextHolder!!
+        decorateRuntime(jsContext.get())
+      } catch (exception: Exception) {
+        Log.w("[RNGestureHandler]", "Could not install JSI bindings.")
+      }
     }
+
+    return true
   }
 
   private external fun decorateRuntime(jsiPtr: Long)
