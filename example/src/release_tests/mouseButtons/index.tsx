@@ -9,6 +9,8 @@ import {
 } from 'react-native-gesture-handler';
 import { StyleSheet, View, Text } from 'react-native';
 
+const COLORS = ['darkmagenta', 'darkgreen', 'darkblue', 'crimson', 'pink'];
+
 type TestProps = {
   name: string;
   gestureHandlers: GestureType[];
@@ -16,26 +18,20 @@ type TestProps = {
 
 function Test({ name, gestureHandlers }: TestProps) {
   return (
-    <View style={[{ height: 300 }, styles.center]}>
-      <Text> {name} </Text>
-      <View style={{ flexDirection: 'row' }}>
-        <GestureDetector gesture={gestureHandlers[0]}>
-          <View style={styles.boxLeft} />
-        </GestureDetector>
-        <GestureDetector gesture={gestureHandlers[1]}>
-          <View style={styles.boxMiddle} />
-        </GestureDetector>
-        <GestureDetector gesture={gestureHandlers[2]}>
-          <View style={styles.boxRight} />
-        </GestureDetector>
-      </View>
-      <View style={{ flexDirection: 'row' }}>
-        <GestureDetector gesture={gestureHandlers[3]}>
-          <View style={styles.boxLeftRight} />
-        </GestureDetector>
-        <GestureDetector gesture={gestureHandlers[4]}>
-          <View style={styles.boxAll} />
-        </GestureDetector>
+    <View style={styles.center}>
+      <Text>{name}</Text>
+      <View
+        style={[
+          { margin: 10, width: '100%', flexDirection: 'row' },
+          styles.center,
+        ]}>
+        {gestureHandlers.map((handler, index) => {
+          return (
+            <GestureDetector gesture={handler} key={index}>
+              <View style={[styles.box, { backgroundColor: COLORS[index] }]} />
+            </GestureDetector>
+          );
+        })}
       </View>
     </View>
   );
@@ -178,29 +174,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
   },
-  boxLeft: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'darkmagenta',
-  },
-  boxRight: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'darkblue',
-  },
-  boxMiddle: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'darkgreen',
-  },
-  boxLeftRight: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'crimson',
-  },
-  boxAll: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'plum',
+  box: {
+    width: 75,
+    height: 75,
   },
 });
