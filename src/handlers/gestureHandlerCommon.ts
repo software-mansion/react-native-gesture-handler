@@ -111,8 +111,6 @@ export type ActiveCursor =
   | 'zoom-in'
   | 'zoom-out';
 
-export type EnableContextMenu = boolean;
-
 //TODO(TS) events in handlers
 
 export interface GestureEvent<ExtraEventPayloadT = Record<string, unknown>> {
@@ -155,7 +153,7 @@ export type CommonGestureConfig = {
   userSelect?: UserSelect;
   activeCursor?: ActiveCursor;
   mouseButton?: MouseButton;
-  enableContextMenu?: EnableContextMenu;
+  enableContextMenu?: boolean;
 };
 
 // Events payloads are types instead of interfaces due to TS limitation.
