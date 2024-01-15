@@ -97,7 +97,7 @@ export class GestureHandlerWebDelegate
     );
   }
 
-  addContextMenuListeners(config: Config): void {
+  private addContextMenuListeners(config: Config): void {
     if (this.shouldDisableContextMenu(config)) {
       this.view.addEventListener('contextmenu', this.disableContextMenu);
     } else if (config.enableContextMenu) {
@@ -105,7 +105,7 @@ export class GestureHandlerWebDelegate
     }
   }
 
-  public removeContextMenuListeners(config: Config): void {
+  private removeContextMenuListeners(config: Config): void {
     if (this.shouldDisableContextMenu(config)) {
       this.view.removeEventListener('contextmenu', this.disableContextMenu);
     } else if (config.enableContextMenu) {
@@ -146,5 +146,9 @@ export class GestureHandlerWebDelegate
 
   onFail(): void {
     this.tryResetCursor();
+  }
+
+  public destroy(config: Config): void {
+    this.removeContextMenuListeners(config);
   }
 }

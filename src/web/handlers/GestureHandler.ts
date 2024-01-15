@@ -749,9 +749,7 @@ export default abstract class GestureHandler {
   protected resetConfig(): void {}
 
   public onDestroy(): void {
-    (this.delegate as GestureHandlerWebDelegate).removeContextMenuListeners(
-      this.config
-    );
+    (this.delegate as GestureHandlerWebDelegate).destroy(this.config);
   }
 
   //
