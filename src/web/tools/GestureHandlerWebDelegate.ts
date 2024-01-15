@@ -113,11 +113,11 @@ export class GestureHandlerWebDelegate
     }
   }
 
-  private disableContextMenu(e: MouseEvent): void {
+  private disableContextMenu(this: void, e: MouseEvent): void {
     e.preventDefault();
   }
 
-  private enableContextMenu(e: MouseEvent): void {
+  private enableContextMenu(this: void, e: MouseEvent): void {
     e.stopPropagation();
   }
 
