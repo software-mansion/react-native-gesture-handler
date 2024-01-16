@@ -83,6 +83,10 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
+    if (!this.isButtonInConfig(event.button)) {
+      return;
+    }
+
     this.tracker.addToTracker(event);
     this.keyPointer = event.pointerId;
 

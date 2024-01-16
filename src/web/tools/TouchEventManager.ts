@@ -1,7 +1,6 @@
 import {
   AdaptedEvent,
   EventTypes,
-  MouseButtons,
   PointerType,
   TouchEventType,
 } from '../interfaces';
@@ -157,7 +156,6 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
       pointerId: event.changedTouches[index].identifier,
       eventType: eventType,
       pointerType: PointerType.TOUCH,
-      buttons: MouseButtons.NONE,
       time: event.timeStamp,
       allTouches: event.touches,
       changedTouches: event.changedTouches,

@@ -10,6 +10,7 @@ import {
   PointerType,
   TouchEventType,
   EventTypes,
+  MouseButton,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
@@ -736,7 +737,19 @@ export default abstract class GestureHandler {
     return false;
   }
 
+  public isButtonInConfig(mouseButton: MouseButton | undefined) {
+    return (
+      !mouseButton ||
+      (!this.config.mouseButton && mouseButton === MouseButton.LEFT) ||
+      (this.config.mouseButton && mouseButton & this.config.mouseButton)
+    );
+  }
+
   protected resetConfig(): void {}
+
+  public onDestroy(): void {
+    this.delegate.destroy(this.config);
+  }
 
   //
   // Getters and setters
