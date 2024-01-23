@@ -74,14 +74,19 @@
 {
   [super rotateWithEvent:event];
 
-  if (self.state == NSGestureRecognizerStateBegan) {
-    [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
-  } else if (self.state == NSGestureRecognizerStateChanged) {
-    [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
-  } else if (self.state == NSGestureRecognizerStateEnded) {
-    [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
-  } else if (self.state == NSGestureRecognizerStateCancelled) {
-    [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+  switch (self.state) {
+    case NSGestureRecognizerStateBegan:
+      [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
+      break;
+    case NSGestureRecognizerStateChanged:
+      [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+      break;
+    case NSGestureRecognizerStateEnded:
+      [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+      break;
+    case NSGestureRecognizerStateCancelled:
+      [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+      break;
   }
 
   _velocity = (self.rotation - prevRotation) / (event.timestamp - prevTime);
