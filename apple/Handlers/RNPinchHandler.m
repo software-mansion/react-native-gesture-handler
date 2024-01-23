@@ -17,11 +17,11 @@
   CGFloat prevMagnification;
   NSTimeInterval prevTime;
 }
+
+@property (nonatomic, readonly) CGFloat velocity;
 #else
 @interface RNBetterPinchRecognizer : UIPinchGestureRecognizer
 #endif
-
-@property (nonatomic, readonly) CGFloat velocity;
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 

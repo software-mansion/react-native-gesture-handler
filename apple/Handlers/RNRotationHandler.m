@@ -15,11 +15,11 @@
   CGFloat prevRotation;
   NSTimeInterval prevTime;
 }
+
+@property (nonatomic, readonly) CGFloat velocity;
 #else
 @interface RNBetterRotationRecognizer : UIRotationGestureRecognizer
 #endif
-
-@property (nonatomic, readonly) CGFloat velocity;
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
