@@ -1,0 +1,28 @@
+.heading {
+    font-size: var(--swm-h2-font-size);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.subheading {
+    font-size: 20px;
+    margin-bottom: 5rem;
+}
+
+.playground {
+    display: flex;
+    flex-wrap: wrap;
+    gap:1.5rem
+}
+
+@media (max-width: 768px) {
+    .subheading {
+        margin-bottom: 3.5rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .subheading {
+        margin-bottom: 1.5rem;
+    }
+}

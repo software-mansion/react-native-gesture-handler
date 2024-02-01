@@ -1,0 +1,54 @@
+.navbarHideable {
+  transition: transform var(--ifm-transition-fast) ease;
+}
+
+.navbarHidden {
+  transform: translate3d(0, calc(-100% - 2px), 0);
+}
+
+[class*='navbar-sidebar__backdrop'] {
+  background-color: var(--swm-sidebar-backdrop);
+}
+
+.navbarLanding {
+  position: relative;
+  background-color: transparent;
+}
+
+.heroBackground {
+  position: absolute;
+  top: 0;
+
+  background: linear-gradient(
+    180deg,
+    var(--swm-blue-light-40) 0%,
+    var(--swm-blue-light-20) 23%,
+    #ffffff 46%
+  );
+  width: 100%;
+  min-height: 70vw;
+  overflow: hidden;
+  z-index: -20;
+}
+
+[data-theme='dark'] .heroBackground {
+  background-color: #1b2445;
+}
+
+@media (max-width: 1124px) and (max-height: 768px) {
+  .heroBackground {
+    min-height: 768px;
+  }
+}
+
+@media (min-width: 680px) and (max-width: 996px) and (max-height: 996px) {
+  .heroBackground {
+    min-height: 1124px !important;
+  }
+}
+
+@media (min-width: 1600px) and (max-height: 996px) {
+  .heroBackground {
+    min-height: 70vw !important;
+  }
+}

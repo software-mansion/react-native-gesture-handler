@@ -1,0 +1,81 @@
+.featuresContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+}
+
+.featuresButton {
+  background-color: transparent;
+  color: var(--swm-landing-button-purple);
+}
+
+.featuresButton svg {
+  stroke: var(--swm-landing-button-purple);
+}
+
+.featuresButton:hover {
+  background-color: var(--swm-landing-button-purple);
+  color: var(--swm-off-white);
+}
+
+.featuresButton:hover svg {
+  stroke: var(--swm-off-white);
+}
+
+
+.title {
+    font-size: var(--swm-h2-font-size);
+}
+
+.learnMoreSection {
+    display: flex;
+    flex-direction: row;
+    gap: 5rem;
+}
+
+.learnMoreSection p {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 28.8px;
+    margin-bottom: 0
+}
+
+.waveContainer {
+    position: relative;
+    /* margin: -21rem 0 21rem 0;
+    z-index: -100; */
+}
+
+.waveContainer svg {
+    position: absolute;
+    z-index: -100;
+    margin: -35rem 0 0 -21rem;
+    top: 0;
+}
+
+@media (max-width: 996px) {
+    .learnMoreSection {
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .learnMoreSection {
+        margin-top: 2.25rem;
+        flex-direction: column;
+    }
+    .featuresContainer {
+        margin-bottom: 0.5rem;
+        gap:0
+    }
+    .title {
+        margin-bottom: 1.5rem
+    }
+}
+
+@media (max-width: 420px) {
+    .title {
+        margin-bottom: 1.5rem;
+        font-size: 24px
+    }
+}
