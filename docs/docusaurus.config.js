@@ -1,130 +1,39 @@
-/** @type {import('@docusaurus/types').DocusaurusConfig} */
-
-const prismConfig = {
-  plain: {
-    color: '#ffffff',
-    backgroundColor: '#001a72',
-  },
-  styles: [
-    {
-      types: ['comment'],
-      style: {
-        color: '#aaaaaa',
-        fontStyle: 'italic',
-      },
-    },
-    {
-      types: ['string'],
-      style: {
-        color: '#ffffff',
-      },
-    },
-    {
-      types: ['punctuation'],
-      style: {
-        color: '#ffee86',
-      },
-    },
-    {
-      types: ['variable', 'constant', 'builtin', 'attr-name'],
-      style: {
-        color: '#a3b8ff',
-      },
-    },
-    {
-      types: ['number', 'operator'],
-      style: {
-        color: '#ffaaa8',
-      },
-    },
-    {
-      types: ['keyword'],
-      style: {
-        color: '#8ed3ef',
-      },
-    },
-    {
-      types: ['char'],
-      style: {
-        color: '#a3b8ff',
-      },
-    },
-    {
-      types: ['tag'],
-      style: {
-        color: '#ffaaa8',
-      },
-    },
-    {
-      types: ['function'],
-      style: {
-        color: '#a3b8ff',
-      },
-    },
-  ],
-};
 /*
 In swizzled components look for "SWM -" string to see our modifications
 */
 
-module.exports = {
+const lightCodeTheme = require('./src/theme/CodeBlock/highlighting-light.js');
+const darkCodeTheme = require('./src/theme/CodeBlock/highlighting-dark.js');
+// @ts-check
+const webpack = require('webpack');
+
+/** @type {import('@docusaurus/types').Config} */
+const config = {
   title: 'React Native Gesture Handler',
-  tagline:
-    'Declarative API exposing platform native touch and gesture system to React Native.',
-  url: 'https://docs.swmansion.com',
-  baseUrl: '/react-native-gesture-handler/',
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
   favicon: 'img/SWM_Fav_192x192.png',
-  organizationName: 'software-mansion',
+
+  url: 'https://docs.swmansion.com',
+
+  baseUrl: '/react-native-gesture-handler/',
+
+  organizationName: 'software-mansion', 
+  projectName: 'react-native-gesture-handler', 
   customFields: {
     shortTitle: 'Gesture Handler',
   },
-  projectName: 'react-native-gesture-handler',
-  themeConfig: {
-    algolia: {
-      appId: 'BKGDKVWG6F',
-      apiKey: '742696612cb124b06465cf68bce6ec92',
-      indexName: 'react-native-gesture-handler',
-      // contextualSearch: true, // doesn't work for some reason
-    },
-    colorMode: {
-      disableSwitch: true,
-    },
-    navbar: {
-      title: 'React Native Gesture Handler',
-      items: [
-        {
-          type: 'docsVersionDropdown',
-          position: 'right',
-        },
-        {
-          type: 'search',
-          position: 'right',
-        },
-        {
-          className: 'github-navbar-logo',
-          href: 'https://github.com/software-mansion/react-native-gesture-handler/',
-          label: 'Github',
-          position: 'right',
-        },
-      ],
-    },
-    footer: {
-      logo: {
-        alt: 'Software Mansion',
-        src: 'img/swmLogo.svg',
-        href: 'https://swmansion.com/',
-      },
-    },
-    prism: {
-      theme: prismConfig,
-    },
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
+
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en'],
   },
+
   presets: [
     [
-      '@docusaurus/preset-classic',
-      {
+      'classic',
+      /** @type {import('@docusaurus/preset-classic').Options} */
+      ({
         docs: {
           breadcrumbs: false,
           sidebarPath: require.resolve('./sidebars.js'),
@@ -139,13 +48,56 @@ module.exports = {
           },
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: require.resolve('./src/css/index.css'),
         },
         googleAnalytics: {
           trackingID: 'UA-41044622-6',
-          anonymizeIP: true, // Should IPs be anonymized?
+          anonymizeIP: true, 
         },
-      },
+      }),
     ],
   ],
+
+  themeConfig:
+    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+    ({
+      navbar: {
+        title: 'React Native Gesture Handler',
+        hideOnScroll: true,
+        logo: {
+          alt: 'React Native Gesture Handler',
+          src: 'img/gesture-handler-logo.svg',
+        },
+        items: [
+          {
+            to: 'docs/',
+            activeBasePath: 'docs',
+            label: 'Docs',
+            position: 'right',
+          },
+          {
+            href: 'https://github.com/software-mansion/react-native-reanimated/',
+            position: 'right',
+            className: 'header-github',
+            'aria-label': 'GitHub repository',
+          },
+        ],
+      },
+      footer: {
+        style: 'light',
+        links: [],
+        copyright:
+          'All trademarks and copyrights belong to their respective owners.',
+      },
+      prism: {
+        theme: lightCodeTheme,
+        darkTheme: darkCodeTheme,
+      },
+      algolia: {
+        appId: 'BKGDKVWG6F',
+        apiKey: '742696612cb124b06465cf68bce6ec92',
+        indexName: 'react-native-gesture-handler',}
+    }),
 };
+
+module.exports = config;

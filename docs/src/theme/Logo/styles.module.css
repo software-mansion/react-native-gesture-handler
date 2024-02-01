@@ -1,0 +1,64 @@
+:root {
+  --swm-logo-height: 50px;
+}
+
+.navbar__logo {
+  display: flex;
+  flex-direction: row;
+  width: 230px;
+}
+.navbar__logo_landing {
+  display: flex;
+  flex-direction: row;
+}
+
+.navbar__logo:hover {
+
+  text-decoration: none;
+}
+
+@media (max-width: 996px) {
+  .navbar__logo {
+    width: 50px;
+  }
+.docsTitle {
+  display: none;
+}
+}
+
+.navbar__logo img {
+  height: var(--swm-logo-height);
+}
+
+/* Hide logo on mobile sidebar */
+[class*='navbar-sidebar'] [class*='navbar__logo'] {
+  display: none;
+}
+
+/* Logo shown on the sidebar after scrolling down the page. */
+@media (min-width: 996px) {
+  [class*='sidebar'] [class*='navbar__logo'] {
+    width: 100%;
+    display: flex;
+    padding-left: 1.5rem;
+    align-items: center;
+    height: 60px;
+  }
+}
+
+.navbar__title {
+  margin-left: 1em;
+  height: var(--swm-logo-height);
+}
+
+@media (max-width: 996px) {
+  .navbar__title {
+    display: none;
+  }
+}
+
+.docsTitle {
+  font-weight: 600;
+  margin-left: 1rem;
+  white-space: pre-wrap;
+}
