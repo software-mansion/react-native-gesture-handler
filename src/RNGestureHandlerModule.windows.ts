@@ -99,17 +99,15 @@ export default {
     _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
-    if (
-      !(newView instanceof HTMLElement || newView instanceof React.Component)
-    ) {
+    if (!(newView instanceof React.Component)) {
       return;
     }
 
     if (isNewWebImplementationEnabled()) {
-      //@ts-ignore Types should be HTMLElement or React.Component
+      //@ts-ignore Types should be React.Component
       NodeManager.getHandler(handlerTag).init(newView, propsRef);
     } else {
-      //@ts-ignore Types should be HTMLElement or React.Component
+      //@ts-ignore Types should be React.Component
       HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
     }
   },
