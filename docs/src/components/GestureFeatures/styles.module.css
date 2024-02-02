@@ -1,7 +1,8 @@
 .featuresContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 5rem;
+  display: flex;
+  flex-direction: column;
+  margin-top: 7.5rem;
+  gap: 5rem;
 }
 
 .featuresButton {
@@ -22,60 +23,50 @@
   stroke: var(--swm-off-white);
 }
 
-
 .title {
-    font-size: var(--swm-h2-font-size);
+  font-size: var(--swm-h2-font-size);
 }
 
 .learnMoreSection {
-    display: flex;
-    flex-direction: row;
-    gap: 5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 5rem;
 }
 
 .learnMoreSection p {
-    font-size: 24px;
-    font-weight: 700;
-    line-height: 28.8px;
-    margin-bottom: 0
-}
-
-.waveContainer {
-    position: relative;
-    /* margin: -21rem 0 21rem 0;
-    z-index: -100; */
-}
-
-.waveContainer svg {
-    position: absolute;
-    z-index: -100;
-    margin: -35rem 0 0 -21rem;
-    top: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28.8px;
+  margin-bottom: 0;
 }
 
 @media (max-width: 996px) {
-    .learnMoreSection {
-        gap: 2rem;
-    }
+  .featuresContainer {
+    margin-top: 3.5rem;
+  }
+  .learnMoreSection {
+    gap: 2rem;
+  }
 }
 
 @media (max-width: 768px) {
-    .learnMoreSection {
-        margin-top: 2.25rem;
-        flex-direction: column;
-    }
-    .featuresContainer {
-        margin-bottom: 0.5rem;
-        gap:0
-    }
-    .title {
-        margin-bottom: 1.5rem
-    }
+  .learnMoreSection {
+    margin-top: 2.25rem;
+    flex-direction: column;
+  }
+  .featuresContainer {
+    margin-bottom: 0.5rem;
+    gap: 0;
+  }
+  .title {
+    margin-bottom: 1.5rem;
+  }
 }
 
 @media (max-width: 420px) {
-    .title {
-        margin-bottom: 1.5rem;
-        font-size: 24px
-    }
+  .title {
+    margin-bottom: 1.5rem;
+    font-size: 24px;
+  }
 }

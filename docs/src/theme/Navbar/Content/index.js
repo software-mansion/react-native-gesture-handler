@@ -46,11 +46,18 @@ function NavbarContentLayout({ left, right }) {
 
   return (
     <div className="navbar__inner">
-      <div className={clsx("navbar__items", isLanding && 'navbar__items--left-padding')}>{left}</div>
+      <div
+        className={clsx(
+          'navbar__items',
+          isLanding && 'navbar__items--left-padding'
+        )}>
+        {left}
+      </div>
       <div
         className={clsx(
           'navbar__items navbar__items--right',
-        isLanding && 'navbar__items--right-padding')}>
+          isLanding && 'navbar__items--right-padding'
+        )}>
         {right}
       </div>
     </div>
@@ -70,11 +77,14 @@ export default function NavbarContent() {
     <NavbarContentLayout
       left={
         <>
-          <div className={clsx(isLanding ? styles.logoWrapperLanding : styles.logoWrapper)}>
+          <div
+            className={clsx(
+              isLanding ? styles.logoWrapperLanding : styles.logoWrapper
+            )}>
             <NavbarLogo />
           </div>
           <NavbarItems items={leftItems} />
-          {!isMobile && !isDocumentation && (
+          {!isDocumentation && (
             <NavbarColorModeToggle className={styles.colorModeToggle} />
           )}
           {!searchBarItem && !isMobile && !isLanding && <AlgoliaSearchBar />}
@@ -85,7 +95,14 @@ export default function NavbarContent() {
       }
       right={
         <>
-          <NavbarItems items={rightItems} isDocumentation={isDocumentation} />
+          <NavbarItems
+            items={
+              isLanding
+                ? rightItems
+                : rightItems.filter((item) => item.label !== 'Docs')
+            }
+            isDocumentation={isDocumentation}
+          />
           {!mobileSidebar.disabled && !isLanding && (
             <NavbarMobileSidebarToggle />
           )}

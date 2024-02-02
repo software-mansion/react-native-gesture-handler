@@ -16,8 +16,8 @@ const config = {
 
   baseUrl: '/react-native-gesture-handler/',
 
-  organizationName: 'software-mansion', 
-  projectName: 'react-native-gesture-handler', 
+  organizationName: 'software-mansion',
+  projectName: 'react-native-gesture-handler',
   customFields: {
     shortTitle: 'Gesture Handler',
   },
@@ -52,7 +52,7 @@ const config = {
         },
         googleAnalytics: {
           trackingID: 'UA-41044622-6',
-          anonymizeIP: true, 
+          anonymizeIP: true,
         },
       }),
     ],
@@ -96,8 +96,50 @@ const config = {
       algolia: {
         appId: 'BKGDKVWG6F',
         apiKey: '742696612cb124b06465cf68bce6ec92',
-        indexName: 'react-native-gesture-handler',}
+        indexName: 'react-native-gesture-handler',
+      },
     }),
+  plugins: [
+    ...[
+      process.env.NODE_ENV === 'production' && '@docusaurus/plugin-debug',
+    ].filter(Boolean),
+    async function reanimatedDocusaurusPlugin(context, options) {
+      return {
+        name: 'react-native-reanimated/docusaurus-plugin',
+        configureWebpack(config, isServer, utils) {
+          const processMock = !isServer ? { process: { env: {} } } : {};
+
+          const raf = require('raf');
+          raf.polyfill();
+
+          return {
+            mergeStrategy: {
+              'resolve.extensions': 'prepend',
+            },
+            plugins: [
+              new webpack.DefinePlugin({
+                ...processMock,
+                __DEV__: 'false',
+                setImmediate: () => {},
+              }),
+            ],
+            module: {
+              rules: [
+                {
+                  test: /\.txt/,
+                  type: 'asset/source',
+                },
+              ],
+            },
+            resolve: {
+              alias: { 'react-native$': 'react-native-web' },
+              extensions: ['.web.js', '...'],
+            },
+          };
+        },
+      };
+    },
+  ],
 };
 
 module.exports = config;

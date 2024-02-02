@@ -1,5 +1,6 @@
 import React from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
+import styles from './styles.module.css';
 import useScreenSize from '@site/src/hooks/useScreenSize';
 
 function Wave() {
@@ -8,8 +9,9 @@ function Wave() {
     <BrowserOnly>
       {() => (
         <svg
+          className={styles.wave}
           xmlns="http://www.w3.org/2000/svg"
-          width={windowWidth * (windowWidth < 996 ? 1.2 : 1.1)}
+          width={windowWidth * (windowWidth < 996 ? 1 : 1)}
           fill="none"
           viewBox="0 0 1440 1051">
           <g clipPath="url(#clip0_254_969)">

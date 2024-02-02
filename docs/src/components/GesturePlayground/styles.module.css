@@ -1,28 +1,44 @@
 .heading {
-    font-size: var(--swm-h2-font-size);
-    font-weight: 700;
-    margin-bottom: 1.5rem;
+  font-size: var(--swm-h2-font-size);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
 }
 
 .subheading {
-    font-size: 20px;
-    margin-bottom: 5rem;
+  font-size: 20px;
+  margin-bottom: 5rem;
 }
 
 .playground {
-    display: flex;
-    flex-wrap: wrap;
-    gap:1.5rem
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
 }
 
 @media (max-width: 768px) {
-    .subheading {
-        margin-bottom: 3.5rem;
-    }
+  .subheading {
+    margin-bottom: 3.5rem;
+  }
 }
 
 @media (max-width: 420px) {
-    .subheading {
-        margin-bottom: 1.5rem;
-    }
+  .subheading {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.animationsSectionWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 4rem;
+  align-items: center;
+  justify-content: center;
+}
+.animationsSectionWrapper > div:first-child {
+  margin-bottom: 5.5rem;
+  background-color: var(--swm-purple-light-transparent);
+  width: 100%;
+  height: 42rem;
+  padding: 3rem 7.5rem 3rem 7.5rem;
 }
