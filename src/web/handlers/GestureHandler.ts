@@ -118,6 +118,10 @@ export default abstract class GestureHandler {
     );
 
     this.onStateChange(newState, oldState);
+
+    if (!this.enabled && this.isFinished()) {
+      this.currentState = State.UNDETERMINED;
+    }
   }
 
   protected onStateChange(_newState: State, _oldState: State): void {}
