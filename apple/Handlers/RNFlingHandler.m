@@ -143,7 +143,7 @@
 
   CGPoint viewAbsolutePosition =
       [recognizer.view convertPoint:recognizer.view.bounds.origin
-                             toView:[UIApplication sharedApplication].keyWindow.rootViewController.view];
+                             toView:RCTKeyWindow().rootViewController.view];
   CGPoint locationInView = [recognizer getLastLocation];
 
   return [RNGestureHandlerEventExtraData
