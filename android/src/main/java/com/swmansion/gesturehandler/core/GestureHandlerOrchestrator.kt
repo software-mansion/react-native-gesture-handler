@@ -181,19 +181,19 @@ class GestureHandlerOrchestrator(
     // There is one catch though - if the handler failed or was cancelled while waiting, relevant event has
     // already been sent. The following chain would result in artificially activating that handler after the
     // failure logic was ran and we don't want to do that.
-      if (currentState == GestureHandler.STATE_FAILED || currentState == GestureHandler.STATE_CANCELLED){
-        return
-      }
-      
-      handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)
-      
-      if (currentState != GestureHandler.STATE_ACTIVE) {
-        handler.dispatchStateChange(GestureHandler.STATE_END, GestureHandler.STATE_ACTIVE)
-        if (currentState != GestureHandler.STATE_END) {
-          handler.dispatchStateChange(GestureHandler.STATE_UNDETERMINED, GestureHandler.STATE_END)
-        }
+    if (currentState == GestureHandler.STATE_FAILED || currentState == GestureHandler.STATE_CANCELLED) {
+      return
+    }
+
+    handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)
+
+    if (currentState != GestureHandler.STATE_ACTIVE) {
+      handler.dispatchStateChange(GestureHandler.STATE_END, GestureHandler.STATE_ACTIVE)
+      if (currentState != GestureHandler.STATE_END) {
+        handler.dispatchStateChange(GestureHandler.STATE_UNDETERMINED, GestureHandler.STATE_END)
       }
     }
+  }
 
   private fun deliverEventToGestureHandlers(event: MotionEvent) {
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
