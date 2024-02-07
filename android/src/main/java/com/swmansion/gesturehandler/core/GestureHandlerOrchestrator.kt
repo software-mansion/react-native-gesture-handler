@@ -101,8 +101,13 @@ class GestureHandlerOrchestrator(
   fun onHandlerStateChange(handler: GestureHandler<*>, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
     if (isFinished(newState)) {
+
+      // We have to loop through copy in order to avoid modifying collection
+      // while iterating over its elements
+      val currentlyAwaitingHandlers = awaitingHandlers.toList()
+
       // if there were handlers awaiting completion of this handler, we can trigger active state
-      for (otherHandler in awaitingHandlers) {
+      for (otherHandler in currentlyAwaitingHandlers) {
         if (shouldHandlerWaitForOther(otherHandler, handler)) {
           if (newState == GestureHandler.STATE_END) {
             // gesture has ended, we need to kill the awaiting handler
