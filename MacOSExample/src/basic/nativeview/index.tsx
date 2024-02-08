@@ -1,28 +1,39 @@
 import React from 'react';
-import { View, StyleSheet, Button, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import {
+  RectButton,
   GestureDetector,
   Gesture,
-  RectButton,
 } from 'react-native-gesture-handler';
 
-export default function App() {
+const TestButton = () => (
+  <RectButton style={styles.rectButton}>
+    <Text>Test button</Text>
+  </RectButton>
+);
+
+export default function EmptyExample() {
   const native = Gesture.Native();
 
   return (
-    <RectButton
-      style={[styles.button]}
-      onPress={() => console.log('test button clicked')}>
-      <Text>test button</Text>
-    </RectButton>
+    <GestureDetector gesture={native}>
+      <TestButton />
+    </GestureDetector>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
+  container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
   },
-  button: {
-    backgroundColor: 'plum',
+  rectButton: {
+    height: 50,
+    padding: 10,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#FFC0CB',
   },
 });

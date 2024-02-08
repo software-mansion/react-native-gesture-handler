@@ -248,8 +248,10 @@
   // for properties like `disallowInterruption` to work.
   if ([view isKindOfClass:[NSControl class]]) {
     NSControl *control = (NSControl *)view;
+    id targetIDBefore = control.target;
     [control setTarget:self];
     [control setAction:@selector(handleTest:)];
+    id targetIDAfter = control.target;
   } else {
     [super bindToView:view];
   }
