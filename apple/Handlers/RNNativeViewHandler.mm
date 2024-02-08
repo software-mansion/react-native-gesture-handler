@@ -248,6 +248,8 @@
   // for properties like `disallowInterruption` to work.
   if ([view isKindOfClass:[NSControl class]]) {
     NSControl *control = (NSControl *)view;
+    [control setTarget:self];
+    [control setAction:@selector(handleTest:)];
   } else {
     [super bindToView:view];
   }
@@ -269,6 +271,11 @@
     //    scrollView.delaysContentTouches = YES;
   }
 #endif // RCT_NEW_ARCH_ENABLED
+}
+
+- (void)handleTest:(RNGHUIView *)sender
+{
+  NSLog(@"testing target-action behaviour");
 }
 
 - (void)handleTouchDown:(RNGHUIView *)sender forEvent:(UIEvent *)event
