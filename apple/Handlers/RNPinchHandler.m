@@ -95,7 +95,7 @@
       break;
   }
 
-  _velocity = (self.magnification - prevMagnification) / (event.timestamp - prevTime);
+  _velocity = (self.magnification - prevMagnification) / ((event.timestamp - prevTime) * 1000);
   prevMagnification = self.magnification;
   prevTime = event.timestamp;
 }

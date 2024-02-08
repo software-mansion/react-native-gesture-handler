@@ -89,7 +89,7 @@
       break;
   }
 
-  _velocity = (self.rotation - prevRotation) / (event.timestamp - prevTime);
+  _velocity = (self.rotation - prevRotation) / ((event.timestamp - prevTime) * 1000);
   prevRotation = self.rotation;
   prevTime = event.timestamp;
 }
