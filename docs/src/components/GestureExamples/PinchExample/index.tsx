@@ -29,15 +29,25 @@ export default function PinchExample() {
   const [centerY, setCenterY] = useState(0);
 
   useEffect(() => {
-    const container = document.getElementById('container-5');
-    if (container) {
-      setCenterX(
-        container.offsetLeft + container.offsetWidth / 2 - window.scrollX
-      );
-      setCenterY(
-        container.offsetTop + container.offsetHeight / 2 - window.scrollY
-      );
-    }
+    const updateCenter = () => {
+      const container = document.getElementById('container-5');
+      if (container) {
+        setCenterX(
+          container.offsetLeft + container.offsetWidth / 2 - window.scrollX
+        );
+        setCenterY(
+          container.offsetTop + container.offsetHeight / 2 - window.scrollY
+        );
+      }
+    };
+
+    updateCenter();
+
+    window.addEventListener('scroll', updateCenter);
+
+    return () => {
+      window.removeEventListener('scroll', updateCenter);
+    };
   }, []);
 
   const pan = Gesture.Pan()
