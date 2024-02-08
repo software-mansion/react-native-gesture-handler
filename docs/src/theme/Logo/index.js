@@ -9,14 +9,16 @@ export default function LogoWrapper(props) {
 
   const heroImages = {
     logo: useBaseUrl('/img/gesture-handler-logo.svg'),
-    title: "React Native\nGesture Handler"
+    title: 'React Native\nGesture Handler',
   };
 
   return (
     <div>
       <LogoStyling
         heroImages={heroImages}
-        className={isLanding ? styles.navbar__logo_landing : styles.navbar__logo}
+        className={
+          isLanding ? styles.navbar__logo_landing : styles.navbar__logo
+        }
         titleClassName={styles.navbar__title}
       />
     </div>

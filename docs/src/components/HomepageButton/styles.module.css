@@ -13,6 +13,11 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
+[data-theme='dark'] .homepageButton {
+  background-color: var(--swm-purple-light-100);
+  border-color: var(--swm-purple-light-100);
+}
+
 a.homepageButtonLink:hover {
   text-decoration: none !important;
 }
@@ -112,4 +117,3 @@ a.homepageButtonLink:hover {
   width: 24px;
   height: 24px;
 }
-

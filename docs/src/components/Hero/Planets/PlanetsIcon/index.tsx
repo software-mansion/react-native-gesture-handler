@@ -11,28 +11,8 @@ function PlanetsIcon() {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width={
-            617 *
-            (windowWidth < 420
-              ? 0.25
-              : windowWidth < 700
-              ? 0.4
-              : windowWidth < 1024
-              ? 0.6
-              : windowWidth < 1350
-              ? 0.8
-              : 1)
-          }
-          height={
-            600 *
-            (windowWidth < 420
-              ? 0.25
-              : windowWidth < 700
-              ? 0.4
-              : windowWidth < 1024
-              ? 0.6
-              : windowWidth < 1350
-              ? 0.8
-              : 1)
+            windowWidth *
+            (windowWidth < 768 ? 0.6 : windowWidth > 2400 ? 0.35 : 0.4)
           }
           fill="none"
           viewBox="0 0 617 600">

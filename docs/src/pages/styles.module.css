@@ -6,6 +6,10 @@
   gap: 7.5rem;
 }
 
+.waveContainer {
+  position: relative;
+}
+
 @media (max-width: 1440px) {
   .container {
     width: 75%;
@@ -17,8 +21,4 @@
     width: 85%;
     gap: 3.5rem;
   }
-}
-
-[id*='__docusaurus'] {
-  min-height: 100%;
 }

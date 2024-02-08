@@ -22,6 +22,13 @@
   transition: background var(--ifm-transition-fast);
 }
 
+@media (max-width: 768px) {
+  .toggleButton {
+    height: 1.5rem;
+    width: 3rem;
+  }
+}
+
 .toggleButton:hover {
   background: var(--ifm-color-emphasis-200);
 }

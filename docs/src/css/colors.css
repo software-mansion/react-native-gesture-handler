@@ -21,6 +21,7 @@
   --swm-purple-light-40: #e8dafc;
   --swm-purple-light-20: #f5eeff;
   --swm-purple-light-transparent: #f5eeff40;
+  --swm-purple-light-transparent-80: #8b7f9d80;
 
   --swm-purple-dark-140: #473d68;
   --swm-purple-dark-120: #6a539a;
@@ -91,6 +92,7 @@
   --swm-light-off-navy: #30354a;
   --swm-off-navy: #272b3c;
   --swm-navy: #232736;
+  --swm-navy-transparent: #23273613;
 
   /* Infima main colors */
   --ifm-color-primary: var(--swm-navy-light-100);

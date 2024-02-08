@@ -13,7 +13,6 @@
 }
 
 .navbar__logo:hover {
-
   text-decoration: none;
 }
 
@@ -21,9 +20,16 @@
   .navbar__logo {
     width: 50px;
   }
-.docsTitle {
-  display: none;
+  .docsTitle {
+    display: none;
+  }
 }
+
+@media (max-width: 768px) {
+  .navbar__logo_landing {
+    width: 1.5rem;
+    height: 3rem;
+  }
 }
 
 .navbar__logo img {

@@ -1,45 +1,42 @@
 .stars {
-    position: absolute;
-    top: 3vh;
-    left: -2vw;
-    z-index: 1;
+  position: absolute;
+  top: 5rem;
+  left: 2vw;
+  z-index: -10;
+}
+
+.stars svg path:nth-child(2n) {
+  animation: 2.7s starBlink infinite;
+}
+
+.stars svg path:nth-child(2n + 1) {
+  animation: 2.1s starBlink infinite;
+}
+
+.stars svg path:nth-child(3n) {
+  animation: 3.6s starBlink infinite;
+}
+
+.stars svg path:nth-child(3n + 1) {
+  animation: 4.2s starBlink infinite;
+}
+
+@media (max-width: 768px) {
+  .stars {
+    top: 3rem;
   }
-  
-  .stars svg path:nth-child(2n) {
-    animation: 2.7s starBlink infinite;
-  }
-  
-  .stars svg path:nth-child(2n + 1) {
-    animation: 2.1s starBlink infinite;
-  }
-  
-  .stars svg path:nth-child(3n) {
-    animation: 3.6s starBlink infinite;
-  }
-  
-  .stars svg path:nth-child(3n + 1) {
-    animation: 4.2s starBlink infinite;
+}
+
+@keyframes starBlink {
+  0% {
+    opacity: 1;
   }
 
-  @media (max-width: 768px) {
-    .stars{
-        top: -1vh;
-        left: -25vw;
-        scale: 75%
-    }
+  50% {
+    opacity: 0.15;
   }
-  
-  @keyframes starBlink {
-    0% {
-      opacity: 1;
-    }
-  
-    50% {
-      opacity: 0.15;
-    }
-  
-    100% {
-      opacity: 1;
-    }
+
+  100% {
+    opacity: 1;
   }
-  
+}

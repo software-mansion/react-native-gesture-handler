@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '@theme/Layout';
 import styles from './styles.module.css';
+import Wave from '@site/src/components/Wave';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import HomepageStartScreen from '@site/src/components/Hero/StartScreen';
 import GesturePlayground from '@site/src/components/GesturePlayground';
@@ -18,6 +19,11 @@ function Home() {
       <div className={styles.container}>
         <HomepageStartScreen />
         <GesturePlayground />
+      </div>
+      <div className={styles.waveContainer}>
+        <Wave />
+      </div>
+      <div className={styles.container}>
         <GestureFeatures />
         <GestureSponsors />
       </div>

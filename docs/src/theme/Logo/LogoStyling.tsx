@@ -6,7 +6,7 @@ import { useThemeConfig, type NavbarLogo } from '@docusaurus/theme-common';
 import ThemedImage from '@theme/ThemedImage';
 import type { Props } from '@theme/Logo';
 import usePageType from '@site/src/hooks/usePageType';
-import styles from './styles.module.css'
+import styles from './styles.module.css';
 
 interface LogoProps extends Props {
   readonly titleImages?: { light: string; dark: string };
@@ -78,7 +78,6 @@ const LogoStyling = (props: LogoProps): JSX.Element => {
     src: props.heroImages.logo,
   };
 
-
   return (
     <Link
       to={logoLink}
@@ -86,16 +85,13 @@ const LogoStyling = (props: LogoProps): JSX.Element => {
       {...(logo?.target && { target: logo.target })}>
       {logo && !isLanding ? (
         <>
-        <LogoThemedImage
-          logo={logo}
-          alt={alt}
-          imageClassName={imageClassName}
-        />
-        <div className={styles.docsTitle}>
-
-        {heroImages?.title}
-        </div>
-</>
+          <LogoThemedImage
+            logo={logo}
+            alt={alt}
+            imageClassName={imageClassName}
+          />
+          <div className={styles.docsTitle}>{heroImages?.title}</div>
+        </>
       ) : (
         <LogoThemedImage
           logo={HeroLogo}
@@ -103,7 +99,6 @@ const LogoStyling = (props: LogoProps): JSX.Element => {
           imageClassName={imageClassName}
         />
       )}
-
     </Link>
   );
 };

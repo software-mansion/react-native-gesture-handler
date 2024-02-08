@@ -1,0 +1,18 @@
+.wave {
+  position: absolute;
+  z-index: -5;
+  top: 3rem;
+  right: 0;
+}
+
+@media (max-width: 996px) {
+  .wave {
+    display: none;
+  }
+}
+
+@media (min-width: 1750px) {
+  .wave {
+    display: none;
+  }
+}

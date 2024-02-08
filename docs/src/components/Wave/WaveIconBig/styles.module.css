@@ -1,0 +1,17 @@
+.bigWave {
+  position: absolute;
+  z-index: -5;
+  top: 3rem;
+  right: 0;
+}
+@media (max-width: 1750px) {
+  .bigWave {
+    display: none;
+  }
+}
+
+@media (min-width: 2550px) {
+  .bigWave {
+    display: none;
+  }
+}
