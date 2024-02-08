@@ -251,6 +251,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   _maxNumberOfTouches = 0;
   self.enabled = YES;
   [super reset];
+  [_gestureHandler reset];
 }
 
 @end

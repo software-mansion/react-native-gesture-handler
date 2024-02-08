@@ -72,6 +72,7 @@
   [_gestureHandler.pointerTracker reset];
   _hasBegan = NO;
   [super reset];
+  [_gestureHandler reset];
 }
 
 - (CGPoint)getLastLocation
@@ -142,7 +143,7 @@
 
   CGPoint viewAbsolutePosition =
       [recognizer.view convertPoint:recognizer.view.bounds.origin
-                             toView:[UIApplication sharedApplication].keyWindow.rootViewController.view];
+                             toView:RCTKeyWindow().rootViewController.view];
   CGPoint locationInView = [recognizer getLastLocation];
 
   return [RNGestureHandlerEventExtraData
@@ -159,7 +160,7 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"Fling gesture handler is not supported on macOS");
+  RCTLogWarn(@"FlingGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
   }

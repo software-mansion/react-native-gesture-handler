@@ -103,6 +103,7 @@
   [_gestureHandler.pointerTracker reset];
 
   [super reset];
+  [_gestureHandler reset];
 }
 
 - (NSUInteger)getDuration
@@ -190,7 +191,7 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"Long press gesture handler is not supported on macOS");
+  RCTLogWarn(@"LongPressGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
   }

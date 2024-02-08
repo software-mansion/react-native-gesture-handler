@@ -129,6 +129,7 @@
 {
   [_gestureHandler.pointerTracker reset];
   [super reset];
+  [_gestureHandler reset];
 }
 
 @end

@@ -211,6 +211,10 @@ export default class PanGestureHandler extends GestureHandler {
 
   //EventsHandling
   protected onPointerDown(event: AdaptedEvent): void {
+    if (!this.isButtonInConfig(event.button)) {
+      return;
+    }
+
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
 
