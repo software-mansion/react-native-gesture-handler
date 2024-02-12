@@ -21,15 +21,13 @@ export default function GestureHandlerRootView(
   return (
     <GestureHandlerRootViewContext.Provider value>
       <GestureHandlerRootViewNativeComponent
-        {...rest}
         style={style ?? styles.container}
+        {...rest}
       />
     </GestureHandlerRootViewContext.Provider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
 });
