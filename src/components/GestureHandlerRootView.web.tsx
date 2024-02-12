@@ -6,11 +6,10 @@ import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<ViewProps> {}
 
-export default function GestureHandlerRootView(
-  props: GestureHandlerRootViewProps
-) {
-  const { style, ...rest } = props;
-
+export default function GestureHandlerRootView({
+  style,
+  ...rest
+}: GestureHandlerRootViewProps) {
   return (
     <GestureHandlerRootViewContext.Provider value>
       <View style={style ?? styles.container} {...rest} />

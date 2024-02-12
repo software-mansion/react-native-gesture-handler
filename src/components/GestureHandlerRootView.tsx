@@ -7,15 +7,14 @@ import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<ViewProps> {}
 
-export default function GestureHandlerRootView(
-  props: GestureHandlerRootViewProps
-) {
+export default function GestureHandlerRootView({
+  style,
+  ...rest
+}: GestureHandlerRootViewProps) {
   // try initialize fabric on the first render, at this point we can
   // reliably check if fabric is enabled (the function contains a flag
   // to make sure it's called only once)
   maybeInitializeFabric();
-
-  const { style, ...rest } = props;
 
   return (
     <GestureHandlerRootViewContext.Provider value>
