@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
-import { ViewProps } from 'react-native';
+import { ViewProps, StyleSheet } from 'react-native';
 import { maybeInitializeFabric } from '../init';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import GestureHandlerRootViewNativeComponent from '../specs/RNGestureHandlerRootViewNativeComponent';
@@ -16,9 +16,20 @@ export default function GestureHandlerRootView(
   // to make sure it's called only once)
   maybeInitializeFabric();
 
+  const { style, ...rest } = props;
+
   return (
     <GestureHandlerRootViewContext.Provider value>
-      <GestureHandlerRootViewNativeComponent {...props} />
+      <GestureHandlerRootViewNativeComponent
+        {...rest}
+        style={style ?? styles.container}
+      />
     </GestureHandlerRootViewContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
