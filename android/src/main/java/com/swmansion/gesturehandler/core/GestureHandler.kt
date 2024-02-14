@@ -23,6 +23,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   private val trackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
   private var trackedPointersIDsCount = 0
 
+  // We need to cache pointers IDs because when gesture enters `END` state its pointers are reset.
+  // Tap gesture enters `END` right after its activation, therefore calling `hasCommonPointers` for taps won't work without cache
   private val cachedPointersID = IntArray(MAX_POINTERS_COUNT) { -1 }
   private var nextCachedPointerID = 0
 

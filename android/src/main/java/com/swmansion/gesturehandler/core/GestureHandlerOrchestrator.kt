@@ -23,7 +23,14 @@ class GestureHandlerOrchestrator(
   private val gestureHandlers = arrayListOf<GestureHandler<*>>()
   private val awaitingHandlers = arrayListOf<GestureHandler<*>>()
   private val preparedHandlers = arrayListOf<GestureHandler<*>>()
+
+  // In `onHandlerStateChange` method we iterate through `awaitingHandlers`, but calling `tryActivate` may modify this list.
+  // To avoid `ConcurrentModificationException` we iterate through copy. There is one more problem though - if handler was
+  // removed from `awaitingHandlers`, it was still present in copy of original list. This hashset helps us identify which handlers
+  // are really inside `awaitingHandlers`.
+  // `contains` method on HashSet has O(1) complexity, so calling it inside for loop won't result in O(n^2) (in opposite to ArrayList)
   private val awaitingHandlersTags = HashSet<Int>()
+
   private var isHandlingTouch = false
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
@@ -80,9 +87,9 @@ class GestureHandlerOrchestrator(
   }
 
   private fun tryActivate(handler: GestureHandler<*>) {
+    // If we are waiting for a gesture that has successfully finished, we should cancel handler
     if (gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }) {
       handler.cancel()
-
       return
     }
 
