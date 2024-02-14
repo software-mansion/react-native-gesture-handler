@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import java.util.*
+import kotlin.collections.HashSet
 
 class GestureHandlerOrchestrator(
   private val wrapperView: ViewGroup,
@@ -26,6 +27,7 @@ class GestureHandlerOrchestrator(
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
   private var activationIndex = 0
+  private val removedHandlers = HashSet<Int>()
 
   /**
    * Should be called from the view wrapper
@@ -86,10 +88,12 @@ class GestureHandlerOrchestrator(
     // see if there is anyone else who we need to wait for
     if (hasOtherHandlerToWaitFor(handler)) {
       addAwaitingHandler(handler)
+      removedHandlers.remove(handler.tag)
     } else {
       // we can activate handler right away
       makeActive(handler)
       handler.isAwaiting = false
+      removedHandlers.add(handler.tag)
     }
   }
 
@@ -168,6 +172,11 @@ class GestureHandlerOrchestrator(
     for (otherHandler in gestureHandlers.asReversed()) {
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
         otherHandler.cancel()
+
+        if (awaitingHandlers.contains(otherHandler)) {
+          awaitingHandlers.remove(otherHandler)
+          removedHandlers.add(otherHandler.tag)
+        }
       }
     }
 
