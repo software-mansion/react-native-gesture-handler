@@ -22,6 +22,10 @@ import java.util.*
 open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
   private val trackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
   private var trackedPointersIDsCount = 0
+
+  private val cachedPointersID = IntArray(MAX_POINTERS_COUNT) { -1 }
+  private var nextCachedPointerID = 0
+
   private val windowOffset = IntArray(2) { 0 }
   var tag = 0
   var view: View? = null
@@ -108,7 +112,18 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         return true
       }
     }
-    return false
+
+    if (this !is TapGestureHandler) {
+      return false
+    }
+
+    for (i in 0 until nextCachedPointerID) {
+      if (cachedPointersID[i] != other.cachedPointersID[i]) {
+        return false
+      }
+    }
+
+    return true
   }
 
   fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT =
@@ -211,8 +226,13 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   fun startTrackingPointer(pointerId: Int) {
     if (trackedPointerIDs[pointerId] == -1) {
-      trackedPointerIDs[pointerId] = findNextLocalPointerId()
+      val nextPointerID = findNextLocalPointerId()
+
+      trackedPointerIDs[pointerId] = nextPointerID
       trackedPointersIDsCount++
+
+      cachedPointersID[nextCachedPointerID++] = nextPointerID
+      nextCachedPointerID %= MAX_POINTERS_COUNT
     }
   }
 
@@ -708,6 +728,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     orchestrator = null
     Arrays.fill(trackedPointerIDs, -1)
     trackedPointersIDsCount = 0
+
+    Arrays.fill(cachedPointersID, -1)
+    nextCachedPointerID = 0
 
     trackedPointersCount = 0
     trackedPointers.fill(null)
