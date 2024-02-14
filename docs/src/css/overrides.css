@@ -2,6 +2,13 @@
   --swm-expandable-transition: transform 200ms ease;
 }
 
+[class*='plugin-pages'] {
+  background-color: #ffffff;
+}
+[data-theme='dark'][class*='plugin-pages'] {
+  background-color: var(--swm-navy-dark-140);
+}
+
 table {
   display: table;
   width: 100%;

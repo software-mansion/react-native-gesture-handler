@@ -38,6 +38,10 @@ nav {
   }
 }
 
+[class*='navbar__inner'] {
+  align-items: center;
+}
+
 /* In other pages than documentation, Docusaurus disables margin-right for the last element on the right side.
  * This block disables this behavior.
  */
@@ -66,7 +70,6 @@ nav {
   gap: 1.5rem;
   display: flex;
   align-items: flex-start;
-  padding-top: 5px;
 }
 
 [class*='navbar__items--left-landing'] > div:nth-child(2) {
@@ -113,9 +116,6 @@ nav {
   [class*='navbar__item'] {
     display: flex;
     padding: 0;
-  }
-  [class*='navbar__items--left-landing'] {
-    padding-top: 5px;
   }
   [class*='navbar__items--left-landing'] > div:nth-child(2) {
     margin-top: 0.5rem;
