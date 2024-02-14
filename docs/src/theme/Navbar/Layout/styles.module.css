@@ -14,8 +14,7 @@
   position: relative;
   background-color: transparent;
   padding-top: 2rem;
-  padding: 0 5rem;
-  margin-top: 2rem;
+  padding: 0 1.25rem 0 1.5rem;
 }
 
 .heroBackground {
@@ -29,7 +28,7 @@
     #ffffff 46%
   );
   width: 100%;
-  height: 100vh;
+  height: 130vh;
   min-height: 70vw;
   overflow: hidden;
   z-index: -20;
@@ -41,9 +40,11 @@
 }
 
 @media (max-width: 996px) {
-  .navbarLanding {
-    padding: 0 3rem;
-    margin-top: 1rem;
+  [class*='logoWrapperLanding'] {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
   }
 }
 

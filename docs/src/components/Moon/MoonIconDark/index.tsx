@@ -11,7 +11,7 @@ function MoonIconDark() {
         <svg
           className={styles.moon}
           xmlns="http://www.w3.org/2000/svg"
-          width={windowWidth * (windowWidth < 1750 ? 1 : 0.7)}
+          width={windowWidth * (windowWidth < 1600 ? 1 : 0.7)}
           fill="none"
           viewBox="0 0 1440 466">
           <g clipPath="url(#clip0_254_3093)">

@@ -1,7 +1,6 @@
 .exampleContainer {
   width: auto;
   background-color: var(--swm-blue-light-20);
-  flex-basis: auto;
   height: 100%;
   flex-grow: 1;
   padding: 2rem 3rem;

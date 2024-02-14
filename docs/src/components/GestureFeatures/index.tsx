@@ -14,7 +14,7 @@ const GestureFeatures = () => {
           Handler
         </p>
         <HomepageButton
-          href="/react-native-gesture-handler/docs/"
+          href="https://blog.swmansion.com/introducing-gesture-handler-2-0-50515f1c4afc"
           title="See blog post"
           backgroundStyling={styles.featuresButton}
         />

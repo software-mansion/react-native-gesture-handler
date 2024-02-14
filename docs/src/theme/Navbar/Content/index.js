@@ -49,14 +49,14 @@ function NavbarContentLayout({ left, right }) {
       <div
         className={clsx(
           'navbar__items',
-          isLanding && 'navbar__items--left-padding'
+          isLanding && 'navbar__items--left-landing'
         )}>
         {left}
       </div>
       <div
         className={clsx(
           'navbar__items navbar__items--right',
-          isLanding && 'navbar__items--right-padding'
+          isLanding && 'navbar__items--right-landing'
         )}>
         {right}
       </div>

@@ -17,7 +17,7 @@ const darkStyles = StyleSheet.create({
   },
 });
 
-export const getStylesForExample = () => {
+export const useStylesForExample = () => {
   return useColorMode().colorMode === 'dark' ? darkStyles : lightStyles;
 };
 

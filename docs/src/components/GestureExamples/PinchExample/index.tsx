@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import stylesWeb from './styles.module.css';
 import {
   GestureHandlerRootView,
@@ -10,11 +10,13 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import { RADIUS, getStylesForExample, isInsideCircle } from '../utils';
+import Hand from '@site/static/img/hand-one.svg';
+import { RADIUS, useStylesForExample, isInsideCircle } from '../utils';
 
 export default function PinchExample() {
-  const colorModeStyles = getStylesForExample();
+  const colorModeStyles = useStylesForExample();
   const [isPanEnabled, setIsPanEnabled] = useState(true);
+  const [showHands, setShowHands] = useState(true);
   const [showGestureCircle, setShowGestureCircle] = useState(false);
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
@@ -51,11 +53,15 @@ export default function PinchExample() {
   }, []);
 
   const pan = Gesture.Pan()
+    .onStart(() => setShowHands(false))
     .onChange((e) => {
       if (isPanEnabled) {
         pointerX.value = e.absoluteX;
         pointerY.value = e.absoluteY;
-
+        console.log('CenterX: ', centerX);
+        console.log('CenterY: ', centerY);
+        console.log('PointerX: ', pointerX.value);
+        console.log('PointerY: ', pointerY.value);
         if (isInsideCircle(pointerX.value, pointerY.value, centerX, centerY)) {
           dx.value = centerX - pointerX.value;
           dy.value = centerY - pointerY.value;
@@ -84,6 +90,7 @@ export default function PinchExample() {
       }
     })
     .onEnd(() => {
+      setShowHands(true);
       setShowGestureCircle(false);
     });
 
@@ -91,6 +98,7 @@ export default function PinchExample() {
     .onStart(() => {
       setIsPanEnabled(false);
       setShowGestureCircle(false);
+      setShowHands(false);
     })
     .onUpdate((e) => {
       scale.value =
@@ -102,6 +110,7 @@ export default function PinchExample() {
     })
     .onEnd(() => {
       savedScale.value = scale.value;
+      setShowHands(true);
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -118,13 +127,34 @@ export default function PinchExample() {
       },
     ],
   }));
+  const handAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: isPanEnabled ? 1 / scalePan.value : 1 / scale.value,
+      },
+      {
+        translateX: isPanEnabled
+          ? -scalePan.value * scalePan.value
+          : -scale.value * scale.value,
+      },
+    ],
+    height: isPanEnabled ? scalePan.value * 40 : scale.value * 40,
+  }));
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={Gesture.Simultaneous(pinch, pan)}>
         <Animated.View
-          style={[styles.circle, animatedStyle, colorModeStyles.circle]}
-        />
+          style={[styles.circle, animatedStyle, colorModeStyles.circle]}>
+          <div className={stylesWeb.pinchClone}>
+            {showHands && (
+              <Animated.View style={handAnimatedStyle}>
+                <Hand className={stylesWeb.handPinchLeft} />
+                <Hand className={stylesWeb.handPinchRight} />
+              </Animated.View>
+            )}
+          </div>
+        </Animated.View>
       </GestureDetector>
       {showGestureCircle && (
         <Animated.View style={[styles.smallCircle, smallCircleStyle]} />

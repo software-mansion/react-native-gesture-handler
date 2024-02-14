@@ -1,7 +1,7 @@
 {
   "name": "react-native-reanimated-docs",
   "version": "0.0.0",
-  "private": false,
+  "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
@@ -42,7 +42,6 @@
     "react-native": "^0.71.4",
     "react-native-gesture-handler": "2.14.1",
     "react-native-reanimated": "^3.7.0-nightly-20240130-720fefba7",
-    "react-native-svg": "^13.14.0",
     "react-native-web": "^0.18.12",
     "source-map": "^0.7.4",
     "source-map-loader": "^4.0.1",

@@ -1,19 +1,19 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import styles from './styles.module.css';
 import GestureFeatureItem from '@site/src/components/GestureFeatures/GestureFeatureItem';
 
 const items = [
   {
+    title: 'native gesture recognizers',
+    body: 'With Gesture Handler touch stream handling happens on the UI thread and uses APIs native to each platform.',
+  },
+  {
+    title: 'native components',
+    body: 'Gesture Handler library ships with a set of components that aims to provide best possible interations such as SwipeableRow or Drawer.',
+  },
+  {
     title: '120 FPS',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-  },
-  {
-    title: 'DECLARATIVE',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-  },
-  {
-    title: 'FEATURE',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    body: 'Gesture Handler integrates tightly with Reanimated to allow you to build smooth gesture based experiences up to 120 fps.',
   },
 ];
 

@@ -10,7 +10,7 @@ const webpack = require('webpack');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'React Native Gesture Handler',
-  favicon: 'img/SWM_Fav_192x192.png',
+  favicon: 'img/favicon.ico',
 
   url: 'https://docs.swmansion.com',
 
@@ -61,7 +61,7 @@ const config = {
         hideOnScroll: true,
         logo: {
           alt: 'React Native Gesture Handler',
-          src: 'img/gesture-handler-logo.svg',
+          src: 'img/logo-hero.svg',
         },
         items: [
           {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
   GestureHandlerRootView,
@@ -10,18 +10,23 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { RADIUS, getStylesForExample } from '../utils';
+import Hand from '@site/static/img/hand-two.svg';
+import stylesWeb from './styles.module.css';
+import { RADIUS, useStylesForExample } from '../utils';
 
 export default function LongPressExample() {
-  const colorModeStyles = getStylesForExample();
+  const colorModeStyles = useStylesForExample();
+  const [showHand, setShowHand] = useState(true);
   const pressed = useSharedValue(false);
 
   const longPress = Gesture.LongPress()
-    .onBegin(() => {
+    .onStart(() => {
       pressed.value = true;
+      setShowHand(false);
     })
-    .onFinalize(() => {
+    .onEnd(() => {
       pressed.value = false;
+      setShowHand(true);
     });
 
   const animatedStyles = useAnimatedStyle(() => ({
@@ -35,8 +40,10 @@ export default function LongPressExample() {
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={longPress}>
         <Animated.View
-          style={[styles.circle, animatedStyles, colorModeStyles.circle]}
-        />
+          style={[styles.circle, animatedStyles, colorModeStyles.circle]}>
+          <div className={stylesWeb.longPressClone} />
+          {showHand && <Hand className={stylesWeb.handLongPress} />}
+        </Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
   );

@@ -20,10 +20,13 @@ const GestureSponsors = () => {
   return (
     <div>
       <h2 className={styles.sponsorsTitle}>Sponsors</h2>
-      <p className={styles.sponsorsSubtitle}>
+
+      {/* We decided to hid the sponsors copy until we came up with a better one */}
+
+      {/* <p className={styles.sponsorsSubtitle}>
         Thanks to our Sponsors we can still develop our library and make the
         React Native world a better place!
-      </p>
+      </p> */}
       <div className={styles.sponsorsBrand}>
         <ThemedImage sources={sponsorsLogos.expo} className={styles.sponsor} />
         <ThemedImage

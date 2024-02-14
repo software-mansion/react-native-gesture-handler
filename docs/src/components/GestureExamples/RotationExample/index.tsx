@@ -10,6 +10,8 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import Hand from '@site/static/img/hand-one.svg';
+import Arrow from '@site/static/img/arrow-circle-left.svg';
 import { useColorMode } from '@docusaurus/theme-common';
 import { RADIUS, isInsideCircle } from '../utils';
 
@@ -19,6 +21,7 @@ export default function RotationExample() {
   const rotationVal = useSharedValue(0);
   const [isPanEnabled, setIsPanEnabled] = useState(true);
   const [showGestureCircle, setShowGestureCircle] = useState(false);
+  const [showHand, setShowHand] = useState(true);
   const savedRotation = useSharedValue(1);
   const pointerX = useSharedValue(0);
   const pointerY = useSharedValue(0);
@@ -52,6 +55,7 @@ export default function RotationExample() {
   }, []);
 
   const pan = Gesture.Pan()
+    .onStart(() => setShowHand(false))
     .onChange((e) => {
       if (isPanEnabled) {
         pointerX.value = e.absoluteX;
@@ -79,18 +83,21 @@ export default function RotationExample() {
     })
     .onEnd(() => {
       setShowGestureCircle(false);
+      setShowHand(true);
     });
 
   const rotation = Gesture.Rotation()
     .onStart(() => {
       setIsPanEnabled(false);
       setShowGestureCircle(false);
+      setShowHand(false);
     })
     .onUpdate((e) => {
       rotationVal.value = savedRotation.value + e.rotation;
     })
     .onEnd(() => {
       savedRotation.value = rotationVal.value;
+      setShowHand(true);
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -115,6 +122,8 @@ export default function RotationExample() {
   return (
     <GestureDetector gesture={Gesture.Simultaneous(pan, rotation)}>
       <GestureHandlerRootView style={styles.container}>
+        <div className={stylesWeb.rotationClone} />
+        {showHand && <Arrow className={stylesWeb.arrowRotation} />}
         <div className={stylesWeb.wrapper}>
           <Animated.View
             style={[styles.circle, animatedStyle, colorModeStyles.circle]}
@@ -127,6 +136,7 @@ export default function RotationExample() {
             ]}
           />
         </div>
+        {showHand && <Hand className={stylesWeb.handRotation} />}
         {showGestureCircle && (
           <Animated.View style={[styles.smallCircle, smallCircleStyle]} />
         )}

@@ -4,7 +4,7 @@
   top: 3rem;
   right: 0;
 }
-@media (max-width: 1750px) {
+@media (max-width: 1600px) {
   .bigWave {
     display: none;
   }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
   GestureHandlerRootView,
@@ -10,15 +10,22 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { RADIUS, getStylesForExample } from '../utils';
+import Hand from '@site/static/img/hand-two.svg';
+import stylesWeb from './styles.module.css';
+import { RADIUS, useStylesForExample } from '../utils';
 
 export default function TapExample() {
-  const colorModeStyles = getStylesForExample();
+  const colorModeStyles = useStylesForExample();
   const pressed = useSharedValue(false);
+  const [showHand, setShowHand] = useState(true);
 
   const tap = Gesture.Tap()
     .onBegin(() => {
+      setShowHand(false);
       pressed.value = true;
+    })
+    .onEnd(() => {
+      setShowHand(true);
     })
     .onFinalize(() => {
       pressed.value = false;
@@ -28,9 +35,6 @@ export default function TapExample() {
     backgroundColor: pressed.value
       ? 'var(--swm-yellow-dark-80)'
       : 'var(--swm-purple-light-100)',
-    // border: pressed.value
-    //   ? 'var(--swm-red-dark-80)'
-    //   : '8px solid var(--swm-purple-light-80)',
     transform: [{ scale: withTiming(pressed.value ? 1.2 : 1) }],
   }));
 
@@ -38,8 +42,10 @@ export default function TapExample() {
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={tap}>
         <Animated.View
-          style={[styles.circle, animatedStyles, colorModeStyles.circle]}
-        />
+          style={[styles.circle, animatedStyles, colorModeStyles.circle]}>
+          <div className={stylesWeb.tapClone} />
+          {showHand && <Hand className={stylesWeb.handTap} />}
+        </Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
   );

@@ -1,6 +1,6 @@
 .moon {
   position: absolute;
-  z-index: -100;
+  z-index: -5;
   bottom: 0;
   right: 0;
 }

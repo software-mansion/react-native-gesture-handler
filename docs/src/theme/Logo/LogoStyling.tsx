@@ -78,6 +78,10 @@ const LogoStyling = (props: LogoProps): JSX.Element => {
     src: props.heroImages.logo,
   };
 
+  const titleImage = {
+    docs: <ThemedImage sources={titleImages} />,
+  };
+
   return (
     <Link
       to={logoLink}
@@ -90,7 +94,6 @@ const LogoStyling = (props: LogoProps): JSX.Element => {
             alt={alt}
             imageClassName={imageClassName}
           />
-          <div className={styles.docsTitle}>{heroImages?.title}</div>
         </>
       ) : (
         <LogoThemedImage
@@ -99,6 +102,7 @@ const LogoStyling = (props: LogoProps): JSX.Element => {
           imageClassName={imageClassName}
         />
       )}
+      {titleImages && getWrappedImage(titleClassName, titleImage.docs)}
     </Link>
   );
 };

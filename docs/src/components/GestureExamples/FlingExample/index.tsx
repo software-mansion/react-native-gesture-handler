@@ -1,21 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
+import stylesWeb from './styles.module.css';
 import {
   GestureHandlerRootView,
   GestureDetector,
   Gesture,
 } from 'react-native-gesture-handler';
 import Animated, {
-  clamp,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import Hand from '@site/static/img/hand-one.svg';
+import Arrows from '@site/static/img/two-arrows.svg';
 import { Directions } from 'react-native-gesture-handler';
-import { RADIUS, isInsideCircle, getStylesForExample } from '../utils';
+import { RADIUS, isInsideCircle, useStylesForExample } from '../utils';
 
-export default function FLingExample() {
-  const colorModeStyles = getStylesForExample();
+export default function FlingExample() {
+  const colorModeStyles = useStylesForExample();
+  const [showHand, setShowHand] = useState(true);
   const startPositionX = useSharedValue(0);
   const endPositionX = useSharedValue(0);
   const startPositionY = useSharedValue(0);
@@ -23,11 +26,14 @@ export default function FLingExample() {
   const positionX = useSharedValue(0);
   const positionY = useSharedValue(0);
 
+  const config = { duration: 100 };
+
   const flingGesture = Gesture.Fling()
     .direction(
       Directions.UP | Directions.DOWN | Directions.LEFT | Directions.RIGHT
     )
     .onBegin((e) => {
+      setShowHand(false);
       startPositionX.value = e.x;
       startPositionY.value = e.y;
     })
@@ -44,20 +50,23 @@ export default function FLingExample() {
 
       positionX.value =
         startPositionX.value < endPositionX.value
-          ? positionX.value + e.x < 100
-            ? withTiming(positionX.value + valueX, { duration: 100 })
-            : 100
-          : positionX.value - e.x > -100
-          ? withTiming(positionX.value - valueX, { duration: 100 })
-          : -100;
+          ? positionX.value + e.x < RADIUS
+            ? withTiming(positionX.value + valueX, config)
+            : RADIUS
+          : positionX.value - e.x > -RADIUS
+          ? withTiming(positionX.value - valueX, config)
+          : -RADIUS;
       positionY.value =
         startPositionY.value < endPositionY.value
-          ? positionY.value + valueY < 100
-            ? withTiming(positionY.value + valueY, { duration: 100 })
-            : 100
-          : positionY.value - valueY > -100
-          ? withTiming(positionY.value - valueY, { duration: 100 })
-          : -100;
+          ? positionY.value + valueY < RADIUS
+            ? withTiming(positionY.value + valueY, config)
+            : RADIUS
+          : positionY.value - valueY > -RADIUS
+          ? withTiming(positionY.value - valueY, config)
+          : -RADIUS;
+    })
+    .onFinalize(() => {
+      setShowHand(true);
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -76,9 +85,18 @@ export default function FLingExample() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={flingGesture}>
-        <Animated.View
-          style={[styles.circle, animatedStyle, colorModeStyles.circle]}
-        />
+        <>
+          <Animated.View
+            style={[styles.circle, animatedStyle, colorModeStyles.circle]}>
+            <div className={stylesWeb.flingClone} />
+            {showHand && (
+              <div>
+                <Arrows className={stylesWeb.arrowsFling} />
+                <Hand className={stylesWeb.handFling} />
+              </div>
+            )}
+          </Animated.View>
+        </>
       </GestureDetector>
     </GestureHandlerRootView>
   );

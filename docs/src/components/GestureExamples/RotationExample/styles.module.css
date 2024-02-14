@@ -8,3 +8,36 @@
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
+
+.rotationClone {
+  transform: translate(142%, 142%);
+  height: 56px;
+  width: 56px;
+  border-radius: 100%;
+  position: absolute;
+  left: -0.5rem;
+  top: -0.5rem;
+  z-index: 10;
+}
+
+.handRotation,
+.arrowRotation {
+  position: absolute;
+  z-index: 5;
+  opacity: 1;
+  visibility: visible;
+  transition: visibility 0.3s, opacity 0.3s ease-in-out;
+}
+
+.handRotation {
+  transform: translate(50%, 100%);
+}
+
+.rotationClone:hover ~ svg {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.arrowRotation {
+  transform: translate(40%, -160%);
+}

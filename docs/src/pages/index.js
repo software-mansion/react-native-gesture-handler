@@ -6,6 +6,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import HomepageStartScreen from '@site/src/components/Hero/StartScreen';
 import GesturePlayground from '@site/src/components/GesturePlayground';
 import GestureFeatures from '@site/src/components/GestureFeatures';
+import GestureTestimonials from '@site/src/components/GestureTestimonials';
 import GestureSponsors from '@site/src/components/GestureSponsors';
 
 function Home() {
@@ -25,6 +26,7 @@ function Home() {
       </div>
       <div className={styles.container}>
         <GestureFeatures />
+        <GestureTestimonials />
         <GestureSponsors />
       </div>
     </Layout>

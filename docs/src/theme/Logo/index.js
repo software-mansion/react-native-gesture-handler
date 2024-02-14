@@ -5,16 +5,22 @@ import usePageType from '@site/src/hooks/usePageType';
 import styles from './styles.module.css';
 
 export default function LogoWrapper(props) {
-  const { isDocumentation, isLanding } = usePageType();
+  const { isLanding } = usePageType();
+
+  const titleImages = {
+    light: useBaseUrl('/img/title.svg'),
+    dark: useBaseUrl('/img/title-dark.svg'),
+  };
 
   const heroImages = {
-    logo: useBaseUrl('/img/gesture-handler-logo.svg'),
-    title: 'React Native\nGesture Handler',
+    logo: useBaseUrl('/img/logo-hero.svg'),
+    title: useBaseUrl('/img/title.svg'),
   };
 
   return (
     <div>
       <LogoStyling
+        titleImages={titleImages}
         heroImages={heroImages}
         className={
           isLanding ? styles.navbar__logo_landing : styles.navbar__logo
