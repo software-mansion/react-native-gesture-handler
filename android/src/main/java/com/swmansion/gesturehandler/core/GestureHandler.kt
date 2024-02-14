@@ -662,7 +662,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun cancel() {
-    if (state == STATE_ACTIVE || state == STATE_UNDETERMINED || state == STATE_BEGAN) {
+    if (state == STATE_ACTIVE || state == STATE_UNDETERMINED || state == STATE_BEGAN || this.isAwaiting) {
       onCancel()
       moveToState(STATE_CANCELLED)
     }
