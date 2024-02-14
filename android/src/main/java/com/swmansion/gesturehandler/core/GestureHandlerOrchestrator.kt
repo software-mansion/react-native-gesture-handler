@@ -23,11 +23,11 @@ class GestureHandlerOrchestrator(
   private val gestureHandlers = arrayListOf<GestureHandler<*>>()
   private val awaitingHandlers = arrayListOf<GestureHandler<*>>()
   private val preparedHandlers = arrayListOf<GestureHandler<*>>()
+  private val awaitingHandlersTags = HashSet<Int>()
   private var isHandlingTouch = false
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
   private var activationIndex = 0
-  private val removedHandlers = HashSet<Int>()
 
   /**
    * Should be called from the view wrapper
@@ -89,17 +89,22 @@ class GestureHandlerOrchestrator(
     // see if there is anyone else who we need to wait for
     if (hasOtherHandlerToWaitFor(handler)) {
       addAwaitingHandler(handler)
-      removedHandlers.remove(handler.tag)
     } else {
       // we can activate handler right away
       makeActive(handler)
       handler.isAwaiting = false
-      removedHandlers.add(handler.tag)
     }
   }
 
   private fun cleanupAwaitingHandlers() {
-    awaitingHandlers.removeAll { !it.isAwaiting }
+    val awaitingHandlersCopy = awaitingHandlers.toList()
+
+    for (handler in awaitingHandlersCopy) {
+      if (!handler.isAwaiting) {
+        awaitingHandlers.remove(handler)
+        awaitingHandlersTags.remove(handler.tag)
+      }
+    }
   }
 
   /*package*/
@@ -112,7 +117,7 @@ class GestureHandlerOrchestrator(
 
       // if there were handlers awaiting completion of this handler, we can trigger active state
       for (otherHandler in currentlyAwaitingHandlers) {
-        if (!shouldHandlerWaitForOther(otherHandler, handler) || removedHandlers.contains(otherHandler.tag)) {
+        if (!shouldHandlerWaitForOther(otherHandler, handler) || !awaitingHandlersTags.contains(otherHandler.tag)) {
           continue
         }
 
@@ -173,11 +178,6 @@ class GestureHandlerOrchestrator(
     for (otherHandler in gestureHandlers.asReversed()) {
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
         otherHandler.cancel()
-
-        if (awaitingHandlers.contains(otherHandler)) {
-          awaitingHandlers.remove(otherHandler)
-          removedHandlers.add(otherHandler.tag)
-        }
       }
     }
 
@@ -398,6 +398,8 @@ class GestureHandlerOrchestrator(
     }
 
     awaitingHandlers.add(handler)
+    awaitingHandlersTags.add(handler.tag)
+
     with(handler) {
       isAwaiting = true
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++
