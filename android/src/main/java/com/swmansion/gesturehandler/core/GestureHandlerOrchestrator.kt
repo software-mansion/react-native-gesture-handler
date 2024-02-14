@@ -76,15 +76,16 @@ class GestureHandlerOrchestrator(
   }
 
   private fun hasOtherHandlerToWaitFor(handler: GestureHandler<*>): Boolean {
-    for (otherHandler in gestureHandlers) {
-      if (!isFinished(otherHandler.state) && shouldHandlerWaitForOther(handler, otherHandler)) {
-        return true
-      }
-    }
-    return false
+    return gestureHandlers.any { !isFinished(it.state) && shouldHandlerWaitForOther(handler, it) }
   }
 
   private fun tryActivate(handler: GestureHandler<*>) {
+    if (gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }) {
+      handler.cancel()
+
+      return
+    }
+
     // see if there is anyone else who we need to wait for
     if (hasOtherHandlerToWaitFor(handler)) {
       addAwaitingHandler(handler)
@@ -111,7 +112,7 @@ class GestureHandlerOrchestrator(
 
       // if there were handlers awaiting completion of this handler, we can trigger active state
       for (otherHandler in currentlyAwaitingHandlers) {
-        if (!shouldHandlerWaitForOther(otherHandler, handler)) {
+        if (!shouldHandlerWaitForOther(otherHandler, handler) || removedHandlers.contains(otherHandler.tag)) {
           continue
         }
 
@@ -183,7 +184,6 @@ class GestureHandlerOrchestrator(
     // Clear all awaiting handlers waiting for the current handler to fail
     for (otherHandler in awaitingHandlers.reversed()) {
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler.cancel()
         otherHandler.isAwaiting = false
       }
     }
