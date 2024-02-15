@@ -10,7 +10,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import Hand from '@site/static/img/hand-one.svg';
+import Hand from '@site/static/img/hand-two.svg';
 import Arrow from '@site/static/img/arrow-circle-left.svg';
 import { useColorMode } from '@docusaurus/theme-common';
 import { RADIUS, isInsideCircle } from '../utils';
@@ -97,6 +97,7 @@ export default function RotationExample() {
     })
     .onEnd(() => {
       savedRotation.value = rotationVal.value;
+      setIsPanEnabled(true);
       setShowHand(true);
     });
 

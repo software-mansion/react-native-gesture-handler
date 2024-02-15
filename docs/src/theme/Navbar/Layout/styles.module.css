@@ -36,7 +36,7 @@
 
 [data-theme='dark'] .heroBackground {
   background: none;
-  background-color: #1b2445;
+  background-color: var(--swm-navy-dark-140);
 }
 
 @media (max-width: 996px) {

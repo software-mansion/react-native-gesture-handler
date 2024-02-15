@@ -9,6 +9,7 @@ nav {
 .colorModeToggle {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
 }
 
 @media (max-height: 768px) {
@@ -74,10 +75,6 @@ nav {
 
 [class*='navbar__items--left-landing'] > div:nth-child(2) {
   margin-top: 0.25rem;
-}
-
-[class*='navbar__items--right-landing'] {
-  gap: 1rem;
 }
 
 @media (min-width: 768px) {

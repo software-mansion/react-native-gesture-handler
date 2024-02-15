@@ -73,6 +73,7 @@ export default function NavbarContent() {
   const items = useNavbarItems();
   const [leftItems, rightItems] = splitNavbarItems(items);
   const searchBarItem = items.find((item) => item.type === 'search');
+  console.log(isMobile);
   return (
     <NavbarContentLayout
       left={
@@ -84,9 +85,9 @@ export default function NavbarContent() {
             <NavbarLogo />
           </div>
           <NavbarItems items={leftItems} />
-          {!isDocumentation && (
+          {/* {!isDocumentation && (
             <NavbarColorModeToggle className={styles.colorModeToggle} />
-          )}
+          )} */}
           {!searchBarItem && !isMobile && !isLanding && <AlgoliaSearchBar />}
           {!isMobile && isDocumentation && (
             <NavbarColorModeToggle className={styles.colorModeToggle} />
@@ -95,12 +96,15 @@ export default function NavbarContent() {
       }
       right={
         <>
+          {!isDocumentation && (
+            <NavbarColorModeToggle className={styles.colorModeToggle} />
+          )}
           <NavbarItems
             items={
-              isLanding
-                ? rightItems
-                : isMobile
+              isMobile
                 ? []
+                : isLanding
+                ? rightItems
                 : rightItems.filter((item) => item.label !== 'Docs')
             }
             isDocumentation={isDocumentation}

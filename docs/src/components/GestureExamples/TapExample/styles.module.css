@@ -1,6 +1,7 @@
 .handTap {
   position: absolute;
-  transform: translate(50%, 100%);
+  transform: translate(90%, 120%);
+  rotate: 10deg;
   cursor: default;
   opacity: 1;
   visibility: visible;

@@ -10,7 +10,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import Hand from '@site/static/img/hand-two.svg';
+import Hand from '@site/static/img/hand-one.svg';
 import stylesWeb from './styles.module.css';
 import { RADIUS, useStylesForExample } from '../utils';
 
@@ -33,7 +33,7 @@ export default function LongPressExample() {
     backgroundColor: pressed.value
       ? 'var(--swm-yellow-dark-80)'
       : 'var(--swm-purple-light-100)',
-    transform: [{ scale: withTiming(pressed.value ? 1.2 : 1) }],
+    transform: [{ scale: withTiming(pressed.value ? 1.8 : 1) }],
   }));
 
   return (

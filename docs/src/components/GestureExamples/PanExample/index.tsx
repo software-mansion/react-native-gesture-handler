@@ -10,7 +10,7 @@ import {
   GestureDetector,
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import Hand from '@site/static/img/hand-two.svg';
+import Hand from '@site/static/img/hand-one.svg';
 import stylesWeb from './styles.module.css';
 import { RADIUS, isInsideCircle, useStylesForExample } from '../utils';
 
@@ -40,7 +40,8 @@ export default function DecayBasicExample() {
             : offsetY.value + event.changeY
           : offsetY.value;
     })
-    .onEnd(() => setShowHand(true));
+    .onEnd(() => setShowHand(true))
+    .minDistance(0);
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [

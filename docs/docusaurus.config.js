@@ -71,6 +71,11 @@ const config = {
             position: 'right',
           },
           {
+            type: 'docsVersionDropdown',
+            position: 'right',
+            dropdownActiveClassDisabled: true,
+          },
+          {
             href: 'https://github.com/software-mansion/react-native-reanimated/',
             position: 'right',
             className: 'header-github',

@@ -30,7 +30,8 @@
 }
 
 .handRotation {
-  transform: translate(50%, 100%);
+  transform: translate(20%, 85%);
+  rotate: -18deg;
 }
 
 .rotationClone:hover ~ svg {

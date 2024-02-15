@@ -42,8 +42,8 @@ export default function FlingExample() {
       endPositionY.value = e.y;
     })
     .onStart((e) => {
-      if (endPositionX.value === 0) endPositionX.value = e.x;
-      if (endPositionY.value === 0) endPositionY.value = e.y;
+      endPositionX.value = e.x;
+      endPositionY.value = e.y;
 
       const valueX = Math.abs(startPositionX.value - endPositionX.value);
       const valueY = Math.abs(startPositionY.value - endPositionY.value);
