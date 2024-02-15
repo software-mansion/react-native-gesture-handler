@@ -41,7 +41,7 @@ const Playground = () => {
       <div>
         <h2 className={styles.heading}>Learn how it works</h2>
         <p className={styles.subheading}>
-          Hover over cards to see our interaction.
+          Tap and drag the circles to explore the gestures.
         </p>
       </div>
       <div className={styles.playground}>
