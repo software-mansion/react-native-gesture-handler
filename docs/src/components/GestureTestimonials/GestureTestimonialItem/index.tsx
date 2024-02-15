@@ -28,7 +28,7 @@ const GestureTestimonialItem = ({
         className={styles.quoteIcon}
         color={
           useColorMode().colorMode === 'dark'
-            ? 'var(--swm-purple-dark-120'
+            ? 'var(--swm-purple-dark-120)'
             : 'var(--swm-purple-light-100)'
         }
       />

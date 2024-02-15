@@ -11,7 +11,7 @@ const items = [
     link: 'https://twitter.com/mrousavy/status/1754909520571019756',
     image: {
       alt: 'marc rousavy',
-      src: 'img/marc_rousavy.jpeg',
+      src: 'img/testimonials/marc_rousavy.jpeg',
     },
   },
   {
@@ -21,7 +21,7 @@ const items = [
     link: 'https://twitter.com/alotoronto/status/1754905332709576823',
     image: {
       alt: 'andrew lo',
-      src: 'img/andrew_lo.jpeg',
+      src: 'img/testimonials/andrew_lo.jpeg',
     },
   },
   {
@@ -30,27 +30,16 @@ const items = [
     link: 'https://twitter.com/gorhom/status/1754974706782896465',
     image: {
       alt: 'mo gorhom',
-      src: 'img/mo_gorhom.jpeg',
+      src: 'img/testimonials/mo_gorhom.jpeg',
     },
   },
   {
-    author: 'Syed Noman',
-    body: `Reanimated is an amazing library!
-    It made my apps smooth and engaging, boosting performance and user happiness. Highly recommend for any developer wanting to upgrade  their app.`,
-    link: 'https://twitter.com/codewithnomi_/status/1754910812584436199',
+    author: 'Brandon Austin',
+    body: `I’ve built dozens of apps, each and every one of them have used both Reanimated and Gesture Handler at different levels of complexity.`,
+    link: 'https://twitter.com/bran_aust/status/1754907731536863670',
     image: {
-      alt: 'syed noman',
-      src: 'img/syed_noman.jpeg',
-    },
-  },
-  {
-    author: 'Daniel Grychtol',
-    company: 'TheWidlarzGroup',
-    body: 'Simply - it’s pure joy to write animations with Reanimated now! Also, API that was introduced in V2 - imo game changer in terms of the learning curve (compared to API from V1) 💜.',
-    link: 'https://twitter.com/daniel_mark01/status/1754925618494337459',
-    image: {
-      alt: 'daniel grychtol',
-      src: 'img/daniel_grychtol.jpeg',
+      alt: 'brandon austin',
+      src: 'img/testimonials/brandon_austin.jpeg',
     },
   },
 ];
