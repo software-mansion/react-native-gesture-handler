@@ -4,10 +4,10 @@ import styles from './styles.module.css';
 import Wave from '@site/src/components/Wave';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import HomepageStartScreen from '@site/src/components/Hero/StartScreen';
-import GesturePlayground from '@site/src/components/GesturePlayground';
+import Playground from '@site/src/components/Playground';
 import GestureFeatures from '@site/src/components/GestureFeatures';
-import GestureTestimonials from '@site/src/components/GestureTestimonials';
-import GestureSponsors from '@site/src/components/GestureSponsors';
+import Testimonials from '@site/src/components/Testimonials';
+import Sponsors from '@site/src/components/Sponsors';
 
 function Home() {
   const context = useDocusaurusContext();
@@ -19,15 +19,15 @@ function Home() {
       description="Description will go into a meta tag in <head />">
       <div className={styles.container}>
         <HomepageStartScreen />
-        <GesturePlayground />
+        <Playground />
       </div>
       <div className={styles.waveContainer}>
         <Wave />
       </div>
       <div className={styles.container}>
         <GestureFeatures />
-        <GestureTestimonials />
-        <GestureSponsors />
+        <Testimonials />
+        <Sponsors />
       </div>
     </Layout>
   );

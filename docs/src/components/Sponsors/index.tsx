@@ -5,7 +5,7 @@ import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import usePageType from '@site/src/hooks/usePageType';
 
-const GestureSponsors = () => {
+const Sponsors = () => {
   const sponsorsLogos = {
     expo: {
       light: useBaseUrl('img/expo.svg'),
@@ -38,4 +38,4 @@ const GestureSponsors = () => {
   );
 };
 
-export default GestureSponsors;
+export default Sponsors;

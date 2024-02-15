@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
-import GestureTestimonialItem from '@site/src/components/GestureTestimonials/GestureTestimonialItem';
+import TestimonialItem from '@site/src/components/Testimonials/TestimonialItem';
 
 const items = [
   {
@@ -11,7 +11,7 @@ const items = [
     link: 'https://twitter.com/mrousavy/status/1754909520571019756',
     image: {
       alt: 'marc rousavy',
-      src: 'img/testimonials/marc_rousavy.jpeg',
+      src: 'https://pbs.twimg.com/profile_images/1713946397391667200/l-LXWNl2_400x400.jpg',
     },
   },
   {
@@ -21,7 +21,7 @@ const items = [
     link: 'https://twitter.com/alotoronto/status/1754905332709576823',
     image: {
       alt: 'andrew lo',
-      src: 'img/testimonials/andrew_lo.jpeg',
+      src: 'https://pbs.twimg.com/profile_images/870388069819707393/WSdiZCDG_400x400.jpg',
     },
   },
   {
@@ -30,7 +30,7 @@ const items = [
     link: 'https://twitter.com/gorhom/status/1754974706782896465',
     image: {
       alt: 'mo gorhom',
-      src: 'img/testimonials/mo_gorhom.jpeg',
+      src: 'https://pbs.twimg.com/profile_images/1699071865996869632/R09iQ1T5_400x400.jpg',
     },
   },
   {
@@ -39,12 +39,12 @@ const items = [
     link: 'https://twitter.com/bran_aust/status/1754907731536863670',
     image: {
       alt: 'brandon austin',
-      src: 'img/testimonials/brandon_austin.jpeg',
+      src: 'https://pbs.twimg.com/profile_images/1757102996654043136/zwiTEFm8_400x400.jpg',
     },
   },
 ];
 
-const GestureTestimonialList = () => {
+const TestimonialList = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -84,21 +84,21 @@ const GestureTestimonialList = () => {
           styles.testimonialPair
         )}
         key={i}>
-        <GestureTestimonialItem
+        <TestimonialItem
           company={items[i].company}
           image={items[i].image}
           link={items[i].link}
           author={items[i].author}>
           {items[i].body}
-        </GestureTestimonialItem>
+        </TestimonialItem>
         {i + 1 < items.length && (
-          <GestureTestimonialItem
+          <TestimonialItem
             company={items[i + 1].company}
             image={items[i + 1].image}
             link={items[i + 1].link}
             author={items[i + 1].author}>
             {items[i + 1].body}
-          </GestureTestimonialItem>
+          </TestimonialItem>
         )}
       </div>
     );
@@ -134,4 +134,4 @@ const GestureTestimonialList = () => {
   );
 };
 
-export default GestureTestimonialList;
+export default TestimonialList;

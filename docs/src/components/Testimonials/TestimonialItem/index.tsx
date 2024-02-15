@@ -4,7 +4,7 @@ import styles from './styles.module.css';
 import QuoteIcon from './QuoteIcon';
 import { useColorMode } from '@docusaurus/theme-common';
 
-export interface TestimonialImageProps {
+interface ImageProps {
   alt: string;
   src: string;
 }
@@ -12,16 +12,10 @@ interface Props extends PropsWithChildren {
   author: string;
   company?: string;
   link: string;
-  image: TestimonialImageProps;
+  image: ImageProps;
 }
 
-const GestureTestimonialItem = ({
-  author,
-  company,
-  image,
-  link,
-  children,
-}: Props) => {
+const TestimonialItem = ({ author, company, image, link, children }: Props) => {
   return (
     <a href={link} target="_blank" className={styles.testimonialItem}>
       <QuoteIcon
@@ -46,4 +40,4 @@ const GestureTestimonialItem = ({
   );
 };
 
-export default GestureTestimonialItem;
+export default TestimonialItem;

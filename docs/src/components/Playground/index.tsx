@@ -35,7 +35,7 @@ const examples = [
   },
 ];
 
-const GesturePlayground = () => {
+const Playground = () => {
   return (
     <div>
       <div>
@@ -58,4 +58,4 @@ const GesturePlayground = () => {
   );
 };
 
-export default GesturePlayground;
+export default Playground;

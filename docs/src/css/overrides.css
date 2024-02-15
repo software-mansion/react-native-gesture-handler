@@ -93,6 +93,10 @@ table thead tr {
   max-width: 150px;
 }
 
+[class*='codeBlockContainer'] {
+  box-shadow: none;
+}
+
 [class*='codeBlockContent'] pre {
   border: 1px solid var(--swm-border);
 }
@@ -101,6 +105,8 @@ table thead tr {
 [class*='codeBlockContent'] code {
   border-radius: 0;
   background-color: var(--swm-off-background);
+  font-size: 14px;
+  font-family: var(--ifm-font-family-monospace);
 }
 
 /* Add small padding, when some of the lines are too long in a code block */

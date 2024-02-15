@@ -1,14 +1,14 @@
 import React from 'react';
 import styles from './styles.module.css';
-import GestureTestimonialList from '@site/src/components/GestureTestimonials/GestureTestimonialList';
+import TestimonialList from '@site/src/components/Testimonials/TestimonialList';
 
-const GestureTestimonals = () => {
+const Testimonals = () => {
   return (
     <div className={styles.testimonialsContainer}>
       <h2 className={styles.title}>Testimonials</h2>
-      <GestureTestimonialList />
+      <TestimonialList />
     </div>
   );
 };
 
-export default GestureTestimonals;
+export default Testimonals;
