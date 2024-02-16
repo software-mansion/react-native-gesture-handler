@@ -96,9 +96,6 @@ nav {
     width: 100%;
   }
 }
-[class*='navbar__item'] {
-  font-size: 20px;
-}
 
 [class*='dropdown__link--active'] {
   color: var(--swm-dropdown-versions-item-active) !important;

@@ -1,5 +1,6 @@
 :root {
   --swm-expandable-transition: transform 200ms ease;
+  --ifm-code-font-size: 14px;
 }
 
 [class*='plugin-pages'] {
@@ -105,7 +106,6 @@ table thead tr {
 [class*='codeBlockContent'] code {
   border-radius: 0;
   background-color: var(--swm-off-background);
-  font-size: 14px;
   font-family: var(--ifm-font-family-monospace);
 }
 
@@ -121,4 +121,11 @@ table thead tr {
   border-radius: 8px;
   border: none;
   margin-bottom: 8px;
+}
+
+@media (max-width: 420px) {
+  [class*='codeBlockContent'] pre,
+  [class*='codeBlockContent'] code {
+    -webkit-text-size-adjust: 100%;
+  }
 }

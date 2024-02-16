@@ -15,8 +15,8 @@ function Home() {
 
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title={`React Native Gesture Handler`}
+      description="Declarative API exposing platform native touch and gesture system to React Native.">
       <div className={styles.container}>
         <HomepageStartScreen />
         <Playground />

@@ -1,6 +1,7 @@
 .featureItem {
   background-color: var(--swm-blue-light-20);
   box-shadow: -12px 12px 0px var(--swm-blue-light-60);
+  flex: 1;
   padding: 1.5em;
 }
 

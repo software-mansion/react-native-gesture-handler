@@ -1,6 +1,6 @@
 .toggle {
   height: calc(0.8 * var(--swm-logo-height));
-  width: calc(2 * var(--swm-logo-height));
+  width: calc(1.6 * var(--swm-logo-height));
 
   margin-right: 0;
 }
@@ -20,13 +20,6 @@
   box-shadow: none;
 
   transition: background var(--ifm-transition-fast);
-}
-
-@media (max-width: 768px) {
-  .toggleButton {
-    height: 1.5rem;
-    width: 3rem;
-  }
 }
 
 .toggleButton:hover {
