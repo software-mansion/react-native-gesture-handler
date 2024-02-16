@@ -88,6 +88,11 @@
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
+
+#if !TARGET_OS_OSX
 - (void)setCurrentPointerType:(nonnull UIEvent *)event;
+#else
+- (void)setCurrentPointerType;
+#endif
 
 @end

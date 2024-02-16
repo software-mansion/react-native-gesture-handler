@@ -147,6 +147,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 #if TARGET_OS_OSX
 - (void)mouseDown:(NSEvent *)event
 {
+  [_gestureHandler setCurrentPointerType];
   [super mouseDown:event];
   [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }

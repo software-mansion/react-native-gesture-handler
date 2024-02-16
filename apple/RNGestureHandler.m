@@ -177,6 +177,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   self.recognizer.enabled = enabled;
 }
 
+#if !TARGET_OS_OSX
 - (void)setCurrentPointerType:(UIEvent *)event
 {
   UITouch *touch = [[event allTouches] anyObject];
@@ -196,6 +197,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       break;
   }
 }
+#else
+- (void)setCurrentPointerType
+{
+  _pointerType = RNGestureHandlerMouse;
+}
+#endif
 
 - (UITouchType)getPointerType
 {
@@ -226,7 +233,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #if TARGET_OS_OSX
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
-                                 withNumberOfTouches:1];
+                                 withNumberOfTouches:1
+                                     withPointerType:RNGestureHandlerMouse];
 #else
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]

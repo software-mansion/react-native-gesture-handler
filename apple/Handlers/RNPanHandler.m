@@ -9,6 +9,8 @@
 #import "RNPanHandler.h"
 
 #if TARGET_OS_OSX
+#import "RNGestureHandlerPointerType.h"
+
 @interface RNBetterPanGestureRecognizer : NSPanGestureRecognizer
 #else
 #import <UIKit/UIGestureRecognizerSubclass.h>
@@ -166,6 +168,7 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
+  [_gestureHandler setCurrentPointerType];
   // super call was moved to interactionsBegan method to keep the
   // original order of calls
   [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
@@ -401,7 +404,8 @@
                            withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
                                 withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
-                            withNumberOfTouches:1];
+                            withNumberOfTouches:1
+                                withPointerType:RNGestureHandlerMouse];
 }
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer

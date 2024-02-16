@@ -7,6 +7,7 @@
 //
 
 #import "RNRotationHandler.h"
+#import "RNGestureHandlerPointerType.h"
 
 #if !TARGET_OS_TV
 
@@ -51,6 +52,7 @@
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
@@ -150,7 +152,8 @@
   return [RNGestureHandlerEventExtraData forRotation:recognizer.rotation
                                      withAnchorPoint:[recognizer locationInView:recognizer.view]
                                         withVelocity:((RNBetterRotationRecognizer *)recognizer).velocity
-                                 withNumberOfTouches:2];
+                                 withNumberOfTouches:2
+                                     withPointerType:RNGestureHandlerMouse];
 }
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIRotationGestureRecognizer *)recognizer

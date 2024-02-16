@@ -9,6 +9,7 @@
 //
 
 #import "RNPinchHandler.h"
+#import "RNGestureHandlerPointerType.h"
 
 #if !TARGET_OS_TV
 
@@ -57,6 +58,7 @@
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
@@ -156,7 +158,8 @@
   return [RNGestureHandlerEventExtraData forPinch:recognizer.magnification
                                    withFocalPoint:[recognizer locationInView:recognizer.view]
                                      withVelocity:((RNBetterPinchRecognizer *)recognizer).velocity
-                              withNumberOfTouches:2];
+                              withNumberOfTouches:2
+                                  withPointerType:RNGestureHandlerMouse];
 }
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPinchGestureRecognizer *)recognizer
