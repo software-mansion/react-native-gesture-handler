@@ -67,6 +67,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected var orchestrator: GestureHandlerOrchestrator? = null
   private var onTouchEventListener: OnTouchEventListener? = null
   private var interactionController: GestureHandlerInteractionController? = null
+  var pointerType: Int = POINTER_TYPE_OTHER
+    private set
 
   @Suppress("UNCHECKED_CAST")
   protected fun self(): ConcreteGestureHandlerT = this as ConcreteGestureHandlerT
@@ -371,6 +373,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
     lastEventOffsetY = adaptedTransformedEvent.rawY - adaptedTransformedEvent.y
+
+    if (sourceEvent.action == MotionEvent.ACTION_DOWN || sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER || sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE) {
+      setPointerType(sourceEvent)
+    }
+
     if (sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
       sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE ||
       sourceEvent.action == MotionEvent.ACTION_HOVER_EXIT
@@ -721,6 +728,17 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     isWithinBounds = false
   }
 
+  fun setPointerType(event: MotionEvent) {
+    val pointerIndex = event.actionIndex
+
+    pointerType = when (event.getToolType(pointerIndex)) {
+      MotionEvent.TOOL_TYPE_FINGER -> POINTER_TYPE_FINGER
+      MotionEvent.TOOL_TYPE_STYLUS -> POINTER_TYPE_STYLUS
+      MotionEvent.TOOL_TYPE_MOUSE -> POINTER_TYPE_MOUSE
+      else -> POINTER_TYPE_OTHER
+    }
+  }
+
   fun setOnTouchEventListener(listener: OnTouchEventListener?): GestureHandler<*> {
     onTouchEventListener = listener
     return this
@@ -763,6 +781,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     const val ACTION_TYPE_NATIVE_ANIMATED_EVENT = 2
     const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
     const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
+    const val POINTER_TYPE_FINGER = 0
+    const val POINTER_TYPE_STYLUS = 1
+    const val POINTER_TYPE_MOUSE = 2
+    const val POINTER_TYPE_OTHER = 3
     private const val MAX_POINTERS_COUNT = 12
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
