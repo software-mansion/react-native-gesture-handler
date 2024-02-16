@@ -81,7 +81,7 @@ const config = {
             dropdownActiveClassDisabled: true,
           },
           {
-            href: 'https://github.com/software-mansion/react-native-reanimated/',
+            href: 'https://github.com/software-mansion/react-native-gesture-handler',
             position: 'right',
             className: 'header-github',
             'aria-label': 'GitHub repository',
