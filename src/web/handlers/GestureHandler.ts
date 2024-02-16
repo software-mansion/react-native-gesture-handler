@@ -17,6 +17,8 @@ import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import { PointerTypeMapping } from '../utils';
+import { PointerType } from '../../PointerType';
 
 export default abstract class GestureHandler {
   private lastSentState: State | null = null;
@@ -421,6 +423,8 @@ export default abstract class GestureHandler {
         handlerTag: this.handlerTag,
         target: this.viewRef,
         oldState: newState !== oldState ? oldState : undefined,
+        pointerType:
+          PointerTypeMapping.get(this.pointerType) ?? PointerType.OTHER,
       },
       timeStamp: Date.now(),
     };
