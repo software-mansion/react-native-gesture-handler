@@ -14,6 +14,7 @@ const GestureFeatures = () => {
           Handler
         </p>
         <HomepageButton
+          target="_blank"
           href="https://blog.swmansion.com/introducing-gesture-handler-2-0-50515f1c4afc"
           title="See blog post"
           backgroundStyling={styles.featuresButton}
