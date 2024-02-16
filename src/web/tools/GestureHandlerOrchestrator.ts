@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { PointerType } from '../interfaces';
+import { WebPointerType } from '../interfaces';
 
 import GestureHandler from '../handlers/GestureHandler';
 import PointerTracker from './PointerTracker';
@@ -358,8 +358,8 @@ export default class GestureHandlerOrchestrator {
   public cancelMouseAndPenGestures(currentHandler: GestureHandler): void {
     this.gestureHandlers.forEach((handler: GestureHandler) => {
       if (
-        handler.getPointerType() !== PointerType.MOUSE &&
-        handler.getPointerType() !== PointerType.PEN
+        handler.getPointerType() !== WebPointerType.MOUSE &&
+        handler.getPointerType() !== WebPointerType.PEN
       ) {
         return;
       }

@@ -14,7 +14,7 @@
 
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
-                                withPointerType:(UITouchType)pointerType
+                                withPointerType:(NSInteger)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
@@ -28,7 +28,7 @@
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
                             withNumberOfTouches:(NSUInteger)numberOfTouches
-                                withPointerType:(UITouchType)pointerType
+                                withPointerType:(NSInteger)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
@@ -44,7 +44,7 @@
                            withAbsolutePosition:(CGPoint)absolutePosition
                             withNumberOfTouches:(NSUInteger)numberOfTouches
                                    withDuration:(NSUInteger)duration
-                                withPointerType:(UITouchType)pointerType
+                                withPointerType:(NSInteger)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
@@ -62,7 +62,7 @@
                            withTranslation:(CGPoint)translation
                               withVelocity:(CGPoint)velocity
                        withNumberOfTouches:(NSUInteger)numberOfTouches
-                           withPointerType:(UITouchType)pointerType
+                           withPointerType:(NSInteger)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
@@ -82,7 +82,7 @@
                                  forPosition:(CGPoint)position
                         withAbsolutePosition:(CGPoint)absolutePosition
                          withNumberOfTouches:(NSUInteger)numberOfTouches
-                             withPointerType:(UITouchType)pointerType
+                             withPointerType:(NSInteger)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
@@ -99,7 +99,7 @@
                               withFocalPoint:(CGPoint)focalPoint
                                 withVelocity:(CGFloat)velocity
                          withNumberOfTouches:(NSUInteger)numberOfTouches
-                             withPointerType:(UITouchType)pointerType
+                             withPointerType:(NSInteger)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"scale" : @(scale),
@@ -115,7 +115,7 @@
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
                             withNumberOfTouches:(NSUInteger)numberOfTouches
-                                withPointerType:(UITouchType)pointerType
+                                withPointerType:(NSInteger)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"rotation" : @(rotation),
@@ -131,7 +131,7 @@
                              withChangedPointers:(NSArray<NSDictionary *> *)changedPointers
                                  withAllPointers:(NSArray<NSDictionary *> *)allPointers
                              withNumberOfTouches:(NSUInteger)numberOfTouches
-                                 withPointerType:(UITouchType)pointerType
+                                 withPointerType:(NSInteger)pointerType
 {
   if (changedPointers == nil || allPointers == nil) {
     changedPointers = @[];
@@ -148,7 +148,7 @@
   }];
 }
 
-+ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside withPointerType:(UITouchType)pointerType
++ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside withPointerType:(NSInteger)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc]
       initWithData:@{@"pointerInside" : @(pointerInside), @"pointerType" : @(pointerType)}];

@@ -54,7 +54,7 @@
  @protected
   RNGestureHandlerState _lastState;
  @protected
-  UITouchType _pointerType;
+  NSInteger _pointerType;
 }
 
 + (nullable RNGestureHandler *)findGestureHandlerByRecognizer:(nonnull UIGestureRecognizer *)recognizer;

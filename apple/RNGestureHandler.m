@@ -1,4 +1,5 @@
 #import "RNGestureHandler.h"
+#import "RNGestureHandlerPointerType.h"
 #import "RNManualActivationRecognizer.h"
 
 #import "Handlers/RNNativeViewHandler.h"
@@ -179,17 +180,19 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)setCurrentPointerType:(UIEvent *)event
 {
   UITouch *touch = [[event allTouches] anyObject];
-  _pointerType = touch.type;
 
   switch (touch.type) {
     case UITouchTypeDirect:
-      NSLog(@"Touched with finger");
+      _pointerType = RNGestureHandlerTouch;
       break;
     case UITouchTypePencil:
-      NSLog(@"Touched with Apple Pencil");
+      _pointerType = RNGestureHandlerStylus;
+      break;
+    case UITouchTypeIndirectPointer:
+      _pointerType = RNGestureHandlerMouse;
       break;
     default:
-      NSLog(@"Touched with other tool");
+      _pointerType = RNGestureHandlerOtherPointer;
       break;
   }
 }
