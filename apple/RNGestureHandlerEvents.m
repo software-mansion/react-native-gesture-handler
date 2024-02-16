@@ -12,33 +12,23 @@
   return self;
 }
 
-+ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position withAbsolutePosition:(CGPoint)absolutePosition
-{
-  return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
-    @"x" : @(position.x),
-    @"y" : @(position.y),
-    @"absoluteX" : @(absolutePosition.x),
-    @"absoluteY" : @(absolutePosition.y)
-  }];
-}
-
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
-                            withNumberOfTouches:(NSUInteger)numberOfTouches
+                                withPointerType:(UITouchType)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
     @"y" : @(position.y),
     @"absoluteX" : @(absolutePosition.x),
     @"absoluteY" : @(absolutePosition.y),
-    @"numberOfPointers" : @(numberOfTouches)
+    @"pointerType" : @(pointerType)
   }];
 }
 
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
                             withNumberOfTouches:(NSUInteger)numberOfTouches
-                                   withDuration:(NSUInteger)duration
+                                withPointerType:(UITouchType)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
@@ -46,7 +36,24 @@
     @"absoluteX" : @(absolutePosition.x),
     @"absoluteY" : @(absolutePosition.y),
     @"numberOfPointers" : @(numberOfTouches),
-    @"duration" : @(duration)
+    @"pointerType" : @(pointerType)
+  }];
+}
+
++ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
+                           withAbsolutePosition:(CGPoint)absolutePosition
+                            withNumberOfTouches:(NSUInteger)numberOfTouches
+                                   withDuration:(NSUInteger)duration
+                                withPointerType:(UITouchType)pointerType
+{
+  return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
+    @"x" : @(position.x),
+    @"y" : @(position.y),
+    @"absoluteX" : @(absolutePosition.x),
+    @"absoluteY" : @(absolutePosition.y),
+    @"numberOfPointers" : @(numberOfTouches),
+    @"duration" : @(duration),
+    @"pointerType" : @(pointerType)
   }];
 }
 
@@ -55,6 +62,7 @@
                            withTranslation:(CGPoint)translation
                               withVelocity:(CGPoint)velocity
                        withNumberOfTouches:(NSUInteger)numberOfTouches
+                           withPointerType:(UITouchType)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
@@ -65,7 +73,8 @@
     @"translationY" : @(translation.y),
     @"velocityX" : SAFE_VELOCITY(velocity.x),
     @"velocityY" : SAFE_VELOCITY(velocity.y),
-    @"numberOfPointers" : @(numberOfTouches)
+    @"numberOfPointers" : @(numberOfTouches),
+    @"pointerType" : @(pointerType)
   }];
 }
 
@@ -73,6 +82,7 @@
                                  forPosition:(CGPoint)position
                         withAbsolutePosition:(CGPoint)absolutePosition
                          withNumberOfTouches:(NSUInteger)numberOfTouches
+                             withPointerType:(UITouchType)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
@@ -80,7 +90,8 @@
     @"absoluteX" : @(absolutePosition.x),
     @"absoluteY" : @(absolutePosition.y),
     @"force" : @(force),
-    @"numberOfPointers" : @(numberOfTouches)
+    @"numberOfPointers" : @(numberOfTouches),
+    @"pointerType" : @(pointerType)
   }];
 }
 
@@ -88,13 +99,15 @@
                               withFocalPoint:(CGPoint)focalPoint
                                 withVelocity:(CGFloat)velocity
                          withNumberOfTouches:(NSUInteger)numberOfTouches
+                             withPointerType:(UITouchType)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"scale" : @(scale),
     @"focalX" : @(focalPoint.x),
     @"focalY" : @(focalPoint.y),
     @"velocity" : SAFE_VELOCITY(velocity),
-    @"numberOfPointers" : @(numberOfTouches)
+    @"numberOfPointers" : @(numberOfTouches),
+    @"pointerType" : @(pointerType)
   }];
 }
 
@@ -102,13 +115,15 @@
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
                             withNumberOfTouches:(NSUInteger)numberOfTouches
+                                withPointerType:(UITouchType)pointerType
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"rotation" : @(rotation),
     @"anchorX" : @(anchorPoint.x),
     @"anchorY" : @(anchorPoint.y),
     @"velocity" : SAFE_VELOCITY(velocity),
-    @"numberOfPointers" : @(numberOfTouches)
+    @"numberOfPointers" : @(numberOfTouches),
+    @"pointerType" : @(pointerType)
   }];
 }
 
@@ -116,6 +131,7 @@
                              withChangedPointers:(NSArray<NSDictionary *> *)changedPointers
                                  withAllPointers:(NSArray<NSDictionary *> *)allPointers
                              withNumberOfTouches:(NSUInteger)numberOfTouches
+                                 withPointerType:(UITouchType)pointerType
 {
   if (changedPointers == nil || allPointers == nil) {
     changedPointers = @[];
@@ -127,13 +143,15 @@
     @"eventType" : @(eventType),
     @"changedTouches" : changedPointers,
     @"allTouches" : allPointers,
-    @"numberOfTouches" : @(numberOfTouches)
+    @"numberOfTouches" : @(numberOfTouches),
+    @"pointerType" : @(pointerType)
   }];
 }
 
-+ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside
++ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside withPointerType:(UITouchType)pointerType
 {
-  return [[RNGestureHandlerEventExtraData alloc] initWithData:@{@"pointerInside" : @(pointerInside)}];
+  return [[RNGestureHandlerEventExtraData alloc]
+      initWithData:@{@"pointerInside" : @(pointerInside), @"pointerType" : @(pointerType)}];
 }
 
 @end

@@ -102,6 +102,7 @@
 #else
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   [super touchesBegan:touches withEvent:event];
   [self interactionsBegan:touches withEvent:event];
 }
@@ -163,7 +164,8 @@
   return [RNGestureHandlerEventExtraData forPinch:recognizer.scale
                                    withFocalPoint:[recognizer locationInView:recognizer.view]
                                      withVelocity:recognizer.velocity
-                              withNumberOfTouches:recognizer.numberOfTouches];
+                              withNumberOfTouches:recognizer.numberOfTouches
+                                  withPointerType:_pointerType];
 }
 #endif
 #endif // !TARGET_OS_TV

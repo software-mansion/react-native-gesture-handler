@@ -176,6 +176,29 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   self.recognizer.enabled = enabled;
 }
 
+- (void)setCurrentPointerType:(UIEvent *)event
+{
+  UITouch *touch = [[event allTouches] anyObject];
+  _pointerType = touch.type;
+
+  switch (touch.type) {
+    case UITouchTypeDirect:
+      NSLog(@"Touched with finger");
+      break;
+    case UITouchTypePencil:
+      NSLog(@"Touched with Apple Pencil");
+      break;
+    default:
+      NSLog(@"Touched with other tool");
+      break;
+  }
+}
+
+- (UITouchType)getPointerType
+{
+  return _pointerType;
+}
+
 - (void)bindToView:(RNGHUIView *)view
 {
 #if !TARGET_OS_OSX
@@ -204,7 +227,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #else
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-                                 withNumberOfTouches:recognizer.numberOfTouches];
+                                 withNumberOfTouches:recognizer.numberOfTouches
+                                     withPointerType:_pointerType];
 #endif
 }
 
@@ -294,7 +318,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
                                           withChangedPointers:_pointerTracker.changedPointersData
                                               withAllPointers:_pointerTracker.allPointersData
-                                          withNumberOfTouches:_pointerTracker.trackedPointersCount];
+                                          withNumberOfTouches:_pointerTracker.trackedPointersCount
+                                              withPointerType:_pointerType];
   id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
                                                   handlerTag:_tag
                                                        state:state

@@ -53,6 +53,8 @@
   UIGestureRecognizer *_recognizer;
  @protected
   RNGestureHandlerState _lastState;
+ @protected
+  UITouchType _pointerType;
 }
 
 + (nullable RNGestureHandler *)findGestureHandlerByRecognizer:(nonnull UIGestureRecognizer *)recognizer;
@@ -86,5 +88,6 @@
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
+- (void)setCurrentPointerType:(nonnull UIEvent *)event;
 
 @end

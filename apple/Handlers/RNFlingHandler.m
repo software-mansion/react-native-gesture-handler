@@ -26,6 +26,7 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [_gestureHandler reset];
   [super touchesBegan:touches withEvent:event];
@@ -141,16 +142,16 @@
 
   RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
 
-  CGPoint viewAbsolutePosition =
-      [recognizer.view convertPoint:recognizer.view.bounds.origin
-                             toView:RCTKeyWindow().rootViewController.view];
+  CGPoint viewAbsolutePosition = [recognizer.view convertPoint:recognizer.view.bounds.origin
+                                                        toView:RCTKeyWindow().rootViewController.view];
   CGPoint locationInView = [recognizer getLastLocation];
 
   return [RNGestureHandlerEventExtraData
                forPosition:locationInView
       withAbsolutePosition:CGPointMake(
                                viewAbsolutePosition.x + locationInView.x, viewAbsolutePosition.y + locationInView.y)
-       withNumberOfTouches:recognizer.numberOfTouches];
+       withNumberOfTouches:recognizer.numberOfTouches
+           withPointerType:_pointerType];
 }
 @end
 

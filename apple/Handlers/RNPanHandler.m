@@ -187,6 +187,7 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   // super call was moved to interactionsBegan method to keep the
   // original order of calls
   [self interactionsBegan:touches withEvent:event];
@@ -409,7 +410,8 @@
                            withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                                 withTranslation:[recognizer translationInView:recognizer.view.window]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window]
-                            withNumberOfTouches:recognizer.numberOfTouches];
+                            withNumberOfTouches:recognizer.numberOfTouches
+                                withPointerType:_pointerType];
 }
 #endif
 
