@@ -30,6 +30,7 @@
 .title {
   font-size: 20px;
   font-weight: 400;
+  display: block;
   text-align: center;
   margin-bottom: 2rem;
 }
