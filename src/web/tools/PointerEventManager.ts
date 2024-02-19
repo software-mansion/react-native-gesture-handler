@@ -83,8 +83,24 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       }
     });
 
+    const lastPosition: { x: number | null; y: number | null } = {
+      x: null,
+      y: null,
+    };
+
     this.view.addEventListener('pointermove', (event: PointerEvent): void => {
       if (event.pointerType === PointerType.TOUCH) {
+        return;
+      }
+
+      // Stylus triggers `pointermove` event when it detects changes in pressure. Since it is very sensitive to those changes,
+      // it constantly sends events, even though there was no change in position. To fix that we check whether
+      // pointer has actually moved and if not, we do not send event.
+      if (
+        event.pointerType === PointerType.PEN &&
+        event.x === lastPosition.x &&
+        event.y === lastPosition.y
+      ) {
         return;
       }
 
@@ -136,6 +152,9 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
           this.onPointerOutOfBounds(adaptedEvent);
         }
       }
+
+      lastPosition.x = event.x;
+      lastPosition.y = event.y;
     });
 
     this.view.addEventListener('pointercancel', (event: PointerEvent): void => {
