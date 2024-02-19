@@ -73,7 +73,8 @@ function Circle({ pointerTypeUpdater }: CircleProps) {
       translationX.value += e.changeX;
       translationY.value += e.changeY;
     })
-    .minDistance(0);
+    .minDistance(0)
+    .runOnJS(true);
 
   return (
     <GestureDetector gesture={panGesture}>
