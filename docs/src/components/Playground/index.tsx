@@ -12,26 +12,32 @@ const examples = [
   {
     title: 'Gesture.Pan()',
     component: <PanExample />,
+    href: 'docs/gestures/pan-gesture',
   },
   {
     title: 'Gesture.Tap()',
     component: <TapExample />,
+    href: 'docs/gestures/tap-gesture',
   },
   {
     title: 'Gesture.Rotation()',
     component: <RotationExample />,
+    href: 'docs/gestures/rotation-gesture',
   },
   {
     title: 'Gesture.Fling()',
     component: <FlingExample />,
+    href: 'docs/gestures/fling-gesture',
   },
   {
     title: 'Gesture.LongPress()',
     component: <LongPressExample />,
+    href: 'docs/gestures/long-press-gesture',
   },
   {
     title: 'Gesture.Pinch()',
     component: <PinchExample />,
+    href: 'docs/gestures/pinch-gesture',
   },
 ];
 
@@ -51,6 +57,7 @@ const Playground = () => {
             idx={idx}
             title={example.title}
             component={example.component}
+            href={example.href}
           />
         ))}
       </div>

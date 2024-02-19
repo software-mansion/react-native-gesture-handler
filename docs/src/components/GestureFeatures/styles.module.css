@@ -18,6 +18,7 @@
 [data-theme='dark'] .featuresButton:hover {
   background-color: var(--swm-purple-light-100);
   border-color: var(--swm-purple-light-100);
+  color: var(--swm-off-white);
 }
 
 .featuresButton svg {
