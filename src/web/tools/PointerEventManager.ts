@@ -97,7 +97,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       // it constantly sends events, even though there was no change in position. To fix that we check whether
       // pointer has actually moved and if not, we do not send event.
       if (
-        event.pointerType === PointerType.PEN &&
+        event.pointerType === WebPointerType.PEN &&
         event.x === lastPosition.x &&
         event.y === lastPosition.y
       ) {
