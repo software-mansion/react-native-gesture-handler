@@ -67,6 +67,17 @@ export default class GestureHandlerOrchestrator {
   }
 
   private tryActivate(handler: GestureHandler): void {
+    if (
+      this.gestureHandlers.some(
+        (otherHandler) =>
+          this.shouldHandlerWaitForOther(handler, otherHandler) &&
+          otherHandler.getState() === State.END
+      )
+    ) {
+      handler.cancel();
+      return;
+    }
+
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler);
     } else if (
