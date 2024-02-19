@@ -6,13 +6,16 @@ interface Props {
   title: string;
   component?: React.ReactNode;
   idx: number;
+  href: string;
 }
 
-const GestureExampleItem = ({ title, component, idx }: Props) => {
+const GestureExampleItem = ({ title, component, idx, href }: Props) => {
   return (
     <>
       <div className={styles.exampleContainer}>
-        <h2 className={styles.title}>{title}</h2>
+        <a className={styles.title} href={href}>
+          {title}
+        </a>
         <div className={styles.interactiveExampleWrapper}>
           <InteractiveExampleComponent idx={idx} component={component} />
         </div>
