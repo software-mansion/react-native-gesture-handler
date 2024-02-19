@@ -1,6 +1,6 @@
 // credits to https://github.com/jmysliv for creating the template for Reanimated 2
 
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 
 import styles from './styles.module.css';
 import clsx from 'clsx';
@@ -22,6 +22,6 @@ const Step = ({ children, title }) => {
 
 export const Divider = () => {
   return <div className={clsx(styles.divider)}></div>;
-}
+};
 
 export default Step;

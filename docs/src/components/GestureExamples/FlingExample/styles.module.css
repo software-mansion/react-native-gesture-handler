@@ -1,0 +1,33 @@
+.handFling,
+.arrowsFling {
+  z-index: 5;
+  position: absolute;
+  cursor: default;
+  transition: visibility 0.3s, opacity 0.3s ease-in-out;
+  opacity: 1;
+  visibility: visible;
+}
+
+.handFling {
+  transform: translate(35%, 145%) rotate(29deg);
+}
+
+.arrowsFling {
+  transform: translate(15%, -160%);
+}
+
+.flingClone {
+  height: 56px;
+  width: 56px;
+  border-radius: 100%;
+  position: absolute;
+  left: -0.5rem;
+  top: -0.5rem;
+  z-index: 10;
+}
+
+.flingClone:hover + div > .handFling,
+.flingClone:hover + div > .arrowsFling {
+  opacity: 0;
+  visibility: hidden;
+}

@@ -1,0 +1,10 @@
+.featureList {
+  display: flex;
+  gap: 1.5rem;
+}
+
+@media (max-width: 996px) {
+  .featureList {
+    flex-direction: column;
+  }
+}

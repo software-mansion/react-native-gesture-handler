@@ -1,0 +1,42 @@
+.stars {
+  position: absolute;
+  top: 5rem;
+  left: 2vw;
+  z-index: -10;
+}
+
+.stars svg path:nth-child(2n) {
+  animation: 2.7s starBlink infinite;
+}
+
+.stars svg path:nth-child(2n + 1) {
+  animation: 2.1s starBlink infinite;
+}
+
+.stars svg path:nth-child(3n) {
+  animation: 3.6s starBlink infinite;
+}
+
+.stars svg path:nth-child(3n + 1) {
+  animation: 4.2s starBlink infinite;
+}
+
+@media (max-width: 768px) {
+  .stars {
+    top: 3rem;
+  }
+}
+
+@keyframes starBlink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.15;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
