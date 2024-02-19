@@ -1,0 +1,82 @@
+.featuresContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 7.5rem;
+  gap: 5rem;
+}
+
+.featuresButton {
+  background-color: transparent;
+  color: var(--swm-landing-button-purple);
+}
+
+[data-theme='dark'] .featuresButton {
+  background-color: transparent;
+  border-color: var(--swm-purple-dark-100);
+  color: var(--swm-purple-dark-100);
+}
+[data-theme='dark'] .featuresButton:hover {
+  background-color: var(--swm-purple-light-100);
+  border-color: var(--swm-purple-light-100);
+}
+
+.featuresButton svg {
+  stroke: var(--swm-landing-button-purple);
+}
+
+.featuresButton:hover {
+  background-color: var(--swm-landing-button-purple);
+  color: var(--swm-off-white);
+}
+
+.featuresButton:hover svg {
+  stroke: var(--swm-off-white);
+}
+
+.title {
+  font-size: var(--swm-h2-font-size);
+}
+
+.learnMoreSection {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 5rem;
+}
+
+.learnMoreSection p {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28.8px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 996px) {
+  .featuresContainer {
+    margin-top: 3.5rem;
+  }
+  .learnMoreSection {
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .learnMoreSection {
+    margin-top: 2.25rem;
+    flex-direction: column;
+  }
+  .featuresContainer {
+    margin-bottom: 0.5rem;
+    gap: 0;
+  }
+  .title {
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .title {
+    margin-bottom: 1.5rem;
+    font-size: 24px;
+  }
+}
