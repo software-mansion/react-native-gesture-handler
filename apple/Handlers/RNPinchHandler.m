@@ -58,7 +58,6 @@
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
@@ -84,6 +83,7 @@
 
   switch (self.state) {
     case NSGestureRecognizerStateBegan:
+      [_gestureHandler setCurrentPointerType];
       [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
       break;
     case NSGestureRecognizerStateChanged:
