@@ -153,7 +153,7 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   }
 
   override fun hasCommonPointers(other: GestureHandler<*>): Boolean {
-    if(super.hasCommonPointers(other)){
+    if (super.hasCommonPointers(other)) {
       return true
     }
 
