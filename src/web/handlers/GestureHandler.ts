@@ -7,7 +7,6 @@ import {
   ResultEvent,
   PointerData,
   ResultTouchEvent,
-  WebPointerType,
   TouchEventType,
   EventTypes,
   MouseButton,
@@ -17,7 +16,6 @@ import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import { PointerTypeMapping } from '../utils';
 import { PointerType } from '../../PointerType';
 
 export default abstract class GestureHandler {
@@ -40,7 +38,7 @@ export default abstract class GestureHandler {
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
-  protected pointerType: WebPointerType = WebPointerType.NONE;
+  protected pointerType: PointerType = PointerType.MOUSE;
 
   protected delegate: GestureHandlerDelegate<unknown>;
 
@@ -283,7 +281,7 @@ export default abstract class GestureHandler {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
     this.pointerType = event.pointerType;
 
-    if (this.pointerType === WebPointerType.TOUCH) {
+    if (this.pointerType === PointerType.FINGER) {
       GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(this);
     }
 
@@ -423,8 +421,7 @@ export default abstract class GestureHandler {
         handlerTag: this.handlerTag,
         target: this.viewRef,
         oldState: newState !== oldState ? oldState : undefined,
-        pointerType:
-          PointerTypeMapping.get(this.pointerType) ?? PointerType.OTHER,
+        pointerType: this.pointerType,
       },
       timeStamp: Date.now(),
     };
@@ -811,7 +808,7 @@ export default abstract class GestureHandler {
     return this.shouldCancellWhenOutside;
   }
 
-  public getPointerType(): WebPointerType {
+  public getPointerType(): PointerType {
     return this.pointerType;
   }
 }

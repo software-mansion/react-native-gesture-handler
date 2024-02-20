@@ -125,7 +125,7 @@ export interface AdaptedEvent {
   offsetY: number;
   pointerId: number;
   eventType: EventTypes;
-  pointerType: WebPointerType;
+  pointerType: PointerType;
   time: number;
   button?: MouseButton;
   allTouches?: TouchList;
@@ -159,11 +159,4 @@ export enum TouchEventType {
   MOVE,
   UP,
   CANCELLED,
-}
-
-export enum WebPointerType {
-  NONE = 'none',
-  MOUSE = 'mouse',
-  TOUCH = 'touch',
-  PEN = 'pen',
 }
