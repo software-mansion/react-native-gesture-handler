@@ -11,10 +11,16 @@
 #if !TARGET_OS_TV
 
 #if TARGET_OS_OSX
-@interface RNBetterRotationRecognizer : NSRotationGestureRecognizer
+@interface RNBetterRotationRecognizer : NSRotationGestureRecognizer {
+  CGFloat prevRotation;
+  NSTimeInterval prevTime;
+}
+
+@property (nonatomic, readonly) CGFloat velocity;
 #else
 @interface RNBetterRotationRecognizer : UIRotationGestureRecognizer
 #endif
+
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
 @end
@@ -28,6 +34,10 @@
   if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
   }
+#if TARGET_OS_OSX
+  prevRotation = 0;
+  prevTime = 0;
+#endif
   return self;
 }
 
@@ -60,52 +70,52 @@
 }
 
 #if TARGET_OS_OSX
-- (void)touchesBeganWithEvent:(NSEvent *)event
+- (void)rotateWithEvent:(NSEvent *)event
 {
-  [super touchesBeganWithEvent:event];
-  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
-}
+  [super rotateWithEvent:event];
 
-- (void)touchesMovedWithEvent:(NSEvent *)event
-{
-  [super touchesMovedWithEvent:event];
-  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
-}
+  switch (self.state) {
+    case NSGestureRecognizerStateBegan:
+      [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
+      break;
+    case NSGestureRecognizerStateChanged:
+      [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+      break;
+    case NSGestureRecognizerStateEnded:
+      [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+      break;
+    case NSGestureRecognizerStateCancelled:
+      [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+      break;
+  }
 
-- (void)touchesEndedWithEvent:(NSEvent *)event
-{
-  [super touchesEndedWithEvent:event];
-  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
-}
-
-- (void)touchesCancelledWithEvent:(NSEvent *)event
-{
-  [super touchesCancelledWithEvent:event];
-  [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+  _velocity = (self.rotation - prevRotation) / ((event.timestamp - prevTime) * 1000);
+  prevRotation = self.rotation;
+  prevTime = event.timestamp;
 }
 #else
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
-  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
+  [self interactionsBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
-  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+  [self interactionsMoved:touches withEvent:event];
 }
 
 - (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
-  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+  [self interactionsEnded:touches withEvent:event];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
-  [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+  [self interactionsCancelled:touches withEvent:event];
 }
 #endif
 
@@ -138,7 +148,7 @@
 {
   return [RNGestureHandlerEventExtraData forRotation:recognizer.rotation
                                      withAnchorPoint:[recognizer locationInView:recognizer.view]
-                                        withVelocity:1
+                                        withVelocity:((RNBetterRotationRecognizer *)recognizer).velocity
                                  withNumberOfTouches:2];
 }
 #else

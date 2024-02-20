@@ -1,4 +1,5 @@
 import type GestureHandler from '../handlers/GestureHandler';
+import { Config } from '../interfaces';
 
 export interface MeasureResult {
   pageX: number;
@@ -20,4 +21,6 @@ export interface GestureHandlerDelegate<T> {
   onEnd(): void;
   onCancel(): void;
   onFail(): void;
+
+  destroy(config: Config): void;
 }

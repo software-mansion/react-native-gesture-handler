@@ -17,13 +17,6 @@ export class GestureHandlerWebDelegate
   private view!: HTMLElement;
   private gestureHandler!: GestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
-  private boundDisableContextMenu: (e: MouseEvent) => void;
-  private boundEnableContextMenu: (e: MouseEvent) => void;
-
-  constructor() {
-    this.boundDisableContextMenu = this.disableContextMenu.bind(this);
-    this.boundEnableContextMenu = this.enableContextMenu.bind(this);
-  }
 
   getView(): HTMLElement {
     return this.view;
@@ -104,30 +97,27 @@ export class GestureHandlerWebDelegate
     );
   }
 
-  addContextMenuListeners(config: Config): void {
+  private addContextMenuListeners(config: Config): void {
     if (this.shouldDisableContextMenu(config)) {
-      this.view.addEventListener('contextmenu', this.boundDisableContextMenu);
+      this.view.addEventListener('contextmenu', this.disableContextMenu);
     } else if (config.enableContextMenu) {
-      this.view.addEventListener('contextmenu', this.boundEnableContextMenu);
+      this.view.addEventListener('contextmenu', this.enableContextMenu);
     }
   }
 
-  public removeContextMenuListeners(config: Config): void {
+  private removeContextMenuListeners(config: Config): void {
     if (this.shouldDisableContextMenu(config)) {
-      this.view.removeEventListener(
-        'contextmenu',
-        this.boundDisableContextMenu
-      );
+      this.view.removeEventListener('contextmenu', this.disableContextMenu);
     } else if (config.enableContextMenu) {
-      this.view.removeEventListener('contextmenu', this.boundEnableContextMenu);
+      this.view.removeEventListener('contextmenu', this.enableContextMenu);
     }
   }
 
-  private disableContextMenu(e: MouseEvent): void {
+  private disableContextMenu(this: void, e: MouseEvent): void {
     e.preventDefault();
   }
 
-  private enableContextMenu(e: MouseEvent): void {
+  private enableContextMenu(this: void, e: MouseEvent): void {
     e.stopPropagation();
   }
 
@@ -156,5 +146,9 @@ export class GestureHandlerWebDelegate
 
   onFail(): void {
     this.tryResetCursor();
+  }
+
+  public destroy(config: Config): void {
+    this.removeContextMenuListeners(config);
   }
 }

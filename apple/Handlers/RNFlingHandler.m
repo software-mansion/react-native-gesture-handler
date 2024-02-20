@@ -141,9 +141,8 @@
 
   RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
 
-  CGPoint viewAbsolutePosition =
-      [recognizer.view convertPoint:recognizer.view.bounds.origin
-                             toView:[UIApplication sharedApplication].keyWindow.rootViewController.view];
+  CGPoint viewAbsolutePosition = [recognizer.view convertPoint:recognizer.view.bounds.origin
+                                                        toView:RCTKeyWindow().rootViewController.view];
   CGPoint locationInView = [recognizer getLastLocation];
 
   return [RNGestureHandlerEventExtraData

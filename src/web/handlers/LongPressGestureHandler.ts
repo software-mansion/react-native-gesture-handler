@@ -21,6 +21,10 @@ export default class LongPressGestureHandler extends GestureHandler {
   private activationTimeout: number | undefined;
 
   public init(ref: number, propsRef: React.RefObject<unknown>) {
+    if (this.config.enableContextMenu === undefined) {
+      this.config.enableContextMenu = false;
+    }
+
     super.init(ref, propsRef);
   }
 

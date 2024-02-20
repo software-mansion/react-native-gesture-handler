@@ -28,7 +28,6 @@ import {
   HandlerStateChangeEvent,
   UserSelect,
   ActiveCursor,
-  EnableContextMenu,
 } from '../handlers/gestureHandlerCommon';
 import {
   PanGestureHandler,
@@ -186,7 +185,7 @@ export interface DrawerLayoutProps {
    * @default 'false if MouseButton.RIGHT is specified'
    * Allows to enable/disable context menu.
    */
-  enableContextMenu?: EnableContextMenu;
+  enableContextMenu?: boolean;
 }
 
 export type DrawerLayoutState = {
