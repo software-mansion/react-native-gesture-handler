@@ -198,7 +198,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 }
 #else
-- (void)setCurrentPointerType
+- (void)setCurrentPointerTypeToMouse
 {
   _pointerType = RNGestureHandlerMouse;
 }

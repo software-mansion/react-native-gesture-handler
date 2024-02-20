@@ -92,7 +92,7 @@
 #if !TARGET_OS_OSX
 - (void)setCurrentPointerType:(nonnull UIEvent *)event;
 #else
-- (void)setCurrentPointerType;
+- (void)setCurrentPointerTypeToMouse;
 #endif
 
 @end

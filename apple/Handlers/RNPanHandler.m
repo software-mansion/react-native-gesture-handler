@@ -168,7 +168,7 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
-  [_gestureHandler setCurrentPointerType];
+  [_gestureHandler setCurrentPointerTypeToMouse];
   // super call was moved to interactionsBegan method to keep the
   // original order of calls
   [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];

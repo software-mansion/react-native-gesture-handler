@@ -77,7 +77,7 @@
 
   switch (self.state) {
     case NSGestureRecognizerStateBegan:
-      [_gestureHandler setCurrentPointerType];
+      [_gestureHandler setCurrentPointerTypeToMouse];
       [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
       break;
     case NSGestureRecognizerStateChanged:
