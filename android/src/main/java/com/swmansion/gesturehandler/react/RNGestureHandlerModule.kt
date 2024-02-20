@@ -365,7 +365,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override public fun createGestureHandler(
+  override fun createGestureHandler(
     handlerName: String,
     handlerTagDouble: Double,
     config: ReadableMap,
@@ -376,7 +376,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override public fun attachGestureHandler(handlerTagDouble: Double, viewTagDouble: Double, actionTypeDouble: Double) {
+  override fun attachGestureHandler(handlerTagDouble: Double, viewTagDouble: Double, actionTypeDouble: Double) {
     val handlerTag = handlerTagDouble.toInt()
     val viewTag = viewTagDouble.toInt()
     val actionType = actionTypeDouble.toInt()
@@ -403,32 +403,32 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override public fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
+  override fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
 
     updateGestureHandlerHelper(handlerTag, config)
   }
 
   @ReactMethod
-  override public fun dropGestureHandler(handlerTagDouble: Double) {
+  override fun dropGestureHandler(handlerTagDouble: Double) {
     val handlerTag = handlerTagDouble.toInt()
     interactionManager.dropRelationsForHandlerWithTag(handlerTag)
     registry.dropHandler(handlerTag)
   }
 
   @ReactMethod
-  override public fun handleSetJSResponder(viewTagDouble: Double, blockNativeResponder: Boolean) {
+  override fun handleSetJSResponder(viewTagDouble: Double, blockNativeResponder: Boolean) {
     val viewTag = viewTagDouble.toInt()
     val rootView = findRootHelperForViewAncestor(viewTag)
     rootView?.handleSetJSResponder(viewTag, blockNativeResponder)
   }
 
   @ReactMethod
-  override public fun handleClearJSResponder() {
+  override fun handleClearJSResponder() {
   }
 
   @ReactMethod
-  override public fun flushOperations() {
+  override fun flushOperations() {
   }
 
   override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
@@ -444,7 +444,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  override public fun install(): Boolean {
+  override fun install(): Boolean {
     reactApplicationContext.runOnJSQueueThread {
       try {
         SoLoader.loadLibrary("gesturehandler")
