@@ -294,7 +294,7 @@ RCT_EXPORT_METHOD(flushOperations)
   };
 }
 
-#if RN_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
