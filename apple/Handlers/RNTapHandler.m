@@ -185,25 +185,25 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
-  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
+  [self interactionsBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
-  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+  [self interactionsMoved:touches withEvent:event];
 }
 
 - (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
-  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+  [self interactionsEnded:touches withEvent:event];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
-  [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+  [self interactionsCancelled:touches withEvent:event];
 }
 
 #endif
@@ -251,6 +251,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   _maxNumberOfTouches = 0;
   self.enabled = YES;
   [super reset];
+  [_gestureHandler reset];
 }
 
 @end

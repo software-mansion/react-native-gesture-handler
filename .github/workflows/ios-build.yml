@@ -29,6 +29,10 @@ jobs:
         with:
           node-version: 18
           cache: 'yarn'
+      - name: setup-cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          version: 1.15.2
       - name: Install node dependencies
         working-directory: ${{ matrix.working-directory }}
         run: yarn
@@ -37,4 +41,4 @@ jobs:
         run: pod install
       - name: Build app
         working-directory: ${{ matrix.working-directory }}
-        run: yarn ios --simulator=\"iPhone 11\" --mode Debug
+        run: yarn ios --simulator=\"iPhone 14\" --mode Debug --verbose --terminal /bin/zsh

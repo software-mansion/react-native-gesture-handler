@@ -9,6 +9,7 @@ import TouchEventManager from './TouchEventManager';
 import { State } from '../../State';
 import { isPointerInBounds } from '../utils';
 import EventManager from './EventManager';
+import { Config, MouseButton } from '../interfaces';
 
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement>
@@ -32,6 +33,8 @@ export class GestureHandlerWebDelegate
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
 
     const config = handler.getConfig();
+
+    this.addContextMenuListeners(config);
 
     if (!config.userSelect) {
       this.view.style['webkitUserSelect'] = 'none';
@@ -82,6 +85,38 @@ export class GestureHandlerWebDelegate
     }
   }
 
+  private shouldDisableContextMenu(config: Config) {
+    return (
+      (config.enableContextMenu === undefined &&
+        this.gestureHandler.isButtonInConfig(MouseButton.RIGHT)) ||
+      config.enableContextMenu === false
+    );
+  }
+
+  private addContextMenuListeners(config: Config): void {
+    if (this.shouldDisableContextMenu(config)) {
+      this.view.addEventListener('contextmenu', this.disableContextMenu);
+    } else if (config.enableContextMenu) {
+      this.view.addEventListener('contextmenu', this.enableContextMenu);
+    }
+  }
+
+  private removeContextMenuListeners(config: Config): void {
+    if (this.shouldDisableContextMenu(config)) {
+      this.view.removeEventListener('contextmenu', this.disableContextMenu);
+    } else if (config.enableContextMenu) {
+      this.view.removeEventListener('contextmenu', this.enableContextMenu);
+    }
+  }
+
+  private disableContextMenu(this: void, e: MouseEvent): void {
+    e.preventDefault();
+  }
+
+  private enableContextMenu(this: void, e: MouseEvent): void {
+    e.stopPropagation();
+  }
+
   onBegin(): void {
     // no-op for now
   }
@@ -107,5 +142,9 @@ export class GestureHandlerWebDelegate
 
   onFail(): void {
     this.tryResetCursor();
+  }
+
+  public destroy(config: Config): void {
+    this.removeContextMenuListeners(config);
   }
 }

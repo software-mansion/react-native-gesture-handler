@@ -16,6 +16,8 @@ import { ComboWithGHScroll } from './release_tests/combo';
 import { TouchablesIndex, TouchableExample } from './release_tests/touchables';
 import Rows from './release_tests/rows';
 import Fling from './release_tests/fling';
+import MouseButtons from './release_tests/mouseButtons';
+import ContextMenu from './release_tests/contextMenu';
 import NestedTouchables from './release_tests/nestedTouchables';
 import NestedButtons from './release_tests/nestedButtons';
 import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
@@ -115,6 +117,8 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Fling', component: Fling },
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
+      { name: 'MouseButtons', component: MouseButtons },
+      { name: 'ContextMenu (web only)', component: ContextMenu },
     ],
   },
   {
@@ -157,7 +161,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={styles.root}>
+    <GestureHandlerRootView>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -216,9 +220,6 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
   sectionTitle: {
     ...Platform.select({
       ios: {

@@ -1,4 +1,9 @@
-import { AdaptedEvent, EventTypes, PointerType } from '../interfaces';
+import {
+  AdaptedEvent,
+  EventTypes,
+  MouseButton,
+  PointerType,
+} from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 
@@ -6,6 +11,17 @@ const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);
 
 export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
+  private readonly mouseButtonsMapper = new Map<number, MouseButton>();
+
+  constructor(view: HTMLElement) {
+    super(view);
+
+    this.mouseButtonsMapper.set(0, MouseButton.LEFT);
+    this.mouseButtonsMapper.set(1, MouseButton.MIDDLE);
+    this.mouseButtonsMapper.set(2, MouseButton.RIGHT);
+    this.mouseButtonsMapper.set(3, MouseButton.BUTTON_4);
+    this.mouseButtonsMapper.set(4, MouseButton.BUTTON_5);
+  }
 
   public setListeners(): void {
     this.view.addEventListener('pointerdown', (event: PointerEvent): void => {
@@ -67,8 +83,24 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       }
     });
 
+    const lastPosition: { x: number | null; y: number | null } = {
+      x: null,
+      y: null,
+    };
+
     this.view.addEventListener('pointermove', (event: PointerEvent): void => {
       if (event.pointerType === PointerType.TOUCH) {
+        return;
+      }
+
+      // Stylus triggers `pointermove` event when it detects changes in pressure. Since it is very sensitive to those changes,
+      // it constantly sends events, even though there was no change in position. To fix that we check whether
+      // pointer has actually moved and if not, we do not send event.
+      if (
+        event.pointerType === PointerType.PEN &&
+        event.x === lastPosition.x &&
+        event.y === lastPosition.y
+      ) {
         return;
       }
 
@@ -120,6 +152,9 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
           this.onPointerOutOfBounds(adaptedEvent);
         }
       }
+
+      lastPosition.x = event.x;
+      lastPosition.y = event.y;
     });
 
     this.view.addEventListener('pointercancel', (event: PointerEvent): void => {
@@ -192,7 +227,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       pointerId: event.pointerId,
       eventType: eventType,
       pointerType: event.pointerType as PointerType,
-      buttons: event.buttons,
+      button: this.mouseButtonsMapper.get(event.button),
       time: event.timeStamp,
     };
   }

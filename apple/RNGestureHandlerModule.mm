@@ -10,7 +10,6 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
-#import <React/RCTSurfacePresenter.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
@@ -26,13 +25,15 @@
 #import "RNGestureHandlerButton.h"
 #import "RNGestureHandlerStateManager.h"
 
+#import <React/RCTJSThread.h>
+
 #ifdef RCT_NEW_ARCH_ENABLED
 using namespace facebook;
 using namespace react;
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
-@interface RNGestureHandlerModule () <RCTSurfacePresenterObserver, RNGestureHandlerStateManager>
+@interface RNGestureHandlerModule () <RNGestureHandlerStateManager>
 
 @end
 #else
@@ -50,6 +51,10 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   NSMutableArray<GestureHandlerOperation> *_operations;
 }
 
+#ifdef RCT_NEW_ARCH_ENABLED
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+#endif // RCT_NEW_ARCH_ENABLED
+
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
@@ -66,9 +71,7 @@ RCT_EXPORT_MODULE()
 
   _manager = nil;
 
-#ifdef RCT_NEW_ARCH_ENABLED
-  [self.bridge.surfacePresenter removeObserver:self];
-#else
+#ifndef RCT_NEW_ARCH_ENABLED
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
 #endif // RCT_NEW_ARCH_ENABLED
 }
@@ -105,6 +108,14 @@ void decorateRuntime(jsi::Runtime &runtime)
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
+#ifdef RCT_NEW_ARCH_ENABLED
+- (void)initialize
+{
+  _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
+                                                        viewRegistry:_viewRegistry_DEPRECATED];
+  _operations = [NSMutableArray new];
+}
+#else
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
@@ -113,65 +124,62 @@ void decorateRuntime(jsi::Runtime &runtime)
                                                 eventDispatcher:bridge.eventDispatcher];
   _operations = [NSMutableArray new];
 
-#ifdef RCT_NEW_ARCH_ENABLED
-  [bridge.surfacePresenter addObserver:self];
-#else
   [bridge.uiManager.observerCoordinator addObserver:self];
-#endif // RCT_NEW_ARCH_ENABLED
 }
+#endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 {
-  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
-  auto runtime = (jsi::Runtime *)cxxBridge.runtime;
-  decorateRuntime(*runtime);
+  [self.bridge
+      dispatchBlock:^{
+        RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+        auto runtime = (jsi::Runtime *)cxxBridge.runtime;
+        decorateRuntime(*runtime);
+      }
+              queue:RCTJSThread];
+
   return @true;
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
 RCT_EXPORT_METHOD(createGestureHandler
-                  : (nonnull NSString *)handlerName tag
-                  : (nonnull NSNumber *)handlerTag config
+                  : (nonnull NSString *)handlerName handlerTag
+                  : (double)handlerTag config
                   : (NSDictionary *)config)
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager createGestureHandler:handlerName tag:handlerTag config:config];
+    [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
   }];
 }
 
-RCT_EXPORT_METHOD(attachGestureHandler
-                  : (nonnull NSNumber *)handlerTag toViewWithTag
-                  : (nonnull NSNumber *)viewTag actionType
-                  : (nonnull NSNumber *)actionType)
+RCT_EXPORT_METHOD(attachGestureHandler : (double)handlerTag newView : (double)viewTag actionType : (double)actionType)
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager attachGestureHandler:handlerTag
-                    toViewWithTag:viewTag
-                   withActionType:(RNGestureHandlerActionType)[actionType integerValue]];
+    [manager attachGestureHandler:[NSNumber numberWithDouble:handlerTag]
+                    toViewWithTag:[NSNumber numberWithDouble:viewTag]
+                   withActionType:(RNGestureHandlerActionType)[[NSNumber numberWithDouble:actionType] integerValue]];
   }];
 }
 
-RCT_EXPORT_METHOD(updateGestureHandler : (nonnull NSNumber *)handlerTag config : (NSDictionary *)config)
+RCT_EXPORT_METHOD(updateGestureHandler : (double)handlerTag newConfig : (NSDictionary *)config)
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager updateGestureHandler:handlerTag config:config];
+    [manager updateGestureHandler:[NSNumber numberWithDouble:handlerTag] config:config];
   }];
 }
 
-RCT_EXPORT_METHOD(dropGestureHandler : (nonnull NSNumber *)handlerTag)
+RCT_EXPORT_METHOD(dropGestureHandler : (double)handlerTag)
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager dropGestureHandler:handlerTag];
+    [manager dropGestureHandler:[NSNumber numberWithDouble:handlerTag]];
   }];
 }
 
-RCT_EXPORT_METHOD(handleSetJSResponder
-                  : (nonnull NSNumber *)viewTag blockNativeResponder
-                  : (nonnull NSNumber *)blockNativeResponder)
+RCT_EXPORT_METHOD(handleSetJSResponder : (double)viewTag blockNativeResponder : (BOOL)blockNativeResponder)
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager handleSetJSResponder:viewTag blockNativeResponder:blockNativeResponder];
+    [manager handleSetJSResponder:[NSNumber numberWithDouble:viewTag] blockNativeResponder:blockNativeResponder];
   }];
 }
 
@@ -194,12 +202,11 @@ RCT_EXPORT_METHOD(flushOperations)
   NSArray<GestureHandlerOperation> *operations = _operations;
   _operations = [NSMutableArray new];
 
-  [self.bridge.uiManager
-      addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        for (GestureHandlerOperation operation in operations) {
-          operation(self->_manager);
-        }
-      }];
+  [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
+    for (GestureHandlerOperation operation in operations) {
+      operation(self->_manager);
+    }
+  }];
 #endif // RCT_NEW_ARCH_ENABLED
 }
 
@@ -241,27 +248,7 @@ RCT_EXPORT_METHOD(flushOperations)
   [_operations addObject:operation];
 }
 
-#pragma mark - RCTSurfacePresenterObserver
-
-#ifdef RCT_NEW_ARCH_ENABLED
-
-- (void)didMountComponentsWithRootTag:(NSInteger)rootTag
-{
-  RCTAssertMainQueue();
-
-  if (_operations.count == 0) {
-    return;
-  }
-
-  NSArray<GestureHandlerOperation> *operations = _operations;
-  _operations = [NSMutableArray new];
-
-  for (GestureHandlerOperation operation in operations) {
-    operation(self->_manager);
-  }
-}
-
-#else
+#ifndef RCT_NEW_ARCH_ENABLED
 
 #pragma mark - RCTUIManagerObserver
 
@@ -317,5 +304,13 @@ RCT_EXPORT_METHOD(flushOperations)
     }
   };
 }
+
+#if RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeRNGestureHandlerModuleSpecJSI>(params);
+}
+#endif
 
 @end

@@ -13,7 +13,12 @@
 #if !TARGET_OS_TV
 
 #if TARGET_OS_OSX
-@interface RNBetterPinchRecognizer : NSMagnificationGestureRecognizer
+@interface RNBetterPinchRecognizer : NSMagnificationGestureRecognizer {
+  CGFloat prevMagnification;
+  NSTimeInterval prevTime;
+}
+
+@property (nonatomic, readonly) CGFloat velocity;
 #else
 @interface RNBetterPinchRecognizer : UIPinchGestureRecognizer
 #endif
@@ -31,6 +36,10 @@
   if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
   }
+#if TARGET_OS_OSX
+  prevMagnification = 0;
+  prevTime = 0;
+#endif
   return self;
 }
 
@@ -67,28 +76,28 @@
 }
 
 #if TARGET_OS_OSX
-- (void)touchesBeganWithEvent:(NSEvent *)event
+- (void)magnifyWithEvent:(NSEvent *)event
 {
-  [super touchesBeganWithEvent:event];
-  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
-}
+  [super magnifyWithEvent:event];
 
-- (void)touchesMovedWithEvent:(NSEvent *)event
-{
-  [super touchesMovedWithEvent:event];
-  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
-}
+  switch (self.state) {
+    case NSGestureRecognizerStateBegan:
+      [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
+      break;
+    case NSGestureRecognizerStateChanged:
+      [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
+      break;
+    case NSGestureRecognizerStateEnded:
+      [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
+      break;
+    case NSGestureRecognizerStateCancelled:
+      [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+      break;
+  }
 
-- (void)touchesEndedWithEvent:(NSEvent *)event
-{
-  [super touchesEndedWithEvent:event];
-  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
-}
-
-- (void)touchesCancelledWithEvent:(NSEvent *)event
-{
-  [super touchesCancelledWithEvent:event];
-  [self interactionsCancelled:[NSSet setWithObject:event] withEvent:event];
+  _velocity = (self.magnification - prevMagnification) / ((event.timestamp - prevTime) * 1000);
+  prevMagnification = self.magnification;
+  prevTime = event.timestamp;
 }
 #else
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -120,6 +129,7 @@
 {
   [_gestureHandler.pointerTracker reset];
   [super reset];
+  [_gestureHandler reset];
 }
 
 @end
@@ -144,7 +154,7 @@
 {
   return [RNGestureHandlerEventExtraData forPinch:recognizer.magnification
                                    withFocalPoint:[recognizer locationInView:recognizer.view]
-                                     withVelocity:1
+                                     withVelocity:((RNBetterPinchRecognizer *)recognizer).velocity
                               withNumberOfTouches:2];
 }
 #else

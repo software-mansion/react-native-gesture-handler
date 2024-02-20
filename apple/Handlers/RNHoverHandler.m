@@ -56,6 +56,12 @@ API_AVAILABLE(ios(13.4))
   self.enabled = NO;
 }
 
+- (void)reset
+{
+  [super reset];
+  [_gestureHandler reset];
+}
+
 - (UIPointerStyle *)pointerInteraction:(UIPointerInteraction *)interaction styleForRegion:(UIPointerRegion *)region
 {
   if (interaction.view != nil && _hoverEffect != RNGestureHandlerHoverEffectNone) {
@@ -87,7 +93,7 @@ API_AVAILABLE(ios(13.4))
 - (instancetype)initWithTag:(NSNumber *)tag
 {
 #if TARGET_OS_TV
-  RCTLogWarn(@"Hover gesture handler is not supported on tvOS");
+  RCTLogWarn(@"HoverGestureHandler is not supported on tvOS");
 #endif
 
   if ((self = [super initWithTag:tag])) {
@@ -160,7 +166,7 @@ API_AVAILABLE(ios(13.4))
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"Hover gesture handler is not supported on macOS");
+  RCTLogWarn(@"HoverGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
   }

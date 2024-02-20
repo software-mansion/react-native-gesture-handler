@@ -62,6 +62,7 @@
 {
   [_gestureHandler.pointerTracker reset];
   [super reset];
+  [_gestureHandler reset];
 
   _shouldSendBeginEvent = YES;
 }
@@ -95,7 +96,7 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"Manual gesture handler is not supported on macOS");
+  RCTLogWarn(@"ManualGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
   }

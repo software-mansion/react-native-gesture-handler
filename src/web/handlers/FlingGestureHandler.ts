@@ -5,7 +5,7 @@ import { AdaptedEvent, Config } from '../interfaces';
 import GestureHandler from './GestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 800;
-const DEFAULT_MIN_ACCEPTABLE_DELTA = 160;
+const DEFAULT_MIN_ACCEPTABLE_DELTA = 32;
 const DEFAULT_DIRECTION = Direction.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
 
@@ -83,6 +83,10 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
+    if (!this.isButtonInConfig(event.button)) {
+      return;
+    }
+
     this.tracker.addToTracker(event);
     this.keyPointer = event.pointerId;
 
@@ -150,11 +154,11 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private onUp(event: AdaptedEvent): void {
-    this.tracker.removeFromTracker(event.pointerId);
-    if (this.currentState !== State.BEGAN) {
-      return;
+    if (this.currentState === State.BEGAN) {
+      this.endFling();
     }
-    this.endFling();
+
+    this.tracker.removeFromTracker(event.pointerId);
   }
 
   public activate(force?: boolean): void {

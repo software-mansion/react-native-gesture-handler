@@ -1,6 +1,6 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "2.14.0",
+  "version": "2.15.0",
   "description": "Experimental implementation of a new declarative API for gesture handling in react-native",
   "scripts": {
     "prepare": "bob build && husky install",
@@ -77,7 +77,7 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-typescript": "^7.12.7",
     "@babel/runtime": "^7.12.5",
-    "@react-native/babel-preset": "^0.73.18",
+    "@react-native/babel-preset": "^0.73.19",
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^9.0.0",
     "@types/hammerjs": "^2.0.38",
@@ -101,7 +101,7 @@
     "prettier": "^2.7.1",
     "react": "18.2.0",
     "react-dom": "^16.12.0",
-    "react-native": "0.73.0-rc.5",
+    "react-native": "0.73.2",
     "react-native-builder-bob": "^0.17.1",
     "react-native-reanimated": "^2.3.1",
     "react-native-web": "^0.11.7",
@@ -146,7 +146,10 @@
   ],
   "codegenConfig": {
     "name": "rngesturehandler_codegen",
-    "type": "components",
-    "jsSrcsDir": "./src/specs"
+    "type": "all",
+    "jsSrcsDir": "./src/specs",
+    "android": {
+      "javaPackageName": "com.swmansion.gesturehandler"
+    }
   }
 }

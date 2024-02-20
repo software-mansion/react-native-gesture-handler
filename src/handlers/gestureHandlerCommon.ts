@@ -12,6 +12,7 @@ import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
+import { MouseButton } from '../web/interfaces';
 
 const commonProps = [
   'id',
@@ -21,6 +22,8 @@ const commonProps = [
   'cancelsTouchesInView',
   'userSelect',
   'activeCursor',
+  'mouseButton',
+  'enableContextMenu',
 ] as const;
 
 const componentInteractionProps = [
@@ -149,6 +152,8 @@ export type CommonGestureConfig = {
   hitSlop?: HitSlop;
   userSelect?: UserSelect;
   activeCursor?: ActiveCursor;
+  mouseButton?: MouseButton;
+  enableContextMenu?: boolean;
 };
 
 // Events payloads are types instead of interfaces due to TS limitation.

@@ -605,10 +605,20 @@ const applyUserSelectProp = (
   }
 };
 
+const applyEnableContextMenuProp = (
+  enableContextMenu: boolean,
+  gesture: ComposedGesture | GestureType
+): void => {
+  for (const g of gesture.toGestureArray()) {
+    g.config.enableContextMenu = enableContextMenu;
+  }
+};
+
 interface GestureDetectorProps {
   gesture: ComposedGesture | GestureType;
-  userSelect?: UserSelect;
   children?: React.ReactNode;
+  userSelect?: UserSelect;
+  enableContextMenu?: boolean;
 }
 interface GestureDetectorState {
   firstRender: boolean;
@@ -628,6 +638,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   if (props.userSelect) {
     applyUserSelectProp(props.userSelect, gestureConfig);
+  }
+
+  if (props.enableContextMenu !== undefined) {
+    applyEnableContextMenuProp(props.enableContextMenu, gestureConfig);
   }
 
   const gesture = gestureConfig.toGestureArray();
@@ -763,7 +777,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       // in case the view has changed, while config update would be handled be the `useEffect` above
       onHandlersUpdate(true);
 
-      if (isFabric()) {
+      if (isFabric() && global.isFormsStackingContext) {
         const node = getShadowNodeFromRef(ref);
         if (global.isFormsStackingContext(node) === false) {
           console.error(

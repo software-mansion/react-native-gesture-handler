@@ -1,0 +1,25 @@
+.handPan {
+  position: absolute;
+  transform: translate(90%, 120%);
+  rotate: 10deg;
+  cursor: default;
+  opacity: 1;
+  visibility: visible;
+  transition: visibility 0.3s, opacity 0.3s ease-in-out;
+  z-index: 5;
+}
+
+.panClone {
+  height: 56px;
+  width: 56px;
+  border-radius: 100%;
+  position: absolute;
+  left: -0.5rem;
+  top: -0.5rem;
+  z-index: 10;
+}
+
+.panClone:hover + .handPan {
+  opacity: 0;
+  visibility: hidden;
+}
