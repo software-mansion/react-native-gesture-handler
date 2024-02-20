@@ -71,6 +71,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
         handler.setManualActivation(config.getBoolean(KEY_MANUAL_ACTIVATION))
       }
+      if (config.hasKey("mouseButton")) {
+        handler.setMouseButton(config.getInt("mouseButton"))
+      }
     }
 
     abstract fun createEventBuilder(handler: T): GestureHandlerEventDataBuilder<T>
