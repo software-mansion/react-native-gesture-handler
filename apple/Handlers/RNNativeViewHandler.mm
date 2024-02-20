@@ -134,6 +134,7 @@
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 {
+  [self setCurrentPointerType:event];
   [self reset];
 
   if (_disallowInterruption) {
@@ -154,6 +155,7 @@
 
 - (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event
 {
+  [self setCurrentPointerType:event];
   [self sendEventsInState:RNGestureHandlerStateEnd
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
@@ -161,6 +163,7 @@
 
 - (void)handleTouchUpInside:(UIView *)sender forEvent:(UIEvent *)event
 {
+  [self setCurrentPointerType:event];
   [self sendEventsInState:RNGestureHandlerStateEnd
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withPointerType:_pointerType]];
@@ -168,6 +171,7 @@
 
 - (void)handleDragExit:(UIView *)sender forEvent:(UIEvent *)event
 {
+  [self setCurrentPointerType:event];
   // Pointer is moved outside of the view bounds, we cancel button when `shouldCancelWhenOutside` is set
   if (self.shouldCancelWhenOutside) {
     UIControl *control = (UIControl *)sender;
@@ -184,6 +188,7 @@
 
 - (void)handleDragEnter:(UIView *)sender forEvent:(UIEvent *)event
 {
+  [self setCurrentPointerType:event];
   [self sendEventsInState:RNGestureHandlerStateActive
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withPointerType:_pointerType]];
@@ -191,6 +196,7 @@
 
 - (void)handleTouchCancel:(UIView *)sender forEvent:(UIEvent *)event
 {
+  [self setCurrentPointerType:event];
   [self sendEventsInState:RNGestureHandlerStateCancelled
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
