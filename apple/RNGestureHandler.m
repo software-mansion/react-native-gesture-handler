@@ -1,5 +1,4 @@
 #import "RNGestureHandler.h"
-#import "RNGestureHandlerPointerType.h"
 #import "RNManualActivationRecognizer.h"
 
 #import "Handlers/RNNativeViewHandler.h"

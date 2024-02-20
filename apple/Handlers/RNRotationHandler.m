@@ -7,7 +7,6 @@
 //
 
 #import "RNRotationHandler.h"
-#import "RNGestureHandlerPointerType.h"
 
 #if !TARGET_OS_TV
 

@@ -9,7 +9,6 @@
 //
 
 #import "RNPinchHandler.h"
-#import "RNGestureHandlerPointerType.h"
 
 #if !TARGET_OS_TV
 
