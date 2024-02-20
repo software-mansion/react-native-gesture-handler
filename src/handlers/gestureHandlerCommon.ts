@@ -111,8 +111,6 @@ export type ActiveCursor =
   | 'zoom-in'
   | 'zoom-out';
 
-export type EnableContextMenu = boolean;
-
 //TODO(TS) events in handlers
 
 export interface GestureEvent<ExtraEventPayloadT = Record<string, unknown>> {
