@@ -51,6 +51,10 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   NSMutableArray<GestureHandlerOperation> *_operations;
 }
 
+#ifdef RCT_NEW_ARCH_ENABLED
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+#endif // RCT_NEW_ARCH_ENABLED
+
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
@@ -104,6 +108,14 @@ void decorateRuntime(jsi::Runtime &runtime)
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
+#ifdef RCT_NEW_ARCH_ENABLED
+- (void)initialize
+{
+  _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
+                                                        viewRegistry:_viewRegistry_DEPRECATED];
+  _operations = [NSMutableArray new];
+}
+#else
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
@@ -112,10 +124,9 @@ void decorateRuntime(jsi::Runtime &runtime)
                                                 eventDispatcher:bridge.eventDispatcher];
   _operations = [NSMutableArray new];
 
-#ifndef RCT_NEW_ARCH_ENABLED
   [bridge.uiManager.observerCoordinator addObserver:self];
-#endif // RCT_NEW_ARCH_ENABLED
 }
+#endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
@@ -191,12 +202,11 @@ RCT_EXPORT_METHOD(flushOperations)
   NSArray<GestureHandlerOperation> *operations = _operations;
   _operations = [NSMutableArray new];
 
-  [self.bridge.uiManager
-      addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        for (GestureHandlerOperation operation in operations) {
-          operation(self->_manager);
-        }
-      }];
+  [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
+    for (GestureHandlerOperation operation in operations) {
+      operation(self->_manager);
+    }
+  }];
 #endif // RCT_NEW_ARCH_ENABLED
 }
 
@@ -295,7 +305,7 @@ RCT_EXPORT_METHOD(flushOperations)
   };
 }
 
-#if RN_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
