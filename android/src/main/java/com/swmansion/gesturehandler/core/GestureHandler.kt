@@ -26,7 +26,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   // We need to cache pointers IDs because when gesture enters `END` state its pointers are reset.
   // Tap gesture enters `END` right after its activation, therefore calling `hasCommonPointers` for taps won't work without cache
-  private val cachedPointersID = IntArray(MAX_POINTERS_COUNT) { -1 }
+  private val cachedPointersIDs = IntArray(MAX_POINTERS_COUNT) { -1 }
   private var nextCachedPointerID = 0
 
   private val windowOffset = IntArray(2) { 0 }
@@ -111,24 +111,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     hitSlop = null
   }
 
-  fun hasCommonPointers(other: GestureHandler<*>): Boolean {
+  open fun hasCommonPointers(other: GestureHandler<*>): Boolean {
     for (i in trackedPointerIDs.indices) {
       if (trackedPointerIDs[i] != -1 && other.trackedPointerIDs[i] != -1) {
         return true
       }
     }
 
-    if (this !is TapGestureHandler) {
-      return false
-    }
-
-    for (i in 0 until nextCachedPointerID) {
-      if (cachedPointersID[i] != other.cachedPointersID[i]) {
-        return false
-      }
-    }
-
-    return true
+    return false
   }
 
   fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT =
@@ -240,7 +230,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       trackedPointerIDs[pointerId] = nextPointerID
       trackedPointersIDsCount++
 
-      cachedPointersID[nextCachedPointerID++] = nextPointerID
+      cachedPointersIDs[nextCachedPointerID++] = nextPointerID
       nextCachedPointerID %= MAX_POINTERS_COUNT
     }
   }
@@ -778,7 +768,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     Arrays.fill(trackedPointerIDs, -1)
     trackedPointersIDsCount = 0
 
-    Arrays.fill(cachedPointersID, -1)
+    Arrays.fill(cachedPointersIDs, -1)
     nextCachedPointerID = 0
 
     trackedPointersCount = 0
@@ -812,6 +802,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     get() = lastAbsolutePositionX + lastEventOffsetX - windowOffset[0]
   val lastPositionInWindowY: Float
     get() = lastAbsolutePositionY + lastEventOffsetY - windowOffset[1]
+
+  fun getTrackedPointersIDs() = trackedPointerIDs
+  fun getCachedPointersIDs() = cachedPointersIDs
+  fun getNextCachedPointerID() = nextCachedPointerID
 
   companion object {
     const val STATE_UNDETERMINED = 0

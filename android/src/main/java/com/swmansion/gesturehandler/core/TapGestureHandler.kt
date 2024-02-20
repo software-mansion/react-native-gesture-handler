@@ -152,6 +152,24 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     end()
   }
 
+  override fun hasCommonPointers(other: GestureHandler<*>): Boolean {
+    if(super.hasCommonPointers(other)){
+      return true
+    }
+
+    val cachedPointersIDs = getCachedPointersIDs()
+    val otherCachedPointerIDs = other.getCachedPointersIDs()
+    val nextCachedPointerID = getNextCachedPointerID()
+
+    for (i in 0 until nextCachedPointerID) {
+      if (cachedPointersIDs[i] != otherCachedPointerIDs[i]) {
+        return false
+      }
+    }
+
+    return true
+  }
+
   override fun onCancel() {
     handler?.removeCallbacksAndMessages(null)
   }
