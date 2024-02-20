@@ -3,6 +3,9 @@
 // on web due to the static resolution of `require` statements by webpack breaking
 // the conditional importing. Solved by making .web file.
 let findHostInstance_DEPRECATED: (ref: any) => void;
+let getInternalInstanceHandleFromPublicInstance: (ref: any) => {
+  stateNode: { node: any };
+};
 
 export function getShadowNodeFromRef(ref: any) {
   // load findHostInstance_DEPRECATED lazily because it may not be available before render
@@ -16,7 +19,19 @@ export function getShadowNodeFromRef(ref: any) {
     }
   }
 
+  // load findHostInstance_DEPRECATED lazily because it may not be available before render
+  if (getInternalInstanceHandleFromPublicInstance === undefined) {
+    try {
+      getInternalInstanceHandleFromPublicInstance =
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance').getInternalInstanceHandleFromPublicInstance;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   // @ts-ignore Fabric
-  return findHostInstance_DEPRECATED(ref)._internalInstanceHandle.stateNode
-    .node;
+  return getInternalInstanceHandleFromPublicInstance(
+    findHostInstance_DEPRECATED(ref)
+  ).stateNode.node;
 }

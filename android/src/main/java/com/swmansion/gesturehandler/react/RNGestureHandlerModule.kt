@@ -47,7 +47,7 @@ import com.swmansion.gesturehandler.react.eventbuilders.TapGestureHandlerEventDa
 // UIManagerModule.resolveRootTagFromReactTag() was deprecated and will be removed in the next RN release
 // ref: https://github.com/facebook/react-native/commit/acbf9e18ea666b07c1224a324602a41d0a66985e
 @Suppress("DEPRECATION")
-@ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
+@ReactModule(name = RNGestureHandlerModule.NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   NativeRNGestureHandlerModuleSpec(reactContext), GestureHandlerStateManager {
   private abstract class HandlerFactory<T : GestureHandler<T>> {
@@ -331,7 +331,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
-  override fun getName() = MODULE_NAME
+  override fun getName() = NAME
 
   @Suppress("UNCHECKED_CAST")
   private fun <T : GestureHandler<T>> createGestureHandlerHelper(
@@ -362,7 +362,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun createGestureHandler(
+  override public fun createGestureHandler(
     handlerName: String,
     handlerTagDouble: Double,
     config: ReadableMap,
@@ -373,7 +373,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun attachGestureHandler(handlerTagDouble: Double, viewTagDouble: Double, actionTypeDouble: Double) {
+  override public fun attachGestureHandler(handlerTagDouble: Double, viewTagDouble: Double, actionTypeDouble: Double) {
     val handlerTag = handlerTagDouble.toInt()
     val viewTag = viewTagDouble.toInt()
     val actionType = actionTypeDouble.toInt()
@@ -400,32 +400,32 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
+  override public fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
 
     updateGestureHandlerHelper(handlerTag, config)
   }
 
   @ReactMethod
-  override fun dropGestureHandler(handlerTagDouble: Double) {
+  override public fun dropGestureHandler(handlerTagDouble: Double) {
     val handlerTag = handlerTagDouble.toInt()
     interactionManager.dropRelationsForHandlerWithTag(handlerTag)
     registry.dropHandler(handlerTag)
   }
 
   @ReactMethod
-  override fun handleSetJSResponder(viewTagDouble: Double, blockNativeResponder: Boolean) {
+  override public fun handleSetJSResponder(viewTagDouble: Double, blockNativeResponder: Boolean) {
     val viewTag = viewTagDouble.toInt()
     val rootView = findRootHelperForViewAncestor(viewTag)
     rootView?.handleSetJSResponder(viewTag, blockNativeResponder)
   }
 
   @ReactMethod
-  override fun handleClearJSResponder() {
+  override public fun handleClearJSResponder() {
   }
 
   @ReactMethod
-  override fun flushOperations() {
+  override public fun flushOperations() {
   }
 
   override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
@@ -441,7 +441,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  override fun install(): Boolean {
+  override public fun install(): Boolean {
     reactApplicationContext.runOnJSQueueThread {
       try {
         SoLoader.loadLibrary("gesturehandler")
@@ -476,7 +476,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     )
   }
 
-  override fun onCatalystInstanceDestroy() {
+  override fun invalidate() {
     registry.dropAllHandlers()
     interactionManager.reset()
     synchronized(roots) {
@@ -489,7 +489,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         }
       }
     }
-    super.onCatalystInstanceDestroy()
+    super.invalidate()
   }
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
@@ -645,7 +645,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   companion object {
-    const val MODULE_NAME = "RNGestureHandlerModule"
+    const val NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
     private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
