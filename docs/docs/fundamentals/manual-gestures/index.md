@@ -16,14 +16,10 @@ import Step7 from './\_steps/step7.md';
 
 RNGH2 finally brings one of the most requested features: manual gestures and touch events. To demonstrate how to make a manual gesture we will make a simple one that tracks all pointers on the screen.
 
-<Divider />
-
 <Step title="Step 1">
     First, we need a way to store information about the pointer: whether it should be visible and its position.
     <Step1 />
 </Step>
-
-<Divider />
 
 <Step title="Step 2">
     We also need a component to mark where a pointer is. In order to accomplish that we will make a component that accepts two shared values: one holding information about the pointer using the interface we just created, the other holding a bool indicating whether the gesture has activated.
@@ -31,28 +27,20 @@ RNGH2 finally brings one of the most requested features: manual gestures and tou
     <Step2 />
 </Step>
 
-<Divider />
-
 <Step title="Step 3">
     Now we have to make a component that will handle the gesture and draw all the pointer indicators. We will store data about pointers in an array of size 12 as that is the maximum number of touches that RNGH will track, and render them inside an Animated.View.
     <Step3 />
 </Step>
-
-<Divider />
 
 <Step title="Step 4">
     We have our components set up and we can finally get to making the gesture! We will start with onTouchesDown where we need to set position of the pointers and make them visible. We can get this information from the touches property of the event. In this case we will also check how many pointers are on the screen and activate the gesture if there are at least two.
     <Step4 />
 </Step>
 
-<Divider />
-
 <Step title="Step 5">
     Next, we will handle pointer movement. In onTouchesMove we will simply update the position of moved pointers.
     <Step5 />
 </Step>
-
-<Divider />
 
 <Step title="Step 6">
     We also need to handle lifting fingers from the screen, which corresponds to onTouchesUp. Here we will just hide the pointers that were lifted and end the gesture if there are no more pointers on the screen.
@@ -60,14 +48,10 @@ RNGH2 finally brings one of the most requested features: manual gestures and tou
     <Step6 />
 </Step>
 
-<Divider />
-
 <Step title="Step 7">
     Now that our pointers are being tracked correctly and we have the state management, we can handle activation and ending of the gesture. In our case, we will simply set the active shared value either to true or false.
     <Step7 />
 </Step>
-
-<Divider />
 
 And that's all! As you can see using manual gestures is really easy but as you can imagine, manual gestures are a powerful tool that makes it possible to accomplish things that were previously impossible with RNGH.
 
