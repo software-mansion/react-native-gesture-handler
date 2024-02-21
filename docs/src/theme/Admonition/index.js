@@ -89,7 +89,9 @@ export default function Admonition(props) {
       )}>
       <div className={styles.admonitionHeading}>
         <div className={styles.admonitionIcon}>
-          {colorMode === 'light' ? <Danger /> : <DangerDark />}
+          {/* one of the icons is always hidden in css */}
+          <Danger />
+          <DangerDark />
         </div>
 
         {titleLabel}
