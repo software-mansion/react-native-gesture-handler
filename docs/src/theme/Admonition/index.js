@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { ThemeClassNames, useColorMode } from '@docusaurus/theme-common';
+import { ThemeClassNames } from '@docusaurus/theme-common';
 import Translate from '@docusaurus/Translate';
 import styles from './styles.module.css';
 
@@ -68,7 +68,6 @@ const aliases = {
 };
 
 export default function Admonition(props) {
-  const { colorMode } = useColorMode();
   const {
     children,
     type,
