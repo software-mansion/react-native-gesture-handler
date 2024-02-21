@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { ThemeClassNames, useColorMode } from '@docusaurus/theme-common';
+import { ThemeClassNames } from '@docusaurus/theme-common';
 import Translate from '@docusaurus/Translate';
 import styles from './styles.module.css';
 
@@ -68,7 +68,6 @@ const aliases = {
 };
 
 export default function Admonition(props) {
-  const { colorMode } = useColorMode();
   const {
     children,
     type,
@@ -89,7 +88,9 @@ export default function Admonition(props) {
       )}>
       <div className={styles.admonitionHeading}>
         <div className={styles.admonitionIcon}>
-          {colorMode === 'light' ? <Danger /> : <DangerDark />}
+          {/* one of the icons is always hidden in css */}
+          <Danger />
+          <DangerDark />
         </div>
 
         {titleLabel}
