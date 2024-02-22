@@ -17,10 +17,12 @@ const StartScreen = () => {
           </h2>
         </div>
         <div className={styles.lowerHeading}>
-          <HomepageButton
-            href="/react-native-gesture-handler/docs/"
-            title="Get started"
-          />
+          <div className={styles.buttonContainer}>
+            <HomepageButton
+              href="/react-native-gesture-handler/docs/"
+              title="Get started"
+            />
+          </div>
         </div>
       </div>
     </section>

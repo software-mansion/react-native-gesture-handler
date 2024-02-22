@@ -5,10 +5,13 @@
 .announcementBar {
   display: flex;
   font-size: var(--docusaurus-announcement-bar-font-size);
-  background-color: var(--ifm-color-white);
-  color: var(--ifm-color-black);
+  background-image: url(/static/img/appjs.svg), linear-gradient(#03c, #03c);
+  background-position: 0;
+  background-size: cover;
+  color: var(--swm-off-white);
   position: relative;
   overflow: hidden;
+  z-index: 10;
 }
 
 .announcementBarAdornment {
@@ -17,20 +20,6 @@
   position: absolute;
   opacity: 0.3;
   pointer-events: none;
-}
-
-.announcementBarLeftAdornment {
-  left: -125px;
-  top: -150px;
-}
-
-.announcementBarRightAdornment {
-  right: -200px;
-  top: -100px;
-}
-
-html[data-announcement-bar-initially-dismissed='true'] .announcementBar {
-  display: none;
 }
 
 .announcementBarPlaceholder {
@@ -49,6 +38,12 @@ html[data-announcement-bar-initially-dismissed='true'] .announcementBar {
   flex: 1 1 auto;
 }
 
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  padding-right: 1rem;
+}
+
 @media print {
   .announcementBar {
     display: none;
@@ -61,6 +56,14 @@ html[data-announcement-bar-initially-dismissed='true'] .announcementBar {
   }
   .announcementBarPlaceholder {
     display: none;
+  }
+}
+@media screen and (max-width: 768px) {
+  .buttonContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 1rem;
   }
 }
 @media screen and (max-width: 600px) {
