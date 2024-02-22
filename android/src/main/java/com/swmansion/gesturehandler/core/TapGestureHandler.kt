@@ -157,13 +157,13 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
       return true
     }
 
-    val cachedPointersIDs = getCachedPointersIDs()
-    val otherCachedPointerIDs = other.getCachedPointersIDs()
-    val nextCachedPointerID = getNextCachedPointerID()
-
-    for (i in 0 until nextCachedPointerID) {
-      if (cachedPointersIDs[i] != otherCachedPointerIDs[i]) {
+    for (i in cachedPointersIDs.indices) {
+      if (cachedPointersIDs[i] != other.cachedPointersIDs[i]) {
         return false
+      }
+
+      if (cachedPointersIDs[i] == -1 || other.cachedPointersIDs[i] == -1) {
+        break
       }
     }
 
