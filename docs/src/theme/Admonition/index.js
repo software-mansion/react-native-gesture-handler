@@ -2,10 +2,9 @@ import React from 'react';
 import clsx from 'clsx';
 import { ThemeClassNames } from '@docusaurus/theme-common';
 import Translate from '@docusaurus/Translate';
+import ThemedImage from '@theme/ThemedImage';
 import styles from './styles.module.css';
-
-import Danger from '/static/img/danger.svg';
-import DangerDark from '/static/img/danger-dark.svg';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 const AdmonitionConfigs = {
   note: {
@@ -77,6 +76,11 @@ export default function Admonition(props) {
   const typeConfig = getAdmonitionConfig(type);
   const titleLabel = title ?? typeConfig.label;
 
+  const dangerIcon = {
+    light: useBaseUrl('/img/danger.svg'),
+    dark: useBaseUrl('/img/danger-dark.svg'),
+  };
+
   return (
     <div
       className={clsx(
@@ -88,9 +92,7 @@ export default function Admonition(props) {
       )}>
       <div className={styles.admonitionHeading}>
         <div className={styles.admonitionIcon}>
-          {/* one of the icons is always hidden in css */}
-          <Danger />
-          <DangerDark />
+          <ThemedImage sources={dangerIcon} />
         </div>
 
         {titleLabel}
