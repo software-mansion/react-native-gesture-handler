@@ -33,7 +33,7 @@ using namespace react;
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
-@interface RNGestureHandlerModule () <RNGestureHandlerStateManager>
+@interface RNGestureHandlerModule () <RNGestureHandlerStateManager, RCTTurboModule>
 
 @end
 #else
@@ -53,6 +53,8 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
 #ifdef RCT_NEW_ARCH_ENABLED
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+@synthesize bridge = _bridge;
+@synthesize dispatchToJSThread = _dispatchToJSThread;
 #endif // RCT_NEW_ARCH_ENABLED
 
 RCT_EXPORT_MODULE()
@@ -130,13 +132,16 @@ void decorateRuntime(jsi::Runtime &runtime)
 #ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 {
-  [self.bridge
-      dispatchBlock:^{
-        RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
-        auto runtime = (jsi::Runtime *)cxxBridge.runtime;
-        decorateRuntime(*runtime);
-      }
-              queue:RCTJSThread];
+  dispatch_block_t block = ^{
+    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)[RCTBridge currentBridge];
+    auto runtime = (jsi::Runtime *)cxxBridge.runtime;
+    decorateRuntime(*runtime);
+  };
+  if (_dispatchToJSThread) {
+    _dispatchToJSThread(block);
+  } else {
+    [[RCTBridge currentBridge] dispatchBlock:block queue:RCTJSThread];
+  }
 
   return @true;
 }
