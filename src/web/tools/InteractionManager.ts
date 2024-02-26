@@ -1,4 +1,4 @@
-import GestureHandler from '../handlers/GestureHandler';
+import type GestureHandlerInterface from '../handlers/GestureHandlerInterface';
 import { Config, Handler } from '../interfaces';
 
 export default class InteractionManager {
@@ -11,7 +11,10 @@ export default class InteractionManager {
   // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
   private constructor() {}
 
-  public configureInteractions(handler: GestureHandler, config: Config) {
+  public configureInteractions(
+    handler: GestureHandlerInterface,
+    config: Config
+  ) {
     this.dropRelationsForHandlerWithTag(handler.getTag());
 
     if (config.waitFor) {
@@ -57,8 +60,8 @@ export default class InteractionManager {
   }
 
   public shouldWaitForHandlerFailure(
-    handler: GestureHandler,
-    otherHandler: GestureHandler
+    handler: GestureHandlerInterface,
+    otherHandler: GestureHandlerInterface
   ): boolean {
     const waitFor: number[] | undefined = this.waitForRelations.get(
       handler.getTag()
@@ -72,8 +75,8 @@ export default class InteractionManager {
   }
 
   public shouldRecognizeSimultaneously(
-    handler: GestureHandler,
-    otherHandler: GestureHandler
+    handler: GestureHandlerInterface,
+    otherHandler: GestureHandlerInterface
   ): boolean {
     const simultaneousHandlers: number[] | undefined =
       this.simultaneousRelations.get(handler.getTag());
@@ -86,8 +89,8 @@ export default class InteractionManager {
   }
 
   public shouldRequireHandlerToWaitForFailure(
-    handler: GestureHandler,
-    otherHandler: GestureHandler
+    handler: GestureHandlerInterface,
+    otherHandler: GestureHandlerInterface
   ): boolean {
     const waitFor: number[] | undefined = this.blocksHandlersRelations.get(
       handler.getTag()
@@ -101,8 +104,8 @@ export default class InteractionManager {
   }
 
   public shouldHandlerBeCancelledBy(
-    _handler: GestureHandler,
-    _otherHandler: GestureHandler
+    _handler: GestureHandlerInterface,
+    _otherHandler: GestureHandlerInterface
   ): boolean {
     //TODO: Implement logic
     return false;

@@ -1,14 +1,14 @@
 import { State } from '../../State';
 import { PointerType } from '../interfaces';
 
-import GestureHandler from '../handlers/GestureHandler';
+import type GestureHandlerInterface from '../handlers/GestureHandlerInterface';
 import PointerTracker from './PointerTracker';
 
 export default class GestureHandlerOrchestrator {
   private static instance: GestureHandlerOrchestrator;
 
-  private gestureHandlers: GestureHandler[] = [];
-  private awaitingHandlers: GestureHandler[] = [];
+  private gestureHandlers: GestureHandlerInterface[] = [];
+  private awaitingHandlers: GestureHandlerInterface[] = [];
 
   private handlingChangeSemaphore = 0;
   private activationIndex = 0;
@@ -23,14 +23,14 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  private cleanHandler(handler: GestureHandler): void {
+  private cleanHandler(handler: GestureHandlerInterface): void {
     handler.reset();
     handler.setActive(false);
     handler.setAwaiting(false);
     handler.setActivationIndex(Number.MAX_VALUE);
   }
 
-  public removeHandlerFromOrchestrator(handler: GestureHandler): void {
+  public removeHandlerFromOrchestrator(handler: GestureHandlerInterface): void {
     this.gestureHandlers.splice(this.gestureHandlers.indexOf(handler), 1);
     this.awaitingHandlers.splice(this.awaitingHandlers.indexOf(handler), 1);
   }
@@ -50,7 +50,7 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  private hasOtherHandlerToWaitFor(handler: GestureHandler): boolean {
+  private hasOtherHandlerToWaitFor(handler: GestureHandlerInterface): boolean {
     let hasToWait = false;
     this.gestureHandlers.forEach((otherHandler) => {
       if (
@@ -66,7 +66,7 @@ export default class GestureHandlerOrchestrator {
     return hasToWait;
   }
 
-  private tryActivate(handler: GestureHandler): void {
+  private tryActivate(handler: GestureHandlerInterface): void {
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler);
     } else if (
@@ -87,7 +87,7 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  private shouldActivate(handler: GestureHandler): boolean {
+  private shouldActivate(handler: GestureHandlerInterface): boolean {
     for (const otherHandler of this.gestureHandlers) {
       if (this.shouldHandlerBeCancelledBy(handler, otherHandler)) {
         return false;
@@ -97,7 +97,7 @@ export default class GestureHandlerOrchestrator {
     return true;
   }
 
-  private cleanupAwaitingHandlers(handler: GestureHandler): void {
+  private cleanupAwaitingHandlers(handler: GestureHandlerInterface): void {
     for (let i = 0; i < this.awaitingHandlers.length; ++i) {
       if (
         !this.awaitingHandlers[i].isAwaiting() &&
@@ -110,7 +110,7 @@ export default class GestureHandlerOrchestrator {
   }
 
   public onHandlerStateChange(
-    handler: GestureHandler,
+    handler: GestureHandlerInterface,
     newState: State,
     oldState: State,
     sendIfDisabled?: boolean
@@ -168,7 +168,7 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  private makeActive(handler: GestureHandler): void {
+  private makeActive(handler: GestureHandlerInterface): void {
     const currentState = handler.getState();
 
     handler.setActive(true);
@@ -207,7 +207,7 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  private addAwaitingHandler(handler: GestureHandler): void {
+  private addAwaitingHandler(handler: GestureHandlerInterface): void {
     let alreadyExists = false;
 
     this.awaitingHandlers.forEach((otherHandler) => {
@@ -227,7 +227,7 @@ export default class GestureHandlerOrchestrator {
     handler.setActivationIndex(this.activationIndex++);
   }
 
-  public recordHandlerIfNotPresent(handler: GestureHandler): void {
+  public recordHandlerIfNotPresent(handler: GestureHandlerInterface): void {
     let alreadyExists = false;
 
     this.gestureHandlers.forEach((otherHandler) => {
@@ -249,8 +249,8 @@ export default class GestureHandlerOrchestrator {
   }
 
   private shouldHandlerWaitForOther(
-    handler: GestureHandler,
-    otherHandler: GestureHandler
+    handler: GestureHandlerInterface,
+    otherHandler: GestureHandlerInterface
   ): boolean {
     return (
       handler !== otherHandler &&
@@ -260,8 +260,8 @@ export default class GestureHandlerOrchestrator {
   }
 
   private canRunSimultaneously(
-    gh1: GestureHandler,
-    gh2: GestureHandler
+    gh1: GestureHandlerInterface,
+    gh2: GestureHandlerInterface
   ): boolean {
     return (
       gh1 === gh2 ||
@@ -271,8 +271,8 @@ export default class GestureHandlerOrchestrator {
   }
 
   private shouldHandlerBeCancelledBy(
-    handler: GestureHandler,
-    otherHandler: GestureHandler
+    handler: GestureHandlerInterface,
+    otherHandler: GestureHandlerInterface
   ): boolean {
     if (this.canRunSimultaneously(handler, otherHandler)) {
       return false;
@@ -300,8 +300,8 @@ export default class GestureHandlerOrchestrator {
   }
 
   private checkOverlap(
-    handler: GestureHandler,
-    otherHandler: GestureHandler
+    handler: GestureHandlerInterface,
+    otherHandler: GestureHandlerInterface
   ): boolean {
     // If handlers don't have common pointers, default return value is false.
     // However, if at least on pointer overlaps with both handlers, we return true
@@ -355,8 +355,10 @@ export default class GestureHandlerOrchestrator {
   // This became a problem because handler was left at active state without any signal to end or fail
   // To handle this, when new touch event is received, we loop through active handlers and check which type of
   // pointer they're using. If there are any handler with mouse/pen as a pointer, we cancel them
-  public cancelMouseAndPenGestures(currentHandler: GestureHandler): void {
-    this.gestureHandlers.forEach((handler: GestureHandler) => {
+  public cancelMouseAndPenGestures(
+    currentHandler: GestureHandlerInterface
+  ): void {
+    this.gestureHandlers.forEach((handler: GestureHandlerInterface) => {
       if (
         handler.getPointerType() !== PointerType.MOUSE &&
         handler.getPointerType() !== PointerType.PEN

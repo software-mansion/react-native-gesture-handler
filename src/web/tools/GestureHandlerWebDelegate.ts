@@ -1,5 +1,5 @@
 import { findNodeHandle } from 'react-native';
-import type GestureHandler from '../handlers/GestureHandler';
+import type GestureHandlerInterface from '../handlers/GestureHandlerInterface';
 import {
   GestureHandlerDelegate,
   MeasureResult,
@@ -15,14 +15,14 @@ export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement>
 {
   private view!: HTMLElement;
-  private gestureHandler!: GestureHandler;
+  private gestureHandler!: GestureHandlerInterface;
   private eventManagers: EventManager<unknown>[] = [];
 
   getView(): HTMLElement {
     return this.view;
   }
 
-  init(viewRef: number, handler: GestureHandler): void {
+  init(viewRef: number, handler: GestureHandlerInterface): void {
     if (!viewRef) {
       throw new Error(
         `Cannot find HTML Element for handler ${handler.getTag()}`

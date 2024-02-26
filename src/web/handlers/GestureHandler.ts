@@ -17,8 +17,11 @@ import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandlerInterface from './GestureHandlerInterface';
 
-export default abstract class GestureHandler {
+export default abstract class GestureHandler
+  implements GestureHandlerInterface
+{
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
 
@@ -56,7 +59,7 @@ export default abstract class GestureHandler {
 
     this.currentState = State.UNDETERMINED;
 
-    this.delegate.init(viewRef, this);
+    this.delegate.init(viewRef, this as GestureHandlerInterface);
   }
 
   public attachEventManager(manager: EventManager<unknown>): void {
@@ -229,46 +232,52 @@ export default abstract class GestureHandler {
     this.activationIndex = value;
   }
 
-  public shouldWaitForHandlerFailure(handler: GestureHandler): boolean {
+  public shouldWaitForHandlerFailure(
+    handler: GestureHandlerInterface
+  ): boolean {
     if (handler === this) {
       return false;
     }
 
     return InteractionManager.getInstance().shouldWaitForHandlerFailure(
-      this,
+      this as GestureHandlerInterface,
       handler
     );
   }
 
-  public shouldRequireToWaitForFailure(handler: GestureHandler): boolean {
+  public shouldRequireToWaitForFailure(
+    handler: GestureHandlerInterface
+  ): boolean {
     if (handler === this) {
       return false;
     }
 
     return InteractionManager.getInstance().shouldRequireHandlerToWaitForFailure(
-      this,
+      this as GestureHandlerInterface,
       handler
     );
   }
 
-  public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
+  public shouldRecognizeSimultaneously(
+    handler: GestureHandlerInterface
+  ): boolean {
     if (handler === this) {
       return true;
     }
 
     return InteractionManager.getInstance().shouldRecognizeSimultaneously(
-      this,
+      this as GestureHandlerInterface,
       handler
     );
   }
 
-  public shouldBeCancelledByOther(handler: GestureHandler): boolean {
+  public shouldBeCancelledByOther(handler: GestureHandlerInterface): boolean {
     if (handler === this) {
       return false;
     }
 
     return InteractionManager.getInstance().shouldHandlerBeCancelledBy(
-      this,
+      this as GestureHandlerInterface,
       handler
     );
   }
@@ -610,7 +619,7 @@ export default abstract class GestureHandler {
         break;
       case State.UNDETERMINED:
         GestureHandlerOrchestrator.getInstance().removeHandlerFromOrchestrator(
-          this
+          this as GestureHandlerInterface
         );
         break;
       default:
