@@ -6,7 +6,7 @@ import { PointerType } from '../../PointerType';
 const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);
 const PointerTypes = {
   Touch: 'touch',
-  Pen: 'pen',
+  Stylus: 'pen',
 };
 
 export default class PointerEventManager extends EventManager<HTMLElement> {
@@ -97,7 +97,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       // it constantly sends events, even though there was no change in position. To fix that we check whether
       // pointer has actually moved and if not, we do not send event.
       if (
-        event.pointerType === PointerTypes.Pen &&
+        event.pointerType === PointerTypes.Stylus &&
         event.x === lastPosition.x &&
         event.y === lastPosition.y
       ) {
