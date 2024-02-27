@@ -775,11 +775,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     isWithinBounds = false
   }
 
-  fun setPointerType(event: MotionEvent) {
+  private fun setPointerType(event: MotionEvent) {
     val pointerIndex = event.actionIndex
 
     pointerType = when (event.getToolType(pointerIndex)) {
-      MotionEvent.TOOL_TYPE_FINGER -> POINTER_TYPE_FINGER
+      MotionEvent.TOOL_TYPE_FINGER -> POINTER_TYPE_TOUCH
       MotionEvent.TOOL_TYPE_STYLUS -> POINTER_TYPE_STYLUS
       MotionEvent.TOOL_TYPE_MOUSE -> POINTER_TYPE_MOUSE
       else -> POINTER_TYPE_OTHER
@@ -828,7 +828,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     const val ACTION_TYPE_NATIVE_ANIMATED_EVENT = 2
     const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
     const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
-    const val POINTER_TYPE_FINGER = 0
+    const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
     const val POINTER_TYPE_OTHER = 3
