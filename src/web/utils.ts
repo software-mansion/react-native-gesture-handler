@@ -11,7 +11,7 @@ export function isPointerInBounds(
 
 export const PointerTypeMapping = new Map<string, PointerType>([
   ['mouse', PointerType.MOUSE],
-  ['touch', PointerType.FINGER],
+  ['touch', PointerType.TOUCH],
   ['pen', PointerType.STYLUS],
   ['none', PointerType.OTHER],
 ]);

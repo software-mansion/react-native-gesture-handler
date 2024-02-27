@@ -13,7 +13,7 @@ import {
 } from 'react-native-gesture-handler';
 
 const Colors = {
-  Finger: '#7bbf98',
+  Touch: '#7bbf98',
   Stylus: '#e9ac79',
   Mouse: '#7c6bab',
 };
@@ -28,8 +28,8 @@ function Circle({ pointerTypeUpdater }: CircleProps) {
 
   const progress = useSharedValue(0);
 
-  const currentColor = useSharedValue(Colors.Finger);
-  const prevColor = useSharedValue(Colors.Finger);
+  const currentColor = useSharedValue(Colors.Touch);
+  const prevColor = useSharedValue(Colors.Touch);
 
   const style = useAnimatedStyle(() => {
     return {
@@ -51,9 +51,9 @@ function Circle({ pointerTypeUpdater }: CircleProps) {
       prevColor.value = currentColor.value;
 
       switch (e.pointerType) {
-        case PointerType.FINGER:
-          currentColor.value = Colors.Finger;
-          pointerTypeUpdater('Finger');
+        case PointerType.TOUCH:
+          currentColor.value = Colors.Touch;
+          pointerTypeUpdater('Touch');
           break;
         case PointerType.STYLUS:
           currentColor.value = Colors.Stylus;
@@ -84,7 +84,7 @@ function Circle({ pointerTypeUpdater }: CircleProps) {
 }
 
 export default function Example() {
-  const [pointerType, setPointerType] = useState('Finger');
+  const [pointerType, setPointerType] = useState('Touch');
 
   return (
     <View style={styles.container}>

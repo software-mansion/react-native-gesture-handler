@@ -151,7 +151,7 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
       offsetY: clientY - rect.top,
       pointerId: event.changedTouches[index].identifier,
       eventType: eventType,
-      pointerType: PointerType.FINGER,
+      pointerType: PointerType.TOUCH,
       time: event.timeStamp,
       allTouches: event.touches,
       changedTouches: event.changedTouches,

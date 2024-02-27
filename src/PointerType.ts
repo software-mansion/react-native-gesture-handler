@@ -1,5 +1,5 @@
 export enum PointerType {
-  FINGER,
+  TOUCH,
   STYLUS,
   MOUSE,
   OTHER,

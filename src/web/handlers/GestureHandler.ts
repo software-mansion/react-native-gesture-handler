@@ -281,7 +281,7 @@ export default abstract class GestureHandler {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
     this.pointerType = event.pointerType;
 
-    if (this.pointerType === PointerType.FINGER) {
+    if (this.pointerType === PointerType.TOUCH) {
       GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(this);
     }
 
