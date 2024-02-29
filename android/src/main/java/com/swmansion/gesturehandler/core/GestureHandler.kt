@@ -23,7 +23,6 @@ import java.util.*
 open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
   private val trackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
   private var trackedPointersIDsCount = 0
-
   private val windowOffset = IntArray(2) { 0 }
   var tag = 0
   var view: View? = null
@@ -108,13 +107,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     hitSlop = null
   }
 
-  open fun hasCommonPointers(other: GestureHandler<*>): Boolean {
+  fun hasCommonPointers(other: GestureHandler<*>): Boolean {
     for (i in trackedPointerIDs.indices) {
       if (trackedPointerIDs[i] != -1 && other.trackedPointerIDs[i] != -1) {
         return true
       }
     }
-
     return false
   }
 
@@ -222,9 +220,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   fun startTrackingPointer(pointerId: Int) {
     if (trackedPointerIDs[pointerId] == -1) {
-      val nextPointerID = findNextLocalPointerId()
-
-      trackedPointerIDs[pointerId] = nextPointerID
+      trackedPointerIDs[pointerId] = findNextLocalPointerId()
       trackedPointersIDsCount++
     }
   }
