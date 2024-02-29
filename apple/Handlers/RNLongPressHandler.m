@@ -59,6 +59,7 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
@@ -181,7 +182,8 @@
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                                  withNumberOfTouches:recognizer.numberOfTouches
-                                        withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]];
+                                        withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]
+                                     withPointerType:_pointerType];
 }
 @end
 

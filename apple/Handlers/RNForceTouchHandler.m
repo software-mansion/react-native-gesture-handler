@@ -40,6 +40,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   if (_firstTouch) {
     // ignore rest of fingers
     return;
@@ -171,7 +172,8 @@ static const BOOL defaultFeedbackOnActivation = NO;
   return [RNGestureHandlerEventExtraData forForce:recognizer.force
                                       forPosition:[recognizer locationInView:recognizer.view]
                              withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-                              withNumberOfTouches:recognizer.numberOfTouches];
+                              withNumberOfTouches:recognizer.numberOfTouches
+                                  withPointerType:_pointerType];
 }
 
 @end

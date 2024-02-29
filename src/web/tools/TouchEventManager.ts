@@ -1,11 +1,7 @@
-import {
-  AdaptedEvent,
-  EventTypes,
-  PointerType,
-  TouchEventType,
-} from '../interfaces';
+import { AdaptedEvent, EventTypes, TouchEventType } from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
+import { PointerType } from '../../PointerType';
 
 export default class TouchEventManager extends EventManager<HTMLElement> {
   public setListeners(): void {
