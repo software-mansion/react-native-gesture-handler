@@ -8,6 +8,7 @@ import {
   GestureHandlerRootView,
   PanGestureHandler,
   LongPressGestureHandler,
+  LongPressGestureHandlerGestureEvent,
   RotationGestureHandler,
   Gesture,
   GestureDetector,
@@ -17,7 +18,6 @@ import {
 } from '../index';
 import { useAnimatedGestureHandler } from 'react-native-reanimated';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
-import { LongPressGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 
 beforeEach(cleanup);
 
