@@ -1,3 +1,5 @@
+import { PointerType } from '../PointerType';
+
 export function isPointerInBounds(
   view: HTMLElement,
   { x, y }: { x: number; y: number }
@@ -6,3 +8,10 @@ export function isPointerInBounds(
 
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
+
+export const PointerTypeMapping = new Map<string, PointerType>([
+  ['mouse', PointerType.MOUSE],
+  ['touch', PointerType.TOUCH],
+  ['pen', PointerType.STYLUS],
+  ['none', PointerType.OTHER],
+]);

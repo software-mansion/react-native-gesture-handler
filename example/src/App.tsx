@@ -20,6 +20,7 @@ import MouseButtons from './release_tests/mouseButtons';
 import ContextMenu from './release_tests/contextMenu';
 import NestedTouchables from './release_tests/nestedTouchables';
 import NestedButtons from './release_tests/nestedButtons';
+import PointerType from './release_tests/pointerType';
 import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
 import { PinchableBox } from './recipes/scaleAndRotate';
 import PanAndScroll from './recipes/panAndScroll';
@@ -119,6 +120,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
       { name: 'MouseButtons', component: MouseButtons },
       { name: 'ContextMenu (web only)', component: ContextMenu },
+      { name: 'PointerType', component: PointerType },
     ],
   },
   {

@@ -147,6 +147,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 #if TARGET_OS_OSX
 - (void)mouseDown:(NSEvent *)event
 {
+  [_gestureHandler setCurrentPointerTypeToMouse];
   [super mouseDown:event];
   [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }
@@ -184,6 +185,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   [super touchesBegan:touches withEvent:event];
   [self interactionsBegan:touches withEvent:event];
 }

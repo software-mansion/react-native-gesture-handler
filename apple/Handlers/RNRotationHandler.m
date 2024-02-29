@@ -76,6 +76,7 @@
 
   switch (self.state) {
     case NSGestureRecognizerStateBegan:
+      [_gestureHandler setCurrentPointerTypeToMouse];
       [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
       break;
     case NSGestureRecognizerStateChanged:
@@ -96,6 +97,7 @@
 #else
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   [super touchesBegan:touches withEvent:event];
   [self interactionsBegan:touches withEvent:event];
 }
@@ -149,7 +151,8 @@
   return [RNGestureHandlerEventExtraData forRotation:recognizer.rotation
                                      withAnchorPoint:[recognizer locationInView:recognizer.view]
                                         withVelocity:((RNBetterRotationRecognizer *)recognizer).velocity
-                                 withNumberOfTouches:2];
+                                 withNumberOfTouches:2
+                                     withPointerType:RNGestureHandlerMouse];
 }
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIRotationGestureRecognizer *)recognizer
@@ -157,7 +160,8 @@
   return [RNGestureHandlerEventExtraData forRotation:recognizer.rotation
                                      withAnchorPoint:[recognizer locationInView:recognizer.view]
                                         withVelocity:recognizer.velocity
-                                 withNumberOfTouches:recognizer.numberOfTouches];
+                                 withNumberOfTouches:recognizer.numberOfTouches
+                                     withPointerType:_pointerType];
 }
 #endif
 #endif // !TARGET_OS_TV

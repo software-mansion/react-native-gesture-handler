@@ -155,7 +155,8 @@ API_AVAILABLE(ios(13.4))
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
-                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window]];
+                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+                                     withPointerType:UITouchTypePencil];
 }
 
 @end
