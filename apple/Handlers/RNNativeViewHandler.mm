@@ -185,7 +185,6 @@
 
 - (void)handleDragEnter:(UIView *)sender forEvent:(UIEvent *)event
 {
-  [self setCurrentPointerType:event];
   [self sendEventsInState:RNGestureHandlerStateActive
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withPointerType:_pointerType]];
