@@ -28,7 +28,7 @@ class GestureHandlerOrchestrator(
   // To avoid `ConcurrentModificationException` we iterate through copy. There is one more problem though - if handler was
   // removed from `awaitingHandlers`, it was still present in copy of original list. This hashset helps us identify which handlers
   // are really inside `awaitingHandlers`.
-  // `contains` method on HashSet has O(1) complexity, so calling it inside for loop won't result in O(n^2) (in opposite to ArrayList)
+  // `contains` method on HashSet has O(1) complexity, so calling it inside for loop won't result in O(n^2) (contrary to ArrayList)
   private val awaitingHandlersTags = HashSet<Int>()
 
   private var isHandlingTouch = false
