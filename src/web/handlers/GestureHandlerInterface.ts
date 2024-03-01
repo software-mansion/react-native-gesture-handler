@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { PointerType } from '../../PointerType';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { State } from '../../State';
