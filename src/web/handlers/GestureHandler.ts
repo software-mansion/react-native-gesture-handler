@@ -10,7 +10,6 @@ import {
   PointerType,
   TouchEventType,
   EventTypes,
-  MouseButton,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
@@ -18,6 +17,7 @@ import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandlerInterface from './GestureHandlerInterface';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
 
 export default abstract class GestureHandler
   implements GestureHandlerInterface
@@ -43,9 +43,11 @@ export default abstract class GestureHandler
   protected shouldResetProgress = false;
   protected pointerType: PointerType = PointerType.NONE;
 
-  protected delegate: GestureHandlerDelegate<unknown>;
+  protected delegate: GestureHandlerDelegate<unknown, GestureHandlerInterface>;
 
-  public constructor(delegate: GestureHandlerDelegate<unknown>) {
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, GestureHandlerInterface>
+  ) {
     this.delegate = delegate;
   }
 
@@ -780,7 +782,10 @@ export default abstract class GestureHandler
     return this.config;
   }
 
-  public getDelegate(): GestureHandlerDelegate<unknown> {
+  public getDelegate(): GestureHandlerDelegate<
+    unknown,
+    GestureHandlerInterface
+  > {
     return this.delegate;
   }
 

@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { State } from '../../State';
-import { Config, MouseButton, PointerType } from '../interfaces';
+import { Config, PointerType } from '../interfaces';
 import EventManager from '../tools/EventManager';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import PointerTracker from '../tools/PointerTracker';
 
 export default interface GestureHandlerInterface {
   getTag: () => number;
   getState: () => State;
   getConfig: () => Config;
-  getDelegate: () => GestureHandlerDelegate<unknown>;
+  getDelegate: () => GestureHandlerDelegate<unknown, this>;
 
   attachEventManager: (manager: EventManager<unknown>) => void;
 

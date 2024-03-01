@@ -9,10 +9,11 @@ import TouchEventManager from './TouchEventManager';
 import { State } from '../../State';
 import { isPointerInBounds } from '../utils';
 import EventManager from './EventManager';
-import { Config, MouseButton } from '../interfaces';
+import { Config } from '../interfaces';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
 
 export class GestureHandlerWebDelegate
-  implements GestureHandlerDelegate<HTMLElement>
+  implements GestureHandlerDelegate<HTMLElement, GestureHandlerInterface>
 {
   private view!: HTMLElement;
   private gestureHandler!: GestureHandlerInterface;

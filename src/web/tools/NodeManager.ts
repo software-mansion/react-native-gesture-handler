@@ -1,5 +1,5 @@
 import { ValueOf } from '../../typeUtils';
-import { Gestures } from '../../RNGestureHandlerModule.web';
+import { Gestures } from '../Gestures';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default abstract class NodeManager {

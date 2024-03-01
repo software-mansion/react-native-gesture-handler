@@ -1,4 +1,3 @@
-import type GestureHandlerInterface from '../handlers/GestureHandlerInterface';
 import { Config } from '../interfaces';
 
 export interface MeasureResult {
@@ -8,10 +7,10 @@ export interface MeasureResult {
   height: number;
 }
 
-export interface GestureHandlerDelegate<T> {
+export interface GestureHandlerDelegate<T, S> {
   getView(): T;
 
-  init(viewRef: number, handler: GestureHandlerInterface): void;
+  init(viewRef: number, handler: S): void;
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean;
   measureView(): MeasureResult;
   reset(): void;

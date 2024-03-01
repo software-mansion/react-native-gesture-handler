@@ -1,11 +1,7 @@
-import {
-  AdaptedEvent,
-  EventTypes,
-  MouseButton,
-  PointerType,
-} from '../interfaces';
+import { AdaptedEvent, EventTypes, PointerType } from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
 
 const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);
 

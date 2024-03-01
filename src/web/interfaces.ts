@@ -1,4 +1,8 @@
-import { UserSelect, ActiveCursor } from '../handlers/gestureHandlerCommon';
+import {
+  UserSelect,
+  ActiveCursor,
+  MouseButton,
+} from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
 import { State } from '../State';
 
@@ -129,15 +133,6 @@ export interface AdaptedEvent {
   allTouches?: TouchList;
   changedTouches?: TouchList;
   touchEventType?: TouchEventType;
-}
-
-export enum MouseButton {
-  LEFT = 1,
-  RIGHT = 2,
-  MIDDLE = 4,
-  BUTTON_4 = 8,
-  BUTTON_5 = 16,
-  ALL = 31,
 }
 
 export enum EventTypes {
