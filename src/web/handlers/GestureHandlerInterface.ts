@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import { PointerType } from '../../PointerType';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { State } from '../../State';
-import { Config, PointerType } from '../interfaces';
+import { Config } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import PointerTracker from '../tools/PointerTracker';

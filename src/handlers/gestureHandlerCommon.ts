@@ -12,7 +12,7 @@ import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
-// import { MouseButton } from '../web/interfaces';
+import { PointerType } from '../PointerType';
 
 const commonProps = [
   'id',
@@ -54,6 +54,7 @@ export interface GestureEventPayload {
   handlerTag: number;
   numberOfPointers: number;
   state: ValueOf<typeof State>;
+  pointerType: PointerType;
 }
 export interface HandlerStateChangeEventPayload extends GestureEventPayload {
   oldState: ValueOf<typeof State>;

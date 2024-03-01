@@ -1,5 +1,5 @@
+import { PointerType } from '../../PointerType';
 import { State } from '../../State';
-import { PointerType } from '../interfaces';
 
 import type GestureHandlerInterface from '../handlers/GestureHandlerInterface';
 import PointerTracker from './PointerTracker';
@@ -361,7 +361,7 @@ export default class GestureHandlerOrchestrator {
     this.gestureHandlers.forEach((handler: GestureHandlerInterface) => {
       if (
         handler.getPointerType() !== PointerType.MOUSE &&
-        handler.getPointerType() !== PointerType.PEN
+        handler.getPointerType() !== PointerType.STYLUS
       ) {
         return;
       }

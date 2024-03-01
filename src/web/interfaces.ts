@@ -5,6 +5,7 @@ import {
 } from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
 import { State } from '../State';
+import { PointerType } from '../PointerType';
 
 export interface HitSlop {
   left?: number;
@@ -83,6 +84,7 @@ interface NativeEvent extends Record<string, NativeEventArgs> {
   handlerTag: number;
   target: number;
   oldState?: State;
+  pointerType: PointerType;
 }
 
 export interface PointerData {
@@ -152,11 +154,4 @@ export enum TouchEventType {
   MOVE,
   UP,
   CANCELLED,
-}
-
-export enum PointerType {
-  NONE = 'none',
-  MOUSE = 'mouse',
-  TOUCH = 'touch',
-  PEN = 'pen',
 }

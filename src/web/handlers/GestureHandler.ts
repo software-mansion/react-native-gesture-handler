@@ -7,7 +7,6 @@ import {
   ResultEvent,
   PointerData,
   ResultTouchEvent,
-  PointerType,
   TouchEventType,
   EventTypes,
 } from '../interfaces';
@@ -18,6 +17,7 @@ import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandlerInterface from './GestureHandlerInterface';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import { PointerType } from '../../PointerType';
 
 export default abstract class GestureHandler
   implements GestureHandlerInterface
@@ -41,7 +41,7 @@ export default abstract class GestureHandler
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
-  protected pointerType: PointerType = PointerType.NONE;
+  protected pointerType: PointerType = PointerType.MOUSE;
 
   protected delegate: GestureHandlerDelegate<unknown, GestureHandlerInterface>;
 
@@ -432,6 +432,7 @@ export default abstract class GestureHandler
         handlerTag: this.handlerTag,
         target: this.viewRef,
         oldState: newState !== oldState ? oldState : undefined,
+        pointerType: this.pointerType,
       },
       timeStamp: Date.now(),
     };
