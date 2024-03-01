@@ -47,7 +47,7 @@ import com.swmansion.gesturehandler.react.eventbuilders.TapGestureHandlerEventDa
 // UIManagerModule.resolveRootTagFromReactTag() was deprecated and will be removed in the next RN release
 // ref: https://github.com/facebook/react-native/commit/acbf9e18ea666b07c1224a324602a41d0a66985e
 @Suppress("DEPRECATION")
-@ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
+@ReactModule(name = RNGestureHandlerModule.NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   NativeRNGestureHandlerModuleSpec(reactContext), GestureHandlerStateManager {
   private abstract class HandlerFactory<T : GestureHandler<T>> {
@@ -334,7 +334,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
-  override fun getName() = MODULE_NAME
+  override fun getName() = NAME
 
   @Suppress("UNCHECKED_CAST")
   private fun <T : GestureHandler<T>> createGestureHandlerHelper(
@@ -479,7 +479,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     )
   }
 
-  override fun onCatalystInstanceDestroy() {
+  override fun invalidate() {
     registry.dropAllHandlers()
     interactionManager.reset()
     synchronized(roots) {
@@ -492,7 +492,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         }
       }
     }
-    super.onCatalystInstanceDestroy()
+    super.invalidate()
   }
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
@@ -648,7 +648,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   companion object {
-    const val MODULE_NAME = "RNGestureHandlerModule"
+    const val NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
     private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
