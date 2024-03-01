@@ -5,6 +5,8 @@ import {
   DeviceEventEmitter,
   EmitterSubscription,
 } from 'react-native';
+// @ts-ignore - its taken straight from RN
+import { customDirectEventTypes } from 'react-native/Libraries/Renderer/shims/ReactNativeViewConfigRegistry';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
@@ -32,6 +34,10 @@ import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
 
 const UIManagerAny = UIManager as any;
+
+customDirectEventTypes.topGestureHandlerEvent = {
+  registrationName: 'onGestureHandlerEvent',
+};
 
 const customGHEventsConfigFabricAndroid = {
   topOnGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
