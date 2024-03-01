@@ -48,6 +48,8 @@ export class GestureHandlerWebDelegate
       this.view.style['userSelect'] = config.userSelect;
     }
 
+    this.view.style['touchAction'] = config.touchAction ?? 'none';
+
     this.eventManagers.push(new PointerEventManager(this.view));
     this.eventManagers.push(new TouchEventManager(this.view));
 
