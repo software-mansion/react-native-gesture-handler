@@ -8,7 +8,6 @@ import {
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
 import {
   handlerIDToTag,
@@ -313,9 +312,17 @@ export default function createHandler<
       this.viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
+        type AttachGestureHandlerWeb = (
+          handlerTag: number,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          newView: any,
+          _actionType: ActionType,
+          propsRef: React.RefObject<unknown>
+        ) => void;
+
         // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
         (
-          RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
+          RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb
         )(
           this.handlerTag,
           newViewTag,
