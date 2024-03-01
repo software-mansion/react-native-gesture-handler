@@ -5,7 +5,7 @@ import {
   DeviceEventEmitter,
   EmitterSubscription,
 } from 'react-native';
-import customDirectEventTypes from './customDirectEventTypes';
+import { customDirectEventTypes } from './customDirectEventTypes';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
