@@ -227,23 +227,14 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     private fun updateBackgroundColor(backgroundColor: Int, borderRadius: Float, selectable: Drawable?) {
       val colorDrawable = PaintDrawable(backgroundColor)
 
-      if (borderRadius != 0f) {
+      val radii = floatArrayOf(borderTopLeftRadius, borderTopRightRadius, borderBottomRightRadius, borderBottomLeftRadius)
+        .map { it.takeIf { it != 0f } ?: borderRadius }
+        .flatMap { listOf(it, it) }
+        .toFloatArray()
+      if (radii.any { it != 0f }) {
+        colorDrawable.setCornerRadii(radii)
+      } else if (borderRadius != 0f) {
         colorDrawable.setCornerRadius(borderRadius)
-      }
-
-      if (borderTopLeftRadius != 0f || borderTopRightRadius != 0f || borderBottomLeftRadius != 0f || borderBottomRightRadius != 0f) {
-        colorDrawable.setCornerRadii(
-          floatArrayOf(
-            borderTopLeftRadius,
-            borderTopLeftRadius,
-            borderTopRightRadius,
-            borderTopRightRadius,
-            borderBottomRightRadius,
-            borderBottomRightRadius,
-            borderBottomLeftRadius,
-            borderBottomLeftRadius
-          )
-        )
       }
 
       val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable) else arrayOf(colorDrawable))

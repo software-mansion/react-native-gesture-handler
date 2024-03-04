@@ -26,6 +26,30 @@ export default function RectButtonBorders() {
         onPress={() => alert(`Pressed borderTopRadius!`)}>
         <Text>border Bottom Radius</Text>
       </RectButton>
+      <RectButton
+        style={[
+          styles.button,
+          {
+            borderRadius: 8,
+            borderTopLeftRadius: 32,
+            borderTopRightRadius: 32,
+          },
+        ]}
+        onPress={() => alert(`Pressed borderTopRadius!`)}>
+        <Text>borderRadius and Top Radius</Text>
+      </RectButton>
+      <RectButton
+        style={[
+          styles.button,
+          {
+            borderRadius: 8,
+            borderBottomLeftRadius: 32,
+            borderBottomRightRadius: 32,
+          },
+        ]}
+        onPress={() => alert(`Pressed borderTopRadius!`)}>
+        <Text>borderRadius and Bottom Radius</Text>
+      </RectButton>
     </View>
   );
 }
