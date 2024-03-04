@@ -42,6 +42,10 @@ Starting with Reanimated 2.3.0 Gesture Handler will provide a [StateManager](/do
 
 This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
 
+### `enableContextMenu(value: boolean)` (**web only**)
+
+Specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false`.
+
 ## Remarks
 
 - Gesture Detector will use first native view in its subtree to recognize gestures, however if this view is used only to group its children it may get automatically [collapsed](https://reactnative.dev/docs/view#collapsable-android). Consider this example:
@@ -58,7 +62,9 @@ This parameter allows to specify which `userSelect` property should be applied t
       <View>
         <GestureDetector gesture={pan}>
           <View>
-            <GestureDetector gesture={pan}> {/* Don't do this! */}
+            <GestureDetector gesture={pan}>
+              {' '}
+              {/* Don't do this! */}
               <View />
             </GestureDetector>
           </View>
