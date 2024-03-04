@@ -61,7 +61,7 @@ Allows users to choose which mouse button should handler respond to. The enum `M
 - `BUTTON_5`
 - `ALL`
 
-Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is `MouseButton.LEFT`.
+Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
 <BaseEventConfig />
 
