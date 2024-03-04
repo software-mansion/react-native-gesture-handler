@@ -62,9 +62,7 @@ Specifies whether context menu should be enabled after clicking on underlying vi
       <View>
         <GestureDetector gesture={pan}>
           <View>
-            <GestureDetector gesture={pan}>
-              {' '}
-              {/* Don't do this! */}
+            <GestureDetector gesture={pan}> {/* Don't do this! */}
               <View />
             </GestureDetector>
           </View>
