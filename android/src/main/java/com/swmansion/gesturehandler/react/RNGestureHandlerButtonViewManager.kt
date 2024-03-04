@@ -65,6 +65,26 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.borderRadius = borderRadius
   }
 
+  @ReactProp(name = "borderTopLeftRadius")
+  override fun setBorderTopLeftRadius(view: ButtonViewGroup, borderTopLeftRadius: Float) {
+    view.borderTopLeftRadius = borderTopLeftRadius
+  }
+
+  @ReactProp(name = "borderTopRightRadius")
+  override fun setBorderTopRightRadius(view: ButtonViewGroup, borderTopRightRadius: Float) {
+    view.borderTopRightRadius = borderTopRightRadius
+  }
+
+  @ReactProp(name = "borderBottomLeftRadius")
+  override fun setBorderBottomLeftRadius(view: ButtonViewGroup, borderBottomLeftRadius: Float) {
+    view.borderBottomLeftRadius = borderBottomLeftRadius
+  }
+
+  @ReactProp(name = "borderBottomRightRadius")
+  override fun setBorderBottomRightRadius(view: ButtonViewGroup, borderBottomRightRadius: Float) {
+    view.borderBottomRightRadius = borderBottomRightRadius
+  }
+
   @ReactProp(name = "rippleColor")
   override fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
     view.rippleColor = rippleColor
@@ -112,6 +132,22 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
     var useBorderlessDrawable = false
     var borderRadius = 0f
+      set(radius) = withBackgroundUpdate {
+        field = radius * resources.displayMetrics.density
+      }
+    var borderTopLeftRadius = 0f
+      set(radius) = withBackgroundUpdate {
+        field = radius * resources.displayMetrics.density
+      }
+    var borderTopRightRadius = 0f
+      set(radius) = withBackgroundUpdate {
+        field = radius * resources.displayMetrics.density
+      }
+    var borderBottomLeftRadius = 0f
+      set(radius) = withBackgroundUpdate {
+        field = radius * resources.displayMetrics.density
+      }
+    var borderBottomRightRadius = 0f
       set(radius) = withBackgroundUpdate {
         field = radius * resources.displayMetrics.density
       }
@@ -193,6 +229,21 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
       if (borderRadius != 0f) {
         colorDrawable.setCornerRadius(borderRadius)
+      }
+
+      if (borderTopLeftRadius != 0f || borderTopRightRadius != 0f || borderBottomLeftRadius != 0f || borderBottomRightRadius != 0f) {
+        colorDrawable.setCornerRadii(
+          floatArrayOf(
+            borderTopLeftRadius,
+            borderTopLeftRadius,
+            borderTopRightRadius,
+            borderTopRightRadius,
+            borderBottomRightRadius,
+            borderBottomRightRadius,
+            borderBottomLeftRadius,
+            borderBottomLeftRadius
+          )
+        )
       }
 
       val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable) else arrayOf(colorDrawable))
