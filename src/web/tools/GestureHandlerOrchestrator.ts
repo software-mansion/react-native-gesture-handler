@@ -66,7 +66,20 @@ export default class GestureHandlerOrchestrator {
     return hasToWait;
   }
 
+  private shouldBeCancelledByFinishedHandler(handler: GestureHandler): boolean {
+    return this.gestureHandlers.some(
+      (otherHandler) =>
+        this.shouldHandlerWaitForOther(handler, otherHandler) &&
+        otherHandler.getState() === State.END
+    );
+  }
+
   private tryActivate(handler: GestureHandler): void {
+    if (this.shouldBeCancelledByFinishedHandler(handler)) {
+      handler.cancel();
+      return;
+    }
+
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler);
     } else if (
