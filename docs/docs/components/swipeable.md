@@ -141,6 +141,19 @@ style object for the children container (Animated.View), for example to apply `f
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
 
+### `mouseButton(value: MouseButton)` (Web | Android)
+
+Allows users to choose which mouse button should handler respond to. The enum `MouseButton` consists of the following predefined fields:
+
+- `LEFT`
+- `RIGHT`
+- `MIDDLE`
+- `BUTTON_4`
+- `BUTTON_5`
+- `ALL`
+
+Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
+
 ## Methods
 
 Using reference to `Swipeable` it's possible to trigger some actions on it
