@@ -541,6 +541,7 @@ export default class Swipeable extends Component<
     return (
       <PanGestureHandler
         activeOffsetX={[-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]}
+        touchAction="pan-y"
         {...this.props}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}>
@@ -551,6 +552,7 @@ export default class Swipeable extends Component<
           {right}
           <TapGestureHandler
             enabled={rowState !== 0}
+            touchAction="pan-y"
             onHandlerStateChange={this.onTapHandlerStateChange}>
             <Animated.View
               pointerEvents={rowState === 0 ? 'auto' : 'box-only'}

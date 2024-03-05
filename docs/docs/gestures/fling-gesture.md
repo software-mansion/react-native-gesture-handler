@@ -62,7 +62,7 @@ fling.direction(Directions.DOWN);
 
 Determine exact number of points required to handle the fling gesture.
 
-### `mouseButton(value: MouseButton)` (Web | Android)
+### `mouseButton(value: MouseButton)` (Web & Android only)
 
 Allows users to choose which mouse button should handler respond to. The enum `MouseButton` consists of the following predefined fields:
 
