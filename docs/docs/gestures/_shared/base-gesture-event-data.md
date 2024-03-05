@@ -7,3 +7,11 @@ Current [state](/docs/fundamentals/states-events) of the handler. Expressed as o
 ### `numberOfPointers`
 
 Represents the number of pointers (fingers) currently placed on the screen.
+
+### `pointerType`
+Indicates the type of pointer device in use. This value is represented by the `PointerType` enum, which includes the following fields:
+
+- `TOUCH` - represents finger 
+- `STYLUS` - represents stylus or digital pen
+- `MOUSE` - represents computer mouse
+- `OTHER` - represents unknown device type that is not relevant
