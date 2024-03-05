@@ -1,10 +1,10 @@
-import { PointerType } from '../../PointerType';
-import { MouseButton } from '../../handlers/gestureHandlerCommon';
-import { State } from '../../State';
-import { Config } from '../interfaces';
-import EventManager from '../tools/EventManager';
+import type { PointerType } from '../../PointerType';
+import type { MouseButton } from '../../handlers/gestureHandlerCommon';
+import type { State } from '../../State';
+import type { Config } from '../interfaces';
+import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import PointerTracker from '../tools/PointerTracker';
+import type PointerTracker from '../tools/PointerTracker';
 
 export default interface GestureHandlerInterface {
   getTag: () => number;
@@ -24,6 +24,7 @@ export default interface GestureHandlerInterface {
 
   begin: () => void;
   activate: () => void;
+  end: () => void;
   fail: () => void;
   cancel: () => void;
 
@@ -42,4 +43,6 @@ export default interface GestureHandlerInterface {
   shouldBeCancelledByOther: (handler: GestureHandlerInterface) => boolean;
 
   sendEvent: (newState: State, oldState: State) => void;
+
+  updateGestureConfig: (config: Config) => void;
 }

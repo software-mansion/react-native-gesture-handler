@@ -1,10 +1,9 @@
 import React from 'react';
 
-import { ActionType } from './ActionType';
+import type { ActionType } from './ActionType';
 import { isNewWebImplementationEnabled } from './EnableNewWebImplementation';
 import { Gestures, HammerGestures } from './web/Gestures';
-import GestureHandlerInterface from './web/handlers/GestureHandlerInterface';
-import { Config } from './web/interfaces';
+import type { Config } from './web/interfaces';
 import InteractionManager from './web/tools/InteractionManager';
 import NodeManager from './web/tools/NodeManager';
 import * as HammerNodeManager from './web_hammer/NodeManager';
@@ -35,7 +34,7 @@ export default {
         new GestureClass(new GestureHandlerWebDelegate())
       );
       InteractionManager.getInstance().configureInteractions(
-        NodeManager.getHandler(handlerTag) as GestureHandlerInterface,
+        NodeManager.getHandler(handlerTag),
         config as unknown as Config
       );
     } else {
@@ -80,7 +79,7 @@ export default {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
 
       InteractionManager.getInstance().configureInteractions(
-        NodeManager.getHandler(handlerTag) as GestureHandlerInterface,
+        NodeManager.getHandler(handlerTag),
         newConfig
       );
     } else {
