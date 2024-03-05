@@ -153,6 +153,14 @@ type InternalEventHandlers = {
   onGestureHandlerStateChange?: (event: any) => void;
 };
 
+type AttachGestureHandlerWeb = (
+  handlerTag: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  newView: any,
+  _actionType: ActionType,
+  propsRef: React.RefObject<unknown>
+) => void;
+
 const UNRESOLVED_REFS_RETRY_LIMIT = 1;
 
 // TODO(TS) - make sure that BaseGestureHandlerProps doesn't need other generic parameter to work with custom properties.
@@ -317,14 +325,6 @@ export default function createHandler<
       this.viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
-        type AttachGestureHandlerWeb = (
-          handlerTag: number,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          newView: any,
-          _actionType: ActionType,
-          propsRef: React.RefObject<unknown>
-        ) => void;
-
         // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
         (
           RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb
