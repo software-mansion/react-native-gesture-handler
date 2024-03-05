@@ -154,6 +154,10 @@ Allows users to choose which mouse button should handler respond to. The enum `M
 
 Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
+### `enableContextMenu(value: boolean)` (Web only)
+
+Specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false`.
+
 ## Methods
 
 Using reference to `Swipeable` it's possible to trigger some actions on it
