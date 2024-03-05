@@ -242,7 +242,7 @@ export default abstract class GestureHandler
     }
 
     return InteractionManager.getInstance().shouldWaitForHandlerFailure(
-      this as GestureHandlerInterface,
+      this,
       handler
     );
   }
@@ -255,7 +255,7 @@ export default abstract class GestureHandler
     }
 
     return InteractionManager.getInstance().shouldRequireHandlerToWaitForFailure(
-      this as GestureHandlerInterface,
+      this,
       handler
     );
   }
@@ -268,7 +268,7 @@ export default abstract class GestureHandler
     }
 
     return InteractionManager.getInstance().shouldRecognizeSimultaneously(
-      this as GestureHandlerInterface,
+      this,
       handler
     );
   }
@@ -279,7 +279,7 @@ export default abstract class GestureHandler
     }
 
     return InteractionManager.getInstance().shouldHandlerBeCancelledBy(
-      this as GestureHandlerInterface,
+      this,
       handler
     );
   }
