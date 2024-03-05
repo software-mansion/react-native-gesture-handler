@@ -24,6 +24,7 @@ const commonProps = [
   'activeCursor',
   'mouseButton',
   'enableContextMenu',
+  'touchAction',
 ] as const;
 
 const componentInteractionProps = [
@@ -120,6 +121,22 @@ export enum MouseButton {
   BUTTON_5 = 16,
   ALL = 31,
 }
+export type TouchAction =
+  | 'auto'
+  | 'none'
+  | 'pan-x'
+  | 'pan-left'
+  | 'pan-right'
+  | 'pan-y'
+  | 'pan-up'
+  | 'pan-down'
+  | 'pinch-zoom'
+  | 'manipulation'
+  | 'inherit'
+  | 'initial'
+  | 'revert'
+  | 'revert-layer'
+  | 'unset';
 
 //TODO(TS) events in handlers
 
@@ -164,6 +181,7 @@ export type CommonGestureConfig = {
   activeCursor?: ActiveCursor;
   mouseButton?: MouseButton;
   enableContextMenu?: boolean;
+  touchAction?: TouchAction;
 };
 
 // Events payloads are types instead of interfaces due to TS limitation.

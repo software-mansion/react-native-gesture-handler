@@ -51,6 +51,7 @@ import HoverableIcons from './new_api/hoverable_icons';
 import VelocityTest from './new_api/velocityTest';
 
 import EmptyExample from './empty/EmptyExample';
+import RectButtonBorders from './release_tests/rectButton';
 
 interface Example {
   name: string;
@@ -121,6 +122,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'MouseButtons', component: MouseButtons },
       { name: 'ContextMenu (web only)', component: ContextMenu },
       { name: 'PointerType', component: PointerType },
+      { name: 'RectButton (borders)', component: RectButtonBorders },
     ],
   },
   {

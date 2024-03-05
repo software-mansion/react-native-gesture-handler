@@ -33,10 +33,6 @@ export class GestureHandlerWebDelegate
     this.gestureHandler = handler;
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
 
-    this.view.style['touchAction'] = 'none';
-    //@ts-ignore This one disables default events on Safari
-    this.view.style['WebkitTouchCallout'] = 'none';
-
     const config = handler.getConfig();
 
     this.addContextMenuListeners(config);
@@ -48,6 +44,10 @@ export class GestureHandlerWebDelegate
       this.view.style['webkitUserSelect'] = config.userSelect;
       this.view.style['userSelect'] = config.userSelect;
     }
+
+    this.view.style['touchAction'] = config.touchAction ?? 'none';
+    //@ts-ignore This one disables default events on Safari
+    this.view.style['WebkitTouchCallout'] = 'none';
 
     this.eventManagers.push(new PointerEventManager(this.view));
     this.eventManagers.push(new TouchEventManager(this.view));
