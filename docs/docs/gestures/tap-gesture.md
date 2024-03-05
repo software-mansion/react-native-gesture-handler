@@ -75,7 +75,7 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 
 Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture.
 
-### `mouseButton(value: MouseButton)` (Web | Android)
+### `mouseButton(value: MouseButton)` (Web & Android only)
 
 Allows users to choose which mouse button should handler respond to. The enum `MouseButton` consists of the following predefined fields:
 
