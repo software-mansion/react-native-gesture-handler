@@ -614,7 +614,7 @@ export default abstract class GestureHandler implements GestureHandlerType {
         break;
       case State.UNDETERMINED:
         GestureHandlerOrchestrator.getInstance().removeHandlerFromOrchestrator(
-          this as GestureHandlerType
+          this
         );
         break;
       default:
