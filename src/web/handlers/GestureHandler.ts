@@ -59,7 +59,7 @@ export default abstract class GestureHandler implements GestureHandlerType {
 
     this.currentState = State.UNDETERMINED;
 
-    this.delegate.init(viewRef, this as GestureHandlerType);
+    this.delegate.init(viewRef, this);
   }
 
   public attachEventManager(manager: EventManager<unknown>): void {
