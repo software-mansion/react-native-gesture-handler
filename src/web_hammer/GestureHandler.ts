@@ -6,6 +6,7 @@ import { findNodeHandle } from 'react-native';
 import { State } from '../State';
 import { EventMap } from './constants';
 import * as NodeManager from './NodeManager';
+import { ghQueueMicrotask } from '../ghQueueMicrotask';
 
 // TODO(TS) Replace with HammerInput if https://github.com/DefinitelyTyped/DefinitelyTyped/pull/50438/files is merged
 export type HammerInputExt = Omit<HammerInput, 'destroy' | 'handler' | 'init'>;
@@ -508,7 +509,7 @@ abstract class GestureHandler {
         .filter((v) => v);
 
       if (shouldUseTouchEvents !== this.shouldUseTouchEvents(props)) {
-        queueMicrotask(() => {
+        ghQueueMicrotask(() => {
           // if the undelying event API needs to be changed, we need to unmount and mount
           // the hammer instance again.
           this.destroy();

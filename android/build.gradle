@@ -7,9 +7,6 @@ buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
 
     repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
         mavenCentral()
         google()
     }
@@ -106,6 +103,12 @@ android {
         namespace "com.swmansion.gesturehandler"
     }
 
+    if (agpVersion.tokenize('.')[0].toInteger() >= 8) {
+        buildFeatures {
+            buildConfig = true
+        }
+    }
+
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
     if (rootProject.hasProperty("ndkPath")) {
@@ -133,9 +136,10 @@ android {
             var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
             externalNativeBuild {
                 cmake {
-                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++17", "-DANDROID"
+                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
                     arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
                         "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+                        "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
                         "-DANDROID_STL=c++_shared"
                     abiFilters (*reactNativeArchitectures())
                 }
@@ -176,11 +180,11 @@ android {
             }
 
             if (isNewArchitectureEnabled()) {
-                srcDirs += 'src/fabric/java'
+                srcDirs += 'fabric/src/main/java'
             } else {
                 // this folder also includes files from codegen so the library can compile with
                 // codegen turned off
-                srcDirs += 'src/paper/java'
+                srcDirs += 'paper/src/main/java'
             }
         }
     }

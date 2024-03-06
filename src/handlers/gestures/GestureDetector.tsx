@@ -19,6 +19,7 @@ import {
   HandlerStateChangeEvent,
   scheduleFlushOperations,
   UserSelect,
+  TouchAction,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -37,12 +38,8 @@ import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
-import {
-  isFabric,
-  isJestEnv,
-  REACT_NATIVE_VERSION,
-  tagMessage,
-} from '../../utils';
+import { isFabric, isJestEnv, tagMessage } from '../../utils';
+import { getReactNativeVersion } from '../../getReactNativeVersion';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
@@ -51,6 +48,7 @@ import { RNRenderer } from '../../RNRenderer';
 import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
 import { nativeViewGestureHandlerProps } from '../NativeViewGestureHandler';
 import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
+import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -159,7 +157,7 @@ function attachHandlers({
 
   // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
-  queueMicrotask(() => {
+  ghQueueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -179,7 +177,7 @@ function attachHandlers({
 
   // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
-  queueMicrotask(() => {
+  ghQueueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -196,11 +194,17 @@ function attachHandlers({
         );
       }
 
+      let blocksHandlers: number[] = [];
+      if (handler.config.blocksHandlers) {
+        blocksHandlers = extractValidHandlerTags(handler.config.blocksHandlers);
+      }
+
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
         filterConfig(handler.config, ALLOWED_PROPS, {
           simultaneousHandlers: simultaneousWith,
           waitFor: requireToFail,
+          blocksHandlers: blocksHandlers,
         })
       );
     }
@@ -267,7 +271,7 @@ function updateHandlers(
   // use queueMicrotask to extract handlerTags, because when it's ran, all refs should be updated
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
-  queueMicrotask(() => {
+  ghQueueMicrotask(() => {
     if (!mountedRef.current) {
       return;
     }
@@ -564,6 +568,7 @@ function validateDetectorChildren(ref: any) {
   //         /       \
   //   NativeView  NativeView
   if (__DEV__ && Platform.OS !== 'web') {
+    const REACT_NATIVE_VERSION = getReactNativeVersion();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const wrapType =
       REACT_NATIVE_VERSION.minor > 63 || REACT_NATIVE_VERSION.major > 0
@@ -601,10 +606,30 @@ const applyUserSelectProp = (
   }
 };
 
+const applyEnableContextMenuProp = (
+  enableContextMenu: boolean,
+  gesture: ComposedGesture | GestureType
+): void => {
+  for (const g of gesture.toGestureArray()) {
+    g.config.enableContextMenu = enableContextMenu;
+  }
+};
+
+const applyTouchActionProp = (
+  touchAction: TouchAction,
+  gesture: ComposedGesture | GestureType
+): void => {
+  for (const g of gesture.toGestureArray()) {
+    g.config.touchAction = touchAction;
+  }
+};
+
 interface GestureDetectorProps {
   gesture: ComposedGesture | GestureType;
-  userSelect?: UserSelect;
   children?: React.ReactNode;
+  userSelect?: UserSelect;
+  enableContextMenu?: boolean;
+  touchAction?: TouchAction;
 }
 interface GestureDetectorState {
   firstRender: boolean;
@@ -624,6 +649,14 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   if (props.userSelect) {
     applyUserSelectProp(props.userSelect, gestureConfig);
+  }
+
+  if (props.enableContextMenu !== undefined) {
+    applyEnableContextMenuProp(props.enableContextMenu, gestureConfig);
+  }
+
+  if (props.touchAction !== undefined) {
+    applyTouchActionProp(props.touchAction, gestureConfig);
   }
 
   const gesture = gestureConfig.toGestureArray();
@@ -759,7 +792,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       // in case the view has changed, while config update would be handled be the `useEffect` above
       onHandlersUpdate(true);
 
-      if (isFabric()) {
+      if (isFabric() && global.isFormsStackingContext) {
         const node = getShadowNodeFromRef(ref);
         if (global.isFormsStackingContext(node) === false) {
           console.error(

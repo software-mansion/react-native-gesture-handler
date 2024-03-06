@@ -21,7 +21,9 @@ export default abstract class NodeManager {
     handler: InstanceType<ValueOf<typeof Gestures>>
   ): void {
     if (handlerTag in this.gestures) {
-      throw new Error(`Handler with tag ${handlerTag} already exists`);
+      throw new Error(
+        `Handler with tag ${handlerTag} already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors.`
+      );
     }
 
     this.gestures[handlerTag] = handler;
@@ -32,6 +34,8 @@ export default abstract class NodeManager {
     if (!(handlerTag in this.gestures)) {
       return;
     }
+
+    this.gestures[handlerTag].onDestroy();
 
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.gestures[handlerTag];

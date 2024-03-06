@@ -6,7 +6,6 @@ import android.view.MotionEvent
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
@@ -17,6 +16,7 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.soloader.SoLoader
 import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.BuildConfig
+import com.swmansion.gesturehandler.NativeRNGestureHandlerModuleSpec
 import com.swmansion.gesturehandler.ReanimatedEventDispatcher
 import com.swmansion.gesturehandler.core.FlingGestureHandler
 import com.swmansion.gesturehandler.core.GestureHandler
@@ -30,6 +30,16 @@ import com.swmansion.gesturehandler.core.PinchGestureHandler
 import com.swmansion.gesturehandler.core.RotationGestureHandler
 import com.swmansion.gesturehandler.core.TapGestureHandler
 import com.swmansion.gesturehandler.dispatchEvent
+import com.swmansion.gesturehandler.react.eventbuilders.FlingGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.eventbuilders.HoverGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.eventbuilders.LongPressGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.eventbuilders.ManualGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.eventbuilders.NativeGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.eventbuilders.PanGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.eventbuilders.PinchGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.eventbuilders.RotationGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.eventbuilders.TapGestureHandlerEventDataBuilder
 
 // NativeModule.onCatalystInstanceDestroy() was deprecated in favor of NativeModule.invalidate()
 // ref: https://github.com/facebook/react-native/commit/18c8417290823e67e211bde241ae9dde27b72f17
@@ -37,10 +47,10 @@ import com.swmansion.gesturehandler.dispatchEvent
 // UIManagerModule.resolveRootTagFromReactTag() was deprecated and will be removed in the next RN release
 // ref: https://github.com/facebook/react-native/commit/acbf9e18ea666b07c1224a324602a41d0a66985e
 @Suppress("DEPRECATION")
-@ReactModule(name = RNGestureHandlerModule.MODULE_NAME)
+@ReactModule(name = RNGestureHandlerModule.NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
-  ReactContextBaseJavaModule(reactContext), GestureHandlerStateManager {
-  private abstract class HandlerFactory<T : GestureHandler<T>> : RNGestureHandlerEventDataExtractor<T> {
+  NativeRNGestureHandlerModuleSpec(reactContext), GestureHandlerStateManager {
+  private abstract class HandlerFactory<T : GestureHandler<T>> {
     abstract val type: Class<T>
     abstract val name: String
     abstract fun create(context: Context?): T
@@ -61,11 +71,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
         handler.setManualActivation(config.getBoolean(KEY_MANUAL_ACTIVATION))
       }
+      if (config.hasKey("mouseButton")) {
+        handler.setMouseButton(config.getInt("mouseButton"))
+      }
     }
 
-    override fun extractEventData(handler: T, eventData: WritableMap) {
-      eventData.putDouble("numberOfPointers", handler.numberOfPointers.toDouble())
-    }
+    abstract fun createEventBuilder(handler: T): GestureHandlerEventDataBuilder<T>
   }
 
   private class NativeViewGestureHandlerFactory : HandlerFactory<NativeViewGestureHandler>() {
@@ -88,10 +99,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       }
     }
 
-    override fun extractEventData(handler: NativeViewGestureHandler, eventData: WritableMap) {
-      super.extractEventData(handler, eventData)
-      eventData.putBoolean("pointerInside", handler.isWithinBounds)
-    }
+    override fun createEventBuilder(handler: NativeViewGestureHandler) = NativeGestureHandlerEventDataBuilder(handler)
   }
 
   private class TapGestureHandlerFactory : HandlerFactory<TapGestureHandler>() {
@@ -127,15 +135,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       }
     }
 
-    override fun extractEventData(handler: TapGestureHandler, eventData: WritableMap) {
-      super.extractEventData(handler, eventData)
-      with(eventData) {
-        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
-        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
-      }
-    }
+    override fun createEventBuilder(handler: TapGestureHandler) = TapGestureHandlerEventDataBuilder(handler)
   }
 
   private class LongPressGestureHandlerFactory : HandlerFactory<LongPressGestureHandler>() {
@@ -156,16 +156,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       }
     }
 
-    override fun extractEventData(handler: LongPressGestureHandler, eventData: WritableMap) {
-      super.extractEventData(handler, eventData)
-      with(eventData) {
-        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
-        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
-        putInt("duration", handler.duration)
-      }
-    }
+    override fun createEventBuilder(handler: LongPressGestureHandler) = LongPressGestureHandlerEventDataBuilder(handler)
   }
 
   private class PanGestureHandlerFactory : HandlerFactory<PanGestureHandler>() {
@@ -247,19 +238,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       }
     }
 
-    override fun extractEventData(handler: PanGestureHandler, eventData: WritableMap) {
-      super.extractEventData(handler, eventData)
-      with(eventData) {
-        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
-        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
-        putDouble("translationX", PixelUtil.toDIPFromPixel(handler.translationX).toDouble())
-        putDouble("translationY", PixelUtil.toDIPFromPixel(handler.translationY).toDouble())
-        putDouble("velocityX", PixelUtil.toDIPFromPixel(handler.velocityX).toDouble())
-        putDouble("velocityY", PixelUtil.toDIPFromPixel(handler.velocityY).toDouble())
-      }
-    }
+    override fun createEventBuilder(handler: PanGestureHandler) = PanGestureHandlerEventDataBuilder(handler)
   }
 
   private class PinchGestureHandlerFactory : HandlerFactory<PinchGestureHandler>() {
@@ -270,15 +249,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       return PinchGestureHandler()
     }
 
-    override fun extractEventData(handler: PinchGestureHandler, eventData: WritableMap) {
-      super.extractEventData(handler, eventData)
-      with(eventData) {
-        putDouble("scale", handler.scale)
-        putDouble("focalX", PixelUtil.toDIPFromPixel(handler.focalPointX).toDouble())
-        putDouble("focalY", PixelUtil.toDIPFromPixel(handler.focalPointY).toDouble())
-        putDouble("velocity", handler.velocity)
-      }
-    }
+    override fun createEventBuilder(handler: PinchGestureHandler) = PinchGestureHandlerEventDataBuilder(handler)
   }
 
   private class FlingGestureHandlerFactory : HandlerFactory<FlingGestureHandler>() {
@@ -299,15 +270,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       }
     }
 
-    override fun extractEventData(handler: FlingGestureHandler, eventData: WritableMap) {
-      super.extractEventData(handler, eventData)
-      with(eventData) {
-        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
-        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
-      }
-    }
+    override fun createEventBuilder(handler: FlingGestureHandler) = FlingGestureHandlerEventDataBuilder(handler)
   }
 
   private class RotationGestureHandlerFactory : HandlerFactory<RotationGestureHandler>() {
@@ -318,15 +281,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       return RotationGestureHandler()
     }
 
-    override fun extractEventData(handler: RotationGestureHandler, eventData: WritableMap) {
-      super.extractEventData(handler, eventData)
-      with(eventData) {
-        putDouble("rotation", handler.rotation)
-        putDouble("anchorX", PixelUtil.toDIPFromPixel(handler.anchorX).toDouble())
-        putDouble("anchorY", PixelUtil.toDIPFromPixel(handler.anchorY).toDouble())
-        putDouble("velocity", handler.velocity)
-      }
-    }
+    override fun createEventBuilder(handler: RotationGestureHandler) = RotationGestureHandlerEventDataBuilder(handler)
   }
 
   private class ManualGestureHandlerFactory : HandlerFactory<ManualGestureHandler>() {
@@ -336,6 +291,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override fun create(context: Context?): ManualGestureHandler {
       return ManualGestureHandler()
     }
+
+    override fun createEventBuilder(handler: ManualGestureHandler) = ManualGestureHandlerEventDataBuilder(handler)
   }
 
   private class HoverGestureHandlerFactory : HandlerFactory<HoverGestureHandler>() {
@@ -346,15 +303,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       return HoverGestureHandler()
     }
 
-    override fun extractEventData(handler: HoverGestureHandler, eventData: WritableMap) {
-      super.extractEventData(handler, eventData)
-      with(eventData) {
-        putDouble("x", PixelUtil.toDIPFromPixel(handler.lastRelativePositionX).toDouble())
-        putDouble("y", PixelUtil.toDIPFromPixel(handler.lastRelativePositionY).toDouble())
-        putDouble("absoluteX", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowX).toDouble())
-        putDouble("absoluteY", PixelUtil.toDIPFromPixel(handler.lastPositionInWindowY).toDouble())
-      }
-    }
+    override fun createEventBuilder(handler: HoverGestureHandler) = HoverGestureHandlerEventDataBuilder(handler)
   }
 
   private val eventListener = object : OnTouchEventListener {
@@ -385,15 +334,21 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
-  override fun getName() = MODULE_NAME
+  override fun getName() = NAME
 
-  @ReactMethod
   @Suppress("UNCHECKED_CAST")
-  fun <T : GestureHandler<T>> createGestureHandler(
+  private fun <T : GestureHandler<T>> createGestureHandlerHelper(
     handlerName: String,
     handlerTag: Int,
     config: ReadableMap,
   ) {
+
+    if (registry.getHandler(handlerTag) !== null) {
+      throw IllegalStateException(
+        "Handler with tag $handlerTag already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors."
+      )
+    }
+
     for (handlerFactory in handlerFactories as Array<HandlerFactory<T>>) {
       if (handlerFactory.name == handlerName) {
         val handler = handlerFactory.create(reactApplicationContext).apply {
@@ -410,7 +365,21 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  fun attachGestureHandler(handlerTag: Int, viewTag: Int, actionType: Int) {
+  override fun createGestureHandler(
+    handlerName: String,
+    handlerTagDouble: Double,
+    config: ReadableMap,
+  ) {
+    val handlerTag = handlerTagDouble.toInt()
+
+    createGestureHandlerHelper(handlerName, handlerTag, config)
+  }
+
+  @ReactMethod
+  override fun attachGestureHandler(handlerTagDouble: Double, viewTagDouble: Double, actionTypeDouble: Double) {
+    val handlerTag = handlerTagDouble.toInt()
+    val viewTag = viewTagDouble.toInt()
+    val actionType = actionTypeDouble.toInt()
     // We don't have to handle view flattening in any special way since handlers are stored as
     // a map: viewTag -> [handler]. If the view with attached handlers was to be flattened
     // then that viewTag simply wouldn't be visited when traversing the view hierarchy in the
@@ -420,9 +389,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  @ReactMethod
   @Suppress("UNCHECKED_CAST")
-  fun <T : GestureHandler<T>> updateGestureHandler(handlerTag: Int, config: ReadableMap) {
+  private fun <T : GestureHandler<T>> updateGestureHandlerHelper(handlerTag: Int, config: ReadableMap) {
     val handler = registry.getHandler(handlerTag) as T?
     if (handler != null) {
       val factory = findFactoryForHandler(handler)
@@ -435,19 +403,32 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  fun dropGestureHandler(handlerTag: Int) {
+  override fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
+    val handlerTag = handlerTagDouble.toInt()
+
+    updateGestureHandlerHelper(handlerTag, config)
+  }
+
+  @ReactMethod
+  override fun dropGestureHandler(handlerTagDouble: Double) {
+    val handlerTag = handlerTagDouble.toInt()
     interactionManager.dropRelationsForHandlerWithTag(handlerTag)
     registry.dropHandler(handlerTag)
   }
 
   @ReactMethod
-  fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
+  override fun handleSetJSResponder(viewTagDouble: Double, blockNativeResponder: Boolean) {
+    val viewTag = viewTagDouble.toInt()
     val rootView = findRootHelperForViewAncestor(viewTag)
     rootView?.handleSetJSResponder(viewTag, blockNativeResponder)
   }
 
   @ReactMethod
-  fun handleClearJSResponder() {
+  override fun handleClearJSResponder() {
+  }
+
+  @ReactMethod
+  override fun flushOperations() {
   }
 
   override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
@@ -463,16 +444,18 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  fun install(): Boolean {
-    return try {
-      SoLoader.loadLibrary("gesturehandler")
-      val jsContext = reactApplicationContext.javaScriptContextHolder
-      decorateRuntime(jsContext.get())
-      true
-    } catch (exception: Exception) {
-      Log.w("[RNGestureHandler]", "Could not install JSI bindings.")
-      false
+  override fun install(): Boolean {
+    reactApplicationContext.runOnJSQueueThread {
+      try {
+        SoLoader.loadLibrary("gesturehandler")
+        val jsContext = reactApplicationContext.javaScriptContextHolder!!
+        decorateRuntime(jsContext.get())
+      } catch (exception: Exception) {
+        Log.w("[RNGestureHandler]", "Could not install JSI bindings.")
+      }
     }
+
+    return true
   }
 
   private external fun decorateRuntime(jsiPtr: Long)
@@ -496,7 +479,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     )
   }
 
-  override fun onCatalystInstanceDestroy() {
+  override fun invalidate() {
     registry.dropAllHandlers()
     interactionManager.reset()
     synchronized(roots) {
@@ -509,7 +492,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         }
       }
     }
-    super.onCatalystInstanceDestroy()
+    super.invalidate()
   }
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
@@ -551,32 +534,32 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       return
     }
     if (handler.state == GestureHandler.STATE_ACTIVE) {
-      val handlerFactory = findFactoryForHandler(handler)
+      val handlerFactory = findFactoryForHandler(handler) ?: return
 
       if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
         // Reanimated worklet
-        val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+        val event = RNGestureHandlerEvent.obtain(handler, handlerFactory.createEventBuilder(handler))
         sendEventForReanimated(event)
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT) {
         // Animated with useNativeDriver: true
         val event = RNGestureHandlerEvent.obtain(
           handler,
-          handlerFactory,
+          handlerFactory.createEventBuilder(handler),
           useTopPrefixedName = BuildConfig.REACT_NATIVE_MINOR_VERSION >= 71
         )
         sendEventForNativeAnimatedEvent(event)
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API) {
         // JS function, Animated.event with useNativeDriver: false using old API
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-          val data = RNGestureHandlerEvent.createEventData(handler, handlerFactory)
+          val data = RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
           sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
         } else {
-          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory.createEventBuilder(handler))
           sendEventForDirectEvent(event)
         }
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API) {
         // JS function, Animated.event with useNativeDriver: false using new API
-        val data = RNGestureHandlerEvent.createEventData(handler, handlerFactory)
+        val data = RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
     }
@@ -589,26 +572,26 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
-    val handlerFactory = findFactoryForHandler(handler)
+    val handlerFactory = findFactoryForHandler(handler) ?: return
 
     if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
       // Reanimated worklet
-      val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
+      val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory.createEventBuilder(handler))
       sendEventForReanimated(event)
     } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT ||
       handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API
     ) {
       // JS function or Animated.event with useNativeDriver: false with old API
       if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-        val data = RNGestureHandlerStateChangeEvent.createEventData(handler, handlerFactory, newState, oldState)
+        val data = RNGestureHandlerStateChangeEvent.createEventData(handlerFactory.createEventBuilder(handler), newState, oldState)
         sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
       } else {
-        val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory)
+        val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory.createEventBuilder(handler))
         sendEventForDirectEvent(event)
       }
     } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API) {
       // JS function or Animated.event with useNativeDriver: false with new API
-      val data = RNGestureHandlerStateChangeEvent.createEventData(handler, handlerFactory, newState, oldState)
+      val data = RNGestureHandlerStateChangeEvent.createEventData(handlerFactory.createEventBuilder(handler), newState, oldState)
       sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
     }
   }
@@ -665,7 +648,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   companion object {
-    const val MODULE_NAME = "RNGestureHandlerModule"
+    const val NAME = "RNGestureHandlerModule"
     private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
     private const val KEY_ENABLED = "enabled"
     private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"

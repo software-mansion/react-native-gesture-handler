@@ -5,6 +5,7 @@ on:
 
 jobs:
   main:
+    if: ${{ github.repository == 'software-mansion/react-native-gesture-handler' && !contains(github.event.issue.labels.*.name, 'Maintainer issue') }}
     runs-on: ubuntu-latest
     concurrency:
       group: platforms-${{ github.event.issue.number }}
@@ -30,4 +31,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           platforms-section-header: Platforms
           platforms-comma-separated: true
-          platforms-with-labels: '{"Android": "Platform: Android", "iOS": "Platform: iOS", "Web": "Platform: Web"}'
+          platforms-with-labels: '{"Android": "Platform: Android", "iOS": "Platform: iOS", "Web": "Platform: Web", "MacOS": "Platform: MacOS"}'

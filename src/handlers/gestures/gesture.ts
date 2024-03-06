@@ -17,6 +17,7 @@ import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
 import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
 import { isRemoteDebuggingEnabled } from '../../utils';
+import { MouseButton } from '../../web/interfaces';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
@@ -41,6 +42,7 @@ export interface BaseGestureConfig
   ref?: React.MutableRefObject<GestureType | undefined>;
   requireToFail?: GestureRef[];
   simultaneousWith?: GestureRef[];
+  blocksHandlers?: GestureRef[];
   needsPointerData?: boolean;
   manualActivation?: boolean;
   runOnJS?: boolean;
@@ -144,7 +146,7 @@ export abstract class BaseGesture<
   }
 
   private addDependency(
-    key: 'simultaneousWith' | 'requireToFail',
+    key: 'simultaneousWith' | 'requireToFail' | 'blocksHandlers',
     gesture: Exclude<GestureRef, number>
   ) {
     const value = this.config[key];
@@ -256,6 +258,11 @@ export abstract class BaseGesture<
     return this;
   }
 
+  mouseButton(mouseButton: MouseButton) {
+    this.config.mouseButton = mouseButton;
+    return this;
+  }
+
   runOnJS(runOnJS: boolean) {
     this.config.runOnJS = runOnJS;
     return this;
@@ -271,6 +278,13 @@ export abstract class BaseGesture<
   requireExternalGestureToFail(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
       this.addDependency('requireToFail', gesture);
+    }
+    return this;
+  }
+
+  blocksExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
+    for (const gesture of gestures) {
+      this.addDependency('blocksHandlers', gesture);
     }
     return this;
   }
