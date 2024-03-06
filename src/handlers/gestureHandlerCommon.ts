@@ -121,6 +121,7 @@ export enum MouseButton {
   BUTTON_5 = 16,
   ALL = 31,
 }
+
 export type TouchAction =
   | 'auto'
   | 'none'
