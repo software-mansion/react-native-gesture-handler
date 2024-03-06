@@ -1,6 +1,6 @@
 import { ValueOf } from '../../typeUtils';
 import { Gestures } from '../Gestures';
-import type GestureHandlerInterface from '../handlers/GestureHandlerInterface';
+import type GestureHandlerType from '../handlers/GestureHandlerType';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default abstract class NodeManager {
@@ -9,9 +9,9 @@ export default abstract class NodeManager {
     InstanceType<ValueOf<typeof Gestures>>
   > = {};
 
-  public static getHandler(tag: number): GestureHandlerInterface {
+  public static getHandler(tag: number): GestureHandlerType {
     if (tag in this.gestures) {
-      return this.gestures[tag] as GestureHandlerInterface;
+      return this.gestures[tag] as GestureHandlerType;
     }
 
     throw new Error(`No handler for tag ${tag}`);

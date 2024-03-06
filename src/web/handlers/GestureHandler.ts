@@ -15,13 +15,11 @@ import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import GestureHandlerInterface from './GestureHandlerInterface';
+import GestureHandlerType from './GestureHandlerType';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 
-export default abstract class GestureHandler
-  implements GestureHandlerInterface
-{
+export default abstract class GestureHandler implements GestureHandlerType {
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
 
@@ -43,10 +41,10 @@ export default abstract class GestureHandler
   protected shouldResetProgress = false;
   protected pointerType: PointerType = PointerType.MOUSE;
 
-  protected delegate: GestureHandlerDelegate<unknown, GestureHandlerInterface>;
+  protected delegate: GestureHandlerDelegate<unknown, GestureHandlerType>;
 
   public constructor(
-    delegate: GestureHandlerDelegate<unknown, GestureHandlerInterface>
+    delegate: GestureHandlerDelegate<unknown, GestureHandlerType>
   ) {
     this.delegate = delegate;
   }
@@ -61,7 +59,7 @@ export default abstract class GestureHandler
 
     this.currentState = State.UNDETERMINED;
 
-    this.delegate.init(viewRef, this as GestureHandlerInterface);
+    this.delegate.init(viewRef, this as GestureHandlerType);
   }
 
   public attachEventManager(manager: EventManager<unknown>): void {
@@ -234,9 +232,7 @@ export default abstract class GestureHandler
     this.activationIndex = value;
   }
 
-  public shouldWaitForHandlerFailure(
-    handler: GestureHandlerInterface
-  ): boolean {
+  public shouldWaitForHandlerFailure(handler: GestureHandlerType): boolean {
     if (handler === this) {
       return false;
     }
@@ -247,9 +243,7 @@ export default abstract class GestureHandler
     );
   }
 
-  public shouldRequireToWaitForFailure(
-    handler: GestureHandlerInterface
-  ): boolean {
+  public shouldRequireToWaitForFailure(handler: GestureHandlerType): boolean {
     if (handler === this) {
       return false;
     }
@@ -260,9 +254,7 @@ export default abstract class GestureHandler
     );
   }
 
-  public shouldRecognizeSimultaneously(
-    handler: GestureHandlerInterface
-  ): boolean {
+  public shouldRecognizeSimultaneously(handler: GestureHandlerType): boolean {
     if (handler === this) {
       return true;
     }
@@ -273,7 +265,7 @@ export default abstract class GestureHandler
     );
   }
 
-  public shouldBeCancelledByOther(handler: GestureHandlerInterface): boolean {
+  public shouldBeCancelledByOther(handler: GestureHandlerType): boolean {
     if (handler === this) {
       return false;
     }
@@ -622,7 +614,7 @@ export default abstract class GestureHandler
         break;
       case State.UNDETERMINED:
         GestureHandlerOrchestrator.getInstance().removeHandlerFromOrchestrator(
-          this as GestureHandlerInterface
+          this as GestureHandlerType
         );
         break;
       default:
@@ -783,10 +775,7 @@ export default abstract class GestureHandler
     return this.config;
   }
 
-  public getDelegate(): GestureHandlerDelegate<
-    unknown,
-    GestureHandlerInterface
-  > {
+  public getDelegate(): GestureHandlerDelegate<unknown, GestureHandlerType> {
     return this.delegate;
   }
 
