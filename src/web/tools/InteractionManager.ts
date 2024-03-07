@@ -1,4 +1,6 @@
 import type GestureHandlerType from '../handlers/GestureHandlerType';
+import { State } from '../../State';
+import NativeViewGestureHandler from '../handlers/NativeViewGestureHandler';
 import { Config, Handler } from '../interfaces';
 
 export default class InteractionManager {
@@ -102,10 +104,13 @@ export default class InteractionManager {
 
   public shouldHandlerBeCancelledBy(
     _handler: GestureHandlerType,
-    _otherHandler: GestureHandlerType
+    otherHandler: GestureHandlerType
   ): boolean {
-    //TODO: Implement logic
-    return false;
+    return (
+      otherHandler instanceof NativeViewGestureHandler &&
+      otherHandler.getState() === State.ACTIVE &&
+      !otherHandler.isButton()
+    );
   }
 
   public dropRelationsForHandlerWithTag(handlerTag: number): void {
