@@ -46,9 +46,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   // TODO: coalescing
   override fun getCoalescingKey(): Short = 0
 
-  override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, createEventData(dataBuilder!!, newState, oldState))
-  }
+  override fun getEventData(): WritableMap = createEventData(dataBuilder!!, newState, oldState)
 
   companion object {
     const val EVENT_NAME = "onGestureHandlerStateChange"
