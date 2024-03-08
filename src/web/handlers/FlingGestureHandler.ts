@@ -5,7 +5,7 @@ import { AdaptedEvent, Config } from '../interfaces';
 import GestureHandler from './GestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 800;
-const DEFAULT_MIN_ACCEPTABLE_DELTA = 32;
+const DEFAULT_MIN_ACCEPTABLE_DELTA = 400;
 const DEFAULT_DIRECTION = Direction.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
 
@@ -51,22 +51,65 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private tryEndFling(): boolean {
+    type SimpleVector = { x: number; y: number };
+
+    const toSafeNumber = (unsafe: number): number => {
+      return Number.isNaN(unsafe) ? 0 : unsafe;
+    };
+
+    const toUnitVector = (vec: SimpleVector): SimpleVector => {
+      const magnitude = Math.abs(vec.x + vec.y);
+      // division by 0 may occur here
+      return {
+        x: toSafeNumber(vec.x / magnitude),
+        y: toSafeNumber(vec.y / magnitude),
+      };
+    };
+
+    const compareSimilarity = (
+      vecA: SimpleVector,
+      vecB: SimpleVector
+    ): number => {
+      const unitA = toUnitVector(vecA);
+      const unitB = toUnitVector(vecB);
+      // returns scalar on range from -1.0 to 1.0
+      return unitA.x * unitB.x + unitA.y * unitB.y;
+    };
+
+    const directionVector: SimpleVector = {
+      x:
+        (this.direction & Direction.LEFT ? -1 : 0) +
+        (this.direction & Direction.RIGHT ? 1 : 0),
+      y:
+        (this.direction & Direction.UP ? -1 : 0) +
+        (this.direction & Direction.DOWN ? 1 : 0),
+    };
+
+    const velocityVector: SimpleVector = {
+      x: this.tracker.getVelocityX(this.keyPointer),
+      y: this.tracker.getVelocityY(this.keyPointer),
+    };
+
+    // hypot may be overkill for this simple function, simple addition would be sufficient
+    const totalVelocity = Math.hypot(velocityVector.x, velocityVector.y);
+
+    const movementAlignment = compareSimilarity(
+      directionVector,
+      velocityVector
+    );
+    const isAligned = movementAlignment > 0.8;
+    const isFast = totalVelocity > this.minAcceptableDelta;
+
+    console.log('received', velocityVector, 'expected:', directionVector);
+    console.log('alignment:', movementAlignment, isAligned);
+
     if (
       this.maxNumberOfPointersSimultaneously ===
         this.numberOfPointersRequired &&
-      ((this.direction & Direction.RIGHT &&
-        this.tracker.getLastX(this.keyPointer) - this.startX >
-          this.minAcceptableDelta) ||
-        (this.direction & Direction.LEFT &&
-          this.startX - this.tracker.getLastX(this.keyPointer) >
-            this.minAcceptableDelta) ||
-        (this.direction & Direction.UP &&
-          this.startY - this.tracker.getLastY(this.keyPointer) >
-            this.minAcceptableDelta) ||
-        (this.direction & Direction.DOWN &&
-          this.tracker.getLastY(this.keyPointer) - this.startY >
-            this.minAcceptableDelta))
+      isAligned &&
+      isFast
     ) {
+      console.log('activating');
       clearTimeout(this.delayTimeout);
       this.activate();
 
