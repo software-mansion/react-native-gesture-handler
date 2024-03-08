@@ -3,6 +3,9 @@ package com.swmansion.gesturehandler.core
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
+import android.view.VelocityTracker
+import kotlin.math.abs
+import kotlin.math.hypot
 
 class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   var numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
@@ -35,26 +38,69 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     handler!!.postDelayed(failDelayed, maxDurationMs)
   }
 
-  private fun tryEndFling(event: MotionEvent) = if (
-    maxNumberOfPointersSimultaneously == numberOfPointersRequired &&
-    (
-      direction and DIRECTION_RIGHT != 0 &&
-        event.rawX - startX > minAcceptableDelta ||
-        direction and DIRECTION_LEFT != 0 &&
-        startX - event.rawX > minAcceptableDelta ||
-        direction and DIRECTION_UP != 0 &&
-        startY - event.rawY > minAcceptableDelta ||
-        direction and DIRECTION_DOWN != 0 &&
-        event.rawY - startY > minAcceptableDelta
-      )
-  ) {
-    handler!!.removeCallbacksAndMessages(null)
-    activate()
-    true
-  } else {
-    false
-  }
+  private fun tryEndFling(event: MotionEvent): Boolean {
+    data class SimpleVector(val x: Double, val y: Double)
 
+    fun toSafeNumber(unsafe: Double): Double {
+      // todo: convert NaN, Infinity and Exception to 0
+      return unsafe
+    }
+
+    fun toUnitVector(vec: SimpleVector): SimpleVector {
+      val magnitude = abs(vec.x + vec.y)
+      // division by 0 may occur here
+      return SimpleVector(
+        toSafeNumber(vec.x / magnitude),
+        toSafeNumber(vec.y / magnitude)
+      )
+    }
+
+    fun compareSimilarity(
+      vecA: SimpleVector,
+      vecB: SimpleVector
+    ): Double {
+      val unitA = toUnitVector(vecA)
+      val unitB = toUnitVector(vecB)
+      // returns scalar on range from -1.0 to 1.0
+      return unitA.x * unitB.x + unitA.y * unitB.y
+    }
+
+    val directionVector = SimpleVector(
+      (if (direction and DIRECTION_LEFT != 0) -1.0 else 0.0) +
+        (if (direction and DIRECTION_RIGHT != 0) 1.0 else 0.0),
+      (if (direction and DIRECTION_UP != 0) -1.0 else 0.0) +
+        (if (direction and DIRECTION_DOWN != 0) 1.0 else 0.0),
+    )
+
+    val velocityTracker = VelocityTracker.obtain()
+    addVelocityMovement(velocityTracker, event)
+    velocityTracker!!.computeCurrentVelocity(1000)
+
+    val velocityVector: SimpleVector = SimpleVector(
+      velocityTracker.xVelocity.toDouble(),
+      velocityTracker.yVelocity.toDouble()
+    )
+
+    velocityTracker.recycle()
+
+    // hypot may be overkill for this simple function, simple addition would be sufficient
+    val totalVelocity = hypot(velocityVector.x, velocityVector.y)
+
+    val movementAlignment = compareSimilarity(directionVector, velocityVector)
+    val isAligned = movementAlignment > 0.75
+    val isFast = totalVelocity > this.minAcceptableDelta
+
+    if (
+      maxNumberOfPointersSimultaneously == numberOfPointersRequired &&
+      isAligned && isFast
+    ) {
+      handler!!.removeCallbacksAndMessages(null)
+      activate()
+      return true
+    } else {
+      return false
+    }
+  }
   override fun activate(force: Boolean) {
     super.activate(force)
     end()
@@ -95,9 +141,17 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     handler?.removeCallbacksAndMessages(null)
   }
 
+  private fun addVelocityMovement(tracker: VelocityTracker?, event: MotionEvent) {
+    val offsetX = event.rawX - event.x
+    val offsetY = event.rawY - event.y
+    event.offsetLocation(offsetX, offsetY)
+    tracker!!.addMovement(event)
+    event.offsetLocation(-offsetX, -offsetY)
+  }
+
   companion object {
     private const val DEFAULT_MAX_DURATION_MS: Long = 800
-    private const val DEFAULT_MIN_ACCEPTABLE_DELTA: Long = 160
+    private const val DEFAULT_MIN_ACCEPTABLE_DELTA: Long = 2000
     private const val DEFAULT_DIRECTION = DIRECTION_RIGHT
     private const val DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1
   }

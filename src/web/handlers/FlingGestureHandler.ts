@@ -91,11 +91,8 @@ export default class FlingGestureHandler extends GestureHandler {
       directionVector,
       velocityVector
     );
-    const isAligned = movementAlignment > 0.8;
+    const isAligned = movementAlignment > 0.75;
     const isFast = totalVelocity > this.minAcceptableDelta;
-
-    console.log('received', velocityVector, 'expected:', directionVector);
-    console.log('alignment:', movementAlignment, isAligned);
 
     if (
       this.maxNumberOfPointersSimultaneously ===
@@ -103,7 +100,6 @@ export default class FlingGestureHandler extends GestureHandler {
       isAligned &&
       isFast
     ) {
-      console.log('activating');
       clearTimeout(this.delayTimeout);
       this.activate();
 
