@@ -42,13 +42,15 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     data class SimpleVector(val x: Double, val y: Double)
 
     fun toSafeNumber(unsafe: Double): Double {
-      // todo: convert NaN, Infinity and Exception to 0
-      return unsafe
+      return if (unsafe.isFinite())
+        unsafe
+      else
+        0.0
     }
 
     fun toUnitVector(vec: SimpleVector): SimpleVector {
       val magnitude = abs(vec.x + vec.y)
-      // division by 0 may occur here
+      // toSafeNumber protects against division by zero
       return SimpleVector(
         toSafeNumber(vec.x / magnitude),
         toSafeNumber(vec.y / magnitude)
@@ -76,29 +78,29 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     addVelocityMovement(velocityTracker, event)
     velocityTracker!!.computeCurrentVelocity(1000)
 
-    val velocityVector: SimpleVector = SimpleVector(
+    val velocityVector = SimpleVector(
       velocityTracker.xVelocity.toDouble(),
       velocityTracker.yVelocity.toDouble()
     )
 
     velocityTracker.recycle()
 
-    // hypot may be overkill for this simple function, simple addition would be sufficient
+    // hypot may be overkill for this simple function, dot product may be sufficient
     val totalVelocity = hypot(velocityVector.x, velocityVector.y)
 
-    val movementAlignment = compareSimilarity(directionVector, velocityVector)
-    val isAligned = movementAlignment > 0.75
+    val isAligned = compareSimilarity(directionVector, velocityVector) > 0.75
     val isFast = totalVelocity > this.minAcceptableDelta
 
-    if (
+    return if (
       maxNumberOfPointersSimultaneously == numberOfPointersRequired &&
-      isAligned && isFast
+      isAligned &&
+      isFast
     ) {
       handler!!.removeCallbacksAndMessages(null)
       activate()
-      return true
+      true
     } else {
-      return false
+      false
     }
   }
   override fun activate(force: Boolean) {
