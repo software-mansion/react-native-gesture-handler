@@ -105,6 +105,10 @@ export default class TapGestureHandler extends GestureHandler {
 
   //Handling Events
   protected onPointerDown(event: AdaptedEvent): void {
+    if (!this.isButtonInConfig(event.button)) {
+      return;
+    }
+
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
 

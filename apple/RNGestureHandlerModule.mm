@@ -10,7 +10,6 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
-#import <React/RCTSurfacePresenter.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
@@ -34,7 +33,7 @@ using namespace react;
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
-@interface RNGestureHandlerModule () <RCTSurfacePresenterObserver, RNGestureHandlerStateManager>
+@interface RNGestureHandlerModule () <RNGestureHandlerStateManager, RCTTurboModule>
 
 @end
 #else
@@ -52,6 +51,12 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   NSMutableArray<GestureHandlerOperation> *_operations;
 }
 
+#ifdef RCT_NEW_ARCH_ENABLED
+@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+@synthesize bridge = _bridge;
+@synthesize dispatchToJSThread = _dispatchToJSThread;
+#endif // RCT_NEW_ARCH_ENABLED
+
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
@@ -68,9 +73,7 @@ RCT_EXPORT_MODULE()
 
   _manager = nil;
 
-#ifdef RCT_NEW_ARCH_ENABLED
-  [self.bridge.surfacePresenter removeObserver:self];
-#else
+#ifndef RCT_NEW_ARCH_ENABLED
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
 #endif // RCT_NEW_ARCH_ENABLED
 }
@@ -97,8 +100,7 @@ void decorateRuntime(jsi::Runtime &runtime)
         if (!arguments[0].isObject()) {
           return jsi::Value::null();
         }
-
-        auto shadowNode = arguments[0].asObject(runtime).getHostObject<ShadowNodeWrapper>(runtime)->shadowNode;
+        auto shadowNode = arguments[0].asObject(runtime).getNativeState<ShadowNode>(runtime);
         bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
 
         return jsi::Value(isFormsStackingContext);
@@ -107,6 +109,14 @@ void decorateRuntime(jsi::Runtime &runtime)
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
+#ifdef RCT_NEW_ARCH_ENABLED
+- (void)initialize
+{
+  _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
+                                                        viewRegistry:_viewRegistry_DEPRECATED];
+  _operations = [NSMutableArray new];
+}
+#else
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
@@ -115,23 +125,23 @@ void decorateRuntime(jsi::Runtime &runtime)
                                                 eventDispatcher:bridge.eventDispatcher];
   _operations = [NSMutableArray new];
 
-#ifdef RCT_NEW_ARCH_ENABLED
-  [bridge.surfacePresenter addObserver:self];
-#else
   [bridge.uiManager.observerCoordinator addObserver:self];
-#endif // RCT_NEW_ARCH_ENABLED
 }
+#endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 {
-  [self.bridge
-      dispatchBlock:^{
-        RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
-        auto runtime = (jsi::Runtime *)cxxBridge.runtime;
-        decorateRuntime(*runtime);
-      }
-              queue:RCTJSThread];
+  dispatch_block_t block = ^{
+    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)[RCTBridge currentBridge];
+    auto runtime = (jsi::Runtime *)cxxBridge.runtime;
+    decorateRuntime(*runtime);
+  };
+  if (_dispatchToJSThread) {
+    _dispatchToJSThread(block);
+  } else {
+    [[RCTBridge currentBridge] dispatchBlock:block queue:RCTJSThread];
+  }
 
   return @true;
 }
@@ -196,12 +206,11 @@ RCT_EXPORT_METHOD(flushOperations)
   NSArray<GestureHandlerOperation> *operations = _operations;
   _operations = [NSMutableArray new];
 
-  [self.bridge.uiManager
-      addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        for (GestureHandlerOperation operation in operations) {
-          operation(self->_manager);
-        }
-      }];
+  [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
+    for (GestureHandlerOperation operation in operations) {
+      operation(self->_manager);
+    }
+  }];
 #endif // RCT_NEW_ARCH_ENABLED
 }
 
@@ -243,27 +252,7 @@ RCT_EXPORT_METHOD(flushOperations)
   [_operations addObject:operation];
 }
 
-#pragma mark - RCTSurfacePresenterObserver
-
-#ifdef RCT_NEW_ARCH_ENABLED
-
-- (void)didMountComponentsWithRootTag:(NSInteger)rootTag
-{
-  RCTAssertMainQueue();
-
-  if (_operations.count == 0) {
-    return;
-  }
-
-  NSArray<GestureHandlerOperation> *operations = _operations;
-  _operations = [NSMutableArray new];
-
-  for (GestureHandlerOperation operation in operations) {
-    operation(self->_manager);
-  }
-}
-
-#else
+#ifndef RCT_NEW_ARCH_ENABLED
 
 #pragma mark - RCTUIManagerObserver
 
@@ -320,7 +309,7 @@ RCT_EXPORT_METHOD(flushOperations)
   };
 }
 
-#if RN_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {

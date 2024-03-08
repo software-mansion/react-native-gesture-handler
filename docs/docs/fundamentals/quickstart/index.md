@@ -16,21 +16,15 @@ RNGH2 provides much simpler way to add gestures to your app. All you need to do 
 
 To demonstrate how you would use the new API, let's make a simple app where you can drag a ball around. You will need to add `react-native-gesture-handler` (for gestures) and `react-native-reanimated` (for animations) modules.
 
-<Divider />
-
 <Step title="Step 1">
   <div>First let's define styles we will need to make the app:</div>
   <Step1 />
 </Step>
 
-<Divider />
-
 <Step title="Step 2">
-  <div>Then we can start writing our `Ball` component:</div>
+  <div>Then we can start writing our <code>Ball</code> component:</div>
   <Step2 />
 </Step>
-
-<Divider />
 
 <Step title="Step 3">
   <div>
@@ -44,14 +38,10 @@ To demonstrate how you would use the new API, let's make a simple app where you 
   <Step3 />
 </Step>
 
-<Divider />
-
 <Step title="Step 4">
   <div>And add it to the ball's styles:</div>
   <Step4 />
 </Step>
-
-<Divider />
 
 <Step title="Step 5">
   <div>
@@ -60,8 +50,6 @@ To demonstrate how you would use the new API, let's make a simple app where you 
   </div>
   <Step5 />
 </Step>
-
-<Divider />
 
 Note the `start` shared value. We need it to store the position of the ball at the moment we grab it to be able to correctly position it later, because we only have access to translation relative to the starting point of the gesture.
 

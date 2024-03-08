@@ -1,5 +1,5 @@
+import { PointerType } from '../../PointerType';
 import { State } from '../../State';
-import { PointerType } from '../interfaces';
 
 import GestureHandler from '../handlers/GestureHandler';
 import PointerTracker from './PointerTracker';
@@ -66,7 +66,20 @@ export default class GestureHandlerOrchestrator {
     return hasToWait;
   }
 
+  private shouldBeCancelledByFinishedHandler(handler: GestureHandler): boolean {
+    return this.gestureHandlers.some(
+      (otherHandler) =>
+        this.shouldHandlerWaitForOther(handler, otherHandler) &&
+        otherHandler.getState() === State.END
+    );
+  }
+
   private tryActivate(handler: GestureHandler): void {
+    if (this.shouldBeCancelledByFinishedHandler(handler)) {
+      handler.cancel();
+      return;
+    }
+
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler);
     } else if (
@@ -359,7 +372,7 @@ export default class GestureHandlerOrchestrator {
     this.gestureHandlers.forEach((handler: GestureHandler) => {
       if (
         handler.getPointerType() !== PointerType.MOUSE &&
-        handler.getPointerType() !== PointerType.PEN
+        handler.getPointerType() !== PointerType.STYLUS
       ) {
         return;
       }

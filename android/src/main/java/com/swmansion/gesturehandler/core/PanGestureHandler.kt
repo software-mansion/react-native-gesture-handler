@@ -208,6 +208,10 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+    if (!shouldActivateWithMouse(sourceEvent)) {
+      return
+    }
+
     val state = state
     val action = sourceEvent.actionMasked
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
@@ -246,7 +250,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       velocityX = velocityTracker!!.xVelocity
       velocityY = velocityTracker!!.yVelocity
     }
-    if (action == MotionEvent.ACTION_UP) {
+    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_BUTTON_RELEASE) {
       if (state == STATE_ACTIVE) {
         end()
       } else {

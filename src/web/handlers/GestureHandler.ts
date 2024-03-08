@@ -7,15 +7,16 @@ import {
   ResultEvent,
   PointerData,
   ResultTouchEvent,
-  PointerType,
   TouchEventType,
   EventTypes,
+  MouseButton,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import { PointerType } from '../../PointerType';
 
 export default abstract class GestureHandler {
   private lastSentState: State | null = null;
@@ -37,7 +38,7 @@ export default abstract class GestureHandler {
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
-  protected pointerType: PointerType = PointerType.NONE;
+  protected pointerType: PointerType = PointerType.MOUSE;
 
   protected delegate: GestureHandlerDelegate<unknown>;
 
@@ -117,6 +118,10 @@ export default abstract class GestureHandler {
     );
 
     this.onStateChange(newState, oldState);
+
+    if (!this.enabled && this.isFinished()) {
+      this.currentState = State.UNDETERMINED;
+    }
   }
 
   protected onStateChange(_newState: State, _oldState: State): void {}
@@ -416,6 +421,7 @@ export default abstract class GestureHandler {
         handlerTag: this.handlerTag,
         target: this.viewRef,
         oldState: newState !== oldState ? oldState : undefined,
+        pointerType: this.pointerType,
       },
       timeStamp: Date.now(),
     };
@@ -736,7 +742,19 @@ export default abstract class GestureHandler {
     return false;
   }
 
+  public isButtonInConfig(mouseButton: MouseButton | undefined) {
+    return (
+      !mouseButton ||
+      (!this.config.mouseButton && mouseButton === MouseButton.LEFT) ||
+      (this.config.mouseButton && mouseButton & this.config.mouseButton)
+    );
+  }
+
   protected resetConfig(): void {}
+
+  public onDestroy(): void {
+    this.delegate.destroy(this.config);
+  }
 
   //
   // Getters and setters

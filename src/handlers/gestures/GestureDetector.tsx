@@ -19,6 +19,7 @@ import {
   HandlerStateChangeEvent,
   scheduleFlushOperations,
   UserSelect,
+  TouchAction,
 } from '../gestureHandlerCommon';
 import {
   GestureStateManager,
@@ -605,10 +606,30 @@ const applyUserSelectProp = (
   }
 };
 
+const applyEnableContextMenuProp = (
+  enableContextMenu: boolean,
+  gesture: ComposedGesture | GestureType
+): void => {
+  for (const g of gesture.toGestureArray()) {
+    g.config.enableContextMenu = enableContextMenu;
+  }
+};
+
+const applyTouchActionProp = (
+  touchAction: TouchAction,
+  gesture: ComposedGesture | GestureType
+): void => {
+  for (const g of gesture.toGestureArray()) {
+    g.config.touchAction = touchAction;
+  }
+};
+
 interface GestureDetectorProps {
   gesture: ComposedGesture | GestureType;
-  userSelect?: UserSelect;
   children?: React.ReactNode;
+  userSelect?: UserSelect;
+  enableContextMenu?: boolean;
+  touchAction?: TouchAction;
 }
 interface GestureDetectorState {
   firstRender: boolean;
@@ -628,6 +649,14 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   if (props.userSelect) {
     applyUserSelectProp(props.userSelect, gestureConfig);
+  }
+
+  if (props.enableContextMenu !== undefined) {
+    applyEnableContextMenuProp(props.enableContextMenu, gestureConfig);
+  }
+
+  if (props.touchAction !== undefined) {
+    applyTouchActionProp(props.touchAction, gestureConfig);
   }
 
   const gesture = gestureConfig.toGestureArray();

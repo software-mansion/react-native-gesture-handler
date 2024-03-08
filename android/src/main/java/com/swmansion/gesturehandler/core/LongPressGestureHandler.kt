@@ -38,6 +38,10 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+    if (!shouldActivateWithMouse(sourceEvent)) {
+      return
+    }
+
     if (state == STATE_UNDETERMINED) {
       previousTime = SystemClock.uptimeMillis()
       startTime = previousTime
@@ -51,7 +55,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
         activate()
       }
     }
-    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP || sourceEvent.actionMasked == MotionEvent.ACTION_BUTTON_RELEASE) {
       handler?.let {
         it.removeCallbacksAndMessages(null)
         handler = null

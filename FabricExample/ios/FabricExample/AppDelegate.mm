@@ -19,6 +19,11 @@
   return [self getBundleURL];
 }
 
+- (NSURL *)bundleURL
+{
+  return [self getBundleURL];
+}
+
 - (NSURL *)getBundleURL
 {
 #if DEBUG

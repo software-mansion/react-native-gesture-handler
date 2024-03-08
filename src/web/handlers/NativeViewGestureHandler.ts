@@ -28,15 +28,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const view = this.delegate.getView() as HTMLElement;
 
     view.style['touchAction'] = 'auto';
-
     //@ts-ignore Turns on defualt touch behavior on Safari
     view.style['WebkitTouchCallout'] = 'auto';
 
-    if (view.hasAttribute('role')) {
-      this.buttonRole = true;
-    } else {
-      this.buttonRole = false;
-    }
+    this.buttonRole = view.getAttribute('role') === 'button';
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
@@ -163,5 +158,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   public disallowsInterruption(): boolean {
     return this.disallowInterruption;
+  }
+
+  public isButton(): boolean {
+    return this.buttonRole;
   }
 }

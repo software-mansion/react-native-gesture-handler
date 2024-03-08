@@ -12,6 +12,8 @@ import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
+import { MouseButton } from '../web/interfaces';
+import { PointerType } from '../PointerType';
 
 const commonProps = [
   'id',
@@ -21,6 +23,9 @@ const commonProps = [
   'cancelsTouchesInView',
   'userSelect',
   'activeCursor',
+  'mouseButton',
+  'enableContextMenu',
+  'touchAction',
 ] as const;
 
 const componentInteractionProps = [
@@ -51,6 +56,7 @@ export interface GestureEventPayload {
   handlerTag: number;
   numberOfPointers: number;
   state: ValueOf<typeof State>;
+  pointerType: PointerType;
 }
 export interface HandlerStateChangeEventPayload extends GestureEventPayload {
   oldState: ValueOf<typeof State>;
@@ -108,6 +114,23 @@ export type ActiveCursor =
   | 'zoom-in'
   | 'zoom-out';
 
+export type TouchAction =
+  | 'auto'
+  | 'none'
+  | 'pan-x'
+  | 'pan-left'
+  | 'pan-right'
+  | 'pan-y'
+  | 'pan-up'
+  | 'pan-down'
+  | 'pinch-zoom'
+  | 'manipulation'
+  | 'inherit'
+  | 'initial'
+  | 'revert'
+  | 'revert-layer'
+  | 'unset';
+
 //TODO(TS) events in handlers
 
 export interface GestureEvent<ExtraEventPayloadT = Record<string, unknown>> {
@@ -149,6 +172,9 @@ export type CommonGestureConfig = {
   hitSlop?: HitSlop;
   userSelect?: UserSelect;
   activeCursor?: ActiveCursor;
+  mouseButton?: MouseButton;
+  enableContextMenu?: boolean;
+  touchAction?: TouchAction;
 };
 
 // Events payloads are types instead of interfaces due to TS limitation.

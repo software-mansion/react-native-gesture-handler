@@ -1,0 +1,21 @@
+.testimonialsContainer {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  gap: 5rem;
+}
+.title {
+  font-size: var(--swm-h2-font-size);
+}
+
+@media (max-width: 768px) {
+  .testimonialsContainer {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .title {
+    font-size: 24px;
+  }
+}

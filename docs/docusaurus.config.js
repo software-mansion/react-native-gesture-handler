@@ -1,130 +1,34 @@
-/** @type {import('@docusaurus/types').DocusaurusConfig} */
-
-const prismConfig = {
-  plain: {
-    color: '#ffffff',
-    backgroundColor: '#001a72',
-  },
-  styles: [
-    {
-      types: ['comment'],
-      style: {
-        color: '#aaaaaa',
-        fontStyle: 'italic',
-      },
-    },
-    {
-      types: ['string'],
-      style: {
-        color: '#ffffff',
-      },
-    },
-    {
-      types: ['punctuation'],
-      style: {
-        color: '#ffee86',
-      },
-    },
-    {
-      types: ['variable', 'constant', 'builtin', 'attr-name'],
-      style: {
-        color: '#a3b8ff',
-      },
-    },
-    {
-      types: ['number', 'operator'],
-      style: {
-        color: '#ffaaa8',
-      },
-    },
-    {
-      types: ['keyword'],
-      style: {
-        color: '#8ed3ef',
-      },
-    },
-    {
-      types: ['char'],
-      style: {
-        color: '#a3b8ff',
-      },
-    },
-    {
-      types: ['tag'],
-      style: {
-        color: '#ffaaa8',
-      },
-    },
-    {
-      types: ['function'],
-      style: {
-        color: '#a3b8ff',
-      },
-    },
-  ],
-};
 /*
 In swizzled components look for "SWM -" string to see our modifications
 */
 
-module.exports = {
+const lightCodeTheme = require('./src/theme/CodeBlock/highlighting-light.js');
+const darkCodeTheme = require('./src/theme/CodeBlock/highlighting-dark.js');
+// @ts-check
+const webpack = require('webpack');
+
+/** @type {import('@docusaurus/types').Config} */
+const config = {
   title: 'React Native Gesture Handler',
-  tagline:
-    'Declarative API exposing platform native touch and gesture system to React Native.',
+  favicon: 'img/favicon.ico',
+
   url: 'https://docs.swmansion.com',
+
   baseUrl: '/react-native-gesture-handler/',
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/SWM_Fav_192x192.png',
+
   organizationName: 'software-mansion',
+  projectName: 'react-native-gesture-handler',
   customFields: {
     shortTitle: 'Gesture Handler',
   },
-  projectName: 'react-native-gesture-handler',
-  themeConfig: {
-    algolia: {
-      appId: 'BKGDKVWG6F',
-      apiKey: '742696612cb124b06465cf68bce6ec92',
-      indexName: 'react-native-gesture-handler',
-      // contextualSearch: true, // doesn't work for some reason
-    },
-    colorMode: {
-      disableSwitch: true,
-    },
-    navbar: {
-      title: 'React Native Gesture Handler',
-      items: [
-        {
-          type: 'docsVersionDropdown',
-          position: 'right',
-        },
-        {
-          type: 'search',
-          position: 'right',
-        },
-        {
-          className: 'github-navbar-logo',
-          href: 'https://github.com/software-mansion/react-native-gesture-handler/',
-          label: 'Github',
-          position: 'right',
-        },
-      ],
-    },
-    footer: {
-      logo: {
-        alt: 'Software Mansion',
-        src: 'img/swmLogo.svg',
-        href: 'https://swmansion.com/',
-      },
-    },
-    prism: {
-      theme: prismConfig,
-    },
-  },
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
+
   presets: [
     [
-      '@docusaurus/preset-classic',
-      {
+      'classic',
+      /** @type {import('@docusaurus/preset-classic').Options} */
+      ({
         docs: {
           breadcrumbs: false,
           sidebarPath: require.resolve('./sidebars.js'),
@@ -139,13 +43,113 @@ module.exports = {
           },
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: require.resolve('./src/css/index.css'),
         },
         googleAnalytics: {
           trackingID: 'UA-41044622-6',
-          anonymizeIP: true, // Should IPs be anonymized?
+          anonymizeIP: true,
         },
-      },
+      }),
     ],
   ],
+
+  themeConfig:
+    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+    ({
+      image: 'img/og-image.png',
+      metadata: [
+        { name: 'og:image:width', content: '1200' },
+        { name: 'og:image:height', content: '630' },
+      ],
+      navbar: {
+        title: 'React Native Gesture Handler',
+        hideOnScroll: true,
+        logo: {
+          alt: 'React Native Gesture Handler',
+          src: 'img/logo-hero.svg',
+        },
+        items: [
+          {
+            to: 'docs/',
+            activeBasePath: 'docs',
+            label: 'Docs',
+            position: 'right',
+          },
+          {
+            type: 'docsVersionDropdown',
+            position: 'right',
+            dropdownActiveClassDisabled: true,
+          },
+          {
+            href: 'https://github.com/software-mansion/react-native-gesture-handler',
+            position: 'right',
+            className: 'header-github',
+            'aria-label': 'GitHub repository',
+          },
+        ],
+      },
+      announcementBar: {
+        content: ' ',
+        backgroundColor: '#03c',
+        textColor: '#fff',
+      },
+      footer: {
+        style: 'light',
+        links: [],
+        copyright:
+          'All trademarks and copyrights belong to their respective owners.',
+      },
+      prism: {
+        theme: lightCodeTheme,
+        darkTheme: darkCodeTheme,
+      },
+      algolia: {
+        appId: 'BKGDKVWG6F',
+        apiKey: '742696612cb124b06465cf68bce6ec92',
+        indexName: 'react-native-gesture-handler',
+      },
+    }),
+  plugins: [
+    ...[
+      process.env.NODE_ENV === 'production' && '@docusaurus/plugin-debug',
+    ].filter(Boolean),
+    async function reanimatedDocusaurusPlugin(context, options) {
+      return {
+        name: 'react-native-reanimated/docusaurus-plugin',
+        configureWebpack(config, isServer, utils) {
+          const processMock = !isServer ? { process: { env: {} } } : {};
+
+          const raf = require('raf');
+          raf.polyfill();
+
+          return {
+            mergeStrategy: {
+              'resolve.extensions': 'prepend',
+            },
+            plugins: [
+              new webpack.DefinePlugin({
+                ...processMock,
+                __DEV__: 'false',
+                setImmediate: () => {},
+              }),
+            ],
+            module: {
+              rules: [
+                {
+                  test: /\.txt/,
+                  type: 'asset/source',
+                },
+              ],
+            },
+            resolve: {
+              alias: { 'react-native$': 'react-native-web' },
+              extensions: ['.web.js', '...'],
+            },
+          };
+        },
+      };
+    },
+  ],
 };
+
+module.exports = config;

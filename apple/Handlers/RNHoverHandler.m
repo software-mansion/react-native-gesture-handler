@@ -56,6 +56,12 @@ API_AVAILABLE(ios(13.4))
   self.enabled = NO;
 }
 
+- (void)reset
+{
+  [super reset];
+  [_gestureHandler reset];
+}
+
 - (UIPointerStyle *)pointerInteraction:(UIPointerInteraction *)interaction styleForRegion:(UIPointerRegion *)region
 {
   if (interaction.view != nil && _hoverEffect != RNGestureHandlerHoverEffectNone) {
@@ -149,7 +155,8 @@ API_AVAILABLE(ios(13.4))
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
-                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window]];
+                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+                                     withPointerType:UITouchTypePencil];
 }
 
 @end

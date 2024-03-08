@@ -9,6 +9,7 @@
 #import "RNPanHandler.h"
 
 #if TARGET_OS_OSX
+
 @interface RNBetterPanGestureRecognizer : NSPanGestureRecognizer
 #else
 #import <UIKit/UIGestureRecognizerSubclass.h>
@@ -123,6 +124,7 @@
 
   if (self.state == UIGestureRecognizerStatePossible && [self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
+    [self triggerAction];
     return;
   }
 
@@ -165,6 +167,7 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
+  [_gestureHandler setCurrentPointerTypeToMouse];
   // super call was moved to interactionsBegan method to keep the
   // original order of calls
   [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
@@ -186,6 +189,7 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   // super call was moved to interactionsBegan method to keep the
   // original order of calls
   [self interactionsBegan:touches withEvent:event];
@@ -218,6 +222,7 @@
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
   self.enabled = YES;
   [super reset];
+  [_gestureHandler reset];
 }
 
 - (void)updateHasCustomActivationCriteria
@@ -398,7 +403,8 @@
                            withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
                                 withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
-                            withNumberOfTouches:1];
+                            withNumberOfTouches:1
+                                withPointerType:RNGestureHandlerMouse];
 }
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
@@ -407,7 +413,8 @@
                            withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                                 withTranslation:[recognizer translationInView:recognizer.view.window]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window]
-                            withNumberOfTouches:recognizer.numberOfTouches];
+                            withNumberOfTouches:recognizer.numberOfTouches
+                                withPointerType:_pointerType];
 }
 #endif
 

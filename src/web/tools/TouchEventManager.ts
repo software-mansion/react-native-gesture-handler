@@ -1,12 +1,7 @@
-import {
-  AdaptedEvent,
-  EventTypes,
-  MouseButtons,
-  PointerType,
-  TouchEventType,
-} from '../interfaces';
+import { AdaptedEvent, EventTypes, TouchEventType } from '../interfaces';
 import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
+import { PointerType } from '../../PointerType';
 
 export default class TouchEventManager extends EventManager<HTMLElement> {
   public setListeners(): void {
@@ -157,7 +152,6 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
       pointerId: event.changedTouches[index].identifier,
       eventType: eventType,
       pointerType: PointerType.TOUCH,
-      buttons: MouseButtons.NONE,
       time: event.timeStamp,
       allTouches: event.touches,
       changedTouches: event.changedTouches,

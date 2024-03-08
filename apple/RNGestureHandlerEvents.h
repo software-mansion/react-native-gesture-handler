@@ -12,36 +12,45 @@
 
 - (instancetype)initWithData:(NSDictionary *)data;
 
-+ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position withAbsolutePosition:(CGPoint)absolutePosition;
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
-                            withNumberOfTouches:(NSUInteger)numberOfTouches;
+                                withPointerType:(NSInteger)pointerType;
 + (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
                             withNumberOfTouches:(NSUInteger)numberOfTouches
-                                   withDuration:(NSUInteger)duration;
+                                withPointerType:(NSInteger)pointerType;
++ (RNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
+                           withAbsolutePosition:(CGPoint)absolutePosition
+                            withNumberOfTouches:(NSUInteger)numberOfTouches
+                                   withDuration:(NSUInteger)duration
+                                withPointerType:(NSInteger)pointerType;
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation
                               withVelocity:(CGPoint)velocity
-                       withNumberOfTouches:(NSUInteger)numberOfTouches;
+                       withNumberOfTouches:(NSUInteger)numberOfTouches
+                           withPointerType:(NSInteger)pointerType;
 + (RNGestureHandlerEventExtraData *)forForce:(CGFloat)force
                                  forPosition:(CGPoint)position
                         withAbsolutePosition:(CGPoint)absolutePosition
-                         withNumberOfTouches:(NSUInteger)numberOfTouches;
+                         withNumberOfTouches:(NSUInteger)numberOfTouches
+                             withPointerType:(NSInteger)pointerType;
 + (RNGestureHandlerEventExtraData *)forPinch:(CGFloat)scale
                               withFocalPoint:(CGPoint)focalPoint
                                 withVelocity:(CGFloat)velocity
-                         withNumberOfTouches:(NSUInteger)numberOfTouches;
+                         withNumberOfTouches:(NSUInteger)numberOfTouches
+                             withPointerType:(NSInteger)pointerType;
 + (RNGestureHandlerEventExtraData *)forRotation:(CGFloat)rotation
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
-                            withNumberOfTouches:(NSUInteger)numberOfTouches;
+                            withNumberOfTouches:(NSUInteger)numberOfTouches
+                                withPointerType:(NSInteger)pointerType;
 + (RNGestureHandlerEventExtraData *)forEventType:(RNGHTouchEventType)eventType
                              withChangedPointers:(NSArray<NSDictionary *> *)changedPointers
                                  withAllPointers:(NSArray<NSDictionary *> *)allPointers
-                             withNumberOfTouches:(NSUInteger)numberOfTouches;
-+ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside;
+                             withNumberOfTouches:(NSUInteger)numberOfTouches
+                                 withPointerType:(NSInteger)pointerType;
++ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside withPointerType:(NSInteger)pointerType;
 @end
 
 @interface RNGestureHandlerEvent : NSObject <RCTEvent>
