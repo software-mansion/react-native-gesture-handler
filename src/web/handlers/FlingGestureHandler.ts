@@ -17,9 +17,6 @@ export default class FlingGestureHandler extends GestureHandler {
   private minAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA;
   private delayTimeout!: number;
 
-  private startX = 0;
-  private startY = 0;
-
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;
 
@@ -40,9 +37,6 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private startFling(): void {
-    this.startX = this.tracker.getLastX(this.keyPointer);
-    this.startY = this.tracker.getLastY(this.keyPointer);
-
     this.begin();
 
     this.maxNumberOfPointersSimultaneously = 1;
