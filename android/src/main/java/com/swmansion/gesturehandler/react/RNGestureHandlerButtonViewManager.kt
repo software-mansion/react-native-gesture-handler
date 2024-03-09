@@ -91,6 +91,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.borderWidth = borderWidth
   }
 
+  @ReactProp(name = "borderColor")
+  override fun setBorderColor(view: ButtonViewGroup, borderColor: Int?) {
+    view.borderColor = borderColor
+  }
+
   @ReactProp(name = "rippleColor")
   override fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
     view.rippleColor = rippleColor
@@ -157,10 +162,13 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       set(radius) = withBackgroundUpdate {
         field = radius * resources.displayMetrics.density
       }
-
     var borderWidth = 0f
       set(width) = withBackgroundUpdate {
         field = width * resources.displayMetrics.density
+      }
+    var borderColor: Int? = null
+      set(color) = withBackgroundUpdate {
+        field = color
       }
 
     private val hasBorderRadii: Boolean
@@ -272,7 +280,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         borderDrawable.paint.apply {
           style = Paint.Style.STROKE
           strokeWidth = borderWidth
-          color = Color.BLACK
+          color = borderColor ?: Color.BLACK
         }
       }
 

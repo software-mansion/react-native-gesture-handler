@@ -46,8 +46,14 @@ export default function RectButtonBorders() {
           borderBottomRightRadius: 32,
         }}
       />
-      <Button text="Border Dashed" style={{ borderStyle: 'dashed' }} />
-      <Button text="Border Dotted" style={{ borderStyle: 'dotted' }} />
+      <Button
+        text="Border Dashed"
+        style={{ borderStyle: 'dashed', borderWidth: 2, borderColor: 'red' }}
+      />
+      <Button
+        text="Border Dotted"
+        style={{ borderStyle: 'dotted', borderWidth: 2, borderColor: 'red' }}
+      />
       <Button
         text="Border Solid"
         style={{ borderStyle: 'solid', borderWidth: 2, borderColor: 'red' }}
