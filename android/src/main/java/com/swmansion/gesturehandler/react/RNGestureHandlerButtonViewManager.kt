@@ -5,7 +5,9 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.graphics.Paint
+import android.graphics.PathEffect
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.PaintDrawable
@@ -96,6 +98,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.borderColor = borderColor
   }
 
+  @ReactProp(name = "borderStyle")
+  override fun setBorderStyle(view: ButtonViewGroup, borderStyle: String?) {
+    view.borderStyle = borderStyle
+  }
+
   @ReactProp(name = "rippleColor")
   override fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
     view.rippleColor = rippleColor
@@ -170,6 +177,10 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       set(color) = withBackgroundUpdate {
         field = color
       }
+    var borderStyle: String? = "solid"
+      set(style) = withBackgroundUpdate {
+        field = style
+      }
 
     private val hasBorderRadii: Boolean
       get() = borderRadius != 0f ||
@@ -216,6 +227,14 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       )
         .map { if (it != 0f) it else borderRadius }
         .toFloatArray()
+    }
+
+    private fun buildBorderStyle(): PathEffect? {
+      return when (borderStyle) {
+        "dotted" -> DashPathEffect(floatArrayOf(borderWidth, borderWidth, borderWidth, borderWidth), 0f)
+        "dashed" -> DashPathEffect(floatArrayOf(borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3), 0f)
+        else -> null
+      }
     }
 
     override fun setBackgroundColor(color: Int) = withBackgroundUpdate {
@@ -281,6 +300,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
           style = Paint.Style.STROKE
           strokeWidth = borderWidth
           color = borderColor ?: Color.BLACK
+          pathEffect = buildBorderStyle()
         }
       }
 

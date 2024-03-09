@@ -49,6 +49,9 @@ public class RNGestureHandlerButtonManagerDelegate<T extends View, U extends Bas
       case "borderColor":
         mViewManager.setBorderColor(view, ColorPropConverter.getColor(value, view.getContext()));
         break;
+      case "borderStyle":
+        mViewManager.setBorderStyle(view, value == null ? "solid" : (String) value);
+        break;
       default:
         super.setProperty(view, propName, value);
     }

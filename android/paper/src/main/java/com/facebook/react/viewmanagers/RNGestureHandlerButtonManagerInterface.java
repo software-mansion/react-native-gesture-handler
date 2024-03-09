@@ -22,4 +22,5 @@ public interface RNGestureHandlerButtonManagerInterface<T extends View> {
   void setTouchSoundDisabled(T view, boolean value);
   void setBorderWidth(T view, float value);
   void setBorderColor(T view, @Nullable Integer value);
+  void setBorderStyle(T view, @Nullable String value);
 }
