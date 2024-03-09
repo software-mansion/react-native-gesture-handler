@@ -20,4 +20,5 @@ public interface RNGestureHandlerButtonManagerInterface<T extends View> {
   void setRippleColor(T view, @Nullable Integer value);
   void setRippleRadius(T view, int value);
   void setTouchSoundDisabled(T view, boolean value);
+  void setBorderWidth(T view, float value);
 }

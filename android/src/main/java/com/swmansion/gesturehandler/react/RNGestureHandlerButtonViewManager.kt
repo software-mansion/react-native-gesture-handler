@@ -5,6 +5,7 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.PaintDrawable
@@ -85,6 +86,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.borderBottomRightRadius = borderBottomRightRadius
   }
 
+  @ReactProp(name = "borderWidth")
+  override fun setBorderWidth(view: ButtonViewGroup, borderWidth: Float) {
+    view.borderWidth = borderWidth
+  }
+
   @ReactProp(name = "rippleColor")
   override fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
     view.rippleColor = rippleColor
@@ -150,6 +156,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     var borderBottomRightRadius = 0f
       set(radius) = withBackgroundUpdate {
         field = radius * resources.displayMetrics.density
+      }
+
+    var borderWidth = 0f
+      set(width) = withBackgroundUpdate {
+        field = width * resources.displayMetrics.density
       }
 
     private val hasBorderRadii: Boolean
@@ -250,12 +261,22 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     private fun updateBackgroundColor(backgroundColor: Int, selectable: Drawable?) {
       val colorDrawable = PaintDrawable(backgroundColor)
+      val borderDrawable = PaintDrawable(Color.TRANSPARENT)
 
       if (hasBorderRadii) {
         colorDrawable.setCornerRadii(buildBorderRadii())
+        borderDrawable.setCornerRadii(buildBorderRadii())
       }
 
-      val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable) else arrayOf(colorDrawable))
+      if (borderWidth > 0f) {
+        borderDrawable.paint.apply {
+          style = Paint.Style.STROKE
+          strokeWidth = borderWidth
+          color = Color.BLACK
+        }
+      }
+
+      val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable, borderDrawable) else arrayOf(colorDrawable, borderDrawable))
       background = layerDrawable
     }
 

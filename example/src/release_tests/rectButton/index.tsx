@@ -50,7 +50,7 @@ export default function RectButtonBorders() {
       <Button text="Border Dotted" style={{ borderStyle: 'dotted' }} />
       <Button
         text="Border Solid"
-        style={{ borderStyle: 'solid', borderWidth: 1, borderColor: 'red' }}
+        style={{ borderStyle: 'solid', borderWidth: 2, borderColor: 'red' }}
       />
     </View>
   );
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 8,
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderColor: '#001a72',
   },
   text: {
