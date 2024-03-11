@@ -13,7 +13,6 @@ const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
 export default class FlingGestureHandler extends GestureHandler {
   private numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
   private direction = DEFAULT_DIRECTION;
-  private shouldCancelWhenOutside = false;
 
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
   private minVelocity = DEFAULT_MIN_VELOCITY;
@@ -26,7 +25,7 @@ export default class FlingGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
 
-    this.setShouldCancelWhenOutside(this.shouldCancelWhenOutside);
+    this.setShouldCancelWhenOutside(this.shouldCancellWhenOutside);
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
@@ -101,7 +100,7 @@ export default class FlingGestureHandler extends GestureHandler {
 
     const totalVelocity = Math.hypot(velocityVector.x, velocityVector.y);
 
-    const isAligned = alignmentList.reduce((any, element) => any || element);
+    const isAligned = alignmentList.some((element) => element);
     const isFast = totalVelocity > this.minVelocity;
 
     if (

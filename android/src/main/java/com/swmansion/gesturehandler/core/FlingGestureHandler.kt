@@ -86,7 +86,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
 
     val totalVelocity = hypot(velocityVector.x, velocityVector.y)
 
-    val isAligned = alignmentList.reduce { any, element -> any or element }
+    val isAligned = alignmentList.any { it }
     val isFast = totalVelocity > this.minVelocity
 
     return if (
