@@ -162,7 +162,7 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected pointerMove(event: AdaptedEvent): void {
+  private pointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
     if (this.currentState !== State.BEGAN) {
