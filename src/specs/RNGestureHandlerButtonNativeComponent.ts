@@ -2,6 +2,7 @@ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNati
 import type {
   Int32,
   WithDefault,
+  Float,
 } from 'react-native/Libraries/Types/CodegenTypes';
 import type { ViewProps, ColorValue } from 'react-native';
 
@@ -13,6 +14,9 @@ interface NativeProps extends ViewProps {
   rippleColor?: ColorValue;
   rippleRadius?: Int32;
   touchSoundDisabled?: WithDefault<boolean, false>;
+  borderWidth?: Float;
+  borderColor?: ColorValue;
+  borderStyle?: WithDefault<string, 'solid'>;
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');
