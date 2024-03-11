@@ -5,16 +5,19 @@ import { AdaptedEvent, Config } from '../interfaces';
 import GestureHandler from './GestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 800;
-const DEFAULT_MIN_ACCEPTABLE_DELTA = 400;
+const DEFAULT_MIN_VELOCITY = 400;
+const DEFAULT_MIN_DIRECTION_ALIGNMENT = 0.75;
 const DEFAULT_DIRECTION = Direction.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
 
 export default class FlingGestureHandler extends GestureHandler {
   private numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
   private direction = DEFAULT_DIRECTION;
+  private shouldCancelWhenOutside = false;
 
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
-  private minAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA;
+  private minVelocity = DEFAULT_MIN_VELOCITY;
+  private minDirectionAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT;
   private delayTimeout!: number;
 
   private maxNumberOfPointersSimultaneously = 0;
@@ -22,6 +25,8 @@ export default class FlingGestureHandler extends GestureHandler {
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
+
+    this.setShouldCancelWhenOutside(this.shouldCancelWhenOutside);
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
@@ -52,7 +57,7 @@ export default class FlingGestureHandler extends GestureHandler {
     };
 
     const toUnitVector = (vec: SimpleVector): SimpleVector => {
-      const magnitude = Math.abs(vec.x + vec.y);
+      const magnitude = Math.hypot(vec.x, vec.y);
       // division by 0 may occur here
       return {
         x: toSafeNumber(vec.x / magnitude),
@@ -70,13 +75,15 @@ export default class FlingGestureHandler extends GestureHandler {
       return unitA.x * unitB.x + unitA.y * unitB.y;
     };
 
-    const directionVector: SimpleVector = {
-      x:
-        (this.direction & Direction.LEFT ? -1 : 0) +
-        (this.direction & Direction.RIGHT ? 1 : 0),
-      y:
-        (this.direction & Direction.UP ? -1 : 0) +
-        (this.direction & Direction.DOWN ? 1 : 0),
+    const compareAlignment = (
+      vec: SimpleVector,
+      directionVec: SimpleVector,
+      direction: number
+    ): boolean => {
+      return !!(
+        compareSimilarity(vec, directionVec) > this.minDirectionAlignment &&
+        this.direction & direction
+      );
     };
 
     const velocityVector: SimpleVector = {
@@ -84,15 +91,18 @@ export default class FlingGestureHandler extends GestureHandler {
       y: this.tracker.getVelocityY(this.keyPointer),
     };
 
-    // hypot may be overkill for this simple function, simple addition would be sufficient
+    // list of alignments to all activated directions
+    const alignmentList = [
+      compareAlignment(velocityVector, { x: -1, y: 0 }, Direction.LEFT),
+      compareAlignment(velocityVector, { x: 1, y: 0 }, Direction.RIGHT),
+      compareAlignment(velocityVector, { x: 0, y: -1 }, Direction.UP),
+      compareAlignment(velocityVector, { x: 0, y: 1 }, Direction.DOWN),
+    ];
+
     const totalVelocity = Math.hypot(velocityVector.x, velocityVector.y);
 
-    const movementAlignment = compareSimilarity(
-      directionVector,
-      velocityVector
-    );
-    const isAligned = movementAlignment > 0.75;
-    const isFast = totalVelocity > this.minAcceptableDelta;
+    const isAligned = alignmentList.reduce((any, element) => any || element);
+    const isFast = totalVelocity > this.minVelocity;
 
     if (
       this.maxNumberOfPointersSimultaneously ===
