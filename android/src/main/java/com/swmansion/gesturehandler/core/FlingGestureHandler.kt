@@ -11,7 +11,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   var direction = DEFAULT_DIRECTION
 
   private val maxDurationMs = DEFAULT_MAX_DURATION_MS
-  private val minVelocity = DEFAULT_MIN_ACCEPTABLE_DELTA
+  private val minVelocity = DEFAULT_MIN_VELOCITY
   private val minDirectionAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT
   private var handler: Handler? = null
   private var maxNumberOfPointersSimultaneously = 0
@@ -151,7 +151,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
 
   companion object {
     private const val DEFAULT_MAX_DURATION_MS: Long = 800
-    private const val DEFAULT_MIN_ACCEPTABLE_DELTA: Long = 2000
+    private const val DEFAULT_MIN_VELOCITY: Long = 2000
     private const val DEFAULT_MIN_DIRECTION_ALIGNMENT: Double = 0.75
     private const val DEFAULT_DIRECTION = DIRECTION_RIGHT
     private const val DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1
