@@ -43,6 +43,15 @@ public class RNGestureHandlerButtonManagerDelegate<T extends View, U extends Bas
       case "touchSoundDisabled":
         mViewManager.setTouchSoundDisabled(view, value == null ? false : (boolean) value);
         break;
+      case "borderWidth":
+        mViewManager.setBorderWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderColor":
+        mViewManager.setBorderColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderStyle":
+        mViewManager.setBorderStyle(view, value == null ? "solid" : (String) value);
+        break;
       default:
         super.setProperty(view, propName, value);
     }
