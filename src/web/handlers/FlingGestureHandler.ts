@@ -163,7 +163,7 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected pointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
     if (this.currentState !== State.BEGAN) {
@@ -173,6 +173,14 @@ export default class FlingGestureHandler extends GestureHandler {
     this.tryEndFling();
 
     super.onPointerMove(event);
+  }
+
+  protected onPointerMove(event: AdaptedEvent): void {
+    this.pointerMove(event);
+  }
+
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+    this.pointerMove(event);
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
