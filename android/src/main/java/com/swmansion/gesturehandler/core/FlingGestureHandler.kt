@@ -41,12 +41,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   private fun tryEndFling(event: MotionEvent): Boolean {
     data class SimpleVector(val x: Double, val y: Double)
 
-    fun toSafeNumber(unsafe: Double): Double {
-      return if (unsafe.isFinite())
-        unsafe
-      else
-        0.0
-    }
+fun toSafeNumber(unsafe: Double): Double = if (unsafe.isFinite()) unsafe else 0.0
 
     fun toUnitVector(vec: SimpleVector): SimpleVector {
       val magnitude = abs(vec.x + vec.y)
