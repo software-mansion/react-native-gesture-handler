@@ -1,14 +1,56 @@
 import { State } from '../../State';
 import { Direction } from '../constants';
 import { AdaptedEvent, Config } from '../interfaces';
+import PointerTracker from '../tools/PointerTracker';
 
 import GestureHandler from './GestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 800;
-const DEFAULT_MIN_VELOCITY = 400;
+const DEFAULT_MIN_VELOCITY = 700;
 const DEFAULT_MIN_DIRECTION_ALIGNMENT = 0.75;
 const DEFAULT_DIRECTION = Direction.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
+
+class Vector {
+  x: number = 0;
+  y: number = 0;
+  uX: number = 0;
+  uY: number = 0;
+
+  fromDirection(direction: number) {
+    [this.x, this.y] = [this.uX, this.uY] = new Map([
+      [Direction.LEFT, [-1, 0]],
+      [Direction.RIGHT, [1, 0]],
+      [Direction.UP, [0, -1]],
+      [Direction.DOWN, [0, 1]],
+    ]).get(direction) ?? [0.0, 0.0];
+
+    return this;
+  }
+
+  fromVelocity(tracker: PointerTracker, pointerId: number) {
+    this.x = tracker.getVelocityX(pointerId);
+    this.y = tracker.getVelocityY(pointerId);
+
+    const magnitude = Math.hypot(this.x, this.y);
+    if (magnitude < 0.001) {
+      this.uX = this.uY = 0;
+    }
+
+    this.uX = this.x / magnitude;
+    this.uY = this.y / magnitude;
+
+    return this;
+  }
+
+  computeSimilarity(vector: any) {
+    return this.uX * vector.uX + this.uY * vector.uY;
+  }
+
+  computeMagnitude() {
+    return Math.hypot(this.x, this.y);
+  }
+}
 
 export default class FlingGestureHandler extends GestureHandler {
   private numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
@@ -16,7 +58,7 @@ export default class FlingGestureHandler extends GestureHandler {
 
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
   private minVelocity = DEFAULT_MIN_VELOCITY;
-  private minDirectionAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT;
+  private minDirectionalAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT;
   private delayTimeout!: number;
 
   private maxNumberOfPointersSimultaneously = 0;
@@ -49,60 +91,26 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private tryEndFling(): boolean {
-    type SimpleVector = { x: number; y: number };
-
-    const toSafeNumber = (unsafe: number): number => {
-      return Number.isNaN(unsafe) ? 0 : unsafe;
-    };
-
-    const toUnitVector = (vec: SimpleVector): SimpleVector => {
-      const magnitude = Math.hypot(vec.x, vec.y);
-      // division by 0 may occur here
-      return {
-        x: toSafeNumber(vec.x / magnitude),
-        y: toSafeNumber(vec.y / magnitude),
-      };
-    };
-
-    const compareSimilarity = (
-      vecA: SimpleVector,
-      vecB: SimpleVector
-    ): number => {
-      // both inputs are required to be unit vectors
-      // returns scalar on range from -1.0 to 1.0
-      return vecA.x * vecB.x + vecA.y * vecB.y;
-    };
-
-    const compareAlignment = (
-      vec: SimpleVector,
-      directionVec: SimpleVector,
-      direction: number
-    ): boolean => {
-      return !!(
-        compareSimilarity(vec, directionVec) > this.minDirectionAlignment &&
-        this.direction & direction
-      );
-    };
-
-    const velocityVector: SimpleVector = {
-      x: this.tracker.getVelocityX(this.keyPointer),
-      y: this.tracker.getVelocityY(this.keyPointer),
-    };
-
-    const velocityUnitVector = toUnitVector(velocityVector);
+    const velocityVector = new Vector().fromVelocity(
+      this.tracker,
+      this.keyPointer
+    );
 
     // list of alignments to all activated directions
     const alignmentList = [
-      compareAlignment(velocityUnitVector, { x: -1, y: 0 }, Direction.LEFT),
-      compareAlignment(velocityUnitVector, { x: 1, y: 0 }, Direction.RIGHT),
-      compareAlignment(velocityUnitVector, { x: 0, y: -1 }, Direction.UP),
-      compareAlignment(velocityUnitVector, { x: 0, y: 1 }, Direction.DOWN),
-    ];
-
-    const totalVelocity = Math.hypot(velocityVector.x, velocityVector.y);
+      Direction.LEFT,
+      Direction.RIGHT,
+      Direction.UP,
+      Direction.DOWN,
+    ].map(
+      (direction) =>
+        velocityVector.computeSimilarity(
+          new Vector().fromDirection(direction)
+        ) > this.minDirectionalAlignment && direction & this.direction
+    );
 
     const isAligned = alignmentList.some((element) => element);
-    const isFast = totalVelocity > this.minVelocity;
+    const isFast = velocityVector.computeMagnitude() > this.minVelocity;
 
     if (
       this.maxNumberOfPointersSimultaneously ===
