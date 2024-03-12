@@ -45,4 +45,6 @@ export default interface IGestureHandler {
   sendEvent: (newState: State, oldState: State) => void;
 
   updateGestureConfig: (config: Config) => void;
+
+  isButton?: () => boolean;
 }
