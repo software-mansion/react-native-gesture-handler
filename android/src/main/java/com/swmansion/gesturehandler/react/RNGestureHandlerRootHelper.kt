@@ -84,9 +84,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
   }
 
-  @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
-  // This parameter may be useful in the future
-  fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+  fun requestDisallowInterceptTouchEvent() {
     // If this method gets called it means that some native view is attempting to grab lock for
     // touch event delivery. In that case we cancel all gesture recognizers
     if (orchestrator != null && !passingTouch) {
