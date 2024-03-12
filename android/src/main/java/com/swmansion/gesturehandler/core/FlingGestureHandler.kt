@@ -52,10 +52,9 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
       vecA: SimpleVector,
       vecB: SimpleVector
     ): Double {
-      val unitA = toUnitVector(vecA)
-      val unitB = toUnitVector(vecB)
+      // inputs have to be unit vectors
       // returns scalar on range from -1.0 to 1.0
-      return unitA.x * unitB.x + unitA.y * unitB.y
+      return vecA.x * vecB.x + vecA.y * vecB.y
     }
 
     fun compareAlignment(
@@ -75,11 +74,13 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
       velocityTracker.yVelocity.toDouble()
     )
 
+    val velocityUnitVector = toUnitVector(velocityVector)
+
     val alignmentList = arrayOf(
-      compareAlignment(velocityVector, SimpleVector(-1.0, 0.0), DIRECTION_LEFT),
-      compareAlignment(velocityVector, SimpleVector(1.0, 0.0), DIRECTION_RIGHT),
-      compareAlignment(velocityVector, SimpleVector(0.0, -1.0), DIRECTION_UP),
-      compareAlignment(velocityVector, SimpleVector(0.0, 1.0), DIRECTION_DOWN)
+      compareAlignment(velocityUnitVector, SimpleVector(-1.0, 0.0), DIRECTION_LEFT),
+      compareAlignment(velocityUnitVector, SimpleVector(1.0, 0.0), DIRECTION_RIGHT),
+      compareAlignment(velocityUnitVector, SimpleVector(0.0, -1.0), DIRECTION_UP),
+      compareAlignment(velocityUnitVector, SimpleVector(0.0, 1.0), DIRECTION_DOWN)
     )
 
     velocityTracker.recycle()
