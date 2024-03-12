@@ -5,7 +5,7 @@ import com.facebook.react.uimanager.events.Event
 
 class ReanimatedEventDispatcher {
   @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
-  // These parameters may be useful in the future
+  // This is necessary on new architecture
   fun <T : Event<T>>sendEvent(event: T, reactApplicationContext: ReactContext) {
     // no-op
   }
