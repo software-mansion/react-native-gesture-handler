@@ -109,7 +109,7 @@ export default class InteractionManager {
     const isNativeHandler =
       otherHandler.constructor.name === 'NativeViewGestureHandler';
     const isActive = otherHandler.getState() === State.ACTIVE;
-    const isButton = !!otherHandler.isButton?.();
+    const isButton = otherHandler.isButton?.() === true;
 
     return isNativeHandler && isActive && !isButton;
   }
