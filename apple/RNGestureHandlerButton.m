@@ -80,6 +80,16 @@
   }
   return inner;
 }
+#else
+- (RNGHUIView *)hitTest:(NSPoint)point
+{
+  RNGHUIView *inner = [super hitTest:point];
+  while (inner && ![self shouldHandleTouch:inner]) {
+    inner = inner.superview;
+  }
+
+  return inner;
+}
 #endif
 
 @end

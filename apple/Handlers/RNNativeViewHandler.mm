@@ -267,14 +267,6 @@
     UIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
     scrollView.delaysContentTouches = YES;
   }
-#else
-  if ([view isKindOfClass:[RCTScrollView class]]) {
-    // This part of the code is coupled with RN implementation of ScrollView native wrapper and
-    // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
-    // subview
-    //    UIScrollView *scrollView = [view.subviews objectAtIndex:0];
-    //    scrollView.delaysContentTouches = YES;
-  }
 #endif // RCT_NEW_ARCH_ENABLED
 }
 
@@ -283,70 +275,5 @@
   NSLog(@"testing target-action behaviour");
 }
 
-- (void)handleTouchDown:(RNGHUIView *)sender forEvent:(UIEvent *)event
-{
-  [self reset];
-
-  if (_disallowInterruption) {
-    // When `disallowInterruption` is set we cancel all gesture handlers when this UIControl
-    // gets DOWN event
-    for (RNGHUITouch *touch in [event allTouches]) {
-      //      for (UIGestureRecognizer *recogn in [touch gestureRecognizers]) {
-      //        recogn.enabled = NO;
-      //        recogn.enabled = YES;
-      //      }
-    }
-  }
-
-  [self sendEventsInState:RNGestureHandlerStateActive
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
-}
-
-- (void)handleTouchUpOutside:(RNGHUIView *)sender forEvent:(UIEvent *)event
-{
-  [self sendEventsInState:RNGestureHandlerStateEnd
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
-}
-
-- (void)handleTouchUpInside:(RNGHUIView *)sender forEvent:(UIEvent *)event
-{
-  [self sendEventsInState:RNGestureHandlerStateEnd
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
-}
-
-- (void)handleDragExit:(RNGHUIView *)sender forEvent:(UIEvent *)event
-{
-  // Pointer is moved outside of the view bounds, we cancel button when `shouldCancelWhenOutside` is set
-  if (self.shouldCancelWhenOutside) {
-    NSControl *control = (NSControl *)sender;
-    //    [control cancelTrackingWithEvent:event];
-    [self sendEventsInState:RNGestureHandlerStateEnd
-             forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
-  } else {
-    [self sendEventsInState:RNGestureHandlerStateActive
-             forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
-  }
-}
-
-- (void)handleDragEnter:(NSControl *)sender forEvent:(UIEvent *)event
-{
-  [self sendEventsInState:RNGestureHandlerStateActive
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
-}
-
-- (void)handleTouchCancel:(NSControl *)sender forEvent:(UIEvent *)event
-{
-  [self sendEventsInState:RNGestureHandlerStateCancelled
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
-}
-
 @end
-
 #endif
