@@ -9,7 +9,6 @@ import { customDirectEventTypes } from './customDirectEventTypes';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
 import {
   handlerIDToTag,
@@ -153,6 +152,14 @@ type InternalEventHandlers = {
   onGestureHandlerEvent?: (event: any) => void;
   onGestureHandlerStateChange?: (event: any) => void;
 };
+
+type AttachGestureHandlerWeb = (
+  handlerTag: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  newView: any,
+  _actionType: ActionType,
+  propsRef: React.RefObject<unknown>
+) => void;
 
 const UNRESOLVED_REFS_RETRY_LIMIT = 1;
 
@@ -320,7 +327,7 @@ export default function createHandler<
       if (Platform.OS === 'web') {
         // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
         (
-          RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
+          RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb
         )(
           this.handlerTag,
           newViewTag,
