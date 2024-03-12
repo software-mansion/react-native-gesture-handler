@@ -60,7 +60,7 @@ class RNGestureHandlerPackage : TurboReactPackage(), ViewManagerOnDemandReactPac
     try {
       val reactModuleInfoProviderClass =
         Class.forName("com.swmansion.gesturehandler.RNGestureHandlerPackage$\$ReactModuleInfoProvider")
-      return reactModuleInfoProviderClass.newInstance() as ReactModuleInfoProvider
+      return reactModuleInfoProviderClass.getDeclaredConstructor().newInstance() as ReactModuleInfoProvider
     } catch (e: ClassNotFoundException) {
       return ReactModuleInfoProvider {
         val reactModule: ReactModule = RNGestureHandlerModule::class.java.getAnnotation(ReactModule::class.java)!!
@@ -71,7 +71,7 @@ class RNGestureHandlerPackage : TurboReactPackage(), ViewManagerOnDemandReactPac
             RNGestureHandlerModule::class.java.name,
             reactModule.canOverrideExistingModule,
             reactModule.needsEagerInit,
-            reactModule.hasConstants,
+            true, // Has constants is hardcoded to return true, so replacing it with `true` changes nothing.
             reactModule.isCxxModule,
             true
           )
