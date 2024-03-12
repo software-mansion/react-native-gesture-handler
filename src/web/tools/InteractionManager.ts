@@ -105,6 +105,7 @@ export default class InteractionManager {
     _handler: IGestureHandler,
     otherHandler: IGestureHandler
   ): boolean {
+    // We check constructor name instead of using `instanceof` in order do avoid circular dependencies
     const isNativeHandler =
       otherHandler.constructor.name === 'NativeViewGestureHandler';
     const isActive = otherHandler.getState() === State.ACTIVE;
