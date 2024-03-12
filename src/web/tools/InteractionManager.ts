@@ -105,10 +105,12 @@ export default class InteractionManager {
     _handler: IGestureHandler,
     otherHandler: IGestureHandler
   ): boolean {
+    const isNativeHandler =
+      otherHandler.constructor.name === 'NativeViewGestureHandler';
     const isActive = otherHandler.getState() === State.ACTIVE;
     const isButton = !!otherHandler.isButton?.();
 
-    return isActive && !isButton;
+    return isNativeHandler && isActive && !isButton;
   }
 
   public dropRelationsForHandlerWithTag(handlerTag: number): void {
