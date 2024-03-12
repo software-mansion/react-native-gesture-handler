@@ -7,10 +7,10 @@ export interface MeasureResult {
   height: number;
 }
 
-export interface GestureHandlerDelegate<T, S> {
-  getView(): T;
+export interface GestureHandlerDelegate<TComponent, THandler> {
+  getView(): TComponent;
 
-  init(viewRef: number, handler: S): void;
+  init(viewRef: number, handler: THandler): void;
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean;
   measureView(): MeasureResult;
   reset(): void;
