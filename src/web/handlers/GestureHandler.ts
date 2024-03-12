@@ -80,14 +80,16 @@ export default abstract class GestureHandler {
 
   protected onCancel(): void {}
   protected onReset(): void {}
-  protected resetProgress(): void {}
+  protected onResetProgress(): void {
+    this.resetProgress();
+    this.currentState = State.UNDETERMINED;
+  }
 
   public reset(): void {
     this.tracker.resetTracker();
     this.onReset();
-    this.resetProgress();
+    this.onResetProgress();
     this.delegate.reset();
-    this.currentState = State.UNDETERMINED;
   }
 
   //
@@ -151,7 +153,7 @@ export default abstract class GestureHandler {
       this.moveToState(State.FAILED, sendIfDisabled);
     }
 
-    this.resetProgress();
+    this.onResetProgress();
   }
 
   /**
@@ -194,7 +196,7 @@ export default abstract class GestureHandler {
       this.moveToState(State.END);
     }
 
-    this.resetProgress();
+    this.onResetProgress();
   }
 
   //
