@@ -6,7 +6,7 @@ import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import type PointerTracker from '../tools/PointerTracker';
 
-export default interface GestureHandlerType {
+export default interface IGestureHandler {
   getTag: () => number;
   getState: () => State;
   getConfig: () => Config;
@@ -37,10 +37,10 @@ export default interface GestureHandlerType {
   setActivationIndex: (value: number) => void;
   setShouldResetProgress: (value: boolean) => void;
 
-  shouldWaitForHandlerFailure: (handler: GestureHandlerType) => boolean;
-  shouldRequireToWaitForFailure: (handler: GestureHandlerType) => boolean;
-  shouldRecognizeSimultaneously: (handler: GestureHandlerType) => boolean;
-  shouldBeCancelledByOther: (handler: GestureHandlerType) => boolean;
+  shouldWaitForHandlerFailure: (handler: IGestureHandler) => boolean;
+  shouldRequireToWaitForFailure: (handler: IGestureHandler) => boolean;
+  shouldRecognizeSimultaneously: (handler: IGestureHandler) => boolean;
+  shouldBeCancelledByOther: (handler: IGestureHandler) => boolean;
 
   sendEvent: (newState: State, oldState: State) => void;
 

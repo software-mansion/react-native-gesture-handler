@@ -1,4 +1,4 @@
-import type GestureHandlerType from '../handlers/GestureHandlerType';
+import type IGestureHandler from '../handlers/IGestureHandler';
 import { State } from '../../State';
 import NativeViewGestureHandler from '../handlers/NativeViewGestureHandler';
 import { Config, Handler } from '../interfaces';
@@ -13,7 +13,7 @@ export default class InteractionManager {
   // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
   private constructor() {}
 
-  public configureInteractions(handler: GestureHandlerType, config: Config) {
+  public configureInteractions(handler: IGestureHandler, config: Config) {
     this.dropRelationsForHandlerWithTag(handler.getTag());
 
     if (config.waitFor) {
@@ -59,8 +59,8 @@ export default class InteractionManager {
   }
 
   public shouldWaitForHandlerFailure(
-    handler: GestureHandlerType,
-    otherHandler: GestureHandlerType
+    handler: IGestureHandler,
+    otherHandler: IGestureHandler
   ): boolean {
     const waitFor: number[] | undefined = this.waitForRelations.get(
       handler.getTag()
@@ -74,8 +74,8 @@ export default class InteractionManager {
   }
 
   public shouldRecognizeSimultaneously(
-    handler: GestureHandlerType,
-    otherHandler: GestureHandlerType
+    handler: IGestureHandler,
+    otherHandler: IGestureHandler
   ): boolean {
     const simultaneousHandlers: number[] | undefined =
       this.simultaneousRelations.get(handler.getTag());
@@ -88,8 +88,8 @@ export default class InteractionManager {
   }
 
   public shouldRequireHandlerToWaitForFailure(
-    handler: GestureHandlerType,
-    otherHandler: GestureHandlerType
+    handler: IGestureHandler,
+    otherHandler: IGestureHandler
   ): boolean {
     const waitFor: number[] | undefined = this.blocksHandlersRelations.get(
       handler.getTag()
@@ -103,8 +103,8 @@ export default class InteractionManager {
   }
 
   public shouldHandlerBeCancelledBy(
-    _handler: GestureHandlerType,
-    otherHandler: GestureHandlerType
+    _handler: IGestureHandler,
+    otherHandler: IGestureHandler
   ): boolean {
     return (
       otherHandler instanceof NativeViewGestureHandler &&

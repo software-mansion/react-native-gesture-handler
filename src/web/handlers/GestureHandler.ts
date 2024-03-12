@@ -15,11 +15,11 @@ import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import GestureHandlerType from './GestureHandlerType';
+import IGestureHandler from './IGestureHandler';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 
-export default abstract class GestureHandler implements GestureHandlerType {
+export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
 
@@ -41,10 +41,10 @@ export default abstract class GestureHandler implements GestureHandlerType {
   protected shouldResetProgress = false;
   protected pointerType: PointerType = PointerType.MOUSE;
 
-  protected delegate: GestureHandlerDelegate<unknown, GestureHandlerType>;
+  protected delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
 
   public constructor(
-    delegate: GestureHandlerDelegate<unknown, GestureHandlerType>
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
   ) {
     this.delegate = delegate;
   }
@@ -232,7 +232,7 @@ export default abstract class GestureHandler implements GestureHandlerType {
     this.activationIndex = value;
   }
 
-  public shouldWaitForHandlerFailure(handler: GestureHandlerType): boolean {
+  public shouldWaitForHandlerFailure(handler: IGestureHandler): boolean {
     if (handler === this) {
       return false;
     }
@@ -243,7 +243,7 @@ export default abstract class GestureHandler implements GestureHandlerType {
     );
   }
 
-  public shouldRequireToWaitForFailure(handler: GestureHandlerType): boolean {
+  public shouldRequireToWaitForFailure(handler: IGestureHandler): boolean {
     if (handler === this) {
       return false;
     }
@@ -254,7 +254,7 @@ export default abstract class GestureHandler implements GestureHandlerType {
     );
   }
 
-  public shouldRecognizeSimultaneously(handler: GestureHandlerType): boolean {
+  public shouldRecognizeSimultaneously(handler: IGestureHandler): boolean {
     if (handler === this) {
       return true;
     }
@@ -265,7 +265,7 @@ export default abstract class GestureHandler implements GestureHandlerType {
     );
   }
 
-  public shouldBeCancelledByOther(handler: GestureHandlerType): boolean {
+  public shouldBeCancelledByOther(handler: IGestureHandler): boolean {
     if (handler === this) {
       return false;
     }
@@ -775,7 +775,7 @@ export default abstract class GestureHandler implements GestureHandlerType {
     return this.config;
   }
 
-  public getDelegate(): GestureHandlerDelegate<unknown, GestureHandlerType> {
+  public getDelegate(): GestureHandlerDelegate<unknown, IGestureHandler> {
     return this.delegate;
   }
 
