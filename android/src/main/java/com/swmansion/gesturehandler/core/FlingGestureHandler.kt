@@ -4,7 +4,54 @@ import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
 import android.view.VelocityTracker
+import com.swmansion.gesturehandler.core.GestureHandler.Companion
 import kotlin.math.hypot
+
+class Vector {
+  var x: Double = 0.0
+  var y: Double = 0.0
+  var uX: Double = 0.0
+  var uY: Double = 0.0
+
+  fun fromDirection(direction: Int) = also {
+    val (x, y) = when (direction) {
+      Companion.DIRECTION_LEFT -> Pair(-1.0, 0.0)
+      Companion.DIRECTION_RIGHT -> Pair(1.0, 0.0)
+      Companion.DIRECTION_UP -> Pair(0.0, -1.0)
+      Companion.DIRECTION_DOWN -> Pair(0.0, 1.0)
+      else -> Pair(0.0, 0.0)
+    }
+
+    this.x = x
+    this.uX = x
+    this.y = y
+    this.uY = y
+  }
+
+  fun fromVelocity(tracker: VelocityTracker) = also {
+    tracker.computeCurrentVelocity(1000)
+
+    this.x = tracker.xVelocity.toDouble()
+    this.y = tracker.yVelocity.toDouble()
+
+    val magnitude = hypot(this.x, this.y)
+    if (magnitude < 0.001) {
+      this.uX = 0.0
+      this.uY = 0.0
+    }
+
+    this.uX = this.x / magnitude
+    this.uY = this.y / magnitude
+  }
+
+  fun computeSimilarity(vector: Vector): Double {
+    return this.uX * vector.uX + this.uY * vector.uY
+  }
+
+  fun computeMagnitude(): Double {
+    return hypot(this.x, this.y)
+  }
+}
 
 class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   var numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
@@ -12,7 +59,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
 
   private val maxDurationMs = DEFAULT_MAX_DURATION_MS
   private val minVelocity = DEFAULT_MIN_VELOCITY
-  private val minDirectionAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT
+  private val minDirectionalAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT
   private var handler: Handler? = null
   private var maxNumberOfPointersSimultaneously = 0
   private val failDelayed = Runnable { fail() }
@@ -35,57 +82,31 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   }
 
   private fun tryEndFling(event: MotionEvent): Boolean {
-    data class SimpleVector(val x: Double, val y: Double)
-
-    fun toSafeNumber(unsafe: Double): Double = if (unsafe.isFinite()) unsafe else 0.0
-
-    fun toUnitVector(vec: SimpleVector): SimpleVector {
-      val magnitude = hypot(vec.x, vec.y)
-      // toSafeNumber protects against division by zero
-      return SimpleVector(
-        toSafeNumber(vec.x / magnitude),
-        toSafeNumber(vec.y / magnitude)
-      )
-    }
-
-    fun compareSimilarity(
-      vecA: SimpleVector,
-      vecB: SimpleVector
-    ): Double {
-      // inputs have to be unit vectors
-      // returns scalar on range from -1.0 to 1.0
-      return vecA.x * vecB.x + vecA.y * vecB.y
-    }
 
     fun compareAlignment(
-      vec: SimpleVector,
-      directionVec: SimpleVector,
-      direction: Int
+      vector: Vector,
+      direction: Int,
+      directionVec: Vector = Vector().fromDirection(direction),
     ): Boolean =
-      compareSimilarity(vec, directionVec) > minDirectionAlignment &&
+      vector.computeSimilarity(directionVec) > minDirectionalAlignment &&
         (this.direction and direction != 0)
 
     val velocityTracker = VelocityTracker.obtain()
     addVelocityMovement(velocityTracker, event)
     velocityTracker!!.computeCurrentVelocity(1000)
 
-    val velocityVector = SimpleVector(
-      velocityTracker.xVelocity.toDouble(),
-      velocityTracker.yVelocity.toDouble()
-    )
-
-    val velocityUnitVector = toUnitVector(velocityVector)
+    val velocityVector = Vector().fromVelocity(velocityTracker)
 
     val alignmentList = arrayOf(
-      compareAlignment(velocityUnitVector, SimpleVector(-1.0, 0.0), DIRECTION_LEFT),
-      compareAlignment(velocityUnitVector, SimpleVector(1.0, 0.0), DIRECTION_RIGHT),
-      compareAlignment(velocityUnitVector, SimpleVector(0.0, -1.0), DIRECTION_UP),
-      compareAlignment(velocityUnitVector, SimpleVector(0.0, 1.0), DIRECTION_DOWN)
+      compareAlignment(velocityVector, DIRECTION_LEFT),
+      compareAlignment(velocityVector, DIRECTION_RIGHT),
+      compareAlignment(velocityVector, DIRECTION_UP),
+      compareAlignment(velocityVector, DIRECTION_DOWN)
     )
 
     velocityTracker.recycle()
 
-    val totalVelocity = hypot(velocityVector.x, velocityVector.y)
+    val totalVelocity = velocityVector.computeMagnitude()
 
     val isAligned = alignmentList.any { it }
     val isFast = totalVelocity > this.minVelocity
