@@ -10,8 +10,8 @@ import kotlin.math.hypot
 class Vector {
   var x: Double = 0.0
   var y: Double = 0.0
-  var uX: Double = 0.0
-  var uY: Double = 0.0
+  private var uX: Double = 0.0
+  private var uY: Double = 0.0
 
   fun fromDirection(direction: Int) = also {
     val (x, y) = when (direction) {
@@ -93,9 +93,10 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
 
     val velocityTracker = VelocityTracker.obtain()
     addVelocityMovement(velocityTracker, event)
-    velocityTracker!!.computeCurrentVelocity(1000)
 
     val velocityVector = Vector().fromVelocity(velocityTracker)
+
+    velocityTracker.recycle()
 
     val alignmentList = arrayOf(
       compareAlignment(velocityVector, DIRECTION_LEFT),
@@ -104,12 +105,8 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
       compareAlignment(velocityVector, DIRECTION_DOWN)
     )
 
-    velocityTracker.recycle()
-
-    val totalVelocity = velocityVector.computeMagnitude()
-
     val isAligned = alignmentList.any { it }
-    val isFast = totalVelocity > this.minVelocity
+    val isFast = velocityVector.computeMagnitude() > this.minVelocity
 
     return if (
       maxNumberOfPointersSimultaneously == numberOfPointersRequired &&

@@ -23,7 +23,7 @@ class Vector {
       [Direction.RIGHT, [1, 0]],
       [Direction.UP, [0, -1]],
       [Direction.DOWN, [0, 1]],
-    ]).get(direction) ?? [0.0, 0.0];
+    ]).get(direction) ?? [0, 0];
 
     return this;
   }
