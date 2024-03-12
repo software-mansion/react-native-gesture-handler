@@ -482,7 +482,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
           return YES;
         }
       }
-    } else if (handler->_simultaneousHandlers) {
+    }
+
+    if (handler->_simultaneousHandlers) {
       for (NSNumber *handlerTag in handler->_simultaneousHandlers) {
         if ([self.tag isEqual:handlerTag]) {
           return YES;
