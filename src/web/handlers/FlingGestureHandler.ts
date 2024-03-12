@@ -68,10 +68,9 @@ export default class FlingGestureHandler extends GestureHandler {
       vecA: SimpleVector,
       vecB: SimpleVector
     ): number => {
-      const unitA = toUnitVector(vecA);
-      const unitB = toUnitVector(vecB);
+      // both inputs are required to be unit vectors
       // returns scalar on range from -1.0 to 1.0
-      return unitA.x * unitB.x + unitA.y * unitB.y;
+      return vecA.x * vecB.x + vecA.y * vecB.y;
     };
 
     const compareAlignment = (
@@ -90,12 +89,14 @@ export default class FlingGestureHandler extends GestureHandler {
       y: this.tracker.getVelocityY(this.keyPointer),
     };
 
+    const velocityUnitVector = toUnitVector(velocityVector);
+
     // list of alignments to all activated directions
     const alignmentList = [
-      compareAlignment(velocityVector, { x: -1, y: 0 }, Direction.LEFT),
-      compareAlignment(velocityVector, { x: 1, y: 0 }, Direction.RIGHT),
-      compareAlignment(velocityVector, { x: 0, y: -1 }, Direction.UP),
-      compareAlignment(velocityVector, { x: 0, y: 1 }, Direction.DOWN),
+      compareAlignment(velocityUnitVector, { x: -1, y: 0 }, Direction.LEFT),
+      compareAlignment(velocityUnitVector, { x: 1, y: 0 }, Direction.RIGHT),
+      compareAlignment(velocityUnitVector, { x: 0, y: -1 }, Direction.UP),
+      compareAlignment(velocityUnitVector, { x: 0, y: 1 }, Direction.DOWN),
     ];
 
     const totalVelocity = Math.hypot(velocityVector.x, velocityVector.y);
