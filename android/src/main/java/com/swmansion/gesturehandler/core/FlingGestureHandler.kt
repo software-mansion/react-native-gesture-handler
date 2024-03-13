@@ -37,7 +37,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     val velocityTracker = VelocityTracker.obtain()
     addVelocityMovement(velocityTracker, event)
 
-    val velocityVector = Vector().fromVelocity(velocityTracker)
+    val velocityVector = Vector.fromVelocity(velocityTracker)
 
     velocityTracker.recycle()
 
