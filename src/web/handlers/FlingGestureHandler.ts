@@ -3,7 +3,7 @@ import { Directions } from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
-import Vector, { DirectionTypeVectorMappings } from '../tools/Vector';
+import Vector, { DirectionToVectorMappings } from '../tools/Vector';
 
 const DEFAULT_MAX_DURATION_MS = 800;
 const DEFAULT_MIN_VELOCITY = 700;
@@ -54,9 +54,8 @@ export default class FlingGestureHandler extends GestureHandler {
     );
 
     const getAlignment = (direction: Directions) => {
-      const directionVector = DirectionTypeVectorMappings.get(direction);
+      const directionVector = DirectionToVectorMappings.get(direction)!;
       return (
-        directionVector &&
         direction & this.direction &&
         velocityVector.isSimilar(directionVector, this.minDirectionalAlignment)
       );
@@ -127,7 +126,7 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  private pointerMove(event: AdaptedEvent): void {
+  private pointerMoveAction(event: AdaptedEvent): void {
     this.tracker.track(event);
 
     if (this.currentState !== State.BEGAN) {
@@ -138,12 +137,12 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    this.pointerMove(event);
+    this.pointerMoveAction(event);
     super.onPointerMove(event);
   }
 
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    this.pointerMove(event);
+    this.pointerMoveAction(event);
     super.onPointerOutOfBounds(event);
   }
 

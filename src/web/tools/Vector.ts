@@ -8,9 +8,7 @@ export default class Vector {
   unitY: number = 0;
 
   fromDirection(direction: Directions) {
-    [this.x, this.y] = [this.unitX, this.unitY] = DirectionTypeMappings.get(
-      direction
-    ) ?? [0, 0];
+    [this.x, this.y] = [this.unitX, this.unitY] = DirectionMappings.get(direction)!;
 
     return this;
   }
@@ -19,13 +17,11 @@ export default class Vector {
     this.x = tracker.getVelocityX(pointerId);
     this.y = tracker.getVelocityY(pointerId);
 
-    const magnitude = Math.hypot(this.x, this.y);
-    if (magnitude < 1) {
-      this.unitX = this.unitY = 0;
-    } else {
-      this.unitX = this.x / magnitude;
-      this.unitY = this.y / magnitude;
-    }
+    const minimalVelocity = 1;
+    const isMagnitudeSufficient = this.magnitude > minimalVelocity;
+
+    this.unitX = isMagnitudeSufficient ? this.x / this.magnitude : 0;
+    this.unitY = isMagnitudeSufficient ? this.y / this.magnitude : 0;
 
     return this;
   }
@@ -43,14 +39,14 @@ export default class Vector {
   }
 }
 
-const DirectionTypeMappings = new Map<Directions, Array<number>>([
+const DirectionMappings = new Map<Directions, number[]>([
   [Directions.LEFT, [-1, 0]],
   [Directions.RIGHT, [1, 0]],
   [Directions.UP, [0, -1]],
   [Directions.DOWN, [0, 1]],
 ]);
 
-export const DirectionTypeVectorMappings = new Map<Directions, Vector>(
+export const DirectionToVectorMappings = new Map<Directions, Vector>(
   Object.values(Directions).map((direction) => [
     direction,
     new Vector().fromDirection(direction),

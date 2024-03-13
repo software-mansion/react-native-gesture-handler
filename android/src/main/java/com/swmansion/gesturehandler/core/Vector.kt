@@ -14,7 +14,7 @@ class Vector {
     private var unitY: Double = 0.0
 
     fun fromDirection(direction: Int) = also {
-        val (x, y) = when (direction) {
+        val (newX, newY) = when (direction) {
             DIRECTION_LEFT -> Pair(-1.0, 0.0)
             DIRECTION_RIGHT -> Pair(1.0, 0.0)
             DIRECTION_UP -> Pair(0.0, -1.0)
@@ -22,39 +22,36 @@ class Vector {
             else -> Pair(0.0, 0.0)
         }
 
-        this.x = x
-        this.y = y
-        this.unitX = x
-        this.unitY = y
+        x = newX
+        y = newY
+        unitX = newX
+        unitY = newY
     }
 
     fun fromVelocity(tracker: VelocityTracker) = also {
         tracker.computeCurrentVelocity(1000)
 
-        this.x = tracker.xVelocity.toDouble()
-        this.y = tracker.yVelocity.toDouble()
+        x = tracker.xVelocity.toDouble()
+        y = tracker.yVelocity.toDouble()
 
-        val magnitude = this.magnitude
-        if (magnitude < 1) {
-            this.unitX = 0.0
-            this.unitY = 0.0
-        } else {
-            this.unitX = this.x / magnitude
-            this.unitY = this.y / magnitude
-        }
+        val minimalMagnitude = 1
+        val isMagnitudeSufficient = magnitude > minimalMagnitude
+
+        unitX = if (isMagnitudeSufficient) x / magnitude else 0.0
+        unitY = if (isMagnitudeSufficient) y / magnitude else 0.0
 
     }
 
     fun computeSimilarity(vector: Vector): Double {
-        return this.unitX * vector.unitX + this.unitY * vector.unitY
+        return unitX * vector.unitX + unitY * vector.unitY
     }
 
     fun isSimilar(vector: Vector, threshold: Double): Boolean {
-        return this.computeSimilarity(vector) > threshold
+        return computeSimilarity(vector) > threshold
     }
 
     val magnitude
-        get() = hypot(this.x, this.y)
+        get() = hypot(x, y)
 
     companion object {
         val VECTOR_LEFT: Vector = Vector().fromDirection(DIRECTION_LEFT)
