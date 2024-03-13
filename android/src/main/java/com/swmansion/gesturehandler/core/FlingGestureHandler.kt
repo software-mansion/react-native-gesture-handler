@@ -4,54 +4,6 @@ import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
 import android.view.VelocityTracker
-import com.swmansion.gesturehandler.core.GestureHandler.Companion
-import kotlin.math.hypot
-
-class Vector {
-  var x: Double = 0.0
-  var y: Double = 0.0
-  private var uX: Double = 0.0
-  private var uY: Double = 0.0
-
-  fun fromDirection(direction: Int) = also {
-    val (x, y) = when (direction) {
-      Companion.DIRECTION_LEFT -> Pair(-1.0, 0.0)
-      Companion.DIRECTION_RIGHT -> Pair(1.0, 0.0)
-      Companion.DIRECTION_UP -> Pair(0.0, -1.0)
-      Companion.DIRECTION_DOWN -> Pair(0.0, 1.0)
-      else -> Pair(0.0, 0.0)
-    }
-
-    this.x = x
-    this.uX = x
-    this.y = y
-    this.uY = y
-  }
-
-  fun fromVelocity(tracker: VelocityTracker) = also {
-    tracker.computeCurrentVelocity(1000)
-
-    this.x = tracker.xVelocity.toDouble()
-    this.y = tracker.yVelocity.toDouble()
-
-    val magnitude = hypot(this.x, this.y)
-    if (magnitude < 0.001) {
-      this.uX = 0.0
-      this.uY = 0.0
-    }
-
-    this.uX = this.x / magnitude
-    this.uY = this.y / magnitude
-  }
-
-  fun computeSimilarity(vector: Vector): Double {
-    return this.uX * vector.uX + this.uY * vector.uY
-  }
-
-  fun computeMagnitude(): Double {
-    return hypot(this.x, this.y)
-  }
-}
 
 class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   var numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
@@ -82,15 +34,6 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   }
 
   private fun tryEndFling(event: MotionEvent): Boolean {
-
-    fun compareAlignment(
-      vector: Vector,
-      direction: Int,
-      directionVec: Vector = Vector().fromDirection(direction),
-    ): Boolean =
-      vector.computeSimilarity(directionVec) > minDirectionalAlignment &&
-        (this.direction and direction != 0)
-
     val velocityTracker = VelocityTracker.obtain()
     addVelocityMovement(velocityTracker, event)
 
@@ -98,15 +41,23 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
 
     velocityTracker.recycle()
 
-    val alignmentList = arrayOf(
-      compareAlignment(velocityVector, DIRECTION_LEFT),
-      compareAlignment(velocityVector, DIRECTION_RIGHT),
-      compareAlignment(velocityVector, DIRECTION_UP),
-      compareAlignment(velocityVector, DIRECTION_DOWN)
+    fun getVelocityAlignment(
+      direction: Int,
+      directionVec: Vector = Vector.fromDirection(direction),
+    ): Boolean = (
+      this.direction and direction != 0 &&
+      velocityVector.isSimilar(directionVec, minDirectionalAlignment)
     )
 
+    val alignmentList = arrayOf(
+      DIRECTION_LEFT,
+      DIRECTION_RIGHT,
+      DIRECTION_UP,
+      DIRECTION_DOWN,
+    ).map { direction -> getVelocityAlignment(direction) }
+
     val isAligned = alignmentList.any { it }
-    val isFast = velocityVector.computeMagnitude() > this.minVelocity
+    val isFast = velocityVector.magnitude > this.minVelocity
 
     return if (
       maxNumberOfPointersSimultaneously == numberOfPointersRequired &&
