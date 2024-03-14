@@ -1,5 +1,5 @@
 import { ValueOf } from '../typeUtils';
-import { HammerGestures } from '../RNGestureHandlerModule.web';
+import { HammerGestures } from '../web/Gestures';
 
 const gestures: Record<
   number,

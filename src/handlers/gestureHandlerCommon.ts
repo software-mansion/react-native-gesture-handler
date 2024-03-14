@@ -12,7 +12,6 @@ import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
-import { MouseButton } from '../web/interfaces';
 import { PointerType } from '../PointerType';
 
 const commonProps = [
@@ -113,6 +112,15 @@ export type ActiveCursor =
   | 'all-scroll'
   | 'zoom-in'
   | 'zoom-out';
+
+export enum MouseButton {
+  LEFT = 1,
+  RIGHT = 2,
+  MIDDLE = 4,
+  BUTTON_4 = 8,
+  BUTTON_5 = 16,
+  ALL = 31,
+}
 
 export type TouchAction =
   | 'auto'

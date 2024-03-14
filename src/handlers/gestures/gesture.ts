@@ -7,6 +7,7 @@ import {
   GestureStateChangeEvent,
   GestureUpdateEvent,
   ActiveCursor,
+  MouseButton,
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
 import { GestureStateManagerType } from './gestureStateManager';
@@ -17,7 +18,6 @@ import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
 import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
 import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
 import { isRemoteDebuggingEnabled } from '../../utils';
-import { MouseButton } from '../../web/interfaces';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>

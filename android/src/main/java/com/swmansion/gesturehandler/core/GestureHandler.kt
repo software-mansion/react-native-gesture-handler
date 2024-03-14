@@ -835,15 +835,15 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
-      var size = size
+      var pointerPropsSize = size
       if (!Companion::pointerProps.isInitialized) {
         pointerProps = arrayOfNulls(MAX_POINTERS_COUNT)
         pointerCoords = arrayOfNulls(MAX_POINTERS_COUNT)
       }
-      while (size > 0 && pointerProps[size - 1] == null) {
-        pointerProps[size - 1] = PointerProperties()
-        pointerCoords[size - 1] = PointerCoords()
-        size--
+      while (pointerPropsSize > 0 && pointerProps[pointerPropsSize - 1] == null) {
+        pointerProps[pointerPropsSize - 1] = PointerProperties()
+        pointerCoords[pointerPropsSize - 1] = PointerCoords()
+        pointerPropsSize--
       }
     }
 

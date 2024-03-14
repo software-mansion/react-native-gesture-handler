@@ -3,15 +3,15 @@ package com.swmansion.gesturehandler.react
 import androidx.core.util.Pools
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
-import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.swmansion.gesturehandler.core.GestureHandler
 
 class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerTouchEvent>() {
   private var extraData: WritableMap? = null
   private var coalescingKey: Short = 0
   private fun <T : GestureHandler<T>> init(handler: T) {
-    super.init(handler.view!!.id)
+    super.init(UIManagerHelper.getSurfaceId(handler.view), handler.view!!.id)
     extraData = createEventData(handler)
     coalescingKey = handler.eventCoalescingKey
   }
@@ -26,10 +26,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   override fun canCoalesce() = true
 
   override fun getCoalescingKey() = coalescingKey
-
-  override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, extraData)
-  }
+  override fun getEventData(): WritableMap? = extraData
 
   companion object {
     const val EVENT_UNDETERMINED = 0
@@ -47,7 +44,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
         init(handler)
       }
 
-    fun <T : GestureHandler<T>> createEventData(handler: T,): WritableMap = Arguments.createMap().apply {
+    fun <T : GestureHandler<T>> createEventData(handler: T): WritableMap = Arguments.createMap().apply {
       putInt("handlerTag", handler.tag)
       putInt("state", handler.state)
       putInt("numberOfTouches", handler.trackedPointersCount)
