@@ -44,7 +44,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
     if (_enabled) {
-      rootHelper!!.requestDisallowInterceptTouchEvent(disallowIntercept)
+      rootHelper!!.requestDisallowInterceptTouchEvent()
     }
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
   }

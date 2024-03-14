@@ -22,6 +22,7 @@ const createGestureHandler = NOOP;
 const dropGestureHandler = NOOP;
 const updateGestureHandler = NOOP;
 const flushOperations = NOOP;
+const install = NOOP;
 const NativeViewGestureHandler = View;
 const TapGestureHandler = View;
 const ForceTouchGestureHandler = View;
@@ -61,6 +62,7 @@ export default {
   dropGestureHandler,
   updateGestureHandler,
   flushOperations,
+  install,
   // probably can be removed
   Directions,
   State,

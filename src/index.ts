@@ -2,7 +2,6 @@ import { initialize } from './init';
 
 export { Directions } from './Directions';
 export { State } from './State';
-export { MouseButton } from './web/interfaces';
 export { PointerType } from './PointerType';
 export { default as gestureHandlerRootHOC } from './components/gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
@@ -20,6 +19,7 @@ export type {
   GestureUpdateEvent,
   GestureStateChangeEvent,
 } from './handlers/gestureHandlerCommon';
+export { MouseButton } from './handlers/gestureHandlerCommon';
 export type { GestureType } from './handlers/gestures/gesture';
 export type {
   TapGestureHandlerEventPayload,
