@@ -58,6 +58,7 @@ jsconfig.json
 
 # Yarn
 .yarn
+.yarnrc.yml
 !.yarn/releases
 
 # TS
