@@ -64,7 +64,7 @@ export default class FlingGestureHandler extends GestureHandler {
     // list of alignments to all activated directions
     const alignmentList = Object.values(Directions).map(getAlignment);
 
-    const isAligned = alignmentList.some((element) => element);
+    const isAligned = alignmentList.some(Boolean);
     const isFast = velocityVector.magnitude > this.minVelocity;
 
     if (

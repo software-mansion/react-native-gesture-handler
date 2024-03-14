@@ -15,6 +15,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   private var handler: Handler? = null
   private var maxNumberOfPointersSimultaneously = 0
   private val failDelayed = Runnable { fail() }
+  private var velocityTracker: VelocityTracker? = null
 
   override fun resetConfig() {
     super.resetConfig()
@@ -23,6 +24,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   }
 
   private fun startFling(event: MotionEvent) {
+    velocityTracker = VelocityTracker.obtain()
     begin()
     maxNumberOfPointersSimultaneously = 1
     if (handler == null) {
@@ -34,20 +36,16 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   }
 
   private fun tryEndFling(event: MotionEvent): Boolean {
-    val velocityTracker = VelocityTracker.obtain()
     addVelocityMovement(velocityTracker, event)
 
-    val velocityVector = Vector.fromVelocity(velocityTracker)
-
-    velocityTracker.recycle()
+    val velocityVector = Vector.fromVelocity(velocityTracker!!)
 
     fun getVelocityAlignment(
       direction: Int,
-      directionVector: Vector = Vector.fromDirection(direction)
     ): Boolean = (
       this.direction and direction != 0 &&
-      velocityVector.isSimilar(directionVector, minDirectionalAlignment)
-    )
+        velocityVector.isSimilar(Vector.fromDirection(direction), minDirectionalAlignment)
+      )
 
     val alignmentList = arrayOf(
       DIRECTION_LEFT,
@@ -108,6 +106,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   }
 
   override fun onReset() {
+    velocityTracker!!.recycle()
     handler?.removeCallbacksAndMessages(null)
   }
 
