@@ -3,28 +3,32 @@ import { MINIMAL_FLING_VELOCITY } from '../constants';
 import PointerTracker from './PointerTracker';
 
 export default class Vector {
-  x: number = 0;
-  y: number = 0;
-  unitX: number = 0;
-  unitY: number = 0;
+  x = 0;
+  y = 0;
+  unitX = 0;
+  unitY = 0;
+  magnitude = 0;
 
-  fromDirection(direction: Directions) {
-    [this.x, this.y] = [this.unitX, this.unitY] =
-      DirectionMappings.get(direction)!;
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
 
-    return this;
-  }
-
-  fromVelocity(tracker: PointerTracker, pointerId: number) {
-    this.x = tracker.getVelocityX(pointerId);
-    this.y = tracker.getVelocityY(pointerId);
-
+    this.magnitude = Math.hypot(this.x, this.y);
     const isMagnitudeSufficient = this.magnitude > MINIMAL_FLING_VELOCITY;
 
     this.unitX = isMagnitudeSufficient ? this.x / this.magnitude : 0;
     this.unitY = isMagnitudeSufficient ? this.y / this.magnitude : 0;
+  }
 
-    return this;
+  static fromDirection(direction: Directions) {
+    return DirectionToVectorMappings.get(direction)!;
+  }
+
+  static fromVelocity(tracker: PointerTracker, pointerId: number) {
+    return new Vector(
+      tracker.getVelocityX(pointerId),
+      tracker.getVelocityY(pointerId)
+    );
   }
 
   computeSimilarity(vector: Vector) {
@@ -34,22 +38,11 @@ export default class Vector {
   isSimilar(vector: Vector, threshold: number) {
     return this.computeSimilarity(vector) > threshold;
   }
-
-  get magnitude() {
-    return Math.hypot(this.x, this.y);
-  }
 }
 
-const DirectionMappings = new Map<Directions, number[]>([
-  [Directions.LEFT, [-1, 0]],
-  [Directions.RIGHT, [1, 0]],
-  [Directions.UP, [0, -1]],
-  [Directions.DOWN, [0, 1]],
+const DirectionToVectorMappings = new Map<Directions, Vector>([
+  [Directions.LEFT, new Vector(-1, 0)],
+  [Directions.RIGHT, new Vector(1, 0)],
+  [Directions.UP, new Vector(0, -1)],
+  [Directions.DOWN, new Vector(0, 1)],
 ]);
-
-export const DirectionToVectorMappings = new Map<Directions, Vector>(
-  Object.values(Directions).map((direction) => [
-    direction,
-    new Vector().fromDirection(direction),
-  ])
-);

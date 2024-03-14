@@ -3,7 +3,7 @@ import { Directions } from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
-import Vector, { DirectionToVectorMappings } from '../tools/Vector';
+import Vector from '../tools/Vector';
 
 const DEFAULT_MAX_DURATION_MS = 800;
 const DEFAULT_MIN_VELOCITY = 700;
@@ -48,16 +48,15 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private tryEndFling(): boolean {
-    const velocityVector = new Vector().fromVelocity(
-      this.tracker,
-      this.keyPointer
-    );
+    const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
 
     const getAlignment = (direction: Directions) => {
-      const directionVector = DirectionToVectorMappings.get(direction)!;
       return (
         direction & this.direction &&
-        velocityVector.isSimilar(directionVector, this.minDirectionalAlignment)
+        velocityVector.isSimilar(
+          Vector.fromDirection(direction),
+          this.minDirectionalAlignment
+        )
       );
     };
 
