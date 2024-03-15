@@ -10,6 +10,7 @@ const DEFAULT_MIN_VELOCITY = 700;
 const DEFAULT_MIN_DIRECTION_ALIGNMENT = 20;
 const DEFAULT_DIRECTION = Directions.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
+const DEFAULT_ENABLE_CORNER_ACTIVATION = true;
 
 export default class FlingGestureHandler extends GestureHandler {
   private numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
@@ -18,13 +19,25 @@ export default class FlingGestureHandler extends GestureHandler {
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
   private minVelocity = DEFAULT_MIN_VELOCITY;
   private minDirectionalAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT;
+  private enableCornerActivation = DEFAULT_ENABLE_CORNER_ACTIVATION;
   private delayTimeout!: number;
 
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;
 
+  private minimalAlignmentCosine: number = 0;
+  private minimalCornerAlignmentCosine: number = 0;
+
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
+
+    const degToRad = (degrees: number) => (degrees * Math.PI) / 180;
+
+    const alignmentRadians = degToRad(this.minDirectionalAlignment);
+    const cornerAreaRadians = degToRad(45 - this.minDirectionalAlignment);
+
+    this.minimalAlignmentCosine = Math.cos(alignmentRadians);
+    this.minimalCornerAlignmentCosine = Math.cos(cornerAreaRadians);
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
@@ -50,15 +63,10 @@ export default class FlingGestureHandler extends GestureHandler {
   private tryEndFling(): boolean {
     const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
 
-    const degToRad = (degrees: number) => degrees * Math.PI / 180;
-
-    const alignmentRadians = degToRad(this.minDirectionalAlignment)
-    const cornerAreaRadians = degToRad(45) - alignmentRadians;
-
-    const minDirectionalAlignmentCos = Math.cos(alignmentRadians);
-    const minDirectionalCornerAlignmentCos = Math.cos(cornerAreaRadians)
-
-    const getAlignment = (direction: Directions | CornerDirections, minimalAlignmentCos: number) => {
+    const getAlignment = (
+      direction: Directions | CornerDirections,
+      minimalAlignmentCos: number
+    ) => {
       return (
         (direction & this.direction) === direction &&
         velocityVector.isSimilar(
@@ -69,16 +77,22 @@ export default class FlingGestureHandler extends GestureHandler {
     };
 
     // list of alignments to all activated directions
-    const alignmentList = Object.values(Directions).map((direction) => getAlignment(direction, minDirectionalAlignmentCos));
-    const cornerFillAlignmentList = Object.values(CornerDirections).map((direction) => getAlignment(direction, minDirectionalCornerAlignmentCos));
-    console.log(alignmentList, cornerFillAlignmentList)
+    const alignmentList = Object.values(Directions).map((direction) =>
+      getAlignment(direction, this.minimalAlignmentCosine)
+    );
+    const cornerFillAlignmentList = this.enableCornerActivation
+      ? Object.values(CornerDirections).map((direction) =>
+          getAlignment(direction, this.minimalCornerAlignmentCosine)
+        )
+      : [];
 
-    const isAligned = alignmentList.some(Boolean) || cornerFillAlignmentList.some(Boolean);
+    const isAligned =
+      alignmentList.some(Boolean) || cornerFillAlignmentList.some(Boolean);
     const isFast = velocityVector.magnitude > this.minVelocity;
 
     if (
       this.maxNumberOfPointersSimultaneously ===
-      this.numberOfPointersRequired &&
+        this.numberOfPointersRequired &&
       isAligned &&
       isFast
     ) {
