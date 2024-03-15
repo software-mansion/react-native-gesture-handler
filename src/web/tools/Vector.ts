@@ -3,21 +3,21 @@ import { MINIMAL_FLING_VELOCITY } from '../constants';
 import PointerTracker from './PointerTracker';
 
 export default class Vector {
-  x = 0;
-  y = 0;
-  unitX = 0;
-  unitY = 0;
-  magnitude = 0;
+  private readonly x;
+  private readonly y;
+  private readonly unitX;
+  private readonly unitY;
+  private readonly _magnitude;
 
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
 
-    this.magnitude = Math.hypot(this.x, this.y);
-    const isMagnitudeSufficient = this.magnitude > MINIMAL_FLING_VELOCITY;
+    this._magnitude = Math.hypot(this.x, this.y);
+    const isMagnitudeSufficient = this._magnitude > MINIMAL_FLING_VELOCITY;
 
-    this.unitX = isMagnitudeSufficient ? this.x / this.magnitude : 0;
-    this.unitY = isMagnitudeSufficient ? this.y / this.magnitude : 0;
+    this.unitX = isMagnitudeSufficient ? this.x / this._magnitude : 0;
+    this.unitY = isMagnitudeSufficient ? this.y / this._magnitude : 0;
   }
 
   static fromDirection(direction: Directions) {
@@ -29,6 +29,10 @@ export default class Vector {
       tracker.getVelocityX(pointerId),
       tracker.getVelocityY(pointerId)
     );
+  }
+
+  get magnitude() {
+    return this._magnitude;
   }
 
   computeSimilarity(vector: Vector) {
