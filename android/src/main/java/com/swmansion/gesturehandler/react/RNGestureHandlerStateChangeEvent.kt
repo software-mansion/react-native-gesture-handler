@@ -10,7 +10,6 @@ import androidx.core.util.Pools
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
-import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 
@@ -46,9 +45,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   // TODO: coalescing
   override fun getCoalescingKey(): Short = 0
 
-  override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, EVENT_NAME, createEventData(dataBuilder!!, newState, oldState))
-  }
+  override fun getEventData(): WritableMap = createEventData(dataBuilder!!, newState, oldState)
 
   companion object {
     const val EVENT_NAME = "onGestureHandlerStateChange"

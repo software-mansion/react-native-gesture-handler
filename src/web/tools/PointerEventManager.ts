@@ -1,5 +1,6 @@
-import { AdaptedEvent, EventTypes, MouseButton } from '../interfaces';
 import EventManager from './EventManager';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 import { PointerTypeMapping, isPointerInBounds } from '../utils';
 import { PointerType } from '../../PointerType';
 

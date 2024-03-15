@@ -1,54 +1,13 @@
 import React from 'react';
 
-import { ActionType } from './ActionType';
+import type { ActionType } from './ActionType';
 import { isNewWebImplementationEnabled } from './EnableNewWebImplementation';
-
-//GestureHandlers
+import { Gestures, HammerGestures } from './web/Gestures';
+import type { Config } from './web/interfaces';
 import InteractionManager from './web/tools/InteractionManager';
 import NodeManager from './web/tools/NodeManager';
-import PanGestureHandler from './web/handlers/PanGestureHandler';
-import TapGestureHandler from './web/handlers/TapGestureHandler';
-import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
-import PinchGestureHandler from './web/handlers/PinchGestureHandler';
-import RotationGestureHandler from './web/handlers/RotationGestureHandler';
-import FlingGestureHandler from './web/handlers/FlingGestureHandler';
-import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
-import ManualGestureHandler from './web/handlers/ManualGestureHandler';
-import HoverGestureHandler from './web/handlers/HoverGestureHandler';
-
-//Hammer Handlers
 import * as HammerNodeManager from './web_hammer/NodeManager';
-import HammerNativeViewGestureHandler from './web_hammer/NativeViewGestureHandler';
-import HammerPanGestureHandler from './web_hammer/PanGestureHandler';
-import HammerTapGestureHandler from './web_hammer/TapGestureHandler';
-import HammerLongPressGestureHandler from './web_hammer/LongPressGestureHandler';
-import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
-import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
-import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
-import { Config } from './web/interfaces';
 import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
-
-export const Gestures = {
-  NativeViewGestureHandler,
-  PanGestureHandler,
-  TapGestureHandler,
-  LongPressGestureHandler,
-  PinchGestureHandler,
-  RotationGestureHandler,
-  FlingGestureHandler,
-  ManualGestureHandler,
-  HoverGestureHandler,
-};
-
-export const HammerGestures = {
-  NativeViewGestureHandler: HammerNativeViewGestureHandler,
-  PanGestureHandler: HammerPanGestureHandler,
-  TapGestureHandler: HammerTapGestureHandler,
-  LongPressGestureHandler: HammerLongPressGestureHandler,
-  PinchGestureHandler: HammerPinchGestureHandler,
-  RotationGestureHandler: HammerRotationGestureHandler,
-  FlingGestureHandler: HammerFlingGestureHandler,
-};
 
 export default {
   handleSetJSResponder(tag: number, blockNativeResponder: boolean) {

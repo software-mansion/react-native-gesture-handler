@@ -9,16 +9,17 @@ import {
   ResultTouchEvent,
   TouchEventType,
   EventTypes,
-  MouseButton,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import IGestureHandler from './IGestureHandler';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 
-export default abstract class GestureHandler {
+export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
 
@@ -40,9 +41,11 @@ export default abstract class GestureHandler {
   protected shouldResetProgress = false;
   protected pointerType: PointerType = PointerType.MOUSE;
 
-  protected delegate: GestureHandlerDelegate<unknown>;
+  protected delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
 
-  public constructor(delegate: GestureHandlerDelegate<unknown>) {
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
     this.delegate = delegate;
   }
 
@@ -229,7 +232,7 @@ export default abstract class GestureHandler {
     this.activationIndex = value;
   }
 
-  public shouldWaitForHandlerFailure(handler: GestureHandler): boolean {
+  public shouldWaitForHandlerFailure(handler: IGestureHandler): boolean {
     if (handler === this) {
       return false;
     }
@@ -240,7 +243,7 @@ export default abstract class GestureHandler {
     );
   }
 
-  public shouldRequireToWaitForFailure(handler: GestureHandler): boolean {
+  public shouldRequireToWaitForFailure(handler: IGestureHandler): boolean {
     if (handler === this) {
       return false;
     }
@@ -251,7 +254,7 @@ export default abstract class GestureHandler {
     );
   }
 
-  public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
+  public shouldRecognizeSimultaneously(handler: IGestureHandler): boolean {
     if (handler === this) {
       return true;
     }
@@ -262,7 +265,7 @@ export default abstract class GestureHandler {
     );
   }
 
-  public shouldBeCancelledByOther(handler: GestureHandler): boolean {
+  public shouldBeCancelledByOther(handler: IGestureHandler): boolean {
     if (handler === this) {
       return false;
     }
@@ -772,7 +775,7 @@ export default abstract class GestureHandler {
     return this.config;
   }
 
-  public getDelegate(): GestureHandlerDelegate<unknown> {
+  public getDelegate(): GestureHandlerDelegate<unknown, IGestureHandler> {
     return this.delegate;
   }
 

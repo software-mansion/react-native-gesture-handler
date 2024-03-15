@@ -1,6 +1,5 @@
+import type IGestureHandler from '../handlers/IGestureHandler';
 import { State } from '../../State';
-import GestureHandler from '../handlers/GestureHandler';
-import NativeViewGestureHandler from '../handlers/NativeViewGestureHandler';
 import { Config, Handler } from '../interfaces';
 
 export default class InteractionManager {
@@ -13,7 +12,7 @@ export default class InteractionManager {
   // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
   private constructor() {}
 
-  public configureInteractions(handler: GestureHandler, config: Config) {
+  public configureInteractions(handler: IGestureHandler, config: Config) {
     this.dropRelationsForHandlerWithTag(handler.getTag());
 
     if (config.waitFor) {
@@ -59,8 +58,8 @@ export default class InteractionManager {
   }
 
   public shouldWaitForHandlerFailure(
-    handler: GestureHandler,
-    otherHandler: GestureHandler
+    handler: IGestureHandler,
+    otherHandler: IGestureHandler
   ): boolean {
     const waitFor: number[] | undefined = this.waitForRelations.get(
       handler.getTag()
@@ -74,8 +73,8 @@ export default class InteractionManager {
   }
 
   public shouldRecognizeSimultaneously(
-    handler: GestureHandler,
-    otherHandler: GestureHandler
+    handler: IGestureHandler,
+    otherHandler: IGestureHandler
   ): boolean {
     const simultaneousHandlers: number[] | undefined =
       this.simultaneousRelations.get(handler.getTag());
@@ -88,8 +87,8 @@ export default class InteractionManager {
   }
 
   public shouldRequireHandlerToWaitForFailure(
-    handler: GestureHandler,
-    otherHandler: GestureHandler
+    handler: IGestureHandler,
+    otherHandler: IGestureHandler
   ): boolean {
     const waitFor: number[] | undefined = this.blocksHandlersRelations.get(
       handler.getTag()
@@ -103,14 +102,16 @@ export default class InteractionManager {
   }
 
   public shouldHandlerBeCancelledBy(
-    _handler: GestureHandler,
-    otherHandler: GestureHandler
+    _handler: IGestureHandler,
+    otherHandler: IGestureHandler
   ): boolean {
-    return (
-      otherHandler instanceof NativeViewGestureHandler &&
-      otherHandler.getState() === State.ACTIVE &&
-      !otherHandler.isButton()
-    );
+    // We check constructor name instead of using `instanceof` in order do avoid circular dependencies
+    const isNativeHandler =
+      otherHandler.constructor.name === 'NativeViewGestureHandler';
+    const isActive = otherHandler.getState() === State.ACTIVE;
+    const isButton = otherHandler.isButton?.() === true;
+
+    return isNativeHandler && isActive && !isButton;
   }
 
   public dropRelationsForHandlerWithTag(handlerTag: number): void {

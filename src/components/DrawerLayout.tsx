@@ -28,6 +28,7 @@ import {
   HandlerStateChangeEvent,
   UserSelect,
   ActiveCursor,
+  MouseButton,
 } from '../handlers/gestureHandlerCommon';
 import {
   PanGestureHandler,
@@ -38,7 +39,6 @@ import {
   TapGestureHandlerEventPayload,
 } from '../handlers/TapGestureHandler';
 import { State } from '../State';
-import { MouseButton } from '../web/interfaces';
 
 const DRAG_TOSS = 0.05;
 
