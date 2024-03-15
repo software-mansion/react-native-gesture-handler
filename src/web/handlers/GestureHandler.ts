@@ -119,7 +119,7 @@ export default abstract class GestureHandler {
 
     this.onStateChange(newState, oldState);
 
-    if (!this.enabled && this.isFinished()) {
+    if (this.isFinished()) {
       this.currentState = State.UNDETERMINED;
     }
   }
