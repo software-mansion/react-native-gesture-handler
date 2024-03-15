@@ -1,24 +1,24 @@
 import { State } from '../../State';
-import { Direction } from '../constants';
+import { Directions } from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
+import Vector from '../tools/Vector';
 
 const DEFAULT_MAX_DURATION_MS = 800;
-const DEFAULT_MIN_ACCEPTABLE_DELTA = 32;
-const DEFAULT_DIRECTION = Direction.RIGHT;
+const DEFAULT_MIN_VELOCITY = 700;
+const DEFAULT_MIN_DIRECTION_ALIGNMENT = 0.75;
+const DEFAULT_DIRECTION = Directions.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
 
 export default class FlingGestureHandler extends GestureHandler {
   private numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
-  private direction = DEFAULT_DIRECTION;
+  private direction: Directions = DEFAULT_DIRECTION;
 
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
-  private minAcceptableDelta = DEFAULT_MIN_ACCEPTABLE_DELTA;
+  private minVelocity = DEFAULT_MIN_VELOCITY;
+  private minDirectionalAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT;
   private delayTimeout!: number;
-
-  private startX = 0;
-  private startY = 0;
 
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;
@@ -40,9 +40,6 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private startFling(): void {
-    this.startX = this.tracker.getLastX(this.keyPointer);
-    this.startY = this.tracker.getLastY(this.keyPointer);
-
     this.begin();
 
     this.maxNumberOfPointersSimultaneously = 1;
@@ -51,21 +48,29 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private tryEndFling(): boolean {
+    const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
+
+    const getAlignment = (direction: Directions) => {
+      return (
+        direction & this.direction &&
+        velocityVector.isSimilar(
+          Vector.fromDirection(direction),
+          this.minDirectionalAlignment
+        )
+      );
+    };
+
+    // list of alignments to all activated directions
+    const alignmentList = Object.values(Directions).map(getAlignment);
+
+    const isAligned = alignmentList.some(Boolean);
+    const isFast = velocityVector.magnitude > this.minVelocity;
+
     if (
       this.maxNumberOfPointersSimultaneously ===
         this.numberOfPointersRequired &&
-      ((this.direction & Direction.RIGHT &&
-        this.tracker.getLastX(this.keyPointer) - this.startX >
-          this.minAcceptableDelta) ||
-        (this.direction & Direction.LEFT &&
-          this.startX - this.tracker.getLastX(this.keyPointer) >
-            this.minAcceptableDelta) ||
-        (this.direction & Direction.UP &&
-          this.startY - this.tracker.getLastY(this.keyPointer) >
-            this.minAcceptableDelta) ||
-        (this.direction & Direction.DOWN &&
-          this.tracker.getLastY(this.keyPointer) - this.startY >
-            this.minAcceptableDelta))
+      isAligned &&
+      isFast
     ) {
       clearTimeout(this.delayTimeout);
       this.activate();
@@ -120,7 +125,7 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  private pointerMoveAction(event: AdaptedEvent): void {
     this.tracker.track(event);
 
     if (this.currentState !== State.BEGAN) {
@@ -128,8 +133,16 @@ export default class FlingGestureHandler extends GestureHandler {
     }
 
     this.tryEndFling();
+  }
 
+  protected onPointerMove(event: AdaptedEvent): void {
+    this.pointerMoveAction(event);
     super.onPointerMove(event);
+  }
+
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+    this.pointerMoveAction(event);
+    super.onPointerOutOfBounds(event);
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
