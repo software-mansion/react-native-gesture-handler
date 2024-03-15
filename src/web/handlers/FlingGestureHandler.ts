@@ -25,8 +25,8 @@ export default class FlingGestureHandler extends GestureHandler {
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;
 
-  private minimalAlignmentCosine: number = 0;
-  private minimalCornerAlignmentCosine: number = 0;
+  private minimalAlignmentCosine = 0;
+  private minimalCornerAlignmentCosine = 0;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -65,13 +65,13 @@ export default class FlingGestureHandler extends GestureHandler {
 
     const getAlignment = (
       direction: Directions | CornerDirections,
-      minimalAlignmentCos: number
+      minimalAlignmentCosine: number
     ) => {
       return (
         (direction & this.direction) === direction &&
         velocityVector.isSimilar(
           Vector.fromDirection(direction),
-          minimalAlignmentCos
+          minimalAlignmentCosine
         )
       );
     };
@@ -80,6 +80,7 @@ export default class FlingGestureHandler extends GestureHandler {
     const alignmentList = Object.values(Directions).map((direction) =>
       getAlignment(direction, this.minimalAlignmentCosine)
     );
+
     const cornerFillAlignmentList = this.enableCornerActivation
       ? Object.values(CornerDirections).map((direction) =>
           getAlignment(direction, this.minimalCornerAlignmentCosine)
