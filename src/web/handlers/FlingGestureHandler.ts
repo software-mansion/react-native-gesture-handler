@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { Directions } from '../../Directions';
+import { CornerDirections, Directions } from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
@@ -7,7 +7,7 @@ import Vector from '../tools/Vector';
 
 const DEFAULT_MAX_DURATION_MS = 800;
 const DEFAULT_MIN_VELOCITY = 700;
-const DEFAULT_MIN_DIRECTION_ALIGNMENT = 0.75;
+const DEFAULT_MIN_DIRECTION_ALIGNMENT = 20;
 const DEFAULT_DIRECTION = Directions.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
 
@@ -50,25 +50,35 @@ export default class FlingGestureHandler extends GestureHandler {
   private tryEndFling(): boolean {
     const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
 
-    const getAlignment = (direction: Directions) => {
+    const degToRad = (degrees: number) => degrees * Math.PI / 180;
+
+    const alignmentRadians = degToRad(this.minDirectionalAlignment)
+    const cornerAreaRadians = degToRad(45) - alignmentRadians;
+
+    const minDirectionalAlignmentCos = Math.cos(alignmentRadians);
+    const minDirectionalCornerAlignmentCos = Math.cos(cornerAreaRadians)
+
+    const getAlignment = (direction: Directions | CornerDirections, minimalAlignmentCos: number) => {
       return (
-        direction & this.direction &&
+        (direction & this.direction) === direction &&
         velocityVector.isSimilar(
           Vector.fromDirection(direction),
-          this.minDirectionalAlignment
+          minimalAlignmentCos
         )
       );
     };
 
     // list of alignments to all activated directions
-    const alignmentList = Object.values(Directions).map(getAlignment);
+    const alignmentList = Object.values(Directions).map((direction) => getAlignment(direction, minDirectionalAlignmentCos));
+    const cornerFillAlignmentList = Object.values(CornerDirections).map((direction) => getAlignment(direction, minDirectionalCornerAlignmentCos));
+    console.log(alignmentList, cornerFillAlignmentList)
 
-    const isAligned = alignmentList.some(Boolean);
+    const isAligned = alignmentList.some(Boolean) || cornerFillAlignmentList.some(Boolean);
     const isFast = velocityVector.magnitude > this.minVelocity;
 
     if (
       this.maxNumberOfPointersSimultaneously ===
-        this.numberOfPointersRequired &&
+      this.numberOfPointersRequired &&
       isAligned &&
       isFast
     ) {

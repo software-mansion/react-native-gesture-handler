@@ -1,4 +1,4 @@
-import { Directions } from '../../Directions';
+import { CornerDirections, Directions } from '../../Directions';
 import { MINIMAL_FLING_VELOCITY } from '../constants';
 import PointerTracker from './PointerTracker';
 
@@ -20,7 +20,7 @@ export default class Vector {
     this.unitY = isMagnitudeSufficient ? this.y / this._magnitude : 0;
   }
 
-  static fromDirection(direction: Directions) {
+  static fromDirection(direction: Directions | CornerDirections) {
     return DirectionToVectorMappings.get(direction)!;
   }
 
@@ -44,9 +44,14 @@ export default class Vector {
   }
 }
 
-const DirectionToVectorMappings = new Map<Directions, Vector>([
+const DirectionToVectorMappings = new Map<Directions | CornerDirections, Vector>([
   [Directions.LEFT, new Vector(-1, 0)],
   [Directions.RIGHT, new Vector(1, 0)],
   [Directions.UP, new Vector(0, -1)],
   [Directions.DOWN, new Vector(0, 1)],
+
+  [CornerDirections.UP_RIGHT, new Vector(1, -1)],
+  [CornerDirections.DOWN_RIGHT, new Vector(1, 1)],
+  [CornerDirections.UP_LEFT, new Vector(-1, -1)],
+  [CornerDirections.DOWN_LEFT, new Vector(-1, 1)],
 ]);
