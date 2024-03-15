@@ -106,7 +106,8 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   }
 
   override fun onReset() {
-    velocityTracker!!.recycle()
+    velocityTracker?.recycle()
+    velocityTracker = null
     handler?.removeCallbacksAndMessages(null)
   }
 
