@@ -1,4 +1,4 @@
-import { CompositeDirections, Directions } from '../../Directions';
+import { Directions } from '../../Directions';
 import { MINIMAL_FLING_VELOCITY } from '../constants';
 import PointerTracker from './PointerTracker';
 
@@ -20,7 +20,7 @@ export default class Vector {
     this.unitY = isMagnitudeSufficient ? this.y / this._magnitude : 0;
   }
 
-  static fromDirection(direction: Directions | CompositeDirections) {
+  static fromDirection(direction: Directions) {
     return DirectionToVectorMappings.get(direction)!;
   }
 
@@ -44,17 +44,14 @@ export default class Vector {
   }
 }
 
-const DirectionToVectorMappings = new Map<
-  Directions | CompositeDirections,
-  Vector
->([
+const DirectionToVectorMappings = new Map<Directions, Vector>([
   [Directions.LEFT, new Vector(-1, 0)],
   [Directions.RIGHT, new Vector(1, 0)],
   [Directions.UP, new Vector(0, -1)],
   [Directions.DOWN, new Vector(0, 1)],
 
-  [CompositeDirections.UP_RIGHT, new Vector(1, -1)],
-  [CompositeDirections.DOWN_RIGHT, new Vector(1, 1)],
-  [CompositeDirections.UP_LEFT, new Vector(-1, -1)],
-  [CompositeDirections.DOWN_LEFT, new Vector(-1, 1)],
+  [Directions.UP_RIGHT, new Vector(1, -1)],
+  [Directions.DOWN_RIGHT, new Vector(1, 1)],
+  [Directions.UP_LEFT, new Vector(-1, -1)],
+  [Directions.DOWN_LEFT, new Vector(-1, 1)],
 ]);

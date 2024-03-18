@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { CompositeDirections, Directions } from '../../Directions';
+import { Directions } from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
@@ -24,7 +24,6 @@ export default class FlingGestureHandler extends GestureHandler {
   private keyPointer = NaN;
 
   private minimalAlignmentCosine = 0;
-  private minimalCornerAlignmentCosine = 0;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -32,10 +31,8 @@ export default class FlingGestureHandler extends GestureHandler {
     const degToRad = (degrees: number) => (degrees * Math.PI) / 180;
 
     const alignmentRadians = degToRad(this.minDirectionalAlignment);
-    const cornerAreaRadians = degToRad(45 - this.minDirectionalAlignment);
 
     this.minimalAlignmentCosine = Math.cos(alignmentRadians);
-    this.minimalCornerAlignmentCosine = Math.cos(cornerAreaRadians);
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
@@ -62,7 +59,7 @@ export default class FlingGestureHandler extends GestureHandler {
     const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
 
     const getAlignment = (
-      direction: Directions | CompositeDirections,
+      direction: Directions,
       minimalAlignmentCosine: number
     ) => {
       return (
@@ -79,12 +76,7 @@ export default class FlingGestureHandler extends GestureHandler {
       getAlignment(direction, this.minimalAlignmentCosine)
     );
 
-    const cornerFillAlignmentList = Object.values(CompositeDirections).map(
-      (direction) => getAlignment(direction, this.minimalCornerAlignmentCosine)
-    );
-
-    const isAligned =
-      alignmentList.some(Boolean) || cornerFillAlignmentList.some(Boolean);
+    const isAligned = alignmentList.some(Boolean);
     const isFast = velocityVector.magnitude > this.minVelocity;
 
     if (
