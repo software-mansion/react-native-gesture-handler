@@ -34,7 +34,7 @@ import PanResponder from './basic/panResponder';
 import HorizontalDrawer from './basic/horizontalDrawer';
 import PagerAndDrawer from './basic/pagerAndDrawer';
 import ForceTouch from './basic/forcetouch';
-import Fling from './basic/fling'
+import Fling from './basic/fling';
 
 import ReanimatedSimple from './new_api/reanimated';
 import Camera from './new_api/camera';
