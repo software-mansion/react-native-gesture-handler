@@ -10,7 +10,6 @@ const DEFAULT_MIN_VELOCITY = 700;
 const DEFAULT_MIN_DIRECTION_ALIGNMENT = 20;
 const DEFAULT_DIRECTION = Directions.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
-const DEFAULT_ENABLE_CORNER_ACTIVATION = true;
 
 export default class FlingGestureHandler extends GestureHandler {
   private numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
@@ -19,7 +18,6 @@ export default class FlingGestureHandler extends GestureHandler {
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
   private minVelocity = DEFAULT_MIN_VELOCITY;
   private minDirectionalAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT;
-  private enableCornerActivation = DEFAULT_ENABLE_CORNER_ACTIVATION;
   private delayTimeout!: number;
 
   private maxNumberOfPointersSimultaneously = 0;
@@ -77,15 +75,13 @@ export default class FlingGestureHandler extends GestureHandler {
     };
 
     // list of alignments to all activated directions
-    const alignmentList = Object.values(Directions).map((direction) =>
-      getAlignment(direction, this.minimalAlignmentCosine)
+    const alignmentList = Object.values(Directions).map(
+      (direction) => getAlignment(direction, this.minimalAlignmentCosine)
     );
 
-    const cornerFillAlignmentList = this.enableCornerActivation
-      ? Object.values(CornerDirections).map((direction) =>
-          getAlignment(direction, this.minimalCornerAlignmentCosine)
-        )
-      : [];
+    const cornerFillAlignmentList = Object.values(CornerDirections).map(
+      (direction) => getAlignment(direction, this.minimalCornerAlignmentCosine)
+    );
 
     const isAligned =
       alignmentList.some(Boolean) || cornerFillAlignmentList.some(Boolean);
@@ -93,7 +89,7 @@ export default class FlingGestureHandler extends GestureHandler {
 
     if (
       this.maxNumberOfPointersSimultaneously ===
-        this.numberOfPointersRequired &&
+      this.numberOfPointersRequired &&
       isAligned &&
       isFast
     ) {
