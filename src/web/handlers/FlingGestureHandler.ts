@@ -75,8 +75,8 @@ export default class FlingGestureHandler extends GestureHandler {
     };
 
     // list of alignments to all activated directions
-    const alignmentList = Object.values(Directions).map(
-      (direction) => getAlignment(direction, this.minimalAlignmentCosine)
+    const alignmentList = Object.values(Directions).map((direction) =>
+      getAlignment(direction, this.minimalAlignmentCosine)
     );
 
     const cornerFillAlignmentList = Object.values(CornerDirections).map(
@@ -89,7 +89,7 @@ export default class FlingGestureHandler extends GestureHandler {
 
     if (
       this.maxNumberOfPointersSimultaneously ===
-      this.numberOfPointersRequired &&
+        this.numberOfPointersRequired &&
       isAligned &&
       isFast
     ) {
