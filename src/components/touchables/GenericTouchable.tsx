@@ -15,6 +15,7 @@ import { BaseButton } from '../GestureButtons';
 import {
   GestureEvent,
   HandlerStateChangeEvent,
+  UserSelect,
 } from '../../handlers/gestureHandlerCommon';
 import { NativeViewGestureHandlerPayload } from '../../handlers/NativeViewGestureHandler';
 import { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedback.android';
@@ -51,6 +52,7 @@ export interface GenericTouchableProps
 
   containerStyle?: StyleProp<ViewStyle>;
   hitSlop?: Insets | number;
+  userSelect?: UserSelect;
 }
 
 interface InternalProps {
@@ -286,6 +288,7 @@ export default class GenericTouchable extends Component<
         }
         onGestureEvent={this.onGestureEvent}
         hitSlop={hitSlop}
+        userSelect={this.props.userSelect}
         shouldActivateOnStart={this.props.shouldActivateOnStart}
         disallowInterruption={this.props.disallowInterruption}
         testID={this.props.testID}
