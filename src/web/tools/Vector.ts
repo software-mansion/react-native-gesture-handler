@@ -44,7 +44,10 @@ export default class Vector {
   }
 }
 
-const DirectionToVectorMappings = new Map<Directions | CornerDirections, Vector>([
+const DirectionToVectorMappings = new Map<
+  Directions | CornerDirections,
+  Vector
+>([
   [Directions.LEFT, new Vector(-1, 0)],
   [Directions.RIGHT, new Vector(1, 0)],
   [Directions.UP, new Vector(0, -1)],

@@ -13,7 +13,7 @@ export const CornerDirections = {
 } as const;
 
 /* eslint-disable @typescript-eslint/no-redeclare -- backward compatibility; it can be used as a type and as a value */
-export type Directions = typeof Directions[keyof typeof Directions];
+export type Directions = (typeof Directions)[keyof typeof Directions];
+// prettier-ignore
 export type CornerDirections = typeof CornerDirections[keyof typeof CornerDirections];
 /* eslint-enable @typescript-eslint/no-redeclare */
-
