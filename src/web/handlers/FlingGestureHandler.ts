@@ -7,7 +7,7 @@ import Vector from '../tools/Vector';
 
 const DEFAULT_MAX_DURATION_MS = 800;
 const DEFAULT_MIN_VELOCITY = 700;
-const DEFAULT_MIN_DIRECTION_ALIGNMENT = 20;
+const DEFAULT_MIN_DIRECTION_ALIGNMENT = 40;
 const DEFAULT_DIRECTION = Directions.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
 
@@ -31,8 +31,9 @@ export default class FlingGestureHandler extends GestureHandler {
     const degToRad = (degrees: number) => (degrees * Math.PI) / 180;
 
     const alignmentRadians = degToRad(this.minDirectionalAlignment);
+    const maxDirectionalDeviation = alignmentRadians / 2;
 
-    this.minimalAlignmentCosine = Math.cos(alignmentRadians);
+    this.minimalAlignmentCosine = Math.cos(maxDirectionalDeviation);
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
