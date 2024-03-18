@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { CornerDirections, Directions } from '../../Directions';
+import { CompositeDirections, Directions } from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
@@ -62,7 +62,7 @@ export default class FlingGestureHandler extends GestureHandler {
     const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
 
     const getAlignment = (
-      direction: Directions | CornerDirections,
+      direction: Directions | CompositeDirections,
       minimalAlignmentCosine: number
     ) => {
       return (
@@ -79,7 +79,7 @@ export default class FlingGestureHandler extends GestureHandler {
       getAlignment(direction, this.minimalAlignmentCosine)
     );
 
-    const cornerFillAlignmentList = Object.values(CornerDirections).map(
+    const cornerFillAlignmentList = Object.values(CompositeDirections).map(
       (direction) => getAlignment(direction, this.minimalCornerAlignmentCosine)
     );
 

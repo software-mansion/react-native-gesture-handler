@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import {
   Directions,
   Gesture,
   GestureDetector,
-  ScrollView,
 } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -12,9 +11,8 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { LoremIpsum } from '../../common';
 
-function Fling() {
+export default function Example() {
   const position = useSharedValue(0);
   const beginPosition = useSharedValue(0);
 
@@ -24,8 +22,8 @@ function Fling() {
       beginPosition.value = e.x;
     })
     .onStart((e) => {
-      const offset = (e.x - beginPosition.value) * 2;
-      position.value = withTiming(position.value + offset, {
+      const direction = Math.sign(e.x - beginPosition.value);
+      position.value = withTiming(position.value + direction * 50, {
         duration: 300,
         easing: Easing.bounce,
       });
@@ -36,27 +34,19 @@ function Fling() {
   }));
 
   return (
-    <GestureDetector gesture={flingGesture}>
-      <Animated.View style={[styles.box, animatedStyle]} />
-    </GestureDetector>
+    <View style={styles.centerView}>
+      <GestureDetector gesture={flingGesture}>
+        <Animated.View style={[styles.box, animatedStyle]} />
+      </GestureDetector>
+    </View>
   );
 }
 
-export default class Example extends Component {
-  render() {
-    return (
-      <ScrollView style={styles.scrollView}>
-        <LoremIpsum words={40} />
-        <Fling />
-        <LoremIpsum />
-      </ScrollView>
-    );
-  }
-}
-
 const styles = StyleSheet.create({
-  scrollView: {
+  centerView: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   box: {
     height: 120,
