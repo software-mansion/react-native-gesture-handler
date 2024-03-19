@@ -74,7 +74,8 @@ export default abstract class GestureHandler implements IGestureHandler {
     manager.setOnPointerOutOfBounds(this.onPointerOutOfBounds.bind(this));
     manager.setOnPointerMoveOver(this.onPointerMoveOver.bind(this));
     manager.setOnPointerMoveOut(this.onPointerMoveOut.bind(this));
-    manager.setListeners();
+
+    manager.registerListeners();
   }
 
   //
