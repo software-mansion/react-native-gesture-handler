@@ -20,6 +20,3 @@ export const degToRad = (degrees: number) => (degrees * Math.PI) / 180;
 
 export const coneToDeviation = (degrees: number) =>
   Math.cos(degToRad(degrees / 2));
-
-export const lastArrayValues = (array: any[], amount: number) =>
-  array.filter((_, index, object) => index > object.length - amount - 1);

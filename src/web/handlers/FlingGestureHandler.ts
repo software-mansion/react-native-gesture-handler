@@ -1,10 +1,5 @@
 import { State } from '../../State';
-import {
-  CompositeDirections,
-  Directions,
-  axialDirectionsList,
-  diagonalDirectionsList,
-} from '../../Directions';
+import { DiagonalDirections, Directions } from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
@@ -59,7 +54,7 @@ export default class FlingGestureHandler extends GestureHandler {
     const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
 
     const getAlignment = (
-      direction: CompositeDirections,
+      direction: Directions | DiagonalDirections,
       minimalAlignmentCosine: number
     ) => {
       return (
@@ -70,6 +65,9 @@ export default class FlingGestureHandler extends GestureHandler {
         )
       );
     };
+
+    const axialDirectionsList = Object.values(Directions);
+    const diagonalDirectionsList = Object.values(DiagonalDirections);
 
     // list of alignments to all activated directions
     const axialAlignmentList = axialDirectionsList.map((direction) =>
