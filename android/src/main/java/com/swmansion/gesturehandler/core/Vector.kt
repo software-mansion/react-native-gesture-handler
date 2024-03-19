@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler.core
 
-import android.graphics.Path.Direction
 import android.view.VelocityTracker
 import com.swmansion.gesturehandler.core.GestureHandler.Companion.DIRECTION_DOWN
 import com.swmansion.gesturehandler.core.GestureHandler.Companion.DIRECTION_LEFT

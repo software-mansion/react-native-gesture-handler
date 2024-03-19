@@ -135,7 +135,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
 
     private val MAX_AXIAL_DEVIATION: Double =
       GestureUtils.coneToDeviation(DEFAULT_ALIGNMENT_CONE)
-    private  val MAX_DIAGONAL_DEVIATION: Double =
+    private val MAX_DIAGONAL_DEVIATION: Double =
       GestureUtils.coneToDeviation(90 - DEFAULT_ALIGNMENT_CONE)
   }
 }
