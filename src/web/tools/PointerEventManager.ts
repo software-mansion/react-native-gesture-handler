@@ -10,10 +10,19 @@ const PointerTypes = {
   Stylus: 'pen',
 };
 
+type PointerEventCallback = (event: PointerEvent) => void;
 export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
   private readonly mouseButtonsMapper = new Map<number, MouseButton>();
   private lastPosition: Point;
+
+  private boundPointerDownCallback: PointerEventCallback;
+  private boundPointerUpCallback: PointerEventCallback;
+  private boundPointerMoveCallback: PointerEventCallback;
+  private boundPointerCancelCallback: PointerEventCallback;
+  private boundPointerEnterCallback: PointerEventCallback;
+  private boundPointerLeaveCallback: PointerEventCallback;
+  private boundLostPointerCaptureCallback: PointerEventCallback;
 
   constructor(view: HTMLElement) {
     super(view);
@@ -23,6 +32,15 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     this.mouseButtonsMapper.set(2, MouseButton.RIGHT);
     this.mouseButtonsMapper.set(3, MouseButton.BUTTON_4);
     this.mouseButtonsMapper.set(4, MouseButton.BUTTON_5);
+
+    this.boundPointerDownCallback = this.pointerDownCallback.bind(this);
+    this.boundPointerUpCallback = this.pointerUpCallback.bind(this);
+    this.boundPointerMoveCallback = this.pointerMoveCallback.bind(this);
+    this.boundPointerCancelCallback = this.pointerCancelCallback.bind(this);
+    this.boundPointerEnterCallback = this.pointerEnterCallback.bind(this);
+    this.boundPointerLeaveCallback = this.pointerLeaveCallback.bind(this);
+    this.boundLostPointerCaptureCallback =
+      this.lostPointerCaptureCallback.bind(this);
 
     this.lastPosition = {
       x: -Infinity,
@@ -203,54 +221,45 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   }
 
   public registerListeners(): void {
-    this.view.addEventListener(
-      'pointerdown',
-      this.pointerDownCallback.bind(this)
-    );
-
-    this.view.addEventListener('pointerup', this.pointerUpCallback.bind(this));
-
-    this.view.addEventListener(
-      'pointermove',
-      this.pointerMoveCallback.bind(this)
-    );
-
+    this.view.addEventListener('pointerdown', this.boundPointerDownCallback);
+    this.view.addEventListener('pointerup', this.boundPointerUpCallback);
+    this.view.addEventListener('pointermove', this.boundPointerMoveCallback);
     this.view.addEventListener(
       'pointercancel',
-      this.pointerCancelCallback.bind(this)
+      this.boundPointerCancelCallback
     );
 
     // onPointerEnter and onPointerLeave are triggered by a custom logic responsible for
     // handling shouldCancelWhenOutside flag, and are unreliable unless the pointer is down.
     // We therefore use pointerenter and pointerleave events to handle the hover gesture,
     // mapping them to onPointerMoveOver and onPointerMoveOut respectively.
-
-    this.view.addEventListener(
-      'pointerenter',
-      this.pointerEnterCallback.bind(this)
-    );
-
-    this.view.addEventListener(
-      'pointerleave',
-      this.pointerLeaveCallback.bind(this)
-    );
-
+    this.view.addEventListener('pointerenter', this.boundPointerEnterCallback);
+    this.view.addEventListener('pointerleave', this.boundPointerLeaveCallback);
     this.view.addEventListener(
       'lostpointercapture',
-      this.lostPointerCaptureCallback.bind(this)
+      this.boundLostPointerCaptureCallback
     );
   }
 
   public unregisterListeners(): void {
-    this.view.removeEventListener('pointerdown', this.pointerDownCallback);
-    this.view.removeEventListener('pointerup', this.pointerUpCallback);
-    this.view.removeEventListener('pointermove', this.pointerMoveCallback);
-    this.view.removeEventListener('pointercancel', this.pointerCancelCallback);
-    this.view.removeEventListener('pointerenter', this.pointerEnterCallback);
-    this.view.removeEventListener('pointerleave', this.pointerLeaveCallback);
+    this.view.removeEventListener('pointerdown', this.boundPointerDownCallback);
+    this.view.removeEventListener('pointerup', this.boundPointerUpCallback);
+    this.view.removeEventListener('pointermove', this.boundPointerMoveCallback);
+    this.view.removeEventListener(
+      'pointercancel',
+      this.boundPointerCancelCallback
+    );
+    this.view.removeEventListener(
+      'pointerenter',
+      this.boundPointerEnterCallback
+    );
+    this.view.removeEventListener(
+      'pointerleave',
+      this.boundPointerLeaveCallback
+    );
     this.view.removeEventListener(
       'lostpointercapture',
-      this.lostPointerCaptureCallback
+      this.boundLostPointerCaptureCallback
     );
   }
 
