@@ -1,15 +1,23 @@
 import { State } from '../../State';
-import { Directions } from '../../Directions';
+import {
+  CompositeDirections,
+  Directions,
+  axialDirectionsList,
+} from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import Vector from '../tools/Vector';
+import { coneToDeviation } from '../utils';
 
 const DEFAULT_MAX_DURATION_MS = 800;
 const DEFAULT_MIN_VELOCITY = 700;
-const DEFAULT_DIRECTIONAL_ALIGNMENT_CONE = 40;
+const DEFAULT_ALIGNMENT_CONE = 30;
 const DEFAULT_DIRECTION = Directions.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
+
+const AXIAL_DEVIATION_COSINE = coneToDeviation(DEFAULT_ALIGNMENT_CONE);
+const DIAGONAL_DEVIATION_COSINE = coneToDeviation(90 - DEFAULT_ALIGNMENT_CONE);
 
 export default class FlingGestureHandler extends GestureHandler {
   private numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
@@ -17,23 +25,13 @@ export default class FlingGestureHandler extends GestureHandler {
 
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
   private minVelocity = DEFAULT_MIN_VELOCITY;
-  private directionalAlignmentCone = DEFAULT_DIRECTIONAL_ALIGNMENT_CONE;
   private delayTimeout!: number;
 
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;
 
-  private minimalAlignmentCosine = 0;
-
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
-
-    const degToRad = (degrees: number) => (degrees * Math.PI) / 180;
-
-    const alignmentRadians = degToRad(this.directionalAlignmentCone);
-    const maxDirectionalDeviation = alignmentRadians / 2;
-
-    this.minimalAlignmentCosine = Math.cos(maxDirectionalDeviation);
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
@@ -60,7 +58,7 @@ export default class FlingGestureHandler extends GestureHandler {
     const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
 
     const getAlignment = (
-      direction: Directions,
+      direction: CompositeDirections,
       minimalAlignmentCosine: number
     ) => {
       return (
@@ -73,11 +71,18 @@ export default class FlingGestureHandler extends GestureHandler {
     };
 
     // list of alignments to all activated directions
-    const alignmentList = Object.values(Directions).map((direction) =>
-      getAlignment(direction, this.minimalAlignmentCosine)
+    const axialAlignmentList = axialDirectionsList.map((direction) =>
+      getAlignment(direction, AXIAL_DEVIATION_COSINE)
     );
 
-    const isAligned = alignmentList.some(Boolean);
+    const diagonalAlignmentList = axialDirectionsList.map((direction) =>
+      getAlignment(direction, DIAGONAL_DEVIATION_COSINE)
+    );
+
+    const isAligned = axialAlignmentList
+      .concat(diagonalAlignmentList)
+      .some(Boolean);
+
     const isFast = velocityVector.magnitude > this.minVelocity;
 
     if (
