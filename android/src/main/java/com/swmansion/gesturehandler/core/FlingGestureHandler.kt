@@ -11,7 +11,6 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
 
   private val maxDurationMs = DEFAULT_MAX_DURATION_MS
   private val minVelocity = DEFAULT_MIN_VELOCITY
-  private val minDirectionalAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT
   private var handler: Handler? = null
   private var maxNumberOfPointersSimultaneously = 0
   private val failDelayed = Runnable { fail() }
@@ -42,19 +41,27 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
 
     fun getVelocityAlignment(
       direction: Int,
+      maxDeviationCosine: Double,
     ): Boolean = (
-      this.direction and direction != 0 &&
-        velocityVector.isSimilar(Vector.fromDirection(direction), minDirectionalAlignment)
+      (this.direction and direction) == direction &&
+        velocityVector.isSimilar(Vector.fromDirection(direction), maxDeviationCosine)
       )
 
-    val alignmentList = arrayOf(
+    val axialAlignmentsList = arrayOf(
       DIRECTION_LEFT,
       DIRECTION_RIGHT,
       DIRECTION_UP,
       DIRECTION_DOWN,
-    ).map { direction -> getVelocityAlignment(direction) }
+    ).map { direction -> getVelocityAlignment(direction, MAX_AXIAL_DEVIATION) }
 
-    val isAligned = alignmentList.any { it }
+    val diagonalAlignmentsList = arrayOf(
+      DiagonalDirections.DIRECTION_RIGHT_UP,
+      DiagonalDirections.DIRECTION_RIGHT_DOWN,
+      DiagonalDirections.DIRECTION_LEFT_UP,
+      DiagonalDirections.DIRECTION_LEFT_DOWN,
+    ).map { direction -> getVelocityAlignment(direction, MAX_DIAGONAL_DEVIATION) }
+
+    val isAligned = axialAlignmentsList.any { it } or diagonalAlignmentsList.any { it }
     val isFast = velocityVector.magnitude > this.minVelocity
 
     return if (
@@ -122,8 +129,13 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   companion object {
     private const val DEFAULT_MAX_DURATION_MS: Long = 800
     private const val DEFAULT_MIN_VELOCITY: Long = 2000
-    private const val DEFAULT_MIN_DIRECTION_ALIGNMENT: Double = 0.75
+    private const val DEFAULT_ALIGNMENT_CONE: Double = 30.0
     private const val DEFAULT_DIRECTION = DIRECTION_RIGHT
     private const val DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1
+
+    private val MAX_AXIAL_DEVIATION: Double =
+      GestureUtils.coneToDeviation(DEFAULT_ALIGNMENT_CONE)
+    private  val MAX_DIAGONAL_DEVIATION: Double =
+      GestureUtils.coneToDeviation(90 - DEFAULT_ALIGNMENT_CONE)
   }
 }

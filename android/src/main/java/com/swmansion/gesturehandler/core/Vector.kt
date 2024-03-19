@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler.core
 
+import android.graphics.Path.Direction
 import android.view.VelocityTracker
 import com.swmansion.gesturehandler.core.GestureHandler.Companion.DIRECTION_DOWN
 import com.swmansion.gesturehandler.core.GestureHandler.Companion.DIRECTION_LEFT
@@ -32,8 +33,14 @@ class Vector(val x: Double, val y: Double) {
     private val VECTOR_RIGHT: Vector = Vector(1.0, 0.0)
     private val VECTOR_UP: Vector = Vector(0.0, -1.0)
     private val VECTOR_DOWN: Vector = Vector(0.0, 1.0)
+
+    private val VECTOR_RIGHT_UP: Vector = Vector(1.0, -1.0)
+    private val VECTOR_RIGHT_DOWN: Vector = Vector(1.0, 1.0)
+    private val VECTOR_LEFT_UP: Vector = Vector(-1.0, -1.0)
+    private val VECTOR_LEFT_DOWN: Vector = Vector(-1.0, 1.0)
+
     private val VECTOR_ZERO: Vector = Vector(0.0, 0.0)
-    const val MINIMAL_MAGNITUDE = 0.1
+    private const val MINIMAL_MAGNITUDE = 0.1
 
     fun fromDirection(direction: Int): Vector =
       when (direction) {
@@ -41,6 +48,10 @@ class Vector(val x: Double, val y: Double) {
         DIRECTION_RIGHT -> VECTOR_RIGHT
         DIRECTION_UP -> VECTOR_UP
         DIRECTION_DOWN -> VECTOR_DOWN
+        DiagonalDirections.DIRECTION_RIGHT_UP -> VECTOR_RIGHT_UP
+        DiagonalDirections.DIRECTION_RIGHT_DOWN -> VECTOR_RIGHT_DOWN
+        DiagonalDirections.DIRECTION_LEFT_UP -> VECTOR_LEFT_UP
+        DiagonalDirections.DIRECTION_LEFT_DOWN -> VECTOR_LEFT_DOWN
         else -> VECTOR_ZERO
       }
 
