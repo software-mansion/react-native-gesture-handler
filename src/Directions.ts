@@ -1,4 +1,4 @@
-import { firstArrayValues, lastArrayValues } from './web/utils';
+import { lastArrayValues } from './web/utils';
 
 const RIGHT = 1;
 const LEFT = 2;
@@ -25,12 +25,8 @@ export const CompositeDirections = {
   DOWN_LEFT: DOWN | LEFT,
 } as const;
 
-export const axialDirectionsList = firstArrayValues(
-  Object.values(CompositeDirections),
-  4
-);
-
-export const diagnalDirectionsList = lastArrayValues(
+export const axialDirectionsList = Object.values(Directions);
+export const diagonalDirectionsList = lastArrayValues(
   Object.values(CompositeDirections),
   4
 );

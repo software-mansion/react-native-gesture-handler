@@ -20,8 +20,8 @@ export default class Vector {
     this.unitY = isMagnitudeSufficient ? this.y / this._magnitude : 0;
   }
 
-  static fromDirection(direction: Directions | CompositeDirections) {
-    return DirectionToVectorMappings.get(direction as CompositeDirections)!;
+  static fromDirection(direction: Directions | CompositeDirections): Vector {
+    return DirectionToVectorMappings.get(direction)!;
   }
 
   static fromVelocity(tracker: PointerTracker, pointerId: number) {

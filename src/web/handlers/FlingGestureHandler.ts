@@ -3,6 +3,7 @@ import {
   CompositeDirections,
   Directions,
   axialDirectionsList,
+  diagonalDirectionsList,
 } from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
 
@@ -75,13 +76,12 @@ export default class FlingGestureHandler extends GestureHandler {
       getAlignment(direction, AXIAL_DEVIATION_COSINE)
     );
 
-    const diagonalAlignmentList = axialDirectionsList.map((direction) =>
+    const diagonalAlignmentList = diagonalDirectionsList.map((direction) =>
       getAlignment(direction, DIAGONAL_DEVIATION_COSINE)
     );
 
-    const isAligned = axialAlignmentList
-      .concat(diagonalAlignmentList)
-      .some(Boolean);
+    const isAligned =
+      axialAlignmentList.some(Boolean) || diagonalAlignmentList.some(Boolean);
 
     const isFast = velocityVector.magnitude > this.minVelocity;
 
