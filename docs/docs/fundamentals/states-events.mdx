@@ -36,20 +36,27 @@ A gesture can be in one of the six possible states:
 
 ## State flows
 
-import PanGesture from '@site/src/examples/PanGesture';
-import PanGestureSrc from '!!raw-loader!@site/src/examples/PanGesture';
+import ComposedGesture from '@site/src/examples/ComposedGesture';
+import ComposedGestureSrc from '!!raw-loader!@site/src/examples/ComposedGesture';
 
 The most typical flow of state is when a gesture picks up on an initial touch event, then recognizes it, then acknowledges its ending and resets itself back to the initial state.
 
 The flow looks as follows:
 
-<CollapsibleCode showLines={[17, 33]} src={PanGestureSrc} />
+<InteractiveExample
+  src={null}
+  component={null}
+  label="State flow chart"
+  larger={true}
+/>
 
 <InteractiveExample
-  src={PanGestureSrc}
-  component={<PanGesture />}
-  label="Grab and drag the circle"
+  src={ComposedGestureSrc}
+  component={<ComposedGesture />}
+  label="Drag or tap the circle"
 />
+
+<CollapsibleCode showLines={[24, 53]} src={ComposedGestureSrc} />
 
 ## Events
 
