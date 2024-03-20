@@ -12,7 +12,7 @@ import { USE_NATIVE_DRIVER } from '../../config';
 const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;
 
-class Fling extends Component {
+class NestedFling extends Component {
   private touchX: Animated.Value;
   private translateX: Animated.AnimatedAddition<number>;
   private translateY: Animated.Value;
@@ -88,7 +88,7 @@ export default class Example extends Component {
   render() {
     return (
       <View>
-        <Fling />
+        <NestedFling />
         <Text>
           Move up (with two fingers) or right/left (with one finger) and watch
           magic happens
