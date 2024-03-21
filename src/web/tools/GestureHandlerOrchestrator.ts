@@ -63,11 +63,14 @@ export default class GestureHandlerOrchestrator {
   private shouldBeCancelledByFinishedHandler(
     handler: IGestureHandler
   ): boolean {
-    return this.gestureHandlers.some(
-      (otherHandler) =>
+    const shouldBeCancelled = (otherHandler: IGestureHandler) => {
+      return (
         this.shouldHandlerWaitForOther(handler, otherHandler) &&
         otherHandler.getState() === State.END
-    );
+      );
+    };
+
+    return this.gestureHandlers.some(shouldBeCancelled);
   }
 
   private tryActivate(handler: IGestureHandler): void {
