@@ -3,24 +3,12 @@ import EventManager from './EventManager';
 import { isPointerInBounds } from '../utils';
 import { PointerType } from '../../PointerType';
 
-type TouchEventCallback = (event: TouchEvent) => void;
-
 export default class TouchEventManager extends EventManager<HTMLElement> {
-  private boundTouchStartCallback: TouchEventCallback;
-  private boundTouchMoveCallback: TouchEventCallback;
-  private boundTouchEndCallback: TouchEventCallback;
-  private boundTouchCancelCallback: TouchEventCallback;
-
   constructor(view: HTMLElement) {
     super(view);
-
-    this.boundTouchStartCallback = this.touchStartCallback.bind(this);
-    this.boundTouchMoveCallback = this.touchMoveCallback.bind(this);
-    this.boundTouchEndCallback = this.touchEndCallback.bind(this);
-    this.boundTouchCancelCallback = this.touchCancelCallback.bind(this);
   }
 
-  private touchStartCallback(event: TouchEvent): void {
+  private touchStartCallback = (event: TouchEvent): void => {
     for (let i = 0; i < event.changedTouches.length; ++i) {
       const adaptedEvent: AdaptedEvent = this.mapEvent(
         event,
@@ -51,9 +39,9 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
         this.onPointerDown(adaptedEvent);
       }
     }
-  }
+  };
 
-  private touchMoveCallback(event: TouchEvent): void {
+  private touchMoveCallback = (event: TouchEvent): void => {
     for (let i = 0; i < event.changedTouches.length; ++i) {
       const adaptedEvent: AdaptedEvent = this.mapEvent(
         event,
@@ -93,9 +81,9 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
         }
       }
     }
-  }
+  };
 
-  private touchEndCallback(event: TouchEvent): void {
+  private touchEndCallback = (event: TouchEvent): void => {
     for (let i = 0; i < event.changedTouches.length; ++i) {
       // When we call reset on gesture handlers, it also resets their event managers
       // In some handlers (like RotationGestureHandler) reset is called before all pointers leave view
@@ -126,9 +114,9 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
         this.onPointerUp(adaptedEvent);
       }
     }
-  }
+  };
 
-  private touchCancelCallback(event: TouchEvent): void {
+  private touchCancelCallback = (event: TouchEvent): void => {
     for (let i = 0; i < event.changedTouches.length; ++i) {
       const adaptedEvent: AdaptedEvent = this.mapEvent(
         event,
@@ -146,20 +134,20 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
       this.markAsOutOfBounds(adaptedEvent.pointerId);
       this.activePointersCounter = 0;
     }
-  }
+  };
 
   public registerListeners(): void {
-    this.view.addEventListener('touchstart', this.boundTouchStartCallback);
-    this.view.addEventListener('touchmove', this.boundTouchMoveCallback);
-    this.view.addEventListener('touchend', this.boundTouchEndCallback);
-    this.view.addEventListener('touchcancel', this.boundTouchCancelCallback);
+    this.view.addEventListener('touchstart', this.touchStartCallback);
+    this.view.addEventListener('touchmove', this.touchMoveCallback);
+    this.view.addEventListener('touchend', this.touchEndCallback);
+    this.view.addEventListener('touchcancel', this.touchCancelCallback);
   }
 
   public unregisterListeners(): void {
-    this.view.removeEventListener('touchstart', this.boundTouchStartCallback);
-    this.view.removeEventListener('touchmove', this.boundTouchMoveCallback);
-    this.view.removeEventListener('touchend', this.boundTouchEndCallback);
-    this.view.removeEventListener('touchcancel', this.boundTouchCancelCallback);
+    this.view.removeEventListener('touchstart', this.touchStartCallback);
+    this.view.removeEventListener('touchmove', this.touchMoveCallback);
+    this.view.removeEventListener('touchend', this.touchEndCallback);
+    this.view.removeEventListener('touchcancel', this.touchCancelCallback);
   }
 
   protected mapEvent(
