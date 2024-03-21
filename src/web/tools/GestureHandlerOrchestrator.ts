@@ -81,21 +81,27 @@ export default class GestureHandlerOrchestrator {
 
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler);
-    } else if (
-      handler.getState() !== State.CANCELLED &&
-      handler.getState() !== State.FAILED
-    ) {
-      if (this.shouldActivate(handler)) {
-        this.makeActive(handler);
-      } else {
-        switch (handler.getState()) {
-          case State.ACTIVE:
-            handler.fail();
-            break;
-          case State.BEGAN:
-            handler.cancel();
-        }
-      }
+      return;
+    }
+
+    const handlerState = handler.getState();
+
+    if (handlerState === State.CANCELLED || handlerState === State.FAILED) {
+      return;
+    }
+
+    if (this.shouldActivate(handler)) {
+      this.makeActive(handler);
+      return;
+    }
+
+    if (handlerState === State.ACTIVE) {
+      handler.fail();
+      return;
+    }
+
+    if (handlerState === State.BEGAN) {
+      handler.cancel();
     }
   }
 
