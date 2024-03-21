@@ -143,23 +143,28 @@ export default class GestureHandlerOrchestrator {
     this.handlingChangeSemaphore += 1;
 
     if (this.isFinished(newState)) {
-      this.awaitingHandlers.forEach((otherHandler) => {
-        if (this.shouldHandlerWaitForOther(otherHandler, handler)) {
-          if (newState === State.END) {
-            otherHandler?.cancel();
-            if (otherHandler.getState() === State.END) {
-              // Handle edge case, where discrete gestures end immediately after activation thus
-              // their state is set to END and when the gesture they are waiting for activates they
-              // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
-              // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
-              otherHandler.sendEvent(State.CANCELLED, State.BEGAN);
-            }
-            otherHandler?.setAwaiting(false);
-          } else {
-            this.tryActivate(otherHandler);
-          }
+      for (const otherHandler of this.awaitingHandlers) {
+        if (!this.shouldHandlerWaitForOther(otherHandler, handler)) {
+          continue;
         }
-      });
+
+        if (newState !== State.END) {
+          this.tryActivate(otherHandler);
+          continue;
+        }
+
+        otherHandler.cancel();
+
+        if (otherHandler.getState() === State.END) {
+          // Handle edge case, where discrete gestures end immediately after activation thus
+          // their state is set to END and when the gesture they are waiting for activates they
+          // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
+          // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
+          otherHandler.sendEvent(State.CANCELLED, State.BEGAN);
+        }
+
+        otherHandler.setAwaiting(false);
+      }
     }
 
     if (newState === State.ACTIVE) {
@@ -184,7 +189,7 @@ export default class GestureHandlerOrchestrator {
 
     this.scheduleFinishedHandlersCleanup();
 
-    if (this.awaitingHandlers.indexOf(handler) < 0) {
+    if (!this.awaitingHandlers.includes(handler)) {
       this.cleanupAwaitingHandlers(handler);
     }
   }
