@@ -232,16 +232,7 @@ export default class GestureHandlerOrchestrator {
   }
 
   private addAwaitingHandler(handler: IGestureHandler): void {
-    let alreadyExists = false;
-
-    this.awaitingHandlers.forEach((otherHandler) => {
-      if (otherHandler === handler) {
-        alreadyExists = true;
-        return;
-      }
-    });
-
-    if (alreadyExists) {
+    if (this.awaitingHandlers.includes(handler)) {
       return;
     }
 
