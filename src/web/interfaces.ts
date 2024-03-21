@@ -90,6 +90,11 @@ interface NativeEvent extends Record<string, NativeEventArgs> {
   pointerType: PointerType;
 }
 
+export interface Point {
+  x: number;
+  y: number;
+}
+
 export interface PointerData {
   id: number;
   x: number;
