@@ -243,16 +243,7 @@ export default class GestureHandlerOrchestrator {
   }
 
   public recordHandlerIfNotPresent(handler: IGestureHandler): void {
-    let alreadyExists = false;
-
-    this.gestureHandlers.forEach((otherHandler) => {
-      if (otherHandler === handler) {
-        alreadyExists = true;
-        return;
-      }
-    });
-
-    if (alreadyExists) {
+    if (this.gestureHandlers.includes(handler)) {
       return;
     }
 
