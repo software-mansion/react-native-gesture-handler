@@ -207,12 +207,11 @@ export default class GestureHandlerOrchestrator {
       }
     }
 
-    this.awaitingHandlers.forEach((otherHandler) => {
+    for (const otherHandler of this.awaitingHandlers) {
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler?.cancel();
-        otherHandler?.setAwaiting(true);
+        otherHandler.setAwaiting(true);
       }
-    });
+    }
 
     handler.sendEvent(State.ACTIVE, State.BEGAN);
 
@@ -223,14 +222,13 @@ export default class GestureHandlerOrchestrator {
       }
     }
 
-    if (handler.isAwaiting()) {
-      handler.setAwaiting(false);
-      for (let i = 0; i < this.awaitingHandlers.length; ++i) {
-        if (this.awaitingHandlers[i] === handler) {
-          this.awaitingHandlers.splice(i, 1);
-        }
-      }
+    if (!handler.isAwaiting()) {
+      return;
     }
+
+    handler.setAwaiting(false);
+
+    this.awaitingHandlers.filter((otherHandler) => otherHandler !== handler);
   }
 
   private addAwaitingHandler(handler: IGestureHandler): void {
