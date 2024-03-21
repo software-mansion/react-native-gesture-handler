@@ -114,15 +114,20 @@ export default class GestureHandlerOrchestrator {
   }
 
   private cleanupAwaitingHandlers(handler: IGestureHandler): void {
-    for (let i = 0; i < this.awaitingHandlers.length; ++i) {
-      if (
-        !this.awaitingHandlers[i].isAwaiting() &&
-        this.shouldHandlerWaitForOther(this.awaitingHandlers[i], handler)
-      ) {
-        this.cleanHandler(this.awaitingHandlers[i]);
-        this.awaitingHandlers.splice(i, 1);
+    const shouldWait = (otherHandler: IGestureHandler) => {
+      return (
+        !otherHandler.isAwaiting() &&
+        this.shouldHandlerWaitForOther(otherHandler, handler)
+      );
+    };
+
+    for (const handler of this.awaitingHandlers) {
+      if (shouldWait(handler)) {
+        this.cleanHandler(handler);
       }
     }
+
+    this.awaitingHandlers.filter((handler) => !shouldWait(handler));
   }
 
   public onHandlerStateChange(
