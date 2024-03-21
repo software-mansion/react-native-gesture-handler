@@ -50,19 +50,14 @@ export default class GestureHandlerOrchestrator {
   }
 
   private hasOtherHandlerToWaitFor(handler: IGestureHandler): boolean {
-    let hasToWait = false;
-    this.gestureHandlers.forEach((otherHandler) => {
-      if (
-        otherHandler &&
+    const hasToWaitFor = (otherHandler: IGestureHandler) => {
+      return (
         !this.isFinished(otherHandler.getState()) &&
         this.shouldHandlerWaitForOther(handler, otherHandler)
-      ) {
-        hasToWait = true;
-        return;
-      }
-    });
+      );
+    };
 
-    return hasToWait;
+    return this.gestureHandlers.some(hasToWaitFor);
   }
 
   private shouldBeCancelledByFinishedHandler(
