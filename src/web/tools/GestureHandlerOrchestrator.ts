@@ -312,38 +312,28 @@ export default class GestureHandlerOrchestrator {
 
     // TODO: Find better way to handle that issue, for example by activation order and handler cancelling
 
-    const handlerPointers: number[] = handler.getTrackedPointersID();
-    const otherPointers: number[] = otherHandler.getTrackedPointersID();
-
-    let overlap = false;
-
-    handlerPointers.forEach((pointer: number) => {
+    const isPointerWithinBothBounds = (pointer: number) => {
       const handlerX: number = handler.getTracker().getLastX(pointer);
       const handlerY: number = handler.getTracker().getLastY(pointer);
 
-      if (
-        handler.getDelegate().isPointerInBounds({ x: handlerX, y: handlerY }) &&
-        otherHandler
-          .getDelegate()
-          .isPointerInBounds({ x: handlerX, y: handlerY })
-      ) {
-        overlap = true;
-      }
-    });
+      const point = {
+        x: handlerX,
+        y: handlerY,
+      };
 
-    otherPointers.forEach((pointer: number) => {
-      const otherX: number = otherHandler.getTracker().getLastX(pointer);
-      const otherY: number = otherHandler.getTracker().getLastY(pointer);
+      return (
+        handler.getDelegate().isPointerInBounds(point) &&
+        otherHandler.getDelegate().isPointerInBounds(point)
+      );
+    };
 
-      if (
-        handler.getDelegate().isPointerInBounds({ x: otherX, y: otherY }) &&
-        otherHandler.getDelegate().isPointerInBounds({ x: otherX, y: otherY })
-      ) {
-        overlap = true;
-      }
-    });
+    const handlerPointers: number[] = handler.getTrackedPointersID();
+    const otherPointers: number[] = otherHandler.getTrackedPointersID();
 
-    return overlap;
+    return (
+      handlerPointers.some(isPointerWithinBothBounds) ||
+      otherPointers.some(isPointerWithinBothBounds)
+    );
   }
 
   private isFinished(state: State): boolean {
