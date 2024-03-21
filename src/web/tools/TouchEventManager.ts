@@ -4,10 +4,6 @@ import { isPointerInBounds } from '../utils';
 import { PointerType } from '../../PointerType';
 
 export default class TouchEventManager extends EventManager<HTMLElement> {
-  constructor(view: HTMLElement) {
-    super(view);
-  }
-
   private touchStartCallback = (event: TouchEvent): void => {
     for (let i = 0; i < event.changedTouches.length; ++i) {
       const adaptedEvent: AdaptedEvent = this.mapEvent(
