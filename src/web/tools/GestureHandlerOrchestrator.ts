@@ -9,6 +9,7 @@ export default class GestureHandlerOrchestrator {
 
   private gestureHandlers: IGestureHandler[] = [];
   private awaitingHandlers: IGestureHandler[] = [];
+  private awaitingHandlersTags: Set<number> = new Set();
 
   private handlingChangeSemaphore = 0;
   private activationIndex = 0;
@@ -33,20 +34,24 @@ export default class GestureHandlerOrchestrator {
   public removeHandlerFromOrchestrator(handler: IGestureHandler): void {
     this.gestureHandlers.splice(this.gestureHandlers.indexOf(handler), 1);
     this.awaitingHandlers.splice(this.awaitingHandlers.indexOf(handler), 1);
+    this.awaitingHandlersTags.delete(handler.getTag());
   }
 
   private cleanupFinishedHandlers(): void {
-    const isHandlerDone = (handler: IGestureHandler) => {
-      return this.isFinished(handler.getState()) && !handler.isAwaiting();
-    };
+    const handlersToRemove = new Set<IGestureHandler>();
 
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
-      if (isHandlerDone(this.gestureHandlers[i])) {
-        this.cleanHandler(this.gestureHandlers[i]);
+      const handler = this.gestureHandlers[i];
+
+      if (this.isFinished(handler.getState()) && !handler.isAwaiting()) {
+        this.cleanHandler(handler);
+        handlersToRemove.add(handler);
       }
     }
 
-    this.gestureHandlers.filter((handler) => !isHandlerDone(handler));
+    this.gestureHandlers = this.gestureHandlers.filter(
+      (handler) => !handlersToRemove.has(handler)
+    );
   }
 
   private hasOtherHandlerToWaitFor(handler: IGestureHandler): boolean {
@@ -121,13 +126,16 @@ export default class GestureHandlerOrchestrator {
       );
     };
 
-    for (const handler of this.awaitingHandlers) {
-      if (shouldWait(handler)) {
-        this.cleanHandler(handler);
+    for (const otherHandler of this.awaitingHandlers) {
+      if (shouldWait(otherHandler)) {
+        this.cleanHandler(otherHandler);
+        this.awaitingHandlersTags.delete(otherHandler.getTag());
       }
     }
 
-    this.awaitingHandlers.filter((handler) => !shouldWait(handler));
+    this.awaitingHandlers = this.awaitingHandlers.filter(
+      (otherHandler) => !shouldWait(otherHandler)
+    );
   }
 
   public onHandlerStateChange(
@@ -144,7 +152,10 @@ export default class GestureHandlerOrchestrator {
 
     if (this.isFinished(newState)) {
       for (const otherHandler of this.awaitingHandlers) {
-        if (!this.shouldHandlerWaitForOther(otherHandler, handler)) {
+        if (
+          !this.shouldHandlerWaitForOther(otherHandler, handler) ||
+          !this.awaitingHandlersTags.has(otherHandler.getTag())
+        ) {
           continue;
         }
 
@@ -228,7 +239,9 @@ export default class GestureHandlerOrchestrator {
 
     handler.setAwaiting(false);
 
-    this.awaitingHandlers.filter((otherHandler) => otherHandler !== handler);
+    this.awaitingHandlers = this.awaitingHandlers.filter(
+      (otherHandler) => otherHandler !== handler
+    );
   }
 
   private addAwaitingHandler(handler: IGestureHandler): void {
@@ -237,6 +250,7 @@ export default class GestureHandlerOrchestrator {
     }
 
     this.awaitingHandlers.push(handler);
+    this.awaitingHandlersTags.add(handler.getTag());
 
     handler.setAwaiting(true);
     handler.setActivationIndex(this.activationIndex++);
