@@ -12,26 +12,38 @@ type ArrowProps = {
   endPoint: Point;
 };
 
-const Arrow = ({ startPoint, endPoint }: ArrowProps) => {
+export default function App({ startPoint, endPoint }: ArrowProps) {
   // Getting info about SVG canvas
   const canvasStartPoint = {
     x: Math.min(startPoint.x, endPoint.x),
     y: Math.min(startPoint.y, endPoint.y),
   };
-  const canvasWidth = Math.abs(endPoint.x - startPoint.x);
-  const canvasHeight = Math.abs(endPoint.y - startPoint.y);
+  const strokeWidth = 3;
+  const halfStrokeWidth = 1.5;
+
+  const canvasWidth = Math.abs(endPoint.x - startPoint.x + strokeWidth);
+  const canvasHeight = Math.abs(endPoint.y - startPoint.y + strokeWidth);
+
+  // with perfectly straight lines, canvas height/width is set to 0
+  // when that is fixed, stoke gets drawn on the border, getting halved
+  canvasStartPoint.x -= halfStrokeWidth;
+  canvasStartPoint.y -= halfStrokeWidth;
 
   return (
     <svg
       width={canvasWidth}
       height={canvasHeight}
       style={{
-        backgroundColor: '#eee',
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        zIndex: -1,
+        backgroundColor: 'transparent',
         transform: `translate(${canvasStartPoint.x}px, ${canvasStartPoint.y}px)`,
       }}>
       <line
         stroke="#aaa"
-        strokeWidth={1}
+        strokeWidth={strokeWidth}
         x1={startPoint.x - canvasStartPoint.x}
         y1={startPoint.y - canvasStartPoint.y}
         x2={endPoint.x - canvasStartPoint.x}
@@ -39,20 +51,4 @@ const Arrow = ({ startPoint, endPoint }: ArrowProps) => {
       />
     </svg>
   );
-};
-
-function App() {
-  const featureAPosition = {
-    x: 300,
-    y: 0,
-  };
-
-  const featureBPosition = {
-    x: 400,
-    y: 200,
-  };
-
-  return <Arrow startPoint={featureAPosition} endPoint={featureBPosition} />;
 }
-
-export default App;

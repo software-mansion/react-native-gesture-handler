@@ -68,5 +68,11 @@ export default class ChartManager {
     ];
   }
 
-  public addConnection(fromId: number, toId: number) {}
+  public addConnection(fromId: number, toId: number) {
+    this._connections.push({
+      id: 1,
+      from: fromId,
+      to: toId,
+    });
+  }
 }

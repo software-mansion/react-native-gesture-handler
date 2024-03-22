@@ -4,10 +4,20 @@ import { StyleSheet, View } from 'react-native';
 import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
 import ChartElement from './ChartElement';
+import Arrow from './Arrow';
+
+type Coordinate = {
+  x: number;
+  y: number;
+};
 
 export default function App(props: { chartManager: ChartManager }) {
   const currentChartManager = props.chartManager;
   const elementsRef = useRef([]);
+  const elementsCoordsRef = useRef([]);
+  const rootRef = useRef(null);
+
+  const getCenter = (side: number, size: number) => side + size / 2;
 
   useEffect(() => {
     currentChartManager.elements.forEach((element) => {
@@ -17,11 +27,22 @@ export default function App(props: { chartManager: ChartManager }) {
           : '#b58df1';
       });
     });
+
+    elementsCoordsRef.current = elementsRef.current.map((element) => {
+      const box = element.getBoundingClientRect();
+      const root = rootRef.current.getBoundingClientRect();
+      return {
+        x: getCenter(box.left, box.width) - root.left,
+        y: getCenter(box.top, box.height) - root.top,
+      } as Coordinate;
+    });
+
+    console.log(elementsRef.current);
   }, [currentChartManager]);
 
   // get each listener, pass them to the Element, they will change their color on input
   return (
-    <View style={styles.container}>
+    <View style={styles.container} ref={rootRef}>
       <Grid container spacing={4}>
         {currentChartManager.elements.map((element) => (
           <ChartElement
@@ -33,6 +54,18 @@ export default function App(props: { chartManager: ChartManager }) {
           />
         ))}
       </Grid>
+      {currentChartManager.connections.map((connection) => (
+        <Arrow
+          key={connection.id}
+          startPoint={{
+            x: elementsCoordsRef.current[connection.from].x,
+            y: elementsCoordsRef.current[connection.from].y,
+          }}
+          endPoint={{
+            x: elementsCoordsRef.current[connection.to].x,
+            y: elementsCoordsRef.current[connection.to].y,
+          }}></Arrow>
+      ))}
     </View>
   );
 }

@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
   header: {
     fontWeight: '500',
     fontSize: 22,
+    minWidth: 110,
   },
   subtext: {
     fontWeight: '300',

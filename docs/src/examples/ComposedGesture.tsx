@@ -60,6 +60,23 @@ export default function App() {
     [chartManager]
   );
 
+  const [tapActiveCallback, tapActiveId] = useMemo(
+    () =>
+      chartManager.current.addElement(
+        State.ACTIVE,
+        'This one activates on tap'
+      ),
+    [chartManager]
+  );
+
+  useEffect(() => {
+    chartManager.current.addConnection(undeterminedId, beganId);
+    chartManager.current.addConnection(beganId, activeId);
+    chartManager.current.addConnection(beganId, failedId);
+    chartManager.current.addConnection(activeId, endId);
+    chartManager.current.addConnection(activeId, cancelledId);
+  }, [chartManager]);
+
   const pressed = useSharedValue(false);
 
   const offset = useSharedValue(0);
@@ -104,12 +121,19 @@ export default function App() {
     .onUpdate((event) => {
       offset.value = event.translationX;
     });
-  const tap = Gesture.Tap().onStart(() => {
-    scale.value = withSequence(
-      withSpring(1.8, { duration: 70 }),
-      withSpring(1, { duration: 140, dampingRatio: 0.4 })
-    );
-  });
+  const tap = Gesture.Tap()
+    .onStart(() => {
+      tapActiveCallback(true);
+      scale.value = withSequence(
+        withSpring(1.8, { duration: 70 }),
+        withSpring(1, { duration: 140, dampingRatio: 0.4 })
+      );
+    })
+    .onFinalize(() => {
+      setTimeout(() => {
+        tapActiveCallback(false);
+      }, 200);
+    });
   // highlight-end
 
   const composed = Gesture.Race(pan, tap);
