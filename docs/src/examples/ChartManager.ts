@@ -15,7 +15,7 @@ type ChartElement = {
   id: number;
   state: State;
   label?: string; // optional subtext
-  position?: null; // todo
+  visible: boolean;
 };
 
 class ChartConnection {
@@ -25,19 +25,34 @@ class ChartConnection {
 }
 
 export default class ChartManager {
-  private _elements: ChartElement[] = [];
-  private _connections: ChartConnection[] = [];
+  private _elements: ChartElement[] = []; // debug: best structure here is array, because this is just a pool of elements, and thier id's are derived from here anyways
+  private _connections: ChartConnection[] = []; // debug: this is a separate pool, fine as well
+  private _layout: number[][];
   private _listeners: Map<number, ((isActive: boolean) => void)[]> = useMemo(
     () => new Map(),
     []
   );
 
-  get elements(): ChartElement[] {
+  public static EMPTY_SPACE = 0;
+
+  constructor() {
+    this.addElement(null, null, false);
+  }
+
+  get elements(): typeof this._elements {
     return this._elements;
   }
 
   get connections(): ChartConnection[] {
     return this._connections;
+  }
+
+  get layout(): number[][] {
+    return this._layout;
+  }
+
+  set layout(layoutGrid: number[][]) {
+    this._layout = layoutGrid;
   }
 
   public addListener(id: number, listener: (isActive: boolean) => void): void {
@@ -47,7 +62,8 @@ export default class ChartManager {
 
   public addElement(
     state: State,
-    label: string | null = null
+    label: string | null = null,
+    visible: boolean = true
   ): [(isActive: boolean) => void, number] {
     const newId = this._elements.length;
     const newChartElement = {
@@ -55,6 +71,7 @@ export default class ChartManager {
       label: label,
       state: state,
       position: null,
+      visible: visible,
     };
 
     this._elements.push(newChartElement);
@@ -70,9 +87,11 @@ export default class ChartManager {
 
   public addConnection(fromId: number, toId: number) {
     this._connections.push({
-      id: 1,
+      id: this._connections.length,
       from: fromId,
       to: toId,
     });
   }
+
+  public setGridLayout() {}
 }

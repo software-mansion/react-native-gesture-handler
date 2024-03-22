@@ -10,19 +10,21 @@ type ChartElementProps = {
   position?: null; // todo
   innerRef?: LegacyRef<View>;
   style?: StyleProp<ViewStyle>;
+  visible?: boolean;
 };
 
 export default function App({
-  id,
   state,
   label, // optional subtext
-  position, // todo
   innerRef,
   style,
+  visible,
 }: ChartElementProps) {
   return (
-    <Grid item style={styles.box}>
-      <View style={[styles.element, style]} ref={innerRef}>
+    <Grid item style={styles.box} xs={3}>
+      <View
+        style={[styles.element, style, visible ? null : styles.hidden]}
+        ref={innerRef}>
         <Text style={styles.header}>{state}</Text>
       </View>
       <Text style={styles.subtext}>{label}</Text>
@@ -38,16 +40,18 @@ const styles = StyleSheet.create({
     maxWidth: 270,
   },
   element: {
-    padding: 30,
+    padding: 16,
     backgroundColor: '#b58df1',
   },
   header: {
     fontWeight: '500',
     fontSize: 22,
-    minWidth: 110,
   },
   subtext: {
     fontWeight: '300',
     fontSize: 14,
+  },
+  hidden: {
+    opacity: 0,
   },
 });

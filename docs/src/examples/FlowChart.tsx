@@ -43,15 +43,22 @@ export default function App(props: { chartManager: ChartManager }) {
   // get each listener, pass them to the Element, they will change their color on input
   return (
     <View style={styles.container} ref={rootRef}>
-      <Grid container spacing={4}>
-        {currentChartManager.elements.map((element) => (
-          <ChartElement
-            key={element.id}
-            innerRef={(el) => (elementsRef.current[element.id] = el)}
-            id={element.id}
-            state={element.state}
-            label={element.label}
-          />
+      <Grid container rowGap={4}>
+        {currentChartManager.layout.map((row) => (
+          <Grid container spacing={4}>
+            {row
+              .map((elementId) => currentChartManager.elements[elementId])
+              .map((element, index) => (
+                <ChartElement
+                  key={index}
+                  innerRef={(el) => (elementsRef.current[element.id] = el)}
+                  id={element.id}
+                  state={element.state}
+                  label={element.label}
+                  visible={element.visible}
+                />
+              ))}
+          </Grid>
         ))}
       </Grid>
       {currentChartManager.connections.map((connection) => (

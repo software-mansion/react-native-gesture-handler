@@ -12,14 +12,24 @@ import Animated, {
 import {
   Gesture,
   GestureDetector,
+  GestureEventPayload,
   GestureHandlerRootView,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
+  PanGestureChangeEventPayload,
+  PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import ChartManager, { State } from './ChartManager';
 import FlowChart from './FlowChart';
 
-const STATE_FAILED = 1;
-const STATE_CANCELLED = 3;
-
+enum States {
+  UNDETERMINED = 0,
+  FAILED = 1,
+  BEGAN = 2,
+  CANCELLED = 3,
+  ACTIVE = 4,
+  END = 5,
+}
 export default function App() {
   const chartManager = useRef(new ChartManager());
   const [undeterminedCallback, undeterminedId] = useMemo(
@@ -69,6 +79,11 @@ export default function App() {
     [chartManager]
   );
 
+  chartManager.current.layout = [
+    [undeterminedId, beganId, activeId, endId],
+    [ChartManager.EMPTY_SPACE, failedId, cancelledId, tapActiveId],
+  ];
+
   useEffect(() => {
     chartManager.current.addConnection(undeterminedId, beganId);
     chartManager.current.addConnection(beganId, activeId);
@@ -84,12 +99,31 @@ export default function App() {
 
   undeterminedCallback(true);
 
+  const resetAllStates = (
+    event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
+  ) => {
+    beganCallback(false);
+    activeCallback(false);
+    undeterminedCallback(true);
+    if (event.state == States.FAILED) {
+      failedCallback(true);
+    }
+    if (event.state == States.CANCELLED) {
+      cancelledCallback(true);
+    }
+    setTimeout(() => {
+      endCallback(false);
+      failedCallback(false);
+      cancelledCallback(false);
+    }, 200);
+  };
+
   // highlight-start
   const pan = Gesture.Pan()
     .onBegin(() => {
-      pressed.value = true;
       beganCallback(true);
       undeterminedCallback(false);
+      pressed.value = true;
     })
     .onStart(() => {
       scale.value = withSpring(0.6, { duration: 200 });
@@ -99,21 +133,8 @@ export default function App() {
     .onEnd(() => {
       endCallback(true);
     })
-    .onFinalize((event, success) => {
-      beganCallback(false);
-      activeCallback(false);
-      if (event.state == STATE_FAILED) {
-        failedCallback(true);
-      }
-      if (event.state == STATE_CANCELLED) {
-        cancelledCallback(true);
-      }
-      setTimeout(() => {
-        endCallback(false);
-        failedCallback(false);
-        cancelledCallback(false);
-        undeterminedCallback(true);
-      }, 200);
+    .onFinalize((event) => {
+      resetAllStates(event);
       offset.value = withSpring(0);
       scale.value = withTiming(1);
       pressed.value = false;
@@ -121,6 +142,7 @@ export default function App() {
     .onUpdate((event) => {
       offset.value = event.translationX;
     });
+
   const tap = Gesture.Tap()
     .onStart(() => {
       tapActiveCallback(true);
