@@ -21,8 +21,8 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
   const strokeWidth = 3;
   const halfStrokeWidth = 1.5;
 
-  const canvasWidth = Math.abs(endPoint.x - startPoint.x + strokeWidth);
-  const canvasHeight = Math.abs(endPoint.y - startPoint.y + strokeWidth);
+  const canvasWidth = Math.abs(endPoint.x - startPoint.x) + strokeWidth;
+  const canvasHeight = Math.abs(endPoint.y - startPoint.y) + strokeWidth;
 
   // with perfectly straight lines, canvas height/width is set to 0
   // when that is fixed, stoke gets drawn on the border, getting halved
