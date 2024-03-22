@@ -17,6 +17,9 @@ import {
 import ChartManager, { State } from './ChartManager';
 import FlowChart from './FlowChart';
 
+const STATE_FAILED = 1;
+const STATE_CANCELLED = 3;
+
 export default function App() {
   const chartManager = useRef(new ChartManager());
   const [undeterminedCallback, undeterminedId] = useMemo(
@@ -79,11 +82,13 @@ export default function App() {
     .onEnd(() => {
       endCallback(true);
     })
-    .onFinalize((_, success) => {
+    .onFinalize((event, success) => {
       beganCallback(false);
       activeCallback(false);
-      if (!success) {
+      if (event.state == STATE_FAILED) {
         failedCallback(true);
+      }
+      if (event.state == STATE_CANCELLED) {
         cancelledCallback(true);
       }
       setTimeout(() => {
