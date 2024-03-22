@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
   subtext: {
     fontWeight: '300',
     fontSize: 14,
+    backgroundColor: 'var(--swm-off-background)',
   },
   hidden: {
     opacity: 0,

@@ -33,11 +33,7 @@ enum States {
 export default function App() {
   const chartManager = useRef(new ChartManager());
   const [undeterminedCallback, undeterminedId] = useMemo(
-    () =>
-      chartManager.current.addElement(
-        State.UNDETERMINED,
-        'This is the default state'
-      ),
+    () => chartManager.current.addElement(State.UNDETERMINED, 'Gesture.pan()'),
     [chartManager]
   );
 
@@ -70,6 +66,11 @@ export default function App() {
     [chartManager]
   );
 
+  const [tapUndeterminedCallback, tapUndeterminedId] = useMemo(
+    () => chartManager.current.addElement(State.UNDETERMINED, 'Gesture.tap()'),
+    [chartManager]
+  );
+
   const [tapActiveCallback, tapActiveId] = useMemo(
     () =>
       chartManager.current.addElement(
@@ -79,9 +80,28 @@ export default function App() {
     [chartManager]
   );
 
+  // horizontal layout
   chartManager.current.layout = [
     [undeterminedId, beganId, activeId, endId],
     [ChartManager.EMPTY_SPACE, failedId, cancelledId, tapActiveId],
+  ];
+
+  // vertical layout
+  chartManager.current.layout = [
+    [
+      undeterminedId,
+      ChartManager.EMPTY_SPACE,
+      ChartManager.EMPTY_SPACE,
+      tapUndeterminedId,
+    ],
+    [beganId, failedId, ChartManager.EMPTY_SPACE, tapActiveId],
+    [activeId, cancelledId, ChartManager.EMPTY_SPACE, ChartManager.EMPTY_SPACE],
+    [
+      endId,
+      ChartManager.EMPTY_SPACE,
+      ChartManager.EMPTY_SPACE,
+      ChartManager.EMPTY_SPACE,
+    ],
   ];
 
   useEffect(() => {
@@ -90,6 +110,8 @@ export default function App() {
     chartManager.current.addConnection(beganId, failedId);
     chartManager.current.addConnection(activeId, endId);
     chartManager.current.addConnection(activeId, cancelledId);
+
+    chartManager.current.addConnection(tapUndeterminedId, tapActiveId);
   }, [chartManager]);
 
   const pressed = useSharedValue(false);
@@ -146,6 +168,7 @@ export default function App() {
   const tap = Gesture.Tap()
     .onStart(() => {
       tapActiveCallback(true);
+      tapUndeterminedCallback(false);
       scale.value = withSequence(
         withSpring(1.8, { duration: 70 }),
         withSpring(1, { duration: 140, dampingRatio: 0.4 })
@@ -154,6 +177,7 @@ export default function App() {
     .onFinalize(() => {
       setTimeout(() => {
         tapActiveCallback(false);
+        tapUndeterminedCallback(true);
       }, 200);
     });
   // highlight-end
