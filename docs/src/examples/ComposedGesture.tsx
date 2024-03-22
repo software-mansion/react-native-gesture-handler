@@ -1,22 +1,18 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useMemo, useRef } from 'react';
-import { Easing, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
   withSequence,
-  withDelay,
 } from 'react-native-reanimated';
 import {
   Gesture,
   GestureDetector,
-  GestureEventPayload,
   GestureHandlerRootView,
   GestureStateChangeEvent,
-  GestureUpdateEvent,
-  PanGestureChangeEventPayload,
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import ChartManager, { State } from './ChartManager';
@@ -61,7 +57,7 @@ export default function App() {
     () =>
       chartManager.current.addElement(
         State.CANCELLED,
-        'This is some sample text'
+        'Called when realeased out of bounds'
       ),
     [chartManager]
   );
@@ -148,7 +144,7 @@ export default function App() {
       pressed.value = true;
     })
     .onStart(() => {
-      scale.value = withSpring(0.6, { duration: 200 });
+      scale.value = withSpring(0.6, { duration: 150 });
       beganCallback(false);
       activeCallback(true);
     })
@@ -157,7 +153,7 @@ export default function App() {
     })
     .onFinalize((event) => {
       resetAllStates(event);
-      offset.value = withSpring(0);
+      offset.value = withSpring(0, { duration: 200 });
       scale.value = withTiming(1);
       pressed.value = false;
     })
@@ -170,8 +166,8 @@ export default function App() {
       tapActiveCallback(true);
       tapUndeterminedCallback(false);
       scale.value = withSequence(
-        withSpring(1.8, { duration: 70 }),
-        withSpring(1, { duration: 140, dampingRatio: 0.4 })
+        withSpring(1.8, { duration: 90 }),
+        withSpring(1, { duration: 180, dampingRatio: 0.4 })
       );
     })
     .onFinalize(() => {
@@ -185,7 +181,10 @@ export default function App() {
   const composed = Gesture.Race(pan, tap);
 
   const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{ translateX: offset.value }, { scale: scale.value }],
+    transform: [
+      { translateX: withSpring(offset.value, {}) },
+      { scale: scale.value },
+    ],
     backgroundColor: pressed.value ? '#ffe04b' : '#b58df1',
   }));
 

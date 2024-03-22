@@ -5,6 +5,7 @@ import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
 import ChartElement from './ChartElement';
 import Arrow from './Arrow';
+import { withSpring } from 'react-native-reanimated';
 
 type Coordinate = {
   x: number;
@@ -44,8 +45,8 @@ export default function App(props: { chartManager: ChartManager }) {
   return (
     <View style={styles.container} ref={rootRef}>
       <Grid container rowGap={4}>
-        {currentChartManager.layout.map((row) => (
-          <Grid container spacing={4}>
+        {currentChartManager.layout.map((row, index) => (
+          <Grid container spacing={4} key={index}>
             {row
               .map((elementId) => currentChartManager.elements[elementId])
               .map((element, index) => (
