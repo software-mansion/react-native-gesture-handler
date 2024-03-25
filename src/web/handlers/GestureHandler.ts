@@ -123,7 +123,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     this.onStateChange(newState, oldState);
 
-    if (this.isFinished()) {
+    if (!this.enabled && this.isFinished()) {
       this.currentState = State.UNDETERMINED;
     }
   }
