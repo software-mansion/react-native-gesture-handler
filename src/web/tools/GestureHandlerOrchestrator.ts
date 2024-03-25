@@ -133,8 +133,8 @@ export default class GestureHandlerOrchestrator {
       }
     }
 
-    this.awaitingHandlers = this.awaitingHandlers.filter(
-      (otherHandler) => !shouldWait(otherHandler)
+    this.awaitingHandlers = this.awaitingHandlers.filter((otherHandler) =>
+      this.awaitingHandlersTags.has(otherHandler.getTag())
     );
   }
 
