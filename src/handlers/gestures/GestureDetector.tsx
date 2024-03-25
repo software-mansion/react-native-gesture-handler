@@ -42,13 +42,20 @@ import { isFabric, isJestEnv, tagMessage } from '../../utils';
 import { getReactNativeVersion } from '../../getReactNativeVersion';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
-import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
 import { onGestureHandlerEvent } from './eventReceiver';
 import { RNRenderer } from '../../RNRenderer';
 import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
 import { nativeViewGestureHandlerProps } from '../NativeViewGestureHandler';
 import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
+
+type AttachGestureHandlerWeb = (
+  handlerTag: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  newView: any,
+  _actionType: ActionType,
+  propsRef: React.RefObject<unknown>
+) => void;
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -220,9 +227,7 @@ function attachHandlers({
       : ActionType.JS_FUNCTION_NEW_API;
 
     if (Platform.OS === 'web') {
-      (
-        RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
-      )(
+      (RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb)(
         gesture.handlerTag,
         viewTag,
         ActionType.JS_FUNCTION_OLD_API, // ignored on web
