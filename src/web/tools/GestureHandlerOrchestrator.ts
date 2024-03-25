@@ -220,7 +220,7 @@ export default class GestureHandlerOrchestrator {
 
     for (const otherHandler of this.awaitingHandlers) {
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler.setAwaiting(true);
+        otherHandler.setAwaiting(false);
       }
     }
 
