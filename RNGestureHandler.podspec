@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
   s.source_files = "apple/**/*.{h,m,mm}"
   s.requires_arc = true
   s.platforms       = { ios: '11.0', tvos: '11.0', osx: '10.15', visionos: '1.0' }
+  s.resource_bundles = { "RNGestureHandler" => ["apple/PrivacyInfo.xcprivacy"] }
 
   if defined?(install_modules_dependencies()) != nil
     install_modules_dependencies(s);
