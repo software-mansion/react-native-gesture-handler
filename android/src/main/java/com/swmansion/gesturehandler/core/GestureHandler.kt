@@ -4,14 +4,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.PointF
-import android.graphics.Rect
 import android.os.Build
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
-import android.view.Window
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
@@ -176,12 +175,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     this.view = view
     this.orchestrator = orchestrator
 
-    val decorView = getWindow(view?.context)?.decorView
-    if (decorView != null) {
-      val frame = Rect()
-      decorView.getWindowVisibleDisplayFrame(frame)
-      windowOffset[0] = frame.left
-      windowOffset[1] = frame.top
+    val content = getActivity(view?.context)?.findViewById<View>(android.R.id.content)
+    if (content != null) {
+      content.getLocationOnScreen(windowOffset)
     } else {
       windowOffset[0] = 0
       windowOffset[1] = 0
@@ -192,13 +188,13 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   protected open fun onPrepare() {}
 
-  private fun getWindow(context: Context?): Window? {
-    if (context == null) return null
-    if (context is Activity) return context.window
-    if (context is ContextWrapper) return getWindow(context.baseContext)
-
-    return null
-  }
+  private fun getActivity(context: Context?): Activity? =
+    when (context) {
+      is ReactContext -> context.currentActivity
+      is Activity -> context
+      is ContextWrapper -> getActivity(context.baseContext)
+      else -> null
+    }
 
   private fun findNextLocalPointerId(): Int {
     var localPointerId = 0
