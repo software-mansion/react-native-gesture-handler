@@ -41,14 +41,14 @@ export default function App() {
   );
 
   const [tapHandle, capturedTap, tapReset] = chartManager.current.newGesture(
-    Gesture.Tap()
+    Gesture.LongPress()
   );
 
   const panIds = panHandle.getIdObject();
   const tapIds = tapHandle.getIdObject();
 
   const panHeaderId = chartManager.current.addHeader('Pan Gesture');
-  const tapHeaderId = chartManager.current.addHeader('Tap Gesture');
+  const tapHeaderId = chartManager.current.addHeader('LongPress Gesture');
 
   // FIXME: tap seems to be broken, and does not follow the typical flow, thus it's quite a bad flow example :P
 
@@ -84,7 +84,7 @@ export default function App() {
       offset.value = event.translationX;
     });
 
-  const tap = Gesture.Tap().onStart(() => {
+  const tap = Gesture.LongPress().onStart(() => {
     scale.value = withSequence(
       withSpring(1.8, { duration: 90 }),
       withSpring(1, { duration: 180, dampingRatio: 0.4 })

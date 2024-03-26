@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#b58df1',
   },
   headerText: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '600',
     fontFamily: 'var(--ifm-heading-font-family)',
     margin: 12,
