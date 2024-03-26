@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -36,11 +36,11 @@ export default function App() {
 
   const chartManager = useRef(new ChartManager());
 
-  const [panHandle, capturedPan] = chartManager.current.newGesture(
+  const [panHandle, capturedPan, panReset] = chartManager.current.newGesture(
     Gesture.Pan()
   );
 
-  const [tapHandle, capturedTap] = chartManager.current.newGesture(
+  const [tapHandle, capturedTap, tapReset] = chartManager.current.newGesture(
     Gesture.Tap()
   );
 
@@ -55,11 +55,11 @@ export default function App() {
   // vertical layout
   // prettier-ignore
   chartManager.current.layout = [
-    [panHeaderId,         ChartManager.EMPTY_SPACE, ChartManager.EMPTY_SPACE, tapHeaderId],
-    [panIds.undetermined, ChartManager.EMPTY_SPACE, ChartManager.EMPTY_SPACE, tapIds.undetermined],
-    [panIds.began,        panIds.failed,            tapIds.failed,            tapIds.began],
-    [panIds.active,       panIds.cancelled,         tapIds.cancelled,         tapIds.active],
-    [panIds.end,          ChartManager.EMPTY_SPACE, ChartManager.EMPTY_SPACE, tapIds.end],
+    [panHeaderId,         ChartManager.EMPTY_SPACE, tapHeaderId,         ChartManager.EMPTY_SPACE],
+    [panIds.undetermined, ChartManager.EMPTY_SPACE, tapIds.undetermined, ChartManager.EMPTY_SPACE],
+    [panIds.began,        panIds.failed,            tapIds.began,        tapIds.failed],
+    [panIds.active,       panIds.cancelled,         tapIds.active,       tapIds.cancelled],
+    [panIds.end,          ChartManager.EMPTY_SPACE, tapIds.end,          ChartManager.EMPTY_SPACE],
   ];
 
   const pressed = useSharedValue(false);
@@ -103,6 +103,12 @@ export default function App() {
     ],
     backgroundColor: pressed.value ? '#ffe04b' : '#b58df1',
   }));
+
+  useEffect(() => {
+    // reset on load
+    panReset();
+    tapReset();
+  });
 
   return (
     <>
