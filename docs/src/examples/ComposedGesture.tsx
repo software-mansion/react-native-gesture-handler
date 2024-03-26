@@ -13,12 +13,13 @@ import {
   GestureDetector,
   GestureHandlerRootView,
   GestureStateChangeEvent,
+  PanGesture,
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import ChartManager, { State } from './ChartManager';
 import FlowChart from './FlowChart';
 
-enum States {
+export enum States {
   UNDETERMINED = 0,
   FAILED = 1,
   BEGAN = 2,
@@ -27,60 +28,38 @@ enum States {
   END = 5,
 }
 export default function App() {
+  // if chartman would take care of the connections and also gesture capturing,
+  // we would only need to segregate between pan and tap
+  // auto connections
+  // const panHandler = useMemo(() => chartManager.capture(pan))
+  // panHandler.capture(State.BEGAN) // only adds this one to the list
+  // panHandler.captureAll() // auto connects all that need to be connected
+  // panHandler.connectAll() // this one is a part of the capAll, will connect based on a lookup list
+  // layout = [panHandler.beganId, ..., ...]
+
   const chartManager = useRef(new ChartManager());
-  const [undeterminedCallback, undeterminedId] = useMemo(
-    () => chartManager.current.addElement(State.UNDETERMINED, 'Gesture.pan()'),
-    [chartManager]
+  const pan = Gesture.Pan();
+
+  const [panHandle, capturedPan] = useMemo(
+    () => chartManager.current.newGesture(Gesture.Pan()),
+    []
   );
 
-  const [beganCallback, beganId] = useMemo(
-    () => chartManager.current.addElement(State.BEGAN),
-    [chartManager]
+  const [tapHandle, capturedTap] = useMemo(
+    () => chartManager.current.newGesture(Gesture.Tap()),
+    []
   );
 
-  const [activeCallback, activeId] = useMemo(
-    () => chartManager.current.addElement(State.ACTIVE),
-    [chartManager]
-  );
+  const beganId = panHandle.elementIds.get(State.BEGAN);
+  const activeId = panHandle.elementIds.get(State.ACTIVE);
+  const endId = panHandle.elementIds.get(State.END);
+  const failedId = panHandle.elementIds.get(State.FAILED);
+  const cancelledId = panHandle.elementIds.get(State.CANCELLED);
+  const undeterminedId = panHandle.elementIds.get(State.UNDETERMINED);
 
-  const [endCallback, endId] = useMemo(
-    () => chartManager.current.addElement(State.END),
-    [chartManager]
-  );
-
-  const [failedCallback, failedId] = useMemo(
-    () => chartManager.current.addElement(State.FAILED),
-    [chartManager]
-  );
-
-  const [cancelledCallback, cancelledId] = useMemo(
-    () =>
-      chartManager.current.addElement(
-        State.CANCELLED,
-        'Called when realeased out of bounds'
-      ),
-    [chartManager]
-  );
-
-  const [tapUndeterminedCallback, tapUndeterminedId] = useMemo(
-    () => chartManager.current.addElement(State.UNDETERMINED, 'Gesture.tap()'),
-    [chartManager]
-  );
-
-  const [tapActiveCallback, tapActiveId] = useMemo(
-    () =>
-      chartManager.current.addElement(
-        State.ACTIVE,
-        'This one activates on tap'
-      ),
-    [chartManager]
-  );
-
-  // horizontal layout
-  chartManager.current.layout = [
-    [undeterminedId, beganId, activeId, endId],
-    [ChartManager.EMPTY_SPACE, failedId, cancelledId, tapActiveId],
-  ];
+  const tapBeganId = tapHandle.elementIds.get(State.BEGAN);
+  const tapActiveId = tapHandle.elementIds.get(State.ACTIVE);
+  const tapUndeterminedId = tapHandle.elementIds.get(State.UNDETERMINED);
 
   // vertical layout
   chartManager.current.layout = [
@@ -90,8 +69,8 @@ export default function App() {
       ChartManager.EMPTY_SPACE,
       tapUndeterminedId,
     ],
-    [beganId, failedId, ChartManager.EMPTY_SPACE, tapActiveId],
-    [activeId, cancelledId, ChartManager.EMPTY_SPACE, ChartManager.EMPTY_SPACE],
+    [beganId, failedId, ChartManager.EMPTY_SPACE, tapBeganId],
+    [activeId, cancelledId, ChartManager.EMPTY_SPACE, tapActiveId],
     [
       endId,
       ChartManager.EMPTY_SPACE,
@@ -100,59 +79,20 @@ export default function App() {
     ],
   ];
 
-  useEffect(() => {
-    chartManager.current.addConnection(undeterminedId, beganId);
-    chartManager.current.addConnection(beganId, activeId);
-    chartManager.current.addConnection(beganId, failedId);
-    chartManager.current.addConnection(activeId, endId);
-    chartManager.current.addConnection(activeId, cancelledId);
-
-    chartManager.current.addConnection(tapUndeterminedId, tapActiveId);
-  }, [chartManager]);
-
   const pressed = useSharedValue(false);
 
   const offset = useSharedValue(0);
   const scale = useSharedValue(1);
 
-  undeterminedCallback(true);
-
-  const resetAllStates = (
-    event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
-  ) => {
-    beganCallback(false);
-    activeCallback(false);
-    undeterminedCallback(true);
-    if (event.state == States.FAILED) {
-      failedCallback(true);
-    }
-    if (event.state == States.CANCELLED) {
-      cancelledCallback(true);
-    }
-    setTimeout(() => {
-      endCallback(false);
-      failedCallback(false);
-      cancelledCallback(false);
-    }, 200);
-  };
-
   // highlight-start
-  const pan = Gesture.Pan()
+  (pan as PanGesture)
     .onBegin(() => {
-      beganCallback(true);
-      undeterminedCallback(false);
       pressed.value = true;
     })
     .onStart(() => {
       scale.value = withSpring(0.6, { duration: 150 });
-      beganCallback(false);
-      activeCallback(true);
     })
-    .onEnd(() => {
-      endCallback(true);
-    })
-    .onFinalize((event) => {
-      resetAllStates(event);
+    .onFinalize(() => {
       offset.value = withSpring(0, { duration: 200 });
       scale.value = withTiming(1);
       pressed.value = false;
@@ -161,24 +101,17 @@ export default function App() {
       offset.value = event.translationX;
     });
 
-  const tap = Gesture.Tap()
-    .onStart(() => {
-      tapActiveCallback(true);
-      tapUndeterminedCallback(false);
-      scale.value = withSequence(
-        withSpring(1.8, { duration: 90 }),
-        withSpring(1, { duration: 180, dampingRatio: 0.4 })
-      );
-    })
-    .onFinalize(() => {
-      setTimeout(() => {
-        tapActiveCallback(false);
-        tapUndeterminedCallback(true);
-      }, 200);
-    });
+  const tap = Gesture.Tap().onStart(() => {
+    scale.value = withSequence(
+      withSpring(1.8, { duration: 90 }),
+      withSpring(1, { duration: 180, dampingRatio: 0.4 })
+    );
+  });
   // highlight-end
 
-  const composed = Gesture.Race(pan, tap);
+  const composedPan = Gesture.Simultaneous(pan, capturedPan);
+  const composedTap = Gesture.Simultaneous(tap, capturedTap);
+  const composed = Gesture.Race(composedPan, composedTap);
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [

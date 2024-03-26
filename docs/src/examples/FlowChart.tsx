@@ -5,7 +5,6 @@ import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
 import ChartElement from './ChartElement';
 import Arrow from './Arrow';
-import { withSpring } from 'react-native-reanimated';
 
 type Coordinate = {
   x: number;
@@ -20,26 +19,22 @@ export default function App(props: { chartManager: ChartManager }) {
 
   const getCenter = (side: number, size: number) => side + size / 2;
 
-  useEffect(() => {
-    currentChartManager.elements.forEach((element) => {
-      currentChartManager.addListener(element.id, (isActive) => {
-        elementsRef.current[element.id].style.backgroundColor = isActive
-          ? '#ffe04b'
-          : '#b58df1';
-      });
+  currentChartManager.elements.forEach((element) => {
+    currentChartManager.addListener(element.id, (isActive) => {
+      elementsRef.current[element.id].style.backgroundColor = isActive
+        ? '#ffe04b'
+        : '#b58df1';
     });
+  });
 
-    elementsCoordsRef.current = elementsRef.current.map((element) => {
-      const box = element.getBoundingClientRect();
-      const root = rootRef.current.getBoundingClientRect();
-      return {
-        x: getCenter(box.left, box.width) - root.left,
-        y: getCenter(box.top, box.height) - root.top,
-      } as Coordinate;
-    });
-
-    console.log(elementsRef.current);
-  }, [currentChartManager]);
+  elementsCoordsRef.current = elementsRef.current.map((element) => {
+    const box = element.getBoundingClientRect();
+    const root = rootRef.current.getBoundingClientRect();
+    return {
+      x: getCenter(box.left, box.width) - root.left,
+      y: getCenter(box.top, box.height) - root.top,
+    } as Coordinate;
+  });
 
   // get each listener, pass them to the Element, they will change their color on input
   return (
@@ -62,18 +57,29 @@ export default function App(props: { chartManager: ChartManager }) {
           </Grid>
         ))}
       </Grid>
-      {currentChartManager.connections.map((connection) => (
-        <Arrow
-          key={connection.id}
-          startPoint={{
-            x: elementsCoordsRef.current[connection.from].x,
-            y: elementsCoordsRef.current[connection.from].y,
-          }}
-          endPoint={{
-            x: elementsCoordsRef.current[connection.to].x,
-            y: elementsCoordsRef.current[connection.to].y,
-          }}></Arrow>
-      ))}
+      {elementsCoordsRef.current.length > 0 &&
+        currentChartManager.connections.map((connection, idx) => {
+          // we have all the connections layed out,
+          // but the user may choose not to use some of the available elements,
+          if (
+            !elementsCoordsRef.current[connection.from] ||
+            !elementsCoordsRef.current[connection.to]
+          ) {
+            return <View key={idx}></View>;
+          }
+          return (
+            <Arrow
+              key={connection.id}
+              startPoint={{
+                x: elementsCoordsRef.current[connection.from].x, // GAH
+                y: elementsCoordsRef.current[connection.from].y,
+              }}
+              endPoint={{
+                x: elementsCoordsRef.current[connection.to].x,
+                y: elementsCoordsRef.current[connection.to].y,
+              }}></Arrow>
+          );
+        })}
     </View>
   );
 }
