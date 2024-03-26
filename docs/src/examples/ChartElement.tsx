@@ -5,29 +5,35 @@ import { State } from './ChartManager';
 
 type ChartElementProps = {
   id: number;
-  state: State;
-  label?: string; // optional subtext
+  label: string;
+  subtext?: string; // optional subtext
   position?: null; // todo
   innerRef?: LegacyRef<View>;
   style?: StyleProp<ViewStyle>;
-  visible?: boolean;
+  isVisible?: boolean;
+  isHeader?: boolean;
 };
 
 export default function App({
-  state,
-  label, // optional subtext
+  label,
+  subtext, // optional subtext
   innerRef,
   style,
-  visible,
+  isVisible,
+  isHeader,
 }: ChartElementProps) {
   return (
-    <Grid item style={styles.box} xs={3}>
+    <Grid item style={isHeader ? styles.headerBox : styles.box} xs={3}>
       <View
-        style={[styles.element, style, visible ? null : styles.hidden]}
+        style={[
+          isHeader ? null : styles.element,
+          style,
+          isVisible ? null : styles.hidden,
+        ]}
         ref={innerRef}>
-        <Text style={styles.header}>{state}</Text>
+        <Text style={isHeader ? styles.header : styles.label}>{label}</Text>
       </View>
-      <Text style={styles.subtext}>{label}</Text>
+      <Text style={styles.subtext}>{subtext}</Text>
     </Grid>
   );
 }
@@ -39,11 +45,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: 270,
   },
+  headerBox: {
+    flex: 1,
+    flexDirection: 'column',
+    textAlign: 'center',
+    maxWidth: 800,
+  },
   element: {
     padding: 16,
     backgroundColor: '#b58df1',
   },
   header: {
+    fontSize: 28,
+    fontWeight: '600',
+    fontFamily: 'var(--ifm-heading-font-family)',
+    margin: 12,
+  },
+  label: {
     fontWeight: '500',
     fontSize: 22,
   },

@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -12,9 +12,7 @@ import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  GestureStateChangeEvent,
   PanGesture,
-  PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import ChartManager, { State } from './ChartManager';
 import FlowChart from './FlowChart';
@@ -50,33 +48,22 @@ export default function App() {
     []
   );
 
-  const beganId = panHandle.elementIds.get(State.BEGAN);
-  const activeId = panHandle.elementIds.get(State.ACTIVE);
-  const endId = panHandle.elementIds.get(State.END);
-  const failedId = panHandle.elementIds.get(State.FAILED);
-  const cancelledId = panHandle.elementIds.get(State.CANCELLED);
-  const undeterminedId = panHandle.elementIds.get(State.UNDETERMINED);
+  const panIds = panHandle.getIdObject();
+  const tapIds = tapHandle.getIdObject();
 
-  const tapBeganId = tapHandle.elementIds.get(State.BEGAN);
-  const tapActiveId = tapHandle.elementIds.get(State.ACTIVE);
-  const tapUndeterminedId = tapHandle.elementIds.get(State.UNDETERMINED);
+  const panHeaderId = chartManager.current.addHeader('Pan Gesture');
+  const tapHeaderId = chartManager.current.addHeader('Tap Gesture');
+
+  // FIXME: tap seems to be broken, and does not follow the typical flow, thus it's quite a bad flow example :P
 
   // vertical layout
+  // prettier-ignore
   chartManager.current.layout = [
-    [
-      undeterminedId,
-      ChartManager.EMPTY_SPACE,
-      ChartManager.EMPTY_SPACE,
-      tapUndeterminedId,
-    ],
-    [beganId, failedId, ChartManager.EMPTY_SPACE, tapBeganId],
-    [activeId, cancelledId, ChartManager.EMPTY_SPACE, tapActiveId],
-    [
-      endId,
-      ChartManager.EMPTY_SPACE,
-      ChartManager.EMPTY_SPACE,
-      ChartManager.EMPTY_SPACE,
-    ],
+    [panHeaderId,         ChartManager.EMPTY_SPACE, ChartManager.EMPTY_SPACE, tapHeaderId],
+    [panIds.undetermined, ChartManager.EMPTY_SPACE, ChartManager.EMPTY_SPACE, tapIds.undetermined],
+    [panIds.began,        panIds.failed,            tapIds.failed,            tapIds.began],
+    [panIds.active,       panIds.cancelled,         tapIds.cancelled,         tapIds.active],
+    [panIds.end,          ChartManager.EMPTY_SPACE, ChartManager.EMPTY_SPACE, tapIds.end],
   ];
 
   const pressed = useSharedValue(false);

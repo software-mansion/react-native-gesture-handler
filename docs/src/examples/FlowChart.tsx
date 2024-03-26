@@ -21,9 +21,10 @@ export default function App(props: { chartManager: ChartManager }) {
 
   currentChartManager.elements.forEach((element) => {
     currentChartManager.addListener(element.id, (isActive) => {
-      elementsRef.current[element.id].style.backgroundColor = isActive
-        ? '#ffe04b'
-        : '#b58df1';
+      if (elementsRef.current[element.id])
+        elementsRef.current[element.id].style.backgroundColor = isActive
+          ? '#ffe04b'
+          : '#b58df1';
     });
   });
 
@@ -49,9 +50,10 @@ export default function App(props: { chartManager: ChartManager }) {
                   key={index}
                   innerRef={(el) => (elementsRef.current[element.id] = el)}
                   id={element.id}
-                  state={element.state}
                   label={element.label}
-                  visible={element.visible}
+                  subtext={element.subtext}
+                  isVisible={element.isVisible}
+                  isHeader={element.isHeader}
                 />
               ))}
           </Grid>

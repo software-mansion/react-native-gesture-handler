@@ -27,9 +27,10 @@ export enum State {
 
 type ChartElement = {
   id: number;
-  state: State;
-  label?: string; // optional subtext
-  visible: boolean;
+  label?: string;
+  subtext?: string;
+  isVisible: boolean;
+  isHeader: boolean;
 };
 
 class ChartConnection {
@@ -66,6 +67,16 @@ export class GestureHandle {
   constructor() {
     this.elementIds = new Map();
     this.elementCbs = new Map();
+  }
+  getIdObject() {
+    return {
+      began: this.elementIds.get(State.BEGAN),
+      active: this.elementIds.get(State.ACTIVE),
+      end: this.elementIds.get(State.END),
+      failed: this.elementIds.get(State.FAILED),
+      cancelled: this.elementIds.get(State.CANCELLED),
+      undetermined: this.elementIds.get(State.UNDETERMINED),
+    };
   }
 }
 
@@ -107,17 +118,19 @@ export default class ChartManager {
   }
 
   public addElement(
-    state: State,
-    label: string | null = null,
-    visible: boolean = true
+    label: State | string = null,
+    subtext: string | null = null,
+    isVisible: boolean = true,
+    isHeader: boolean = false
   ): [(isActive: boolean) => void, number] {
     const newId = this._elements.length;
     const newChartElement = {
       id: newId,
       label: label,
-      state: state,
+      subtext: subtext,
       position: null,
-      visible: visible,
+      isVisible: isVisible,
+      isHeader: isHeader,
     };
 
     this._elements.push(newChartElement);
@@ -133,7 +146,7 @@ export default class ChartManager {
 
   public addHeader(text: string): number {
     // todo: add elements which can display text, and fill in all of the assigned space
-    return 0;
+    return this.addElement(text, null, true, true)[1];
   }
 
   public addConnection(fromId: number, toId: number) {
@@ -193,9 +206,9 @@ export default class ChartManager {
     // this could take up a little less space, but we would still need to hardcode the flow itself, just in a different format.
     undeterminedCallback(true);
 
+    const WAVE_DELAY_MS = 100;
+
     const resetAllStates = (event: GestureStateChangeEvent<any>) => {
-      beganCallback(false);
-      activeCallback(false);
       undeterminedCallback(true);
       if (event.state == States.FAILED) {
         failedCallback(true);
@@ -204,10 +217,14 @@ export default class ChartManager {
         cancelledCallback(true);
       }
       setTimeout(() => {
+        beganCallback(false);
+        activeCallback(false);
+      }, WAVE_DELAY_MS);
+      setTimeout(() => {
         endCallback(false);
         failedCallback(false);
         cancelledCallback(false);
-      }, 200);
+      }, 2 * WAVE_DELAY_MS);
     };
 
     // highlight-start
