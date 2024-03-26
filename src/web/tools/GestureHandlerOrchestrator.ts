@@ -9,6 +9,7 @@ export default class GestureHandlerOrchestrator {
 
   private gestureHandlers: IGestureHandler[] = [];
   private awaitingHandlers: IGestureHandler[] = [];
+  private awaitingHandlersTags: Set<number> = new Set();
 
   private handlingChangeSemaphore = 0;
   private activationIndex = 0;
@@ -33,47 +34,48 @@ export default class GestureHandlerOrchestrator {
   public removeHandlerFromOrchestrator(handler: IGestureHandler): void {
     this.gestureHandlers.splice(this.gestureHandlers.indexOf(handler), 1);
     this.awaitingHandlers.splice(this.awaitingHandlers.indexOf(handler), 1);
+    this.awaitingHandlersTags.delete(handler.getTag());
   }
 
   private cleanupFinishedHandlers(): void {
+    const handlersToRemove = new Set<IGestureHandler>();
+
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
       const handler = this.gestureHandlers[i];
 
-      if (!handler) {
-        continue;
-      }
       if (this.isFinished(handler.getState()) && !handler.isAwaiting()) {
-        this.gestureHandlers.splice(i, 1);
-
         this.cleanHandler(handler);
+        handlersToRemove.add(handler);
       }
     }
+
+    this.gestureHandlers = this.gestureHandlers.filter(
+      (handler) => !handlersToRemove.has(handler)
+    );
   }
 
   private hasOtherHandlerToWaitFor(handler: IGestureHandler): boolean {
-    let hasToWait = false;
-    this.gestureHandlers.forEach((otherHandler) => {
-      if (
-        otherHandler &&
+    const hasToWaitFor = (otherHandler: IGestureHandler) => {
+      return (
         !this.isFinished(otherHandler.getState()) &&
         this.shouldHandlerWaitForOther(handler, otherHandler)
-      ) {
-        hasToWait = true;
-        return;
-      }
-    });
+      );
+    };
 
-    return hasToWait;
+    return this.gestureHandlers.some(hasToWaitFor);
   }
 
   private shouldBeCancelledByFinishedHandler(
     handler: IGestureHandler
   ): boolean {
-    return this.gestureHandlers.some(
-      (otherHandler) =>
+    const shouldBeCancelled = (otherHandler: IGestureHandler) => {
+      return (
         this.shouldHandlerWaitForOther(handler, otherHandler) &&
         otherHandler.getState() === State.END
-    );
+      );
+    };
+
+    return this.gestureHandlers.some(shouldBeCancelled);
   }
 
   private tryActivate(handler: IGestureHandler): void {
@@ -84,44 +86,56 @@ export default class GestureHandlerOrchestrator {
 
     if (this.hasOtherHandlerToWaitFor(handler)) {
       this.addAwaitingHandler(handler);
-    } else if (
-      handler.getState() !== State.CANCELLED &&
-      handler.getState() !== State.FAILED
-    ) {
-      if (this.shouldActivate(handler)) {
-        this.makeActive(handler);
-      } else {
-        switch (handler.getState()) {
-          case State.ACTIVE:
-            handler.fail();
-            break;
-          case State.BEGAN:
-            handler.cancel();
-        }
-      }
+      return;
+    }
+
+    const handlerState = handler.getState();
+
+    if (handlerState === State.CANCELLED || handlerState === State.FAILED) {
+      return;
+    }
+
+    if (this.shouldActivate(handler)) {
+      this.makeActive(handler);
+      return;
+    }
+
+    if (handlerState === State.ACTIVE) {
+      handler.fail();
+      return;
+    }
+
+    if (handlerState === State.BEGAN) {
+      handler.cancel();
     }
   }
 
   private shouldActivate(handler: IGestureHandler): boolean {
-    for (const otherHandler of this.gestureHandlers) {
-      if (this.shouldHandlerBeCancelledBy(handler, otherHandler)) {
-        return false;
-      }
-    }
+    const shouldBeCancelledBy = (otherHandler: IGestureHandler) => {
+      return this.shouldHandlerBeCancelledBy(handler, otherHandler);
+    };
 
-    return true;
+    return !this.gestureHandlers.some(shouldBeCancelledBy);
   }
 
   private cleanupAwaitingHandlers(handler: IGestureHandler): void {
-    for (let i = 0; i < this.awaitingHandlers.length; ++i) {
-      if (
-        !this.awaitingHandlers[i].isAwaiting() &&
-        this.shouldHandlerWaitForOther(this.awaitingHandlers[i], handler)
-      ) {
-        this.cleanHandler(this.awaitingHandlers[i]);
-        this.awaitingHandlers.splice(i, 1);
+    const shouldWait = (otherHandler: IGestureHandler) => {
+      return (
+        !otherHandler.isAwaiting() &&
+        this.shouldHandlerWaitForOther(otherHandler, handler)
+      );
+    };
+
+    for (const otherHandler of this.awaitingHandlers) {
+      if (shouldWait(otherHandler)) {
+        this.cleanHandler(otherHandler);
+        this.awaitingHandlersTags.delete(otherHandler.getTag());
       }
     }
+
+    this.awaitingHandlers = this.awaitingHandlers.filter((otherHandler) =>
+      this.awaitingHandlersTags.has(otherHandler.getTag())
+    );
   }
 
   public onHandlerStateChange(
@@ -137,23 +151,31 @@ export default class GestureHandlerOrchestrator {
     this.handlingChangeSemaphore += 1;
 
     if (this.isFinished(newState)) {
-      this.awaitingHandlers.forEach((otherHandler) => {
-        if (this.shouldHandlerWaitForOther(otherHandler, handler)) {
-          if (newState === State.END) {
-            otherHandler?.cancel();
-            if (otherHandler.getState() === State.END) {
-              // Handle edge case, where discrete gestures end immediately after activation thus
-              // their state is set to END and when the gesture they are waiting for activates they
-              // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
-              // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
-              otherHandler.sendEvent(State.CANCELLED, State.BEGAN);
-            }
-            otherHandler?.setAwaiting(false);
-          } else {
-            this.tryActivate(otherHandler);
-          }
+      for (const otherHandler of this.awaitingHandlers) {
+        if (
+          !this.shouldHandlerWaitForOther(otherHandler, handler) ||
+          !this.awaitingHandlersTags.has(otherHandler.getTag())
+        ) {
+          continue;
         }
-      });
+
+        if (newState !== State.END) {
+          this.tryActivate(otherHandler);
+          continue;
+        }
+
+        otherHandler.cancel();
+
+        if (otherHandler.getState() === State.END) {
+          // Handle edge case, where discrete gestures end immediately after activation thus
+          // their state is set to END and when the gesture they are waiting for activates they
+          // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
+          // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
+          otherHandler.sendEvent(State.CANCELLED, State.BEGAN);
+        }
+
+        otherHandler.setAwaiting(false);
+      }
     }
 
     if (newState === State.ACTIVE) {
@@ -178,7 +200,7 @@ export default class GestureHandlerOrchestrator {
 
     this.scheduleFinishedHandlersCleanup();
 
-    if (this.awaitingHandlers.indexOf(handler) < 0) {
+    if (!this.awaitingHandlers.includes(handler)) {
       this.cleanupAwaitingHandlers(handler);
     }
   }
@@ -196,12 +218,11 @@ export default class GestureHandlerOrchestrator {
       }
     }
 
-    this.awaitingHandlers.forEach((otherHandler) => {
+    for (const otherHandler of this.awaitingHandlers) {
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler?.cancel();
-        otherHandler?.setAwaiting(true);
+        otherHandler.setAwaiting(false);
       }
-    });
+    }
 
     handler.sendEvent(State.ACTIVE, State.BEGAN);
 
@@ -212,47 +233,31 @@ export default class GestureHandlerOrchestrator {
       }
     }
 
-    if (handler.isAwaiting()) {
-      handler.setAwaiting(false);
-      for (let i = 0; i < this.awaitingHandlers.length; ++i) {
-        if (this.awaitingHandlers[i] === handler) {
-          this.awaitingHandlers.splice(i, 1);
-        }
-      }
+    if (!handler.isAwaiting()) {
+      return;
     }
+
+    handler.setAwaiting(false);
+
+    this.awaitingHandlers = this.awaitingHandlers.filter(
+      (otherHandler) => otherHandler !== handler
+    );
   }
 
   private addAwaitingHandler(handler: IGestureHandler): void {
-    let alreadyExists = false;
-
-    this.awaitingHandlers.forEach((otherHandler) => {
-      if (otherHandler === handler) {
-        alreadyExists = true;
-        return;
-      }
-    });
-
-    if (alreadyExists) {
+    if (this.awaitingHandlers.includes(handler)) {
       return;
     }
 
     this.awaitingHandlers.push(handler);
+    this.awaitingHandlersTags.add(handler.getTag());
 
     handler.setAwaiting(true);
     handler.setActivationIndex(this.activationIndex++);
   }
 
   public recordHandlerIfNotPresent(handler: IGestureHandler): void {
-    let alreadyExists = false;
-
-    this.gestureHandlers.forEach((otherHandler) => {
-      if (otherHandler === handler) {
-        alreadyExists = true;
-        return;
-      }
-    });
-
-    if (alreadyExists) {
+    if (this.gestureHandlers.includes(handler)) {
       return;
     }
 
@@ -293,10 +298,7 @@ export default class GestureHandlerOrchestrator {
       return false;
     }
 
-    if (
-      handler !== otherHandler &&
-      (handler.isAwaiting() || handler.getState() === State.ACTIVE)
-    ) {
+    if (handler.isAwaiting() || handler.getState() === State.ACTIVE) {
       // For now it always returns false
       return handler.shouldBeCancelledByOther(otherHandler);
     }
@@ -324,38 +326,28 @@ export default class GestureHandlerOrchestrator {
 
     // TODO: Find better way to handle that issue, for example by activation order and handler cancelling
 
-    const handlerPointers: number[] = handler.getTrackedPointersID();
-    const otherPointers: number[] = otherHandler.getTrackedPointersID();
-
-    let overlap = false;
-
-    handlerPointers.forEach((pointer: number) => {
+    const isPointerWithinBothBounds = (pointer: number) => {
       const handlerX: number = handler.getTracker().getLastX(pointer);
       const handlerY: number = handler.getTracker().getLastY(pointer);
 
-      if (
-        handler.getDelegate().isPointerInBounds({ x: handlerX, y: handlerY }) &&
-        otherHandler
-          .getDelegate()
-          .isPointerInBounds({ x: handlerX, y: handlerY })
-      ) {
-        overlap = true;
-      }
-    });
+      const point = {
+        x: handlerX,
+        y: handlerY,
+      };
 
-    otherPointers.forEach((pointer: number) => {
-      const otherX: number = otherHandler.getTracker().getLastX(pointer);
-      const otherY: number = otherHandler.getTracker().getLastY(pointer);
+      return (
+        handler.getDelegate().isPointerInBounds(point) &&
+        otherHandler.getDelegate().isPointerInBounds(point)
+      );
+    };
 
-      if (
-        handler.getDelegate().isPointerInBounds({ x: otherX, y: otherY }) &&
-        otherHandler.getDelegate().isPointerInBounds({ x: otherX, y: otherY })
-      ) {
-        overlap = true;
-      }
-    });
+    const handlerPointers: number[] = handler.getTrackedPointersID();
+    const otherPointers: number[] = otherHandler.getTrackedPointersID();
 
-    return overlap;
+    return (
+      handlerPointers.some(isPointerWithinBothBounds) ||
+      otherPointers.some(isPointerWithinBothBounds)
+    );
   }
 
   private isFinished(state: State): boolean {

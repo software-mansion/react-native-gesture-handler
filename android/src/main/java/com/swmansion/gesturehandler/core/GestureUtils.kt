@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler.core
 
 import android.view.MotionEvent
+import kotlin.math.cos
 
 object GestureUtils {
   fun getLastPointerX(event: MotionEvent, averageTouches: Boolean): Float {
@@ -44,4 +45,6 @@ object GestureUtils {
       event.getY(lastPointerIdx)
     }
   }
+  fun coneToDeviation(angle: Double): Double =
+    cos(Math.toRadians(angle / 2.0))
 }

@@ -1,15 +1,19 @@
 import { State } from '../../State';
-import { Directions } from '../../Directions';
+import { DiagonalDirections, Directions } from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import Vector from '../tools/Vector';
+import { coneToDeviation } from '../utils';
 
 const DEFAULT_MAX_DURATION_MS = 800;
 const DEFAULT_MIN_VELOCITY = 700;
-const DEFAULT_MIN_DIRECTION_ALIGNMENT = 0.75;
+const DEFAULT_ALIGNMENT_CONE = 30;
 const DEFAULT_DIRECTION = Directions.RIGHT;
 const DEFAULT_NUMBER_OF_TOUCHES_REQUIRED = 1;
+
+const AXIAL_DEVIATION_COSINE = coneToDeviation(DEFAULT_ALIGNMENT_CONE);
+const DIAGONAL_DEVIATION_COSINE = coneToDeviation(90 - DEFAULT_ALIGNMENT_CONE);
 
 export default class FlingGestureHandler extends GestureHandler {
   private numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
@@ -17,7 +21,6 @@ export default class FlingGestureHandler extends GestureHandler {
 
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
   private minVelocity = DEFAULT_MIN_VELOCITY;
-  private minDirectionalAlignment = DEFAULT_MIN_DIRECTION_ALIGNMENT;
   private delayTimeout!: number;
 
   private maxNumberOfPointersSimultaneously = 0;
@@ -50,20 +53,34 @@ export default class FlingGestureHandler extends GestureHandler {
   private tryEndFling(): boolean {
     const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
 
-    const getAlignment = (direction: Directions) => {
+    const getAlignment = (
+      direction: Directions | DiagonalDirections,
+      minimalAlignmentCosine: number
+    ) => {
       return (
-        direction & this.direction &&
+        (direction & this.direction) === direction &&
         velocityVector.isSimilar(
           Vector.fromDirection(direction),
-          this.minDirectionalAlignment
+          minimalAlignmentCosine
         )
       );
     };
 
-    // list of alignments to all activated directions
-    const alignmentList = Object.values(Directions).map(getAlignment);
+    const axialDirectionsList = Object.values(Directions);
+    const diagonalDirectionsList = Object.values(DiagonalDirections);
 
-    const isAligned = alignmentList.some(Boolean);
+    // list of alignments to all activated directions
+    const axialAlignmentList = axialDirectionsList.map((direction) =>
+      getAlignment(direction, AXIAL_DEVIATION_COSINE)
+    );
+
+    const diagonalAlignmentList = diagonalDirectionsList.map((direction) =>
+      getAlignment(direction, DIAGONAL_DEVIATION_COSINE)
+    );
+
+    const isAligned =
+      axialAlignmentList.some(Boolean) || diagonalAlignmentList.some(Boolean);
+
     const isFast = velocityVector.magnitude > this.minVelocity;
 
     if (

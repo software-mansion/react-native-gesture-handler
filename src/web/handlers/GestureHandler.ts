@@ -74,7 +74,8 @@ export default abstract class GestureHandler implements IGestureHandler {
     manager.setOnPointerOutOfBounds(this.onPointerOutOfBounds.bind(this));
     manager.setOnPointerMoveOver(this.onPointerMoveOver.bind(this));
     manager.setOnPointerMoveOut(this.onPointerMoveOut.bind(this));
-    manager.setListeners();
+
+    manager.registerListeners();
   }
 
   //
@@ -122,7 +123,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     this.onStateChange(newState, oldState);
 
-    if (this.isFinished()) {
+    if (!this.enabled && this.isFinished()) {
       this.currentState = State.UNDETERMINED;
     }
   }
