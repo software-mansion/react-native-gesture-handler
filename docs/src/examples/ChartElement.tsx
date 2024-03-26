@@ -1,7 +1,6 @@
 import { Grid } from '@mui/material';
-import React, { LegacyRef, Ref } from 'react';
+import React, { LegacyRef } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle, Text } from 'react-native';
-import { State } from './ChartManager';
 
 type ChartElementProps = {
   id: number;
@@ -27,11 +26,11 @@ export default function App({
       <View
         style={[
           isHeader ? null : styles.element,
-          style,
           isVisible ? null : styles.hidden,
+          style,
         ]}
         ref={innerRef}>
-        <Text style={isHeader ? styles.header : styles.label}>{label}</Text>
+        <Text style={isHeader ? styles.headerText : styles.label}>{label}</Text>
       </View>
       <Text style={styles.subtext}>{subtext}</Text>
     </Grid>
@@ -55,7 +54,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#b58df1',
   },
-  header: {
+  headerText: {
     fontSize: 28,
     fontWeight: '600',
     fontFamily: 'var(--ifm-heading-font-family)',

@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -12,9 +12,8 @@ import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  PanGesture,
 } from 'react-native-gesture-handler';
-import ChartManager, { State } from './ChartManager';
+import ChartManager from './ChartManager';
 import FlowChart from './FlowChart';
 
 export enum States {
@@ -36,16 +35,13 @@ export default function App() {
   // layout = [panHandler.beganId, ..., ...]
 
   const chartManager = useRef(new ChartManager());
-  const pan = Gesture.Pan();
 
-  const [panHandle, capturedPan] = useMemo(
-    () => chartManager.current.newGesture(Gesture.Pan()),
-    []
+  const [panHandle, capturedPan] = chartManager.current.newGesture(
+    Gesture.Pan()
   );
 
-  const [tapHandle, capturedTap] = useMemo(
-    () => chartManager.current.newGesture(Gesture.Tap()),
-    []
+  const [tapHandle, capturedTap] = chartManager.current.newGesture(
+    Gesture.Tap()
   );
 
   const panIds = panHandle.getIdObject();
@@ -72,7 +68,7 @@ export default function App() {
   const scale = useSharedValue(1);
 
   // highlight-start
-  (pan as PanGesture)
+  const pan = Gesture.Pan()
     .onBegin(() => {
       pressed.value = true;
     })
@@ -102,7 +98,7 @@ export default function App() {
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [
-      { translateX: withSpring(offset.value, {}) },
+      { translateX: withSpring(offset.value, { duration: 1000 }) },
       { scale: scale.value },
     ],
     backgroundColor: pressed.value ? '#ffe04b' : '#b58df1',
