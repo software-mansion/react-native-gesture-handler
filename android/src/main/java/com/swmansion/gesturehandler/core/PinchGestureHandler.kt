@@ -1,9 +1,9 @@
 package com.swmansion.gesturehandler.core
 
-import android.graphics.PointF
 import android.view.MotionEvent
-import android.view.ViewConfiguration
-import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sqrt
 
 class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   var scale = 0.0
@@ -15,68 +15,84 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   var focalPointY: Float = Float.NaN
     private set
 
-  private var scaleGestureDetector: ScaleGestureDetector? = null
   private var startingSpan = 0f
-  private var spanSlop = 0f
-  private val gestureListener: ScaleGestureDetector.OnScaleGestureListener = object :
-    ScaleGestureDetector.OnScaleGestureListener {
-    override fun onScale(detector: ScaleGestureDetector): Boolean {
-      val prevScaleFactor: Double = scale
-      scale *= detector.scaleFactor.toDouble()
-      val delta = detector.timeDelta
-      if (delta > 0) {
-        velocity = (scale - prevScaleFactor) / delta
-      }
-      if (abs(startingSpan - detector.currentSpan) >= spanSlop &&
-        state == STATE_BEGAN
-      ) {
-        activate()
-      }
-      return true
-    }
+  private var time: Long = 0L
 
-    init {
-      setShouldCancelWhenOutside(false)
+  // Get average position X within the view.
+  private fun getX(event: MotionEvent): Float {
+    var total: Float = 0f
+    var pointers: Int = event.pointerCount - 1
+    for (i in 0..pointers) {
+      total += event.getX(event.getPointerId(i))
     }
+    return total / (pointers + 1)
+  }
+  // Get average position Y within the view.
+  private fun getY(event: MotionEvent): Float {
+    var total: Float = 0f
+    var pointers: Int = event.pointerCount - 1
+    for (i in 0..pointers) {
+      total += event.getY(event.getPointerId(i))
+    }
+    return total / (pointers + 1)
+  }
 
-    override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
-      startingSpan = detector.currentSpan
-      return true
+  // Calculate hypothenuse of touches bounding box.
+  private fun getSpan(event: MotionEvent): Float {
+    var minX: Float = Float.MAX_VALUE
+    var minY: Float = Float.MAX_VALUE
+    var maxX: Float = Float.MIN_VALUE
+    var maxY: Float = Float.MIN_VALUE
+    var pointers: Int = event.pointerCount - 1
+    for (i in 0..pointers) {
+      var id = event.getPointerId(i)
+      var x: Float = event.getX(id)
+      var y: Float = event.getY(id)
+      minX = min(minX, x)
+      maxX = max(maxX, x)
+      minY = min(minY, y)
+      maxY = max(maxY, y)
     }
-
-    override fun onScaleEnd(detector: ScaleGestureDetector) {
-      // ScaleGestureDetector thinks that when fingers are 27mm away that's a sufficiently good
-      // reason to trigger this method giving us no other choice but to ignore it completely.
-    }
+    var spanX: Float = maxX - minX
+    var spanY: Float = maxY - minY
+    return sqrt(spanX * spanX + spanY * spanY)
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
-    if (state == STATE_UNDETERMINED) {
-      val context = view!!.context
-      resetProgress()
-      scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
-      val configuration = ViewConfiguration.get(context)
-      spanSlop = configuration.scaledTouchSlop.toFloat()
-
-      // set the focal point to the position of the first pointer as NaN causes the event not to arrive
-      this.focalPointX = event.x
-      this.focalPointY = event.y
-
-      begin()
-    }
-    scaleGestureDetector?.onTouchEvent(sourceEvent)
-    scaleGestureDetector?.let {
-      val point = transformPoint(PointF(it.focusX, it.focusY))
-      this.focalPointX = point.x
-      this.focalPointY = point.y
-    }
-    var activePointers = sourceEvent.pointerCount
-    if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+    var activePointers = event.pointerCount
+    if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       activePointers -= 1
     }
+
+    if (activePointers >= 2) {
+      focalPointX = getX(event)
+      focalPointY = getY(event)
+      var prevTime: Long = time
+      time = event.getEventTime()
+
+      if (state == STATE_UNDETERMINED) {
+        velocity = 0.0
+        scale = 1.0
+        startingSpan = getSpan(event)
+        begin()
+      } else {
+        var lastSpan: Float = getSpan(event)
+        var prevScale: Double = scale
+        scale = (lastSpan / startingSpan).toString().toDouble()
+        var delta: Long = time - prevTime
+        if (delta > 0) {
+          velocity = (scale - prevScale) / delta
+        }
+
+        if (state == STATE_BEGAN) {
+          activate()
+        }
+      }
+    }
+
     if (state == STATE_ACTIVE && activePointers < 2) {
       end()
-    } else if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
+    } else if (event.actionMasked == MotionEvent.ACTION_UP) {
       fail()
     }
   }
@@ -90,7 +106,6 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   }
 
   override fun onReset() {
-    scaleGestureDetector = null
     focalPointX = Float.NaN
     focalPointY = Float.NaN
     resetProgress()
