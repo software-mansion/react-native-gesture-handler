@@ -29,6 +29,14 @@ export default function App(props: { chartManager: ChartManager }) {
   });
 
   elementsCoordsRef.current = elementsRef.current.map((element) => {
+    // during unloading or overresizing, element may reload itself, causing it to be undefineds
+    if (!element) {
+      return {
+        x: 0,
+        y: 0,
+      } as Coordinate;
+    }
+
     const box = element.getBoundingClientRect();
     const root = rootRef.current.getBoundingClientRect();
     return {
