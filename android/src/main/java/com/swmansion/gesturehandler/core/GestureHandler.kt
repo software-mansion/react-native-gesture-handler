@@ -188,14 +188,13 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   protected open fun onPrepare() {}
 
-  private fun getActivity(context: Context?): Activity? {
-    if (context == null) return null
-    if (context is ReactContext) return context.currentActivity
-    if (context is Activity) return context
-    if (context is ContextWrapper) return getActivity(context.baseContext)
-
-    return null
-  }
+  private fun getActivity(context: Context?): Activity? =
+    when (context) {
+      is ReactContext -> context.currentActivity
+      is Activity -> context
+      is ContextWrapper -> getActivity(context.baseContext)
+      else -> null
+    }
 
   private fun findNextLocalPointerId(): Int {
     var localPointerId = 0
