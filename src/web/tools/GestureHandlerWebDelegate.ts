@@ -151,5 +151,9 @@ export class GestureHandlerWebDelegate
 
   public destroy(config: Config): void {
     this.removeContextMenuListeners(config);
+
+    this.eventManagers.forEach((manager) => {
+      manager.unregisterListeners();
+    });
   }
 }
