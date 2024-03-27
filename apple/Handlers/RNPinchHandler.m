@@ -164,12 +164,16 @@
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPinchGestureRecognizer *)recognizer
 {
   CGPoint accumulatedPoint = CGPointZero;
+
   for (int i = 0; i < recognizer.numberOfTouches; i++) {
     CGPoint location = [recognizer locationOfTouch:i inView:recognizer.view];
     accumulatedPoint.x += location.x;
     accumulatedPoint.y += location.y;
   }
-  CGPoint focalPoint = CGPointMake(accumulatedPoint.x / recognizer.numberOfTouches, accumulatedPoint.y / recognizer.numberOfTouches);
+
+  CGPoint focalPoint =
+      CGPointMake(accumulatedPoint.x / recognizer.numberOfTouches, accumulatedPoint.y / recognizer.numberOfTouches);
+
   return [RNGestureHandlerEventExtraData forPinch:recognizer.scale
                                    withFocalPoint:focalPoint
                                      withVelocity:recognizer.velocity
