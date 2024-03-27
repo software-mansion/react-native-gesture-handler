@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';

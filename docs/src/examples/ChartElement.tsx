@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material';
 import React, { LegacyRef, useEffect } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle, Text } from 'react-native';
+import { StyleProp, StyleSheet, View, Text } from 'react-native';
 import ChartManager, { ElementData } from './ChartManager';
 import Animated, {
   interpolateColor,

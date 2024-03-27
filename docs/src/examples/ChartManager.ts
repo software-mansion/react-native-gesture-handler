@@ -256,6 +256,9 @@ export default class ChartManager {
     this.addConnection(activeId, endId);
     this.addConnection(activeId, cancelledId);
 
+    // todo: once faulty GH flow is fixed, this connection should be removed
+    this.addConnection(beganId, cancelledId);
+
     const resetCb = () => {
       undeterminedCallback(true);
     };

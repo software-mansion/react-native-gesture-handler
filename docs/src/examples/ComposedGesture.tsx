@@ -67,12 +67,6 @@ export default function App(props: {
   const offset = useSharedValue(0);
   const scale = useSharedValue(1);
 
-  // IMPORTANT
-  // until the issue with GestureHandlers flow isn't resolved,
-  // we're adding these temporary arrows connecting BEGAN -> CANCELLED
-  chartManager.current.addConnection(panIds.began, panIds.cancelled);
-  chartManager.current.addConnection(pressIds.began, pressIds.cancelled);
-
   // highlight-start
   const pan = Gesture.Pan()
     .onBegin(() => {
