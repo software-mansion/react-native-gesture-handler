@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -16,32 +16,20 @@ import {
 import ChartManager from './ChartManager';
 import FlowChart from './FlowChart';
 
-export enum States {
-  UNDETERMINED = 0,
-  FAILED = 1,
-  BEGAN = 2,
-  CANCELLED = 3,
-  ACTIVE = 4,
-  END = 5,
-}
-export default function App() {
-  // if chartman would take care of the connections and also gesture capturing,
-  // we would only need to segregate between pan and tap
-  // auto connections
-  // const panHandler = useMemo(() => chartManager.capture(pan))
-  // panHandler.capture(State.BEGAN) // only adds this one to the list
-  // panHandler.captureAll() // auto connects all that need to be connected
-  // panHandler.connectAll() // this one is a part of the capAll, will connect based on a lookup list
-  // layout = [panHandler.beganId, ..., ...]
-
+export default function App(props: {
+  primaryColor: string;
+  highlightColor: string;
+}) {
   const chartManager = useRef(new ChartManager());
 
-  const [panHandle, capturedPan, panReset] = chartManager.current.newGesture(
-    Gesture.Pan()
+  const [panHandle, capturedPan, panReset] = useMemo(
+    () => chartManager.current.newGesture(Gesture.Pan()),
+    []
   );
 
-  const [tapHandle, capturedTap, tapReset] = chartManager.current.newGesture(
-    Gesture.LongPress()
+  const [tapHandle, capturedTap, tapReset] = useMemo(
+    () => chartManager.current.newGesture(Gesture.LongPress()),
+    []
   );
 
   const panIds = panHandle.getIdObject();
@@ -66,6 +54,12 @@ export default function App() {
 
   const offset = useSharedValue(0);
   const scale = useSharedValue(1);
+
+  // IMPORTANT
+  // until the issue with GestureHandlers flow isn't resolved,
+  // we're adding these temporary arrows connecting BEGAN -> CANCELLED
+  chartManager.current.addConnection(panIds.began, panIds.cancelled);
+  chartManager.current.addConnection(tapIds.began, tapIds.cancelled);
 
   // highlight-start
   const pan = Gesture.Pan()
@@ -101,7 +95,7 @@ export default function App() {
       { translateX: withSpring(offset.value, { duration: 1000 }) },
       { scale: scale.value },
     ],
-    backgroundColor: pressed.value ? '#ffe04b' : '#b58df1',
+    backgroundColor: pressed.value ? props.highlightColor : props.primaryColor,
   }));
 
   useEffect(() => {
@@ -113,7 +107,11 @@ export default function App() {
   return (
     <>
       <View style={[styles.container, styles.chartContainer]}>
-        <FlowChart chartManager={chartManager.current} />
+        <FlowChart
+          chartManager={chartManager.current}
+          primaryColor={props.primaryColor}
+          highlightColor={props.highlightColor}
+        />
       </View>
       <GestureHandlerRootView style={styles.container}>
         <View style={styles.container}>
@@ -139,7 +137,6 @@ const styles = StyleSheet.create({
   circle: {
     height: 120,
     width: 120,
-    backgroundColor: '#b58df1',
     borderRadius: 500,
     cursor: 'grab',
   },

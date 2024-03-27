@@ -1,4 +1,4 @@
-//import ChartElement from './ChartElement';
+//import ElementData from './ElementData';
 
 import { useMemo } from 'react';
 import {
@@ -13,25 +13,25 @@ import {
   ManualGesture,
   HoverGesture,
   GestureStateChangeEvent,
+  State,
 } from 'react-native-gesture-handler';
-import { States } from './ComposedGesture';
 
-export enum State {
-  UNDETERMINED = 'UNDETERMINED',
-  FAILED = 'FAILED',
-  BEGAN = 'BEGAN',
-  CANCELLED = 'CANCELLED',
-  ACTIVE = 'ACTIVE',
-  END = 'END',
-}
-
-type ChartElement = {
+export type ElementData = {
   id: number;
   label?: string;
   subtext?: string;
   isVisible: boolean;
   isHeader: boolean;
 };
+
+const stateToName = new Map<number, string>([
+  [State.UNDETERMINED, 'UNDETERMINED'],
+  [State.FAILED, 'FAILED'],
+  [State.BEGAN, 'BEGAN'],
+  [State.CANCELLED, 'CANCELLED'],
+  [State.ACTIVE, 'ACTIVE'],
+  [State.END, 'END'],
+]);
 
 class ChartConnection {
   id: number;
@@ -61,7 +61,7 @@ const stateConnectionsMap = [
 ];
 
 export class GestureHandle {
-  // within gesture, States can be used as unique IDs pointing to the ChartElement pool
+  // within gesture, States can be used as unique IDs pointing to the ElementData pool
   elementIds: Map<State, number>;
   elementCbs: Map<State, (isActive: boolean) => void>;
   constructor() {
@@ -81,14 +81,12 @@ export class GestureHandle {
 }
 
 export default class ChartManager {
-  private _elements: ChartElement[] = []; // debug: best structure here is array, because this is just a pool of elements, and thier id's are derived from here anyways
+  private _elements: ElementData[] = []; // debug: best structure here is array, because this is just a pool of elements, and thier id's are derived from here anyways
   private _connections: ChartConnection[] = []; // debug: this is a separate pool, fine as well
-  private _headers: ChartElement[] = [];
+  private _headers: ElementData[] = [];
   private _layout: number[][];
-  private _listeners: Map<number, ((isActive: boolean) => void)[]> = useMemo(
-    () => new Map(),
-    []
-  );
+  private _listeners: Map<number, Map<number, (isActive: boolean) => void>> =
+    useMemo(() => new Map(), []);
 
   public static EMPTY_SPACE = 0;
 
@@ -112,9 +110,28 @@ export default class ChartManager {
     this._layout = layoutGrid;
   }
 
-  public addListener(id: number, listener: (isActive: boolean) => void): void {
-    if (this._listeners.has(id)) this._listeners.get(id).push(listener);
-    else this._listeners.set(id, [listener]);
+  public addListener(
+    elementId: number,
+    listener: (isActive: boolean) => void
+  ): number {
+    const listenerId = this._listeners.get(elementId)?.size - 1 ?? 0;
+
+    // another map is used inside of _listeners to seamlessly remove listening functions from _listeners
+    if (this._listeners.has(elementId)) {
+      this._listeners.get(elementId).set(listenerId, listener);
+    } else {
+      this._listeners.set(elementId, new Map([[0, listener]]));
+    }
+
+    return listenerId;
+  }
+
+  public removeListener(elementId: number, listenerId: number): void {
+    this._listeners.get(elementId).delete(listenerId);
+  }
+
+  public clearListeners(): void {
+    this._listeners.clear();
   }
 
   public addElement(
@@ -124,7 +141,12 @@ export default class ChartManager {
     isHeader: boolean = false
   ): [(isActive: boolean) => void, number] {
     const newId = this._elements.length;
-    const newChartElement = {
+
+    if (typeof label == 'number') {
+      label = stateToName.get(label);
+    }
+
+    const newElementData = {
       id: newId,
       label: label,
       subtext: subtext,
@@ -133,7 +155,7 @@ export default class ChartManager {
       isHeader: isHeader,
     };
 
-    this._elements.push(newChartElement);
+    this._elements.push(newElementData);
 
     // this callback will be used by a .onX hook to broadcast this event to all listeners
     return [
@@ -196,10 +218,10 @@ export default class ChartManager {
 
     const resetAllStates = (event: GestureStateChangeEvent<any>) => {
       undeterminedCallback(true);
-      if (event.state == States.FAILED) {
+      if (event.state == 1) {
         failedCallback(true);
       }
-      if (event.state == States.CANCELLED) {
+      if (event.state == 3) {
         cancelledCallback(true);
       }
       setTimeout(() => {

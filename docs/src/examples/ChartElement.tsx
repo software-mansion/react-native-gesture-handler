@@ -1,38 +1,72 @@
 import { Grid } from '@mui/material';
-import React, { LegacyRef } from 'react';
+import React, { LegacyRef, useEffect } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle, Text } from 'react-native';
+import ChartManager, { ElementData } from './ChartManager';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 type ChartElementProps = {
-  id: number;
-  label: string;
-  subtext?: string; // optional subtext
-  position?: null; // todo
+  data: ElementData;
+  chartManager: ChartManager;
+  primaryColor: string;
+  highlightColor: string;
   innerRef?: LegacyRef<View>;
   style?: StyleProp<ViewStyle>;
-  isVisible?: boolean;
-  isHeader?: boolean;
 };
 
 export default function App({
-  label,
-  subtext, // optional subtext
+  data,
+  chartManager,
+  primaryColor,
+  highlightColor,
   innerRef,
   style,
-  isVisible,
-  isHeader,
 }: ChartElementProps) {
+  const progress = useSharedValue(0);
+
+  useEffect(() => {
+    // this listener is cleared through FlowChart
+    if (data.id != ChartManager.EMPTY_SPACE && !data.isHeader) {
+      const listenerId = chartManager.addListener(data.id, (isActive) => {
+        progress.value = withSpring(isActive ? 1 : 0, { duration: 200 });
+      });
+
+      return () => {
+        chartManager.removeListener(data.id, listenerId);
+      };
+    }
+  }, [chartManager]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: interpolateColor(
+        progress.value,
+        [0, 1],
+        [primaryColor, highlightColor],
+        'RGB'
+      ),
+    };
+  });
+
   return (
-    <Grid item style={isHeader ? styles.headerBox : styles.box} xs={3}>
-      <View
+    <Grid item style={data.isHeader ? styles.headerBox : styles.box} xs={3}>
+      <Animated.View
         style={[
-          isHeader ? null : styles.element,
-          isVisible ? null : styles.hidden,
+          data.isHeader ? null : [styles.element, animatedStyle],
+          data.isVisible ? null : styles.hidden,
           style,
         ]}
         ref={innerRef}>
-        <Text style={isHeader ? styles.headerText : styles.label}>{label}</Text>
-      </View>
-      <Text style={styles.subtext}>{subtext}</Text>
+        <Text style={data.isHeader ? styles.headerText : styles.label}>
+          {data.label}
+        </Text>
+      </Animated.View>
+      <Text style={styles.subtext}>{data.subtext}</Text>
     </Grid>
   );
 }

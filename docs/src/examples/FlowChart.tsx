@@ -6,27 +6,30 @@ import { Grid } from '@mui/material';
 import ChartElement from './ChartElement';
 import Arrow from './Arrow';
 
+const COLOR_DORMANT = '#b58df1';
+const COLOR_ACTIVE = '#ffe04b';
+
 type Coordinate = {
   x: number;
   y: number;
 };
 
-export default function App(props: { chartManager: ChartManager }) {
-  const currentChartManager = props.chartManager;
+type FlowChartProps = {
+  chartManager: ChartManager;
+  primaryColor: string;
+  highlightColor: string;
+};
+
+export default function App({
+  chartManager,
+  primaryColor = COLOR_DORMANT,
+  highlightColor = COLOR_ACTIVE,
+}: FlowChartProps) {
   const elementsRef = useRef([]);
   const elementsCoordsRef = useRef([]);
   const rootRef = useRef(null);
 
   const getCenter = (side: number, size: number) => side + size / 2;
-
-  currentChartManager.elements.forEach((element) => {
-    currentChartManager.addListener(element.id, (isActive) => {
-      if (elementsRef.current[element.id])
-        elementsRef.current[element.id].style.backgroundColor = isActive
-          ? '#ffe04b'
-          : '#b58df1';
-    });
-  });
 
   elementsCoordsRef.current = elementsRef.current.map((element) => {
     // during unloading or overresizing, element may reload itself, causing it to be undefineds
@@ -49,26 +52,25 @@ export default function App(props: { chartManager: ChartManager }) {
   return (
     <View style={styles.container} ref={rootRef}>
       <Grid container rowGap={4}>
-        {currentChartManager.layout.map((row, index) => (
+        {chartManager.layout.map((row, index) => (
           <Grid container spacing={4} key={index}>
             {row
-              .map((elementId) => currentChartManager.elements[elementId])
+              .map((elementId) => chartManager.elements[elementId])
               .map((element, index) => (
                 <ChartElement
                   key={index}
                   innerRef={(el) => (elementsRef.current[element.id] = el)}
-                  id={element.id}
-                  label={element.label}
-                  subtext={element.subtext}
-                  isVisible={element.isVisible}
-                  isHeader={element.isHeader}
+                  data={element}
+                  primaryColor={primaryColor}
+                  highlightColor={highlightColor}
+                  chartManager={chartManager}
                 />
               ))}
           </Grid>
         ))}
       </Grid>
       {elementsCoordsRef.current.length > 0 &&
-        currentChartManager.connections.map((connection, idx) => {
+        chartManager.connections.map((connection, idx) => {
           // we have all the connections layed out,
           // but the user may choose not to use some of the available elements,
           if (
@@ -112,7 +114,6 @@ const styles = StyleSheet.create({
     padding: 30,
     fontWeight: '500',
     fontSize: 24,
-    backgroundColor: '#b58df1',
   },
   subtext: {
     fontWeight: '300',
