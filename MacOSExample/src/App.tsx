@@ -17,6 +17,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Draggable from './basic/draggable';
 import PinchableBox from './recipes/scaleAndRotate';
 import Tap from './basic/tap';
+import NativeViewExample from './basic/nativeview';
 
 interface Example {
   name: string;
@@ -35,6 +36,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Draggable', component: Draggable },
       { name: 'Pinch & rotate', component: PinchableBox },
       { name: 'Tap', component: Tap },
+      { name: 'NativeView example', component: NativeViewExample },
     ],
   },
 ];

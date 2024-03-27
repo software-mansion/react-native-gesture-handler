@@ -21,8 +21,6 @@
 #import <React/RCTScrollView.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
-#if !TARGET_OS_OSX
-
 #pragma mark RNDummyGestureRecognizer
 
 @implementation RNDummyGestureRecognizer {
@@ -36,6 +34,26 @@
   }
   return self;
 }
+
+#if TARGET_OS_OSX
+- (void)mouseDown:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
+  self.state = NSGestureRecognizerStateEnded;
+  [self reset];
+}
+
+#else
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
@@ -62,6 +80,8 @@
   [self reset];
 }
 
+#endif
+
 - (void)reset
 {
   [_gestureHandler.pointerTracker reset];
@@ -70,6 +90,8 @@
 }
 
 @end
+
+#if !TARGET_OS_OSX
 
 #pragma mark RNNativeViewGestureHandler
 
@@ -201,31 +223,57 @@
 
 #else
 
-#pragma mark RNDummyGestureRecognizer
-
-@implementation RNDummyGestureRecognizer
-
-- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
-{
-  self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)];
-  return self;
-}
-
-@end
-
 #pragma mark RNNativeViewGestureHandler
 
-@implementation RNNativeViewGestureHandler
+@implementation RNNativeViewGestureHandler {
+  BOOL _shouldActivateOnStart;
+  BOOL _disallowInterruption;
+}
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"NativeViewGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
-    _recognizer = [NSGestureRecognizer alloc];
+    _recognizer = [[RNDummyGestureRecognizer alloc] initWithGestureHandler:self];
   }
   return self;
 }
 
-@end
+- (void)configure:(NSDictionary *)config
+{
+  [super configure:config];
+  _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
+  _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
+}
 
+- (void)bindToView:(RNGHUIView *)view
+{
+  // For UIControl based views (UIButton, UISwitch) we provide special handling that would allow
+  // for properties like `disallowInterruption` to work.
+  if ([view isKindOfClass:[NSControl class]]) {
+    NSControl *control = (NSControl *)view;
+    id targetIDBefore = control.target;
+    [control setTarget:self];
+    [control setAction:@selector(handleTest:)];
+    id targetIDAfter = control.target;
+  } else {
+    [super bindToView:view];
+  }
+
+  // We can restore default scrollview behaviour to delay touches to scrollview's children
+  // because gesture handler system can handle cancellation of scroll recognizer when JS responder
+  // is set
+#ifdef RCT_NEW_ARCH_ENABLED
+  if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
+    UIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
+    scrollView.delaysContentTouches = YES;
+  }
+#endif // RCT_NEW_ARCH_ENABLED
+}
+
+- (void)handleTest:(RNGHUIView *)sender
+{
+  NSLog(@"testing target-action behaviour");
+}
+
+@end
 #endif
