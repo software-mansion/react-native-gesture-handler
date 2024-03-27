@@ -94,12 +94,15 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
         transform: `translate(${canvasStartPoint.x}px, ${canvasStartPoint.y}px)`,
       }}>
       <line
+        shapeRendering="crispEdges"
+        filter="blur(0.2px)"
         stroke="#aaa"
         strokeWidth={strokeWidth}
         x1={startPoint.x - canvasStartPoint.x}
         y1={startPoint.y - canvasStartPoint.y}
         x2={endPoint.x - canvasStartPoint.x}
         y2={endPoint.y - canvasStartPoint.y}
+        spreadMethod=""
       />
       <line
         stroke="#aaa"
