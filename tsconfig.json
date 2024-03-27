@@ -19,7 +19,9 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitUseStrict": false,
     "noUnusedParameters": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+
+    "moduleSuffixes": [".native", ""]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"]
 }
