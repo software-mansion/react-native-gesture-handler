@@ -216,10 +216,10 @@ export default class ChartManager {
 
     const resetAllStates = (event: GestureStateChangeEvent<any>) => {
       undeterminedCallback(true);
-      if (event.state == 1) {
+      if (event.state == State.FAILED) {
         failedCallback(true);
       }
-      if (event.state == 3) {
+      if (event.state == State.CANCELLED) {
         cancelledCallback(true);
       }
       setTimeout(() => {

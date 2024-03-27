@@ -29,7 +29,6 @@ export default function App({
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    // this listener is cleared through FlowChart
     if (data.id != ChartManager.EMPTY_SPACE && !data.isHeader) {
       const listenerId = chartManager.addListener(data.id, (isActive) => {
         progress.value = withSpring(isActive ? 1 : 0, { duration: 200 });
