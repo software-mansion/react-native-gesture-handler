@@ -1,13 +1,10 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
 import ChartElement from './ChartElement';
 import Arrow from './Arrow';
-
-const COLOR_DORMANT = '#b58df1';
-const COLOR_ACTIVE = '#ffe04b';
 
 type Coordinate = {
   x: number;
@@ -18,12 +15,14 @@ type FlowChartProps = {
   chartManager: ChartManager;
   primaryColor: string;
   highlightColor: string;
+  isPhoneMode: boolean;
 };
 
 export default function App({
   chartManager,
-  primaryColor = COLOR_DORMANT,
-  highlightColor = COLOR_ACTIVE,
+  primaryColor,
+  highlightColor,
+  isPhoneMode,
 }: FlowChartProps) {
   const elementsRef = useRef([]);
   const elementsCoordsRef = useRef([]);
@@ -48,6 +47,10 @@ export default function App({
     } as Coordinate;
   });
 
+  const phoneStyle = {
+    fontSize: 16,
+  } as StyleProp<ViewStyle>;
+
   // get each listener, pass them to the Element, they will change their color on input
   return (
     <View style={styles.container} ref={rootRef}>
@@ -64,6 +67,7 @@ export default function App({
                   primaryColor={primaryColor}
                   highlightColor={highlightColor}
                   chartManager={chartManager}
+                  style={isPhoneMode ? phoneStyle : null}
                 />
               ))}
           </Grid>
@@ -83,7 +87,7 @@ export default function App({
             <Arrow
               key={connection.id}
               startPoint={{
-                x: elementsCoordsRef.current[connection.from].x, // GAH
+                x: elementsCoordsRef.current[connection.from].x,
                 y: elementsCoordsRef.current[connection.from].y,
               }}
               endPoint={{

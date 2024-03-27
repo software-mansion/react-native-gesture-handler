@@ -7,7 +7,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
 } from 'react-native-reanimated';
 
 type ChartElementProps = {
@@ -16,7 +15,7 @@ type ChartElementProps = {
   primaryColor: string;
   highlightColor: string;
   innerRef?: LegacyRef<View>;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<any>;
 };
 
 export default function App({
@@ -62,7 +61,7 @@ export default function App({
           style,
         ]}
         ref={innerRef}>
-        <Text style={data.isHeader ? styles.headerText : styles.label}>
+        <Text style={[data.isHeader ? styles.headerText : styles.label, style]}>
           {data.label}
         </Text>
       </Animated.View>
@@ -76,13 +75,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     textAlign: 'center',
-    maxWidth: 270,
+    maxWidth: 900,
   },
   headerBox: {
     flex: 1,
     flexDirection: 'column',
     textAlign: 'center',
-    maxWidth: 800,
+    maxWidth: 900,
   },
   element: {
     padding: 16,

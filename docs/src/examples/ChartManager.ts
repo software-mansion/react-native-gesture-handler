@@ -181,12 +181,10 @@ export default class ChartManager {
 
   public connectAll(handle: GestureHandle) {
     stateConnectionsMap.forEach(([fromState, toState]) => {
-      console.log('adding connection');
       const fromId = handle.elementIds.get(fromState);
       const toId = handle.elementIds.get(toState);
       if (fromId && toId) {
         this.addConnection(fromId, toId);
-        console.log('connected');
       }
     });
   }

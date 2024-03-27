@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -27,28 +27,40 @@ export default function App(props: {
     []
   );
 
-  const [tapHandle, capturedTap, tapReset] = useMemo(
+  const [pressHandle, capturedTap, tapReset] = useMemo(
     () => chartManager.current.newGesture(Gesture.LongPress()),
     []
   );
 
   const panIds = panHandle.getIdObject();
-  const tapIds = tapHandle.getIdObject();
+  const pressIds = pressHandle.getIdObject();
 
   const panHeaderId = chartManager.current.addHeader('Pan Gesture');
   const tapHeaderId = chartManager.current.addHeader('LongPress Gesture');
 
-  // FIXME: tap seems to be broken, and does not follow the typical flow, thus it's quite a bad flow example :P
+  const dimensions = useWindowDimensions();
+  const MAX_PHONE_WIDTH = 768;
+  const isPhoneMode = dimensions.width < MAX_PHONE_WIDTH;
 
-  // vertical layout
   // prettier-ignore
-  chartManager.current.layout = [
+  const desktopLayout = [
     [panHeaderId,         ChartManager.EMPTY_SPACE, tapHeaderId,         ChartManager.EMPTY_SPACE],
-    [panIds.undetermined, ChartManager.EMPTY_SPACE, tapIds.undetermined, ChartManager.EMPTY_SPACE],
-    [panIds.began,        panIds.failed,            tapIds.began,        tapIds.failed],
-    [panIds.active,       panIds.cancelled,         tapIds.active,       tapIds.cancelled],
-    [panIds.end,          ChartManager.EMPTY_SPACE, tapIds.end,          ChartManager.EMPTY_SPACE],
+    [panIds.undetermined, ChartManager.EMPTY_SPACE, pressIds.undetermined, ChartManager.EMPTY_SPACE],
+    [panIds.began,        panIds.failed,            pressIds.began,        pressIds.failed],
+    [panIds.active,       panIds.cancelled,         pressIds.active,       pressIds.cancelled],
+    [panIds.end,          ChartManager.EMPTY_SPACE, pressIds.end,          ChartManager.EMPTY_SPACE],
   ];
+
+  // prettier-ignore
+  const phoneLayout = [
+    [panHeaderId],
+    [panIds.undetermined],
+    [panIds.began,        panIds.failed,          ],
+    [panIds.active,       panIds.cancelled,       ],
+    [panIds.end,          ChartManager.EMPTY_SPACE],
+  ];
+
+  chartManager.current.layout = isPhoneMode ? phoneLayout : desktopLayout;
 
   const pressed = useSharedValue(false);
 
@@ -59,7 +71,7 @@ export default function App(props: {
   // until the issue with GestureHandlers flow isn't resolved,
   // we're adding these temporary arrows connecting BEGAN -> CANCELLED
   chartManager.current.addConnection(panIds.began, panIds.cancelled);
-  chartManager.current.addConnection(tapIds.began, tapIds.cancelled);
+  chartManager.current.addConnection(pressIds.began, pressIds.cancelled);
 
   // highlight-start
   const pan = Gesture.Pan()
@@ -111,6 +123,7 @@ export default function App(props: {
           chartManager={chartManager.current}
           primaryColor={props.primaryColor}
           highlightColor={props.highlightColor}
+          isPhoneMode={isPhoneMode}
         />
       </View>
       <GestureHandlerRootView style={styles.container}>
