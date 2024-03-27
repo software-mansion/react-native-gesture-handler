@@ -15,14 +15,14 @@ type FlowChartProps = {
   chartManager: ChartManager;
   primaryColor: string;
   highlightColor: string;
-  isPhoneMode: boolean;
+  isFontReduced: boolean;
 };
 
 export default function App({
   chartManager,
   primaryColor,
   highlightColor,
-  isPhoneMode,
+  isFontReduced,
 }: FlowChartProps) {
   const elementsRef = useRef([]);
   const elementsCoordsRef = useRef([]);
@@ -47,7 +47,7 @@ export default function App({
     } as Coordinate;
   });
 
-  const phoneStyle = {
+  const tinyFontStyle = {
     fontSize: 16,
   } as StyleProp<ViewStyle>;
 
@@ -67,7 +67,7 @@ export default function App({
                   primaryColor={primaryColor}
                   highlightColor={highlightColor}
                   chartManager={chartManager}
-                  style={isPhoneMode ? phoneStyle : null}
+                  style={isFontReduced ? tinyFontStyle : null}
                 />
               ))}
           </Grid>

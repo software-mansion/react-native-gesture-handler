@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     maxWidth: 900,
   },
   element: {
-    padding: 16,
+    paddingVertical: 16,
     backgroundColor: '#b58df1',
   },
   headerText: {

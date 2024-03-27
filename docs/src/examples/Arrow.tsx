@@ -51,7 +51,11 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
 
   const truncate = ({ x, y }: Coords, length: number): Coords => {
     const magnitude = Math.hypot(x, y);
-    const modifier = length / magnitude;
+
+    let modifier = length / magnitude;
+    if (!Number.isFinite(modifier)) {
+      modifier = 0;
+    }
 
     return {
       x: x * modifier,

@@ -39,8 +39,13 @@ export default function App(props: {
   const tapHeaderId = chartManager.current.addHeader('LongPress Gesture');
 
   const dimensions = useWindowDimensions();
-  const MAX_PHONE_WIDTH = 768;
-  const isPhoneMode = dimensions.width < MAX_PHONE_WIDTH;
+
+  // widths pulled from CSS
+  const MIN_DESKTOP_WIDTH = 1298;
+  const MAX_PHONE_WIDTH = 996;
+
+  const isPhoneMode = dimensions.width < MIN_DESKTOP_WIDTH;
+  const isFontReduced = dimensions.width < MAX_PHONE_WIDTH;
 
   // prettier-ignore
   const desktopLayout = [
@@ -108,7 +113,7 @@ export default function App(props: {
     // reset on load
     panReset();
     tapReset();
-  });
+  }, []);
 
   return (
     <>
@@ -117,7 +122,7 @@ export default function App(props: {
           chartManager={chartManager.current}
           primaryColor={props.primaryColor}
           highlightColor={props.highlightColor}
-          isPhoneMode={isPhoneMode}
+          isFontReduced={isFontReduced}
         />
       </View>
       <GestureHandlerRootView style={styles.container}>
