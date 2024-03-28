@@ -32,9 +32,17 @@ export default class GestureHandlerOrchestrator {
   }
 
   public removeHandlerFromOrchestrator(handler: IGestureHandler): void {
-    this.gestureHandlers.splice(this.gestureHandlers.indexOf(handler), 1);
-    this.awaitingHandlers.splice(this.awaitingHandlers.indexOf(handler), 1);
-    this.awaitingHandlersTags.delete(handler.getTag());
+    const indexInGestureHandlers = this.gestureHandlers.indexOf(handler);
+    const indexInAwaitingHandlers = this.awaitingHandlers.indexOf(handler);
+
+    if (indexInGestureHandlers >= 0) {
+      this.gestureHandlers.splice(indexInGestureHandlers, 1);
+    }
+
+    if (indexInAwaitingHandlers >= 0) {
+      this.awaitingHandlers.splice(indexInAwaitingHandlers, 1);
+      this.awaitingHandlersTags.delete(handler.getTag());
+    }
   }
 
   private cleanupFinishedHandlers(): void {
