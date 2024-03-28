@@ -94,6 +94,8 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
     truncate(midToOriginVector, arrowLength / 1.8)
   );
 
+  const arrowColor = 'var(--swm-border)';
+
   return (
     <svg
       width={canvasWidth}
@@ -107,7 +109,7 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
         transform: `translate(${canvasStartPoint.x}px, ${canvasStartPoint.y}px)`,
       }}>
       <line
-        stroke="#aaa"
+        stroke={arrowColor}
         strokeLinecap="round"
         strokeWidth={strokeWidth}
         x1={midPoint.x + deflectionVectorExtender.x}
@@ -116,7 +118,7 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
         y2={midPoint.y + deflectionVectorRight.y}
       />
       <line
-        stroke="#aaa"
+        stroke={arrowColor}
         strokeLinecap="round"
         strokeWidth={strokeWidth}
         x1={midPoint.x + deflectionVectorExtender.x}

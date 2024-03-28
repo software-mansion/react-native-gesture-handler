@@ -8,6 +8,9 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+const TRANSITION_FUNCTION = ' cubic-bezier(.8,0,.8,1)';
+const TRANSITION_DURATION = ' 200ms';
+
 type ChartElementProps = {
   elementData: ElementData;
   chartManager: ChartManager;
@@ -106,7 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'var(--ifm-background-color)',
     borderWidth: 1,
     borderColor: 'var(--swm-border)',
-    transition: 'all 200ms ease-in-out',
+    transition: 'all' + TRANSITION_DURATION + TRANSITION_FUNCTION,
   },
   headerText: {
     fontSize: 30,
@@ -117,7 +120,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'var(--swm-border)',
-    transition: 'color 200ms ease-in-out',
+    transition: 'color' + TRANSITION_DURATION + TRANSITION_FUNCTION,
     fontWeight: '500',
     fontSize: 22,
   },
