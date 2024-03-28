@@ -29,7 +29,7 @@ export default function App({
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    if (data.id != ChartManager.EMPTY_SPACE && !data.isHeader) {
+    if (data.id != ChartManager.EMPTY_SPACE_ID && !data.isHeader) {
       const listenerId = chartManager.addListener(data.id, (isActive) => {
         progress.value = withSpring(isActive ? 1 : 0, { duration: 200 });
       });

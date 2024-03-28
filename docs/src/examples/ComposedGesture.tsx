@@ -27,7 +27,7 @@ export default function App(props: {
     []
   );
 
-  const [pressHandle, capturedTap, tapReset] = useMemo(
+  const [pressHandle, capturedPress, pressReset] = useMemo(
     () => chartManager.current.newGesture(Gesture.LongPress()),
     []
   );
@@ -49,11 +49,11 @@ export default function App(props: {
 
   // prettier-ignore
   const desktopLayout = [
-    [panHeaderId,         ChartManager.EMPTY_SPACE, tapHeaderId,         ChartManager.EMPTY_SPACE],
-    [panIds.undetermined, ChartManager.EMPTY_SPACE, pressIds.undetermined, ChartManager.EMPTY_SPACE],
+    [panHeaderId,         ChartManager.EMPTY_SPACE_ID, tapHeaderId,         ChartManager.EMPTY_SPACE_ID],
+    [panIds.undetermined, ChartManager.EMPTY_SPACE_ID, pressIds.undetermined, ChartManager.EMPTY_SPACE_ID],
     [panIds.began,        panIds.failed,            pressIds.began,        pressIds.failed],
     [panIds.active,       panIds.cancelled,         pressIds.active,       pressIds.cancelled],
-    [panIds.end,          ChartManager.EMPTY_SPACE, pressIds.end,          ChartManager.EMPTY_SPACE],
+    [panIds.end,          ChartManager.EMPTY_SPACE_ID, pressIds.end,          ChartManager.EMPTY_SPACE_ID],
   ];
 
   // prettier-ignore
@@ -62,7 +62,7 @@ export default function App(props: {
     [panIds.undetermined],
     [panIds.began,        panIds.failed,          ],
     [panIds.active,       panIds.cancelled,       ],
-    [panIds.end,          ChartManager.EMPTY_SPACE],
+    [panIds.end,          ChartManager.EMPTY_SPACE_ID],
   ];
 
   chartManager.current.layout = isPhoneMode ? phoneLayout : desktopLayout;
@@ -89,7 +89,7 @@ export default function App(props: {
       offset.value = event.translationX;
     });
 
-  const tap = Gesture.LongPress().onStart(() => {
+  const press = Gesture.LongPress().onStart(() => {
     scale.value = withSequence(
       withSpring(1.8, { duration: 90 }),
       withSpring(1, { duration: 180, dampingRatio: 0.4 })
@@ -98,8 +98,8 @@ export default function App(props: {
   // highlight-end
 
   const composedPan = Gesture.Simultaneous(pan, capturedPan);
-  const composedTap = Gesture.Simultaneous(tap, capturedTap);
-  const composed = Gesture.Race(composedPan, composedTap);
+  const composedPress = Gesture.Simultaneous(press, capturedPress);
+  const composed = Gesture.Race(composedPan, composedPress);
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [
@@ -112,7 +112,7 @@ export default function App(props: {
   useEffect(() => {
     // reset on load
     panReset();
-    tapReset();
+    pressReset();
   }, []);
 
   return (

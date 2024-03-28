@@ -51,15 +51,6 @@ type GesturesUnion =
   | ManualGesture
   | HoverGesture;
 
-// FROM, TO
-const stateConnectionsMap = [
-  [State.UNDETERMINED, State.BEGAN],
-  [State.BEGAN, State.ACTIVE],
-  [State.BEGAN, State.FAILED],
-  [State.ACTIVE, State.END],
-  [State.ACTIVE, State.CANCELLED],
-];
-
 export class GestureHandle {
   // within gesture, States can be used as unique IDs pointing to the ElementData pool
   elementIds: Map<State, number>;
@@ -81,14 +72,13 @@ export class GestureHandle {
 }
 
 export default class ChartManager {
-  private _elements: ElementData[] = []; // debug: best structure here is array, because this is just a pool of elements, and thier id's are derived from here anyways
-  private _connections: ChartConnection[] = []; // debug: this is a separate pool, fine as well
-  private _headers: ElementData[] = [];
+  private _elements: ElementData[] = [];
+  private _connections: ChartConnection[] = [];
   private _layout: number[][];
   private _listeners: Map<number, Map<number, (isActive: boolean) => void>> =
     useMemo(() => new Map(), []);
 
-  public static EMPTY_SPACE = 0;
+  public static EMPTY_SPACE_ID = 0;
 
   constructor() {
     this.addElement(null, null, false);
@@ -167,8 +157,8 @@ export default class ChartManager {
   }
 
   public addHeader(text: string): number {
-    // todo: add elements which can display text, and fill in all of the assigned space
-    return this.addElement(text, null, true, true)[1];
+    const [_, headerId] = this.addElement(text, null, true, true);
+    return headerId;
   }
 
   public addConnection(fromId: number, toId: number) {
@@ -176,16 +166,6 @@ export default class ChartManager {
       id: this._connections.length,
       from: fromId,
       to: toId,
-    });
-  }
-
-  public connectAll(handle: GestureHandle) {
-    stateConnectionsMap.forEach(([fromState, toState]) => {
-      const fromId = handle.elementIds.get(fromState);
-      const toId = handle.elementIds.get(toState);
-      if (fromId && toId) {
-        this.addConnection(fromId, toId);
-      }
     });
   }
 
@@ -233,7 +213,6 @@ export default class ChartManager {
       }, 2 * WAVE_DELAY_MS);
     };
 
-    // highlight-start
     gesture
       .onBegin(() => {
         beganCallback(true);
@@ -246,7 +225,7 @@ export default class ChartManager {
       .onEnd(() => {
         endCallback(true);
       })
-      .onFinalize((event) => {
+      .onFinalize((event: GestureStateChangeEvent<any>) => {
         resetAllStates(event);
       });
 
@@ -255,8 +234,6 @@ export default class ChartManager {
     this.addConnection(beganId, failedId);
     this.addConnection(activeId, endId);
     this.addConnection(activeId, cancelledId);
-
-    // todo: once faulty GH flow is fixed, this connection should be removed
     this.addConnection(beganId, cancelledId);
 
     const resetCb = () => {

@@ -31,7 +31,7 @@ export default function App({
   const getCenter = (side: number, size: number) => side + size / 2;
 
   elementsCoordsRef.current = elementsRef.current.map((element) => {
-    // during unloading or overresizing, element may reload itself, causing it to be undefineds
+    // during unloading or overresizing, element may reload itself, causing it to be undefined
     if (!element) {
       return {
         x: 0,
@@ -51,7 +51,6 @@ export default function App({
     fontSize: 16,
   } as StyleProp<ViewStyle>;
 
-  // get each listener, pass them to the Element, they will change their color on input
   return (
     <View style={styles.container} ref={rootRef}>
       <Grid container rowGap={4}>
@@ -81,7 +80,7 @@ export default function App({
             !elementsCoordsRef.current[connection.from] ||
             !elementsCoordsRef.current[connection.to]
           ) {
-            return <View key={idx}></View>;
+            return <View key={connection.id}></View>;
           }
           return (
             <Arrow
