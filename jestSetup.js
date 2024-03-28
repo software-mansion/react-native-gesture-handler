@@ -5,3 +5,5 @@ jest.mock('./lib/commonjs/RNGestureHandlerModule', () =>
 jest.mock('./lib/module/RNGestureHandlerModule', () =>
   require('./lib/module/mocks')
 );
+
+jest.useFakeTimers();
