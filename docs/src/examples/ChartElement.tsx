@@ -1,9 +1,8 @@
 import { Grid } from '@mui/material';
 import React, { LegacyRef, useEffect } from 'react';
 import { StyleProp, StyleSheet, View, Text } from 'react-native';
-import ChartManager, { ElementData } from './ChartManager';
+import ChartManager, { ElementData, WAVE_DELAY_MS } from './ChartManager';
 import Animated, {
-  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -12,8 +11,6 @@ import Animated, {
 type ChartElementProps = {
   elementData: ElementData;
   chartManager: ChartManager;
-  primaryColor: string;
-  highlightColor: string;
   innerRef?: LegacyRef<View>;
   style?: StyleProp<any>;
 };
@@ -21,8 +18,6 @@ type ChartElementProps = {
 export default function App({
   elementData,
   chartManager,
-  primaryColor,
-  highlightColor,
   innerRef,
   style,
 }: ChartElementProps) {
@@ -36,7 +31,9 @@ export default function App({
       const listenerId = chartManager.addListener(
         elementData.id,
         (isActive) => {
-          progress.value = withSpring(isActive ? 1 : 0, { duration: 200 });
+          progress.value = withSpring(isActive ? 1 : 0, {
+            duration: 2 * WAVE_DELAY_MS,
+          });
         }
       );
 
@@ -48,12 +45,19 @@ export default function App({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        [primaryColor, highlightColor],
-        'RGB'
-      ),
+      backgroundColor:
+        progress.value > 0.5
+          ? elementData.highlightColor
+          : 'var(--ifm-background-color)',
+    };
+  });
+
+  const animatedTextStyle = useAnimatedStyle(() => {
+    return {
+      color:
+        progress.value > 0.5
+          ? 'var(--swm-navy-light-100)'
+          : 'var(--swm-border)',
     };
   });
 
@@ -69,13 +73,14 @@ export default function App({
           style,
         ]}
         ref={innerRef}>
-        <Text
+        <Animated.Text
           style={[
+            animatedTextStyle,
             elementData.isHeader ? styles.headerText : styles.label,
             style,
           ]}>
           {elementData.label}
-        </Text>
+        </Animated.Text>
       </Animated.View>
       <Text style={styles.subtext}>{elementData.subtext}</Text>
     </Grid>
@@ -97,15 +102,21 @@ const styles = StyleSheet.create({
   },
   element: {
     paddingVertical: 16,
-    backgroundColor: '#b58df1',
+    backgroundColor: 'var(--ifm-background-color)',
+    borderWidth: 1,
+    borderColor: 'var(--swm-border)',
+    transition: 'background-color 200ms ease-in-out',
   },
   headerText: {
     fontSize: 30,
     fontWeight: '600',
     fontFamily: 'var(--ifm-heading-font-family)',
+    color: 'var(--ifm-font-color-base)',
     margin: 12,
   },
   label: {
+    color: 'var(--swm-border)',
+    transition: 'color 200ms ease-in-out',
     fontWeight: '500',
     fontSize: 22,
   },

@@ -16,10 +16,7 @@ import {
 import ChartManager from './ChartManager';
 import FlowChart from './FlowChart';
 
-export default function App(props: {
-  primaryColor: string;
-  highlightColor: string;
-}) {
+export default function App() {
   const chartManager = useRef(new ChartManager());
 
   const [panHandle, capturedPan, panReset] = useMemo(
@@ -106,7 +103,7 @@ export default function App(props: {
       { translateX: withSpring(offset.value, { duration: 1000 }) },
       { scale: scale.value },
     ],
-    backgroundColor: pressed.value ? props.highlightColor : props.primaryColor,
+    backgroundColor: pressed.value ? '#ffe04b' : '#b58df1',
   }));
 
   useEffect(() => {
@@ -120,8 +117,6 @@ export default function App(props: {
       <View style={[styles.container, styles.chartContainer]}>
         <FlowChart
           chartManager={chartManager.current}
-          primaryColor={props.primaryColor}
-          highlightColor={props.highlightColor}
           isFontReduced={isFontReduced}
         />
       </View>

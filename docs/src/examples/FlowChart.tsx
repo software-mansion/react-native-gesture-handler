@@ -13,17 +13,10 @@ type Coordinate = {
 
 type FlowChartProps = {
   chartManager: ChartManager;
-  primaryColor: string;
-  highlightColor: string;
   isFontReduced: boolean;
 };
 
-export default function App({
-  chartManager,
-  primaryColor,
-  highlightColor,
-  isFontReduced,
-}: FlowChartProps) {
+export default function App({ chartManager, isFontReduced }: FlowChartProps) {
   const elementsRef = useRef([]);
   const elementsCoordsRef = useRef([]);
   const rootRef = useRef(null);
@@ -63,8 +56,6 @@ export default function App({
                   key={index}
                   innerRef={(el) => (elementsRef.current[element.id] = el)}
                   elementData={element}
-                  primaryColor={primaryColor}
-                  highlightColor={highlightColor}
                   chartManager={chartManager}
                   style={isFontReduced ? tinyFontStyle : null}
                 />

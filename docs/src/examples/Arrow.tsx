@@ -41,8 +41,6 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
   const avg = (a: number, b: number) => (a + b) / 2;
 
   // we will be drawing two deflections from midpoint to origin
-  const arrowDeflection = 45;
-  const arrowLength = 10;
   const midPoint = {
     x: avg(startPoint.x, endPoint.x),
     y: avg(startPoint.y, endPoint.y),
@@ -69,10 +67,7 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
     };
   };
 
-  const rotate = (
-    { x, y }: { x: number; y: number },
-    rotation: number
-  ): Coords => {
+  const rotate = ({ x, y }: Coords, rotation: number): Coords => {
     const rotationRadians = (Math.PI * rotation) / 180;
     const cosResult = Math.cos(rotationRadians);
     const sinResult = Math.sin(rotationRadians);
@@ -82,13 +77,21 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
     };
   };
 
-  const deflectionVectorLeft = rotate(
-    truncate(midToOriginVector, arrowLength),
-    arrowDeflection
-  );
-  const deflectionVectorRight = rotate(
-    truncate(midToOriginVector, arrowLength),
-    -arrowDeflection
+  const reverse = ({ x, y }: Coords): Coords => {
+    return {
+      x: -x,
+      y: -y,
+    };
+  };
+
+  const arrowLength = 9;
+
+  const truncatedVector = truncate(midToOriginVector, arrowLength);
+
+  const deflectionVectorLeft = rotate(truncatedVector, 50);
+  const deflectionVectorRight = rotate(truncatedVector, -50);
+  const deflectionVectorExtender = reverse(
+    truncate(midToOriginVector, arrowLength / 1.8)
   );
 
   return (
@@ -105,18 +108,10 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
       }}>
       <line
         stroke="#aaa"
-        strokeWidth={strokeWidth}
-        x1={startPoint.x}
-        y1={startPoint.y}
-        x2={endPoint.x}
-        y2={endPoint.y}
-      />
-      <line
-        stroke="#aaa"
         strokeLinecap="round"
         strokeWidth={strokeWidth}
-        x1={midPoint.x}
-        y1={midPoint.y}
+        x1={midPoint.x + deflectionVectorExtender.x}
+        y1={midPoint.y + deflectionVectorExtender.y}
         x2={midPoint.x + deflectionVectorRight.x}
         y2={midPoint.y + deflectionVectorRight.y}
       />
@@ -124,8 +119,8 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
         stroke="#aaa"
         strokeLinecap="round"
         strokeWidth={strokeWidth}
-        x1={midPoint.x}
-        y1={midPoint.y}
+        x1={midPoint.x + deflectionVectorExtender.x}
+        y1={midPoint.y + deflectionVectorExtender.y}
         x2={midPoint.x + deflectionVectorLeft.x}
         y2={midPoint.y + deflectionVectorLeft.y}
       />

@@ -16,12 +16,15 @@ import {
   State,
 } from 'react-native-gesture-handler';
 
+export const WAVE_DELAY_MS = 150;
+
 export type ElementData = {
   id: number;
   label?: string;
   subtext?: string;
   isVisible: boolean;
   isHeader: boolean;
+  highlightColor: string;
 };
 
 const stateToName = new Map<number, string>([
@@ -124,6 +127,23 @@ export default class ChartManager {
     this._listeners.clear();
   }
 
+  private static getStateHighlightColor(label: string): string {
+    switch (label) {
+      case stateToName.get(State.BEGAN):
+        return 'var(--swm-blue-light-80)';
+      case stateToName.get(State.ACTIVE):
+        return 'var(--swm-green-light-80)';
+      case stateToName.get(State.END):
+        return 'var(--swm-blue-light-80)';
+      case stateToName.get(State.FAILED):
+        return 'var(--swm-red-light-80)';
+      case stateToName.get(State.CANCELLED):
+        return 'var(--swm-red-light-80)';
+      default:
+        return 'var(--swm-yellow-light-80)';
+    }
+  }
+
   public addElement(
     label: State | string = null,
     subtext: string | null = null,
@@ -136,6 +156,8 @@ export default class ChartManager {
       label = stateToName.get(label);
     }
 
+    let highlightColor = ChartManager.getStateHighlightColor(label);
+
     const newElementData = {
       id: newId,
       label: label,
@@ -143,6 +165,7 @@ export default class ChartManager {
       position: null,
       isVisible: isVisible,
       isHeader: isHeader,
+      highlightColor: highlightColor,
     };
 
     this._elements.push(newElementData);
@@ -191,8 +214,6 @@ export default class ChartManager {
     handle.elementIds.set(State.UNDETERMINED, undeterminedId);
 
     undeterminedCallback(true);
-
-    const WAVE_DELAY_MS = 100;
 
     const resetAllStates = (event: GestureStateChangeEvent<any>) => {
       undeterminedCallback(true);
