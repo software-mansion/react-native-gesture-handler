@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useRef } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View } from 'react-native';
 import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
 import ChartElement from './ChartElement';
@@ -49,7 +49,7 @@ export default function App({
 
   const tinyFontStyle = {
     fontSize: 16,
-  } as StyleProp<ViewStyle>;
+  } as StyleProp<any>;
 
   return (
     <View style={styles.container} ref={rootRef}>
@@ -62,7 +62,7 @@ export default function App({
                 <ChartElement
                   key={index}
                   innerRef={(el) => (elementsRef.current[element.id] = el)}
-                  data={element}
+                  elementData={element}
                   primaryColor={primaryColor}
                   highlightColor={highlightColor}
                   chartManager={chartManager}
@@ -73,7 +73,7 @@ export default function App({
         ))}
       </Grid>
       {elementsCoordsRef.current.length > 0 &&
-        chartManager.connections.map((connection, idx) => {
+        chartManager.connections.map((connection) => {
           // we have all the connections layed out,
           // but the user may choose not to use some of the available elements,
           if (

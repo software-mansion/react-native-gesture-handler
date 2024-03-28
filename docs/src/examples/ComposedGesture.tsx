@@ -36,7 +36,7 @@ export default function App(props: {
   const pressIds = pressHandle.getIdObject();
 
   const panHeaderId = chartManager.current.addHeader('Pan Gesture');
-  const tapHeaderId = chartManager.current.addHeader('LongPress Gesture');
+  const pressHeaderId = chartManager.current.addHeader('LongPress Gesture');
 
   const dimensions = useWindowDimensions();
 
@@ -49,10 +49,10 @@ export default function App(props: {
 
   // prettier-ignore
   const desktopLayout = [
-    [panHeaderId,         ChartManager.EMPTY_SPACE_ID, tapHeaderId,         ChartManager.EMPTY_SPACE_ID],
+    [panHeaderId,         ChartManager.EMPTY_SPACE_ID, pressHeaderId,         ChartManager.EMPTY_SPACE_ID],
     [panIds.undetermined, ChartManager.EMPTY_SPACE_ID, pressIds.undetermined, ChartManager.EMPTY_SPACE_ID],
-    [panIds.began,        panIds.failed,            pressIds.began,        pressIds.failed],
-    [panIds.active,       panIds.cancelled,         pressIds.active,       pressIds.cancelled],
+    [panIds.began,        panIds.failed,               pressIds.began,        pressIds.failed],
+    [panIds.active,       panIds.cancelled,            pressIds.active,       pressIds.cancelled],
     [panIds.end,          ChartManager.EMPTY_SPACE_ID, pressIds.end,          ChartManager.EMPTY_SPACE_ID],
   ];
 
@@ -60,8 +60,8 @@ export default function App(props: {
   const phoneLayout = [
     [panHeaderId],
     [panIds.undetermined],
-    [panIds.began,        panIds.failed,          ],
-    [panIds.active,       panIds.cancelled,       ],
+    [panIds.began,        panIds.failed],
+    [panIds.active,       panIds.cancelled],
     [panIds.end,          ChartManager.EMPTY_SPACE_ID],
   ];
 

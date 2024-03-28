@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 type ChartElementProps = {
-  data: ElementData;
+  elementData: ElementData;
   chartManager: ChartManager;
   primaryColor: string;
   highlightColor: string;
@@ -19,7 +19,7 @@ type ChartElementProps = {
 };
 
 export default function App({
-  data,
+  elementData,
   chartManager,
   primaryColor,
   highlightColor,
@@ -29,13 +29,19 @@ export default function App({
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    if (data.id != ChartManager.EMPTY_SPACE_ID && !data.isHeader) {
-      const listenerId = chartManager.addListener(data.id, (isActive) => {
-        progress.value = withSpring(isActive ? 1 : 0, { duration: 200 });
-      });
+    if (
+      elementData.id != ChartManager.EMPTY_SPACE_ID &&
+      !elementData.isHeader
+    ) {
+      const listenerId = chartManager.addListener(
+        elementData.id,
+        (isActive) => {
+          progress.value = withSpring(isActive ? 1 : 0, { duration: 200 });
+        }
+      );
 
       return () => {
-        chartManager.removeListener(data.id, listenerId);
+        chartManager.removeListener(elementData.id, listenerId);
       };
     }
   }, [chartManager]);
@@ -52,19 +58,26 @@ export default function App({
   });
 
   return (
-    <Grid item style={data.isHeader ? styles.headerBox : styles.box} xs={3}>
+    <Grid
+      item
+      style={elementData.isHeader ? styles.headerBox : styles.box}
+      xs={3}>
       <Animated.View
         style={[
-          data.isHeader ? null : [styles.element, animatedStyle],
-          data.isVisible ? null : styles.hidden,
+          elementData.isHeader ? null : [styles.element, animatedStyle],
+          elementData.isVisible ? null : styles.hidden,
           style,
         ]}
         ref={innerRef}>
-        <Text style={[data.isHeader ? styles.headerText : styles.label, style]}>
-          {data.label}
+        <Text
+          style={[
+            elementData.isHeader ? styles.headerText : styles.label,
+            style,
+          ]}>
+          {elementData.label}
         </Text>
       </Animated.View>
-      <Text style={styles.subtext}>{data.subtext}</Text>
+      <Text style={styles.subtext}>{elementData.subtext}</Text>
     </Grid>
   );
 }

@@ -32,19 +32,25 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
   canvasStartPoint.x -= halfPadding;
   canvasStartPoint.y -= halfPadding;
 
+  // adjust coordinates by canvas global offset
+  startPoint.x = startPoint.x - canvasStartPoint.x;
+  startPoint.y = startPoint.y - canvasStartPoint.y;
+  endPoint.x = endPoint.x - canvasStartPoint.x;
+  endPoint.y = endPoint.y - canvasStartPoint.y;
+
   const avg = (a: number, b: number) => (a + b) / 2;
 
   // we will be drawing two deflections from midpoint to origin
   const arrowDeflection = 45;
   const arrowLength = 10;
   const midPoint = {
-    x: avg(startPoint.x - canvasStartPoint.x, endPoint.x - canvasStartPoint.x),
-    y: avg(startPoint.y - canvasStartPoint.y, endPoint.y - canvasStartPoint.y),
+    x: avg(startPoint.x, endPoint.x),
+    y: avg(startPoint.y, endPoint.y),
   };
 
   const midToOriginVector = {
-    x: midPoint.x - endPoint.x + canvasStartPoint.x,
-    y: midPoint.y - endPoint.y + canvasStartPoint.y,
+    x: midPoint.x - endPoint.x,
+    y: midPoint.y - endPoint.y,
   };
 
   type Coords = { x: number; y: number };
@@ -100,10 +106,10 @@ export default function App({ startPoint, endPoint }: ArrowProps) {
       <line
         stroke="#aaa"
         strokeWidth={strokeWidth}
-        x1={startPoint.x - canvasStartPoint.x}
-        y1={startPoint.y - canvasStartPoint.y}
-        x2={endPoint.x - canvasStartPoint.x}
-        y2={endPoint.y - canvasStartPoint.y}
+        x1={startPoint.x}
+        y1={startPoint.y}
+        x2={endPoint.x}
+        y2={endPoint.y}
       />
       <line
         stroke="#aaa"
