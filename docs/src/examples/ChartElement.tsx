@@ -49,6 +49,7 @@ export default function App({
         progress.value > 0.5
           ? elementData.highlightColor
           : 'var(--ifm-background-color)',
+      borderColor: progress.value > 0.5 ? 'transparent' : 'var(--swm-border)',
     };
   });
 
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'var(--ifm-background-color)',
     borderWidth: 1,
     borderColor: 'var(--swm-border)',
-    transition: 'background-color 200ms ease-in-out',
+    transition: 'all 200ms ease-in-out',
   },
   headerText: {
     fontSize: 30,
