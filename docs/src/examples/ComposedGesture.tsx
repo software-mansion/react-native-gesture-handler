@@ -29,8 +29,8 @@ export default function App() {
     []
   );
 
-  const panIds = panHandle.getIdObject();
-  const pressIds = pressHandle.getIdObject();
+  const panIds = panHandle.idObject;
+  const pressIds = pressHandle.idObject;
 
   const panHeaderId = chartManager.current.addHeader('Pan Gesture');
   const pressHeaderId = chartManager.current.addHeader('LongPress Gesture');

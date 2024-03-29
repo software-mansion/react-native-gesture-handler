@@ -17,6 +17,12 @@ import {
 } from 'react-native-gesture-handler';
 
 export const WAVE_DELAY_MS = 150;
+const Colors = {
+  BLUE: 'var(--swm-blue-light-80)',
+  GREEN: 'var(--swm-green-light-80)',
+  YELLOW: 'var(--swm-yellow-light-80)',
+  RED: 'var(--swm-red-light-80)',
+};
 
 export type ElementData = {
   id: number;
@@ -34,6 +40,15 @@ const stateToName = new Map<number, string>([
   [State.CANCELLED, 'CANCELLED'],
   [State.ACTIVE, 'ACTIVE'],
   [State.END, 'END'],
+]);
+
+const labelColorMap = new Map<string, string>([
+  [stateToName.get(State.BEGAN), Colors.BLUE],
+  [stateToName.get(State.ACTIVE), Colors.GREEN],
+  [stateToName.get(State.END), Colors.BLUE],
+  [stateToName.get(State.FAILED), Colors.RED],
+  [stateToName.get(State.CANCELLED), Colors.RED],
+  [stateToName.get(State.UNDETERMINED), Colors.YELLOW],
 ]);
 
 class ChartConnection {
@@ -54,23 +69,24 @@ type GesturesUnion =
   | ManualGesture
   | HoverGesture;
 
+type IdObject = {
+  began: number;
+  active: number;
+  end: number;
+  failed: number;
+  cancelled: number;
+  undetermined: number;
+};
+
 export class GestureHandle {
   // within gesture, States can be used as unique IDs pointing to the ElementData pool
-  elementIds: Map<State, number>;
-  elementCbs: Map<State, (isActive: boolean) => void>;
-  constructor() {
-    this.elementIds = new Map();
-    this.elementCbs = new Map();
+  _elementIds: IdObject;
+
+  get idObject() {
+    return this._elementIds;
   }
-  getIdObject() {
-    return {
-      began: this.elementIds.get(State.BEGAN),
-      active: this.elementIds.get(State.ACTIVE),
-      end: this.elementIds.get(State.END),
-      failed: this.elementIds.get(State.FAILED),
-      cancelled: this.elementIds.get(State.CANCELLED),
-      undetermined: this.elementIds.get(State.UNDETERMINED),
-    };
+  set idObject(newObject: IdObject) {
+    this._elementIds = newObject;
   }
 }
 
@@ -127,23 +143,6 @@ export default class ChartManager {
     this._listeners.clear();
   }
 
-  private static getStateHighlightColor(label: string): string {
-    switch (label) {
-      case stateToName.get(State.BEGAN):
-        return 'var(--swm-blue-light-80)';
-      case stateToName.get(State.ACTIVE):
-        return 'var(--swm-green-light-80)';
-      case stateToName.get(State.END):
-        return 'var(--swm-blue-light-80)';
-      case stateToName.get(State.FAILED):
-        return 'var(--swm-red-light-80)';
-      case stateToName.get(State.CANCELLED):
-        return 'var(--swm-red-light-80)';
-      default:
-        return 'var(--swm-yellow-light-80)';
-    }
-  }
-
   public addElement(
     label: State | string = null,
     subtext: string | null = null,
@@ -156,7 +155,7 @@ export default class ChartManager {
       label = stateToName.get(label);
     }
 
-    let highlightColor = ChartManager.getStateHighlightColor(label);
+    let highlightColor = labelColorMap.get(label) ?? Colors.YELLOW;
 
     const newElementData = {
       id: newId,
@@ -205,13 +204,14 @@ export default class ChartManager {
     );
 
     const handle = new GestureHandle();
-
-    handle.elementIds.set(State.BEGAN, beganId);
-    handle.elementIds.set(State.ACTIVE, activeId);
-    handle.elementIds.set(State.END, endId);
-    handle.elementIds.set(State.FAILED, failedId);
-    handle.elementIds.set(State.CANCELLED, cancelledId);
-    handle.elementIds.set(State.UNDETERMINED, undeterminedId);
+    handle.idObject = {
+      began: beganId,
+      active: activeId,
+      end: endId,
+      failed: failedId,
+      cancelled: cancelledId,
+      undetermined: undeterminedId,
+    } as IdObject;
 
     undeterminedCallback(true);
 
@@ -250,12 +250,16 @@ export default class ChartManager {
         resetAllStates(event);
       });
 
-    this.addConnection(undeterminedId, beganId);
-    this.addConnection(beganId, activeId);
-    this.addConnection(beganId, failedId);
-    this.addConnection(activeId, endId);
-    this.addConnection(activeId, cancelledId);
-    this.addConnection(beganId, cancelledId);
+    [
+      [undeterminedId, beganId],
+      [beganId, activeId],
+      [beganId, failedId],
+      [activeId, endId],
+      [activeId, cancelledId],
+      [beganId, cancelledId],
+    ].forEach(([from, to]) => {
+      this.addConnection(from, to);
+    });
 
     const resetCb = () => {
       undeterminedCallback(true);
