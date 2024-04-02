@@ -41,7 +41,7 @@ import { ActionType } from '../../ActionType';
 import { isFabric, isJestEnv, tagMessage } from '../../utils';
 import { getReactNativeVersion } from '../../getReactNativeVersion';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
-import { Platform } from 'react-native';
+import { Platform, isDEV } from '../../ReactCompact';
 import { onGestureHandlerEvent } from './eventReceiver';
 import { RNRenderer } from '../../RNRenderer';
 import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
@@ -572,7 +572,7 @@ function validateDetectorChildren(ref: any) {
   //          /     \
   //         /       \
   //   NativeView  NativeView
-  if (__DEV__ && Platform.OS !== 'web') {
+  if (isDEV && Platform.OS !== 'web') {
     const REACT_NATIVE_VERSION = getReactNativeVersion();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const wrapType =
@@ -644,7 +644,7 @@ interface GestureDetectorState {
 }
 export const GestureDetector = (props: GestureDetectorProps) => {
   const rootViewContext = useContext(GestureHandlerRootViewContext);
-  if (__DEV__ && !rootViewContext && !isJestEnv() && Platform.OS !== 'web') {
+  if (isDEV && !rootViewContext && !isJestEnv() && Platform.OS !== 'web') {
     throw new Error(
       'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
     );

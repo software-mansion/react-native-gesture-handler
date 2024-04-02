@@ -26,8 +26,8 @@ export default class TapGestureHandler extends GestureHandler {
   private lastX = 0;
   private lastY = 0;
 
-  private waitTimeout: number | undefined;
-  private delayTimeout: number | undefined;
+  private waitTimeout: NodeJS.Timeout | undefined;
+  private delayTimeout: NodeJS.Timeout | undefined;
 
   private tapsSoFar = 0;
 
