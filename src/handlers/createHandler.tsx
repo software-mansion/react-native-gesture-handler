@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  isDEV,
   Platform,
   UIManager,
   DeviceEventEmitter,
@@ -104,7 +105,7 @@ UIManagerAny.clearJSResponder = () => {
 };
 
 let allowTouches = true;
-const DEV_ON_ANDROID = __DEV__ && Platform.OS === 'android';
+const DEV_ON_ANDROID = isDEV && Platform.OS === 'android';
 // Toggled inspector blocks touch events in order to allow inspecting on Android
 // This needs to be a global variable in order to set initial state for `allowTouches` property in Handler component
 if (DEV_ON_ANDROID) {
@@ -417,7 +418,7 @@ export default function createHandler<
     }
 
     render() {
-      if (__DEV__ && !this.context && !isJestEnv() && Platform.OS !== 'web') {
+      if (isDEV && !this.context && !isJestEnv() && Platform.OS !== 'web') {
         throw new Error(
           name +
             ' must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
@@ -507,7 +508,7 @@ export default function createHandler<
 
       let grandChildren = child.props.children;
       if (
-        __DEV__ &&
+        isDEV &&
         child.type &&
         (child.type === 'RNGestureHandlerButton' ||
           child.type.name === 'View' ||
