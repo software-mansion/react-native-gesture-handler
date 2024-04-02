@@ -1,2 +1,9 @@
-export { findNodeHandle, Platform, NativeModules } from 'react-native';
+export {
+  findNodeHandle,
+  Platform,
+  NativeModules,
+  DeviceEventEmitter,
+  EmitterSubscription,
+} from 'react-native';
+
 export const isDEV = __DEV__;
