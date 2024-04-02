@@ -4,7 +4,7 @@ import {
   UIManager,
   DeviceEventEmitter,
   EmitterSubscription,
-} from 'react-native';
+} from '../ReactCompact';
 import { customDirectEventTypes } from './customDirectEventTypes';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'lodash/isEqual';

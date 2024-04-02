@@ -8,3 +8,4 @@ export const DeviceEventEmitter = {
   addListener: (_a: string, _b: any) => null,
 };
 export type EmitterSubscription = any;
+export const UIManager = {};
