@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform } from '../../ReactCompact';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
 import { AdaptedEvent, Config } from '../interfaces';
