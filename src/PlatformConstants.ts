@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules, Platform } from './ReactCompact';
 
 type PlatformConstants = {
   forceTouchAvailable: boolean;

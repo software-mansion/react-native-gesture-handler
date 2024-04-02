@@ -1,1 +1,1 @@
-export { findNodeHandle, Platform } from 'react-native';
+export { findNodeHandle, Platform, NativeModules } from 'react-native';
