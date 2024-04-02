@@ -21,6 +21,8 @@ jobs:
     concurrency:
       group: ios-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true
+    env:
+      NO_FLIPPER: 1
     steps:
       - name: checkout
         uses: actions/checkout@v2
