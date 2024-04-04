@@ -24,7 +24,7 @@ const AnimableIcon = ({
   const [actionPerformed, setActionPerformed] = React.useState(false);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setActionPerformed(() => false), 1000);
+    const timeout = setTimeout(() => setActionPerformed(false), 1000);
     return () => clearTimeout(timeout);
   }, [actionPerformed]);
 
