@@ -24,10 +24,7 @@ export default function ChartElement({
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    if (
-      elementData.id != ChartManager.EMPTY_SPACE_ID &&
-      !elementData.isHeader
-    ) {
+    if (elementData.id != ChartManager.EMPTY_SPACE_ID) {
       const listenerId = chartManager.addListener(
         elementData.id,
         (isActive) => {
@@ -63,23 +60,15 @@ export default function ChartElement({
   });
 
   return (
-    <Grid
-      item
-      style={elementData.isHeader ? styles.headerBox : styles.box}
-      xs={3}>
+    <Grid item style={styles.box} xs={3}>
       <Animated.View
         style={[
-          elementData.isHeader ? null : [styles.element, animatedStyle],
+          [styles.element, animatedStyle],
           elementData.isVisible ? null : styles.hidden,
           style,
         ]}
         ref={innerRef}>
-        <Animated.Text
-          style={[
-            animatedTextStyle,
-            elementData.isHeader ? styles.headerText : styles.label,
-            style,
-          ]}>
+        <Animated.Text style={[animatedTextStyle, styles.label, style]}>
           {elementData.label}
         </Animated.Text>
       </Animated.View>
@@ -95,25 +84,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: 900,
   },
-  headerBox: {
-    flex: 1,
-    flexDirection: 'column',
-    textAlign: 'center',
-    maxWidth: 900,
-  },
   element: {
     paddingVertical: 16,
     backgroundColor: 'var(--ifm-background-color)',
     borderWidth: 1,
     borderColor: 'var(--swm-border)',
     transition: 'all 350ms ease-in-out',
-  },
-  headerText: {
-    fontSize: 30,
-    fontWeight: '600',
-    fontFamily: 'var(--ifm-heading-font-family)',
-    color: 'var(--ifm-font-color-base)',
-    margin: 12,
   },
   label: {
     color: 'var(--swm-border)',

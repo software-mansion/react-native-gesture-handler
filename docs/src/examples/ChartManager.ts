@@ -29,7 +29,6 @@ export type ElementData = {
   label?: string;
   subtext?: string;
   isVisible: boolean;
-  isHeader: boolean;
   highlightColor: string;
 };
 
@@ -146,8 +145,7 @@ export default class ChartManager {
   public addElement(
     label: State | string = null,
     subtext: string | null = null,
-    isVisible: boolean = true,
-    isHeader: boolean = false
+    isVisible: boolean = true
   ): [(isActive: boolean) => void, number] {
     const newId = this._elements.length;
 
@@ -163,7 +161,6 @@ export default class ChartManager {
       subtext: subtext,
       position: null,
       isVisible: isVisible,
-      isHeader: isHeader,
       highlightColor: highlightColor,
     };
 
@@ -176,11 +173,6 @@ export default class ChartManager {
       },
       newId,
     ];
-  }
-
-  public addHeader(text: string): number {
-    const [_, headerId] = this.addElement(text, null, true, true);
-    return headerId;
   }
 
   public addConnection(fromId: number, toId: number) {
