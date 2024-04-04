@@ -40,7 +40,7 @@ let gestureInstances = 0;
 abstract class GestureHandler {
   public handlerTag: any;
   public isGestureRunning = false;
-  public view: number | null = null;
+  public view: Element | number | null = null;
   protected hasCustomActivationCriteria: boolean;
   protected hasGestureFailed = false;
   protected hammer: HammerManager | null = null;
@@ -283,7 +283,7 @@ abstract class GestureHandler {
     this.propsRef = propsRef;
     this.ref = ref;
 
-    this.view = findNodeHandle(ref);
+    this.view = findNodeHandle(ref) as Element;
 
     // When the browser starts handling the gesture (e.g. scrolling), it sends a pointercancel event and stops
     // sending additional pointer events. This is not the case with touch events, so if the gesture is simultaneous
