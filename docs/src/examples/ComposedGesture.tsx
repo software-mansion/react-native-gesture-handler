@@ -107,10 +107,7 @@ export default function App() {
             <Text style={styles.label}>Gesture.LongPress()</Text>
           )}
         </View>
-        <FlowChart
-          chartManager={chartManager.current}
-          isFontReduced={isFontReduced}
-        />
+        <FlowChart chartManager={chartManager.current} />
       </View>
       <GestureHandlerRootView style={styles.container}>
         <View style={styles.container}>

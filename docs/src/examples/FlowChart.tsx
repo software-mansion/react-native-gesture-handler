@@ -1,9 +1,9 @@
 import 'react-native-gesture-handler';
 import React, { useRef } from 'react';
-import { StyleProp, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
-import ChartElement from './ChartElement';
+import ChartItem from './ChartItem';
 import Arrow from './Arrow';
 
 type Coordinate = {
@@ -13,18 +13,17 @@ type Coordinate = {
 
 type FlowChartProps = {
   chartManager: ChartManager;
-  isFontReduced: boolean;
 };
 
-export default function App({ chartManager, isFontReduced }: FlowChartProps) {
-  const elementsRef = useRef([]);
-  const elementsCoordsRef = useRef([]);
+export default function FlowChart({ chartManager }: FlowChartProps) {
+  const itemsRef = useRef([]);
+  const itemsCoordsRef = useRef([]);
   const rootRef = useRef(null);
 
   const getCenter = (side: number, size: number) => side + size / 2;
 
-  elementsCoordsRef.current = elementsRef.current.map((element) => {
-    // during unloading or overresizing, element may reload itself, causing it to be undefined
+  itemsCoordsRef.current = itemsRef.current.map((element) => {
+    // during unloading or overresizing, item may reload itself, causing it to be undefined
     if (!element) {
       return {
         x: 0,
@@ -46,25 +45,25 @@ export default function App({ chartManager, isFontReduced }: FlowChartProps) {
         {chartManager.layout.map((row, index) => (
           <Grid container spacing={4} key={index}>
             {row
-              .map((elementId) => chartManager.elements[elementId])
-              .map((element, index) => (
-                <ChartElement
+              .map((itemId) => chartManager.items[itemId])
+              .map((item, index) => (
+                <ChartItem
                   key={index}
-                  innerRef={(el) => (elementsRef.current[element.id] = el)}
-                  elementData={element}
+                  innerRef={(el) => (itemsRef.current[item.id] = el)}
+                  item={item}
                   chartManager={chartManager}
                 />
               ))}
           </Grid>
         ))}
       </Grid>
-      {elementsCoordsRef.current.length > 0 &&
+      {itemsCoordsRef.current.length > 0 &&
         chartManager.connections.map((connection) => {
           // we have all the connections layed out,
-          // but the user may choose not to use some of the available elements,
+          // but the user may choose not to use some of the available items,
           if (
-            !elementsCoordsRef.current[connection.from] ||
-            !elementsCoordsRef.current[connection.to]
+            !itemsCoordsRef.current[connection.from] ||
+            !itemsCoordsRef.current[connection.to]
           ) {
             return <View key={connection.id} />;
           }
@@ -72,12 +71,12 @@ export default function App({ chartManager, isFontReduced }: FlowChartProps) {
             <Arrow
               key={connection.id}
               startPoint={{
-                x: elementsCoordsRef.current[connection.from].x,
-                y: elementsCoordsRef.current[connection.from].y,
+                x: itemsCoordsRef.current[connection.from].x,
+                y: itemsCoordsRef.current[connection.from].y,
               }}
               endPoint={{
-                x: elementsCoordsRef.current[connection.to].x,
-                y: elementsCoordsRef.current[connection.to].y,
+                x: itemsCoordsRef.current[connection.to].x,
+                y: itemsCoordsRef.current[connection.to].y,
               }}
             />
           );

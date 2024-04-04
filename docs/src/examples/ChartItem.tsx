@@ -1,41 +1,38 @@
 import { Grid } from '@mui/material';
 import React, { LegacyRef, useEffect } from 'react';
 import { StyleProp, StyleSheet, View, Text } from 'react-native';
-import ChartManager, { ElementData, WAVE_DELAY_MS } from './ChartManager';
+import ChartManager, { Item, WAVE_DELAY_MS } from './ChartManager';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
 
-type ChartElementProps = {
-  elementData: ElementData;
+interface ChartItemProps {
+  item: Item;
   chartManager: ChartManager;
   innerRef?: LegacyRef<View>;
   style?: StyleProp<any>;
-};
+}
 
-export default function ChartElement({
-  elementData,
+export default function ChartItem({
+  item,
   chartManager,
   innerRef,
   style,
-}: ChartElementProps) {
+}: ChartItemProps) {
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    if (elementData.id != ChartManager.EMPTY_SPACE_ID) {
-      const listenerId = chartManager.addListener(
-        elementData.id,
-        (isActive) => {
-          progress.value = withSpring(isActive ? 1 : 0, {
-            duration: 2 * WAVE_DELAY_MS,
-          });
-        }
-      );
+    if (item.id != ChartManager.EMPTY_SPACE_ID) {
+      const listenerId = chartManager.addListener(item.id, (isActive) => {
+        progress.value = withSpring(isActive ? 1 : 0, {
+          duration: 2 * WAVE_DELAY_MS,
+        });
+      });
 
       return () => {
-        chartManager.removeListener(elementData.id, listenerId);
+        chartManager.removeListener(item.id, listenerId);
       };
     }
   }, [chartManager]);
@@ -44,7 +41,7 @@ export default function ChartElement({
     return {
       backgroundColor:
         progress.value > 0.5
-          ? elementData.highlightColor
+          ? item.highlightColor
           : 'var(--ifm-background-color)',
       borderColor: progress.value > 0.5 ? 'transparent' : 'var(--swm-border)',
     };
@@ -63,16 +60,16 @@ export default function ChartElement({
     <Grid item style={styles.box} xs={3}>
       <Animated.View
         style={[
-          [styles.element, animatedStyle],
-          elementData.isVisible ? null : styles.hidden,
+          [styles.item, animatedStyle],
+          item.isVisible ? null : styles.hidden,
           style,
         ]}
         ref={innerRef}>
         <Animated.Text style={[animatedTextStyle, styles.label, style]}>
-          {elementData.label}
+          {item.label}
         </Animated.Text>
       </Animated.View>
-      <Text style={styles.subtext}>{elementData.subtext}</Text>
+      <Text style={styles.subtext}>{item.subtext}</Text>
     </Grid>
   );
 }
@@ -84,7 +81,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: 900,
   },
-  element: {
+  item: {
     paddingVertical: 16,
     backgroundColor: 'var(--ifm-background-color)',
     borderWidth: 1,
