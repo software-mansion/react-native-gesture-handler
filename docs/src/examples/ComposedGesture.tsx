@@ -69,16 +69,15 @@ export default function App() {
   const offset = useSharedValue(0);
   const scale = useSharedValue(1);
 
-  // highlight-start
   const pan = Gesture.Pan()
     .onBegin(() => {
       pressed.value = true;
     })
     .onStart(() => {
-      scale.value = withSpring(0.6, { duration: 150 });
+      scale.value = withSpring(0.7);
     })
     .onFinalize(() => {
-      offset.value = withSpring(0, { duration: 200 });
+      offset.value = withSpring(0, { damping: 20, stiffness: 150 });
       scale.value = withTiming(1);
       pressed.value = false;
     })
@@ -86,13 +85,13 @@ export default function App() {
       offset.value = event.translationX;
     });
 
-  const press = Gesture.LongPress().onStart(() => {
-    scale.value = withSequence(
-      withSpring(1.8, { duration: 90 }),
-      withSpring(1, { duration: 180, dampingRatio: 0.4 })
-    );
-  });
-  // highlight-end
+  const press = Gesture.LongPress()
+    .onStart(() => {
+      scale.value = withSpring(1.3, { stiffness: 175 });
+    })
+    .onFinalize(() => {
+      scale.value = withTiming(1);
+    });
 
   const composedPan = Gesture.Simultaneous(pan, capturedPan);
   const composedPress = Gesture.Simultaneous(press, capturedPress);

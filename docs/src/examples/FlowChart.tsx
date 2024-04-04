@@ -71,7 +71,7 @@ export default function App({ chartManager, isFontReduced }: FlowChartProps) {
             !elementsCoordsRef.current[connection.from] ||
             !elementsCoordsRef.current[connection.to]
           ) {
-            return <View key={connection.id}></View>;
+            return <View key={connection.id} />;
           }
           return (
             <Arrow
@@ -83,7 +83,8 @@ export default function App({ chartManager, isFontReduced }: FlowChartProps) {
               endPoint={{
                 x: elementsCoordsRef.current[connection.to].x,
                 y: elementsCoordsRef.current[connection.to].y,
-              }}></Arrow>
+              }}
+            />
           );
         })}
     </View>
