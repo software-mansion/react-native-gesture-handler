@@ -1,10 +1,9 @@
 import { initialize } from './init';
+import { isReactNativeWebAvailable } from './isReactNativeAvailable';
 
 export { Directions } from './Directions';
 export { State } from './State';
 export { PointerType } from './PointerType';
-export { default as gestureHandlerRootHOC } from './components/gestureHandlerRootHOC';
-export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
 export type {
   // event types
   GestureEvent,
@@ -84,38 +83,6 @@ export type {
 } from './handlers/gestures/gestureComposition';
 export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
-export type {
-  RawButtonProps,
-  BaseButtonProps,
-  RectButtonProps,
-  BorderlessButtonProps,
-} from './components/GestureButtons';
-export {
-  RawButton,
-  BaseButton,
-  RectButton,
-  BorderlessButton,
-  PureNativeButton,
-} from './components/GestureButtons';
-export type {
-  TouchableHighlightProps,
-  TouchableOpacityProps,
-  TouchableWithoutFeedbackProps,
-} from './components/touchables';
-export {
-  TouchableHighlight,
-  TouchableNativeFeedback,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from './components/touchables';
-export {
-  ScrollView,
-  Switch,
-  TextInput,
-  DrawerLayoutAndroid,
-  FlatList,
-  RefreshControl,
-} from './components/GestureComponents';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
   //events
@@ -156,21 +123,47 @@ export type {
   BorderlessButtonProperties,
 } from './handlers/gestureHandlerTypesCompat';
 
-export type { SwipeableProps } from './components/Swipeable';
-export { default as Swipeable } from './components/Swipeable';
-export type {
-  DrawerLayoutProps,
-  DrawerPosition,
-  DrawerState,
-  DrawerType,
-  DrawerLockMode,
-  DrawerKeyboardDismissMode,
-} from './components/DrawerLayout';
-export { default as DrawerLayout } from './components/DrawerLayout';
-
 export {
   enableExperimentalWebImplementation,
   enableLegacyWebImplementation,
 } from './EnableNewWebImplementation';
+
+const Components = isReactNativeWebAvailable()
+  ? require('./components')
+  : require('./mocks');
+
+export const RectButton = Components.RectButton;
+export const BorderlessButton = Components.BorderlessButton;
+export const DrawerLayoutAndroid = Components.DrawerLayoutAndroid;
+export const GestureHandlerRootView = Components.GestureHandlerRootView;
+export const gestureHandlerRootHOC = Components.gestureHandlerRootHOC;
+export const Switch = Components.Switch;
+export const ScrollView = Components.ScrollView;
+export const FlatList = Components.FlatList;
+export const RefreshControl = Components.RefreshControl;
+export const Swipeable = Components.Swipeable;
+export const SwipeableProps = Components.SwipeableProps;
+export const DrawerLayoutProps = Components.DrawerLayoutProps;
+export const DrawerPosition = Components.DrawerPosition;
+export const DrawerState = Components.DrawerState;
+export const DrawerType = Components.DrawerType;
+export const DrawerLockMode = Components.DrawerLockMode;
+export const DrawerKeyboardDismissMode = Components.DrawerKeyboardDismissMode;
+export const BaseButton = Components.BaseButton;
+export const BaseButtonProps = Components.BaseButtonProps;
+export const BorderlessButtonProps = Components.BorderlessButtonProps;
+export const TouchableNativeFeedback = Components.TouchableNativeFeedback;
+export const DrawerLayout = Components.DrawerLayout;
+export const TouchableWithoutFeedback = Components.TouchableWithoutFeedback;
+export const TouchableHighlight = Components.TouchableHighlight;
+export const TouchableOpacity = Components.TouchableOpacity;
+export const TouchableWithoutFeedbackProps =
+  Components.TouchableWithoutFeedbackProps;
+export const TouchableHighlightProps = Components.TouchableHighlightProps;
+export const TouchableOpacityProps = Components.TouchableOpacityProps;
+export const TextInput = Components.TextInput;
+export const RawButton = Components.RawButton;
+export const RawButtonProps = Components.RawButtonProps;
+export const PureNativeButton = Components.PureNativeButton;
 
 initialize();
