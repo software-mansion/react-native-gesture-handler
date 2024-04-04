@@ -1,13 +1,14 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
-import { isReactNativeWebAvailable } from '../isReactNativeAvailable';
 import GestureHandler, { HammerInputExt } from './GestureHandler';
 
-const PixelRatio = isReactNativeWebAvailable()
-  ? require('react-native').PixelRatio
-  : window.devicePixelRatio;
+let PixelRatio: { get: () => number };
 
-console.log(PixelRatio);
+try {
+  PixelRatio = require('react-native').PixelRatio;
+} catch {
+  PixelRatio = { get: () => window.devicePixelRatio };
+}
 
 abstract class DraggingGestureHandler extends GestureHandler {
   get shouldEnableGestureOnSetup() {
