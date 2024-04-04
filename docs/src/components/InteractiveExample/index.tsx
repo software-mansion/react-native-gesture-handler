@@ -48,41 +48,43 @@ export default function InteractiveExample({
           ${!showPreview ? styles.code : ''}`}
           data-ispreview={showPreview}>
           {showPreview && prefersReducedMotion && <ReducedMotionWarning />}
-          <div
-            className={clsx(
-              styles.buttonsContainer,
-              styles.upperButtonsContainer
-            )}>
-            <div className={styles.actionButtonsContainer}>
-              <button
-                className={clsx(
-                  styles.actionButton,
-                  showPreview ? styles.actionButtonActive : ''
-                )}
-                onClick={() => setShowPreview(true)}>
-                Preview
-              </button>
-              <button
-                className={clsx(
-                  styles.actionButton,
-                  !showPreview ? styles.actionButtonActive : ''
-                )}
-                onClick={() => setShowPreview(false)}>
-                Code
-              </button>
+          {src && (
+            <div
+              className={clsx(
+                styles.buttonsContainer,
+                styles.upperButtonsContainer
+              )}>
+              <div className={styles.actionButtonsContainer}>
+                <button
+                  className={clsx(
+                    styles.actionButton,
+                    showPreview ? styles.actionButtonActive : ''
+                  )}
+                  onClick={() => setShowPreview(true)}>
+                  Preview
+                </button>
+                <button
+                  className={clsx(
+                    styles.actionButton,
+                    !showPreview ? styles.actionButtonActive : ''
+                  )}
+                  onClick={() => setShowPreview(false)}>
+                  Code
+                </button>
+              </div>
+              <AnimableIcon
+                icon={<Copy />}
+                iconDark={<CopyDark />}
+                animation={Animation.FADE_IN_OUT}
+                onClick={(actionPerformed, setActionPerformed) => {
+                  if (!actionPerformed) {
+                    copy(src);
+                    setActionPerformed(true);
+                  }
+                }}
+              />
             </div>
-            <AnimableIcon
-              icon={<Copy />}
-              iconDark={<CopyDark />}
-              animation={Animation.FADE_IN_OUT}
-              onClick={(actionPerformed, setActionPerformed) => {
-                if (!actionPerformed) {
-                  copy(src);
-                  setActionPerformed(true);
-                }
-              }}
-            />
-          </div>
+          )}
           <div className={styles.previewContainer}>
             {showPreview ? (
               <>

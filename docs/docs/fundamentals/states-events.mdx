@@ -37,14 +37,12 @@ A gesture can be in one of the six possible states:
 ## State flows
 
 import ComposedGesture from '@site/src/examples/ComposedGesture';
-import ComposedGestureSrc from '!!raw-loader!@site/src/examples/ComposedGesture';
 
 The most typical flow of state is when a gesture picks up on an initial touch event, then recognizes it, then acknowledges its ending and resets itself back to the initial state.
 
 The flow looks as follows:
 
 <InteractiveExample
-  src={ComposedGestureSrc}
   component={<ComposedGesture />}
   label="Drag or long-press the circle"
   larger={true}
