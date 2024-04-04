@@ -1,5 +1,6 @@
-import { HostComponent } from 'react-native';
-import { RawButtonProps } from './GestureButtons';
-import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
+import * as React from 'react';
+import { View } from 'react-native';
 
-export default RNGestureHandlerButtonNativeComponent as HostComponent<RawButtonProps>;
+export default React.forwardRef<View>((props, ref) => (
+  <View ref={ref} accessibilityRole="button" {...props} />
+));
