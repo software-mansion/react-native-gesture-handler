@@ -40,10 +40,6 @@ export default function App({ chartManager, isFontReduced }: FlowChartProps) {
     } as Coordinate;
   });
 
-  const tinyFontStyle = {
-    fontSize: 16,
-  } as StyleProp<any>;
-
   return (
     <View style={styles.container} ref={rootRef}>
       <Grid container rowGap={4}>
@@ -57,7 +53,6 @@ export default function App({ chartManager, isFontReduced }: FlowChartProps) {
                   innerRef={(el) => (elementsRef.current[element.id] = el)}
                   elementData={element}
                   chartManager={chartManager}
-                  style={isFontReduced ? tinyFontStyle : null}
                 />
               ))}
           </Grid>
@@ -99,19 +94,5 @@ const styles = StyleSheet.create({
     height: '100%',
     padding: 40,
     paddingTop: 0,
-  },
-  box: {
-    flex: 1,
-    flexDirection: 'column',
-    textAlign: 'center',
-  },
-  element: {
-    padding: 30,
-    fontWeight: '500',
-    fontSize: 24,
-  },
-  subtext: {
-    fontWeight: '300',
-    fontSize: 14,
   },
 });

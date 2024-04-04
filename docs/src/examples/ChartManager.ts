@@ -191,9 +191,7 @@ export default class ChartManager {
     });
   }
 
-  public newGesture(
-    gesture: GesturesUnion
-  ): [GestureHandle, GesturesUnion, any] {
+  public newGesture(gesture: GesturesUnion): [GestureHandle, GesturesUnion] {
     const [beganCallback, beganId] = this.addElement(State.BEGAN);
     const [activeCallback, activeId] = this.addElement(State.ACTIVE);
     const [endCallback, endId] = this.addElement(State.END);
@@ -261,10 +259,6 @@ export default class ChartManager {
       this.addConnection(from, to);
     });
 
-    const resetCb = () => {
-      undeterminedCallback(true);
-    };
-
-    return [handle, gesture, resetCb];
+    return [handle, gesture];
   }
 }
