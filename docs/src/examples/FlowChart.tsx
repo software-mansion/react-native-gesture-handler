@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
-    padding: 40,
-    paddingTop: 0,
+    paddingHorizontal: 40,
   },
 });
