@@ -6,17 +6,17 @@ import CollapseButton from '@site/src/components/CollapseButton';
 
 interface Props {
   src: string;
-  showLines: number[];
+  lineBounds: number[];
 }
 
-export default function CollapsibleCode({ src, showLines }: Props) {
+export default function CollapsibleCode({ src, lineBounds }: Props) {
   const [collapsed, setCollapsed] = useState(true);
 
-  if (!showLines) {
+  if (!lineBounds) {
     return <CodeBlock language="jsx">{src}</CodeBlock>;
   }
 
-  const [start, end] = showLines;
+  const [start, end] = lineBounds;
 
   const codeLines = src.split('\n');
   const linesToShow = codeLines.slice(start, end + 1).join('\n');
