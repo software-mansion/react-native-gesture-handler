@@ -30,6 +30,7 @@ const ReactNative = {
   StatusBar: null,
   StatusBarAnimation: null,
   NativeSyntheticEvent: null,
+  PixelRatio: { get: () => window.devicePixelRatio },
 };
 
 export const Animated = ReactNative.Animated;
@@ -66,3 +67,4 @@ export const Keyboard = ReactNative.Keyboard;
 export const StatusBar = ReactNative.StatusBar;
 export const StatusBarAnimation = ReactNative.StatusBarAnimation;
 export const NativeSyntheticEvent = ReactNative.NativeSyntheticEvent;
+export const PixelRatio = ReactNative.PixelRatio;

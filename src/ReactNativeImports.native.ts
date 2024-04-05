@@ -30,4 +30,5 @@ export {
   StatusBar,
   StatusBarAnimation,
   NativeSyntheticEvent,
+  PixelRatio,
 } from 'react-native';
