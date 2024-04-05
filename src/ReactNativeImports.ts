@@ -1,9 +1,8 @@
-// const ReactNativeStr = 'react-native';
-let ReactNative = {
-  Animated: { createAnimatedComponent: ({}) => {} },
+const ReactNative = {
+  Animated: { createAnimatedComponent: (_: any) => _ },
   Easing: null,
   processColor: null,
-  StyleSheet: { create: ({}) => {} },
+  StyleSheet: { create: (_: any) => _ },
   StyleProp: null,
   ViewStyle: null,
   View: null,
