@@ -38,17 +38,15 @@ A gesture can be in one of the six possible states:
 
 The most typical flow of state is when a gesture picks up on an initial touch event, then recognizes it, then acknowledges its ending and resets itself back to the initial state.
 
-The flow looks as follows (longer arrows represent that there are possibly more touch events received before the state changes):
+The flow looks as follows:
 
-[`UNDETERMINED`](#undetermined) -> [`BEGAN`](#began) ------> [`ACTIVE`](#active) ------> [`END`](#end) -> [`UNDETERMINED`](#undetermined)
+import GestureStateFlowExample from '@site/src/examples/GestureStateFlowExample';
 
-Another possible flow is when a handler receives touches that cause a recognition failure:
-
-[`UNDETERMINED`](#undetermined) -> [`BEGAN`](#began) ------> [`FAILED`](#failed) -> [`UNDETERMINED`](#undetermined)
-
-At last, when a handler does properly recognize the gesture but then is interrupted by the touch system the gesture recognition is canceled and the flow looks as follows:
-
-[`UNDETERMINED`](#undetermined) -> [`BEGAN`](#began) ------> [`ACTIVE`](#active) ------> [`CANCELLED`](#cancelled) -> [`UNDETERMINED`](#undetermined)
+<InteractiveExample
+  component={<GestureStateFlowExample />}
+  label="Drag or long-press the circle"
+  larger={true}
+/>
 
 ## Events
 
