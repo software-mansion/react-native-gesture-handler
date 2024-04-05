@@ -44,8 +44,11 @@ export default function InteractiveExample({
     <BrowserOnly fallback={<div>Loading...</div>}>
       {() => (
         <div
-          className={`${styles.container} ${larger && styles.largerContainer} 
-          ${!showPreview ? styles.code : ''}`}
+                   className={clsx(
+            styles.container,
+            larger && styles.largerContainer,
+            !showPreview ? styles.code : ''
+          )}
           data-ispreview={showPreview}>
           {showPreview && prefersReducedMotion && <ReducedMotionWarning />}
           {src && (
