@@ -1,8 +1,5 @@
-import { NativeModules, Platform } from './ReactCompact';
-
-type PlatformConstants = {
-  forceTouchAvailable: boolean;
+export default {
+  get forceTouchAvailable() {
+    return false;
+  },
 };
-
-export default (NativeModules?.PlatformConstants ??
-  Platform.constants) as PlatformConstants;
