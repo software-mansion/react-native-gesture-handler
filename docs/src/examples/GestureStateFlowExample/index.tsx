@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View, useWindowDimensions, Text } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -21,15 +21,20 @@ const MIN_DESKTOP_WIDTH = 1298;
 export default function App() {
   const chartManager = useRef(new ChartManager());
 
-  const [panHandle, capturedPan] = useMemo(
+  const [panHandle, capturedPan, resetPan] = useMemo(
     () => chartManager.current.newGesture(Gesture.Pan()),
     []
   );
 
-  const [pressHandle, capturedPress] = useMemo(
+  const [pressHandle, capturedPress, resetLongPress] = useMemo(
     () => chartManager.current.newGesture(Gesture.LongPress()),
     []
   );
+
+  useEffect(() => {
+    resetPan();
+    resetLongPress();
+  }, []);
 
   const panIds = panHandle.idObject;
   const pressIds = pressHandle.idObject;
