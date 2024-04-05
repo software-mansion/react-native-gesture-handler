@@ -17,7 +17,6 @@ import FlowChart from './FlowChart';
 
 // widths pulled from CSS
 const MIN_DESKTOP_WIDTH = 1298;
-const MAX_PHONE_WIDTH = 996;
 
 export default function App() {
   const chartManager = useRef(new ChartManager());
@@ -37,7 +36,6 @@ export default function App() {
 
   const dimensions = useWindowDimensions();
   const isDesktopMode = dimensions.width > MIN_DESKTOP_WIDTH;
-  const isFontReduced = dimensions.width < MAX_PHONE_WIDTH;
 
   // prettier-ignore
   const desktopLayout = [
@@ -143,7 +141,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     marginTop: 24,
     marginBottom: 14,

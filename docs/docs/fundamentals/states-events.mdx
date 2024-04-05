@@ -36,14 +36,14 @@ A gesture can be in one of the six possible states:
 
 ## State flows
 
-import ComposedGesture from '@site/src/examples/ComposedGesture';
-
 The most typical flow of state is when a gesture picks up on an initial touch event, then recognizes it, then acknowledges its ending and resets itself back to the initial state.
 
 The flow looks as follows:
 
+import GestureStateFlowExample from '@site/src/examples/GestureStateFlowExample';
+
 <InteractiveExample
-  component={<ComposedGesture />}
+  component={<GestureStateFlowExample />}
   label="Drag or long-press the circle"
   larger={true}
 />
@@ -91,3 +91,4 @@ Is called when there will be no more information about this pointer. It may be c
 ### `onPointerChange`
 
 Is called before `onPointerDown`, `onPointerMove`, `onPointerUp` and `onPointerCancelled` with the same event, which may be useful in case you share logic between them. It may carry information about more than one pointer because the events are batched.
+@site/src/examples/GestureStateFlowExample@site/src/examples

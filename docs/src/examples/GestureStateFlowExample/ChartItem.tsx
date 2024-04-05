@@ -60,8 +60,9 @@ export default function ChartItem({
     <Grid item style={styles.box} xs={3}>
       <Animated.View
         style={[
-          [styles.item, animatedStyle],
+          styles.item,
           item.isVisible ? null : styles.hidden,
+          animatedStyle,
           style,
         ]}
         ref={innerRef}>
