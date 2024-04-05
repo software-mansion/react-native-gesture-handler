@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
@@ -19,6 +19,17 @@ export default function FlowChart({ chartManager }: FlowChartProps) {
   const itemsRef = useRef([]);
   const itemsCoordsRef = useRef([]);
   const rootRef = useRef(null);
+
+  // there's a bug where arrows are not shown on the first render on production build
+  // i hate this but it forces a re-render after the component is mounted
+  // a man's gotta do what a man's gotta do
+  const [counter, setCounter] = useState(0);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setCounter(counter + 1);
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, []);
 
   const getCenter = (side: number, size: number) => side + size / 2;
 
@@ -57,30 +68,29 @@ export default function FlowChart({ chartManager }: FlowChartProps) {
           </Grid>
         ))}
       </Grid>
-      {itemsCoordsRef.current.length > 0 &&
-        chartManager.connections.map((connection) => {
-          // we have all the connections layed out,
-          // but the user may choose not to use some of the available items,
-          if (
-            !itemsCoordsRef.current[connection.from] ||
-            !itemsCoordsRef.current[connection.to]
-          ) {
-            return <View key={connection.id} />;
-          }
-          return (
-            <Arrow
-              key={connection.id}
-              startPoint={{
-                x: itemsCoordsRef.current[connection.from].x,
-                y: itemsCoordsRef.current[connection.from].y,
-              }}
-              endPoint={{
-                x: itemsCoordsRef.current[connection.to].x,
-                y: itemsCoordsRef.current[connection.to].y,
-              }}
-            />
-          );
-        })}
+      {chartManager.connections.map((connection) => {
+        // we have all the connections layed out,
+        // but the user may choose not to use some of the available items,
+        if (
+          !itemsCoordsRef.current[connection.from] ||
+          !itemsCoordsRef.current[connection.to]
+        ) {
+          return <View key={connection.id} />;
+        }
+        return (
+          <Arrow
+            key={connection.id}
+            startPoint={{
+              x: itemsCoordsRef.current[connection.from].x,
+              y: itemsCoordsRef.current[connection.from].y,
+            }}
+            endPoint={{
+              x: itemsCoordsRef.current[connection.to].x,
+              y: itemsCoordsRef.current[connection.to].y,
+            }}
+          />
+        );
+      })}
     </View>
   );
 }
