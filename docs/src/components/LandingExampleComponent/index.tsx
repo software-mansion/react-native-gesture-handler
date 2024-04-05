@@ -8,7 +8,7 @@ interface Props {
   idx?: number;
 }
 
-export default function InteractiveExampleComponent({ component, idx }: Props) {
+export default function LandingExample({ component, idx }: Props) {
   return (
     <BrowserOnly fallback={<div>Loading...</div>}>
       {() => (
