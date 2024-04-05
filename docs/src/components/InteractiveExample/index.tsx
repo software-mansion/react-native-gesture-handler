@@ -44,7 +44,7 @@ export default function InteractiveExample({
     <BrowserOnly fallback={<div>Loading...</div>}>
       {() => (
         <div
-                   className={clsx(
+          className={clsx(
             styles.container,
             larger && styles.largerContainer,
             !showPreview ? styles.code : ''
