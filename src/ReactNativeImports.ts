@@ -1,8 +1,8 @@
 const ReactNative = {
-  Animated: { createAnimatedComponent: (_: any) => _ },
+  Animated: { createAnimatedComponent: (a: any) => a },
   Easing: null,
   processColor: null,
-  StyleSheet: { create: (_: any) => _ },
+  StyleSheet: { create: (a: any) => a },
   StyleProp: null,
   ViewStyle: null,
   View: null,
