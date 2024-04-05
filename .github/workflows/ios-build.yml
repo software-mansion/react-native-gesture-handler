@@ -38,7 +38,7 @@ jobs:
         run: yarn
       - name: Install pods
         working-directory: ${{ matrix.working-directory }}/ios
-        run: bundle install && bundle exec pod install
+        run: bundle install && NO_FLIPPER=1 bundle exec pod install
       - name: Build app
         working-directory: ${{ matrix.working-directory }}
         run: yarn ios --simulator=\"iPhone 14\" --mode Debug --verbose --terminal /bin/zsh
