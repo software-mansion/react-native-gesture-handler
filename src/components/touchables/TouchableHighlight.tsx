@@ -10,7 +10,7 @@ import {
   TouchableHighlightProps as RNTouchableHighlightProps,
   ColorValue,
   ViewProps,
-} from 'react-native';
+} from '../../ReactNativeImports';
 
 interface State {
   extraChildStyle: null | {

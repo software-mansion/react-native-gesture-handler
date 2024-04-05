@@ -1,3 +1,3 @@
-import { TouchableNativeFeedback } from 'react-native';
+import { TouchableNativeFeedback } from '../../ReactNativeImports';
 
 export default TouchableNativeFeedback;

@@ -21,7 +21,7 @@ import {
   ViewStyle,
   LayoutChangeEvent,
   NativeSyntheticEvent,
-} from 'react-native';
+} from '../ReactNativeImports';
 
 import {
   GestureEvent,
