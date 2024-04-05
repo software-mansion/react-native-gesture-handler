@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './styles.module.css';
 import clsx from 'clsx';
 import { useColorMode } from '@docusaurus/theme-common';
@@ -21,7 +21,7 @@ const AnimableIcon = ({
   onClick,
 }: Props): JSX.Element => {
   const { colorMode } = useColorMode();
-  const [actionPerformed, setActionPerformed] = React.useState(false);
+  const [actionPerformed, setActionPerformed] = useState(false);
 
   useEffect(() => {
     const timeout = setTimeout(() => setActionPerformed(false), 1000);
