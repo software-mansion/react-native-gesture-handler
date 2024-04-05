@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './styles.module.css';
-import InteractiveExampleComponent from '@site/src/components/InteractiveExampleComponent';
+import LandingExampleComponent from '@site/src/components/LandingExampleComponent';
 
 interface Props {
   title: string;
@@ -17,7 +17,7 @@ const GestureExampleItem = ({ title, component, idx, href }: Props) => {
           {title}
         </a>
         <div className={styles.interactiveExampleWrapper}>
-          <InteractiveExampleComponent idx={idx} component={component} />
+          <LandingExampleComponent idx={idx} component={component} />
         </div>
       </div>
     </>
