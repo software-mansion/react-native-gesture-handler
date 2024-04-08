@@ -1,4 +1,4 @@
-import { Platform } from './ReactCompact';
+import { Platform } from './ReactCompat';
 
 let useNewWebImplementation = true;
 let getWasCalled = false;

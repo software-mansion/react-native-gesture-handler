@@ -7,7 +7,7 @@ import {
   ViewStyle,
 } from '../ReactNativeImports';
 
-import { Platform } from '../ReactCompact';
+import { Platform } from '../ReactCompat';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';

@@ -1,4 +1,4 @@
-import { Platform } from '../../ReactCompact';
+import { Platform } from '../../ReactCompat';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
 import { AdaptedEvent, Config } from '../interfaces';
