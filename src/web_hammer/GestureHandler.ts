@@ -1,7 +1,7 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
 import Hammer from '@egjs/hammerjs';
-import { findNodeHandle } from '../ReactCompact';
+import { findNodeHandle } from '../ReactCompat';
 
 import { State } from '../State';
 import { EventMap } from './constants';

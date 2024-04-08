@@ -1,4 +1,4 @@
-import { findNodeHandle } from '../../ReactCompact';
+import { findNodeHandle } from '../../ReactCompat';
 import type IGestureHandler from '../handlers/IGestureHandler';
 import {
   GestureHandlerDelegate,

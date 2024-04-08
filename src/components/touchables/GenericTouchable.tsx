@@ -8,7 +8,7 @@ import {
   Insets,
 } from '../../ReactNativeImports';
 
-import { Platform } from '../../ReactCompact';
+import { Platform } from '../../ReactCompat';
 
 import { State } from '../../State';
 import { BaseButton } from '../GestureButtons';

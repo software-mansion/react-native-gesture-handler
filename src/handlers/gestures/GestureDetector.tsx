@@ -41,7 +41,7 @@ import { ActionType } from '../../ActionType';
 import { isFabric, isJestEnv, tagMessage } from '../../utils';
 import { getReactNativeVersion } from '../../getReactNativeVersion';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
-import { Platform, isDEV } from '../../ReactCompact';
+import { Platform, isDEV } from '../../ReactCompat';
 import { onGestureHandlerEvent } from './eventReceiver';
 import { RNRenderer } from '../../RNRenderer';
 import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
