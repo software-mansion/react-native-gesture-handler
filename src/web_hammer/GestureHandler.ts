@@ -1,7 +1,7 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
 import Hammer from '@egjs/hammerjs';
-import { findDOMNode as findNodeHandle } from 'react-dom';
+import { findNodeHandle } from '../ReactCompact';
 
 import { State } from '../State';
 import { EventMap } from './constants';
@@ -283,7 +283,7 @@ abstract class GestureHandler {
     this.propsRef = propsRef;
     this.ref = ref;
 
-    this.view = findNodeHandle(ref) as Element;
+    this.view = findNodeHandle(ref);
 
     // When the browser starts handling the gesture (e.g. scrolling), it sends a pointercancel event and stops
     // sending additional pointer events. This is not the case with touch events, so if the gesture is simultaneous
