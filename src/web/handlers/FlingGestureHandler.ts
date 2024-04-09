@@ -21,7 +21,7 @@ export default class FlingGestureHandler extends GestureHandler {
 
   private maxDurationMs = DEFAULT_MAX_DURATION_MS;
   private minVelocity = DEFAULT_MIN_VELOCITY;
-  private delayTimeout!: ReturnType<typeof setTimeout>;
+  private delayTimeout!: number;
 
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;

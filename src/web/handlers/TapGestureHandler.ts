@@ -26,8 +26,8 @@ export default class TapGestureHandler extends GestureHandler {
   private lastX = 0;
   private lastY = 0;
 
-  private waitTimeout: ReturnType<typeof setTimeout> | undefined;
-  private delayTimeout: ReturnType<typeof setTimeout> | undefined;
+  private waitTimeout: number | undefined;
+  private delayTimeout: number | undefined;
 
   private tapsSoFar = 0;
 
