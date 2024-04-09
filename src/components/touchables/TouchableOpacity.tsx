@@ -4,7 +4,7 @@ import {
   StyleSheet,
   View,
   TouchableOpacityProps as RNTouchableOpacityProps,
-} from '../../ReactNativeImports';
+} from '../../ReactCompat';
 import GenericTouchable, {
   TOUCHABLE_STATE,
   GenericTouchableProps,

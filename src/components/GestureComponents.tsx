@@ -6,7 +6,7 @@ import {
   ScrollView as RNScrollView,
   FlatListProps,
   View,
-} from '../ReactNativeImports';
+} from '../ReactCompat';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 

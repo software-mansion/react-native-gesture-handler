@@ -6,9 +6,8 @@ import {
   ViewStyle,
   TouchableWithoutFeedbackProps,
   Insets,
-} from '../../ReactNativeImports';
-
-import { Platform } from '../../ReactCompat';
+  Platform,
+} from '../../ReactCompat';
 
 import { State } from '../../State';
 import { BaseButton } from '../GestureButtons';

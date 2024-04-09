@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, StyleProp, ViewStyle } from '../ReactNativeImports';
+import { StyleSheet, StyleProp, ViewStyle } from '../ReactCompat';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import GestureHandlerRootView from './GestureHandlerRootView';
 
