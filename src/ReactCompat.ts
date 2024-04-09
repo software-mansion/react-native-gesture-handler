@@ -45,7 +45,7 @@ const ReactNative = {
   NativeSyntheticEvent: null,
   PixelRatio: { get: () => window.devicePixelRatio },
 
-  UIManager: null,
+  UIManager: {},
   EmitterSubscription: null,
   DeviceEventEmitter: {
     addListener: (_a: string, _b: unknown) => null,
