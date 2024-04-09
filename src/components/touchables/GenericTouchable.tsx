@@ -6,7 +6,7 @@ import {
   ViewStyle,
   TouchableWithoutFeedbackProps,
   Insets,
-} from '../../ReactNativeImports';
+} from '../../ReactCompat';
 
 import { Platform } from '../../ReactCompat';
 

@@ -17,7 +17,7 @@ import {
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
   RefreshControl as RNRefreshControl,
-} from '../ReactNativeImports';
+} from '../ReactCompat';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 

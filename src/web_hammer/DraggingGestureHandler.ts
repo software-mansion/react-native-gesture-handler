@@ -1,7 +1,7 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
 import GestureHandler, { HammerInputExt } from './GestureHandler';
-import { PixelRatio } from '../ReactNativeImports';
+import { PixelRatio } from '../ReactCompat';
 abstract class DraggingGestureHandler extends GestureHandler {
   get shouldEnableGestureOnSetup() {
     return true;

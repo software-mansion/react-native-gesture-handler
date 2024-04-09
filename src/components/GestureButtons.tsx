@@ -5,7 +5,7 @@ import {
   StyleSheet,
   StyleProp,
   ViewStyle,
-} from '../ReactNativeImports';
+} from '../ReactCompat';
 
 import { Platform } from '../ReactCompat';
 

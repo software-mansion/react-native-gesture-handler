@@ -12,7 +12,7 @@ import {
   LayoutChangeEvent,
   StyleProp,
   ViewStyle,
-} from '../ReactNativeImports';
+} from '../ReactCompat';
 
 import {
   GestureEvent,
