@@ -1,3 +1,14 @@
+/*
+  This file was created in order to run Gesture Handler with Next.js. Metro is better at resolving file extensions than other bundlers, 
+  so right now we have 3 types of extensions to add pure React compatibility:
+
+  - .ts files are used by Next.js 
+  - .web.ts files are used by react-native-web
+  - .native.ts files are used by react-native
+
+  With this approach we can run Next apps directly from our repository, without introducing drastic changes into our source code.
+*/
+
 import { findDOMNode } from 'react-dom';
 
 const ReactNative = {
