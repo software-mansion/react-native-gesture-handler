@@ -5,9 +5,8 @@ import {
   StyleSheet,
   StyleProp,
   ViewStyle,
+  Platform,
 } from '../ReactCompat';
-
-import { Platform } from '../ReactCompat';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';
