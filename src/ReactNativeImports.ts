@@ -1,32 +1,68 @@
-export const Animated = { createAnimatedComponent: (a: any) => a };
-export const Easing = null;
-export const processColor = null;
-export const StyleSheet = { create: (a: any) => a };
-export type StyleProp = null;
-export type ViewStyle = null;
-export const View = null;
-export type TouchableHighlightProps = null;
-export type TouchableOpacityProps = null;
-export type ColorValue = null;
-export type ViewProps = null;
-export const TouchableWithoutFeedbackProps = null;
-export const Insets = null;
-export const TouchableNativeFeedback = null;
-export const ScrollView = null;
-export type ScrollViewProps = null;
-export const Switch = null;
-export type SwitchProps = null;
-export const TextInput = null;
-export type TextInputProps = null;
-export const DrawerLayoutAndroid = null;
-export type DrawerLayoutAndroidProps = null;
-export const FlatList = null;
-export type FlatListProps = null;
-export const RefreshControl = null;
-export const I18nManager = { isRTL: false };
-export const LayoutChangeEvent = null;
-export const Keyboard = null;
-export const StatusBar = null;
-export const StatusBarAnimation = null;
-export const NativeSyntheticEvent = null;
-export const PixelRatio = { get: () => window.devicePixelRatio };
+const ReactNative = {
+  Animated: { createAnimatedComponent: (a: any) => a },
+  Easing: null,
+  processColor: null,
+  StyleSheet: { create: (a: any) => a },
+  StyleProp: null,
+  ViewStyle: null,
+  View: null,
+  TouchableHighlightProps: null,
+  TouchableOpacityProps: null,
+  ColorValue: null,
+  ViewProps: null,
+  TouchableWithoutFeedbackProps: null,
+  Insets: null,
+  TouchableNativeFeedback: null,
+  ScrollView: null,
+  ScrollViewProps: null,
+  Switch: null,
+  SwitchProps: null,
+  TextInput: null,
+  TextInputProps: null,
+  DrawerLayoutAndroid: null,
+  DrawerLayoutAndroidProps: null,
+  FlatList: null,
+  FlatListProps: null,
+  RefreshControl: null,
+  I18nManager: { isRTL: false },
+  LayoutChangeEvent: null,
+  Keyboard: null,
+  StatusBar: null,
+  StatusBarAnimation: null,
+  NativeSyntheticEvent: null,
+  PixelRatio: { get: () => window.devicePixelRatio },
+};
+
+export const {
+  Animated,
+  Easing,
+  processColor,
+  StyleSheet,
+  StyleProp,
+  ViewStyle,
+  View,
+  TouchableHighlightProps,
+  TouchableOpacityProps,
+  ColorValue,
+  ViewProps,
+  TouchableWithoutFeedbackProps,
+  Insets,
+  TouchableNativeFeedback,
+  ScrollView,
+  ScrollViewProps,
+  Switch,
+  SwitchProps,
+  TextInput,
+  TextInputProps,
+  DrawerLayoutAndroid,
+  DrawerLayoutAndroidProps,
+  FlatList,
+  FlatListProps,
+  RefreshControl,
+  I18nManager,
+  LayoutChangeEvent,
+  Keyboard,
+  StatusBar,
+  StatusBarAnimation,
+  NativeSyntheticEvent,
+} = ReactNative;
