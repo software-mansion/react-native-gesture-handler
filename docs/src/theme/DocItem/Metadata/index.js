@@ -1,13 +1,12 @@
 import React from 'react';
-import {PageMetadata} from '@docusaurus/theme-common';
-import {useDoc} from '@docusaurus/theme-common/internal';
+import { PageMetadata } from '@docusaurus/theme-common';
+import { useDoc } from '@docusaurus/theme-common/internal';
 export default function DocItemMetadata() {
-  const {metadata, frontMatter, assets} = useDoc();
+  const { metadata, frontMatter, assets } = useDoc();
 
-  if (!metadata)
-    return null;
+  if (!metadata) return null;
 
-  const image = metadata.title
+  const ogImage = metadata.title
     .replace(/[ /]/g, '-')
     .replace(/`/g, '')
     .replace(/:/g, '')
@@ -18,7 +17,9 @@ export default function DocItemMetadata() {
       title={metadata.title}
       description={metadata.description}
       keywords={frontMatter.keywords}
-      image={`docs/og/${image === '' || !image ? 'unnamed' : image}.png`}
+      image={`docs/og/${
+        ogImage === '' || !ogImage ? 'React Native Reanimated' : ogImage
+      }.png`}
     />
   );
 }
