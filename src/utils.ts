@@ -50,5 +50,9 @@ export function isFabric(): boolean {
 export function isRemoteDebuggingEnabled(): boolean {
   // react-native-reanimated checks if in remote debugging in the same way
   // @ts-ignore global is available but node types are not included
-  return !(global as any).nativeCallSyncHook || (global as any).__REMOTEDEV__;
+  const localGlobal = global as any;
+  return (
+    (!localGlobal.nativeCallSyncHook || !!localGlobal.__REMOTEDEV__) &&
+    !localGlobal.RN$Bridgeless
+  );
 }
