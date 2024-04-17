@@ -7,7 +7,7 @@ export function toArray<T>(object: T | T[]): T[] {
 }
 
 export type withPrevAndCurrentMapFn<T, Transformed> = (
-  previous: Transformed | null,
+  previous: Transformed | null | undefined,
   current: T
 ) => Transformed;
 export function withPrevAndCurrent<T, Transformed>(
