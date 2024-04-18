@@ -23,7 +23,7 @@ export default interface IGestureHandler {
   getTrackedPointersID: () => number[];
 
   begin: () => void;
-  activate: () => void;
+  activate: (force: boolean) => void;
   end: () => void;
   fail: () => void;
   cancel: () => void;

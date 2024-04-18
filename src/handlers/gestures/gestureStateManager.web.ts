@@ -9,7 +9,7 @@ export const GestureStateManager = {
       },
 
       activate: () => {
-        NodeManager.getHandler(handlerTag).activate();
+        NodeManager.getHandler(handlerTag).activate(true);
       },
 
       fail: () => {
