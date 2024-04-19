@@ -221,6 +221,9 @@ export default class PanGestureHandler extends GestureHandler {
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
 
+    this.startX = this.lastX;
+    this.startY = this.lastY;
+
     this.tryBegin(event);
     this.checkBegan();
   }
