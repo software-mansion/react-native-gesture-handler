@@ -138,8 +138,7 @@ const buildOGImages = async () => {
 
       const ogImageStream = await OGImageStream(
         header,
-        base64Image,
-        targetDocs
+        base64Image
       );
 
       await saveStreamToFile(

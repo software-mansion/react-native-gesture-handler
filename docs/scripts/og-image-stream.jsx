@@ -3,7 +3,7 @@ import path from 'path';
 import { ImageResponse } from '@vercel/og';
 import fs from 'fs';
 
-export default async function OGImageStream(header, base64Image, targetDocs) {
+export default async function OGImageStream(header, base64Image) {
   return (
     new ImageResponse(
       (
