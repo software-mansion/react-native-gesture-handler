@@ -18,7 +18,7 @@ export function withPrevAndCurrent<T, Transformed>(
   const currentArr = [...array];
   const transformedArr: Transformed[] = [];
   currentArr.forEach((current, i) => {
-    const previous = previousArr[i];
+    const previous = previousArr[i] as Transformed | null;
     const transformed = mapFn(previous, current);
     previousArr.push(transformed);
     transformedArr.push(transformed);
