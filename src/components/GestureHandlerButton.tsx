@@ -1,6 +1,13 @@
 import * as React from 'react';
-import { View } from '../ReactCompat';
+import { Insets, View } from '../ReactCompat';
+import { RawButtonProps } from './GestureButtons';
 
-export default React.forwardRef<View>((props, ref) => (
-  <View ref={ref} accessibilityRole="button" {...props} />
-));
+interface RawButtonWebProps extends RawButtonProps {
+  hitSlop?: Insets | undefined;
+}
+
+export default React.forwardRef<View, { rippleColor: any }>(
+  (props: RawButtonWebProps, ref) => (
+    <View ref={ref} accessibilityRole="button" {...props} />
+  )
+);

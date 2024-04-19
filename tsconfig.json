@@ -20,6 +20,7 @@
     "noImplicitUseStrict": false,
     "noUnusedParameters": true,
     "noUnusedLocals": true,
+    "downlevelIteration": true,
 
     "moduleSuffixes": [".native", ""]
   },

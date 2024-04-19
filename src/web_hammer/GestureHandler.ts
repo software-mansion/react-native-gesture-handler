@@ -283,7 +283,7 @@ abstract class GestureHandler {
     this.propsRef = propsRef;
     this.ref = ref;
 
-    this.view = findNodeHandle(ref);
+    this.view = findNodeHandle(ref) as unknown as HTMLElement;
 
     // When the browser starts handling the gesture (e.g. scrolling), it sends a pointercancel event and stops
     // sending additional pointer events. This is not the case with touch events, so if the gesture is simultaneous
@@ -571,6 +571,7 @@ function invokeNullableMethod(
         if ('__nodeConfig' in method) {
           const { argMapping } = method.__nodeConfig;
           if (Array.isArray(argMapping)) {
+            // @ts-ignore owdhioqwehd
             for (const [index, [key, value]] of argMapping.entries()) {
               if (key in event.nativeEvent) {
                 // @ts-ignore fix method type
