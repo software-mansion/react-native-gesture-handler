@@ -176,13 +176,13 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
   }
 
-  public activate(_force = false) {
+  public activate(force = false) {
     if (
-      this.currentState === State.UNDETERMINED ||
-      this.currentState === State.BEGAN
+      (this.config.manualActivation !== true || force) &&
+      (this.currentState === State.UNDETERMINED ||
+        this.currentState === State.BEGAN)
     ) {
       this.delegate.onActivate();
-
       this.moveToState(State.ACTIVE);
     }
   }

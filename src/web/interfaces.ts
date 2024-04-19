@@ -47,6 +47,7 @@ export interface Config extends Record<string, ConfigArgs> {
   mouseButton?: MouseButton;
   enableContextMenu?: boolean;
   touchAction?: TouchAction;
+  manualActivation?: boolean;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;
