@@ -136,10 +136,7 @@ async function buildOGImages() {
     files.map(async (file) => {
       const header = getMarkdownHeader(path.resolve(baseDirPath, dir, file));
 
-      const ogImageStream = await OGImageStream(
-        header,
-        base64Image
-      );
+      const ogImageStream = await OGImageStream(header, base64Image);
 
       await saveStreamToFile(
         ogImageStream,
@@ -147,6 +144,6 @@ async function buildOGImages() {
       );
     });
   });
-};
+}
 
 buildOGImages();
