@@ -58,36 +58,36 @@ async function saveStreamToFile(stream, path) {
   await promisify(pipeline)(stream, writeStream);
 }
 
-const formatFilesInDoc = async (dir, files, baseDocsPath) => {
+const formatFilesInDoc = async (dir, files, baseDirPath) => {
   return await Promise.all(
     files.map(async (file) => ({
       file,
       isDirectory: (
-        await fs.promises.lstat(path.resolve(baseDocsPath, dir, file))
+        await fs.promises.lstat(path.resolve(baseDirPath, dir, file))
       ).isDirectory(),
       isMarkdown: file.endsWith('.md') || file.endsWith('.mdx'),
     }))
   );
 };
 
-const formatDocInDocs = async (dir, baseDocsPath) => {
-  const files = await fs.promises.readdir(path.resolve(baseDocsPath, dir));
+const formatDocInDocs = async (dir, baseDirPath) => {
+  const files = await fs.promises.readdir(path.resolve(baseDirPath, dir));
   return {
     dir,
-    files: (await formatFilesInDoc(dir, files, baseDocsPath)).filter(
+    files: (await formatFilesInDoc(dir, files, baseDirPath)).filter(
       ({ isDirectory, isMarkdown }) => isDirectory || isMarkdown
     ),
   };
 };
 
-const extractSubFiles = async (dir, files, baseDocsPath) => {
+const extractSubFiles = async (dir, files, baseDirPath) => {
   return (
     await Promise.all(
       files.map(async (file) => {
         if (!file.isDirectory) return file.file;
 
         const subFiles = (
-          await fs.promises.readdir(path.resolve(baseDocsPath, dir, file.file))
+          await fs.promises.readdir(path.resolve(baseDirPath, dir, file.file))
         ).filter((file) => file.endsWith('.md') || file.endsWith('.mdx'));
 
         return subFiles.map((subFile) => `${file.file}/${subFile}`);
@@ -96,35 +96,35 @@ const extractSubFiles = async (dir, files, baseDocsPath) => {
   ).flat();
 };
 
-const getDocs = async (baseDocsPath) => {
+const getDocs = async (baseDirPath) => {
   let docs = await Promise.all(
     (
-      await fs.promises.readdir(baseDocsPath)
-    ).map(async (dir) => formatDocInDocs(dir, baseDocsPath))
+      await fs.promises.readdir(baseDirPath)
+    ).map(async (dir) => formatDocInDocs(dir, baseDirPath))
   );
 
   docs = await Promise.all(
     docs.map(async ({ dir, files }) => ({
       dir,
-      files: await extractSubFiles(dir, files, baseDocsPath),
+      files: await extractSubFiles(dir, files, baseDirPath),
     }))
   );
 
   return docs;
 };
 
-const buildOGImages = async () => {
-  const baseDocsPath = path.resolve(__dirname, '../docs');
+async function buildOGImages() {
+  const baseDirPath = path.resolve(__dirname, '../docs');
 
-  const docs = await getDocs(baseDocsPath);
+  const docs = await getDocs(baseDirPath);
 
-  const targetDocs = path.resolve(__dirname, '../build/img/og');
+  const ogImageTargets = path.resolve(__dirname, '../build/img/og');
 
-  if (fs.existsSync(targetDocs)) {
-    fs.rmSync(targetDocs, { recursive: true });
+  if (fs.existsSync(ogImageTargets)) {
+    fs.rmSync(ogImageTargets, { recursive: true });
   }
 
-  fs.mkdirSync(targetDocs, { recursive: true });
+  fs.mkdirSync(ogImageTargets, { recursive: true });
 
   console.log('Generating OG images for docs...');
 
@@ -134,7 +134,7 @@ const buildOGImages = async () => {
 
   docs.map(async ({ dir, files }) => {
     files.map(async (file) => {
-      const header = getMarkdownHeader(path.resolve(baseDocsPath, dir, file));
+      const header = getMarkdownHeader(path.resolve(baseDirPath, dir, file));
 
       const ogImageStream = await OGImageStream(
         header,
@@ -143,7 +143,7 @@ const buildOGImages = async () => {
 
       await saveStreamToFile(
         ogImageStream,
-        path.resolve(targetDocs, formatHeaderToFilename(header))
+        path.resolve(ogImageTargets, formatHeaderToFilename(header))
       );
     });
   });
