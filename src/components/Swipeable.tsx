@@ -516,7 +516,7 @@ export default class Swipeable extends Component<
         ]}>
         {renderLeftActions(this.showLeftAction!, this.transX!, this)}
         <View
-          onLayout={({ nativeEvent }) =>
+          onLayout={({ nativeEvent }: LayoutChangeEvent) =>
             this.setState({ leftWidth: nativeEvent.layout.x })
           }
         />
@@ -531,7 +531,7 @@ export default class Swipeable extends Component<
         ]}>
         {renderRightActions(this.showRightAction!, this.transX!, this)}
         <View
-          onLayout={({ nativeEvent }) =>
+          onLayout={({ nativeEvent }: LayoutChangeEvent) =>
             this.setState({ rightOffset: nativeEvent.layout.x })
           }
         />

@@ -100,6 +100,8 @@ class FlingGestureHandler extends DraggingGestureHandler {
     if (direction & Direction.DOWN) {
       directions.push(Hammer.DIRECTION_VERTICAL);
     }
+
+    // @ts-ignore We don't actively support Hammer anymore, so we can ignore this error
     directions = [...new Set(directions)];
 
     if (directions.length === 0) return Hammer.DIRECTION_NONE;

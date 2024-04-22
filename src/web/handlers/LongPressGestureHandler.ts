@@ -104,7 +104,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     if (this.minDurationMs > 0) {
       this.activationTimeout = setTimeout(() => {
         this.activate();
-      }, this.minDurationMs);
+      }, this.minDurationMs) as unknown as number;
     } else if (this.minDurationMs === 0) {
       this.activate();
     }
