@@ -88,8 +88,6 @@ export namespace Animated {
     setValue = (_a: unknown) => {};
     interpolate = (_a: unknown) => this;
   }
-
-  // export function interpolate() {}
 }
 
 export const {
