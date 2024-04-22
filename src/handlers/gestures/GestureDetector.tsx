@@ -49,14 +49,6 @@ import { nativeViewGestureHandlerProps } from '../NativeViewGestureHandler';
 import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
-type AttachGestureHandlerWeb = (
-  handlerTag: number,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  newView: any,
-  _actionType: ActionType,
-  propsRef: React.RefObject<unknown>
-) => void;
-
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
 };
@@ -227,10 +219,9 @@ function attachHandlers({
       : ActionType.JS_FUNCTION_NEW_API;
 
     if (Platform.OS === 'web') {
-      (RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb)(
+      (RNGestureHandlerModule as any).attachGestureHandlerWeb(
         gesture.handlerTag,
         viewTag,
-        ActionType.JS_FUNCTION_OLD_API, // ignored on web
         webEventHandlersRef
       );
     } else {
