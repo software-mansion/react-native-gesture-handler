@@ -17,6 +17,8 @@
         "name": "next"
       }
     ],
+    "target": "esnext",
+    "downlevelIteration": true,
     "paths": {
       "@/*": ["./*"],
       "react-native-gesture-handler": ["../src/index.ts"]
