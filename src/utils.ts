@@ -18,6 +18,9 @@ export function withPrevAndCurrent<T, Transformed>(
   const currentArr = [...array];
   const transformedArr: Transformed[] = [];
   currentArr.forEach((current, i) => {
+    // This type cast is fine and solves problem mentioned in https://github.com/software-mansion/react-native-gesture-handler/pull/2867 (namely that `previous` can be undefined).
+    // Unfortunately, linter on our CI does not allow this type of casting as it is unnecessary. To bypass that we use eslint-disable.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const previous = previousArr[i] as Transformed | null;
     const transformed = mapFn(previous, current);
     previousArr.push(transformed);
