@@ -59,8 +59,8 @@ export class HoverGesture extends ContinousBaseGesture<
   }
 
   /**
+   * #### iOS only
    * Sets the visual hover effect.
-   * iOS only
    */
   effect(effect: HoverEffect) {
     this.config.hoverEffect = effect;
