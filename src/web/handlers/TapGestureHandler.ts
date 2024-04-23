@@ -26,8 +26,8 @@ export default class TapGestureHandler extends GestureHandler {
   private lastX = 0;
   private lastY = 0;
 
-  private waitTimeout: number | undefined;
-  private delayTimeout: number | undefined;
+  private waitTimeout: ReturnType<typeof setTimeout> | undefined;
+  private delayTimeout: ReturnType<typeof setTimeout> | undefined;
 
   private tapsSoFar = 0;
 
@@ -87,10 +87,7 @@ export default class TapGestureHandler extends GestureHandler {
   private startTap(): void {
     this.clearTimeouts();
 
-    this.waitTimeout = setTimeout(
-      () => this.fail(),
-      this.maxDurationMs
-    ) as unknown as number;
+    this.waitTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
   }
 
   private endTap(): void {
@@ -102,10 +99,7 @@ export default class TapGestureHandler extends GestureHandler {
     ) {
       this.activate();
     } else {
-      this.delayTimeout = setTimeout(
-        () => this.fail(),
-        this.maxDelayMs
-      ) as unknown as number;
+      this.delayTimeout = setTimeout(() => this.fail(), this.maxDelayMs);
     }
   }
 

@@ -52,7 +52,7 @@ export default class PanGestureHandler extends GestureHandler {
   private lastY = 0;
 
   private activateAfterLongPress = 0;
-  private activationTimeout = 0;
+  private activationTimeout: ReturnType<typeof setTimeout> | undefined;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -447,7 +447,7 @@ export default class PanGestureHandler extends GestureHandler {
       if (this.activateAfterLongPress > 0) {
         this.activationTimeout = setTimeout(() => {
           this.activate();
-        }, this.activateAfterLongPress) as unknown as number;
+        }, this.activateAfterLongPress);
       }
     } else {
       this.velocityX = this.tracker.getVelocityX(event.pointerId);
