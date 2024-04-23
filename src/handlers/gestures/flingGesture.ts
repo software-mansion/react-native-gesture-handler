@@ -25,6 +25,7 @@ export class FlingGesture extends BaseGesture<FlingGestureHandlerEventPayload> {
   /**
    * Expressed allowed direction of movement.
    * Expected values are exported as constants in the Directions object.
+   * Arguments can be combined using `|` operator. Default value is set to `MouseButton.LEFT`.
    * @param direction
    * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/fling-gesture/#directionvalue-directions
    */
