@@ -225,7 +225,7 @@ export abstract class BaseGesture<
   }
 
   /**
-   * Set the `onTouchesDown` callback which is called every time a finger is placed on the screen.
+   * Set the `onTouchesDown` callback which is called every time a pointer is placed on the screen.
    * @param callback
    */
   onTouchesDown(callback: TouchEventHandlerType) {
@@ -238,7 +238,7 @@ export abstract class BaseGesture<
   }
 
   /**
-   * Set the `onTouchesMove` callback which is called every time a finger is moved on the screen.
+   * Set the `onTouchesMove` callback which is called every time a pointer is moved on the screen.
    * @param callback
    */
   onTouchesMove(callback: TouchEventHandlerType) {
@@ -251,7 +251,7 @@ export abstract class BaseGesture<
   }
 
   /**
-   * Set the `onTouchesUp` callback which is called every time a finger is lifted from the screen.
+   * Set the `onTouchesUp` callback which is called every time a pointer is lifted from the screen.
    * @param callback
    */
   onTouchesUp(callback: TouchEventHandlerType) {
@@ -264,7 +264,7 @@ export abstract class BaseGesture<
   }
 
   /**
-   * Set the `onTouchesCancelled` callback which is called every time a finger stops being tracked, for example when the gesture finishes.
+   * Set the `onTouchesCancelled` callback which is called every time a pointer stops being tracked, for example when the gesture finishes.
    * @param callback
    */
   onTouchesCancelled(callback: TouchEventHandlerType) {
