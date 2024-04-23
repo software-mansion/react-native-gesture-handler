@@ -17,8 +17,8 @@ import FlingGestureBasic from '@site/static/examples/FlingGestureBasic';
 import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestureBasic';
 
 <InteractiveExample
-  component={<FlingGestureBasic/>}
-  src={FlingGestureBasic}
+component={<FlingGestureBasic/>}
+src={FlingGestureBasic}
 />
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -158,4 +158,5 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
 @site/static/examples/FlingGestureBasic

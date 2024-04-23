@@ -17,8 +17,8 @@ import LongPressGestureBasic from '@site/static/examples/LongPressGestureBasic';
 import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPressGestureBasic';
 
 <InteractiveExample
-  component={<LongPressGestureBasic/>}
-  src={LongPressGestureBasicSrc}
+component={<LongPressGestureBasic/>}
+src={LongPressGestureBasicSrc}
 />
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -135,4 +135,5 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
 @site/static/examples/LongPressGestureBasic

@@ -17,8 +17,8 @@ import RotationGestureBasic from '@site/static/examples/RotationGestureBasic';
 import RotationGestureBasicSrc from '!!raw-loader!@site/static/examples/RotationGestureBasicSrc';
 
 <InteractiveExample
-  component={<RotationGestureBasic/>}
-  src={RotationGestureBasicSrc}
+component={<RotationGestureBasic/>}
+src={RotationGestureBasicSrc}
 />
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -86,7 +86,7 @@ Y coordinate, expressed in points, of the gesture's central focal point (anchor)
 
 ## Example
 
-```jsx
+````jsx
 import { StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -127,3 +127,4 @@ const styles = StyleSheet.create({
   },
 });
 ```@site/static/examples/RotationGestureBasic
+````

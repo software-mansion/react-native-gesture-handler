@@ -17,8 +17,8 @@ import PinchGestureBasic from '@site/static/examples/PinchGestureBasic';
 import PinchGestureBasicSrc from '!!raw-loader!@site/static/examples/PinchGestureBasicSrc';
 
 <InteractiveExample
-  component={<PinchGestureBasic/>}
-  src={PinchGestureBasicSrc}
+component={<PinchGestureBasic/>}
+src={PinchGestureBasicSrc}
 />
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -89,7 +89,7 @@ Position expressed in points along Y axis of center anchor point of gesture
 
 ## Example
 
-```jsx
+````jsx
 import { StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -130,3 +130,4 @@ const styles = StyleSheet.create({
   },
 });
 ```@site/static/examples/PinchGestureBasic
+````

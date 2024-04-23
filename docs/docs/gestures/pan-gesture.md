@@ -17,8 +17,8 @@ import PanGestureBasic from '@site/static/examples/PanGestureBasic';
 import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBasic';
 
 <InteractiveExample
-  component={<PanGestureBasic/>}
-  src={PanGestureBasicSrc}
+component={<PanGestureBasic/>}
+src={PanGestureBasicSrc}
 />
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -239,4 +239,5 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
 @site/static/examples/PanGestureBasic

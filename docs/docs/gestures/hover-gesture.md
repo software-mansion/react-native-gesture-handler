@@ -17,8 +17,8 @@ import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
 import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
 
 <InteractiveExample
-  component={<HoverGestureBasic/>}
-  src={HoverGestureBasicSrc}
+component={<HoverGestureBasic/>}
+src={HoverGestureBasicSrc}
 />
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';

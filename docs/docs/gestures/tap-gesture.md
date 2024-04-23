@@ -17,8 +17,8 @@ import TapGestureBasic from '@site/static/examples/TapGestureBasic';
 import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBasic';
 
 <InteractiveExample
-  component={<TapGestureBasic/>}
-  src={TapGestureBasicSrc}
+component={<TapGestureBasic/>}
+src={TapGestureBasicSrc}
 />
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -128,7 +128,7 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 
 ## Example
 
-```jsx
+````jsx
 import { View, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
@@ -163,3 +163,4 @@ const styles = StyleSheet.create({
   },
 });
 ```@site/static/examples/TapGestureBasic
+````
