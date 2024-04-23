@@ -219,7 +219,8 @@ function attachHandlers({
       : ActionType.JS_FUNCTION_NEW_API;
 
     if (Platform.OS === 'web') {
-      (RNGestureHandlerModule as any).attachGestureHandlerWeb(
+      // @ts-ignore in this branch we use web version of Gesture Handler Module, so this function is defined
+      RNGestureHandlerModule.attachGestureHandlerWeb(
         gesture.handlerTag,
         viewTag,
         webEventHandlersRef

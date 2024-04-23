@@ -318,8 +318,8 @@ export default function createHandler<
       this.viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
-        // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
-        (RNGestureHandlerModule as any).attachGestureHandlerWeb(
+        // @ts-ignore in this branch we use web version of Gesture Handler Module, so this function is defined
+        RNGestureHandlerModule.attachGestureHandlerWeb(
           this.handlerTag,
           newViewTag,
           this.propsRef
