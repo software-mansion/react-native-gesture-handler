@@ -13,8 +13,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
   </video>
 </div>
 
-import PinchGestureBasic from '@site/src/examples/PinchGestureBasic';
-import PinchGestureBasicSrc from '!!raw-loader!@site/src/examples/PinchGestureBasicSrc';
+import PinchGestureBasic from '@site/static/examples/PinchGestureBasic';
+import PinchGestureBasicSrc from '!!raw-loader!@site/static/examples/PinchGestureBasicSrc';
 
 <InteractiveExample
   component={<PinchGestureBasic/>}
@@ -35,6 +35,8 @@ The distance between the fingers is reported as a scale factor. At the beginning
 Similarly, the scale factor decreases as the distance between the fingers decreases.
 Pinch gestures are used most commonly to change the size of objects or content onscreen.
 For example, map views use pinch gestures to change the zoom level of the map.
+
+<samp id="PinchGestureBasicSrc">Pinch Gesture</samp>
 
 ## Reference
 
@@ -127,4 +129,4 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-```
+```@site/static/examples/PinchGestureBasic

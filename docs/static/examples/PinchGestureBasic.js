@@ -50,23 +50,27 @@ export default function App() {
   const pan = Gesture.Pan()
     .minDistance(1)
     .onStart((event) => {
-        const distanceX = Math.abs(event.absoluteX - centerX.value);
-        const distanceY = Math.abs(event.absoluteY - centerY.value);
-        const width = Math.max(distanceX, distanceY) * 2;
-        distanceDifference.value = boxWidth.value - width;
-        console.log(distanceDifference.value);
+      const distanceX = Math.abs(event.absoluteX - centerX.value);
+      const distanceY = Math.abs(event.absoluteY - centerY.value);
+      const width = Math.max(distanceX, distanceY) * 2;
+      distanceDifference.value = boxWidth.value - width;
+      console.log(distanceDifference.value);
 
-        touchOpacity.value = withTiming(0.4, { duration: 200 });
+      touchOpacity.value = withTiming(0.4, { duration: 200 });
     })
     .onUpdate((event) => {
-        const distanceX = Math.abs(event.absoluteX - centerX.value);
-        const distanceY = Math.abs(event.absoluteY - centerY.value);
-        boxWidth.value = clamp(Math.max(distanceX, distanceY) * 2  + distanceDifference.value, 100, 300);
+      const distanceX = Math.abs(event.absoluteX - centerX.value);
+      const distanceY = Math.abs(event.absoluteY - centerY.value);
+      boxWidth.value = clamp(
+        Math.max(distanceX, distanceY) * 2 + distanceDifference.value,
+        100,
+        300
+      );
 
-        pointerPositionX.value = event.absoluteX - centerX.value - 12;
-        pointerPositionY.value = event.absoluteY - centerY.value - 12;
-        negativePointerPositionX.value = centerX.value - event.absoluteX - 12;
-        negativePointerPositionY.value = centerY.value - event.absoluteY - 12;
+      pointerPositionX.value = event.absoluteX - centerX.value - 12;
+      pointerPositionY.value = event.absoluteY - centerY.value - 12;
+      negativePointerPositionX.value = centerX.value - event.absoluteX - 12;
+      negativePointerPositionY.value = centerY.value - event.absoluteY - 12;
     })
     .onEnd(() => {
       touchOpacity.value = withTiming(0, { duration: 200 });

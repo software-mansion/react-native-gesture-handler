@@ -13,8 +13,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
   </video>
 </div>
 
-import LongPressGestureBasic from '@site/src/examples/LongPressGestureBasic';
-import LongPressGestureBasicSrc from '!!raw-loader!@site/src/examples/LongPressGestureBasic';
+import LongPressGestureBasic from '@site/static/examples/LongPressGestureBasic';
+import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPressGestureBasic';
 
 <InteractiveExample
   component={<LongPressGestureBasic/>}
@@ -28,6 +28,8 @@ import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture's state will turn into [END](/docs/fundamentals/states-events#end) immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](/docs/gestures/long-press-gesture#mindurationvalue-number) or if the finger is moved further than the [allowable distance](/docs/gestures/long-press-gesture#maxdistancevalue-number).
+
+<samp id="LongPressGestureBasic">Long Press Gesture</samp>
 
 ## Reference
 
@@ -133,3 +135,4 @@ const styles = StyleSheet.create({
   },
 });
 ```
+@site/static/examples/LongPressGestureBasic

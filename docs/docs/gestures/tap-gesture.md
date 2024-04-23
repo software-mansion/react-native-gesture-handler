@@ -13,8 +13,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
   </video>
 </div>
 
-import TapGestureBasic from '@site/src/examples/TapGestureBasic';
-import TapGestureBasicSrc from '!!raw-loader!@site/src/examples/TapGestureBasic';
+import TapGestureBasic from '@site/static/examples/TapGestureBasic';
+import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBasic';
 
 <InteractiveExample
   component={<TapGestureBasic/>}
@@ -33,6 +33,8 @@ The required number of taps and allowed distance from initial position may be co
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
 In order for a gesture to [activate](/docs/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](/docs/fundamentals/states-events#active), it will [end](/docs/fundamentals/states-events#end).
+
+<samp id="TapGestureBasic">Tap Gesture</samp>
 
 ## Reference
 
@@ -160,4 +162,4 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-```
+```@site/static/examples/TapGestureBasic

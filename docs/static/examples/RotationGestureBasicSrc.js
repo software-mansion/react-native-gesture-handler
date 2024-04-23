@@ -1,41 +1,34 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import {
-  Directions,
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import { StyleSheet } from 'react-native';
 import Animated, {
-  withTiming,
   useSharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
 export default function App() {
-  const translateX = useSharedValue(0);
-  const startTranslateX = useSharedValue(0);
+  const angle = useSharedValue(0);
+  const startAngle = useSharedValue(0);
 
-  const fling = Gesture.Fling()
-    .direction(Directions.LEFT | Directions.RIGHT)
-    .onBegin((event) => {
-      startTranslateX.value = event.x;
+  const rotation = Gesture.Rotation()
+    .onStart(() => {
+      startAngle.value = angle.value;
     })
-    .onStart((event) => {
-      translateX.value = withTiming(
-        translateX.value + event.x - startTranslateX.value,
-        { duration: 200 }
-      );
+    .onUpdate((event) => {
+      angle.value = startAngle.value + event.angle;
     });
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [{ rotate: `${angle.value}rad` }],
   }));
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={fling}>
+      <GestureDetector gesture={rotation}>
         <Animated.View style={[styles.box, boxAnimatedStyles]}></Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
@@ -53,5 +46,14 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 20,
     backgroundColor: '#b58df1',
+  },
+  dot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#ccc',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
   },
 });

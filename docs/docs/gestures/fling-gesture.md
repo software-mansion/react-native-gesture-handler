@@ -13,8 +13,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
   </video>
 </div>
 
-import FlingGestureBasic from '@site/src/examples/FlingGestureBasic';
-import FlingGestureBasicSrc from '!!raw-loader!@site/src/examples/FlingGestureBasic';
+import FlingGestureBasic from '@site/static/examples/FlingGestureBasic';
+import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestureBasic';
 
 <InteractiveExample
   component={<FlingGestureBasic/>}
@@ -29,6 +29,8 @@ A discrete gesture that activates when the movement is sufficiently long and fas
 Gesture gets [ACTIVE](/docs/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
 When gesture gets activated it will turn into [END](/docs/fundamentals/states-events#end) state when finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
+
+<samp id="FlingGestureBasic">Fling Gesture</samp>
 
 ## Reference
 
@@ -156,3 +158,4 @@ const styles = StyleSheet.create({
   },
 });
 ```
+@site/static/examples/FlingGestureBasic

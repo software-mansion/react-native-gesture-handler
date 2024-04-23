@@ -13,8 +13,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
   </video>
 </div>
 
-import HoverGestureBasic from '@site/src/examples/HoverGestureBasic';
-import HoverGestureBasicSrc from '!!raw-loader!@site/src/examples/HoverGestureBasic';
+import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
+import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
 
 <InteractiveExample
   component={<HoverGestureBasic/>}
@@ -29,6 +29,8 @@ import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callb
 A continuous gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
 
 On iOS additional visual effects may be configured.
+
+<samp id="HoverGestureBasic">Hover Gesture</samp>
 
 ## Reference
 
@@ -96,4 +98,4 @@ Y coordinate of the current position of the pointer relative to the window. The 
 
 ## Remarks
 
-- Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan` gesture](/docs/gestures/pan-gesture).
+- Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan` gesture](/docs/gestures/pan-gesture).@site/static/examples/HoverGestureBasic

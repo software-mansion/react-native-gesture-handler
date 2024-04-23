@@ -13,8 +13,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
   </video>
 </div>
 
-import PanGestureBasic from '@site/src/examples/PanGestureBasic';
-import PanGestureBasicSrc from '!!raw-loader!@site/src/examples/PanGestureBasic';
+import PanGestureBasic from '@site/static/examples/PanGestureBasic';
+import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBasic';
 
 <InteractiveExample
   component={<PanGestureBasic/>}
@@ -34,6 +34,8 @@ The gesture [activates](/docs/fundamentals/states-events#active) when a finger i
 Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](/docs/gestures/pan-gesture#minpointersvalue-number) required for activation (allowing for multifinger swipes) may be specified.
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
+
+<samp id="PanGestureBasic">Pan Gesture</samp>
 
 ## Reference
 
@@ -237,3 +239,4 @@ const styles = StyleSheet.create({
   },
 });
 ```
+@site/static/examples/PanGestureBasic

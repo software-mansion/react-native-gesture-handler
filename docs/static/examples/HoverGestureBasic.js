@@ -5,7 +5,12 @@ import {
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 export default function App() {
   const translateX = useSharedValue(0);
@@ -16,24 +21,30 @@ export default function App() {
 
   const hover = Gesture.Hover()
     .onStart((event) => {
-        startX.value = event.x;
-        startY.value = event.y;
+      startX.value = event.x;
+      startY.value = event.y;
     })
     .onUpdate((event) => {
-        translateX.value = (startX.value - event.x) * .2;
-        translateY.value = (startY.value - event.y) * .2;
+      translateX.value = (event.x - startX.value) * 0.3;
+      translateY.value = (event.y - startY.value) * 0.3;
     })
     .onEnd(() => {
-        translateX.value = withTiming(0, {duration: 400, easing: Easing.bezier(1, -1, 0.3, 1.43)});
-        translateY.value = withTiming(0, {duration: 400, easing: Easing.bezier(1, -1, 0.3, 1.43)});
+      translateX.value = withTiming(0, {
+        duration: 400,
+        easing: Easing.bezier(1, -1, 0.3, 1.43),
+      });
+      translateY.value = withTiming(0, {
+        duration: 400,
+        easing: Easing.bezier(1, -1, 0.3, 1.43),
+      });
     });
 
   const boxAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
-      {translateX: translateX.value},
-      {translateY: translateY.value},
+      { translateX: translateX.value },
+      { translateY: translateY.value },
     ],
-  }))
+  }));
 
   return (
     <GestureHandlerRootView style={styles.container}>
