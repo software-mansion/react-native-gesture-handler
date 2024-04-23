@@ -13,6 +13,14 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
   </video>
 </div>
 
+import TapGestureBasic from '@site/src/examples/TapGestureBasic';
+import TapGestureBasicSrc from '!!raw-loader!@site/src/examples/TapGestureBasic';
+
+<InteractiveExample
+  component={<TapGestureBasic/>}
+  src={TapGestureBasicSrc}
+/>
+
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';

@@ -13,6 +13,14 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
   </video>
 </div>
 
+import PanGestureBasic from '@site/src/examples/PanGestureBasic';
+import PanGestureBasicSrc from '!!raw-loader!@site/src/examples/PanGestureBasic';
+
+<InteractiveExample
+  component={<PanGestureBasic/>}
+  src={PanGestureBasicSrc}
+/>
+
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseContinousEventConfig from './\_shared/base-continous-gesture-config.md';
