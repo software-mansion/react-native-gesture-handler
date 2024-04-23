@@ -677,6 +677,8 @@ interface GestureDetectorState {
  * ### Remarks
  * - Gesture Detector will use first native view in its subtree to recognize gestures, however if this view is used only to group its children it may get automatically collapsed.
  * - Using the same instance of a gesture across multiple Gesture Detectors is not possible.
+ *
+ * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/gesture-detector
  */
 export const GestureDetector = (props: GestureDetectorProps) => {
   const rootViewContext = useContext(GestureHandlerRootViewContext);
