@@ -8,7 +8,11 @@ import {
   GestureDetector,
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+function clamp(val, min, max) {
+  return Math.min(Math.max(val, min), max);
+}
 
 export default function App() {
   const translationX = useSharedValue(0);
@@ -16,6 +20,10 @@ export default function App() {
   const prevTranslationX = useSharedValue(0);
   const prevTranslationY = useSharedValue(0);
   const grabbing = useSharedValue(false);
+  const maxTranslateX = useSharedValue(0);
+  const maxTranslateY = useSharedValue(0);
+
+  const containerRef = React.useRef(null);
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [
@@ -25,6 +33,29 @@ export default function App() {
     cursor: grabbing.value ? 'grabbing' : 'grab',
   }));
 
+  const updateWidthAndHeight = () => {
+    if (!containerRef.current) return;
+
+    containerRef.current.measureInWindow((x, y, width, height) => {
+      maxTranslateX.value = width / 2 - 50;
+      maxTranslateY.value = height / 2 - 50;
+    });
+  }
+
+  React.useEffect(() => {
+    updateWidthAndHeight();
+  }, [containerRef.current]);
+
+  React.useEffect(() => {
+    window.addEventListener('resize', updateWidthAndHeight);
+    window.addEventListener('scroll', updateWidthAndHeight);
+
+    return () => {
+      window.removeEventListener('resize', updateWidthAndHeight);
+      window.removeEventListener('scroll', updateWidthAndHeight);
+    };
+  }, []);
+
   const pan = Gesture.Pan()
     .minDistance(1)
     .onBegin(() => {
@@ -33,18 +64,20 @@ export default function App() {
       prevTranslationY.value = translationY.value;
     })
     .onUpdate((event) => {
-      translationX.value = prevTranslationX.value + event.translationX;
-      translationY.value = prevTranslationY.value + event.translationY;
+      translationX.value = clamp(prevTranslationX.value + event.translationX, -maxTranslateX.value, maxTranslateX.value);
+      translationY.value = clamp(prevTranslationY.value + event.translationY, -maxTranslateY.value, maxTranslateY.value);
     })
     .onFinalize(() => {
       grabbing.value = false;
     });
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={pan}>
-        <Animated.View style={[animatedStyles, styles.box]}></Animated.View>
-      </GestureDetector>
+    <GestureHandlerRootView>
+      <View ref={containerRef} style={styles.container}>
+        <GestureDetector gesture={pan}>
+          <Animated.View style={[animatedStyles, styles.box]}></Animated.View>
+        </GestureDetector>
+      </View>
     </GestureHandlerRootView>
   );
 }

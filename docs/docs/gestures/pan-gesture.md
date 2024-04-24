@@ -35,7 +35,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
   </video>
 </div>
 
-<samp id="PanGestureBasic">Pan Gesture</samp>
+<samp id="PanGestureBasicSrc">Pan Gesture</samp>
 
 ## Reference
 
