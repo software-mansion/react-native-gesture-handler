@@ -47,6 +47,7 @@ import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation'
 import { nativeViewGestureHandlerProps } from '../NativeViewGestureHandler';
 import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
+import { RNGestureHandlerModuleWeb } from '../../web/RNGestureHandlerModuleType';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -218,8 +219,9 @@ function attachHandlers({
       : ActionType.JS_FUNCTION_NEW_API;
 
     if (Platform.OS === 'web') {
-      // @ts-ignore in this branch we use web version of Gesture Handler Module, so this function is defined
-      RNGestureHandlerModule.attachGestureHandlerWeb(
+      (
+        RNGestureHandlerModule as RNGestureHandlerModuleWeb
+      ).attachGestureHandlerWeb(
         gesture.handlerTag,
         viewTag,
         webEventHandlersRef

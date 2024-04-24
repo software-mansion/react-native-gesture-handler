@@ -31,6 +31,7 @@ import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
+import { RNGestureHandlerModuleWeb } from '../web/RNGestureHandlerModuleType';
 
 const UIManagerAny = UIManager as any;
 
@@ -318,12 +319,10 @@ export default function createHandler<
       this.viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
-        // @ts-ignore in this branch we use web version of Gesture Handler Module, so this function is defined
-        RNGestureHandlerModule.attachGestureHandlerWeb(
-          this.handlerTag,
-          newViewTag,
-          this.propsRef
-        );
+        // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
+        (
+          RNGestureHandlerModule as RNGestureHandlerModuleWeb
+        ).attachGestureHandlerWeb(this.handlerTag, newViewTag, this.propsRef);
       } else {
         registerOldGestureHandler(this.handlerTag, {
           onGestureEvent: this.onGestureHandlerEvent,
