@@ -5,14 +5,6 @@ sidebar_label: Fling gesture
 sidebar_position: 8
 ---
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
-  </video>
-</div>
-
 import FlingGestureBasic from '@site/static/examples/FlingGestureBasic';
 import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestureBasic';
 
@@ -29,6 +21,14 @@ A discrete gesture that activates when the movement is sufficiently long and fas
 Gesture gets [ACTIVE](/docs/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
 When gesture gets activated it will turn into [END](/docs/fundamentals/states-events#end) state when finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+    <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
+  </video>
+</div>
 
 <samp id="FlingGestureBasic">Fling Gesture</samp>
 

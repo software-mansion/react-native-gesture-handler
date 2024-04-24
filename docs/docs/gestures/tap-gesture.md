@@ -5,14 +5,6 @@ sidebar_label: Tap gesture
 sidebar_position: 4
 ---
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
-  </video>
-</div>
-
 import TapGestureBasic from '@site/static/examples/TapGestureBasic';
 import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBasic';
 
@@ -33,6 +25,14 @@ The required number of taps and allowed distance from initial position may be co
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
 In order for a gesture to [activate](/docs/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](/docs/fundamentals/states-events#active), it will [end](/docs/fundamentals/states-events#end).
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+    <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
+  </video>
+</div>
 
 <samp id="TapGestureBasic">Tap Gesture</samp>
 

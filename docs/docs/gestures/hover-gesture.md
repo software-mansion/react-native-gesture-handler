@@ -5,14 +5,6 @@ sidebar_label: Hover gesture
 sidebar_position: 9
 ---
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 375}}>
-    <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
-  </video>
-</div>
-
 import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
 import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
 
@@ -29,6 +21,14 @@ import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callb
 A continuous gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
 
 On iOS additional visual effects may be configured.
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+  <video playsInline autoPlay muted loop style={{maxWidth: 375}}>
+    <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
+  </video>
+</div>
 
 <samp id="HoverGestureBasic">Hover Gesture</samp>
 
