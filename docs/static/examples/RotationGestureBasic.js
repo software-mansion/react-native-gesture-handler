@@ -21,6 +21,7 @@ export default function App() {
   const negativePointerPositionX = useSharedValue(0);
   const negativePointerPositionY = useSharedValue(0);
   const touchOpacity = useSharedValue(0);
+  const grabbing = useSharedValue(false);
 
   const boxRef = React.useRef(null);
 
@@ -39,15 +40,17 @@ export default function App() {
 
   React.useEffect(() => {
     window.addEventListener('resize', updateCenter);
+    window.addEventListener('scroll', updateCenter);
 
     return () => {
       window.removeEventListener('resize', updateCenter);
+      window.removeEventListener('scroll', updateCenter);
     };
   }, []);
 
   const pan = Gesture.Pan()
     .minDistance(1)
-    .onStart((event) => {
+    .onBegin((event) => {
       startAngle.value =
         angle.value -
         Math.atan2(
@@ -55,6 +58,7 @@ export default function App() {
           event.absoluteX - centerX.value
         );
       touchOpacity.value = withTiming(0.4, { duration: 200 });
+      grabbing.value = true;
     })
     .onUpdate((event) => {
       angle.value =
@@ -68,12 +72,14 @@ export default function App() {
       negativePointerPositionX.value = centerX.value - event.absoluteX - 12;
       negativePointerPositionY.value = centerY.value - event.absoluteY - 12;
     })
-    .onEnd(() => {
+    .onFinalize(() => {
       touchOpacity.value = withTiming(0, { duration: 200 });
+      grabbing.value = false;
     });
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     transform: [{ rotate: `${angle.value}rad` }],
+    cursor: grabbing.value ? 'grabbing' : 'grab',
   }));
 
   return (
@@ -129,5 +135,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: '50%',
     top: '50%',
+    pointerEvents: 'none',
   },
 });

@@ -41,9 +41,11 @@ export default function App() {
 
   React.useEffect(() => {
     window.addEventListener('resize', updateCenter);
+    window.addEventListener('scroll', updateCenter);
 
     return () => {
       window.removeEventListener('resize', updateCenter);
+      window.removeEventListener('scroll', updateCenter);
     };
   }, []);
 
@@ -124,6 +126,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 20,
     backgroundColor: '#b58df1',
+    cursor: 'pointer',
   },
   dot: {
     width: 24,

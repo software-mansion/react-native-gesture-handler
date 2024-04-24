@@ -15,22 +15,29 @@ export default function App() {
   const translationY = useSharedValue(0);
   const prevTranslationX = useSharedValue(0);
   const prevTranslationY = useSharedValue(0);
+  const grabbing = useSharedValue(false);
 
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [
       { translateX: translationX.value },
       { translateY: translationY.value },
     ],
+    cursor: grabbing.value ? 'grabbing' : 'grab',
   }));
 
   const pan = Gesture.Pan()
-    .onStart(() => {
+    .minDistance(1)
+    .onBegin(() => {
+      grabbing.value = true;
       prevTranslationX.value = translationX.value;
       prevTranslationY.value = translationY.value;
     })
     .onUpdate((event) => {
       translationX.value = prevTranslationX.value + event.translationX;
       translationY.value = prevTranslationY.value + event.translationY;
+    })
+    .onFinalize(() => {
+      grabbing.value = false;
     });
 
   return (
