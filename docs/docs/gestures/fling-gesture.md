@@ -30,7 +30,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
   </video>
 </div>
 
-<samp id="FlingGestureBasic">Fling Gesture</samp>
+<samp id="FlingGestureBasicSrc">Fling Gesture</samp>
 
 ## Reference
 
