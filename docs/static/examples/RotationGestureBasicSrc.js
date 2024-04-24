@@ -19,7 +19,7 @@ export default function App() {
       startAngle.value = angle.value;
     })
     .onUpdate((event) => {
-      angle.value = startAngle.value + event.angle;
+      angle.value = startAngle.value + event.rotation;
     });
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
