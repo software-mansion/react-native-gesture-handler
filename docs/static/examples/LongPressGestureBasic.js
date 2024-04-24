@@ -12,7 +12,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-const COLORS = ['#33488e', '#ffe04b', '#5bb9e0', '#fa7f7c', '#82cab2'];
+const COLORS = ['#fa7f7c', '#b58df1', '#ffe780', '#82cab2'];
 
 export default function App() {
   const colorIndex = useSharedValue(0);
