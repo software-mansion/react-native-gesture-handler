@@ -47,7 +47,11 @@ export default function App() {
       });
     }
 
-    boxWidth.value = clamp(boxWidth.value, 100, Math.min(width.value, height.value));
+    boxWidth.value = clamp(
+      boxWidth.value,
+      100,
+      Math.min(width.value, height.value)
+    );
   }
 
   React.useEffect(() => {

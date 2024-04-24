@@ -29,7 +29,11 @@ export default function App() {
     containerRef.current.measure((x, y, width, height) => {
       containerWidth.value = width;
 
-      translateX.value = clamp(translateX.value, containerWidth.value / -2 + 50, containerWidth.value / 2 - 50);
+      translateX.value = clamp(
+        translateX.value,
+        containerWidth.value / -2 + 50,
+        containerWidth.value / 2 - 50
+      );
     });
   };
 
@@ -42,7 +46,7 @@ export default function App() {
 
     return () => {
       window.removeEventListener('resize', updateContainerWidth);
-    }
+    };
   }, []);
 
   const fling = Gesture.Fling()
@@ -52,7 +56,11 @@ export default function App() {
     })
     .onStart((event) => {
       translateX.value = withTiming(
-        clamp(translateX.value + event.x - startTranslateX.value, containerWidth.value / -2 + 50, containerWidth.value / 2 - 50),
+        clamp(
+          translateX.value + event.x - startTranslateX.value,
+          containerWidth.value / -2 + 50,
+          containerWidth.value / 2 - 50
+        ),
         { duration: 200 }
       );
     });
@@ -65,7 +73,8 @@ export default function App() {
     <GestureHandlerRootView>
       <View ref={containerRef} style={styles.container}>
         <GestureDetector gesture={fling}>
-          <Animated.View style={[styles.box, boxAnimatedStyles]}></Animated.View>
+          <Animated.View
+            style={[styles.box, boxAnimatedStyles]}></Animated.View>
         </GestureDetector>
       </View>
     </GestureHandlerRootView>

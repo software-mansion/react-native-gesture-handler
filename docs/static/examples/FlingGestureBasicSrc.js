@@ -1,18 +1,18 @@
-import React from "react";
+import React from 'react';
 import {
   Directions,
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import { Dimensions, StyleSheet } from "react-native";
+} from 'react-native-gesture-handler';
+import { Dimensions, StyleSheet } from 'react-native';
 import Animated, {
   withTiming,
   useSharedValue,
   useAnimatedStyle,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 
-const { width } = Dimensions.get("screen");
+const { width } = Dimensions.get('screen');
 
 function clamp(val, min, max) {
   return Math.min(Math.max(val, min), max);
@@ -55,14 +55,14 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   box: {
     width: 100,
     height: 100,
     borderRadius: 20,
-    backgroundColor: "#b58df1",
-    cursor: "grab",
+    backgroundColor: '#b58df1',
+    cursor: 'grab',
   },
 });

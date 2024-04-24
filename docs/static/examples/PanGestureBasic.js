@@ -40,7 +40,7 @@ export default function App() {
       maxTranslateX.value = width / 2 - 50;
       maxTranslateY.value = height / 2 - 50;
     });
-  }
+  };
 
   React.useEffect(() => {
     updateWidthAndHeight();
@@ -64,8 +64,16 @@ export default function App() {
       prevTranslationY.value = translationY.value;
     })
     .onUpdate((event) => {
-      translationX.value = clamp(prevTranslationX.value + event.translationX, -maxTranslateX.value, maxTranslateX.value);
-      translationY.value = clamp(prevTranslationY.value + event.translationY, -maxTranslateY.value, maxTranslateY.value);
+      translationX.value = clamp(
+        prevTranslationX.value + event.translationX,
+        -maxTranslateX.value,
+        maxTranslateX.value
+      );
+      translationY.value = clamp(
+        prevTranslationY.value + event.translationY,
+        -maxTranslateY.value,
+        maxTranslateY.value
+      );
     })
     .onFinalize(() => {
       grabbing.value = false;
