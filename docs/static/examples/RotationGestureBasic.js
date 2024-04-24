@@ -59,6 +59,11 @@ export default function App() {
         );
       touchOpacity.value = withTiming(0.4, { duration: 200 });
       grabbing.value = true;
+      
+      pointerPositionX.value = event.absoluteX - centerX.value - 12;
+      pointerPositionY.value = event.absoluteY - centerY.value - 12;
+      negativePointerPositionX.value = centerX.value - event.absoluteX - 12;
+      negativePointerPositionY.value = centerY.value - event.absoluteY - 12;
     })
     .onUpdate((event) => {
       angle.value =

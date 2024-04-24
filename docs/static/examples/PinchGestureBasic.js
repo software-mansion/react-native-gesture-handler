@@ -4,7 +4,7 @@ import {
   GestureDetector,
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -16,36 +16,51 @@ const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 export default function App() {
   const boxWidth = useSharedValue(100);
   const distanceDifference = useSharedValue(0);
+
   const centerX = useSharedValue(0);
   const centerY = useSharedValue(0);
+  const width = useSharedValue(0);
+  const height = useSharedValue(0);
+
   const pointerPositionX = useSharedValue(0);
   const pointerPositionY = useSharedValue(0);
   const negativePointerPositionX = useSharedValue(0);
   const negativePointerPositionY = useSharedValue(0);
+
   const touchOpacity = useSharedValue(0);
 
+  const containerRef = React.useRef(null);
   const boxRef = React.useRef(null);
 
-  function updateCenter() {
-    if (!boxRef.current) return;
+  function updateCenterAndDimensions() {
+    if (boxRef.current) {
+      boxRef.current.measureInWindow((x, y, width, height) => {
+        centerX.value = x + width / 2;
+        centerY.value = y + height / 2;
+      });
+    }
 
-    boxRef.current.measureInWindow((x, y, width, height) => {
-      centerX.value = x + width / 2;
-      centerY.value = y + height / 2;
-    });
+    if (containerRef.current) {
+      containerRef.current.measureInWindow((x, y, w, h) => {
+        width.value = w;
+        height.value = h;
+      });
+    }
+
+    boxWidth.value = clamp(boxWidth.value, 100, Math.min(width.value, height.value));
   }
 
   React.useEffect(() => {
-    updateCenter();
-  }, [boxRef.current]);
+    updateCenterAndDimensions();
+  }, [boxRef.current, containerRef.current]);
 
   React.useEffect(() => {
-    window.addEventListener('resize', updateCenter);
-    window.addEventListener('scroll', updateCenter);
+    window.addEventListener('resize', updateCenterAndDimensions);
+    window.addEventListener('scroll', updateCenterAndDimensions);
 
     return () => {
-      window.removeEventListener('resize', updateCenter);
-      window.removeEventListener('scroll', updateCenter);
+      window.removeEventListener('resize', updateCenterAndDimensions);
+      window.removeEventListener('scroll', updateCenterAndDimensions);
     };
   }, []);
 
@@ -56,7 +71,6 @@ export default function App() {
       const distanceY = Math.abs(event.absoluteY - centerY.value);
       const width = Math.max(distanceX, distanceY) * 2;
       distanceDifference.value = boxWidth.value - width;
-      console.log(distanceDifference.value);
 
       touchOpacity.value = withTiming(0.4, { duration: 200 });
     })
@@ -66,7 +80,7 @@ export default function App() {
       boxWidth.value = clamp(
         Math.max(distanceX, distanceY) * 2 + distanceDifference.value,
         100,
-        300
+        Math.min(width.value, height.value)
       );
 
       pointerPositionX.value = event.absoluteX - centerX.value - 12;
@@ -83,34 +97,36 @@ export default function App() {
   }));
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={pan}>
+    <GestureHandlerRootView>
+      <View ref={containerRef} style={styles.container}>
+        <GestureDetector gesture={pan}>
+          <Animated.View
+            ref={boxRef}
+            style={[styles.box, boxAnimatedStyles]}></Animated.View>
+        </GestureDetector>
         <Animated.View
-          ref={boxRef}
-          style={[styles.box, boxAnimatedStyles]}></Animated.View>
-      </GestureDetector>
-      <Animated.View
-        style={[
-          styles.dot,
-          {
-            transform: [
-              { translateX: pointerPositionX },
-              { translateY: pointerPositionY },
-            ],
-            opacity: touchOpacity,
-          },
-        ]}></Animated.View>
-      <Animated.View
-        style={[
-          styles.dot,
-          {
-            transform: [
-              { translateX: negativePointerPositionX },
-              { translateY: negativePointerPositionY },
-            ],
-            opacity: touchOpacity,
-          },
-        ]}></Animated.View>
+          style={[
+            styles.dot,
+            {
+              transform: [
+                { translateX: pointerPositionX },
+                { translateY: pointerPositionY },
+              ],
+              opacity: touchOpacity,
+            },
+          ]}></Animated.View>
+        <Animated.View
+          style={[
+            styles.dot,
+            {
+              transform: [
+                { translateX: negativePointerPositionX },
+                { translateY: negativePointerPositionY },
+              ],
+              opacity: touchOpacity,
+            },
+          ]}></Animated.View>
+      </View>
     </GestureHandlerRootView>
   );
 }
@@ -120,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    aspectRatio: 2,
+    aspectRatio: 3,
   },
   box: {
     aspectRatio: 1,

@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    aspectRatio: 2,
+    aspectRatio: 3,
   },
   box: {
     width: 100,
