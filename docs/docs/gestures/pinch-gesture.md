@@ -89,7 +89,7 @@ Position expressed in points along Y axis of center anchor point of gesture
 
 ## Example
 
-````jsx
+```jsx
 import { StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -129,5 +129,4 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-```@site/static/examples/PinchGestureBasic
-````
+```

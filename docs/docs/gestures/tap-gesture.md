@@ -128,7 +128,7 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 
 ## Example
 
-````jsx
+```jsx
 import { View, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
@@ -162,5 +162,4 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-```@site/static/examples/TapGestureBasic
-````
+```

@@ -239,5 +239,3 @@ const styles = StyleSheet.create({
   },
 });
 ```
-
-@site/static/examples/PanGestureBasic

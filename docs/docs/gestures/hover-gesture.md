@@ -98,4 +98,4 @@ Y coordinate of the current position of the pointer relative to the window. The 
 
 ## Remarks
 
-- Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan` gesture](/docs/gestures/pan-gesture).@site/static/examples/HoverGestureBasic
+- Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan` gesture](/docs/gestures/pan-gesture).

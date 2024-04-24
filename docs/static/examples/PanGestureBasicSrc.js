@@ -1,21 +1,21 @@
-import React from "react";
+import React from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import { StyleSheet, Dimensions } from "react-native";
+} from 'react-native-gesture-handler';
+import { StyleSheet, Dimensions } from 'react-native';
 
 function clamp(val, min, max) {
   'worklet';
   return Math.min(Math.max(val, min), max);
 }
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get('screen');
 
 export default function App() {
   const translationX = useSharedValue(0);
@@ -64,13 +64,13 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   box: {
     width: 100,
     height: 100,
-    backgroundColor: "#b58df1",
+    backgroundColor: '#b58df1',
     borderRadius: 20,
   },
 });

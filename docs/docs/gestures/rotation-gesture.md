@@ -86,7 +86,7 @@ Y coordinate, expressed in points, of the gesture's central focal point (anchor)
 
 ## Example
 
-````jsx
+```jsx
 import { StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -126,5 +126,4 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-```@site/static/examples/RotationGestureBasic
-````
+```
